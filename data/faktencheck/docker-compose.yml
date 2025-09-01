@@ -1,0 +1,27 @@
+services:
+  db:
+    image: postgres:latest
+    container_name: kibad-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: kibad
+      POSTGRES_DB: kibad
+    networks:
+      - kibad_network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: kibad-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: kibad
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+    networks:
+      - kibad_network
+
+networks:
+  kibad_network:
+    driver: bridge
