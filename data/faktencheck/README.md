@@ -1,4 +1,28 @@
-# Running from scratch
+# Set up Docker
+- Ubuntu: Follow instructions here: https://docs.docker.com/engine/install/ubuntu/ and https://docs.docker.com/engine/install/linux-postinstall/ 
+
+# Docker: Running from docker-compose.yml
+## Run with docker-compose.yml
+- Start containers: `docker compose up -d`
+
+## SQL Dump
+- Import sql file to database: `docker exec -it kibad-postgres bash -c "gzip -cd /tmp/data/2025-08-19_pg-faktencheck_dump.sql.gz | psql -U postgres -d kibad"`
+
+## Access pgAdmin
+- Go to: http://localhost:8080
+- Use login email "admin@admin.com" and pw "kibad"  (see docker-compose!)
+- Click "Add new server"
+    - General -> Name: "Postgres-Local"
+    - Connection
+        - Host name/address: "kibad-postgres"
+        - Port: 5432
+        - Username: "postgres"  (see docker-compose!)
+        - Password: "kibad"   (see docker-compose!)
+- Access tables: Servers -> Postgres-Local -> Databases -> kibad -> Schemas -> public -> Tables
+
+
+# Docker: Running from scratch
+
 ## Postgres
 - Download postgres: `docker pull postgres:latest`
 - Create postgres container: `docker run --name kibad-postgres -e POSTGRES_PASSWORD=kibad -p 5432:5432 -d postgres`
@@ -18,6 +42,7 @@
 
 ## Access pgAdmin
 - Go to: http://localhost:8080
+- Use login email "admin@admin.com" and pw "kibad"
 - Click "Add new server"
     - General -> Name: "Postgres-Local"
     - Connection
@@ -27,21 +52,3 @@
         - Password: "kibad"
 - Access tables: Servers -> Postgres-Local -> Databases -> kibad -> Schemas -> public -> Tables
 
-# Running from docker-compose.yml
-## Import docker-compose.yml
-- Import containers: `docker compose up -d`
-
-## SQL Dump
-- Copy sql file to container: `docker cp directory_containing_sql_dump/2025-08-19_pg-faktencheck_dump.sql kibad-postgres:/2025-08-19_pg-faktencheck_dump.sql`
-- Import sql file to database: `docker exec -it kibad-postgres psql -U postgres -d kibad -f /2025-08-19_pg-faktencheck_dump.sql`
-
-## Access pgAdmin
-- Go to: http://localhost:8080
-- Click "Add new server"
-    - General -> Name: "Postgres-Local"
-    - Connection
-        - Host name/address: "kibad-postgres"
-        - Port: 5432
-        - Username: "postgres"
-        - Password: "kibad"
-- Access tables: Servers -> Postgres-Local -> Databases -> kibad -> Schemas -> public -> Tables
