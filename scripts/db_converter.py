@@ -4,7 +4,7 @@ import argparse
 import json
 import sqlite3
 
-from .queries import Queries, QueryTypes
+from queries import Queries, QueryTypes
 
 
 def query_db(cursor: sqlite3.Cursor, query_type: str) -> sqlite3.Cursor:
