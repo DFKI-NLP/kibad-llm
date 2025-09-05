@@ -5,6 +5,7 @@ converts the results to JSONL format and writes to a file.
 
 import json
 import os
+from pathlib import Path
 from typing import Any
 
 import argparse
@@ -14,7 +15,7 @@ from dotenv import load_dotenv
 from queries import CORE_QUERY, VOCAB_QUERIES
 
 
-FILEPATH: str = "results.jsonl"
+FILEPATH: Path = Path(__file__).parent.parent / "data" / "2025-08-19 pg-faktencheck dump.jsonl"
 
 
 def query_core(
@@ -82,7 +83,7 @@ def main(args: argparse.Namespace) -> None:
         password=os.getenv("DB_PASSWORD")
     ) as conn:
         with conn.cursor() as cursor:
-            results: list[tuple] = query_core(cursor, args.query)
+            results: list[tuple] = query_core(cursor, CORE_QUERY)
             column_names: list[str] = [desc[0] for desc in cursor.description]
             with open(args.filepath, "w", encoding="utf-8") as f:
                 for result in results:
@@ -104,7 +105,6 @@ def main(args: argparse.Namespace) -> None:
 if __name__ == "__main__":
     parser: argparse.ArgumentParser = argparse.ArgumentParser()
     parser.add_argument("--filepath", type=str, default=FILEPATH)
-    parser.add_argument("--query", type=str, default=CORE_QUERY)
     args: argparse.Namespace = parser.parse_args()
     load_dotenv()
     main(args)
