@@ -1,12 +1,18 @@
-# Set up Docker
-- Ubuntu: Follow instructions here: https://docs.docker.com/engine/install/ubuntu/ and https://docs.docker.com/engine/install/linux-postinstall/ 
+# Set up Podman (Preferred)
+- Ubuntu: `sudo apt install podman podman-compose`
+  - If you have installed docker, set the compose provider for podman: `export PODMAN_COMPOSE_PROVIDER=podman-compose`
+
+# Alternative: set up Docker (not recommended)
+- Ubuntu: Follow instructions here: https://docs.docker.com/engine/install/ubuntu/ and https://docs.docker.com/engine/install/linux-postinstall/
 
 # Docker: Running from docker-compose.yml
 ## Run with docker-compose.yml
-- Start containers: `docker compose up -d`
+- Start containers: `podman compose up -d`  (currently fails)
+  - With Docker: `docker compose up -d`
 
 ## SQL Dump
-- Import sql file to database: `docker exec -it kibad-postgres bash -c "gzip -cd /tmp/data/2025-08-19_pg-faktencheck_dump.sql.gz | psql -U postgres -d kibad"`
+- Import sql file to database: `podman exec -it kibad-postgres bash -c "gzip -cd /tmp/data/2025-08-19_pg-faktencheck_dump.sql.gz | psql -U postgres -d kibad"`
+  - With Docker: `docker exec -it kibad-postgres bash -c "gzip -cd /tmp/data/2025-08-19_pg-faktencheck_dump.sql.gz | psql -U postgres -d kibad"`
 
 ## Access pgAdmin
 - Go to: http://localhost:8080
@@ -21,7 +27,7 @@
 - Access tables: Servers -> Postgres-Local -> Databases -> kibad -> Schemas -> public -> Tables
 
 
-# Docker: Running from scratch
+# Deprecated - Docker: Running from scratch
 
 ## Postgres
 - Download postgres: `docker pull postgres:latest`
