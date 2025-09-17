@@ -26,6 +26,9 @@
         - Password: "kibad"   (see docker-compose!)
 - Access tables: Servers -> Postgres-Local -> Databases -> kibad -> Schemas -> public -> Tables
 
+## Stop containers
+- Start containers: `podman compose down`  (currently fails)
+  - With Docker: `docker compose down`
 
 # Deprecated - Docker: Running from scratch
 
