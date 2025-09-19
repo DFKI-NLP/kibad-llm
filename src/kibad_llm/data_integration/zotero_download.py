@@ -230,12 +230,6 @@ def get_papers_from_dois(df: pd.DataFrame, verbose: bool = True) -> pd.DataFrame
     return df_papers
 
 
-# def main(
-#     file_path: str | Path = DATA_DIR
-#     / "zotero"
-#     / "Faktencheck Artenvielfalt Literaturdatenbank.csv",
-#     download_type: Literal["direct", "doi", "title"] = "doi",
-# ) -> None:
 def main(args: argparse.Namespace) -> None:
     """This script allows to download papers based on three methods:
 
@@ -374,6 +368,7 @@ def main(args: argparse.Namespace) -> None:
             df_papers_from_s2, how="left", on="paperId"
         )
 
+        # Actual download
         pbar = tqdm(
             df_papers_to_download.iterrows(), total=df_papers_to_download.shape[0]
         )
