@@ -11,7 +11,7 @@ You can run this script with the following paramters or a combination of them:
 By default:
 --file-path="./data/zotero/Faktencheck Artenvielfalt Literaturdatenbank.csv"
 --download-type='doi'
---output_dir="./output/"
+--output_dir="./output/downloads"
 """
 
 import argparse
