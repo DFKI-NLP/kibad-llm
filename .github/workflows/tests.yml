@@ -68,17 +68,10 @@ jobs:
         if: github.event_name == 'push' && github.ref_name == 'main'
         run: |
           source .venv/bin/activate
-          pytest --cov --cov-report=xml:coverage.xml --cov-report=term-missing --typeguard-packages=pytorch-ie
+          pytest --cov --cov-report=term-missing --typeguard-packages=kibad-llm
       # Otherwise skip slow tests
       - name: Run 'not slow' tests with coverage
         if: github.event_name != 'push' || github.ref_name != 'main'
         run: |
           source .venv/bin/activate
-          pytest -m "not slow" --cov --cov-report=xml:coverage.xml --cov-report=term-missing --typeguard-packages=pytorch-ie
-      - name: Upload coverage report to Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          files: ./coverage.xml
-          fail_ci_if_error: true
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          pytest -m "not slow" --cov --cov-report=term-missing --typeguard-packages=kibad-llm
