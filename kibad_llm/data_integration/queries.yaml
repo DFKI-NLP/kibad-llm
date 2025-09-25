@@ -1,0 +1,187 @@
+CORE_QUERY: |
+  SELECT c.zotitem_ptr_id,
+      c.status,
+      c.bibtex_author,
+      c.bibtex_title,
+      c.bibtex_year,
+      c.bibtex_type
+  FROM core_zotaddon c
+  WHERE c.status = 'abgeschlossen'
+  ORDER BY zotitem_ptr_id ASC,
+      bibtex_author ASC;
+
+BIODIVERSITY_LEVEL_QUERY: |
+  SELECT vbl.name AS biodiversity_level
+  FROM core_zotaddon_biodiversity_levels bl,
+      vocabulary_biodiversitylevel vbl
+  WHERE bl.zotaddon_id = %s
+  AND bl.biodiversitylevel_id = vbl.id;
+
+BIODIVERSITY_VARIABLE_QUERY: |
+  SELECT vbv.name AS biodiversity_variable
+  FROM core_zotaddon_biodiversity_variables bv,
+      vocabulary_biodiversityvariable vbv
+  WHERE bv.zotaddon_id = %s
+  AND bv.biodiversityvariable_id = vbv.id;
+
+CLIMATES_QUERY: |
+  SELECT vcl.name AS climate
+  FROM core_zotaddon_climates cl,
+      vocabulary_climate vcl
+  WHERE cl.zotaddon_id = %s
+  AND cl.climate_id = vcl.id;
+
+CONSERVATION_AREA_QUERY: |
+  SELECT ca.name AS name,
+      cam.description AS description,
+      cam.success AS success
+  FROM vocabulary_conservationareameasure cam,
+      vocabulary_conservationarea ca
+  WHERE cam.zot_addon_id = %s
+  AND cam.conservation_area_id = ca.id;
+
+DIRECT_DRIVER_QUERY: |
+  SELECT d.details AS details,
+      d.category AS category
+  FROM vocabulary_directdriver d
+  WHERE d.zot_addon_id = %s;
+
+ECOSYSTEM_SERVICE_QUERY: |
+  SELECT est.name AS term,
+      esc.name AS category,
+      es.details AS details
+  FROM vocabulary_ecosystemservice es,
+      vocabulary_ecosystemservicecategory esc,
+      vocabulary_ecosystemserviceterm est
+  WHERE es.zot_addon_id = %s
+  AND es.category_id = esc.id
+  AND es.term_id = est.id;
+
+ECOSYSTEM_TYPE_QUERY: |
+  SELECT ett.name AS term,
+      etc.name AS category,
+      et.description AS description
+  FROM vocabulary_ecosystemtype et,
+      vocabulary_ecosystemtypecategory etc,
+      vocabulary_ecosystemtypeterm ett
+  WHERE et.zot_addon_id = %s
+  AND et.category_id = etc.id
+  AND et.term_id = ett.id;
+
+HABITAT_QUERY: |
+  SELECT vh.name AS habitat
+  FROM core_zotaddon_habitats h,
+      vocabulary_habitat vh
+  WHERE h.zotaddon_id = %s
+  AND h.habitat_id = vh.id;
+
+IMPULSE_MEASURE_QUERY: |
+  SELECT im.description AS description,
+      im.success AS success
+  FROM vocabulary_impulsemeasure im
+  WHERE im.zot_addon_id = %s;
+
+INDIRECT_DRIVER_QUERY: |
+  SELECT id.details AS details,
+      id.category AS category
+  FROM vocabulary_indirectdriver id
+  WHERE id.zot_addon_id = %s;
+
+LAND_USE_QUERY: |
+  SELECT vlu.name AS landuse
+  FROM core_zotaddon_land_uses lu,
+      vocabulary_landuse vlu
+  WHERE lu.zotaddon_id = %s
+  AND lu.landuse_id = vlu.id;
+
+LOCATION_QUERY: |
+  SELECT vl.name AS name,
+      vl.federal_state AS federal_state,
+      vl.country AS country
+  FROM core_zotaddon_locations l,
+      vocabulary_location vl
+  WHERE l.zotaddon_id = %s
+  AND l.location_id = vl.id;
+
+MANAGEMENT_MEASURE_QUERY: |
+  SELECT mm.description AS description,
+      mm.success AS success
+  FROM vocabulary_managementmeasure mm
+  WHERE mm.zot_addon_id = %s;
+
+MEASURE_QUERY: |
+  SELECT vm.name AS measure
+  FROM vocabulary_measure_zot_addons m,
+      vocabulary_measure vm
+  WHERE m.zotaddon_id = %s
+  AND m.measure_id = vm.id;
+
+METHOD_QUERY: |
+  SELECT vm.name AS name
+  FROM core_zotaddon_methods m,
+      vocabulary_method vm
+  WHERE m.zotaddon_id = %s
+  AND m.method_id = vm.id;
+
+NATURAL_REGION_QUERY: |
+  SELECT vnr.name AS natural_region
+  FROM core_zotaddon_natural_regions nr,
+      vocabulary_naturalregion vnr
+  WHERE nr.zotaddon_id = %s
+  AND nr.naturalregion_id = vnr.id;
+
+SOIL_QUERY: |
+  SELECT sn.name AS name,
+      s.depth AS depth
+  FROM vocabulary_soil s,
+      vocabulary_soilname sn
+  WHERE s.zot_addon_id = %s
+  AND s.name_id = sn.id;
+
+STUDY_TYPE_QUERY: |
+  SELECT vst.name AS study_type
+  FROM core_zotaddon_study_types st,
+      vocabulary_studytype vst
+  WHERE st.zotaddon_id = %s
+  AND st.studytype_id = vst.id;
+
+TAXA_QUERY: |
+  SELECT vt.german_name AS german_name,
+      vt.scientific_name AS scientific_name,
+      vt.collective_term AS collective_term,
+      vsg.name AS species_group
+  FROM core_zotaddon_taxa t,
+      vocabulary_taxon vt,
+      vocabulary_speciesgroup vsg
+  WHERE t.zotaddon_id = %s
+  AND t.taxon_id = vt.id
+  AND vt.species_group_id = vsg.id;
+
+TRANSFORMATION_POTENTIAL_QUERY: |
+  SELECT vtp.name AS transformation_potential
+  FROM core_zotaddon c,
+      vocabulary_transformationpotential vtp
+  WHERE c.zotitem_ptr_id = %s
+  AND c.transformation_potential_id = vtp.id;
+
+VOCAB_QUERY_NAMES:
+  biodiversity_level: BIODIVERSITY_LEVEL_QUERY
+  biodiversity_variable: BIODIVERSITY_VARIABLE_QUERY
+  climate: CLIMATES_QUERY
+  conservation_area: CONSERVATION_AREA_QUERY
+  direct_driver: DIRECT_DRIVER_QUERY
+  ecosystem_service: ECOSYSTEM_SERVICE_QUERY
+  ecosystem_type: ECOSYSTEM_TYPE_QUERY
+  habitat: HABITAT_QUERY
+  impulse_measure: IMPULSE_MEASURE_QUERY
+  indirect_driver: INDIRECT_DRIVER_QUERY
+  landuse: LAND_USE_QUERY
+  location: LOCATION_QUERY
+  management_measure: MANAGEMENT_MEASURE_QUERY
+  measure: MEASURE_QUERY
+  method: METHOD_QUERY
+  natural_region: NATURAL_REGION_QUERY
+  soil: SOIL_QUERY
+  study_type: STUDY_TYPE_QUERY
+  taxa: TAXA_QUERY
+  transformation_potential: TRANSFORMATION_POTENTIAL_QUERY

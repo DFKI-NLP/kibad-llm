@@ -18,6 +18,9 @@ classifiers = [
 dependencies = [
     "psycopg2_binary==2.9.10",  # for db_converter.py
     "types-psycopg2",
+    "pyyaml",   # for db_converter.py
+    "types-PyYAML",
+
 
     # utils & other
     "tqdm",
@@ -40,7 +43,6 @@ pytest = ">=6.2.5"
 pytest-xdist = "^3.8.0"
 pytest-cov = "^6.2.1"
 typeguard = ">=2.13.3"
-types-requests = "^2.27.7"
 
 # code quality and static type checking (via pre-commit)
 pre-commit = ">=2.16.0"

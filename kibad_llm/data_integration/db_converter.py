@@ -11,9 +11,12 @@ from typing import Any
 
 from dotenv import load_dotenv
 import psycopg2
-from queries import CORE_QUERY, VOCAB_QUERIES
+import yaml
 
-FILEPATH: Path = Path(__file__).parent.parent / "data" / "2025-08-19 pg-faktencheck dump.jsonl"
+DEFAULT_FILEPATH: Path = (
+    Path(__file__).parent.parent / "data" / "2025-08-19 pg-faktencheck dump.jsonl"
+)
+QUERIES_YAML_PATH = Path(__file__).parent / "queries.yaml"
 
 
 def query_core(
@@ -50,29 +53,42 @@ def format_result(result: tuple, column_names: list[str]) -> dict[str, Any]:
     return dict(zip(column_names, result)) if len(result) > 1 else result[0]
 
 
-def main(args: argparse.Namespace) -> None:
+def main(filepath: str, host: str, port: str, database: str, user: str, password: str) -> None:
     """
     Main function to execute the query and convert the results to JSONL format.
 
     Args:
-        args (argparse.Namespace): command line arguments
+        filepath (str): path to the output file
+        host (str): database host
+        port (str): database port
+        database (str): database name
+        user (str): database user
+        password (str): database password
     """
+
+    # load CORE_QUERY and VOCAB_QUERIES queries from queries.yaml
+    with open(QUERIES_YAML_PATH, encoding="utf-8") as f:
+        queries_yaml = yaml.safe_load(f)
+
+    core_query = queries_yaml["CORE_QUERY"]
+    vocab_queries = {k: queries_yaml[v] for k, v in queries_yaml["VOCAB_QUERY_NAMES"].items()}
+
     with psycopg2.connect(
-        host=os.getenv("DB_HOST", "localhost"),
-        port=os.getenv("DB_PORT", "5432"),
-        database=os.getenv("DB_NAME", "kibad"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD"),
+        host=host,
+        port=port,
+        database=database,
+        user=user,
+        password=password,
     ) as conn:
         with conn.cursor() as cursor:
             if cursor.description is None:
                 raise ValueError("Cursor description is None. Query might have failed.")
-            results: list[tuple] = query_core(cursor, CORE_QUERY)
+            results: list[tuple] = query_core(cursor, core_query)
             column_names: list[str] = [desc[0] for desc in cursor.description]
-            with open(args.filepath, "w", encoding="utf-8") as f:
+            with open(filepath, "w", encoding="utf-8") as f:
                 for result in results:
                     row_dict: dict[str, Any] = dict(zip(column_names, result))
-                    for query_name, query in VOCAB_QUERIES.items():
+                    for query_name, query in vocab_queries.items():
                         vocab_results: list[tuple] = query_core(cursor, query, (result[0],))
                         vocab_column_names: list[str] = [desc[0] for desc in cursor.description]
                         if vocab_results:
@@ -88,7 +104,14 @@ def main(args: argparse.Namespace) -> None:
 
 if __name__ == "__main__":
     parser: argparse.ArgumentParser = argparse.ArgumentParser()
-    parser.add_argument("--filepath", type=str, default=FILEPATH)
+    parser.add_argument("--filepath", type=str, default=DEFAULT_FILEPATH)
     args: argparse.Namespace = parser.parse_args()
     load_dotenv()
-    main(args)
+    main(
+        filepath=args.filepath,
+        host=os.getenv("DB_HOST", "localhost"),
+        port=os.getenv("DB_PORT", "5432"),
+        database=os.getenv("DB_NAME", "kibad"),
+        user=os.getenv("DB_USER", ""),
+        password=os.getenv("DB_PASSWORD", ""),
+    )
