@@ -6,6 +6,21 @@
 
 A short description of the project.
 
+## Quickstart
+
+### Setup
+
+This project requires [Poetry](https://python-poetry.org/). If it is not already installed, please see the [installation guide](https://python-poetry.org/docs/#installation).
+
+```bash
+# clone project
+git clone https://github.com/DFKI-NLP/kibad-llm
+cd kibad-llm
+
+# create a Python environment and install dependencies  
+poetry install
+```
+
 ## Project Organization
 
 ```
