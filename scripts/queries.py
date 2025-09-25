@@ -5,7 +5,7 @@ CORE_QUERY: str = """SELECT c.zotitem_ptr_id,
     c.bibtex_year,
     c.bibtex_type
 FROM core_zotaddon c
-WHERE c.status = 'abgeschlossen' 
+WHERE c.status = 'abgeschlossen'
 ORDER BY zotitem_ptr_id ASC,
     bibtex_author ASC;"""
 
@@ -163,5 +163,5 @@ VOCAB_QUERIES: dict[str, str] = {
     "soil": SOIL_QUERY,
     "study_type": STUDY_TYPE_QUERY,
     "taxa": TAXA_QUERY,
-    "transformation_potential": TRANSFORMATION_POTENTIAL_QUERY
+    "transformation_potential": TRANSFORMATION_POTENTIAL_QUERY,
 }

@@ -3,25 +3,21 @@ This script connects to a database, extracts the most important data and its met
 converts the results to JSONL format and writes to a file.
 """
 
+import argparse
 import json
 import os
 from pathlib import Path
 from typing import Any
 
-import argparse
-import psycopg2
 from dotenv import load_dotenv
-
+import psycopg2
 from queries import CORE_QUERY, VOCAB_QUERIES
-
 
 FILEPATH: Path = Path(__file__).parent.parent / "data" / "2025-08-19 pg-faktencheck dump.jsonl"
 
 
 def query_core(
-        cursor: psycopg2.extensions.cursor,
-        query: str,
-        args: tuple | None = None
+    cursor: psycopg2.extensions.cursor, query: str, args: tuple | None = None
 ) -> list[tuple]:
     """
     Queries the core data from the database.
@@ -37,20 +33,6 @@ def query_core(
     cursor.execute(query, args)
 
     return cursor.fetchall()
-
-
-def query_row(cursor: psycopg2.extensions.cursor, result: tuple, column_names: list[str]) -> dict[str, Any]:
-    row_dict: dict[str, Any] = dict(zip(column_names, result))
-    for query_name, query in VOCAB_QUERIES.items():
-        vocab_results: list[tuple] = query_core(cursor, query, (result[0],))
-        vocab_column_names: list[str] = [desc[0] for desc in cursor.description]
-        if vocab_results:
-            row_dict[query_name] = [
-                format_result(vocab_result, vocab_column_names)
-                for vocab_result in vocab_results
-            ]
-        else:
-            row_dict[query_name] = None
 
 
 def format_result(result: tuple, column_names: list[str]) -> dict[str, Any]:
@@ -80,9 +62,11 @@ def main(args: argparse.Namespace) -> None:
         port=os.getenv("DB_PORT", "5432"),
         database=os.getenv("DB_NAME", "kibad"),
         user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD")
+        password=os.getenv("DB_PASSWORD"),
     ) as conn:
         with conn.cursor() as cursor:
+            if cursor.description is None:
+                raise ValueError("Cursor description is None. Query might have failed.")
             results: list[tuple] = query_core(cursor, CORE_QUERY)
             column_names: list[str] = [desc[0] for desc in cursor.description]
             with open(args.filepath, "w", encoding="utf-8") as f:

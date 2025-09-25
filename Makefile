@@ -15,8 +15,12 @@ PYTHON_INTERPRETER = python
 .PHONY: requirements
 requirements:
 	poetry install
-	
 
+
+## code quality checks and fixes via pre-commit
+.PHONY: precommit
+precommit:
+	poetry run pre-commit run --all-files
 
 
 ## Delete all compiled Python files

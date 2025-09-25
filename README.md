@@ -17,9 +17,13 @@ This project requires [Poetry](https://python-poetry.org/). If it is not already
 git clone https://github.com/DFKI-NLP/kibad-llm
 cd kibad-llm
 
-# create a Python environment and install dependencies  
+# create a Python environment and install dependencies
 poetry install
 ```
+
+NOTE: If the installation gets stuck, try if disabling experimental parallel installer helps
+([source](https://github.com/python-poetry/poetry/issues/3352#issuecomment-732761629)):
+`poetry config experimental.new-installer false`
 
 ## Project Organization
 
@@ -41,7 +45,7 @@ poetry install
 │                         the creator's initials, and a short `-` delimited description, e.g.
 │                         `1.0-jqp-initial-data-exploration`.
 │
-├── pyproject.toml     <- Project configuration file with package metadata for 
+├── pyproject.toml     <- Project configuration file with package metadata for
 │                         kibad_llm and configuration for tools like black
 │
 ├── references         <- Data dictionaries, manuals, and all other explanatory materials.
@@ -64,13 +68,54 @@ poetry install
     │
     ├── features.py             <- Code to create features for modeling
     │
-    ├── modeling                
-    │   ├── __init__.py 
-    │   ├── predict.py          <- Code to run model inference with trained models          
+    ├── modeling
+    │   ├── __init__.py
+    │   ├── predict.py          <- Code to run model inference with trained models
     │   └── train.py            <- Code to train models
     │
     └── plots.py                <- Code to create visualizations
 ```
 
---------
+---
 
+## 🔧 Project Development
+
+### Setup
+
+Install the project with development dependencies:
+
+```bash
+poetry install --with dev
+```
+
+### Testing and code quality checks
+
+To run code quality checks and static type checking, call:
+
+```bash
+pre-commit run -a
+```
+
+To run all tests, call:
+
+```bash
+pytest
+```
+
+The following commands run on GitHub CI (see [tests.yml](.github/workflows/tests.yml)), but can also be run locally:
+
+```bash
+pre-commit run -a
+# run tests *not marked as slow* with coverage and typeguard checks
+pytest -m "not slow" --cov --cov-report=xml:coverage.xml --cov-report=term-missing --typeguard-packages=pytorch-ie
+```
+
+### Updating Dependencies
+
+Call this to update individual packages:
+
+```bash
+poetry update <package>
+```
+
+Then, commit the modified lock file to persist the state.
