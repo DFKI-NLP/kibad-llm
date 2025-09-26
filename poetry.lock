@@ -749,21 +749,6 @@ files = [
 windows-terminal = ["colorama (>=0.4.6)"]
 
 [[package]]
-name = "pyrootutils"
-version = "1.0.4"
-description = "Simple package for easy project root setup"
-optional = false
-python-versions = ">=3.7.0"
-groups = ["main"]
-files = [
-    {file = "pyrootutils-1.0.4-py3-none-any.whl", hash = "sha256:8bbf25425278693168ae03b167aa6509422dc21853a6ee01d5d5e40601a89f90"},
-    {file = "pyrootutils-1.0.4.tar.gz", hash = "sha256:f58aac67147bbab20938b7b783cb2f4670d6329a33c6640233854976538fc5f2"},
-]
-
-[package.dependencies]
-python-dotenv = ">=0.20.0"
-
-[[package]]
 name = "pytest"
 version = "8.4.2"
 description = "pytest: simple powerful testing with Python"
@@ -1244,4 +1229,4 @@ dev = ["black (>=19.3b0) ; python_version >= \"3.6\"", "pytest (>=4.6.2)"]
 [metadata]
 lock-version = "2.1"
 python-versions = "~=3.10.0"
-content-hash = "6bda1c28736a8b54cd38f1ec92420bab9f2db5eb16daea79eae68b414180da39"
+content-hash = "b6a416a224443adf18b68ab32e589e0222b84bdad1eb84b5aa73f6566a879000"

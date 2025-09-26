@@ -22,7 +22,6 @@ dependencies = [
     "types-PyYAML",
 
     # utils & other
-    "pyrootutils (>=1.0.4,<2.0.0)",     # standardizing the project root setup
     "tqdm",
     "types-tqdm",
     "typer",

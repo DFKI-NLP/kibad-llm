@@ -11,22 +11,12 @@ from typing import Any
 
 from dotenv import load_dotenv
 import psycopg2
-import pyrootutils  # type: ignore[import]
 import yaml
-
-root = pyrootutils.setup_root(
-    search_from=__file__,
-    indicator=[".project-root"],
-    pythonpath=True,
-    cwd=True,
-    dotenv=True,
-)
-
 
 DEFAULT_FILEPATH: Path = (
     Path("data") / "iterim" / "faktencheck-db" / "faktencheck-db-converted_2025-08-19.jsonl"
 )
-QUERIES_YAML_PATH = Path(__file__).parent / "queries.yaml"
+DEFAULT_QUERIES_PATH: Path = Path("data") / "iterim" / "faktencheck-db" / "queries.yaml"
 
 
 def query_core(
@@ -63,12 +53,21 @@ def format_result(result: tuple, column_names: list[str]) -> dict[str, Any]:
     return dict(zip(column_names, result)) if len(result) > 1 else result[0]
 
 
-def main(filepath: str, host: str, port: str, database: str, user: str, password: str) -> None:
+def main(
+    filepath: Path,
+    queries_path: Path,
+    host: str,
+    port: str,
+    database: str,
+    user: str,
+    password: str,
+) -> None:
     """
     Main function to execute the query and convert the results to JSONL format.
 
     Args:
-        filepath (str): path to the output file
+        filepath (Path): path to the output file
+        queries_path (Path): path to yaml file including SQL queries
         host (str): database host
         port (str): database port
         database (str): database name
@@ -77,7 +76,7 @@ def main(filepath: str, host: str, port: str, database: str, user: str, password
     """
 
     # load CORE_QUERY and VOCAB_QUERIES queries from queries.yaml
-    with open(QUERIES_YAML_PATH, encoding="utf-8") as f:
+    with open(queries_path, encoding="utf-8") as f:
         queries_yaml = yaml.safe_load(f)
 
     core_query = queries_yaml["CORE_QUERY"]
@@ -114,11 +113,24 @@ def main(filepath: str, host: str, port: str, database: str, user: str, password
 
 if __name__ == "__main__":
     parser: argparse.ArgumentParser = argparse.ArgumentParser()
-    parser.add_argument("--filepath", type=str, default=DEFAULT_FILEPATH)
+    parser.add_argument(
+        "--filepath",
+        type=Path,
+        default=Path("data")
+        / "iterim"
+        / "faktencheck-db"
+        / "faktencheck-db-converted_2025-08-19.jsonl",
+    )
+    parser.add_argument(
+        "--queries_path",
+        type=Path,
+        default=Path("data") / "iterim" / "faktencheck-db" / "queries.yaml",
+    )
     args: argparse.Namespace = parser.parse_args()
     load_dotenv()
     main(
         filepath=args.filepath,
+        queries_path=args.queries_path,
         host=os.getenv("DB_HOST", "localhost"),
         port=os.getenv("DB_PORT", "5432"),
         database=os.getenv("DB_NAME", "kibad"),
