@@ -50,6 +50,14 @@ mypy = ">=1.3.0"
 
 [tool.pytest.ini_options]
 typeguard-packages = "kibad_llm"
+addopts = "--cov=kibad_llm --cov-report=term-missing"
+
+[tool.coverage.run]
+branch = true
+source = ["kibad_llm"]   # measure only your package (src layout is fine)
+
+[tool.coverage.report]
+show_missing = true
 
 [tool.black]
 line-length = 99

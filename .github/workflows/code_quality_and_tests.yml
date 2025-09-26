@@ -68,7 +68,7 @@ jobs:
         if: github.event_name == 'push' && github.ref_name == 'main'
         run: |
           source .venv/bin/activate
-          pytest --cov --cov-report=term-missing --typeguard-packages=kibad-llm
+          pytest
       # Otherwise skip slow tests
       - name: Run 'not slow' tests with coverage
         if: github.event_name != 'push' || github.ref_name != 'main'

@@ -17,17 +17,17 @@ requirements:
 	poetry install
 
 
-## code quality checks and fixes via pre-commit
-.PHONY: precommit
-precommit:
-	poetry run pre-commit run --all-files
-
-
 ## Delete all compiled Python files
 .PHONY: clean
 clean:
 	find . -type f -name "*.py[co]" -delete
 	find . -type d -name "__pycache__" -delete
+
+
+## code quality checks and fixes via pre-commit
+.PHONY: precommit
+precommit:
+	poetry run pre-commit run --all-files
 
 
 ## Lint using flake8, black, and isort (use `make format` to do formatting)
@@ -48,7 +48,7 @@ format:
 ## Run tests
 .PHONY: test
 test:
-	poetry run pytest --cov --cov-report=term-missing
+	poetry run pytest
 
 
 ## Set up Python interpreter environment
