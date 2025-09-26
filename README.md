@@ -102,12 +102,12 @@ To run all tests, call:
 pytest
 ```
 
-The following commands run on GitHub CI (see [tests.yml](.github/workflows/tests.yml)), but can also be run locally:
+The following commands run on GitHub CI (see [tests.yml](.github/workflows/code_quality_and_tests.yml)), but can also be run locally:
 
 ```bash
 pre-commit run -a
 # run tests *not marked as slow* with coverage and typeguard checks
-pytest -m "not slow" --cov --cov-report=xml:coverage.xml --cov-report=term-missing --typeguard-packages=pytorch-ie
+pytest -m "not slow" --cov --cov-report=term-missing --typeguard-packages=kibad-llm
 ```
 
 ### Updating Dependencies

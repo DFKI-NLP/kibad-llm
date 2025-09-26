@@ -48,7 +48,7 @@ format:
 ## Run tests
 .PHONY: test
 test:
-	python -m pytest tests
+	poetry run pytest --cov --cov-report=term-missing
 
 
 ## Set up Python interpreter environment

@@ -33,6 +33,9 @@ dependencies = [
 ]
 requires-python = "~=3.10.0"
 
+[tool.poetry]
+packages = [{ include = "kibad_llm", from = "src" }]
+
 [tool.poetry.group.dev]
 optional = true
 
@@ -52,6 +55,19 @@ flake8 = ">=7.1.1"
 isort = ">=5.12.0"
 pyupgrade = ">=2.29.1"
 mypy = ">=0.930"
+flake8-pyproject = "^1.2.3"  # to read config from pyproject.toml
+
+[tool.pytest.ini_options]
+typeguard-packages = "kibad_llm"
+# Some useful toggles:
+# typeguard-debug-instrumentation = true
+# typeguard-forward-ref-policy = "ERROR"
+# typeguard-collection-check-strategy = "ALL_ITEMS"
+
+[tool.flake8]
+ignore = ["E731", "E266", "E501", "C901", "W503"]
+max-line-length = 99
+exclude = [".git", "notebooks", "references", "models", "data"]
 
 [tool.black]
 line-length = 99
