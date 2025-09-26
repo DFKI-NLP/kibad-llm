@@ -11,10 +11,20 @@ from typing import Any
 
 from dotenv import load_dotenv
 import psycopg2
+import pyrootutils  # type: ignore[import]
 import yaml
 
+root = pyrootutils.setup_root(
+    search_from=__file__,
+    indicator=[".project-root"],
+    pythonpath=True,
+    cwd=True,
+    dotenv=True,
+)
+
+
 DEFAULT_FILEPATH: Path = (
-    Path(__file__).parent.parent / "data" / "faktencheck-db-converted_2025-08-19.jsonl"
+    Path("data") / "iterim" / "faktencheck-db" / "faktencheck-db-converted_2025-08-19.jsonl"
 )
 QUERIES_YAML_PATH = Path(__file__).parent / "queries.yaml"
 
