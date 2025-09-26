@@ -1,5 +1,5 @@
 """
-You can run this script with the following paramters or a combination of them:
+You can run this script with the following parameters or a combination of them:
 
 `python -m kibad_llm.data_integration.zotero_download`
 `python -m kibad_llm.data_integration.zotero_download--file-path="<PATH/TO/EXPORTED/ZOTERO/GROUP/CSV_FILE.csv>"`
@@ -15,9 +15,9 @@ By default:
 """
 
 import argparse
-import time
 from math import ceil
 from pathlib import Path
+import time
 
 import pandas as pd
 import requests
@@ -363,14 +363,10 @@ def main(args: argparse.Namespace) -> None:
                 "license",
             ],
         )
-        df_papers_to_download = papers.merge(
-            df_papers_from_s2, how="left", on="paperId"
-        )
+        df_papers_to_download = papers.merge(df_papers_from_s2, how="left", on="paperId")
 
         # Actual download
-        pbar = tqdm(
-            df_papers_to_download.iterrows(), total=df_papers_to_download.shape[0]
-        )
+        pbar = tqdm(df_papers_to_download.iterrows(), total=df_papers_to_download.shape[0])
         for i, row in pbar:
             pbar.set_description(f'{row["Key"]}')
             if len(str(row["url"])) > 3:
@@ -387,9 +383,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--file_path",
         type=str,
-        default=str(
-            DATA_DIR / "zotero" / "Faktencheck Artenvielfalt Literaturdatenbank.csv"
-        ),
+        default=str(DATA_DIR / "zotero" / "Faktencheck Artenvielfalt Literaturdatenbank.csv"),
     )
     parser.add_argument("--download_type", type=str, default="doi")
     parser.add_argument("--output_dir", type=str, default=DOWNLOAD_DIR)
