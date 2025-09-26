@@ -14,7 +14,7 @@ import psycopg2
 import yaml
 
 DEFAULT_FILEPATH: Path = (
-    Path(__file__).parent.parent / "data" / "2025-08-19 pg-faktencheck dump.jsonl"
+    Path(__file__).parent.parent / "data" / "faktencheck-db-converted_2025-08-19.jsonl"
 )
 QUERIES_YAML_PATH = Path(__file__).parent / "queries.yaml"
 
