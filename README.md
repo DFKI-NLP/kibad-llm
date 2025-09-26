@@ -76,7 +76,7 @@ NOTE: If the installation gets stuck, try if disabling experimental parallel ins
     └── plots.py                <- Code to create visualizations
 ```
 
----
+______________________________________________________________________
 
 ## 🔧 Project Development
 
