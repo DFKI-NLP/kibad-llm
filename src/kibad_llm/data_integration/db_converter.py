@@ -20,7 +20,7 @@ DEFAULT_QUERIES_PATH: Path = Path("data") / "iterim" / "faktencheck-db" / "queri
 
 
 def query_core(
-    cursor: psycopg2.extensions.cursor, query: str, args: tuple | None = None
+    cursor: psycopg2.extensions.cursor, query: str, query_vars: tuple | None = None
 ) -> list[tuple]:
     """
     Queries the core data from the database.
@@ -28,12 +28,12 @@ def query_core(
     Args:
         cursor (psycopg2.extensions.cursor): cursor to execute the query
         query (str): query to execute
-        args (tuple | None): arguments to pass to the query
+        query_vars (tuple | None): arguments to pass to the query
 
     Returns:
         list[tuple]: the results of the query
     """
-    cursor.execute(query, args)
+    cursor.execute(query, query_vars)
 
     return cursor.fetchall()
 
