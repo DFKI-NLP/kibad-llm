@@ -9,7 +9,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./:/tmp/data/:ro
+      - ./:/tmp/data/:ro,Z
     networks:
       - kibad_network
 
