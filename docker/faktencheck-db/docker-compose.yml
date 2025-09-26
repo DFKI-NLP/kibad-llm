@@ -6,6 +6,8 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: kibad
       POSTGRES_DB: kibad
+    ports:
+      - "5432:5432"
     volumes:
       - ./:/tmp/data/:ro
     networks:

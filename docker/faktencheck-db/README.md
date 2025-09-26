@@ -6,6 +6,7 @@ TODO: add description and title
 
 - Ubuntu: `sudo apt install podman podman-compose`
   - If you have installed docker, set the compose provider for podman: `export PODMAN_COMPOSE_PROVIDER=podman-compose`
+- MacOS: `brew install podman podman-compose` then `podman machine init` and `podman machine start`. This starts a very small Linux VM that you can stop with `podman machine stop`. You do not need any further setup commands as we neither need root nor the docker api.
 
 ## Alternative: set up Docker (not recommended)
 
@@ -16,6 +17,11 @@ TODO: add description and title
 ### Run with docker-compose.yml
 
 - Start containers: `podman compose up -d` (currently fails)
+# Docker: Running from docker-compose.yml
+
+## Run with docker-compose.yml
+
+- Start containers: `podman compose up -d`
   - With Docker: `docker compose up -d`
 
 ### SQL Dump
@@ -38,7 +44,9 @@ TODO: add description and title
 
 ### Stop containers
 
-- Start containers: `podman compose down` (currently fails)
+## Stop containers
+
+- Start containers: `podman compose down`
   - With Docker: `docker compose down`
 
 ## Deprecated - Docker: Running from scratch
