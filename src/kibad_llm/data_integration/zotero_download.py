@@ -1,12 +1,12 @@
 """
 You can run this script with the following paramters or a combination of them:
 
-`python scripts/zotero_download.py`
-`python scripts/zotero_download.py --file-path="<PATH/TO/EXPORTED/ZOTERO/GROUP/CSV_FILE.csv>"`
-`python scripts/zotero_download.py --download-type='direct'`
-`python scripts/zotero_download.py --download-type='title'`
-`python scripts/zotero_download.py --download-type='doi' # default option`
-`python scripts/zotero_download.py --output_dir="</PATH/TO/DOWNLOADS/DIRECTORY>"`
+`python -m kibad_llm.data_integration.zotero_download`
+`python -m kibad_llm.data_integration.zotero_download--file-path="<PATH/TO/EXPORTED/ZOTERO/GROUP/CSV_FILE.csv>"`
+`python -m kibad_llm.data_integration.zotero_download--download-type='direct'`
+`python -m kibad_llm.data_integration.zotero_download--download-type='title'`
+`python -m kibad_llm.data_integration.zotero_download--download-type='doi' # default option`
+`python -m kibad_llm.data_integration.zotero_download--output_dir="</PATH/TO/DOWNLOADS/DIRECTORY>"`
 
 By default:
 --file-path="./data/zotero/Faktencheck Artenvielfalt Literaturdatenbank.csv"
@@ -18,14 +18,13 @@ import argparse
 import time
 from math import ceil
 from pathlib import Path
-from typing import Literal
 
 import pandas as pd
 import requests
 from retry import retry
 from tqdm import tqdm
 
-ROOT_DIR: Path = Path(__file__).absolute().parent.parent
+ROOT_DIR: Path = Path(__file__).absolute().parent.parent.parent
 DATA_DIR: Path = ROOT_DIR / "data"
 OUTPUT_DIR: Path = ROOT_DIR / "output"
 DOWNLOAD_DIR: Path = OUTPUT_DIR / "downloads"
