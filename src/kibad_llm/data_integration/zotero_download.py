@@ -11,7 +11,7 @@ You can run this script with the following parameters or a combination of them:
 By default:
 --file-path="./data/external/zotero/Faktencheck Artenvielfalt Literaturdatenbank.csv"
 --download-type='doi'
---output-dir="./data/interim/zotero_downloads"
+--output-dir="./data/interim/zotero_download"
 """
 
 import argparse
@@ -24,11 +24,7 @@ import requests
 from retry import retry
 from tqdm import tqdm
 
-ROOT_DIR: Path = Path(__file__).absolute().parent.parent.parent
-DATA_DIR: Path = ROOT_DIR / "data"
-OUTPUT_DIR: Path = ROOT_DIR / "output"
-DOWNLOAD_DIR: Path = OUTPUT_DIR / "downloads"
-DOWNLOAD_DIR.mkdir(exist_ok=True, parents=True)
+from kibad_llm.config import DATA_DIR
 
 
 def get_s2_data(ids: list[str]) -> dict:
@@ -66,7 +62,7 @@ def get_s2_data(ids: list[str]) -> dict:
 def download_file(
     url: str,
     file_name: str,
-    output_dir: Path = DOWNLOAD_DIR,
+    output_dir: Path,
     chunk_size: int = 10 * 1024,
     overwrite: bool = False,
 ) -> None:
@@ -75,8 +71,7 @@ def download_file(
     Args:
         url (str): URL to download.
         file_name (str): Name and extension of the target file.
-        output_dir (Path, optional): Path to store the file. Defaults to
-            DOWNLOAD_DIR.
+        output_dir (Path, optional): Path to store the file.
         chunk_size (int, optional): Size of the temporary file to store while
             downloading. Defaults to 10*1024.
         overwrite (bool, optional): Whether or not to overwrite a file with the
@@ -229,7 +224,7 @@ def get_papers_from_dois(df: pd.DataFrame, verbose: bool = True) -> pd.DataFrame
     return df_papers
 
 
-def main(args: argparse.Namespace) -> None:
+def main(file_path: Path, download_type: str, output_dir: Path) -> None:
     """This script allows to download papers based on three methods:
 
     - `doi`: searching ID papers in SemanticScholar using the DOI and then
@@ -244,9 +239,6 @@ def main(args: argparse.Namespace) -> None:
         file_path (str | Path, optional): Exported CSV from a Zotero list.
             Defaults to DATA_DIR/"zotero"/"Faktencheck Artenvielfalt Literaturdatenbank.csv".
     """
-    file_path = Path(args.file_path)
-    download_type = args.download_type
-    output_dir = Path(args.output_dir)
 
     # Check if the file exists
     if not Path(file_path).is_file():
@@ -298,6 +290,7 @@ def main(args: argparse.Namespace) -> None:
                 download_file(
                     url=row["url"],
                     file_name=row["Key"] + ".pdf",
+                    output_dir=output_dir,
                 )
     elif download_type == "direct":
         # Direct download
@@ -378,14 +371,18 @@ def main(args: argparse.Namespace) -> None:
 
 
 if __name__ == "__main__":
-    # Following main call from `db_converter.py`
     parser: argparse.ArgumentParser = argparse.ArgumentParser()
     parser.add_argument(
         "--file-path",
-        type=str,
-        default=str(DATA_DIR / "zotero" / "Faktencheck Artenvielfalt Literaturdatenbank.csv"),
+        type=Path,
+        default=DATA_DIR
+        / "external"
+        / "zotero"
+        / "Faktencheck Artenvielfalt Literaturdatenbank.csv",
     )
     parser.add_argument("--download-type", type=str, default="doi")
-    parser.add_argument("--output-dir", type=str, default=DOWNLOAD_DIR)
-    args: argparse.Namespace = parser.parse_args()
-    main(args)
+    parser.add_argument(
+        "--output-dir", type=Path, default=DATA_DIR / "interim" / "zotero_download"
+    )
+    kwargs = vars(parser.parse_args())
+    main(**kwargs)
