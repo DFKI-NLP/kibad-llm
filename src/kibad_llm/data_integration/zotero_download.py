@@ -309,7 +309,6 @@ def main(file_path: Path, download_type: str, output_dir: Path) -> None:
 
     elif download_type == "title":
         # Download papers by title
-
         output_file = get_paper_ids_by_title(
             df=df_bank, paper_ids_file=OUTPUT_DIR / "papers_id.txt"
         )
