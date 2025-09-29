@@ -19,11 +19,16 @@ cd kibad-llm
 
 # create a Python environment and install dependencies
 poetry install
+
+# (optional) copy the .env.example file to .env and adjust environment variables as needed
+cp .env.example .env
 ```
 
 NOTE: If the installation gets stuck, try if disabling experimental parallel installer helps
 ([source](https://github.com/python-poetry/poetry/issues/3352#issuecomment-732761629)):
 `poetry config experimental.new-installer false`
+
+## Usage
 
 ## Project Organization
 
@@ -96,6 +101,8 @@ To run code quality checks and static type checking, call:
 pre-commit run -a
 ```
 
+This runs all configured [pre-commit](https://pre-commit.com/) hooks (see [pre-commit-config.yaml](.pre-commit-config.yaml)) on all files. Some hooks may fix issues automatically, others will report issues that need to be fixed manually.
+
 To run all tests, call:
 
 ```bash
@@ -107,7 +114,7 @@ The following commands run on GitHub CI (see [tests.yml](.github/workflows/code_
 ```bash
 pre-commit run -a
 # run tests *not marked as slow* with coverage and typeguard checks
-pytest -m "not slow" --cov --cov-report=term-missing --typeguard-packages=kibad-llm
+pytest -m "not slow"
 ```
 
 ### Updating Dependencies
