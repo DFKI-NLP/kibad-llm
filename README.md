@@ -28,6 +28,8 @@ NOTE: If the installation gets stuck, try if disabling experimental parallel ins
 ([source](https://github.com/python-poetry/poetry/issues/3352#issuecomment-732761629)):
 `poetry config experimental.new-installer false`
 
+## Usage
+
 ## Project Organization
 
 ```
