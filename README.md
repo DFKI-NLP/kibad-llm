@@ -112,7 +112,7 @@ The following commands run on GitHub CI (see [tests.yml](.github/workflows/code_
 ```bash
 pre-commit run -a
 # run tests *not marked as slow* with coverage and typeguard checks
-pytest -m "not slow" --cov --cov-report=term-missing --typeguard-packages=kibad-llm
+pytest -m "not slow"
 ```
 
 ### Updating Dependencies
