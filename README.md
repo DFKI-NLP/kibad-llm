@@ -19,6 +19,9 @@ cd kibad-llm
 
 # create a Python environment and install dependencies
 poetry install
+
+# (optional) copy the .env.example file to .env and adjust environment variables as needed
+cp .env.example .env
 ```
 
 NOTE: If the installation gets stuck, try if disabling experimental parallel installer helps
