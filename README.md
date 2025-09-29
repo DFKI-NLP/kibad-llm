@@ -101,6 +101,8 @@ To run code quality checks and static type checking, call:
 pre-commit run -a
 ```
 
+This runs all configured [pre-commit](https://pre-commit.com/) hooks (see [pre-commit-config.yaml](.pre-commit-config.yaml)) on all files. Some hooks may fix issues automatically, others will report issues that need to be fixed manually.
+
 To run all tests, call:
 
 ```bash
