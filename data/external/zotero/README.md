@@ -1,3 +1,3 @@
 # Zotero exports
-- [`Faktencheck Artenvielfalt Literaturdatenbank.csv`](../../data/zotero/Faktencheck%20Artenvielfalt%20Literaturdatenbank.csv) is an export to CSV of the [Faktencheck Artenvielfalt Literaturdatenbank](https://www.zotero.org/groups/4699059/faktencheck_artenvielfalt_literaturdatenbank/library) Zotero group library
-- [`Faktencheck Artenvielfalt.csv`](../../data/zotero/Faktencheck%20Artenvielfalt.csv) is a CSV export of the [Faktencheck Artenvielfalt](`https://www.zotero.org/groups/4048231/faktencheck_artenvielfalt/library`) Zotero group library
+- [`Faktencheck Artenvielfalt Literaturdatenbank.csv`](./Faktencheck%20Artenvielfalt%20Literaturdatenbank.csv) is an export to CSV of the [Faktencheck Artenvielfalt Literaturdatenbank](https://www.zotero.org/groups/4699059/faktencheck_artenvielfalt_literaturdatenbank/library) Zotero group library
+- [`Faktencheck Artenvielfalt.csv`](./Faktencheck%20Artenvielfalt.csv) is a CSV export of the [Faktencheck Artenvielfalt](`https://www.zotero.org/groups/4048231/faktencheck_artenvielfalt/library`) Zotero group library
