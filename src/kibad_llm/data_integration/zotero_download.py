@@ -224,7 +224,7 @@ def get_papers_from_dois(df: pd.DataFrame, verbose: bool = True) -> pd.DataFrame
     return df_papers
 
 
-def main(file_path: Path, download_type: str, output_dir: Path) -> None:
+def main(file_path: Path, output_dir: Path, download_type: str = "doi") -> None:
     """This script allows to download papers based on three methods:
 
     - `doi`: searching ID papers in SemanticScholar using the DOI and then
@@ -236,8 +236,10 @@ def main(file_path: Path, download_type: str, output_dir: Path) -> None:
     It uses an exported CSV version of any Zotero list.
 
     Args:
-        file_path (str | Path, optional): Exported CSV from a Zotero list.
-            Defaults to DATA_DIR/"zotero"/"Faktencheck Artenvielfalt Literaturdatenbank.csv".
+        file_path (Path): Exported CSV from a Zotero list.
+        output_dir (Path): Directory to store the downloaded papers.
+        download_type (str, optional): Type of download to perform. Options are
+            'doi', 'direct' and 'title'. Defaults to 'doi'.
     """
 
     # Check if the file exists
