@@ -2,16 +2,16 @@
 You can run this script with the following parameters or a combination of them:
 
 `python -m kibad_llm.data_integration.zotero_download`
-`python -m kibad_llm.data_integration.zotero_download--file-path="<PATH/TO/EXPORTED/ZOTERO/GROUP/CSV_FILE.csv>"`
-`python -m kibad_llm.data_integration.zotero_download--download-type='direct'`
-`python -m kibad_llm.data_integration.zotero_download--download-type='title'`
-`python -m kibad_llm.data_integration.zotero_download--download-type='doi' # default option`
-`python -m kibad_llm.data_integration.zotero_download--output_dir="</PATH/TO/DOWNLOADS/DIRECTORY>"`
+`python -m kibad_llm.data_integration.zotero_download --file-path="<PATH/TO/EXPORTED/ZOTERO/GROUP/CSV_FILE.csv>"`
+`python -m kibad_llm.data_integration.zotero_download --download-type='direct'`
+`python -m kibad_llm.data_integration.zotero_download --download-type='title'`
+`python -m kibad_llm.data_integration.zotero_download --download-type='doi' # default option`
+`python -m kibad_llm.data_integration.zotero_download --output-dir="</PATH/TO/DOWNLOADS/DIRECTORY>"`
 
 By default:
---file-path="./data/zotero/Faktencheck Artenvielfalt Literaturdatenbank.csv"
+--file-path="./data/external/zotero/Faktencheck Artenvielfalt Literaturdatenbank.csv"
 --download-type='doi'
---output_dir="./output/downloads"
+--output-dir="./data/interim/zotero_downloads"
 """
 
 import argparse
@@ -381,11 +381,11 @@ if __name__ == "__main__":
     # Following main call from `db_converter.py`
     parser: argparse.ArgumentParser = argparse.ArgumentParser()
     parser.add_argument(
-        "--file_path",
+        "--file-path",
         type=str,
         default=str(DATA_DIR / "zotero" / "Faktencheck Artenvielfalt Literaturdatenbank.csv"),
     )
-    parser.add_argument("--download_type", type=str, default="doi")
-    parser.add_argument("--output_dir", type=str, default=DOWNLOAD_DIR)
+    parser.add_argument("--download-type", type=str, default="doi")
+    parser.add_argument("--output-dir", type=str, default=DOWNLOAD_DIR)
     args: argparse.Namespace = parser.parse_args()
     main(args)
