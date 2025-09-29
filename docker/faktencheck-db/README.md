@@ -6,6 +6,7 @@ TODO: add description and title
 
 - Ubuntu: `sudo apt install podman podman-compose`
   - If you have installed docker, set the compose provider for podman: `export PODMAN_COMPOSE_PROVIDER=podman-compose`
+  - In case you have not added any registries (podman will let you know with an error message), adding docker.io gets you going: `echo 'unqualified-search-registries = ["docker.io"]' | sudo tee -a /etc/containers/registries.conf`
 - MacOS: `brew install podman podman-compose` then `podman machine init` and `podman machine start`. This starts a very small Linux VM that you can stop with `podman machine stop`. You do not need any further setup commands as we neither need root nor the docker api.
 
 ## Alternative: set up Docker (not recommended)
