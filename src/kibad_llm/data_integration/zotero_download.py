@@ -9,9 +9,9 @@ You can run this script with the following parameters or a combination of them:
 `python -m kibad_llm.data_integration.zotero_download --output-dir="</PATH/TO/DOWNLOADS/DIRECTORY>"`
 
 By default:
---file-path="./data/external/zotero/Faktencheck Artenvielfalt Literaturdatenbank.csv"
---download-type='doi'
---output-dir="./data/interim/zotero_download"
+--file-path=./data/external/zotero/Faktencheck_Artenvielfalt_Literaturdatenbank.csv
+--download-type=doi
+--output-dir=./data/interim/zotero_download
 """
 
 import argparse
@@ -378,7 +378,7 @@ if __name__ == "__main__":
         default=DATA_DIR
         / "external"
         / "zotero"
-        / "Faktencheck Artenvielfalt Literaturdatenbank.csv",
+        / "Faktencheck_Artenvielfalt_Literaturdatenbank.csv",
     )
     parser.add_argument("--download-type", type=str, default="doi")
     parser.add_argument(
