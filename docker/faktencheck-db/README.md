@@ -19,6 +19,7 @@ TODO: add description and title
 ### Run with docker-compose.yml
 
 - Start containers: `podman compose up -d` (currently fails)
+
 # Docker: Running from docker-compose.yml
 
 ## Run with docker-compose.yml
