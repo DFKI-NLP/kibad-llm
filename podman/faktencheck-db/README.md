@@ -8,19 +8,19 @@ Installation instructions for the [podman project](https://podman.io/) are provi
 
 <ul>
     <li>
-        <details> 
+        <details>
             <summary>Linux: Install <a href="https://docs.podman.io/en/stable/markdown/podman.1.html">podman</a> and <a href="https://docs.podman.io/en/stable/markdown/podman-compose.1.html">podman-compose</a> with your package manager of choice. (for debian based distros: <code>sudo apt install podman podman-compose</code>)</summary>
             podman and podman-compose are available as native packages in many distributions, like debian: <a href="https://packages.debian.org/trixie/podman">podman</a> <a href="https://packages.debian.org/trixie/podman-compose">podman-compose</a>
         </details>
     </li>
     <ul>
-        <li> 
+        <li>
             <details>
                 <summary>If you have installed docker, set the compose provider for podman: <code>export PODMAN_COMPOSE_PROVIDER=podman-compose</code></summary>
                 As stated in its <a href="https://docs.podman.io/en/stable/markdown/podman-compose.1.html">manpage<a>, <q>podman compose is a thin wrapper around an external compose provider such as docker-compose or podman-compose.</q>. docker-compose takes precedence, but we want to use podman-compose. Changing the podman compose provider only changes which provider podman compose uses and does not change how docker works in any way.
             </details>
         </li>
-        <li> 
+        <li>
             <details>
                 <summary>In case your distro has no configured registries, adding docker.io gets you going: <code>echo 'unqualified-search-registries = ["docker.io"]' | sudo tee -a /etc/containers/registries.conf</code></summary>
                 Registries contain already built containers. Anyone can host a registry and so Fedora ships with three different registries per default:
@@ -28,7 +28,7 @@ Installation instructions for the [podman project](https://podman.io/) are provi
                     <li>docker.io</li>
                     <li>registry.fedoraproject.org</li>
                     <li>registry.access.redhat.com</li>
-                </ol>        
+                </ol>
                 Whilst docker.io is the most widely known registry, since it is dockers default, it makes sense to maintain independent structures. Hencewhy redhat and fedora provide their own registries.<br>
                 If you know what you're doing, you can set your own choice of registry. Otherwise we recommend docker.io because it has proven to work in our testing.<br>
                 In case your distro does not preconfigure registries, like on debian based distros, podman will let you know it needs a registry by throwing an error.
@@ -47,9 +47,10 @@ Installation instructions for the [podman project](https://podman.io/) are provi
 
 Using docker requires the docker daemon to run. Said daemon needs to run as root and consumes resources, whilst podman neither needs a daemon, to run as root, greatly reducing the attack vector. If we were to assume that this project was only deployed on reasonably powerful machines (which is a false assumption), there would still be the issue that the docker daemon running as root is a major point for exploitation. Just last month docker has received two CVEs rated critical ([CVE-2025-7390](https://www.cve.org/CVERecord?id=CVE-2025-7390), [CVE-2025-9074](https://www.cve.org/CVERecord?id=CVE-2025-9074)).
 
-Therefore its recource and security reasons that make us recommend podman over docker.
+Therefore its resource and security reasons that make us recommend podman over docker.
 
 If however you still want or need to install docker, you can find information on how to do so on ubuntu below.
+
 - Ubuntu: Follow instructions here: https://docs.docker.com/engine/install/ubuntu/ and https://docs.docker.com/engine/install/linux-postinstall/
 
 ## Start containers with docker-compose.yml
