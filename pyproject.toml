@@ -30,7 +30,7 @@ dependencies = [
     "mkdocs",
     "pip",
 ]
-requires-python = "~=3.10.0"
+requires-python = ">=3.10.0"
 
 [tool.poetry]
 packages = [{ include = "kibad_llm", from = "src" }]
