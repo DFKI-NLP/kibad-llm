@@ -30,6 +30,17 @@ NOTE: If the installation gets stuck, try if disabling experimental parallel ins
 
 ## Usage
 
+### faktencheck postgres to json conversion
+
+First create a .env file with the credentials set in the docker compose:
+
+```
+DB_USER=<username-here>
+DB_PASSWORD=<password-here>
+```
+
+Then, from the `./src/kibad_llm/data_integration/` directory, run `python db_converter.py`
+
 ## Project Organization
 
 ```
@@ -49,6 +60,9 @@ NOTE: If the installation gets stuck, try if disabling experimental parallel ins
 ├── notebooks          <- Jupyter notebooks. Naming convention is a number (for ordering),
 │                         the creator's initials, and a short `-` delimited description, e.g.
 │                         `1.0-jqp-initial-data-exploration`.
+│
+├── podman
+│   └── faktencheck-db <- Instructions and commands for using the faktencheck database
 │
 ├── pyproject.toml     <- Project configuration file with package metadata for
 │                         kibad_llm and configuration for tools like black

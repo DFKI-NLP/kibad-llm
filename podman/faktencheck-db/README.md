@@ -1,6 +1,14 @@
-# Title
+# Faktencheck Database
 
-TODO: add description and title
+The faktencheck database is provided within this repo as postgres database dump. <br>
+This readme contains instructions to quickly and easily set up postgres, load the data and access it.
+
+In order to use the faktencheck database, we recommend to 
+- [set up podman](#set-up-podman-preferred)
+- [start up postgres](#start-containers-with-docker-composeyml)
+- [load the data](#load-sql-dump)
+- [make the data api accessible](#access-pgadmin)
+- [stop the containers](#stop-containers)
 
 ## Set up Podman (Preferred)
 
@@ -55,10 +63,12 @@ If however you still want or need to install docker, you can find information on
 
 ## Start containers with docker-compose.yml
 
+To start up the containers, run the following command from this directory.
+
 - Podman: `podman compose up -d`
 - Docker (not recommended): `docker compose up -d`
 
-### SQL Dump
+### Load SQL Dump
 
 Please make sure to wait a few seconds for all containers to start fully before trying to load the database.
 
@@ -66,6 +76,8 @@ Please make sure to wait a few seconds for all containers to start fully before 
   - With Docker: `docker exec -it kibad-postgres bash -c "gzip -cd /tmp/data/2025-08-19_pg-faktencheck_dump.sql.gz | psql -U postgres -d kibad"`
 
 ### Access pgAdmin
+
+These are the steps for using pgAdmin to make the database accessible via api.
 
 - Go to: http://localhost:8080
 - Use login email "admin@admin.com" and pw "kibad" (see docker-compose!)
@@ -79,6 +91,8 @@ Please make sure to wait a few seconds for all containers to start fully before 
 - Access tables: Servers -> Postgres-Local -> Databases -> kibad -> Schemas -> public -> Tables
 
 ### Stop containers
+
+To shut down the containers, run the following command from this directory.
 
 - Podman: `podman compose down`
 - Docker: `docker compose down`
