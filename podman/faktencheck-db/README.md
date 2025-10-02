@@ -3,7 +3,8 @@
 The faktencheck database is provided within this repo as postgres database dump. <br>
 This readme contains instructions to quickly and easily set up postgres, load the data and access it.
 
-In order to use the faktencheck database, we recommend to 
+In order to use the faktencheck database, we recommend to
+
 - [set up podman](#set-up-podman-preferred)
 - [start up postgres](#start-containers-with-docker-composeyml)
 - [load the data](#load-sql-dump)
