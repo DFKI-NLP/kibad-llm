@@ -1,4 +1,13 @@
 """
+This script download papers using the open-access url from Semantic Scholar API
+starting from a Zotero group library exported to CSV. 
+The script uses three arguments indicating the path to the CSV file with an 
+exported Zotero group. The script can search the open-access url using the DOI 
+of the paper, the title or a direct url found in the CSV. The final argument is 
+the local path where to store the downloaded PDF files.
+
+To start the download of open-access papers, call:
+
 You can run this script with the following parameters or a combination of them:
 
 `python -m kibad_llm.data_integration.zotero_download`
@@ -8,6 +17,11 @@ You can run this script with the following parameters or a combination of them:
 `python -m kibad_llm.data_integration.zotero_download --download-type='doi' # default option`
 `python -m kibad_llm.data_integration.zotero_download --output-dir="</PATH/TO/DOWNLOADS/DIRECTORY>"`
 
+python -m kibad_llm.data_integration.zotero_download \
+    --file-path="<PATH/TO/EXPORTED/ZOTERO/GROUP/CSV_FILE.csv>" \
+    --download-type='doi' \
+    --output-dir="</PATH/TO/DOWNLOADS/DIRECTORY>"
+
 By default:
 --file-path=./data/external/zotero/Faktencheck_Artenvielfalt_Literaturdatenbank.csv
 --download-type=doi
@@ -15,16 +29,17 @@ By default:
 """
 
 import argparse
+import time
 from math import ceil
 from pathlib import Path
-import time
 
 import pandas as pd
 import requests
+from loguru import logger
 from retry import retry
 from tqdm import tqdm
 
-from kibad_llm.config import DATA_DIR
+from kibad_llm.config import DATA_DIR, INTERIM_DATA_DIR
 
 
 def get_s2_data(ids: list[str]) -> dict:
@@ -87,7 +102,7 @@ def download_file(
                 for chunk in response.iter_content(chunk_size=chunk_size):
                     file.write(chunk)
     except:
-        print(f"{url} not responding...")
+        logger.info(f"{url} not responding...")
         time.sleep(5)
         pass
 
@@ -129,7 +144,7 @@ def get_paper_ids_by_title(df: pd.DataFrame, paper_ids_file: Path | str) -> Path
         with open(paper_ids_file, "a+", encoding="utf-8") as f:
             f.write("Key|paperId|Title|matchScore\n")
 
-    print(f"Papers with S2 IDs will be saved to {paper_ids_file}")
+    logger.info(f"Papers with S2 IDs will be saved to {paper_ids_file}")
     pbar = tqdm(df.iterrows(), total=df.shape[0])
     for _, row in pbar:
         pbar.set_description(f"{row['Key']}")
@@ -177,7 +192,7 @@ def get_papers_from_dois(df: pd.DataFrame, verbose: bool = True) -> pd.DataFrame
     dois = df[~pd.isna(df["DOI"])]["DOI"].to_list()
 
     if verbose:
-        print(f"Querying SemanticScholar for paper IDs for {len(dois):,} DOIs...")
+        logger.info(f"Querying SemanticScholar for paper IDs for {len(dois):,} DOIs...")
 
     # Querying the S2 API using the DOIs
     data_download = []
@@ -244,8 +259,13 @@ def main(file_path: Path, output_dir: Path, download_type: str = "doi") -> None:
 
     # Check if the file exists
     if not Path(file_path).is_file():
-        print(f"{file_path} doesn't exists")
+        logger.info(f"{file_path} doesn't exists")
         return
+    
+    # Create output dir in case it doesn't exists
+    if not output_dir.exists():
+        output_dir.mkdir(parents=True, exist_ok=True)
+        logger.info(f"{output_dir} created to store the PDFs")
 
     # Read the zotero library from a CSV
     df_bank = pd.read_csv(
@@ -268,7 +288,7 @@ def main(file_path: Path, output_dir: Path, download_type: str = "doi") -> None:
         ]
     ]
 
-    print(f"{df_bank.shape[0]:,} papers in the Zotero group")
+    logger.info(f"{df_bank.shape[0]:,} papers in the Zotero group")
 
     if download_type == "doi":
         # DOI papers
@@ -311,8 +331,10 @@ def main(file_path: Path, output_dir: Path, download_type: str = "doi") -> None:
 
     elif download_type == "title":
         # Download papers by title
+        zotero_paper_ids = INTERIM_DATA_DIR / "zotero"
+        zotero_paper_ids.mkdir(exist_ok=True, parents=True)
         output_file = get_paper_ids_by_title(
-            df=df_bank, paper_ids_file=OUTPUT_DIR / "papers_id.txt"
+            df=df_bank, paper_ids_file=zotero_paper_ids / "papers_id.txt"
         )
         papers = pd.read_csv(output_file, sep="|")
         paper_ids = [x for x in papers["paperId"].to_list() if pd.notna(x)]
