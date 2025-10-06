@@ -10,11 +10,6 @@ import yaml
 
 from kibad_llm.config import DATA_DIR
 
-DEFAULT_FILEPATH: Path = (
-    Path("data") / "iterim" / "faktencheck-db" / "faktencheck-db-converted_2025-08-19.jsonl"
-)
-DEFAULT_QUERIES_PATH: Path = Path("data") / "iterim" / "faktencheck-db" / "queries.yaml"
-
 
 def query_core(
     cursor: psycopg2.extensions.cursor, query: str, query_vars: tuple | None = None
