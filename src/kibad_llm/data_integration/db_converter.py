@@ -13,6 +13,8 @@ from dotenv import load_dotenv
 import psycopg2
 import yaml
 
+from kibad_llm.config import DATA_DIR
+
 DEFAULT_FILEPATH: Path = (
     Path("data") / "iterim" / "faktencheck-db" / "faktencheck-db-converted_2025-08-19.jsonl"
 )
@@ -116,15 +118,15 @@ if __name__ == "__main__":
     parser.add_argument(
         "--filepath",
         type=Path,
-        default=Path("data")
-        / "iterim"
+        default=DATA_DIR
+        / "interim"
         / "faktencheck-db"
         / "faktencheck-db-converted_2025-08-19.jsonl",
     )
     parser.add_argument(
         "--queries_path",
         type=Path,
-        default=Path("data") / "iterim" / "faktencheck-db" / "queries.yaml",
+        default=DATA_DIR / "interim" / "faktencheck-db" / "queries.yaml",
     )
     args: argparse.Namespace = parser.parse_args()
     load_dotenv()
