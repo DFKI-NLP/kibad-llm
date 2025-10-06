@@ -30,16 +30,36 @@ NOTE: If the installation gets stuck, try if disabling experimental parallel ins
 
 ## Usage
 
-### faktencheck postgres to json conversion
+IMPORTANT: All commands below assume that:
 
-First create a .env file with the credentials set in the docker compose:
+- You are inside the poetry shell (run `poetry shell` if not), and
+- You are in the root directory of this project (where this README.md is located).
+
+### Faktencheck Postgres to Json Conversion
+
+#### Prerequisites
+
+The following environment variables need to be set in a `.env` file in the root directory:
 
 ```
+# docker-compose credentials for faktencheck database
 DB_USER=<username-here>
 DB_PASSWORD=<password-here>
 ```
 
-Then, from the `./src/kibad_llm/data_integration/` directory, run `python db_converter.py`
+Then, run the faktencheck database with podman (see [podman/faktencheck-db/README.md](./podman/faktencheck-db/README.md) for instructions).
+
+#### DB conversion
+
+Run the following command to convert the faktencheck database to json files:
+
+```bash
+python -m python -m kibad_llm.data_integration.db_converter
+```
+
+This will create a `data/interim/faktencheck-db` directory with json files.
+
+Call `python -m kibad_llm.data_integration.db_converter --help` for more options.
 
 ## Project Organization
 
