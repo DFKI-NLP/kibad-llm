@@ -20,6 +20,7 @@ dependencies = [
     "types-psycopg2",
     "pyyaml",   # for db_converter.py
     "types-PyYAML",
+    "pymupdf4llm", # for pdf_to_md.py
 
     # utils & other
     "tqdm",
