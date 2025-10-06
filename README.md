@@ -32,7 +32,7 @@ NOTE: If the installation gets stuck, try if disabling experimental parallel ins
 
 IMPORTANT: All commands below assume that:
 
-- You are inside the poetry shell (run `poetry shell` if not), and
+- You are inside the poetry environment (run `poetry env activate` if not), and
 - You are in the root directory of this project (where this README.md is located).
 
 ### Faktencheck Postgres to Json Conversion
