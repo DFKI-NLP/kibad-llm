@@ -32,10 +32,10 @@ NOTE: If the installation gets stuck, try if disabling experimental parallel ins
 
 ### Zotero and Semantic Scholar
 
-It is possible to download papers using the open access url from Semantic 
-Scholar. The script `zotero_download` uses three arguments indicating the path 
+It is possible to download papers using the open access url from Semantic
+Scholar. The script `zotero_download` uses three arguments indicating the path
 to a CSV file with an exported Zotero group. The script can search the open-access
-url using the DOI of the paper, the title or a direct url found in the CSV. The 
+url using the DOI of the paper, the title or a direct url found in the CSV. The
 final argument is the local path where to store the downloaded PDF files.
 
 To start the download of open-access papers, call:
@@ -124,7 +124,7 @@ poetry install --with dev
 
 ### Activate virtual environment
 
-To activate the Python virutal environment, call:
+To activate the Python virtual environment, call:
 
 ```bash
 $ eval $(poetry env activate)

@@ -1,9 +1,9 @@
 """
 This script download papers using the open-access url from Semantic Scholar API
-starting from a Zotero group library exported to CSV. 
-The script uses three arguments indicating the path to the CSV file with an 
-exported Zotero group. The script can search the open-access url using the DOI 
-of the paper, the title or a direct url found in the CSV. The final argument is 
+starting from a Zotero group library exported to CSV.
+The script uses three arguments indicating the path to the CSV file with an
+exported Zotero group. The script can search the open-access url using the DOI
+of the paper, the title or a direct url found in the CSV. The final argument is
 the local path where to store the downloaded PDF files.
 
 To start the download of open-access papers, call:
@@ -29,13 +29,13 @@ By default:
 """
 
 import argparse
-import time
 from math import ceil
 from pathlib import Path
+import time
 
+from loguru import logger
 import pandas as pd
 import requests
-from loguru import logger
 from retry import retry
 from tqdm import tqdm
 
@@ -70,6 +70,7 @@ def get_s2_data(ids: list[str]) -> dict:
             "fields": "referenceCount,citationCount,title,isOpenAccess,openAccessPdf,externalIds"
         },
         json={"ids": ids},
+        timeout=60,
     )
     return response.json()
 
@@ -97,12 +98,12 @@ def download_file(
         return
 
     try:
-        with requests.get(url, stream=True, allow_redirects=True) as response:
+        with requests.get(url, stream=True, allow_redirects=True, timeout=60) as response:
             with open(output_dir / file_name, mode="wb") as file:
                 for chunk in response.iter_content(chunk_size=chunk_size):
                     file.write(chunk)
-    except:
-        logger.info(f"{url} not responding...")
+    except Exception:
+        logger.exception(f"{url} not responding...")
         time.sleep(5)
         pass
 
@@ -123,7 +124,7 @@ def get_s2_data_by_title(title: str) -> requests.Response:
         requests.Response: The response from the S2 API.
     """
     response = requests.get(
-        f"https://api.semanticscholar.org/graph/v1/paper/search/match?query={title}"
+        f"https://api.semanticscholar.org/graph/v1/paper/search/match?query={title}", timeout=60
     )
     return response
 
@@ -261,7 +262,7 @@ def main(file_path: Path, output_dir: Path, download_type: str = "doi") -> None:
     if not Path(file_path).is_file():
         logger.info(f"{file_path} doesn't exists")
         return
-    
+
     # Create output dir in case it doesn't exists
     if not output_dir.exists():
         output_dir.mkdir(parents=True, exist_ok=True)
