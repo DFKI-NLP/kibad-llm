@@ -1,8 +1,3 @@
-"""
-This script connects to a database, extracts the most important data and its metadata, then
-converts the results to JSONL format and writes to a file.
-"""
-
 import argparse
 import json
 import os
@@ -13,10 +8,7 @@ from dotenv import load_dotenv
 import psycopg2
 import yaml
 
-DEFAULT_FILEPATH: Path = (
-    Path("data") / "iterim" / "faktencheck-db" / "faktencheck-db-converted_2025-08-19.jsonl"
-)
-DEFAULT_QUERIES_PATH: Path = Path("data") / "iterim" / "faktencheck-db" / "queries.yaml"
+from kibad_llm.config import DATA_DIR
 
 
 def query_core(
@@ -112,19 +104,22 @@ def main(
 
 
 if __name__ == "__main__":
-    parser: argparse.ArgumentParser = argparse.ArgumentParser()
+    parser: argparse.ArgumentParser = argparse.ArgumentParser(
+        description="This script connects to a database, extracts the most important data "
+        "and its metadata, then converts the results to JSONL format and writes to a file."
+    )
     parser.add_argument(
         "--filepath",
         type=Path,
-        default=Path("data")
-        / "iterim"
+        default=DATA_DIR
+        / "interim"
         / "faktencheck-db"
         / "faktencheck-db-converted_2025-08-19.jsonl",
     )
     parser.add_argument(
         "--queries_path",
         type=Path,
-        default=Path("data") / "iterim" / "faktencheck-db" / "queries.yaml",
+        default=DATA_DIR / "interim" / "faktencheck-db" / "queries.yaml",
     )
     args: argparse.Namespace = parser.parse_args()
     load_dotenv()

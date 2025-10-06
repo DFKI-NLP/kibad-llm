@@ -30,6 +30,37 @@ NOTE: If the installation gets stuck, try if disabling experimental parallel ins
 
 ## Usage
 
+IMPORTANT: All commands below assume that:
+
+- You are inside the poetry shell (run `poetry shell` if not), and
+- You are in the root directory of this project (where this README.md is located).
+
+### Faktencheck Postgres to Json Conversion
+
+#### Prerequisites
+
+The following environment variables need to be set in a `.env` file in the root directory:
+
+```
+# docker-compose credentials for faktencheck database
+DB_USER=<username-here>
+DB_PASSWORD=<password-here>
+```
+
+Then, run the faktencheck database with podman (see [podman/faktencheck-db/README.md](./podman/faktencheck-db/README.md) for instructions).
+
+#### DB conversion
+
+Run the following command to convert the faktencheck database to json files:
+
+```bash
+python -m python -m kibad_llm.data_integration.db_converter
+```
+
+This will create a `data/interim/faktencheck-db` directory with json files.
+
+Call `python -m kibad_llm.data_integration.db_converter --help` for more options.
+
 ## Project Organization
 
 ```
@@ -49,6 +80,9 @@ NOTE: If the installation gets stuck, try if disabling experimental parallel ins
 ├── notebooks          <- Jupyter notebooks. Naming convention is a number (for ordering),
 │                         the creator's initials, and a short `-` delimited description, e.g.
 │                         `1.0-jqp-initial-data-exploration`.
+│
+├── podman
+│   └── faktencheck-db <- Instructions and commands for using the faktencheck database
 │
 ├── pyproject.toml     <- Project configuration file with package metadata for
 │                         kibad_llm and configuration for tools like black
