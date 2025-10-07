@@ -32,8 +32,8 @@ NOTE: If the installation gets stuck, try if disabling experimental parallel ins
 
 IMPORTANT: All commands below assume that:
 
-- You are inside the poetry environment (run `poetry env activate` if not), and
-- You are in the root directory of this project (where this README.md is located).
+- You are inside the poetry environment (run `eval $(poetry env activate)` if not), and
+- You are in the root directory of this project (where this `README.md` is located).
 
 ### PDF Download Based on Zotero Groups
 
@@ -154,17 +154,6 @@ Install the project with development dependencies:
 poetry install --with dev
 ```
 
-### Activate virtual environment
-
-To activate the Python virtual environment, call:
-
-```bash
-$ eval $(poetry env activate)
-(kibad-llm-py3.10) $  # Virtualenv entered
-```
-
-More information about [managing environments](https://python-poetry.org/docs/managing-environments/#bash-csh-zsh)
-
 ### Testing and code quality checks
 
 To run code quality checks and static type checking, call:
@@ -197,4 +186,10 @@ Call this to update individual packages:
 poetry update <package>
 ```
 
-Then, commit the modified lock file to persist the state.
+Then, commit the modified lock file to persist the state. 
+
+Finally, update the installed dependencies in the current environment with:
+
+```bash
+poetry sync --with dev
+```
