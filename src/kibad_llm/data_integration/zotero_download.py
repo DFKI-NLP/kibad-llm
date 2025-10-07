@@ -1,31 +1,10 @@
-"""
-This script download papers using the open-access url from Semantic Scholar API
+DESCRIPTION = """
+This script downloads papers using the open-access url from Semantic Scholar API
 starting from a Zotero group library exported to CSV.
 The script uses three arguments indicating the path to the CSV file with an
 exported Zotero group. The script can search the open-access url using the DOI
 of the paper, the title or a direct url found in the CSV. The final argument is
 the local path where to store the downloaded PDF files.
-
-To start the download of open-access papers, call:
-
-You can run this script with the following parameters or a combination of them:
-
-`python -m kibad_llm.data_integration.zotero_download`
-`python -m kibad_llm.data_integration.zotero_download --file-path="<PATH/TO/EXPORTED/ZOTERO/GROUP/CSV_FILE.csv>"`
-`python -m kibad_llm.data_integration.zotero_download --download-type='direct'`
-`python -m kibad_llm.data_integration.zotero_download --download-type='title'`
-`python -m kibad_llm.data_integration.zotero_download --download-type='doi' # default option`
-`python -m kibad_llm.data_integration.zotero_download --output-dir="</PATH/TO/DOWNLOADS/DIRECTORY>"`
-
-python -m kibad_llm.data_integration.zotero_download \
-    --file-path="<PATH/TO/EXPORTED/ZOTERO/GROUP/CSV_FILE.csv>" \
-    --download-type='doi' \
-    --output-dir="</PATH/TO/DOWNLOADS/DIRECTORY>"
-
-By default:
---file-path=./data/external/zotero/Faktencheck_Artenvielfalt_Literaturdatenbank.csv
---download-type=doi
---output-dir=./data/interim/zotero_download
 """
 
 import argparse
@@ -395,7 +374,9 @@ def main(file_path: Path, output_dir: Path, download_type: str = "doi") -> None:
 
 
 if __name__ == "__main__":
-    parser: argparse.ArgumentParser = argparse.ArgumentParser()
+    parser: argparse.ArgumentParser = argparse.ArgumentParser(
+        description=DESCRIPTION, formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    )
     parser.add_argument(
         "--file-path",
         type=Path,
@@ -403,10 +384,21 @@ if __name__ == "__main__":
         / "external"
         / "zotero"
         / "Faktencheck_Artenvielfalt_Literaturdatenbank.csv",
+        help="Path to the exported CSV from a Zotero group.",
     )
-    parser.add_argument("--download-type", type=str, default="doi")
     parser.add_argument(
-        "--output-dir", type=Path, default=DATA_DIR / "interim" / "zotero_download"
+        "--download-type",
+        type=str,
+        choices=["doi", "direct", "title"],
+        default="doi",
+        help="Type of download to perform. doi: using the DOI to find the open access url; "
+        "direct: using the direct url provided by Zotero; title: using the title to find the open access url.",
+    )
+    parser.add_argument(
+        "--output-dir",
+        type=Path,
+        default=DATA_DIR / "interim" / "zotero_download",
+        help="Directory to store the downloaded papers.",
     )
     kwargs = vars(parser.parse_args())
     main(**kwargs)

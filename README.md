@@ -30,39 +30,37 @@ NOTE: If the installation gets stuck, try if disabling experimental parallel ins
 
 ## Usage
 
-### Zotero and Semantic Scholar
-
-It is possible to download papers using the open access url from Semantic
-Scholar. The script `zotero_download` uses three arguments indicating the path
-to a CSV file with an exported Zotero group. The script can search the open-access
-url using the DOI of the paper, the title or a direct url found in the CSV. The
-final argument is the local path where to store the downloaded PDF files.
-
-To start the download of open-access papers, call:
-
-```bash
-python -m kibad_llm.data_integration.zotero_download
-python -m kibad_llm.data_integration.zotero_download --file-path="<PATH/TO/EXPORTED/ZOTERO/GROUP/CSV_FILE.csv>"
-python -m kibad_llm.data_integration.zotero_download --download-type='direct'
-python -m kibad_llm.data_integration.zotero_download --download-type='title'
-python -m kibad_llm.data_integration.zotero_download --download-type='doi' # default option
-python -m kibad_llm.data_integration.zotero_download --output-dir="</PATH/TO/DOWNLOADS/DIRECTORY>"
-
-python -m kibad_llm.data_integration.zotero_download \
-    --file-path="<PATH/TO/EXPORTED/ZOTERO/GROUP/CSV_FILE.csv>" \
-    --download-type='doi' \
-    --output-dir="</PATH/TO/DOWNLOADS/DIRECTORY>"
-
-By default:
---file-path=./data/external/zotero/Faktencheck_Artenvielfalt_Literaturdatenbank.csv
---download-type=doi
---output-dir=./data/interim/zotero_download
-```
-
 IMPORTANT: All commands below assume that:
 
 - You are inside the poetry environment (run `poetry env activate` if not), and
 - You are in the root directory of this project (where this README.md is located).
+
+### PDF Download Based on Zotero Groups
+
+It is possible to download papers using the open access url from Semantic Scholar.
+
+#### Prerequisites
+
+An export of a Zotero group as CSV file, see [data/external/zotero](data/external/zotero) for the "Faktencheck Artenvielfalt" groups. Information how to export a Zotero group can be found in the [Zotero documentation](https://www.zotero.org/support/kb/exporting).
+
+#### Downloading Papers
+
+The script `zotero_download` uses a CSV file with an exported Zotero
+group. It can search the open-access url using the DOI of the paper, the title
+or a direct url found in the CSV. It downloads the papers and stores them in a
+local directory.
+
+For additional information (including default parameters), call:
+
+```bash
+python -m kibad_llm.data_integration.zotero_download --help
+```
+
+To start the download of open-access papers with default parameters, call:
+
+```bash
+python -m kibad_llm.data_integration.zotero_download
+```
 
 ### Faktencheck Postgres to Json Conversion
 
