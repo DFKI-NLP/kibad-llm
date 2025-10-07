@@ -36,7 +36,7 @@ dependencies = [
     "pip",
     "pre-commit (>=4.3.0,<5.0.0)",
 ]
-requires-python = "~=3.10.0"
+requires-python = ">=3.10.0"
 
 [tool.poetry]
 packages = [{ include = "kibad_llm", from = "src" }]
