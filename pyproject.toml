@@ -34,7 +34,6 @@ dependencies = [
     "loguru",
     "mkdocs",
     "pip",
-    "pre-commit (>=4.3.0,<5.0.0)",
 ]
 requires-python = ">=3.10.0"
 
