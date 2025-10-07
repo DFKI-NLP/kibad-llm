@@ -186,7 +186,7 @@ Call this to update individual packages:
 poetry update <package>
 ```
 
-Then, commit the modified lock file to persist the state. 
+Then, commit the modified lock file to persist the state.
 
 Finally, update the installed dependencies in the current environment with:
 
