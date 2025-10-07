@@ -20,6 +20,11 @@ dependencies = [
     "types-psycopg2",
     "pyyaml",   # for db_converter.py
     "types-PyYAML",
+    "pandas >=2.3.2, <3",  # for zotero_download.py
+    "pandas-stubs",
+    "retry >=0.9.2, <1",  # for zotero_download.py
+    "types-retry",
+    "requests >=2.32.5, <3",  # for zotero_download.py
 
     # utils & other
     "tqdm",
