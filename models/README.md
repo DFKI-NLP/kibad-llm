@@ -46,5 +46,6 @@
   - Teuken requires a custom chat template to allow for system prompts
 - DeepSeek
 - GPT-OSS
+  - `MODEL_PARAMS="openai/gpt-oss-20b"`
 - Mistral/Mistral-Nemo
 - Extract-0
