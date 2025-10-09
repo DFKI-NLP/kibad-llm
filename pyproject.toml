@@ -20,6 +20,10 @@ dependencies = [
     "types-psycopg2>=2.9.21.20250915",  # for db_converter.py
     "types-pyyaml>=6.0.12.20250915",  # for db_converter.py
     "types-retry>=0.9.9.20250322",  # for zotero_download.py
+    # inference
+    "llama-index-core (>=0.14.4,<0.15.0)",
+    "llama-index-llms-openai-like (>=0.5.3,<0.6.0)",
+    "pymupdf4llm (>=0.0.27,<0.0.28)",
 
     # utils & other
     "tqdm>=4.67.1",
@@ -39,6 +43,7 @@ cicd = [
     "pre-commit>=2.16.0",
     "mypy>=1.3.0",
 ]
+requires-python = ">=3.10.0,<4.0.0"
 
 [tool.hatch.build.targets.sdist]
 include = ["src/kibad_llm"]
@@ -50,8 +55,15 @@ include = ["src/kibad_llm"]
 "src/kibad_llm" = "kibad_llm"
 
 [tool.pytest.ini_options]
+minversion = "6.0"
+testpaths = ["tests"]
 typeguard-packages = "kibad_llm"
-addopts = "--cov=kibad_llm --cov-report=term-missing"
+# skip slow tests by default; run them with `pytest -m slow`
+#addopts = "--cov=kibad_llm --cov-report=term-missing -m \"not slow\""
+markers = [
+  "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+  "typeguard_ignore: ignore typeguard in this test"
+]
 
 [tool.coverage.run]
 branch = true
