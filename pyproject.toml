@@ -118,3 +118,7 @@ validate = true
 [tool.mypy]
 python_version = "3.10"
 files = ["src", "tests"]
+
+[[tool.mypy.overrides]]
+module = ["pymupdf4llm", "llama_index", "llama_index.*"]
+ignore_missing_imports = true
