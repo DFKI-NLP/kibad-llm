@@ -64,6 +64,6 @@ runs:
     #----------------------------------------------
     # install root project
     #----------------------------------------------
-    # - name: Install project
-    #   run: poetry install --no-interaction --only-root
-    #   shell: bash
+    - name: Install project
+      run: uv pip install -e . --no-deps
+      shell: bash
