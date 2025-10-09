@@ -70,16 +70,16 @@ def extract_from_pdf(pdf_path: str | Path, fields_csv: list[str], top_k: int) ->
 
     prompt_questions = """
     Bitte lese den folgenden Text vollständig. Der Text ist eine Studie zu einem Ökosystem. Beantworte die folgenden Fragen auf Deutsch, auch wenn der Text auf Englisch ist.  Wenn Antwortmöglichkeiten nach einer Frage gegeben sind, wähle eine von den durch Komma getrennten Antwortmöglichkeiten aus.
-    
+
     1. Frage: In welchem Lebensraum wurde die Studie durchgeführt? Antwortmöglichkeiten: Wald, Agrar- und Offenland, Binnengewässer und Auen, Küste und Küstengewässer, Urbane Räume, Boden
-    
+
     2. Frage: In welchem Naturgroßraum wurde die Studie durchgeführt? Antwortmöglichkeiten: Alpen, Alpenvorland, Mittelgebirgsschwelle, Norddeutsches Tiefland, Nord- und Ostsee oder Schichtsstufenland beidseits des Oberrheingrabens
-    
+
     3. Frage: Welchen Ökosystemtyp hat die Studie betrachtet? Antwortmöglichkeiten: Binnenland: Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte; Binnenland: Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent); Binnengewässer: Stehende Gewässer; Meere und Küsten: Benthal der Nordsee
-    
+
     4. Frage: In welchem Bundesland liegt das betrachtete Ökosystem der Studie? Antwortmöglichkeiten: Baden-Württemberg, Bayern, Niedersachsen, Brandenburg, Berlin, Bremen, Hamburg, Hessen,  Mecklenburg-Vorpommern, Niedersachsen, Nordrhein-Westfalen, Rheinland-Pfalz, Saarland, Sachsen, Sachsen-Anhalt, Schleswig-Holstein, Thüringen
     """
 
     prompt = f"{prompt_questions}\n\nDokument in Markdown Format:\n{md}"
     response = Settings.llm.complete(prompt)
-    return response.text
+    return {"raw": response.text}
