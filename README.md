@@ -146,8 +146,6 @@ ______________________________________________________________________
 
 ### Setup
 
-**TODO:** we don't need this step if we run `uv run --group cicd pre-commit run -a` instead of `uv run pre-commit -a`. this could keep our .venv cleaner.
-
 Install the project with development dependencies:
 
 ```bash
@@ -160,6 +158,8 @@ To run code quality checks and static type checking, call:
 
 ```bash
 uv run pre-commit run -a
+# if you have not run 'uv sync --group cicd' previously, use instead
+uv run --group cicd pre-commit run -a
 ```
 
 This runs all configured [pre-commit](https://pre-commit.com/) hooks (see [pre-commit-config.yaml](.pre-commit-config.yaml)) on all files. Some hooks may fix issues automatically, others will report issues that need to be fixed manually.
@@ -168,6 +168,8 @@ To run all tests, call:
 
 ```bash
 uv run pytest
+# if you have not run 'uv sync --group cicd' previously, use instead
+uv run --group cicd pytest
 ```
 
 The following commands run on GitHub CI (see [tests.yml](.github/workflows/code_quality_and_tests.yml)), but can also be run locally:
@@ -180,17 +182,12 @@ uv run --group cicd pytest -m "not slow"
 
 ### Updating Dependencies
 
-**TODO:** remove poetry
-Call this to update individual packages:
+To update individual dependencies, add them again with a different version constraint. _[docs](https://docs.astral.sh/uv/concepts/projects/dependencies/#changing-dependencies)_
 
 ```bash
-poetry update <package>
+uv add "httpx>0.1.0"
+# to force an update to the latest version within constraints use
+uv add "httpx>0.1.0" --upgrade-package httpx
 ```
 
-Then, commit the modified lock file to persist the state.
-
-Finally, update the installed dependencies in the current environment with:
-
-```bash
-poetry sync --with dev
-```
+Please keep in mind that you can add [platform-specific dependencies](https://docs.astral.sh/uv/concepts/projects/dependencies/#platform-specific-dependencies).
