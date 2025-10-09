@@ -10,8 +10,7 @@ A short description of the project.
 
 ### Setup
 
-**TODO:** change to uv
-This project requires [Poetry](https://python-poetry.org/). If it is not already installed, please see the [installation guide](https://python-poetry.org/docs/#installation).
+This project requires [uv](https://docs.astral.sh/uv/). If it is not already installed, please see the [installation guide](https://docs.astral.sh/uv/getting-started/installation/).
 
 ```bash
 # clone project
@@ -25,15 +24,10 @@ uv sync
 cp .env.example .env
 ```
 
-NOTE: If the installation gets stuck, try if disabling experimental parallel installer helps
-([source](https://github.com/python-poetry/poetry/issues/3352#issuecomment-732761629)):
-`poetry config experimental.new-installer false`
-
 ## Usage
 
 IMPORTANT: All commands below assume that:
 
-- You are inside the poetry environment (run `eval $(poetry env activate)` if not), and
 - You are in the root directory of this project (where this `README.md` is located).
 
 ### PDF Download Based on Zotero Groups
@@ -54,13 +48,13 @@ local directory.
 For additional information (including default parameters), call:
 
 ```bash
-python -m kibad_llm.data_integration.zotero_download --help
+uv run -m kibad_llm.data_integration.zotero_download --help
 ```
 
 To start the download of open-access papers with default parameters, call:
 
 ```bash
-python -m kibad_llm.data_integration.zotero_download
+uv run -m kibad_llm.data_integration.zotero_download
 ```
 
 ### Faktencheck Postgres to Json Conversion
@@ -82,12 +76,12 @@ Then, run the faktencheck database with podman (see [podman/faktencheck-db/READM
 Run the following command to convert the faktencheck database to json files:
 
 ```bash
-python -m python -m kibad_llm.data_integration.db_converter
+uv run -m kibad_llm.data_integration.db_converter
 ```
 
 This will create a `data/interim/faktencheck-db` directory with json files.
 
-Call `python -m kibad_llm.data_integration.db_converter --help` for more options.
+Call `uv run -m kibad_llm.data_integration.db_converter --help` for more options.
 
 ## Project Organization
 
@@ -114,6 +108,9 @@ Call `python -m kibad_llm.data_integration.db_converter --help` for more options
 │
 ├── pyproject.toml     <- Project configuration file with package metadata for
 │                         kibad_llm and configuration for tools like black
+│
+├── uv.lock            <- Do not touch. Managed by uv.
+│                         Project state file.
 │
 ├── references         <- Data dictionaries, manuals, and all other explanatory materials.
 │
@@ -150,6 +147,7 @@ ______________________________________________________________________
 ### Setup
 
 **TODO:** we don't need this step if we run `uv run --group cicd pre-commit run -a` instead of `uv run pre-commit -a`. this could keep our .venv cleaner.
+
 Install the project with development dependencies:
 
 ```bash
