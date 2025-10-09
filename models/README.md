@@ -3,9 +3,9 @@
 
 based on: [DFKI-NLP/vLLM-Starter#2 (comment)](https://github.com/DFKI-NLP/vLLM-Starter/issues/2#issuecomment-3383218249)
 
-    Install uv: https://docs.astral.sh/uv/getting-started/installation/
-    create uv cache dir on netscratch: mkdir -p /netscratch/$USER/cache/uv
-    open a new shell (or a create a new screen: screen -S vLLM-Starter)
+  1. Install uv: https://docs.astral.sh/uv/getting-started/installation/
+  2. create uv cache dir on netscratch: `mkdir -p /netscratch/$USER/cache/uv`
+  3. open a new shell (or a create a new screen: `screen -S vLLM-Starter`)
 
 ## Run `gpt-oss-20b`
 
@@ -33,7 +33,7 @@ Note: This may take some time, wait for `Application startup complete.`
 query:
 
 ```bash 
-# Note: You may select a different NODE than `serv-9220`. I got it by calling `squeue -u $USER`.
+# Note: You may need to select a different NODE than `serv-9220`. I got it by calling `squeue -u $USER`.
 curl http://serv-9220.kl.dfki.de:18000/v1/completions \
     -H "Content-Type: application/json" \
     -d '{

@@ -88,19 +88,20 @@ This will create a `data/interim/faktencheck-db` directory with json files.
 
 Call `uv run -m kibad_llm.data_integration.db_converter --help` for more options.
 
-### VLLM Hosting
+### vLLM Hosting
 
 #### Prerequisites
 
+- Hosting vLLM does not require poetry but uv to manage python!
 - In case you want to run a gated model, log into HuggingFace and make sure you have the correct access permissions.
 
 #### Hosting
 
 - Choose model, resources and max job runtime carefully.
 - Check for special requirements, like chat templates, tokenisers, and allowing local code execution.
-- execute the srun command.
+- Follow the instructions here [models/README.md](./models/README.md).
 
-For model specific instructions check [models/README.md](./models/README.md).
+For model specific instructions check .
 
 ## Project Organization
 
