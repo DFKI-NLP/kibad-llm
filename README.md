@@ -10,6 +10,7 @@ A short description of the project.
 
 ### Setup
 
+**TODO:** change to uv
 This project requires [Poetry](https://python-poetry.org/). If it is not already installed, please see the [installation guide](https://python-poetry.org/docs/#installation).
 
 ```bash
@@ -18,7 +19,7 @@ git clone https://github.com/DFKI-NLP/kibad-llm
 cd kibad-llm
 
 # create a Python environment and install dependencies
-poetry install
+uv sync
 
 # (optional) copy the .env.example file to .env and adjust environment variables as needed
 cp .env.example .env
@@ -148,10 +149,11 @@ ______________________________________________________________________
 
 ### Setup
 
+**TODO:** we don't need this step if we run `uv run --group cicd pre-commit run -a` instead of `uv run pre-commit -a`. this could keep our .venv cleaner.
 Install the project with development dependencies:
 
 ```bash
-poetry install --with dev
+uv sync --group cicd
 ```
 
 ### Testing and code quality checks
@@ -159,7 +161,7 @@ poetry install --with dev
 To run code quality checks and static type checking, call:
 
 ```bash
-pre-commit run -a
+uv run pre-commit run -a
 ```
 
 This runs all configured [pre-commit](https://pre-commit.com/) hooks (see [pre-commit-config.yaml](.pre-commit-config.yaml)) on all files. Some hooks may fix issues automatically, others will report issues that need to be fixed manually.
@@ -167,19 +169,20 @@ This runs all configured [pre-commit](https://pre-commit.com/) hooks (see [pre-c
 To run all tests, call:
 
 ```bash
-pytest
+uv run pytest
 ```
 
 The following commands run on GitHub CI (see [tests.yml](.github/workflows/code_quality_and_tests.yml)), but can also be run locally:
 
 ```bash
-pre-commit run -a
+uv run --group cicd pre-commit run -a
 # run tests *not marked as slow* with coverage and typeguard checks
-pytest -m "not slow"
+uv run --group cicd pytest -m "not slow"
 ```
 
 ### Updating Dependencies
 
+**TODO:** remove poetry
 Call this to update individual packages:
 
 ```bash
