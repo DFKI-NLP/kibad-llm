@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import logging
 import os
 from pathlib import Path
@@ -73,7 +74,11 @@ def extract_from_pdf(pdf_path: str | Path, prompt_questions: str) -> dict[str, A
 
     prompt = f"{prompt_questions}\n\nDokument in Markdown Format:\n{md}"
     response = Settings.llm.complete(prompt)
-    return {"raw": response.text}
+    result = {
+        "file_name": path.name,
+        "raw": response.text
+    }
+    return result
 
 
 def predict(cfg: DictConfig) -> None:
@@ -85,12 +90,19 @@ def predict(cfg: DictConfig) -> None:
         temperature=0.0,
     )
     result = extract_from_pdf(pdf_path=cfg.pdf_file, prompt_questions=cfg.template.questions)
+    # write result to cfg.output_file
+    output_path = Path(cfg.output_file)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(output_path, "w") as f:
+        json.dump(result, f, indent=2)
 
 
-@hydra.main(version_base="1.2", config_path=str(PROJ_ROOT / "configs"), config_name="predict.yaml")
+@hydra.main(version_base="1.3", config_path=str(PROJ_ROOT / "configs"), config_name="predict.yaml")
 def main(cfg: DictConfig) -> None:
     predict(cfg)
 
 
 if __name__ == "__main__":
+    # set env var PROJECT_ROOT
+    os.environ["PROJECT_ROOT"] = str(PROJ_ROOT)
     main()
