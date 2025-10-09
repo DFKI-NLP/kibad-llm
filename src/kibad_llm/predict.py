@@ -1,12 +1,14 @@
 from __future__ import annotations
 
-import json
+import logging
 from pathlib import Path
 from typing import Any
 
 from llama_index.core import Settings
 from llama_index.llms.openai_like import OpenAILike
 import pymupdf4llm
+
+logger = logging.getLogger(__name__)
 
 
 def init_llm(model: str, api_base: str, api_key: str, temperature: float) -> None:
@@ -30,34 +32,6 @@ def init_llm(model: str, api_base: str, api_key: str, temperature: float) -> Non
         api_key=api_key or "dummy",  # many self-hosted backends ignore this
         temperature=temperature,
     )
-
-
-def _coerce_json(text: str) -> dict[str, Any]:
-    """
-    Best-effort parsing of model output into JSON.
-
-    Tries strict `json.loads`. If that fails, extracts the substring between the
-    first '{' and the last '}' and tries again. Falls back to returning the raw text.
-
-    Args:
-        text: The raw model output.
-
-    Returns:
-        A dictionary parsed from JSON, or `{'raw': <text>}` if parsing fails.
-    """
-    try:
-        return json.loads(text)
-    except Exception:
-        pass
-    start = text.find("{")
-    end = text.rfind("}")
-    if start != -1 and end != -1 and end > start:
-        snippet = text[start : end + 1]
-        try:
-            return json.loads(snippet)
-        except Exception:
-            pass
-    return {"raw": text.strip()}
 
 
 def extract_from_pdf(pdf_path: str | Path, fields_csv: list[str], top_k: int) -> dict[str, Any]:
@@ -94,18 +68,18 @@ def extract_from_pdf(pdf_path: str | Path, fields_csv: list[str], top_k: int) ->
 
     md = pymupdf4llm.to_markdown(str(path))
 
-    prompt = (
-        "You are an information extraction assistant.\n"
-        "Given the document content in markdown format, extract the following fields as a compact JSON object.\n"
-        f"Fields: {', '.join(fields_csv)}\n"
-        "Rules:\n"
-        "- Return ONLY valid JSON.\n"
-        "- If a field is missing, set it to null or an empty list.\n"
-        "- Keep values concise.\n"
-        "\n"
-        "Document:\n"
-        f"{md}"
-    )
+    prompt_questions = """
+    Bitte lese den folgenden Text vollständig. Der Text ist eine Studie zu einem Ökosystem. Beantworte die folgenden Fragen auf Deutsch, auch wenn der Text auf Englisch ist.  Wenn Antwortmöglichkeiten nach einer Frage gegeben sind, wähle eine von den durch Komma getrennten Antwortmöglichkeiten aus.
+    
+    1. Frage: In welchem Lebensraum wurde die Studie durchgeführt? Antwortmöglichkeiten: Wald, Agrar- und Offenland, Binnengewässer und Auen, Küste und Küstengewässer, Urbane Räume, Boden
+    
+    2. Frage: In welchem Naturgroßraum wurde die Studie durchgeführt? Antwortmöglichkeiten: Alpen, Alpenvorland, Mittelgebirgsschwelle, Norddeutsches Tiefland, Nord- und Ostsee oder Schichtsstufenland beidseits des Oberrheingrabens
+    
+    3. Frage: Welchen Ökosystemtyp hat die Studie betrachtet? Antwortmöglichkeiten: Binnenland: Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte; Binnenland: Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent); Binnengewässer: Stehende Gewässer; Meere und Küsten: Benthal der Nordsee
+    
+    4. Frage: In welchem Bundesland liegt das betrachtete Ökosystem der Studie? Antwortmöglichkeiten: Baden-Württemberg, Bayern, Niedersachsen, Brandenburg, Berlin, Bremen, Hamburg, Hessen,  Mecklenburg-Vorpommern, Niedersachsen, Nordrhein-Westfalen, Rheinland-Pfalz, Saarland, Sachsen, Sachsen-Anhalt, Schleswig-Holstein, Thüringen
+    """
 
+    prompt = f"{prompt_questions}\n\nDokument in Markdown Format:\n{md}"
     response = Settings.llm.complete(prompt)
-    return _coerce_json(response.text)
+    return response.text

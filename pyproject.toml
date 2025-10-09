@@ -53,6 +53,12 @@ include = ["src/kibad_llm"]
 [tool.pytest.ini_options]
 typeguard-packages = "kibad_llm"
 addopts = "--cov=kibad_llm --cov-report=term-missing"
+minversion = "6.0"
+testpaths = ["tests"]
+markers = [
+  "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+  "typeguard_ignore: ignore typeguard in this test"
+]
 
 [tool.coverage.run]
 branch = true

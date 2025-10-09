@@ -37,8 +37,8 @@ def test_extract_from_pdf_e2e_real_vllm():
 
     fixtures_dir = Path(__file__).resolve().parents[1] / "fixtures" / "pdfs"
     pdfs = sorted(p for p in fixtures_dir.iterdir() if p.suffix.lower() == ".pdf")
-    if not pdfs:
-        pytest.skip("No PDF fixtures found in tests/fixtures/pdfs")
+    #if not pdfs:
+    #    pytest.skip("No PDF fixtures found in tests/fixtures/pdfs")
 
     # Run a real extraction against the live backend
     result = predict.extract_from_pdf(str(pdfs[0]), ["title", "date"], top_k=4)
