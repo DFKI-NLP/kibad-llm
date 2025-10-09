@@ -20,8 +20,8 @@ dependencies = [
     "types-psycopg2>=2.9.21.20250915", # for db_converter.py
     "types-pyyaml>=6.0.12.20250915", # for db_converter.py
     "types-retry>=0.9.9.20250322", # for zotero_download.py
-    "pymupdf4llm>=0.0.27",  # pdf to markdown conversion
-    "llama-index-llms-openai-like>=0.5.3",  # for LLM (gpt-oss) integration
+    "pymupdf4llm>=0.0.27", # pdf to markdown conversion
+    "llama-index-llms-openai-like>=0.5.3", # for LLM (gpt-oss) integration
     # utils & other
     "tqdm>=4.67.1",
     "types-tqdm>=4.67.0.20250809",
@@ -29,6 +29,7 @@ dependencies = [
     "python-dotenv>=1.1.1",
     "loguru>=0.7.3",
     "mkdocs>=1.6.1",
+    "hydra-core>=1.3.2",
 ]
 
 [dependency-groups]
@@ -93,7 +94,7 @@ max-line-length = 99
 exclude = [".git", "notebooks", "models", "data", "logs"]
 
 [tool.codespell]
-skip = "logs/**,data/**,*.ipynb"
+skip = "logs/**,data/**,configs/template/**,*.ipynb"
 ignore-words-list = "hist"
 
 # Bandit (read by pre-commit bandit with -c pyproject.toml)

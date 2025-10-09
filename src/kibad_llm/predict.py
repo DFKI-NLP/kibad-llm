@@ -1,12 +1,17 @@
 from __future__ import annotations
 
 import logging
+import os
 from pathlib import Path
 from typing import Any
 
+import hydra
 from llama_index.core import Settings
 from llama_index.llms.openai_like import OpenAILike
+from omegaconf import DictConfig
 import pymupdf4llm
+
+from kibad_llm.config import PROJ_ROOT
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +39,7 @@ def init_llm(model: str, api_base: str, api_key: str, temperature: float) -> Non
     )
 
 
-def extract_from_pdf(pdf_path: str | Path, fields_csv: list[str], top_k: int) -> dict[str, Any]:
+def extract_from_pdf(pdf_path: str | Path, prompt_questions: str) -> dict[str, Any]:
     """
     Extract requested fields from a PDF by prompting the LLM directly (no retrieval/index).
 
@@ -48,8 +53,6 @@ def extract_from_pdf(pdf_path: str | Path, fields_csv: list[str], top_k: int) ->
 
     Args:
         pdf_path: Path to a `.pdf` file.
-        fields_csv: Comma-separated field names to extract.
-        top_k: Unused parameter kept for API compatibility.
 
     Returns:
         A dictionary containing extracted fields or a fallback with the raw model output.
@@ -68,18 +71,26 @@ def extract_from_pdf(pdf_path: str | Path, fields_csv: list[str], top_k: int) ->
 
     md = pymupdf4llm.to_markdown(str(path))
 
-    prompt_questions = """
-    Bitte lese den folgenden Text vollständig. Der Text ist eine Studie zu einem Ökosystem. Beantworte die folgenden Fragen auf Deutsch, auch wenn der Text auf Englisch ist.  Wenn Antwortmöglichkeiten nach einer Frage gegeben sind, wähle eine von den durch Komma getrennten Antwortmöglichkeiten aus.
-
-    1. Frage: In welchem Lebensraum wurde die Studie durchgeführt? Antwortmöglichkeiten: Wald, Agrar- und Offenland, Binnengewässer und Auen, Küste und Küstengewässer, Urbane Räume, Boden
-
-    2. Frage: In welchem Naturgroßraum wurde die Studie durchgeführt? Antwortmöglichkeiten: Alpen, Alpenvorland, Mittelgebirgsschwelle, Norddeutsches Tiefland, Nord- und Ostsee oder Schichtsstufenland beidseits des Oberrheingrabens
-
-    3. Frage: Welchen Ökosystemtyp hat die Studie betrachtet? Antwortmöglichkeiten: Binnenland: Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte; Binnenland: Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent); Binnengewässer: Stehende Gewässer; Meere und Küsten: Benthal der Nordsee
-
-    4. Frage: In welchem Bundesland liegt das betrachtete Ökosystem der Studie? Antwortmöglichkeiten: Baden-Württemberg, Bayern, Niedersachsen, Brandenburg, Berlin, Bremen, Hamburg, Hessen,  Mecklenburg-Vorpommern, Niedersachsen, Nordrhein-Westfalen, Rheinland-Pfalz, Saarland, Sachsen, Sachsen-Anhalt, Schleswig-Holstein, Thüringen
-    """
-
     prompt = f"{prompt_questions}\n\nDokument in Markdown Format:\n{md}"
     response = Settings.llm.complete(prompt)
     return {"raw": response.text}
+
+
+def predict(cfg: DictConfig) -> None:
+
+    init_llm(
+        model=cfg.model_name,
+        api_base=os.getenv("LLM_API_BASE", cfg.api_base),
+        api_key=cfg.api_key,
+        temperature=0.0,
+    )
+    result = extract_from_pdf(pdf_path=cfg.pdf_file, prompt_questions=cfg.template.questions)
+
+
+@hydra.main(version_base="1.2", config_path=str(PROJ_ROOT / "configs"), config_name="predict.yaml")
+def main(cfg: DictConfig) -> None:
+    predict(cfg)
+
+
+if __name__ == "__main__":
+    main()
