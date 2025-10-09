@@ -40,7 +40,7 @@ def init_llm(model: str, api_base: str, api_key: str, temperature: float) -> Non
     )
 
 
-def extract_from_pdf(pdf_path: str | Path, prompt_questions: str) -> dict[str, Any]:
+def extract_from_pdf(pdf_path: str | Path, template: str) -> dict[str, Any]:
     """
     Extract requested fields from a PDF by prompting the LLM directly (no retrieval/index).
 
@@ -54,6 +54,7 @@ def extract_from_pdf(pdf_path: str | Path, prompt_questions: str) -> dict[str, A
 
     Args:
         pdf_path: Path to a `.pdf` file.
+        template: A prompt template with a `{document}` placeholder for the PDF content in Markdown.
 
     Returns:
         A dictionary containing extracted fields or a fallback with the raw model output.
@@ -72,12 +73,9 @@ def extract_from_pdf(pdf_path: str | Path, prompt_questions: str) -> dict[str, A
 
     md = pymupdf4llm.to_markdown(str(path))
 
-    prompt = f"{prompt_questions}\n\nDokument in Markdown Format:\n{md}"
+    prompt = template.format(document=md)
     response = Settings.llm.complete(prompt)
-    result = {
-        "file_name": path.name,
-        "raw": response.text
-    }
+    result = {"file_name": path.name, "raw": response.text}
     return result
 
 
@@ -89,7 +87,7 @@ def predict(cfg: DictConfig) -> None:
         api_key=cfg.api_key,
         temperature=0.0,
     )
-    result = extract_from_pdf(pdf_path=cfg.pdf_file, prompt_questions=cfg.template.questions)
+    result = extract_from_pdf(pdf_path=cfg.pdf_file, template=cfg.template.text)
     # write result to cfg.output_file
     output_path = Path(cfg.output_file)
     output_path.parent.mkdir(parents=True, exist_ok=True)
