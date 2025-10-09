@@ -26,9 +26,14 @@ cp .env.example .env
 
 ## Usage
 
-IMPORTANT: All commands below assume that:
+IMPORTANT:
 
-- You are in the root directory of this project (where this `README.md` is located).
+All commands below assume that you are in the root directory of this project (where this `README.md` is located).
+
+Also, if you're new to `uv`:
+
+In places where you used to use `python`, with `uv` you tend to write `uv run` instead. <br>
+What used to be `source .venv/bin/activate` and then `python your-script.py first-arg second-arg` now is reduced to `uv run your-script.py first-arg second-arg`.
 
 ### PDF Download Based on Zotero Groups
 
@@ -144,7 +149,7 @@ ______________________________________________________________________
 
 ## 🔧 Project Development
 
-### Setup
+### Optional setup
 
 Install the project with development dependencies:
 
@@ -180,14 +185,19 @@ uv run --group cicd pre-commit run -a
 uv run --group cicd pytest -m "not slow"
 ```
 
-### Updating Dependencies
+### Adding dependencies
 
-To update individual dependencies, add them again with a different version constraint. _[docs](https://docs.astral.sh/uv/concepts/projects/dependencies/#changing-dependencies)_
+To [add packages as dependencies](https://docs.astral.sh/uv/concepts/projects/dependencies/), use the `uv add` command.
 
 ```bash
-uv add "httpx>0.1.0"
-# to force an update to the latest version within constraints use
-uv add "httpx>0.1.0" --upgrade-package httpx
+uv add httpx
+# you can add a specific version
+uv add "httpx==0.20"
+# an upper or lower bound
+uv add "httpx>=0.20"
+# or a range
+uv add "httpx>=0.20,<1.0"
 ```
 
-Please keep in mind that you can add [platform-specific dependencies](https://docs.astral.sh/uv/concepts/projects/dependencies/#platform-specific-dependencies).
+[Changing dependencies](https://docs.astral.sh/uv/concepts/projects/dependencies/#changing-dependencies) works just like adding them. <br>
+Please keep in mind that you can also add [platform-specific dependencies](https://docs.astral.sh/uv/concepts/projects/dependencies/#platform-specific-dependencies).
