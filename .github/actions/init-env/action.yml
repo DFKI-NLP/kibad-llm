@@ -1,4 +1,4 @@
-# This action mostly follows steps described here https://github.com/marketplace/actions/install-poetry-action
+# This action mostly follows steps described here https://github.com/marketplace/actions/install-poetry-action and then was adapted to uv
 
 name: Init
 description: Set up python environment
@@ -23,38 +23,36 @@ runs:
         python-version: ${{ inputs.python }}
 
     #----------------------------------------------
-    #  -----  install & configure poetry  -----
+    #  -----  install & configure uv  -----
     #----------------------------------------------
-    - name: Install Poetry
-      uses: snok/install-poetry@v1
+    - name: Install uv
+      uses: astral-sh/setup-uv@v6
       with:
-        version: latest
-        virtualenvs-create: true
-        virtualenvs-in-project: true
-        installer-parallel: true
-        plugins: poetry-plugin-export
+        version: "latest"
+        enable-cache: true
+    #   cache-suffix: "optional-suffix"
 
     #----------------------------------------------
     #       load cached venv if cache exists
     #----------------------------------------------
     - name: Load cached venv
-      id: cached-poetry-dependencies
+      id: cached-uv-dependencies
       uses: actions/cache@v4
       with:
         path: .venv
-        key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+        key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/uv.lock') }}
 
     #----------------------------------------------
     # install dependencies if cache does not exist
     #----------------------------------------------
     - name: Install dependencies
-      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-      run: poetry sync --with dev --no-interaction --no-root
+      if: steps.cached-uv-dependencies.outputs.cache-hit != 'true'
+      run: uv sync --group cicd
       shell: bash
 
     #----------------------------------------------
     # install root project
     #----------------------------------------------
     - name: Install project
-      run: poetry install --no-interaction --only-root
+      run: uv pip install -e . --no-deps
       shell: bash
