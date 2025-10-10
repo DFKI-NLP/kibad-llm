@@ -4,12 +4,12 @@ import logging
 import os
 from pathlib import Path
 
-import hydra
-import pymupdf4llm
 from datasets import Dataset
+import hydra
 from hydra.utils import instantiate
 from llama_index.core import Settings
 from omegaconf import DictConfig
+import pymupdf4llm
 
 from kibad_llm.config import PROJ_ROOT
 
@@ -27,6 +27,11 @@ def extract_from_markdown(markdown: str, template: str) -> dict[str, str]:
     return result
 
 
+def _file_name_generator(file_names: list[str]):
+    for file_name in file_names:
+        yield {"file_name": file_name}
+
+
 def predict(cfg: DictConfig) -> None:
 
     logger.info("Instantiating LLM model interface ...")
@@ -34,7 +39,12 @@ def predict(cfg: DictConfig) -> None:
 
     data_base_path = Path(cfg.pdf_directory)
 
-    dataset = Dataset.from_list([{"file_name": p.name} for p in data_base_path.glob("*.pdf")])
+    # Create the dataset based on the sorted file names. This will define the cache key.
+    # IMPORTANT: This means the whole dataset will be re-processed if any file is added/removed!
+    file_names = sorted(p.name for p in data_base_path.glob("*.pdf"))
+    dataset = Dataset.from_generator(
+        generator=_file_name_generator, gen_kwargs={"file_names": file_names}
+    )
     logger.info(f"Processing {len(dataset)} PDF files from {cfg.pdf_directory} ...")
     if cfg.get("fast_dev_run", False) and len(dataset) > 0:
         logger.warning(
