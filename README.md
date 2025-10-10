@@ -244,7 +244,7 @@ srun --partition=RTXA6000-SLT \
 Alternatively, the cache directory can be set as an environment variable:
 
 ```bash
-UV_CACHE_DIR="/netscratch/$USER/cache/uv"
+export UV_CACHE_DIR="/netscratch/$USER/cache/uv"
 ```
 
 #### Set `UV_PROJECT_ENVIRONMENT`
@@ -253,21 +253,32 @@ Set up the directory once:
 
 ```bash
 mkdir -p /netscratch/$USER/cache/uv
+mkdir -p /netscratch/$USER/cache/uv-venvs
 ```
 
-Then set the environment variable for every new shell session:
+Then set the environment variables for every new shell session:
 
 ```bash
-UV_PROJECT_ENVIRONMENT="/netscratch/$USER/cache/uv/kibad-llm"
+export UV_CACHE_DIR="/netscratch/$USER/cache/uv"
+export UV_PROJECT_ENVIRONMENT="/netscratch/$USER/cache/uv-venvs/kibad-llm"
 ```
 
 [docs](https://docs.astral.sh/uv/concepts/projects/config/#project-environment-path)
 
 #### Symlink .venv
 
-uv uses `$PROJECT_ROOT/.venv` as environment path per default.
+First follow the steps outlined in the above section [Set `UV_PROJECT_ENVIRONMENT`](#set-uv_project_environment) <br>
+Then run `uv sync` to ensure that all directories are created properly.
+Lastly, create both symlinks.
 
-If you know what symlinks are and choose this option, you should be able to take it from here.
+```bash
+# link the .venv
+ln -s /netscratch/$USER/cache/uv-venvs/kibad-llm ./.venv
+# link the cache
+ln -s /netscratch/$USER/cache/uv ~/.cache/uv
+```
+
+Now you do not need to add the environment variables each time you start up a new shell session.
 
 ### uv known issues
 
