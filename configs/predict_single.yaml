@@ -2,6 +2,7 @@
 
 defaults:
   - _self_
+  - model: gpt_oss_20b
   - paths: default
   - template: v1
   - hydra: default
@@ -13,8 +14,5 @@ print_config: True
 # name of the run, used in logging and as a subdir of log_dir
 name: "default"
 
-api_base: "http://127.0.0.1:5001/v1"
-api_key: "dummy"
-model_name: "openai/gpt-oss-20b"
 pdf_file: ???
 output_file: ${paths.prediction_save_dir}/predictions.jsonl

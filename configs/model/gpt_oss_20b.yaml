@@ -1,0 +1,14 @@
+# Example configuration for using GPT-OSS-20B model with LlamaIndex
+#
+# This requires a local deployment of the GPT-OSS-20B model that is compatible with the OpenAI API.
+# TODO: reference the actual model README instead of the issue when available.
+# See https://github.com/DFKI-NLP/kibad-llm/issues/3#issuecomment-3383093247 for instructions.
+
+_target_: llama_index.llms.openai_like.OpenAILike
+
+# to use en environment variable instead of hardcoding the api_base here, use:
+# api_base: ${oc.env:LLM_API_BASE}
+api_base: "http://127.0.0.1:5001/v1"
+api_key: "dummy"
+model: "openai/gpt-oss-20b"
+temperature: 0.0

@@ -7,37 +7,15 @@ from pathlib import Path
 from typing import Any
 
 import hydra
+from hydra.utils import instantiate
 from llama_index.core import Settings
-from llama_index.llms.openai_like import OpenAILike
+from llama_index.core.llms.utils import LLMType
 from omegaconf import DictConfig
 import pymupdf4llm
 
 from kibad_llm.config import PROJ_ROOT
 
 logger = logging.getLogger(__name__)
-
-
-def init_llm(model: str, api_base: str, api_key: str, temperature: float) -> None:
-    """
-    Configure the global LlamaIndex LLM for downstream calls.
-
-    Args:
-        model: OpenAI-compatible model name (e.g., 'gpt-4o-mini').
-        api_base: Base URL of the OpenAI-compatible endpoint (e.g., 'http://localhost:8000/v1').
-        api_key: API key (dummy is fine for local/self-hosted backends).
-        temperature: Sampling temperature for generation.
-
-    Side Effects:
-        Sets `Settings.llm` globally.
-    """
-
-    # If you must use a non-OpenAI model name against OpenAI wrapper, disable the Responses API:
-    Settings.llm = OpenAILike(
-        model=model,
-        api_base=api_base,
-        api_key=api_key or "dummy",  # many self-hosted backends ignore this
-        temperature=temperature,
-    )
 
 
 def extract_from_pdf(pdf_path: str | Path, template: str) -> dict[str, Any]:
@@ -81,13 +59,13 @@ def extract_from_pdf(pdf_path: str | Path, template: str) -> dict[str, Any]:
 
 def predict_single(cfg: DictConfig) -> None:
 
-    init_llm(
-        model=cfg.model_name,
-        api_base=os.getenv("LLM_API_BASE", cfg.api_base),
-        api_key=cfg.api_key,
-        temperature=0.0,
-    )
+    # setup the model interface
+    model: LLMType = instantiate(cfg.model)
+    Settings.llm = model
+
+    # execute extraction
     result = extract_from_pdf(pdf_path=cfg.pdf_file, template=cfg.template.text)
+
     # write result to cfg.output_file
     output_path = Path(cfg.output_file)
     output_path.parent.mkdir(parents=True, exist_ok=True)
