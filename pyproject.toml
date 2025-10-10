@@ -20,6 +20,8 @@ dependencies = [
     "types-psycopg2>=2.9.21.20250915",  # for db_converter.py
     "types-pyyaml>=6.0.12.20250915",  # for db_converter.py
     "types-retry>=0.9.9.20250322",  # for zotero_download.py
+    "defusedxml>=0.7.1", # for synch_nextcloud_with_cluster.py
+    "types-defusedxml>=0.7.0.20250822", # for synch_nextcloud_with_cluster.py
 
     # utils & other
     "tqdm>=4.67.1",
