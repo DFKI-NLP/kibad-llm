@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from hydra import compose, initialize
 from hydra.core.global_hydra import GlobalHydra
 from omegaconf import DictConfig, open_dict
@@ -8,9 +6,9 @@ import pytest
 from kibad_llm.config import PROJ_ROOT
 
 
-def cfg_predict_global(overrides=None) -> DictConfig:
+def cfg_predict_single_global(overrides=None) -> DictConfig:
     with initialize(version_base="1.3", config_path="../../configs"):
-        cfg = compose(config_name="predict.yaml", return_hydra_config=True, overrides=overrides)
+        cfg = compose(config_name="predict_single.yaml", return_hydra_config=True, overrides=overrides)
 
         # set defaults for all tests
         with open_dict(cfg):
@@ -25,8 +23,8 @@ def cfg_predict_global(overrides=None) -> DictConfig:
 # this is called by each test which uses `cfg_eval` arg
 # each test generates its own temporary logging path
 @pytest.fixture(scope="function")
-def cfg_predict(tmp_path) -> DictConfig:  # type: ignore
-    cfg = cfg_predict_global()
+def cfg_predict_single(tmp_path) -> DictConfig:  # type: ignore
+    cfg = cfg_predict_single_global()
 
     with open_dict(cfg):
         cfg.paths.output_dir = str(tmp_path)

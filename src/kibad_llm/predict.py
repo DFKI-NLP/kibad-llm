@@ -79,7 +79,7 @@ def extract_from_pdf(pdf_path: str | Path, template: str) -> dict[str, Any]:
     return result
 
 
-def predict(cfg: DictConfig) -> None:
+def predict_single(cfg: DictConfig) -> None:
 
     init_llm(
         model=cfg.model_name,
@@ -97,7 +97,7 @@ def predict(cfg: DictConfig) -> None:
 
 @hydra.main(version_base="1.3", config_path=str(PROJ_ROOT / "configs"), config_name="predict.yaml")
 def main(cfg: DictConfig) -> None:
-    predict(cfg)
+    predict_single(cfg)
 
 
 if __name__ == "__main__":
