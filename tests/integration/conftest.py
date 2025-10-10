@@ -8,7 +8,9 @@ from kibad_llm.config import PROJ_ROOT
 
 def cfg_predict_single_global(overrides=None) -> DictConfig:
     with initialize(version_base="1.3", config_path="../../configs"):
-        cfg = compose(config_name="predict_single.yaml", return_hydra_config=True, overrides=overrides)
+        cfg = compose(
+            config_name="predict_single.yaml", return_hydra_config=True, overrides=overrides
+        )
 
         # set defaults for all tests
         with open_dict(cfg):

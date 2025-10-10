@@ -95,7 +95,9 @@ def predict_single(cfg: DictConfig) -> None:
         json.dump(result, f, indent=2)
 
 
-@hydra.main(version_base="1.3", config_path=str(PROJ_ROOT / "configs"), config_name="predict.yaml")
+@hydra.main(
+    version_base="1.3", config_path=str(PROJ_ROOT / "configs"), config_name="predict_single.yaml"
+)
 def main(cfg: DictConfig) -> None:
     predict_single(cfg)
 
