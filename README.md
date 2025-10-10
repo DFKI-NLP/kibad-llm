@@ -201,3 +201,17 @@ uv add "httpx>=0.20,<1.0"
 
 [Changing dependencies](https://docs.astral.sh/uv/concepts/projects/dependencies/#changing-dependencies) works just like adding them. <br>
 Please keep in mind that you can also add [platform-specific dependencies](https://docs.astral.sh/uv/concepts/projects/dependencies/#platform-specific-dependencies).
+
+### Upgrading dependencies
+
+You can upgrade either one or all packages.
+
+```bash
+# upgrade all packages
+uv lock --upgrade
+# upgrade one package
+uv lock --upgrade-package <package>
+# upgrade one package to a specific version
+uv lock --upgrade-package <package>==<version>
+```
+
