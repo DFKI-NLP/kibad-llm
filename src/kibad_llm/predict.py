@@ -73,11 +73,39 @@ def predict_single(cfg: DictConfig) -> None:
         json.dump(result, f, indent=2)
 
 
+def predict(cfg: DictConfig) -> None:
+
+    # set up the model interface
+    model: LLMType = instantiate(cfg.model)
+    Settings.llm = model
+
+    # get list of PDF files
+    pdf_files = list(Path(cfg.pdf_directory).glob("*.pdf"))
+    logger.info(f"Processing {len(pdf_files)} PDF files from {cfg.pdf_directory} ...")
+    if cfg.get("fast_dev_run", False) and len(pdf_files) > 0:
+        logger.warning(f"fast_dev_run is set: only processing the first PDF file ({pdf_files[0]}) ...")
+
+    # execute extraction
+    results = []
+    for pdf_file in Path(cfg.pdf_directory).glob("*.pdf"):
+        result = extract_from_pdf(pdf_path=pdf_file, template=cfg.template.text)
+        results.append(result)
+        if cfg.get("fast_dev_run", False):
+            break
+
+    # write result to cfg.output_file
+    output_path = Path(cfg.output_file)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(output_path, "w") as f:
+        for result in results:
+            f.write(json.dumps(result, sort_keys=True) + "\n")
+
+
 @hydra.main(
-    version_base="1.3", config_path=str(PROJ_ROOT / "configs"), config_name="predict_single.yaml"
+    version_base="1.3", config_path=str(PROJ_ROOT / "configs"), config_name="predict.yaml"
 )
 def main(cfg: DictConfig) -> None:
-    predict_single(cfg)
+    predict(cfg)
 
 
 if __name__ == "__main__":

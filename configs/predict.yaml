@@ -9,10 +9,13 @@ defaults:
 
 print_config: True
 
-#ignore_warnings: True
+# ignore_warnings: True
 
 # name of the run, used in logging and as a subdir of log_dir
 name: "default"
 
-pdf_file: ???
+pdf_directory: ???
 output_file: ${paths.prediction_save_dir}/predictions.jsonl
+
+# enable to process only a subset of the data, useful for debugging
+fast_dev_run: False

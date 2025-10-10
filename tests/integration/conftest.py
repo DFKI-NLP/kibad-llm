@@ -6,10 +6,10 @@ import pytest
 from kibad_llm.config import PROJ_ROOT
 
 
-def cfg_predict_single_global(overrides=None) -> DictConfig:
+def cfg_predict_global(overrides=None) -> DictConfig:
     with initialize(version_base="1.3", config_path="../../configs"):
         cfg = compose(
-            config_name="predict_single.yaml", return_hydra_config=True, overrides=overrides
+            config_name="predict.yaml", return_hydra_config=True, overrides=overrides
         )
 
         # set defaults for all tests
@@ -25,8 +25,8 @@ def cfg_predict_single_global(overrides=None) -> DictConfig:
 # this is called by each test which uses `cfg_eval` arg
 # each test generates its own temporary logging path
 @pytest.fixture(scope="function")
-def cfg_predict_single(tmp_path) -> DictConfig:  # type: ignore
-    cfg = cfg_predict_single_global()
+def cfg_predict(tmp_path) -> DictConfig:  # type: ignore
+    cfg = cfg_predict_global()
 
     with open_dict(cfg):
         cfg.paths.output_dir = str(tmp_path)
@@ -36,3 +36,4 @@ def cfg_predict_single(tmp_path) -> DictConfig:  # type: ignore
     yield cfg
 
     GlobalHydra.instance().clear()
+
