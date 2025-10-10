@@ -214,3 +214,64 @@ uv lock --upgrade-package <package>
 # upgrade one package to a specific version
 uv lock --upgrade-package <package>==<version>
 ```
+
+### Pegasus - DFKI Cluster
+
+For running your code on Pegasus, you have three options.
+
+#### One package
+
+If all you need is one package, for example when using `vllm serve`, it is recommended to use the `-w your-package` option with a cache on netscratch.
+
+```bash
+# first create a cache directory on netscratch
+mkdir -p /netscratch/$USER/cache/uv
+# run the command with the package and cache
+srun --partition=RTXA6000-SLT \
+     --job-name=vllm_serve \
+     --nodes=1 \
+     --ntasks=1 \
+     --cpus-per-task=6 \
+     --gpus-per-task=1 \
+     --mem-per-cpu=4G \
+     --time=1-00:00:00 \
+     uv run -w vllm --cache-dir /netscratch/$USER/cache/uv \
+            vllm serve "openai/gpt-oss-20b" \
+                       --download-dir=/ds/models/llms/cache \
+                       --port=18000
+```
+
+Alternatively, the cache directory can be set as an environment variable:
+
+```bash
+UV_CACHE_DIR="/netscratch/$USER/cache/uv"
+```
+
+#### Set `UV_PROJECT_ENVIRONMENT`
+
+Set up the directory once:
+
+```bash
+mkdir -p /netscratch/$USER/cache/uv
+```
+
+Then set the environment variable for every new shell session:
+
+```bash
+UV_PROJECT_ENVIRONMENT="/netscratch/$USER/cache/uv/kibad-llm"
+```
+
+[docs](https://docs.astral.sh/uv/concepts/projects/config/#project-environment-path)
+
+#### Symlink .venv
+
+uv uses `$PROJECT_ROOT/.venv` as environment path per default.
+
+If you know what symlinks are and choose this option, you should be able to take it from here.
+
+### uv known issues
+
+These known issues have their own uv specific fixes. The relevant documentation is linked.
+
+- [Build isolation](https://docs.astral.sh/uv/concepts/projects/config/#build-isolation) - Can lead to runtime errors
+- [Conflicting dependencies](https://docs.astral.sh/uv/concepts/projects/config/#conflicting-dependencies)
