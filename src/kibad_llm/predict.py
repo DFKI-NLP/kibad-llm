@@ -83,7 +83,9 @@ def predict(cfg: DictConfig) -> None:
     pdf_files = list(Path(cfg.pdf_directory).glob("*.pdf"))
     logger.info(f"Processing {len(pdf_files)} PDF files from {cfg.pdf_directory} ...")
     if cfg.get("fast_dev_run", False) and len(pdf_files) > 0:
-        logger.warning(f"fast_dev_run is set: only processing the first PDF file ({pdf_files[0]}) ...")
+        logger.warning(
+            f"fast_dev_run is set: only processing the first PDF file ({pdf_files[0]}) ..."
+        )
 
     # execute extraction
     results = []
@@ -101,9 +103,7 @@ def predict(cfg: DictConfig) -> None:
             f.write(json.dumps(result, sort_keys=True) + "\n")
 
 
-@hydra.main(
-    version_base="1.3", config_path=str(PROJ_ROOT / "configs"), config_name="predict.yaml"
-)
+@hydra.main(version_base="1.3", config_path=str(PROJ_ROOT / "configs"), config_name="predict.yaml")
 def main(cfg: DictConfig) -> None:
     predict(cfg)
 
