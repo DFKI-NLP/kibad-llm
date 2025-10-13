@@ -1,19 +1,30 @@
 # How-To Run an LLM on the DFKI Cluster
-## Prerequisites
+
+- [Quickstart](#quickstart)
+  - [Prerequisites](#prerequisites)
+  - [Run `gpt-oss-20b`](#run-gpt-oss-20b)
+- [uv and Pegasus, the DFKI Cluster](#uv-and-pegasus-the-dfki-cluster)
+  - ["I just need one package"](#i-just-need-one-package)
+  - [Set `UV_PROJECT_ENVIRONMENT`](#set-uv_project_environment)
+  - [Symlink .venv](#symlink-venv)
+
+## Quickstart
+
+### Prerequisites
 
 based on: [DFKI-NLP/vLLM-Starter#2 (comment)](https://github.com/DFKI-NLP/vLLM-Starter/issues/2#issuecomment-3383218249)
 
-  1. Install uv: https://docs.astral.sh/uv/getting-started/installation/
-  2. create uv cache dir on netscratch: `mkdir -p /netscratch/$USER/cache/uv`
-  3. open a new shell (or a create a new screen: `screen -S vLLM-Starter`)
+1. Install uv: https://docs.astral.sh/uv/getting-started/installation/
+1. create uv cache dir on netscratch: `mkdir -p /netscratch/$USER/cache/uv`
+1. open a new shell (or a create a new screen: `screen -S vLLM-Starter`)
 
-## Run `gpt-oss-20b`
+### Run `gpt-oss-20b`
 
 Based on instructions from https://github.com/DFKI-NLP/vLLM-Starter.
 
 start the service:
 
-```bash 
+```bash
 srun --partition=RTXA6000-SLT \
      --job-name=vllm_serve \
      --nodes=1 \
@@ -32,7 +43,7 @@ Note: This may take some time, wait for `Application startup complete.`
 
 query:
 
-```bash 
+```bash
 # Note: You may need to select a different NODE than `serv-9220`. I got it by calling `squeue -u $USER`.
 curl http://serv-9220.kl.dfki.de:18000/v1/completions \
     -H "Content-Type: application/json" \
@@ -46,7 +57,7 @@ curl http://serv-9220.kl.dfki.de:18000/v1/completions \
 
 result:
 
-```bash 
+```bash
 {
    "id":"cmpl-daceb4b0e6cf49338a588eff564ad85a",
    "object":"text_completion",
@@ -76,11 +87,11 @@ result:
 }
 ```
 
-### Pegasus - DFKI Cluster
+## uv and Pegasus, the DFKI Cluster
 
 For running your code on Pegasus, you have three options.
 
-#### One package
+### "I just need one package"
 
 If all you need is one package, for example when using `vllm serve`, it is recommended to use the `-w your-package` option with a cache on netscratch.
 
@@ -108,7 +119,7 @@ Alternatively, the cache directory can be set as an environment variable:
 export UV_CACHE_DIR="/netscratch/$USER/cache/uv"
 ```
 
-#### Set `UV_PROJECT_ENVIRONMENT`
+### Set `UV_PROJECT_ENVIRONMENT`
 
 Set up the directory once:
 
@@ -140,7 +151,7 @@ srun --partition=RTXA6000-SLT \
 
 For more info on the project environment path, please refer to the [docs](https://docs.astral.sh/uv/concepts/projects/config/#project-environment-path).
 
-#### Symlink .venv
+### Symlink .venv
 
 First follow the steps outlined in the above section [Set `UV_PROJECT_ENVIRONMENT`](#set-uv_project_environment). <br>
 Then run `uv sync` to ensure that all directories are created properly.
