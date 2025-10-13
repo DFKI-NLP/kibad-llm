@@ -8,6 +8,7 @@ from datasets import Dataset
 import hydra
 from hydra.utils import instantiate
 from llama_index.core import Settings
+from llama_index.core.llms.utils import LLMType
 from omegaconf import DictConfig
 import pymupdf4llm
 
@@ -20,9 +21,13 @@ def read_pdf_as_markdown(file_name: str, base_path: Path) -> dict[str, str]:
     return {"markdown": pymupdf4llm.to_markdown(str(base_path / file_name))}
 
 
-def extract_from_markdown(markdown: str, template: str) -> dict[str, str]:
+def extract_from_markdown(
+    markdown: str, template: str, model: LLMType | None = None
+) -> dict[str, str]:
+    if model is None:
+        model = Settings.llm
     prompt = template.format(document=markdown)
-    response = Settings.llm.complete(prompt)
+    response = model.complete(prompt)
     result = {"raw": response.text}
     return result
 
