@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import json
 import logging
 import os
 from pathlib import Path
+from typing import Any
 
 from datasets import Dataset
 import hydra
@@ -23,12 +25,20 @@ def read_pdf_as_markdown(file_name: str, base_path: Path) -> dict[str, str]:
 
 def extract_from_markdown(
     markdown: str, template: str, model: LLM | None = None
-) -> dict[str, str]:
+) -> dict[str, Any]:
     if model is None:
         model = Settings.llm
     prompt = template.format(document=markdown)
     response = model.complete(prompt)
-    result = {"raw": response.text}
+    result: dict[str, Any] = {"text": response.text}
+
+    # for now, simply try to parse as JSON
+    try:
+        result["structured"] = json.loads(result["text"])
+    except json.JSONDecodeError:
+        logger.warning("Failed to parse structured output as JSON")
+        result["structured"] = None
+
     return result
 
 
