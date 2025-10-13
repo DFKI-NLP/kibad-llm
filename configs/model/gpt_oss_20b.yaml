@@ -12,3 +12,9 @@ api_base: "http://127.0.0.1:5001/v1"
 api_key: "dummy"
 model: "openai/gpt-oss-20b"
 temperature: 0.0
+# the default is 16, so we increase it to allow a reasonable context window
+max_tokens: 4096
+#is_function_calling_model: true
+# enable to correctly handle (i.e. remove) reasoning traces in the output
+is_chat_model: true
+is_function_calling_model: false
