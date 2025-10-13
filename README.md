@@ -205,14 +205,14 @@ Please keep in mind that you can also add [platform-specific dependencies](https
 
 ### Updating dependencies
 
-You can upgrade either one or all packages.
+You can update either one or all packages.
 
 ```bash
-# upgrade all packages
+# update all packages
 uv lock --upgrade
-# upgrade one package
+# update one package
 uv lock --upgrade-package <package>
-# upgrade one package to a specific version
+# update one package to a specific version
 uv lock --upgrade-package <package>==<version>
 ```
 
