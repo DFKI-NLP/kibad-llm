@@ -43,16 +43,8 @@ runs:
         key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/uv.lock') }}
 
     #----------------------------------------------
-    # install dependencies if cache does not exist
+    # sync the venv to ensure the cache is up to date
     #----------------------------------------------
     - name: Install dependencies
-      if: steps.cached-uv-dependencies.outputs.cache-hit != 'true'
       run: uv sync --group cicd
-      shell: bash
-
-    #----------------------------------------------
-    # install root project
-    #----------------------------------------------
-    - name: Install project
-      run: uv pip install -e . --no-deps
       shell: bash

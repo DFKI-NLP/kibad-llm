@@ -187,7 +187,8 @@ uv run --group cicd pytest -m "not slow"
 
 ### Adding dependencies
 
-To [add packages as dependencies](https://docs.astral.sh/uv/concepts/projects/dependencies/), use the `uv add` command.
+To [add packages as dependencies](https://docs.astral.sh/uv/concepts/projects/dependencies/), use the `uv add` command. <br>
+Please make sure to add upper bounds when you can to prevent future breakage.
 
 ```bash
 uv add httpx
@@ -201,3 +202,23 @@ uv add "httpx>=0.20,<1.0"
 
 [Changing dependencies](https://docs.astral.sh/uv/concepts/projects/dependencies/#changing-dependencies) works just like adding them. <br>
 Please keep in mind that you can also add [platform-specific dependencies](https://docs.astral.sh/uv/concepts/projects/dependencies/#platform-specific-dependencies).
+
+### Updating dependencies
+
+You can update either one or all packages.
+
+```bash
+# update all packages
+uv lock --upgrade
+# update one package
+uv lock --upgrade-package <package>
+# update one package to a specific version
+uv lock --upgrade-package <package>==<version>
+```
+
+### uv known issues
+
+These known issues have their own uv specific fixes. The relevant documentation is linked.
+
+- [Build isolation](https://docs.astral.sh/uv/concepts/projects/config/#build-isolation) - Can lead to runtime errors
+- [Conflicting dependencies](https://docs.astral.sh/uv/concepts/projects/config/#conflicting-dependencies)
