@@ -75,3 +75,83 @@ result:
    "kv_transfer_params":null
 }
 ```
+
+### Pegasus - DFKI Cluster
+
+For running your code on Pegasus, you have three options.
+
+#### One package
+
+If all you need is one package, for example when using `vllm serve`, it is recommended to use the `-w your-package` option with a cache on netscratch.
+
+```bash
+# first create a cache directory on netscratch
+mkdir -p /netscratch/$USER/cache/uv
+# run the command with the package and cache
+srun --partition=RTXA6000-SLT \
+     --job-name=vllm_serve \
+     --nodes=1 \
+     --ntasks=1 \
+     --cpus-per-task=6 \
+     --gpus-per-task=1 \
+     --mem-per-cpu=4G \
+     --time=1-00:00:00 \
+     uv run -w vllm --cache-dir /netscratch/$USER/cache/uv \
+            vllm serve "openai/gpt-oss-20b" \
+                       --download-dir=/ds/models/llms/cache \
+                       --port=18000
+```
+
+Alternatively, the cache directory can be set as an environment variable:
+
+```bash
+export UV_CACHE_DIR="/netscratch/$USER/cache/uv"
+```
+
+#### Set `UV_PROJECT_ENVIRONMENT`
+
+Set up the directory once:
+
+```bash
+mkdir -p /netscratch/$USER/cache/uv
+mkdir -p /netscratch/$USER/cache/uv-venvs
+```
+
+Then set the environment variables for every new shell session:
+
+```bash
+export UV_CACHE_DIR="/netscratch/$USER/cache/uv"
+export UV_PROJECT_ENVIRONMENT="/netscratch/$USER/cache/uv-venvs/kibad-llm"
+```
+
+Using this setup, you run your scripts like you would do locally, except they're prefixed by srun.
+
+```bash
+srun --partition=RTXA6000-SLT \
+     --job-name=vllm_serve \
+     --nodes=1 \
+     --ntasks=1 \
+     --cpus-per-task=6 \
+     --gpus-per-task=1 \
+     --mem-per-cpu=4G \
+     --time=1-00:00:00 \
+     uv run -m your.file.here
+```
+
+For more info on the project environment path, please refer to the [docs](https://docs.astral.sh/uv/concepts/projects/config/#project-environment-path).
+
+#### Symlink .venv
+
+First follow the steps outlined in the above section [Set `UV_PROJECT_ENVIRONMENT`](#set-uv_project_environment). <br>
+Then run `uv sync` to ensure that all directories are created properly.
+Lastly, create both symlinks.
+
+```bash
+# link the .venv
+ln -s /netscratch/$USER/cache/uv-venvs/kibad-llm ./.venv
+# link the cache
+ln -s /netscratch/$USER/cache/uv ~/.cache/uv
+```
+
+Now you do not need to add the environment variables each time you start up a new shell session. <br>
+Running your scripts works the same way as described in the above section [Set `UV_PROJECT_ENVIRONMENT`](#set-uv_project_environment).
