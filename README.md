@@ -92,7 +92,6 @@ Call `uv run -m kibad_llm.data_integration.db_converter --help` for more options
 
 #### Prerequisites
 
-- Hosting vLLM does not require poetry but uv to manage python!
 - In case you want to run a gated model, log into HuggingFace and make sure you have the correct access permissions.
 
 #### Hosting
@@ -100,8 +99,6 @@ Call `uv run -m kibad_llm.data_integration.db_converter --help` for more options
 - Choose model, resources and max job runtime carefully.
 - Check for special requirements, like chat templates, tokenisers, and allowing local code execution.
 - Follow the instructions here [models/README.md](./models/README.md).
-
-For model specific instructions check .
 
 ## Project Organization
 
