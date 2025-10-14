@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import os
@@ -9,33 +10,17 @@ from typing import Any
 from datasets import Dataset
 import hydra
 from hydra.utils import instantiate
-from jsonschema import Draft202012Validator, validators
+from jsonschema.exceptions import ValidationError
+from jsonschema.validators import validator_for as _validator_for
 from llama_index.core import Settings, set_global_handler
-from llama_index.core.llms import LLM
+from llama_index.core.llms import LLM, ChatMessage, MessageRole
 from omegaconf import DictConfig
-from pydantic import ValidationError
 import pymupdf4llm
 
 from kibad_llm.config import PROJ_ROOT
-from kibad_llm.schema.types import EcosystemStudyFeatures
+from kibad_llm.schema.utils import build_schema_description
 
 logger = logging.getLogger(__name__)
-
-
-def _extend_with_default(validator_cls):
-    validate_props = validator_cls.VALIDATORS["properties"]
-
-    def set_defaults(validator, properties, instance, schema):
-        if isinstance(instance, dict):
-            for prop, subschema in properties.items():
-                if "default" in subschema and prop not in instance:
-                    instance[prop] = subschema["default"]
-        yield from validate_props(validator, properties, instance, schema)
-
-    return validators.extend(validator_cls, {"properties": set_defaults})
-
-
-DefaultingValidator = _extend_with_default(Draft202012Validator)
 
 
 def read_pdf_as_markdown(file_name: str, base_path: Path) -> dict[str, str]:
@@ -43,83 +28,77 @@ def read_pdf_as_markdown(file_name: str, base_path: Path) -> dict[str, str]:
 
 
 def extract_from_markdown(
+    # IMPORTANT: The order of the arguments depends on the order in the Dataset map input_columns!
     markdown: str,
-    file_name: str | None = None,
-    document_context: str | None = None,
+    file_name: str,
+    system_message: str,
+    user_message: str | None = None,
     schema: dict[str, Any] | None = None,
-    model: LLM | None = None,
+    system_message_requires_schema_description: bool = False,
+    model: LLM | None = None,  # LlamaIndex OpenAILike; must be is_chat_model=True
 ) -> dict:
-    """
-    Extract structured information from markdown text using an LLM.
+    """Extract structured information from markdown text using an LLM.
 
     Args:
-        markdown (str): The markdown document to process.
-        file_name (str | None): Optional name of the file being processed (for logging).
-        document_context (str | None): Optional prompt template to provide context for the document. Needs to contain a `{document}` placeholder.
-        schema (dict | None): Optional JSON schema to guide the LLM's output structure.
-        model (LLM | None): Optional LLM model instance to use (primarily for testing).
-            If None, uses the globally configured model.
+        markdown: The markdown text to process.
+        file_name: Optional file name for logging and seeding.
+        system_message: The system message template (required). If schema is provided, it will be formatted with schema_description.
+        user_message: The user message template (optional, defaults to just the markdown).
+        schema: Optional JSON schema for structured output.
+        system_message_requires_schema_description: Whether the system message template requires a schema description.
+        model: The LLM model to use (defaults to Settings.llm).
 
     Returns:
-        dict: A dictionary with keys:
-            - "text": The raw text output from the LLM.
-            - "structured": The structured data extracted, or None if extraction/validation failed.
-    Example:
-        result = extract_from_markdown(
-            markdown="# Sample Document\nThis is a sample.",
-            file_name="sample.md",
-            document_context="Extract the following information from the document:\n{document}",
-            schema={
-                "title": "SampleSchema",
-                "type": "object",
-                "properties": {
-                    "title": {"type": "string"},
-                    "content_summary": {"type": "string"},
-                },
-                "required": ["title", "content_summary"],
-            },
-            model=my_llm_instance
-        )
-
-        print(result["text"])  # Raw LLM output
-        print(result["structured"])  # Parsed structured data or None
+        A dictionary with keys "text" (the raw LLM output) and "structured" (the parsed JSON or None).
     """
 
     if model is None:
         model = Settings.llm
 
-    if schema is None and document_context is None:
-        raise ValueError("At least one of schema or document_context must be provided")
-
-    completion_kwargs: dict[str, Any] = {}
-
-    if document_context is not None:
-        prompt = document_context.format(document=markdown)
+    # Build chat messages
+    if schema is not None and system_message_requires_schema_description:
+        schema_description = build_schema_description(schema=schema)
+        system = system_message.format(schema_description=schema_description)
     else:
-        prompt = markdown
+        if system_message_requires_schema_description:
+            raise ValueError(
+                "system_message_requires_schema_description is True but no schema provided"
+            )
+        system = system_message
+    user = user_message.format(document=markdown) if user_message else markdown
+    messages = [
+        ChatMessage(role=MessageRole.SYSTEM, content=system),
+        ChatMessage(role=MessageRole.USER, content=user),
+    ]
 
-    # Option A: OpenAI-style JSON Schema (if your vLLM build supports it)
+    # Determinism knobs (standard args stay top-level; vendor extras go in extra_body)
+    seed_src = f"{file_name or ''}\n{user}"
+    seed = int(hashlib.sha256(seed_src.encode("utf-8")).hexdigest()[:8], 16)
+
+    vllm_extras: dict[str, Any] = {"seed": seed, "top_k": -1}  # vendor-specific → extra_body
+
     if schema is not None:
-        rf = {
-            "type": "json_schema",
-            "strict": True,
-            "json_schema": {"name": schema["title"], "schema": schema},
-        }
-        completion_kwargs["response_format"] = rf
+        vllm_extras["guided_json"] = schema
+        vllm_extras["guided_decoding_backend"] = "lm-format-enforcer"
 
-    resp = model.complete(prompt, **completion_kwargs)
+    # Chat call (reasoning kept separate by server; final JSON is in message.content)
+    resp = model.chat(messages, extra_body=vllm_extras)
 
-    # Option B (very compatible with vLLM): guided JSON
-    # resp = model.complete(prompt, guided_json=schema)
+    text = getattr(resp.message, "content", "") or ""
+    out: dict[str, Any | None] = {"text": text, "structured": None}
 
-    out: dict[str, Any | None] = {"text": resp.text, "structured": None}
+    # Parse & validate (schema optional)
     try:
-        data = json.loads(resp.text)
+        data = json.loads(text)
         if schema is not None:
-            DefaultingValidator(schema).validate(data)  # fills defaults + validates
+            validator_cls = _validator_for(schema)
+            validator_cls.check_schema(schema)
+            validator = validator_cls(schema)
+            validator.validate(data)
         out["structured"] = data
     except (json.JSONDecodeError, ValidationError):
         logger.warning(f"Failed to obtain/validate structured output for document {file_name}")
+
     return out
 
 

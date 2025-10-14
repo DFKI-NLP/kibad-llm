@@ -62,22 +62,22 @@ class EcosystemStudyFeatures(BaseModel):
     habitat: HabitatEnum = Field(
         ...,
         alias="Lebensraum",
-        description="In welchem Lebensraum wurde die Studie durchgeführt? Auswahl gemäß Vorgabe",
+        description="In welchem Lebensraum wurde die Studie durchgeführt?",
     )
     natural_region: NaturalRegionEnum = Field(
         ...,
         alias="Naturgroßraum",
-        description="In welchem Naturgroßraum wurde die Studie durchgeführt? Auswahl gemäß Vorgabe",
+        description="In welchem Naturgroßraum wurde die Studie durchgeführt?",
     )
     ecosystem_type_term: EcosystemTypeTermEnum = Field(
         ...,
         alias="Ökosystemtyp",
-        description="Welchen Ökosystemtyp hat die Studie betrachtet? Auswahl gemäß Vorgabe",
+        description="Welchen Ökosystemtyp hat die Studie betrachtet?",
     )
     location_federal_state: LocationFederalStateEnum = Field(
         ...,
         alias="Bundesland",
-        description="In welchem Bundesland liegt das betrachtete Ökosystem der Studie? Auswahl gemäß Vorgabe",
+        description="In welchem Bundesland liegt das betrachtete Ökosystem der Studie?",
     )
 
     model_config = ConfigDict(

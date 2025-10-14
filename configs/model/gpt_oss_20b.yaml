@@ -11,10 +11,13 @@ _target_: llama_index.llms.openai_like.OpenAILike
 api_base: "http://127.0.0.1:5001/v1"
 api_key: "dummy"
 model: "openai/gpt-oss-20b"
+# try to be as deterministic as possible
 temperature: 0.0
-# the default is 16, so we increase it to allow a reasonable context window
+top_p: 1.0
+# presence_penalty and frequency_penalty are also standard if we need them
+
+# the default is 16, so we set it to 4096 to allow a reasonable context window
 max_tokens: 4096
-#is_function_calling_model: true
 # enable to correctly handle (i.e. remove) reasoning traces in the output
 is_chat_model: true
 is_function_calling_model: false
