@@ -4,7 +4,7 @@ defaults:
   - _self_
   - model: gpt_oss_20b
   - paths: default
-  - template: v1
+  - template: v1_with_schema
   - hydra: default
 
 print_config: True

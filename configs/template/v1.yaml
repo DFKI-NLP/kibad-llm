@@ -1,13 +1,13 @@
-text: |
-  Bitte lese den folgenden Text vollständig. Der Text ist eine Studie zu einem Ökosystem. Beantworte die folgenden Fragen auf Deutsch, auch wenn der Text auf Englisch ist.  Wenn Antwortmöglichkeiten nach einer Frage gegeben sind, wähle eine von den durch Komma getrennten Antwortmöglichkeiten aus. Erzeuge die Antwort in validem JSON-Format (nicht embedded Markdown!) mit den folgenden Schlüsseln: habitat, natural_region, ecosystem_type_term, location_federal_state.
+document_context: |
+  Bitte lese den folgenden Text vollständig. Der Text ist eine Studie zu einem Ökosystem. Beantworte die folgenden Fragen auf Deutsch, auch wenn der Text auf Englisch ist.  Wenn Antwortmöglichkeiten nach einer Frage gegeben sind, wähle eine von den durch Komma getrennten Antwortmöglichkeiten aus. Erzeuge die Antwort in validem JSON-Format (nicht embedded Markdown!) mit den folgenden Schlüsseln: Lebensraum, Naturgroßraum, Ökosystemtyp, Bundesland.
 
-  habitat: In welchem Lebensraum wurde die Studie durchgeführt? Antwortmöglichkeiten: Wald, Agrar- und Offenland, Binnengewässer und Auen, Küste und Küstengewässer, Urbane Räume, Boden, UNBEKANNT
+  Lebensraum: In welchem Lebensraum wurde die Studie durchgeführt? Antwortmöglichkeiten: Wald, Agrar- und Offenland, Binnengewässer und Auen, Küste und Küstengewässer, Urbane Räume, Boden, UNBEKANNT
 
-  natural_region: In welchem Naturgroßraum wurde die Studie durchgeführt? Antwortmöglichkeiten: Alpen, Alpenvorland, Mittelgebirgsschwelle, Norddeutsches Tiefland, Nord- und Ostsee oder Schichtsstufenland beidseits des Oberrheingrabens, UNBEKANNT
+  Naturgroßraum: In welchem Naturgroßraum wurde die Studie durchgeführt? Antwortmöglichkeiten: Alpen, Alpenvorland, Mittelgebirgsschwelle, Norddeutsches Tiefland, Nord- und Ostsee oder Schichtsstufenland beidseits des Oberrheingrabens, UNBEKANNT
 
-  ecosystem_type_term: Welchen Ökosystemtyp hat die Studie betrachtet? Antwortmöglichkeiten: Binnenland: Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte; Binnenland: Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent); Binnengewässer: Stehende Gewässer; Meere und Küsten: Benthal der Nordsee; UNBEKANNT
+  Ökosystemtyp: Welchen Ökosystemtyp hat die Studie betrachtet? Antwortmöglichkeiten: Binnenland: Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte; Binnenland: Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent); Binnengewässer: Stehende Gewässer; Meere und Küsten: Benthal der Nordsee; UNBEKANNT
 
-  location_federal_state: In welchem Bundesland liegt das betrachtete Ökosystem der Studie? Antwortmöglichkeiten: Baden-Württemberg, Bayern, Niedersachsen, Brandenburg, Berlin, Bremen, Hamburg, Hessen,  Mecklenburg-Vorpommern, Niedersachsen, Nordrhein-Westfalen, Rheinland-Pfalz, Saarland, Sachsen, Sachsen-Anhalt, Schleswig-Holstein, Thüringen, UNBEKANNT
+  Bundesland: In welchem Bundesland liegt das betrachtete Ökosystem der Studie? Antwortmöglichkeiten: Baden-Württemberg, Bayern, Niedersachsen, Brandenburg, Berlin, Bremen, Hamburg, Hessen,  Mecklenburg-Vorpommern, Niedersachsen, Nordrhein-Westfalen, Rheinland-Pfalz, Saarland, Sachsen, Sachsen-Anhalt, Schleswig-Holstein, Thüringen, UNBEKANNT
 
   Dokument in Markdown Format:
 

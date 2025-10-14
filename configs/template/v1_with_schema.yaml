@@ -1,0 +1,10 @@
+document_context: |
+  Bitte lese den folgenden Text vollständig. Der Text ist eine Studie zu einem Ökosystem.
+
+  Dokument in Markdown Format:
+
+  {document}
+
+schema:
+  # create the schema from the pydantic model of EcosystemStudyFeatures
+  _target_: kibad_llm.schema.types.EcosystemStudyFeatures.model_json_schema

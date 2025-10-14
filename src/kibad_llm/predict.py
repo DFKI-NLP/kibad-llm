@@ -9,6 +9,7 @@ from typing import Any
 from datasets import Dataset
 import hydra
 from hydra.utils import instantiate
+from jsonschema import Draft202012Validator, validators
 from llama_index.core import Settings, set_global_handler
 from llama_index.core.llms import LLM
 from omegaconf import DictConfig
@@ -16,8 +17,25 @@ from pydantic import ValidationError
 import pymupdf4llm
 
 from kibad_llm.config import PROJ_ROOT
+from kibad_llm.schema.types import EcosystemStudyFeatures
 
 logger = logging.getLogger(__name__)
+
+
+def _extend_with_default(validator_cls):
+    validate_props = validator_cls.VALIDATORS["properties"]
+
+    def set_defaults(validator, properties, instance, schema):
+        if isinstance(instance, dict):
+            for prop, subschema in properties.items():
+                if "default" in subschema and prop not in instance:
+                    instance[prop] = subschema["default"]
+        yield from validate_props(validator, properties, instance, schema)
+
+    return validators.extend(validator_cls, {"properties": set_defaults})
+
+
+DefaultingValidator = _extend_with_default(Draft202012Validator)
 
 
 def read_pdf_as_markdown(file_name: str, base_path: Path) -> dict[str, str]:
@@ -27,17 +45,56 @@ def read_pdf_as_markdown(file_name: str, base_path: Path) -> dict[str, str]:
 def extract_from_markdown(
     markdown: str,
     file_name: str | None = None,
-    template: str | None = None,
-    model: LLM | None = None,
+    document_context: str | None = None,
     schema: dict[str, Any] | None = None,
+    model: LLM | None = None,
 ) -> dict:
+    """
+    Extract structured information from markdown text using an LLM.
+
+    Args:
+        markdown (str): The markdown document to process.
+        file_name (str | None): Optional name of the file being processed (for logging).
+        document_context (str | None): Optional prompt template to provide context for the document. Needs to contain a `{document}` placeholder.
+        schema (dict | None): Optional JSON schema to guide the LLM's output structure.
+        model (LLM | None): Optional LLM model instance to use (primarily for testing).
+            If None, uses the globally configured model.
+
+    Returns:
+        dict: A dictionary with keys:
+            - "text": The raw text output from the LLM.
+            - "structured": The structured data extracted, or None if extraction/validation failed.
+    Example:
+        result = extract_from_markdown(
+            markdown="# Sample Document\nThis is a sample.",
+            file_name="sample.md",
+            document_context="Extract the following information from the document:\n{document}",
+            schema={
+                "title": "SampleSchema",
+                "type": "object",
+                "properties": {
+                    "title": {"type": "string"},
+                    "content_summary": {"type": "string"},
+                },
+                "required": ["title", "content_summary"],
+            },
+            model=my_llm_instance
+        )
+
+        print(result["text"])  # Raw LLM output
+        print(result["structured"])  # Parsed structured data or None
+    """
+
     if model is None:
         model = Settings.llm
 
+    if schema is None and document_context is None:
+        raise ValueError("At least one of schema or document_context must be provided")
+
     completion_kwargs: dict[str, Any] = {}
 
-    if template is not None:
-        prompt = template.format(document=markdown)
+    if document_context is not None:
+        prompt = document_context.format(document=markdown)
     else:
         prompt = markdown
 
@@ -59,12 +116,8 @@ def extract_from_markdown(
     try:
         data = json.loads(resp.text)
         if schema is not None:
-            # TODO: get/construct BiodiversityFeatures from schema
-            raise NotImplementedError("Schema-based validation not implemented yet")
-            # data_cls = BiodiversityFeatures
-            # out["structured"] = data_cls.model_validate(data).model_dump()
-        else:
-            out["structured"] = data
+            DefaultingValidator(schema).validate(data)  # fills defaults + validates
+        out["structured"] = data
     except (json.JSONDecodeError, ValidationError):
         logger.warning(f"Failed to obtain/validate structured output for document {file_name}")
     return out
@@ -106,13 +159,12 @@ def predict(cfg: DictConfig) -> None:
     )
 
     logger.info("Extracting information from markdown ...")
+    # the template may contain: document_context and schema; both are optional and can be instantiated objects
+    template = instantiate(cfg.template, _convert_="all")
     dataset = dataset.map(
         function=extract_from_markdown,
         input_columns=["markdown", "file_name"],
-        fn_kwargs={
-            "template": cfg.template.text,
-            # "schema": BiodiversityFeatures.model_json_schema(),
-        },
+        fn_kwargs=template,
         # use random fingerprint to always re-evaluate
         new_fingerprint=str(os.urandom(16).hex()),
     )
