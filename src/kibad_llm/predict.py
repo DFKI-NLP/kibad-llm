@@ -121,6 +121,8 @@ def predict(cfg: DictConfig) -> None:
             "template": cfg.template.text,
             # "schema": BiodiversityFeatures.model_json_schema(),
         },
+        # use random fingerprint to always re-evaluate
+        new_fingerprint=str(os.urandom(16).hex()),
     )
 
     logger.info(f"Writing results to {cfg.output_file} ...")
