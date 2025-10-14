@@ -12,21 +12,12 @@ from hydra.utils import instantiate
 from llama_index.core import Settings, set_global_handler
 from llama_index.core.llms import LLM
 from omegaconf import DictConfig
-from pydantic import BaseModel, ValidationError
+from pydantic import ValidationError
 import pymupdf4llm
 
 from kibad_llm.config import PROJ_ROOT
 
 logger = logging.getLogger(__name__)
-
-
-class BiodiversityFeatures(BaseModel):
-    """Data model for biodiversity features extracted from Markdown documents."""
-
-    Lebensraum: str
-    Naturgroßraum: str
-    Ökosystemtyp: str
-    Bundesland: str
 
 
 def read_pdf_as_markdown(file_name: str, base_path: Path) -> dict[str, str]:
@@ -69,8 +60,9 @@ def extract_from_markdown(
         data = json.loads(resp.text)
         if schema is not None:
             # TODO: get/construct BiodiversityFeatures from schema
-            data_cls = BiodiversityFeatures
-            out["structured"] = data_cls.model_validate(data).model_dump()
+            raise NotImplementedError("Schema-based validation not implemented yet")
+            # data_cls = BiodiversityFeatures
+            # out["structured"] = data_cls.model_validate(data).model_dump()
         else:
             out["structured"] = data
     except (json.JSONDecodeError, ValidationError):
