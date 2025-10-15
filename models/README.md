@@ -1,12 +1,12 @@
 # How-To Run an LLM on the DFKI Cluster
 
-- [Quickstart](#quickstart)
-  - [Prerequisites](#prerequisites)
-  - [Run `gpt-oss-20b`](#run-gpt-oss-20b)
-- [uv and Pegasus, the DFKI Cluster](#uv-and-pegasus-the-dfki-cluster)
-  - ["I just need one package"](#i-just-need-one-package)
-  - [Set `UV_PROJECT_ENVIRONMENT`](#set-uv_project_environment)
-  - [Symlink .venv](#symlink-venv)
+- [How-To Run an LLM on the DFKI Cluster](#how-to-run-an-llm-on-the-dfki-cluster)
+  - [Quickstart](#quickstart)
+    - [Prerequisites](#prerequisites)
+    - [Run `gpt-oss-20b`](#run-gpt-oss-20b)
+  - [The two ways to use uv on Pegasus](#the-two-ways-to-use-uv-on-pegasus)
+    - [Single package srun](#single-package-srun)
+    - [Full project srun](#full-project-srun)
 
 ## Quickstart
 
@@ -33,7 +33,7 @@ srun --partition=RTXA6000-SLT \
      --gpus-per-task=1 \
      --mem-per-cpu=4G \
      --time=1-00:00:00 \
-     uv run --with vllm --cache-dir /netscratch/$USER/cache/uv \
+     uv run --w vllm --cache-dir /netscratch/$USER/cache/uv \
             vllm serve "openai/gpt-oss-20b" \
                        --download-dir=/ds/models/llms/cache \
                        --port=18000
@@ -87,82 +87,55 @@ result:
 }
 ```
 
-## uv and Pegasus, the DFKI Cluster
+## The two ways to use uv on Pegasus
 
-For running your code on Pegasus, you have three options.
+In General:
 
-### "I just need one package"
+- In case you want to run a gated model, log into HuggingFace and make sure you have the correct access permissions.
+- Choose model, resources and max job runtime carefully.
+- Check for special requirements, like chat templates, tokenisers, and allowing local code execution.
 
-If all you need is one package, for example when using `vllm serve`, it is recommended to use the `-w your-package` option with a cache on netscratch.
+### Single package srun
 
-```bash
-# first create a cache directory on netscratch
-mkdir -p /netscratch/$USER/cache/uv
-# run the command with the package and cache
-srun --partition=RTXA6000-SLT \
-     --job-name=vllm_serve \
-     --nodes=1 \
-     --ntasks=1 \
-     --cpus-per-task=6 \
-     --gpus-per-task=1 \
-     --mem-per-cpu=4G \
-     --time=1-00:00:00 \
-     uv run -w vllm --cache-dir /netscratch/$USER/cache/uv \
-            vllm serve "openai/gpt-oss-20b" \
-                       --download-dir=/ds/models/llms/cache \
-                       --port=18000
-```
+If you want to do not much setup and all you need is one package, for example when using `vllm serve`, use `uv run` with these two flags:
 
-Alternatively, the cache directory can be set as an environment variable:
+- `-w your-package` this could be vllm or whatever other package you need.
+- `--cache-dir /netscratch/$USER/cache/uv` this prevents uv from filling up your home directory. It does however require you to set up the cache dir `mkdir -p /netscratch/$USER/cache/uv`.
 
-```bash
-export UV_CACHE_DIR="/netscratch/$USER/cache/uv"
-```
+This approach is used in the [Quickstart](#quickstart) section.
 
-### Set `UV_PROJECT_ENVIRONMENT`
+### Full project srun
 
-Set up the directory once:
+To run a uv project with any number of custom python packages in your environment, you need to set up a few things.
+
+Firstly, you need to create directories on netscratch where the uv cache and virtual environment can live:
 
 ```bash
 mkdir -p /netscratch/$USER/cache/uv
 mkdir -p /netscratch/$USER/cache/uv-venvs
 ```
 
-Then set the environment variables for every new shell session:
+Secondly, you need to set the environment variables for the uv cache and virtual environment to the directories you just created. This will point uv there and prevent it from causing your home directory to overflow.
 
 ```bash
 export UV_CACHE_DIR="/netscratch/$USER/cache/uv"
 export UV_PROJECT_ENVIRONMENT="/netscratch/$USER/cache/uv-venvs/kibad-llm"
 ```
 
-Using this setup, you run your scripts like you would do locally, except they're prefixed by srun.
+Thirdly, create the virtual environment and symlink the directories so that you don't need to set the environment variables each time you open a new shell.
 
 ```bash
-srun --partition=RTXA6000-SLT \
-     --job-name=vllm_serve \
-     --nodes=1 \
-     --ntasks=1 \
-     --cpus-per-task=6 \
-     --gpus-per-task=1 \
-     --mem-per-cpu=4G \
-     --time=1-00:00:00 \
-     uv run -m your.file.here
-```
-
-For more info on the project environment path, please refer to the [docs](https://docs.astral.sh/uv/concepts/projects/config/#project-environment-path).
-
-### Symlink .venv
-
-First follow the steps outlined in the above section [Set `UV_PROJECT_ENVIRONMENT`](#set-uv_project_environment). <br>
-Then run `uv sync` to ensure that all directories are created properly.
-Lastly, create both symlinks.
-
-```bash
+# create the .venv
+uv sync
 # link the .venv
 ln -s /netscratch/$USER/cache/uv-venvs/kibad-llm ./.venv
 # link the cache
 ln -s /netscratch/$USER/cache/uv ~/.cache/uv
 ```
 
-Now you do not need to add the environment variables each time you start up a new shell session. <br>
-Running your scripts works the same way as described in the above section [Set `UV_PROJECT_ENVIRONMENT`](#set-uv_project_environment).
+Now you can all of your python code without worrying about the uv cache or virtual environment.
+
+```bash
+srun --your-srun-flag \
+     uv run -m your.file.here
+```

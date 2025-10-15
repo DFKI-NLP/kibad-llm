@@ -88,17 +88,9 @@ This will create a `data/interim/faktencheck-db` directory with json files.
 
 Call `uv run -m kibad_llm.data_integration.db_converter --help` for more options.
 
-### vLLM Hosting
+### LLM Hosting
 
-#### Prerequisites
-
-- In case you want to run a gated model, log into HuggingFace and make sure you have the correct access permissions.
-
-#### Hosting
-
-- Choose model, resources and max job runtime carefully.
-- Check for special requirements, like chat templates, tokenisers, and allowing local code execution.
-- Follow the instructions here [models/README.md](./models/README.md).
+Follow the instructions [here for a quickstart](./models/README.md#quickstart) or [here for general instructions on uv and the cluster](./models/README.md#the-two-ways-to-use-uv-on-pegasus).
 
 ## Project Organization
 
