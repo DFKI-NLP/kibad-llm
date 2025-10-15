@@ -88,6 +88,10 @@ This will create a `data/interim/faktencheck-db` directory with json files.
 
 Call `uv run -m kibad_llm.data_integration.db_converter --help` for more options.
 
+### LLM Hosting
+
+Follow the instructions [here for a quickstart](./models/README.md#quickstart) or [here for general instructions on uv and the cluster](./models/README.md#the-two-ways-to-use-uv-on-pegasus).
+
 ## Project Organization
 
 ```
