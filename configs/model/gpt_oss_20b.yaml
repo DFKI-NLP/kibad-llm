@@ -6,9 +6,8 @@
 
 _target_: llama_index.llms.openai_like.OpenAILike
 
-# to use en environment variable instead of hardcoding the api_base here, use:
-# api_base: ${oc.env:LLM_API_BASE}
-api_base: "http://127.0.0.1:5001/v1"
+# get the API base URL from the environment variable LLM_API_BASE, defaulting to http://127.0.0.1:5001/v1
+api_base: ${oc.env:LLM_API_BASE,http://127.0.0.1:5001/v1}
 api_key: "dummy"
 model: "openai/gpt-oss-20b"
 # try to be as deterministic as possible
