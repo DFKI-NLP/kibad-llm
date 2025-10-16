@@ -15,6 +15,7 @@ def test_extract_from_markdown(tmp_path, cfg_predict):
     with open_dict(cfg_predict):
         cfg_predict.pdf_directory = str(PROJ_ROOT / "tests" / "fixtures" / "pdfs")
         cfg_predict.fast_dev_run = True
+        cfg_predict.disable_extraction_caching = True
 
     HydraConfig().set_config(cfg_predict)
 

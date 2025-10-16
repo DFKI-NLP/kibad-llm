@@ -29,6 +29,7 @@ def predictions_dict(cfg_predict_module) -> dict[str, dict]:
 
     with open_dict(cfg_predict_module):
         cfg_predict_module.pdf_directory = str(PDF_DIR)
+        cfg_predict_module.disable_extraction_caching = True
 
     HydraConfig().set_config(cfg_predict_module)
     predict(cfg_predict_module)
@@ -72,6 +73,7 @@ def test_predict_fast_dev_run(tmp_path, cfg_predict):
     with open_dict(cfg_predict):
         cfg_predict.pdf_directory = str(PROJ_ROOT / "tests" / "fixtures" / "pdfs")
         cfg_predict.fast_dev_run = True
+        cfg_predict.disable_extraction_caching = True
 
     HydraConfig().set_config(cfg_predict)
     predict(cfg_predict)

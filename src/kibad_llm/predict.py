@@ -141,6 +141,12 @@ def predict(cfg: DictConfig) -> None:
         dataset = dataset.take(1)
         set_global_handler("simple")
 
+    if cfg.get("disable_extraction_caching", False):
+        # disable caching for the extraction step
+        extraction_new_fingerprint = str(os.urandom(16).hex())
+    else:
+        extraction_new_fingerprint = None
+
     logger.info("Converting PDF to markdown ...")
     dataset = dataset.map(
         function=read_pdf_as_markdown,
@@ -156,8 +162,7 @@ def predict(cfg: DictConfig) -> None:
         function=extract_from_markdown,
         input_columns=["markdown", "file_name"],
         fn_kwargs=template,
-        # use random fingerprint to always re-evaluate
-        new_fingerprint=str(os.urandom(16).hex()),
+        new_fingerprint=extraction_new_fingerprint,
     )
 
     logger.info(f"Writing results to {cfg.output_file} ...")
