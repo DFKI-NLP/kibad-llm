@@ -24,6 +24,14 @@ logger = logging.getLogger(__name__)
 
 
 def read_pdf_as_markdown(file_name: str, base_path: Path) -> dict[str, str]:
+    """Read a PDF file and convert it to markdown using pymupdf4llm.
+
+    Args:
+        file_name: The name of the PDF file to read.
+        base_path: The base path where the PDF file is located.
+    Returns:
+        A dictionary with a single key "markdown" containing the markdown text.
+    """
     return {"markdown": pymupdf4llm.to_markdown(str(base_path / file_name))}
 
 
@@ -35,18 +43,22 @@ def extract_from_markdown(
     user_message: str | None = None,
     schema: dict[str, Any] | None = None,
     system_message_requires_schema_description: bool = False,
-    model: LLM | None = None,  # LlamaIndex OpenAILike; must be is_chat_model=True
+    model: LLM | None = None,
 ) -> dict:
     """Extract structured information from markdown text using an LLM.
 
     Args:
         markdown: The markdown text to process.
-        file_name: Optional file name for logging and seeding.
-        system_message: The system message template (required). If schema is provided, it will be formatted with schema_description.
+        file_name: File name for logging and seeding.
+        system_message: The system message template (required). If system_message_requires_schema_description
+            is True, it must contain a "{schema_description}" placeholder.
         user_message: The user message template (optional, defaults to just the markdown).
         schema: Optional JSON schema for structured output.
-        system_message_requires_schema_description: Whether the system message template requires a schema description.
-        model: The LLM model to use (defaults to Settings.llm).
+        system_message_requires_schema_description: Whether the system message template
+            requires a schema description (will raise an error if True but no schema provided).
+            The schema description will be built from the provided schema.
+        model: The LLM model to use (defaults to Settings.llm). Must be a chat model (i.e. is_chat_model=True)
+            and support extra_body parameters for guided decoding if schema is provided.
 
     Returns:
         A dictionary with keys "text" (the raw LLM output) and "structured" (the parsed JSON or None).
@@ -111,9 +123,7 @@ def predict(cfg: DictConfig) -> None:
 
     logger.info("Instantiating LLM model interface ...")
     logger.info(f"LLM config: {dict(cfg.model)}")
-    llm = instantiate(cfg.model)
-
-    Settings.llm = llm  # llm.as_structured_llm(output_cls=BiodiversityFeatures)
+    Settings.llm = instantiate(cfg.model)
 
     data_base_path = Path(cfg.pdf_directory)
 
@@ -139,7 +149,8 @@ def predict(cfg: DictConfig) -> None:
     )
 
     logger.info("Extracting information from markdown ...")
-    # the template may contain: document_context and schema; both are optional and can be instantiated objects
+    # the template needs to contain system_message and may contain user_message, schema and
+    # system_message_requires_schema_description; all may be constructed from sub-configs
     template = instantiate(cfg.template, _convert_="all")
     dataset = dataset.map(
         function=extract_from_markdown,
