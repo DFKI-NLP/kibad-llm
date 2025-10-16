@@ -99,7 +99,7 @@ max-line-length = 99
 exclude = [".git", "notebooks", "models", "data", "logs"]
 
 [tool.codespell]
-skip = "logs/**,data/**,configs/template/**,tests/fixtures/**.json,src/kibad_llm/schema/**,*.ipynb"
+skip = "logs/**,data/**,configs/template/**,tests/fixtures/**.json,src/kibad_llm/schema/**,tests/unit/schema/**,*.ipynb"
 ignore-words-list = "hist"
 
 # Bandit (read by pre-commit bandit with -c pyproject.toml)

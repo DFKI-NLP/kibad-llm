@@ -23,6 +23,25 @@ def _resolve_ref(schema: Mapping[str, Any], ref: str) -> Mapping[str, Any] | Non
 
 
 def build_schema_description(schema: dict[str, Any]) -> str:
+    """
+    Build a human-readable German summary for a JSON Schema.
+
+    Creates a newline-separated description that includes:
+    - Optional "Beschreibung:" from the schema-level "description".
+    - A header "Feldhinweise und erlaubte Werte:".
+    - One line per property from "properties" in the form
+      "- <name>: <description> [Zulässige Werte: v1; v2; ...]" when an enum exists.
+
+    Enums are taken from the property's "enum" or, if present, from a local "$ref"
+    (e.g., "#/$defs/Name"). Only local "$ref" targets are resolved.
+
+    Parameters:
+        schema: A JSON Schema object (as dict) with "properties" and optional
+                "description" and "$defs".
+
+    Returns:
+        str: Multi-line German text summarizing fields and allowed values.
+    """
     lines = []
     desc = schema.get("description", "")
     if desc:
