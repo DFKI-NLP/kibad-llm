@@ -6,7 +6,7 @@ from omegaconf import open_dict
 import pytest
 
 from kibad_llm.config import PROJ_ROOT
-from kibad_llm.predict import extract_from_markdown, read_pdf_as_markdown
+from kibad_llm.predict import extract_from_text, read_pdf_as_markdown
 
 
 def test_read_pdf_as_markdown():
@@ -16,21 +16,21 @@ def test_read_pdf_as_markdown():
     markdown_path = PROJ_ROOT / "tests" / "fixtures" / "markdown" / f"{file_name}.json"
     with open(markdown_path) as f:
         markdown_data = json.load(f)
-    markdown_expected = markdown_data["markdown"]
+    markdown_expected = markdown_data["text"]
 
     result = read_pdf_as_markdown(
         file_name=file_name, base_path=PROJ_ROOT / "tests" / "fixtures" / "pdfs"
     )
 
     assert isinstance(result, dict)
-    assert set(result) == {"markdown"}
-    markdown = result["markdown"]
+    assert set(result) == {"text"}
+    markdown = result["text"]
 
     assert markdown == markdown_expected
 
 
 @pytest.mark.slow
-def test_extract_from_markdown(tmp_path, cfg_predict):
+def test_extract_from_text(tmp_path, cfg_predict):
 
     with open_dict(cfg_predict):
         cfg_predict.pdf_directory = str(PROJ_ROOT / "tests" / "fixtures" / "pdfs")
@@ -47,10 +47,10 @@ def test_extract_from_markdown(tmp_path, cfg_predict):
     markdown_path = PROJ_ROOT / "tests" / "fixtures" / "markdown" / f"{file_name}.json"
     with open(markdown_path) as f:
         markdown_data = json.load(f)
-    markdown = markdown_data["markdown"]
+    text = markdown_data["text"]
 
     template = instantiate(cfg_predict.template, _convert_="all")
-    result = extract_from_markdown(file_name=file_name, markdown=markdown, model=model, **template)
+    result = extract_from_text(text_id=file_name, text=text, model=model, **template)
 
     # just check keys since the actual values are not deterministic
     keys_expected = {"Bundesland", "Lebensraum", "Naturgroßraum", "Ökosystemtyp"}

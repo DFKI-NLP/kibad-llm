@@ -30,26 +30,26 @@ def read_pdf_as_markdown(file_name: str, base_path: Path) -> dict[str, str]:
         file_name: The name of the PDF file to read.
         base_path: The base path where the PDF file is located.
     Returns:
-        A dictionary with a single key "markdown" containing the markdown text.
+        A dictionary with a single key "text" containing the markdown text.
     """
-    return {"markdown": pymupdf4llm.to_markdown(str(base_path / file_name))}
+    return {"text": pymupdf4llm.to_markdown(str(base_path / file_name))}
 
 
-def extract_from_markdown(
+def extract_from_text(
     # IMPORTANT: The order of the arguments depends on the order in the Dataset map input_columns!
-    markdown: str,
-    file_name: str,
+    text: str,
+    text_id: str,
     system_message: str,
     user_message: str | None = None,
     schema: dict[str, Any] | None = None,
     system_message_requires_schema_description: bool = False,
     model: LLM | None = None,
 ) -> dict:
-    """Extract structured information from markdown text using an LLM.
+    """Extract structured information from text using an LLM.
 
     Args:
-        markdown: The markdown text to process.
-        file_name: File name for logging and seeding.
+        text: The text to process.
+        text_id: Text identifier for logging and seeding.
         system_message: The system message template (required). If system_message_requires_schema_description
             is True, it must contain a "{schema_description}" placeholder.
         user_message: The user message template (optional, defaults to just the markdown).
@@ -77,14 +77,14 @@ def extract_from_markdown(
                 "system_message_requires_schema_description is True but no schema provided"
             )
         system = system_message
-    user = user_message.format(document=markdown) if user_message else markdown
+    user = user_message.format(document=text) if user_message else text
     messages = [
         ChatMessage(role=MessageRole.SYSTEM, content=system),
         ChatMessage(role=MessageRole.USER, content=user),
     ]
 
     # Determinism knobs (standard args stay top-level; vendor extras go in extra_body)
-    seed_src = f"{file_name or ''}\n{user}"
+    seed_src = f"{text_id or ''}\n{user}"
     seed = int(hashlib.sha256(seed_src.encode("utf-8")).hexdigest()[:8], 16)
 
     vllm_extras: dict[str, Any] = {"seed": seed, "top_k": -1}  # vendor-specific → extra_body
@@ -96,12 +96,12 @@ def extract_from_markdown(
     # Chat call (reasoning kept separate by server; final JSON is in message.content)
     resp = model.chat(messages, extra_body=vllm_extras)
 
-    text = getattr(resp.message, "content", "") or ""
-    out: dict[str, Any | None] = {"text": text, "structured": None}
+    response_content = getattr(resp.message, "content", "") or ""
+    out: dict[str, Any | None] = {"response_content": response_content, "structured": None}
 
     # Parse & validate (schema optional)
     try:
-        data = json.loads(text)
+        data = json.loads(response_content)
         if schema is not None:
             validator_cls = _validator_for(schema)
             validator_cls.check_schema(schema)
@@ -109,7 +109,7 @@ def extract_from_markdown(
             validator.validate(data)
         out["structured"] = data
     except (json.JSONDecodeError, ValidationError):
-        logger.warning(f"Failed to obtain/validate structured output for document {file_name}")
+        logger.warning(f"Failed to obtain/validate structured output for document {text_id}")
 
     return out
 
@@ -159,8 +159,8 @@ def predict(cfg: DictConfig) -> None:
     # system_message_requires_schema_description; all may be constructed from sub-configs
     template = instantiate(cfg.template, _convert_="all")
     dataset = dataset.map(
-        function=extract_from_markdown,
-        input_columns=["markdown", "file_name"],
+        function=extract_from_text,
+        input_columns=["text", "file_name"],
         fn_kwargs=template,
         new_fingerprint=extraction_new_fingerprint,
     )
