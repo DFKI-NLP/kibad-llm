@@ -3,11 +3,13 @@ import pandas as pd
 df = pd.read_json("data/interim/faktencheck-db/faktencheck-db-converted_2025-08-19.jsonl", lines=True)
 
 str_cols = ['zotitem_ptr_id', 'status', 'bibtex_author', 'bibtex_title', 'bibtex_year', 'bibtex_type']
-list_cols = ['biodiversity_level', 'biodiversity_variable', 'climate']
+list_cols = [
+    'biodiversity_level', 'biodiversity_variable', 'climate', 'habitat', 'landuse', 'measure', 'method',
+    'natural_region', 'study_type', 'transformation_potential'
+]
 list_of_dict_cols = [
-    'conservation_area', 'direct_driver', 'ecosystem_service', 'ecosystem_type', 'habitat', 'impulse_measure',
-    'indirect_driver', 'landuse', 'location', 'management_measure', 'measure', 'method', 'natural_region', 'soil',
-    'study_type', 'taxa', 'transformation_potential'
+    'conservation_area', 'direct_driver', 'ecosystem_service', 'ecosystem_type',  'impulse_measure', 'indirect_driver',
+    'location', 'management_measure', 'soil', 'taxa'
 ]
 
 unique_dict = {}
