@@ -49,8 +49,9 @@ def test_extract_from_markdown(tmp_path, cfg_predict):
         markdown_data = json.load(f)
     markdown = markdown_data["markdown"]
 
+    template = instantiate(cfg_predict.template, _convert_="all")
     result = extract_from_markdown(
-        markdown=markdown, template=cfg_predict.template.text, model=model
+        file_name=file_name, markdown=markdown, model=model, **template
     )
 
     result_path = PROJ_ROOT / "tests" / "fixtures" / "results" / f"{file_name}.json"
