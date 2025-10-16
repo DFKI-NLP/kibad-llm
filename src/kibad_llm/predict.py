@@ -110,6 +110,7 @@ def _file_name_generator(file_names: list[str]):
 def predict(cfg: DictConfig) -> None:
 
     logger.info("Instantiating LLM model interface ...")
+    logger.info(f"LLM config: {dict(cfg.model)}")
     llm = instantiate(cfg.model)
 
     Settings.llm = llm  # llm.as_structured_llm(output_cls=BiodiversityFeatures)
@@ -158,6 +159,7 @@ def main(cfg: DictConfig) -> None:
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
     # set env var PROJECT_ROOT
     os.environ["PROJECT_ROOT"] = str(PROJ_ROOT)
     main()
