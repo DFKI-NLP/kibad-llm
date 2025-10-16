@@ -1,5 +1,17 @@
 # @package _global_
 
+# Configuration for running classification based data extraction on a set of PDF files. The extracted
+# data is saved in JSONL format. See models and templates config subdirectories for available model
+# settings and prompt templates.
+# Uses:
+# - pymupdf4llm for PDF text extraction,
+# - LlamaIndex to interact with a local LLM model to classify and extract structured data, and
+# - datasets for pipeline management and caching.
+#
+# Usage:
+#   python -m kibad_llm.predict pdf_directory=path/to/pdf/files
+
+
 defaults:
   - _self_
   - model: gpt_oss_20b
@@ -14,7 +26,9 @@ print_config: True
 # name of the run, used in logging and as a subdir of log_dir
 name: "default"
 
+# path to the directory containing the PDF files to process
 pdf_directory: ???
+# path to the JSONL file where the predictions will be saved
 output_file: ${paths.prediction_save_dir}/predictions.jsonl
 
 # enable to process only a subset of the data, useful for debugging

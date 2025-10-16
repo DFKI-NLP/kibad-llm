@@ -1,3 +1,7 @@
+# Template to extract information from ecosystem study documents in Markdown.
+# Extracts keys: Lebensraum, Naturgroßraum, Ökosystemtyp, Bundesland.
+# Select one value per key from fixed enums; use UNBEKANNT if unknown.
+
 system_message: |
   Bitte lese den folgenden Text vollständig. Der Text ist eine Studie zu einem Ökosystem. Beantworte die folgenden Fragen auf Deutsch, auch wenn der Text auf Englisch ist.  Wenn Antwortmöglichkeiten nach einer Frage gegeben sind, wähle eine von den durch Komma getrennten Antwortmöglichkeiten aus. Erzeuge die Antwort in validem JSON-Format (nicht embedded Markdown!) mit den folgenden Schlüsseln: Lebensraum, Naturgroßraum, Ökosystemtyp, Bundesland.
 
