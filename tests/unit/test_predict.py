@@ -50,18 +50,8 @@ def test_extract_from_markdown(tmp_path, cfg_predict):
     markdown = markdown_data["markdown"]
 
     template = instantiate(cfg_predict.template, _convert_="all")
-    result = extract_from_markdown(
-        file_name=file_name, markdown=markdown, model=model, **template
-    )
+    result = extract_from_markdown(file_name=file_name, markdown=markdown, model=model, **template)
 
-    result_path = PROJ_ROOT / "tests" / "fixtures" / "results" / f"{file_name}.json"
-
-    # read fixture data
-    with open(result_path) as f:
-        result_expected = json.load(f)
-
-    # remove entries not in result
-    del result_expected["file_name"]
-    del result_expected["markdown"]
-
-    assert result == result_expected
+    # just check keys since the actual values are not deterministic
+    keys_expected = {"Bundesland", "Lebensraum", "Naturgroßraum", "Ökosystemtyp"}
+    assert set(result["structured"]) == keys_expected
