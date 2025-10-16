@@ -88,9 +88,23 @@ This will create a `data/interim/faktencheck-db` directory with json files.
 
 Call `uv run -m kibad_llm.data_integration.db_converter --help` for more options.
 
-### LLM Hosting
+### Information Extraction from PDFs
+
+#### Prerequisite: LLM Hosting
 
 Follow the instructions [here for a quickstart](./models/README.md#quickstart) or [here for general instructions on uv and the cluster](./models/README.md#the-two-ways-to-use-uv-on-pegasus).
+
+#### Inference
+
+The information extraction pipeline can be run with:
+
+```bash
+uv run -m kibad_llm.predict pdf_directory=path/to/pdf/files
+```
+
+This will process all PDF files in `pdf_directory` and save the result in a JSON line file.
+
+See [configs/predict](./configs/predict.yaml) for further information and options.
 
 ## Project Organization
 
