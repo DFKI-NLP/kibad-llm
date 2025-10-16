@@ -1,0 +1,29 @@
+import pandas as pd
+
+df = pd.read_json("data/interim/faktencheck-db/faktencheck-db-converted_2025-08-19.jsonl", lines=True)
+
+str_cols = ['zotitem_ptr_id', 'status', 'bibtex_author', 'bibtex_title', 'bibtex_year', 'bibtex_type']
+list_cols = ['biodiversity_level', 'biodiversity_variable', 'climate']
+list_of_dict_cols = [
+    'conservation_area', 'direct_driver', 'ecosystem_service', 'ecosystem_type', 'habitat', 'impulse_measure',
+    'indirect_driver', 'landuse', 'location', 'management_measure', 'measure', 'method', 'natural_region', 'soil',
+    'study_type', 'taxa', 'transformation_potential'
+]
+
+unique_dict = {}
+
+for col in str_cols:
+    unique_dict[col] = df[col].unique().tolist()
+
+for col in list_cols:
+    unique_dict[col] = df[col].explode().unique().tolist()
+
+for col in list_of_dict_cols:
+    normalized_df = pd.json_normalize(df[col].explode())
+    normalized_df = normalized_df.replace({float('nan'): None})
+    sub_cols = normalized_df.columns.to_list()
+    for sub_col in sub_cols:
+        unique_dict[f"{col}.{sub_col}"] = normalized_df[sub_col].unique().tolist()
+
+unique_dict_len = {dict_name: len(dict_list) for dict_name, dict_list in unique_dict.items()}
+print(unique_dict_len)
