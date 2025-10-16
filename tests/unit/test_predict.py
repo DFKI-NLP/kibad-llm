@@ -2,7 +2,6 @@ import json
 
 from hydra.core.hydra_config import HydraConfig
 from hydra.utils import instantiate
-from omegaconf import open_dict
 import pytest
 
 from kibad_llm.config import PROJ_ROOT
@@ -31,11 +30,6 @@ def test_read_pdf_as_markdown():
 
 @pytest.mark.slow
 def test_extract_from_text(tmp_path, cfg_predict):
-
-    with open_dict(cfg_predict):
-        cfg_predict.pdf_directory = str(PROJ_ROOT / "tests" / "fixtures" / "pdfs")
-        cfg_predict.fast_dev_run = True
-        cfg_predict.disable_extraction_caching = True
 
     HydraConfig().set_config(cfg_predict)
 
