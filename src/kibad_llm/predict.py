@@ -12,7 +12,6 @@ from omegaconf import DictConfig
 
 from kibad_llm.config import PROJ_ROOT
 from kibad_llm.extraction import extract_from_text
-from kibad_llm.preprocessing import read_pdf_as_markdown
 
 logger = logging.getLogger(__name__)
 
@@ -61,8 +60,10 @@ def predict(cfg: DictConfig) -> None:
         extraction_new_fingerprint = None
 
     logger.info("Converting PDF to markdown ...")
+    logger.info(f"PDF reader config: {dict(cfg.pdf_reader)}")
+    pdf_reader = instantiate(cfg.pdf_reader, _convert_="all")
     dataset = dataset.map(
-        function=read_pdf_as_markdown,
+        function=pdf_reader,
         input_columns=["file_name"],
         fn_kwargs={"base_path": data_base_path},
     )
