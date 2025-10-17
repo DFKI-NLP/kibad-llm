@@ -1,5 +1,5 @@
 # This will use pymupdf4llm.to_markdown to read PDF files and convert them to text.
-# See src/kibad_llm/preprocessing.py::read_pdf_as_markdown for details.
+# See src/kibad_llm/preprocessing.py::read_pdf_as_markdown_via_pymupdf4llm for details.
 
-_target_: kibad_llm.preprocessing.read_pdf_as_markdown
+_target_: kibad_llm.preprocessing.read_pdf_as_markdown_via_pymupdf4llm
 _partial_: true

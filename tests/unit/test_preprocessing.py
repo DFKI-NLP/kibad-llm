@@ -1,13 +1,13 @@
 import json
 
 from kibad_llm.config import PROJ_ROOT
-from kibad_llm.preprocessing import read_pdf_as_markdown
+from kibad_llm.preprocessing import read_pdf_as_markdown_via_pymupdf4llm
 
 
-def test_read_pdf_as_markdown():
+def test_read_pdf_as_markdown_via_pymupdf4llm():
     file_name = "25ABQZIH.pdf"
 
-    result = read_pdf_as_markdown(
+    result = read_pdf_as_markdown_via_pymupdf4llm(
         file_name=file_name, base_path=PROJ_ROOT / "tests" / "fixtures" / "pdfs"
     )
 

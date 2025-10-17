@@ -8,7 +8,7 @@ import pymupdf4llm
 logger = logging.getLogger(__name__)
 
 
-def read_pdf_as_markdown(file_name: str, base_path: Path) -> dict[str, str]:
+def read_pdf_as_markdown_via_pymupdf4llm(file_name: str, base_path: Path) -> dict[str, str]:
     """Read a PDF file and convert it to markdown using pymupdf4llm.
 
     Args:
