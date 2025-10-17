@@ -91,7 +91,7 @@ if __name__ == "__main__":
         sorted(unique_dict_less_k.items(), key=lambda item: len(item[1]))
     )
     # lines = "\n".join(f'{k}: {v}' for k, v in unique_dict_less_k_sorted.items())
-    lines = json.dumps(unique_dict_less_k_sorted, indent=2, sort_keys=True)
+    lines = json.dumps(unique_dict_less_k_sorted, indent=2, sort_keys=True, ensure_ascii=False)
     logger.info(
         f"show unique entries for {len(unique_dict_less_k_sorted)} keys with less "
         f"than {n} entries sorted by number of entries (#remaining keys: "
