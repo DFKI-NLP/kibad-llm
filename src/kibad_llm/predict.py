@@ -12,7 +12,6 @@ from omegaconf import DictConfig
 
 from kibad_llm.config import PROJ_ROOT
 from kibad_llm.extraction import extract_from_text
-from kibad_llm.preprocessing import read_pdf_as_markdown
 
 logger = logging.getLogger(__name__)
 
