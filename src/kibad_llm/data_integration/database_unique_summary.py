@@ -1,3 +1,4 @@
+import json
 import logging
 
 import pandas as pd
@@ -69,6 +70,14 @@ def main(data_path: str) -> dict[str, dict]:
 
 
 if __name__ == "__main__":
+    # show info level logs
+    logging.basicConfig(level=logging.INFO)
+
+    # get unique entries
     unique_dict = main("data/interim/faktencheck-db/faktencheck-db-converted_2025-08-19.jsonl")
+
+    # show numbers on console
     unique_dict_len = {dict_name: len(dict_list) for dict_name, dict_list in unique_dict.items()}
-    logger.info(unique_dict_len)
+    logger.info(
+        f"number of unique entries per key:\n{json.dumps(unique_dict_len, indent=2, sort_keys=True)}"
+    )
