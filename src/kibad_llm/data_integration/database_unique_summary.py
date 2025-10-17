@@ -1,4 +1,8 @@
+import logging
+
 import pandas as pd
+
+logger = logging.getLogger(__name__)
 
 
 def main(data_path: str) -> dict[str, dict]:
@@ -67,4 +71,4 @@ def main(data_path: str) -> dict[str, dict]:
 if __name__ == "__main__":
     unique_dict = main("data/interim/faktencheck-db/faktencheck-db-converted_2025-08-19.jsonl")
     unique_dict_len = {dict_name: len(dict_list) for dict_name, dict_list in unique_dict.items()}
-    print(unique_dict_len)
+    logger.info(unique_dict_len)
