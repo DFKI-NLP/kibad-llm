@@ -79,5 +79,21 @@ if __name__ == "__main__":
     # show numbers on console
     unique_dict_len = {dict_name: len(dict_list) for dict_name, dict_list in unique_dict.items()}
     logger.info(
-        f"number of unique entries per key:\n{json.dumps(unique_dict_len, indent=2, sort_keys=True)}"
+        f"number of unique entries per key:\n{json.dumps(unique_dict_len, indent=2, sort_keys=True)}\n"
+    )
+
+    n = 20
+    unique_dict_less_k = {
+        k: unique_dict[k] for k in sorted(unique_dict) if len(unique_dict[k]) < n
+    }
+    # sort entries for better readability
+    unique_dict_less_k_sorted = dict(
+        sorted(unique_dict_less_k.items(), key=lambda item: len(item[1]))
+    )
+    # lines = "\n".join(f'{k}: {v}' for k, v in unique_dict_less_k_sorted.items())
+    lines = json.dumps(unique_dict_less_k_sorted, indent=2, sort_keys=True)
+    logger.info(
+        f"show unique entries for {len(unique_dict_less_k_sorted)} keys with less "
+        f"than {n} entries sorted by number of entries (#remaining keys: "
+        f"{len(unique_dict_len) - len(unique_dict_less_k_sorted)}):\n{lines}"
     )
