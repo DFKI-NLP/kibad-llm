@@ -79,7 +79,7 @@ def predict(cfg: DictConfig) -> None:
     )
 
     logger.info(f"Writing results to {cfg.output_file} ...")
-    dataset.to_json(cfg.output_file)
+    dataset.to_json(cfg.output_file, force_ascii=False)
 
 
 @hydra.main(version_base="1.3", config_path=str(PROJ_ROOT / "configs"), config_name="predict.yaml")

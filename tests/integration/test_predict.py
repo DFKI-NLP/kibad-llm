@@ -60,7 +60,7 @@ def test_prediction(file_name, predictions_dict):
 
     # write fixture data
     # with open(prediction_path, "w") as f:
-    #     json.dump(prediction, f, indent=4)
+    #     json.dump(prediction, f, indent=4, ensure_ascii=False)
 
     # read fixture data
     with open(prediction_path) as f:
@@ -93,7 +93,7 @@ def test_predict_fast_dev_run(tmp_path, cfg_predict):
 
     # write fixture data
     # with open(fixture_path, "w") as f:
-    #   json.dump(result, f, indent=4)
+    #   json.dump(result, f, indent=4, ensure_ascii=False)
 
     # read fixture data
     with open(fixture_path) as f:
