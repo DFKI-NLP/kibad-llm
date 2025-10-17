@@ -62,13 +62,6 @@ jobs:
         with:
           os: ${{ matrix.os }}
           python: ${{ matrix.python }}
-      # If this is a push to the main branch, run all tests (including slow ones).
-      - name: Run all tests with coverage
-        if: github.event_name == 'push' && github.ref_name == 'main'
-        run: |
-          uv run --group cicd pytest --cov=kibad_llm --cov-report=term-missing
-      # Otherwise skip slow tests
       - name: Run 'not slow' tests with coverage
-        if: github.event_name != 'push' || github.ref_name != 'main'
         run: |
           uv run --group cicd pytest -m "not slow" --cov=kibad_llm --cov-report=term-missing
