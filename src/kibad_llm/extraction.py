@@ -26,6 +26,10 @@ def extract_from_text(
 ) -> dict:
     """Extract structured information from text using an LLM.
 
+    Given a chat model (per default, uses Settings.llm from llama-index), composes system
+    and user messages, and invokes the model. When a schema is provided, it is used to enforce
+    guided decoding. The output is parsed as JSON and validated against the schema if provided.
+
     Args:
         text: The text to process.
         text_id: Text identifier for logging and seeding.

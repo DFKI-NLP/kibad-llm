@@ -23,6 +23,16 @@ def _file_name_generator(file_names: list[str]):
 
 
 def predict(cfg: DictConfig) -> None:
+    """Run classification based information extraction on PDF files.
+
+    Reads all PDF files from cfg.pdf_directory, converts them to markdown,
+    extracts structured information using an LLM model and a prompt template,
+    and writes the results to cfg.output_file in JSON lines format. Caches
+    intermediate results by using map from the datasets library.
+
+    Args:
+        cfg: OmegaConf configuration. See configs/predict.yaml for details.
+    """
 
     logger.info("Instantiating LLM model interface ...")
     logger.info(f"LLM config: {dict(cfg.model)}")
