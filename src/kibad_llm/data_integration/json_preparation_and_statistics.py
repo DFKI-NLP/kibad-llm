@@ -14,29 +14,48 @@ logger = logging.getLogger(__name__)
 def _join_strings_and_move_ints_to_end(
     entries: tuple[str | int, ...], sep: str = "."
 ) -> tuple[str | int, ...]:
-    """Joins all string entries in a tuple with `sep` and moves all integer entries to the end without their respective order.
-    :param entries: input tuple with string and integer entries
-    :param sep: separator to use when joining string entries
-    :return: tuple with joined string entries and integer entries at the end
-    """
+    """Join string parts with `sep` and append integer parts.
 
+    Args:
+      entries: Tuple of strings and integers.
+      sep: Separator used to join string parts. Defaults to ".".
+
+    Returns:
+      A tuple where the first element is the joined string and the remaining
+      elements are the integers in original order.
+
+    Example:
+      >>> _join_strings_and_move_ints_to_end(("a", "b", 0, 1))
+      ('a.b', 0, 1)
+    """
     return (sep.join(str(k) for k in entries if not isinstance(k, int)),) + tuple(
         k for k in entries if isinstance(k, int)
     )
 
 
-def _flatten_nested_lists(l: list, remove_values: list | None = None, sort: bool = False) -> list:
-    """Flattens a nested list of arbitrary depth.
+def _flatten_nested_list(l: list, remove_values: list | None = None, sort: bool = False) -> list:
+    """Flatten an arbitrarily nested list to a single list.
 
-    :param l: input list
-    :param remove_values: list of values to remove from the flattened list
-    :param sort: whether to sort the flattened list
-    :return: flattened list
+    Args:
+      l: Input list. Elements can be values or lists.
+      remove_values: Values to drop from the flattened list. Defaults to None.
+      sort: Whether to sort the flattened list. Defaults to False.
+
+    Returns:
+      A flat list. The result excludes values in remove_values. The result is sorted when sort is True.
+
+    Examples:
+      >>> _flatten_nested_list([1, [2, [3, None]], 4])
+      [1, 2, 3, None, 4]
+      >>> _flatten_nested_list([3, [2, 1, [2]]], remove_values=[2])
+      [3, 1]
+      >>> _flatten_nested_list([3, [None, 1]], remove_values=[None], sort=True)
+      [1, 3]
     """
     flattened_list = []
     for item in l:
         if isinstance(item, list):
-            flattened_list.extend(_flatten_nested_lists(item))
+            flattened_list.extend(_flatten_nested_list(item))
         else:
             flattened_list.append(item)
     if remove_values is not None:
@@ -53,11 +72,13 @@ def rearrange_dict(
     - all dict levels are outermost combined into a single key joined by `key_sep`, and
     - all list levels are innermost combined into a single flattened list.
 
-    :param d: input dictionary
-    :param key_sep: separator to use when joining keys
-    :param lists_remove_values: list of values to remove from flattened lists
-    :param lists_sort: whether to sort the flattened lists
-    :return: rearranged dictionary
+    Args:
+        d: input dictionary
+        key_sep: separator to use when joining keys
+        lists_remove_values: list of values to remove from flattened lists
+        lists_sort: whether to sort the flattened lists
+    Returns:
+        rearranged dictionary
     """
 
     # flatten: keys will be tuples
@@ -72,7 +93,7 @@ def rearrange_dict(
     # flatten all list entries (also remove unwanted values and sort if specified)
     d_flat_lists = {
         k: (
-            _flatten_nested_lists(v, remove_values=lists_remove_values, sort=lists_sort)
+            _flatten_nested_list(v, remove_values=lists_remove_values, sort=lists_sort)
             if isinstance(v, list)
             else v
         )
@@ -82,6 +103,15 @@ def rearrange_dict(
 
 
 def _get_list_cols(df: pd.DataFrame) -> list[str]:
+    """Get names of columns in a dataframe where all non-null entries are lists.
+
+    Args:
+        df: input dataframe
+    Returns:
+        list of column names where all non-null entries are lists
+    Raises:
+        ValueError: if any column has mixed list and non-list entries
+    """
     cols_with_entries = df.columns[df.notnull().any()].tolist()
     # columns where at least one value is a list
     cols_with_any_list = [
@@ -101,6 +131,8 @@ def _get_list_cols(df: pd.DataFrame) -> list[str]:
 
 
 def _sort_with_none_last(l: list) -> list:
+    """Sort a list, placing None and NaN values at the end."""
+
     def is_nan(x):
         try:
             return math.isnan(x)  # works for float and numpy.float*
@@ -112,7 +144,7 @@ def _sort_with_none_last(l: list) -> list:
     return sorted(core) + tail
 
 
-def flatten_json_data(data: pd.DataFrame, key_sep: str = ".") -> pd.DataFrame:
+def flatten_json_data(df: pd.DataFrame, **kwargs) -> pd.DataFrame:
     """
     Flatten nested JSON data in a pandas DataFrame. See `rearrange_dict` for details.
     """
@@ -120,16 +152,13 @@ def flatten_json_data(data: pd.DataFrame, key_sep: str = ".") -> pd.DataFrame:
     def _flatten_row(row: pd.Series) -> pd.Series:
         return pd.Series(
             rearrange_dict(
-                d=row.to_dict(),
-                key_sep=key_sep,
-                lists_remove_values=[None, "", np.nan],
-                lists_sort=True,
+                d=row.to_dict(), lists_remove_values=[None, "", np.nan], lists_sort=True, **kwargs
             )
         )
 
-    data_flat = data.apply(_flatten_row, axis="columns")
+    df_flat = df.apply(_flatten_row, axis="columns")
 
-    return data_flat
+    return df_flat
 
 
 def get_unique_single_and_multi_values(
@@ -138,15 +167,20 @@ def get_unique_single_and_multi_values(
     """
     Get unique values for single-label and multi-label columns in a dataframe.
 
-    :param df: input dataframe
-    :return: dictionary with unique values for each (sub-)column
+    Args:
+        df: input dataframe
+    Returns:
+        A tuple of two dictionaries:
+        - a dict mapping single-label column names to their unique values
+        - a dict mapping multi-label column names to their unique values
     """
 
     none_cols = [c for c in df.columns if df[c].isnull().all()]
     if len(none_cols) > 0:
-        logger.warning(f"Columns with all None values found: {none_cols}")
+        logger.warning(f"Columns with all None values found:\n{none_cols}")
     multi_label_cols = _get_list_cols(df)
     logger.info(f"Found {len(multi_label_cols)} multi-label columns:\n{multi_label_cols}")
+    # assume all other columns are single-label
     single_label_cols = [c for c in df.columns if c not in none_cols + multi_label_cols]
     logger.info(f"Found {len(single_label_cols)} single-label columns:\n{single_label_cols}")
 
