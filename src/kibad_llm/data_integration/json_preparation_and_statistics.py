@@ -112,7 +112,7 @@ def _sort_with_none_last(l: list) -> list:
     return sorted(core) + tail
 
 
-def flatten_json_data(data: pd.DataFrame) -> pd.DataFrame:
+def flatten_json_data(data: pd.DataFrame, key_sep: str = ".") -> pd.DataFrame:
     """
     Flatten nested JSON data in a pandas DataFrame. See `rearrange_dict` for details.
     """
@@ -121,7 +121,7 @@ def flatten_json_data(data: pd.DataFrame) -> pd.DataFrame:
         return pd.Series(
             rearrange_dict(
                 d=row.to_dict(),
-                key_sep=".",
+                key_sep=key_sep,
                 lists_remove_values=[None, "", np.nan],
                 lists_sort=True,
             )
@@ -160,13 +160,14 @@ def get_unique_single_and_multi_values(
     return unique_values_single, unique_values_multi
 
 
-def show_unique_values_summary(input_file: str, top_n: int = 20) -> None:
+def show_unique_values_summary(input_file: str, top_n: int = 20, key_sep: str = ".") -> None:
     """
     Show a summary of unique values in the Faktencheck database JSONL file.
     """
 
     df = pd.read_json(input_file, lines=True)
-    df_flat = flatten_json_data(df)
+    # flatten dict, see `rearrange_dict` for details
+    df_flat = flatten_json_data(df, key_sep=key_sep)
 
     # get unique entries
     unique_values_single, unique_values_multi = get_unique_single_and_multi_values(df=df_flat)
@@ -213,6 +214,13 @@ if __name__ == "__main__":
         default="data/interim/faktencheck-db/faktencheck-db-converted_2025-08-19.jsonl",
         help="Path to the input JSONL file containing the Faktencheck database created "
         "with `db_converter.py`.",
+    )
+    parser.add_argument(
+        "-s",
+        "--key-sep",
+        type=str,
+        default=".",
+        help="Separator to use when joining nested keys.",
     )
     parser.add_argument(
         "-n",
