@@ -40,7 +40,7 @@ def flatten_dict(
     return dict(_flatten_dict_gen(d, parent_key=parent_key))
 
 
-def unflatten_dict(d: dict[tuple[str, ...], Any]) -> dict[str, Any] | Any:
+def unflatten_dict(d: dict[tuple[str | int, ...], Any]) -> dict[str, Any] | list | Any:
     """Unflattens a dictionary with nested tuple keys. A dictionary with an empty tuple as the key
     is considered a root key, in which case the value is returned directly.
 
@@ -53,8 +53,14 @@ def unflatten_dict(d: dict[tuple[str, ...], Any]) -> dict[str, Any] | Any:
         >>> d = {("a", "b", "c"): 1, ("a", "b", "d"): 2, ("a", "e"): 3}
         >>> unflatten_dict(d)
         {'a': {'b': {'c': 1, 'd': 2}, 'e': 3}}
+
+        # converts integer keys back to lists (note the None padding)
+        >>> d = {("a", 0): 1, ("a", 1): 2, ("b", 1, "c"): 3}
+        >>> unflatten_dict(d)
+        {'a': [1, 2], 'b': [None, {'c': 3}]}
     """
-    result: dict[str, Any] = {}
+    # keys may be str or int, but int keys indicate lists and will be converted later
+    result: dict[str | int, Any] = {}
 
     for path, value in d.items():
         # If the key path is empty, this is a direct value return:
@@ -85,4 +91,19 @@ def unflatten_dict(d: dict[tuple[str, ...], Any]) -> dict[str, Any] | Any:
 
         current[path[-1]] = value
 
-    return result
+    # convert dicts keyed by ints into lists (pad with None)
+    def _to_lists(obj: Any) -> Any:
+        if isinstance(obj, dict):
+            for k in list(obj.keys()):
+                obj[k] = _to_lists(obj[k])
+            if obj and all(isinstance(k, int) for k in obj.keys()):
+                max_idx = max(obj.keys())
+                lst = [None] * (max_idx + 1)
+                for i, v in obj.items():
+                    lst[i] = v
+                return lst
+        elif isinstance(obj, list):
+            return [_to_lists(v) for v in obj]
+        return obj
+
+    return _to_lists(result)
