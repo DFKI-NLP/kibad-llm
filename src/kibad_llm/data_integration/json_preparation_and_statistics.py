@@ -202,16 +202,17 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Extract unique values from Faktencheck database JSONL file. "
         'Some columns have nested entries, e.g. "direct_driver", these '
-        "are a list of a dict. The database is flattened and the column "
-        "name combined with the key to generate uniques for the values. "
-        "Should the database or conversion change the columns, they need "
-        "to be changed manually."
+        "are a list of a dicts. The script flattens these nested entries such that "
+        'the keys are joined with a "." and the list entries are flattened into a single list. '
+        "E.g. {'direct_driver': [{'type': 'A'}, {'type': 'B'}]} becomes "
+        '{"direct_driver.type": ["A", "B"]}. See `rearrange_dict` for details.'
     )
     parser.add_argument(
         "--input-file",
         type=str,
         default="data/interim/faktencheck-db/faktencheck-db-converted_2025-08-19.jsonl",
-        help="Path to the input JSONL file containing the Faktencheck database.",
+        help="Path to the input JSONL file containing the Faktencheck database created "
+        "with `db_converter.py`.",
     )
     parser.add_argument(
         "-n",
