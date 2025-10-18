@@ -154,7 +154,8 @@ if __name__ == "__main__":
         "are a list of a dicts. The script flattens these nested entries such that "
         'the keys are joined with a "." and the list entries are flattened into a single list. '
         "E.g. {'direct_driver': [{'type': 'A'}, {'type': 'B'}]} becomes "
-        '{"direct_driver.type": ["A", "B"]}. See `rearrange_dict` for details.'
+        '{"direct_driver.type": ["A", "B"]}. See `rearrange_dict` for details.',
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
     parser.add_argument(
         "--input-file",
