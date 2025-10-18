@@ -110,7 +110,7 @@ def get_unique_single_and_multi_values(
 
 def show_unique_values_summary(input_file: str, top_n: int = 20, key_sep: str = ".") -> None:
     """
-    Show a summary of unique values in the Faktencheck database JSONL file.
+    Show a summary of unique values in a JSONL file with nested entries.
     """
 
     df = pd.read_json(input_file, lines=True)
