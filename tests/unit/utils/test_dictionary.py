@@ -94,3 +94,7 @@ def test_unflatten_dict_with_list_keys():
     # more complex nesting
     d = {("a", 0, "b"): 1, ("a", 1, "c", 0): 2, ("a", 1, "c", 1): 3, ("d",): 4}
     assert unflatten_dict(d) == {"a": [{"b": 1}, {"c": [2, 3]}], "d": 4}
+
+    # plain list
+    d = {(0,): 1, (1,): 2, (2,): 3}
+    assert unflatten_dict(d) == [1, 2, 3]
