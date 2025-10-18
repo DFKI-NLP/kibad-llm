@@ -42,7 +42,9 @@ def flatten_dict(
 
 def unflatten_dict(d: dict[tuple[str | int, ...], Any]) -> dict[str, Any] | list | Any:
     """Unflattens a dictionary with nested tuple keys. A dictionary with an empty tuple as the key
-    is considered a root key, in which case the value is returned directly.
+    is considered a root key, in which case the value is returned directly. Dictionary keys can be
+    strings or integers. Integer keys indicate list indices and will be converted to lists in the
+    final output.
 
     Additionally, this version raises an error if there is a conflict such that one key tries
     to treat another key's value as a dictionary. For example:
@@ -179,13 +181,13 @@ def rearrange_dict(
         rearranged dictionary
     """
 
-    # flatten: keys will be tuples
+    # flatten: keys will be tuples and values scalars (e.g. str, int)
     d_flat = flatten_dict(d)
-    # join string keys and move int keys to the end
+    # rearrange levels: join string keys and move int keys to the end
     d_keys_rearranged = {
         _join_strings_and_move_ints_to_end(k, sep=key_sep): v for k, v in d_flat.items()
     }
-    # unflatten dict: entries may be single values, lists, or nested lists
+    # unflatten dict: entries will be scalar values, lists, or nested lists
     d_rearranged = unflatten_dict(d_keys_rearranged)
     assert isinstance(d_rearranged, dict)
     # flatten all list entries (also remove unwanted values and sort if specified)
