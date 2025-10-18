@@ -130,20 +130,6 @@ def _get_list_cols(df: pd.DataFrame) -> list[str]:
     return cols_all_lists
 
 
-def _sort_with_none_last(l: list) -> list:
-    """Sort a list, placing None and NaN values at the end."""
-
-    def is_nan(x):
-        try:
-            return math.isnan(x)  # works for float and numpy.float*
-        except (TypeError, ValueError):
-            return False
-
-    core = [x for x in l if x is not None and not is_nan(x)]
-    tail = [x for x in l if x is None or is_nan(x)]
-    return sorted(core) + tail
-
-
 def flatten_json_data(df: pd.DataFrame, **kwargs) -> pd.DataFrame:
     """
     Flatten nested JSON data in a pandas DataFrame. See `rearrange_dict` for details.
@@ -159,6 +145,23 @@ def flatten_json_data(df: pd.DataFrame, **kwargs) -> pd.DataFrame:
     df_flat = df.apply(_flatten_row, axis="columns")
 
     return df_flat
+
+
+def _sort_with_none(l: list, remove_none: bool = False) -> list:
+    """Sort a list, placing None and NaN values at the end."""
+
+    def is_nan(x):
+        try:
+            return math.isnan(x)  # works for float and numpy.float*
+        except (TypeError, ValueError):
+            return False
+
+    core = [x for x in l if x is not None and not is_nan(x)]
+    tail = [x for x in l if x is None or is_nan(x)]
+    result = sorted(core)
+    if not remove_none:
+        result += tail
+    return result
 
 
 def get_unique_single_and_multi_values(
@@ -185,10 +188,12 @@ def get_unique_single_and_multi_values(
     logger.info(f"Found {len(single_label_cols)} single-label columns:\n{single_label_cols}")
 
     unique_values_single = {
-        col: _sort_with_none_last(df[col].unique().tolist()) for col in single_label_cols
+        col: _sort_with_none(df[col].unique().tolist()) for col in single_label_cols
     }
+    # remove None values from multi-label unique entries
     unique_values_multi = {
-        col: _sort_with_none_last(df[col].explode().unique().tolist()) for col in multi_label_cols
+        col: _sort_with_none(df[col].explode().unique().tolist(), remove_none=True)
+        for col in multi_label_cols
     }
 
     return unique_values_single, unique_values_multi
