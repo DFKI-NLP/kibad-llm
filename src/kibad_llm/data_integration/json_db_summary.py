@@ -155,7 +155,7 @@ if __name__ == "__main__":
         'the keys are joined with a "." and the list entries are flattened into a single list. '
         "E.g. {'direct_driver': [{'type': 'A'}, {'type': 'B'}]} becomes "
         '{"direct_driver.type": ["A", "B"]}. See `rearrange_dict` for details.',
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument(
         "--input-file",
