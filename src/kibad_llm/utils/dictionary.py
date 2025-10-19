@@ -56,10 +56,10 @@ def unflatten_dict(d: dict[tuple[str | int, ...], Any]) -> dict[str, Any] | list
         >>> unflatten_dict(d)
         {'a': {'b': {'c': 1, 'd': 2}, 'e': 3}}
 
-        # converts integer keys back to lists (note the None padding)
+        # converts integer keys back to lists (note the missing index for 'b' (0) does not cause an issue)
         >>> d = {("a", 0): 1, ("a", 1): 2, ("b", 1, "c"): 3}
         >>> unflatten_dict(d)
-        {'a': [1, 2], 'b': [None, {'c': 3}]}
+        {'a': [1, 2], 'b': [{'c': 3}]}
     """
     # keys may be str or int, but int keys indicate lists and will be converted later
     result: dict[str | int, Any] = {}
@@ -93,16 +93,20 @@ def unflatten_dict(d: dict[tuple[str | int, ...], Any]) -> dict[str, Any] | list
 
         current[path[-1]] = value
 
-    # convert dicts keyed by ints into lists (pad with None)
+    # convert dicts keyed by ints into lists
     def _to_lists(obj: Any) -> Any:
         if isinstance(obj, dict):
             for k in list(obj.keys()):
                 obj[k] = _to_lists(obj[k])
             if obj and all(isinstance(k, int) for k in obj.keys()):
-                max_idx = max(obj.keys())
-                lst = [None] * (max_idx + 1)
-                for i, v in obj.items():
-                    lst[i] = v
+                num_unique = len(set(obj.keys()))
+                if len(obj.keys()) > num_unique:
+                    raise ValueError("Duplicate integer keys found when converting dict to list.")
+                lst = [None] * num_unique
+                # just use the keys in sorted order to fill the list to allow missing indices
+                obj_keys_sorted = sorted(obj.keys())
+                for i, l_k in enumerate(obj_keys_sorted):
+                    lst[i] = obj[l_k]
                 return lst
         elif isinstance(obj, list):
             return [_to_lists(v) for v in obj]
@@ -183,7 +187,7 @@ def rearrange_dict(
     Examples:
         >>> d = {"a": {"b": [1, 2]}, "c": [3, {"d": 4}]}
         >>> rearrange_dict(d)
-        {'a.b': [1, 2], 'c': [3], 'c.d': [None, 4]}
+        {'a.b': [1, 2], 'c': [3], 'c.d': [4]}
         >>> d = {"a": {"b": [1, None, 2]}, "c": [3, {"d": 4}], "e": None}
         >>> rearrange_dict(d, lists_remove_values=[None])
         {'a.b': [1, 2], 'c': [3], 'c.d': [4], 'e': None}
