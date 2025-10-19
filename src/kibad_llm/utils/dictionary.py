@@ -179,6 +179,17 @@ def rearrange_dict(
         lists_sort: whether to sort the flattened lists
     Returns:
         rearranged dictionary
+
+    Examples:
+        >>> d = {"a": {"b": [1, 2]}, "c": [3, {"d": 4}]}
+        >>> rearrange_dict(d)
+        {'a.b': [1, 2], 'c': [3], 'c.d': [None, 4]}
+        >>> d = {"a": {"b": [1, None, 2]}, "c": [3, {"d": 4}], "e": None}
+        >>> rearrange_dict(d, lists_remove_values=[None])
+        {'a.b': [1, 2], 'c': [3], 'c.d': [4], 'e': None}
+        >>> d = {"a": {"b": [2, 1]}, "c": [3, {"d": 4}]}
+        >>> rearrange_dict(d, lists_sort=True)
+        {'a.b': [1, 2], 'c': [3, 4]}
     """
 
     # flatten: keys will be tuples and values scalars (e.g. str, int)

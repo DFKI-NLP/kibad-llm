@@ -2,6 +2,7 @@ import pytest
 
 from kibad_llm.utils.dictionary import (
     flatten_dict,
+    rearrange_dict,
     unflatten_dict,
 )
 
@@ -17,6 +18,10 @@ def test_flatten_dict():
 def test_flatten_dict_with_list():
     d = {"a": [1, 2], "b": [{"c": 3}]}
     assert flatten_dict(d) == {("a", 0): 1, ("a", 1): 2, ("b", 0, "c"): 3}
+
+    # plain top level list
+    d = [1, 2, 3]
+    assert flatten_dict(d) == {(0,): 1, (1,): 2, (2,): 3}
 
 
 def test_flatten_dict_with_list_nested():
@@ -86,8 +91,10 @@ def test_unflatten_dict_multiple_roots():
         unflatten_dict({("a", "b"): 1, ("a", "b", "c"): 2})
 
 
-def test_unflatten_dict_with_list_keys():
+def test_unflatten_dict_with_lists():
     # key ("b", 0) is missing, so it should be filled with None
+    # TODO: Better to not pad with None (see comment in rearrange_dict)?
+    #  Would this cause any problems?
     d = {("a", 0): 1, ("a", 1): 2, ("b", 1, "c"): 3}
     assert unflatten_dict(d) == {"a": [1, 2], "b": [None, {"c": 3}]}
 
@@ -98,3 +105,31 @@ def test_unflatten_dict_with_list_keys():
     # plain list
     d = {(0,): 1, (1,): 2, (2,): 3}
     assert unflatten_dict(d) == [1, 2, 3]
+
+
+def test_flatten_and_unflatten_dict_with_lists():
+    d = {"a": {"b": [1, 2]}, "c": [3, {"d": 4}]}
+    assert flatten_dict(d) == {("a", "b", 0): 1, ("a", "b", 1): 2, ("c", 0): 3, ("c", 1, "d"): 4}
+
+    d_back = unflatten_dict(flatten_dict(d))
+    assert d_back == d
+
+
+def test_rearrange_dict():
+    # note that the None value for 'c.d' comes from the first entry in list 'c'
+    # (which has a different/lower depth then the second entry)
+    # TODO: check if this is the desired behavior. Better to not pad with None?
+    d = {"a": {"b": [1, 2]}, "c": [3, {"d": 4}]}
+    assert rearrange_dict(d) == {"a.b": [1, 2], "c": [3], "c.d": [None, 4]}
+
+    d = {"a": {"b": [1, None, 2]}, "c": [3, {"d": 4}], "e": None}
+    assert rearrange_dict(d, lists_remove_values=[None]) == {
+        "a.b": [1, 2],
+        "c": [3],
+        "c.d": [4],
+        "e": None,
+    }
+
+    # lists_sort should be used together with lists_remove_values since sorting with None values fails
+    d = {"a": {"b": [2, 1]}, "c": [3, {"d": 4}]}
+    assert rearrange_dict(d, lists_remove_values=[None], lists_sort=True)
