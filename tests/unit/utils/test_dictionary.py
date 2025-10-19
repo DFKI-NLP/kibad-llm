@@ -116,6 +116,8 @@ def test_rearrange_dict():
     d = {"a": {"b": [1, 2]}, "c": [3, {"d": 4}]}
     assert rearrange_dict(d) == {"a.b": [1, 2], "c": [3], "c.d": [4]}
 
+    # test lists_remove_values
+    # note that the None value for "e" is kept as it is not in a list
     d = {"a": {"b": [1, None, 2]}, "c": [3, {"d": 4}], "e": None}
     assert rearrange_dict(d, lists_remove_values=[None]) == {
         "a.b": [1, 2],
@@ -124,6 +126,6 @@ def test_rearrange_dict():
         "e": None,
     }
 
-    # lists_sort should be used together with lists_remove_values since sorting with None values fails
+    # test lists_sort
     d = {"a": {"b": [2, 1]}, "c": [3, {"d": 4}]}
-    assert rearrange_dict(d, lists_remove_values=[None], lists_sort=True)
+    assert rearrange_dict(d, lists_sort=True) == {"a.b": [1, 2], "c": [3], "c.d": [4]}
