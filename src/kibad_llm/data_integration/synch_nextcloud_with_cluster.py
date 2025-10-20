@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
+import logging
 import os
 from urllib.parse import quote, unquote, urlparse
 
 import defusedxml.ElementTree as ET
 import requests
 from tqdm import tqdm
+
+logging.basicConfig(level=logging.INFO)
 
 # ---------- CONFIGURATION ----------
 NEXTCLOUD_BASE_URL = "https://cloud.dfki.de/owncloud/"  # Your Nextcloud domain
@@ -104,55 +107,57 @@ def list_local_files():
 def download_file(filename):
     url = NEXTCLOUD_WEBDAV_URL + quote(filename, safe="")
     local_path = os.path.join(LOCAL_DIR, filename)
-    print(f"Downloading {url} to {local_path}")
+    logging.info(f"Downloading {url} to {local_path}")
     os.makedirs(os.path.dirname(local_path), exist_ok=True)
 
     with requests.get(url, auth=AUTH, stream=True, timeout=30) as r:
         if r.status_code == 200:
             with open(local_path, "wb") as fh:
                 for chunk in tqdm(
-                    r.iter_content(chunk_size=8192), desc=f"Downloading {filename}", unit="KB"
+                    r.iter_content(chunk_size=8192),
+                    desc=f"Downloading {url} to {local_path}",
+                    unit="KB",
                 ):
                     if chunk:
                         fh.write(chunk)
         else:
-            raise RuntimeError(f"Failed to download {filename}: {r.status_code} {r.text[:200]}")
+            raise RuntimeError(f"Failed to download {url}: {r.status_code} {r.text[:200]}")
 
 
 def upload_file(filename):
     url = NEXTCLOUD_WEBDAV_URL + quote(filename, safe="")
     local_path = os.path.join(LOCAL_DIR, filename)
-    print(f"Uploading {local_path} to {url}")
+    logging.info(f"Uploading {local_path} to {url}")
     with open(local_path, "rb") as fh:
         resp = requests.put(url, auth=AUTH, data=fh, timeout=30)
     if resp.status_code not in (200, 201, 204):
-        raise RuntimeError(f"Failed to upload {filename}: {resp.status_code} {resp.text[:500]}")
+        raise RuntimeError(f"Failed to upload {local_path}: {resp.status_code} {resp.text[:500]}")
 
 
 def sync_nextcloud():
-    print("Listing Nextcloud files...")
+    logging.info("Listing Nextcloud files...")
     nc_files = set(list_nextcloud_files())
-    print("Listing local files...")
+    logging.info("Listing local files...")
     local_files = set(list_local_files())
 
     to_download = nc_files - local_files
     to_upload = local_files - nc_files
 
     if not to_download and not to_upload:
-        print("Folders are already in sync.")
+        logging.info("Folders are already in sync.")
         return
 
     if to_download:
-        print(f"Downloading {len(to_download)} file(s) from Nextcloud...")
+        logging.info(f"Downloading {len(to_download)} file(s) from Nextcloud...")
         for f in sorted(to_download):
             download_file(f)
 
     if to_upload:
-        print(f"Uploading {len(to_upload)} file(s) to Nextcloud...")
+        logging.info(f"Uploading {len(to_upload)} file(s) to Nextcloud...")
         for f in sorted(to_upload):
             upload_file(f)
 
-    print("Sync complete.")
+    logging.info("Sync complete.")
 
 
 if __name__ == "__main__":
