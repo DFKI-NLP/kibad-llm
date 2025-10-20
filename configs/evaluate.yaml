@@ -6,11 +6,15 @@ defaults:
   - _self_
   - metric: f1
 
-predictions_file: ???  # Path to the JSONL file containing predictions to evaluate
-references_file: ???  # Path to the JSONL file containing gold reference data for evaluation
+# Path to the JSONL file containing predictions to evaluate, e.g., produced by predict.py.
+predictions_file: ???
+# Path to the JSONL file containing gold reference data for evaluation,
+# e.g., produced by data_integration/db_converter.py from the Faktencheck-DB.
+references_file: ???
 
 # map the field names used in the json schema to the json paths (keys) in the (flattened) reference jsonl file
 # see column "Pfad im JSONL der konvertierten Faktencheck-DB" in table https://docs.google.com/spreadsheets/d/1MyEZTLOm85ZNxuTSHxwJLxaAXiCGLt-mMozUkBlGzJE/edit?gid=0#gid=0
+# but also the result of the data_integration/json_db_summary.py script: https://github.com/DFKI-NLP/kibad-llm/pull/31#issuecomment-3418782905
 json_paths_mapping:
   Bundesland: "location/federal_state"
   # TODO: it looks like we have "Lebensräume" in the table instead
