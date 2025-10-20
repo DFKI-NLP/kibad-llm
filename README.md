@@ -88,6 +88,16 @@ This will create a `data/interim/faktencheck-db` directory with json files.
 
 Call `uv run -m kibad_llm.data_integration.db_converter --help` for more options.
 
+#### Syncing Nextcloud PDFs with the cluster storage
+
+Run the following command to synch the Nextcloud folder at
+https://cloud.dfki.de/owncloud/index.php/s/dPc2BSDDEAT4R2W?path=%2FPDFs%20Literaturdatenbank with the PDF directory
+on the cluster at /ds/text/kiba-d/zotero_literaturdatenbank/ .
+
+```bash
+uv run -m kibad_llm.data_integration.synch_nextcloud_with_cluster
+```
+
 ### Information Extraction from PDFs
 
 #### Prerequisite: LLM Hosting
