@@ -3,8 +3,9 @@
 # Configuration for evaluating predictions against gold reference data via a metric.
 #
 # In detail:
-#  - Entries in the predictions are taken from the "structured" field produced by the LLM in predict.py and
-#    and individual fields (which are based on the json schema) are mapped via the json_paths_mapping below.
+#  - Entries in the predictions are taken from the "structured" field produced by the LLM in predict.py
+#    and individual fields (which are based on the json schema compiled from schema.types.EcosystemStudyFeatures)
+#    are mapped via the json_paths_mapping below.
 #  - Entries in the references are taken from the json produced by db_converter.py (from the Faktencheck-DB),
 #    but flattened (dicts as well as list levels).
 #  - Prediction and reference entries are matched based on the PDF file_name and zotitem_ptr_id, respectively.
