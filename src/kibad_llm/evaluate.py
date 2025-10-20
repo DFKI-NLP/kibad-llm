@@ -79,7 +79,11 @@ def evaluate(cfg: DictConfig) -> dict[str, Any]:
 
     logger.info("Computing metric ...")
     predictions.map(
-        metric.update, input_columns=["prediction", "reference"], load_from_cache_file=False
+        metric.update,
+        input_columns=["prediction", "reference"],
+        # disable caching since we are interested in the side effect of updating the metric,
+        # not in the returned dataset
+        load_from_cache_file=False,
     )
     results = metric.compute()
 
