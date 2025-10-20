@@ -3,8 +3,7 @@
 # TODO: Add description
 
 defaults:
-  - _self_
-  - metric: f1
+  - metric: f1_single
 
 # Path to the JSONL file containing predictions to evaluate, e.g., produced by predict.py.
 predictions_file: ???
