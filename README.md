@@ -98,6 +98,24 @@ on the cluster at /ds/text/kiba-d/zotero_literaturdatenbank/ .
 uv run -m kibad_llm.data_integration.synch_nextcloud_with_cluster
 ```
 
+### Information Extraction from PDFs
+
+#### Prerequisite: LLM Hosting
+
+Follow the instructions [here for a quickstart](./models/README.md#quickstart) or [here for general instructions on uv and the cluster](./models/README.md#the-two-ways-to-use-uv-on-pegasus).
+
+#### Inference
+
+The information extraction pipeline can be run with:
+
+```bash
+uv run -m kibad_llm.predict pdf_directory=path/to/pdf/files
+```
+
+This will process all PDF files in `pdf_directory` and save the result in a JSON line file.
+
+See [configs/predict](./configs/predict.yaml) for further information and options.
+
 ## Project Organization
 
 ```
@@ -197,7 +215,8 @@ uv run --group cicd pytest -m "not slow"
 
 ### Adding dependencies
 
-To [add packages as dependencies](https://docs.astral.sh/uv/concepts/projects/dependencies/), use the `uv add` command.
+To [add packages as dependencies](https://docs.astral.sh/uv/concepts/projects/dependencies/), use the `uv add` command. <br>
+Please make sure to add upper bounds when you can to prevent future breakage.
 
 ```bash
 uv add httpx
@@ -211,3 +230,23 @@ uv add "httpx>=0.20,<1.0"
 
 [Changing dependencies](https://docs.astral.sh/uv/concepts/projects/dependencies/#changing-dependencies) works just like adding them. <br>
 Please keep in mind that you can also add [platform-specific dependencies](https://docs.astral.sh/uv/concepts/projects/dependencies/#platform-specific-dependencies).
+
+### Updating dependencies
+
+You can update either one or all packages.
+
+```bash
+# update all packages
+uv lock --upgrade
+# update one package
+uv lock --upgrade-package <package>
+# update one package to a specific version
+uv lock --upgrade-package <package>==<version>
+```
+
+### uv known issues
+
+These known issues have their own uv specific fixes. The relevant documentation is linked.
+
+- [Build isolation](https://docs.astral.sh/uv/concepts/projects/config/#build-isolation) - Can lead to runtime errors
+- [Conflicting dependencies](https://docs.astral.sh/uv/concepts/projects/config/#conflicting-dependencies)
