@@ -10,7 +10,6 @@ class HabitatEnum(str, Enum):
     KUESTE_UND_KUUESTENGEWAESSER = "Küste und Küstengewässer"
     URBANE_RAEUME = "Urbane Räume"
     BODEN = "Boden"
-    UNBEKANNT = "UNBEKANNT"
 
 
 class NaturalRegionEnum(str, Enum):
@@ -21,7 +20,6 @@ class NaturalRegionEnum(str, Enum):
     NORD_UND_OSTSEE_ODER_SCHICHTSSTUFENLAND = (
         "Nord- und Ostsee oder Schichtsstufenland beidseits des Oberrheingrabens"
     )
-    UNBEKANNT = "UNBEKANNT"
 
 
 class EcosystemTypeTermEnum(str, Enum):
@@ -59,15 +57,15 @@ class LocationFederalStateEnum(str, Enum):
 class EcosystemStudyFeatures(BaseModel):
     """Angaben zu den ökosystembezogenen Studienmerkmalen."""
 
-    habitat: HabitatEnum = Field(
-        ...,
-        alias="Lebensraum",
-        description="In welchem Lebensraum wurde die Studie durchgeführt?",
+    habitats: list[HabitatEnum] = Field(
+        default_factory=list,
+        alias="Lebensräume",
+        description="In welchen Lebensräumen wurde die Studie durchgeführt?",
     )
-    natural_region: NaturalRegionEnum = Field(
-        ...,
-        alias="Naturgroßraum",
-        description="In welchem Naturgroßraum wurde die Studie durchgeführt?",
+    natural_regions: list[NaturalRegionEnum] = Field(
+        default_factory=list,
+        alias="Naturgroßräume",
+        description="In welchen Naturgroßräumen wurde die Studie durchgeführt?",
     )
     ecosystem_type_term: EcosystemTypeTermEnum = Field(
         ...,
