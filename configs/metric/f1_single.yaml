@@ -1,0 +1,2 @@
+_target_: kibad_llm.metrics.F1SingleLabelMetric
+field: ???  # the field in the prediction and reference to compute the F1 score on

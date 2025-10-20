@@ -1,0 +1,20 @@
+# @package _global_
+
+# TODO: Add description
+
+defaults:
+  - _self_
+  - metric: f1
+
+predictions_file: ???  # Path to the JSONL file containing predictions to evaluate
+references_file: ???  # Path to the JSONL file containing gold reference data for evaluation
+
+# map the field names used in the json schema to the json paths (keys) in the (flattened) reference jsonl file
+# see column "Pfad im JSONL der konvertierten Faktencheck-DB" in table https://docs.google.com/spreadsheets/d/1MyEZTLOm85ZNxuTSHxwJLxaAXiCGLt-mMozUkBlGzJE/edit?gid=0#gid=0
+json_paths_mapping:
+  Bundesland: "location/federal_state"
+  # TODO: it looks like we have "Lebensräume" in the table instead
+  Lebensraum: "TODO"
+  # TODO: it looks like we have "Großräume" in the table instead
+  Naturgroßraum: "TODO"
+  Ökosystemtyp: "ecosystem_type/term"
