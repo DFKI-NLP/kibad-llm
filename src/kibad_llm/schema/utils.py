@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from collections.abc import Mapping as ABCMapping
-from typing import Any, Optional
+from typing import Any
 
 
 def _resolve_ref(schema: Mapping[str, Any], ref: str) -> Mapping[str, Any] | None:
@@ -22,6 +22,42 @@ def _resolve_ref(schema: Mapping[str, Any], ref: str) -> Mapping[str, Any] | Non
     return node
 
 
+def _extract_enum(schema: Mapping[str, Any], node: Any) -> list[str] | None:
+    """
+    Extract enum values from a schema node, handling:
+    - inline 'enum'
+    - direct '$ref'
+    - composition via 'allOf'/'anyOf'/'oneOf' that contain refs or enums
+    """
+    if not isinstance(node, ABCMapping):
+        return None
+
+    # inline enum
+    enum = node.get("enum")
+    if isinstance(enum, list) and enum:
+        return [str(v) for v in enum]
+
+    # direct $ref
+    ref = node.get("$ref")
+    if isinstance(ref, str):
+        ref_schema = _resolve_ref(schema, ref)
+        if isinstance(ref_schema, ABCMapping):
+            ref_enum = ref_schema.get("enum")
+            if isinstance(ref_enum, list) and ref_enum:
+                return [str(v) for v in ref_enum]
+
+    # composition wrappers
+    for key in ("allOf", "anyOf", "oneOf"):
+        subs = node.get(key)
+        if isinstance(subs, list):
+            for sub in subs:
+                values = _extract_enum(schema, sub)
+                if values:
+                    return values
+
+    return None
+
+
 def build_schema_description(schema: dict[str, Any]) -> str:
     """
     Build a human-readable German summary for a JSON Schema.
@@ -29,47 +65,37 @@ def build_schema_description(schema: dict[str, Any]) -> str:
     Creates a newline-separated description that includes:
     - Optional "Beschreibung:" from the schema-level "description".
     - A header "Feldhinweise und erlaubte Werte:".
-    - One line per property from "properties" in the form
-      "- <name>: <description> [Zulässige Werte: v1; v2; ...]" when an enum exists.
-
-    Enums are taken from:
-    - the property's "enum",
-    - a local "$ref" on the property (e.g., "#/$defs/Name"), or
-    - for arrays, the "items" schema's "enum" or its local "$ref".
-
-    Only local "$ref" targets are resolved.
+    - One line per property with description, cardinality, and allowed enum values.
     """
     lines = []
     desc = schema.get("description", "")
     if desc:
         lines.append(f"Beschreibung: {desc}")
-    lines.append("Feldhinweise und erlaubte Werte:")
+    lines.append("Feldhinweise und erlaubte Werte (getrennt durch Semikolons):")
+
     props = schema.get("properties", {}) or {}
     for name, spec in props.items():
         pdesc = spec.get("description", "")
-        enum: list[str] | None = None
 
-        # 1) direct enum on the property
-        enum = spec.get("enum")
+        is_array = spec.get("type") == "array"
+        has_default = "default" in spec
+        if is_array:
+            cardinality = "0..*"
+        else:
+            cardinality = "0..1" if has_default else "1"
 
-        # 2) enum via $ref on the property
-        if enum is None and "$ref" in spec:
-            ref_schema = _resolve_ref(schema, spec["$ref"])
-            if ref_schema:
-                enum = ref_schema.get("enum")
-
-        # 3) arrays: enum on items or via $ref on items
-        if enum is None and spec.get("type") == "array":
+        # Extract enum values
+        if is_array:
             items = spec.get("items")
-            if isinstance(items, ABCMapping):
-                enum = items.get("enum")
-                if enum is None and "$ref" in items:
-                    ref_schema = _resolve_ref(schema, items["$ref"])
-                    if ref_schema:
-                        enum = ref_schema.get("enum")
+            enum = _extract_enum(schema, items)
+        else:
+            enum = _extract_enum(schema, spec)
 
         hint = f"- {name}: {pdesc}" if pdesc else f"- {name}:"
+        hint += f" Kardinalität: {cardinality}"
         if enum:
-            hint += " Zulässige Werte: " + "; ".join(enum)
+            hint += " | Zulässige Werte: " + "; ".join(enum)
+
         lines.append(hint)
+
     return "\n".join(lines)
