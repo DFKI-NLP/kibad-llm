@@ -60,12 +60,29 @@ def _extract_enum(schema: Mapping[str, Any], node: Any) -> list[str] | None:
 
 def build_schema_description(schema: dict[str, Any]) -> str:
     """
-    Build a human-readable German summary for a JSON Schema.
+    Build a human‑readable German summary for a JSON Schema.
 
-    Creates a newline-separated description that includes:
-    - Optional "Beschreibung:" from the schema-level "description".
-    - A header "Feldhinweise und erlaubte Werte:".
-    - One line per property with description, cardinality, and allowed enum values.
+    Output format:
+    - Optional first line: "Beschreibung: <schema.description>" if present.
+    - Header line: "Feldhinweise und erlaubte Werte (getrennt durch Semikolons):"
+    - Then one line per property:
+      "- <Name>: <Beschreibung> Kardinalität: <1|0..1|0..*>[ | Zulässige Werte: v1; v2; ...]"
+      The "Zulässige Werte" section is omitted if no enum is available.
+
+    Cardinality rules:
+    - type=array ⇒ "0..*"
+    - non-array with a "default" ⇒ "0..1"
+    - non-array without a "default" ⇒ "1"
+
+    Enum extraction:
+    - Supports inline "enum", direct "$ref", and compositions via "allOf"/"anyOf"/"oneOf".
+    - For arrays, enums are taken from "items" (including "$ref" or compositions).
+
+    Args:
+        schema: The JSON Schema as a dictionary.
+
+    Returns:
+        str: Multi-line German text summarizing fields and constraints.
     """
     lines = []
     desc = schema.get("description", "")
