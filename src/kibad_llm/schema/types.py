@@ -31,7 +31,6 @@ class EcosystemTypeTermEnum(str, Enum):
     )
     BINNENGEWAESSER_STEHENDE = "Binnengewässer: Stehende Gewässer"
     MEERE_UND_KUESTEN_BENTHAL_DER_NORDSEE = "Meere und Küsten: Benthal der Nordsee"
-    UNBEKANNT = "UNBEKANNT"
 
 
 class LocationFederalStateEnum(str, Enum):
@@ -51,7 +50,6 @@ class LocationFederalStateEnum(str, Enum):
     SACHSEN_ANHALT = "Sachsen-Anhalt"
     SCHLESWIG_HOLSTEIN = "Schleswig-Holstein"
     THUERINGEN = "Thüringen"
-    UNBEKANNT = "UNBEKANNT"
 
 
 class EcosystemStudyFeatures(BaseModel):
@@ -67,13 +65,13 @@ class EcosystemStudyFeatures(BaseModel):
         alias="Naturgroßräume",
         description="In welchen Naturgroßräumen wurde die Studie durchgeführt?",
     )
-    ecosystem_type_term: EcosystemTypeTermEnum = Field(
-        ...,
+    ecosystem_type_term: EcosystemTypeTermEnum | None = Field(
+        default=None,
         alias="Ökosystemtyp",
         description="Welchen Ökosystemtyp hat die Studie betrachtet?",
     )
-    location_federal_state: LocationFederalStateEnum = Field(
-        ...,
+    location_federal_state: LocationFederalStateEnum | None = Field(
+        default=None,
         alias="Bundesland",
         description="In welchem Bundesland liegt das betrachtete Ökosystem der Studie?",
     )
