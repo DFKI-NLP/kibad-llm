@@ -6,7 +6,6 @@
 system_message: |
   Du extrahierst Informationen aus einem Markdown-Dokument.
   Gib **ausschließlich** gültiges JSON nach dem folgendem Schema zurück.
-  Wenn eine Angabe im Dokument nicht eindeutig vorhanden ist, verwende den Enum-Wert "UNBEKANNT".
   Keine zusätzlichen Felder, keine Erklärungen.
   {schema_description}
 
