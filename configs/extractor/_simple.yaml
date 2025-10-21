@@ -1,7 +1,7 @@
 # simple extraction workflow based on a single LLM call using a prompt template
 
 defaults:
-  - model: gpt_oss_20b
+  - llm: gpt_oss_20b
 
 _target_: kibad_llm.extraction.extract_from_text
 # mark as partial since it is a function (and not a class to be instantiated)
