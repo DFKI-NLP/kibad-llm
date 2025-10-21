@@ -33,10 +33,6 @@ def predict(cfg: DictConfig) -> None:
         cfg: OmegaConf configuration. See configs/predict.yaml for details.
     """
 
-    logger.info("Instantiating LLM model interface ...")
-    logger.info(f"LLM config: {dict(cfg.model)}")
-    Settings.llm = instantiate(cfg.model)
-
     data_base_path = Path(cfg.pdf_directory)
 
     # Create the dataset based on the sorted file names. This will define the cache key.
@@ -68,14 +64,16 @@ def predict(cfg: DictConfig) -> None:
         fn_kwargs={"base_path": data_base_path},
     )
 
-    logger.info("Extracting information from markdown ...")
-    # the template needs to contain system_message and may contain user_message, schema and
-    # system_message_requires_schema_description; all may be constructed from sub-configs
-    template = instantiate(cfg.template, _convert_="all")
+    logger.info("Instantiating LLM model interface ...")
+    logger.info(f"LLM config: {dict(cfg.model)}")
+    Settings.llm = instantiate(cfg.model)
+
+    logger.info("Extract information from markdown ...")
+    logger.info(f"Extractor config: {dict(cfg.extractor)}")
+    extractor = instantiate(cfg.extractor, _convert_="all")
     dataset = dataset.map(
-        function=extract_from_text,
+        function=extractor,
         input_columns=["text", "file_name"],
-        fn_kwargs=template,
         new_fingerprint=extraction_new_fingerprint,
     )
 

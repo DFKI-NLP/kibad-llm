@@ -105,7 +105,7 @@ def test_predict_fast_dev_run(tmp_path, cfg_predict):
 
 @pytest.fixture(scope="function")
 def cfg_predict_without_schema(tmp_path) -> DictConfig:  # type: ignore
-    cfg = cfg_predict_global(out_dir=tmp_path, overrides=["template=v1"])
+    cfg = cfg_predict_global(out_dir=tmp_path, overrides=["extractor=simple"])
 
     with open_dict(cfg):
         cfg.pdf_directory = str(PDF_DIR)

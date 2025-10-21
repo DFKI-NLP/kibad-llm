@@ -2,18 +2,16 @@ import json
 
 from hydra.core.hydra_config import HydraConfig
 from hydra.utils import instantiate
+from llama_index.core import Settings
 import pytest
 
 from kibad_llm.config import PROJ_ROOT
-from kibad_llm.predict import extract_from_text
 
 
 @pytest.mark.slow
-def test_extract_from_text(tmp_path, cfg_predict):
+def test_extractor(tmp_path, cfg_predict):
 
     HydraConfig().set_config(cfg_predict)
-
-    model = instantiate(cfg_predict.model)
 
     file_name = "25ABQZIH.pdf"
 
@@ -23,8 +21,10 @@ def test_extract_from_text(tmp_path, cfg_predict):
         markdown_data = json.load(f)
     text = markdown_data["text"]
 
-    template = instantiate(cfg_predict.template, _convert_="all")
-    result = extract_from_text(text_id=file_name, text=text, model=model, **template)
+    Settings.llm = instantiate(cfg_predict.model)
+
+    extractor = instantiate(cfg_predict.extractor, _convert_="all")
+    result = extractor(text_id=file_name, text=text)
 
     # just check keys since the actual values are not deterministic
     keys_expected = {"Bundesland", "Lebensraum", "Naturgroßraum", "Ökosystemtyp"}
