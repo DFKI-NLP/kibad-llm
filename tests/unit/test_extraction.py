@@ -21,8 +21,6 @@ def test_extractor(tmp_path, cfg_predict):
         markdown_data = json.load(f)
     text = markdown_data["text"]
 
-    Settings.llm = instantiate(cfg_predict.model)
-
     extractor = instantiate(cfg_predict.extractor, _convert_="all")
     result = extractor(text_id=file_name, text=text)
 

@@ -64,13 +64,11 @@ def predict(cfg: DictConfig) -> None:
         fn_kwargs={"base_path": data_base_path},
     )
 
-    logger.info("Instantiating LLM model interface ...")
-    logger.info(f"LLM config: {dict(cfg.model)}")
-    Settings.llm = instantiate(cfg.model)
-
-    logger.info("Extract information from markdown ...")
+    logger.info("Instantiating Extractor ...")
     logger.info(f"Extractor config: {dict(cfg.extractor)}")
     extractor = instantiate(cfg.extractor, _convert_="all")
+
+    logger.info("Extract information from markdown ...")
     dataset = dataset.map(
         function=extractor,
         input_columns=["text", "file_name"],

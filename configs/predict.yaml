@@ -16,8 +16,6 @@ defaults:
   - _self_
   - paths: default
   - hydra: default
-  # The LLM model interface (will be available at Settings.llm for the extractor).
-  - model: gpt_oss_20b
   # The PDF reader gets the PDF path as positional argument and needs to return a dictionary
   # with at least 'text' and 'text_id'.
   - pdf_reader: pymupdf4llm
