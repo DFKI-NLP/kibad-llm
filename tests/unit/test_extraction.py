@@ -2,7 +2,6 @@ import json
 
 from hydra.core.hydra_config import HydraConfig
 from hydra.utils import instantiate
-from llama_index.core import Settings
 import pytest
 
 from kibad_llm.config import PROJ_ROOT
