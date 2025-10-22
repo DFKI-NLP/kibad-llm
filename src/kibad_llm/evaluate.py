@@ -85,18 +85,18 @@ def evaluate(cfg: DictConfig) -> dict[str, Any]:
         # not in the returned dataset
         load_from_cache_file=False,
     )
-    results = metric.compute()
+    metric_dict = metric.compute()
 
-    logger.info(f"Evaluation results:\n{json.dumps(results, indent=2)}")
+    logger.info(f"Evaluation results:\n{json.dumps(metric_dict, indent=2)}")
 
-    return results
+    return metric_dict
 
 
 @hydra.main(
     version_base="1.3", config_path=str(PROJ_ROOT / "configs"), config_name="evaluate.yaml"
 )
-def main(cfg: DictConfig) -> None:
-    evaluate(cfg)
+def main(cfg: DictConfig) -> dict[str, Any]:
+    return evaluate(cfg)
 
 
 if __name__ == "__main__":
