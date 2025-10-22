@@ -12,6 +12,9 @@
 #  - Per default, uses the "f1_single" metric to compute F1 scores far a selected field of single-label
 #    classification (see configs/metrics/f1_single.yaml for details). See configs/metrics/ for other
 #    available metrics.
+#
+# Usage:
+#    python -m kibad_llm.evaluate predictions_file=path/to/predictions.jsonl references_file=path/to/references.jsonl
 
 defaults:
   - metric: f1_single
