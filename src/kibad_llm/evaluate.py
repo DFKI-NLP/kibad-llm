@@ -29,14 +29,14 @@ def _get_key_from_reference(entry: Mapping[str, Any]) -> str:
 
 
 def _get_reference(prediction: Mapping[str, Any], references: dict[str, dict]) -> dict:
-    """Get the corresponding reference for a prediction. Return as dict
-    with single key to comply with datasets map function."""
+    """Get the corresponding reference for a prediction."""
     prediction_key = _get_key_from_prediction(prediction)
     return references[prediction_key]
 
 
 def evaluate(cfg: DictConfig) -> dict[str, Any]:
-    """Evaluate predictions against gold references using a specified metric.
+    """Evaluate predictions against gold references using a specified metric and optional preprocessing
+    of predictions and references.
 
     Args:
         cfg: OmegaConf configuration. See configs/evaluate.yaml for details.
