@@ -55,6 +55,9 @@ def evaluate(cfg: DictConfig) -> dict[str, Any]:
             func=prediction_preprocessor, result_key="prediction"
         )
         predictions = predictions.map(prediction_preprocessor_wrapped)
+    else:
+        # use the whole prediction entry as "prediction"
+        predictions = predictions.map(wrap_map_func(lambda x: x, result_key="prediction"))
 
     logger.info(f"Loading gold references from {cfg.references_file} ...")
     references_dict = {}
