@@ -10,7 +10,6 @@ class HabitatEnum(str, Enum):
     KUESTE_UND_KUUESTENGEWAESSER = "Küste und Küstengewässer"
     URBANE_RAEUME = "Urbane Räume"
     BODEN = "Boden"
-    UNBEKANNT = "UNBEKANNT"
 
 
 class NaturalRegionEnum(str, Enum):
@@ -21,7 +20,6 @@ class NaturalRegionEnum(str, Enum):
     NORD_UND_OSTSEE_ODER_SCHICHTSSTUFENLAND = (
         "Nord- und Ostsee oder Schichtsstufenland beidseits des Oberrheingrabens"
     )
-    UNBEKANNT = "UNBEKANNT"
 
 
 class EcosystemTypeTermEnum(str, Enum):
@@ -33,7 +31,6 @@ class EcosystemTypeTermEnum(str, Enum):
     )
     BINNENGEWAESSER_STEHENDE = "Binnengewässer: Stehende Gewässer"
     MEERE_UND_KUESTEN_BENTHAL_DER_NORDSEE = "Meere und Küsten: Benthal der Nordsee"
-    UNBEKANNT = "UNBEKANNT"
 
 
 class LocationFederalStateEnum(str, Enum):
@@ -53,29 +50,28 @@ class LocationFederalStateEnum(str, Enum):
     SACHSEN_ANHALT = "Sachsen-Anhalt"
     SCHLESWIG_HOLSTEIN = "Schleswig-Holstein"
     THUERINGEN = "Thüringen"
-    UNBEKANNT = "UNBEKANNT"
 
 
 class EcosystemStudyFeatures(BaseModel):
     """Angaben zu den ökosystembezogenen Studienmerkmalen."""
 
-    habitat: HabitatEnum = Field(
-        ...,
-        alias="Lebensraum",
-        description="In welchem Lebensraum wurde die Studie durchgeführt?",
+    habitats: list[HabitatEnum] = Field(
+        default_factory=list,
+        alias="Lebensräume",
+        description="In welchen Lebensräumen wurde die Studie durchgeführt?",
     )
-    natural_region: NaturalRegionEnum = Field(
-        ...,
-        alias="Naturgroßraum",
-        description="In welchem Naturgroßraum wurde die Studie durchgeführt?",
+    natural_regions: list[NaturalRegionEnum] = Field(
+        default_factory=list,
+        alias="Naturgroßräume",
+        description="In welchen Naturgroßräumen wurde die Studie durchgeführt?",
     )
-    ecosystem_type_term: EcosystemTypeTermEnum = Field(
-        ...,
+    ecosystem_type_term: EcosystemTypeTermEnum | None = Field(
+        default=None,
         alias="Ökosystemtyp",
         description="Welchen Ökosystemtyp hat die Studie betrachtet?",
     )
-    location_federal_state: LocationFederalStateEnum = Field(
-        ...,
+    location_federal_state: LocationFederalStateEnum | None = Field(
+        default=None,
         alias="Bundesland",
         description="In welchem Bundesland liegt das betrachtete Ökosystem der Studie?",
     )

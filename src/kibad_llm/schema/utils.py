@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from collections.abc import Mapping as ABCMapping
-from typing import Any, Optional
+from typing import Any
 
 
 def _resolve_ref(schema: Mapping[str, Any], ref: str) -> Mapping[str, Any] | None:
@@ -22,41 +22,97 @@ def _resolve_ref(schema: Mapping[str, Any], ref: str) -> Mapping[str, Any] | Non
     return node
 
 
+def _extract_enum(schema: Mapping[str, Any], node: Any) -> list[str] | None:
+    """
+    Extract enum values from a schema node, handling:
+    - inline 'enum'
+    - direct '$ref'
+    - composition via 'allOf'/'anyOf'/'oneOf' that contain refs or enums
+    """
+    if not isinstance(node, ABCMapping):
+        return None
+
+    # inline enum
+    enum = node.get("enum")
+    if isinstance(enum, list) and enum:
+        return [str(v) for v in enum]
+
+    # direct $ref
+    ref = node.get("$ref")
+    if isinstance(ref, str):
+        ref_schema = _resolve_ref(schema, ref)
+        if isinstance(ref_schema, ABCMapping):
+            ref_enum = ref_schema.get("enum")
+            if isinstance(ref_enum, list) and ref_enum:
+                return [str(v) for v in ref_enum]
+
+    # composition wrappers
+    for key in ("allOf", "anyOf", "oneOf"):
+        subs = node.get(key)
+        if isinstance(subs, list):
+            for sub in subs:
+                values = _extract_enum(schema, sub)
+                if values:
+                    return values
+
+    return None
+
+
 def build_schema_description(schema: dict[str, Any]) -> str:
     """
-    Build a human-readable German summary for a JSON Schema.
+    Build a human‑readable German summary for a JSON Schema.
 
-    Creates a newline-separated description that includes:
-    - Optional "Beschreibung:" from the schema-level "description".
-    - A header "Feldhinweise und erlaubte Werte:".
-    - One line per property from "properties" in the form
-      "- <name>: <description> [Zulässige Werte: v1; v2; ...]" when an enum exists.
+    Output format:
+    - Optional first line: "Beschreibung: <schema.description>" if present.
+    - Header line: "Feldhinweise und erlaubte Werte (getrennt durch Semikolons):"
+    - Then one line per property:
+      "- <Name>: <Beschreibung> Kardinalität: <1|0..1|0..*>[ | Zulässige Werte: v1; v2; ...]"
+      The "Zulässige Werte" section is omitted if no enum is available.
 
-    Enums are taken from the property's "enum" or, if present, from a local "$ref"
-    (e.g., "#/$defs/Name"). Only local "$ref" targets are resolved.
+    Cardinality rules:
+    - type=array ⇒ "0..*"
+    - non-array with a "default" ⇒ "0..1"
+    - non-array without a "default" ⇒ "1"
 
-    Parameters:
-        schema: A JSON Schema object (as dict) with "properties" and optional
-                "description" and "$defs".
+    Enum extraction:
+    - Supports inline "enum", direct "$ref", and compositions via "allOf"/"anyOf"/"oneOf".
+    - For arrays, enums are taken from "items" (including "$ref" or compositions).
+
+    Args:
+        schema: The JSON Schema as a dictionary.
 
     Returns:
-        str: Multi-line German text summarizing fields and allowed values.
+        str: Multi-line German text summarizing fields and constraints.
     """
     lines = []
     desc = schema.get("description", "")
     if desc:
         lines.append(f"Beschreibung: {desc}")
-    lines.append("Feldhinweise und erlaubte Werte:")
+    lines.append("Feldhinweise und erlaubte Werte (getrennt durch Semikolons):")
+
     props = schema.get("properties", {}) or {}
     for name, spec in props.items():
         pdesc = spec.get("description", "")
-        enum = spec.get("enum")
-        if enum is None and "$ref" in spec:
-            ref_schema = _resolve_ref(schema, spec["$ref"])
-            if ref_schema:
-                enum = ref_schema.get("enum")
+
+        is_array = spec.get("type") == "array"
+        has_default = "default" in spec
+        if is_array:
+            cardinality = "0..*"
+        else:
+            cardinality = "0..1" if has_default else "1"
+
+        # Extract enum values
+        if is_array:
+            items = spec.get("items")
+            enum = _extract_enum(schema, items)
+        else:
+            enum = _extract_enum(schema, spec)
+
         hint = f"- {name}: {pdesc}" if pdesc else f"- {name}:"
+        hint += f" Kardinalität: {cardinality}"
         if enum:
-            hint += " Zulässige Werte: " + "; ".join(enum)
+            hint += " | Zulässige Werte: " + "; ".join(enum)
+
         lines.append(hint)
+
     return "\n".join(lines)
