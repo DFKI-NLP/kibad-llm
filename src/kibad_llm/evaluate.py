@@ -26,13 +26,42 @@ def _get_key_from_reference(entry: dict[str, Any]) -> str:
     return entry["zotitem_ptr_id"]
 
 
+def flatten_dict_simple(d: dict[str, Any], sep: str = ".") -> dict[str, Any]:
+    result: dict[str, Any] = dict()
+    for k, v in d.items():
+        # remove empty values
+        if v is None or (isinstance(v, str) and v.strip() == ""):
+            pass
+        elif isinstance(v, (str, int, float, bool)):
+            result[k] = v
+        elif isinstance(v, list):
+            if all(isinstance(e, (str, int, float, bool)) for e in v):
+                result[k] = v
+            elif all(isinstance(e, dict) for e in v):
+                current_keys = set()
+                for e in v:
+                    for k2, v2 in e.items():
+                        if v2 is not None and not (isinstance(v2, str) and v2.strip() == ""):
+                            (
+                                result[f"{k}{sep}{k2}"].append(v2)
+                                if f"{k}{sep}{k2}" in result
+                                else result.setdefault(f"{k}{sep}{k2}", [v2])
+                            )
+                            current_keys.add(f"{k}{sep}{k2}")
+                for k2 in current_keys:
+                    result[k2] = sorted(set(result[k2]))
+            else:
+                raise ValueError(f"Cannot flatten list with mixed types: {v}")
+
+    return result
+
+
 def _get_and_flatten_reference(prediction: dict, references: dict[str, dict]) -> dict:
     """Get the corresponding reference for a prediction and flatten it. Return as dict
     with single key to comply with datasets map function."""
     prediction_key = _get_key_from_prediction(prediction)
     reference = references[prediction_key]
-    # TODO: convert reference to flat format using rearrange_dict from https://github.com/DFKI-NLP/kibad-llm/pull/31
-    reference_flat = reference
+    reference_flat = flatten_dict_simple(reference, sep="/")
     return {"reference": reference_flat}
 
 
