@@ -116,6 +116,19 @@ This will process all PDF files in `pdf_directory` and save the result in a JSON
 
 See [configs/predict](./configs/predict.yaml) for further information and options.
 
+#### Evaluation
+
+To evaluate the information extraction results against gold reference data, run:
+
+```bash
+uv run -m kibad_llm.evaluate
+predictions_file=path/to/predictions.jsonl \
+references_file=path/to/references.jsonl \
+metric.field=path/in/flattened/reference/jsonl
+```
+
+See [configs/evaluate](./configs/evaluate.yaml) for further information and options.
+
 ## Project Organization
 
 ```
