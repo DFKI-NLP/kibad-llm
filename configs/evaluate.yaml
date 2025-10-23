@@ -32,8 +32,6 @@ references_file: ???
 # https://github.com/DFKI-NLP/kibad-llm/pull/31#issuecomment-3418782905
 json_paths_mapping:
   Bundesland: "location/federal_state"
-  # TODO: it looks like we have "Lebensräume" in the table instead
-  Lebensraum: "TODO"
-  # TODO: it looks like we have "Großräume" in the table instead
-  Naturgroßraum: "TODO"
+  Lebensräume: "habitat"
+  Naturgroßräume: "natural_region"
   Ökosystemtyp: "ecosystem_type/term"
