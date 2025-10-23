@@ -26,7 +26,6 @@ def cfg_evaluate(tmp_path) -> DictConfig:  # type: ignore
     GlobalHydra.instance().clear()
 
 
-@pytest.mark.slow
 def test_evaluate(tmp_path, cfg_evaluate):
 
     HydraConfig().set_config(cfg_evaluate)
