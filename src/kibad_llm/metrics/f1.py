@@ -16,9 +16,9 @@ class F1SingleLabelMetric(Metric):
     def reset(self) -> None:
         self.state: dict[str, int] = {"tp": 0, "fp": 0, "fn": 0}
 
-    def _update(self, predictions: dict[str, Any], references: dict[str, Any]) -> None:
-        pred = predictions.get(self.field, None)
-        ref = references.get(self.field, None)
+    def _update(self, prediction: dict[str, Any], reference: dict[str, Any]) -> None:
+        pred = prediction.get(self.field, None)
+        ref = reference.get(self.field, None)
         if pred == ref and pred is not None:
             self.state["tp"] += 1
         else:
