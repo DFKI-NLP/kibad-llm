@@ -49,3 +49,21 @@ def flatten_dict_simple(d: Mapping[str, Any], sep: str = ".") -> dict[str, Any]:
                 raise ValueError(f"Cannot flatten list with mixed types: {v}")
 
     return result
+
+
+def get_and_map_keys(
+    d: Mapping[str, Any],
+    key: str,
+    mapping: Mapping[str, str],
+) -> dict[str, Any]:
+    """Get a sub-dictionary from `d` by `key` and map its keys using `mapping`.
+
+    Args:
+        d: The input dictionary.
+        key: The key to get the sub-dictionary.
+        mapping: A mapping from old keys to new keys.
+    Returns:
+        A new dictionary with mapped keys.
+    """
+    mapped = {mapping[k]: v for k, v in d[key].items()}
+    return mapped

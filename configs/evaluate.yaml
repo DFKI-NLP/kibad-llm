@@ -34,13 +34,22 @@ predictions_file: ???
 # e.g., produced by data_integration/db_converter.py from the Faktencheck-DB.
 references_file: ???
 
-# map the field names used in the json schema to the json paths (keys) in the (flattened) reference jsonl file
-# see column "Pfad im JSONL der konvertierten Faktencheck-DB" in table
-# https://docs.google.com/spreadsheets/d/1MyEZTLOm85ZNxuTSHxwJLxaAXiCGLt-mMozUkBlGzJE/edit?gid=0#gid=0
-# but also the result of the data_integration/json_db_summary.py script:
-# https://github.com/DFKI-NLP/kibad-llm/pull/31#issuecomment-3418782905
-json_paths_mapping:
-  Bundesland: "location/federal_state"
-  Lebensräume: "habitat"
-  Naturgroßräume: "natural_region"
-  Ökosystemtyp: "ecosystem_type/term"
+preprocess_reference:
+  _target_: kibad_llm.utils.dictionary.flatten_dict_simple
+  _partial_: True
+  sep: "/"
+
+preprocess_prediction:
+  _target_: kibad_llm.utils.dictionary.get_and_map_keys
+  _partial_: True
+  key: "structured"
+  # map the field names used in the json schema to the json paths (keys) in the (flattened) reference jsonl file
+  # see column "Pfad im JSONL der konvertierten Faktencheck-DB" in table
+  # https://docs.google.com/spreadsheets/d/1MyEZTLOm85ZNxuTSHxwJLxaAXiCGLt-mMozUkBlGzJE/edit?gid=0#gid=0
+  # but also the result of the data_integration/json_db_summary.py script:
+  # https://github.com/DFKI-NLP/kibad-llm/pull/31#issuecomment-3418782905
+  mapping:
+    Bundesland: "location/federal_state"
+    Lebensräume: "habitat"
+    Naturgroßräume: "natural_region"
+    Ökosystemtyp: "ecosystem_type/term"

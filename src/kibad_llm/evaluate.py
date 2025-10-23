@@ -13,7 +13,7 @@ from omegaconf import DictConfig
 
 from kibad_llm.config import PROJ_ROOT
 from kibad_llm.metric import Metric
-from kibad_llm.utils.dictionary import flatten_dict_simple
+from kibad_llm.utils.datasets import wrap_map_func
 
 logger = logging.getLogger(__name__)
 
@@ -32,23 +32,7 @@ def _get_reference(prediction: Mapping[str, Any], references: dict[str, dict]) -
     """Get the corresponding reference for a prediction. Return as dict
     with single key to comply with datasets map function."""
     prediction_key = _get_key_from_prediction(prediction)
-    return {"reference": references[prediction_key]}
-
-
-def _prepare_reference(reference: Mapping[str, Any]) -> dict[str, Any]:
-    """Prepare reference by flattening the dict structure. Return as dict
-    with single key to comply with datasets map function."""
-    reference_flat = flatten_dict_simple(reference, sep="/")
-    return {"reference": reference_flat}
-
-
-def _prepare_prediction(
-    prediction: Mapping[str, Any], json_paths_mapping: Mapping[str, str]
-) -> dict[str, Any]:
-    """Prepare prediction by taking only the structured part and mapping schema keys to
-    json paths. Return as dict with single key to comply with datasets map function."""
-    mapped = {json_paths_mapping[k]: v for k, v in prediction["structured"].items()}
-    return {"prediction": mapped}
+    return references[prediction_key]
 
 
 def evaluate(cfg: DictConfig) -> dict[str, Any]:
@@ -62,6 +46,15 @@ def evaluate(cfg: DictConfig) -> dict[str, Any]:
 
     logger.info(f"Loading predictions from {cfg.predictions_file} ...")
     predictions = Dataset.from_json(cfg.predictions_file)
+    if cfg.get("preprocess_prediction"):
+        logger.info(
+            "Preprocess predictions for metric computation (e.g. map schema keys to json paths) ..."
+        )
+        prediction_preprocessor = instantiate(cfg.preprocess_prediction, _convert_="all")
+        prediction_preprocessor_wrapped = wrap_map_func(
+            func=prediction_preprocessor, result_key="prediction"
+        )
+        predictions = predictions.map(prediction_preprocessor_wrapped)
 
     logger.info(f"Loading gold references from {cfg.references_file} ...")
     references_dict = {}
@@ -71,13 +64,17 @@ def evaluate(cfg: DictConfig) -> dict[str, Any]:
             references_dict[_get_key_from_reference(entry)] = entry
 
     logger.info("Aligning references with predictions ...")
-    predictions = predictions.map(_get_reference, fn_kwargs={"references": references_dict})
-    logger.info("Preparing references for metric computation ...")
-    predictions = predictions.map(_prepare_reference, input_columns=["reference"])
-    logger.info("Preparing predictions for metric computation (map schema keys to json paths) ...")
     predictions = predictions.map(
-        _prepare_prediction, fn_kwargs={"json_paths_mapping": cfg.json_paths_mapping}
+        wrap_map_func(_get_reference, result_key="reference"),
+        fn_kwargs={"references": references_dict},
     )
+    if cfg.get("preprocess_reference"):
+        logger.info("Preprocess references for metric computation (e.g. flatten dicts) ...")
+        reference_preprocessor = instantiate(cfg.preprocess_reference, _convert_="all")
+        reference_preprocessor_wrapped = wrap_map_func(
+            func=reference_preprocessor, result_key="reference"
+        )
+        predictions = predictions.map(reference_preprocessor_wrapped, input_columns=["reference"])
 
     logger.info("Instantiating metric ...")
     logger.info(f"Metric config: {dict(cfg.metric)}")
