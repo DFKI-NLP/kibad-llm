@@ -17,7 +17,13 @@
 #    python -m kibad_llm.evaluate predictions_file=path/to/predictions.jsonl references_file=path/to/references.jsonl metric.field=structured_field_name
 
 defaults:
+  - paths: default
+  - hydra: default
   - metric: f1_single
+  - _self_
+
+# name of the run, used in logging and as a subdir of log_dir
+name: "default"
 
 # Path to the JSONL file containing predictions to evaluate, e.g., produced by predict.py.
 predictions_file: ???
