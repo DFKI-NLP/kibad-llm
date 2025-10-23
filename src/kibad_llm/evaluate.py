@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Mapping
 import json
 import logging
 import os
@@ -16,24 +17,24 @@ from kibad_llm.metric import Metric
 logger = logging.getLogger(__name__)
 
 
-def _get_key_from_prediction(entry: dict[str, Any]) -> str:
+def _get_key_from_prediction(entry: Mapping[str, Any]) -> str:
     """Use the file name without extension as key for aligning predictions with references."""
     return os.path.splitext(entry["file_name"])[0]
 
 
-def _get_key_from_reference(entry: dict[str, Any]) -> str:
+def _get_key_from_reference(entry: Mapping[str, Any]) -> str:
     """Use the zotitem_ptr_id as key for aligning references with predictions."""
     return entry["zotitem_ptr_id"]
 
 
-def _get_and_add_reference(prediction: dict, references: dict[str, dict]) -> dict:
+def _get_and_add_reference(prediction: Mapping[str, Any], references: dict[str, dict]) -> dict:
     """Get the corresponding reference for a prediction and flatten it. Return as dict
     with single key to comply with datasets map function."""
     prediction_key = _get_key_from_prediction(prediction)
     return {"reference": references[prediction_key]}
 
 
-def flatten_dict_simple(d: dict[str, Any], sep: str = ".") -> dict[str, Any]:
+def flatten_dict_simple(d: Mapping[str, Any], sep: str = ".") -> dict[str, Any]:
     """Flatten a dictionary with simple rules:
     - Keep only non-empty primitive values (str, int, float, bool)
     - For lists of primitives, keep as is
@@ -77,13 +78,13 @@ def flatten_dict_simple(d: dict[str, Any], sep: str = ".") -> dict[str, Any]:
     return result
 
 
-def _prepare_reference(reference: dict[str, Any]) -> dict[str, Any]:
+def _prepare_reference(reference: Mapping[str, Any]) -> dict[str, Any]:
     reference_flat = flatten_dict_simple(reference, sep="/")
     return {"reference": reference_flat}
 
 
 def _prepare_prediction(
-    entry: dict[str, Any], json_paths_mapping: dict[str, str]
+    entry: Mapping[str, Any], json_paths_mapping: Mapping[str, str]
 ) -> dict[str, Any]:
     """Prepare prediction by taking only the structured part and mapping schema keys to
     json paths. Return as dict with single key to comply with datasets map function."""
