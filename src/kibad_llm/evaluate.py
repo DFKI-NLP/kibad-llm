@@ -26,7 +26,28 @@ def _get_key_from_reference(entry: dict[str, Any]) -> str:
     return entry["zotitem_ptr_id"]
 
 
+def _get_and_add_reference(prediction: dict, references: dict[str, dict]) -> dict:
+    """Get the corresponding reference for a prediction and flatten it. Return as dict
+    with single key to comply with datasets map function."""
+    prediction_key = _get_key_from_prediction(prediction)
+    return {"reference": references[prediction_key]}
+
+
 def flatten_dict_simple(d: dict[str, Any], sep: str = ".") -> dict[str, Any]:
+    """Flatten a dictionary with simple rules:
+    - Keep only non-empty primitive values (str, int, float, bool)
+    - For lists of primitives, keep as is
+    - For lists of dicts, create new keys by combining parent key and child keys,
+      and aggregate values into lists (removing duplicates and sorting)
+
+    IMPORTANT: This function does not handle nested dicts beyond one level inside lists.
+
+    Args:
+        d: The dictionary to flatten.
+        sep: The separator to use when combining keys.
+    Returns:
+        A flattened dictionary.
+    """
     result: dict[str, Any] = dict()
     for k, v in d.items():
         # remove empty values
@@ -56,11 +77,7 @@ def flatten_dict_simple(d: dict[str, Any], sep: str = ".") -> dict[str, Any]:
     return result
 
 
-def _get_and_flatten_reference(prediction: dict, references: dict[str, dict]) -> dict:
-    """Get the corresponding reference for a prediction and flatten it. Return as dict
-    with single key to comply with datasets map function."""
-    prediction_key = _get_key_from_prediction(prediction)
-    reference = references[prediction_key]
+def _prepare_reference(reference: dict[str, Any]) -> dict[str, Any]:
     reference_flat = flatten_dict_simple(reference, sep="/")
     return {"reference": reference_flat}
 
@@ -95,8 +112,10 @@ def evaluate(cfg: DictConfig) -> dict[str, Any]:
 
     logger.info("Aligning predictions with references ...")
     predictions = predictions.map(
-        _get_and_flatten_reference, fn_kwargs={"references": references_dict}
+        _get_and_add_reference, fn_kwargs={"references": references_dict}
     )
+    logger.info("Preparing references for metric computation ...")
+    predictions = predictions.map(_prepare_reference, input_columns=["reference"])
     logger.info("Preparing predictions for metric computation (map schema keys to json paths) ...")
     predictions = predictions.map(
         _prepare_prediction, fn_kwargs={"json_paths_mapping": cfg.json_paths_mapping}
