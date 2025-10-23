@@ -22,11 +22,11 @@ def extract_from_text(
     user_message: str | None = None,
     schema: dict[str, Any] | None = None,
     system_message_requires_schema_description: bool = False,
-    model: LLM | None = None,
+    llm: LLM | None = None,
 ) -> dict:
     """Extract structured information from text using an LLM.
 
-    Given a chat model (per default, uses Settings.llm from llama-index), composes system
+    Given a chat llm (per default, uses Settings.llm from llama-index), composes system
     and user messages, and invokes the model. When a schema is provided, it is used to enforce
     guided decoding. The output is parsed as JSON and validated against the schema if provided.
 
@@ -40,15 +40,15 @@ def extract_from_text(
         system_message_requires_schema_description: Whether the system message template
             requires a schema description (will raise an error if True but no schema provided).
             The schema description will be built from the provided schema.
-        model: The LLM model to use (defaults to Settings.llm). Must be a chat model (i.e. is_chat_model=True)
+        llm: The LLM model to use (defaults to Settings.llm). Must be a chat model (i.e. is_chat_model=True)
             and support extra_body parameters for guided decoding if schema is provided.
 
     Returns:
         A dictionary with keys "text" (the raw LLM output) and "structured" (the parsed JSON or None).
     """
 
-    if model is None:
-        model = Settings.llm
+    if llm is None:
+        llm = Settings.llm
 
     # Build chat messages
     if schema is not None and system_message_requires_schema_description:
@@ -77,7 +77,7 @@ def extract_from_text(
         vllm_extras["guided_decoding_backend"] = "lm-format-enforcer"
 
     # Chat call (reasoning kept separate by server; final JSON is in message.content)
-    resp = model.chat(messages, extra_body=vllm_extras)
+    resp = llm.chat(messages, extra_body=vllm_extras)
 
     response_content = getattr(resp.message, "content", "") or ""
     out: dict[str, Any | None] = {"response_content": response_content, "structured": None}
