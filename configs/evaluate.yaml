@@ -14,7 +14,7 @@
 #    available metrics.
 #
 # Usage:
-#    python -m kibad_llm.evaluate predictions_file=path/to/predictions.jsonl references_file=path/to/references.jsonl
+#    python -m kibad_llm.evaluate predictions_file=path/to/predictions.jsonl references_file=path/to/references.jsonl metric.field=structured_field_name
 
 defaults:
   - metric: f1_single
