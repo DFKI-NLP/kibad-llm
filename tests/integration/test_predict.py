@@ -7,7 +7,7 @@ import pytest
 
 from kibad_llm.config import PROJ_ROOT
 from kibad_llm.predict import predict
-from tests.conftest import cfg_predict_global
+from tests.conftest import cfg_global
 
 PDF_DIR = PROJ_ROOT / "tests" / "fixtures" / "pdfs"
 FILE_NAMES = sorted([f.name for f in PDF_DIR.glob("*.pdf")])
@@ -17,7 +17,7 @@ PREDICTION_DIR = PROJ_ROOT / "tests" / "fixtures" / "results"
 @pytest.fixture(scope="module")
 def cfg_predict_module(tmp_path_factory) -> DictConfig:  # type: ignore
     module_tmp_path = tmp_path_factory.mktemp("module")
-    cfg = cfg_predict_global(out_dir=module_tmp_path)
+    cfg = cfg_global(config_name="predict.yaml", out_dir=module_tmp_path)
 
     yield cfg
 
@@ -105,7 +105,7 @@ def test_predict_fast_dev_run(tmp_path, cfg_predict):
 
 @pytest.fixture(scope="function")
 def cfg_predict_without_schema(tmp_path) -> DictConfig:  # type: ignore
-    cfg = cfg_predict_global(out_dir=tmp_path, overrides=["extractor=simple"])
+    cfg = cfg_global(config_name="predict.yaml", out_dir=tmp_path, overrides=["extractor=simple"])
 
     with open_dict(cfg):
         cfg.pdf_directory = str(PDF_DIR)

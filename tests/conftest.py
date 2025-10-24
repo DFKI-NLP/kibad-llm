@@ -8,9 +8,11 @@ import pytest
 from kibad_llm.config import PROJ_ROOT
 
 
-def cfg_predict_global(overrides=None, out_dir: str | Path | None = None) -> DictConfig:
+def cfg_global(
+    overrides=None, out_dir: str | Path | None = None, config_name="predict.yaml"
+) -> DictConfig:
     with initialize(version_base="1.3", config_path="../configs"):
-        cfg = compose(config_name="predict.yaml", return_hydra_config=True, overrides=overrides)
+        cfg = compose(config_name=config_name, return_hydra_config=True, overrides=overrides)
 
         # set defaults for all tests
         with open_dict(cfg):
@@ -28,11 +30,11 @@ def cfg_predict_global(overrides=None, out_dir: str | Path | None = None) -> Dic
     return cfg
 
 
-# this is called by each test which uses `cfg_eval` arg
+# this is called by each test which uses `cfg_predict` arg
 # each test generates its own temporary logging path
 @pytest.fixture(scope="function")
 def cfg_predict(tmp_path) -> DictConfig:  # type: ignore
-    cfg = cfg_predict_global(out_dir=tmp_path)
+    cfg = cfg_global(out_dir=tmp_path)
 
     yield cfg
 
