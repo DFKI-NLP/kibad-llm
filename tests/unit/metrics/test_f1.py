@@ -33,11 +33,13 @@ def test_mixed_counts() -> None:
     m.update({"label": None}, {"label": "d"})
     # fp only
     m.update({"label": "e"}, {"label": None})
+    # fp only again
+    m.update({"label": "f"}, {"label": None})
     out = m.compute(m)
-    # tp=1, fp=2, fn=2 -> precision=1/3, recall=1/3, f1=1/3
-    assert out["precision"] == pytest.approx(1 / 3)
+    # tp=1, fp=3, fn=2 -> precision=1/4, recall=1/3, f1=2/7
+    assert out["precision"] == pytest.approx(1 / 4)
     assert out["recall"] == pytest.approx(1 / 3)
-    assert out["f1"] == pytest.approx(1 / 3)
+    assert out["f1"] == pytest.approx(2 / 7)
 
 
 def test_all_none_zero_division() -> None:
