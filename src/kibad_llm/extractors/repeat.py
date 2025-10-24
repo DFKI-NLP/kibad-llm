@@ -51,13 +51,18 @@ def _aggregate_structured_outputs(
     Returns:
         aggregated structured output
     """
-
+    # collect all keys to correctly handle missing entries
+    all_keys: set[str] = set()
+    for res in structured_outputs:
+        if res is not None:
+            all_keys.update(res.keys())
     values_per_key = defaultdict(list)
     type_per_key: dict[str, type | None] = dict()
     # get values and type per key
     for res in structured_outputs:
         if res is not None:
-            for key, value in res.items():
+            for key in all_keys:
+                value = res.get(key, None)
                 values_per_key[key].append(value)
                 if value is not None:
                     if key not in type_per_key:

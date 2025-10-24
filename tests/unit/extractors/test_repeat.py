@@ -111,3 +111,23 @@ def test_aggregate_structured_outputs_inconsistent_types_raises():
     structured_outputs = [{"k": 1}, {"k": "1"}]
     with pytest.raises(ValueError, match="Inconsistent types for key 'k'"):
         _aggregate_structured_outputs(structured_outputs)
+
+
+def test_aggregate_structured_outputs_missing_first_key():
+
+    structured_outputs = [
+        {"A": None},
+        {"A": 1},
+        {"A": 2},
+    ]
+    res = _aggregate_structured_outputs(structured_outputs)
+    assert res == {"A": None}
+
+    # the result should be the same even if the first entry has the key missing
+    structured_outputs2 = [
+        {},
+        {"A": 1},
+        {"A": 2},
+    ]
+    res2 = _aggregate_structured_outputs(structured_outputs2)
+    assert res2 == {"A": None}
