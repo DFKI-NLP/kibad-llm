@@ -11,11 +11,11 @@ from kibad_llm.config import PROJ_ROOT
 from tests.conftest import cfg_global
 
 # strip extension to have nicer logging output, e.g. tests/test_extractors.py::test_extractor[simple]
-# and exclude helper configs starting with "_"
+# and exclude folders (without extension) and helper configs starting with "_"
 AVAILABLE_EXTRACTORS = [
     os.path.splitext(extractor_yaml)[0]
     for extractor_yaml in os.listdir(PROJ_ROOT / "configs" / "extractor")
-    if not extractor_yaml.startswith("_")
+    if os.path.splitext(extractor_yaml)[1] != "" and not extractor_yaml.startswith("_")
 ]
 
 
