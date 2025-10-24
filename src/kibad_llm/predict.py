@@ -4,14 +4,13 @@ import logging
 import os
 from pathlib import Path
 
-from datasets import Dataset
 import hydra
+from datasets import Dataset
 from hydra.utils import instantiate
-from llama_index.core import Settings, set_global_handler
+from llama_index.core import set_global_handler
 from omegaconf import DictConfig
 
 from kibad_llm.config import PROJ_ROOT
-from kibad_llm.extraction import extract_from_text
 from kibad_llm.utils.datasets import wrap_map_func
 
 logger = logging.getLogger(__name__)
