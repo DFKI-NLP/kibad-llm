@@ -1,7 +1,7 @@
 from collections import Counter, defaultdict
 from typing import Any
 
-from .utils import extract_from_text
+from .base import extract_from_text
 
 
 def _majority_vote(values: list) -> Any:
