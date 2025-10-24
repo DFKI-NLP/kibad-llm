@@ -59,6 +59,9 @@ def predict(cfg: DictConfig) -> None:
     logger.info(f"PDF reader config: {dict(cfg.pdf_reader)}")
     pdf_reader = instantiate(cfg.pdf_reader, _convert_="all")
     dataset = dataset.map(
+        # TODO: Use function=wrap_map_func(func=pdf_reader, result_key="text") to not
+        #  require the pdf_reader to return a dict with "text" key. But this requires
+        #  more changes in the pdf_reader implementations (and to check if caching still works).
         function=pdf_reader,
         input_columns=["file_name"],
         fn_kwargs={"base_path": data_base_path},
