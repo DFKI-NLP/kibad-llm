@@ -20,7 +20,7 @@ defaults:
   - pdf_reader: pymupdf4llm
   # The extractor gets the 'text' and 'text_id' as positional parameters
   # and needs to return a dictionary with the extracted data.
-  - extractor: simple_with_schema
+  - extractor: repeat_with_schema
 
 print_config: True
 
