@@ -13,11 +13,19 @@ def _majority_vote(values: list) -> Any:
     return majority_value
 
 
-def _multi_entry_majority_vote(values: list[list | None], n: int) -> list:
+def _multi_entry_majority_vote(values: list[list | None], n: int | None = None) -> list:
     """Return the majority items from a list of lists.
 
     An item is included in the result if it appears in more than half of the lists.
+
+    Args:
+        values: list of lists (or None)
+        n: total number of lists (if None, uses len(values))
+    Returns:
+        list of majority items
     """
+    if n is None:
+        n = len(values)
     item_counts: Counter = Counter()
     for v in values:
         if v is not None:
