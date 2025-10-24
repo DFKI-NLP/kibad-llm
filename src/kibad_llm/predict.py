@@ -7,11 +7,11 @@ from pathlib import Path
 from datasets import Dataset
 import hydra
 from hydra.utils import instantiate
-from llama_index.core import Settings, set_global_handler
+from llama_index.core import set_global_handler
 from omegaconf import DictConfig
 
 from kibad_llm.config import PROJ_ROOT
-from kibad_llm.extraction import extract_from_text
+from kibad_llm.utils.datasets import wrap_map_func
 
 logger = logging.getLogger(__name__)
 
@@ -58,11 +58,9 @@ def predict(cfg: DictConfig) -> None:
     logger.info("Converting PDF to markdown ...")
     logger.info(f"PDF reader config: {dict(cfg.pdf_reader)}")
     pdf_reader = instantiate(cfg.pdf_reader, _convert_="all")
+    pdf_reader_wrapped = wrap_map_func(func=pdf_reader, result_key="text")
     dataset = dataset.map(
-        # TODO: Use function=wrap_map_func(func=pdf_reader, result_key="text") to not
-        #  require the pdf_reader to return a dict with "text" key. But this requires
-        #  more changes in the pdf_reader implementations (and to check if caching still works).
-        function=pdf_reader,
+        function=pdf_reader_wrapped,
         input_columns=["file_name"],
         fn_kwargs={"base_path": data_base_path},
     )
