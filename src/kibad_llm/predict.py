@@ -4,8 +4,8 @@ import logging
 import os
 from pathlib import Path
 
-import hydra
 from datasets import Dataset
+import hydra
 from hydra.utils import instantiate
 from llama_index.core import set_global_handler
 from omegaconf import DictConfig
