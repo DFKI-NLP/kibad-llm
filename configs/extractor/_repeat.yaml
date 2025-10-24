@@ -1,0 +1,7 @@
+# extraction workflow that repeats the extraction n times and aggregates the results by majority voting
+
+defaults:
+  - llm: gpt_oss_20b
+
+_target_: kibad_llm.extractors.RepeatingExtractor
+n: 3  # number of repetitions
