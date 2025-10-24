@@ -82,7 +82,7 @@ def _aggregate_structured_outputs(structured_outputs: list[dict]) -> dict[str, A
 
 
 class RepeatingExtractor:
-    """Extractor that repeats extraction multiple times and aggregates results.
+    """Extractor that repeats extraction multiple times and aggregates results per key.
 
     This extractor calls the base extraction function multiple times (n times) on the same
     input text and aggregates the structured outputs. The aggregation is done by majority vote
