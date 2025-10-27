@@ -11,7 +11,7 @@ system_message: |
 
   Ökosystemtyp: Welche Ökosystemtypen hat die Studie betrachtet? Kardinalität: 0..* | Antwortmöglichkeiten: Binnenland: Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte; Binnenland: Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent); Binnengewässer: Stehende Gewässer; Meere und Küsten: Benthal der Nordsee
 
-  Bundesland: In welche Bundesländern liegt das betrachtete Ökosystem der Studie? Kardinalität: 0..* | Antwortmöglichkeiten: Baden-Württemberg, Bayern, Niedersachsen, Brandenburg, Berlin, Bremen, Hamburg, Hessen,  Mecklenburg-Vorpommern, Niedersachsen, Nordrhein-Westfalen, Rheinland-Pfalz, Saarland, Sachsen, Sachsen-Anhalt, Schleswig-Holstein, Thüringen
+  Bundesland: In welchen Bundesländern liegt das betrachtete Ökosystem der Studie? Kardinalität: 0..* | Antwortmöglichkeiten: Baden-Württemberg, Bayern, Niedersachsen, Brandenburg, Berlin, Bremen, Hamburg, Hessen,  Mecklenburg-Vorpommern, Niedersachsen, Nordrhein-Westfalen, Rheinland-Pfalz, Saarland, Sachsen, Sachsen-Anhalt, Schleswig-Holstein, Thüringen
 
 user_message: |
   Dokument in Markdown Format:
