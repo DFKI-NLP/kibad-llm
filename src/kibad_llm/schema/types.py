@@ -65,15 +65,15 @@ class EcosystemStudyFeatures(BaseModel):
         alias="Naturgroßräume",
         description="In welchen Naturgroßräumen wurde die Studie durchgeführt?",
     )
-    ecosystem_type_term: EcosystemTypeTermEnum | None = Field(
-        default=None,
+    ecosystem_type_term: list[EcosystemTypeTermEnum] = Field(
+        default_factory=list,
         alias="Ökosystemtyp",
-        description="Welchen Ökosystemtyp hat die Studie betrachtet?",
+        description="Welche Ökosystemtypen hat die Studie betrachtet?",
     )
-    location_federal_state: LocationFederalStateEnum | None = Field(
-        default=None,
+    location_federal_state: list[LocationFederalStateEnum] = Field(
+        default_factory=list,
         alias="Bundesland",
-        description="In welchem Bundesland liegt das betrachtete Ökosystem der Studie?",
+        description="In welchen Bundesländern liegt das betrachtete Ökosystem der Studie?",
     )
 
     model_config = ConfigDict(
