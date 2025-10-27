@@ -17,6 +17,16 @@ class F1LabelMetric(Metric):
         """Resets all values of the internal state to zero"""
         self.state: dict[str, int] = {"tp": 0, "fp": 0, "fn": 0}
 
+    def _prepare_entry(self, entry: Any) -> set:
+        """Helper method to convert an entry into a set of values."""
+        if self.field is not None:
+            entry = entry.get(self.field, None)
+        if entry is None:
+            return set()
+        if isinstance(entry, (list, set)):
+            return set(entry)
+        return {entry}
+
     def _update(self, prediction: Any, reference: Any) -> None:
         """Updates the internal state with the given prediction(s) and reference(s).
 
@@ -32,30 +42,12 @@ class F1LabelMetric(Metric):
             prediction: Dict of predicted value(s) or predicted values directly
             prediction: Dict of reference value(s) or reference values directly, to compare to
         """
-        if self.field:
-            prediction = prediction.get(self.field, [])
-            reference = reference.get(self.field, [])
+        prediction = self._prepare_entry(prediction)
+        reference = self._prepare_entry(reference)
 
-        if prediction is None:
-            prediction = []
-        elif (
-            not isinstance(prediction, list)
-            and not isinstance(prediction, tuple)
-            and not isinstance(prediction, set)
-        ):
-            prediction = [prediction]
-        if reference is None:
-            reference = []
-        elif (
-            not isinstance(reference, list)
-            and not isinstance(reference, tuple)
-            and not isinstance(reference, set)
-        ):
-            reference = [reference]
-
-        self.state["tp"] += len(set(prediction) & set(reference))
-        self.state["fp"] += len(set(prediction) - set(reference))
-        self.state["fn"] += len(set(reference) - set(prediction))
+        self.state["tp"] += len(prediction & reference)
+        self.state["fp"] += len(prediction - reference)
+        self.state["fn"] += len(reference - prediction)
 
     def _compute(self, *args, **kwargs) -> dict[str, Any]:
         """Computes the micro average of precision, recall and f1
