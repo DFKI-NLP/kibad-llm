@@ -10,9 +10,8 @@ def test_build_schema_description():
         """
         Beschreibung: Angaben zu den ökosystembezogenen Studienmerkmalen.
         Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
-        - Lebensräume: In welchen Lebensräumen wurde die Studie durchgeführt? Kardinalität: 0..* | Zulässige Werte: Wald; Agrar- und Offenland; Binnengewässer und Auen; Küste und Küstengewässer; Urbane Räume; Boden
-        - Naturgroßräume: In welchen Naturgroßräumen wurde die Studie durchgeführt? Kardinalität: 0..* | Zulässige Werte: Alpen; Alpenvorland; Mittelgebirgsschwelle; Norddeutsches Tiefland; Nord- und Ostsee oder Schichtsstufenland beidseits des Oberrheingrabens
-        - Ökosystemtyp: Welche Ökosystemtypen hat die Studie betrachtet? Kardinalität: 0..* | Zulässige Werte: Binnenland: Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte; Binnenland: Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent); Binnengewässer: Stehende Gewässer; Meere und Küsten: Benthal der Nordsee
+        - Lebensräume: In welchen Lebensräumen wurde die Studie durchgeführt? Kardinalität: 0..* | Zulässige Werte: Agrar- und Offenland; Binnengewässer und Auen; Boden; Küsten und Küstengewässer; Urbane Räume; Wald
+        - Naturgroßräume: In welchen Naturgroßräumen wurde die Studie durchgeführt? Kardinalität: 0..* | Zulässige Werte: Alpen; Alpenvorland; Mittelgebirgsschwelle; Nord- und Ostsee; Norddeutsches Tiefland; Schichtstufenland beidseits des Oberrheingrabens
         - Bundesland: In welchen Bundesländern liegt das betrachtete Ökosystem der Studie? Kardinalität: 0..* | Zulässige Werte: Baden-Württemberg; Bayern; Berlin; Brandenburg; Bremen; Hamburg; Hessen; Mecklenburg-Vorpommern; Niedersachsen; Nordrhein-Westfalen; Rheinland-Pfalz; Saarland; Sachsen; Sachsen-Anhalt; Schleswig-Holstein; Thüringen
         """
     )
