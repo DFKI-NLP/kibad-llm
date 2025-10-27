@@ -1,5 +1,5 @@
 # Template to extract information from ecosystem study documents in Markdown.
-# Extracts keys: Lebensräume, Naturgroßraum, Ökosystemtyp, Bundesland.
+# Extracts keys: Lebensräume, Naturgroßraum, Bundesland.
 # Select one or multiple values (depending on cardinality) per key from fixed enums.
 
 system_message: |
