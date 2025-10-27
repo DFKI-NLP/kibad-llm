@@ -38,8 +38,20 @@ class F1LabelMetric(Metric):
 
         if prediction is None:
             prediction = []
+        elif (
+            not isinstance(prediction, list)
+            and not isinstance(prediction, tuple)
+            and not isinstance(prediction, set)
+        ):
+            prediction = [prediction]
         if reference is None:
             reference = []
+        elif (
+            not isinstance(reference, list)
+            and not isinstance(reference, tuple)
+            and not isinstance(reference, set)
+        ):
+            reference = [reference]
 
         self.state["tp"] += len(set(prediction) & set(reference))
         self.state["fp"] += len(set(prediction) - set(reference))
