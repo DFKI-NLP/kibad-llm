@@ -55,23 +55,23 @@ class LocationFederalStateEnum(str, Enum):
 class EcosystemStudyFeatures(BaseModel):
     """Angaben zu den ökosystembezogenen Studienmerkmalen."""
 
-    habitat: set[HabitatEnum] = Field(
-        default_factory=set,
+    habitat: list[HabitatEnum] = Field(
+        default_factory=list,
         alias="Lebensräume",
         description="In welchen Lebensräumen wurde die Studie durchgeführt?",
     )
-    natural_region: set[NaturalRegionEnum] = Field(
-        default_factory=set,
+    natural_region: list[NaturalRegionEnum] = Field(
+        default_factory=list,
         alias="Naturgroßräume",
         description="In welchen Naturgroßräumen wurde die Studie durchgeführt?",
     )
-    ecosystem_type_term: set[EcosystemTypeTermEnum] = Field(
-        default_factory=set,
+    ecosystem_type_term: list[EcosystemTypeTermEnum] = Field(
+        default_factory=list,
         alias="Ökosystemtyp",
         description="Welche Ökosystemtypen hat die Studie betrachtet?",
     )
-    location_federal_state: set[LocationFederalStateEnum] = Field(
-        default_factory=set,
+    location_federal_state: list[LocationFederalStateEnum] = Field(
+        default_factory=list,
         alias="Bundesland",
         description="In welchen Bundesländern liegt das betrachtete Ökosystem der Studie?",
     )
