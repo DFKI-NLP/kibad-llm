@@ -3,7 +3,7 @@ from typing import Any
 from kibad_llm.metric import Metric
 
 
-class F1LabelMetric(Metric):
+class MicroF1Metric(Metric):
     """Computes precision, recall, and F1 score for single- and multi-label classification tasks.
     Args:
         field: The optional field name in the predictions and references to evaluate.
