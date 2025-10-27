@@ -9,8 +9,8 @@
 #  - Entries in the references are taken from the json produced by db_converter.py (from the Faktencheck-DB),
 #    but flattened (dicts as well as list levels), see preprocess_reference below.
 #  - Prediction and reference entries are matched based on the PDF file_name and zotitem_ptr_id, respectively.
-#  - Per default, uses the "f1_single" metric to compute F1 scores far a selected field of single-label
-#    classification (see configs/metrics/f1_single.yaml for details). See configs/metrics/ for other
+#  - Per default, uses the "f1" metric to compute F1 scores far a selected field of single-label
+#    classification (see configs/metrics/f1.yaml for details). See configs/metrics/ for other
 #    available metrics.
 #
 # Usage:
@@ -22,7 +22,7 @@
 defaults:
   - paths: default
   - hydra: default
-  - metric: f1_single
+  - metric: f1
   - _self_
 
 # name of the run, used in logging and as a subdir of log_dir
