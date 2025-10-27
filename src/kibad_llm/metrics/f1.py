@@ -70,17 +70,3 @@ class F1LabelMetric(Metric):
             "recall": recall,
             "f1": f1,
         }
-
-
-class F1MultiLabelMetric(F1LabelMetric):
-    """Computes precision, recall, and F1 score for multi-label classification tasks.
-    Args:
-        field: The optional field name in the predictions and references to evaluate.
-    """
-
-
-class F1SingleLabelMetric(F1LabelMetric):
-    """Computes precision, recall, and F1 score for single-label classification tasks.
-    Args:
-        field: The field name in the predictions and references to evaluate.
-    """

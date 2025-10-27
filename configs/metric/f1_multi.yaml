@@ -1,4 +1,0 @@
-# F1 score metric for multi-label classification.
-
-_target_: kibad_llm.metrics.F1MultiLabelMetric
-field: ???  # the field in the prediction and reference to compute the F1 score on

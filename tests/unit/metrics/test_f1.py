@@ -1,10 +1,10 @@
 import pytest
 
-from kibad_llm.metrics.f1 import F1SingleLabelMetric
+from kibad_llm.metrics.f1 import F1LabelMetric
 
 
 def test_perfect_matches() -> None:
-    m = F1SingleLabelMetric(field="label")
+    m = F1LabelMetric(field="label")
     m.update({"label": "foo"}, {"label": "foo"})
     m.update({"label": "bar"}, {"label": "bar"})
     out = m.compute(m)
@@ -14,7 +14,7 @@ def test_perfect_matches() -> None:
 
 
 def test_all_mismatches() -> None:
-    m = F1SingleLabelMetric(field="label")
+    m = F1LabelMetric(field="label")
     m.update({"label": "foo"}, {"label": "woo"})
     m.update({"label": "bar"}, {"label": "rar"})
     out = m.compute(m)
@@ -24,7 +24,7 @@ def test_all_mismatches() -> None:
 
 
 def test_mixed_counts() -> None:
-    m = F1SingleLabelMetric(field="label")
+    m = F1LabelMetric(field="label")
     # tp
     m.update({"label": "foo"}, {"label": "foo"})
     # fp and fn and bool
@@ -43,7 +43,7 @@ def test_mixed_counts() -> None:
 
 
 def test_all_none_zero_division() -> None:
-    m = F1SingleLabelMetric(field="label")
+    m = F1LabelMetric(field="label")
     m.update({"label": None}, {"label": None})
     m.update({"label": None}, {"label": None})
     out = m.compute(m)
@@ -53,7 +53,7 @@ def test_all_none_zero_division() -> None:
 
 
 def test_reset() -> None:
-    m = F1SingleLabelMetric(field="label")
+    m = F1LabelMetric(field="label")
     m.update({"label": "foo"}, {"label": "foo"})
     assert m.compute(m)["f1"] == pytest.approx(1.0)
     m.reset()
