@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 import logging
 import os
 from pathlib import Path
+from typing import Any
 
 from datasets import Dataset
 import hydra
@@ -67,7 +69,9 @@ def predict(cfg: DictConfig) -> None:
 
     logger.info("Instantiating Extractor ...")
     logger.info(f"Extractor config: {dict(cfg.extractor)}")
-    extractor = instantiate(cfg.extractor, _convert_="all")
+    # The extractor gets the text and file_name as input
+    # and should return a json serializable dictionary with the extracted information.
+    extractor: Callable[[str, str], dict[str, Any]] = instantiate(cfg.extractor, _convert_="all")
 
     logger.info("Extract information from markdown ...")
     dataset = dataset.map(

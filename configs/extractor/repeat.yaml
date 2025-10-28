@@ -1,0 +1,7 @@
+defaults:
+  - _repeat
+  - _template
+
+# skips keys with values of inconsistent types across extractions
+# when aggregating results instead of raising an error
+skip_type_mismatches: true
