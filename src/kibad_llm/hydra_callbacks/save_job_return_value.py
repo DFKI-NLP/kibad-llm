@@ -197,7 +197,7 @@ class SaveJobReturnValueCallback(Callback):
         which will result in keeping only the count, mean and std values.
     sort_markdown_columns: bool (default: False)
         If True, the columns of the markdown table are sorted alphabetically.
-    multirun_create_ids_from_overrides: bool (default: True)
+    multirun_create_ids_from_overrides: bool (default: False)
         Create job identifiers from the overrides of the jobs in a multi-run. If False, the job index is used as
         identifier.
     markdown_round_digits: int (default: 3)
