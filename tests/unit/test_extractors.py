@@ -47,5 +47,5 @@ def test_extractor(tmp_path, cfg_predict_extractor):
     result = extractor(text_id=file_name, text=text)
 
     # just check keys since the actual values are not deterministic
-    keys_expected = {"Bundesland", "Lebensräume", "Naturgroßräume", "Ökosystemtyp"}
+    keys_expected = {"Bundesland", "Lebensräume", "Naturgroßräume"}
     assert set(result["structured"]) == keys_expected
