@@ -20,7 +20,8 @@ def cfg_evaluate(tmp_path) -> DictConfig:  # type: ignore
     with open_dict(cfg):
         cfg.predictions_file = str(PREDICTIONS_FILE)
         cfg.references_file = str(REFERENCES_FILE)
-        cfg.metric.field = "ecosystem_type/term"
+        # this produces non-zero results
+        cfg.metric.field = "habitat"
 
     yield cfg
 
@@ -28,9 +29,9 @@ def cfg_evaluate(tmp_path) -> DictConfig:  # type: ignore
 
 
 def test_evaluate(tmp_path, cfg_evaluate):
-    """For now, this is primarily to test that the evaluation runs end-to-end without errors (but see TODO)."""
+    """For now, this is primarily to test that the evaluation runs end-to-end without errors."""
 
     HydraConfig().set_config(cfg_evaluate)
     metric_scores = evaluate(cfg_evaluate)
-    # TODO: re-compute predictions when the pipeline produces reasonable results (and also adjust expected scores)
-    assert metric_scores == {"f1": 0.0, "precision": 0.0, "recall": 0.0}
+
+    assert metric_scores == pytest.approx({"f1": 2 / 7, "precision": 1 / 4, "recall": 1 / 3})

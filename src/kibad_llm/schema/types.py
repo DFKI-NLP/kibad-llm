@@ -4,33 +4,21 @@ from pydantic import BaseModel, ConfigDict, Field
 
 
 class HabitatEnum(str, Enum):
-    WALD = "Wald"
     AGRAR_UND_OFFENLAND = "Agrar- und Offenland"
     BINNENGEWAESSER_UND_AUEN = "Binnengewässer und Auen"
-    KUESTE_UND_KUUESTENGEWAESSER = "Küste und Küstengewässer"
-    URBANE_RAEUME = "Urbane Räume"
     BODEN = "Boden"
+    KUESTEN_UND_KUESTENGEWAESSER = "Küsten und Küstengewässer"
+    URBANE_RAEUME = "Urbane Räume"
+    WALD = "Wald"
 
 
 class NaturalRegionEnum(str, Enum):
     ALPEN = "Alpen"
     ALPENVORLAND = "Alpenvorland"
     MITTELGEBIRGSSCHWELLE = "Mittelgebirgsschwelle"
+    NORD_UND_OSTSEE = "Nord- und Ostsee"
     NORDDEUTSCHES_TIEFLAND = "Norddeutsches Tiefland"
-    NORD_UND_OSTSEE_ODER_SCHICHTSSTUFENLAND = (
-        "Nord- und Ostsee oder Schichtsstufenland beidseits des Oberrheingrabens"
-    )
-
-
-class EcosystemTypeTermEnum(str, Enum):
-    BINNENLAND_NIEDERMOORE_UND_SUEMPFE_GRUENLAND = (
-        "Binnenland: Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte"
-    )
-    BINNENLAND_LAUBMISCH_WAELDER_UND_FORSTE = (
-        "Binnenland: Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent)"
-    )
-    BINNENGEWAESSER_STEHENDE = "Binnengewässer: Stehende Gewässer"
-    MEERE_UND_KUESTEN_BENTHAL_DER_NORDSEE = "Meere und Küsten: Benthal der Nordsee"
+    SCHICHTSTUFENLAND_OBERRHEINGRABEN = "Schichtstufenland beidseits des Oberrheingrabens"
 
 
 class LocationFederalStateEnum(str, Enum):
@@ -65,15 +53,10 @@ class EcosystemStudyFeatures(BaseModel):
         alias="Naturgroßräume",
         description="In welchen Naturgroßräumen wurde die Studie durchgeführt?",
     )
-    ecosystem_type_term: EcosystemTypeTermEnum | None = Field(
-        default=None,
-        alias="Ökosystemtyp",
-        description="Welchen Ökosystemtyp hat die Studie betrachtet?",
-    )
-    location_federal_state: LocationFederalStateEnum | None = Field(
-        default=None,
+    location_federal_state: list[LocationFederalStateEnum] = Field(
+        default_factory=list,
         alias="Bundesland",
-        description="In welchem Bundesland liegt das betrachtete Ökosystem der Studie?",
+        description="In welchen Bundesländern liegt das betrachtete Ökosystem der Studie?",
     )
 
     model_config = ConfigDict(
