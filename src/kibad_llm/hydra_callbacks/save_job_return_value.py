@@ -108,7 +108,7 @@ def flatten_dict(d: dict[Hashable, Any], pad_keys: bool = True) -> dict[tuple[Ha
     return result
 
 
-def unflatten_dict(d: dict[tuple[str, ...], Any], unpad_keys: bool = True) -> dict[str, Any] | Any:
+def unflatten_dict(d: dict[tuple[Hashable, ...], Any], unpad_keys: bool = True) -> dict[Hashable, Any] | Any:
     """Unflattens a dictionary with nested keys. Per default, the keys are unpadded by removing
     np.nan values.
 
@@ -297,8 +297,9 @@ class SaveJobReturnValueCallback(Callback):
                 # add the aggregation keys (e.g. mean, min, ...) as most inner keys and convert back to dict
                 # TODO: check if "type ignore" is really fine and necessary here
                 obj_flat_aggregated: dict[tuple[str, ...], Any] = df_described.T.stack().to_dict()  # type: ignore
-                # unflatten because _save() works better with nested dicts
-                obj_aggregated = unflatten_dict(obj_flat_aggregated)
+                # unflatten because _save() works better with nested dicts. But don't remove key padding
+                # since this is required for proper unstacking in _save() for markdown files.
+                obj_aggregated = unflatten_dict(obj_flat_aggregated, unpad_keys=False)
         else:
             # create a dict of the job return-values of all jobs from a multi-run
             # (_save() works better with nested dicts)
@@ -349,6 +350,9 @@ class SaveJobReturnValueCallback(Callback):
         if filename.endswith(".json"):
             # Convert PyTorch tensors and numpy arrays to native python types
             obj_py = to_py_obj(obj)
+            if isinstance(obj_py, dict):
+                # remove padding from keys for json output
+                obj_py = unflatten_dict(flatten_dict(obj_py), unpad_keys=True)
             with open(str(output_dir / filename), "w") as file:
                 json.dump(obj_py, file, indent=2)
         elif filename.endswith(".md"):

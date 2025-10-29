@@ -266,13 +266,11 @@ class TestSaveJobReturnValueCallback:
             )
             # check aggregated
             content_aggregated = fn_aggregated.read_text()
-            # TODO: this looks odd
             assert content_aggregated == (
-                "|                         |   mean |    std |    nan |\n"
-                "|:------------------------|-------:|-------:|-------:|\n"
-                "| ('loss', 'mean')        |  nan   | nan    |   0.15 |\n"
-                "| ('loss', 'std')         |  nan   | nan    |   0.05 |\n"
-                "| ('metrics', 'accuracy') |    0.9 |   0.02 | nan    |"
+                '|                         |   mean |   std |\n'
+                '|:------------------------|-------:|------:|\n'
+                "| ('loss', nan)           |   0.15 |  0.05 |\n"
+                "| ('metrics', 'accuracy') |   0.9  |  0.02 |"
             )
         else:
             pytest.fail(f"Unsupported extension: {extension}")
