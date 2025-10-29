@@ -1,23 +1,28 @@
-# Fully local Hugging Face model via LlamaIndex (in-process, no server)
-# Point model_name/tokenizer_name to your local HF directory.
-# Example: models/YourHFModelDir containing config.json, tokenizer.*, and *.safetensors
-
+# Example configuration for using GPT-OSS-20B model locally with LlamaIndex
+# See models/README.md for instructions.
+# YAML
 _target_: llama_index.llms.huggingface.HuggingFaceLLM
 
+# local paths (taken from your current file)
 model_name: ${oc.env:HF_LOCAL_MODEL_DIR,/ds/models/llms/gpt-oss-20b/}
 tokenizer_name: ${oc.env:HF_LOCAL_TOKENIZER_DIR,/ds/models/llms/gpt-oss-20b/}
 
-# generation settings
+# expose chat interface
+is_chat_model: true
+is_function_calling_model: false
+
+# common, older-version-safe fields
+max_new_tokens: 1024
+
+# put loader-related options under model_kwargs to avoid init errors
+model_kwargs:
+  device_map: ${oc.env:HF_DEVICE_MAP,auto}
+  trust_remote_code: true
+  # load_in_8bit: true         # uncomment only if your version supports it here
+  # load_in_4bit: true
+  # torch_dtype: "bfloat16"
+
+# generation settings belong in generate_kwargs for older builds
 generate_kwargs:
   temperature: 0.0
   top_p: 1.0
-
-# loading options
-device_map: ${oc.env:HF_DEVICE_MAP,auto}        # e.g., "auto", "cuda:0", or explicit mapping
-load_in_8bit: ${oc.env:HF_LOAD_IN_8BIT,False}
-load_in_4bit: ${oc.env:HF_LOAD_IN_4BIT,False}
-torch_dtype: ${oc.env:HF_TORCH_DTYPE,null}      # e.g., "bfloat16", "float16", or null
-
-# expose chat interface to match existing usage
-is_chat_model: true
-is_function_calling_model: false
