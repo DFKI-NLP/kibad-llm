@@ -7,9 +7,12 @@ callbacks:
   save_job_return:
     _target_: kibad_llm.hydra_callbacks.SaveJobReturnValueCallback
     integrate_multirun_result: true
+    multirun_convert_job_ids: true
+    sort_markdown_columns: true
     filenames:
       - job_return_value.json
       - job_return_value.md
+    multirun_show_file_contents: [job_return_value.md]
     multirun_aggregator_blacklist: ["min", "25%", "50%", "75%", "max"]
 
 # output directory, generated dynamically on each run
