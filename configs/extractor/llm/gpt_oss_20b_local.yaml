@@ -4,7 +4,7 @@
 
 _target_: llama_index.llms.huggingface.HuggingFaceLLM
 
-model_name: ${oc.env:HF_LOCAL_MODEL_DIR,models/YourHFModelDir}
+model_name: ${oc.env:HF_LOCAL_MODEL_DIR,/ds/models/llms/gpt-oss-20b/}
 tokenizer_name: ${oc.env:HF_LOCAL_TOKENIZER_DIR,${model_name}}
 
 # generation settings
