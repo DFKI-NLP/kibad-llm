@@ -1,0 +1,23 @@
+# Fully local Hugging Face model via LlamaIndex (in-process, no server)
+# Point model_name/tokenizer_name to your local HF directory.
+# Example: models/YourHFModelDir containing config.json, tokenizer.*, and *.safetensors
+
+_target_: llama_index.llms.huggingface.HuggingFaceLLM
+
+model_name: ${oc.env:HF_LOCAL_MODEL_DIR,models/YourHFModelDir}
+tokenizer_name: ${oc.env:HF_LOCAL_TOKENIZER_DIR,${model_name}}
+
+# generation settings
+temperature: 0.0
+top_p: 1.0
+max_new_tokens: 1024
+
+# loading options
+device_map: ${oc.env:HF_DEVICE_MAP,auto}        # e.g., "auto", "cuda:0", or explicit mapping
+load_in_8bit: ${oc.env:HF_LOAD_IN_8BIT,False}
+load_in_4bit: ${oc.env:HF_LOAD_IN_4BIT,False}
+torch_dtype: ${oc.env:HF_TORCH_DTYPE,null}      # e.g., "bfloat16", "float16", or null
+
+# expose chat interface to match existing usage
+is_chat_model: true
+is_function_calling_model: false

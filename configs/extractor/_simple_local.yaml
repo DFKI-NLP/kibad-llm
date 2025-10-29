@@ -1,0 +1,5 @@
+defaults:
+  - llm: gpt_oss_20b_local
+
+_target_: kibad_llm.extractors.extract_from_text
+_partial_: True
