@@ -275,11 +275,15 @@ class TestSaveJobReturnValueCallback:
         else:
             pytest.fail(f"Unsupported extension: {extension}")
 
-    def test_multirun_ids_from_overrides(self, mock_config, temp_output_dir, extension):
+    @pytest.mark.parametrize("integrate_multirun_result", [False, True])
+    def test_multirun_ids_from_overrides(
+        self, mock_config, temp_output_dir, extension, integrate_multirun_result
+    ):
         """Test creating job IDs from overrides."""
         callback = SaveJobReturnValueCallback(
             filenames=f"multirun.{extension}",
-            integrate_multirun_result=True,
+            integrate_multirun_result=integrate_multirun_result,
+            multirun_aggregator_blacklist=["min", "25%", "50%", "75%", "max", "count"],
             multirun_create_ids_from_overrides=True,
         )
 
@@ -293,30 +297,71 @@ class TestSaveJobReturnValueCallback:
         multirun_dir = temp_output_dir / "multirun"
         fn = multirun_dir / f"multirun.{extension}"
         assert fn.exists()
-        if extension == "json":
-            with open(fn) as f:
-                data = json.load(f)
-            assert data == {
-                "accuracy": [0.9, 0.92, 0.88],
-                "job_id": ["lr=0.001", "lr=0.01", "lr=0.1"],
-            }
-        elif extension == "md":
-            content = fn.read_text()
-            assert content == (
-                "| job_id   |   accuracy |\n"
-                "|:---------|-----------:|\n"
-                "| lr=0.001 |       0.9  |\n"
-                "| lr=0.01  |       0.92 |\n"
-                "| lr=0.1   |       0.88 |"
-            )
-        else:
-            pytest.fail(f"Unsupported extension: {extension}")
 
-    def test_multirun_ids_from_multiple_overrides(self, mock_config, temp_output_dir, extension):
+        if integrate_multirun_result:
+            fn_aggregated = multirun_dir / f"multirun.aggregated.{extension}"
+            assert fn_aggregated.exists()
+
+            if extension == "json":
+                with open(fn) as f:
+                    data = json.load(f)
+                assert data == {
+                    "accuracy": [0.9, 0.92, 0.88],
+                    "job_id": ["lr=0.001", "lr=0.01", "lr=0.1"],
+                }
+                # check aggregated result
+                with open(fn_aggregated) as f:
+                    data_aggregated = json.load(f)
+                assert data_aggregated == {
+                    "accuracy": {"mean": pytest.approx(0.9), "std": pytest.approx(0.02)}
+                }
+            elif extension == "md":
+                content = fn.read_text()
+                assert content == (
+                    "| job_id   |   accuracy |\n"
+                    "|:---------|-----------:|\n"
+                    "| lr=0.001 |       0.9  |\n"
+                    "| lr=0.01  |       0.92 |\n"
+                    "| lr=0.1   |       0.88 |"
+                )
+                # check aggregated
+                content_aggregated = fn_aggregated.read_text()
+                assert content_aggregated == (
+                    "|          |   mean |   std |\n"
+                    "|:---------|-------:|------:|\n"
+                    "| accuracy |    0.9 |  0.02 |"
+                )
+            else:
+                pytest.fail(f"Unsupported extension: {extension}")
+        else:
+            if extension == "json":
+                with open(fn) as f:
+                    data_json = json.load(f)
+                assert data_json == {
+                    "lr=0.001": {"accuracy": 0.9},
+                    "lr=0.01": {"accuracy": 0.92},
+                    "lr=0.1": {"accuracy": 0.88},
+                }
+            elif extension == "md":
+                content = fn.read_text()
+                assert content == (
+                    "|          |   accuracy |\n"
+                    "|:---------|-----------:|\n"
+                    "| lr=0.001 |       0.9  |\n"
+                    "| lr=0.01  |       0.92 |\n"
+                    "| lr=0.1   |       0.88 |"
+                )
+            else:
+                pytest.fail(f"Unsupported extension: {extension}")
+
+    @pytest.mark.parametrize("integrate_multirun_result", [False, True])
+    def test_multirun_ids_from_multiple_overrides(
+        self, mock_config, temp_output_dir, extension, integrate_multirun_result
+    ):
         """Test creating job IDs from multiple overrides."""
         callback = SaveJobReturnValueCallback(
             filenames=f"multirun.{extension}",
-            integrate_multirun_result=True,
+            integrate_multirun_result=integrate_multirun_result,
             multirun_create_ids_from_overrides=True,
         )
 
@@ -330,19 +375,42 @@ class TestSaveJobReturnValueCallback:
         multirun_dir = temp_output_dir / "multirun"
         fn = multirun_dir / f"multirun.{extension}"
         assert fn.exists()
-        if extension == "json":
-            with open(fn) as f:
-                data = json.load(f)
-            assert data == {
-                "accuracy": [0.9, 0.92, 0.88],
-                "job_id": ["lr=0.001-bs=32", "lr=0.01-bs=64", "lr=0.1-bs=128"],
-            }
-        elif extension == "md":
-            content = fn.read_text()
-            assert content == (
-                "| job_id         |   accuracy |\n"
-                "|:---------------|-----------:|\n"
-                "| lr=0.001-bs=32 |       0.9  |\n"
-                "| lr=0.01-bs=64  |       0.92 |\n"
-                "| lr=0.1-bs=128  |       0.88 |"
-            )
+        if integrate_multirun_result:
+            if extension == "json":
+                with open(fn) as f:
+                    data = json.load(f)
+                assert data == {
+                    "accuracy": [0.9, 0.92, 0.88],
+                    "job_id": ["lr=0.001-bs=32", "lr=0.01-bs=64", "lr=0.1-bs=128"],
+                }
+            elif extension == "md":
+                content = fn.read_text()
+                assert content == (
+                    "| job_id         |   accuracy |\n"
+                    "|:---------------|-----------:|\n"
+                    "| lr=0.001-bs=32 |       0.9  |\n"
+                    "| lr=0.01-bs=64  |       0.92 |\n"
+                    "| lr=0.1-bs=128  |       0.88 |"
+                )
+            else:
+                pytest.fail(f"Unsupported extension: {extension}")
+        else:
+            if extension == "json":
+                with open(fn) as f:
+                    data_json = json.load(f)
+                assert data_json == {
+                    "lr=0.001-bs=32": {"accuracy": 0.9},
+                    "lr=0.01-bs=64": {"accuracy": 0.92},
+                    "lr=0.1-bs=128": {"accuracy": 0.88},
+                }
+            elif extension == "md":
+                content = fn.read_text()
+                assert content == (
+                    "|                |   accuracy |\n"
+                    "|:---------------|-----------:|\n"
+                    "| lr=0.001-bs=32 |       0.9  |\n"
+                    "| lr=0.01-bs=64  |       0.92 |\n"
+                    "| lr=0.1-bs=128  |       0.88 |"
+                )
+            else:
+                pytest.fail(f"Unsupported extension: {extension}")
