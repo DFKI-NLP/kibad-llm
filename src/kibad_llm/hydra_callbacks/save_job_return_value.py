@@ -339,8 +339,8 @@ class SaveJobReturnValueCallback(Callback):
             df_flat = pd.DataFrame(obj_flat)
             # select only the numeric values
             df_numbers_only = df_flat.select_dtypes(["number"])
-            cols_removed = (
-                set(df_flat.columns) - set(df_numbers_only.columns) - {self.multirun_job_id_key}
+            cols_removed: set[tuple[str | int, ...]] = (
+                set(df_flat.columns) - set(df_numbers_only.columns) - {(self.multirun_job_id_key,)}  # type: ignore
             )
             if len(cols_removed) > 0:
                 self.log.warning(
