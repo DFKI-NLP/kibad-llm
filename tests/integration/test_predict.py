@@ -139,3 +139,34 @@ def test_predict_without_schema_fast_dev_run(cfg_predict_without_schema):
 
     # just check keys since the actual values are not deterministic
     assert set(result["structured"]) == set(fixture_data["structured"])
+
+
+@pytest.fixture
+def cfg_predict_pdf_errors(tmp_path_factory) -> DictConfig:  # type: ignore
+    module_tmp_path = tmp_path_factory.mktemp("module")
+    cfg = cfg_global(config_name="predict.yaml", out_dir=module_tmp_path)
+
+    with open_dict(cfg):
+        cfg.pdf_directory = str(PROJ_ROOT / "tests" / "fixtures" / "pdfs_errors")
+        cfg.disable_extraction_caching = True
+
+    yield cfg
+
+    GlobalHydra.instance().clear()
+
+
+@pytest.mark.slow
+def test_prediction_on_pdf_errors(file_name, cfg_predict_pdf_errors):
+    predict(cfg_predict_pdf_errors)
+    # read json line file from cfg_predict_module.output_file
+    with open(cfg_predict_pdf_errors.output_file) as f:
+        lines = f.readlines()
+
+    # create result as dict keyed by file_name
+    results = {}
+    for line in lines:
+        result = json.loads(line)
+        results[result["file_name"]] = result
+
+    # TODO: add more specific checks
+    assert results
