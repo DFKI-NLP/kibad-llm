@@ -9,7 +9,6 @@ tokenizer_name: ${oc.env:HF_LOCAL_TOKENIZER_DIR,/ds/models/llms/gpt-oss-20b/}
 
 # expose chat interface
 is_chat_model: true
-is_function_calling_model: false
 
 # common, older-version-safe fields
 max_new_tokens: 1024
