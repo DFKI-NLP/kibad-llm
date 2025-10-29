@@ -1,21 +1,28 @@
-# Example configuration for using GPT-OSS-20B model with LlamaIndex
-#
-# This requires a local deployment of the GPT-OSS-20B model that is compatible with the OpenAI API.
+# Example configuration for using GPT-OSS-20B model locally with LlamaIndex
 # See models/README.md for instructions.
+# YAML
+_target_: llama_index.llms.huggingface.HuggingFaceLLM
 
-_target_: llama_index.llms.openai_like.OpenAILike
+# local paths (taken from your current file)
+model_name: ${oc.env:HF_LOCAL_MODEL_DIR,/ds/models/llms/gpt-oss-20b/}
+tokenizer_name: ${oc.env:HF_LOCAL_TOKENIZER_DIR,/ds/models/llms/gpt-oss-20b/}
 
-# get the API base URL from the environment variable LLM_API_BASE, defaulting to http://127.0.0.1:5001/v1
-api_base: ${oc.env:LLM_API_BASE,http://127.0.0.1:5001/v1}
-api_key: "dummy"
-model: "openai/gpt-oss-20b"
-# try to be as deterministic as possible
-temperature: 0.0
-top_p: 1.0
-# presence_penalty and frequency_penalty are also standard if we need them
-
-# the default is 16, so we set it to 4096 to allow a reasonable context window
-max_tokens: 4096
-# enable to correctly handle (i.e. remove) reasoning traces in the output
+# expose chat interface
 is_chat_model: true
 is_function_calling_model: false
+
+# common, older-version-safe fields
+max_new_tokens: 1024
+
+# put loader-related options under model_kwargs to avoid init errors
+model_kwargs:
+  device_map: ${oc.env:HF_DEVICE_MAP,auto}
+  trust_remote_code: true
+  # load_in_8bit: true         # uncomment only if your version supports it here
+  # load_in_4bit: true
+  # torch_dtype: "bfloat16"
+
+# generation settings belong in generate_kwargs for older builds
+generate_kwargs:
+  temperature: 0.0
+  top_p: 1.0
