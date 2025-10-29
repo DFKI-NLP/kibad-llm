@@ -1,7 +1,7 @@
 from collections import Counter, defaultdict
 from typing import Any
 
-from .base import extract_from_text
+from .base import extract_from_text_lenient
 
 
 def _majority_vote(values: list) -> Any:
@@ -129,17 +129,21 @@ class RepeatingExtractor:
         combined_kwargs = {**self.default_kwargs, **kwargs}
         results = []
         for i in range(self.n):
-            current_result = extract_from_text(*args, **combined_kwargs)
+            current_result = extract_from_text_lenient(*args, **combined_kwargs)
             results.append(current_result)
 
-        response_contents = [v["response_content"] for v in results]
-        structured_outputs = [v["structured"] for v in results]
+        response_contents = [v.get("response_content", None) for v in results]
+        structured_outputs = [v.get("structured", None) for v in results]
+        errors = [v.get("error", None) for v in results]
         aggregated_structured = _aggregate_structured_outputs(
             structured_outputs, skip_type_mismatches=self.skip_type_mismatches
         )
 
-        return {
+        result = {
             "response_content_list": response_contents,
             "structured_list": structured_outputs,
             "structured": aggregated_structured,
         }
+        if any(errors):
+            result["error_list"] = errors
+        return result
