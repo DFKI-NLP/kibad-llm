@@ -35,8 +35,8 @@ def _multi_entry_majority_vote(values: list[list | None], n: int | None = None) 
 
 
 def _aggregate_structured_outputs(
-    structured_outputs: list[dict], skip_type_mismatches: bool = False
-) -> dict[str, Any]:
+    structured_outputs: list[dict | None], skip_type_mismatches: bool = False
+) -> dict[str, Any] | None:
     """Aggregate structured outputs from multiple extractions.
 
     Entries with the same key are aggregated based on their value types:
@@ -49,8 +49,11 @@ def _aggregate_structured_outputs(
         skip_type_mismatches: If True, skips keys with inconsistent types across extractions
             instead of raising an error (default: False)
     Returns:
-        aggregated structured output
+        aggregated structured output or None if all entries are None
     """
+    if all(res is None for res in structured_outputs):
+        return None
+
     # collect all keys to correctly handle missing entries
     all_keys: set[str] = set()
     for res in structured_outputs:
