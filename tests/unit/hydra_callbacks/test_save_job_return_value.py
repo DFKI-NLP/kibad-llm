@@ -446,3 +446,69 @@ class TestSaveJobReturnValueCallback:
                 )
             else:
                 pytest.fail(f"Unsupported extension: {extension}")
+
+    def test_multirun_with_convert_job_ids(self, mock_config, temp_output_dir, extension):
+        callback = SaveJobReturnValueCallback(
+            filenames=f"multirun.{extension}",
+            integrate_multirun_result=True,
+            multirun_create_ids_from_overrides=True,
+            multirun_aggregator_blacklist=["min", "25%", "50%", "75%", "max", "count"],
+            multirun_convert_job_ids=True,
+        )
+
+        for lr, bs, accuracy, loss in [
+            (0.001, 32, 0.90, 0.1),
+            (0.01, 64, 0.92, 0.2),
+            (0.1, 128, 0.88, 0.15),
+        ]:
+            jr = _construct_job_return(
+                overrides=[f"lr={lr}", f"bs={bs}"],
+                return_value={"metrics": {"accuracy": accuracy}, "loss": loss},
+            )
+            callback.job_returns.append(jr)
+
+        callback.on_multirun_end(config=mock_config)
+
+        multirun_dir = temp_output_dir / "multirun"
+        fn = multirun_dir / f"multirun.{extension}"
+        assert fn.exists()
+
+        fn_aggregated = multirun_dir / f"multirun.aggregated.{extension}"
+        assert fn_aggregated.exists()
+
+        if extension == "json":
+            with open(fn) as f:
+                data = json.load(f)
+            assert data == {
+                "job_id": {"bs": ["32", "64", "128"], "lr": ["0.001", "0.01", "0.1"]},
+                "loss": [0.1, 0.2, 0.15],
+                "metrics": {"accuracy": [0.9, 0.92, 0.88]},
+            }
+            # check aggregated result
+            with open(fn_aggregated) as f:
+                data_aggregated = json.load(f)
+            assert data_aggregated == {
+                "metrics": {
+                    "accuracy": {"mean": pytest.approx(0.9), "std": pytest.approx(0.02)},
+                },
+                "loss": {"mean": pytest.approx(0.15), "std": pytest.approx(0.05)},
+            }
+        elif extension == "md":
+            content = fn.read_text()
+            assert content == (
+                "|   job_id.bs |   job_id.lr |   loss |   metrics.accuracy |\n"
+                "|------------:|------------:|-------:|-------------------:|\n"
+                "|          32 |       0.001 |   0.1  |               0.9  |\n"
+                "|          64 |       0.01  |   0.2  |               0.92 |\n"
+                "|         128 |       0.1   |   0.15 |               0.88 |"
+            )
+            # check aggregated
+            content_aggregated = fn_aggregated.read_text()
+            assert content_aggregated == (
+                "|                  |   mean |   std |\n"
+                "|:-----------------|-------:|------:|\n"
+                "| loss             |   0.15 |  0.05 |\n"
+                "| metrics.accuracy |   0.9  |  0.02 |"
+            )
+        else:
+            pytest.fail(f"Unsupported extension: {extension}")

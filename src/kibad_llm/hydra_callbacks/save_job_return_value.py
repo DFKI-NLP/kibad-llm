@@ -1,4 +1,4 @@
-from collections.abc import Generator, Sequence
+from collections.abc import Generator, Iterable, Sequence
 import json
 import logging
 import math
@@ -176,6 +176,33 @@ def overrides_to_identifiers(
     return identifiers
 
 
+def identifier_to_dict(identifier: str, sep: str = "-") -> dict[str, str]:
+    """Convert an identifier string back to a dictionary of overrides.
+
+    Example:
+        >>> identifier = "b=2-c=3"
+        >>> identifier_to_dict(identifier)
+        {'b': '2', 'c': '3'}
+
+    Args:
+        identifier (str): The identifier string.
+        sep (str, optional): The separator used between the overrides. Defaults to "-".
+
+    Returns:
+        dict[str, str]: The dictionary of overrides.
+    """
+    overrides = identifier.split(sep)
+    override_dict = {}
+    for override in overrides:
+        key, value = override.split("=", 1)
+        override_dict[key] = value
+    return override_dict
+
+
+def _filter_nan_and_join(values: Iterable, sep: str) -> str:
+    return sep.join([v for v in values if not isinstance(v, float) or not math.isnan(v)])
+
+
 def multi_index_to_single(index: pd.MultiIndex, sep: str = ".") -> pd.Index:
     """Convert a MultiIndex to a single Index by joining the levels with a separator and
     removing NaN values.
@@ -193,12 +220,7 @@ def multi_index_to_single(index: pd.MultiIndex, sep: str = ".") -> pd.Index:
         pd.Index: The converted Index.
     """
 
-    return pd.Index(
-        [
-            sep.join([v for v in values if not isinstance(v, float) or not math.isnan(v)])
-            for values in index.to_flat_index()
-        ]
-    )
+    return pd.Index([_filter_nan_and_join(values, sep) for values in index.to_flat_index()])
 
 
 class SaveJobReturnValueCallback(Callback):
@@ -233,6 +255,8 @@ class SaveJobReturnValueCallback(Callback):
         The number of digits to round the values in the markdown file. If None, no rounding is applied.
     multirun_job_id_key: str (default: "job_id")
         The key to use for the job identifiers in the integrated multi-run result.
+    multirun_convert_job_ids: bool (default: False)
+        If True, convert job ids to dictionaries. Works only if integrate_multirun_result is True.
     paths_file: str (default: None)
         The file to save the paths of the log directories to. If None, the paths are not saved.
     path_id: str (default: None)
@@ -252,6 +276,7 @@ class SaveJobReturnValueCallback(Callback):
         multirun_create_ids_from_overrides: bool = True,
         markdown_round_digits: int | None = 3,
         multirun_job_id_key: str = "job_id",
+        multirun_convert_job_ids: bool = False,
         paths_file: str | None = None,
         path_id: str | None = None,
         multirun_paths_file: str | None = None,
@@ -265,6 +290,7 @@ class SaveJobReturnValueCallback(Callback):
         self.sort_markdown_columns = sort_markdown_columns
         self.multirun_create_ids_from_overrides = multirun_create_ids_from_overrides
         self.multirun_job_id_key = multirun_job_id_key
+        self.multirun_convert_job_ids = multirun_convert_job_ids
         self.markdown_round_digits = markdown_round_digits
         self.multirun_paths_file = multirun_paths_file
         self.multirun_path_id = multirun_path_id
@@ -330,6 +356,15 @@ class SaveJobReturnValueCallback(Callback):
                 # unflatten because _save() works better with nested dicts. But don't remove key padding
                 # since this is required for proper unstacking in _save() for markdown files.
                 obj_aggregated = unflatten_dict(obj_flat_aggregated, unpad_keys=False)
+
+            if self.multirun_convert_job_ids:
+                # convert job ids (created from overrides) to dicts
+                obj[self.multirun_job_id_key] = list_of_dicts_to_dict_of_lists_recursive(
+                    [
+                        identifier_to_dict(identifier)
+                        for identifier in obj[self.multirun_job_id_key]
+                    ]
+                )
         else:
             # create a dict of the job return-values of all jobs from a multi-run
             # (_save() works better with nested dicts)
@@ -396,12 +431,10 @@ class SaveJobReturnValueCallback(Callback):
                 # In the case of (not aggregated) integrated multi-run result, we expect to have
                 # multiple values for each key. We therefore just convert the dict to a pandas DataFrame.
                 result = pd.DataFrame(obj_py_flat)
-                job_id_column = (self.multirun_job_id_key,) + (np.nan,) * (
-                    result.columns.nlevels - 1
-                )
-                if job_id_column in result.columns:
-                    result = result.set_index(job_id_column)
-                    result.index.name = self.multirun_job_id_key
+                # get job id columns
+                job_id_columns = [
+                    col for col in result.columns if col[0] == self.multirun_job_id_key
+                ]
             else:
                 # Otherwise, we have only one value for each key. We convert the dict to a pandas Series.
                 series = pd.Series(obj_py_flat)
@@ -422,9 +455,15 @@ class SaveJobReturnValueCallback(Callback):
                         # i.e. the identifier created from the overrides, and transpose the result
                         # to have the individual jobs as rows.
                         result = series.unstack(0).T
+                job_id_columns = []
 
-            if isinstance(result, pd.DataFrame) and self.sort_markdown_columns:
-                result = result.sort_index(axis=1)
+            if isinstance(result, pd.DataFrame):
+                if self.sort_markdown_columns:
+                    result = result.sort_index(axis=1)
+                # move job id columns to the front
+                job_id_columns_sorted = [col for col in result.columns if col in job_id_columns]
+                other_columns = [col for col in result.columns if col not in job_id_columns]
+                result = result[job_id_columns_sorted + other_columns]
 
             # flatten the index values and column names
             if isinstance(result.index, pd.MultiIndex):
@@ -436,7 +475,7 @@ class SaveJobReturnValueCallback(Callback):
                 result = result.round(self.markdown_round_digits)
 
             with open(str(output_dir / filename), "w") as file:
-                file.write(result.to_markdown())
+                file.write(result.to_markdown(index=len(job_id_columns) == 0))
 
         else:
             raise ValueError("Unknown file extension")
