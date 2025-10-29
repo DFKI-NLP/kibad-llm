@@ -257,6 +257,9 @@ class SaveJobReturnValueCallback(Callback):
         The key to use for the job identifiers in the integrated multi-run result.
     multirun_convert_job_ids: bool (default: False)
         If True, convert job ids to dictionaries. Works only if integrate_multirun_result is True.
+    multirun_show_file_contents: list[str] (default: None)
+        A list of filenames (from the filenames parameter or aggregated files) to log the contents
+        to the console after saving the multi-run results.
     paths_file: str (default: None)
         The file to save the paths of the log directories to. If None, the paths are not saved.
     path_id: str (default: None)
@@ -277,6 +280,7 @@ class SaveJobReturnValueCallback(Callback):
         markdown_round_digits: int | None = 3,
         multirun_job_id_key: str = "job_id",
         multirun_convert_job_ids: bool = False,
+        multirun_show_file_contents: list[str] | None = None,
         paths_file: str | None = None,
         path_id: str | None = None,
         multirun_paths_file: str | None = None,
@@ -284,6 +288,7 @@ class SaveJobReturnValueCallback(Callback):
     ) -> None:
         self.log = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
         self.filenames = [filenames] if isinstance(filenames, str) else filenames
+        self.multirun_show_file_contents = multirun_show_file_contents or []
         self.integrate_multirun_result = integrate_multirun_result
         self.job_returns: list[JobReturn] = []
         self.multirun_aggregator_blacklist = multirun_aggregator_blacklist
@@ -334,7 +339,9 @@ class SaveJobReturnValueCallback(Callback):
             df_flat = pd.DataFrame(obj_flat)
             # select only the numeric values
             df_numbers_only = df_flat.select_dtypes(["number"])
-            cols_removed = set(df_flat.columns) - set(df_numbers_only.columns) - {self.multirun_job_id_key}
+            cols_removed = (
+                set(df_flat.columns) - set(df_numbers_only.columns) - {self.multirun_job_id_key}
+            )
             if len(cols_removed) > 0:
                 self.log.warning(
                     f"Removed the following columns from the aggregated result because they are not numeric: "
@@ -381,6 +388,7 @@ class SaveJobReturnValueCallback(Callback):
             with open(self.multirun_paths_file, "a") as file:
                 file.write(line)
 
+        filenames_aggregated = []
         for filename in self.filenames:
             self._save(
                 obj=obj,
@@ -392,6 +400,7 @@ class SaveJobReturnValueCallback(Callback):
             if obj_aggregated is not None:
                 file_base_name, ext = os.path.splitext(filename)
                 filename_aggregated = f"{file_base_name}.aggregated{ext}"
+                filenames_aggregated.append(filename_aggregated)
                 self._save(
                     obj=obj_aggregated,
                     filename=filename_aggregated,
@@ -400,6 +409,12 @@ class SaveJobReturnValueCallback(Callback):
                     # i.e. the aggregation key.
                     unstack_last_index_level=True,
                 )
+        saved_files = set(self.filenames + filenames_aggregated)
+        for fn in self.multirun_show_file_contents:
+            if fn in saved_files:
+                with open(str(output_dir / fn)) as file:
+                    contents = file.read()
+                self.log.info(f"Contents of {output_dir / fn}:\n{contents}")
 
     def _save(
         self,
