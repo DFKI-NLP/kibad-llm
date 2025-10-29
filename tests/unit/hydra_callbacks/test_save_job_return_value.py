@@ -202,11 +202,11 @@ class TestSaveJobReturnValueCallback:
         elif extension == "md":
             content = fn.read_text()
             assert content == (
-                "|    |   ('accuracy',) |\n"
-                "|---:|----------------:|\n"
-                "|  0 |            0.9  |\n"
-                "|  1 |            0.92 |\n"
-                "|  2 |            0.88 |"
+                "|    |   accuracy |\n"
+                "|---:|-----------:|\n"
+                "|  0 |       0.9  |\n"
+                "|  1 |       0.92 |\n"
+                "|  2 |       0.88 |"
             )
             # check aggregated
             content_aggregated = fn_aggregated.read_text()
@@ -258,19 +258,19 @@ class TestSaveJobReturnValueCallback:
         elif extension == "md":
             content = fn.read_text()
             assert content == (
-                "|    |   ('loss', nan) |   ('metrics', 'accuracy') |\n"
-                "|---:|----------------:|--------------------------:|\n"
-                "|  0 |            0.1  |                      0.9  |\n"
-                "|  1 |            0.2  |                      0.92 |\n"
-                "|  2 |            0.15 |                      0.88 |"
+                "|    |   loss |   metrics.accuracy |\n"
+                "|---:|-------:|-------------------:|\n"
+                "|  0 |   0.1  |               0.9  |\n"
+                "|  1 |   0.2  |               0.92 |\n"
+                "|  2 |   0.15 |               0.88 |"
             )
             # check aggregated
             content_aggregated = fn_aggregated.read_text()
             assert content_aggregated == (
-                '|                         |   mean |   std |\n'
-                '|:------------------------|-------:|------:|\n'
-                "| ('loss', nan)           |   0.15 |  0.05 |\n"
-                "| ('metrics', 'accuracy') |   0.9  |  0.02 |"
+                "|                  |   mean |   std |\n"
+                "|:-----------------|-------:|------:|\n"
+                "| loss             |   0.15 |  0.05 |\n"
+                "| metrics.accuracy |   0.9  |  0.02 |"
             )
         else:
             pytest.fail(f"Unsupported extension: {extension}")
@@ -303,11 +303,11 @@ class TestSaveJobReturnValueCallback:
         elif extension == "md":
             content = fn.read_text()
             assert content == (
-                "| job_id   |   ('accuracy',) |\n"
-                "|:---------|----------------:|\n"
-                "| lr=0.001 |            0.9  |\n"
-                "| lr=0.01  |            0.92 |\n"
-                "| lr=0.1   |            0.88 |"
+                "| job_id   |   accuracy |\n"
+                "|:---------|-----------:|\n"
+                "| lr=0.001 |       0.9  |\n"
+                "| lr=0.01  |       0.92 |\n"
+                "| lr=0.1   |       0.88 |"
             )
         else:
             pytest.fail(f"Unsupported extension: {extension}")
@@ -340,9 +340,9 @@ class TestSaveJobReturnValueCallback:
         elif extension == "md":
             content = fn.read_text()
             assert content == (
-                "| job_id         |   ('accuracy',) |\n"
-                "|:---------------|----------------:|\n"
-                "| lr=0.001-bs=32 |            0.9  |\n"
-                "| lr=0.01-bs=64  |            0.92 |\n"
-                "| lr=0.1-bs=128  |            0.88 |"
+                "| job_id         |   accuracy |\n"
+                "|:---------------|-----------:|\n"
+                "| lr=0.001-bs=32 |       0.9  |\n"
+                "| lr=0.01-bs=64  |       0.92 |\n"
+                "| lr=0.1-bs=128  |       0.88 |"
             )

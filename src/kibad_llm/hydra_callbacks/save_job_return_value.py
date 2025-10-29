@@ -176,6 +176,31 @@ def overrides_to_identifiers(
     return identifiers
 
 
+def multi_index_to_single(index: pd.MultiIndex, sep: str = ".") -> pd.Index:
+    """Convert a MultiIndex to a single Index by joining the levels with a separator and
+    removing NaN values.
+
+    Example:
+        >>> index = pd.MultiIndex.from_tuples([('a', 'b'), ('c', np.nan)])
+        >>> multi_index_to_single(index)
+        Index(['a.b', 'c'], dtype='object')
+
+    Args:
+        index (pd.MultiIndex): The MultiIndex to convert.
+        sep (str, optional): The separator to use between the levels. Defaults to ".".
+
+    Returns:
+        pd.Index: The converted Index.
+    """
+
+    return pd.Index(
+        [
+            sep.join([v for v in values if not isinstance(v, float) or not math.isnan(v)])
+            for values in index.to_flat_index()
+        ]
+    )
+
+
 class SaveJobReturnValueCallback(Callback):
     """Save the job return-value in ${output_dir}/{job_return_value_filename}.
 
@@ -400,6 +425,12 @@ class SaveJobReturnValueCallback(Callback):
 
             if isinstance(result, pd.DataFrame) and self.sort_markdown_columns:
                 result = result.sort_index(axis=1)
+
+            # flatten the index values and column names
+            if isinstance(result.index, pd.MultiIndex):
+                result.index = multi_index_to_single(result.index)
+            if isinstance(result, pd.DataFrame) and isinstance(result.columns, pd.MultiIndex):
+                result.columns = multi_index_to_single(result.columns)
 
             if self.markdown_round_digits is not None:
                 result = result.round(self.markdown_round_digits)
