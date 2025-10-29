@@ -141,13 +141,12 @@ def test_predict_without_schema_fast_dev_run(cfg_predict_without_schema):
     assert set(result["structured"]) == set(fixture_data["structured"])
 
 
-@pytest.fixture
-def cfg_predict_pdf_errors(tmp_path_factory) -> DictConfig:  # type: ignore
-    module_tmp_path = tmp_path_factory.mktemp("module")
-    cfg = cfg_global(config_name="predict.yaml", out_dir=module_tmp_path)
+@pytest.fixture(scope="function")
+def cfg_predict_pdf_errors(tmp_path) -> DictConfig:  # type: ignore
+    cfg = cfg_global(config_name="predict.yaml", out_dir=tmp_path)
 
     with open_dict(cfg):
-        cfg.pdf_directory = str(PROJ_ROOT / "tests" / "fixtures" / "pdfs_errors")
+        cfg.pdf_directory = str(PROJ_ROOT / "tests" / "fixtures" / "pdfs_error")
         cfg.disable_extraction_caching = True
 
     yield cfg
@@ -156,7 +155,7 @@ def cfg_predict_pdf_errors(tmp_path_factory) -> DictConfig:  # type: ignore
 
 
 @pytest.mark.slow
-def test_prediction_on_pdf_errors(file_name, cfg_predict_pdf_errors):
+def test_prediction_on_pdf_errors(cfg_predict_pdf_errors):
     predict(cfg_predict_pdf_errors)
     # read json line file from cfg_predict_module.output_file
     with open(cfg_predict_pdf_errors.output_file) as f:
@@ -168,5 +167,20 @@ def test_prediction_on_pdf_errors(file_name, cfg_predict_pdf_errors):
         result = json.loads(line)
         results[result["file_name"]] = result
 
-    # TODO: add more specific checks
-    assert results
+    # check long PDF error
+    file_name_long_pdf = "2E9XWUUE.pdf"
+    assert file_name_long_pdf in results
+    result_long_pdf = results[file_name_long_pdf]
+    # assert that there was some quite long input text
+    text_long_pdf = result_long_pdf.get("text", None)
+    assert text_long_pdf is not None and len(text_long_pdf) == 1427535
+    # assert that there is no structured output ...
+    structured_long_pdf = result_long_pdf.get("structured", None)
+    assert structured_long_pdf is None
+    # ... but an error message about max tokens
+    error_long_pdf = result_long_pdf.get("error", None)
+    assert (
+        error_long_pdf
+        == "Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -328820.', "
+        "'type': 'BadRequestError', 'param': None, 'code': 400}}"
+    )
