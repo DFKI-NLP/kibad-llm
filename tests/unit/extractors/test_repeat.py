@@ -131,3 +131,22 @@ def test_aggregate_structured_outputs_missing_first_key():
     ]
     res2 = _aggregate_structured_outputs(structured_outputs2)
     assert res2 == {"A": None}
+
+
+def test_aggregate_structured_outputs_none():
+
+    # if at least one entry has a value, it should be used
+    structured_outputs = [
+        None,
+        {"A": 1},
+    ]
+    res = _aggregate_structured_outputs(structured_outputs)
+    assert res == {"A": 1}
+
+    # if all entries are None, the result should be None
+    structured_outputs2 = [
+        None,
+        None,
+    ]
+    res2 = _aggregate_structured_outputs(structured_outputs2)
+    assert res2 is None

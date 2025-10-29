@@ -95,3 +95,24 @@ def extract_from_text(
         logger.warning(f"Failed to obtain/validate structured output for document {text_id}")
 
     return out
+
+
+def extract_from_text_lenient(text: str, text_id: str, **kwargs) -> dict:
+    """Wrapper around extract_from_text that catches all exceptions.
+
+    This is useful when processing multiple documents and we want to
+    continue processing even if one document fails.
+
+    Args:
+        text: The text to process.
+        text_id: Text identifier for logging.
+        **kwargs: Keyword arguments for extract_from_text.
+    Returns:
+        A dictionary with keys "response_content" and "structured" or "error" in the case of failure.
+    """
+
+    try:
+        return extract_from_text(text=text, text_id=text_id, **kwargs)
+    except Exception as e:
+        logger.error(f"Error processing document {text_id}: {e}")
+        return {"error": str(e)}
