@@ -486,7 +486,9 @@ class SaveJobReturnValueCallback(Callback):
             if isinstance(result, pd.DataFrame) and isinstance(result.columns, pd.MultiIndex):
                 result.columns = multi_index_to_single(result.columns)
 
-            if self.markdown_round_digits is not None:
+            if self.markdown_round_digits is not None and (
+                isinstance(result, pd.DataFrame) or result.dtype != "object"
+            ):
                 result = result.round(self.markdown_round_digits)
 
             with open(str(output_dir / filename), "w") as file:
