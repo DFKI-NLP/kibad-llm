@@ -10,17 +10,6 @@ tokenizer_name: ${oc.env:HF_LOCAL_TOKENIZER_DIR,/ds/models/llms/gpt-oss-20b/}
 # expose chat interface
 is_chat_model: true
 
-# common, older-version-safe fields
-max_new_tokens: 1024
-
-# put loader-related options under model_kwargs to avoid init errors
-model_kwargs:
-  device_map: ${oc.env:HF_DEVICE_MAP,auto}
-  trust_remote_code: true
-  # load_in_8bit: true         # uncomment only if your version supports it here
-  # load_in_4bit: true
-  # torch_dtype: "bfloat16"
-
 # generation settings belong in generate_kwargs for older builds
 generate_kwargs:
   temperature: 0.0
