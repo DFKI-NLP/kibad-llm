@@ -1,4 +1,4 @@
-from collections.abc import Generator, Sequence
+from collections.abc import Generator, Hashable, Sequence
 import json
 import logging
 import os
@@ -76,7 +76,7 @@ def list_of_dicts_to_dict_of_lists_recursive(list_of_dicts):
         return list_of_dicts
 
 
-def _flatten_dict_gen(d, parent_key: tuple[str, ...] = ()) -> Generator:
+def _flatten_dict_gen(d, parent_key: tuple[Hashable, ...] = ()) -> Generator:
     for k, v in d.items():
         new_key = parent_key + (k,)
         if isinstance(v, dict):
@@ -85,7 +85,7 @@ def _flatten_dict_gen(d, parent_key: tuple[str, ...] = ()) -> Generator:
             yield new_key, v
 
 
-def flatten_dict(d: dict[str, Any], pad_keys: bool = True) -> dict[tuple[str, ...], Any]:
+def flatten_dict(d: dict[Hashable, Any], pad_keys: bool = True) -> dict[tuple[Hashable, ...], Any]:
     """Flattens a dictionary with nested keys. Per default, the keys are padded with np.nan to have
     the same length.
 
