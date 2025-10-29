@@ -252,3 +252,38 @@ class TestSaveJobReturnValueCallback:
             )
         else:
             pytest.fail(f"Unsupported extension: {extension}")
+
+    def test_multirun_ids_from_multiple_overrides(self, mock_config, temp_output_dir, extension):
+        """Test creating job IDs from multiple overrides."""
+        callback = SaveJobReturnValueCallback(
+            filenames=f"multirun.{extension}",
+            integrate_multirun_result=True,
+            multirun_create_ids_from_overrides=True,
+        )
+
+        for accuracy, lr, bs in [(0.90, "0.001", 32), (0.92, "0.01", 64), (0.88, "0.1", 128)]:
+            jr = _construct_job_return(
+                overrides=[f"lr={lr}", f"bs={bs}"], return_value={"accuracy": accuracy}
+            )
+            callback.job_returns.append(jr)
+        callback.on_multirun_end(config=mock_config)
+
+        multirun_dir = temp_output_dir / "multirun"
+        fn = multirun_dir / f"multirun.{extension}"
+        assert fn.exists()
+        if extension == "json":
+            with open(fn) as f:
+                data = json.load(f)
+            assert data == {
+                "accuracy": [0.9, 0.92, 0.88],
+                "job_id": ["lr=0.001-bs=32", "lr=0.01-bs=64", "lr=0.1-bs=128"],
+            }
+        elif extension == "md":
+            content = fn.read_text()
+            assert content == (
+                "| job_id         |   ('accuracy',) |\n"
+                "|:---------------|----------------:|\n"
+                "| lr=0.001-bs=32 |            0.9  |\n"
+                "| lr=0.01-bs=64  |            0.92 |\n"
+                "| lr=0.1-bs=128  |            0.88 |"
+            )
