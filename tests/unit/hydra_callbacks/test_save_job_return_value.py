@@ -1,5 +1,4 @@
 import json
-import pickle
 
 from hydra.core.utils import JobReturn, JobStatus
 from omegaconf import OmegaConf
@@ -38,7 +37,7 @@ def _construct_job_return(overrides, return_value) -> JobReturn:
     return job_return
 
 
-@pytest.fixture(params=["json", "pkl", "md"])
+@pytest.fixture(params=["json", "md"])
 def extension(request):
     """Fixture for different file extensions."""
     return request.param
@@ -56,11 +55,11 @@ class TestSaveJobReturnValueCallback:
     def test_init_custom_params(self):
         """Test initialization with custom parameters."""
         callback = SaveJobReturnValueCallback(
-            filenames=["result.json", "result.pkl"],
+            filenames=["result.json", "result.md"],
             integrate_multirun_result=True,
             multirun_job_id_key="run_id",
         )
-        assert callback.filenames == ["result.json", "result.pkl"]
+        assert callback.filenames == ["result.json", "result.md"]
         assert callback.integrate_multirun_result is True
         assert callback.multirun_job_id_key == "run_id"
 
@@ -83,10 +82,6 @@ class TestSaveJobReturnValueCallback:
             with open(file_name) as f:
                 data = json.load(f)
             assert data == {"accuracy": 0.95, "loss": 0.05}
-        elif extension == "pkl":
-            with open(file_name, "rb") as f:
-                data = pickle.load(f)
-            assert data == {"accuracy": 0.95, "loss": 0.05}
         elif extension == "md":
             content = file_name.read_text()
             assert content == (
@@ -104,11 +99,11 @@ class TestSaveJobReturnValueCallback:
             overrides=["model=resnet", "lr=0.001"], return_value={"accuracy": 0.95, "loss": 0.05}
         )
 
-        callback = SaveJobReturnValueCallback(filenames=["result.json", "result.pkl"])
+        callback = SaveJobReturnValueCallback(filenames=["result.json", "result.md"])
         callback.on_job_end(config=mock_config, job_return=job_return)
 
         assert (temp_output_dir / "result.json").exists()
-        assert (temp_output_dir / "result.pkl").exists()
+        assert (temp_output_dir / "result.md").exists()
 
     def test_paths_file_creation(self, mock_config, temp_output_dir, tmp_path):
         """Test creation of paths file."""
@@ -151,10 +146,6 @@ class TestSaveJobReturnValueCallback:
                 "1": {"accuracy": 0.92},
                 "2": {"accuracy": 0.88},
             }
-        elif extension == "pkl":
-            with open(fn, "rb") as f:
-                data_pkl = pickle.load(f)
-            assert data_pkl == {0: {"accuracy": 0.9}, 1: {"accuracy": 0.92}, 2: {"accuracy": 0.88}}
         elif extension == "md":
             content = fn.read_text()
             assert content == (
@@ -207,26 +198,6 @@ class TestSaveJobReturnValueCallback:
                     "std": pytest.approx(0.02),
                 }
             }
-        elif extension == "pkl":
-            # check pickle
-            with open(fn, "rb") as f:
-                data = pickle.load(f)
-            assert data == {"accuracy": [0.9, 0.92, 0.88]}
-            # check aggregated
-            with open(fn_aggregated, "rb") as f:
-                data_aggregated = pickle.load(f)
-            assert data_aggregated == {
-                "accuracy": {
-                    "25%": pytest.approx(0.89),
-                    "50%": pytest.approx(0.9),
-                    "75%": pytest.approx(0.91),
-                    "count": 3.0,
-                    "max": 0.92,
-                    "mean": 0.9,
-                    "min": 0.88,
-                    "std": pytest.approx(0.02),
-                }
-            }
 
         elif extension == "md":
             content = fn.read_text()
@@ -266,13 +237,6 @@ class TestSaveJobReturnValueCallback:
         if extension == "json":
             with open(fn) as f:
                 data = json.load(f)
-            assert data == {
-                "accuracy": [0.9, 0.92, 0.88],
-                "job_id": ["lr=0.001", "lr=0.01", "lr=0.1"],
-            }
-        elif extension == "pkl":
-            with open(fn, "rb") as f:
-                data = pickle.load(f)
             assert data == {
                 "accuracy": [0.9, 0.92, 0.88],
                 "job_id": ["lr=0.001", "lr=0.01", "lr=0.1"],

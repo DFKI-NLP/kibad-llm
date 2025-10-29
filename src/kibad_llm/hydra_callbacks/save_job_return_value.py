@@ -3,7 +3,6 @@ import json
 import logging
 import os
 from pathlib import Path
-import pickle
 from typing import Any
 
 from hydra.core.utils import JobReturn
@@ -183,8 +182,8 @@ class SaveJobReturnValueCallback(Callback):
     -------
     filenames: str or list[str] (default: "job_return_value.json")
         The filename(s) of the file(s) to save the job return-value to. If it ends with ".json",
-        the return-value will be saved as a json file. If it ends with ".pkl", the return-value will be
-        saved as a pickle file, if it ends with ".md", the return-value will be saved as a markdown file.
+        the return-value will be saved as a json file. If it ends with ".md", the return-value will be
+        saved as a markdown file.
     integrate_multirun_result: bool (default: True)
         If True, the job return-values of all jobs from a multi-run will be rearranged into a dict of lists (maybe
         nested), where the keys are the keys of the job return-values and the values are lists of the corresponding
@@ -347,10 +346,7 @@ class SaveJobReturnValueCallback(Callback):
         self.log.info(f"Saving job_return in {output_dir / filename}")
         output_dir.mkdir(parents=True, exist_ok=True)
         assert output_dir is not None
-        if filename.endswith(".pkl"):
-            with open(str(output_dir / filename), "wb") as file:
-                pickle.dump(obj, file, protocol=4)
-        elif filename.endswith(".json"):
+        if filename.endswith(".json"):
             # Convert PyTorch tensors and numpy arrays to native python types
             obj_py = to_py_obj(obj)
             with open(str(output_dir / filename), "w") as file:
