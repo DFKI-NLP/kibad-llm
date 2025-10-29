@@ -1,6 +1,7 @@
-from collections.abc import Generator, Hashable, Sequence
+from collections.abc import Generator, Sequence
 import json
 import logging
+import math
 import os
 from pathlib import Path
 from typing import Any
@@ -75,7 +76,7 @@ def list_of_dicts_to_dict_of_lists_recursive(list_of_dicts):
         return list_of_dicts
 
 
-def _flatten_dict_gen(d, parent_key: tuple[Hashable, ...] = ()) -> Generator:
+def _flatten_dict_gen(d, parent_key: tuple[str | int, ...] = ()) -> Generator:
     for k, v in d.items():
         new_key = parent_key + (k,)
         if isinstance(v, dict):
@@ -84,7 +85,9 @@ def _flatten_dict_gen(d, parent_key: tuple[Hashable, ...] = ()) -> Generator:
             yield new_key, v
 
 
-def flatten_dict(d: dict[Hashable, Any], pad_keys: bool = True) -> dict[tuple[Hashable, ...], Any]:
+def flatten_dict(
+    d: dict[str | int, Any], pad_keys: bool = True
+) -> dict[tuple[str | int, ...], Any]:
     """Flattens a dictionary with nested keys. Per default, the keys are padded with np.nan to have
     the same length.
 
@@ -108,7 +111,9 @@ def flatten_dict(d: dict[Hashable, Any], pad_keys: bool = True) -> dict[tuple[Ha
     return result
 
 
-def unflatten_dict(d: dict[tuple[Hashable, ...], Any], unpad_keys: bool = True) -> dict[Hashable, Any] | Any:
+def unflatten_dict(
+    d: dict[tuple[str | int, ...], Any], unpad_keys: bool = True
+) -> dict[str | int, Any] | Any:
     """Unflattens a dictionary with nested keys. Per default, the keys are unpadded by removing
     np.nan values.
 
@@ -122,7 +127,7 @@ def unflatten_dict(d: dict[tuple[Hashable, ...], Any], unpad_keys: bool = True) 
         >>> unflatten_dict(d)
         {'a': {'b': {'c': 1, 'd': 2}, 'e': 3}}
     """
-    result: dict[str, Any] = {}
+    result: dict[str | int, Any] = {}
     for k, v in d.items():
         if unpad_keys:
             k = tuple([ki for ki in k if not pd.isna(ki)])
@@ -296,7 +301,7 @@ class SaveJobReturnValueCallback(Callback):
                     )
                 # add the aggregation keys (e.g. mean, min, ...) as most inner keys and convert back to dict
                 # TODO: check if "type ignore" is really fine and necessary here
-                obj_flat_aggregated: dict[tuple[str, ...], Any] = df_described.T.stack().to_dict()  # type: ignore
+                obj_flat_aggregated: dict[tuple[str | int, ...], Any] = df_described.T.stack().to_dict()  # type: ignore
                 # unflatten because _save() works better with nested dicts. But don't remove key padding
                 # since this is required for proper unstacking in _save() for markdown files.
                 obj_aggregated = unflatten_dict(obj_flat_aggregated, unpad_keys=False)
