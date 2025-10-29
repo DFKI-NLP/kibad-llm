@@ -8,9 +8,10 @@ model_name: ${oc.env:HF_LOCAL_MODEL_DIR,/ds/models/llms/gpt-oss-20b/}
 tokenizer_name: ${oc.env:HF_LOCAL_TOKENIZER_DIR,/ds/models/llms/gpt-oss-20b/}
 
 # generation settings
-temperature: 0.0
-top_p: 1.0
-max_new_tokens: 1024
+default_kwargs:
+  temperature: 0.0
+  top_p: 1.0
+  max_new_tokens: 1024
 
 # loading options
 device_map: ${oc.env:HF_DEVICE_MAP,auto}        # e.g., "auto", "cuda:0", or explicit mapping
