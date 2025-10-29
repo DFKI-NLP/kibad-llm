@@ -216,6 +216,67 @@ class TestSaveJobReturnValueCallback:
                 "| accuracy |  0.89 |   0.9 |  0.91 |       3 |  0.92 |    0.9 |  0.88 |  0.02 |"
             )
 
+    def test_multirun_with_aggregation_nested_return_values(
+        self, mock_config, temp_output_dir, extension
+    ):
+        """Test multirun result with aggregation for nested return values."""
+        callback = SaveJobReturnValueCallback(
+            filenames=f"multirun.{extension}",
+            integrate_multirun_result=True,
+            multirun_create_ids_from_overrides=False,
+            multirun_aggregator_blacklist=["min", "25%", "50%", "75%", "max", "count"],
+        )
+
+        for accuracy, loss in [(0.90, 0.1), (0.92, 0.2), (0.88, 0.15)]:
+            jr = _construct_job_return(
+                overrides=[], return_value={"metrics": {"accuracy": accuracy}, "loss": loss}
+            )
+            callback.job_returns.append(jr)
+
+        callback.on_multirun_end(config=mock_config)
+
+        multirun_dir = temp_output_dir / "multirun"
+        fn = multirun_dir / f"multirun.{extension}"
+        assert fn.exists()
+        fn_aggregated = multirun_dir / f"multirun.aggregated.{extension}"
+        assert fn_aggregated.exists()
+
+        # check individual results
+        if extension == "json":
+            with open(fn) as f:
+                data = json.load(f)
+            assert data == {"loss": [0.1, 0.2, 0.15], "metrics": {"accuracy": [0.9, 0.92, 0.88]}}
+            # check aggregated result
+            with open(fn_aggregated) as f:
+                data_aggregated = json.load(f)
+            assert data_aggregated == {
+                "metrics": {
+                    "accuracy": {"mean": pytest.approx(0.9), "std": pytest.approx(0.02)},
+                },
+                "loss": {"mean": pytest.approx(0.15), "std": pytest.approx(0.05)},
+            }
+        elif extension == "md":
+            content = fn.read_text()
+            assert content == (
+                "|    |   ('loss', nan) |   ('metrics', 'accuracy') |\n"
+                "|---:|----------------:|--------------------------:|\n"
+                "|  0 |            0.1  |                      0.9  |\n"
+                "|  1 |            0.2  |                      0.92 |\n"
+                "|  2 |            0.15 |                      0.88 |"
+            )
+            # check aggregated
+            content_aggregated = fn_aggregated.read_text()
+            # TODO: this looks odd
+            assert content_aggregated == (
+                "|                         |   mean |    std |    nan |\n"
+                "|:------------------------|-------:|-------:|-------:|\n"
+                "| ('loss', 'mean')        |  nan   | nan    |   0.15 |\n"
+                "| ('loss', 'std')         |  nan   | nan    |   0.05 |\n"
+                "| ('metrics', 'accuracy') |    0.9 |   0.02 | nan    |"
+            )
+        else:
+            pytest.fail(f"Unsupported extension: {extension}")
+
     def test_multirun_ids_from_overrides(self, mock_config, temp_output_dir, extension):
         """Test creating job IDs from overrides."""
         callback = SaveJobReturnValueCallback(
