@@ -4,7 +4,7 @@ import logging
 import os
 from pathlib import Path
 import pickle
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any
 
 from hydra.core.utils import JobReturn
 from hydra.experimental.callback import Callback
@@ -48,7 +48,7 @@ def list_of_dicts_to_dict_of_lists_recursive(list_of_dicts):
         {'a': [1, None], 'b': {'c': [2, None]}}
 
     Args:
-        list_of_dicts (List[dict]): A list of dicts.
+        list_of_dicts (list[dict]): A list of dicts.
 
     Returns:
         dict: An arbitrarily nested dict of lists.
@@ -154,11 +154,11 @@ def overrides_to_identifiers(
         ['b=2-c=3', 'b=2-c=4', 'b=3-c=3']
 
     Args:
-        overrides_per_result (List[List[str]]): A list of lists of overrides.
+        overrides_per_result (list[list[str]]): A list of lists of overrides.
         sep (str, optional): The separator to use between the overrides. Defaults to "-".
 
     Returns:
-        List[str]: A list of identifiers.
+        list[str]: A list of identifiers.
     """
     # get the overrides that are not identical for all results
     overrides_per_result_transposed = np.array(overrides_per_result).T.tolist()
@@ -181,7 +181,7 @@ class SaveJobReturnValueCallback(Callback):
 
     params:
     -------
-    filenames: str or List[str] (default: "job_return_value.json")
+    filenames: str or list[str] (default: "job_return_value.json")
         The filename(s) of the file(s) to save the job return-value to. If it ends with ".json",
         the return-value will be saved as a json file. If it ends with ".pkl", the return-value will be
         saved as a pickle file, if it ends with ".md", the return-value will be saved as a markdown file.
@@ -190,7 +190,7 @@ class SaveJobReturnValueCallback(Callback):
         nested), where the keys are the keys of the job return-values and the values are lists of the corresponding
         values of all jobs. This is useful if you want to access specific values of all jobs in a multi-run all at once.
         Also, aggregated values (e.g. mean, min, max) are created for all numeric values and saved in another file.
-    multirun_aggregator_blacklist: List[str] (default: None)
+    multirun_aggregator_blacklist: list[str] (default: None)
         A list of keys to exclude from the aggregation (of multirun results), such as "count" or "25%". If None,
         all keys are included. See pd.DataFrame.describe() for possible aggregation keys.
         For numeric values, it is recommended to use ["min", "25%", "50%", "75%", "max"]
