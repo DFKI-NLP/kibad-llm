@@ -356,13 +356,14 @@ class TestSaveJobReturnValueCallback:
             else:
                 pytest.fail(f"Unsupported extension: {extension}")
 
+    @pytest.mark.parametrize("integrate_multirun_result", [True, False])
     def test_multirun_with_aggregation_nested_return_values(
-        self, mock_config, temp_output_dir, extension
+        self, mock_config, temp_output_dir, extension, integrate_multirun_result
     ):
         """Test multirun result with aggregation for nested return values."""
         callback = SaveJobReturnValueCallback(
             filenames=f"multirun.{extension}",
-            integrate_multirun_result=True,
+            integrate_multirun_result=integrate_multirun_result,
             multirun_create_ids_from_overrides=True,
             multirun_aggregator_blacklist=["min", "25%", "50%", "75%", "max", "count"],
         )
@@ -383,43 +384,65 @@ class TestSaveJobReturnValueCallback:
         multirun_dir = temp_output_dir / "multirun"
         fn = multirun_dir / f"multirun.{extension}"
         assert fn.exists()
-        fn_aggregated = multirun_dir / f"multirun.aggregated.{extension}"
-        assert fn_aggregated.exists()
 
         # check individual results
-        if extension == "json":
-            with open(fn) as f:
-                data = json.load(f)
-            assert data == {
-                "job_id": ["lr=0.001-bs=32", "lr=0.01-bs=64", "lr=0.1-bs=128"],
-                "loss": [0.1, 0.2, 0.15],
-                "metrics": {"accuracy": [0.9, 0.92, 0.88]},
-            }
-            # check aggregated result
-            with open(fn_aggregated) as f:
-                data_aggregated = json.load(f)
-            assert data_aggregated == {
-                "metrics": {
-                    "accuracy": {"mean": pytest.approx(0.9), "std": pytest.approx(0.02)},
-                },
-                "loss": {"mean": pytest.approx(0.15), "std": pytest.approx(0.05)},
-            }
-        elif extension == "md":
-            content = fn.read_text()
-            assert content == (
-                "| job_id         |   loss |   metrics.accuracy |\n"
-                "|:---------------|-------:|-------------------:|\n"
-                "| lr=0.001-bs=32 |   0.1  |               0.9  |\n"
-                "| lr=0.01-bs=64  |   0.2  |               0.92 |\n"
-                "| lr=0.1-bs=128  |   0.15 |               0.88 |"
-            )
-            # check aggregated
-            content_aggregated = fn_aggregated.read_text()
-            assert content_aggregated == (
-                "|                  |   mean |   std |\n"
-                "|:-----------------|-------:|------:|\n"
-                "| loss             |   0.15 |  0.05 |\n"
-                "| metrics.accuracy |   0.9  |  0.02 |"
-            )
+        if integrate_multirun_result:
+            fn_aggregated = multirun_dir / f"multirun.aggregated.{extension}"
+            assert fn_aggregated.exists()
+
+            if extension == "json":
+                with open(fn) as f:
+                    data = json.load(f)
+                assert data == {
+                    "job_id": ["lr=0.001-bs=32", "lr=0.01-bs=64", "lr=0.1-bs=128"],
+                    "loss": [0.1, 0.2, 0.15],
+                    "metrics": {"accuracy": [0.9, 0.92, 0.88]},
+                }
+                # check aggregated result
+                with open(fn_aggregated) as f:
+                    data_aggregated = json.load(f)
+                assert data_aggregated == {
+                    "metrics": {
+                        "accuracy": {"mean": pytest.approx(0.9), "std": pytest.approx(0.02)},
+                    },
+                    "loss": {"mean": pytest.approx(0.15), "std": pytest.approx(0.05)},
+                }
+            elif extension == "md":
+                content = fn.read_text()
+                assert content == (
+                    "| job_id         |   loss |   metrics.accuracy |\n"
+                    "|:---------------|-------:|-------------------:|\n"
+                    "| lr=0.001-bs=32 |   0.1  |               0.9  |\n"
+                    "| lr=0.01-bs=64  |   0.2  |               0.92 |\n"
+                    "| lr=0.1-bs=128  |   0.15 |               0.88 |"
+                )
+                # check aggregated
+                content_aggregated = fn_aggregated.read_text()
+                assert content_aggregated == (
+                    "|                  |   mean |   std |\n"
+                    "|:-----------------|-------:|------:|\n"
+                    "| loss             |   0.15 |  0.05 |\n"
+                    "| metrics.accuracy |   0.9  |  0.02 |"
+                )
+            else:
+                pytest.fail(f"Unsupported extension: {extension}")
         else:
-            pytest.fail(f"Unsupported extension: {extension}")
+            if extension == "json":
+                with open(fn) as f:
+                    data_json = json.load(f)
+                assert data_json == {
+                    "lr=0.001-bs=32": {"loss": 0.1, "metrics": {"accuracy": 0.9}},
+                    "lr=0.01-bs=64": {"loss": 0.2, "metrics": {"accuracy": 0.92}},
+                    "lr=0.1-bs=128": {"loss": 0.15, "metrics": {"accuracy": 0.88}},
+                }
+            elif extension == "md":
+                content = fn.read_text()
+                assert content == (
+                    "|                |   loss |   metrics.accuracy |\n"
+                    "|:---------------|-------:|-------------------:|\n"
+                    "| lr=0.001-bs=32 |   0.1  |               0.9  |\n"
+                    "| lr=0.01-bs=64  |   0.2  |               0.92 |\n"
+                    "| lr=0.1-bs=128  |   0.15 |               0.88 |"
+                )
+            else:
+                pytest.fail(f"Unsupported extension: {extension}")
