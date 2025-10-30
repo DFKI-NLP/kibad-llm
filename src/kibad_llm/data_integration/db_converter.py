@@ -11,6 +11,12 @@ import yaml
 
 from kibad_llm.config import DATA_DIR
 
+# This list contains only the json keys as single entities that are queried
+# separately from the core query that retrieves results from the table core_zotaddon.
+# Any values retrieved via the core query, e.g.
+# start_year, end_year, spatial_extent etc that are also single entities, do not need
+# to be listed here because they are automatically written as key:value pairs where
+# value is NOT a list.
 SINGLE_ENTITIES = [
     "project",
     "transformation_potential",
