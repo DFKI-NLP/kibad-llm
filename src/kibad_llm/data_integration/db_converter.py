@@ -6,9 +6,23 @@ from typing import Any
 
 from dotenv import load_dotenv
 import psycopg2
+from tqdm import tqdm
 import yaml
 
 from kibad_llm.config import DATA_DIR
+
+SINGLE_ENTITIES = [
+    "project",
+    "transformation_potential",
+    "spacial_extent",
+    "spacial_resolution",
+    "spacial_measurements",
+    "temporal_extent",
+    "temporal_resolution",
+    "temporal_measurements",
+    "start_year",
+    "end_year",
+]
 
 
 def query_core(
@@ -71,21 +85,9 @@ def main(
     with open(queries_path, encoding="utf-8") as f:
         queries_yaml = yaml.safe_load(f)
 
-
     core_query = queries_yaml["CORE_QUERY"]
     vocab_queries = {k: queries_yaml[v] for k, v in queries_yaml["VOCAB_QUERY_NAMES"].items()}
-    SINGLE_ENTITIES = [
-        "project",
-        "transformation_potential",
-        "spacial_extent",
-        "spacial_resolution",
-        "spacial_measurements",
-        "temporal_extent",
-        "temporal_resolution",
-        "temporal_measurements",
-        "start_year",
-        "end_year",
-    ]
+
     with psycopg2.connect(
         host=host,
         port=port,
@@ -93,21 +95,33 @@ def main(
         user=user,
         password=password,
     ) as conn:
+
         with conn.cursor() as cursor:
-            # if cursor.description is None:
-            #     raise ValueError("Cursor description is None. Query might have failed.")
+
             results: list[tuple] = query_core(cursor, core_query)
+            if cursor.description is None:
+                raise ValueError("Cursor description is None. Query might have failed.")
             column_names: list[str] = [desc[0] for desc in cursor.description]
             with open(filepath, "w", encoding="utf-8") as f:
-                for result in results:
+                for result in tqdm(results, "Exporting DB entries to JSONL"):
                     row_dict: dict[str, Any] = dict(zip(column_names, result))
                     for query_name, query in vocab_queries.items():
                         vocab_results: list[tuple] = query_core(cursor, query, (result[0],))
+                        if cursor.description is None:
+                            raise ValueError(
+                                "Cursor description is None. Query might have failed."
+                            )
                         vocab_column_names: list[str] = [desc[0] for desc in cursor.description]
 
                         if query_name in SINGLE_ENTITIES:
                             if vocab_results:
-                                row_dict[query_name] = format_result(vocab_results[0], vocab_column_names)
+                                if len(vocab_results) > 1:
+                                    raise ValueError(
+                                        f"Expected a single result only for {query_name}, got {len(vocab_results)}."
+                                    )
+                                row_dict[query_name] = format_result(
+                                    vocab_results[0], vocab_column_names
+                                )
                             else:
                                 row_dict[query_name] = None
                         else:
