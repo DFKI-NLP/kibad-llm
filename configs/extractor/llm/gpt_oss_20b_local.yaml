@@ -1,16 +1,12 @@
-# Example configuration for using GPT-OSS-20B model locally with LlamaIndex
-# See models/README.md for instructions.
-# YAML
-_target_: llama_index.llms.huggingface.HuggingFaceLLM
+_target_: llama_index.llms.ollama.Ollama
 
-# local paths (taken from your current file)
-model_name: ${oc.env:HF_LOCAL_MODEL_DIR,/ds/models/llms/gpt-oss-20b/}
-tokenizer_name: ${oc.env:HF_LOCAL_TOKENIZER_DIR,/ds/models/llms/gpt-oss-20b/}
+# Ollama server and model
+model: "gpt-oss:20b"
+base_url: ${oc.env:OLLAMA_BASE_URL,http://127.0.0.1:11434}
 
-# expose chat interface
-is_chat_model: true
-
-# generation settings belong in generate_kwargs for older builds
-generate_kwargs:
-  temperature: 0.0
-  top_p: 1.0
+# Chat/generation params
+request_timeout: 360
+temperature: 0.0
+top_p: 1.0
+num_predict: 1024
+thinking: false
