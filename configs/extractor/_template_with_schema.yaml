@@ -17,5 +17,5 @@ user_message: |
   {document}
 
 schema:
-  # create the schema from the pydantic model of EcosystemStudyFeatures
-  _target_: kibad_llm.schema.types.EcosystemStudyFeatures.model_json_schema
+  # create the schema from the pydantic model of EcosystemStudyFeaturesWithoutCompounds
+  _target_: kibad_llm.schema.types.EcosystemStudyFeaturesWithoutCompounds.model_json_schema
