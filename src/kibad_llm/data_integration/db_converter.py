@@ -97,13 +97,16 @@ def main(
             # if cursor.description is None:
             #     raise ValueError("Cursor description is None. Query might have failed.")
             results: list[tuple] = query_core(cursor, core_query)
-            column_names: list[str] = [desc[0] for desc in cursor.description]
+            # Fix for mypy error: cursor.description can be None, which is not iterable
+            #  Using (cursor.description or ()) ensures we always have an iterable (empty tuple if None)
+            column_names: list[str] = [desc[0] for desc in (cursor.description or ())]
+
             with open(filepath, "w", encoding="utf-8") as f:
                 for result in results:
                     row_dict: dict[str, Any] = dict(zip(column_names, result))
                     for query_name, query in vocab_queries.items():
                         vocab_results: list[tuple] = query_core(cursor, query, (result[0],))
-                        vocab_column_names: list[str] = [desc[0] for desc in cursor.description]
+                        vocab_column_names: list[str] = [desc[0] for desc in (cursor.description or ())]
 
                         if query_name in SINGLE_ENTITIES:
                             if vocab_results:
