@@ -56,7 +56,8 @@ def get_and_map_keys(
     key: str,
     mapping: Mapping[str, str],
 ) -> dict[str, Any]:
-    """Get a sub-dictionary from `d` by `key` and map its keys using `mapping`.
+    """Get a sub-dictionary from `d` by `key` and map its keys using `mapping`. If the key
+    does not exist in `d` or its value is None, an empty dictionary is used.
 
     Args:
         d: The input dictionary.
@@ -65,5 +66,8 @@ def get_and_map_keys(
     Returns:
         A new dictionary with mapped keys.
     """
-    mapped = {mapping[k]: v for k, v in d[key].items()}
+    d_nested = d.get(key, None)
+    if d_nested is None:
+        d_nested = dict()
+    mapped = {mapping[k]: v for k, v in d_nested.items()}
     return mapped
