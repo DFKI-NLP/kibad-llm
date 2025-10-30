@@ -14,14 +14,6 @@ from kibad_llm.config import DATA_DIR
 SINGLE_ENTITIES = [
     "project",
     "transformation_potential",
-    "spacial_extent",
-    "spacial_resolution",
-    "spacial_measurements",
-    "temporal_extent",
-    "temporal_resolution",
-    "temporal_measurements",
-    "start_year",
-    "end_year",
 ]
 
 
