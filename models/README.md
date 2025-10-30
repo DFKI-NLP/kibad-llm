@@ -33,7 +33,7 @@ srun --partition=RTXA6000-SLT \
      --gpus-per-task=1 \
      --mem-per-cpu=4G \
      --time=1-00:00:00 \
-     uv run --w vllm --cache-dir /netscratch/$USER/cache/uv \
+     uv run -w vllm --cache-dir /netscratch/$USER/cache/uv \
             vllm serve "openai/gpt-oss-20b" \
                        --download-dir=/ds/models/llms/cache \
                        --port=18000
