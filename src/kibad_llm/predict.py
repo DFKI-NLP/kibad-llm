@@ -4,6 +4,7 @@ from collections.abc import Callable
 import logging
 import os
 from pathlib import Path
+import time
 from typing import Any
 
 from datasets import Dataset
@@ -23,7 +24,7 @@ def _file_name_generator(file_names: list[str]):
         yield {"file_name": file_name}
 
 
-def predict(cfg: DictConfig) -> None:
+def predict(cfg: DictConfig) -> dict[str, Any]:
     """Run classification based information extraction on PDF files.
 
     Reads all PDF files from cfg.pdf_directory, converts them to markdown,
@@ -61,11 +62,13 @@ def predict(cfg: DictConfig) -> None:
     logger.info(f"PDF reader config: {dict(cfg.pdf_reader)}")
     pdf_reader = instantiate(cfg.pdf_reader, _convert_="all")
     pdf_reader_wrapped = wrap_map_func(func=pdf_reader, result_key="text")
+    t_start_pdf_conversion = time.perf_counter()
     dataset = dataset.map(
         function=pdf_reader_wrapped,
         input_columns=["file_name"],
         fn_kwargs={"base_path": data_base_path},
     )
+    t_delta_pdf_conversion = time.perf_counter() - t_start_pdf_conversion
 
     logger.info("Instantiating Extractor ...")
     logger.info(f"Extractor config: {dict(cfg.extractor)}")
@@ -74,19 +77,26 @@ def predict(cfg: DictConfig) -> None:
     extractor: Callable[[str, str], dict[str, Any]] = instantiate(cfg.extractor, _convert_="all")
 
     logger.info("Extract information from markdown ...")
+    t_start_extraction = time.perf_counter()
     dataset = dataset.map(
         function=extractor,
         input_columns=["text", "file_name"],
         new_fingerprint=extraction_new_fingerprint,
     )
+    t_delta_extraction = time.perf_counter() - t_start_extraction
 
     logger.info(f"Writing results to {cfg.output_file} ...")
     dataset.to_json(cfg.output_file, force_ascii=False)
+    return {
+        "output_file": cfg.output_file,
+        "time_pdf_conversion": t_delta_pdf_conversion,
+        "time_extraction": t_delta_extraction,
+    }
 
 
 @hydra.main(version_base="1.3", config_path=str(PROJ_ROOT / "configs"), config_name="predict.yaml")
-def main(cfg: DictConfig) -> None:
-    predict(cfg)
+def main(cfg: DictConfig) -> dict[str, Any]:
+    return predict(cfg)
 
 
 if __name__ == "__main__":
