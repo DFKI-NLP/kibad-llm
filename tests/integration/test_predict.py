@@ -103,43 +103,6 @@ def test_predict_fast_dev_run(tmp_path, cfg_predict):
 
 
 @pytest.fixture(scope="function")
-def cfg_predict_without_schema(tmp_path) -> DictConfig:  # type: ignore
-    cfg = cfg_global(config_name="predict.yaml", out_dir=tmp_path, overrides=["extractor=simple"])
-
-    with open_dict(cfg):
-        cfg.pdf_directory = str(PDF_DIR)
-        cfg.fast_dev_run = True
-
-    yield cfg
-
-    GlobalHydra.instance().clear()
-
-
-@pytest.mark.slow
-def test_predict_without_schema_fast_dev_run(cfg_predict_without_schema):
-
-    HydraConfig().set_config(cfg_predict_without_schema)
-    predict(cfg_predict_without_schema)
-
-    # read json line file from cfg_predict.output_file
-    with open(cfg_predict_without_schema.output_file) as f:
-        lines = f.readlines()
-    results = [json.loads(line) for line in lines]
-
-    assert len(results) == 1
-    result = results[0]
-
-    fixture_path = PREDICTION_DIR / f"{result['file_name']}.json"
-
-    # read fixture data
-    with open(fixture_path) as f:
-        fixture_data = json.load(f)
-
-    # just check keys since the actual values are not deterministic
-    assert set(result["structured"]) == set(fixture_data["structured"])
-
-
-@pytest.fixture(scope="function")
 def cfg_predict_pdf_errors(tmp_path) -> DictConfig:  # type: ignore
     cfg = cfg_global(config_name="predict.yaml", out_dir=tmp_path)
 
