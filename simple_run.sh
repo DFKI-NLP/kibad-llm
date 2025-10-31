@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # default options that can be overridden by the use of flags
-# random port per default to prevent script interference. 
+# random port per default to prevent script interference.
 PORT=$(shuf -i 10000-60000 -n 1)  # only ports forwarded through vpn
 PARTITION="RTXA6000-SLT"
 TIME=0-01:00:00
