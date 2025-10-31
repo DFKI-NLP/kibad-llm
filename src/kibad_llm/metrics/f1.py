@@ -5,17 +5,14 @@ from kibad_llm.metric import Metric
 
 class MicroF1Metric(Metric):
     """Computes precision, recall, and F1 score for single- and multi-label classification tasks.
+        WARNING:
+        !This class can obfuscate issues, like an llm returning the same value as prediction 100 times!
 
-        If self.field is set, this class assumes the prediction and reference inputs to be dictionaries.
-        In that case it uses self.field to try and extract the relevant prediction and reference
-        values from the prediction and reference dictionaries.
-        If self.field is none, this class assumes the inputs to be a list, set, or single value.
-        The inputs are later converted into sets by self._prepare_entry.
-        Warning:
-        !This can obfuscate issues, like an llm returning the same value as prediction 100 times!
+        Operates on sets and allows for simple preprocessing, see _prepare_entry for details.
 
     Args:
-        field: The optional field name in the predictions and references to evaluate.
+        field: Optional field key as str.
+               If self.field is set, it is used as key for prediction and reference, which need to be dicts then.
     """
 
     def __init__(self, field: str | None = None) -> None:
