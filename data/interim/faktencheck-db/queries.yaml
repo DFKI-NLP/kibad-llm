@@ -4,7 +4,15 @@ CORE_QUERY: |
       c.bibtex_author,
       c.bibtex_title,
       c.bibtex_year,
-      c.bibtex_type
+      c.bibtex_type,
+      c.spacial_extent as spatial_extent,
+      c.temporal_extent,
+      c.spacial_resolution as spatial_resolution,
+      c.temporal_resolution,
+      c.spacial_measurements as spatial_measurements,
+      c.temporal_measurements,
+      c.start_year,
+      c.end_year
   FROM core_zotaddon c
   WHERE c.status = 'abgeschlossen'
   ORDER BY zotitem_ptr_id ASC,
@@ -130,6 +138,13 @@ NATURAL_REGION_QUERY: |
   WHERE nr.zotaddon_id = %s
   AND nr.naturalregion_id = vnr.id;
 
+PROJECT_QUERY: |
+  SELECT vp.name AS project_name
+  FROM core_zotaddon c,
+      vocabulary_project vp
+  WHERE c.zotitem_ptr_id = %s
+  AND vp.id = c.project_id;
+
 SOIL_QUERY: |
   SELECT sn.name AS name,
       s.depth AS depth
@@ -181,6 +196,7 @@ VOCAB_QUERY_NAMES:
   measure: MEASURE_QUERY
   method: METHOD_QUERY
   natural_region: NATURAL_REGION_QUERY
+  project: PROJECT_QUERY
   soil: SOIL_QUERY
   study_type: STUDY_TYPE_QUERY
   taxa: TAXA_QUERY

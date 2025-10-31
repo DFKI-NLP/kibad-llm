@@ -6,9 +6,21 @@ from typing import Any
 
 from dotenv import load_dotenv
 import psycopg2
+from tqdm import tqdm
 import yaml
 
 from kibad_llm.config import DATA_DIR
+
+# This list contains only the json keys as single entities that are queried
+# separately from the core query that retrieves results from the table core_zotaddon.
+# Any values retrieved via the core query, e.g.
+# start_year, end_year, spatial_extent etc that are also single entities, do not need
+# to be listed here because they are automatically written as key:value pairs where
+# value is NOT a list.
+SINGLE_ENTITIES = [
+    "project",
+    "transformation_potential",
+]
 
 
 def query_core(
@@ -81,24 +93,43 @@ def main(
         user=user,
         password=password,
     ) as conn:
+
         with conn.cursor() as cursor:
+
+            results: list[tuple] = query_core(cursor, core_query)
             if cursor.description is None:
                 raise ValueError("Cursor description is None. Query might have failed.")
-            results: list[tuple] = query_core(cursor, core_query)
             column_names: list[str] = [desc[0] for desc in cursor.description]
             with open(filepath, "w", encoding="utf-8") as f:
-                for result in results:
+                for result in tqdm(results, "Exporting DB entries to JSONL"):
                     row_dict: dict[str, Any] = dict(zip(column_names, result))
                     for query_name, query in vocab_queries.items():
                         vocab_results: list[tuple] = query_core(cursor, query, (result[0],))
+                        if cursor.description is None:
+                            raise ValueError(
+                                "Cursor description is None. Query might have failed."
+                            )
                         vocab_column_names: list[str] = [desc[0] for desc in cursor.description]
-                        if vocab_results:
-                            row_dict[query_name] = [
-                                format_result(vocab_result, vocab_column_names)
-                                for vocab_result in vocab_results
-                            ]
+
+                        if query_name in SINGLE_ENTITIES:
+                            if vocab_results:
+                                if len(vocab_results) > 1:
+                                    raise ValueError(
+                                        f"Expected a single result only for {query_name}, got {len(vocab_results)}."
+                                    )
+                                row_dict[query_name] = format_result(
+                                    vocab_results[0], vocab_column_names
+                                )
+                            else:
+                                row_dict[query_name] = None
                         else:
-                            row_dict[query_name] = None
+                            if vocab_results:
+                                row_dict[query_name] = [
+                                    format_result(vocab_result, vocab_column_names)
+                                    for vocab_result in vocab_results
+                                ]
+                            else:
+                                row_dict[query_name] = None
 
                     f.write(json.dumps(row_dict, ensure_ascii=False) + "\n")
 
