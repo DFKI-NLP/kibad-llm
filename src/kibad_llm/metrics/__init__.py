@@ -1,1 +1,1 @@
-from .f1 import F1SingleLabelMetric
+from .f1 import MicroF1Metric

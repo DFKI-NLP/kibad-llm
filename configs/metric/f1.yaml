@@ -1,0 +1,4 @@
+# F1 score metric for single- or multi-label classification.
+
+_target_: kibad_llm.metrics.MicroF1Metric
+field: ???  # the field in the prediction and reference to compute the F1 score on
