@@ -244,7 +244,8 @@ class EcosystemStudyFeaturesWithoutCompounds(BaseModel):
     temporal_extent: int | None = Field(
         default=None,
         alias="Zeitraum & Zeiteinheit",
-        description="In welchem Zeitraum fanden die Messungen statt (in Jahren???)?",
+        # TODO: is "in Jahren" correct?
+        description="In welchem Zeitraum fanden die Messungen statt (in Jahren)?",
     )
     temporal_resolution: TemporalResolutionEnum | None = Field(
         default=None,
