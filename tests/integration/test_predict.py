@@ -7,7 +7,7 @@ import pytest
 
 from kibad_llm.config import PROJ_ROOT
 from kibad_llm.predict import predict
-from tests.conftest import cfg_global
+from tests.conftest import WRITE_FIXTURE_DATA, cfg_global
 
 PDF_DIR = PROJ_ROOT / "tests" / "fixtures" / "pdfs"
 FILE_NAMES = sorted([f.name for f in PDF_DIR.glob("*.pdf")])
@@ -57,9 +57,10 @@ def test_prediction(file_name, predictions_dict):
 
     prediction_path = PREDICTION_DIR / f"{file_name}.json"
 
-    # write fixture data
-    # with open(prediction_path, "w") as f:
-    #     json.dump(prediction, f, indent=4, ensure_ascii=False)
+    if WRITE_FIXTURE_DATA:
+        # write fixture data
+        with open(prediction_path, "w") as f:
+            json.dump(prediction, f, indent=4, ensure_ascii=False)
 
     # read fixture data
     with open(prediction_path) as f:
