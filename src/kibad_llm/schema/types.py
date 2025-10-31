@@ -21,7 +21,7 @@ class NaturalRegionEnum(str, Enum):
     SCHICHTSTUFENLAND_OBERRHEINGRABEN = "Schichtstufenland beidseits des Oberrheingrabens"
 
 
-# TODO: this is not yet used (compounds are not yet implemented)
+# this is not yet used (compounds are not yet implemented)
 class LocationFederalStateEnum(str, Enum):
     BADEN_WUERTTEMBERG = "Baden-Württemberg"
     BAYERN = "Bayern"
@@ -41,7 +41,8 @@ class LocationFederalStateEnum(str, Enum):
     THUERINGEN = "Thüringen"
 
 
-# TODO: this is not yet used. What is the entry in the Fragenkatalog table for "ecosystem_type" -> "category"? I could not find it.
+# TODO: What is the entry in the Fragenkatalog table for "ecosystem_type" -> "category"? I could not find it.
+# this is not yet used.
 class EcosystemTypeCategoryEnum(str, Enum):
     I_MEERE_UND_KUESTEN = "I Biotoptypengruppen der Meere und Küsten"
     II_BINNENGEWAESSER = "II Biotoptypengruppen der Binnengewässer"
