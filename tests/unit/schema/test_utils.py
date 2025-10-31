@@ -8,7 +8,7 @@ def test_build_schema_description():
     description = build_schema_description(
         EcosystemStudyFeaturesWithoutCompounds.model_json_schema()
     )
-    path_expected = PROJ_ROOT / "tests" / "fixtures" / "schema" / "default.txt"
+    path_expected = PROJ_ROOT / "tests" / "fixtures" / "schema" / "description_default.txt"
     if WRITE_FIXTURE_DATA:
         with open(path_expected, "w") as f:
             f.write(description)
