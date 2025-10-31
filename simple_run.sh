@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
 # default options that can be overridden by the use of flags
-PORT=18433
+# random port per default to prevent script interference. 
+PORT=$(shuf -i 10000-60000 -n 1)  # only ports forwarded through vpn
 PARTITION="RTXA6000-SLT"
 TIME=0-01:00:00
 
@@ -81,7 +82,7 @@ done
 echo ">>> VLLM HAS STARTED"
 
 echo ">>> START UV: uv run $UV_ARGS"
-uv run "$UV_ARGS"
+uv run $UV_ARGS
 echo ">>> DONE WITH UV"
 
 # the job needs to be killed explicitly in some cases.
