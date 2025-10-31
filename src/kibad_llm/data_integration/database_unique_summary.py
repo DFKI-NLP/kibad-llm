@@ -90,7 +90,9 @@ def get_unique_single_and_multi_values(
     return unique_values_single, unique_values_multi
 
 
-def show_unique_values_summary(input_file: str, top_n: int = 20, key_sep: str = ".") -> None:
+def show_unique_values_summary(
+    input_file: str, top_n: int = 20, fields: list[str] | None = None, key_sep: str = "."
+) -> None:
     """
     Show a summary of unique values in a JSONL file with nested entries.
     """
@@ -111,20 +113,25 @@ def show_unique_values_summary(input_file: str, top_n: int = 20, key_sep: str = 
         f"number of unique entries per key:\n{json.dumps(unique_dict_len, indent=2, sort_keys=True)}\n"
     )
 
-    unique_dict_less_k = {
-        k: unique_dict[k] for k in sorted(unique_dict) if len(unique_dict[k]) < top_n
-    }
+    if fields is not None:
+        unique_dict_filtered = {k: unique_dict[k] for k in sorted(unique_dict) if k in fields}
+        msg = f"show unique entries for specified fields ({fields})"
+    else:
+        unique_dict_filtered = {
+            k: unique_dict[k] for k in sorted(unique_dict) if len(unique_dict[k]) < top_n
+        }
+        num_remaining = len(unique_dict_len) - len(unique_dict_filtered)
+        msg = (
+            f"show unique entries for {len(unique_dict_filtered)} keys with less than "
+            f"{top_n} entries (#remaining keys: {num_remaining})"
+        )
     # sort entries for better readability
-    unique_dict_less_k_sorted = dict(
-        sorted(unique_dict_less_k.items(), key=lambda item: len(item[1]))
+    unique_dict_filtered_sorted = dict(
+        sorted(unique_dict_filtered.items(), key=lambda item: len(item[1]))
     )
-    # lines = "\n".join(f'{k}: {v}' for k, v in unique_dict_less_k_sorted.items())
-    lines = json.dumps(unique_dict_less_k_sorted, indent=2, sort_keys=True, ensure_ascii=False)
-    logger.info(
-        f"show unique entries for {len(unique_dict_less_k_sorted)} keys with less "
-        f"than {top_n} entries sorted by number of entries (#remaining keys: "
-        f"{len(unique_dict_len) - len(unique_dict_less_k_sorted)}):\n{lines}"
-    )
+    # lines = "\n".join(f'{k}: {v}' for k, v in unique_dict_filtered_sorted.items())
+    lines = json.dumps(unique_dict_filtered_sorted, indent=2, sort_keys=True, ensure_ascii=False)
+    logger.info(f"{msg}:\n{lines}")
 
 
 if __name__ == "__main__":
@@ -160,6 +167,13 @@ if __name__ == "__main__":
         type=int,
         default=20,
         help="Number of unique entries threshold for displaying keys.",
+    )
+    parser.add_argument(
+        "-f",
+        "--fields",
+        type=str,
+        nargs="+",
+        help="If provided, only show these fields and disrespect parameter --top-n.",
     )
     args = parser.parse_args()
     kwargs = vars(args)
