@@ -1,4 +1,4 @@
-exclude: "^data/.*"
+exclude: "^data/.*|^tests/fixtures/.*"
 
 repos:
   # Core housekeeping
