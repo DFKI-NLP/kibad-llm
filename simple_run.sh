@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 PORT=18433
-PARTITION="RTX3090"
+PARTITION="RTXA6000-SLT"
 TIME=0-01:00:00
 
 while [[ "$1" =~ ^- && ! "$1" == "--" ]]; do case $1 in
@@ -33,20 +33,16 @@ while [[ "$1" =~ ^- && ! "$1" == "--" ]]; do case $1 in
 esac; shift; done
 if [[ "$1" == '--' ]]; then shift; fi
 
-
-
-
-
 export HF_HOME="/netscratch/$USER/.cache/hf"
 
 UUID="$(uuidgen)"
-JOB_NAME="kiba-d_evaluation_$UUID"
-
+JOB_NAME="kiba-d_$UUID"
 
 echo "============================================="
 echo ">>> USING PARTITION $PARTITION"
 echo ">>> MAX TIME $TIME"
 echo ">>> SUBMITTED $(date)"
+echo ">>> VLLM_ARGS $VLLM_ARGS --download-dir=/ds/models/llms/cache --port=$PORT"
 echo ">>> UV_ARGS $UV_ARGS"
 echo ">>> JOB_NAME $JOB_NAME"
 echo "============================================="
@@ -60,27 +56,27 @@ srun --partition=$PARTITION \
      --mem-per-cpu=4G \
      --oversubscribe \
      --time=$TIME \
-     uv run -w vllm --cache-dir /netscratch/$USER/cache/uv \
+     uvx --cache-dir /netscratch/$USER/cache/uv \
          vllm serve "$VLLM_ARGS" \
              --download-dir=/ds/models/llms/cache \
              --port=$PORT&
 
-squeue --name="$JOB_NAME"
 SERVER="$(squeue --name="$JOB_NAME" -O NODELIST -h | awk '{$1=$1};1')"
-VLLM_ENDPOINT="http://${SERVER}.kl.dfki.de:${PORT}/v1"
+# !the name LLM_API_BASE is important as the extractors hydra config looks for it!
+export LLM_API_BASE="http://${SERVER}.kl.dfki.de:${PORT}/v1"
 
-echo "waiting for vllm startup"
-until curl --output /dev/null --silent --fail "${VLLM_ENDPOINT}/models"; do
+echo ">>> WAITING FOR VLLM STARTUP"
+until curl --output /dev/null --silent --fail "${LLM_API_BASE}/models"; do
     printf '.'
     sleep 5
     SERVER="$(squeue --name="$JOB_NAME" -O NODELIST -h | awk '{$1=$1};1')"
-    VLLM_ENDPOINT="http://${SERVER}.kl.dfki.de:${PORT}/v1"
+    export LLM_API_BASE="http://${SERVER}.kl.dfki.de:${PORT}/v1"
 done
-echo "vllm has started"
+echo ">>> VLLM HAS STARTED"
 
-echo "we'd be running uv here"
+echo ">>> START UV: uv run $UV_ARGS"
 uv run "$UV_ARGS"
-echo "döner"
+echo ">>> DONE WITH UV"
 
-# WE NEED TO KILL THE JOB EXPLICITLY
+# the job needs to be killed explicitly in some cases.
 scancel --name=$JOB_NAME
