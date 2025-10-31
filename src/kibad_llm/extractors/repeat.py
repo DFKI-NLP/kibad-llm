@@ -142,8 +142,7 @@ class RepeatingExtractor:
         result = {
             "response_content_list": response_contents,
             "structured_list": structured_outputs,
+            "error_list": errors if any(errors) else None,
             "structured": aggregated_structured,
         }
-        if any(errors):
-            result["error_list"] = errors
         return result

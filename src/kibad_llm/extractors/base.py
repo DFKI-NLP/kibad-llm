@@ -6,7 +6,7 @@ import logging
 from typing import Any
 
 from jsonschema.exceptions import ValidationError
-from jsonschema.validators import validator_for as _validator_for
+from jsonschema.validators import validator_for
 from llama_index.core import Settings
 from llama_index.core.llms import LLM, ChatMessage, MessageRole
 
@@ -80,19 +80,27 @@ def extract_from_text(
     resp = llm.chat(messages, extra_body=vllm_extras)
 
     response_content = getattr(resp.message, "content", "") or ""
-    out: dict[str, Any | None] = {"response_content": response_content, "structured": None}
+    out: dict[str, Any | None] = {
+        "response_content": response_content,
+        "structured": None,
+        "error": None,
+    }
 
     # Parse & validate (schema optional)
     try:
         data = json.loads(response_content)
+        out["structured"] = data
         if schema is not None:
-            validator_cls = _validator_for(schema)
+            validator_cls = validator_for(schema)
             validator_cls.check_schema(schema)
             validator = validator_cls(schema)
             validator.validate(data)
-        out["structured"] = data
-    except (json.JSONDecodeError, ValidationError):
-        logger.warning(f"Failed to obtain/validate structured output for document {text_id}")
+    except json.JSONDecodeError as e:
+        logger.warning(f"Failed to parse JSON output for document {text_id}")
+        out["error"] = f"JSONDecodeError: {str(e)}"
+    except ValidationError as e:
+        logger.warning(f"Failed to validate structured output for document {text_id}")
+        out["error"] = f"ValidationError: {str(e)}"
 
     return out
 
@@ -115,4 +123,5 @@ def extract_from_text_lenient(text: str, text_id: str, **kwargs) -> dict:
         return extract_from_text(text=text, text_id=text_id, **kwargs)
     except Exception as e:
         logger.error(f"Error processing document {text_id}: {e}")
-        return {"error": str(e)}
+        # needs to match the output of extract_from_text
+        return {"error": str(e), "response_content": None, "structured": None}
