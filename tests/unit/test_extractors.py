@@ -46,6 +46,8 @@ def test_extractor(tmp_path, cfg_predict_extractor):
     extractor = instantiate(cfg_predict_extractor.extractor, _convert_="all")
     result = extractor(text_id=file_name, text=text)
 
+    expected_result_path = PROJ_ROOT / "tests" / "fixtures" / "results" / f"{file_name}.json"
+    with open(expected_result_path) as f:
+        expected_result = json.load(f)
     # just check keys since the actual values are not deterministic
-    keys_expected = {"Bundesland", "Lebensräume", "Naturgroßräume"}
-    assert set(result["structured"]) == keys_expected
+    assert set(result["structured"]) == set(expected_result["structured"])
