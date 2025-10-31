@@ -49,6 +49,7 @@ preprocess_prediction:
   # but also the result of the data_integration/json_db_summary.py script:
   # https://github.com/DFKI-NLP/kibad-llm/pull/31#issuecomment-3418782905
   mapping:
+    Bundesland: "location/federal_state"
     Lebensräume: "habitat"
     Naturgroßräume: "natural_region"
     Ökosystemtyp: "ecosystem_type/term"
