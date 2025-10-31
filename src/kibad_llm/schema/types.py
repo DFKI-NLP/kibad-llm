@@ -116,6 +116,75 @@ class LanduseEnum(str, Enum):
     OEFFENTLICHE_EINRICHTUNGEN = "Öffentliche Einrichtungen"
 
 
+class SpatialExtentEnum(str, Enum):
+    BUNDESWEIT = "bundesweit"
+    GLOBAL = "global"
+    KONTINENT = "kontinent"
+    LANDSCHAFT = "landschaft"
+    PLOT = "plot"
+    PUNKT = "punkt"
+    REGION = "region"
+
+
+# TODO: this is the same as SpatialExtentEnum! Is the data correct?
+class SpatialResolutionEnum(str, Enum):
+    BUNDESWEIT = "bundesweit"
+    GLOBAL = "global"
+    KONTINENT = "kontinent"
+    LANDSCHAFT = "landschaft"
+    PLOT = "plot"
+    PUNKT = "punkt"
+    REGION = "region"
+
+
+class TemporalResolutionEnum(str, Enum):
+    JAHRE = "jahre"
+    JAHRZEHNTE = "jahrzehnte"
+    MINUTEN = "minuten"
+    MONATE = "monate"
+    STUNDEN = "stunden"
+    TAGE = "tage"
+    WOCHEN = "wochen"
+
+
+class MethodEnum(str, Enum):
+    CITIZEN_SCIENCE = "Citizen Science"
+    EXPERIMENT = "Experiment"
+    FELDBEOBACHTUNG = "Feldbeobachtung"
+    MODELLIERUNG = "Modellierung"
+    REMOTE_SENSING = "Remote Sensing"
+    REVIEW = "Review"
+    SYNTHESE = "Synthese"
+    UMFRAGE = "Umfrage"
+
+
+class StudyTypeEnum(str, Enum):
+    GUTACHTEN = "Gutachten"
+    META_STUDIE = "Meta-Studie"
+    NICHT_PEER_REVIEWED = "Nicht Peer-Reviewed"
+    ORIGINALSTUDIE = "Originalstudie"
+    PEER_REVIEWED = "Peer-Reviewed"
+    POSITION_PAPER = "Position Paper"
+    TEXT_REVIEW = "Text Review"
+    VOTE_COUNT = "Vote Count"
+
+
+class BiodiversityLevelEnum(str, Enum):
+    ARTENVIELFALT = "Artenvielfalt"
+    FUNKTIONELLE_DIVERSITAET = "Funktionelle Diversität"
+    GENETISCHE_DIVERSITAET = "Genetische Diversität"
+    HABITATDIVERSITAET = "Habitatdiversität"
+    PHYLOGENETISCHE_DIVERSITAET = "Phylogenetische Diversität"
+    STRUKTURELLE_DIVERSITAET = "Strukturelle Diversität"
+    ZUSAMMENSETZUNG_DER_ARTENGEMEINSCHAFT = "Zusammensetzung der Artengemeinschaft"
+
+
+class TransformationPotentialEnum(str, Enum):
+    LEBENSRAUMSPEZIFISCHER_WANDLUNGSPROZESS = "Lebensraumspezifischer Wandlungsprozess"
+    LEBENSRAUMUNABHAENGIGER_WANDLUNGSPROZESS = "Lebensraumunabhängiger Wandlungsprozess"
+    LEBENSRAUMUEBERGREIFENDER_WANDLUNGSPROZESS = "Lebensraumübergreifender Wandlungsprozess"
+
+
 class EcosystemStudyFeaturesWithoutCompounds(BaseModel):
     """Angaben zu den ökosystembezogenen Studienmerkmalen."""
 
