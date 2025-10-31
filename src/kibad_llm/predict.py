@@ -52,12 +52,6 @@ def predict(cfg: DictConfig) -> dict[str, Any]:
         dataset = dataset.take(1)
         set_global_handler("simple")
 
-    if cfg.get("disable_extraction_caching", False):
-        # disable caching for the extraction step
-        extraction_new_fingerprint = str(os.urandom(16).hex())
-    else:
-        extraction_new_fingerprint = None
-
     logger.info("Converting PDF to markdown ...")
     logger.info(f"PDF reader config: {dict(cfg.pdf_reader)}")
     pdf_reader = instantiate(cfg.pdf_reader, _convert_="all")
@@ -81,7 +75,7 @@ def predict(cfg: DictConfig) -> dict[str, Any]:
     dataset = dataset.map(
         function=extractor,
         input_columns=["text", "file_name"],
-        new_fingerprint=extraction_new_fingerprint,
+        load_from_cache_file=cfg.get("extraction_caching", False),
     )
     t_delta_extraction = time.perf_counter() - t_start_extraction
 
