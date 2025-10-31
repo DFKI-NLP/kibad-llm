@@ -1,12 +1,18 @@
 #!/usr/bin/env bash
 
+# default options that can be overridden by the use of flags
 PORT=18433
 PARTITION="RTXA6000-SLT"
 TIME=0-01:00:00
 
+# flag processing for setting vars and displaying help
 while [[ "$1" =~ ^- && ! "$1" == "--" ]]; do case $1 in
   -h | --help )
     echo "
+    Help for the all in one cluster startup script.
+    --------------------------------------------------------------------------------
+    It is recommended to pass flag values wrapped in quotes like '$0 ... -v \"model/id --trust-remote-code\" ...'
+
     -v / --vllm         Arguments with which to run vLLM.
     -po / --port        Port to run vLLM on.                    default=$PORT
     -pa / --partition   Partition to run vLLM on.               default=$PARTITION
