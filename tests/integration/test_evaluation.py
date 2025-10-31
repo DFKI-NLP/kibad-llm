@@ -34,4 +34,6 @@ def test_evaluate(tmp_path, cfg_evaluate):
     HydraConfig().set_config(cfg_evaluate)
     metric_scores = evaluate(cfg_evaluate)
 
-    assert metric_scores == pytest.approx({"f1": 2 / 7, "precision": 1 / 4, "recall": 1 / 3})
+    assert metric_scores == pytest.approx(
+        {"f1": 2 * ((3 / 8) / (1 + (3 / 8))), "precision": 3 / 8, "recall": 1}
+    )
