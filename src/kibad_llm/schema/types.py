@@ -21,6 +21,7 @@ class NaturalRegionEnum(str, Enum):
     SCHICHTSTUFENLAND_OBERRHEINGRABEN = "Schichtstufenland beidseits des Oberrheingrabens"
 
 
+# TODO: this is not yet used (compounds are not yet implemented)
 class LocationFederalStateEnum(str, Enum):
     BADEN_WUERTTEMBERG = "Baden-Württemberg"
     BAYERN = "Bayern"
