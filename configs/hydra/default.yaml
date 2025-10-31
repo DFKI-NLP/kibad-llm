@@ -3,10 +3,19 @@ defaults:
   - override hydra_logging: colorlog
   - override job_logging: colorlog
 
-# save cfg to pickle for reproducibility
-# callbacks:
-#   save_job_info:
-#     _target_: hydra.experimental.callbacks.PickleJobInfoCallback
+callbacks:
+  save_job_return:
+    _target_: kibad_llm.hydra_callbacks.SaveJobReturnValueCallback
+    integrate_multirun_result: true
+    multirun_convert_job_ids: true
+    sort_markdown_columns: true
+    filenames:
+      - job_return_value.json
+      - job_return_value.md
+    multirun_show_file_contents: [job_return_value.md]
+    # file names contain the default separator ("-"), so we change it here to avoid conflicts
+    multirun_overrides_seperator: "#"
+    multirun_aggregator_blacklist: ["min", "25%", "50%", "75%", "max"]
 
 # output directory, generated dynamically on each run
 run:
