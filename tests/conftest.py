@@ -7,6 +7,12 @@ import pytest
 
 from kibad_llm.config import PROJ_ROOT
 
+WRITE_FIXTURE_DATA = False  # set to True to create or update fixture data
+
+
+def test_dont_write_fixture_data():
+    assert not WRITE_FIXTURE_DATA, "WRITE_FIXTURE_DATA is set to True, please set it to False!"
+
 
 def cfg_global(
     overrides=None, out_dir: str | Path | None = None, config_name="predict.yaml"
