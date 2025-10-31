@@ -5,10 +5,14 @@ from kibad_llm.metric import Metric
 
 class MicroF1Metric(Metric):
     """Computes precision, recall, and F1 score for single- and multi-label classification tasks.
-        WARNING:
-        !This class can obfuscate issues, like an llm returning the same value as prediction 100 times!
 
-        Operates on sets and allows for simple preprocessing, see _prepare_entry for details.
+       The metric operates on sets and allows for simple preprocessing, see _prepare_entry for details.
+
+       WARNING:
+       !Since the metric operates on sets, this can obfuscate if the LLM produces duplicate labels
+       !in multi-label settings. E.g., prediction = ["A", "A", "B"] and reference = ["A", "B"] will
+       !be treated as perfect prediction with tp=2, fp=0, fn=0 even though the prediction contains a
+       !duplicate label "A".
 
     Args:
         field: Optional field key as str.
