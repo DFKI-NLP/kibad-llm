@@ -141,6 +141,6 @@ def test_prediction_on_pdf_errors(cfg_predict_pdf_errors):
     error_long_pdf = result_long_pdf.get("error", None)
     assert (
         error_long_pdf
-        == "Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -330017.', "
+        == "Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -328978.', "
         "'type': 'BadRequestError', 'param': None, 'code': 400}}"
     )

@@ -304,3 +304,34 @@ class EcosystemStudyFeaturesWithoutCompounds(BaseModel):
         use_enum_values=True,
         extra="forbid",
     )
+
+
+class EcosystemStudyFeaturesSimple(BaseModel):
+    """Angaben zu den ökosystembezogenen Studienmerkmalen."""
+
+    habitat: list[HabitatEnum] = Field(
+        default_factory=list,
+        alias="Lebensräume",
+        description="Um welchen der folgenden Lebensräume oder in welcher Kombination der folgenden Lebensräume geht es in dem Text?",
+    )
+    natural_region: list[NaturalRegionEnum] = Field(
+        default_factory=list,
+        alias="Naturgroßräume",
+        description="Um welchen der folgenden Naturgroßräume geht es in dem Text?",
+    )
+    climate: list[ClimateEnum] = Field(
+        default_factory=list,
+        alias="Klima",
+        description="Welche Umschreibung trifft auf das Klima des Untersuchungsgebiets zu?",
+    )
+    landuse: list[LanduseEnum] = Field(
+        default_factory=list,
+        alias="Landnutzung",
+        description="Welche Landnutzung wird im oder nahe des Untersuchungsgebietes betrieben? In welche der folgenden Kategorien fällt die Nutzung?",
+    )
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+        use_enum_values=True,
+        extra="forbid",
+    )
