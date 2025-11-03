@@ -12,9 +12,9 @@ from tests.conftest import cfg_global
 # strip extension to have nicer logging output, e.g. tests/integration/test_evaluation.py::test_evaluate[f1]
 # and exclude folders (without extension) and helper configs starting with "_"
 AVAILABLE_METRICS = [
-    os.path.splitext(extractor_yaml)[0]
-    for extractor_yaml in os.listdir(PROJ_ROOT / "configs" / "metric")
-    if os.path.splitext(extractor_yaml)[1] != "" and not extractor_yaml.startswith("_")
+    os.path.splitext(config_yaml)[0]
+    for config_yaml in os.listdir(PROJ_ROOT / "configs" / "metric")
+    if os.path.splitext(config_yaml)[1] != "" and not config_yaml.startswith("_")
 ]
 
 
