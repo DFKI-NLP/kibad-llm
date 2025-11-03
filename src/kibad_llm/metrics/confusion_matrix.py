@@ -15,8 +15,10 @@ class ConfusionMatrix(Metric):
     Args:
         field: Optional field key as str. If self.field is set, it is used as key for
             prediction and reference, which need to be dicts then.
-        unassignable_label: The label to use for false negative annotations. Defaults to "UNASSIGNABLE".
-        undetected_label: The label to use for false positive annotations. Defaults to "UNDETECTED".
+        unassignable_label: Label used on the gold side to encode spurious predicted labels
+            (false positives). Defaults to "UNASSIGNABLE".
+        undetected_label: Label used on the prediction side to encode missed gold labels
+            (false negatives). Defaults to "UNDETECTED".
         show_as_markdown: If True, logs the confusion matrix as markdown on the console when calling compute().
     """
 
@@ -81,11 +83,11 @@ class ConfusionMatrix(Metric):
 
         # False negatives: labels in reference but not in prediction
         for label in reference - prediction:
-            counts[(label, self.unassignable_label)] += 1
+            counts[(label, self.undetected_label)] += 1
 
         # False positives: labels in prediction but not in reference
         for label in prediction - reference:
-            counts[(self.undetected_label, label)] += 1
+            counts[(self.unassignable_label, label)] += 1
 
         return counts
 
@@ -111,19 +113,19 @@ class ConfusionMatrix(Metric):
             gold_labels = res_df.columns
             pred_labels = res_df.index
 
-            # re-arrange index and columns: sort and put undetected_label and unassignable_label at the end
+            # re-arrange index and columns: sort and put reserved labels at the end
             gold_labels_sorted = sorted(
-                [gold_label for gold_label in gold_labels if gold_label != self.undetected_label]
+                [gold_label for gold_label in gold_labels if gold_label != self.unassignable_label]
             )
-            # re-add undetected_label at the end, if it was in the gold labels
-            if self.undetected_label in gold_labels:
-                gold_labels_sorted = gold_labels_sorted + [self.undetected_label]
+            # re-add unassignable_label at the end, if it was in the gold labels
+            if self.unassignable_label in gold_labels:
+                gold_labels_sorted = gold_labels_sorted + [self.unassignable_label]
             pred_labels_sorted = sorted(
-                [pred_label for pred_label in pred_labels if pred_label != self.unassignable_label]
+                [pred_label for pred_label in pred_labels if pred_label != self.undetected_label]
             )
-            # re-add unassignable_label at the end, if it was in the pred labels
-            if self.unassignable_label in pred_labels:
-                pred_labels_sorted = pred_labels_sorted + [self.unassignable_label]
+            # re-add undetected_label at the end, if it was in the pred labels
+            if self.undetected_label in pred_labels:
+                pred_labels_sorted = pred_labels_sorted + [self.undetected_label]
             res_df_sorted = res_df.loc[pred_labels_sorted, gold_labels_sorted]
 
             # transpose and show as markdown: index is now gold, columns is prediction

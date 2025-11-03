@@ -17,8 +17,10 @@ def test_calculate_counts_multilabel_tp_fn_fp():
     ref = {"A", "B"}
     counts = cm.calculate_counts(prediction=pred, reference=ref)
     assert counts[("A", "A")] == 1
-    assert counts[("B", cm.unassignable_label)] == 1
-    assert counts[(cm.undetected_label, "C")] == 1
+    # FN: label in gold but not predicted -> (gold_label, UNDETECTED)
+    assert counts[("B", cm.undetected_label)] == 1
+    # FP: label predicted but not in gold -> (UNASSIGNABLE, pred_label)
+    assert counts[(cm.unassignable_label, "C")] == 1
     # No other spurious counts
     assert len(counts) == 3
 
@@ -28,9 +30,9 @@ def test_prepare_entry_various_types():
     assert cm._prepare_entry(None) == set()
     assert cm._prepare_entry("x") == {"x"}
     assert cm._prepare_entry(["a", "a", "b"]) == {"a", "b"}
-    assert (
-        cm._prepare_entry({"labels": ["a"]}) == {("labels", "a")} if False else True
-    )  # sanity placeholder
+    # Passing a dict without a field leads to an unhashable element; ensure this is surfaced
+    with pytest.raises(TypeError):
+        cm._prepare_entry({"labels": ["a"]})
 
     cm_field = ConfusionMatrix(field="labels")
     assert cm_field._prepare_entry({"labels": ["x", "y", "y"]}) == {"x", "y"}
@@ -51,8 +53,10 @@ def test_update_and_compute_accumulates_and_structures_result():
     res = cm.compute()
     # res is a mapping: gold_label -> {pred_label -> count}
     assert res["A"]["A"] == 1
-    assert res["B"][cm.unassignable_label] == 2
-    assert res[cm.undetected_label]["C"] == 1
+    # FN(B) counted under prediction side as UNDETECTED
+    assert res["B"][cm.undetected_label] == 2
+    # FP(C) counted under gold side as UNASSIGNABLE
+    assert res[cm.unassignable_label]["C"] == 1
     assert res["D"]["D"] == 1
 
 
@@ -77,15 +81,15 @@ def test_errors_on_reserved_labels_in_inputs():
 def test_show_as_markdown_logs(caplog):
     caplog.set_level(logging.INFO, logger="kibad_llm.metrics.confusion_matrix")
     cm = ConfusionMatrix(show_as_markdown=True)
-    cm.update(prediction=["A"], reference=["B"])  # produces FN(B) and no TP
+    cm.update(prediction=["A"], reference=["B"])  # produces FN(B) and FP(A)
     cm.update(prediction=["C"], reference=[])  # produces FP(C)
     _ = cm.compute()
     # Ensure a markdown confusion matrix was logged
     lines = caplog.text.splitlines()
     # discard first line since it contains line number info which may vary
     assert lines[1:] == [
-        "|            |   A |   C |   UNASSIGNABLE |",
-        "|:-----------|----:|----:|---------------:|",
-        "| B          |   0 |   0 |              1 |",
-        "| UNDETECTED |   1 |   1 |              0 |",
+        "|              |   A |   C |   UNDETECTED |",
+        "|:-------------|----:|----:|-------------:|",
+        "| B            |   0 |   0 |            1 |",
+        "| UNASSIGNABLE |   1 |   1 |            0 |",
     ]
