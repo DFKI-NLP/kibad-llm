@@ -81,10 +81,11 @@ def test_show_as_markdown_logs(caplog):
     cm.update(prediction=["C"], reference=[])  # produces FP(C)
     _ = cm.compute()
     # Ensure a markdown confusion matrix was logged
-    assert caplog.text == (
-        "INFO     kibad_llm.metrics.confusion_matrix:confusion_matrix.py:134 Confusion Matrix:\n"
-        "|            |   A |   C |   UNASSIGNABLE |\n"
-        "|:-----------|----:|----:|---------------:|\n"
-        "| B          |   0 |   0 |              1 |\n"
-        "| UNDETECTED |   1 |   1 |              0 |\n"
-    )
+    lines = caplog.text.splitlines()
+    # discard first line since it contains line number info which may vary
+    assert lines[1:] == [
+        "|            |   A |   C |   UNASSIGNABLE |",
+        "|:-----------|----:|----:|---------------:|",
+        "| B          |   0 |   0 |              1 |",
+        "| UNDETECTED |   1 |   1 |              0 |",
+    ]
