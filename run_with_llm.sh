@@ -54,6 +54,8 @@ echo ">>> UV_ARGS $UV_ARGS"
 echo ">>> JOB_NAME $JOB_NAME"
 echo "============================================="
 
+export VLLM_CONFIGURE_LOGGING=0
+
 srun --partition=$PARTITION \
      --job-name="$JOB_NAME" \
      --nodes=1 \
