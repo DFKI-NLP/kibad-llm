@@ -41,8 +41,8 @@ class LocationFederalStateEnum(str, Enum):
     THUERINGEN = "Thüringen"
 
 
-# TODO: What is the entry in the Fragenkatalog table for "ecosystem_type" -> "category"? I could not find it.
-# this is not yet used.
+# this is not yet used
+# IMPORTANT: If we add it, it will form a compound with ecosystem_type_term
 class EcosystemTypeCategoryEnum(str, Enum):
     I_MEERE_UND_KUESTEN = "I Biotoptypengruppen der Meere und Küsten"
     II_BINNENGEWAESSER = "II Biotoptypengruppen der Binnengewässer"
@@ -212,6 +212,7 @@ class EcosystemStudyFeaturesWithoutCompounds(BaseModel):
         alias="Naturgroßräume",
         description="Um welchen der folgenden Naturgroßräume geht es in dem Text?",
     )
+    # Note: This is only a non-compound field because ecosystem_type_category (EcosystemTypeCategoryEnum) is not (yet) added
     ecosystem_type_term: list[EcosystemTypeTermEnum] = Field(
         default_factory=list,
         alias="Ökosystemtyp",
