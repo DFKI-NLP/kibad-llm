@@ -42,7 +42,7 @@ if [[ "$1" == '--' ]]; then shift; fi
 
 export HF_HOME="/netscratch/$USER/.cache/hf"
 
-# use uuid to prevent job colision
+# use uuid to prevent job collision
 UUID="$(uuidgen)"
 JOB_NAME="kiba-d_$UUID"
 
