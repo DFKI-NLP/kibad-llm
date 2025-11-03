@@ -46,9 +46,7 @@ class LocationFederalStateEnum(str, Enum):
 class EcosystemTypeCategoryEnum(str, Enum):
     I_MEERE_UND_KUESTEN = "I Biotoptypengruppen der Meere und Küsten"
     II_BINNENGEWAESSER = "II Biotoptypengruppen der Binnengewässer"
-    III_BINNENLAND_TERRESTRISCH_SEMITERRESTRISCH = (
-        "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
-    )
+    III_BINNENLAND_ = "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
     IV_TECHNISCHE = "IV Technische Biotoptypengruppen"
     V_ALPEN = "V Biotoptypengruppen mit Schwerpunkt in den Alpen"
     VI_WEITERE = "VI Weitere"
