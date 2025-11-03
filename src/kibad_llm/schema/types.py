@@ -66,7 +66,7 @@ class EcosystemTypeTermEnum(str, Enum):
     GEBIRGSRASEN = "Gebirgsrasen (subalpine bis alpine Stufe)"
     GRUNDWASSER_HOHLENGEWAESSER = "Grundwasser und Höhlengewässer"
     GRUEN_FREIFLAECHEN = "Grün- und Freiflächen"
-    HOCH_ZWISCHEN_UeBERGANGSMOORE = "Hoch-, Zwischen- und Übergangsmoore"
+    HOCH_ZWISCHEN_UEBERGANGSMOORE = "Hoch-, Zwischen- und Übergangsmoore"
     HOHLEN = "Höhlen (einschließlich Stollen, Brunnenschächte etc.)"
     KLEINE_UNBEFESTIGTE_FREIFLAECHEN = "Kleine, unbefestigte Freiflächen des besiedelten Bereiches"
     KUESTENDUENEN = "Küstendünen"
