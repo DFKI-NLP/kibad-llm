@@ -138,7 +138,6 @@ class SpatialExtentEnum(str, Enum):
     REGION = "region"
 
 
-# TODO: this is the same as SpatialExtentEnum! Is the data correct?
 class SpatialResolutionEnum(str, Enum):
     BUNDESWEIT = "bundesweit"
     GLOBAL = "global"
