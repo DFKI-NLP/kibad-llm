@@ -148,6 +148,16 @@ class SpatialResolutionEnum(str, Enum):
     REGION = "region"
 
 
+class TemporalExtendUnit(str, Enum):
+    JAHRE = "jahre"
+    JAHRZEHNTE = "jahrzehnte"
+    # MINUTEN = "minuten"  # not in the data
+    MONATE = "monate"
+    STUNDEN = "stunden"
+    TAGE = "tage"
+    WOCHEN = "wochen"
+
+
 class TemporalResolutionEnum(str, Enum):
     JAHRE = "jahre"
     JAHRZEHNTE = "jahrzehnte"
@@ -236,9 +246,13 @@ class EcosystemStudyFeaturesWithoutCompounds(BaseModel):
     )
     temporal_extent: int | None = Field(
         default=None,
-        alias="Zeitraum & Zeiteinheit",
-        # TODO: is "in Jahren" correct?
-        description="In welchem Zeitraum fanden die Messungen statt (in Jahren)?",
+        alias="Zeitraum",
+        description="In welchem Zeitraum fanden die Messungen statt?",
+    )
+    temporal_extent_unit: TemporalExtendUnit | None = Field(
+        default=None,
+        alias="Zeiteinheit",
+        description="In welcher der folgenden Zeiteinheiten ist der Zeitraum angegeben?",
     )
     temporal_resolution: TemporalResolutionEnum | None = Field(
         default=None,
