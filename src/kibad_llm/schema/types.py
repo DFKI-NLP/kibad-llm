@@ -41,8 +41,7 @@ class LocationFederalStateEnum(str, Enum):
     THUERINGEN = "Thüringen"
 
 
-# this is not yet used
-# IMPORTANT: If we add it, it will form a compound with ecosystem_type_term
+# this is not yet used (compound)
 class EcosystemTypeCategoryEnum(str, Enum):
     I_MEERE_UND_KUESTEN = "I Biotoptypengruppen der Meere und Küsten"
     II_BINNENGEWAESSER = "II Biotoptypengruppen der Binnengewässer"
@@ -52,6 +51,7 @@ class EcosystemTypeCategoryEnum(str, Enum):
     VI_WEITERE = "VI Weitere"
 
 
+# this is not yet used (compound)
 class EcosystemTypeTermEnum(str, Enum):
     ANTHROPOGENE_ROHBODEN = "Anthropogene Rohbodenstandorte und Ruderalfluren"
     BAUWERKE = "Bauwerke"
