@@ -210,12 +210,6 @@ class EcosystemStudyFeaturesWithoutCompounds(BaseModel):
         alias="Naturgroßräume",
         description="Um welchen der folgenden Naturgroßräume geht es in dem Text?",
     )
-    # Note: This is only a non-compound field because ecosystem_type_category (EcosystemTypeCategoryEnum) is not (yet) added
-    ecosystem_type_term: list[EcosystemTypeTermEnum] = Field(
-        default_factory=list,
-        alias="Ökosystemtyp",
-        description="Welche der folgenden Ökosysteme werden in der Studie betrachtet?",
-    )
     climate: list[ClimateEnum] = Field(
         default_factory=list,
         alias="Klima",
