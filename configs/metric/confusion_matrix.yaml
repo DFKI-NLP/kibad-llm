@@ -1,0 +1,5 @@
+# Confusion matrix for single- or multi-label classification.
+
+_target_: kibad_llm.metrics.ConfusionMatrix
+field: ???  # the field in the prediction and reference to compute the confusion matrix on
+show_as_markdown: true  # whether to show the confusion matrix as markdown table in the output
