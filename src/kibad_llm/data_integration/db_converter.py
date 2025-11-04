@@ -131,7 +131,7 @@ def main(
                             else:
                                 row_dict[query_name] = None
 
-                    f.write(json.dumps(row_dict, ensure_ascii=False) + "\n")
+                    f.write(json.dumps(row_dict, ensure_ascii=False, sort_keys=True) + "\n")
 
 
 if __name__ == "__main__":
