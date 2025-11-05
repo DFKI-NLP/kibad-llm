@@ -3,13 +3,15 @@
 # Select one or multiple values (depending on cardinality) per key from fixed enums.
 
 system_message: |
-  Bitte lese den folgenden Text vollständig. Der Text ist eine Studie zu einem Ökosystem. Beantworte die folgenden Fragen auf Deutsch, auch wenn der Text auf Englisch ist. Befolge die Angaben zur Kardinalität. Wenn Antwortmöglichkeiten nach einer Frage gegeben sind, wähle nur aus den durch Komma getrennten Antwortmöglichkeiten. Erzeuge die Antwort in validem JSON-Format (nicht embedded Markdown!) mit den folgenden Schlüsseln: Lebensräume, Naturgroßräume, Bundesland.
+  Bitte lese den folgenden Text vollständig. Der Text ist eine Studie zu einem Ökosystem. Beantworte die folgenden Fragen auf Deutsch, auch wenn der Text auf Englisch ist. Befolge die Angaben zur Kardinalität. Wenn Antwortmöglichkeiten nach einer Frage gegeben sind, wähle nur aus den durch Semikolon getrennten Antwortmöglichkeiten. Erzeuge die Antwort in validem JSON-Format (nicht embedded Markdown!) mit den folgenden Schlüsseln: Lebensräume, Naturgroßräume, Klima, Landnutzung. Gib **ausschließlich** das JSON zurück. Keine zusätzlichen Felder, keine Erklärungen.
 
-  Lebensräume: In welchen Lebensräumen wurde die Studie durchgeführt? Kardinalität: 0..* | Antwortmöglichkeiten: Agrar- und Offenland; Binnengewässer und Auen; Boden; Küsten und Küstengewässer; Urbane Räume; Wald
+   Lebensräume: Um welchen der folgenden Lebensräume oder in welcher Kombination der folgenden Lebensräume geht es in dem Text? Kardinalität: 0..* | Zulässige Werte: Agrar- und Offenland; Binnengewässer und Auen; Boden; Küsten und Küstengewässer; Urbane Räume; Wald
 
-  Naturgroßräume: In welchen Naturgroßräumen wurde die Studie durchgeführt? Kardinalität: 0..* | Antwortmöglichkeiten: Alpen; Alpenvorland; Mittelgebirgsschwelle; Nord- und Ostsee; Norddeutsches Tiefland; Schichtstufenland beidseits des Oberrheingrabens
+   Naturgroßräume: Um welchen der folgenden Naturgroßräume geht es in dem Text? Kardinalität: 0..* | Zulässige Werte: Alpen; Alpenvorland; Mittelgebirgsschwelle; Nord- und Ostsee; Norddeutsches Tiefland; Schichtstufenland beidseits des Oberrheingrabens
 
-  Bundesland: In welchen Bundesländern liegt das betrachtete Ökosystem der Studie? Kardinalität: 0..* | Antwortmöglichkeiten: Baden-Württemberg; Bayern; Berlin; Brandenburg; Bremen; Hamburg; Hessen; Mecklenburg-Vorpommern; Niedersachsen; Nordrhein-Westfalen; Rheinland-Pfalz; Saarland; Sachsen; Sachsen-Anhalt; Schleswig-Holstein; Thüringen
+   Klima: Welche Umschreibung trifft auf das Klima des Untersuchungsgebiets zu? Kardinalität: 0..* | Zulässige Werte: Atlantisches Klima; Gebirgsklima; kontinental; maritim; niederschlagsbenachteiligt; niederschlagsnormal; niederschlagsbegünstigt; subkontinental; submaritim
+
+   Landnutzung: Welche Landnutzung wird im oder nahe des Untersuchungsgebietes betrieben? In welche der folgenden Kategorien fällt die Nutzung? Kardinalität: 0..* | Zulässige Werte: Bau; Bergbau und Steinbruch; Brachliegende Flächen; Energieproduktion; Erholung, Freizeit, Sport; Fischerei und Aquakultur; Forstwirtschaft; Handels-, Finanz-, Berufs- und Informationsdienstleistungen; Industrie und Fertigung; Landwirtschaft; Naturnahe und natürliche Flächen, die nicht genutzt werden; Verkehr, Kommunikationsnetzwerke, Lagerung, Schutzwälle; Wasser- und Abfallbehandlung; Wohngebiete; andere Leistung des Primärsektors; Öffentliche Einrichtungen
 
 user_message: |
   Dokument in Markdown Format:

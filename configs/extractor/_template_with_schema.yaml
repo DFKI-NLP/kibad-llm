@@ -1,6 +1,6 @@
 # Template to extract information from ecosystem study documents in Markdown with
 # guided decoding based on a JSON schema.
-# Uses the pydantic model `EcosystemStudyFeatures` to define the schema and a description
+# Uses the pydantic model `EcosystemStudyFeaturesSimple` to define the schema and a description
 # derived from that schema (model field docstrings and value enums) to guide the LLM.
 
 system_message: |
@@ -17,5 +17,5 @@ user_message: |
   {document}
 
 schema:
-  # create the schema from the pydantic model of EcosystemStudyFeatures
-  _target_: kibad_llm.schema.types.EcosystemStudyFeatures.model_json_schema
+  # create the schema from the pydantic model of EcosystemStudyFeaturesSimple
+  _target_: kibad_llm.schema.types.EcosystemStudyFeaturesSimple.model_json_schema
