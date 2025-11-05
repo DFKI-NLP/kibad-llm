@@ -145,7 +145,7 @@ if __name__ == "__main__":
         default=DATA_DIR
         / "interim"
         / "faktencheck-db"
-        / "faktencheck-db-converted_2025-08-19.jsonl",
+        / "faktencheck-db-converted_2025-11-05.jsonl",
     )
     parser.add_argument(
         "--queries_path",

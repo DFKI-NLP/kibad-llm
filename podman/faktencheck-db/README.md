@@ -69,12 +69,26 @@ To start up the containers, run the following command from this directory.
 - Podman: `podman compose up -d`
 - Docker (not recommended): `docker compose up -d`
 
+Note: If you have started the containers previously, they might be cached and you will get an error message with exit code 125
+('Error: creating container storage: the container name "kibad-postgres" is already in use by ...
+You have to remove that container to be able to reuse that name: that name is already in use, or use --replace to instruct Podman to do so.
+exit code: 125')
+
+You can safely ignore these errors as long as the startup exit code is 0.
+
 ### Load SQL Dump
 
 Please make sure to wait a few seconds for all containers to start fully before trying to load the database.
 
-- Import sql file to database: `podman exec -it kibad-postgres bash -c "gzip -cd /tmp/data/2025-08-19_pg-faktencheck_dump.sql.gz | psql -U postgres -d kibad"`
-  - With Docker: `docker exec -it kibad-postgres bash -c "gzip -cd /tmp/data/2025-08-19_pg-faktencheck_dump.sql.gz | psql -U postgres -d kibad"`
+- Import sql file to database: `podman exec -it kibad-postgres bash -c "gzip -cd /tmp/data/2025-11-05_pg-faktencheck_dump.sql.gz | psql -U postgres -d kibad"`
+  - With Docker: `docker exec -it kibad-postgres bash -c "gzip -cd /tmp/data/2025-11-05_pg-faktencheck_dump.sql.gz | psql -U postgres -d kibad"`
+
+Note: If you have started the containers previously, they might be cached and you will get errors when re-importing the dump (or a newer dump). To fix
+this, the current solution is to delete the cached containers with
+
+- `podman rm -f kibad-postgres && podman rm -f kibad-pgadmin`
+
+Then, rerun `podman compose up -d` followed by the import command.
 
 ### Access pgAdmin
 
@@ -108,8 +122,8 @@ To shut down the containers, run the following command from this directory.
 
 ### SQL Dump
 
-- Copy sql file to container: `docker cp directory_containing_sql_dump/2025-08-19_pg-faktencheck_dump.sql kibad-postgres:/2025-08-19_pg-faktencheck_dump.sql`
-- Import sql file to database: `docker exec -it kibad-postgres psql -U postgres -d kibad -f /2025-08-19_pg-faktencheck_dump.sql`
+- Copy sql file to container: `docker cp directory_containing_sql_dump/2025-11-05_pg-faktencheck_dump.sql kibad-postgres:/2025-08-19_pg-faktencheck_dump.sql`
+- Import sql file to database: `docker exec -it kibad-postgres psql -U postgres -d kibad -f /2025-11-05_pg-faktencheck_dump.sql`
 
 ### pgAdmin
 

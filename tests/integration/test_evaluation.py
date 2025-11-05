@@ -10,7 +10,7 @@ from tests.conftest import cfg_global
 # This was produced with the default pipeline configuration on the PDFs in tests/fixtures/pdfs
 PREDICTIONS_FILE = PROJ_ROOT / "tests" / "fixtures" / "evaluation" / "predictions.jsonl"
 # This was produced by converting the Faktencheck-DB via the script in src/kibad_llm/data_integration/db_converter.py
-REFERENCES_FILE = INTERIM_DATA_DIR / "faktencheck-db" / "faktencheck-db-converted_2025-08-19.jsonl"
+REFERENCES_FILE = INTERIM_DATA_DIR / "faktencheck-db" / "faktencheck-db-converted_2025-11-05.jsonl"
 
 
 @pytest.fixture(scope="function")
