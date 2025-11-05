@@ -8,7 +8,7 @@ Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
 - Räumliche Auflösung: Mit welcher räumlichen Auflösung wurden die einzelnen Messungen in der Studie durchgeführt? Kardinalität: 0..1 | Zulässige Werte: bundesweit; global; kontinent; landschaft; plot; punkt; region
 - Anzahl räumlicher Messungen: An wie vielen Stellen wurde gemessen? Kardinalität: 0..1
 - Zeitraum: In welchem Zeitraum fanden die Messungen statt? Kardinalität: 0..1
-- Zeiteinheit: In welcher der folgenden Zeiteinheiten ist der Zeitraum angegeben? Kardinalität: 0..1 | Zulässige Werte: jahre; jahrzehnte; monate; stunden; tage; wochen
+- Zeiteinheit: In welcher der folgenden Zeiteinheiten ist der Zeitraum angegeben? Kardinalität: 0..1 | Zulässige Werte: jahre; jahrzehnte; minuten; monate; stunden; tage; wochen
 - Zeitliche Auflösung: Mit welcher zeitlichen Auflösung wurden die einzelnen Messungen in der Studie durchgeführt? Kardinalität: 0..1 | Zulässige Werte: jahre; jahrzehnte; minuten; monate; stunden; tage; wochen
 - Anzahl zeitlicher Messungen: Zu wie vielen unterschiedlichen Zeitpunkten wurde gemessen? Kardinalität: 0..1
 - Startjahr: In welchem Jahr fand die erste Messung statt? Kardinalität: 0..1
