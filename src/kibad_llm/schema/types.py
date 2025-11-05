@@ -212,7 +212,7 @@ class EcosystemStudyFeaturesWithoutCompounds(BaseModel):
     habitat: list[HabitatEnum] = Field(
         default_factory=list,
         alias="Lebensräume",
-        description="Um welchen der folgenden Lebensräume oder in welcher Kombination der folgenden Lebensräume geht es in dem Text?",
+        description="Um welchen der folgenden Lebensräume oder um welche Kombinationen der folgenden Lebensräume geht es in dem Text?",
     )
     natural_region: list[NaturalRegionEnum] = Field(
         default_factory=list,
@@ -287,7 +287,7 @@ class EcosystemStudyFeaturesWithoutCompounds(BaseModel):
     project: str | None = Field(
         default=None,
         alias="Projekt/Programm",
-        description="Gehört die Studie zu einem größeren Programm oder Projekt, wenn ja welche?",
+        description="Gehört die Studie zu einem größeren Programm oder Projekt, wenn ja zu welchem?",
     )
     biodiversity_level: list[BiodiversityLevelEnum] = Field(
         default_factory=list,
