@@ -287,7 +287,7 @@ class EcosystemStudyFeaturesWithoutCompounds(BaseModel):
     project: str | None = Field(
         default=None,
         alias="Projekt/Programm",
-        description="Gehört die Studie zu einem größeren Programm oder Projekt, wenn ja zu welchem?",
+        description="Gehört die Studie zu einem größeren Programm oder Projekt? Wenn ja, zu welchem?",
     )
     biodiversity_level: list[BiodiversityLevelEnum] = Field(
         default_factory=list,
