@@ -79,6 +79,9 @@ def predict(cfg: DictConfig) -> dict[str, Any]:
     )
     t_delta_extraction = time.perf_counter() - t_start_extraction
 
+    if not cfg.get("store_text_in_predictions", True):
+        dataset = dataset.remove_columns("text")
+
     logger.info(f"Writing results to {cfg.output_file} ...")
     dataset.to_json(cfg.output_file, force_ascii=False)
     return {
