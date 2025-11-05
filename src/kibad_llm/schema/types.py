@@ -148,10 +148,10 @@ class SpatialResolutionEnum(str, Enum):
     REGION = "region"
 
 
-class TemporalExtendUnit(str, Enum):
+class TemporalExtentUnit(str, Enum):
     JAHRE = "jahre"
     JAHRZEHNTE = "jahrzehnte"
-    # MINUTEN = "minuten"  # not in the data
+    MINUTEN = "minuten"
     MONATE = "monate"
     STUNDEN = "stunden"
     TAGE = "tage"
@@ -249,7 +249,7 @@ class EcosystemStudyFeaturesWithoutCompounds(BaseModel):
         alias="Zeitraum",
         description="In welchem Zeitraum fanden die Messungen statt?",
     )
-    temporal_extent_unit: TemporalExtendUnit | None = Field(
+    temporal_extent_unit: TemporalExtentUnit | None = Field(
         default=None,
         alias="Zeiteinheit",
         description="In welcher der folgenden Zeiteinheiten ist der Zeitraum angegeben?",
