@@ -34,5 +34,8 @@ class MetricWithPrepareEntryAsSet(Metric):
         if entry is None:
             return set()
         if isinstance(entry, (list, set)):
-            return set(entry)
+            # convert list entries to tuples (sort each by key to ensure consistent ordering)
+            # to make dicts hashable for the set
+            maybe_tuples = (tuple(sorted(e.items())) if isinstance(e, dict) else e for e in entry)
+            return set(maybe_tuples)
         return {entry}
