@@ -4,17 +4,19 @@ from typing import Any
 
 import pandas as pd
 
-from kibad_llm.metric import Metric
+from kibad_llm.metrics.base import MetricWithPrepareEntryAsSet
 
 logger = logging.getLogger(__name__)
 
 
-class ConfusionMatrix(Metric):
+class ConfusionMatrix(MetricWithPrepareEntryAsSet):
     """Computes a confusion matrix for single- and multi-label classification tasks.
 
+    WARNING:
+    !Since the metric operates on sets, this can obfuscate if the LLM produces duplicate labels
+    !in multi-label settings.
+
     Args:
-        field: Optional field key as str. If self.field is set, it is used as key for
-            prediction and reference, which need to be dicts then.
         unassignable_label: Label used on the gold side to encode spurious predicted labels
             (false positives). Defaults to "UNASSIGNABLE".
         undetected_label: Label used on the prediction side to encode missed gold labels
@@ -24,13 +26,12 @@ class ConfusionMatrix(Metric):
 
     def __init__(
         self,
-        field: str | None = None,
         show_as_markdown: bool = False,
         unassignable_label: str = "UNASSIGNABLE",
         undetected_label: str = "UNDETECTED",
+        **kwargs: Any,
     ):
-        super().__init__()
-        self.field = field
+        super().__init__(**kwargs)
         self.unassignable_label = unassignable_label
         self.undetected_label = undetected_label
         self.show_as_markdown = show_as_markdown
@@ -38,25 +39,6 @@ class ConfusionMatrix(Metric):
 
     def reset(self) -> None:
         self.counts: dict[tuple[str, str], int] = defaultdict(int)
-
-    def _prepare_entry(self, entry: Any) -> set:
-        """Helper method to convert any prediction or reference value into a set of values.
-
-        Uses self.field to retrieve the correct values from a given dict if necessary.
-        Returns empty set when there is no value.
-        Wraps any found values into a set whilst keeping the unique values unaltered
-
-        Args:
-            entry: Any kind of data structure to maybe extract from and eventually wrap in a set.
-        Returns: A set of whatever relevant value was put in.
-        """
-        if self.field is not None:
-            entry = entry.get(self.field, None)
-        if entry is None:
-            return set()
-        if isinstance(entry, (list, set)):
-            return set(entry)
-        return {entry}
 
     def calculate_counts(
         self,
@@ -96,8 +78,8 @@ class ConfusionMatrix(Metric):
             self.counts[key] += value
 
     def _update(self, prediction: Any, reference: Any) -> None:
-        pred_set = self._prepare_entry(prediction)
-        ref_set = self._prepare_entry(reference)
+        pred_set = self._prepare_entry_as_set(prediction)
+        ref_set = self._prepare_entry_as_set(reference)
         new_counts = self.calculate_counts(prediction=pred_set, reference=ref_set)
         self.add_counts(new_counts)
 

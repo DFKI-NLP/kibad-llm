@@ -27,17 +27,17 @@ def test_calculate_counts_multilabel_tp_fn_fp():
 
 def test_prepare_entry_various_types():
     cm = ConfusionMatrix()
-    assert cm._prepare_entry(None) == set()
-    assert cm._prepare_entry("x") == {"x"}
-    assert cm._prepare_entry(["a", "a", "b"]) == {"a", "b"}
+    assert cm._prepare_entry_as_set(None) == set()
+    assert cm._prepare_entry_as_set("x") == {"x"}
+    assert cm._prepare_entry_as_set(["a", "a", "b"]) == {"a", "b"}
     # Passing a dict without a field leads to an unhashable element; ensure this is surfaced
     with pytest.raises(TypeError):
-        cm._prepare_entry({"labels": ["a"]})
+        cm._prepare_entry_as_set({"labels": ["a"]})
 
     cm_field = ConfusionMatrix(field="labels")
-    assert cm_field._prepare_entry({"labels": ["x", "y", "y"]}) == {"x", "y"}
-    assert cm_field._prepare_entry({"other": "z"}) == set()
-    assert cm_field._prepare_entry({"labels": None}) == set()
+    assert cm_field._prepare_entry_as_set({"labels": ["x", "y", "y"]}) == {"x", "y"}
+    assert cm_field._prepare_entry_as_set({"other": "z"}) == set()
+    assert cm_field._prepare_entry_as_set({"labels": None}) == set()
 
 
 def test_update_and_compute_accumulates_and_structures_result():
