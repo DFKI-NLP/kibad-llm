@@ -21,11 +21,11 @@ def test_prepare_entry_as_set_multi_value():
     # list with duplicates
     assert m._prepare_entry_as_set(["a", "a", "b"]) == {"a", "b"}
     # list with None
-    assert m._prepare_entry_as_set(["a", None, "b", None]) == {"a", "b", None}
+    assert m._prepare_entry_as_set(["a", None, "b", None]) == {"a", "b"}
     # set
     assert m._prepare_entry_as_set({"a", "b", "a"}) == {"a", "b"}
     # set with None
-    assert m._prepare_entry_as_set({"a", None, "b", None}) == {"a", "b", None}
+    assert m._prepare_entry_as_set({"a", None, "b", None}) == {"a", "b"}
     # list with dict entries
     assert m._prepare_entry_as_set([{"a": 1}, {"b": 2, "c": 3}]) == {
         (("a", 1),),

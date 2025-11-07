@@ -18,8 +18,11 @@ def _make_hashable_and_order_normalize(
     value: Any, _seen: set[int] | None = None
 ) -> Hashable | tuple[Hashable, ...]:
     """Return a hashable, order-normalized equivalent of the input value.
-    Handles dict, list, tuple, set. Protects against cycles.
-    Falls back to repr(...) for non-hashable scalars.
+    Handles dict, list, tuple, set. Dicts, lists, and sets are converted to tuples with sorted
+    elements to ensure order normalization.
+    Tuples are converted to tuples without sorting to preserve order.
+    Scalar values are returned as-is after checking they are hashable.
+    Protects against cycles.
     """
     if _seen is None:
         _seen = set()
@@ -33,20 +36,22 @@ def _make_hashable_and_order_normalize(
                 # sort by repr of key to ensure consistent ordering
                 sorted(
                     ((k, _make_hashable_and_order_normalize(v, _seen)) for k, v in value.items()),
-                    key=lambda kv: repr(kv[0]),
+                    key=lambda kv: kv[0],
                 )
             )
-        if isinstance(value, (list, tuple, set)):
+        if isinstance(value, (list, set)):
             return tuple(
                 # sort by repr to ensure consistent ordering
-                sorted((_make_hashable_and_order_normalize(v, _seen) for v in value), key=repr)
+                sorted(
+                    _make_hashable_and_order_normalize(v, _seen) for v in value if v is not None
+                )
             )
+        if isinstance(value, tuple):
+            # don't sort tuples, just convert elements
+            return tuple(_make_hashable_and_order_normalize(v, _seen) for v in value)
         # Ensure scalar is hashable
-        try:
-            hash(value)
-            return value
-        except TypeError:
-            return repr(value)
+        hash(value)
+        return value
     finally:
         _seen.remove(obj_id)
 
