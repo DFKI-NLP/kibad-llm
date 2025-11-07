@@ -97,7 +97,7 @@ known_first_party = ["kibad_llm"]
 force_sort_within_sections = true
 
 [tool.flake8]
-ignore = ["E203", "E266", "E402", "E501", "F401", "F841", "C901", "W503", "E731", "E741"]
+ignore = ["E203", "E266", "E402", "E501", "F401", "F841", "C901", "W503", "E731", "E741", "E704"]
 max-line-length = 99
 exclude = [".git", "notebooks", "models", "data", "logs"]
 

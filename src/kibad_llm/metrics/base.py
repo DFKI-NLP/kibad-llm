@@ -1,6 +1,54 @@
-from typing import Any
+from collections.abc import Hashable
+from typing import Any, overload
 
 from kibad_llm.metric import Metric
+
+
+@overload
+def _make_hashable_and_order_normalize(
+    value: tuple | set | dict | list, _seen: set[int] | None = None
+) -> tuple[Hashable, ...]: ...
+
+
+@overload
+def _make_hashable_and_order_normalize(value: Any, _seen: set[int] | None = None) -> Hashable: ...
+
+
+def _make_hashable_and_order_normalize(
+    value: Any, _seen: set[int] | None = None
+) -> Hashable | tuple[Hashable, ...]:
+    """Return a hashable, order-normalized equivalent of the input value.
+    Handles dict, list, tuple, set. Protects against cycles.
+    Falls back to repr(...) for non-hashable scalars.
+    """
+    if _seen is None:
+        _seen = set()
+    obj_id = id(value)
+    if obj_id in _seen:
+        raise ValueError("Cycle detected in structure")
+    _seen.add(obj_id)
+    try:
+        if isinstance(value, dict):
+            return tuple(
+                # sort by repr of key to ensure consistent ordering
+                sorted(
+                    ((k, _make_hashable_and_order_normalize(v, _seen)) for k, v in value.items()),
+                    key=lambda kv: repr(kv[0]),
+                )
+            )
+        if isinstance(value, (list, tuple, set)):
+            return tuple(
+                # sort by repr to ensure consistent ordering
+                sorted((_make_hashable_and_order_normalize(v, _seen) for v in value), key=repr)
+            )
+        # Ensure scalar is hashable
+        try:
+            hash(value)
+            return value
+        except TypeError:
+            return repr(value)
+    finally:
+        _seen.remove(obj_id)
 
 
 class MetricWithPrepareEntryAsSet(Metric):
@@ -33,9 +81,11 @@ class MetricWithPrepareEntryAsSet(Metric):
             entry = entry.get(self.field, None)
         if entry is None:
             return set()
+
+        entry_hashable = _make_hashable_and_order_normalize(entry)
+        # multi-value case
         if isinstance(entry, (list, set)):
-            # convert list entries to tuples (sort each by key to ensure consistent ordering)
-            # to make dicts hashable for the set
-            maybe_tuples = (tuple(sorted(e.items())) if isinstance(e, dict) else e for e in entry)
-            return set(maybe_tuples)
-        return {entry}
+            return set(entry_hashable)
+        # single-value case (also includes tuples and dicts)
+        else:
+            return {entry_hashable}
