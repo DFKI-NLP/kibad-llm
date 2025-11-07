@@ -8,27 +8,23 @@ def test_prepare_entry_as_set_single_value():
     assert m._prepare_entry_as_set(None) == set()
     # simple scalar
     assert m._prepare_entry_as_set("x") == {"x"}
-    # simple dict
-    assert m._prepare_entry_as_set({"a": 1, "b": 2}) == {(("a", 1), ("b", 2))}
-    # tuple
-    assert m._prepare_entry_as_set(("a", "b")) == {("a", "b")}
-    # dict with list value (i.e, non-hashable value)
+    # simple dict: sorts and removes None
+    assert m._prepare_entry_as_set({"b": 2, "a": 1, "c": None}) == {(("a", 1), ("b", 2))}
+    # tuple: does not sort and keeps None
+    assert m._prepare_entry_as_set(("b", "a", None)) == {("b", "a", None)}
+    # dict with list non-hashable value
     with pytest.raises(TypeError):
         assert m._prepare_entry_as_set({"labels": ["a"]})
 
 
 def test_prepare_entry_as_set_multi_value():
     m = MetricWithPrepareEntryAsSet()
-    # list with duplicates
-    assert m._prepare_entry_as_set(["a", "a", "b"]) == {"a", "b"}
-    # list with None
-    assert m._prepare_entry_as_set(["a", None, "b", None]) == {"a", "b"}
-    # set
-    assert m._prepare_entry_as_set({"a", "b", "a"}) == {"a", "b"}
+    # list with duplicates and None
+    assert m._prepare_entry_as_set(["a", "a", "b", None]) == {"a", "b"}
     # set with None
-    assert m._prepare_entry_as_set({"a", None, "b", None}) == {"a", "b"}
-    # list with dict entries
-    assert m._prepare_entry_as_set([{"a": 1}, {"b": 2, "c": 3}]) == {
+    assert m._prepare_entry_as_set({"a", "b", None, "a"}) == {"a", "b"}
+    # list with dict entries and Nones
+    assert m._prepare_entry_as_set([{"a": 1}, {"b": 2, "c": 3, "d": None}, None]) == {
         (("a", 1),),
         (("b", 2), ("c", 3)),
     }
