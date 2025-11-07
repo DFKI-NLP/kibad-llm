@@ -13,6 +13,10 @@ class MicroF1Metric(MetricWithPrepareEntryAsSet):
     !in multi-label settings. E.g., prediction = ["A", "A", "B"] and reference = ["A", "B"] will
     !be treated as perfect prediction with tp=2, fp=0, fn=0 even though the prediction contains a
     !duplicate label "A".
+
+    Args:
+        **kwargs: Keyword arguments for entry-to-set preparation. See
+            `MetricWithPrepareEntryAsSet` for supported options.
     """
 
     def __init__(self, **kwargs) -> None:

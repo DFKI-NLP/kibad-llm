@@ -22,6 +22,8 @@ class ConfusionMatrix(MetricWithPrepareEntryAsSet):
         undetected_label: Label used on the prediction side to encode missed gold labels
             (false negatives). Defaults to "UNDETECTED".
         show_as_markdown: If True, logs the confusion matrix as markdown on the console when calling compute().
+        **kwargs: Additional keyword arguments for entry-to-set preparation. See
+            `MetricWithPrepareEntryAsSet` for supported options.
     """
 
     def __init__(
