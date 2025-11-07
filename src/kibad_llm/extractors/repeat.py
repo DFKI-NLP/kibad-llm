@@ -5,12 +5,16 @@ from .base import extract_from_text_lenient
 
 
 def _majority_vote(values: list) -> Any:
-    """Return the majority value from a list of values."""
+    """Return the majority value from a list of values. Returns None on ties."""
     if len(values) == 0:
         raise ValueError("Cannot perform majority vote on empty list")
     value_counts = Counter(values)
-    majority_value, _ = value_counts.most_common(1)[0]
-    return majority_value
+    most_common = value_counts.most_common()
+    top_value, top_count = most_common[0]
+    # Check for tie: any other value with same top_count
+    if any(c == top_count for _, c in most_common[1:]):
+        return None
+    return top_value
 
 
 def _make_hashable_simple(value: Any) -> Any:

@@ -14,9 +14,9 @@ def test_majority_vote_basic():
 
 
 def test_majority_vote_tie_returns_one_of():
-    # In a tie, any of the tied values is acceptable
+    # In a tie, there is no majority; function should return None
     res = _majority_vote(["x", "y"])
-    assert res in {"x", "y"}
+    assert res is None
 
 
 def test_majority_vote_empty_raises():
