@@ -70,13 +70,6 @@ def test_multi_entry_majority_vote_dict_entries_with_lists():
     assert res == [{"k1": ("v1",)}]
 
 
-def test_multi_entry_majority_vote_list_entries():
-    # lists consisting of lists
-    values = [[["a", "b"], ["c"], ["d"]], [["a", "b", None]], [["d"]]]
-    res = _multi_entry_majority_vote(values)
-    assert res == [["a", "b"], ["d"]]
-
-
 # --- Tests for _aggregate_structured_outputs ---
 
 

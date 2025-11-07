@@ -37,8 +37,7 @@ def _multi_entry_majority_vote(values: list[list | None], n: int | None = None) 
 
     An item is included in the result if it appears in more than half of the lists.
 
-    Works with lists of primitive types, lists of lists, and lists of dicts. Items that are
-    None are ignored.
+    Works with lists of primitive types, and lists of dicts. Items that are None are ignored.
 
     Args:
         values: list of lists (or None)
@@ -52,19 +51,15 @@ def _multi_entry_majority_vote(values: list[list | None], n: int | None = None) 
     entry_type: type | None = None
     for vs in values:
         if vs is not None:
-            # if the list contains lists or dicts, we need to keep track of the type ...
-            if any(isinstance(item, list) for item in vs):
-                entry_type = list
-            elif any(isinstance(item, dict) for item in vs):
+            # if the list contains dicts, we need to keep track of that ...
+            if any(isinstance(item, dict) for item in vs):
                 entry_type = dict
             # ... and make items hashable
             v_hashable = (_make_hashable_simple(item) for item in vs if item is not None)
             item_counts.update(v_hashable)
     majority_items = [item for item, count in item_counts.items() if count > n / 2]
     # convert back to original types (but nested structures remain hashable tuples!)
-    if entry_type is list:
-        majority_items = [list(item) for item in majority_items]
-    elif entry_type is dict:
+    if entry_type is dict:
         majority_items = [dict(item) for item in majority_items]
     elif entry_type is None:
         # all items are primitive types
