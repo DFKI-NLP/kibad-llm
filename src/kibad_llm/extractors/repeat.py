@@ -129,15 +129,21 @@ def _aggregate_structured_outputs(
         else:
             # Aggregate based on type
             if issubclass(value_type, (str, int, float, bool)):
-                # majority vote for primitive types
+                # single-value: majority vote for primitive types
                 aggregated[key] = _majority_vote(values)
+            elif issubclass(value_type, dict):
+                # single-value: majority vote for dicts
+                values_hashable = [
+                    _make_hashable_simple(v) if v is not None else None for v in values
+                ]
+                majority = _majority_vote(values_hashable)
+                # convert back to dict
+                aggregated[key] = dict(majority) if majority is not None else None
             elif issubclass(value_type, list):
-                # majority vote per item for list types
+                # multi-value: majority vote per item for list types
                 # explicitly pass the number of structured outputs since some values may
                 # be None and thus not in current values
                 aggregated[key] = _multi_entry_majority_vote(values, n=len(structured_outputs))
-            elif issubclass(value_type, dict):
-                raise ValueError("Aggregation for dict type values is not yet implemented")
             else:
                 raise ValueError(f"Unsupported value type for aggregation: {value_type}")
 
