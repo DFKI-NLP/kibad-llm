@@ -10,10 +10,11 @@ def test_prepare_entry_as_set_single_value():
     assert m._prepare_entry_as_set("x") == {"x"}
     # simple dict
     assert m._prepare_entry_as_set({"a": 1, "b": 2}) == {(("a", 1), ("b", 2))}
-    # dict with list value
-    assert m._prepare_entry_as_set({"labels": ["a"]}) == {(("labels", ("a",)),)}
     # tuple
     assert m._prepare_entry_as_set(("a", "b")) == {("a", "b")}
+    # dict with list value (i.e, non-hashable value)
+    with pytest.raises(TypeError):
+        assert m._prepare_entry_as_set({"labels": ["a"]})
 
 
 def test_prepare_entry_as_set_multi_value():
@@ -48,7 +49,7 @@ def test_prepare_entry_as_set_with_list_of_dicts():
         None,
         "simple_value",
     ]
-    expected_output_mixed = {(("key1", "value1"),), "simple_value", (("key2", "value2"),), None}
+    expected_output_mixed = {(("key1", "value1"),), "simple_value", (("key2", "value2"),)}
     assert m._prepare_entry_as_set(input_data_mixed) == expected_output_mixed
 
 
