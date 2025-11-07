@@ -52,6 +52,31 @@ def test_multi_entry_majority_vote_empty_values_returns_empty():
     assert _multi_entry_majority_vote([]) == []
 
 
+def test_multi_entry_majority_vote_dict_entries():
+    # lists consisting of dicts
+    values = [[{"k1": "v1", "k2": None}, {"k1": "v2"}], [{"k1": "v1"}], [{"k1": "v3"}]]
+    res = _multi_entry_majority_vote(values)
+    assert res == [{"k1": "v1"}]
+
+
+def test_multi_entry_majority_vote_dict_entries_with_lists():
+    # lists consisting of dicts with list values
+    values = [
+        [{"k1": ["v1", None], "k2": None}, {"k1": ["v2"]}],
+        [{"k1": ["v1"]}],
+        [{"k1": ["v3"]}],
+    ]
+    res = _multi_entry_majority_vote(values)
+    assert res == [{"k1": ("v1",)}]
+
+
+def test_multi_entry_majority_vote_list_entries():
+    # lists consisting of lists
+    values = [[["a", "b"], ["c"], ["d"]], [["a", "b", None]], [["d"]]]
+    res = _multi_entry_majority_vote(values)
+    assert res == [["a", "b"], ["d"]]
+
+
 # --- Tests for _aggregate_structured_outputs ---
 
 
