@@ -166,7 +166,7 @@ See [configs/evaluate](./configs/evaluate.yaml) for further information and opti
 ├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g.
 │                         generated with `pip freeze > requirements.txt`
 │
-├── run_with_llm.sh    <- An all-in-one script for hosting vLLM and running uv against it 
+├── run_with_llm.sh    <- An all-in-one script for hosting vLLM and running uv against it
 │
 ├── setup.cfg          <- Configuration file for flake8
 │

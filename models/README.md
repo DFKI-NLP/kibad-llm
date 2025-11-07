@@ -168,5 +168,5 @@ The script takes care of everything start to finish and executes all code on the
 ### The alternative
 
 `run_with_llm_login_node_exec.sh` is very similar to `run_with_llm.sh`. The main difference is that this script puts vLLM on the compute node and runs your uv code locally on the login node. You need to be careful when using this script because of the strain you put on the login node.
-Depending on how your uv code fails or the script is cancelled, the slurm job may need to be cancelled separately.  
+Depending on how your uv code fails or the script is cancelled, the slurm job may need to be cancelled separately.
 This script may make working on your code easier, depending on your needs, but you should probably have a quick look at how the script works in that case.
