@@ -14,9 +14,9 @@ def test_majority_vote_basic():
 
 
 def test_majority_vote_tie_returns_one_of():
-    # In a tie, any of the tied values is acceptable
+    # In a tie, there is no majority; function should return None
     res = _majority_vote(["x", "y"])
-    assert res in {"x", "y"}
+    assert res is None
 
 
 def test_majority_vote_empty_raises():
@@ -50,6 +50,24 @@ def test_multi_entry_majority_vote_with_explicit_n_strict_threshold():
 
 def test_multi_entry_majority_vote_empty_values_returns_empty():
     assert _multi_entry_majority_vote([]) == []
+
+
+def test_multi_entry_majority_vote_dict_entries():
+    # lists consisting of dicts
+    values = [[{"k1": "v1", "k2": None}, {"k1": "v2"}], [{"k1": "v1"}], [{"k1": "v3"}]]
+    res = _multi_entry_majority_vote(values)
+    assert res == [{"k1": "v1"}]
+
+
+def test_multi_entry_majority_vote_dict_entries_with_lists():
+    # lists consisting of dicts with list values
+    values = [
+        [{"k1": ["v1", None], "k2": None}, {"k1": ["v2"]}],
+        [{"k1": ["v1"]}],
+        [{"k1": ["v3"]}],
+    ]
+    res = _multi_entry_majority_vote(values)
+    assert res == [{"k1": ("v1",)}]
 
 
 # --- Tests for _aggregate_structured_outputs ---
@@ -99,12 +117,24 @@ def test_aggregate_structured_outputs_all_none_results_in_none():
     assert res["x"] is None
 
 
-def test_aggregate_structured_outputs_dict_value_raises():
-    structured_outputs = [{"d": {"k": "v"}}, {"d": {"k": "w"}}]
-    with pytest.raises(
-        ValueError, match="Dict type values is not yet implemented|dict type values"
-    ):
-        _aggregate_structured_outputs(structured_outputs)
+def test_aggregate_structured_outputs_dict():
+    # None values inside dicts should be ignored in majority vote
+    structured_outputs = [
+        {"d": {"k1": 1, "k2": None, "k3": 3}},
+        {"d": {"k1": 1, "k3": 3}},
+        {"d": {"k1": [1, 2, 3], "k3": 3}},
+    ]
+    res = _aggregate_structured_outputs(structured_outputs)
+    assert res == {"d": {"k1": 1, "k3": 3}}
+
+
+def test_aggregate_structured_outputs_dict_tie():
+    structured_outputs = [
+        {"d": {"k1": 0, "k2": 2}},
+        {"d": {"k1": 1, "k2": 2}},
+    ]
+    res = _aggregate_structured_outputs(structured_outputs)
+    assert res == {"d": None}
 
 
 def test_aggregate_structured_outputs_inconsistent_types_raises():

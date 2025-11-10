@@ -5,18 +5,39 @@ from .base import extract_from_text_lenient
 
 
 def _majority_vote(values: list) -> Any:
-    """Return the majority value from a list of values."""
+    """Return the majority value from a list of values. Returns None on ties."""
     if len(values) == 0:
         raise ValueError("Cannot perform majority vote on empty list")
     value_counts = Counter(values)
-    majority_value, _ = value_counts.most_common(1)[0]
-    return majority_value
+    most_common = value_counts.most_common()
+    top_value, top_count = most_common[0]
+    # Check for tie: any other value with same top_count
+    if any(c == top_count for _, c in most_common[1:]):
+        return None
+    return top_value
+
+
+def _make_hashable_simple(value: Any) -> Any:
+    if isinstance(value, (list, set)):
+        # sort and remove None values
+        return tuple(sorted(_make_hashable_simple(v) for v in value if v is not None))
+    if isinstance(value, tuple):
+        # keep order and None values
+        return tuple(_make_hashable_simple(v) for v in value)
+    if isinstance(value, dict):
+        # sort and remove None values
+        return tuple(
+            sorted((k, _make_hashable_simple(v)) for k, v in value.items() if v is not None)
+        )
+    return value
 
 
 def _multi_entry_majority_vote(values: list[list | None], n: int | None = None) -> list:
     """Return the majority items from a list of lists.
 
     An item is included in the result if it appears in more than half of the lists.
+
+    Works with lists of primitive types, and lists of dicts. Items that are None are ignored.
 
     Args:
         values: list of lists (or None)
@@ -27,10 +48,24 @@ def _multi_entry_majority_vote(values: list[list | None], n: int | None = None) 
     if n is None:
         n = len(values)
     item_counts: Counter = Counter()
-    for v in values:
-        if v is not None:
-            item_counts.update(v)
+    entry_type: type | None = None
+    for vs in values:
+        if vs is not None:
+            # if the list contains dicts, we need to keep track of that ...
+            if any(isinstance(item, dict) for item in vs):
+                entry_type = dict
+            # ... and make items hashable
+            v_hashable = (_make_hashable_simple(item) for item in vs if item is not None)
+            item_counts.update(v_hashable)
     majority_items = [item for item, count in item_counts.items() if count > n / 2]
+    # convert back to original types (but nested structures remain hashable tuples!)
+    if entry_type is dict:
+        majority_items = [dict(item) for item in majority_items]
+    elif entry_type is None:
+        # all items are primitive types
+        pass
+    else:
+        raise ValueError(f"Unsupported entry type in multi-entry majority vote: {entry_type}")
     return majority_items
 
 
@@ -89,15 +124,21 @@ def _aggregate_structured_outputs(
         else:
             # Aggregate based on type
             if issubclass(value_type, (str, int, float, bool)):
-                # majority vote for primitive types
+                # single-value: majority vote for primitive types
                 aggregated[key] = _majority_vote(values)
+            elif issubclass(value_type, dict):
+                # single-value: majority vote for dicts
+                values_hashable = [
+                    _make_hashable_simple(v) if v is not None else None for v in values
+                ]
+                majority = _majority_vote(values_hashable)
+                # convert back to dict
+                aggregated[key] = dict(majority) if majority is not None else None
             elif issubclass(value_type, list):
-                # majority vote per item for list types
+                # multi-value: majority vote per item for list types
                 # explicitly pass the number of structured outputs since some values may
                 # be None and thus not in current values
                 aggregated[key] = _multi_entry_majority_vote(values, n=len(structured_outputs))
-            elif issubclass(value_type, dict):
-                raise ValueError("Aggregation for dict type values is not yet implemented")
             else:
                 raise ValueError(f"Unsupported value type for aggregation: {value_type}")
 
