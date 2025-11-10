@@ -54,3 +54,16 @@ def test_prepare_entry_as_set_with_field():
     assert m._prepare_entry_as_set({"labels": ["x", "y", "y"]}) == {"x", "y"}
     assert m._prepare_entry_as_set({"other": "z"}) == set()
     assert m._prepare_entry_as_set({"labels": None}) == set()
+
+
+def test_prepare_entry_as_set_with_field_and_ignore_subfields():
+    m = MetricWithPrepareEntryAsSet(field="items", ignore_subfields={"items": ["ignore_me"]})
+    input_data = {
+        "items": [
+            {"key1": "value1", "ignore_me": "foo"},
+            {"key2": "value2", "ignore_me": "bar"},
+            {"key1": "value1", "ignore_me": "baz"},
+        ]
+    }
+    expected_output = {(("key1", "value1"),), (("key2", "value2"),)}
+    assert m._prepare_entry_as_set(input_data) == expected_output
