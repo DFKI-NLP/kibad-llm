@@ -46,8 +46,8 @@ class MetricWithPrepareEntryAsSet(Metric):
                 )
             entry = entry.get(self.field, None)
         if entry is None:
-            return set()
-        if isinstance(entry, (list, set)):
+            result = set()
+        elif isinstance(entry, (list, set)):
             # convert list entries to tuples (sort each by key to ensure consistent ordering)
             # to make dicts hashable for the set
             maybe_tuples = (
@@ -59,7 +59,10 @@ class MetricWithPrepareEntryAsSet(Metric):
                 for e in entry
                 if e is not None
             )
-            return set(maybe_tuples)
-        if isinstance(entry, dict):
-            return {_convert_dict_to_tuple(entry, ignore_keys=self.ignore_subfields)}
-        return {entry}
+            result = set(maybe_tuples)
+        elif isinstance(entry, dict):
+            result = {_convert_dict_to_tuple(entry, ignore_keys=self.ignore_subfields)}
+        else:
+            result = {entry}
+
+        return result
