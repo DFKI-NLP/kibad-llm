@@ -23,8 +23,8 @@ class MetricWithPrepareEntryAsSet(Metric):
     ) -> None:
         self.field = field
         self.ignore_subfields = []
-        if ignore_subfields is not None and field is not None:
-            self.ignore_subfields = ignore_subfields.get(field, [])
+        if ignore_subfields is not None and self.field is not None:
+            self.ignore_subfields = ignore_subfields.get(self.field, [])
         super().__init__()
 
     def _prepare_entry_as_set(self, entry: Any) -> set:
