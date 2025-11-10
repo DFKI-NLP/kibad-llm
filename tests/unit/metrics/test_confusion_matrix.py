@@ -68,13 +68,15 @@ def test_show_as_markdown_logs(caplog):
     cm = ConfusionMatrix(show_as_markdown=True)
     cm.update(prediction=["A"], reference=["B"])  # produces FN(B) and FP(A)
     cm.update(prediction=["C"], reference=[])  # produces FP(C)
+    cm.update(prediction=[], reference=[])  # produces TP(EMPTY)
     _ = cm.compute()
     # Ensure a markdown confusion matrix was logged
     lines = caplog.text.splitlines()
     # discard first line since it contains line number info which may vary
     assert lines[1:] == [
-        "|              |   A |   C |   UNDETECTED |",
-        "|:-------------|----:|----:|-------------:|",
-        "| B            |   0 |   0 |            1 |",
-        "| UNASSIGNABLE |   1 |   1 |            0 |",
+        "|              |   A |   C |   EMPTY |   UNDETECTED |",
+        "|:-------------|----:|----:|--------:|-------------:|",
+        "| B            |   0 |   0 |       0 |            1 |",
+        "| EMPTY        |   0 |   0 |       1 |            0 |",
+        "| UNASSIGNABLE |   1 |   1 |       0 |            0 |",
     ]

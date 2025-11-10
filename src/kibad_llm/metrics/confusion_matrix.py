@@ -31,11 +31,13 @@ class ConfusionMatrix(MetricWithPrepareEntryAsSet):
         show_as_markdown: bool = False,
         unassignable_label: str = "UNASSIGNABLE",
         undetected_label: str = "UNDETECTED",
+        empty_label: str = "EMPTY",
         **kwargs: Any,
     ):
         super().__init__(**kwargs)
         self.unassignable_label = unassignable_label
         self.undetected_label = undetected_label
+        self.empty_label = empty_label
         self.show_as_markdown = show_as_markdown
         self.reset()
 
@@ -61,6 +63,12 @@ class ConfusionMatrix(MetricWithPrepareEntryAsSet):
 
         # (gold_label, pred_label) -> count
         counts: dict[tuple[str, str], int] = defaultdict(int)
+
+        # we want to acknowledge empty predictions and references as true positives TODO: really?? or true negatives?
+        if len(prediction) == len(reference) == 0:
+            counts[(self.empty_label, self.empty_label)] = 1
+            return counts
+
         # True positives: labels in both reference and prediction
         for label in reference & prediction:
             counts[(label, label)] += 1

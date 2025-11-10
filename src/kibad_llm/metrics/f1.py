@@ -37,6 +37,11 @@ class MicroF1Metric(MetricWithPrepareEntryAsSet):
         prediction = self._prepare_entry_as_set(prediction)
         reference = self._prepare_entry_as_set(reference)
 
+        # we want to acknowledge empty predictions and references as true positives TODO: really?? or true negatives?
+        if len(prediction) == len(reference) == 0:
+            self.state["tp"] += 1
+            return
+
         self.state["tp"] += len(prediction & reference)
         self.state["fp"] += len(prediction - reference)
         self.state["fn"] += len(reference - prediction)

@@ -44,12 +44,30 @@ def test_mixed_counts() -> None:
 
 def test_all_none_zero_division() -> None:
     m = MicroF1Metric(field="label")
-    m.update({"label": None}, {"label": None})
-    m.update({"label": None}, {"label": None})
+    assert m.state == {"tp": 0, "fp": 0, "fn": 0}
     out = m.compute(m)
     assert out["precision"] == pytest.approx(0.0)
     assert out["recall"] == pytest.approx(0.0)
     assert out["f1"] == pytest.approx(0.0)
+
+
+def test_empty() -> None:
+    m = MicroF1Metric(field="label")
+    # tp: both empty
+    m.update({"label": None}, {"label": None})
+    assert m.state == {"tp": 1, "fp": 0, "fn": 0}
+    # fp
+    m.update({"label": "foo"}, {"label": None})
+    assert m.state == {"tp": 1, "fp": 1, "fn": 0}
+    # fn
+    m.update({"label": None}, {"label": "bar"})
+    assert m.state == {"tp": 1, "fp": 1, "fn": 1}
+    out = m.compute(m)
+    assert out == {
+        "precision": pytest.approx(1 / 2),
+        "recall": pytest.approx(1 / 2),
+        "f1": pytest.approx(1 / 2),
+    }
 
 
 def test_reset() -> None:
