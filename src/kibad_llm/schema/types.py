@@ -341,3 +341,52 @@ class EcosystemStudyFeaturesSimple(BaseModel):
         # use_enum_values=True,
         extra="forbid",
     )
+
+
+class EcosystemType(BaseModel):
+    """Ökosystemtyp mit Kategorie und Term."""
+
+    category: EcosystemTypeCategoryEnum = Field(
+        ..., alias="Kategorie", description="Kategorie des Biotoptyps"
+    )
+    term: EcosystemTypeTermEnum = Field(..., alias="Term", description="Spezifischer Biotoptyp")
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+        use_enum_values=True,
+        extra="forbid",
+    )
+
+
+class Location(BaseModel):
+    """Standort mit Bundesland und Name."""
+
+    federal_state: LocationFederalStateEnum = Field(
+        ..., alias="Bundesland", description="Bundesland des Standorts"
+    )
+    name: str = Field(..., alias="Name", description="Name des Standorts")
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+        use_enum_values=True,
+        extra="forbid",
+    )
+
+
+class EcosystemStudyFeaturesCompoundsSimple(BaseModel):
+    """Angaben zu den ökosystembezogenen Studienmerkmalen."""
+
+    ecosystem_type: list[EcosystemType] = Field(
+        default_factory=list,
+        alias="Ökosystemtypen",
+        description="Liste der relevanten Ökosystemtypen",
+    )
+    location: list[Location] = Field(
+        default_factory=list, alias="Standorte", description="Liste der relevanten Standorte"
+    )
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+        use_enum_values=True,
+        extra="forbid",
+    )
