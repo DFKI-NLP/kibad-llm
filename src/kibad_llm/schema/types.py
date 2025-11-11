@@ -385,10 +385,12 @@ class EcosystemStudyFeaturesCompoundsSimple(BaseEcosystemStudyFeatures):
     ecosystem_type: list[EcosystemType] = Field(
         default_factory=list,
         alias="Ökosystemtypen",
-        description="Liste der relevanten Ökosystemtypen",
+        description="Welche Ökosystemtypen werden in der Studie untersucht?",
     )
     location: list[Location] = Field(
-        default_factory=list, alias="Standorte", description="Liste der relevanten Standorte"
+        default_factory=list,
+        alias="Standorte",
+        description="Welche Standorte werden in der Studie untersucht?",
     )
 
     model_config = ConfigDict(
