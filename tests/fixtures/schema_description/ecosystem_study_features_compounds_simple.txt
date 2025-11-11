@@ -1,0 +1,4 @@
+Beschreibung: Angaben zu den ökosystembezogenen Studienmerkmalen.
+Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
+- ecosystem_type: Welche Ökosystemtypen werden in der Studie untersucht? Kardinalität: 0..*
+- location: Welche Standorte werden in der Studie untersucht? Kardinalität: 0..*
