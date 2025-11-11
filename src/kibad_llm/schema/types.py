@@ -3,6 +3,12 @@ from enum import Enum
 from pydantic import BaseModel, ConfigDict, Field
 
 
+class BaseEcosystemStudyFeatures(BaseModel):
+    """Basis-Klasse für ökosystembezogene Studienmerkmale."""
+
+    pass
+
+
 class HabitatEnum(str, Enum):
     AGRAR_UND_OFFENLAND = "Agrar- und Offenland"
     BINNENGEWAESSER_UND_AUEN = "Binnengewässer und Auen"
@@ -206,7 +212,7 @@ class TransformationPotentialEnum(str, Enum):
     LEBENSRAUMUEBERGREIFENDER_WANDLUNGSPROZESS = "Lebensraumübergreifender Wandlungsprozess"
 
 
-class EcosystemStudyFeaturesWithoutCompounds(BaseModel):
+class EcosystemStudyFeaturesWithoutCompounds(BaseEcosystemStudyFeatures):
     """Angaben zu den ökosystembezogenen Studienmerkmalen."""
 
     habitat: list[HabitatEnum] = Field(
@@ -312,7 +318,7 @@ class EcosystemStudyFeaturesWithoutCompounds(BaseModel):
     )
 
 
-class EcosystemStudyFeaturesSimple(BaseModel):
+class EcosystemStudyFeaturesSimple(BaseEcosystemStudyFeatures):
     """Angaben zu den ökosystembezogenen Studienmerkmalen."""
 
     habitat: list[HabitatEnum] = Field(
@@ -373,7 +379,7 @@ class Location(BaseModel):
     )
 
 
-class EcosystemStudyFeaturesCompoundsSimple(BaseModel):
+class EcosystemStudyFeaturesCompoundsSimple(BaseEcosystemStudyFeatures):
     """Angaben zu den ökosystembezogenen Studienmerkmalen."""
 
     ecosystem_type: list[EcosystemType] = Field(
