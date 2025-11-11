@@ -1,0 +1,103 @@
+{
+  "$defs": {
+    "ClimateEnum": {
+      "enum": [
+        "Atlantisches Klima",
+        "Gebirgsklima",
+        "kontinental",
+        "maritim",
+        "niederschlagsbenachteiligt",
+        "niederschlagsnormal",
+        "niederschlagsbegünstigt",
+        "subkontinental",
+        "submaritim"
+      ],
+      "title": "ClimateEnum",
+      "type": "string"
+    },
+    "HabitatEnum": {
+      "enum": [
+        "Agrar- und Offenland",
+        "Binnengewässer und Auen",
+        "Boden",
+        "Küsten und Küstengewässer",
+        "Urbane Räume",
+        "Wald"
+      ],
+      "title": "HabitatEnum",
+      "type": "string"
+    },
+    "LanduseEnum": {
+      "enum": [
+        "Bau",
+        "Bergbau und Steinbruch",
+        "Brachliegende Flächen",
+        "Energieproduktion",
+        "Erholung, Freizeit, Sport",
+        "Fischerei und Aquakultur",
+        "Forstwirtschaft",
+        "Handels-, Finanz-, Berufs- und Informationsdienstleistungen",
+        "Industrie und Fertigung",
+        "Landwirtschaft",
+        "Naturnahe und natürliche Flächen, die nicht genutzt werden",
+        "Verkehr, Kommunikationsnetzwerke, Lagerung, Schutzwälle",
+        "Wasser- und Abfallbehandlung",
+        "Wohngebiete",
+        "andere Leistung des Primärsektors",
+        "Öffentliche Einrichtungen"
+      ],
+      "title": "LanduseEnum",
+      "type": "string"
+    },
+    "NaturalRegionEnum": {
+      "enum": [
+        "Alpen",
+        "Alpenvorland",
+        "Mittelgebirgsschwelle",
+        "Nord- und Ostsee",
+        "Norddeutsches Tiefland",
+        "Schichtstufenland beidseits des Oberrheingrabens"
+      ],
+      "title": "NaturalRegionEnum",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Angaben zu den ökosystembezogenen Studienmerkmalen.",
+  "properties": {
+    "Lebensräume": {
+      "description": "Um welchen der folgenden Lebensräume oder in welcher Kombination der folgenden Lebensräume geht es in dem Text?",
+      "items": {
+        "$ref": "#/$defs/HabitatEnum"
+      },
+      "title": "Lebensräume",
+      "type": "array"
+    },
+    "Naturgroßräume": {
+      "description": "Um welchen der folgenden Naturgroßräume geht es in dem Text?",
+      "items": {
+        "$ref": "#/$defs/NaturalRegionEnum"
+      },
+      "title": "Naturgroßräume",
+      "type": "array"
+    },
+    "Klima": {
+      "description": "Welche Umschreibung trifft auf das Klima des Untersuchungsgebiets zu?",
+      "items": {
+        "$ref": "#/$defs/ClimateEnum"
+      },
+      "title": "Klima",
+      "type": "array"
+    },
+    "Landnutzung": {
+      "description": "Welche Landnutzung wird im oder nahe des Untersuchungsgebietes betrieben? In welche der folgenden Kategorien fällt die Nutzung?",
+      "items": {
+        "$ref": "#/$defs/LanduseEnum"
+      },
+      "title": "Landnutzung",
+      "type": "array"
+    }
+  },
+  "title": "EcosystemStudyFeaturesSimple",
+  "type": "object"
+}

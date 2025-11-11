@@ -1,0 +1,371 @@
+{
+  "$defs": {
+    "BiodiversityLevelEnum": {
+      "enum": [
+        "Artenvielfalt",
+        "Funktionelle Diversität",
+        "Genetische Diversität",
+        "Habitatdiversität",
+        "Phylogenetische Diversität",
+        "Strukturelle Diversität",
+        "Zusammensetzung der Artengemeinschaft"
+      ],
+      "title": "BiodiversityLevelEnum",
+      "type": "string"
+    },
+    "ClimateEnum": {
+      "enum": [
+        "Atlantisches Klima",
+        "Gebirgsklima",
+        "kontinental",
+        "maritim",
+        "niederschlagsbenachteiligt",
+        "niederschlagsnormal",
+        "niederschlagsbegünstigt",
+        "subkontinental",
+        "submaritim"
+      ],
+      "title": "ClimateEnum",
+      "type": "string"
+    },
+    "HabitatEnum": {
+      "enum": [
+        "Agrar- und Offenland",
+        "Binnengewässer und Auen",
+        "Boden",
+        "Küsten und Küstengewässer",
+        "Urbane Räume",
+        "Wald"
+      ],
+      "title": "HabitatEnum",
+      "type": "string"
+    },
+    "LanduseEnum": {
+      "enum": [
+        "Bau",
+        "Bergbau und Steinbruch",
+        "Brachliegende Flächen",
+        "Energieproduktion",
+        "Erholung, Freizeit, Sport",
+        "Fischerei und Aquakultur",
+        "Forstwirtschaft",
+        "Handels-, Finanz-, Berufs- und Informationsdienstleistungen",
+        "Industrie und Fertigung",
+        "Landwirtschaft",
+        "Naturnahe und natürliche Flächen, die nicht genutzt werden",
+        "Verkehr, Kommunikationsnetzwerke, Lagerung, Schutzwälle",
+        "Wasser- und Abfallbehandlung",
+        "Wohngebiete",
+        "andere Leistung des Primärsektors",
+        "Öffentliche Einrichtungen"
+      ],
+      "title": "LanduseEnum",
+      "type": "string"
+    },
+    "MethodEnum": {
+      "enum": [
+        "Citizen Science",
+        "Experiment",
+        "Feldbeobachtung",
+        "Modellierung",
+        "Remote Sensing",
+        "Review",
+        "Synthese",
+        "Umfrage"
+      ],
+      "title": "MethodEnum",
+      "type": "string"
+    },
+    "NaturalRegionEnum": {
+      "enum": [
+        "Alpen",
+        "Alpenvorland",
+        "Mittelgebirgsschwelle",
+        "Nord- und Ostsee",
+        "Norddeutsches Tiefland",
+        "Schichtstufenland beidseits des Oberrheingrabens"
+      ],
+      "title": "NaturalRegionEnum",
+      "type": "string"
+    },
+    "SpatialExtentEnum": {
+      "enum": [
+        "bundesweit",
+        "global",
+        "kontinent",
+        "landschaft",
+        "plot",
+        "punkt",
+        "region"
+      ],
+      "title": "SpatialExtentEnum",
+      "type": "string"
+    },
+    "SpatialResolutionEnum": {
+      "enum": [
+        "bundesweit",
+        "global",
+        "kontinent",
+        "landschaft",
+        "plot",
+        "punkt",
+        "region"
+      ],
+      "title": "SpatialResolutionEnum",
+      "type": "string"
+    },
+    "StudyTypeEnum": {
+      "enum": [
+        "Gutachten",
+        "Meta-Studie",
+        "Nicht Peer-Reviewed",
+        "Originalstudie",
+        "Peer-Reviewed",
+        "Position Paper",
+        "Text Review",
+        "Vote Count"
+      ],
+      "title": "StudyTypeEnum",
+      "type": "string"
+    },
+    "TemporalExtentUnit": {
+      "enum": [
+        "jahre",
+        "jahrzehnte",
+        "minuten",
+        "monate",
+        "stunden",
+        "tage",
+        "wochen"
+      ],
+      "title": "TemporalExtentUnit",
+      "type": "string"
+    },
+    "TemporalResolutionEnum": {
+      "enum": [
+        "jahre",
+        "jahrzehnte",
+        "minuten",
+        "monate",
+        "stunden",
+        "tage",
+        "wochen"
+      ],
+      "title": "TemporalResolutionEnum",
+      "type": "string"
+    },
+    "TransformationPotentialEnum": {
+      "enum": [
+        "Lebensraumspezifischer Wandlungsprozess",
+        "Lebensraumunabhängiger Wandlungsprozess",
+        "Lebensraumübergreifender Wandlungsprozess"
+      ],
+      "title": "TransformationPotentialEnum",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Angaben zu den ökosystembezogenen Studienmerkmalen.",
+  "properties": {
+    "Lebensräume": {
+      "description": "Um welchen der folgenden Lebensräume oder um welche Kombinationen der folgenden Lebensräume geht es in dem Text?",
+      "items": {
+        "$ref": "#/$defs/HabitatEnum"
+      },
+      "title": "Lebensräume",
+      "type": "array"
+    },
+    "Naturgroßräume": {
+      "description": "Um welchen der folgenden Naturgroßräume geht es in dem Text?",
+      "items": {
+        "$ref": "#/$defs/NaturalRegionEnum"
+      },
+      "title": "Naturgroßräume",
+      "type": "array"
+    },
+    "Klima": {
+      "description": "Welche Umschreibung trifft auf das Klima des Untersuchungsgebiets zu?",
+      "items": {
+        "$ref": "#/$defs/ClimateEnum"
+      },
+      "title": "Klima",
+      "type": "array"
+    },
+    "Landnutzung": {
+      "description": "Welche Landnutzung wird im oder nahe des Untersuchungsgebietes betrieben? In welche der folgenden Kategorien fällt die Nutzung?",
+      "items": {
+        "$ref": "#/$defs/LanduseEnum"
+      },
+      "title": "Landnutzung",
+      "type": "array"
+    },
+    "Räumliche Ausdehnung": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/SpatialExtentEnum"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Wie ist insgesamt die räumliche Ausdehnung der Studie?"
+    },
+    "Räumliche Auflösung": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/SpatialResolutionEnum"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Mit welcher räumlichen Auflösung wurden die einzelnen Messungen in der Studie durchgeführt?"
+    },
+    "Anzahl räumlicher Messungen": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "An wie vielen Stellen wurde gemessen?",
+      "title": "Anzahl Räumlicher Messungen"
+    },
+    "Zeitraum": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "In welchem Zeitraum fanden die Messungen statt?",
+      "title": "Zeitraum"
+    },
+    "Zeiteinheit": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/TemporalExtentUnit"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "In welcher der folgenden Zeiteinheiten ist der Zeitraum angegeben?"
+    },
+    "Zeitliche Auflösung": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/TemporalResolutionEnum"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Mit welcher zeitlichen Auflösung wurden die einzelnen Messungen in der Studie durchgeführt?"
+    },
+    "Anzahl zeitlicher Messungen": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Zu wie vielen unterschiedlichen Zeitpunkten wurde gemessen?",
+      "title": "Anzahl Zeitlicher Messungen"
+    },
+    "Startjahr": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "In welchem Jahr fand die erste Messung statt?",
+      "title": "Startjahr"
+    },
+    "Endjahr": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "In welchem Jahr fand die letzte Messung statt?",
+      "title": "Endjahr"
+    },
+    "Methoden der Datenaufnahme": {
+      "description": "Mit welcher/welchen Methode(n) wurden die Daten erhoben?",
+      "items": {
+        "$ref": "#/$defs/MethodEnum"
+      },
+      "title": "Methoden Der Datenaufnahme",
+      "type": "array"
+    },
+    "Studienart": {
+      "description": "Um welche Form der wissenschaftlichen Studie handelt es sich?",
+      "items": {
+        "$ref": "#/$defs/StudyTypeEnum"
+      },
+      "title": "Studienart",
+      "type": "array"
+    },
+    "Projekt/Programm": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Gehört die Studie zu einem größeren Programm oder Projekt? Wenn ja, zu welchem?",
+      "title": "Projekt/Programm"
+    },
+    "Biodiversitätsebene": {
+      "description": "Auf welche der folgenden Ebenen wird Biodiversität in der Studie gemessen?",
+      "items": {
+        "$ref": "#/$defs/BiodiversityLevelEnum"
+      },
+      "title": "Biodiversitätsebene",
+      "type": "array"
+    },
+    "Biodiversitätsvariable": {
+      "description": "In welchen Variablen wird die Biodiversität gemessen?",
+      "items": {
+        "type": "string"
+      },
+      "title": "Biodiversitätsvariable",
+      "type": "array"
+    },
+    "Transformationspotenzial": {
+      "description": "In welche der folgenden Kategorien lässt sich die im Text behandelte Transformation einordnen? ",
+      "items": {
+        "$ref": "#/$defs/TransformationPotentialEnum"
+      },
+      "title": "Transformationspotenzial",
+      "type": "array"
+    }
+  },
+  "title": "EcosystemStudyFeaturesWithoutCompounds",
+  "type": "object"
+}
