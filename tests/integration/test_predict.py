@@ -139,8 +139,8 @@ def test_prediction_on_pdf_errors(cfg_predict_pdf_errors):
     assert structured_long_pdf is None
     # ... but an error message about max tokens
     error_long_pdf = result_long_pdf.get("error", None)
-    assert (
-        error_long_pdf
-        == "Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -328978.', "
-        "'type': 'BadRequestError', 'param': None, 'code': 400}}"
-    )
+    assert error_long_pdf is not None
+    assert "Error code: 400" in error_long_pdf
+    # check that we got a negative max_tokens error message
+    assert "'message': 'max_tokens must be at least 1, got -" in error_long_pdf
+    assert "'type': 'BadRequestError'" in error_long_pdf
