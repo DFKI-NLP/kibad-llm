@@ -306,6 +306,7 @@ class EcosystemStudyFeaturesWithoutCompounds(BaseModel):
     )
 
     model_config = ConfigDict(
+        validate_by_name=True,
         use_enum_values=True,
         extra="forbid",
     )
@@ -336,6 +337,7 @@ class EcosystemStudyFeaturesSimple(BaseModel):
     )
 
     model_config = ConfigDict(
+        validate_by_name=True,
         use_enum_values=True,
         extra="forbid",
     )
