@@ -358,8 +358,8 @@ class EcosystemType(BaseModel):
     term: EcosystemTypeTermEnum = Field(..., alias="Term", description="Spezifischer Biotoptyp")
 
     model_config = ConfigDict(
-        populate_by_name=True,
-        use_enum_values=True,
+        # validate_by_name=True,
+        # use_enum_values=True,
         extra="forbid",
     )
 
@@ -373,8 +373,8 @@ class Location(BaseModel):
     name: str = Field(..., alias="Name", description="Name des Standorts")
 
     model_config = ConfigDict(
-        populate_by_name=True,
-        use_enum_values=True,
+        # validate_by_name=True,
+        # use_enum_values=True,
         extra="forbid",
     )
 
@@ -394,7 +394,7 @@ class EcosystemStudyFeaturesCompoundsSimple(BaseEcosystemStudyFeatures):
     )
 
     model_config = ConfigDict(
-        populate_by_name=True,
-        use_enum_values=True,
+        # validate_by_name=True,
+        # use_enum_values=True,
         extra="forbid",
     )
