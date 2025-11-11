@@ -34,10 +34,10 @@ predictions_file: ???
 # e.g., produced by data_integration/db_converter.py from the Faktencheck-DB.
 references_file: ???
 
-preprocess_reference:
-  _target_: kibad_llm.utils.dictionary.flatten_dict_simple
-  _partial_: True
-  sep: "/"
+# preprocess_reference:
+#   _target_: kibad_llm.utils.dictionary.flatten_dict_simple
+#   _partial_: True
+#   sep: "/"
 
 preprocess_prediction:
   _target_: kibad_llm.utils.dictionary.get
