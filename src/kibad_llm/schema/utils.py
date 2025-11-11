@@ -104,7 +104,7 @@ def build_schema_description(
     cardinality_prefix: str = "Kardinalität: ",
     type_prefix: str = "Typ: ",
     enum_prefix: str = "Zulässige Werte: ",
-    separator: str = " | ",
+    component_separator: str = " | ",
     enum_separator: str = "; ",
     indent_step: str = "  ",
     # internal args
@@ -141,7 +141,7 @@ def build_schema_description(
         cardinality_prefix: Prefix for cardinality information
         type_prefix: Prefix for type information
         enum_prefix: Prefix for enum value lists
-        separator: Separator between field components (name, cardinality, type, enum)
+        component_separator: Separator between field components (name, cardinality, type, enum)
         enum_separator: Separator between individual enum values
         indent_step: String used for each indentation level
         indent: Current indentation level (internal, for recursion)
@@ -182,11 +182,11 @@ def build_schema_description(
 
         # Build field line
         hint = f"{prefix}- {name}: {pdesc}" if pdesc else f"{prefix}- {name}:"
-        hint += f"{separator}{cardinality_prefix}{cardinality}"
+        hint += f"{component_separator}{cardinality_prefix}{cardinality}"
         if field_type:
-            hint += f"{separator}{type_prefix}{field_type}"
+            hint += f"{component_separator}{type_prefix}{field_type}"
         if enum:
-            hint += f"{separator}{enum_prefix}" + enum_separator.join(enum)
+            hint += f"{component_separator}{enum_prefix}" + enum_separator.join(enum)
 
         lines.append(hint)
 
@@ -207,7 +207,7 @@ def build_schema_description(
                         cardinality_prefix=cardinality_prefix,
                         type_prefix=type_prefix,
                         enum_prefix=enum_prefix,
-                        separator=separator,
+                        component_separator=component_separator,
                         enum_separator=enum_separator,
                         indent_step=indent_step,
                     )
