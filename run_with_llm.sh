@@ -4,7 +4,7 @@
 # random port per default to prevent script interference.
 export PORT=$(shuf -i 10000-60000 -n 1)  # only ports forwarded through vpn
 PARTITION="RTXA6000-SLT"
-TIME=0-01:00:00
+TIME=1-00:00:00
 
 # flag processing for setting vars and displaying help
 while [[ "$1" =~ ^- && ! "$1" == "--" ]]; do case $1 in
