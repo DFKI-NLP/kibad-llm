@@ -137,36 +137,34 @@ def build_schema_description(
     lines = []
     prefix = "  " * indent
 
-    # Only add header at top level
+    # Add description
+    desc = schema.get("description", "")
+    if desc:
+        lines.append(f"{prefix}Beschreibung: {desc}" if indent > 0 else f"Beschreibung: {desc}")
+
+    # Add header only once at top level
     if indent == 0:
-        desc = schema.get("description", "")
-        if desc:
-            lines.append(f"Beschreibung: {desc}")
         lines.append("Feldhinweise und erlaubte Werte (getrennt durch Semikolons):")
 
     props = schema.get("properties", {}) or {}
     for name, spec in props.items():
         pdesc = spec.get("description", "")
 
+        # Single check for array vs non-array handling
         is_array = spec.get("type") == "array"
-        has_default = "default" in spec
-        if is_array:
-            cardinality = "0..*"
-        else:
-            cardinality = "0..1" if has_default else "1"
+        target = spec.get("items") if is_array else spec
 
-        # Extract type and enum (use root_schema for resolving refs)
-        if is_array:
-            items = spec.get("items")
-            field_type = _extract_type(root_schema, items)
-            enum = _extract_enum(root_schema, items)
-        else:
-            field_type = _extract_type(root_schema, spec)
-            enum = _extract_enum(root_schema, spec)
+        # Determine cardinality
+        has_default = "default" in spec
+        cardinality = "0..*" if is_array else ("0..1" if has_default else "1")
+
+        # Extract type and enum from target
+        field_type = _extract_type(root_schema, target)
+        enum = _extract_enum(root_schema, target)
 
         # Build field line
         hint = f"{prefix}- {name}: {pdesc}" if pdesc else f"{prefix}- {name}:"
-        hint += f" Kardinalität: {cardinality}"
+        hint += f" | Kardinalität: {cardinality}"
         if field_type:
             hint += f" | Typ: {field_type}"
         if enum:
@@ -175,28 +173,15 @@ def build_schema_description(
         lines.append(hint)
 
         # Handle nested objects recursively
-        if field_type == "object":
-            # Resolve the nested schema
-            nested_schema = None
-            if is_array:
-                items = spec.get("items")
-                if isinstance(items, ABCMapping):
-                    ref = items.get("$ref")
-                    if isinstance(ref, str):
-                        nested_schema = _resolve_ref(root_schema, ref)
-            else:
-                ref = spec.get("$ref")
-                if isinstance(ref, str):
-                    nested_schema = _resolve_ref(root_schema, ref)
-
-            if nested_schema:
-                nested_desc = nested_schema.get("description", "")
-                if nested_desc:
-                    lines.append(f"{prefix}  Beschreibung: {nested_desc}")
-
-                # Recursively process nested properties with root_schema
-                nested_content = build_schema_description(nested_schema, indent + 1, root_schema)
-                # No need to skip lines - indent > 0 doesn't add header
-                lines.append(nested_content)
+        if field_type == "object" and isinstance(target, ABCMapping):
+            ref = target.get("$ref")
+            if isinstance(ref, str):
+                nested_schema = _resolve_ref(root_schema, ref)
+                if nested_schema:
+                    # Recursively process nested properties
+                    nested_content = build_schema_description(
+                        nested_schema, indent + 1, root_schema
+                    )
+                    lines.append(nested_content)
 
     return "\n".join(lines)
