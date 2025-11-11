@@ -75,7 +75,15 @@
       "description": "Standort mit Bundesland und Name.",
       "properties": {
         "federal_state": {
-          "$ref": "#/$defs/LocationFederalStateEnum",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/LocationFederalStateEnum"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
           "description": "Bundesland des Standorts"
         },
         "name": {
@@ -85,7 +93,6 @@
         }
       },
       "required": [
-        "federal_state",
         "name"
       ],
       "title": "Location",
