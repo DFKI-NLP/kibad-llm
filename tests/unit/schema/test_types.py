@@ -11,7 +11,7 @@ from tests.unit.schema import ALL_MODELS, camel_case_to_snake_case
 @pytest.mark.parametrize("model_cls", list(ALL_MODELS))
 def test_type(model_cls: type[BaseModel]):
     schema = model_cls.model_json_schema(by_alias=False)
-    fixture_fn = f"{camel_case_to_snake_case(model_cls.__name__)}.txt"
+    fixture_fn = f"{camel_case_to_snake_case(model_cls.__name__)}.json"
     path_expected = PROJ_ROOT / "tests" / "fixtures" / "schema" / fixture_fn
     if WRITE_FIXTURE_DATA:
         with open(path_expected, "w") as f:
