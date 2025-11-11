@@ -22,7 +22,7 @@ def _resolve_ref(schema: Mapping[str, Any], ref: str) -> Mapping[str, Any] | Non
     return node
 
 
-def _extract_enum(schema: Mapping[str, Any], node: Any) -> list[str] | None:
+def _extract_choices(schema: Mapping[str, Any], node: Any) -> list[str] | None:
     """
     Extract enum values from a schema node, handling:
     - inline 'enum'
@@ -51,7 +51,7 @@ def _extract_enum(schema: Mapping[str, Any], node: Any) -> list[str] | None:
         subs = node.get(key)
         if isinstance(subs, list):
             for sub in subs:
-                values = _extract_enum(schema, sub)
+                values = _extract_choices(schema, sub)
                 if values:
                     return values
 
@@ -103,9 +103,9 @@ def build_schema_description(
     schema_description_prefix: str | None = "Beschreibung: ",
     cardinality_prefix: str | None = "Kardinalität: ",
     type_prefix: str | None = "Typ: ",
-    enum_prefix: str | None = "Zulässige Werte: ",
+    choices_prefix: str | None = "Zulässige Werte: ",
     component_separator: str = " | ",
-    enum_separator: str = "; ",
+    choices_separator: str = "; ",
     indent_step: str = "  ",
     # internal args
     indent: int = 0,
@@ -130,9 +130,9 @@ def build_schema_description(
     - Supports inline "type", direct "$ref", and compositions via "allOf"/"anyOf"/"oneOf"
     - For arrays, type is taken from "items"
 
-    Enum extraction:
-    - Supports inline "enum", direct "$ref", and compositions via "allOf"/"anyOf"/"oneOf"
-    - For arrays, enums are taken from "items" (including "$ref" or compositions)
+    Choices extraction:
+    - Supports inline enums, direct "$ref", and compositions via "allOf"/"anyOf"/"oneOf"
+    - For arrays, choices are taken from "items" (including "$ref" or compositions)
 
     Args:
         schema: The JSON Schema dictionary to process
@@ -140,9 +140,9 @@ def build_schema_description(
         schema_description_prefix: Prefix for schema descriptions (None to omit schema descriptions)
         cardinality_prefix: Prefix for cardinality information (None to omit cardinality)
         type_prefix: Prefix for type information (None to omit types)
-        enum_prefix: Prefix for enum value lists (None to omit enums)
-        component_separator: Separator between field components (name, cardinality, type, enum)
-        enum_separator: Separator between individual enum values
+        choices_prefix: Prefix for choices value lists (None to omit choices)
+        component_separator: Separator between field components (name, cardinality, type, choices)
+        choices_separator: Separator between individual choices values
         indent_step: String used for each indentation level
         indent: Current indentation level (internal, for recursion)
         root_schema: Root schema containing $defs (internal, for recursion)
@@ -157,16 +157,16 @@ def build_schema_description(
     prefix = indent_step * indent
 
     # Add description
-    desc = schema.get("description", "")
-    if desc and schema_description_prefix is not None:
-        lines.append(f"{prefix}{schema_description_prefix}{desc}")
+    schema_desc = schema.get("description", "")
+    if schema_desc and schema_description_prefix is not None:
+        lines.append(f"{prefix}{schema_description_prefix}{schema_desc}")
 
     if header:
         lines.append(header)
 
     props = schema.get("properties", {}) or {}
     for name, spec in props.items():
-        pdesc = spec.get("description", "")
+        desc = spec.get("description", "")
 
         # Single check for array vs non-array handling
         is_array = spec.get("type") == "array"
@@ -176,18 +176,21 @@ def build_schema_description(
         has_default = "default" in spec
         cardinality = "0..*" if is_array else ("0..1" if has_default else "1")
 
-        # Extract type and enum from target
+        # Extract type and choices from target
         field_type = _extract_type(root_schema, target)
-        enum = _extract_enum(root_schema, target)
+        choices = _extract_choices(root_schema, target)
 
         # Build field line
-        hint = f"{prefix}- {name}: {pdesc}" if pdesc else f"{prefix}- {name}:"
+        hint = f"{prefix}- {name}:"
+        # the field description is mandatory (if exists)
+        if desc:
+            hint += f" {desc}"
         if cardinality_prefix is not None:
             hint += f"{component_separator}{cardinality_prefix}{cardinality}"
         if field_type and type_prefix is not None:
             hint += f"{component_separator}{type_prefix}{field_type}"
-        if enum and enum_prefix is not None:
-            hint += f"{component_separator}{enum_prefix}" + enum_separator.join(enum)
+        if choices and choices_prefix is not None:
+            hint += f"{component_separator}{choices_prefix}" + choices_separator.join(choices)
 
         lines.append(hint)
 
@@ -207,9 +210,9 @@ def build_schema_description(
                         schema_description_prefix=schema_description_prefix,
                         cardinality_prefix=cardinality_prefix,
                         type_prefix=type_prefix,
-                        enum_prefix=enum_prefix,
+                        choices_prefix=choices_prefix,
                         component_separator=component_separator,
-                        enum_separator=enum_separator,
+                        choices_separator=choices_separator,
                         indent_step=indent_step,
                     )
                     lines.append(nested_content)
