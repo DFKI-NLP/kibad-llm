@@ -98,53 +98,71 @@ def _extract_type(schema: Mapping[str, Any], node: Any) -> str | None:
 
 
 def build_schema_description(
-    schema: Mapping[str, Any], indent: int = 0, root_schema: Mapping[str, Any] | None = None
+    schema: Mapping[str, Any],
+    header: str | None = "Feldhinweise und erlaubte Werte (getrennt durch Semikolons):",
+    description_prefix: str = "Beschreibung: ",
+    cardinality_prefix: str = "Kardinalität: ",
+    type_prefix: str = "Typ: ",
+    enum_prefix: str = "Zulässige Werte: ",
+    separator: str = " | ",
+    enum_separator: str = "; ",
+    indent_step: str = "  ",
+    # internal args
+    indent: int = 0,
+    root_schema: Mapping[str, Any] | None = None,
 ) -> str:
     """
-    Build a human‑readable German summary for a JSON Schema.
+    Build a human‑readable summary for a JSON Schema.
 
     Output format:
-    - Optional first line: "Beschreibung: <schema.description>" if present.
-    - Header line: "Feldhinweise und erlaubte Werte (getrennt durch Semikolons):"
-    - Then one line per property:
-      "- <Name>: <Beschreibung> Kardinalität: <1|0..1|0..*> | Typ: <type>[ | Zulässige Werte: v1; v2; ...]"
-      For nested objects, recursively include their properties with indentation.
+    - Optional first line: "<description_prefix><schema.description>" if present
+    - Optional header line (only at top level if header is not None)
+    - One line per property:
+      "<indent>- <name>: <description><separator><cardinality_prefix><cardinality><separator><type_prefix><type>[<separator><enum_prefix><values>]"
+    - For nested objects, recursively includes their properties with increased indentation
 
     Cardinality rules:
     - type=array ⇒ "0..*"
-    - non-array with a "default" ⇒ "0..1"
-    - non-array without a "default" ⇒ "1"
+    - non-array with "default" ⇒ "0..1"
+    - non-array without "default" ⇒ "1"
 
     Type extraction:
-    - Supports inline "type", direct "$ref", and compositions via "allOf"/"anyOf"/"oneOf".
-    - For arrays, type is taken from "items".
+    - Supports inline "type", direct "$ref", and compositions via "allOf"/"anyOf"/"oneOf"
+    - For arrays, type is taken from "items"
 
     Enum extraction:
-    - Supports inline "enum", direct "$ref", and compositions via "allOf"/"anyOf"/"oneOf".
-    - For arrays, enums are taken from "items" (including "$ref" or compositions).
+    - Supports inline "enum", direct "$ref", and compositions via "allOf"/"anyOf"/"oneOf"
+    - For arrays, enums are taken from "items" (including "$ref" or compositions)
 
     Args:
-        schema: The JSON Schema as a dictionary.
-        indent: Current indentation level for nested objects.
-        root_schema: The root schema containing $defs (defaults to schema if None).
+        schema: The JSON Schema dictionary to process
+        header: Header text for field list (only shown at top level, None to omit)
+        description_prefix: Prefix for schema descriptions
+        cardinality_prefix: Prefix for cardinality information
+        type_prefix: Prefix for type information
+        enum_prefix: Prefix for enum value lists
+        separator: Separator between field components (name, cardinality, type, enum)
+        enum_separator: Separator between individual enum values
+        indent_step: String used for each indentation level
+        indent: Current indentation level (internal, for recursion)
+        root_schema: Root schema containing $defs (internal, for recursion)
 
     Returns:
-        str: Multi-line German text summarizing fields and constraints.
+        Multi-line string summarizing schema structure, fields, and constraints
     """
     if root_schema is None:
         root_schema = schema
 
     lines = []
-    prefix = "  " * indent
+    prefix = indent_step * indent
 
     # Add description
     desc = schema.get("description", "")
     if desc:
-        lines.append(f"{prefix}Beschreibung: {desc}" if indent > 0 else f"Beschreibung: {desc}")
+        lines.append(f"{prefix}{description_prefix}{desc}")
 
-    # Add header only once at top level
-    if indent == 0:
-        lines.append("Feldhinweise und erlaubte Werte (getrennt durch Semikolons):")
+    if header:
+        lines.append(header)
 
     props = schema.get("properties", {}) or {}
     for name, spec in props.items():
@@ -164,11 +182,11 @@ def build_schema_description(
 
         # Build field line
         hint = f"{prefix}- {name}: {pdesc}" if pdesc else f"{prefix}- {name}:"
-        hint += f" | Kardinalität: {cardinality}"
+        hint += f"{separator}{cardinality_prefix}{cardinality}"
         if field_type:
-            hint += f" | Typ: {field_type}"
+            hint += f"{separator}{type_prefix}{field_type}"
         if enum:
-            hint += " | Zulässige Werte: " + "; ".join(enum)
+            hint += f"{separator}{enum_prefix}" + enum_separator.join(enum)
 
         lines.append(hint)
 
@@ -180,7 +198,18 @@ def build_schema_description(
                 if nested_schema:
                     # Recursively process nested properties
                     nested_content = build_schema_description(
-                        nested_schema, indent + 1, root_schema
+                        nested_schema,
+                        indent=indent + 1,
+                        root_schema=root_schema,
+                        # no header for nested
+                        header=None,
+                        description_prefix=description_prefix,
+                        cardinality_prefix=cardinality_prefix,
+                        type_prefix=type_prefix,
+                        enum_prefix=enum_prefix,
+                        separator=separator,
+                        enum_separator=enum_separator,
+                        indent_step=indent_step,
                     )
                     lines.append(nested_content)
 
