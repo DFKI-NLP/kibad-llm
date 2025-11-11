@@ -40,33 +40,6 @@ preprocess_reference:
   sep: "/"
 
 preprocess_prediction:
-  _target_: kibad_llm.utils.dictionary.get_and_map_keys
+  _target_: kibad_llm.utils.dictionary.get
   _partial_: True
   key: "structured"
-  # map the field names used in the json schema to the json paths (keys) in the (flattened) reference jsonl file
-  # see column "Pfad im JSONL der konvertierten Faktencheck-DB" in table
-  # https://docs.google.com/spreadsheets/d/1MyEZTLOm85ZNxuTSHxwJLxaAXiCGLt-mMozUkBlGzJE/edit?gid=0#gid=0
-  # but also the result of the data_integration/json_db_summary.py script:
-  # https://github.com/DFKI-NLP/kibad-llm/pull/31#issuecomment-3418782905
-  mapping:
-    Bundesland: "location/federal_state"
-    Lebensräume: "habitat"
-    Naturgroßräume: "natural_region"
-    Ökosystemtyp: "ecosystem_type/term"
-    Klima: "climate"
-    Landnutzung: "landuse"
-    Räumliche Ausdehnung: "spatial_extent"
-    Räumliche Auflösung: "spatial_resolution"
-    Anzahl räumlicher Messungen: "spatial_measurements"
-    Zeitraum: "temporal_extent"
-    Zeiteinheit: "temporal_extent_unit"
-    Zeitliche Auflösung: "temporal_resolution"
-    Anzahl zeitlicher Messungen: "temporal_measurements"
-    Startjahr: "start_year"
-    Endjahr: "end_year"
-    Methoden der Datenaufnahme: "method"
-    Studienart: "study_type"
-    Projekt/Programm: "project"
-    Biodiversitätsebene: "biodiversity_level"
-    Biodiversitätsvariable: "biodiversity_variable"
-    Transformationspotenzial: "transformation_potential"

@@ -62,9 +62,8 @@ def test_evaluate(tmp_path, cfg_evaluate, metric_name):
             "Küsten und Küstengewässer": {"Küsten und Küstengewässer": 2},
             "UNASSIGNABLE": {
                 "Agrar- und Offenland": 1,
-                "Binnengewässer und Auen": 1,
+                "Binnengewässer und Auen": 2,
                 "Boden": 1,
-                "Urbane Räume": 1,
                 "Wald": 1,
             },
         }

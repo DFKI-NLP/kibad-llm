@@ -167,39 +167,39 @@
   "additionalProperties": false,
   "description": "Angaben zu den ökosystembezogenen Studienmerkmalen.",
   "properties": {
-    "Lebensräume": {
+    "habitat": {
       "description": "Um welchen der folgenden Lebensräume oder um welche Kombinationen der folgenden Lebensräume geht es in dem Text?",
       "items": {
         "$ref": "#/$defs/HabitatEnum"
       },
-      "title": "Lebensräume",
+      "title": "Habitat",
       "type": "array"
     },
-    "Naturgroßräume": {
+    "natural_region": {
       "description": "Um welchen der folgenden Naturgroßräume geht es in dem Text?",
       "items": {
         "$ref": "#/$defs/NaturalRegionEnum"
       },
-      "title": "Naturgroßräume",
+      "title": "Natural Region",
       "type": "array"
     },
-    "Klima": {
+    "climate": {
       "description": "Welche Umschreibung trifft auf das Klima des Untersuchungsgebiets zu?",
       "items": {
         "$ref": "#/$defs/ClimateEnum"
       },
-      "title": "Klima",
+      "title": "Climate",
       "type": "array"
     },
-    "Landnutzung": {
+    "landuse": {
       "description": "Welche Landnutzung wird im oder nahe des Untersuchungsgebietes betrieben? In welche der folgenden Kategorien fällt die Nutzung?",
       "items": {
         "$ref": "#/$defs/LanduseEnum"
       },
-      "title": "Landnutzung",
+      "title": "Landuse",
       "type": "array"
     },
-    "Räumliche Ausdehnung": {
+    "spatial_extent": {
       "anyOf": [
         {
           "$ref": "#/$defs/SpatialExtentEnum"
@@ -211,7 +211,7 @@
       "default": null,
       "description": "Wie ist insgesamt die räumliche Ausdehnung der Studie?"
     },
-    "Räumliche Auflösung": {
+    "spatial_resolution": {
       "anyOf": [
         {
           "$ref": "#/$defs/SpatialResolutionEnum"
@@ -223,7 +223,7 @@
       "default": null,
       "description": "Mit welcher räumlichen Auflösung wurden die einzelnen Messungen in der Studie durchgeführt?"
     },
-    "Anzahl räumlicher Messungen": {
+    "spatial_measurements": {
       "anyOf": [
         {
           "type": "integer"
@@ -234,9 +234,9 @@
       ],
       "default": null,
       "description": "An wie vielen Stellen wurde gemessen?",
-      "title": "Anzahl Räumlicher Messungen"
+      "title": "Spatial Measurements"
     },
-    "Zeitraum": {
+    "temporal_extent": {
       "anyOf": [
         {
           "type": "integer"
@@ -247,9 +247,9 @@
       ],
       "default": null,
       "description": "In welchem Zeitraum fanden die Messungen statt?",
-      "title": "Zeitraum"
+      "title": "Temporal Extent"
     },
-    "Zeiteinheit": {
+    "temporal_extent_unit": {
       "anyOf": [
         {
           "$ref": "#/$defs/TemporalExtentUnit"
@@ -261,7 +261,7 @@
       "default": null,
       "description": "In welcher der folgenden Zeiteinheiten ist der Zeitraum angegeben?"
     },
-    "Zeitliche Auflösung": {
+    "temporal_resolution": {
       "anyOf": [
         {
           "$ref": "#/$defs/TemporalResolutionEnum"
@@ -273,7 +273,7 @@
       "default": null,
       "description": "Mit welcher zeitlichen Auflösung wurden die einzelnen Messungen in der Studie durchgeführt?"
     },
-    "Anzahl zeitlicher Messungen": {
+    "temporal_measurements": {
       "anyOf": [
         {
           "type": "integer"
@@ -284,9 +284,9 @@
       ],
       "default": null,
       "description": "Zu wie vielen unterschiedlichen Zeitpunkten wurde gemessen?",
-      "title": "Anzahl Zeitlicher Messungen"
+      "title": "Temporal Measurements"
     },
-    "Startjahr": {
+    "start_year": {
       "anyOf": [
         {
           "type": "integer"
@@ -297,9 +297,9 @@
       ],
       "default": null,
       "description": "In welchem Jahr fand die erste Messung statt?",
-      "title": "Startjahr"
+      "title": "Start Year"
     },
-    "Endjahr": {
+    "end_year": {
       "anyOf": [
         {
           "type": "integer"
@@ -310,25 +310,25 @@
       ],
       "default": null,
       "description": "In welchem Jahr fand die letzte Messung statt?",
-      "title": "Endjahr"
+      "title": "End Year"
     },
-    "Methoden der Datenaufnahme": {
+    "method": {
       "description": "Mit welcher/welchen Methode(n) wurden die Daten erhoben?",
       "items": {
         "$ref": "#/$defs/MethodEnum"
       },
-      "title": "Methoden Der Datenaufnahme",
+      "title": "Method",
       "type": "array"
     },
-    "Studienart": {
+    "study_type": {
       "description": "Um welche Form der wissenschaftlichen Studie handelt es sich?",
       "items": {
         "$ref": "#/$defs/StudyTypeEnum"
       },
-      "title": "Studienart",
+      "title": "Study Type",
       "type": "array"
     },
-    "Projekt/Programm": {
+    "project": {
       "anyOf": [
         {
           "type": "string"
@@ -339,30 +339,30 @@
       ],
       "default": null,
       "description": "Gehört die Studie zu einem größeren Programm oder Projekt? Wenn ja, zu welchem?",
-      "title": "Projekt/Programm"
+      "title": "Project"
     },
-    "Biodiversitätsebene": {
+    "biodiversity_level": {
       "description": "Auf welche der folgenden Ebenen wird Biodiversität in der Studie gemessen?",
       "items": {
         "$ref": "#/$defs/BiodiversityLevelEnum"
       },
-      "title": "Biodiversitätsebene",
+      "title": "Biodiversity Level",
       "type": "array"
     },
-    "Biodiversitätsvariable": {
+    "biodiversity_variable": {
       "description": "In welchen Variablen wird die Biodiversität gemessen?",
       "items": {
         "type": "string"
       },
-      "title": "Biodiversitätsvariable",
+      "title": "Biodiversity Variable",
       "type": "array"
     },
-    "Transformationspotenzial": {
+    "transformation_potential": {
       "description": "In welche der folgenden Kategorien lässt sich die im Text behandelte Transformation einordnen? ",
       "items": {
         "$ref": "#/$defs/TransformationPotentialEnum"
       },
-      "title": "Transformationspotenzial",
+      "title": "Transformation Potential",
       "type": "array"
     }
   },

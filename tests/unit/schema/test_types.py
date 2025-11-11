@@ -18,7 +18,7 @@ MODEL2FIXTURE = {
 
 @pytest.mark.parametrize("model_cls", list(MODEL2FIXTURE))
 def test_type(model_cls: type[BaseModel]):
-    schema = model_cls.model_json_schema()
+    schema = model_cls.model_json_schema(by_alias=False)
     path_expected = PROJ_ROOT / "tests" / "fixtures" / "schema" / MODEL2FIXTURE[model_cls]
     if WRITE_FIXTURE_DATA:
         with open(path_expected, "w") as f:

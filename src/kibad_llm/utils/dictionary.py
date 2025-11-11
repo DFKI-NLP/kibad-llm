@@ -51,6 +51,7 @@ def flatten_dict_simple(d: Mapping[str, Any], sep: str = ".") -> dict[str, Any]:
     return result
 
 
+# not used
 def get_and_map_keys(
     d: Mapping[str, Any],
     key: str,
@@ -71,3 +72,11 @@ def get_and_map_keys(
         d_nested = dict()
     mapped = {mapping[k]: v for k, v in d_nested.items()}
     return mapped
+
+
+def get(
+    d: Mapping[str, Any],
+    key: str,
+    default: Any = None,
+) -> Any:
+    return d.get(key, default)
