@@ -100,10 +100,10 @@ def _extract_type(schema: Mapping[str, Any], node: Any) -> str | None:
 def build_schema_description(
     schema: Mapping[str, Any],
     header: str | None = "Feldhinweise und erlaubte Werte (getrennt durch Semikolons):",
-    description_prefix: str = "Beschreibung: ",
-    cardinality_prefix: str = "Kardinalität: ",
-    type_prefix: str = "Typ: ",
-    enum_prefix: str = "Zulässige Werte: ",
+    schema_description_prefix: str | None = "Beschreibung: ",
+    cardinality_prefix: str | None = "Kardinalität: ",
+    type_prefix: str | None = "Typ: ",
+    enum_prefix: str | None = "Zulässige Werte: ",
     component_separator: str = " | ",
     enum_separator: str = "; ",
     indent_step: str = "  ",
@@ -115,10 +115,10 @@ def build_schema_description(
     Build a human‑readable summary for a JSON Schema.
 
     Output format:
-    - Optional first line: "<description_prefix><schema.description>" if present
+    - Optional first line: "<schema_description_prefix><schema.description>" if schema_description_prefix is not None and description exists
     - Optional header line (only at top level if header is not None)
-    - One line per property:
-      "<indent>- <name>: <description><separator><cardinality_prefix><cardinality><separator><type_prefix><type>[<separator><enum_prefix><values>]"
+    - One line per property with format depending on which prefix parameters are not None:
+      "<indent>- <name>[: <description>][<separator><cardinality_prefix><cardinality>][<separator><type_prefix><type>][<separator><enum_prefix><values>]"
     - For nested objects, recursively includes their properties with increased indentation
 
     Cardinality rules:
@@ -137,10 +137,10 @@ def build_schema_description(
     Args:
         schema: The JSON Schema dictionary to process
         header: Header text for field list (only shown at top level, None to omit)
-        description_prefix: Prefix for schema descriptions
-        cardinality_prefix: Prefix for cardinality information
-        type_prefix: Prefix for type information
-        enum_prefix: Prefix for enum value lists
+        schema_description_prefix: Prefix for schema descriptions (None to omit schema descriptions)
+        cardinality_prefix: Prefix for cardinality information (None to omit cardinality)
+        type_prefix: Prefix for type information (None to omit types)
+        enum_prefix: Prefix for enum value lists (None to omit enums)
         component_separator: Separator between field components (name, cardinality, type, enum)
         enum_separator: Separator between individual enum values
         indent_step: String used for each indentation level
@@ -158,8 +158,8 @@ def build_schema_description(
 
     # Add description
     desc = schema.get("description", "")
-    if desc:
-        lines.append(f"{prefix}{description_prefix}{desc}")
+    if desc and schema_description_prefix is not None:
+        lines.append(f"{prefix}{schema_description_prefix}{desc}")
 
     if header:
         lines.append(header)
@@ -182,10 +182,11 @@ def build_schema_description(
 
         # Build field line
         hint = f"{prefix}- {name}: {pdesc}" if pdesc else f"{prefix}- {name}:"
-        hint += f"{component_separator}{cardinality_prefix}{cardinality}"
-        if field_type:
+        if cardinality_prefix is not None:
+            hint += f"{component_separator}{cardinality_prefix}{cardinality}"
+        if field_type and type_prefix is not None:
             hint += f"{component_separator}{type_prefix}{field_type}"
-        if enum:
+        if enum and enum_prefix is not None:
             hint += f"{component_separator}{enum_prefix}" + enum_separator.join(enum)
 
         lines.append(hint)
@@ -203,7 +204,7 @@ def build_schema_description(
                         root_schema=root_schema,
                         # no header for nested
                         header=None,
-                        description_prefix=description_prefix,
+                        schema_description_prefix=schema_description_prefix,
                         cardinality_prefix=cardinality_prefix,
                         type_prefix=type_prefix,
                         enum_prefix=enum_prefix,
