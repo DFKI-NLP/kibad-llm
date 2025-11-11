@@ -211,102 +211,101 @@ class EcosystemStudyFeaturesWithoutCompounds(BaseModel):
 
     habitat: list[HabitatEnum] = Field(
         default_factory=list,
-        # alias="Lebensräume",
+        alias="Lebensräume",
         description="Um welchen der folgenden Lebensräume oder um welche Kombinationen der folgenden Lebensräume geht es in dem Text?",
     )
     natural_region: list[NaturalRegionEnum] = Field(
         default_factory=list,
-        # alias="Naturgroßräume",
+        alias="Naturgroßräume",
         description="Um welchen der folgenden Naturgroßräume geht es in dem Text?",
     )
     climate: list[ClimateEnum] = Field(
         default_factory=list,
-        # alias="Klima",
+        alias="Klima",
         description="Welche Umschreibung trifft auf das Klima des Untersuchungsgebiets zu?",
     )
     landuse: list[LanduseEnum] = Field(
         default_factory=list,
-        # alias="Landnutzung",
+        alias="Landnutzung",
         description="Welche Landnutzung wird im oder nahe des Untersuchungsgebietes betrieben? In welche der folgenden Kategorien fällt die Nutzung?",
     )
     spatial_extent: SpatialExtentEnum | None = Field(
         default=None,
-        # alias="Räumliche Ausdehnung",
+        alias="Räumliche Ausdehnung",
         description="Wie ist insgesamt die räumliche Ausdehnung der Studie?",
     )
     spatial_resolution: SpatialResolutionEnum | None = Field(
         default=None,
-        # alias="Räumliche Auflösung",
+        alias="Räumliche Auflösung",
         description="Mit welcher räumlichen Auflösung wurden die einzelnen Messungen in der Studie durchgeführt?",
     )
     spatial_measurements: int | None = Field(
         default=None,
-        # alias="Anzahl räumlicher Messungen",
+        alias="Anzahl räumlicher Messungen",
         description="An wie vielen Stellen wurde gemessen?",
     )
     temporal_extent: int | None = Field(
         default=None,
-        # alias="Zeitraum",
+        alias="Zeitraum",
         description="In welchem Zeitraum fanden die Messungen statt?",
     )
     temporal_extent_unit: TemporalExtentUnit | None = Field(
         default=None,
-        # alias="Zeiteinheit",
+        alias="Zeiteinheit",
         description="In welcher der folgenden Zeiteinheiten ist der Zeitraum angegeben?",
     )
     temporal_resolution: TemporalResolutionEnum | None = Field(
         default=None,
-        # alias="Zeitliche Auflösung",
+        alias="Zeitliche Auflösung",
         description="Mit welcher zeitlichen Auflösung wurden die einzelnen Messungen in der Studie durchgeführt?",
     )
     temporal_measurements: int | None = Field(
         default=None,
-        # alias="Anzahl zeitlicher Messungen",
+        alias="Anzahl zeitlicher Messungen",
         description="Zu wie vielen unterschiedlichen Zeitpunkten wurde gemessen?",
     )
     start_year: int | None = Field(
         default=None,
-        # alias="Startjahr",
+        alias="Startjahr",
         description="In welchem Jahr fand die erste Messung statt?",
     )
     end_year: int | None = Field(
         default=None,
-        # alias="Endjahr",
+        alias="Endjahr",
         description="In welchem Jahr fand die letzte Messung statt?",
     )
     method: list[MethodEnum] = Field(
         default_factory=list,
-        # alias="Methoden der Datenaufnahme",
+        alias="Methoden der Datenaufnahme",
         description="Mit welcher/welchen Methode(n) wurden die Daten erhoben?",
     )
     study_type: list[StudyTypeEnum] = Field(
         default_factory=list,
-        # alias="Studienart",
+        alias="Studienart",
         description="Um welche Form der wissenschaftlichen Studie handelt es sich?",
     )
     project: str | None = Field(
         default=None,
-        # alias="Projekt/Programm",
+        alias="Projekt/Programm",
         description="Gehört die Studie zu einem größeren Programm oder Projekt? Wenn ja, zu welchem?",
     )
     biodiversity_level: list[BiodiversityLevelEnum] = Field(
         default_factory=list,
-        # alias="Biodiversitätsebene",
+        alias="Biodiversitätsebene",
         description="Auf welche der folgenden Ebenen wird Biodiversität in der Studie gemessen?",
     )
     biodiversity_variable: list[str] = Field(
         default_factory=list,
-        # alias="Biodiversitätsvariable",
+        alias="Biodiversitätsvariable",
         description="In welchen Variablen wird die Biodiversität gemessen?",
     )
     transformation_potential: list[TransformationPotentialEnum] = Field(
         default_factory=list,
-        # alias="Transformationspotenzial",
+        alias="Transformationspotenzial",
         description="In welche der folgenden Kategorien lässt sich die im Text behandelte Transformation einordnen? ",
     )
 
     model_config = ConfigDict(
-        # populate_by_name=True,
         use_enum_values=True,
         extra="forbid",
     )
@@ -317,27 +316,26 @@ class EcosystemStudyFeaturesSimple(BaseModel):
 
     habitat: list[HabitatEnum] = Field(
         default_factory=list,
-        # alias="Lebensräume",
+        alias="Lebensräume",
         description="Um welchen der folgenden Lebensräume oder in welcher Kombination der folgenden Lebensräume geht es in dem Text?",
     )
     natural_region: list[NaturalRegionEnum] = Field(
         default_factory=list,
-        # alias="Naturgroßräume",
+        alias="Naturgroßräume",
         description="Um welchen der folgenden Naturgroßräume geht es in dem Text?",
     )
     climate: list[ClimateEnum] = Field(
         default_factory=list,
-        # alias="Klima",
+        alias="Klima",
         description="Welche Umschreibung trifft auf das Klima des Untersuchungsgebiets zu?",
     )
     landuse: list[LanduseEnum] = Field(
         default_factory=list,
-        # alias="Landnutzung",
+        alias="Landnutzung",
         description="Welche Landnutzung wird im oder nahe des Untersuchungsgebietes betrieben? In welche der folgenden Kategorien fällt die Nutzung?",
     )
 
     model_config = ConfigDict(
-        # populate_by_name=True,
         use_enum_values=True,
         extra="forbid",
     )
