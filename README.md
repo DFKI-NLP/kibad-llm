@@ -102,7 +102,7 @@ uv run -m kibad_llm.data_integration.synch_nextcloud_with_cluster
 
 #### Prerequisite: LLM Hosting
 
-Follow the instructions [here for a quickstart](./models/README.md#quickstart) or [here for general instructions on uv and the cluster](./models/README.md#the-two-ways-to-use-uv-on-pegasus).
+Follow the instructions [here for a quickstart](./models/README.md#quickstart), [here for an all-in-one script](./models/README.md#all-in-one-run-script) or [here for general instructions on uv and the cluster](./models/README.md#the-two-ways-to-use-uv-on-pegasus).
 
 #### Inference
 
@@ -166,9 +166,11 @@ See [configs/evaluate](./configs/evaluate.yaml) for further information and opti
 ├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g.
 │                         generated with `pip freeze > requirements.txt`
 │
+├── run_with_llm.sh    <- An all-in-one script for hosting vLLM and running uv against it
+│
 ├── setup.cfg          <- Configuration file for flake8
 │
-└── kibad_llm   <- Source code for use in this project.
+└── kibad_llm          <- Source code for use in this project.
     │
     ├── __init__.py             <- Makes kibad_llm a Python module
     │
