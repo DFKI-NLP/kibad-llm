@@ -7,7 +7,7 @@ import pytest
 
 from kibad_llm.config import PROJ_ROOT
 
-WRITE_FIXTURE_DATA = True  # set to True to create or update fixture data
+WRITE_FIXTURE_DATA = False  # set to True to create or update fixture data
 
 
 def test_dont_write_fixture_data():
