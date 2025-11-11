@@ -22,6 +22,7 @@ def extract_from_text(
     user_message: str | None = None,
     schema: dict[str, Any] | None = None,
     system_message_requires_schema_description: bool = False,
+    schema_description_kwargs: dict[str, Any] | None = None,
     llm: LLM | None = None,
 ) -> dict:
     """Extract structured information from text using an LLM.
@@ -40,6 +41,8 @@ def extract_from_text(
         system_message_requires_schema_description: Whether the system message template
             requires a schema description (will raise an error if True but no schema provided).
             The schema description will be built from the provided schema.
+        schema_description_kwargs: Optional kwargs for build_schema_description when generating
+            the schema description.
         llm: The LLM model to use (defaults to Settings.llm). Must be a chat model (i.e. is_chat_model=True)
             and support extra_body parameters for guided decoding if schema is provided.
 
@@ -52,7 +55,9 @@ def extract_from_text(
 
     # Build chat messages
     if schema is not None and system_message_requires_schema_description:
-        schema_description = build_schema_description(schema=schema)
+        schema_description = build_schema_description(
+            schema=schema, **(schema_description_kwargs or {})
+        )
         system = system_message.format(schema_description=schema_description)
     else:
         if system_message_requires_schema_description:
