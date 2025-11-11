@@ -150,7 +150,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--input-file",
         type=str,
-        default="data/interim/faktencheck-db/faktencheck-db-converted_2025-08-19.jsonl",
+        default="data/interim/faktencheck-db/faktencheck-db-converted_2025-11-05.jsonl",
         help="Path to the input JSONL file containing the Faktencheck database created "
         "with `db_converter.py`.",
     )
