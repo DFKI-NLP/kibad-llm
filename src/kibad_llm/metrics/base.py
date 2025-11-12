@@ -39,7 +39,7 @@ class MetricWithPrepareEntryAsSet(Metric):
             entry: Any kind of data structure to maybe extract from and eventually wrap in a set.
         Returns: A set of whatever relevant value was put in.
         """
-        if self.field is not None:
+        if self.field is not None and entry is not None:
             if not isinstance(entry, dict):
                 raise ValueError(
                     f"Expected entry to be a dict when field is set, but got {type(entry)}"
