@@ -58,6 +58,9 @@ def test_prepare_entry_as_set_with_field():
 
 def test_prepare_entry_as_set_with_field_no_dict():
     m = MetricWithPrepareEntryAsSet(field="labels")
+    # if input is None, return empty set
+    assert m._prepare_entry_as_set(None) == set()
+    # if input is not None, raise ValueError
     with pytest.raises(ValueError) as excinfo:
         m._prepare_entry_as_set("no_dict")
     assert (
