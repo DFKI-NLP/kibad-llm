@@ -1,0 +1,16 @@
+Beschreibung: Angaben zu den ökosystembezogenen Studienmerkmalen.
+Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
+- ecosystem_type: Welche Ökosystemtypen werden in der Studie untersucht? | Kardinalität: 0..* | Typ: object
+  Beschreibung: Ökosystemtyp mit Kategorie und Term.
+  - category: Kategorie des Biotoptyps | Kardinalität: 1 | Typ: string | Zulässige Werte: I Biotoptypengruppen der Meere und Küsten; II Biotoptypengruppen der Binnengewässer; III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes; IV Technische Biotoptypengruppen; V Biotoptypengruppen mit Schwerpunkt in den Alpen; VI Weitere
+  - term: Spezifischer Biotoptyp | Kardinalität: 1 | Typ: string | Zulässige Werte: Anthropogene Rohbodenstandorte und Ruderalfluren; Bauwerke; Benthal der Nordsee; Benthal der Ostsee; Feldgehölze, Gebüsche, Hecken und Gehölzkulturen; Fels- und Steilküsten; Felsen, Block- und Schutthalden, Geröllfelder, offene Bereiche mit sandigem oder bindigem Substrat; Fließende Gewässer; Gebirgsrasen (subalpine bis alpine Stufe); Grundwasser und Höhlengewässer; Grün- und Freiflächen; Hoch-, Zwischen- und Übergangsmoore; Höhlen (einschließlich Stollen, Brunnenschächte etc.); Kleine, unbefestigte Freiflächen des besiedelten Bereiches; Küstendünen; Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent); Nadel(Misch)Wälder und -Forste; Pelagial der Nordsee; Pelagial der Ostsee; Quellen (inklusive Quellabfluss (Krenal)); Röhrichte (ohne Brackwasserröhrichte); Salzgrünland der Nordseeküste (Supralitoral); Salzgrünland, Brackwasserröhrichte und -Hochstaudenfluren des Geolitorals der Ostseeküste; Stehende Gewässer; Sände, Sand-, Geröll- und Blockstrände; Trockenrasen sowie Grünland trockener bis frischer Standorte; Verkehrsanlagen und Plätze; Wald- und Ufersäume, Staudenfluren; Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte; Waldmäntel und Vorwälder, spezielle Waldnutzungsformen; Zwergstrauchheiden; Äcker und Ackerbrachen
+- location: Welche Standorte werden in der Studie untersucht? | Kardinalität: 0..* | Typ: object
+  Beschreibung: Standort mit Land, Bundesland und Ort.
+  - country: Land des Studienstandorts | Kardinalität: 0..1 | Typ: string
+  - federal_state: Bundesland des Studienstandorts | Kardinalität: 0..1 | Typ: string | Zulässige Werte: Baden-Württemberg; Bayern; Berlin; Brandenburg; Bremen; Hamburg; Hessen; Mecklenburg-Vorpommern; Niedersachsen; Nordrhein-Westfalen; Rheinland-Pfalz; Saarland; Sachsen; Sachsen-Anhalt; Schleswig-Holstein; Thüringen
+  - name: Ort (z.B. Stadt, Gemeinde, Region) des Studienstandorts | Kardinalität: 1 | Typ: string
+- taxa: Welche Arten werden in der Studie untersucht? | Kardinalität: 0..* | Typ: object
+  Beschreibung: Art mit wissenschaftlichem und deutschem Namen sowie Gruppierung.
+  - scientific_name: Wissenschaftlicher Name der Art | Kardinalität: 0..1 | Typ: string
+  - german_name: Deutscher Name der Art | Kardinalität: 0..1 | Typ: string
+  - species_group: Artengruppe der Art | Kardinalität: 1 | Typ: string | Zulässige Werte: Amphibien und Reptilien; Andere; Andere Pflanzen; Andere Wirbellose; Archaeen; Bakterien; Fische; Flechten; Gefäßpflanzen; Insekten; Moose; Pilze; Protisten; Protozoen; Säugetiere; Vögel

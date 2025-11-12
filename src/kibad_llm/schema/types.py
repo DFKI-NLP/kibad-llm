@@ -389,6 +389,52 @@ class Location(BaseModel):
     )
 
 
+class SpeciesGroupEnum(str, Enum):
+    AMPHIBIANS_AND_REPTILES = "Amphibien und Reptilien"
+    OTHERS = "Andere"
+    OTHER_PLANTS = "Andere Pflanzen"
+    OTHER_INVERTEBRATES = "Andere Wirbellose"
+    ARCHAEA = "Archaeen"
+    BACTERIA = "Bakterien"
+    FISHES = "Fische"
+    LICHENS = "Flechten"
+    VASCULAR_PLANTS = "Gefäßpflanzen"
+    INSECTS = "Insekten"
+    MOSSES = "Moose"
+    FUNGI = "Pilze"
+    PROTISTS = "Protisten"
+    PROTOZOA = "Protozoen"
+    MAMMALS = "Säugetiere"
+    BIRDS = "Vögel"
+
+
+class Taxa(BaseModel):
+    """Art mit wissenschaftlichem und deutschem Namen sowie Gruppierung."""
+
+    # TODO: or is "scientific_name" mandatory?
+    scientific_name: str | None = Field(
+        default=None,
+        alias="Wissenschaftlicher Artenname",
+        description="Wissenschaftlicher Name der Art",
+    )
+    german_name: str | None = Field(
+        default=None,
+        alias="Deutscher Artenname",
+        description="Deutscher Name der Art",
+    )
+    species_group: SpeciesGroupEnum = Field(
+        ...,
+        alias="Artengruppe",
+        description="Artengruppe der Art",
+    )
+
+    model_config = ConfigDict(
+        # validate_by_name=True,
+        # use_enum_values=True,
+        extra="forbid",
+    )
+
+
 class EcosystemStudyFeaturesCompoundsSimple(BaseEcosystemStudyFeatures):
     """Angaben zu den ökosystembezogenen Studienmerkmalen."""
 
@@ -408,3 +454,32 @@ class EcosystemStudyFeaturesCompoundsSimple(BaseEcosystemStudyFeatures):
         # use_enum_values=True,
         extra="forbid",
     )
+
+
+class EcosystemStudyFeaturesCompoundsOnly(BaseEcosystemStudyFeatures):
+    """Angaben zu den ökosystembezogenen Studienmerkmalen."""
+
+    ecosystem_type: list[EcosystemType] = Field(
+        default_factory=list,
+        alias="Ökosystemtypen",
+        description="Welche Ökosystemtypen werden in der Studie untersucht?",
+    )
+    location: list[Location] = Field(
+        default_factory=list,
+        alias="Standorte",
+        description="Welche Standorte werden in der Studie untersucht?",
+    )
+    taxa: list[Taxa] = Field(
+        default_factory=list,
+        alias="Arten",
+        description="Welche Arten werden in der Studie untersucht?",
+    )
+    # TODO:
+    # soil
+    # direct_driver
+    # ecosystem_type
+    # indirect_driver
+    # conservation_area
+    # management_measure
+    # impulse_measure
+    # ecosystem_service
