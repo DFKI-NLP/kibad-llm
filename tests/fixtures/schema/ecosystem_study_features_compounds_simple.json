@@ -74,6 +74,19 @@
       "additionalProperties": false,
       "description": "Standort mit Bundesland und Name.",
       "properties": {
+        "country": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Staat des Standorts",
+          "title": "Country"
+        },
         "federal_state": {
           "anyOf": [
             {

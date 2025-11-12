@@ -367,6 +367,7 @@ class EcosystemType(BaseModel):
 class Location(BaseModel):
     """Standort mit Bundesland und Name."""
 
+    country: str | None = Field(default=None, alias="Staat", description="Staat des Standorts")
     federal_state: LocationFederalStateEnum | None = Field(
         default=None, alias="Bundesland", description="Bundesland des Standorts"
     )
