@@ -352,6 +352,7 @@ class EcosystemStudyFeaturesSimple(BaseEcosystemStudyFeatures):
 class EcosystemType(BaseModel):
     """Ökosystemtyp mit Kategorie und Term."""
 
+    # TODO: use description from google table
     category: EcosystemTypeCategoryEnum = Field(
         ..., alias="Kategorie", description="Kategorie des Biotoptyps"
     )
@@ -367,6 +368,7 @@ class EcosystemType(BaseModel):
 class Location(BaseModel):
     """Standort mit Bundesland und Name."""
 
+    # TODO: use description from google table
     country: str | None = Field(default=None, alias="Staat", description="Staat des Standorts")
     federal_state: LocationFederalStateEnum | None = Field(
         default=None, alias="Bundesland", description="Bundesland des Standorts"
