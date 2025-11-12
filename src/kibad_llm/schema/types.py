@@ -6,7 +6,8 @@ from pydantic import BaseModel, ConfigDict, Field
 class BaseEcosystemStudyFeatures(BaseModel):
     """Basis-Klasse für ökosystembezogene Studienmerkmale."""
 
-    pass
+    # do not allow extra fields per default
+    model_config = ConfigDict(extra="forbid")
 
 
 class HabitatEnum(str, Enum):
