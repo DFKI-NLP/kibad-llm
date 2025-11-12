@@ -43,3 +43,9 @@ preprocess_prediction:
   _target_: kibad_llm.utils.dictionary.get
   _partial_: True
   key: "structured"
+
+
+metric:
+  # for compound entries, we may ignore certain subfields during evaluation
+  ignore_subfields:
+    ecosystem_type: ["description"]
