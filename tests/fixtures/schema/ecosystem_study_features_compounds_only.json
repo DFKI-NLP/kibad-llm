@@ -133,6 +133,59 @@
       "title": "LocationFederalStateEnum",
       "type": "string"
     },
+    "Soil": {
+      "additionalProperties": false,
+      "description": "Boden mit Kategorie und Tiefe.",
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/SoilNameEnum",
+          "description": "Name des Bodentyps"
+        },
+        "depth": {
+          "$ref": "#/$defs/SoilDepthEnum",
+          "description": "Tiefe des Bodens"
+        }
+      },
+      "required": [
+        "name",
+        "depth"
+      ],
+      "title": "Soil",
+      "type": "object"
+    },
+    "SoilDepthEnum": {
+      "enum": [
+        "Oberboden",
+        "Streuschicht",
+        "Unbekannt",
+        "Unterboden"
+      ],
+      "title": "SoilDepthEnum",
+      "type": "string"
+    },
+    "SoilNameEnum": {
+      "enum": [
+        "Bergbauflächen",
+        "Braune Lössböden, einschließlich Sandlöss und lössähnliche Sedimente",
+        "Böden aus Geschiebelehm und Geschiebemergel mit sandiger Deckschicht",
+        "Böden aus Kalk-, Mergel- und Dolomitgesteinen",
+        "Böden aus Ton- und Schluffschiefern",
+        "Böden aus kalkfreien Sedimentgesteinen und Quarziten",
+        "Böden aus sauren und intermediären magamatischen und metamorphen Gesteinen",
+        "Böden der Flussauen",
+        "Böden der Niederungen und Urstromtäler",
+        "Gewässerflächen",
+        "Hoch- und Niedermoorböden",
+        "Marschböden",
+        "Schwarze Lössböden",
+        "Siedlungsflächen",
+        "Staunasse Lössböden",
+        "Trockene Sandböden",
+        "Wattböden"
+      ],
+      "title": "SoilNameEnum",
+      "type": "string"
+    },
     "SpeciesGroupEnum": {
       "enum": [
         "Amphibien und Reptilien",
@@ -222,6 +275,14 @@
         "$ref": "#/$defs/Taxa"
       },
       "title": "Taxa",
+      "type": "array"
+    },
+    "soil": {
+      "description": "Welche Bodentypen werden in der Studie untersucht?",
+      "items": {
+        "$ref": "#/$defs/Soil"
+      },
+      "title": "Soil",
       "type": "array"
     }
   },

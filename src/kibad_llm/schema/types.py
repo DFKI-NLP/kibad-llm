@@ -435,6 +435,48 @@ class Taxa(BaseModel):
     )
 
 
+class SoilDepthEnum(str, Enum):
+    OBERBODEN = "Oberboden"
+    STREUSCHICHT = "Streuschicht"
+    UNBEKANNT = "Unbekannt"
+    UNTERBODEN = "Unterboden"
+
+
+class SoilNameEnum(str, Enum):
+    BERGBAUFLAECHEN = "Bergbauflächen"
+    BRAUNE_LOESSBOEDEN = "Braune Lössböden, einschließlich Sandlöss und lössähnliche Sedimente"
+    BOEDEN_GESCHIEBELEHM = "Böden aus Geschiebelehm und Geschiebemergel mit sandiger Deckschicht"
+    BOEDEN_KALK_MERGEL_DOLIMITGESTEINEN = "Böden aus Kalk-, Mergel- und Dolomitgesteinen"
+    BOEDEN_TON_SCHLUFFSCHIEFERN = "Böden aus Ton- und Schluffschiefern"
+    BOEDEN_KALKFREIEN_SEDIMENTGESTEINEN = "Böden aus kalkfreien Sedimentgesteinen und Quarziten"
+    BOEDEN_SAUREN_MAGMATISCHEN_GESTEINEN = (
+        "Böden aus sauren und intermediären magamatischen und metamorphen Gesteinen"
+    )
+    BOEDEN_FLUSSAUEN = "Böden der Flussauen"
+    BOEDEN_NIEDERUNGEN_URSTROMTAELER = "Böden der Niederungen und Urstromtäler"
+    GEWAESSERFLAECHEN = "Gewässerflächen"
+    HOCH_NIEDERMOORBOEDEN = "Hoch- und Niedermoorböden"
+    MARSCHBOEDEN = "Marschböden"
+    SCHWARZE_LOESSBOEDEN = "Schwarze Lössböden"
+    SIEDLUNGSFLAECHEN = "Siedlungsflächen"
+    STAUNASSE_LOESSBOEDEN = "Staunasse Lössböden"
+    TROCKENE_SANDBOEDEN = "Trockene Sandböden"
+    WATTBOEDEN = "Wattböden"
+
+
+class Soil(BaseModel):
+    """Boden mit Kategorie und Tiefe."""
+
+    name: SoilNameEnum = Field(..., alias="Name", description="Name des Bodentyps")
+    depth: SoilDepthEnum = Field(..., alias="Tiefe", description="Tiefe des Bodens")
+
+    model_config = ConfigDict(
+        # validate_by_name=True,
+        # use_enum_values=True,
+        extra="forbid",
+    )
+
+
 class EcosystemStudyFeaturesCompoundsSimple(BaseEcosystemStudyFeatures):
     """Angaben zu den ökosystembezogenen Studienmerkmalen."""
 
@@ -474,8 +516,12 @@ class EcosystemStudyFeaturesCompoundsOnly(BaseEcosystemStudyFeatures):
         alias="Arten",
         description="Welche Arten werden in der Studie untersucht?",
     )
+    soil: list[Soil] = Field(
+        default_factory=list,
+        alias="Böden",
+        description="Welche Bodentypen werden in der Studie untersucht?",
+    )
     # TODO:
-    # soil
     # direct_driver
     # ecosystem_type
     # indirect_driver
