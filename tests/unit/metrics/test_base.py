@@ -56,6 +56,16 @@ def test_prepare_entry_as_set_with_field():
     assert m._prepare_entry_as_set({"labels": None}) == set()
 
 
+def test_prepare_entry_as_set_with_field_no_dict():
+    m = MetricWithPrepareEntryAsSet(field="labels")
+    with pytest.raises(ValueError) as excinfo:
+        m._prepare_entry_as_set("no_dict")
+    assert (
+        str(excinfo.value)
+        == "Expected entry to be a dict when field is set, but got <class 'str'>"
+    )
+
+
 def test_prepare_entry_as_set_with_field_and_ignore_subfields():
     m = MetricWithPrepareEntryAsSet(field="items", ignore_subfields={"items": ["ignore_me"]})
     input_data = {
