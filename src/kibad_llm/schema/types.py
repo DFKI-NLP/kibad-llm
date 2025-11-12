@@ -353,7 +353,6 @@ class EcosystemStudyFeaturesSimple(BaseEcosystemStudyFeatures):
 class EcosystemType(BaseModel):
     """Ökosystemtyp mit Kategorie und Term."""
 
-    # TODO: use description from google table
     category: EcosystemTypeCategoryEnum = Field(
         ..., alias="Kategorie", description="Kategorie des Biotoptyps"
     )
@@ -367,14 +366,21 @@ class EcosystemType(BaseModel):
 
 
 class Location(BaseModel):
-    """Standort mit Bundesland und Name."""
+    """Standort mit Land, Bundesland und Ort."""
 
-    # TODO: use description from google table
-    country: str | None = Field(default=None, alias="Staat", description="Staat des Standorts")
-    federal_state: LocationFederalStateEnum | None = Field(
-        default=None, alias="Bundesland", description="Bundesland des Standorts"
+    country: str | None = Field(
+        default=None, alias="Land", description="Land des Studienstandorts"
     )
-    name: str = Field(..., alias="Name", description="Name des Standorts")
+    federal_state: LocationFederalStateEnum | None = Field(
+        default=None,
+        alias="Bundesland",
+        description="Bundesland des Studienstandorts",
+    )
+    name: str = Field(
+        ...,
+        alias="Ort",
+        description="Ort (z.B. Stadt, Gemeinde, Region) des Studienstandorts",
+    )
 
     model_config = ConfigDict(
         # validate_by_name=True,

@@ -72,7 +72,7 @@
     },
     "Location": {
       "additionalProperties": false,
-      "description": "Standort mit Bundesland und Name.",
+      "description": "Standort mit Land, Bundesland und Ort.",
       "properties": {
         "country": {
           "anyOf": [
@@ -84,7 +84,7 @@
             }
           ],
           "default": null,
-          "description": "Staat des Standorts",
+          "description": "Land des Studienstandorts",
           "title": "Country"
         },
         "federal_state": {
@@ -97,10 +97,10 @@
             }
           ],
           "default": null,
-          "description": "Bundesland des Standorts"
+          "description": "Bundesland des Studienstandorts"
         },
         "name": {
-          "description": "Name des Standorts",
+          "description": "Ort (z.B. Stadt, Gemeinde, Region) des Studienstandorts",
           "title": "Name",
           "type": "string"
         }
