@@ -1,7 +1,4 @@
-from enum import Enum
 import re
-
-from pydantic import BaseModel
 
 from kibad_llm.schema import types
 
@@ -16,7 +13,6 @@ ALL_MODELS = [
     obj
     for obj in vars(types).values()
     if isinstance(obj, type)
-    and issubclass(obj, BaseModel)
-    and obj is not BaseModel
-    and not issubclass(obj, Enum)
+    and issubclass(obj, types.BaseEcosystemStudyFeatures)
+    and obj is not types.BaseEcosystemStudyFeatures
 ]

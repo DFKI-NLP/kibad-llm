@@ -3,6 +3,13 @@ from enum import Enum
 from pydantic import BaseModel, ConfigDict, Field
 
 
+class BaseEcosystemStudyFeatures(BaseModel):
+    """Basis-Klasse für ökosystembezogene Studienmerkmale."""
+
+    # do not allow extra fields per default
+    model_config = ConfigDict(extra="forbid")
+
+
 class HabitatEnum(str, Enum):
     AGRAR_UND_OFFENLAND = "Agrar- und Offenland"
     BINNENGEWAESSER_UND_AUEN = "Binnengewässer und Auen"
@@ -206,7 +213,7 @@ class TransformationPotentialEnum(str, Enum):
     LEBENSRAUMUEBERGREIFENDER_WANDLUNGSPROZESS = "Lebensraumübergreifender Wandlungsprozess"
 
 
-class EcosystemStudyFeaturesWithoutCompounds(BaseModel):
+class EcosystemStudyFeaturesWithoutCompounds(BaseEcosystemStudyFeatures):
     """Angaben zu den ökosystembezogenen Studienmerkmalen."""
 
     habitat: list[HabitatEnum] = Field(
@@ -312,7 +319,7 @@ class EcosystemStudyFeaturesWithoutCompounds(BaseModel):
     )
 
 
-class EcosystemStudyFeaturesSimple(BaseModel):
+class EcosystemStudyFeaturesSimple(BaseEcosystemStudyFeatures):
     """Angaben zu den ökosystembezogenen Studienmerkmalen."""
 
     habitat: list[HabitatEnum] = Field(
@@ -334,6 +341,66 @@ class EcosystemStudyFeaturesSimple(BaseModel):
         default_factory=list,
         alias="Landnutzung",
         description="Welche Landnutzung wird im oder nahe des Untersuchungsgebietes betrieben? In welche der folgenden Kategorien fällt die Nutzung?",
+    )
+
+    model_config = ConfigDict(
+        # validate_by_name=True,
+        # use_enum_values=True,
+        extra="forbid",
+    )
+
+
+class EcosystemType(BaseModel):
+    """Ökosystemtyp mit Kategorie und Term."""
+
+    category: EcosystemTypeCategoryEnum = Field(
+        ..., alias="Kategorie", description="Kategorie des Biotoptyps"
+    )
+    term: EcosystemTypeTermEnum = Field(..., alias="Term", description="Spezifischer Biotoptyp")
+
+    model_config = ConfigDict(
+        # validate_by_name=True,
+        # use_enum_values=True,
+        extra="forbid",
+    )
+
+
+class Location(BaseModel):
+    """Standort mit Land, Bundesland und Ort."""
+
+    country: str | None = Field(
+        default=None, alias="Land", description="Land des Studienstandorts"
+    )
+    federal_state: LocationFederalStateEnum | None = Field(
+        default=None,
+        alias="Bundesland",
+        description="Bundesland des Studienstandorts",
+    )
+    name: str = Field(
+        ...,
+        alias="Ort",
+        description="Ort (z.B. Stadt, Gemeinde, Region) des Studienstandorts",
+    )
+
+    model_config = ConfigDict(
+        # validate_by_name=True,
+        # use_enum_values=True,
+        extra="forbid",
+    )
+
+
+class EcosystemStudyFeaturesCompoundsSimple(BaseEcosystemStudyFeatures):
+    """Angaben zu den ökosystembezogenen Studienmerkmalen."""
+
+    ecosystem_type: list[EcosystemType] = Field(
+        default_factory=list,
+        alias="Ökosystemtypen",
+        description="Welche Ökosystemtypen werden in der Studie untersucht?",
+    )
+    location: list[Location] = Field(
+        default_factory=list,
+        alias="Standorte",
+        description="Welche Standorte werden in der Studie untersucht?",
     )
 
     model_config = ConfigDict(
