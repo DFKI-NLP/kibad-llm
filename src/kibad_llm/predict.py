@@ -71,6 +71,7 @@ def predict(cfg: DictConfig) -> dict[str, Any]:
     extractor: Callable[[str, str], dict[str, Any]] = instantiate(cfg.extractor, _convert_="all")
 
     logger.info("Extract information from markdown ...")
+    logging.getLogger("httpx").setLevel(logging.WARNING)
     t_start_extraction = time.perf_counter()
     dataset = dataset.map(
         function=extractor,
