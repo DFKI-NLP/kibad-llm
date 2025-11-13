@@ -47,7 +47,13 @@ def _sort_with_none(l: list, remove_none: bool = False) -> list:
         except (TypeError, ValueError):
             return False
 
-    core = [x for x in l if x is not None and not is_nan(x)]
+    def convert_float_to_int(x):
+        # convert float integers to int to match db_converter.py behavior
+        if isinstance(x, float) and x.is_integer() and not math.isnan(x):
+            return int(x)
+        return x
+
+    core = [convert_float_to_int(x) for x in l if x is not None and not is_nan(x)]
     tail = [x for x in l if x is None or is_nan(x)]
     result = sorted(core)
     if not remove_none:
