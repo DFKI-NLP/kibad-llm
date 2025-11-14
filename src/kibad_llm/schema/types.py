@@ -345,14 +345,19 @@ class EcosystemStudyFeaturesSimple(BaseEcosystemStudyFeatures):
     )
 
 
-# Without descriptions for now.
 class EcosystemType(CompoundFeature):
-    """Ökosystemtyp mit Kategorie und Term."""
+    """Ökosystemtyp mit Kategorie, Name und Beschreibung."""
 
     category: EcosystemTypeCategoryEnum = Field(
-        ..., alias="Kategorie", description="Kategorie des Biotoptyps"
+        ..., alias="Kategorie", description="Kategorie des Ökosystemtyps"
     )
-    term: EcosystemTypeTermEnum = Field(..., alias="Term", description="Spezifischer Biotoptyp")
+    term: EcosystemTypeTermEnum = Field(..., alias="Term", description="Name des Ökosystemtyps")
+    # TODO: or is "description" mandatory?
+    description: str | None = Field(
+        default=None,
+        alias="Beschreibung",
+        description="Beschreibung des Ökosystemtyps",
+    )
 
 
 class Location(CompoundFeature):

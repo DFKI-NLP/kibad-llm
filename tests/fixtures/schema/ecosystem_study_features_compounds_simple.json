@@ -2,15 +2,28 @@
   "$defs": {
     "EcosystemType": {
       "additionalProperties": false,
-      "description": "Ökosystemtyp mit Kategorie und Term.",
+      "description": "Ökosystemtyp mit Kategorie, Name und Beschreibung.",
       "properties": {
         "category": {
           "$ref": "#/$defs/EcosystemTypeCategoryEnum",
-          "description": "Kategorie des Biotoptyps"
+          "description": "Kategorie des Ökosystemtyps"
         },
         "term": {
           "$ref": "#/$defs/EcosystemTypeTermEnum",
-          "description": "Spezifischer Biotoptyp"
+          "description": "Name des Ökosystemtyps"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Beschreibung des Ökosystemtyps",
+          "title": "Description"
         }
       },
       "required": [
