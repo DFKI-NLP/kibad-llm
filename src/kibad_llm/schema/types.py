@@ -319,12 +319,6 @@ class EcosystemStudyFeaturesWithoutCompounds(BaseEcosystemStudyFeatures):
         description="In welche der folgenden Kategorien lässt sich die im Text behandelte Transformation einordnen? ",
     )
 
-    model_config = ConfigDict(
-        # validate_by_name=True,
-        # use_enum_values=True,
-        extra="forbid",
-    )
-
 
 class EcosystemStudyFeaturesSimple(BaseEcosystemStudyFeatures):
     """Angaben zu den ökosystembezogenen Studienmerkmalen."""
@@ -350,12 +344,6 @@ class EcosystemStudyFeaturesSimple(BaseEcosystemStudyFeatures):
         description="Welche Landnutzung wird im oder nahe des Untersuchungsgebietes betrieben? In welche der folgenden Kategorien fällt die Nutzung?",
     )
 
-    model_config = ConfigDict(
-        # validate_by_name=True,
-        # use_enum_values=True,
-        extra="forbid",
-    )
-
 
 # Without descriptions for now.
 class EcosystemType(CompoundFeature):
@@ -365,12 +353,6 @@ class EcosystemType(CompoundFeature):
         ..., alias="Kategorie", description="Kategorie des Biotoptyps"
     )
     term: EcosystemTypeTermEnum = Field(..., alias="Term", description="Spezifischer Biotoptyp")
-
-    model_config = ConfigDict(
-        # validate_by_name=True,
-        # use_enum_values=True,
-        extra="forbid",
-    )
 
 
 class Location(CompoundFeature):
@@ -388,12 +370,6 @@ class Location(CompoundFeature):
         ...,
         alias="Ort",
         description="Ort (z.B. Stadt, Gemeinde, Region) des Studienstandorts",
-    )
-
-    model_config = ConfigDict(
-        # validate_by_name=True,
-        # use_enum_values=True,
-        extra="forbid",
     )
 
 
@@ -436,12 +412,6 @@ class Taxa(CompoundFeature):
         description="Artengruppe der Art",
     )
 
-    model_config = ConfigDict(
-        # validate_by_name=True,
-        # use_enum_values=True,
-        extra="forbid",
-    )
-
 
 class SoilDepthEnum(str, Enum):
     OBERBODEN = "Oberboden"
@@ -478,12 +448,6 @@ class Soil(CompoundFeature):
     name: SoilNameEnum = Field(..., alias="Name", description="Name des Bodentyps")
     depth: SoilDepthEnum = Field(..., alias="Tiefe", description="Tiefe des Bodens")
 
-    model_config = ConfigDict(
-        # validate_by_name=True,
-        # use_enum_values=True,
-        extra="forbid",
-    )
-
 
 class SuccessEnum(str, Enum):
     JA = "ja"
@@ -507,12 +471,6 @@ class ConservationArea(CompoundFeature):
         description="Hatte das Schutzgebiet einen messbaren Effekt auf die Biodiversität?",
     )
 
-    model_config = ConfigDict(
-        # validate_by_name=True,
-        # use_enum_values=True,
-        extra="forbid",
-    )
-
 
 # TODO: This is without description for now.
 class ManagementMeasure(CompoundFeature):
@@ -524,12 +482,6 @@ class ManagementMeasure(CompoundFeature):
         description="Hatte die Bewirtschaftung als Maßnahme für die Biodiversität einen messbaren Effekt? ",
     )
 
-    model_config = ConfigDict(
-        # validate_by_name=True,
-        # use_enum_values=True,
-        extra="forbid",
-    )
-
 
 # TODO: This is without description for now.
 class ImpulseMeasure(CompoundFeature):
@@ -539,12 +491,6 @@ class ImpulseMeasure(CompoundFeature):
         ...,
         alias="Erfolg",
         description="Hatte die einmalige Maßnahme für die Biodiversität einen messbaren Effekt? ",
-    )
-
-    model_config = ConfigDict(
-        # validate_by_name=True,
-        # use_enum_values=True,
-        extra="forbid",
     )
 
 
@@ -582,12 +528,6 @@ class DirectDriver(CompoundFeature):
         description="Zu welcher der folgenden Kategorien lässt sich der direkte Treiber zuordnen?",
     )
 
-    model_config = ConfigDict(
-        # validate_by_name=True,
-        # use_enum_values=True,
-        extra="forbid",
-    )
-
 
 # TODO: This is without details for now.
 class IndirectDriver(CompoundFeature):
@@ -597,12 +537,6 @@ class IndirectDriver(CompoundFeature):
         ...,
         alias="Kategorie",
         description="Zu welcher der folgenden Kategorien lässt sich der indirekte Treiber zuordnen?",
-    )
-
-    model_config = ConfigDict(
-        # validate_by_name=True,
-        # use_enum_values=True,
-        extra="forbid",
     )
 
 
@@ -728,12 +662,6 @@ class EcosystemService(CompoundFeature):
         description="Welche konkrete Ökosystemleistung wurde untersucht?",
     )
 
-    model_config = ConfigDict(
-        # validate_by_name=True,
-        # use_enum_values=True,
-        extra="forbid",
-    )
-
 
 class EcosystemStudyFeaturesCompoundsSimple(BaseEcosystemStudyFeatures):
     """Angaben zu den ökosystembezogenen Studienmerkmalen."""
@@ -747,12 +675,6 @@ class EcosystemStudyFeaturesCompoundsSimple(BaseEcosystemStudyFeatures):
         default_factory=list,
         alias="Standorte",
         description="Welche Standorte werden in der Studie untersucht?",
-    )
-
-    model_config = ConfigDict(
-        # validate_by_name=True,
-        # use_enum_values=True,
-        extra="forbid",
     )
 
 
@@ -808,10 +730,4 @@ class EcosystemStudyFeaturesCompoundsOnly(BaseEcosystemStudyFeatures):
         default_factory=list,
         alias="Ökosystemleistungen",
         description="Welche Ökosystemleistungen wurden in der Studie untersucht?",
-    )
-
-    model_config = ConfigDict(
-        # validate_by_name=True,
-        # use_enum_values=True,
-        extra="forbid",
     )
