@@ -1,0 +1,3 @@
+Beschreibung: Indirekter Treiber mit Kategorie und Details.
+- category: Zu welcher der folgenden Kategorien lässt sich der indirekte Treiber zuordnen? | Kardinalität: 1 | Typ: string | Zulässige Werte: Gesellschaftliche Treiber; Politische und rechtliche Treiber - rechtlich-regulativ; Politische und rechtliche Treiber - sozial-informationell; Politische und rechtliche Treiber - ökonomisch-anreizbasiert; Wirtschaftliche und technologische Treiber
+- details: Details zum indirekten Treiber | Kardinalität: 0..1 | Typ: string

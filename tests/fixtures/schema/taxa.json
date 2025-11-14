@@ -1,0 +1,65 @@
+{
+  "$defs": {
+    "SpeciesGroupEnum": {
+      "enum": [
+        "Amphibien und Reptilien",
+        "Andere",
+        "Andere Pflanzen",
+        "Andere Wirbellose",
+        "Archaeen",
+        "Bakterien",
+        "Fische",
+        "Flechten",
+        "Gefäßpflanzen",
+        "Insekten",
+        "Moose",
+        "Pilze",
+        "Protisten",
+        "Protozoen",
+        "Säugetiere",
+        "Vögel"
+      ],
+      "title": "SpeciesGroupEnum",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Art mit wissenschaftlichem und deutschem Namen sowie Gruppierung.",
+  "properties": {
+    "scientific_name": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Wissenschaftlicher Name der Art",
+      "title": "Scientific Name"
+    },
+    "german_name": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Deutscher Name der Art",
+      "title": "German Name"
+    },
+    "species_group": {
+      "$ref": "#/$defs/SpeciesGroupEnum",
+      "description": "Artengruppe der Art"
+    }
+  },
+  "required": [
+    "species_group"
+  ],
+  "title": "Taxa",
+  "type": "object"
+}

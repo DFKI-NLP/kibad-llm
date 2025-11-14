@@ -1,0 +1,3 @@
+Beschreibung: Direkter Treiber mit Kategorie und Details.
+- category: Zu welcher der folgenden Kategorien lässt sich der direkte Treiber zuordnen? | Kardinalität: 1 | Typ: string | Zulässige Werte: Andere direkte Treiber; Direkte Ressourcenentnahme; Invasive gebietsfremde Arten; Klimawandel; Verschmutzung; Veränderte Land-/Meeresnutzung; Veränderung der Struktur der Landschaft
+- details: Details zum direkten Treiber | Kardinalität: 0..1 | Typ: string

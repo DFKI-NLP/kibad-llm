@@ -1,0 +1,65 @@
+{
+  "$defs": {
+    "LocationFederalStateEnum": {
+      "enum": [
+        "Baden-Württemberg",
+        "Bayern",
+        "Berlin",
+        "Brandenburg",
+        "Bremen",
+        "Hamburg",
+        "Hessen",
+        "Mecklenburg-Vorpommern",
+        "Niedersachsen",
+        "Nordrhein-Westfalen",
+        "Rheinland-Pfalz",
+        "Saarland",
+        "Sachsen",
+        "Sachsen-Anhalt",
+        "Schleswig-Holstein",
+        "Thüringen"
+      ],
+      "title": "LocationFederalStateEnum",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Standort mit Land, Bundesland und Ort.",
+  "properties": {
+    "country": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Land des Studienstandorts",
+      "title": "Country"
+    },
+    "federal_state": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/LocationFederalStateEnum"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Bundesland des Studienstandorts"
+    },
+    "name": {
+      "description": "Ort (z.B. Stadt, Gemeinde, Region) des Studienstandorts",
+      "title": "Name",
+      "type": "string"
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "title": "Location",
+  "type": "object"
+}

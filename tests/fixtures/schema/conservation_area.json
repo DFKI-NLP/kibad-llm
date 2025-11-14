@@ -1,0 +1,46 @@
+{
+  "$defs": {
+    "SuccessEnum": {
+      "enum": [
+        "ja",
+        "nein",
+        "teilweise",
+        "unbekannt"
+      ],
+      "title": "SuccessEnum",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Schutzgebiet mit Name, Beschreibung und Erfolg.",
+  "properties": {
+    "name": {
+      "description": "Name des Schutzgebiets",
+      "title": "Name",
+      "type": "string"
+    },
+    "description": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Charakterisierung des Schutzgebiets",
+      "title": "Description"
+    },
+    "success": {
+      "$ref": "#/$defs/SuccessEnum",
+      "description": "Hatte das Schutzgebiet einen messbaren Effekt auf die Biodiversität?"
+    }
+  },
+  "required": [
+    "name",
+    "success"
+  ],
+  "title": "ConservationArea",
+  "type": "object"
+}

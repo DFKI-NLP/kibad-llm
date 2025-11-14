@@ -1,0 +1,41 @@
+{
+  "$defs": {
+    "IndirectDriverEnum": {
+      "enum": [
+        "Gesellschaftliche Treiber",
+        "Politische und rechtliche Treiber - rechtlich-regulativ",
+        "Politische und rechtliche Treiber - sozial-informationell",
+        "Politische und rechtliche Treiber - ökonomisch-anreizbasiert",
+        "Wirtschaftliche und technologische Treiber"
+      ],
+      "title": "IndirectDriverEnum",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Indirekter Treiber mit Kategorie und Details.",
+  "properties": {
+    "category": {
+      "$ref": "#/$defs/IndirectDriverEnum",
+      "description": "Zu welcher der folgenden Kategorien lässt sich der indirekte Treiber zuordnen?"
+    },
+    "details": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Details zum indirekten Treiber",
+      "title": "Details"
+    }
+  },
+  "required": [
+    "category"
+  ],
+  "title": "IndirectDriver",
+  "type": "object"
+}

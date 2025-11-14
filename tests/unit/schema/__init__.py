@@ -16,3 +16,11 @@ ALL_MODELS = [
     and issubclass(obj, types.BaseEcosystemStudyFeatures)
     and obj is not types.BaseEcosystemStudyFeatures
 ]
+
+ALL_COMPOUND_FEATURES = [
+    obj
+    for obj in vars(types).values()
+    if isinstance(obj, type)
+    and issubclass(obj, types.CompoundFeature)
+    and obj is not types.CompoundFeature
+]

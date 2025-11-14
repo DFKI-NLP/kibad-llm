@@ -1,0 +1,4 @@
+Beschreibung: Schutzgebiet mit Name, Beschreibung und Erfolg.
+- name: Name des Schutzgebiets | Kardinalität: 1 | Typ: string
+- description: Charakterisierung des Schutzgebiets | Kardinalität: 0..1 | Typ: string
+- success: Hatte das Schutzgebiet einen messbaren Effekt auf die Biodiversität? | Kardinalität: 1 | Typ: string | Zulässige Werte: ja; nein; teilweise; unbekannt

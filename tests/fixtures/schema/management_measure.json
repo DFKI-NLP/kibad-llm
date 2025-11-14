@@ -1,0 +1,33 @@
+{
+  "$defs": {
+    "SuccessEnum": {
+      "enum": [
+        "ja",
+        "nein",
+        "teilweise",
+        "unbekannt"
+      ],
+      "title": "SuccessEnum",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Bewirtschaftungsmaßnahme mit Beschreibung und Erfolg.",
+  "properties": {
+    "description": {
+      "description": "Beschreibung der Bewirtschaftungsmaßnahme",
+      "title": "Description",
+      "type": "string"
+    },
+    "success": {
+      "$ref": "#/$defs/SuccessEnum",
+      "description": "Hatte die Bewirtschaftung als Maßnahme für die Biodiversität einen messbaren Effekt? "
+    }
+  },
+  "required": [
+    "description",
+    "success"
+  ],
+  "title": "ManagementMeasure",
+  "type": "object"
+}
