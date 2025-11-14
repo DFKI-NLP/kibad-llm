@@ -10,6 +10,13 @@ class BaseEcosystemStudyFeatures(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
 
+class CompoundFeature(BaseModel):
+    """Basis-Klasse für komplexe Merkmale mit Unterfeldern."""
+
+    # do not allow extra fields per default
+    model_config = ConfigDict(extra="forbid")
+
+
 class HabitatEnum(str, Enum):
     AGRAR_UND_OFFENLAND = "Agrar- und Offenland"
     BINNENGEWAESSER_UND_AUEN = "Binnengewässer und Auen"
@@ -351,7 +358,7 @@ class EcosystemStudyFeaturesSimple(BaseEcosystemStudyFeatures):
 
 
 # Without descriptions for now.
-class EcosystemType(BaseModel):
+class EcosystemType(CompoundFeature):
     """Ökosystemtyp mit Kategorie und Term."""
 
     category: EcosystemTypeCategoryEnum = Field(
@@ -366,7 +373,7 @@ class EcosystemType(BaseModel):
     )
 
 
-class Location(BaseModel):
+class Location(CompoundFeature):
     """Standort mit Land, Bundesland und Ort."""
 
     country: str | None = Field(
@@ -409,7 +416,7 @@ class SpeciesGroupEnum(str, Enum):
     BIRDS = "Vögel"
 
 
-class Taxa(BaseModel):
+class Taxa(CompoundFeature):
     """Art mit wissenschaftlichem und deutschem Namen sowie Gruppierung."""
 
     # TODO: or is "scientific_name" mandatory?
@@ -465,7 +472,7 @@ class SoilNameEnum(str, Enum):
     WATTBOEDEN = "Wattböden"
 
 
-class Soil(BaseModel):
+class Soil(CompoundFeature):
     """Boden mit Kategorie und Tiefe."""
 
     name: SoilNameEnum = Field(..., alias="Name", description="Name des Bodentyps")
@@ -486,7 +493,7 @@ class SuccessEnum(str, Enum):
 
 
 # TODO: This is without description for now.
-class ConservationArea(BaseModel):
+class ConservationArea(CompoundFeature):
     """Schutzgebiet mit Name und Erfolg."""
 
     name: str = Field(
@@ -508,7 +515,7 @@ class ConservationArea(BaseModel):
 
 
 # TODO: This is without description for now.
-class ManagementMeasure(BaseModel):
+class ManagementMeasure(CompoundFeature):
     """Bewirtschaftungsmaßnahme mit Erfolg."""
 
     success: SuccessEnum = Field(
@@ -525,7 +532,7 @@ class ManagementMeasure(BaseModel):
 
 
 # TODO: This is without description for now.
-class ImpulseMeasure(BaseModel):
+class ImpulseMeasure(CompoundFeature):
     """Einmalige Maßnahme mit Erfolg."""
 
     success: SuccessEnum = Field(
@@ -566,7 +573,7 @@ class IndirectDriverEnum(str, Enum):
 
 
 # TODO: This is without details for now.
-class DirectDriver(BaseModel):
+class DirectDriver(CompoundFeature):
     """Direkter Treiber mit Kategorie."""
 
     category: DirectDriverEnum = Field(
@@ -583,7 +590,7 @@ class DirectDriver(BaseModel):
 
 
 # TODO: This is without details for now.
-class IndirectDriver(BaseModel):
+class IndirectDriver(CompoundFeature):
     """Indirekter Treiber mit Kategorie."""
 
     category: IndirectDriverEnum = Field(
@@ -707,7 +714,7 @@ class EcosystemServiceTermEnum(str, Enum):
 
 
 # Without details for now.
-class EcosystemService(BaseModel):
+class EcosystemService(CompoundFeature):
     """Ökosystemdienstleistung mit Kategorie und Term."""
 
     category: EcosystemServiceEnum = Field(
