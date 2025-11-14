@@ -350,6 +350,7 @@ class EcosystemStudyFeaturesSimple(BaseEcosystemStudyFeatures):
     )
 
 
+# Without descriptions for now.
 class EcosystemType(BaseModel):
     """Ökosystemtyp mit Kategorie und Term."""
 
@@ -477,6 +478,256 @@ class Soil(BaseModel):
     )
 
 
+class SuccessEnum(str, Enum):
+    JA = "ja"
+    NEIN = "nein"
+    TEILWEISE = "teilweise"
+    UNBEKANNT = "unbekannt"
+
+
+# TODO: This is without description for now.
+class ConservationArea(BaseModel):
+    """Schutzgebiet mit Name und Erfolg."""
+
+    name: str = Field(
+        ...,
+        alias="Name",
+        description="Name des Schutzgebiets",
+    )
+    success: SuccessEnum = Field(
+        ...,
+        alias="Erfolg",
+        description="Hatte das Schutzgebiet einen messbaren Effekt auf die Biodiversität?",
+    )
+
+    model_config = ConfigDict(
+        # validate_by_name=True,
+        # use_enum_values=True,
+        extra="forbid",
+    )
+
+
+# TODO: This is without description for now.
+class ManagementMeasure(BaseModel):
+    """Bewirtschaftungsmaßnahme mit Erfolg."""
+
+    success: SuccessEnum = Field(
+        ...,
+        alias="Erfolg",
+        description="Hatte die Bewirtschaftung als Maßnahme für die Biodiversität einen messbaren Effekt? ",
+    )
+
+    model_config = ConfigDict(
+        # validate_by_name=True,
+        # use_enum_values=True,
+        extra="forbid",
+    )
+
+
+# TODO: This is without description for now.
+class ImpulseMeasure(BaseModel):
+    """Einmalige Maßnahme mit Erfolg."""
+
+    success: SuccessEnum = Field(
+        ...,
+        alias="Erfolg",
+        description="Hatte die einmalige Maßnahme für die Biodiversität einen messbaren Effekt? ",
+    )
+
+    model_config = ConfigDict(
+        # validate_by_name=True,
+        # use_enum_values=True,
+        extra="forbid",
+    )
+
+
+class DirectDriverEnum(str, Enum):
+    ANDERE_DIREKTE_TREIBER = "Andere direkte Treiber"
+    DIREKTE_ROSSOURCENTNAHME = "Direkte Ressourcenentnahme"
+    INVASIVE_GEBIETSFREMDE_ARTEN = "Invasive gebietsfremde Arten"
+    KLIMAWANDEL = "Klimawandel"
+    VERSCHMUTZUNG = "Verschmutzung"
+    VERANDERTE_LAND_MEERESNUTZUNG = "Veränderte Land-/Meeresnutzung"
+    VERANDERUNG_DER_STRUKTUR_DER_LANDSCHAFT = "Veränderung der Struktur der Landschaft"
+
+
+class IndirectDriverEnum(str, Enum):
+    GESELLSCHAFTLICHE_TREIBER = "Gesellschaftliche Treiber"
+    POLITISCHE_RECHTLICHE_TREIBER_RECHTLICH_REGULATIV = (
+        "Politische und rechtliche Treiber - rechtlich-regulativ"
+    )
+    POLITISCHE_RECHTLICHE_TREIBER_SOZIAL_INFORMATIONELL = (
+        "Politische und rechtliche Treiber - sozial-informationell"
+    )
+    POLITISCHE_RECHTLICHE_TREIBER_OEKONOMISCH_ANREIZBASIERT = (
+        "Politische und rechtliche Treiber - ökonomisch-anreizbasiert"
+    )
+    WIRTSCHAFTLICHE_TECHNOLOGISCHE_TREIBER = "Wirtschaftliche und technologische Treiber"
+
+
+# TODO: This is without details for now.
+class DirectDriver(BaseModel):
+    """Direkter Treiber mit Kategorie."""
+
+    category: DirectDriverEnum = Field(
+        ...,
+        alias="Kategorie",
+        description="Zu welcher der folgenden Kategorien lässt sich der direkte Treiber zuordnen?",
+    )
+
+    model_config = ConfigDict(
+        # validate_by_name=True,
+        # use_enum_values=True,
+        extra="forbid",
+    )
+
+
+# TODO: This is without details for now.
+class IndirectDriver(BaseModel):
+    """Indirekter Treiber mit Kategorie."""
+
+    category: IndirectDriverEnum = Field(
+        ...,
+        alias="Kategorie",
+        description="Zu welcher der folgenden Kategorien lässt sich der indirekte Treiber zuordnen?",
+    )
+
+    model_config = ConfigDict(
+        # validate_by_name=True,
+        # use_enum_values=True,
+        extra="forbid",
+    )
+
+
+class EcosystemServiceEnum(str, Enum):
+    KULTURELLE_LEISTUNGEN = "Kulturelle Leistungen"
+    REGULIERUNGS_UND_ERHALTUNGSLEISTUNGEN = "Regulierungs- und Erhaltungsleistungen"
+    VERSORGUNGSLEISTUNGEN = "Versorgungsleistungen"
+
+
+class EcosystemServiceTermEnum(str, Enum):
+    ES_TERM_1_1_1_1 = "1.1.1.1 Kultivierte Landpflanzen (einschließlich Pilze und Algen), die zu Ernährungszwecken angebaut werden"
+    ES_TERM_1_1_1_2 = "1.1.1.2 Fasern und andere Materialien aus kultivierten Landpflanzen, Pilzen, Algen und Bakterien zur direkten Verwendung oder Verarbeitung (ausgenommen genetisches Material)"
+    ES_TERM_1_1_1_3 = "1.1.1.3 Kultivierte Landpflanzen (einschließlich Pilze, Algen), die zur Energiegewinnung angebaut werden"
+    ES_TERM_1_1_2_1 = (
+        "1.1.2.1 Pflanzen aus In-situ-Aquakultur, die zu Ernährungszwecken angebaut werden"
+    )
+    ES_TERM_1_1_2_2 = "1.1.2.2 Fasern und andere Materialien aus Pflanzen aus In-situ-Aquakultur zur direkten Verwendung oder Verarbeitung (ausgenommen genetisches Material)"
+    ES_TERM_1_1_2_3 = (
+        "1.1.2.3 Pflanzen aus In-situ-Aquakultur, die als Energiequelle angebaut werden"
+    )
+    ES_TERM_1_1_3_1 = "1.1.3.1 Zu Ernährungszwecken gehaltene Tiere"
+    ES_TERM_1_1_3_2 = "1.1.3.2 Fasern und andere Materialien von gehaltenen Tieren zur direkten Verwendung oder Verarbeitung (ausgenommen genetisches Material)"
+    ES_TERM_1_1_3_3 = "1.1.3.3 Tiere, die zur Energiegewinnung gehalten werden (auch mechanisch)"
+    ES_TERM_1_1_4_1 = (
+        "1.1.4.1 Tiere, die in In-situ-Aquakultur zu Ernährungszwecken aufgezogen werden"
+    )
+    ES_TERM_1_1_4_2 = "1.1.4.2 Fasern und andere Materialien von Tieren, die in In-situ-Aquakultur gezüchtet werden, zur direkten Verwendung oder Verarbeitung (ausgenommen genetisches Material)"
+    ES_TERM_1_1_4_3 = "1.1.4.3 In-situ-Aquakultur aufgezogene Tiere als Energiequelle"
+    ES_TERM_1_1_5_1 = "1.1.5.1 Wildpflanzen (Land- und Wasserpflanzen, einschließlich Pilze und Algen), die zur Ernährung genutzt werden"
+    ES_TERM_1_1_5_2 = "1.1.5.2 Fasern und andere Materialien von Wildpflanzen zur direkten Verwendung oder Verarbeitung (ausgenommen genetisches Material)"
+    ES_TERM_1_1_5_3 = "1.1.5.3 Wildpflanzen (Land- und Wasserpflanzen, einschließlich Pilze und Algen), die als Energiequelle genutzt werden"
+    ES_TERM_1_1_6_1 = (
+        "1.1.6.1 Wildtiere (Land- und Wassertiere), die zu Ernährungszwecken verwendet werden"
+    )
+    ES_TERM_1_1_6_2 = "1.1.6.2 Fasern und andere Materialien von Wildtieren zur direkten Verwendung oder Verarbeitung (ausgenommen genetisches Material)"
+    ES_TERM_1_1_6_3 = (
+        "1.1.6.3 Wildtiere (Land- und Wassertiere), die als Energiequelle genutzt werden"
+    )
+    ES_TERM_1_2_1_1 = "1.2.1.1 Saatgut, Sporen und anderes Pflanzenmaterial, das zur Erhaltung oder zum Aufbau einer Population gesammelt wird"
+    ES_TERM_1_2_1_2 = "1.2.1.2 Höhere und niedere Pflanzen (ganze Organismen), die zur Züchtung neuer Stämme oder Sorten verwendet werden"
+    ES_TERM_1_2_1_3 = "1.2.1.3 Einzelne Gene, die aus höheren und niederen Pflanzen für den Entwurf und die Konstruktion neuer biologischer Einheiten gewonnen werden"
+    ES_TERM_1_2_2_1 = "1.2.2.1 Tiermaterial, das für die Erhaltung oder den Aufbau einer Population gesammelt wurde"
+    ES_TERM_1_2_2_2 = "1.2.2.2 Wildtiere (ganze Organismen), die zur Züchtung neuer Stämme oder Sorten verwendet werden"
+    ES_TERM_1_2_2_3 = "1.2.2.3 Einzelne Gene, die aus Organismen extrahiert werden, um neue biologische Einheiten zu entwerfen und zu konstruieren"
+    # TODO: here is a typo in the original? "Versorungsleistungen" missing a "g"
+    ES_TERM_1_3_X_X = "1.3.X.X Andere (Versorungsleistungen aus biotischen Quellen)"
+    ES_TERM_2_1_1_1 = "2.1.1.1 Biosanierung durch Mikroorganismen, Algen, Pflanzen und Tiere"
+    ES_TERM_2_1_1_2 = "2.1.1.2 Filtration/Sequestrierung/Speicherung/Akkumulation durch Mikroorganismen, Algen, Pflanzen und Tiere"
+    ES_TERM_2_1_2_1 = "2.1.2.1 Reduktion von Gerüchen"
+    ES_TERM_2_1_2_2 = "2.1.2.2 Reduktion von Lärm"
+    ES_TERM_2_1_2_3 = "2.1.2.3 Sichtschutz (Visual Screening)"
+    ES_TERM_2_2_1_1 = "2.2.1.1 Kontrolle der Erosionsraten"
+    ES_TERM_2_2_1_2 = "2.2.1.2 Pufferung und Abschwächung von Massenbewegungen"
+    ES_TERM_2_2_1_3 = "2.2.1.3 Wasserkreislauf und Wasserflussregulierung (einschließlich Hochwasserschutz und Küstenschutz)"
+    ES_TERM_2_2_1_4 = "2.2.1.4 Windschutz"
+    ES_TERM_2_2_1_5 = "2.2.1.5 Feuerschutz"
+    ES_TERM_2_2_2_1 = "2.2.2.1 Bestäubung (oder 'Gameten'-Ausbreitung in einem marinen Kontext)"
+    ES_TERM_2_2_2_2 = "2.2.2.2 Ausbreitung von Saatgut"
+    ES_TERM_2_2_2_3 = "2.2.2.3 Aufrechterhaltung von Aufwuchspopulationen und Lebensräumen (einschließlich Schutz des Genpools)"
+    ES_TERM_2_2_3_1 = "2.2.3.1 Schädlingsbekämpfung (einschließlich invasiver Arten)"
+    ES_TERM_2_2_3_2 = "2.2.3.2 Krankheitsbekämpfung"
+    ES_TERM_2_2_4_1 = "2.2.4.1 Verwitterungsprozesse und ihre Auswirkungen auf die Bodenqualität"
+    ES_TERM_2_2_4_2 = (
+        "2.2.4.2 Zersetzungs- und Fixierungsprozesse und ihre Auswirkungen auf die Bodenqualität"
+    )
+    ES_TERM_2_2_5_1 = (
+        "2.2.5.1 Regulierung des chemischen Zustands von Süßgewässern durch lebende Prozesse"
+    )
+    ES_TERM_2_2_5_2 = (
+        "2.2.5.2 Regulierung des chemischen Zustands von Salzwasser durch lebende Prozesse"
+    )
+    ES_TERM_2_2_6_1 = (
+        "2.2.6.1 Regulierung der chemischen Zusammensetzung der Atmosphäre und der Ozeane"
+    )
+    ES_TERM_2_2_6_2 = "2.2.6.2 Regulierung von Temperatur und Feuchtigkeit, einschließlich Belüftung und Transpiration"
+    ES_TERM_2_3_X_X = "2.3.X.X Andere"
+    ES_TERM_3_1_1_1 = "3.1.1.1 Merkmale lebender Systeme, die durch aktive oder immersive Interaktionen Aktivitäten ermöglichen, die der Gesundheit, der Erholung oder dem Vergnügen dienen"
+    ES_TERM_3_1_1_2 = "3.1.1.2 Merkmale lebender Systeme, die Aktivitäten zur Förderung von Gesundheit, Erholung oder Vergnügen durch passive oder beobachtende Interaktionen ermöglichen"
+    ES_TERM_3_1_2_1 = "3.1.2.1 Merkmale lebender Systeme, die eine wissenschaftliche Untersuchung oder die Schaffung von traditionellem ökologischem Wissen ermöglichen"
+    ES_TERM_3_1_2_2 = "3.1.2.2 Merkmale lebender Systeme, die Bildung und Ausbildung ermöglichen"
+    ES_TERM_3_1_2_3 = "3.1.2.3 Merkmale lebender Systeme, die in Bezug auf die Kultur und Kulturerbe eine Rolle spielen"
+    ES_TERM_3_1_2_4 = "3.1.2.4 Merkmale lebender Systeme, die ästhetische Erfahrungen ermöglichen"
+    ES_TERM_3_2_1_1 = (
+        "3.2.1.1 Elemente von lebenden Systemen, die eine symbolische Bedeutung haben"
+    )
+    ES_TERM_3_2_1_2 = (
+        "3.2.1.2 Elemente von lebenden Systemen, die eine heilige oder religiöse Bedeutung haben"
+    )
+    ES_TERM_3_2_1_3 = (
+        "3.2.1.3 Elemente lebender Systeme, die zur Unterhaltung oder Darstellung verwendet werden"
+    )
+    ES_TERM_3_2_2_1 = (
+        "3.2.2.1 Merkmale oder Eigenschaften von lebenden Systemen, die einen Existenzwert haben"
+    )
+    ES_TERM_3_2_2_2 = "3.2.2.2 Merkmale oder Eigenschaften von lebenden Systemen, die einen Options- oder Vermächtniswert haben"
+    ES_TERM_3_3_X_X = "3.3.X.X Andere"
+    ES_TERM_4_2_1_1 = "4.2.1.1 Oberflächenwasser als Trinkwasser"
+    ES_TERM_4_2_1_2 = (
+        "4.2.1.2 Oberflächenwasser, das als Material verwendet wird (nicht zu Trinkzwecken)"
+    )
+    ES_TERM_4_2_1_3 = "4.2.1.3 Oberflächenwasser aus Süßwasser, das als Energiequelle genutzt wird"
+    ES_TERM_4_2_1_4 = "4.2.1.4 Küsten- und Meereswasser, das als Energiequelle genutzt wird"
+    ES_TERM_4_2_2_1 = "4.2.2.1 Grundwasser (und Untergrundwasser) als Trinkwasser"
+    ES_TERM_4_2_2_2 = "4.2.2.2 Grundwasser (und Oberflächenwasser), das als Material verwendet wird (nicht zu Trinkzwecken)"
+    ES_TERM_4_2_2_3 = (
+        "4.2.2.3 Grundwasser (und Untergrundwasser), das als Energiequelle genutzt wird"
+    )
+    ES_TERM_4_2_X_X = "4.2.X.X Andere (Ökosystemleistungen des Wassers)"
+
+
+# Without details for now.
+class EcosystemService(BaseModel):
+    """Ökosystemdienstleistung mit Kategorie und Term."""
+
+    category: EcosystemServiceEnum = Field(
+        ...,
+        alias="Kategorie",
+        description="In welche der folgenden Kategorien lässt sich die im Text behandelte Ökosystemleistung einordnen?",
+    )
+    term: EcosystemServiceTermEnum = Field(
+        ...,
+        alias="Term",
+        description="Welche konkrete Ökosystemleistung wurde untersucht?",
+    )
+
+    model_config = ConfigDict(
+        # validate_by_name=True,
+        # use_enum_values=True,
+        extra="forbid",
+    )
+
+
 class EcosystemStudyFeaturesCompoundsSimple(BaseEcosystemStudyFeatures):
     """Angaben zu den ökosystembezogenen Studienmerkmalen."""
 
@@ -521,11 +772,39 @@ class EcosystemStudyFeaturesCompoundsOnly(BaseEcosystemStudyFeatures):
         alias="Böden",
         description="Welche Bodentypen werden in der Studie untersucht?",
     )
-    # TODO:
-    # direct_driver
-    # ecosystem_type
-    # indirect_driver
-    # conservation_area
-    # management_measure
-    # impulse_measure
-    # ecosystem_service
+    conservation_area: list[ConservationArea] = Field(
+        default_factory=list,
+        alias="Schutzgebiete",
+        description="Welche Schutzgebiete werden in der Studie untersucht?",
+    )
+    management_measure: list[ManagementMeasure] = Field(
+        default_factory=list,
+        alias="Bewirtschaftungsmaßnahmen",
+        description="Wurden Formen der Bewirtschaftung als Maßnahmen für die Biodiversität untersucht?",
+    )
+    impulse_measure: list[ImpulseMeasure] = Field(
+        default_factory=list,
+        alias="Einmalige Maßnahmen",
+        description="Wurden einmalige Maßnahmen für die Biodiversität untersucht?",
+    )
+    direct_driver: list[DirectDriver] = Field(
+        default_factory=list,
+        alias="Direkte Treiber",
+        description="Welche Vorgänge mit direktem Einfluss auf Biodiversität wurden untersucht?",
+    )
+    indirect_driver: list[IndirectDriver] = Field(
+        default_factory=list,
+        alias="Indirekte Treiber",
+        description="Welche Vorgänge mit indirektem Einfluss auf Biodiversität wurden untersucht?",
+    )
+    ecosystem_service: list[EcosystemService] = Field(
+        default_factory=list,
+        alias="Ökosystemleistungen",
+        description="Welche Ökosystemleistungen wurden in der Studie untersucht?",
+    )
+
+    model_config = ConfigDict(
+        # validate_by_name=True,
+        # use_enum_values=True,
+        extra="forbid",
+    )
