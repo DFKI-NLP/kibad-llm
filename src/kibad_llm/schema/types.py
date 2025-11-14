@@ -409,6 +409,15 @@ class Taxa(CompoundFeature):
         alias="Deutscher Artenname",
         description="Deutscher Name der Art",
     )
+    # TODO: Should that be added? It is in the data, but not in the Fragenkatalog google table.
+    #  If this gets added, remove the entry from metric.ignore_subfields in the evaluate.yaml config!
+    # collective_term: bool = Field(
+    #    ...,
+    #    # not sure about the alias here, made up by auto-complete
+    #    alias="Sammelbegriff",
+    #    # not sure about the description here, made up by auto-complete
+    #    description="Handelt es sich bei dem angegebenen Artnamen um einen Sammelbegriff für mehrere Arten?",
+    # )
     species_group: SpeciesGroupEnum = Field(
         ...,
         alias="Artengruppe",
