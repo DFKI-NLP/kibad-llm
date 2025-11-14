@@ -11,19 +11,19 @@ Inspired by: db_converter.py and database_unique_summary.py
 Usage example:
      python extract_vocabulary_enums.py --top-n 100
 """
-
 import argparse
 import json
 import logging
 import os
+from pathlib import Path
 import re
+from typing import Any
+
+from dotenv import load_dotenv
 import psycopg2
+from psycopg2 import sql
 import yaml
 
-from pathlib import Path
-from typing import Any
-from dotenv import load_dotenv
-from psycopg2 import sql
 from kibad_llm.config import DATA_DIR
 
 logger = logging.getLogger(__name__)
