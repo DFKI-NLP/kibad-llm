@@ -50,3 +50,8 @@ metric:
   ignore_subfields:
     ecosystem_type: ["description"]
     taxa: ["collective_term"]
+    conservation_area: ["description"]
+    management_measure: ["description"]
+    impulse_measure: ["description"]
+    direct_driver: ["details"]
+    indirect_driver: ["details"]

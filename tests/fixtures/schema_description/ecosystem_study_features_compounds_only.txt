@@ -1,9 +1,10 @@
 Beschreibung: Angaben zu den ökosystembezogenen Studienmerkmalen.
 Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
 - ecosystem_type: Welche Ökosystemtypen werden in der Studie untersucht? | Kardinalität: 0..* | Typ: object
-  Beschreibung: Ökosystemtyp mit Kategorie und Term.
-  - category: Kategorie des Biotoptyps | Kardinalität: 1 | Typ: string | Zulässige Werte: I Biotoptypengruppen der Meere und Küsten; II Biotoptypengruppen der Binnengewässer; III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes; IV Technische Biotoptypengruppen; V Biotoptypengruppen mit Schwerpunkt in den Alpen; VI Weitere
-  - term: Spezifischer Biotoptyp | Kardinalität: 1 | Typ: string | Zulässige Werte: Anthropogene Rohbodenstandorte und Ruderalfluren; Bauwerke; Benthal der Nordsee; Benthal der Ostsee; Feldgehölze, Gebüsche, Hecken und Gehölzkulturen; Fels- und Steilküsten; Felsen, Block- und Schutthalden, Geröllfelder, offene Bereiche mit sandigem oder bindigem Substrat; Fließende Gewässer; Gebirgsrasen (subalpine bis alpine Stufe); Grundwasser und Höhlengewässer; Grün- und Freiflächen; Hoch-, Zwischen- und Übergangsmoore; Höhlen (einschließlich Stollen, Brunnenschächte etc.); Kleine, unbefestigte Freiflächen des besiedelten Bereiches; Küstendünen; Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent); Nadel(Misch)Wälder und -Forste; Pelagial der Nordsee; Pelagial der Ostsee; Quellen (inklusive Quellabfluss (Krenal)); Röhrichte (ohne Brackwasserröhrichte); Salzgrünland der Nordseeküste (Supralitoral); Salzgrünland, Brackwasserröhrichte und -Hochstaudenfluren des Geolitorals der Ostseeküste; Stehende Gewässer; Sände, Sand-, Geröll- und Blockstrände; Trockenrasen sowie Grünland trockener bis frischer Standorte; Verkehrsanlagen und Plätze; Wald- und Ufersäume, Staudenfluren; Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte; Waldmäntel und Vorwälder, spezielle Waldnutzungsformen; Zwergstrauchheiden; Äcker und Ackerbrachen
+  Beschreibung: Ökosystemtyp mit Kategorie, Name und Beschreibung.
+  - category: Kategorie des Ökosystemtyps | Kardinalität: 1 | Typ: string | Zulässige Werte: I Biotoptypengruppen der Meere und Küsten; II Biotoptypengruppen der Binnengewässer; III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes; IV Technische Biotoptypengruppen; V Biotoptypengruppen mit Schwerpunkt in den Alpen; VI Weitere
+  - term: Name des Ökosystemtyps | Kardinalität: 1 | Typ: string | Zulässige Werte: Anthropogene Rohbodenstandorte und Ruderalfluren; Bauwerke; Benthal der Nordsee; Benthal der Ostsee; Feldgehölze, Gebüsche, Hecken und Gehölzkulturen; Fels- und Steilküsten; Felsen, Block- und Schutthalden, Geröllfelder, offene Bereiche mit sandigem oder bindigem Substrat; Fließende Gewässer; Gebirgsrasen (subalpine bis alpine Stufe); Grundwasser und Höhlengewässer; Grün- und Freiflächen; Hoch-, Zwischen- und Übergangsmoore; Höhlen (einschließlich Stollen, Brunnenschächte etc.); Kleine, unbefestigte Freiflächen des besiedelten Bereiches; Küstendünen; Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent); Nadel(Misch)Wälder und -Forste; Pelagial der Nordsee; Pelagial der Ostsee; Quellen (inklusive Quellabfluss (Krenal)); Röhrichte (ohne Brackwasserröhrichte); Salzgrünland der Nordseeküste (Supralitoral); Salzgrünland, Brackwasserröhrichte und -Hochstaudenfluren des Geolitorals der Ostseeküste; Stehende Gewässer; Sände, Sand-, Geröll- und Blockstrände; Trockenrasen sowie Grünland trockener bis frischer Standorte; Verkehrsanlagen und Plätze; Wald- und Ufersäume, Staudenfluren; Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte; Waldmäntel und Vorwälder, spezielle Waldnutzungsformen; Zwergstrauchheiden; Äcker und Ackerbrachen
+  - description: Beschreibung des Ökosystemtyps | Kardinalität: 0..1 | Typ: string
 - location: Welche Standorte werden in der Studie untersucht? | Kardinalität: 0..* | Typ: object
   Beschreibung: Standort mit Land, Bundesland und Ort.
   - country: Land des Studienstandorts | Kardinalität: 0..1 | Typ: string
@@ -19,21 +20,26 @@ Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
   - name: Name des Bodentyps | Kardinalität: 1 | Typ: string | Zulässige Werte: Bergbauflächen; Braune Lössböden, einschließlich Sandlöss und lössähnliche Sedimente; Böden aus Geschiebelehm und Geschiebemergel mit sandiger Deckschicht; Böden aus Kalk-, Mergel- und Dolomitgesteinen; Böden aus Ton- und Schluffschiefern; Böden aus kalkfreien Sedimentgesteinen und Quarziten; Böden aus sauren und intermediären magamatischen und metamorphen Gesteinen; Böden der Flussauen; Böden der Niederungen und Urstromtäler; Gewässerflächen; Hoch- und Niedermoorböden; Marschböden; Schwarze Lössböden; Siedlungsflächen; Staunasse Lössböden; Trockene Sandböden; Wattböden
   - depth: Tiefe des Bodens | Kardinalität: 1 | Typ: string | Zulässige Werte: Oberboden; Streuschicht; Unbekannt; Unterboden
 - conservation_area: Welche Schutzgebiete werden in der Studie untersucht? | Kardinalität: 0..* | Typ: object
-  Beschreibung: Schutzgebiet mit Name und Erfolg.
+  Beschreibung: Schutzgebiet mit Name, Beschreibung und Erfolg.
   - name: Name des Schutzgebiets | Kardinalität: 1 | Typ: string
+  - description: Charakterisierung des Schutzgebiets | Kardinalität: 0..1 | Typ: string
   - success: Hatte das Schutzgebiet einen messbaren Effekt auf die Biodiversität? | Kardinalität: 1 | Typ: string | Zulässige Werte: ja; nein; teilweise; unbekannt
 - management_measure: Wurden Formen der Bewirtschaftung als Maßnahmen für die Biodiversität untersucht? | Kardinalität: 0..* | Typ: object
-  Beschreibung: Bewirtschaftungsmaßnahme mit Erfolg.
+  Beschreibung: Bewirtschaftungsmaßnahme mit Beschreibung und Erfolg.
+  - description: Beschreibung der Bewirtschaftungsmaßnahme | Kardinalität: 1 | Typ: string
   - success: Hatte die Bewirtschaftung als Maßnahme für die Biodiversität einen messbaren Effekt?  | Kardinalität: 1 | Typ: string | Zulässige Werte: ja; nein; teilweise; unbekannt
 - impulse_measure: Wurden einmalige Maßnahmen für die Biodiversität untersucht? | Kardinalität: 0..* | Typ: object
-  Beschreibung: Einmalige Maßnahme mit Erfolg.
+  Beschreibung: Einmalige Maßnahme mit Beschreibung und Erfolg.
+  - description: Beschreibung der einmaligen Maßnahme | Kardinalität: 1 | Typ: string
   - success: Hatte die einmalige Maßnahme für die Biodiversität einen messbaren Effekt?  | Kardinalität: 1 | Typ: string | Zulässige Werte: ja; nein; teilweise; unbekannt
 - direct_driver: Welche Vorgänge mit direktem Einfluss auf Biodiversität wurden untersucht? | Kardinalität: 0..* | Typ: object
-  Beschreibung: Direkter Treiber mit Kategorie.
+  Beschreibung: Direkter Treiber mit Kategorie und Details.
   - category: Zu welcher der folgenden Kategorien lässt sich der direkte Treiber zuordnen? | Kardinalität: 1 | Typ: string | Zulässige Werte: Andere direkte Treiber; Direkte Ressourcenentnahme; Invasive gebietsfremde Arten; Klimawandel; Verschmutzung; Veränderte Land-/Meeresnutzung; Veränderung der Struktur der Landschaft
+  - details: Details zum direkten Treiber | Kardinalität: 0..1 | Typ: string
 - indirect_driver: Welche Vorgänge mit indirektem Einfluss auf Biodiversität wurden untersucht? | Kardinalität: 0..* | Typ: object
-  Beschreibung: Indirekter Treiber mit Kategorie.
+  Beschreibung: Indirekter Treiber mit Kategorie und Details.
   - category: Zu welcher der folgenden Kategorien lässt sich der indirekte Treiber zuordnen? | Kardinalität: 1 | Typ: string | Zulässige Werte: Gesellschaftliche Treiber; Politische und rechtliche Treiber - rechtlich-regulativ; Politische und rechtliche Treiber - sozial-informationell; Politische und rechtliche Treiber - ökonomisch-anreizbasiert; Wirtschaftliche und technologische Treiber
+  - details: Details zum indirekten Treiber | Kardinalität: 0..1 | Typ: string
 - ecosystem_service: Welche Ökosystemleistungen wurden in der Studie untersucht? | Kardinalität: 0..* | Typ: object
   Beschreibung: Ökosystemdienstleistung mit Kategorie und Term.
   - category: In welche der folgenden Kategorien lässt sich die im Text behandelte Ökosystemleistung einordnen? | Kardinalität: 1 | Typ: string | Zulässige Werte: Kulturelle Leistungen; Regulierungs- und Erhaltungsleistungen; Versorgungsleistungen

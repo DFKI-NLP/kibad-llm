@@ -35,7 +35,6 @@ class NaturalRegionEnum(str, Enum):
     SCHICHTSTUFENLAND_OBERRHEINGRABEN = "Schichtstufenland beidseits des Oberrheingrabens"
 
 
-# this is not yet used (compounds are not yet implemented)
 class LocationFederalStateEnum(str, Enum):
     BADEN_WUERTTEMBERG = "Baden-Württemberg"
     BAYERN = "Bayern"
@@ -55,7 +54,6 @@ class LocationFederalStateEnum(str, Enum):
     THUERINGEN = "Thüringen"
 
 
-# this is not yet used (compound)
 class EcosystemTypeCategoryEnum(str, Enum):
     I_MEERE_UND_KUESTEN = "I Biotoptypengruppen der Meere und Küsten"
     II_BINNENGEWAESSER = "II Biotoptypengruppen der Binnengewässer"
@@ -65,7 +63,6 @@ class EcosystemTypeCategoryEnum(str, Enum):
     VI_WEITERE = "VI Weitere"
 
 
-# this is not yet used (compound)
 class EcosystemTypeTermEnum(str, Enum):
     ANTHROPOGENE_ROHBODEN = "Anthropogene Rohbodenstandorte und Ruderalfluren"
     BAUWERKE = "Bauwerke"
@@ -406,6 +403,7 @@ class Taxa(CompoundFeature):
         alias="Wissenschaftlicher Artenname",
         description="Wissenschaftlicher Name der Art",
     )
+    # TODO: or is "german_name" mandatory?
     german_name: str | None = Field(
         default=None,
         alias="Deutscher Artenname",
@@ -461,14 +459,19 @@ class SuccessEnum(str, Enum):
     UNBEKANNT = "unbekannt"
 
 
-# TODO: This is without description for now.
 class ConservationArea(CompoundFeature):
-    """Schutzgebiet mit Name und Erfolg."""
+    """Schutzgebiet mit Name, Beschreibung und Erfolg."""
 
     name: str = Field(
         ...,
         alias="Name",
         description="Name des Schutzgebiets",
+    )
+    # TODO: or is "description" mandatory?
+    description: str | None = Field(
+        default=None,
+        alias="Beschreibung",
+        description="Charakterisierung des Schutzgebiets",
     )
     success: SuccessEnum = Field(
         ...,
@@ -477,10 +480,15 @@ class ConservationArea(CompoundFeature):
     )
 
 
-# TODO: This is without description for now.
 class ManagementMeasure(CompoundFeature):
-    """Bewirtschaftungsmaßnahme mit Erfolg."""
+    """Bewirtschaftungsmaßnahme mit Beschreibung und Erfolg."""
 
+    # TODO: or is "description" optional?
+    description: str = Field(
+        ...,
+        alias="Beschreibung",
+        description="Beschreibung der Bewirtschaftungsmaßnahme",
+    )
     success: SuccessEnum = Field(
         ...,
         alias="Erfolg",
@@ -488,10 +496,15 @@ class ManagementMeasure(CompoundFeature):
     )
 
 
-# TODO: This is without description for now.
 class ImpulseMeasure(CompoundFeature):
-    """Einmalige Maßnahme mit Erfolg."""
+    """Einmalige Maßnahme mit Beschreibung und Erfolg."""
 
+    # TODO: or is "description" optional?
+    description: str = Field(
+        ...,
+        alias="Beschreibung",
+        description="Beschreibung der einmaligen Maßnahme",
+    )
     success: SuccessEnum = Field(
         ...,
         alias="Erfolg",
@@ -523,25 +536,35 @@ class IndirectDriverEnum(str, Enum):
     WIRTSCHAFTLICHE_TECHNOLOGISCHE_TREIBER = "Wirtschaftliche und technologische Treiber"
 
 
-# TODO: This is without details for now.
 class DirectDriver(CompoundFeature):
-    """Direkter Treiber mit Kategorie."""
+    """Direkter Treiber mit Kategorie und Details."""
 
     category: DirectDriverEnum = Field(
         ...,
         alias="Kategorie",
         description="Zu welcher der folgenden Kategorien lässt sich der direkte Treiber zuordnen?",
     )
+    # TODO: or is "details" mandatory?
+    details: str | None = Field(
+        default=None,
+        alias="Details",
+        description="Details zum direkten Treiber",
+    )
 
 
-# TODO: This is without details for now.
 class IndirectDriver(CompoundFeature):
-    """Indirekter Treiber mit Kategorie."""
+    """Indirekter Treiber mit Kategorie und Details."""
 
     category: IndirectDriverEnum = Field(
         ...,
         alias="Kategorie",
         description="Zu welcher der folgenden Kategorien lässt sich der indirekte Treiber zuordnen?",
+    )
+    # TODO: or is "details" mandatory?
+    details: str | None = Field(
+        default=None,
+        alias="Details",
+        description="Details zum indirekten Treiber",
     )
 
 
@@ -586,7 +609,7 @@ class EcosystemServiceTermEnum(str, Enum):
     ES_TERM_1_2_2_1 = "1.2.2.1 Tiermaterial, das für die Erhaltung oder den Aufbau einer Population gesammelt wurde"
     ES_TERM_1_2_2_2 = "1.2.2.2 Wildtiere (ganze Organismen), die zur Züchtung neuer Stämme oder Sorten verwendet werden"
     ES_TERM_1_2_2_3 = "1.2.2.3 Einzelne Gene, die aus Organismen extrahiert werden, um neue biologische Einheiten zu entwerfen und zu konstruieren"
-    # TODO: here is a typo in the original? "Versorungsleistungen" missing a "g"
+    # Note: Here is a typo in the original data ("Versorungsleistungen" missing a "g")
     ES_TERM_1_3_X_X = "1.3.X.X Andere (Versorungsleistungen aus biotischen Quellen)"
     ES_TERM_2_1_1_1 = "2.1.1.1 Biosanierung durch Mikroorganismen, Algen, Pflanzen und Tiere"
     ES_TERM_2_1_1_2 = "2.1.1.2 Filtration/Sequestrierung/Speicherung/Akkumulation durch Mikroorganismen, Algen, Pflanzen und Tiere"

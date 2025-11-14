@@ -2,12 +2,25 @@
   "$defs": {
     "ConservationArea": {
       "additionalProperties": false,
-      "description": "Schutzgebiet mit Name und Erfolg.",
+      "description": "Schutzgebiet mit Name, Beschreibung und Erfolg.",
       "properties": {
         "name": {
           "description": "Name des Schutzgebiets",
           "title": "Name",
           "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Charakterisierung des Schutzgebiets",
+          "title": "Description"
         },
         "success": {
           "$ref": "#/$defs/SuccessEnum",
@@ -23,11 +36,24 @@
     },
     "DirectDriver": {
       "additionalProperties": false,
-      "description": "Direkter Treiber mit Kategorie.",
+      "description": "Direkter Treiber mit Kategorie und Details.",
       "properties": {
         "category": {
           "$ref": "#/$defs/DirectDriverEnum",
           "description": "Zu welcher der folgenden Kategorien lässt sich der direkte Treiber zuordnen?"
+        },
+        "details": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Details zum direkten Treiber",
+          "title": "Details"
         }
       },
       "required": [
@@ -153,15 +179,28 @@
     },
     "EcosystemType": {
       "additionalProperties": false,
-      "description": "Ökosystemtyp mit Kategorie und Term.",
+      "description": "Ökosystemtyp mit Kategorie, Name und Beschreibung.",
       "properties": {
         "category": {
           "$ref": "#/$defs/EcosystemTypeCategoryEnum",
-          "description": "Kategorie des Biotoptyps"
+          "description": "Kategorie des Ökosystemtyps"
         },
         "term": {
           "$ref": "#/$defs/EcosystemTypeTermEnum",
-          "description": "Spezifischer Biotoptyp"
+          "description": "Name des Ökosystemtyps"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Beschreibung des Ökosystemtyps",
+          "title": "Description"
         }
       },
       "required": [
@@ -223,14 +262,20 @@
     },
     "ImpulseMeasure": {
       "additionalProperties": false,
-      "description": "Einmalige Maßnahme mit Erfolg.",
+      "description": "Einmalige Maßnahme mit Beschreibung und Erfolg.",
       "properties": {
+        "description": {
+          "description": "Beschreibung der einmaligen Maßnahme",
+          "title": "Description",
+          "type": "string"
+        },
         "success": {
           "$ref": "#/$defs/SuccessEnum",
           "description": "Hatte die einmalige Maßnahme für die Biodiversität einen messbaren Effekt? "
         }
       },
       "required": [
+        "description",
         "success"
       ],
       "title": "ImpulseMeasure",
@@ -238,11 +283,24 @@
     },
     "IndirectDriver": {
       "additionalProperties": false,
-      "description": "Indirekter Treiber mit Kategorie.",
+      "description": "Indirekter Treiber mit Kategorie und Details.",
       "properties": {
         "category": {
           "$ref": "#/$defs/IndirectDriverEnum",
           "description": "Zu welcher der folgenden Kategorien lässt sich der indirekte Treiber zuordnen?"
+        },
+        "details": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Details zum indirekten Treiber",
+          "title": "Details"
         }
       },
       "required": [
@@ -327,14 +385,20 @@
     },
     "ManagementMeasure": {
       "additionalProperties": false,
-      "description": "Bewirtschaftungsmaßnahme mit Erfolg.",
+      "description": "Bewirtschaftungsmaßnahme mit Beschreibung und Erfolg.",
       "properties": {
+        "description": {
+          "description": "Beschreibung der Bewirtschaftungsmaßnahme",
+          "title": "Description",
+          "type": "string"
+        },
         "success": {
           "$ref": "#/$defs/SuccessEnum",
           "description": "Hatte die Bewirtschaftung als Maßnahme für die Biodiversität einen messbaren Effekt? "
         }
       },
       "required": [
+        "description",
         "success"
       ],
       "title": "ManagementMeasure",
