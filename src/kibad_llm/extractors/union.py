@@ -1,8 +1,8 @@
 from collections import defaultdict
 from typing import Any
 
-from kibad_llm.extractors import extract_from_text_lenient
-from kibad_llm.extractors.utils import make_hashable_simple
+from .base import extract_from_text_lenient
+from .utils import make_hashable_simple
 
 
 def _union_single(values: list) -> Any:
