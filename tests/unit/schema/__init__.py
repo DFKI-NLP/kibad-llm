@@ -17,7 +17,7 @@ ALL_MODELS = [
     and obj is not types.BaseEcosystemStudyFeatures
 ]
 
-ALL_COMPOUND_FEATURES = [
+ALL_COMPOUNDS = [
     obj
     for obj in vars(types).values()
     if isinstance(obj, type)
