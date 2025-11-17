@@ -156,14 +156,23 @@ class RepeatingExtractor:
         n: Number of repetitions (default: 3)
         skip_type_mismatches: If True, skips keys with inconsistent types across extractions
             instead of raising an error (default: False)
+        return_as_list: List of field names to return as lists of all extracted values
+            (default: None)
         **kwargs: Additional keyword arguments passed to the base extraction function.
     """
 
-    def __init__(self, n: int = 3, skip_type_mismatches: bool = False, **kwargs):
+    def __init__(
+        self,
+        n: int = 3,
+        skip_type_mismatches: bool = False,
+        return_as_list: list[str] | None = None,
+        **kwargs,
+    ):
         if n < 1:
             raise ValueError("n must be at least 1")
         self.n = n
         self.skip_type_mismatches = skip_type_mismatches
+        self.return_as_list = return_as_list or []
         self.default_kwargs = kwargs
 
     def __call__(self, *args, **kwargs) -> dict[str, Any]:
@@ -173,17 +182,14 @@ class RepeatingExtractor:
             current_result = extract_from_text_lenient(*args, **combined_kwargs)
             results.append(current_result)
 
-        response_contents = [v.get("response_content", None) for v in results]
         structured_outputs = [v.get("structured", None) for v in results]
-        errors = [v.get("error", None) for v in results]
         aggregated_structured = _aggregate_structured_outputs(
             structured_outputs, skip_type_mismatches=self.skip_type_mismatches
         )
-
-        result = {
-            "response_content_list": response_contents,
-            "structured_list": structured_outputs,
-            "error_list": errors if any(errors) else None,
+        result: dict[str, Any] = {
             "structured": aggregated_structured,
         }
+        for field in self.return_as_list:
+            result[f"{field}_list"] = [v.get(field, None) for v in results]
+
         return result
