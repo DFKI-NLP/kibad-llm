@@ -24,6 +24,7 @@ def extract_from_text(
     system_message_requires_schema_description: bool = False,
     schema_description_kwargs: dict[str, Any] | None = None,
     llm: LLM | None = None,
+    return_reasoning: bool = False,
 ) -> dict:
     """Extract structured information from text using an LLM.
 
@@ -45,6 +46,7 @@ def extract_from_text(
             the schema description.
         llm: The LLM model to use (defaults to Settings.llm). Must be a chat model (i.e. is_chat_model=True)
             and support extra_body parameters for guided decoding if schema is provided.
+        return_reasoning: Whether to return the reasoning done by the model.
 
     Returns:
         A dictionary with keys "text" (the raw LLM output) and "structured" (the parsed JSON or None).
@@ -75,7 +77,10 @@ def extract_from_text(
     seed_src = f"{text_id or ''}\n{user}"
     seed = int(hashlib.sha256(seed_src.encode("utf-8")).hexdigest()[:8], 16)
 
-    vllm_extras: dict[str, Any] = {"seed": seed, "top_k": -1}  # vendor-specific → extra_body
+    vllm_extras: dict[str, Any] = {
+        "seed": seed,
+        "top_k": -1,
+    }  # vendor-specific → extra_body
 
     if schema is not None:
         vllm_extras["guided_json"] = schema
@@ -89,8 +94,13 @@ def extract_from_text(
         "response_content": response_content,
         "structured": None,
         "error": None,
+        "reasoning_content": None,
     }
 
+    if return_reasoning:
+        out["reasoning_content"] = (
+            getattr(resp.message, "reasoning_content", "") or ""
+        )
     # Parse & validate (schema optional)
     try:
         data = json.loads(response_content)
@@ -104,7 +114,9 @@ def extract_from_text(
         logger.warning(f"Failed to parse JSON output for document {text_id}")
         out["error"] = f"JSONDecodeError: {str(e)}"
     except ValidationError as e:
-        logger.warning(f"Failed to validate structured output for document {text_id}")
+        logger.warning(
+            f"Failed to validate structured output for document {text_id}"
+        )
         out["error"] = f"ValidationError: {str(e)}"
 
     return out
