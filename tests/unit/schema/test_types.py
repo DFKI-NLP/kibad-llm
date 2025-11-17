@@ -30,7 +30,7 @@ def test_models(model_cls: type[BaseModel]):
 def test_compound_models(model_cls: type[BaseModel]):
     schema = model_cls.model_json_schema(by_alias=False)
     fixture_fn = f"{camel_case_to_snake_case(model_cls.__name__)}.json"
-    path_expected = PROJ_ROOT / "tests" / "fixtures" / "schema" / fixture_fn
+    path_expected = PROJ_ROOT / "tests" / "fixtures" / "schema_field" / fixture_fn
     if WRITE_FIXTURE_DATA:
         with open(path_expected, "w") as f:
             json.dump(schema, f, indent=2, ensure_ascii=False)
