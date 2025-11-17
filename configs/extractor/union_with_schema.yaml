@@ -1,0 +1,13 @@
+defaults:
+  - _union
+  - _template_with_schema
+
+overrides:
+  - schema:
+      # create the schema from the pydantic model of EcosystemStudyFeaturesSimple
+      _target_: kibad_llm.schema.types.EcosystemStudyFeaturesSimple.model_json_schema
+      by_alias: false
+  - schema:
+      # create the schema from the pydantic model of EcosystemStudyFeaturesCompoundsSimple
+      _target_: kibad_llm.schema.types.EcosystemStudyFeaturesCompoundsSimple.model_json_schema
+      by_alias: false
