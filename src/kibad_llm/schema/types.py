@@ -577,7 +577,7 @@ class IndirectDriver(CompoundFeature):
     )
 
 
-class EcosystemServiceEnum(str, Enum):
+class EcosystemServiceCategoryEnum(str, Enum):
     KULTURELLE_LEISTUNGEN = "Kulturelle Leistungen"
     REGULIERUNGS_UND_ERHALTUNGSLEISTUNGEN = "Regulierungs- und Erhaltungsleistungen"
     VERSORGUNGSLEISTUNGEN = "Versorgungsleistungen"
@@ -684,19 +684,26 @@ class EcosystemServiceTermEnum(str, Enum):
     ES_TERM_4_2_X_X = "4.2.X.X Andere (Ökosystemleistungen des Wassers)"
 
 
-# Without details for now.
 class EcosystemService(CompoundFeature):
-    """Ökosystemdienstleistung mit Kategorie und Term."""
+    """Ökosystemdienstleistung mit Kategorie, Term und Details."""
 
-    category: EcosystemServiceEnum = Field(
+    # TODO: or is "category" optional?
+    category: EcosystemServiceCategoryEnum = Field(
         ...,
         alias="Kategorie",
         description="In welche der folgenden Kategorien lässt sich die im Text behandelte Ökosystemleistung einordnen?",
     )
+    # TODO: or is "term" optional?
     term: EcosystemServiceTermEnum = Field(
         ...,
         alias="Term",
         description="Welche konkrete Ökosystemleistung wurde untersucht?",
+    )
+    # TODO: or is "details" mandatory?
+    details: str | None = Field(
+        default=None,
+        alias="Details",
+        description="Details zum direkten Treiber",
     )
 
 

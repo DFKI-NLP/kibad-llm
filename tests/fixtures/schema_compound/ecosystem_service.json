@@ -1,12 +1,12 @@
 {
   "$defs": {
-    "EcosystemServiceEnum": {
+    "EcosystemServiceCategoryEnum": {
       "enum": [
         "Kulturelle Leistungen",
         "Regulierungs- und Erhaltungsleistungen",
         "Versorgungsleistungen"
       ],
-      "title": "EcosystemServiceEnum",
+      "title": "EcosystemServiceCategoryEnum",
       "type": "string"
     },
     "EcosystemServiceTermEnum": {
@@ -84,15 +84,28 @@
     }
   },
   "additionalProperties": false,
-  "description": "Ökosystemdienstleistung mit Kategorie und Term.",
+  "description": "Ökosystemdienstleistung mit Kategorie, Term und Details.",
   "properties": {
     "category": {
-      "$ref": "#/$defs/EcosystemServiceEnum",
+      "$ref": "#/$defs/EcosystemServiceCategoryEnum",
       "description": "In welche der folgenden Kategorien lässt sich die im Text behandelte Ökosystemleistung einordnen?"
     },
     "term": {
       "$ref": "#/$defs/EcosystemServiceTermEnum",
       "description": "Welche konkrete Ökosystemleistung wurde untersucht?"
+    },
+    "details": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Details zum direkten Treiber",
+      "title": "Details"
     }
   },
   "required": [
