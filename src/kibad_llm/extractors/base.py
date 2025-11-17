@@ -99,8 +99,14 @@ def extract_from_text(
 
     if return_reasoning:
         out["reasoning_content"] = (
-            getattr(resp.message, "reasoning_content", "") or ""
+            getattr(
+                getattr(getattr(resp.raw, "choices", "")[0], "message", ""),
+                "reasoning_content",
+                "",
+            )
+            or ""
         )
+
     # Parse & validate (schema optional)
     try:
         data = json.loads(response_content)
@@ -113,10 +119,9 @@ def extract_from_text(
     except json.JSONDecodeError as e:
         logger.warning(f"Failed to parse JSON output for document {text_id}")
         out["error"] = f"JSONDecodeError: {str(e)}"
+        print(json.dumps(out))
     except ValidationError as e:
-        logger.warning(
-            f"Failed to validate structured output for document {text_id}"
-        )
+        logger.warning(f"Failed to validate structured output for document {text_id}")
         out["error"] = f"ValidationError: {str(e)}"
 
     return out
@@ -141,4 +146,9 @@ def extract_from_text_lenient(text: str, text_id: str, **kwargs) -> dict:
     except Exception as e:
         logger.error(f"Error processing document {text_id}: {e}")
         # needs to match the output of extract_from_text
-        return {"error": str(e), "response_content": None, "structured": None}
+        return {
+            "error": str(e),
+            "response_content": None,
+            "structured": None,
+            "reasoning_content": None,
+        }
