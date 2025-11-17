@@ -5,13 +5,20 @@ from .utils import collect_values_and_type_per_key, make_hashable_simple
 
 
 def _union_single(values: list) -> Any:
-    """Return the union of single values from a list.
-    If all values are the same (excluding None or None only), return that value.
-    Otherwise, raise ValueError.
+    """Return a single value if all non-None values in the list are identical.
+
+    This function is used to aggregate values that should be the same across multiple
+    extractions. It ensures consistency by raising an error when conflicting values
+    are found.
+
     Args:
-        values: list of values
+        values: List of values to check for consistency
+
     Returns:
-        single value if all values are the same
+        The single consistent value, or None if all values are None
+
+    Raises:
+        ValueError: If the list contains multiple different non-None values
     """
 
     # if only None or empty list, return None
@@ -25,18 +32,17 @@ def _union_single(values: list) -> Any:
 
 
 def _multi_entry_union(values: list[list | None]) -> list:
-    """Return the union of items from a list of lists.
+    """Return the union of all items from multiple lists.
 
-    An item is included in the result if it appears in at least one of the lists.
-
-    Works with lists of primitive types, and lists of dicts. Items that are None are ignored.
-
-    IMPORTANT: None values in the input lists are ignored and not included in the output.
+    Combines items from all input lists, removing duplicates. Works with lists containing
+    primitive types or dictionaries. None values (both None lists and None items within
+    lists) are filtered out.
 
     Args:
-        values: list of lists (or None)
+        values: List of lists to union, where individual lists can be None
+
     Returns:
-        list of union items
+        Sorted list of unique items from all input lists
     """
     item_set: set = set()
     entry_type: type | None = None
