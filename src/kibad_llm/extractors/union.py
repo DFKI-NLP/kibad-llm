@@ -1,8 +1,7 @@
-from collections import defaultdict
 from typing import Any
 
 from .base import extract_from_text_lenient
-from .utils import make_hashable_simple
+from .utils import collect_values_and_type_per_key, make_hashable_simple
 
 
 def _union_single(values: list) -> Any:
@@ -76,31 +75,9 @@ def _aggregate_structured_outputs_union(
     if all(res is None for res in structured_outputs):
         return None
 
-    # collect all keys to correctly handle missing entries
-    all_keys: set[str] = set()
-    for res in structured_outputs:
-        if res is not None:
-            all_keys.update(res.keys())
-    values_per_key = defaultdict(list)
-    type_per_key: dict[str, type | None] = dict()
-    # get values and type per key
-    for res in structured_outputs:
-        if res is not None:
-            for key in all_keys:
-                value = res.get(key, None)
-                values_per_key[key].append(value)
-                if value is not None:
-                    if key not in type_per_key:
-                        type_per_key[key] = type(value)
-                    else:
-                        if type_per_key[key] != type(value):
-                            if not skip_type_mismatches:
-                                raise ValueError(
-                                    f"Inconsistent types for key '{key}': "
-                                    f"{type_per_key[key]} vs {type(value)}"
-                                )
-                            else:
-                                type_per_key[key] = None
+    values_per_key, type_per_key = collect_values_and_type_per_key(
+        structured_outputs, skip_type_mismatches=skip_type_mismatches
+    )
 
     aggregated: dict[str, Any] = dict()
     for key, values in values_per_key.items():
