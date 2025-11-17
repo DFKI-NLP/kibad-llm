@@ -119,7 +119,6 @@ def extract_from_text(
     except json.JSONDecodeError as e:
         logger.warning(f"Failed to parse JSON output for document {text_id}")
         out["error"] = f"JSONDecodeError: {str(e)}"
-        print(json.dumps(out))
     except ValidationError as e:
         logger.warning(f"Failed to validate structured output for document {text_id}")
         out["error"] = f"ValidationError: {str(e)}"
