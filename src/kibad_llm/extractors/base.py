@@ -98,11 +98,30 @@ def extract_from_text(
     }
 
     if return_reasoning:
+        """
+        resp returns the ChatResponse which consists of the "message" and "raw".
+        the "message" contains all pretty results we want and need normally and is hence used above.
+        the "raw" contains all information coming from the model.
+        "raw" is a ChatCompletion object that contains the key "choices", which contains the key "message" with a ChatCompletionMessage.
+        the ChatCompletionMessage object contains the the info about how the model responded, including the reasoning_content.
+        mypy will scream if you do resp.raw.choices[0].message.reasoning_content, so we have to matryoshka a few getattr here.
+        """
         out["reasoning_content"] = (
             getattr(
-                getattr(getattr(resp.raw, "choices", "")[0], "message", ""),
+                getattr(
+                    getattr(
+                        resp.raw,
+                        "choices",
+                        "",
+                        # get the first response choice from raw
+                    )[0],
+                    "message",
+                    "",
+                    # get the message from within the choice
+                ),
                 "reasoning_content",
                 "",
+                # get the reasoning_content from the message
             )
             or ""
         )
