@@ -7,15 +7,19 @@ from .utils import make_hashable_simple
 
 def _union_single(values: list) -> Any:
     """Return the union of single values from a list.
-    If all values are the same, return that value. Otherwise, raise ValueError.
+    If all values are the same (excluding None or None only), return that value.
+    Otherwise, raise ValueError.
     Args:
         values: list of values
     Returns:
         single value if all values are the same
     """
 
-    if len(values) == 0:
-        raise ValueError("Cannot combine empty list")
+    # if only None or empty list, return None
+    if all(v is None for v in values):
+        return None
+    # filter out None values
+    values = [v for v in values if v is not None]
     if len(set(values)) == 1:
         return values[0]
     raise ValueError(f"Conflicting values for union with single entry: {set(values)}")
@@ -27,6 +31,8 @@ def _multi_entry_union(values: list[list | None]) -> list:
     An item is included in the result if it appears in at least one of the lists.
 
     Works with lists of primitive types, and lists of dicts. Items that are None are ignored.
+
+    IMPORTANT: None values in the input lists are ignored and not included in the output.
 
     Args:
         values: list of lists (or None)
