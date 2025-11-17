@@ -26,7 +26,7 @@ def test_build_schema_description(model_cls: type[BaseModel]):
 
 
 @pytest.mark.parametrize("model_cls", list(ALL_COMPOUNDS))
-def test_build_schema_description_compound_feature(model_cls: type[BaseModel]):
+def test_build_schema_description_compound(model_cls: type[BaseModel]):
     # dont include header for compound features
     description = build_schema_description(
         model_cls.model_json_schema(by_alias=False), header=None
