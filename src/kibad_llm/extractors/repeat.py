@@ -2,6 +2,7 @@ from collections import Counter, defaultdict
 from typing import Any
 
 from .base import extract_from_text_lenient
+from .utils import make_hashable_simple
 
 
 def _majority_vote(values: list) -> Any:
@@ -15,21 +16,6 @@ def _majority_vote(values: list) -> Any:
     if any(c == top_count for _, c in most_common[1:]):
         return None
     return top_value
-
-
-def _make_hashable_simple(value: Any) -> Any:
-    if isinstance(value, (list, set)):
-        # sort and remove None values
-        return tuple(sorted(_make_hashable_simple(v) for v in value if v is not None))
-    if isinstance(value, tuple):
-        # keep order and None values
-        return tuple(_make_hashable_simple(v) for v in value)
-    if isinstance(value, dict):
-        # sort and remove None values
-        return tuple(
-            sorted((k, _make_hashable_simple(v)) for k, v in value.items() if v is not None)
-        )
-    return value
 
 
 def _multi_entry_majority_vote(values: list[list | None], n: int | None = None) -> list:
@@ -55,7 +41,7 @@ def _multi_entry_majority_vote(values: list[list | None], n: int | None = None) 
             if any(isinstance(item, dict) for item in vs):
                 entry_type = dict
             # ... and make items hashable
-            v_hashable = (_make_hashable_simple(item) for item in vs if item is not None)
+            v_hashable = (make_hashable_simple(item) for item in vs if item is not None)
             item_counts.update(v_hashable)
     majority_items = [item for item, count in item_counts.items() if count > n / 2]
     # convert back to original types (but nested structures remain hashable tuples!)
@@ -129,7 +115,7 @@ def _aggregate_structured_outputs(
             elif issubclass(value_type, dict):
                 # single-value: majority vote for dicts
                 values_hashable = [
-                    _make_hashable_simple(v) if v is not None else None for v in values
+                    make_hashable_simple(v) if v is not None else None for v in values
                 ]
                 majority = _majority_vote(values_hashable)
                 # convert back to dict
