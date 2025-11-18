@@ -345,9 +345,11 @@ class EcosystemStudyFeaturesSimple(BaseEcosystemStudyFeatures):
 class EcosystemType(CompoundFeature):
     """Ökosystemtyp mit Kategorie, Name und Beschreibung."""
 
+    # TODO: or is "category" optional?
     category: EcosystemTypeCategoryEnum = Field(
         ..., alias="Kategorie", description="Kategorie des Ökosystemtyps"
     )
+    # TODO: or is "term" optional?
     term: EcosystemTypeTermEnum = Field(..., alias="Term", description="Name des Ökosystemtyps")
     # TODO: or is "description" mandatory?
     description: str | None = Field(
