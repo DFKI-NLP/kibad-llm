@@ -368,6 +368,7 @@ class Location(CompoundFeature):
         alias="Bundesland",
         description="Bundesland des Studienstandorts",
     )
+    # TODO: or is "name" optional?
     name: str = Field(
         ...,
         alias="Ort",
@@ -418,6 +419,7 @@ class Taxa(CompoundFeature):
     #    # not sure about the description here, made up by auto-complete
     #    description="Handelt es sich bei dem angegebenen Artnamen um einen Sammelbegriff für mehrere Arten?",
     # )
+    # TODO: or is "species_group" optional?
     species_group: SpeciesGroupEnum = Field(
         ...,
         alias="Artengruppe",
@@ -457,8 +459,12 @@ class SoilNameEnum(str, Enum):
 class Soil(CompoundFeature):
     """Boden mit Kategorie und Tiefe."""
 
+    # TODO: or is "name" optional?
     name: SoilNameEnum = Field(..., alias="Name", description="Name des Bodentyps")
-    depth: SoilDepthEnum = Field(..., alias="Tiefe", description="Tiefe des Bodens")
+    # TODO: or is "depth" mandatory?
+    depth: SoilDepthEnum | None = Field(
+        default=None, alias="Tiefe", description="Tiefe des Bodens"
+    )
 
 
 class SuccessEnum(str, Enum):
@@ -471,6 +477,7 @@ class SuccessEnum(str, Enum):
 class ConservationArea(CompoundFeature):
     """Schutzgebiet mit Name, Beschreibung und Erfolg."""
 
+    # TODO: or is "name" optional?
     name: str = Field(
         ...,
         alias="Name",
@@ -482,6 +489,7 @@ class ConservationArea(CompoundFeature):
         alias="Beschreibung",
         description="Charakterisierung des Schutzgebiets",
     )
+    # TODO: or is "success" optional?
     success: SuccessEnum = Field(
         ...,
         alias="Erfolg",
@@ -498,6 +506,7 @@ class ManagementMeasure(CompoundFeature):
         alias="Beschreibung",
         description="Beschreibung der Bewirtschaftungsmaßnahme",
     )
+    # TODO: or is "success" optional?
     success: SuccessEnum = Field(
         ...,
         alias="Erfolg",
@@ -514,6 +523,7 @@ class ImpulseMeasure(CompoundFeature):
         alias="Beschreibung",
         description="Beschreibung der einmaligen Maßnahme",
     )
+    # TODO: or is "success" optional?
     success: SuccessEnum = Field(
         ...,
         alias="Erfolg",

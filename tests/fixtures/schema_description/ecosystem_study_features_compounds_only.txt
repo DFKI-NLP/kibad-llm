@@ -18,7 +18,7 @@ Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
 - soil: Welche Bodentypen werden in der Studie untersucht? | Kardinalität: 0..* | Typ: object
   Beschreibung: Boden mit Kategorie und Tiefe.
   - name: Name des Bodentyps | Kardinalität: 1 | Typ: string | Zulässige Werte: Bergbauflächen; Braune Lössböden, einschließlich Sandlöss und lössähnliche Sedimente; Böden aus Geschiebelehm und Geschiebemergel mit sandiger Deckschicht; Böden aus Kalk-, Mergel- und Dolomitgesteinen; Böden aus Ton- und Schluffschiefern; Böden aus kalkfreien Sedimentgesteinen und Quarziten; Böden aus sauren und intermediären magamatischen und metamorphen Gesteinen; Böden der Flussauen; Böden der Niederungen und Urstromtäler; Gewässerflächen; Hoch- und Niedermoorböden; Marschböden; Schwarze Lössböden; Siedlungsflächen; Staunasse Lössböden; Trockene Sandböden; Wattböden
-  - depth: Tiefe des Bodens | Kardinalität: 1 | Typ: string | Zulässige Werte: Oberboden; Streuschicht; Unbekannt; Unterboden
+  - depth: Tiefe des Bodens | Kardinalität: 0..1 | Typ: string | Zulässige Werte: Oberboden; Streuschicht; Unbekannt; Unterboden
 - conservation_area: Welche Schutzgebiete werden in der Studie untersucht? | Kardinalität: 0..* | Typ: object
   Beschreibung: Schutzgebiet mit Name, Beschreibung und Erfolg.
   - name: Name des Schutzgebiets | Kardinalität: 1 | Typ: string
