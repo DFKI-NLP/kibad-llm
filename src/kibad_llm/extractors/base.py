@@ -51,6 +51,7 @@ def extract_from_text(
     Returns:
         A dictionary with keys "text" (the raw LLM output) and "structured" (the parsed JSON or None).
     """
+    # setting the log level on every query is suboptimal, but the simplest solution in our current architecture
     logging.getLogger("httpx").setLevel(logging.WARNING)
 
     if llm is None:
