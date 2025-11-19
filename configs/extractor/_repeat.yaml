@@ -10,3 +10,4 @@ return_as_list:
   - structured
   - error
   - response_content
+return_reasoning: False
