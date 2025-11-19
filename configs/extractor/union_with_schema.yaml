@@ -2,6 +2,7 @@ defaults:
   - _union
   - _template_with_schema
 
+# use two dummy schemata (...Simple) per default
 overrides:
   - schema:
       # create the schema from the pydantic model of EcosystemStudyFeaturesSimple
