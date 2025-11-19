@@ -463,7 +463,7 @@ class SoilNameEnum(str, Enum):
         "Böden aus sauren und intermediären magamatischen und metamorphen Gesteinen"
     )
     BASISCHE_INTERMEDIARE_GESTEINE = (
-        "Böden aus basischen und intermediären magmatischen und metamorphoren Gesteinen"
+        "Böden aus basischen und intermediären magmatischen und metamorphen Gesteinen"
     )
     FLUSSAUEN = "Böden der Flussauen"
     FLUSSTERASSEN_HOCHFLUTSEDIMENTE = "Böden der Flussterassen und Hochflutsedimente"
