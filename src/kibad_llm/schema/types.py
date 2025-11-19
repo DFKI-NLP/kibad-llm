@@ -454,24 +454,30 @@ class SoilDepthEnum(str, Enum):
 
 class SoilNameEnum(str, Enum):
     BERGBAUFLAECHEN = "Bergbauflächen"
-    BRAUNE_LOESSBOEDEN = "Braune Lössböden, einschließlich Sandlöss und lössähnliche Sedimente"
-    BOEDEN_GESCHIEBELEHM = "Böden aus Geschiebelehm und Geschiebemergel mit sandiger Deckschicht"
-    BOEDEN_KALK_MERGEL_DOLIMITGESTEINEN = "Böden aus Kalk-, Mergel- und Dolomitgesteinen"
-    BOEDEN_TON_SCHLUFFSCHIEFERN = "Böden aus Ton- und Schluffschiefern"
-    BOEDEN_KALKFREIEN_SEDIMENTGESTEINEN = "Böden aus kalkfreien Sedimentgesteinen und Quarziten"
-    BOEDEN_SAUREN_MAGMATISCHEN_GESTEINEN = (
+    BRAUNER_LOESS = "Braune Lössböden, einschließlich Sandlöss und lössähnliche Sedimente"
+    GESCHIEBELEHM = "Böden aus Geschiebelehm und Geschiebemergel mit sandiger Deckschicht"
+    KALK_MERGEL_DOLIMITGESTEIN = "Böden aus Kalk-, Mergel- und Dolomitgesteinen"
+    TON_SCHLUFFSCHIEFER = "Böden aus Ton- und Schluffschiefern"
+    KALKFREIE_SEDIMENTGESTEINE = "Böden aus kalkfreien Sedimentgesteinen und Quarziten"
+    SAURE_MAGMATISCHE_GESTEINE = (
         "Böden aus sauren und intermediären magamatischen und metamorphen Gesteinen"
     )
-    BOEDEN_FLUSSAUEN = "Böden der Flussauen"
-    BOEDEN_NIEDERUNGEN_URSTROMTAELER = "Böden der Niederungen und Urstromtäler"
+    BASISCHE_INTERMEDIARE_GESTEINE = (
+        "Böden aus basischen und intermediären magmatischen und metamorphoren Gesteinen"
+    )
+    FLUSSAUEN = "Böden der Flussauen"
+    FLUSSTERASSEN_HOCHFLUTSEDIMENTE = "Böden der Flussterassen und Hochflutsedimente"
+    HOCHGEBIRGE = "Boden des Hochgebirges"
+    LOESSVERMISCHTE_TERTIAERABLAGERUNGEN = "Böden aus lössvermischten Tertiärablagerungen"
+    NIEDERUNGEN_URSTROMTAELER = "Böden der Niederungen und Urstromtäler"
     GEWAESSERFLAECHEN = "Gewässerflächen"
-    HOCH_NIEDERMOORBOEDEN = "Hoch- und Niedermoorböden"
-    MARSCHBOEDEN = "Marschböden"
-    SCHWARZE_LOESSBOEDEN = "Schwarze Lössböden"
+    HOCH_NIEDERMOOR = "Hoch- und Niedermoorböden"
+    MARSCH = "Marschböden"
+    SCHWARZER_LOESS = "Schwarze Lössböden"
     SIEDLUNGSFLAECHEN = "Siedlungsflächen"
-    STAUNASSE_LOESSBOEDEN = "Staunasse Lössböden"
-    TROCKENE_SANDBOEDEN = "Trockene Sandböden"
-    WATTBOEDEN = "Wattböden"
+    STAUNASSER_LOESS = "Staunasse Lössböden"
+    TROCKENER_SAND = "Trockene Sandböden"
+    WATT = "Wattböden"
 
 
 class Soil(CompoundFeature):
