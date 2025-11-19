@@ -24,7 +24,6 @@ def extract_from_text(
     system_message_requires_schema_description: bool = False,
     schema_description_kwargs: dict[str, Any] | None = None,
     llm: LLM | None = None,
-    return_reasoning: bool = False,
 ) -> dict:
     """Extract structured information from text using an LLM.
 
@@ -46,7 +45,6 @@ def extract_from_text(
             the schema description.
         llm: The LLM model to use (defaults to Settings.llm). Must be a chat model (i.e. is_chat_model=True)
             and support extra_body parameters for guided decoding if schema is provided.
-        return_reasoning: Whether to return the reasoning done by the model.
 
     Returns:
         A dictionary with keys "text" (the raw LLM output) and "structured" (the parsed JSON or None).
@@ -97,34 +95,33 @@ def extract_from_text(
         "reasoning_content": None,
     }
 
-    if return_reasoning:
-        """
-        resp returns the ChatResponse which consists of the "message" and "raw".
-        the "message" contains all pretty results we want and need normally and is hence used above.
-        the "raw" contains all information coming from the model.
-        "raw" is a ChatCompletion object that contains the key "choices", which contains the key "message" with a ChatCompletionMessage.
-        the ChatCompletionMessage object contains the the info about how the model responded, including the reasoning_content.
-        mypy will scream if you do resp.raw.choices[0].message.reasoning_content, so we have to matryoshka a few getattr here.
-        """
-        out["reasoning_content"] = (
+    """
+    resp returns the ChatResponse which consists of the "message" and "raw".
+    the "message" contains all pretty results we want and need normally and is hence used above.
+    the "raw" contains all information coming from the model.
+    "raw" is a ChatCompletion object that contains the key "choices", which contains the key "message" with a ChatCompletionMessage.
+    the ChatCompletionMessage object contains the the info about how the model responded, including the reasoning_content.
+    mypy will scream if you do resp.raw.choices[0].message.reasoning_content, so we have to matryoshka a few getattr here.
+    """
+    out["reasoning_content"] = (
+        getattr(
             getattr(
                 getattr(
-                    getattr(
-                        resp.raw,
-                        "choices",
-                        "",
-                        # get the first response choice from raw
-                    )[0],
-                    "message",
+                    resp.raw,
+                    "choices",
                     "",
-                    # get the message from within the choice
-                ),
-                "reasoning_content",
+                    # get the first response choice from raw
+                )[0],
+                "message",
                 "",
-                # get the reasoning_content from the message
-            )
-            or ""
+                # get the message from within the choice
+            ),
+            "reasoning_content",
+            "",
+            # get the reasoning_content from the message
         )
+        or ""
+    )
 
     # Parse & validate (schema optional)
     try:
