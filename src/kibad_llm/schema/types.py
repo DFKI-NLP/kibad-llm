@@ -68,11 +68,17 @@ class EcosystemTypeTermEnum(str, Enum):
     BAUWERKE = "Bauwerke"
     BENTHAL_NORDSEE = "Benthal der Nordsee"
     BENTHAL_OSTSEE = "Benthal der Ostsee"
+    DEPONIEN_RIESELFELDER = "Deponien und Rieselfelder"
     FELDGEHOELZE = "Feldgehölze, Gebüsche, Hecken und Gehölzkulturen"
     FELS_STEILKUESTEN = "Fels- und Steilküsten"
     FELSEN_BLOCK_SCHUTTHALDEN = "Felsen, Block- und Schutthalden, Geröllfelder, offene Bereiche mit sandigem oder bindigem Substrat"
+    FELSEN_SUBALPIN_NIVAL = "Felsen der subalpinen bis nivalen Stufe"
+    FIRN_SCHNEEFELDER_GLETSCHER = "Firn, permanente Schneefelder und Gletscher"
     FLIESSENDE_GEWAESSER = "Fließende Gewässer"
     GEBIRGSRASEN = "Gebirgsrasen (subalpine bis alpine Stufe)"
+    GEBUESCHE_HOCHMONTAN_SUBALPIN = "Gebüsche der hochmontanen bis subalpinen Stufe"
+    GEWAESSER_SUBALPIN_ALPIN = "Gewässer der subalpinen bis alpinen Stufe"
+    GROSSSEGGENRIEDE = "Großseggenriede"
     GRUNDWASSER_HOHLENGEWAESSER = "Grundwasser und Höhlengewässer"
     GRUEN_FREIFLAECHEN = "Grün- und Freiflächen"
     HOCH_ZWISCHEN_UEBERGANGSMOORE = "Hoch-, Zwischen- und Übergangsmoore"
@@ -80,17 +86,28 @@ class EcosystemTypeTermEnum(str, Enum):
     KLEINE_UNBEFESTIGTE_FREIFLAECHEN = "Kleine, unbefestigte Freiflächen des besiedelten Bereiches"
     KUESTENDUENEN = "Küstendünen"
     LAUB_MISCH_WAELDER = "Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent)"
+    MOORE_SUBALPIN_ALPIN = "Moore der subalpinen bis alpinen Stufe"
     NADEL_MISCH_WAELDER = "Nadel(Misch)Wälder und -Forste"
     PELAGIAL_NORDSEE = "Pelagial der Nordsee"
     PELAGIAL_OSTSEE = "Pelagial der Ostsee"
     QUELLEN_KRENAL = "Quellen (inklusive Quellabfluss (Krenal))"
     ROEHRICHTE = "Röhrichte (ohne Brackwasserröhrichte)"
+    SAISONALES_MEEREIS_NORDSEE = "Saisonales Meereis der Nordsee"
+    SAISONALES_MEEREIS_OSTSEE = "Saisonales Meereis der Ostsee"
     SALZGRUENLAND_NORDSEEKUESTE = "Salzgrünland der Nordseeküste (Supralitoral)"
     SALZGRUENLAND_BRACKWASSER = (
         "Salzgrünland, Brackwasserröhrichte und -Hochstaudenfluren des Geolitorals der Ostseeküste"
     )
+    SCHNEEBOEDEN_SCHNEETAELCHEN = "Schneeböden, Schneetälchen"
     STEHENDE_GEWAESSER = "Stehende Gewässer"
+    STEINSCHUTTHALDEN_SCHOTTER_SUBALPIN_ALPIN = (
+        "Steinschutthalden und Schotterflächen der subalpinen bis alpinen Stufe"
+    )
     SANDE_STRAND = "Sände, Sand-, Geröll- und Blockstrände"
+    STAUDEN_LAEGERFLUREN_HOCHMONTAN_ALPIN = (
+        "Stauden- und Lägerfluren der hochmontanen bis alpinen Stufe"
+    )
+    SUBALPINE_WAELDER = "Subalpine Wälder"
     TROCKENRASEN = "Trockenrasen sowie Grünland trockener bis frischer Standorte"
     VERKEHRSANLAGEN_PLAETZE = "Verkehrsanlagen und Plätze"
     WALD_UFERSAEUME = "Wald- und Ufersäume, Staudenfluren"
@@ -99,6 +116,7 @@ class EcosystemTypeTermEnum(str, Enum):
     )
     WALDMAENTEL_VORWAELDER = "Waldmäntel und Vorwälder, spezielle Waldnutzungsformen"
     ZWERGSTRAUCHHEIDEN = "Zwergstrauchheiden"
+    ZWERGSTRAUCHHEIDEN_SUBALPIN_ALPIN = "Zwergstrauchheiden der subalpinen bis alpinen Stufe"
     AECKER_ACKERBRACHEN = "Äcker und Ackerbrachen"
 
 
