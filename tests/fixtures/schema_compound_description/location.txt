@@ -1,4 +1,4 @@
-Beschreibung: Standort mit Land, Bundesland und Ort.
-- country: Land des Studienstandorts | Kardinalität: 0..1 | Typ: string
-- federal_state: Bundesland des Studienstandorts | Kardinalität: 0..1 | Typ: string | Zulässige Werte: Baden-Württemberg; Bayern; Berlin; Brandenburg; Bremen; Hamburg; Hessen; Mecklenburg-Vorpommern; Niedersachsen; Nordrhein-Westfalen; Rheinland-Pfalz; Saarland; Sachsen; Sachsen-Anhalt; Schleswig-Holstein; Thüringen
-- name: Ort (z.B. Stadt, Gemeinde, Region) des Studienstandorts | Kardinalität: 1 | Typ: string
+Beschreibung: Untersuchungsgebiet mit Land, Bundesland und Ort.
+- country: Land des Untersuchungsgebietes | Kardinalität: 0..1 | Typ: string
+- federal_state: Bundesland des Untersuchungsgebietes | Kardinalität: 0..1 | Typ: string | Zulässige Werte: Baden-Württemberg; Bayern; Berlin; Brandenburg; Bremen; Hamburg; Hessen; Mecklenburg-Vorpommern; Niedersachsen; Nordrhein-Westfalen; Rheinland-Pfalz; Saarland; Sachsen; Sachsen-Anhalt; Schleswig-Holstein; Thüringen
+- name: Ort (z.B. Stadt, Gemeinde, Region) des Untersuchungsgebietes | Kardinalität: 0..1 | Typ: string

@@ -38,7 +38,15 @@
   "description": "Boden mit Kategorie und Tiefe.",
   "properties": {
     "name": {
-      "$ref": "#/$defs/SoilNameEnum",
+      "anyOf": [
+        {
+          "$ref": "#/$defs/SoilNameEnum"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
       "description": "Name des Bodentyps"
     },
     "depth": {
@@ -54,9 +62,6 @@
       "description": "Tiefe des Bodens"
     }
   },
-  "required": [
-    "name"
-  ],
   "title": "Soil",
   "type": "object"
 }

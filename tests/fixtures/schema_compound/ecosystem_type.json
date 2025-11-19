@@ -73,7 +73,15 @@
       "description": "Kategorie des Ökosystemtyps"
     },
     "term": {
-      "$ref": "#/$defs/EcosystemTypeTermEnum",
+      "anyOf": [
+        {
+          "$ref": "#/$defs/EcosystemTypeTermEnum"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
       "description": "Name des Ökosystemtyps"
     },
     "description": {
@@ -91,8 +99,7 @@
     }
   },
   "required": [
-    "category",
-    "term"
+    "category"
   ],
   "title": "EcosystemType",
   "type": "object"

@@ -91,7 +91,15 @@
       "description": "In welche der folgenden Kategorien lässt sich die im Text behandelte Ökosystemleistung einordnen?"
     },
     "term": {
-      "$ref": "#/$defs/EcosystemServiceTermEnum",
+      "anyOf": [
+        {
+          "$ref": "#/$defs/EcosystemServiceTermEnum"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
       "description": "Welche konkrete Ökosystemleistung wurde untersucht?"
     },
     "details": {
@@ -104,13 +112,12 @@
         }
       ],
       "default": null,
-      "description": "Details zum direkten Treiber",
+      "description": "Details zur Ökosystemleistung",
       "title": "Details"
     }
   },
   "required": [
-    "category",
-    "term"
+    "category"
   ],
   "title": "EcosystemService",
   "type": "object"

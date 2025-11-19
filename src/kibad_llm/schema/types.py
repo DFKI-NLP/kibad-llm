@@ -363,13 +363,12 @@ class EcosystemStudyFeaturesSimple(BaseEcosystemStudyFeatures):
 class EcosystemType(CompoundFeature):
     """Ökosystemtyp mit Kategorie, Name und Beschreibung."""
 
-    # TODO: or is "category" optional?
     category: EcosystemTypeCategoryEnum = Field(
         ..., alias="Kategorie", description="Kategorie des Ökosystemtyps"
     )
-    # TODO: or is "term" optional?
-    term: EcosystemTypeTermEnum = Field(..., alias="Term", description="Name des Ökosystemtyps")
-    # TODO: or is "description" mandatory?
+    term: EcosystemTypeTermEnum | None = Field(
+        default=None, alias="Term", description="Name des Ökosystemtyps"
+    )
     description: str | None = Field(
         default=None,
         alias="Beschreibung",
@@ -378,21 +377,20 @@ class EcosystemType(CompoundFeature):
 
 
 class Location(CompoundFeature):
-    """Standort mit Land, Bundesland und Ort."""
+    """Untersuchungsgebiet mit Land, Bundesland und Ort."""
 
     country: str | None = Field(
-        default=None, alias="Land", description="Land des Studienstandorts"
+        default=None, alias="Land", description="Land des Untersuchungsgebietes"
     )
     federal_state: LocationFederalStateEnum | None = Field(
         default=None,
         alias="Bundesland",
-        description="Bundesland des Studienstandorts",
+        description="Bundesland des Untersuchungsgebietes",
     )
-    # TODO: or is "name" optional?
-    name: str = Field(
-        ...,
+    name: str | None = Field(
+        default=None,
         alias="Ort",
-        description="Ort (z.B. Stadt, Gemeinde, Region) des Studienstandorts",
+        description="Ort (z.B. Stadt, Gemeinde, Region) des Untersuchungsgebietes",
     )
 
 
@@ -416,21 +414,20 @@ class SpeciesGroupEnum(str, Enum):
 
 
 class Taxa(CompoundFeature):
-    """Art mit wissenschaftlichem und deutschem Namen sowie Gruppierung."""
+    """Art mit wissenschaftlichem und deutschem Namen sowie taxonomischer Gruppe."""
 
-    # TODO: or is "scientific_name" mandatory?
     scientific_name: str | None = Field(
         default=None,
         alias="Wissenschaftlicher Artenname",
         description="Wissenschaftlicher Name der Art",
     )
-    # TODO: or is "german_name" mandatory?
     german_name: str | None = Field(
         default=None,
         alias="Deutscher Artenname",
         description="Deutscher Name der Art",
     )
-    # TODO: Should that be added? It is in the data, but not in the Fragenkatalog google table.
+    # Note: This is excluded since "Artengruppe" is always a "Sammelbegriff".
+    #  It is in the data, but not in the Fragenkatalog google table.
     #  If this gets added, remove the entry from metric.ignore_subfields in the evaluate.yaml config!
     # collective_term: bool = Field(
     #    ...,
@@ -439,11 +436,10 @@ class Taxa(CompoundFeature):
     #    # not sure about the description here, made up by auto-complete
     #    description="Handelt es sich bei dem angegebenen Artnamen um einen Sammelbegriff für mehrere Arten?",
     # )
-    # TODO: or is "species_group" optional?
     species_group: SpeciesGroupEnum = Field(
         ...,
-        alias="Artengruppe",
-        description="Artengruppe der Art",
+        alias="Taxonomische Gruppe",
+        description="Taxonomische Gruppe der Art",
     )
 
 
@@ -479,9 +475,7 @@ class SoilNameEnum(str, Enum):
 class Soil(CompoundFeature):
     """Boden mit Kategorie und Tiefe."""
 
-    # TODO: or is "name" optional?
-    name: SoilNameEnum = Field(..., alias="Name", description="Name des Bodentyps")
-    # TODO: or is "depth" mandatory?
+    name: SoilNameEnum | None = Field(default=None, alias="Name", description="Name des Bodentyps")
     depth: SoilDepthEnum | None = Field(
         default=None, alias="Tiefe", description="Tiefe des Bodens"
     )
@@ -497,19 +491,16 @@ class SuccessEnum(str, Enum):
 class ConservationArea(CompoundFeature):
     """Schutzgebiet mit Name, Beschreibung und Erfolg."""
 
-    # TODO: or is "name" optional?
-    name: str = Field(
-        ...,
+    name: str | None = Field(
+        default=None,
         alias="Name",
         description="Name des Schutzgebiets",
     )
-    # TODO: or is "description" mandatory?
     description: str | None = Field(
         default=None,
         alias="Beschreibung",
         description="Charakterisierung des Schutzgebiets",
     )
-    # TODO: or is "success" optional?
     success: SuccessEnum = Field(
         ...,
         alias="Erfolg",
@@ -520,13 +511,11 @@ class ConservationArea(CompoundFeature):
 class ManagementMeasure(CompoundFeature):
     """Bewirtschaftungsmaßnahme mit Beschreibung und Erfolg."""
 
-    # TODO: or is "description" optional?
     description: str = Field(
         ...,
         alias="Beschreibung",
         description="Beschreibung der Bewirtschaftungsmaßnahme",
     )
-    # TODO: or is "success" optional?
     success: SuccessEnum = Field(
         ...,
         alias="Erfolg",
@@ -537,13 +526,11 @@ class ManagementMeasure(CompoundFeature):
 class ImpulseMeasure(CompoundFeature):
     """Einmalige Maßnahme mit Beschreibung und Erfolg."""
 
-    # TODO: or is "description" optional?
     description: str = Field(
         ...,
         alias="Beschreibung",
         description="Beschreibung der einmaligen Maßnahme",
     )
-    # TODO: or is "success" optional?
     success: SuccessEnum = Field(
         ...,
         alias="Erfolg",
@@ -583,7 +570,6 @@ class DirectDriver(CompoundFeature):
         alias="Kategorie",
         description="Zu welcher der folgenden Kategorien lässt sich der direkte Treiber zuordnen?",
     )
-    # TODO: or is "details" mandatory?
     details: str | None = Field(
         default=None,
         alias="Details",
@@ -599,7 +585,6 @@ class IndirectDriver(CompoundFeature):
         alias="Kategorie",
         description="Zu welcher der folgenden Kategorien lässt sich der indirekte Treiber zuordnen?",
     )
-    # TODO: or is "details" mandatory?
     details: str | None = Field(
         default=None,
         alias="Details",
@@ -717,23 +702,20 @@ class EcosystemServiceTermEnum(str, Enum):
 class EcosystemService(CompoundFeature):
     """Ökosystemdienstleistung mit Kategorie, Term und Details."""
 
-    # TODO: or is "category" optional?
     category: EcosystemServiceCategoryEnum = Field(
         ...,
         alias="Kategorie",
         description="In welche der folgenden Kategorien lässt sich die im Text behandelte Ökosystemleistung einordnen?",
     )
-    # TODO: or is "term" optional?
-    term: EcosystemServiceTermEnum = Field(
-        ...,
+    term: EcosystemServiceTermEnum | None = Field(
+        default=None,
         alias="Term",
         description="Welche konkrete Ökosystemleistung wurde untersucht?",
     )
-    # TODO: or is "details" mandatory?
     details: str | None = Field(
         default=None,
         alias="Details",
-        description="Details zum direkten Treiber",
+        description="Details zur Ökosystemleistung",
     )
 
 
@@ -762,8 +744,8 @@ class EcosystemStudyFeaturesCompoundsOnly(BaseEcosystemStudyFeatures):
     )
     location: list[Location] = Field(
         default_factory=list,
-        alias="Standorte",
-        description="Welche Standorte werden in der Studie untersucht?",
+        alias="Untersuchungsgebiete",
+        description="Welche Untersuchungsgebiete werden in der Studie untersucht?",
     )
     taxa: list[Taxa] = Field(
         default_factory=list,

@@ -15,9 +15,17 @@
   "description": "Schutzgebiet mit Name, Beschreibung und Erfolg.",
   "properties": {
     "name": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
       "description": "Name des Schutzgebiets",
-      "title": "Name",
-      "type": "string"
+      "title": "Name"
     },
     "description": {
       "anyOf": [
@@ -38,7 +46,6 @@
     }
   },
   "required": [
-    "name",
     "success"
   ],
   "title": "ConservationArea",

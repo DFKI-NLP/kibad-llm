@@ -24,7 +24,7 @@
     }
   },
   "additionalProperties": false,
-  "description": "Standort mit Land, Bundesland und Ort.",
+  "description": "Untersuchungsgebiet mit Land, Bundesland und Ort.",
   "properties": {
     "country": {
       "anyOf": [
@@ -36,7 +36,7 @@
         }
       ],
       "default": null,
-      "description": "Land des Studienstandorts",
+      "description": "Land des Untersuchungsgebietes",
       "title": "Country"
     },
     "federal_state": {
@@ -49,17 +49,22 @@
         }
       ],
       "default": null,
-      "description": "Bundesland des Studienstandorts"
+      "description": "Bundesland des Untersuchungsgebietes"
     },
     "name": {
-      "description": "Ort (z.B. Stadt, Gemeinde, Region) des Studienstandorts",
-      "title": "Name",
-      "type": "string"
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Ort (z.B. Stadt, Gemeinde, Region) des Untersuchungsgebietes",
+      "title": "Name"
     }
   },
-  "required": [
-    "name"
-  ],
   "title": "Location",
   "type": "object"
 }

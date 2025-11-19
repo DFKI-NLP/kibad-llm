@@ -5,9 +5,17 @@
       "description": "Schutzgebiet mit Name, Beschreibung und Erfolg.",
       "properties": {
         "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
           "description": "Name des Schutzgebiets",
-          "title": "Name",
-          "type": "string"
+          "title": "Name"
         },
         "description": {
           "anyOf": [
@@ -28,7 +36,6 @@
         }
       },
       "required": [
-        "name",
         "success"
       ],
       "title": "ConservationArea",
@@ -84,7 +91,15 @@
           "description": "In welche der folgenden Kategorien lässt sich die im Text behandelte Ökosystemleistung einordnen?"
         },
         "term": {
-          "$ref": "#/$defs/EcosystemServiceTermEnum",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EcosystemServiceTermEnum"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
           "description": "Welche konkrete Ökosystemleistung wurde untersucht?"
         },
         "details": {
@@ -97,13 +112,12 @@
             }
           ],
           "default": null,
-          "description": "Details zum direkten Treiber",
+          "description": "Details zur Ökosystemleistung",
           "title": "Details"
         }
       },
       "required": [
-        "category",
-        "term"
+        "category"
       ],
       "title": "EcosystemService",
       "type": "object"
@@ -199,7 +213,15 @@
           "description": "Kategorie des Ökosystemtyps"
         },
         "term": {
-          "$ref": "#/$defs/EcosystemTypeTermEnum",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EcosystemTypeTermEnum"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
           "description": "Name des Ökosystemtyps"
         },
         "description": {
@@ -217,8 +239,7 @@
         }
       },
       "required": [
-        "category",
-        "term"
+        "category"
       ],
       "title": "EcosystemType",
       "type": "object"
@@ -349,7 +370,7 @@
     },
     "Location": {
       "additionalProperties": false,
-      "description": "Standort mit Land, Bundesland und Ort.",
+      "description": "Untersuchungsgebiet mit Land, Bundesland und Ort.",
       "properties": {
         "country": {
           "anyOf": [
@@ -361,7 +382,7 @@
             }
           ],
           "default": null,
-          "description": "Land des Studienstandorts",
+          "description": "Land des Untersuchungsgebietes",
           "title": "Country"
         },
         "federal_state": {
@@ -374,17 +395,22 @@
             }
           ],
           "default": null,
-          "description": "Bundesland des Studienstandorts"
+          "description": "Bundesland des Untersuchungsgebietes"
         },
         "name": {
-          "description": "Ort (z.B. Stadt, Gemeinde, Region) des Studienstandorts",
-          "title": "Name",
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Ort (z.B. Stadt, Gemeinde, Region) des Untersuchungsgebietes",
+          "title": "Name"
         }
       },
-      "required": [
-        "name"
-      ],
       "title": "Location",
       "type": "object"
     },
@@ -436,7 +462,15 @@
       "description": "Boden mit Kategorie und Tiefe.",
       "properties": {
         "name": {
-          "$ref": "#/$defs/SoilNameEnum",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SoilNameEnum"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
           "description": "Name des Bodentyps"
         },
         "depth": {
@@ -452,9 +486,6 @@
           "description": "Tiefe des Bodens"
         }
       },
-      "required": [
-        "name"
-      ],
       "title": "Soil",
       "type": "object"
     },
@@ -525,7 +556,7 @@
     },
     "Taxa": {
       "additionalProperties": false,
-      "description": "Art mit wissenschaftlichem und deutschem Namen sowie Gruppierung.",
+      "description": "Art mit wissenschaftlichem und deutschem Namen sowie taxonomischer Gruppe.",
       "properties": {
         "scientific_name": {
           "anyOf": [
@@ -555,7 +586,7 @@
         },
         "species_group": {
           "$ref": "#/$defs/SpeciesGroupEnum",
-          "description": "Artengruppe der Art"
+          "description": "Taxonomische Gruppe der Art"
         }
       },
       "required": [
@@ -577,7 +608,7 @@
       "type": "array"
     },
     "location": {
-      "description": "Welche Standorte werden in der Studie untersucht?",
+      "description": "Welche Untersuchungsgebiete werden in der Studie untersucht?",
       "items": {
         "$ref": "#/$defs/Location"
       },
