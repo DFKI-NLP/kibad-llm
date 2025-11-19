@@ -21,6 +21,9 @@ defaults:
   # The extractor gets the 'text' and 'text_id' as positional parameters
   # and needs to return a dictionary with the extracted data.
   - extractor: simple_with_schema
+  # experiment configs allow for version control of specific hyperparameters
+  # e.g. best hyperparameters for given model and taskmodule
+  - experiment: null
 
 print_config: True
 
