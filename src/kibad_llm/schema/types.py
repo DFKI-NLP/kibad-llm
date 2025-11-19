@@ -366,6 +366,8 @@ class EcosystemType(CompoundFeature):
     category: EcosystemTypeCategoryEnum = Field(
         ..., alias="Kategorie", description="Kategorie des Ökosystemtyps"
     )
+    # Note (JuliaEllerbrok): Eine Zuordnung von Term sollte eigentlich immer möglich sein,
+    # aber sicherheitshalber würde ich "optional" setzen.
     term: EcosystemTypeTermEnum | None = Field(
         default=None, alias="Term", description="Name des Ökosystemtyps"
     )
