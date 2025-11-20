@@ -8,7 +8,7 @@ from omegaconf import DictConfig
 import pytest
 
 from kibad_llm.config import PROJ_ROOT
-from tests.conftest import cfg_global
+from tests.conftest import WRITE_FIXTURE_DATA, cfg_global
 
 # strip extension to have nicer logging output, e.g. tests/test_extractors.py::test_extractor[simple]
 # and exclude folders (without extension) and helper configs starting with "_"
@@ -20,9 +20,16 @@ AVAILABLE_EXTRACTORS = [
 
 
 @pytest.fixture(scope="function", params=AVAILABLE_EXTRACTORS)
-def cfg_predict_extractor(tmp_path, request) -> DictConfig:  # type: ignore
+def extractor_name(request) -> str:
+    return request.param
+
+
+@pytest.fixture(scope="function")
+def cfg_predict_extractor(tmp_path, extractor_name) -> DictConfig:  # type: ignore
     cfg = cfg_global(
-        out_dir=tmp_path, overrides=[f"extractor={request.param}"], config_name="predict.yaml"
+        out_dir=tmp_path,
+        overrides=[f"extractor={extractor_name}", "store_text_in_predictions=false"],
+        config_name="predict.yaml",
     )
 
     yield cfg
@@ -31,7 +38,7 @@ def cfg_predict_extractor(tmp_path, request) -> DictConfig:  # type: ignore
 
 
 @pytest.mark.slow
-def test_extractor(tmp_path, cfg_predict_extractor):
+def test_extractor(tmp_path, cfg_predict_extractor, extractor_name):
 
     HydraConfig().set_config(cfg_predict_extractor)
 
@@ -46,7 +53,16 @@ def test_extractor(tmp_path, cfg_predict_extractor):
     extractor = instantiate(cfg_predict_extractor.extractor, _convert_="all")
     result = extractor(text_id=file_name, text=text)
 
-    expected_result_path = PROJ_ROOT / "tests" / "fixtures" / "results" / f"{file_name}.json"
+    expected_result_path = (
+        PROJ_ROOT / "tests" / "fixtures" / "extractor" / f"{extractor_name}.{file_name}.json"
+    )
+    if WRITE_FIXTURE_DATA:
+        # create directory if it does not exist
+        os.makedirs(os.path.dirname(expected_result_path), exist_ok=True)
+        # write fixture data
+        with open(expected_result_path, "w") as f:
+            json.dump(result, f, indent=2)
+
     with open(expected_result_path) as f:
         expected_result = json.load(f)
     # just check keys since the actual values are not deterministic
