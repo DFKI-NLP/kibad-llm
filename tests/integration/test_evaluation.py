@@ -39,7 +39,14 @@ def cfg_evaluate(tmp_path, metric_name) -> DictConfig:  # type: ignore
         cfg.predictions_file = str(PREDICTIONS_FILE)
         cfg.references_file = str(REFERENCES_FILE)
         # this produces non-zero results
-        cfg.metric.field = "habitat"
+        if metric_name in ["confusion_matrix", "f1"]:
+            cfg.metric.field = "habitat"
+        elif metric_name == "f1_collection":
+            cfg.metric.fields = ["habitat", "landuse"]
+        else:
+            raise ValueError(
+                f"Unexpected metric name: {metric_name}. Please update the test case."
+            )
 
     yield cfg
 
@@ -66,6 +73,11 @@ def test_evaluate(tmp_path, cfg_evaluate, metric_name):
                 "Boden": 1,
                 "Wald": 1,
             },
+        }
+    elif metric_name == "f1_collection":
+        assert metric_scores == {
+            "habitat": {"f1": pytest.approx(0.545454545), "precision": 0.375, "recall": 1.0},
+            "landuse": {"f1": 0.0, "precision": 0.0, "recall": 0.0},
         }
     else:
         raise ValueError(f"Unexpected metric name: {metric_name}. Please update the test case.")
