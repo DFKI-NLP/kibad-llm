@@ -1,5 +1,35 @@
 # F1 score metric for single- or multi-label classification for multiple fields.
 
 _target_: kibad_llm.metrics.MicroF1MetricCollection
-fields: ???  # the fields in the prediction and reference to compute the F1 score on
+# the fields in the prediction and reference to compute the F1 score on
+fields:
+ - habitat
+ - natural_region
+ - climate
+ - landuse
+ - spatial_extent
+ - spatial_resolution
+ - spatial_measurements
+ - temporal_extent
+ - temporal_extent_unit
+ - temporal_resolution
+ - temporal_measurements
+ - start_year
+ - end_year
+ - method
+ - study_type
+ - project
+ - biodiversity_level
+ - biodiversity_variable
+ - transformation_potential
+ - ecosystem_type
+ - location
+ - taxa
+ - soil
+ - conservation_area
+ - management_measure
+ - impulse_measure
+ - direct_driver
+ - indirect_driver
+ - ecosystem_service
 format_as_markdown: true
