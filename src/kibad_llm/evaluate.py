@@ -93,7 +93,7 @@ def evaluate(cfg: DictConfig) -> dict[str, Any]:
     )
     metric_dict = metric.compute()
 
-    logger.info(f"Evaluation results:\n{json.dumps(metric_dict, indent=2)}")
+    metric.show_result(metric_dict)
 
     return metric_dict
 
