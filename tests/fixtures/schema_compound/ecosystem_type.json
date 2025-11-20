@@ -1,0 +1,106 @@
+{
+  "$defs": {
+    "EcosystemTypeCategoryEnum": {
+      "enum": [
+        "I Biotoptypengruppen der Meere und Küsten",
+        "II Biotoptypengruppen der Binnengewässer",
+        "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes",
+        "IV Technische Biotoptypengruppen",
+        "V Biotoptypengruppen mit Schwerpunkt in den Alpen",
+        "VI Weitere"
+      ],
+      "title": "EcosystemTypeCategoryEnum",
+      "type": "string"
+    },
+    "EcosystemTypeTermEnum": {
+      "enum": [
+        "Anthropogene Rohbodenstandorte und Ruderalfluren",
+        "Bauwerke",
+        "Benthal der Nordsee",
+        "Benthal der Ostsee",
+        "Deponien und Rieselfelder",
+        "Feldgehölze, Gebüsche, Hecken und Gehölzkulturen",
+        "Fels- und Steilküsten",
+        "Felsen, Block- und Schutthalden, Geröllfelder, offene Bereiche mit sandigem oder bindigem Substrat",
+        "Felsen der subalpinen bis nivalen Stufe",
+        "Firn, permanente Schneefelder und Gletscher",
+        "Fließende Gewässer",
+        "Gebirgsrasen (subalpine bis alpine Stufe)",
+        "Gebüsche der hochmontanen bis subalpinen Stufe",
+        "Gewässer der subalpinen bis alpinen Stufe",
+        "Großseggenriede",
+        "Grundwasser und Höhlengewässer",
+        "Grün- und Freiflächen",
+        "Hoch-, Zwischen- und Übergangsmoore",
+        "Höhlen (einschließlich Stollen, Brunnenschächte etc.)",
+        "Kleine, unbefestigte Freiflächen des besiedelten Bereiches",
+        "Küstendünen",
+        "Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent)",
+        "Moore der subalpinen bis alpinen Stufe",
+        "Nadel(Misch)Wälder und -Forste",
+        "Pelagial der Nordsee",
+        "Pelagial der Ostsee",
+        "Quellen (inklusive Quellabfluss (Krenal))",
+        "Röhrichte (ohne Brackwasserröhrichte)",
+        "Saisonales Meereis der Nordsee",
+        "Saisonales Meereis der Ostsee",
+        "Salzgrünland der Nordseeküste (Supralitoral)",
+        "Salzgrünland, Brackwasserröhrichte und -Hochstaudenfluren des Geolitorals der Ostseeküste",
+        "Schneeböden, Schneetälchen",
+        "Stehende Gewässer",
+        "Steinschutthalden und Schotterflächen der subalpinen bis alpinen Stufe",
+        "Sände, Sand-, Geröll- und Blockstrände",
+        "Stauden- und Lägerfluren der hochmontanen bis alpinen Stufe",
+        "Subalpine Wälder",
+        "Trockenrasen sowie Grünland trockener bis frischer Standorte",
+        "Verkehrsanlagen und Plätze",
+        "Wald- und Ufersäume, Staudenfluren",
+        "Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte",
+        "Waldmäntel und Vorwälder, spezielle Waldnutzungsformen",
+        "Zwergstrauchheiden",
+        "Zwergstrauchheiden der subalpinen bis alpinen Stufe",
+        "Äcker und Ackerbrachen"
+      ],
+      "title": "EcosystemTypeTermEnum",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Ökosystemtyp mit Kategorie, Name und Beschreibung.",
+  "properties": {
+    "category": {
+      "$ref": "#/$defs/EcosystemTypeCategoryEnum",
+      "description": "Kategorie des Ökosystemtyps"
+    },
+    "term": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/EcosystemTypeTermEnum"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Name des Ökosystemtyps"
+    },
+    "description": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Beschreibung des Ökosystemtyps",
+      "title": "Description"
+    }
+  },
+  "required": [
+    "category"
+  ],
+  "title": "EcosystemType",
+  "type": "object"
+}

@@ -1,0 +1,4 @@
+Beschreibung: Art mit wissenschaftlichem und deutschem Namen sowie taxonomischer Gruppe.
+- scientific_name: Wissenschaftlicher Name der Art | Kardinalität: 0..1 | Typ: string
+- german_name: Deutscher Name der Art | Kardinalität: 0..1 | Typ: string
+- species_group: Taxonomische Gruppe der Art | Kardinalität: 1 | Typ: string | Zulässige Werte: Amphibien und Reptilien; Andere; Andere Pflanzen; Andere Wirbellose; Archaeen; Bakterien; Fische; Flechten; Gefäßpflanzen; Insekten; Moose; Pilze; Protisten; Protozoen; Säugetiere; Vögel

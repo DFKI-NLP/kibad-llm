@@ -49,3 +49,9 @@ metric:
   # for compound entries, we may ignore certain subfields during evaluation
   ignore_subfields:
     ecosystem_type: ["description"]
+    taxa: ["collective_term"]
+    conservation_area: ["description"]
+    direct_driver: ["details"]
+    indirect_driver: ["details"]
+    # Note: we do not ignore `description` of `management_measure`/`impulse_measure`
+    #  since it holds its main content (and is mandatory)

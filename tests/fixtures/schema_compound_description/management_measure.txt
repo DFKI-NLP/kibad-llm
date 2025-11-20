@@ -1,0 +1,3 @@
+Beschreibung: Bewirtschaftungsmaßnahme mit Beschreibung und Erfolg.
+- description: Beschreibung der Bewirtschaftungsmaßnahme | Kardinalität: 1 | Typ: string
+- success: Hatte die Bewirtschaftung als Maßnahme für die Biodiversität einen messbaren Effekt?  | Kardinalität: 1 | Typ: string | Zulässige Werte: ja; nein; teilweise; unbekannt

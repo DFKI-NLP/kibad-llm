@@ -1,0 +1,33 @@
+{
+  "$defs": {
+    "SuccessEnum": {
+      "enum": [
+        "ja",
+        "nein",
+        "teilweise",
+        "unbekannt"
+      ],
+      "title": "SuccessEnum",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Einmalige Maßnahme mit Beschreibung und Erfolg.",
+  "properties": {
+    "description": {
+      "description": "Beschreibung der einmaligen Maßnahme",
+      "title": "Description",
+      "type": "string"
+    },
+    "success": {
+      "$ref": "#/$defs/SuccessEnum",
+      "description": "Hatte die einmalige Maßnahme für die Biodiversität einen messbaren Effekt? "
+    }
+  },
+  "required": [
+    "description",
+    "success"
+  ],
+  "title": "ImpulseMeasure",
+  "type": "object"
+}

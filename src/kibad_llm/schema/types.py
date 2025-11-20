@@ -10,6 +10,13 @@ class BaseEcosystemStudyFeatures(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
 
+class CompoundFeature(BaseModel):
+    """Basis-Klasse für komplexe Merkmale mit Unterfeldern."""
+
+    # do not allow extra fields per default
+    model_config = ConfigDict(extra="forbid")
+
+
 class HabitatEnum(str, Enum):
     AGRAR_UND_OFFENLAND = "Agrar- und Offenland"
     BINNENGEWAESSER_UND_AUEN = "Binnengewässer und Auen"
@@ -28,7 +35,6 @@ class NaturalRegionEnum(str, Enum):
     SCHICHTSTUFENLAND_OBERRHEINGRABEN = "Schichtstufenland beidseits des Oberrheingrabens"
 
 
-# this is not yet used (compounds are not yet implemented)
 class LocationFederalStateEnum(str, Enum):
     BADEN_WUERTTEMBERG = "Baden-Württemberg"
     BAYERN = "Bayern"
@@ -48,7 +54,6 @@ class LocationFederalStateEnum(str, Enum):
     THUERINGEN = "Thüringen"
 
 
-# this is not yet used (compound)
 class EcosystemTypeCategoryEnum(str, Enum):
     I_MEERE_UND_KUESTEN = "I Biotoptypengruppen der Meere und Küsten"
     II_BINNENGEWAESSER = "II Biotoptypengruppen der Binnengewässer"
@@ -58,17 +63,22 @@ class EcosystemTypeCategoryEnum(str, Enum):
     VI_WEITERE = "VI Weitere"
 
 
-# this is not yet used (compound)
 class EcosystemTypeTermEnum(str, Enum):
     ANTHROPOGENE_ROHBODEN = "Anthropogene Rohbodenstandorte und Ruderalfluren"
     BAUWERKE = "Bauwerke"
     BENTHAL_NORDSEE = "Benthal der Nordsee"
     BENTHAL_OSTSEE = "Benthal der Ostsee"
+    DEPONIEN_RIESELFELDER = "Deponien und Rieselfelder"
     FELDGEHOELZE = "Feldgehölze, Gebüsche, Hecken und Gehölzkulturen"
     FELS_STEILKUESTEN = "Fels- und Steilküsten"
     FELSEN_BLOCK_SCHUTTHALDEN = "Felsen, Block- und Schutthalden, Geröllfelder, offene Bereiche mit sandigem oder bindigem Substrat"
+    FELSEN_SUBALPIN_NIVAL = "Felsen der subalpinen bis nivalen Stufe"
+    FIRN_SCHNEEFELDER_GLETSCHER = "Firn, permanente Schneefelder und Gletscher"
     FLIESSENDE_GEWAESSER = "Fließende Gewässer"
     GEBIRGSRASEN = "Gebirgsrasen (subalpine bis alpine Stufe)"
+    GEBUESCHE_HOCHMONTAN_SUBALPIN = "Gebüsche der hochmontanen bis subalpinen Stufe"
+    GEWAESSER_SUBALPIN_ALPIN = "Gewässer der subalpinen bis alpinen Stufe"
+    GROSSSEGGENRIEDE = "Großseggenriede"
     GRUNDWASSER_HOHLENGEWAESSER = "Grundwasser und Höhlengewässer"
     GRUEN_FREIFLAECHEN = "Grün- und Freiflächen"
     HOCH_ZWISCHEN_UEBERGANGSMOORE = "Hoch-, Zwischen- und Übergangsmoore"
@@ -76,17 +86,28 @@ class EcosystemTypeTermEnum(str, Enum):
     KLEINE_UNBEFESTIGTE_FREIFLAECHEN = "Kleine, unbefestigte Freiflächen des besiedelten Bereiches"
     KUESTENDUENEN = "Küstendünen"
     LAUB_MISCH_WAELDER = "Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent)"
+    MOORE_SUBALPIN_ALPIN = "Moore der subalpinen bis alpinen Stufe"
     NADEL_MISCH_WAELDER = "Nadel(Misch)Wälder und -Forste"
     PELAGIAL_NORDSEE = "Pelagial der Nordsee"
     PELAGIAL_OSTSEE = "Pelagial der Ostsee"
     QUELLEN_KRENAL = "Quellen (inklusive Quellabfluss (Krenal))"
     ROEHRICHTE = "Röhrichte (ohne Brackwasserröhrichte)"
+    SAISONALES_MEEREIS_NORDSEE = "Saisonales Meereis der Nordsee"
+    SAISONALES_MEEREIS_OSTSEE = "Saisonales Meereis der Ostsee"
     SALZGRUENLAND_NORDSEEKUESTE = "Salzgrünland der Nordseeküste (Supralitoral)"
     SALZGRUENLAND_BRACKWASSER = (
         "Salzgrünland, Brackwasserröhrichte und -Hochstaudenfluren des Geolitorals der Ostseeküste"
     )
+    SCHNEEBOEDEN_SCHNEETAELCHEN = "Schneeböden, Schneetälchen"
     STEHENDE_GEWAESSER = "Stehende Gewässer"
+    STEINSCHUTTHALDEN_SCHOTTER_SUBALPIN_ALPIN = (
+        "Steinschutthalden und Schotterflächen der subalpinen bis alpinen Stufe"
+    )
     SANDE_STRAND = "Sände, Sand-, Geröll- und Blockstrände"
+    STAUDEN_LAEGERFLUREN_HOCHMONTAN_ALPIN = (
+        "Stauden- und Lägerfluren der hochmontanen bis alpinen Stufe"
+    )
+    SUBALPINE_WAELDER = "Subalpine Wälder"
     TROCKENRASEN = "Trockenrasen sowie Grünland trockener bis frischer Standorte"
     VERKEHRSANLAGEN_PLAETZE = "Verkehrsanlagen und Plätze"
     WALD_UFERSAEUME = "Wald- und Ufersäume, Staudenfluren"
@@ -95,6 +116,7 @@ class EcosystemTypeTermEnum(str, Enum):
     )
     WALDMAENTEL_VORWAELDER = "Waldmäntel und Vorwälder, spezielle Waldnutzungsformen"
     ZWERGSTRAUCHHEIDEN = "Zwergstrauchheiden"
+    ZWERGSTRAUCHHEIDEN_SUBALPIN_ALPIN = "Zwergstrauchheiden der subalpinen bis alpinen Stufe"
     AECKER_ACKERBRACHEN = "Äcker und Ackerbrachen"
 
 
@@ -312,12 +334,6 @@ class EcosystemStudyFeaturesWithoutCompounds(BaseEcosystemStudyFeatures):
         description="In welche der folgenden Kategorien lässt sich die im Text behandelte Transformation einordnen? ",
     )
 
-    model_config = ConfigDict(
-        # validate_by_name=True,
-        # use_enum_values=True,
-        extra="forbid",
-    )
-
 
 class EcosystemStudyFeaturesSimple(BaseEcosystemStudyFeatures):
     """Angaben zu den ökosystembezogenen Studienmerkmalen."""
@@ -343,49 +359,371 @@ class EcosystemStudyFeaturesSimple(BaseEcosystemStudyFeatures):
         description="Welche Landnutzung wird im oder nahe des Untersuchungsgebietes betrieben? In welche der folgenden Kategorien fällt die Nutzung?",
     )
 
-    model_config = ConfigDict(
-        # validate_by_name=True,
-        # use_enum_values=True,
-        extra="forbid",
-    )
 
-
-class EcosystemType(BaseModel):
-    """Ökosystemtyp mit Kategorie und Term."""
+class EcosystemType(CompoundFeature):
+    """Ökosystemtyp mit Kategorie, Name und Beschreibung."""
 
     category: EcosystemTypeCategoryEnum = Field(
-        ..., alias="Kategorie", description="Kategorie des Biotoptyps"
+        ..., alias="Kategorie", description="Kategorie des Ökosystemtyps"
     )
-    term: EcosystemTypeTermEnum = Field(..., alias="Term", description="Spezifischer Biotoptyp")
-
-    model_config = ConfigDict(
-        # validate_by_name=True,
-        # use_enum_values=True,
-        extra="forbid",
+    # Note (JuliaEllerbrok): Eine Zuordnung von Term sollte eigentlich immer möglich sein,
+    # aber sicherheitshalber würde ich "optional" setzen.
+    term: EcosystemTypeTermEnum | None = Field(
+        default=None, alias="Term", description="Name des Ökosystemtyps"
+    )
+    description: str | None = Field(
+        default=None,
+        alias="Beschreibung",
+        description="Beschreibung des Ökosystemtyps",
     )
 
 
-class Location(BaseModel):
-    """Standort mit Land, Bundesland und Ort."""
+class Location(CompoundFeature):
+    """Untersuchungsgebiet mit Land, Bundesland und Ort."""
 
     country: str | None = Field(
-        default=None, alias="Land", description="Land des Studienstandorts"
+        default=None, alias="Land", description="Land des Untersuchungsgebietes"
     )
     federal_state: LocationFederalStateEnum | None = Field(
         default=None,
         alias="Bundesland",
-        description="Bundesland des Studienstandorts",
+        description="Bundesland des Untersuchungsgebietes",
     )
-    name: str = Field(
-        ...,
+    name: str | None = Field(
+        default=None,
         alias="Ort",
-        description="Ort (z.B. Stadt, Gemeinde, Region) des Studienstandorts",
+        description="Ort (z.B. Stadt, Gemeinde, Region) des Untersuchungsgebietes",
     )
 
-    model_config = ConfigDict(
-        # validate_by_name=True,
-        # use_enum_values=True,
-        extra="forbid",
+
+class SpeciesGroupEnum(str, Enum):
+    AMPHIBIANS_AND_REPTILES = "Amphibien und Reptilien"
+    OTHERS = "Andere"
+    OTHER_PLANTS = "Andere Pflanzen"
+    OTHER_INVERTEBRATES = "Andere Wirbellose"
+    ARCHAEA = "Archaeen"
+    BACTERIA = "Bakterien"
+    FISHES = "Fische"
+    LICHENS = "Flechten"
+    VASCULAR_PLANTS = "Gefäßpflanzen"
+    INSECTS = "Insekten"
+    MOSSES = "Moose"
+    FUNGI = "Pilze"
+    PROTISTS = "Protisten"
+    PROTOZOA = "Protozoen"
+    MAMMALS = "Säugetiere"
+    BIRDS = "Vögel"
+
+
+class Taxa(CompoundFeature):
+    """Art mit wissenschaftlichem und deutschem Namen sowie taxonomischer Gruppe."""
+
+    scientific_name: str | None = Field(
+        default=None,
+        alias="Wissenschaftlicher Artenname",
+        description="Wissenschaftlicher Name der Art",
+    )
+    german_name: str | None = Field(
+        default=None,
+        alias="Deutscher Artenname",
+        description="Deutscher Name der Art",
+    )
+    # Note: This is excluded since "Artengruppe" is always a "Sammelbegriff".
+    #  It is in the data, but not in the Fragenkatalog google table.
+    #  If this gets added, remove the entry from metric.ignore_subfields in the evaluate.yaml config!
+    # collective_term: bool = Field(
+    #    ...,
+    #    # not sure about the alias here, made up by auto-complete
+    #    alias="Sammelbegriff",
+    #    # not sure about the description here, made up by auto-complete
+    #    description="Handelt es sich bei dem angegebenen Artnamen um einen Sammelbegriff für mehrere Arten?",
+    # )
+    species_group: SpeciesGroupEnum = Field(
+        ...,
+        alias="Taxonomische Gruppe",
+        description="Taxonomische Gruppe der Art",
+    )
+
+
+class SoilDepthEnum(str, Enum):
+    OBERBODEN = "Oberboden"
+    STREUSCHICHT = "Streuschicht"
+    UNBEKANNT = "Unbekannt"
+    UNTERBODEN = "Unterboden"
+
+
+class SoilNameEnum(str, Enum):
+    BERGBAUFLAECHEN = "Bergbauflächen"
+    BRAUNER_LOESS = "Braune Lössböden, einschließlich Sandlöss und lössähnliche Sedimente"
+    GESCHIEBELEHM = "Böden aus Geschiebelehm und Geschiebemergel mit sandiger Deckschicht"
+    KALK_MERGEL_DOLIMITGESTEIN = "Böden aus Kalk-, Mergel- und Dolomitgesteinen"
+    TON_SCHLUFFSCHIEFER = "Böden aus Ton- und Schluffschiefern"
+    KALKFREIE_SEDIMENTGESTEINE = "Böden aus kalkfreien Sedimentgesteinen und Quarziten"
+    SAURE_MAGMATISCHE_GESTEINE = (
+        "Böden aus sauren und intermediären magamatischen und metamorphen Gesteinen"
+    )
+    BASISCHE_INTERMEDIARE_GESTEINE = (
+        "Böden aus basischen und intermediären magmatischen und metamorphen Gesteinen"
+    )
+    FLUSSAUEN = "Böden der Flussauen"
+    FLUSSTERASSEN_HOCHFLUTSEDIMENTE = "Böden der Flussterassen und Hochflutsedimente"
+    HOCHGEBIRGE = "Boden des Hochgebirges"
+    LOESSVERMISCHTE_TERTIAERABLAGERUNGEN = "Böden aus lössvermischten Tertiärablagerungen"
+    NIEDERUNGEN_URSTROMTAELER = "Böden der Niederungen und Urstromtäler"
+    GEWAESSERFLAECHEN = "Gewässerflächen"
+    HOCH_NIEDERMOOR = "Hoch- und Niedermoorböden"
+    MARSCH = "Marschböden"
+    SCHWARZER_LOESS = "Schwarze Lössböden"
+    SIEDLUNGSFLAECHEN = "Siedlungsflächen"
+    STAUNASSER_LOESS = "Staunasse Lössböden"
+    TROCKENER_SAND = "Trockene Sandböden"
+    WATT = "Wattböden"
+
+
+class Soil(CompoundFeature):
+    """Boden mit Kategorie und Tiefe."""
+
+    name: SoilNameEnum | None = Field(default=None, alias="Name", description="Name des Bodentyps")
+    depth: SoilDepthEnum | None = Field(
+        default=None, alias="Tiefe", description="Tiefe des Bodens"
+    )
+
+
+class SuccessEnum(str, Enum):
+    JA = "ja"
+    NEIN = "nein"
+    TEILWEISE = "teilweise"
+    UNBEKANNT = "unbekannt"
+
+
+class ConservationArea(CompoundFeature):
+    """Schutzgebiet mit Name, Beschreibung und Erfolg."""
+
+    name: str | None = Field(
+        default=None,
+        alias="Name",
+        description="Name des Schutzgebiets",
+    )
+    description: str | None = Field(
+        default=None,
+        alias="Beschreibung",
+        description="Charakterisierung des Schutzgebiets",
+    )
+    success: SuccessEnum = Field(
+        ...,
+        alias="Erfolg",
+        description="Hatte das Schutzgebiet einen messbaren Effekt auf die Biodiversität?",
+    )
+
+
+class ManagementMeasure(CompoundFeature):
+    """Bewirtschaftungsmaßnahme mit Beschreibung und Erfolg."""
+
+    description: str = Field(
+        ...,
+        alias="Beschreibung",
+        description="Beschreibung der Bewirtschaftungsmaßnahme",
+    )
+    success: SuccessEnum = Field(
+        ...,
+        alias="Erfolg",
+        description="Hatte die Bewirtschaftung als Maßnahme für die Biodiversität einen messbaren Effekt? ",
+    )
+
+
+class ImpulseMeasure(CompoundFeature):
+    """Einmalige Maßnahme mit Beschreibung und Erfolg."""
+
+    description: str = Field(
+        ...,
+        alias="Beschreibung",
+        description="Beschreibung der einmaligen Maßnahme",
+    )
+    success: SuccessEnum = Field(
+        ...,
+        alias="Erfolg",
+        description="Hatte die einmalige Maßnahme für die Biodiversität einen messbaren Effekt? ",
+    )
+
+
+class DirectDriverEnum(str, Enum):
+    ANDERE_DIREKTE_TREIBER = "Andere direkte Treiber"
+    DIREKTE_ROSSOURCENTNAHME = "Direkte Ressourcenentnahme"
+    INVASIVE_GEBIETSFREMDE_ARTEN = "Invasive gebietsfremde Arten"
+    KLIMAWANDEL = "Klimawandel"
+    VERSCHMUTZUNG = "Verschmutzung"
+    VERANDERTE_LAND_MEERESNUTZUNG = "Veränderte Land-/Meeresnutzung"
+    VERANDERUNG_DER_STRUKTUR_DER_LANDSCHAFT = "Veränderung der Struktur der Landschaft"
+
+
+class IndirectDriverEnum(str, Enum):
+    GESELLSCHAFTLICHE_TREIBER = "Gesellschaftliche Treiber"
+    POLITISCHE_RECHTLICHE_TREIBER_RECHTLICH_REGULATIV = (
+        "Politische und rechtliche Treiber - rechtlich-regulativ"
+    )
+    POLITISCHE_RECHTLICHE_TREIBER_SOZIAL_INFORMATIONELL = (
+        "Politische und rechtliche Treiber - sozial-informationell"
+    )
+    POLITISCHE_RECHTLICHE_TREIBER_OEKONOMISCH_ANREIZBASIERT = (
+        "Politische und rechtliche Treiber - ökonomisch-anreizbasiert"
+    )
+    WIRTSCHAFTLICHE_TECHNOLOGISCHE_TREIBER = "Wirtschaftliche und technologische Treiber"
+
+
+class DirectDriver(CompoundFeature):
+    """Direkter Treiber mit Kategorie und Details."""
+
+    category: DirectDriverEnum = Field(
+        ...,
+        alias="Kategorie",
+        description="Zu welcher der folgenden Kategorien lässt sich der direkte Treiber zuordnen?",
+    )
+    details: str | None = Field(
+        default=None,
+        alias="Details",
+        description="Details zum direkten Treiber",
+    )
+
+
+class IndirectDriver(CompoundFeature):
+    """Indirekter Treiber mit Kategorie und Details."""
+
+    category: IndirectDriverEnum = Field(
+        ...,
+        alias="Kategorie",
+        description="Zu welcher der folgenden Kategorien lässt sich der indirekte Treiber zuordnen?",
+    )
+    details: str | None = Field(
+        default=None,
+        alias="Details",
+        description="Details zum indirekten Treiber",
+    )
+
+
+class EcosystemServiceCategoryEnum(str, Enum):
+    KULTURELLE_LEISTUNGEN = "Kulturelle Leistungen"
+    REGULIERUNGS_UND_ERHALTUNGSLEISTUNGEN = "Regulierungs- und Erhaltungsleistungen"
+    VERSORGUNGSLEISTUNGEN = "Versorgungsleistungen"
+
+
+class EcosystemServiceTermEnum(str, Enum):
+    ES_TERM_1_1_1_1 = "1.1.1.1 Kultivierte Landpflanzen (einschließlich Pilze und Algen), die zu Ernährungszwecken angebaut werden"
+    ES_TERM_1_1_1_2 = "1.1.1.2 Fasern und andere Materialien aus kultivierten Landpflanzen, Pilzen, Algen und Bakterien zur direkten Verwendung oder Verarbeitung (ausgenommen genetisches Material)"
+    ES_TERM_1_1_1_3 = "1.1.1.3 Kultivierte Landpflanzen (einschließlich Pilze, Algen), die zur Energiegewinnung angebaut werden"
+    ES_TERM_1_1_2_1 = (
+        "1.1.2.1 Pflanzen aus In-situ-Aquakultur, die zu Ernährungszwecken angebaut werden"
+    )
+    ES_TERM_1_1_2_2 = "1.1.2.2 Fasern und andere Materialien aus Pflanzen aus In-situ-Aquakultur zur direkten Verwendung oder Verarbeitung (ausgenommen genetisches Material)"
+    ES_TERM_1_1_2_3 = (
+        "1.1.2.3 Pflanzen aus In-situ-Aquakultur, die als Energiequelle angebaut werden"
+    )
+    ES_TERM_1_1_3_1 = "1.1.3.1 Zu Ernährungszwecken gehaltene Tiere"
+    ES_TERM_1_1_3_2 = "1.1.3.2 Fasern und andere Materialien von gehaltenen Tieren zur direkten Verwendung oder Verarbeitung (ausgenommen genetisches Material)"
+    ES_TERM_1_1_3_3 = "1.1.3.3 Tiere, die zur Energiegewinnung gehalten werden (auch mechanisch)"
+    ES_TERM_1_1_4_1 = (
+        "1.1.4.1 Tiere, die in In-situ-Aquakultur zu Ernährungszwecken aufgezogen werden"
+    )
+    ES_TERM_1_1_4_2 = "1.1.4.2 Fasern und andere Materialien von Tieren, die in In-situ-Aquakultur gezüchtet werden, zur direkten Verwendung oder Verarbeitung (ausgenommen genetisches Material)"
+    ES_TERM_1_1_4_3 = "1.1.4.3 In-situ-Aquakultur aufgezogene Tiere als Energiequelle"
+    ES_TERM_1_1_5_1 = "1.1.5.1 Wildpflanzen (Land- und Wasserpflanzen, einschließlich Pilze und Algen), die zur Ernährung genutzt werden"
+    ES_TERM_1_1_5_2 = "1.1.5.2 Fasern und andere Materialien von Wildpflanzen zur direkten Verwendung oder Verarbeitung (ausgenommen genetisches Material)"
+    ES_TERM_1_1_5_3 = "1.1.5.3 Wildpflanzen (Land- und Wasserpflanzen, einschließlich Pilze und Algen), die als Energiequelle genutzt werden"
+    ES_TERM_1_1_6_1 = (
+        "1.1.6.1 Wildtiere (Land- und Wassertiere), die zu Ernährungszwecken verwendet werden"
+    )
+    ES_TERM_1_1_6_2 = "1.1.6.2 Fasern und andere Materialien von Wildtieren zur direkten Verwendung oder Verarbeitung (ausgenommen genetisches Material)"
+    ES_TERM_1_1_6_3 = (
+        "1.1.6.3 Wildtiere (Land- und Wassertiere), die als Energiequelle genutzt werden"
+    )
+    ES_TERM_1_2_1_1 = "1.2.1.1 Saatgut, Sporen und anderes Pflanzenmaterial, das zur Erhaltung oder zum Aufbau einer Population gesammelt wird"
+    ES_TERM_1_2_1_2 = "1.2.1.2 Höhere und niedere Pflanzen (ganze Organismen), die zur Züchtung neuer Stämme oder Sorten verwendet werden"
+    ES_TERM_1_2_1_3 = "1.2.1.3 Einzelne Gene, die aus höheren und niederen Pflanzen für den Entwurf und die Konstruktion neuer biologischer Einheiten gewonnen werden"
+    ES_TERM_1_2_2_1 = "1.2.2.1 Tiermaterial, das für die Erhaltung oder den Aufbau einer Population gesammelt wurde"
+    ES_TERM_1_2_2_2 = "1.2.2.2 Wildtiere (ganze Organismen), die zur Züchtung neuer Stämme oder Sorten verwendet werden"
+    ES_TERM_1_2_2_3 = "1.2.2.3 Einzelne Gene, die aus Organismen extrahiert werden, um neue biologische Einheiten zu entwerfen und zu konstruieren"
+    # Note: Here is a typo in the original data ("Versorungsleistungen" missing a "g")
+    ES_TERM_1_3_X_X = "1.3.X.X Andere (Versorungsleistungen aus biotischen Quellen)"
+    ES_TERM_2_1_1_1 = "2.1.1.1 Biosanierung durch Mikroorganismen, Algen, Pflanzen und Tiere"
+    ES_TERM_2_1_1_2 = "2.1.1.2 Filtration/Sequestrierung/Speicherung/Akkumulation durch Mikroorganismen, Algen, Pflanzen und Tiere"
+    ES_TERM_2_1_2_1 = "2.1.2.1 Reduktion von Gerüchen"
+    ES_TERM_2_1_2_2 = "2.1.2.2 Reduktion von Lärm"
+    ES_TERM_2_1_2_3 = "2.1.2.3 Sichtschutz (Visual Screening)"
+    ES_TERM_2_2_1_1 = "2.2.1.1 Kontrolle der Erosionsraten"
+    ES_TERM_2_2_1_2 = "2.2.1.2 Pufferung und Abschwächung von Massenbewegungen"
+    ES_TERM_2_2_1_3 = "2.2.1.3 Wasserkreislauf und Wasserflussregulierung (einschließlich Hochwasserschutz und Küstenschutz)"
+    ES_TERM_2_2_1_4 = "2.2.1.4 Windschutz"
+    ES_TERM_2_2_1_5 = "2.2.1.5 Feuerschutz"
+    ES_TERM_2_2_2_1 = "2.2.2.1 Bestäubung (oder 'Gameten'-Ausbreitung in einem marinen Kontext)"
+    ES_TERM_2_2_2_2 = "2.2.2.2 Ausbreitung von Saatgut"
+    ES_TERM_2_2_2_3 = "2.2.2.3 Aufrechterhaltung von Aufwuchspopulationen und Lebensräumen (einschließlich Schutz des Genpools)"
+    ES_TERM_2_2_3_1 = "2.2.3.1 Schädlingsbekämpfung (einschließlich invasiver Arten)"
+    ES_TERM_2_2_3_2 = "2.2.3.2 Krankheitsbekämpfung"
+    ES_TERM_2_2_4_1 = "2.2.4.1 Verwitterungsprozesse und ihre Auswirkungen auf die Bodenqualität"
+    ES_TERM_2_2_4_2 = (
+        "2.2.4.2 Zersetzungs- und Fixierungsprozesse und ihre Auswirkungen auf die Bodenqualität"
+    )
+    ES_TERM_2_2_5_1 = (
+        "2.2.5.1 Regulierung des chemischen Zustands von Süßgewässern durch lebende Prozesse"
+    )
+    ES_TERM_2_2_5_2 = (
+        "2.2.5.2 Regulierung des chemischen Zustands von Salzwasser durch lebende Prozesse"
+    )
+    ES_TERM_2_2_6_1 = (
+        "2.2.6.1 Regulierung der chemischen Zusammensetzung der Atmosphäre und der Ozeane"
+    )
+    ES_TERM_2_2_6_2 = "2.2.6.2 Regulierung von Temperatur und Feuchtigkeit, einschließlich Belüftung und Transpiration"
+    ES_TERM_2_3_X_X = "2.3.X.X Andere"
+    ES_TERM_3_1_1_1 = "3.1.1.1 Merkmale lebender Systeme, die durch aktive oder immersive Interaktionen Aktivitäten ermöglichen, die der Gesundheit, der Erholung oder dem Vergnügen dienen"
+    ES_TERM_3_1_1_2 = "3.1.1.2 Merkmale lebender Systeme, die Aktivitäten zur Förderung von Gesundheit, Erholung oder Vergnügen durch passive oder beobachtende Interaktionen ermöglichen"
+    ES_TERM_3_1_2_1 = "3.1.2.1 Merkmale lebender Systeme, die eine wissenschaftliche Untersuchung oder die Schaffung von traditionellem ökologischem Wissen ermöglichen"
+    ES_TERM_3_1_2_2 = "3.1.2.2 Merkmale lebender Systeme, die Bildung und Ausbildung ermöglichen"
+    ES_TERM_3_1_2_3 = "3.1.2.3 Merkmale lebender Systeme, die in Bezug auf die Kultur und Kulturerbe eine Rolle spielen"
+    ES_TERM_3_1_2_4 = "3.1.2.4 Merkmale lebender Systeme, die ästhetische Erfahrungen ermöglichen"
+    ES_TERM_3_2_1_1 = (
+        "3.2.1.1 Elemente von lebenden Systemen, die eine symbolische Bedeutung haben"
+    )
+    ES_TERM_3_2_1_2 = (
+        "3.2.1.2 Elemente von lebenden Systemen, die eine heilige oder religiöse Bedeutung haben"
+    )
+    ES_TERM_3_2_1_3 = (
+        "3.2.1.3 Elemente lebender Systeme, die zur Unterhaltung oder Darstellung verwendet werden"
+    )
+    ES_TERM_3_2_2_1 = (
+        "3.2.2.1 Merkmale oder Eigenschaften von lebenden Systemen, die einen Existenzwert haben"
+    )
+    ES_TERM_3_2_2_2 = "3.2.2.2 Merkmale oder Eigenschaften von lebenden Systemen, die einen Options- oder Vermächtniswert haben"
+    ES_TERM_3_3_X_X = "3.3.X.X Andere"
+    ES_TERM_4_2_1_1 = "4.2.1.1 Oberflächenwasser als Trinkwasser"
+    ES_TERM_4_2_1_2 = (
+        "4.2.1.2 Oberflächenwasser, das als Material verwendet wird (nicht zu Trinkzwecken)"
+    )
+    ES_TERM_4_2_1_3 = "4.2.1.3 Oberflächenwasser aus Süßwasser, das als Energiequelle genutzt wird"
+    ES_TERM_4_2_1_4 = "4.2.1.4 Küsten- und Meereswasser, das als Energiequelle genutzt wird"
+    ES_TERM_4_2_2_1 = "4.2.2.1 Grundwasser (und Untergrundwasser) als Trinkwasser"
+    ES_TERM_4_2_2_2 = "4.2.2.2 Grundwasser (und Oberflächenwasser), das als Material verwendet wird (nicht zu Trinkzwecken)"
+    ES_TERM_4_2_2_3 = (
+        "4.2.2.3 Grundwasser (und Untergrundwasser), das als Energiequelle genutzt wird"
+    )
+    ES_TERM_4_2_X_X = "4.2.X.X Andere (Ökosystemleistungen des Wassers)"
+
+
+class EcosystemService(CompoundFeature):
+    """Ökosystemdienstleistung mit Kategorie, Term und Details."""
+
+    category: EcosystemServiceCategoryEnum = Field(
+        ...,
+        alias="Kategorie",
+        description="In welche der folgenden Kategorien lässt sich die im Text behandelte Ökosystemleistung einordnen?",
+    )
+    term: EcosystemServiceTermEnum | None = Field(
+        default=None,
+        alias="Term",
+        description="Welche konkrete Ökosystemleistung wurde untersucht?",
+    )
+    details: str | None = Field(
+        default=None,
+        alias="Details",
+        description="Details zur Ökosystemleistung",
     )
 
 
@@ -403,8 +741,57 @@ class EcosystemStudyFeaturesCompoundsSimple(BaseEcosystemStudyFeatures):
         description="Welche Standorte werden in der Studie untersucht?",
     )
 
-    model_config = ConfigDict(
-        # validate_by_name=True,
-        # use_enum_values=True,
-        extra="forbid",
+
+class EcosystemStudyFeaturesCompoundsOnly(BaseEcosystemStudyFeatures):
+    """Angaben zu den ökosystembezogenen Studienmerkmalen."""
+
+    ecosystem_type: list[EcosystemType] = Field(
+        default_factory=list,
+        alias="Ökosystemtypen",
+        description="Welche Ökosystemtypen werden in der Studie untersucht?",
+    )
+    location: list[Location] = Field(
+        default_factory=list,
+        alias="Untersuchungsgebiete",
+        description="Welche Untersuchungsgebiete werden in der Studie untersucht?",
+    )
+    taxa: list[Taxa] = Field(
+        default_factory=list,
+        alias="Arten",
+        description="Welche Arten werden in der Studie untersucht?",
+    )
+    soil: list[Soil] = Field(
+        default_factory=list,
+        alias="Böden",
+        description="Welche Bodentypen werden in der Studie untersucht?",
+    )
+    conservation_area: list[ConservationArea] = Field(
+        default_factory=list,
+        alias="Schutzgebiete",
+        description="Welche Schutzgebiete werden in der Studie untersucht?",
+    )
+    management_measure: list[ManagementMeasure] = Field(
+        default_factory=list,
+        alias="Bewirtschaftungsmaßnahmen",
+        description="Wurden Formen der Bewirtschaftung als Maßnahmen für die Biodiversität untersucht?",
+    )
+    impulse_measure: list[ImpulseMeasure] = Field(
+        default_factory=list,
+        alias="Einmalige Maßnahmen",
+        description="Wurden einmalige Maßnahmen für die Biodiversität untersucht?",
+    )
+    direct_driver: list[DirectDriver] = Field(
+        default_factory=list,
+        alias="Direkte Treiber",
+        description="Welche Vorgänge mit direktem Einfluss auf Biodiversität wurden untersucht?",
+    )
+    indirect_driver: list[IndirectDriver] = Field(
+        default_factory=list,
+        alias="Indirekte Treiber",
+        description="Welche Vorgänge mit indirektem Einfluss auf Biodiversität wurden untersucht?",
+    )
+    ecosystem_service: list[EcosystemService] = Field(
+        default_factory=list,
+        alias="Ökosystemleistungen",
+        description="Welche Ökosystemleistungen wurden in der Studie untersucht?",
     )
