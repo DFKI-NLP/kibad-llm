@@ -36,12 +36,14 @@ srun --partition=RTXA6000-SLT \
      --cpus-per-task=6 \
      --gpus-per-task=1 \
      --mem-per-cpu=4G \
-     --time=1-00:00:00 \
-     uv run -w vllm --cache-dir /netscratch/$USER/cache/uv \
-            vllm serve "openai/gpt-oss-20b" \
-                       --download-dir=/ds/models/llms/cache \
-                       --port=18000
+     --time=0-02:00:00 \
+     uvx --cache-dir /netscratch/$USER/cache/uv \
+         vllm@latest serve "openai/gpt-oss-20b" \
+             --download-dir=/ds/models/llms/cache \
+             --port=18000
 ```
+
+If you need a specific version of vLLM, change `@latest` to `@your.version.here`. [docs](https://docs.astral.sh/uv/guides/tools/#requesting-specific-versions)
 
 Note: This may take some time, wait for `Application startup complete.`
 
