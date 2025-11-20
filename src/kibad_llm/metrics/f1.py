@@ -71,10 +71,11 @@ class MicroF1Metric(MetricWithPrepareEntryAsSet):
 class MicroF1MetricCollection(MetricCollection):
 
     def __init__(self, fields: list[str], format_as_markdown: bool = True, **kwargs) -> None:
-        """Computes MicroF1Metric for multiple fields and aggregates them.
+        """Computes MicroF1Metric for multiple fields at once.
 
         Args:
             fields: List of fields to compute MicroF1Metric for.
+            format_as_markdown: Whether to format the result as a markdown table. Defaults to True.
             **kwargs: Additional keyword arguments for MicroF1Metric, e.g., ignore_subfields.
         """
         metrics: dict[str, Metric] = {
