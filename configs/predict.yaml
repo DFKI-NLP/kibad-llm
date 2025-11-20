@@ -21,6 +21,11 @@ defaults:
   # The extractor gets the 'text' and 'text_id' as positional parameters
   # and needs to return a dictionary with the extracted data.
   - extractor: simple_with_schema
+  # Experiment configs allow to define specific inference setups. This is useful for complex setups to simplify
+  # commands, but especially recommended when some parameters depend on each other.
+  # Note that multiple experiments (if they do not require other dependent settings) can be easily executed
+  # in a single multi-run for fast reproducibility.
+  - experiment: null
 
 print_config: True
 

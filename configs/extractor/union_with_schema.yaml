@@ -1,0 +1,20 @@
+defaults:
+  - _union
+  - _template_with_schema
+
+# Overrides need to be dictionaries that will get instantiated and then passed as kwargs
+# to the respective base extractor. Thus, no hydra-like merging for individual kwargs is
+# possible (e.g., "by_alias: false" is not derived from the base extractor config, but
+# needs to be repeated for each schema).
+#
+# Use two dummy schemata (...Simple) per default. Overrides is a list, so setting it
+# somewhere else will completely replace the list.
+overrides:
+  - schema:
+      # create the schema from the pydantic model EcosystemStudyFeaturesSimple
+      _target_: kibad_llm.schema.types.EcosystemStudyFeaturesSimple.model_json_schema
+      by_alias: false
+  - schema:
+      # create the schema from the pydantic model EcosystemStudyFeaturesCompoundsSimple
+      _target_: kibad_llm.schema.types.EcosystemStudyFeaturesCompoundsSimple.model_json_schema
+      by_alias: false

@@ -1,0 +1,46 @@
+{
+  "structured": {
+    "natural_region": [
+      "Alpenvorland",
+      "Norddeutsches Tiefland"
+    ],
+    "landuse": [
+      "Bau",
+      "Energieproduktion",
+      "Landwirtschaft"
+    ],
+    "ecosystem_type": [
+      {
+        "category": "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes",
+        "term": "Hoch-, Zwischen- und \u00dcbergangsmoore"
+      }
+    ],
+    "location": [
+      {
+        "country": "Deutschland",
+        "federal_state": "Bayern"
+      },
+      {
+        "country": "Deutschland",
+        "federal_state": "Brandenburg"
+      },
+      {
+        "country": "Deutschland",
+        "federal_state": "Mecklenburg-Vorpommern"
+      },
+      {
+        "country": "Deutschland",
+        "federal_state": "Niedersachsen"
+      },
+      {
+        "country": "Deutschland",
+        "federal_state": "Schleswig-Holstein"
+      }
+    ],
+    "climate": [],
+    "habitat": [
+      "Agrar- und Offenland",
+      "Boden"
+    ]
+  }
+}

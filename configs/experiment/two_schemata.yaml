@@ -1,0 +1,23 @@
+# @package _global_
+
+# This experiment uses two schemata to extract data for all fields in the Fragenkatalog database:
+#   - EcosystemStudyFeaturesWithoutCompounds: fields without compounds, and
+#   - EcosystemStudyFeaturesCompoundsOnly: compound fields only.
+
+# To execute this experiment run:
+# python -m kibad_llm.predict experiment=two_schemata
+
+defaults:
+  - override /extractor: union_with_schema
+
+
+extractor:
+  overrides:
+    - schema:
+        # create the schema from the pydantic model EcosystemStudyFeaturesWithoutCompounds
+        _target_: kibad_llm.schema.types.EcosystemStudyFeaturesWithoutCompounds.model_json_schema
+        by_alias: false
+    - schema:
+        # create the schema from the pydantic model EcosystemStudyFeaturesCompoundsOnly
+        _target_: kibad_llm.schema.types.EcosystemStudyFeaturesCompoundsOnly.model_json_schema
+        by_alias: false

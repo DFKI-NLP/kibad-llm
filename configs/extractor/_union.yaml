@@ -1,0 +1,8 @@
+# extraction workflow that repeats the extraction for each item in the overrides list
+# and aggregates the results per key by union
+
+defaults:
+  - llm: gpt_oss_20b
+
+_target_: kibad_llm.extractors.UnionExtractor
+overrides: ???  # list of extraction workflows to union

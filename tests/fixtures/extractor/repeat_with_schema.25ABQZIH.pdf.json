@@ -1,0 +1,77 @@
+{
+  "structured": {
+    "natural_region": [
+      "Norddeutsches Tiefland",
+      "Alpenvorland"
+    ],
+    "habitat": [
+      "Boden",
+      "Agrar- und Offenland"
+    ],
+    "landuse": [
+      "Landwirtschaft",
+      "Energieproduktion",
+      "Bau"
+    ],
+    "climate": []
+  },
+  "structured_list": [
+    {
+      "habitat": [
+        "Boden",
+        "Agrar- und Offenland"
+      ],
+      "natural_region": [
+        "Norddeutsches Tiefland",
+        "Alpenvorland"
+      ],
+      "climate": [],
+      "landuse": [
+        "Landwirtschaft",
+        "Energieproduktion"
+      ]
+    },
+    {
+      "habitat": [
+        "Boden",
+        "Agrar- und Offenland"
+      ],
+      "natural_region": [
+        "Norddeutsches Tiefland",
+        "Alpenvorland"
+      ],
+      "climate": [],
+      "landuse": [
+        "Landwirtschaft",
+        "Bau",
+        "Energieproduktion"
+      ]
+    },
+    {
+      "habitat": [
+        "Boden",
+        "Agrar- und Offenland"
+      ],
+      "natural_region": [
+        "Norddeutsches Tiefland",
+        "Alpenvorland"
+      ],
+      "climate": [],
+      "landuse": [
+        "Landwirtschaft",
+        "Bau",
+        "Energieproduktion"
+      ]
+    }
+  ],
+  "error_list": [
+    null,
+    null,
+    null
+  ],
+  "response_content_list": [
+    "{\"habitat\":[\"Boden\",\"Agrar- und Offenland\"],\"natural_region\":[\"Norddeutsches Tiefland\",\"Alpenvorland\"],\"climate\":[],\"landuse\":[\"Landwirtschaft\",\"Energieproduktion\"]}",
+    "{\"habitat\":[\"Boden\",\"Agrar- und Offenland\"],\"natural_region\":[\"Norddeutsches Tiefland\",\"Alpenvorland\"],\"climate\":[],\"landuse\":[\"Landwirtschaft\",\"Bau\",\"Energieproduktion\"]}",
+    "{\"habitat\":[\"Boden\",\"Agrar- und Offenland\"],\"natural_region\":[\"Norddeutsches Tiefland\",\"Alpenvorland\"],\"climate\":[],\"landuse\":[\"Landwirtschaft\",\"Bau\",\"Energieproduktion\"]}"
+  ]
+}

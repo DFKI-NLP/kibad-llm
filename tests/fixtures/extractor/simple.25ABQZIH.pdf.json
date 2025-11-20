@@ -1,0 +1,24 @@
+{
+  "response_content": "{\"habitat\":[\"Boden\",\"Agrar- und Offenland\"],\"natural_region\":[\"Norddeutsches Tiefland\",\"Alpenvorland\"],\"climate\":[\"Atlantisches Klima\",\"subkontinental\"],\"landuse\":[\"Landwirtschaft\",\"Energieproduktion\",\"Bau\"]}",
+  "structured": {
+    "habitat": [
+      "Boden",
+      "Agrar- und Offenland"
+    ],
+    "natural_region": [
+      "Norddeutsches Tiefland",
+      "Alpenvorland"
+    ],
+    "climate": [
+      "Atlantisches Klima",
+      "subkontinental"
+    ],
+    "landuse": [
+      "Landwirtschaft",
+      "Energieproduktion",
+      "Bau"
+    ]
+  },
+  "error": null,
+  "reasoning_content": null
+}

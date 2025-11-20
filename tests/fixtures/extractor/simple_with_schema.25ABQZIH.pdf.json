@@ -1,0 +1,22 @@
+{
+  "response_content": "{\"habitat\":[\"Boden\",\"Agrar- und Offenland\"],\"natural_region\":[\"Norddeutsches Tiefland\",\"Alpenvorland\"],\"climate\":[],\"landuse\":[\"Landwirtschaft\",\"Bau\",\"Energieproduktion\",\"Verkehr, Kommunikationsnetzwerke, Lagerung, Schutzw\u00e4lle\"]}",
+  "structured": {
+    "habitat": [
+      "Boden",
+      "Agrar- und Offenland"
+    ],
+    "natural_region": [
+      "Norddeutsches Tiefland",
+      "Alpenvorland"
+    ],
+    "climate": [],
+    "landuse": [
+      "Landwirtschaft",
+      "Bau",
+      "Energieproduktion",
+      "Verkehr, Kommunikationsnetzwerke, Lagerung, Schutzw\u00e4lle"
+    ]
+  },
+  "error": null,
+  "reasoning_content": null
+}
