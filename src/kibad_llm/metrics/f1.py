@@ -1,6 +1,10 @@
 from typing import Any
 
+from pandas import DataFrame
+
+from kibad_llm.metric import Metric
 from kibad_llm.metrics.base import MetricWithPrepareEntryAsSet
+from kibad_llm.metrics.collection import MetricCollection
 
 
 class MicroF1Metric(MetricWithPrepareEntryAsSet):
@@ -62,3 +66,37 @@ class MicroF1Metric(MetricWithPrepareEntryAsSet):
             "recall": recall,
             "f1": f1,
         }
+
+
+class MicroF1MetricCollection(MetricCollection):
+
+    def __init__(self, fields: list[str], format_as_markdown: bool = True, **kwargs) -> None:
+        """Computes MicroF1Metric for multiple fields and aggregates them.
+
+        Args:
+            fields: List of fields to compute MicroF1Metric for.
+            **kwargs: Additional keyword arguments for MicroF1Metric, e.g., ignore_subfields.
+        """
+        metrics: dict[str, Metric] = {
+            field: MicroF1Metric(field=field, **kwargs) for field in fields
+        }
+        super().__init__(metrics=metrics)
+
+        self.format_as_markdown = format_as_markdown
+
+    def _format_result(self, result: dict[str, Any]) -> str:
+        """Formats the result as a markdown table if specified, otherwise as pretty-printed JSON.
+
+        Args:
+            result: The result dictionary to format.
+        Returns: A string representation of the result.
+        """
+        if self.format_as_markdown:
+            # create pandas DataFrame and convert to markdown table
+            df = DataFrame.from_dict(result, orient="index")
+            df.index.name = "field"
+            # round to 3 decimal places
+            df = df.round(3)
+            return df.to_markdown()
+        else:
+            return super()._format_result(result)

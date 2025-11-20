@@ -1,6 +1,6 @@
 import pytest
 
-from kibad_llm.metrics.f1 import MicroF1Metric
+from kibad_llm.metrics.f1 import MicroF1Metric, MicroF1MetricCollection
 
 
 def test_perfect_matches() -> None:
@@ -133,3 +133,60 @@ def test_multi_mixed_counts_no_field() -> None:
     assert out["precision"] == pytest.approx(2 / 7)
     assert out["recall"] == pytest.approx(2 / 5)
     assert out["f1"] == pytest.approx(2 * (((2 / 7) * (2 / 5)) / ((2 / 7) + (2 / 5))))
+
+
+def test_collection_single_field() -> None:
+    m = MicroF1MetricCollection(fields=["label"])
+    m.update({"label": "foo"}, {"label": "foo"})
+    m.update({"label": "bar"}, {"label": "rar"})
+    out = m.compute()
+    assert out == {"label": {"precision": 0.5, "recall": 0.5, "f1": 0.5}}
+
+
+def test_collection_multiple_fields() -> None:
+    m = MicroF1MetricCollection(fields=["label1", "label2"])
+    m.update({"label1": "foo", "label2": "A"}, {"label1": "foo", "label2": "B"})
+    m.update({"label1": "bar", "label2": "C"}, {"label1": "rar", "label2": "C"})
+    out = m.compute()
+    assert out == {
+        "label1": {"precision": 0.5, "recall": 0.5, "f1": 0.5},
+        "label2": {"precision": 0.5, "recall": 0.5, "f1": 0.5},
+    }
+
+
+def test_collection_reset() -> None:
+    m = MicroF1MetricCollection(fields=["label"])
+    m.update({"label": "foo"}, {"label": "foo"})
+    assert m.compute()["label"]["f1"] == pytest.approx(1.0)
+    m.reset()
+    out = m.compute()
+    assert out["label"]["f1"] == pytest.approx(0.0)
+
+
+def test_collection_format_result_markdown() -> None:
+    m = MicroF1MetricCollection(fields=["label1", "label2"], format_as_markdown=True)
+    m.update({"label1": "foo", "label2": "A"}, {"label1": "foo", "label2": "A"})
+    result = m.compute()
+    formatted = m._format_result(result)
+    assert formatted == (
+        "| field   |   precision |   recall |   f1 |\n"
+        "|:--------|------------:|---------:|-----:|\n"
+        "| label1  |           1 |        1 |    1 |\n"
+        "| label2  |           1 |        1 |    1 |"
+    )
+
+
+def test_collection_format_result_json() -> None:
+    m = MicroF1MetricCollection(fields=["label"], format_as_markdown=False)
+    m.update({"label": "foo"}, {"label": "foo"})
+    result = m.compute()
+    formatted = m._format_result(result)
+    assert formatted == (
+        "{\n"
+        '  "label": {\n'
+        '    "precision": 1.0,\n'
+        '    "recall": 1.0,\n'
+        '    "f1": 1.0\n'
+        "  }\n"
+        "}"
+    )
