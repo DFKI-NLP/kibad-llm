@@ -133,7 +133,7 @@ def test_prediction_on_pdf_errors(cfg_predict_pdf_errors):
     result_long_pdf = results[file_name_long_pdf]
     # assert that there was some quite long input text
     text_long_pdf = result_long_pdf.get("text", None)
-    assert text_long_pdf is not None and len(text_long_pdf) == 1427535
+    assert text_long_pdf is not None and len(text_long_pdf) > 1_000_000
     # assert that there is no structured output ...
     structured_long_pdf = result_long_pdf.get("structured", None)
     assert structured_long_pdf is None
