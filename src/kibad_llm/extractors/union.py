@@ -94,10 +94,11 @@ def _aggregate_structured_outputs_union(
         else:
             # Aggregate based on type
             if issubclass(value_type, (str, int, float, bool)):
-                # single-value: majority vote for primitive types
+                # single-value: this should be identical across all outputs, raises ValueError if not
                 aggregated[key] = _union_single(values)
             elif issubclass(value_type, dict):
-                # single-value: majority vote for dicts
+                # single-value: this should be identical across all outputs, raises ValueError if not
+                # make dicts hashable for comparison
                 values_hashable = [
                     make_hashable_simple(v) if v is not None else None for v in values
                 ]
@@ -105,10 +106,8 @@ def _aggregate_structured_outputs_union(
                 # convert back to dict
                 aggregated[key] = dict(majority) if majority is not None else None
             elif issubclass(value_type, list):
-                # multi-value: majority vote per item for list types
-                # explicitly pass the number of structured outputs since some values may
-                # be None and thus not in current values
-                aggregated[key] = _multi_entry_union(values)  # , n=len(structured_outputs))
+                # multi-value: union per item for list types
+                aggregated[key] = _multi_entry_union(values)
             else:
                 raise ValueError(f"Unsupported value type for aggregation: {value_type}")
 
