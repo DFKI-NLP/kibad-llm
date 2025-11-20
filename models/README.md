@@ -36,7 +36,7 @@ srun --partition=RTXA6000-SLT \
      --cpus-per-task=6 \
      --gpus-per-task=1 \
      --mem-per-cpu=4G \
-     --time=0-02:00:00 \
+     --time=0-04:00:00 \
      uvx --cache-dir /netscratch/$USER/cache/uv \
          vllm@latest serve "openai/gpt-oss-20b" \
              --download-dir=/ds/models/llms/cache \
