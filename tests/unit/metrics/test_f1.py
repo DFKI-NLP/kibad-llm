@@ -190,3 +190,68 @@ def test_multiple_fields_format_result_json() -> None:
         "  }\n"
         "}"
     )
+
+
+@pytest.mark.parametrize(
+    "format_as_markdown,sort_fields", [(True, True), (True, False), (False, True), (False, False)]
+)
+def test_multiple_fields_show(format_as_markdown: bool, sort_fields: bool, caplog) -> None:
+    m = F1MultipleFieldsMetric(
+        fields=["b_field", "a_field"],
+        format_as_markdown=format_as_markdown,
+        sort_fields=sort_fields,
+    )
+    m.update({"b_field": "foo", "a_field": "A"}, {"b_field": "foo", "a_field": "A"})
+    with caplog.at_level("INFO"):
+        m.show_result()
+
+    # split off the header line
+    header, logged_output = caplog.text.split("\n", 1)
+
+    assert "Evaluation results:" in header
+    if format_as_markdown:
+        if sort_fields:
+            assert logged_output == (
+                "| field   |   precision |   recall |   f1 |\n"
+                "|:--------|------------:|---------:|-----:|\n"
+                "| a_field |           1 |        1 |    1 |\n"
+                "| b_field |           1 |        1 |    1 |\n"
+            )
+        else:
+            assert logged_output == (
+                "| field   |   precision |   recall |   f1 |\n"
+                "|:--------|------------:|---------:|-----:|\n"
+                "| b_field |           1 |        1 |    1 |\n"
+                "| a_field |           1 |        1 |    1 |\n"
+            )
+    else:
+        if sort_fields:
+            assert logged_output == (
+                "{\n"
+                '  "a_field": {\n'
+                '    "precision": 1.0,\n'
+                '    "recall": 1.0,\n'
+                '    "f1": 1.0\n'
+                "  },\n"
+                '  "b_field": {\n'
+                '    "precision": 1.0,\n'
+                '    "recall": 1.0,\n'
+                '    "f1": 1.0\n'
+                "  }\n"
+                "}\n"
+            )
+        else:
+            assert logged_output == (
+                "{\n"
+                '  "b_field": {\n'
+                '    "precision": 1.0,\n'
+                '    "recall": 1.0,\n'
+                '    "f1": 1.0\n'
+                "  },\n"
+                '  "a_field": {\n'
+                '    "precision": 1.0,\n'
+                '    "recall": 1.0,\n'
+                '    "f1": 1.0\n'
+                "  }\n"
+                "}\n"
+            )
