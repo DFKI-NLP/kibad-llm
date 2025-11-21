@@ -1,16 +1,19 @@
-from typing import Any
+from collections.abc import Mapping
+from typing import Any, Generic, TypeVar
 
 from kibad_llm.metric import Metric
 
+T = TypeVar("T", bound=Mapping[str, Metric])
 
-class MetricCollection(Metric):
+
+class MetricCollection(Metric, Generic[T]):
     """A metric that aggregates multiple sub-metrics.
 
     Args:
         metrics: A dictionary mapping metric names to Metric instances.
     """
 
-    def __init__(self, metrics: dict[str, Metric]) -> None:
+    def __init__(self, metrics: T) -> None:
         super().__init__()
         self.metrics = metrics
 
