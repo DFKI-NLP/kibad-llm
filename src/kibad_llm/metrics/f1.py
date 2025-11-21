@@ -103,7 +103,7 @@ class F1MultipleFieldsMetric(MetricCollection):
         """
         result = super()._compute(*args, **kwargs)
 
-        # compute MACRO average from result
+        # compute MACRO average from result per metric
         if len(result) > 0:
             # collect all values for each score
             result_lists = defaultdict(list)
@@ -115,7 +115,7 @@ class F1MultipleFieldsMetric(MetricCollection):
                 key: sum(values) / len(values) for key, values in result_lists.items()
             }
 
-        # compute MICRO average
+        # compute MICRO average based on states of all sub-metrics
         total_tp = sum(metric.state["tp"] for metric in self.metrics.values())
         total_fp = sum(metric.state["fp"] for metric in self.metrics.values())
         total_fn = sum(metric.state["fn"] for metric in self.metrics.values())
