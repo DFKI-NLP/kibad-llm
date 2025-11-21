@@ -1,6 +1,6 @@
 # F1 score metric for single- or multi-label classification for multiple fields.
 
-_target_: kibad_llm.metrics.MicroF1MetricCollection
+_target_: kibad_llm.metrics.F1MultipleFieldsMetric
 # the fields in the prediction and reference to compute the F1 score on
 fields:
  - habitat

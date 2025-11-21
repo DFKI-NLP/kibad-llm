@@ -68,7 +68,7 @@ class MicroF1Metric(MetricWithPrepareEntryAsSet):
         }
 
 
-class MicroF1MetricCollection(MetricCollection):
+class F1MultipleFieldsMetric(MetricCollection):
 
     def __init__(self, fields: list[str], format_as_markdown: bool = True, **kwargs) -> None:
         """Computes MicroF1Metric for multiple fields at once.

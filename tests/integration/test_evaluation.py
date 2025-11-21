@@ -41,7 +41,7 @@ def cfg_evaluate(tmp_path, metric_name) -> DictConfig:  # type: ignore
         # this produces non-zero results
         if metric_name in ["confusion_matrix", "f1"]:
             cfg.metric.field = "habitat"
-        elif metric_name == "f1_collection":
+        elif metric_name == "f1_multiple_fields":
             cfg.metric.fields = ["habitat", "landuse"]
         else:
             raise ValueError(
@@ -74,7 +74,7 @@ def test_evaluate(tmp_path, cfg_evaluate, metric_name):
                 "Wald": 1,
             },
         }
-    elif metric_name == "f1_collection":
+    elif metric_name == "f1_multiple_fields":
         assert metric_scores == {
             "habitat": {"f1": pytest.approx(0.545454545), "precision": 0.375, "recall": 1.0},
             "landuse": {"f1": 0.0, "precision": 0.0, "recall": 0.0},

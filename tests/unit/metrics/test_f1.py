@@ -1,6 +1,6 @@
 import pytest
 
-from kibad_llm.metrics.f1 import MicroF1Metric, MicroF1MetricCollection
+from kibad_llm.metrics.f1 import F1MultipleFieldsMetric, MicroF1Metric
 
 
 def test_perfect_matches() -> None:
@@ -136,7 +136,7 @@ def test_multi_mixed_counts_no_field() -> None:
 
 
 def test_collection_single_field() -> None:
-    m = MicroF1MetricCollection(fields=["label"])
+    m = F1MultipleFieldsMetric(fields=["label"])
     m.update({"label": "foo"}, {"label": "foo"})
     m.update({"label": "bar"}, {"label": "rar"})
     out = m.compute()
@@ -144,7 +144,7 @@ def test_collection_single_field() -> None:
 
 
 def test_collection_multiple_fields() -> None:
-    m = MicroF1MetricCollection(fields=["label1", "label2"])
+    m = F1MultipleFieldsMetric(fields=["label1", "label2"])
     m.update({"label1": "foo", "label2": "A"}, {"label1": "foo", "label2": "B"})
     m.update({"label1": "bar", "label2": "C"}, {"label1": "rar", "label2": "C"})
     out = m.compute()
@@ -155,7 +155,7 @@ def test_collection_multiple_fields() -> None:
 
 
 def test_collection_reset() -> None:
-    m = MicroF1MetricCollection(fields=["label"])
+    m = F1MultipleFieldsMetric(fields=["label"])
     m.update({"label": "foo"}, {"label": "foo"})
     assert m.compute()["label"]["f1"] == pytest.approx(1.0)
     m.reset()
@@ -164,7 +164,7 @@ def test_collection_reset() -> None:
 
 
 def test_collection_format_result_markdown() -> None:
-    m = MicroF1MetricCollection(fields=["label1", "label2"], format_as_markdown=True)
+    m = F1MultipleFieldsMetric(fields=["label1", "label2"], format_as_markdown=True)
     m.update({"label1": "foo", "label2": "A"}, {"label1": "foo", "label2": "A"})
     result = m.compute()
     formatted = m._format_result(result)
@@ -177,7 +177,7 @@ def test_collection_format_result_markdown() -> None:
 
 
 def test_collection_format_result_json() -> None:
-    m = MicroF1MetricCollection(fields=["label"], format_as_markdown=False)
+    m = F1MultipleFieldsMetric(fields=["label"], format_as_markdown=False)
     m.update({"label": "foo"}, {"label": "foo"})
     result = m.compute()
     formatted = m._format_result(result)

@@ -1,3 +1,3 @@
 from .collection import MetricCollection
 from .confusion_matrix import ConfusionMatrix
-from .f1 import MicroF1Metric, MicroF1MetricCollection
+from .f1 import F1MultipleFieldsMetric, MicroF1Metric
