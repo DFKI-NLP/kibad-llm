@@ -1,10 +1,10 @@
 import pytest
 
-from kibad_llm.metrics.f1 import F1MultipleFieldsMetric, MicroF1Metric
+from kibad_llm.metrics.f1 import F1MultipleFieldsMetric, F1SingleFieldMetric
 
 
 def test_perfect_matches() -> None:
-    m = MicroF1Metric(field="label")
+    m = F1SingleFieldMetric(field="label")
     m.update({"label": "foo"}, {"label": "foo"})
     m.update({"label": "bar"}, {"label": "bar"})
     out = m.compute(m)
@@ -14,7 +14,7 @@ def test_perfect_matches() -> None:
 
 
 def test_all_mismatches() -> None:
-    m = MicroF1Metric(field="label")
+    m = F1SingleFieldMetric(field="label")
     m.update({"label": "foo"}, {"label": "woo"})
     m.update({"label": "bar"}, {"label": "rar"})
     out = m.compute(m)
@@ -24,7 +24,7 @@ def test_all_mismatches() -> None:
 
 
 def test_mixed_counts() -> None:
-    m = MicroF1Metric(field="label")
+    m = F1SingleFieldMetric(field="label")
     # tp
     m.update({"label": "foo"}, {"label": "foo"})
     # fp and fn and bool
@@ -43,7 +43,7 @@ def test_mixed_counts() -> None:
 
 
 def test_all_none_zero_division() -> None:
-    m = MicroF1Metric(field="label")
+    m = F1SingleFieldMetric(field="label")
     m.update({"label": None}, {"label": None})
     m.update({"label": None}, {"label": None})
     out = m.compute(m)
@@ -53,7 +53,7 @@ def test_all_none_zero_division() -> None:
 
 
 def test_reset() -> None:
-    m = MicroF1Metric(field="label")
+    m = F1SingleFieldMetric(field="label")
     m.update({"label": "foo"}, {"label": "foo"})
     assert m.compute(m)["f1"] == pytest.approx(1.0)
     m.reset()
@@ -64,7 +64,7 @@ def test_reset() -> None:
 
 
 def test_multi_perfect_matches() -> None:
-    m = MicroF1Metric(field="label")
+    m = F1SingleFieldMetric(field="label")
     m.update({"label": ["foo", "woo"]}, {"label": ["foo", "woo"]})
     m.update({"label": {"bar", "dar"}}, {"label": {"bar", "dar"}})
     out = m.compute(m)
@@ -74,7 +74,7 @@ def test_multi_perfect_matches() -> None:
 
 
 def test_multi_all_mismatches() -> None:
-    m = MicroF1Metric(field="label")
+    m = F1SingleFieldMetric(field="label")
     m.update({"label": ["foo", "boo"]}, {"label": ["woo", "doo"]})
     m.update({"label": {"bar", "dar"}}, {"label": {"rar", "sar"}})
     out = m.compute(m)
@@ -84,7 +84,7 @@ def test_multi_all_mismatches() -> None:
 
 
 def test_multi_mixed_count() -> None:
-    m = MicroF1Metric()
+    m = F1SingleFieldMetric()
     m.update(["foo", True], {"bar", "dar", True})
     out = m.compute(m)
     # tp=1, fp=1, fn=2 -> precision=1/2, recall=1/3, f1=2*(((1/2)*(1/3))/((1/2)+(1/3)))
@@ -94,7 +94,7 @@ def test_multi_mixed_count() -> None:
 
 
 def test_multi_mixed_counts() -> None:
-    m = MicroF1Metric(field="label")
+    m = F1SingleFieldMetric(field="label")
     # tp
     m.update({"label": {"foo"}}, {"label": ["foo"]})
     # fp and fn and bool
@@ -115,7 +115,7 @@ def test_multi_mixed_counts() -> None:
 
 
 def test_multi_mixed_counts_no_field() -> None:
-    m = MicroF1Metric()
+    m = F1SingleFieldMetric()
     # tp
     m.update({"foo"}, ["foo"])
     # fp and fn and bool
