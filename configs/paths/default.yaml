@@ -6,6 +6,10 @@ root_dir: ${oc.env:PROJECT_ROOT}
 # path to data directory
 data_dir: ${paths.root_dir}/data
 
+# subdirectory for the current run, used in output_dir (see hydra/default.yaml)
+# and prediction_save_dir
+run_subdir: ${name}/${now:%Y-%m-%d_%H-%M-%S}
+
 # path to output directory, created dynamically by hydra
 # path generation pattern is specified in `configs/hydra/default.yaml`
 # use it to store all files generated during the run, like ckpts and metrics
@@ -21,8 +25,5 @@ log_dir: ${paths.save_dir}/logs
 # path to working directory
 work_dir: ${hydra:runtime.cwd}
 
-# where to save the trained model and taskmodule
-#model_save_dir: ${paths.save_dir}/models/${name}/${now:%Y-%m-%d_%H-%M-%S}
-
 # predefined path that can be used as output path for the serializer
-prediction_save_dir: ${paths.save_dir}/predictions/${name}/${now:%Y-%m-%d_%H-%M-%S}
+prediction_save_dir: ${paths.save_dir}/predictions/${run_subdir}
