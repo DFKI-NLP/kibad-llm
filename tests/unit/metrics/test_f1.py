@@ -73,7 +73,7 @@ def test_multi_perfect_matches() -> None:
     assert out["f1"] == pytest.approx(1.0)
 
 
-def test_multi_all_mismatches() -> None:
+def test_multi_value_all_mismatches() -> None:
     m = F1SingleFieldMetric(field="label")
     m.update({"label": ["foo", "boo"]}, {"label": ["woo", "doo"]})
     m.update({"label": {"bar", "dar"}}, {"label": {"rar", "sar"}})
@@ -83,7 +83,7 @@ def test_multi_all_mismatches() -> None:
     assert out["f1"] == pytest.approx(0.0)
 
 
-def test_multi_mixed_count() -> None:
+def test_multi_value_mixed_count() -> None:
     m = F1SingleFieldMetric()
     m.update(["foo", True], {"bar", "dar", True})
     out = m.compute(m)
@@ -93,7 +93,7 @@ def test_multi_mixed_count() -> None:
     assert out["f1"] == pytest.approx(2 * (((1 / 2) * (1 / 3)) / ((1 / 2) + (1 / 3))))
 
 
-def test_multi_mixed_counts() -> None:
+def test_multi_value_mixed_counts() -> None:
     m = F1SingleFieldMetric(field="label")
     # tp
     m.update({"label": {"foo"}}, {"label": ["foo"]})
@@ -114,7 +114,7 @@ def test_multi_mixed_counts() -> None:
     assert out["f1"] == pytest.approx(2 * (((2 / 7) * (2 / 5)) / ((2 / 7) + (2 / 5))))
 
 
-def test_multi_mixed_counts_no_field() -> None:
+def test_multi_value_mixed_counts_no_field() -> None:
     m = F1SingleFieldMetric()
     # tp
     m.update({"foo"}, ["foo"])
@@ -135,7 +135,7 @@ def test_multi_mixed_counts_no_field() -> None:
     assert out["f1"] == pytest.approx(2 * (((2 / 7) * (2 / 5)) / ((2 / 7) + (2 / 5))))
 
 
-def test_collection_single_field() -> None:
+def test_multiple_fields_single_field() -> None:
     m = F1MultipleFieldsMetric(fields=["label"])
     m.update({"label": "foo"}, {"label": "foo"})
     m.update({"label": "bar"}, {"label": "rar"})
@@ -143,7 +143,7 @@ def test_collection_single_field() -> None:
     assert out == {"label": {"precision": 0.5, "recall": 0.5, "f1": 0.5}}
 
 
-def test_collection_multiple_fields() -> None:
+def test_multiple_fields() -> None:
     m = F1MultipleFieldsMetric(fields=["label1", "label2"])
     m.update({"label1": "foo", "label2": "A"}, {"label1": "foo", "label2": "B"})
     m.update({"label1": "bar", "label2": "C"}, {"label1": "rar", "label2": "C"})
@@ -154,7 +154,7 @@ def test_collection_multiple_fields() -> None:
     }
 
 
-def test_collection_reset() -> None:
+def test_multiple_fields_reset() -> None:
     m = F1MultipleFieldsMetric(fields=["label"])
     m.update({"label": "foo"}, {"label": "foo"})
     assert m.compute()["label"]["f1"] == pytest.approx(1.0)
@@ -163,7 +163,7 @@ def test_collection_reset() -> None:
     assert out["label"]["f1"] == pytest.approx(0.0)
 
 
-def test_collection_format_result_markdown() -> None:
+def test_multiple_fields_format_result_markdown() -> None:
     m = F1MultipleFieldsMetric(fields=["label1", "label2"], format_as_markdown=True)
     m.update({"label1": "foo", "label2": "A"}, {"label1": "foo", "label2": "A"})
     result = m.compute()
@@ -176,7 +176,7 @@ def test_collection_format_result_markdown() -> None:
     )
 
 
-def test_collection_format_result_json() -> None:
+def test_multiple_fields_format_result_json() -> None:
     m = F1MultipleFieldsMetric(fields=["label"], format_as_markdown=False)
     m.update({"label": "foo"}, {"label": "foo"})
     result = m.compute()
