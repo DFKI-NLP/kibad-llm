@@ -6,8 +6,8 @@ root_dir: ${oc.env:PROJECT_ROOT}
 # path to data directory
 data_dir: ${paths.root_dir}/data
 
-# subdirectory for the current run, used in output_dir (see hydra/default.yaml)
-# and prediction_save_dir
+# subdirectory for the current run, used in prediction_save_dir and output_dir
+# (indirectly via hydra.run.dir, see hydra/default.yaml)
 run_subdir: ${name}/${now:%Y-%m-%d_%H-%M-%S}
 
 # path to output directory, created dynamically by hydra
