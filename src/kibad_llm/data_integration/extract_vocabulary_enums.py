@@ -11,6 +11,7 @@ Inspired by: db_converter.py and database_unique_summary.py
 Usage example:
      python extract_vocabulary_enums.py --top-n 100
 """
+
 import argparse
 import json
 import logging
@@ -43,7 +44,7 @@ def extract_vocabulary_table_name(query: str) -> str | None:
     """
     Extract the vocabulary table name (without prefix) from a SQL query.
     """
-    pattern = r'vocabulary_(\w+)'
+    pattern = r"vocabulary_(\w+)"
     match = re.search(pattern, query, re.IGNORECASE)
     if match:
         return normalize_table_suffix(match.group(1))
