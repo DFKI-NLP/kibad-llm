@@ -98,6 +98,15 @@ def test_predict_fast_dev_run(tmp_path, cfg_predict):
     with open(fixture_path) as f:
         fixture_data = json.load(f)
 
+    assert set(result) == {
+        "file_name",
+        "text",
+        "structured",
+        "error",
+        "response_content",
+        "reasoning_content",
+    }
+
     # just check keys since the actual values are not deterministic
     assert set(result["structured"]) == set(fixture_data["structured"])
 
