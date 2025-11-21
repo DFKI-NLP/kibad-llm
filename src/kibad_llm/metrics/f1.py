@@ -70,7 +70,13 @@ class F1SingleFieldMetric(MetricWithPrepareEntryAsSet):
 
 class F1MultipleFieldsMetric(MetricCollection):
 
-    def __init__(self, fields: list[str], format_as_markdown: bool = True, **kwargs) -> None:
+    def __init__(
+        self,
+        fields: list[str],
+        format_as_markdown: bool = True,
+        sort_fields: bool = False,
+        **kwargs,
+    ) -> None:
         """Computes MicroF1Metric for multiple fields at once.
 
         Args:
@@ -78,6 +84,8 @@ class F1MultipleFieldsMetric(MetricCollection):
             format_as_markdown: Whether to format the result as a markdown table. Defaults to True.
             **kwargs: Additional keyword arguments for MicroF1Metric, e.g., ignore_subfields.
         """
+        if sort_fields:
+            fields = sorted(fields)
         metrics: dict[str, Metric] = {
             field: F1SingleFieldMetric(field=field, **kwargs) for field in fields
         }
