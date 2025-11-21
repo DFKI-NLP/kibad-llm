@@ -22,7 +22,7 @@
 defaults:
   - paths: default
   - hydra: default
-  - metric: f1_single_field
+  - metric: f1
   - _self_
 
 # name of the run, used in logging and as a subdir of log_dir
