@@ -1,8 +1,8 @@
+from collections import defaultdict
 from typing import Any
 
 from pandas import DataFrame
 
-from kibad_llm.metric import Metric
 from kibad_llm.metrics.base import MetricWithPrepareEntryAsSet
 from kibad_llm.metrics.collection import MetricCollection
 
@@ -83,14 +83,46 @@ class F1MultipleFieldsMetric(MetricCollection):
             format_as_markdown: Whether to format the result as a markdown table. Defaults to True.
             **kwargs: Additional keyword arguments for F1MicroSingleFieldMetric, e.g., ignore_subfields.
         """
+        # for now, just raise error if fields contain MICRO or MACRO
+        if "MICRO" in fields or "MACRO" in fields:
+            raise ValueError("Fields cannot contain 'MICRO' or 'MACRO' as field names.")
+
         if sort_fields:
             fields = sorted(fields)
-        metrics: dict[str, Metric] = {
-            field: F1MicroSingleFieldMetric(field=field, **kwargs) for field in fields
-        }
-        super().__init__(metrics=metrics)
+        super().__init__(
+            metrics={field: F1MicroSingleFieldMetric(field=field, **kwargs) for field in fields}
+        )
 
         self.format_as_markdown = format_as_markdown
+
+    def _compute(self, *args, **kwargs) -> dict[str, Any]:
+        """Computes the results for all sub-metrics and MICRO and MACRO averages.
+
+        Returns:
+            A dictionary mapping field names to their computed results.
+        """
+        result = super()._compute(*args, **kwargs)
+
+        # compute MACRO average from result
+        if len(result) > 0:
+            # collect all values for each score
+            result_lists = defaultdict(list)
+            for metric_result in result.values():
+                for key, value in metric_result.items():
+                    result_lists[key].append(value)
+            # compute average for score
+            result["MACRO"] = {
+                key: sum(values) / len(values) for key, values in result_lists.items()
+            }
+
+        # compute MICRO average
+        total_tp = sum(metric.state["tp"] for metric in self.metrics.values())
+        total_fp = sum(metric.state["fp"] for metric in self.metrics.values())
+        total_fn = sum(metric.state["fn"] for metric in self.metrics.values())
+        result["MICRO"] = F1MicroSingleFieldMetric.calculate_scores(
+            tp=total_tp, fp=total_fp, fn=total_fn
+        )
+        return result
 
     def _format_result(self, result: dict[str, Any]) -> str:
         """Formats the result as a markdown table if specified, otherwise as pretty-printed JSON.

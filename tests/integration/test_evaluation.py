@@ -78,6 +78,12 @@ def test_evaluate(tmp_path, cfg_evaluate, metric_name):
         assert metric_scores == {
             "habitat": {"f1": pytest.approx(0.545454545), "precision": 0.375, "recall": 1.0},
             "landuse": {"f1": 0.0, "precision": 0.0, "recall": 0.0},
+            "MACRO": {"f1": pytest.approx(0.27272727272), "precision": 0.1875, "recall": 0.5},
+            "MICRO": {
+                "f1": pytest.approx(0.28571428),
+                "precision": pytest.approx(0.17647058823),
+                "recall": 0.75,
+            },
         }
     else:
         raise ValueError(f"Unexpected metric name: {metric_name}. Please update the test case.")
