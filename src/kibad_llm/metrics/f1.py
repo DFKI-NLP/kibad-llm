@@ -46,27 +46,25 @@ class F1MicroSingleFieldMetric(MetricWithPrepareEntryAsSet):
         self.state["fp"] += len(prediction - reference)
         self.state["fn"] += len(reference - prediction)
 
-    def _compute(self, *args, **kwargs) -> dict[str, Any]:
-        """Computes the micro average of precision, recall and f1
+    @staticmethod
+    def calculate_scores(tp: int, fp: int, fn: int) -> dict[str, float]:
+        """Calculates precision, recall and f1 from true positives, false positives and false negatives.
 
         returns: dictionary with precision, recall and f1
         """
-        precision = (
-            self.state["tp"] / (self.state["tp"] + self.state["fp"])
-            if (self.state["tp"] + self.state["fp"]) > 0
-            else 0.0
-        )
-        recall = (
-            self.state["tp"] / (self.state["tp"] + self.state["fn"])
-            if (self.state["tp"] + self.state["fn"]) > 0
-            else 0.0
-        )
+
+        precision = tp / (tp + fp) if (tp + fp) > 0 else 0.0
+        recall = tp / (tp + fn) if (tp + fn) > 0 else 0.0
         f1 = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0.0
         return {
             "precision": precision,
             "recall": recall,
             "f1": f1,
         }
+
+    def _compute(self, *args, **kwargs) -> dict[str, Any]:
+        """Computes the micro average of precision, recall and f1 score."""
+        return self.calculate_scores(tp=self.state["tp"], fp=self.state["fp"], fn=self.state["fn"])
 
 
 class F1MultipleFieldsMetric(MetricCollection):
