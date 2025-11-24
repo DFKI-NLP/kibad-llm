@@ -65,5 +65,9 @@ def test_extractor(tmp_path, cfg_predict_extractor, extractor_name):
 
     with open(expected_result_path) as f:
         expected_result = json.load(f)
+
+    # check top-level keys
+    assert set(result) == set(expected_result)
+
     # just check keys since the actual values are not deterministic
     assert set(result["structured"]) == set(expected_result["structured"])

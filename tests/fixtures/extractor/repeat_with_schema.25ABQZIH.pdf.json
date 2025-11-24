@@ -1,77 +1,22 @@
 {
   "structured": {
+    "habitat": [
+      "Boden"
+    ],
     "natural_region": [
       "Norddeutsches Tiefland",
       "Alpenvorland"
     ],
-    "habitat": [
-      "Boden",
-      "Agrar- und Offenland"
-    ],
+    "climate": [],
     "landuse": [
       "Landwirtschaft",
       "Energieproduktion",
       "Bau"
-    ],
-    "climate": []
+    ]
   },
-  "structured_list": [
-    {
-      "habitat": [
-        "Boden",
-        "Agrar- und Offenland"
-      ],
-      "natural_region": [
-        "Norddeutsches Tiefland",
-        "Alpenvorland"
-      ],
-      "climate": [],
-      "landuse": [
-        "Landwirtschaft",
-        "Energieproduktion"
-      ]
-    },
-    {
-      "habitat": [
-        "Boden",
-        "Agrar- und Offenland"
-      ],
-      "natural_region": [
-        "Norddeutsches Tiefland",
-        "Alpenvorland"
-      ],
-      "climate": [],
-      "landuse": [
-        "Landwirtschaft",
-        "Bau",
-        "Energieproduktion"
-      ]
-    },
-    {
-      "habitat": [
-        "Boden",
-        "Agrar- und Offenland"
-      ],
-      "natural_region": [
-        "Norddeutsches Tiefland",
-        "Alpenvorland"
-      ],
-      "climate": [],
-      "landuse": [
-        "Landwirtschaft",
-        "Bau",
-        "Energieproduktion"
-      ]
-    }
-  ],
   "error_list": [
     null,
-    null,
+    "JSONDecodeError: Expecting value: line 1 column 1 (char 0)",
     null
-  ],
-  "response_content_list": [
-    "{\"habitat\":[\"Boden\",\"Agrar- und Offenland\"],\"natural_region\":[\"Norddeutsches Tiefland\",\"Alpenvorland\"],\"climate\":[],\"landuse\":[\"Landwirtschaft\",\"Energieproduktion\"]}",
-    "{\"habitat\":[\"Boden\",\"Agrar- und Offenland\"],\"natural_region\":[\"Norddeutsches Tiefland\",\"Alpenvorland\"],\"climate\":[],\"landuse\":[\"Landwirtschaft\",\"Bau\",\"Energieproduktion\"]}",
-    "{\"habitat\":[\"Boden\",\"Agrar- und Offenland\"],\"natural_region\":[\"Norddeutsches Tiefland\",\"Alpenvorland\"],\"climate\":[],\"landuse\":[\"Landwirtschaft\",\"Bau\",\"Energieproduktion\"]}"
   ]
 }
