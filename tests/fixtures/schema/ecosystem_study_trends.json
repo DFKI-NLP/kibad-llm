@@ -108,11 +108,11 @@
     },
     "TrendCategoryEnum": {
       "enum": [
-        "stabil",
-        "positiv",
-        "negativ",
-        "positiv dann negativ",
-        "negativ dann positiv"
+        "positive",
+        "negative",
+        "no",
+        "positive to negative",
+        "negative to positive"
       ],
       "title": "TrendCategoryEnum",
       "type": "string"
