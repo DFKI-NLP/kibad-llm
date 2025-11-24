@@ -230,6 +230,9 @@ def main(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Extract vocabulary enum values from Faktencheck database. "
+                    "Database connection parameters are read from environment variables:"
+        "  DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD"
+        "If any of these are not set, the script falls back to default values."
         "Fields with more than --top-n unique values are excluded from output.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
