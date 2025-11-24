@@ -7,8 +7,9 @@ from kibad_llm.metrics.base import MetricWithPrepareEntryAsSet
 from kibad_llm.metrics.collection import MetricCollection
 
 
-class F1SingleFieldMetric(MetricWithPrepareEntryAsSet):
-    """Computes precision, recall, and F1 score for single- and multi-label classification tasks.
+class F1MicroSingleFieldMetric(MetricWithPrepareEntryAsSet):
+    """Computes micro averaged precision, recall, and F1 score for single- and multi-label
+    classification tasks.
 
     The metric operates on sets and allows for simple preprocessing, see _prepare_entry for details.
 
@@ -77,17 +78,17 @@ class F1MultipleFieldsMetric(MetricCollection):
         sort_fields: bool = False,
         **kwargs,
     ) -> None:
-        """Computes MicroF1Metric for multiple fields at once.
+        """Computes F1MicroSingleFieldMetric for multiple fields at once.
 
         Args:
-            fields: List of fields to compute MicroF1Metric for.
+            fields: List of fields to compute F1MicroSingleFieldMetric for.
             format_as_markdown: Whether to format the result as a markdown table. Defaults to True.
-            **kwargs: Additional keyword arguments for MicroF1Metric, e.g., ignore_subfields.
+            **kwargs: Additional keyword arguments for F1MicroSingleFieldMetric, e.g., ignore_subfields.
         """
         if sort_fields:
             fields = sorted(fields)
         metrics: dict[str, Metric] = {
-            field: F1SingleFieldMetric(field=field, **kwargs) for field in fields
+            field: F1MicroSingleFieldMetric(field=field, **kwargs) for field in fields
         }
         super().__init__(metrics=metrics)
 
