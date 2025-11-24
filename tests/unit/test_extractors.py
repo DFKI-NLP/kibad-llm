@@ -28,7 +28,7 @@ def extractor_name(request) -> str:
 def cfg_predict_extractor(tmp_path, extractor_name) -> DictConfig:  # type: ignore
     cfg = cfg_global(
         out_dir=tmp_path,
-        overrides=[f"extractor={extractor_name}", "store_text_in_predictions=false"],
+        overrides=[f"extractor={extractor_name}"],
         config_name="predict.yaml",
     )
 
