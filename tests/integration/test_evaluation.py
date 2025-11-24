@@ -78,6 +78,7 @@ def test_evaluate(tmp_path, cfg_evaluate, metric_name):
         assert metric_scores == {
             "habitat": {"f1": pytest.approx(0.545454545), "precision": 0.375, "recall": 1.0},
             "landuse": {"f1": 0.0, "precision": 0.0, "recall": 0.0},
+            "MEAN": {"f1": pytest.approx(0.272727272), "precision": 0.1875, "recall": 0.5},
             "ALL": {
                 "f1": pytest.approx(0.28571428),
                 "precision": pytest.approx(0.17647058823),

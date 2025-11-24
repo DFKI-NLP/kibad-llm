@@ -79,8 +79,8 @@ class F1MicroMultipleFieldsMetric(MetricCollection):
         sort_fields: bool = False,
         **kwargs,
     ) -> None:
-        """Computes F1MicroSingleFieldMetric for multiple fields at once and computes micro average
-        over all fields.
+        """Computes F1MicroSingleFieldMetric for multiple fields at once as well as micro (ALL)
+        and macro (MEAN) over all fields.
 
         Args:
             fields: List of fields to compute F1MicroSingleFieldMetric for.
@@ -88,8 +88,8 @@ class F1MicroMultipleFieldsMetric(MetricCollection):
             **kwargs: Additional keyword arguments for F1MicroSingleFieldMetric, e.g., ignore_subfields.
         """
         # for now, just raise error if fields contain MICRO or MACRO
-        if "ALL" in fields:
-            raise ValueError("Fields cannot contain 'ALL' as field names.")
+        if "ALL" in fields or "MEAN" in fields:
+            raise ValueError("Fields cannot contain 'ALL' or 'MEAN' as field names.")
 
         if sort_fields:
             fields = sorted(fields)
@@ -106,6 +106,12 @@ class F1MicroMultipleFieldsMetric(MetricCollection):
             A dictionary mapping field names to their computed results.
         """
         result = super()._compute(*args, **kwargs)
+        # compute mean for precision, recall, f1 over all fields
+        scores_list = defaultdict(list)
+        for field_result in result.values():
+            for key, value in field_result.items():
+                scores_list[key].append(value)
+        result["MEAN"] = {key: sum(values) / len(values) for key, values in scores_list.items()}
 
         # compute micro average over all instances based on states of all sub-metrics
         state_total = {
