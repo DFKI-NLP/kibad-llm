@@ -67,7 +67,7 @@ class F1MicroSingleFieldMetric(MetricWithPrepareEntryAsSet):
         return self.calculate_scores(tp=self.state["tp"], fp=self.state["fp"], fn=self.state["fn"])
 
 
-class F1MultipleFieldsMetric(MetricCollection):
+class F1MicroMultipleFieldsMetric(MetricCollection):
 
     def __init__(
         self,
@@ -84,8 +84,8 @@ class F1MultipleFieldsMetric(MetricCollection):
             **kwargs: Additional keyword arguments for F1MicroSingleFieldMetric, e.g., ignore_subfields.
         """
         # for now, just raise error if fields contain MICRO or MACRO
-        if "MICRO" in fields or "MACRO" in fields:
-            raise ValueError("Fields cannot contain 'MICRO' or 'MACRO' as field names.")
+        if "ALL" in fields:
+            raise ValueError("Fields cannot contain 'ALL' as field names.")
 
         if sort_fields:
             fields = sorted(fields)
@@ -96,30 +96,18 @@ class F1MultipleFieldsMetric(MetricCollection):
         self.format_as_markdown = format_as_markdown
 
     def _compute(self, *args, **kwargs) -> dict[str, Any]:
-        """Computes the results for all sub-metrics and MICRO and MACRO averages.
+        """Computes the results for all sub-metrics and micro average over all instances.
 
         Returns:
             A dictionary mapping field names to their computed results.
         """
         result = super()._compute(*args, **kwargs)
 
-        # compute MACRO average from result per metric
-        if len(result) > 0:
-            # collect all values for each score
-            result_lists = defaultdict(list)
-            for metric_result in result.values():
-                for key, value in metric_result.items():
-                    result_lists[key].append(value)
-            # compute average for score
-            result["MACRO"] = {
-                key: sum(values) / len(values) for key, values in result_lists.items()
-            }
-
-        # compute MICRO average based on states of all sub-metrics
+        # compute micro average over all instances based on states of all sub-metrics
         total_tp = sum(metric.state["tp"] for metric in self.metrics.values())
         total_fp = sum(metric.state["fp"] for metric in self.metrics.values())
         total_fn = sum(metric.state["fn"] for metric in self.metrics.values())
-        result["MICRO"] = F1MicroSingleFieldMetric.calculate_scores(
+        result["ALL"] = F1MicroSingleFieldMetric.calculate_scores(
             tp=total_tp, fp=total_fp, fn=total_fn
         )
         return result
