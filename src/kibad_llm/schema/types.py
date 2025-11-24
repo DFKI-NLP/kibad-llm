@@ -795,3 +795,55 @@ class EcosystemStudyFeaturesCompoundsOnly(BaseEcosystemStudyFeatures):
         alias="Ökosystemleistungen",
         description="Welche Ökosystemleistungen wurden in der Studie untersucht?",
     )
+
+
+class TrendCategoryEnum(str, Enum):
+    # TODO: check values with actual data
+    STABIL = "stabil"
+    POSITIV = "positiv"
+    NEGATIV = "negativ"
+    POSITIV_DANN_NEGATIV = "positiv dann negativ"
+    NEGATIV_DANN_POSITIV = "negativ dann positiv"
+
+
+class EcosystemTrend(BaseModel):
+    """Trendaussage zu einem bestimmten Ökosystemaspekt bestehend aus Lebensraum (habitat),
+    Artengruppe (taxa), Biodiversitätsvariable (biodiversity_variable) und Trendkategorie (trend_category).
+    """
+
+    habitat: HabitatEnum = Field(
+        ...,
+        alias="Lebensraum",
+        description="Auf welchen der folgenden Lebensräume bezieht sich der Trend?",
+    )
+    taxa: Taxa = Field(
+        ...,
+        alias="Artengruppe",
+        description="Auf welche Artengruppe bezieht sich der Trend?",
+    )
+    biodiversity_variable: str = Field(
+        ...,
+        alias="Biodiversitätsvariable",
+        description="In welcher Biodiversitätsvariable wird der Trend beschrieben?",
+    )
+    trend_category: TrendCategoryEnum = Field(
+        ...,
+        alias="Trendkategorie",
+        description="In welche der folgenden Kategorien lässt sich der Trend einordnen?",
+    )
+
+    # do not allow extra fields per default
+    model_config = ConfigDict(extra="forbid")
+
+
+class EcosystemStudyTrends(BaseEcosystemStudyFeatures):
+    """Angaben zu den im Text beschriebenen Ökosystemtrends."""
+
+    trends: list[EcosystemTrend] = Field(
+        default_factory=list,
+        alias="Trends",
+        description="Liste der im Text beschriebenen Ökosystemtrends.",
+    )
+
+    # do not allow extra fields per default
+    model_config = ConfigDict(extra="forbid")
