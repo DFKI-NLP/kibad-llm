@@ -142,7 +142,7 @@ def test_multiple_fields_single_field() -> None:
     out = m.compute()
     assert out == {
         "label": {"f1": 0.5, "precision": 0.5, "recall": 0.5},
-        "MEAN": {"f1": 0.5, "precision": 0.5, "recall": 0.5},
+        "AVG": {"f1": 0.5, "precision": 0.5, "recall": 0.5},
         "ALL": {"f1": 0.5, "precision": 0.5, "recall": 0.5},
     }
 
@@ -155,7 +155,7 @@ def test_multiple_fields() -> None:
     assert out == {
         "label1": {"f1": 0.5, "precision": 0.5, "recall": 0.5},
         "label2": {"f1": 0.5, "precision": 0.5, "recall": 0.5},
-        "MEAN": {"f1": 0.5, "precision": 0.5, "recall": 0.5},
+        "AVG": {"f1": 0.5, "precision": 0.5, "recall": 0.5},
         "ALL": {"f1": 0.5, "precision": 0.5, "recall": 0.5},
     }
 
@@ -179,7 +179,7 @@ def test_multiple_fields_format_result_markdown() -> None:
         "|:--------|------------:|---------:|-----:|\n"
         "| label1  |           1 |        1 |    1 |\n"
         "| label2  |           1 |        1 |    1 |\n"
-        "| MEAN    |           1 |        1 |    1 |\n"
+        "| AVG     |           1 |        1 |    1 |\n"
         "| ALL     |           1 |        1 |    1 |"
     )
 
@@ -196,7 +196,7 @@ def test_multiple_fields_format_result_json() -> None:
         '    "recall": 1.0,\n'
         '    "f1": 1.0\n'
         "  },\n"
-        '  "MEAN": {\n'
+        '  "AVG": {\n'
         '    "precision": 1.0,\n'
         '    "recall": 1.0,\n'
         '    "f1": 1.0\n'
@@ -234,7 +234,7 @@ def test_multiple_fields_show(format_as_markdown: bool, sort_fields: bool, caplo
                 "|:--------|------------:|---------:|-----:|\n"
                 "| a_field |           1 |        1 |    1 |\n"
                 "| b_field |           1 |        1 |    1 |\n"
-                "| MEAN    |           1 |        1 |    1 |\n"
+                "| AVG     |           1 |        1 |    1 |\n"
                 "| ALL     |           1 |        1 |    1 |\n"
             )
         else:
@@ -243,7 +243,7 @@ def test_multiple_fields_show(format_as_markdown: bool, sort_fields: bool, caplo
                 "|:--------|------------:|---------:|-----:|\n"
                 "| b_field |           1 |        1 |    1 |\n"
                 "| a_field |           1 |        1 |    1 |\n"
-                "| MEAN    |           1 |        1 |    1 |\n"
+                "| AVG     |           1 |        1 |    1 |\n"
                 "| ALL     |           1 |        1 |    1 |\n"
             )
     else:
@@ -260,7 +260,7 @@ def test_multiple_fields_show(format_as_markdown: bool, sort_fields: bool, caplo
                 '    "recall": 1.0,\n'
                 '    "f1": 1.0\n'
                 "  },\n"
-                '  "MEAN": {\n'
+                '  "AVG": {\n'
                 '    "precision": 1.0,\n'
                 '    "recall": 1.0,\n'
                 '    "f1": 1.0\n'
@@ -285,7 +285,7 @@ def test_multiple_fields_show(format_as_markdown: bool, sort_fields: bool, caplo
                 '    "recall": 1.0,\n'
                 '    "f1": 1.0\n'
                 "  },\n"
-                '  "MEAN": {\n'
+                '  "AVG": {\n'
                 '    "precision": 1.0,\n'
                 '    "recall": 1.0,\n'
                 '    "f1": 1.0\n'
