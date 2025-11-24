@@ -800,7 +800,7 @@ class EcosystemStudyFeaturesCompoundsOnly(BaseEcosystemStudyFeatures):
 class TrendCategoryEnum(str, Enum):
     POSITIVE = "positive"
     NEGATIVE = "negative"
-    # TODO: what does this mean? no trend mentioned? or constant trend?
+    # TODO: what does this mean? no trend mentioned? or constant/stable trend?
     NO = "no"
     POSITIVE_TO_NEGATIVE = "positive to negative"
     NEGATIVE_TO_POSITIVE = "negative to positive"
