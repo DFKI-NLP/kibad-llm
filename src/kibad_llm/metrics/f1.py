@@ -47,12 +47,15 @@ class F1MicroSingleFieldMetric(MetricWithPrepareEntryAsSet):
         self.state["fn"] += len(reference - prediction)
 
     @staticmethod
-    def calculate_scores(tp: int, fp: int, fn: int) -> dict[str, float]:
+    def calculate_scores(state: dict[str, int]) -> dict[str, float]:
         """Calculates precision, recall and f1 from true positives, false positives and false negatives.
+
+        Args:
+            state: dictionary with keys "tp", "fp", "fn"
 
         returns: dictionary with precision, recall and f1
         """
-
+        tp, fp, fn = state["tp"], state["fp"], state["fn"]
         precision = tp / (tp + fp) if (tp + fp) > 0 else 0.0
         recall = tp / (tp + fn) if (tp + fn) > 0 else 0.0
         f1 = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0.0
@@ -64,7 +67,7 @@ class F1MicroSingleFieldMetric(MetricWithPrepareEntryAsSet):
 
     def _compute(self, *args, **kwargs) -> dict[str, Any]:
         """Computes the micro average of precision, recall and f1 score."""
-        return self.calculate_scores(tp=self.state["tp"], fp=self.state["fp"], fn=self.state["fn"])
+        return self.calculate_scores(state=self.state)
 
 
 class F1MicroMultipleFieldsMetric(MetricCollection):
@@ -76,7 +79,8 @@ class F1MicroMultipleFieldsMetric(MetricCollection):
         sort_fields: bool = False,
         **kwargs,
     ) -> None:
-        """Computes F1MicroSingleFieldMetric for multiple fields at once.
+        """Computes F1MicroSingleFieldMetric for multiple fields at once and computes micro average
+        over all fields.
 
         Args:
             fields: List of fields to compute F1MicroSingleFieldMetric for.
@@ -104,12 +108,12 @@ class F1MicroMultipleFieldsMetric(MetricCollection):
         result = super()._compute(*args, **kwargs)
 
         # compute micro average over all instances based on states of all sub-metrics
-        total_tp = sum(metric.state["tp"] for metric in self.metrics.values())
-        total_fp = sum(metric.state["fp"] for metric in self.metrics.values())
-        total_fn = sum(metric.state["fn"] for metric in self.metrics.values())
-        result["ALL"] = F1MicroSingleFieldMetric.calculate_scores(
-            tp=total_tp, fp=total_fp, fn=total_fn
-        )
+        state_total = {
+            "tp": sum(metric.state["tp"] for metric in self.metrics.values()),
+            "fp": sum(metric.state["fp"] for metric in self.metrics.values()),
+            "fn": sum(metric.state["fn"] for metric in self.metrics.values()),
+        }
+        result["ALL"] = F1MicroSingleFieldMetric.calculate_scores(state=state_total)
         return result
 
     def _format_result(self, result: dict[str, Any]) -> str:
