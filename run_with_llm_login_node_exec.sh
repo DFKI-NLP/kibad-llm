@@ -46,6 +46,7 @@ esac; shift; done
 if [[ "$1" == '--' ]]; then shift; fi
 
 export HF_HOME="/netscratch/$USER/.cache/hf"
+export VLLM_CACHE_ROOT="/netscratch/$USER/.cache/vllm"
 
 # use uuid to prevent job collision
 UUID="$(uuidgen)"
