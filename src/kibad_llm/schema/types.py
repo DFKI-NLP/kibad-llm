@@ -798,13 +798,12 @@ class EcosystemStudyFeaturesCompoundsOnly(BaseEcosystemStudyFeatures):
 
 
 class TrendCategoryEnum(str, Enum):
-    # TODO: Check values with actual data. Where can we find this? Is there a google/excel table?
-    #  If not, it should be created for easy verification. The link needs to be added to the PR description.
-    STABIL = "stabil"
-    POSITIV = "positiv"
-    NEGATIV = "negativ"
-    POSITIV_DANN_NEGATIV = "positiv dann negativ"
-    NEGATIV_DANN_POSITIV = "negativ dann positiv"
+    POSITIVE = "positive"
+    NEGATIVE = "negative"
+    # TODO: what does this mean? no trend mentioned? or constant trend?
+    NO = "no"
+    POSITIVE_TO_NEGATIVE = "positive to negative"
+    NEGATIVE_TO_POSITIVE = "negative to positive"
 
 
 class EcosystemTrend(BaseModel):
