@@ -44,4 +44,4 @@ fast_dev_run: False
 # set True to enable caching of extraction results, useful for debugging
 extraction_caching: False
 # set False to disable storing the text in predictions, saves loads of storage
-store_text_in_predictions: True
+store_text_in_predictions: False
