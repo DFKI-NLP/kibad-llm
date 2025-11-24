@@ -63,6 +63,7 @@ class F1MicroSingleFieldMetric(MetricWithPrepareEntryAsSet):
             "precision": precision,
             "recall": recall,
             "f1": f1,
+            "support": tp + fn,
         }
 
     def _compute(self, *args, **kwargs) -> dict[str, Any]:
