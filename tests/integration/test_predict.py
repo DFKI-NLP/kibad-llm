@@ -104,7 +104,12 @@ def test_predict_fast_dev_run(tmp_path, cfg_predict):
 
 @pytest.fixture(scope="function")
 def cfg_predict_pdf_errors(tmp_path) -> DictConfig:  # type: ignore
-    cfg = cfg_global(config_name="predict.yaml", out_dir=tmp_path)
+    cfg = cfg_global(
+        config_name="predict.yaml",
+        out_dir=tmp_path,
+        # we need the text to check for the length, so enable store_text_in_predictions
+        overrides=["store_text_in_predictions=true"],
+    )
 
     with open_dict(cfg):
         cfg.pdf_directory = str(PROJ_ROOT / "tests" / "fixtures" / "pdfs_error")
