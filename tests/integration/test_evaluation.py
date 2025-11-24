@@ -39,7 +39,7 @@ def cfg_evaluate(tmp_path, metric_name) -> DictConfig:  # type: ignore
         cfg.predictions_file = str(PREDICTIONS_FILE)
         cfg.references_file = str(REFERENCES_FILE)
         # this produces non-zero results
-        if metric_name in ["confusion_matrix", "f1_single_field"]:
+        if metric_name in ["confusion_matrix", "f1_micro_single_field"]:
             cfg.metric.field = "habitat"
         elif metric_name == "f1":
             cfg.metric.fields = ["habitat", "landuse"]
@@ -59,7 +59,7 @@ def test_evaluate(tmp_path, cfg_evaluate, metric_name):
     HydraConfig().set_config(cfg_evaluate)
     metric_scores = evaluate(cfg_evaluate)
 
-    if metric_name == "f1_single_field":
+    if metric_name == "f1_micro_single_field":
         assert metric_scores == pytest.approx(
             {"f1": 2 * ((3 / 8) / (1 + (3 / 8))), "precision": 3 / 8, "recall": 1}
         )
