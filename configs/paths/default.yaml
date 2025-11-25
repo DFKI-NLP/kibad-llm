@@ -26,4 +26,4 @@ log_dir: ${paths.save_dir}/logs
 work_dir: ${hydra:runtime.cwd}
 
 # predefined path that can be used as output path for the serializer
-prediction_save_dir: ${paths.save_dir}/predictions/${run_subdir}
+prediction_save_dir: ${paths.save_dir}/predictions/${paths.run_subdir}
