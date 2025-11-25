@@ -806,7 +806,7 @@ class TrendCategoryEnum(str, Enum):
     NEGATIVE_TO_POSITIVE = "negative to positive"
 
 
-class EcosystemTrend(BaseModel):
+class EcosystemTrend(CompoundFeature):
     """Trendaussage zu einem bestimmten Ökosystemaspekt bestehend aus Lebensraum (habitat),
     Artengruppe (taxa), Biodiversitätsvariable (biodiversity_variable) und Trendkategorie (trend_category).
     """
@@ -817,6 +817,7 @@ class EcosystemTrend(BaseModel):
         alias="Lebensraum",
         description="Auf welchen der folgenden Lebensräume bezieht sich der Trend?",
     )
+    # TODO: Use special Taxa with different species_group (in detail, SpeciesGroupEnum)?
     taxa: Taxa = Field(
         ...,
         alias="Artengruppe",
@@ -833,9 +834,6 @@ class EcosystemTrend(BaseModel):
         description="In welche der folgenden Kategorien lässt sich der Trend einordnen?",
     )
 
-    # do not allow extra fields per default
-    model_config = ConfigDict(extra="forbid")
-
 
 class EcosystemStudyTrends(BaseEcosystemStudyFeatures):
     """Angaben zu den im Text beschriebenen Ökosystemtrends."""
@@ -845,6 +843,3 @@ class EcosystemStudyTrends(BaseEcosystemStudyFeatures):
         alias="Trends",
         description="Liste der im Text beschriebenen Ökosystemtrends.",
     )
-
-    # do not allow extra fields per default
-    model_config = ConfigDict(extra="forbid")

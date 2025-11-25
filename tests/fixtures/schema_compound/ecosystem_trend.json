@@ -1,0 +1,119 @@
+{
+  "$defs": {
+    "HabitatEnum": {
+      "enum": [
+        "Agrar- und Offenland",
+        "Binnengewässer und Auen",
+        "Boden",
+        "Küsten und Küstengewässer",
+        "Urbane Räume",
+        "Wald"
+      ],
+      "title": "HabitatEnum",
+      "type": "string"
+    },
+    "SpeciesGroupEnum": {
+      "enum": [
+        "Amphibien und Reptilien",
+        "Andere",
+        "Andere Pflanzen",
+        "Andere Wirbellose",
+        "Archaeen",
+        "Bakterien",
+        "Fische",
+        "Flechten",
+        "Gefäßpflanzen",
+        "Insekten",
+        "Moose",
+        "Pilze",
+        "Protisten",
+        "Protozoen",
+        "Säugetiere",
+        "Vögel"
+      ],
+      "title": "SpeciesGroupEnum",
+      "type": "string"
+    },
+    "Taxa": {
+      "additionalProperties": false,
+      "description": "Art mit wissenschaftlichem und deutschem Namen sowie taxonomischer Gruppe.",
+      "properties": {
+        "scientific_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Wissenschaftlicher Name der Art",
+          "title": "Scientific Name"
+        },
+        "german_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Deutscher Name der Art",
+          "title": "German Name"
+        },
+        "species_group": {
+          "$ref": "#/$defs/SpeciesGroupEnum",
+          "description": "Taxonomische Gruppe der Art"
+        }
+      },
+      "required": [
+        "species_group"
+      ],
+      "title": "Taxa",
+      "type": "object"
+    },
+    "TrendCategoryEnum": {
+      "enum": [
+        "positive",
+        "negative",
+        "no",
+        "positive to negative",
+        "negative to positive"
+      ],
+      "title": "TrendCategoryEnum",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Trendaussage zu einem bestimmten Ökosystemaspekt bestehend aus Lebensraum (habitat),\nArtengruppe (taxa), Biodiversitätsvariable (biodiversity_variable) und Trendkategorie (trend_category).",
+  "properties": {
+    "habitat": {
+      "$ref": "#/$defs/HabitatEnum",
+      "description": "Auf welchen der folgenden Lebensräume bezieht sich der Trend?"
+    },
+    "taxa": {
+      "$ref": "#/$defs/Taxa",
+      "description": "Auf welche Artengruppe bezieht sich der Trend?"
+    },
+    "biodiversity_variable": {
+      "description": "In welcher Biodiversitätsvariable wird der Trend beschrieben?",
+      "title": "Biodiversity Variable",
+      "type": "string"
+    },
+    "trend_category": {
+      "$ref": "#/$defs/TrendCategoryEnum",
+      "description": "In welche der folgenden Kategorien lässt sich der Trend einordnen?"
+    }
+  },
+  "required": [
+    "habitat",
+    "taxa",
+    "biodiversity_variable",
+    "trend_category"
+  ],
+  "title": "EcosystemTrend",
+  "type": "object"
+}
