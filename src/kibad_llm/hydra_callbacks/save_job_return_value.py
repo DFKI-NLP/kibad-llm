@@ -440,7 +440,7 @@ class SaveJobReturnValueCallback(Callback):
                 # remove padding from keys for json output
                 obj_py = unflatten_dict(flatten_dict(obj_py), unpad_keys=True)
             with open(str(output_dir / filename), "w") as file:
-                json.dump(obj_py, file, indent=2)
+                json.dump(obj_py, file, indent=2, ensure_ascii=False)
         elif filename.endswith(".md"):
             # Convert PyTorch tensors and numpy arrays to native python types
             obj_py = to_py_obj(obj)
