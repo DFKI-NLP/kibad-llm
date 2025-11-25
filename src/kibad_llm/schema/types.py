@@ -811,6 +811,7 @@ class EcosystemTrend(BaseModel):
     Artengruppe (taxa), Biodiversitätsvariable (biodiversity_variable) und Trendkategorie (trend_category).
     """
 
+    # TODO: For now, all four fields are mandatory. Is this fine for an initial version?
     habitat: HabitatEnum = Field(
         ...,
         alias="Lebensraum",
