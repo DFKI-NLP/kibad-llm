@@ -1,6 +1,7 @@
 from typing import Any
 
 from kibad_llm.metric import Metric
+from kibad_llm.utils.dictionary import flatten_dict_simple
 
 
 def _convert_dict_to_tuple(d: dict, ignore_keys: list | None = None) -> tuple:
@@ -14,15 +15,20 @@ class MetricWithPrepareEntryAsSet(Metric):
 
     Args:
         field: Optional; If provided, the field to extract from a dict entry.
+        flatten_dicts: bool; Whether to flatten dict entries before processing.
         ignore_subfields: Optional; A dict mapping field names to lists of subfield names to ignore
             when converting dicts to tuples.
     """
 
     def __init__(
-        self, field: str | None = None, ignore_subfields: dict[str, list] | None = None
+        self,
+        field: str | None = None,
+        flatten_dicts: bool = False,
+        ignore_subfields: dict[str, list] | None = None,
     ) -> None:
         self.field = field
         self.ignore_subfields = []
+        self.flatten_dicts = flatten_dicts
         if ignore_subfields is not None and self.field is not None:
             self.ignore_subfields = ignore_subfields.get(self.field, [])
         super().__init__()
@@ -39,6 +45,9 @@ class MetricWithPrepareEntryAsSet(Metric):
             entry: Any kind of data structure to maybe extract from and eventually wrap in a set.
         Returns: A set of whatever relevant value was put in.
         """
+        if entry is not None and isinstance(entry, dict) and self.flatten_dicts:
+            entry = flatten_dict_simple(entry)
+
         if self.field is not None and entry is not None:
             if not isinstance(entry, dict):
                 raise ValueError(
