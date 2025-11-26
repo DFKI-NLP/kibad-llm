@@ -6,9 +6,3 @@ defaults:
   - references: faktencheck_db_converted
 
 _target_: kibad_llm.dataset.utils.merge_references_into_predictions
-predictions_id_key: file_name
-# strip file extension from predictions to match zotitem_ptr_id in references
-process_predictions_id:
-  _partial_: true
-  _target_: kibad_llm.utils.path.strip_filename_extension
-references_id_key: zotitem_ptr_id

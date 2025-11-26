@@ -1,11 +1,10 @@
 _target_: kibad_llm.dataset.json.load_and_preprocess
 file: ???
-# If any of these contains a list of None values (in the first entry of the predictions),
-# datasets does not grasp the structure correctly and fails, so we drop them here.
-# When the extractor did return more entries that may be lists of None (e.g. reasoning_content),
-# they need to be added here as well.
-drop_columns:
-  - error_list
+id_key: file_name
+# strip file extension from predictions to match zotitem_ptr_id in references
+process_id:
+  _partial_: true
+  _target_: kibad_llm.utils.path.strip_filename_extension
 preprocess:
   _target_: kibad_llm.utils.dictionary.get
   _partial_: True

@@ -30,13 +30,8 @@ def evaluate(cfg: DictConfig) -> dict[str, Any]:
     metric: Metric = instantiate(cfg.metric, _convert_="all")
 
     logger.info("Computing metric ...")
-    dataset.map(
-        metric.update,
-        input_columns=["prediction", "reference"],
-        # disable caching since we are interested in the side effect of updating the metric,
-        # not in the returned dataset
-        load_from_cache_file=False,
-    )
+    for _, example in dataset.items():
+        metric.update(example["prediction"], example["reference"])
     metric_dict = metric.compute()
 
     metric.show_result(metric_dict)
