@@ -4,53 +4,32 @@
 #
 # In detail:
 #  - Entries in the predictions are taken from the "structured" field produced by the LLM in predict.py
-#    and individual fields (which are based on the json schema compiled from schema.types.EcosystemStudyFeatures)
-#    are mapped via the key mapping, see preprocess_prediction below.
-#  - Entries in the references are taken from the json produced by db_converter.py (from the Faktencheck-DB),
-#    but flattened (dicts as well as list levels), see preprocess_reference below.
+#    and individual fields (which are based on the json schema compiled from schema.types.EcosystemStudyFeatures).
+#    See dataset/predictions/extraction_result.yaml for details.
+#  - Entries in the references are taken from the json produced by db_converter.py (from the Faktencheck-DB).
+#    See dataset/references/faktencheck_db_converted.yaml for details.
 #  - Prediction and reference entries are matched based on the PDF file_name and zotitem_ptr_id, respectively.
+#    See dataset/faktencheck_predictions_with_references.yaml for details.
 #  - Per default, uses the "f1" metric to compute F1 scores far a selected field of single- or multi-label
 #    classification (see configs/metrics/f1.yaml for details). See configs/metrics/ for other
 #    available metrics.
 #
 # Usage:
 #    python -m kibad_llm.evaluate \
-#      predictions_file=path/to/predictions.jsonl \
-#      references_file=path/to/references.jsonl \
+#      dataset.predictions.file=path/to/predictions.jsonl \
 #      metric.field=path/in/flattened/reference/jsonl
 
 defaults:
   - paths: default
   - hydra: default
+  # this needs to return a dataset with 'prediction' and 'reference' entries
+  - dataset: faktencheck_predictions_with_references
+  # this needs to return an instance of kibad_llm.metric.Metric
   - metric: f1_micro
   - _self_
 
 # name of the run, used in logging and as a subdir of log_dir
 name: "default"
-
-# Path to the JSONL file containing predictions to evaluate, e.g., produced by predict.py.
-predictions_file: ???
-# Path to the JSONL file containing gold reference data for evaluation,
-# e.g., produced by data_integration/db_converter.py from the Faktencheck-DB.
-references_file: ???
-
-# preprocess_reference:
-#   _target_: kibad_llm.utils.dictionary.flatten_dict_simple
-#   _partial_: True
-#   sep: "/"
-
-# If any of these contains a list of None values (in the first entry of the predictions),
-# datasets does not grasp the structure correctly and fails, so we drop them here.
-# When the extractor did return more entries that may be lists of None (e.g. reasoning_content),
-# they need to be added here as well.
-drop_prediction_columns:
-  - error_list
-
-preprocess_prediction:
-  _target_: kibad_llm.utils.dictionary.get
-  _partial_: True
-  key: "structured"
-
 
 metric:
   # for compound entries, we may ignore certain subfields during evaluation
