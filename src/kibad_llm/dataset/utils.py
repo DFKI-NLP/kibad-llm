@@ -1,12 +1,10 @@
-from collections.abc import Callable, Hashable
-
-from datasets import Dataset
+from collections.abc import Hashable
 
 
 def merge_references_into_predictions(
     predictions: dict,
     references: dict,
-) -> Dataset:
+) -> dict[Hashable, dict[str, dict]]:
     """Create a new Dataset with entries "prediction" and "reference" by merging references
     into predictions based on matching IDs. If no matching reference is found for a prediction,
     the "reference" field will be an empty dict.

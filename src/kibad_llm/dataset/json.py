@@ -1,8 +1,6 @@
-from collections.abc import Callable
+from collections.abc import Callable, Hashable
 import json
 import logging
-
-from datasets import Dataset
 
 logger = logging.getLogger(__name__)
 
@@ -12,7 +10,7 @@ def load_and_preprocess(
     id_key: str,
     process_id: Callable | None = None,
     preprocess: Callable | None = None,
-) -> Dataset:
+) -> dict[Hashable, dict]:
     """Load a dataset from a JSON file and apply optional preprocessing.
 
     Args:
