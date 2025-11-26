@@ -46,6 +46,20 @@ def evaluate(cfg: DictConfig) -> dict[str, Any]:
 
     logger.info(f"Loading predictions from {cfg.predictions_file} ...")
     predictions = Dataset.from_json(cfg.predictions_file)
+
+    # this needs to happen before any mapping is applied (which may fail otherwise)
+    if cfg.get("drop_prediction_columns"):
+        logger.info(f"Dropping prediction columns: {cfg.drop_prediction_columns} ...")
+        columns_remove = [
+            col for col in cfg.drop_prediction_columns if col in predictions.column_names
+        ]
+        columns_not_found = set(cfg.drop_prediction_columns) - set(columns_remove)
+        if len(columns_not_found) > 0:
+            logger.warning(
+                f"Columns not found in predictions, but specified to drop: {columns_not_found}"
+            )
+        predictions = predictions.remove_columns(columns_remove)
+
     if cfg.get("preprocess_prediction"):
         logger.info(
             "Preprocess predictions for metric computation (e.g. map schema keys to json paths) ..."
