@@ -15,8 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 def evaluate(cfg: DictConfig) -> dict[str, Any]:
-    """Evaluate predictions against gold references using a specified metric and optional preprocessing
-    of predictions and references.
+    """Evaluates a dataset containing predictions and references using a specified metric.
 
     Args:
         cfg: OmegaConf configuration. See configs/evaluate.yaml for details.
