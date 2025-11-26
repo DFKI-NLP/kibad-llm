@@ -19,7 +19,7 @@
 based on: [DFKI-NLP/vLLM-Starter#2 (comment)](https://github.com/DFKI-NLP/vLLM-Starter/issues/2#issuecomment-3383218249)
 
 1. Install uv: https://docs.astral.sh/uv/getting-started/installation/
-2. open a new shell (or a create a new screen: `screen -S vLLM-Starter`)
+1. open a new shell (or a create a new screen: `screen -S vLLM-Starter`)
 
 ### Run `gpt-oss-20b`
 
@@ -169,12 +169,17 @@ In order to use `run_with_llm.sh` you need to have followed the steps in [Full p
 `run_with_llm.sh` uses flags with command line arguments.
 
 - `-h | --help` displays very similar help to this.
+
 - `-v | --vllm` is used for almost all arguments relevant to vLLM. If there are multiple, make sure to wrap them in quotes like `"some/mistral --trust-remote-code"`. This is a required flag.
+
 - `-vv | --vllm-version` is the vLLM version to run. This is an optional flag and uses the latest stable version per default.
 
 - `-po | --port` is the port vLLM and the uv code communicate on. This is an optional flag and uses a random port per default.
+
 - `pa | --partition` is the slurm partition to submit the job to. This is an optional flag and uses `"RTX6000-SLT"` per default.
+
 - `-t | --time` is the maximum time the slurm job is allowed to run. This is an optional flag and uses one hour per default.
+
 - `-u | --uv` is used for all `uv run` arguments. If there are multiple, make sure to wrap them in quotes like `"-m some.code"` which results in `uv run -m some.code`. This is a required flag.
 
 The script takes care of everything start to finish and executes all code on the compute node. As soon as the job gets resources, vLLM starts. The script then waits till vLLm is ready and starts your code with uv right after. This allows you to run heavy jobs without straining the login node. You can cancel the job with `ctrl-c` or `scancel` any time and don't need to worry about residual processes.
