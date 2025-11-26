@@ -1,4 +1,4 @@
-_target_: kibad_llm.dataset.json.load_and_preprocess
+_target_: kibad_llm.dataset.json.read_and_preprocess
 file: ???
 id_key: file_name
 # strip file extension from predictions to match zotitem_ptr_id in references
