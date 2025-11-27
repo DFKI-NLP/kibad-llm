@@ -797,6 +797,7 @@ class EcosystemStudyFeaturesCompoundsOnly(BaseEcosystemStudyFeatures):
     )
 
 
+# currently not used
 class SpeciesGroupForTrendEnum(str, Enum):
     AMPHIBIEN = "Amphibien"
     ARTHROPODEN = "Arthropoden"
@@ -898,22 +899,23 @@ class TaxaForTrend(CompoundFeature):
     """Art mit Hauptgruppe (hauptgruppe_rote_listen), Untergruppe (untergruppe_rote_listen)
     und Detail (untergruppe_rote_listen_detail)."""
 
-    # TODO: I created these entries based Trends-WeightedVoteCount.csv file. Was this correct?
+    # TODO: I created the fields below based Trends-WeightedVoteCount.csv file. Was this correct?
     # The alias fields are the columns from Trends-WeightedVoteCount.csv.
+
+    # TODO: data does not contain NA values, so this is required
     hauptgruppe_rote_listen: HauptGruppeRoteListenEnum = Field(
-        # data does not contain NA values, so this is required
         ...,
         alias="Hauptgruppe_RoteListen",
         description="TODO",
     )
+    # TODO: data contains NA values, so this is optional. correct?
     untergruppe_rote_listen: UntergruppeRoteListenEnum | None = Field(
-        # data contains NA values, so this is optional
         default=None,
         alias="Untergruppe_RoteListen",
         description="TODO",
     )
+    # TODO: data contains NA values, so this is optional. correct?
     untergruppe_rote_listen_detail: UntergruppeRoteListenDetailEnum | None = Field(
-        # data contains NA values, so this is optional
         default=None,
         alias="Untergruppe_RoteListen_Detail",
         description="TODO",
@@ -953,6 +955,7 @@ class BiodiversityTrend(CompoundFeature):
 
     # TODO: I updated these entries based Trends-WeightedVoteCount.csv file. Was this correct?
     # The alias fields are the columns from Trends-WeightedVoteCount.csv.
+
     taxa: TaxaForTrend = Field(
         ...,
         alias="Artengruppe",
