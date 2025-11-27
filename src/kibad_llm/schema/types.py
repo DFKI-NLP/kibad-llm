@@ -811,23 +811,112 @@ class SpeciesGroupForTrendEnum(str, Enum):
     VOEGEL = "Vögel"
 
 
-class TaxaForTrend(CompoundFeature):
-    """Art mit wissenschaftlichem und deutschem Namen sowie taxonomischer Gruppe."""
+class HauptGruppeRoteListenEnum(str, Enum):
+    MAKROFAUNA = "Makrofauna"
+    MESOFAUNA = "Mesofauna"
+    MIKROFAUNA = "Mikrofauna"
+    PFLANZEN = "Pflanzen"
+    PILZE_FLECHTEN = "Pilze_Flechten"
+    WIRBELLOSE = "Wirbellose"
+    WIRBELTIERE = "Wirbeltiere"
 
-    scientific_name: str | None = Field(
-        default=None,
-        alias="Wissenschaftlicher Artenname",
-        description="Wissenschaftlicher Name der Art",
-    )
-    german_name: str | None = Field(
-        default=None,
-        alias="Deutscher Artenname",
-        description="Deutscher Name der Art",
-    )
-    species_group: SpeciesGroupForTrendEnum = Field(
+
+class UntergruppeRoteListenEnum(str, Enum):
+    AMPHIBIEN = "Amphibien"
+    ANDERE_WIRBELLOSE = "Andere_Wirbellose"
+    ANDERE_WIRBELLOSE_MAKROZOOBENTHOS = "Andere_Wirbellose_Makrozoobenthos"
+    ANDERE_WIRBELLOSE_ZOOPLANKTON = "Andere_Wirbellose_Zooplankton"
+    ARTHROPODEN = "Arthropoden"
+    COLLEMBOLA = "Collembola"
+    FISCHE = "Fische"
+    FLECHTEN = "Flechten"
+    MESOSTIGMATA = "Mesostigmata"
+    MIKROALGEN = "Mikroalgen"
+    MOOSE = "Moose"
+    ORIBATIDA = "Oribatida"
+    PFLANZEN = "Pflanzen"
+    PILZE = "Pilze"
+    REPTILIEN = "Reptilien"
+    SAEUGER = "Saeuger"
+    VOEGEL = "Voegel"
+
+
+class UntergruppeRoteListenDetailEnum(str, Enum):
+    AMPHIBIEN = "Amphibien"
+    ANDERE = "Andere"
+    ANDERE_WIRBELLOSE = "Andere_Wirbellose"
+    ARTHROPODEN = "Arthropoden"
+    BAKTERIEN = "Bakterien"
+    BINNENMOLLUSKEN = "Binnenmollusken"
+    BODENMIKROORGANISMEN = "Bodenmikroorganismen"
+    CHIROPTERA_FLEDERMAEUSE = "Chiroptera/ Fledermaeuse"
+    DOPPELFUESSER = "Doppelfüßer"
+    ENCHYTRAEIDAE = "Enchytraeidae"
+    FARN_BLUETENPFLANZEN = "Farn- und Blütenpflanzen"
+    FISCHE = "Fische"
+    FLECHTEN = "Flechten"
+    GAMASINA = "Gamasina"
+    HEUSCHRECKEN = "Heuschrecken"
+    HORNMILBEN_ORIBATIDA = "Hornmilben (Oribatida)"
+    KURZFLUEGLER = "Kurzflügler"
+    KAEFER_WANZEN_ZIKADEN = "Käfer, Wanzen, Zikaden"
+    LANDSCHNECKEN = "Landschnecken"
+    LAUFKAEFER = "Laufkäfer"
+    LIBELLEN = "Libellen"
+    MAKROFAUNA = "Makrofauna"
+    MAKROPHYTEN = "Makrophyten"
+    MAKROZOOBENTHOS = "Makrozoobenthos"
+    MICROBES = "Microbes"
+    MIKROORGANISMEN = "Mikroorganismen"
+    MOLLUSKEN = "Mollusken"
+    MOOSE = "Moose"
+    NEMATODA = "Nematoda"
+    NEMATODEN = "Nematoden"
+    ORIBATIDA = "Oribatida"
+    PFLANZEN = "Pflanzen"
+    PHYTOPLANKTON = "Phytoplankton"
+    PILZE = "Pilze"
+    REGENWUERMER = "Regenwürmer"
+    REPTILIEN = "Reptilien"
+    SAPROPHAGE_NEMATODEN = "saprophage Nematoden"
+    SPECHTE_FLEDERMAEUSE = "Spechte und zusätzlich Fledermäuse (Säugetiere)"
+    SPINNEN = "Spinnen"
+    SAEUGER = "Säuger"
+    SAEUGETIERE = "Säugetiere"
+    SUESSWASSERFISCHE = "Süßwasserfische"
+    TAGFALTER = "Tagfalter"
+    TARDIGRADA = "Tardigrada"
+    UNKEN = "Unken"
+    VOEGEL = "Vögel"
+    WALDVEGETATION = "Waldvegetation"
+    WALDVEGETATION_WASSER_UFERVEGETATION = "Waldvegetation, Wasser- und Ufervegetation"
+    WASSER_UFERVEGETATION = "Wasser- und Ufervegetation"
+    ZOOPLANKTON = "Zooplankton"
+
+
+class TaxaForTrend(CompoundFeature):
+    """Art mit Hauptgruppe (hauptgruppe_rote_listen), Untergruppe (untergruppe_rote_listen)
+    und Detail (untergruppe_rote_listen_detail)."""
+
+    # TODO: I created these entries based Trends-WeightedVoteCount.csv file. Was this correct?
+    # The alias fields are the columns from Trends-WeightedVoteCount.csv.
+    hauptgruppe_rote_listen: HauptGruppeRoteListenEnum = Field(
+        # data does not contain NA values, so this is required
         ...,
-        alias="Taxonomische Gruppe",
-        description="Taxonomische Gruppe der Art",
+        alias="Hauptgruppe_RoteListen",
+        description="TODO",
+    )
+    untergruppe_rote_listen: UntergruppeRoteListenEnum | None = Field(
+        # data contains NA values, so this is optional
+        default=None,
+        alias="Untergruppe_RoteListen",
+        description="TODO",
+    )
+    untergruppe_rote_listen_detail: UntergruppeRoteListenDetailEnum | None = Field(
+        # data contains NA values, so this is optional
+        default=None,
+        alias="Untergruppe_RoteListen_Detail",
+        description="TODO",
     )
 
 
@@ -842,29 +931,46 @@ class TrendCategoryEnum(str, Enum):
     NEGATIVE_TO_POSITIVE = "negative to positive"
 
 
+class HabitatForTrendEnum(str, Enum):
+    AGRAR_OFFEN = "AgrarOffen"
+    BINNENGEWAESSER = "Binnengewaesser"
+    BODEN = "Boden"
+    KUESTEN = "Kueste"
+    URBAN = "Urban"
+    WALD = "Wald"
+
+
+class BiodiversityVariableEnum(str, Enum):
+    ABUNDANZ = "Abundanz"
+    ARTENZAHL = "Artenzahl"
+    ENS = "ENS"
+
+
 class BiodiversityTrend(CompoundFeature):
     """Biodiversitätstrend bestehend aus Artengruppe (taxa), Lebensraum (habitat),
     Biodiversitätsvariable (biodiversity_variable) und Trendrichtung (trend_category).
     """
 
+    # TODO: I updated these entries based Trends-WeightedVoteCount.csv file. Was this correct?
+    # The alias fields are the columns from Trends-WeightedVoteCount.csv.
     taxa: TaxaForTrend = Field(
         ...,
         alias="Artengruppe",
         description="Auf welche Artengruppe bezieht sich der Trend?",
     )
-    habitat: HabitatEnum = Field(
+    habitat: HabitatForTrendEnum = Field(
         ...,
         alias="Lebensraum",
         description="Auf welchen der folgenden Lebensräume bezieht sich der Trend?",
     )
-    biodiversity_variable: str = Field(
+    biodiversity_variable: BiodiversityVariableEnum = Field(
         ...,
-        alias="Biodiversitätsvariable",
+        alias="Antwortvariable",
         description="Mithilfe welcher Biodiversitätsvariable wird der Trend gemessen?",
     )
     trend_category: TrendCategoryEnum = Field(
         ...,
-        alias="Trendkategorie",
+        alias="Trend",
         description="In welche der folgenden Kategorien lässt sich die Richtung des Trends einordnen?",
     )
 
