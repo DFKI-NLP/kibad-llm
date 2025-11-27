@@ -797,6 +797,40 @@ class EcosystemStudyFeaturesCompoundsOnly(BaseEcosystemStudyFeatures):
     )
 
 
+class SpeciesGroupForTrendEnum(str, Enum):
+    AMPHIBIEN = "Amphibien"
+    ARTHROPODEN = "Arthropoden"
+    FISCHE = "Fische"
+    FLECHTEN = "Flechten"
+    MIKROALGEN = "Mikroalgen"
+    PFLANZEN = "Pflanzen"
+    PILZE = "Pilze"
+    REPTILIEN = "Reptilien"
+    SAEUGER = "Säuger"
+    UEBRIGE_WIRBELLOSE = "Übrige Wirbellose"
+    VOEGEL = "Vögel"
+
+
+class TaxaForTrend(CompoundFeature):
+    """Art mit wissenschaftlichem und deutschem Namen sowie taxonomischer Gruppe."""
+
+    scientific_name: str | None = Field(
+        default=None,
+        alias="Wissenschaftlicher Artenname",
+        description="Wissenschaftlicher Name der Art",
+    )
+    german_name: str | None = Field(
+        default=None,
+        alias="Deutscher Artenname",
+        description="Deutscher Name der Art",
+    )
+    species_group: SpeciesGroupForTrendEnum = Field(
+        ...,
+        alias="Taxonomische Gruppe",
+        description="Taxonomische Gruppe der Art",
+    )
+
+
 class TrendCategoryEnum(str, Enum):
     POSITIVE = "positive"
     NEGATIVE = "negative"
@@ -811,7 +845,7 @@ class BiodiversityTrend(CompoundFeature):
     Biodiversitätsvariable (biodiversity_variable) und Trendrichtung (trend_category).
     """
 
-    taxa: Taxa = Field(
+    taxa: TaxaForTrend = Field(
         ...,
         alias="Artengruppe",
         description="Auf welche Artengruppe bezieht sich der Trend?",
@@ -821,7 +855,6 @@ class BiodiversityTrend(CompoundFeature):
         alias="Lebensraum",
         description="Auf welchen der folgenden Lebensräume bezieht sich der Trend?",
     )
-    # TODO: Use special Taxa with different species_group (in detail, SpeciesGroupEnum)?
     biodiversity_variable: str = Field(
         ...,
         alias="Biodiversitätsvariable",

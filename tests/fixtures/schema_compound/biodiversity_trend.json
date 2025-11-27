@@ -12,29 +12,24 @@
       "title": "HabitatEnum",
       "type": "string"
     },
-    "SpeciesGroupEnum": {
+    "SpeciesGroupForTrendEnum": {
       "enum": [
-        "Amphibien und Reptilien",
-        "Andere",
-        "Andere Pflanzen",
-        "Andere Wirbellose",
-        "Archaeen",
-        "Bakterien",
+        "Amphibien",
+        "Arthropoden",
         "Fische",
         "Flechten",
-        "Gefäßpflanzen",
-        "Insekten",
-        "Moose",
+        "Mikroalgen",
+        "Pflanzen",
         "Pilze",
-        "Protisten",
-        "Protozoen",
-        "Säugetiere",
+        "Reptilien",
+        "Säuger",
+        "Übrige Wirbellose",
         "Vögel"
       ],
-      "title": "SpeciesGroupEnum",
+      "title": "SpeciesGroupForTrendEnum",
       "type": "string"
     },
-    "Taxa": {
+    "TaxaForTrend": {
       "additionalProperties": false,
       "description": "Art mit wissenschaftlichem und deutschem Namen sowie taxonomischer Gruppe.",
       "properties": {
@@ -65,14 +60,14 @@
           "title": "German Name"
         },
         "species_group": {
-          "$ref": "#/$defs/SpeciesGroupEnum",
+          "$ref": "#/$defs/SpeciesGroupForTrendEnum",
           "description": "Taxonomische Gruppe der Art"
         }
       },
       "required": [
         "species_group"
       ],
-      "title": "Taxa",
+      "title": "TaxaForTrend",
       "type": "object"
     },
     "TrendCategoryEnum": {
@@ -91,7 +86,7 @@
   "description": "Biodiversitätstrend bestehend aus Artengruppe (taxa), Lebensraum (habitat),\nBiodiversitätsvariable (biodiversity_variable) und Trendrichtung (trend_category).",
   "properties": {
     "taxa": {
-      "$ref": "#/$defs/Taxa",
+      "$ref": "#/$defs/TaxaForTrend",
       "description": "Auf welche Artengruppe bezieht sich der Trend?"
     },
     "habitat": {
