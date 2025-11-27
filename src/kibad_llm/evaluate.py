@@ -1,110 +1,37 @@
 from __future__ import annotations
 
-from collections.abc import Mapping
-import json
 import logging
 import os
 from typing import Any
 
-from datasets import Dataset
 import hydra
 from hydra.utils import instantiate
 from omegaconf import DictConfig
 
 from kibad_llm.config import PROJ_ROOT
 from kibad_llm.metric import Metric
-from kibad_llm.utils.datasets import wrap_map_func
 
 logger = logging.getLogger(__name__)
 
 
-def _get_key_from_prediction(entry: Mapping[str, Any]) -> str:
-    """Use the file name without extension as key for aligning predictions with references."""
-    return os.path.splitext(entry["file_name"])[0]
-
-
-def _get_key_from_reference(entry: Mapping[str, Any]) -> str:
-    """Use the zotitem_ptr_id as key for aligning references with predictions."""
-    return entry["zotitem_ptr_id"]
-
-
-def _get_reference(prediction: Mapping[str, Any], references: dict[str, dict]) -> dict:
-    """Get the corresponding reference for a prediction."""
-    prediction_key = _get_key_from_prediction(prediction)
-    return references[prediction_key]
-
-
 def evaluate(cfg: DictConfig) -> dict[str, Any]:
-    """Evaluate predictions against gold references using a specified metric and optional preprocessing
-    of predictions and references.
+    """Evaluates a dataset containing predictions and references using a specified metric.
 
     Args:
         cfg: OmegaConf configuration. See configs/evaluate.yaml for details.
     Returns:
         A dictionary with evaluation results.
     """
-
-    logger.info(f"Loading predictions from {cfg.predictions_file} ...")
-    predictions = Dataset.from_json(cfg.predictions_file)
-
-    # this needs to happen before any mapping is applied (which may fail otherwise)
-    if cfg.get("drop_prediction_columns"):
-        logger.info(f"Dropping prediction columns: {cfg.drop_prediction_columns} ...")
-        columns_remove = [
-            col for col in cfg.drop_prediction_columns if col in predictions.column_names
-        ]
-        columns_not_found = set(cfg.drop_prediction_columns) - set(columns_remove)
-        if len(columns_not_found) > 0:
-            logger.warning(
-                f"Columns not found in predictions, but specified to drop: {columns_not_found}"
-            )
-        predictions = predictions.remove_columns(columns_remove)
-
-    if cfg.get("preprocess_prediction"):
-        logger.info(
-            "Preprocess predictions for metric computation (e.g. map schema keys to json paths) ..."
-        )
-        prediction_preprocessor = instantiate(cfg.preprocess_prediction, _convert_="all")
-        prediction_preprocessor_wrapped = wrap_map_func(
-            func=prediction_preprocessor, result_key="prediction"
-        )
-        predictions = predictions.map(prediction_preprocessor_wrapped)
-    else:
-        # use the whole prediction entry as "prediction"
-        predictions = predictions.map(wrap_map_func(lambda x: x, result_key="prediction"))
-
-    logger.info(f"Loading gold references from {cfg.references_file} ...")
-    references_dict = {}
-    with open(cfg.references_file, encoding="utf-8") as f:
-        for line in f:
-            entry = json.loads(line)
-            references_dict[_get_key_from_reference(entry)] = entry
-
-    logger.info("Aligning references with predictions ...")
-    predictions = predictions.map(
-        wrap_map_func(_get_reference, result_key="reference"),
-        fn_kwargs={"references": references_dict},
-    )
-    if cfg.get("preprocess_reference"):
-        logger.info("Preprocess references for metric computation (e.g. flatten dicts) ...")
-        reference_preprocessor = instantiate(cfg.preprocess_reference, _convert_="all")
-        reference_preprocessor_wrapped = wrap_map_func(
-            func=reference_preprocessor, result_key="reference"
-        )
-        predictions = predictions.map(reference_preprocessor_wrapped, input_columns=["reference"])
+    logger.info("Loading dataset with predictions and references ...")
+    dataset = instantiate(cfg.dataset, _convert_="all")
 
     logger.info("Instantiating metric ...")
     logger.info(f"Metric config: {dict(cfg.metric)}")
     metric: Metric = instantiate(cfg.metric, _convert_="all")
 
     logger.info("Computing metric ...")
-    predictions.map(
-        metric.update,
-        input_columns=["prediction", "reference"],
-        # disable caching since we are interested in the side effect of updating the metric,
-        # not in the returned dataset
-        load_from_cache_file=False,
-    )
+    for _, example in dataset.items():
+        metric.update(example["prediction"], example["reference"])
     metric_dict = metric.compute()
 
     metric.show_result(metric_dict)
