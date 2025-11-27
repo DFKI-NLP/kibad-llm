@@ -6,7 +6,7 @@ defaults:
 callbacks:
   save_job_return:
     _target_: kibad_llm.hydra_callbacks.SaveJobReturnValueCallback
-    integrate_multirun_result: true
+    integrate_multirun_result: false
     multirun_convert_job_ids: true
     sort_markdown_columns: true
     filenames:
