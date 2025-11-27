@@ -806,40 +806,39 @@ class TrendCategoryEnum(str, Enum):
     NEGATIVE_TO_POSITIVE = "negative to positive"
 
 
-class EcosystemTrend(CompoundFeature):
-    """Trendaussage zu einem bestimmten Ökosystemaspekt bestehend aus Lebensraum (habitat),
-    Artengruppe (taxa), Biodiversitätsvariable (biodiversity_variable) und Trendkategorie (trend_category).
+class BiodiversityTrend(CompoundFeature):
+    """Biodiversitätstrend bestehend aus Artengruppe (taxa), Lebensraum (habitat),
+    Biodiversitätsvariable (biodiversity_variable) und Trendrichtung (trend_category).
     """
 
-    # TODO: For now, all four fields are mandatory. Is this fine for an initial version?
+    taxa: Taxa = Field(
+        ...,
+        alias="Artengruppe",
+        description="Auf welche Artengruppe bezieht sich der Trend?",
+    )
     habitat: HabitatEnum = Field(
         ...,
         alias="Lebensraum",
         description="Auf welchen der folgenden Lebensräume bezieht sich der Trend?",
     )
     # TODO: Use special Taxa with different species_group (in detail, SpeciesGroupEnum)?
-    taxa: Taxa = Field(
-        ...,
-        alias="Artengruppe",
-        description="Auf welche Artengruppe bezieht sich der Trend?",
-    )
     biodiversity_variable: str = Field(
         ...,
         alias="Biodiversitätsvariable",
-        description="In welcher Biodiversitätsvariable wird der Trend beschrieben?",
+        description="Mithilfe welcher Biodiversitätsvariable wird der Trend gemessen?",
     )
     trend_category: TrendCategoryEnum = Field(
         ...,
         alias="Trendkategorie",
-        description="In welche der folgenden Kategorien lässt sich der Trend einordnen?",
+        description="In welche der folgenden Kategorien lässt sich die Richtung des Trends einordnen?",
     )
 
 
 class EcosystemStudyTrends(BaseEcosystemStudyFeatures):
-    """Angaben zu den im Text beschriebenen Ökosystemtrends."""
+    """Angaben zu den im Text beschriebenen Biodiversitätstrends."""
 
-    trends: list[EcosystemTrend] = Field(
+    trends: list[BiodiversityTrend] = Field(
         default_factory=list,
         alias="Trends",
-        description="Liste der im Text beschriebenen Ökosystemtrends.",
+        description="Liste der im Text beschriebenen Biodiversitätstrends.",
     )

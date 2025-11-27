@@ -1,34 +1,34 @@
 {
   "$defs": {
-    "EcosystemTrend": {
+    "BiodiversityTrend": {
       "additionalProperties": false,
-      "description": "Trendaussage zu einem bestimmten Ökosystemaspekt bestehend aus Lebensraum (habitat),\nArtengruppe (taxa), Biodiversitätsvariable (biodiversity_variable) und Trendkategorie (trend_category).",
+      "description": "Biodiversitätstrend bestehend aus Artengruppe (taxa), Lebensraum (habitat),\nBiodiversitätsvariable (biodiversity_variable) und Trendrichtung (trend_category).",
       "properties": {
-        "habitat": {
-          "$ref": "#/$defs/HabitatEnum",
-          "description": "Auf welchen der folgenden Lebensräume bezieht sich der Trend?"
-        },
         "taxa": {
           "$ref": "#/$defs/Taxa",
           "description": "Auf welche Artengruppe bezieht sich der Trend?"
         },
+        "habitat": {
+          "$ref": "#/$defs/HabitatEnum",
+          "description": "Auf welchen der folgenden Lebensräume bezieht sich der Trend?"
+        },
         "biodiversity_variable": {
-          "description": "In welcher Biodiversitätsvariable wird der Trend beschrieben?",
+          "description": "Mithilfe welcher Biodiversitätsvariable wird der Trend gemessen?",
           "title": "Biodiversity Variable",
           "type": "string"
         },
         "trend_category": {
           "$ref": "#/$defs/TrendCategoryEnum",
-          "description": "In welche der folgenden Kategorien lässt sich der Trend einordnen?"
+          "description": "In welche der folgenden Kategorien lässt sich die Richtung des Trends einordnen?"
         }
       },
       "required": [
-        "habitat",
         "taxa",
+        "habitat",
         "biodiversity_variable",
         "trend_category"
       ],
-      "title": "EcosystemTrend",
+      "title": "BiodiversityTrend",
       "type": "object"
     },
     "HabitatEnum": {
@@ -119,12 +119,12 @@
     }
   },
   "additionalProperties": false,
-  "description": "Angaben zu den im Text beschriebenen Ökosystemtrends.",
+  "description": "Angaben zu den im Text beschriebenen Biodiversitätstrends.",
   "properties": {
     "trends": {
-      "description": "Liste der im Text beschriebenen Ökosystemtrends.",
+      "description": "Liste der im Text beschriebenen Biodiversitätstrends.",
       "items": {
-        "$ref": "#/$defs/EcosystemTrend"
+        "$ref": "#/$defs/BiodiversityTrend"
       },
       "title": "Trends",
       "type": "array"

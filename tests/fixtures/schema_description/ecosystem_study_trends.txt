@@ -1,13 +1,13 @@
-Beschreibung: Angaben zu den im Text beschriebenen Ökosystemtrends.
+Beschreibung: Angaben zu den im Text beschriebenen Biodiversitätstrends.
 Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
-- trends: Liste der im Text beschriebenen Ökosystemtrends. | Kardinalität: 0..* | Typ: object
-  Beschreibung: Trendaussage zu einem bestimmten Ökosystemaspekt bestehend aus Lebensraum (habitat),
-Artengruppe (taxa), Biodiversitätsvariable (biodiversity_variable) und Trendkategorie (trend_category).
-  - habitat: Auf welchen der folgenden Lebensräume bezieht sich der Trend? | Kardinalität: 1 | Typ: string | Zulässige Werte: Agrar- und Offenland; Binnengewässer und Auen; Boden; Küsten und Küstengewässer; Urbane Räume; Wald
+- trends: Liste der im Text beschriebenen Biodiversitätstrends. | Kardinalität: 0..* | Typ: object
+  Beschreibung: Biodiversitätstrend bestehend aus Artengruppe (taxa), Lebensraum (habitat),
+Biodiversitätsvariable (biodiversity_variable) und Trendrichtung (trend_category).
   - taxa: Auf welche Artengruppe bezieht sich der Trend? | Kardinalität: 1 | Typ: object
     Beschreibung: Art mit wissenschaftlichem und deutschem Namen sowie taxonomischer Gruppe.
     - scientific_name: Wissenschaftlicher Name der Art | Kardinalität: 0..1 | Typ: string
     - german_name: Deutscher Name der Art | Kardinalität: 0..1 | Typ: string
     - species_group: Taxonomische Gruppe der Art | Kardinalität: 1 | Typ: string | Zulässige Werte: Amphibien und Reptilien; Andere; Andere Pflanzen; Andere Wirbellose; Archaeen; Bakterien; Fische; Flechten; Gefäßpflanzen; Insekten; Moose; Pilze; Protisten; Protozoen; Säugetiere; Vögel
-  - biodiversity_variable: In welcher Biodiversitätsvariable wird der Trend beschrieben? | Kardinalität: 1 | Typ: string
-  - trend_category: In welche der folgenden Kategorien lässt sich der Trend einordnen? | Kardinalität: 1 | Typ: string | Zulässige Werte: positive; negative; no; positive to negative; negative to positive
+  - habitat: Auf welchen der folgenden Lebensräume bezieht sich der Trend? | Kardinalität: 1 | Typ: string | Zulässige Werte: Agrar- und Offenland; Binnengewässer und Auen; Boden; Küsten und Küstengewässer; Urbane Räume; Wald
+  - biodiversity_variable: Mithilfe welcher Biodiversitätsvariable wird der Trend gemessen? | Kardinalität: 1 | Typ: string
+  - trend_category: In welche der folgenden Kategorien lässt sich die Richtung des Trends einordnen? | Kardinalität: 1 | Typ: string | Zulässige Werte: positive; negative; no; positive to negative; negative to positive
