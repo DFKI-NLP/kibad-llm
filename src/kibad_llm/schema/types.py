@@ -902,7 +902,7 @@ class TaxaForTrend(CompoundFeature):
     # TODO: I created the fields below based Trends-WeightedVoteCount.csv file. Was this correct?
     # The alias fields are the columns from Trends-WeightedVoteCount.csv.
 
-    # TODO: data does not contain NA values, so this is required
+    # TODO: data does not contain NA values, so this is required. correct?
     hauptgruppe_rote_listen: HauptGruppeRoteListenEnum = Field(
         ...,
         alias="Hauptgruppe_RoteListen",
