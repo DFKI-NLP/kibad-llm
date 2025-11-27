@@ -1,0 +1,60 @@
+{
+  "$defs": {
+    "SpeciesGroupForTrendEnum": {
+      "enum": [
+        "Amphibien",
+        "Arthropoden",
+        "Fische",
+        "Flechten",
+        "Mikroalgen",
+        "Pflanzen",
+        "Pilze",
+        "Reptilien",
+        "Säuger",
+        "Übrige Wirbellose",
+        "Vögel"
+      ],
+      "title": "SpeciesGroupForTrendEnum",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Art mit wissenschaftlichem und deutschem Namen sowie taxonomischer Gruppe.",
+  "properties": {
+    "scientific_name": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Wissenschaftlicher Name der Art",
+      "title": "Scientific Name"
+    },
+    "german_name": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Deutscher Name der Art",
+      "title": "German Name"
+    },
+    "species_group": {
+      "$ref": "#/$defs/SpeciesGroupForTrendEnum",
+      "description": "Taxonomische Gruppe der Art"
+    }
+  },
+  "required": [
+    "species_group"
+  ],
+  "title": "TaxaForTrend",
+  "type": "object"
+}
