@@ -834,7 +834,9 @@ class TaxaForTrend(CompoundFeature):
 class TrendCategoryEnum(str, Enum):
     POSITIVE = "positive"
     NEGATIVE = "negative"
-    # TODO: what does this mean? no trend mentioned? or constant/stable trend?
+    # "no" means "Die Artengruppe entwickelt sich stabil". It was called "neutral" in the iDiv publication.
+    # Julia recommends to rename to "neutral", but that will require post-processing of existing data,
+    # so for now we keep it as "no".
     NO = "no"
     POSITIVE_TO_NEGATIVE = "positive to negative"
     NEGATIVE_TO_POSITIVE = "negative to positive"
