@@ -900,7 +900,7 @@ class TaxaForTrend(CompoundFeature):
     und Detail (untergruppe_rote_listen_detail)."""
 
     # TODO: I created the fields below based Trends-WeightedVoteCount.csv file. Was this correct?
-    # The alias fields are the columns from Trends-WeightedVoteCount.csv.
+    # The alias fields are the column names from Trends-WeightedVoteCount.csv.
 
     # TODO: data does not contain NA values, so this is required. correct?
     hauptgruppe_rote_listen: HauptGruppeRoteListenEnum = Field(
@@ -954,7 +954,7 @@ class BiodiversityTrend(CompoundFeature):
     """
 
     # TODO: I updated these entries based Trends-WeightedVoteCount.csv file. Was this correct?
-    # The alias fields are the columns from Trends-WeightedVoteCount.csv.
+    # The alias fields are the column names from Trends-WeightedVoteCount.csv (except for TaxaForTrend).
 
     taxa: TaxaForTrend = Field(
         ...,
