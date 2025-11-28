@@ -94,11 +94,11 @@
     }
   },
   "additionalProperties": false,
-  "description": "Art mit Hauptgruppe (hauptgruppe_rote_listen), Untergruppe (untergruppe_rote_listen)\nund Detail (untergruppe_rote_listen_detail).",
+  "description": "Organismengruppe mit Hauptgruppe (hauptgruppe_rote_listen), Untergruppe (untergruppe_rote_listen)\nund Detail (untergruppe_rote_listen_detail).",
   "properties": {
     "hauptgruppe_rote_listen": {
       "$ref": "#/$defs/HauptGruppeRoteListenEnum",
-      "description": "TODO"
+      "description": "Hauptgruppe der Organismen"
     },
     "untergruppe_rote_listen": {
       "anyOf": [
@@ -110,7 +110,7 @@
         }
       ],
       "default": null,
-      "description": "TODO"
+      "description": "Untergruppe der Organismen"
     },
     "untergruppe_rote_listen_detail": {
       "anyOf": [
@@ -122,12 +122,12 @@
         }
       ],
       "default": null,
-      "description": "TODO"
+      "description": "Detaillierte Organismengruppe"
     }
   },
   "required": [
     "hauptgruppe_rote_listen"
   ],
-  "title": "TaxaForTrend",
+  "title": "TaxaRoteListe",
   "type": "object"
 }

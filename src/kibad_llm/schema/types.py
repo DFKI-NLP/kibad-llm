@@ -895,30 +895,28 @@ class UntergruppeRoteListenDetailEnum(str, Enum):
     ZOOPLANKTON = "Zooplankton"
 
 
-class TaxaForTrend(CompoundFeature):
-    """Art mit Hauptgruppe (hauptgruppe_rote_listen), Untergruppe (untergruppe_rote_listen)
+class TaxaRoteListe(CompoundFeature):
+    """Organismengruppe mit Hauptgruppe (hauptgruppe_rote_listen), Untergruppe (untergruppe_rote_listen)
     und Detail (untergruppe_rote_listen_detail)."""
 
-    # TODO: I created the fields below based Trends-WeightedVoteCount.csv file. Was this correct?
-    # The alias fields are the column names from Trends-WeightedVoteCount.csv.
+    # The fields below are based Trends-WeightedVoteCount.csv file.
+    # The aliases of the fields are the column names of that table.
 
-    # TODO: data does not contain NA values, so this is required. correct?
     hauptgruppe_rote_listen: HauptGruppeRoteListenEnum = Field(
         ...,
         alias="Hauptgruppe_RoteListen",
-        description="TODO",
+        description="Hauptgruppe der Organismen",
     )
     # TODO: data contains NA values, so this is optional. correct?
     untergruppe_rote_listen: UntergruppeRoteListenEnum | None = Field(
         default=None,
         alias="Untergruppe_RoteListen",
-        description="TODO",
+        description="Untergruppe der Organismen",
     )
-    # TODO: data contains NA values, so this is optional. correct?
     untergruppe_rote_listen_detail: UntergruppeRoteListenDetailEnum | None = Field(
         default=None,
         alias="Untergruppe_RoteListen_Detail",
-        description="TODO",
+        description="Detaillierte Organismengruppe",
     )
 
 
@@ -949,17 +947,17 @@ class BiodiversityVariableEnum(str, Enum):
 
 
 class BiodiversityTrend(CompoundFeature):
-    """Biodiversitätstrend bestehend aus Artengruppe (taxa), Lebensraum (habitat),
+    """Biodiversitätstrend bestehend aus Organismengruppe (taxa), Lebensraum (habitat),
     Biodiversitätsvariable (biodiversity_variable) und Trendrichtung (trend_category).
     """
 
-    # TODO: I updated these entries based Trends-WeightedVoteCount.csv file. Was this correct?
-    # The alias fields are the column names from Trends-WeightedVoteCount.csv (except for TaxaForTrend).
+    # The fields below are based Trends-WeightedVoteCount.csv file.
+    # The aliases of the fields are the column names of that table (except for TaxaForTrend).
 
-    taxa: TaxaForTrend = Field(
+    taxa: TaxaRoteListe = Field(
         ...,
-        alias="Artengruppe",
-        description="Auf welche Artengruppe bezieht sich der Trend?",
+        alias="Organismengruppe",
+        description="Auf welche Organismengruppe bezieht sich der Trend?",
     )
     habitat: HabitatForTrendEnum = Field(
         ...,
