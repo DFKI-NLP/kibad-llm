@@ -896,7 +896,7 @@ class UntergruppeRoteListenDetailEnum(str, Enum):
     ZOOPLANKTON = "Zooplankton"
 
 
-# currently not used
+# currently not used (content is flatly in BiodiversityTrend), but kept for possible future use
 class TaxaRoteListe(CompoundFeature):
     """Organismengruppe mit Hauptgruppe (hauptgruppe_rote_listen), Untergruppe (untergruppe_rote_listen)
     und Detail (untergruppe_rote_listen_detail)."""
