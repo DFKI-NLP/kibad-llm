@@ -4,7 +4,7 @@
 # ecosystem study trends from Markdown documents.
 
 # To execute this experiment run:
-# python -m kibad_llm.predict experiment=trends
+# python -m kibad_llm.predict experiment=organism_trends
 
 defaults:
   - override /extractor: simple_with_schema
