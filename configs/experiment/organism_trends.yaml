@@ -1,0 +1,16 @@
+# @package _global_
+
+# This experiment uses the schema EcosystemStudyOrganismTrends to extract organism based
+# ecosystem study trends from Markdown documents.
+
+# To execute this experiment run:
+# python -m kibad_llm.predict experiment=trends
+
+defaults:
+  - override /extractor: simple_with_schema
+
+extractor:
+  schema:
+    # create the schema from the pydantic model EcosystemStudyOrganismTrends
+    _target_: kibad_llm.schema.types.EcosystemStudyOrganismTrends.model_json_schema
+    by_alias: false
