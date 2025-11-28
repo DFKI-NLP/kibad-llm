@@ -70,7 +70,7 @@
     }
   },
   "additionalProperties": false,
-  "description": "Biodiversitätstrend bestehend aus Organismenhauptgruppe (hauptgruppe_rote_listen),\nOrganismenuntergruppe (untergruppe_rote_listen), Lebensraum (habitat), Biodiversitätsvariable\n(biodiversity_variable) und Trendrichtung (trend_category).",
+  "description": "Organismenbezogener Biodiversitätstrend bestehend aus Organismenhauptgruppe\n(hauptgruppe_rote_listen), Organismenuntergruppe (untergruppe_rote_listen),\nLebensraum (habitat), Biodiversitätsvariable (biodiversity_variable)\nund Trendrichtung (trend_category).",
   "properties": {
     "hauptgruppe_rote_listen": {
       "$ref": "#/$defs/HauptGruppeRoteListenEnum",
@@ -107,6 +107,6 @@
     "biodiversity_variable",
     "trend_category"
   ],
-  "title": "BiodiversityTrend",
+  "title": "OrganismBiodiversityTrend",
   "type": "object"
 }

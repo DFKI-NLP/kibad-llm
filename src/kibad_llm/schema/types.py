@@ -949,10 +949,11 @@ class BiodiversityVariableEnum(str, Enum):
     ENS = "ENS"
 
 
-class BiodiversityTrend(CompoundFeature):
-    """Biodiversitätstrend bestehend aus Organismenhauptgruppe (hauptgruppe_rote_listen),
-    Organismenuntergruppe (untergruppe_rote_listen), Lebensraum (habitat), Biodiversitätsvariable
-    (biodiversity_variable) und Trendrichtung (trend_category).
+class OrganismBiodiversityTrend(CompoundFeature):
+    """Organismenbezogener Biodiversitätstrend bestehend aus Organismenhauptgruppe
+    (hauptgruppe_rote_listen), Organismenuntergruppe (untergruppe_rote_listen),
+    Lebensraum (habitat), Biodiversitätsvariable (biodiversity_variable)
+    und Trendrichtung (trend_category).
     """
 
     # The fields below are based Trends-WeightedVoteCount.csv file.
@@ -1001,8 +1002,8 @@ class BiodiversityTrend(CompoundFeature):
 class EcosystemStudyTrends(BaseEcosystemStudyFeatures):
     """Angaben zu den im Text beschriebenen Biodiversitätstrends."""
 
-    trends: list[BiodiversityTrend] = Field(
+    organism_trends: list[OrganismBiodiversityTrend] = Field(
         default_factory=list,
         alias="Trends",
-        description="Liste der im Text beschriebenen Biodiversitätstrends.",
+        description="Liste der im Text beschriebenen organismenbezogenen Biodiversitätstrends.",
     )

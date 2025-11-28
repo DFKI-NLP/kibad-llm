@@ -1,8 +1,42 @@
 {
   "$defs": {
-    "BiodiversityTrend": {
+    "BiodiversityVariableEnum": {
+      "enum": [
+        "Abundanz",
+        "Artenzahl",
+        "ENS"
+      ],
+      "title": "BiodiversityVariableEnum",
+      "type": "string"
+    },
+    "HabitatForTrendEnum": {
+      "enum": [
+        "AgrarOffen",
+        "Binnengewaesser",
+        "Boden",
+        "Kueste",
+        "Urban",
+        "Wald"
+      ],
+      "title": "HabitatForTrendEnum",
+      "type": "string"
+    },
+    "HauptGruppeRoteListenEnum": {
+      "enum": [
+        "Makrofauna",
+        "Mesofauna",
+        "Mikrofauna",
+        "Pflanzen",
+        "Pilze_Flechten",
+        "Wirbellose",
+        "Wirbeltiere"
+      ],
+      "title": "HauptGruppeRoteListenEnum",
+      "type": "string"
+    },
+    "OrganismBiodiversityTrend": {
       "additionalProperties": false,
-      "description": "Biodiversitätstrend bestehend aus Organismenhauptgruppe (hauptgruppe_rote_listen),\nOrganismenuntergruppe (untergruppe_rote_listen), Lebensraum (habitat), Biodiversitätsvariable\n(biodiversity_variable) und Trendrichtung (trend_category).",
+      "description": "Organismenbezogener Biodiversitätstrend bestehend aus Organismenhauptgruppe\n(hauptgruppe_rote_listen), Organismenuntergruppe (untergruppe_rote_listen),\nLebensraum (habitat), Biodiversitätsvariable (biodiversity_variable)\nund Trendrichtung (trend_category).",
       "properties": {
         "hauptgruppe_rote_listen": {
           "$ref": "#/$defs/HauptGruppeRoteListenEnum",
@@ -39,42 +73,8 @@
         "biodiversity_variable",
         "trend_category"
       ],
-      "title": "BiodiversityTrend",
+      "title": "OrganismBiodiversityTrend",
       "type": "object"
-    },
-    "BiodiversityVariableEnum": {
-      "enum": [
-        "Abundanz",
-        "Artenzahl",
-        "ENS"
-      ],
-      "title": "BiodiversityVariableEnum",
-      "type": "string"
-    },
-    "HabitatForTrendEnum": {
-      "enum": [
-        "AgrarOffen",
-        "Binnengewaesser",
-        "Boden",
-        "Kueste",
-        "Urban",
-        "Wald"
-      ],
-      "title": "HabitatForTrendEnum",
-      "type": "string"
-    },
-    "HauptGruppeRoteListenEnum": {
-      "enum": [
-        "Makrofauna",
-        "Mesofauna",
-        "Mikrofauna",
-        "Pflanzen",
-        "Pilze_Flechten",
-        "Wirbellose",
-        "Wirbeltiere"
-      ],
-      "title": "HauptGruppeRoteListenEnum",
-      "type": "string"
     },
     "TrendCategoryEnum": {
       "enum": [
@@ -114,12 +114,12 @@
   "additionalProperties": false,
   "description": "Angaben zu den im Text beschriebenen Biodiversitätstrends.",
   "properties": {
-    "trends": {
-      "description": "Liste der im Text beschriebenen Biodiversitätstrends.",
+    "organism_trends": {
+      "description": "Liste der im Text beschriebenen organismenbezogenen Biodiversitätstrends.",
       "items": {
-        "$ref": "#/$defs/BiodiversityTrend"
+        "$ref": "#/$defs/OrganismBiodiversityTrend"
       },
-      "title": "Trends",
+      "title": "Organism Trends",
       "type": "array"
     }
   },
