@@ -1,0 +1,8 @@
+# Merges the references from "Weighted Vote Count Wald Literatur" csv into the predictions from extraction_result.
+# The resulting dataset has "prediction" and "reference" fields for each entry and can be used for evaluation.
+
+defaults:
+  - predictions: extraction_result
+  - references: organismus_trends_wald
+
+_target_: kibad_llm.dataset.utils.merge_references_into_predictions
