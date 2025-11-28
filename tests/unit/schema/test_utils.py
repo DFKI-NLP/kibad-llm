@@ -17,6 +17,7 @@ def test_build_schema_description(model_cls: type[BaseModel]):
     fixture_fn = f"{camel_case_to_snake_case(model_cls.__name__)}.txt"
     path_expected = PROJ_ROOT / "tests" / "fixtures" / "schema_description" / fixture_fn
     if WRITE_FIXTURE_DATA:
+        path_expected.parent.mkdir(parents=True, exist_ok=True)
         with open(path_expected, "w") as f:
             f.write(description)
 
@@ -34,6 +35,7 @@ def test_build_schema_description_compound(model_cls: type[BaseModel]):
     fixture_fn = f"{camel_case_to_snake_case(model_cls.__name__)}.txt"
     path_expected = PROJ_ROOT / "tests" / "fixtures" / "schema_compound_description" / fixture_fn
     if WRITE_FIXTURE_DATA:
+        path_expected.parent.mkdir(parents=True, exist_ok=True)
         with open(path_expected, "w") as f:
             f.write(description)
 

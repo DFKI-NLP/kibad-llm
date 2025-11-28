@@ -17,6 +17,7 @@ def test_read_pdf_as_markdown_via_pymupdf4llm():
     markdown_path = PROJ_ROOT / "tests" / "fixtures" / "markdown" / f"{file_name}.json"
 
     if WRITE_FIXTURE_DATA:
+        markdown_path.parent.mkdir(parents=True, exist_ok=True)
         # write fixture data
         with open(markdown_path, "w") as f:
             json.dump({"text": result}, f, indent=4, ensure_ascii=False)

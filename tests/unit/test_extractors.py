@@ -58,7 +58,7 @@ def test_extractor(tmp_path, cfg_predict_extractor, extractor_name):
     )
     if WRITE_FIXTURE_DATA:
         # create directory if it does not exist
-        os.makedirs(os.path.dirname(expected_result_path), exist_ok=True)
+        expected_result_path.parent.mkdir(parents=True, exist_ok=True)
         # write fixture data
         with open(expected_result_path, "w") as f:
             json.dump(result, f, indent=2)

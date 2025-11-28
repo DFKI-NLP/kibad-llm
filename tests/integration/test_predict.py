@@ -58,6 +58,7 @@ def test_prediction(file_name, predictions_dict):
     prediction_path = PREDICTION_DIR / f"{file_name}.json"
 
     if WRITE_FIXTURE_DATA:
+        prediction_path.parent.mkdir(parents=True, exist_ok=True)
         # write fixture data
         with open(prediction_path, "w") as f:
             json.dump(prediction, f, indent=4, ensure_ascii=False)
