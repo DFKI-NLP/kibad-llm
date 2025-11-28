@@ -812,7 +812,7 @@ class SpeciesGroupForTrendEnum(str, Enum):
     VOEGEL = "Vögel"
 
 
-class HauptGruppeRoteListenEnum(str, Enum):
+class HauptgruppeRoteListenEnum(str, Enum):
     MAKROFAUNA = "Makrofauna"
     MESOFAUNA = "Mesofauna"
     MIKROFAUNA = "Mikrofauna"
@@ -878,7 +878,7 @@ class OrganismBiodiversityTrend(CompoundFeature):
     # The fields below are based Trends-WeightedVoteCount.csv file.
     # The aliases of the fields are the column names of that table (except for taxa).
 
-    hauptgruppe_rote_listen: HauptGruppeRoteListenEnum = Field(
+    hauptgruppe_rote_listen: HauptgruppeRoteListenEnum = Field(
         ...,
         alias="Hauptgruppe_RoteListen",
         description="Hauptgruppe der Organismen auf die sich der Trend bezieht.",

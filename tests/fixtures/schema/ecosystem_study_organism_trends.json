@@ -21,7 +21,7 @@
       "title": "HabitatForOrganismTrendEnum",
       "type": "string"
     },
-    "HauptGruppeRoteListenEnum": {
+    "HauptgruppeRoteListenEnum": {
       "enum": [
         "Makrofauna",
         "Mesofauna",
@@ -31,7 +31,7 @@
         "Wirbellose",
         "Wirbeltiere"
       ],
-      "title": "HauptGruppeRoteListenEnum",
+      "title": "HauptgruppeRoteListenEnum",
       "type": "string"
     },
     "OrganismBiodiversityTrend": {
@@ -39,7 +39,7 @@
       "description": "Organismenbezogener Biodiversitätstrend bestehend aus Organismenhauptgruppe\n(hauptgruppe_rote_listen), Organismenuntergruppe (untergruppe_rote_listen),\nLebensraum (habitat), Biodiversitätsvariable (biodiversity_variable)\nund Trendrichtung (trend_category).",
       "properties": {
         "hauptgruppe_rote_listen": {
-          "$ref": "#/$defs/HauptGruppeRoteListenEnum",
+          "$ref": "#/$defs/HauptgruppeRoteListenEnum",
           "description": "Hauptgruppe der Organismen auf die sich der Trend bezieht."
         },
         "untergruppe_rote_listen": {
