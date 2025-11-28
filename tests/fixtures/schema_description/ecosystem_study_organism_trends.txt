@@ -1,4 +1,4 @@
-Beschreibung: Angaben zu den im Text beschriebenen Biodiversitätstrends.
+Beschreibung: Angaben zu den im Text beschriebenen organismenbezogenen Biodiversitätstrends.
 Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
 - organism_trends: Liste der im Text beschriebenen organismenbezogenen Biodiversitätstrends. | Kardinalität: 0..* | Typ: object
   Beschreibung: Organismenbezogener Biodiversitätstrend bestehend aus Organismenhauptgruppe

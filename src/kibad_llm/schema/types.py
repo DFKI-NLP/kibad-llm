@@ -906,8 +906,8 @@ class OrganismBiodiversityTrend(CompoundFeature):
     )
 
 
-class EcosystemStudyTrends(BaseEcosystemStudyFeatures):
-    """Angaben zu den im Text beschriebenen Biodiversitätstrends."""
+class EcosystemStudyOrganismTrends(BaseEcosystemStudyFeatures):
+    """Angaben zu den im Text beschriebenen organismenbezogenen Biodiversitätstrends."""
 
     organism_trends: list[OrganismBiodiversityTrend] = Field(
         default_factory=list,

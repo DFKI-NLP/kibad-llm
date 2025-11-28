@@ -112,7 +112,7 @@
     }
   },
   "additionalProperties": false,
-  "description": "Angaben zu den im Text beschriebenen Biodiversitätstrends.",
+  "description": "Angaben zu den im Text beschriebenen organismenbezogenen Biodiversitätstrends.",
   "properties": {
     "organism_trends": {
       "description": "Liste der im Text beschriebenen organismenbezogenen Biodiversitätstrends.",
@@ -123,6 +123,6 @@
       "type": "array"
     }
   },
-  "title": "EcosystemStudyTrends",
+  "title": "EcosystemStudyOrganismTrends",
   "type": "object"
 }
