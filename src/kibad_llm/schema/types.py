@@ -895,6 +895,7 @@ class UntergruppeRoteListenDetailEnum(str, Enum):
     ZOOPLANKTON = "Zooplankton"
 
 
+# currently not used
 class TaxaRoteListe(CompoundFeature):
     """Organismengruppe mit Hauptgruppe (hauptgruppe_rote_listen), Untergruppe (untergruppe_rote_listen)
     und Detail (untergruppe_rote_listen_detail)."""
@@ -948,18 +949,37 @@ class BiodiversityVariableEnum(str, Enum):
 
 
 class BiodiversityTrend(CompoundFeature):
-    """Biodiversitätstrend bestehend aus Organismengruppe (taxa), Lebensraum (habitat),
-    Biodiversitätsvariable (biodiversity_variable) und Trendrichtung (trend_category).
+    """Biodiversitätstrend bestehend aus Organismenhauptgruppe (hauptgruppe_rote_listen),
+    Organismenuntergruppe (untergruppe_rote_listen), Lebensraum (habitat), Biodiversitätsvariable
+    (biodiversity_variable) und Trendrichtung (trend_category).
     """
 
     # The fields below are based Trends-WeightedVoteCount.csv file.
-    # The aliases of the fields are the column names of that table (except for TaxaForTrend).
+    # The aliases of the fields are the column names of that table (except for taxa).
 
-    taxa: TaxaRoteListe = Field(
+    # taxa: TaxaRoteListe = Field(
+    #    ...,
+    #    alias="Organismengruppe",
+    #    description="Auf welche Organismengruppe bezieht sich der Trend?",
+    # )
+    hauptgruppe_rote_listen: HauptGruppeRoteListenEnum = Field(
         ...,
-        alias="Organismengruppe",
-        description="Auf welche Organismengruppe bezieht sich der Trend?",
+        alias="Hauptgruppe_RoteListen",
+        description="Hauptgruppe der Organismen auf die sich der Trend bezieht.",
     )
+    # A bit unexpected, but data contains NA values, so this is optional.
+    untergruppe_rote_listen: UntergruppeRoteListenEnum | None = Field(
+        default=None,
+        alias="Untergruppe_RoteListen",
+        description="Untergruppe der Organismen auf die sich der Trend bezieht.",
+    )
+    # TODO: Is it fine to not include this? wait for feedback from Maria.
+    # Data contains NA values, so this is optional.
+    # untergruppe_rote_listen_detail: UntergruppeRoteListenDetailEnum | None = Field(
+    #    default=None,
+    #    alias="Untergruppe_RoteListen_Detail",
+    #    description="Detaillierte Organismengruppe auf die sich der Trend bezieht.",
+    # )
     habitat: HabitatForTrendEnum = Field(
         ...,
         alias="Lebensraum",

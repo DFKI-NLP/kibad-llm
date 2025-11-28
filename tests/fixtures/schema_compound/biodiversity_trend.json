@@ -34,45 +34,6 @@
       "title": "HauptGruppeRoteListenEnum",
       "type": "string"
     },
-    "TaxaRoteListe": {
-      "additionalProperties": false,
-      "description": "Organismengruppe mit Hauptgruppe (hauptgruppe_rote_listen), Untergruppe (untergruppe_rote_listen)\nund Detail (untergruppe_rote_listen_detail).",
-      "properties": {
-        "hauptgruppe_rote_listen": {
-          "$ref": "#/$defs/HauptGruppeRoteListenEnum",
-          "description": "Hauptgruppe der Organismen"
-        },
-        "untergruppe_rote_listen": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/UntergruppeRoteListenEnum"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Untergruppe der Organismen"
-        },
-        "untergruppe_rote_listen_detail": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/UntergruppeRoteListenDetailEnum"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Detaillierte Organismengruppe"
-        }
-      },
-      "required": [
-        "hauptgruppe_rote_listen"
-      ],
-      "title": "TaxaRoteListe",
-      "type": "object"
-    },
     "TrendCategoryEnum": {
       "enum": [
         "positive",
@@ -82,62 +43,6 @@
         "negative to positive"
       ],
       "title": "TrendCategoryEnum",
-      "type": "string"
-    },
-    "UntergruppeRoteListenDetailEnum": {
-      "enum": [
-        "Amphibien",
-        "Andere",
-        "Andere_Wirbellose",
-        "Arthropoden",
-        "Bakterien",
-        "Binnenmollusken",
-        "Bodenmikroorganismen",
-        "Chiroptera/ Fledermaeuse",
-        "Doppelfüßer",
-        "Enchytraeidae",
-        "Farn- und Blütenpflanzen",
-        "Fische",
-        "Flechten",
-        "Gamasina",
-        "Heuschrecken",
-        "Hornmilben (Oribatida)",
-        "Kurzflügler",
-        "Käfer, Wanzen, Zikaden",
-        "Landschnecken",
-        "Laufkäfer",
-        "Libellen",
-        "Makrofauna",
-        "Makrophyten",
-        "Makrozoobenthos",
-        "Microbes",
-        "Mikroorganismen",
-        "Mollusken",
-        "Moose",
-        "Nematoda",
-        "Nematoden",
-        "Oribatida",
-        "Pflanzen",
-        "Phytoplankton",
-        "Pilze",
-        "Regenwürmer",
-        "Reptilien",
-        "saprophage Nematoden",
-        "Spechte und zusätzlich Fledermäuse (Säugetiere)",
-        "Spinnen",
-        "Säuger",
-        "Säugetiere",
-        "Süßwasserfische",
-        "Tagfalter",
-        "Tardigrada",
-        "Unken",
-        "Vögel",
-        "Waldvegetation",
-        "Waldvegetation, Wasser- und Ufervegetation",
-        "Wasser- und Ufervegetation",
-        "Zooplankton"
-      ],
-      "title": "UntergruppeRoteListenDetailEnum",
       "type": "string"
     },
     "UntergruppeRoteListenEnum": {
@@ -165,11 +70,23 @@
     }
   },
   "additionalProperties": false,
-  "description": "Biodiversitätstrend bestehend aus Organismengruppe (taxa), Lebensraum (habitat),\nBiodiversitätsvariable (biodiversity_variable) und Trendrichtung (trend_category).",
+  "description": "Biodiversitätstrend bestehend aus Organismenhauptgruppe (hauptgruppe_rote_listen),\nOrganismenuntergruppe (untergruppe_rote_listen), Lebensraum (habitat), Biodiversitätsvariable\n(biodiversity_variable) und Trendrichtung (trend_category).",
   "properties": {
-    "taxa": {
-      "$ref": "#/$defs/TaxaRoteListe",
-      "description": "Auf welche Organismengruppe bezieht sich der Trend?"
+    "hauptgruppe_rote_listen": {
+      "$ref": "#/$defs/HauptGruppeRoteListenEnum",
+      "description": "Hauptgruppe der Organismen auf die sich der Trend bezieht."
+    },
+    "untergruppe_rote_listen": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/UntergruppeRoteListenEnum"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Untergruppe der Organismen auf die sich der Trend bezieht."
     },
     "habitat": {
       "$ref": "#/$defs/HabitatForTrendEnum",
@@ -185,7 +102,7 @@
     }
   },
   "required": [
-    "taxa",
+    "hauptgruppe_rote_listen",
     "habitat",
     "biodiversity_variable",
     "trend_category"
