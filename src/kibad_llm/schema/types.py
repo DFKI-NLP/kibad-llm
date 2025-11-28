@@ -1004,6 +1004,6 @@ class EcosystemStudyTrends(BaseEcosystemStudyFeatures):
 
     organism_trends: list[OrganismBiodiversityTrend] = Field(
         default_factory=list,
-        alias="Trends",
+        alias="Organismenbezogene Biodiversitätstrends",
         description="Liste der im Text beschriebenen organismenbezogenen Biodiversitätstrends.",
     )
