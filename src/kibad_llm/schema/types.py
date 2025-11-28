@@ -853,7 +853,7 @@ class TrendCategoryEnum(str, Enum):
     NEGATIVE_TO_POSITIVE = "negative to positive"
 
 
-class HabitatForTrendEnum(str, Enum):
+class HabitatForOrganismTrendEnum(str, Enum):
     AGRAR_OFFEN = "AgrarOffen"
     BINNENGEWAESSER = "Binnengewaesser"
     BODEN = "Boden"
@@ -889,7 +889,7 @@ class OrganismBiodiversityTrend(CompoundFeature):
         alias="Untergruppe_RoteListen",
         description="Untergruppe der Organismen auf die sich der Trend bezieht.",
     )
-    habitat: HabitatForTrendEnum = Field(
+    habitat: HabitatForOrganismTrendEnum = Field(
         ...,
         alias="Lebensraum",
         description="Auf welchen der folgenden Lebensräume bezieht sich der Trend?",

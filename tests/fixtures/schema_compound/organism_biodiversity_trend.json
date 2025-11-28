@@ -9,7 +9,7 @@
       "title": "BiodiversityVariableEnum",
       "type": "string"
     },
-    "HabitatForTrendEnum": {
+    "HabitatForOrganismTrendEnum": {
       "enum": [
         "AgrarOffen",
         "Binnengewaesser",
@@ -18,7 +18,7 @@
         "Urban",
         "Wald"
       ],
-      "title": "HabitatForTrendEnum",
+      "title": "HabitatForOrganismTrendEnum",
       "type": "string"
     },
     "HauptGruppeRoteListenEnum": {
@@ -89,7 +89,7 @@
       "description": "Untergruppe der Organismen auf die sich der Trend bezieht."
     },
     "habitat": {
-      "$ref": "#/$defs/HabitatForTrendEnum",
+      "$ref": "#/$defs/HabitatForOrganismTrendEnum",
       "description": "Auf welchen der folgenden Lebensräume bezieht sich der Trend?"
     },
     "biodiversity_variable": {
