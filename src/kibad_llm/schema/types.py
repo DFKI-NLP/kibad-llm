@@ -842,87 +842,6 @@ class UntergruppeRoteListenEnum(str, Enum):
     VOEGEL = "Voegel"
 
 
-# currently just used in unused TaxaRoteListe class
-class UntergruppeRoteListenDetailEnum(str, Enum):
-    AMPHIBIEN = "Amphibien"
-    ANDERE = "Andere"
-    ANDERE_WIRBELLOSE = "Andere_Wirbellose"
-    ARTHROPODEN = "Arthropoden"
-    BAKTERIEN = "Bakterien"
-    BINNENMOLLUSKEN = "Binnenmollusken"
-    BODENMIKROORGANISMEN = "Bodenmikroorganismen"
-    CHIROPTERA_FLEDERMAEUSE = "Chiroptera/ Fledermaeuse"
-    DOPPELFUESSER = "Doppelfüßer"
-    ENCHYTRAEIDAE = "Enchytraeidae"
-    FARN_BLUETENPFLANZEN = "Farn- und Blütenpflanzen"
-    FISCHE = "Fische"
-    FLECHTEN = "Flechten"
-    GAMASINA = "Gamasina"
-    HEUSCHRECKEN = "Heuschrecken"
-    HORNMILBEN_ORIBATIDA = "Hornmilben (Oribatida)"
-    KURZFLUEGLER = "Kurzflügler"
-    KAEFER_WANZEN_ZIKADEN = "Käfer, Wanzen, Zikaden"
-    LANDSCHNECKEN = "Landschnecken"
-    LAUFKAEFER = "Laufkäfer"
-    LIBELLEN = "Libellen"
-    MAKROFAUNA = "Makrofauna"
-    MAKROPHYTEN = "Makrophyten"
-    MAKROZOOBENTHOS = "Makrozoobenthos"
-    MICROBES = "Microbes"
-    MIKROORGANISMEN = "Mikroorganismen"
-    MOLLUSKEN = "Mollusken"
-    MOOSE = "Moose"
-    NEMATODA = "Nematoda"
-    NEMATODEN = "Nematoden"
-    ORIBATIDA = "Oribatida"
-    PFLANZEN = "Pflanzen"
-    PHYTOPLANKTON = "Phytoplankton"
-    PILZE = "Pilze"
-    REGENWUERMER = "Regenwürmer"
-    REPTILIEN = "Reptilien"
-    SAPROPHAGE_NEMATODEN = "saprophage Nematoden"
-    SPECHTE_FLEDERMAEUSE = "Spechte und zusätzlich Fledermäuse (Säugetiere)"
-    SPINNEN = "Spinnen"
-    SAEUGER = "Säuger"
-    SAEUGETIERE = "Säugetiere"
-    SUESSWASSERFISCHE = "Süßwasserfische"
-    TAGFALTER = "Tagfalter"
-    TARDIGRADA = "Tardigrada"
-    UNKEN = "Unken"
-    VOEGEL = "Vögel"
-    WALDVEGETATION = "Waldvegetation"
-    WALDVEGETATION_WASSER_UFERVEGETATION = "Waldvegetation, Wasser- und Ufervegetation"
-    WASSER_UFERVEGETATION = "Wasser- und Ufervegetation"
-    ZOOPLANKTON = "Zooplankton"
-
-
-# currently not used (content is flatly in BiodiversityTrend), but kept for possible future use
-class TaxaRoteListe(CompoundFeature):
-    """Organismengruppe mit Hauptgruppe (hauptgruppe_rote_listen), Untergruppe (untergruppe_rote_listen)
-    und Detail (untergruppe_rote_listen_detail)."""
-
-    # The fields below are based Trends-WeightedVoteCount.csv file.
-    # The aliases of the fields are the column names of that table.
-
-    hauptgruppe_rote_listen: HauptGruppeRoteListenEnum = Field(
-        ...,
-        alias="Hauptgruppe_RoteListen",
-        description="Hauptgruppe der Organismen",
-    )
-    # A bit unexpected, but data contains NA values, so this is optional.
-    untergruppe_rote_listen: UntergruppeRoteListenEnum | None = Field(
-        default=None,
-        alias="Untergruppe_RoteListen",
-        description="Untergruppe der Organismen",
-    )
-    # Data contains NA values, so this is optional.
-    untergruppe_rote_listen_detail: UntergruppeRoteListenDetailEnum | None = Field(
-        default=None,
-        alias="Untergruppe_RoteListen_Detail",
-        description="Detaillierte Organismengruppe",
-    )
-
-
 class TrendCategoryEnum(str, Enum):
     POSITIVE = "positive"
     NEGATIVE = "negative"
@@ -959,11 +878,6 @@ class OrganismBiodiversityTrend(CompoundFeature):
     # The fields below are based Trends-WeightedVoteCount.csv file.
     # The aliases of the fields are the column names of that table (except for taxa).
 
-    # taxa: TaxaRoteListe = Field(
-    #    ...,
-    #    alias="Organismengruppe",
-    #    description="Auf welche Organismengruppe bezieht sich der Trend?",
-    # )
     hauptgruppe_rote_listen: HauptGruppeRoteListenEnum = Field(
         ...,
         alias="Hauptgruppe_RoteListen",
@@ -975,13 +889,6 @@ class OrganismBiodiversityTrend(CompoundFeature):
         alias="Untergruppe_RoteListen",
         description="Untergruppe der Organismen auf die sich der Trend bezieht.",
     )
-    # TODO: Is it fine to not include this? wait for feedback from Maria.
-    # Data contains NA values, so this is optional.
-    # untergruppe_rote_listen_detail: UntergruppeRoteListenDetailEnum | None = Field(
-    #    default=None,
-    #    alias="Untergruppe_RoteListen_Detail",
-    #    description="Detaillierte Organismengruppe auf die sich der Trend bezieht.",
-    # )
     habitat: HabitatForTrendEnum = Field(
         ...,
         alias="Lebensraum",
