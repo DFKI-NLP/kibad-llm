@@ -907,12 +907,13 @@ class TaxaRoteListe(CompoundFeature):
         alias="Hauptgruppe_RoteListen",
         description="Hauptgruppe der Organismen",
     )
-    # TODO: data contains NA values, so this is optional. correct?
+    # A bit unexpected, but data contains NA values, so this is optional.
     untergruppe_rote_listen: UntergruppeRoteListenEnum | None = Field(
         default=None,
         alias="Untergruppe_RoteListen",
         description="Untergruppe der Organismen",
     )
+    # Data contains NA values, so this is optional.
     untergruppe_rote_listen_detail: UntergruppeRoteListenDetailEnum | None = Field(
         default=None,
         alias="Untergruppe_RoteListen_Detail",
