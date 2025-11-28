@@ -842,6 +842,7 @@ class UntergruppeRoteListenEnum(str, Enum):
     VOEGEL = "Voegel"
 
 
+# currently just used in unused TaxaRoteListe class
 class UntergruppeRoteListenDetailEnum(str, Enum):
     AMPHIBIEN = "Amphibien"
     ANDERE = "Andere"
