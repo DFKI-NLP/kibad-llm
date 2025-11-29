@@ -138,6 +138,36 @@ This uses uses `data/interim/faktencheck-db/faktencheck-db-converted_2025-11-05.
 
 See [configs/evaluate.yaml](./configs/evaluate.yaml) for further information and options.
 
+#### Multirun
+
+Hydra multirun can be used with both inference and evaluation to systematically explore multiple configurations in one go. It is enabled by passing comma-separated values to one or more parameters and adding `--multirun` (or `-m`) to the command line. Hydra will then execute one run for each resulting parameter combination (see the [Hydra multirun docs](https://hydra.cc/docs/tutorials/basic/running_your_app/multi-run/)).
+
+For example, to compare the default guided decoding setup (`extractor=simple_with_schema`) with an unguided setup (`extractor=simple`), you can run:
+
+```bash
+uv run -m kibad_llm.predict \
+  pdf_directory=path/to/pdf/files \
+  extractor=simple_with_schema,simple \
+  --multirun
+```
+
+Each multirun produces a `job_return_value.json` (a nested dictionary) and a `job_return_value.md` file with the combined output of all runs (e.g., output paths for inference or metric scores for evaluation). The top-level keys in the JSON / the `job_id` column in the Markdown summarize only those overrides that differ between runs.
+
+For inference, complex setups are best managed via dedicated `experiment` configs; otherwise, Hydra will generate all combinations of the provided overrides, which may not be intended.
+
+For evaluation, you can additionally request an aggregated result over all runs (e.g., mean and standard deviation across multiple non-deterministic runs or different seeds). To do so, add the following override:
+
+```bash
+uv run -m kibad_llm.evaluate \
+  dataset.predictions.file=path/to/predictions.jsonl \
+  hydra.callbacks.save_job_return.integrate_multirun_result=true \
+  --multirun
+```
+
+This will create `job_return_value.aggregated.json` and `job_return_value.aggregated.md` alongside the per-run outputs, summarizing the metrics across all runs in the multirun.
+
+See [configs/hydra/default.yaml](./configs/hydra/default.yaml) for further configuration options and details on the Hydra callback to create the combined output.
+
 ## Project Organization
 
 ```
