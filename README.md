@@ -138,6 +138,8 @@ This uses uses `data/interim/faktencheck-db/faktencheck-db-converted_2025-11-05.
 
 See [configs/evaluate.yaml](./configs/evaluate.yaml) for further information and options.
 
+Note: The `confusion_matrix` metric calculates the confusion matrix just for a single field, which needs to be specified (`metric.field=<field>`). To evaluate multiple fields at once, use multirun below.
+
 #### Multirun
 
 Hydra multirun can be used with both inference and evaluation to systematically explore multiple configurations in one go. It is enabled by passing comma-separated values to one or more parameters and adding `--multirun` (or `-m`) to the command line. Hydra will then execute one run for each resulting parameter combination (see the [Hydra multirun docs](https://hydra.cc/docs/tutorials/basic/running_your_app/multi-run/)).
