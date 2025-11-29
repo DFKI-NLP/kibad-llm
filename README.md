@@ -155,11 +155,11 @@ Each multirun produces a `job_return_value.json` (a nested dictionary) and a `jo
 
 For inference, complex setups are best managed via dedicated `experiment` configs; otherwise, Hydra will generate all combinations of the provided overrides, which may not be intended.
 
-For evaluation, you can additionally request an aggregated result over all runs (e.g., mean and standard deviation across multiple non-deterministic runs or different seeds). To do so, add the following override:
+For evaluation, you can additionally request an aggregated result over all runs (e.g., mean and standard deviation across multiple non-deterministic runs or different seeds). To do so, add the `hydra.callbacks.save_job_return.integrate_multirun_result=true` override:
 
 ```bash
 uv run -m kibad_llm.evaluate \
-  dataset.predictions.file=path/to/predictions.jsonl \
+  dataset.predictions.file=path/to/A/predictions.jsonl,path/to/B/predictions.jsonl,path/to/C/predictions.jsonl \
   hydra.callbacks.save_job_return.integrate_multirun_result=true \
   --multirun
 ```
