@@ -164,7 +164,7 @@ uv run -m kibad_llm.evaluate \
   --multirun
 ```
 
-This will create `job_return_value.aggregated.json` and `job_return_value.aggregated.md` alongside the per-run outputs, summarizing the metrics across all runs in the multirun.
+This will create `job_return_value.aggregated.json` and `job_return_value.aggregated.md` alongside the not aggregated outputs, summarizing the metrics across all runs in the multirun.
 
 See [configs/hydra/default.yaml](./configs/hydra/default.yaml) for further configuration options and details on the Hydra callback to create the combined output (`save_job_return`).
 
