@@ -117,6 +117,7 @@ This will process all PDF files in `pdf_directory` and save the result in a JSON
 See [configs/predict](./configs/predict.yaml) for further information and options.
 
 IMPORTANT: Relevant inference setups should be defined in their own `experiment` config. This allows to easily reproduce results later on by adding `experiment=<experiment_config>` to the command line call. For example, to run the experiment with two schemata ([configs/experiment/two_schemata.yaml](./configs/experiment/two_schemata.yaml)), use:
+
 ```bash
 uv run -m kibad_llm.predict pdf_directory=path/to/pdf/files \
 experiment=two_schemata
