@@ -6,3 +6,6 @@ defaults:
   - references: organismus_trends_wald
 
 _target_: kibad_llm.dataset.utils.merge_references_into_predictions
+# the reference data contains only positive entries (i.e., with trends), so we allow missing references
+# to be able to evaluate negative predictions as well
+allow_missing_references: true
