@@ -1,4 +1,4 @@
-_target_: kibad_llm.dataset.json.read_and_preprocess
+_target_: kibad_llm.dataset.csv.read_organism_trends
 file: "data/external/organism_trends/Weighted Vote Count Wald Literatur - Sheet1.csv"
 # pdf_id_column: "Key"
 columns:
