@@ -121,13 +121,13 @@ See [configs/predict](./configs/predict.yaml) for further information and option
 To evaluate the information extraction results against gold reference data, run:
 
 ```bash
-uv run -m kibad_llm.evaluate
-predictions_file=path/to/predictions.jsonl \
-references_file=path/to/references.jsonl \
-metric.field=path/in/flattened/reference/jsonl
+uv run -m kibad_llm.evaluate \
+dataset.predictions.file=path/to/predictions.jsonl
 ```
 
-See [configs/evaluate](./configs/evaluate.yaml) for further information and options.
+This uses uses `data/interim/faktencheck-db/faktencheck-db-converted_2025-11-05.jsonl` as default reference data and calculates micro averaged precision, recall and F1-score for all fields in the Faktencheck database (i.e., `metric=f1_micro`, see [configs/metric/f1_micro.yaml](./configs/metric/f1_micro.yaml) for details). See [configs/metric](./configs/metric) for other available metrics.
+
+See [configs/evaluate.yaml](./configs/evaluate.yaml) for further information and options.
 
 ## Project Organization
 

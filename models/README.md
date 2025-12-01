@@ -19,7 +19,6 @@
 based on: [DFKI-NLP/vLLM-Starter#2 (comment)](https://github.com/DFKI-NLP/vLLM-Starter/issues/2#issuecomment-3383218249)
 
 1. Install uv: https://docs.astral.sh/uv/getting-started/installation/
-1. create uv cache dir on netscratch: `mkdir -p /netscratch/$USER/cache/uv`
 1. open a new shell (or a create a new screen: `screen -S vLLM-Starter`)
 
 ### Run `gpt-oss-20b`
@@ -29,6 +28,8 @@ Based on instructions from https://github.com/DFKI-NLP/vLLM-Starter.
 start the service:
 
 ```bash
+export HF_HOME="/netscratch/$USER/cache/hf"
+export VLLM_CACHE_ROOT="/netscratch/$USER/cache/vllm"
 srun --partition=RTXA6000-SLT \
      --job-name=vllm_serve \
      --nodes=1 \
@@ -103,22 +104,29 @@ In General:
 
 ### Single package srun
 
-If you want to do not much setup and all you need is one package, for example when using `vllm serve`, use `uv run` with these two flags:
+If you want to do not much setup and all you need is one package, for example when using `vllm serve`, use `uvx` with the following flag and eviroment variables:
 
-- `-w your-package` this could be vllm or whatever other package you need.
-- `--cache-dir /netscratch/$USER/cache/uv` this prevents uv from filling up your home directory. It does however require you to set up the cache dir `mkdir -p /netscratch/$USER/cache/uv`.
+- `export HF_HOME="/netscratch/$USER/cache/hf"` this prevents the huggingface cache from filling up your home directory.
+- `export VLLM_CACHE_ROOT="/netscratch/$USER/cache/vllm"` this prevents the vLLM cache from filling up your home directory.
+- `--cache-dir /netscratch/$USER/cache/uv` this prevents uv from filling up your home directory.
 
 This approach is used in the [Quickstart](#quickstart) section.
+
+If the tool you want to use is invoked with a different name than it is installed, then use `--from <install-name>`. <br>
+example:
+`uvx --from rust-just just` The `rust-just` package is invoked by calling `just`.
 
 ### Full project srun
 
 To run a uv project with any number of custom python packages in your environment, you need to set up a few things.
 
-Firstly, you need to create directories on netscratch where the uv cache and virtual environment can live:
+Firstly, you need to create directories on netscratch where the uv virtual environment and caches can live:
 
 ```bash
 mkdir -p /netscratch/$USER/cache/uv
 mkdir -p /netscratch/$USER/cache/uv-venvs
+mkdir -p /netscratch/$USER/cache/hf
+mkdir -p /netscratch/$USER/cache/vllm
 ```
 
 Secondly, you need to set the environment variables for the uv cache and virtual environment to the directories you just created. This will point uv there and prevent it from causing your home directory to overflow.
@@ -135,11 +143,13 @@ Thirdly, create the virtual environment and symlink the directories so that you 
 uv sync
 # link the .venv
 ln -s /netscratch/$USER/cache/uv-venvs/kibad-llm ./.venv
-# link the cache
+# link the caches
 ln -s /netscratch/$USER/cache/uv ~/.cache/uv
+ln -s /netscratch/$USER/cache/hf ~/.cache/huggingface
+ln -s /netscratch/$USER/cache/vllm ~/.cache/vllm
 ```
 
-Now you can all of your python code without worrying about the uv cache or virtual environment.
+Now you can all of your python code without worrying about the uv cache, virtual environment, or huggingface/ vllm caches.
 
 ```bash
 srun --your-srun-flag \
@@ -159,10 +169,17 @@ In order to use `run_with_llm.sh` you need to have followed the steps in [Full p
 `run_with_llm.sh` uses flags with command line arguments.
 
 - `-h | --help` displays very similar help to this.
+
 - `-v | --vllm` is used for almost all arguments relevant to vLLM. If there are multiple, make sure to wrap them in quotes like `"some/mistral --trust-remote-code"`. This is a required flag.
+
+- `-vv | --vllm-version` is the vLLM version to run. This is an optional flag and uses the latest stable version per default.
+
 - `-po | --port` is the port vLLM and the uv code communicate on. This is an optional flag and uses a random port per default.
+
 - `pa | --partition` is the slurm partition to submit the job to. This is an optional flag and uses `"RTX6000-SLT"` per default.
+
 - `-t | --time` is the maximum time the slurm job is allowed to run. This is an optional flag and uses one hour per default.
+
 - `-u | --uv` is used for all `uv run` arguments. If there are multiple, make sure to wrap them in quotes like `"-m some.code"` which results in `uv run -m some.code`. This is a required flag.
 
 The script takes care of everything start to finish and executes all code on the compute node. As soon as the job gets resources, vLLM starts. The script then waits till vLLm is ready and starts your code with uv right after. This allows you to run heavy jobs without straining the login node. You can cancel the job with `ctrl-c` or `scancel` any time and don't need to worry about residual processes.

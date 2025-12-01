@@ -28,7 +28,7 @@ def extractor_name(request) -> str:
 def cfg_predict_extractor(tmp_path, extractor_name) -> DictConfig:  # type: ignore
     cfg = cfg_global(
         out_dir=tmp_path,
-        overrides=[f"extractor={extractor_name}", "store_text_in_predictions=false"],
+        overrides=[f"extractor={extractor_name}"],
         config_name="predict.yaml",
     )
 
@@ -65,5 +65,9 @@ def test_extractor(tmp_path, cfg_predict_extractor, extractor_name):
 
     with open(expected_result_path) as f:
         expected_result = json.load(f)
+
+    # check top-level keys
+    assert set(result) == set(expected_result)
+
     # just check keys since the actual values are not deterministic
     assert set(result["structured"]) == set(expected_result["structured"])

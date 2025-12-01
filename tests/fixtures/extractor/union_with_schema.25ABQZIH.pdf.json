@@ -4,6 +4,32 @@
       "Alpenvorland",
       "Norddeutsches Tiefland"
     ],
+    "climate": [
+      "maritim"
+    ],
+    "location": [
+      {
+        "country": "Germany",
+        "federal_state": "Bayern"
+      },
+      {
+        "country": "Germany",
+        "federal_state": "Brandenburg"
+      },
+      {
+        "country": "Germany",
+        "federal_state": "Mecklenburg-Vorpommern",
+        "name": "Greifswald"
+      },
+      {
+        "country": "Germany",
+        "federal_state": "Niedersachsen"
+      },
+      {
+        "country": "Germany",
+        "federal_state": "Schleswig-Holstein"
+      }
+    ],
     "landuse": [
       "Bau",
       "Energieproduktion",
@@ -15,32 +41,12 @@
         "term": "Hoch-, Zwischen- und \u00dcbergangsmoore"
       }
     ],
-    "location": [
-      {
-        "country": "Deutschland",
-        "federal_state": "Bayern"
-      },
-      {
-        "country": "Deutschland",
-        "federal_state": "Brandenburg"
-      },
-      {
-        "country": "Deutschland",
-        "federal_state": "Mecklenburg-Vorpommern"
-      },
-      {
-        "country": "Deutschland",
-        "federal_state": "Niedersachsen"
-      },
-      {
-        "country": "Deutschland",
-        "federal_state": "Schleswig-Holstein"
-      }
-    ],
-    "climate": [],
     "habitat": [
-      "Agrar- und Offenland",
       "Boden"
     ]
-  }
+  },
+  "error_list": [
+    null,
+    null
+  ]
 }

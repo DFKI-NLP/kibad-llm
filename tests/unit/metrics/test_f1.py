@@ -1,10 +1,10 @@
 import pytest
 
-from kibad_llm.metrics.f1 import F1MultipleFieldsMetric, F1SingleFieldMetric
+from kibad_llm.metrics.f1 import F1MicroMultipleFieldsMetric, F1MicroSingleFieldMetric
 
 
 def test_perfect_matches() -> None:
-    m = F1SingleFieldMetric(field="label")
+    m = F1MicroSingleFieldMetric(field="label")
     m.update({"label": "foo"}, {"label": "foo"})
     m.update({"label": "bar"}, {"label": "bar"})
     out = m.compute(m)
@@ -14,7 +14,7 @@ def test_perfect_matches() -> None:
 
 
 def test_all_mismatches() -> None:
-    m = F1SingleFieldMetric(field="label")
+    m = F1MicroSingleFieldMetric(field="label")
     m.update({"label": "foo"}, {"label": "woo"})
     m.update({"label": "bar"}, {"label": "rar"})
     out = m.compute(m)
@@ -24,7 +24,7 @@ def test_all_mismatches() -> None:
 
 
 def test_mixed_counts() -> None:
-    m = F1SingleFieldMetric(field="label")
+    m = F1MicroSingleFieldMetric(field="label")
     # tp
     m.update({"label": "foo"}, {"label": "foo"})
     # fp and fn and bool
@@ -43,7 +43,7 @@ def test_mixed_counts() -> None:
 
 
 def test_all_none_zero_division() -> None:
-    m = F1SingleFieldMetric(field="label")
+    m = F1MicroSingleFieldMetric(field="label")
     m.update({"label": None}, {"label": None})
     m.update({"label": None}, {"label": None})
     out = m.compute(m)
@@ -53,7 +53,7 @@ def test_all_none_zero_division() -> None:
 
 
 def test_reset() -> None:
-    m = F1SingleFieldMetric(field="label")
+    m = F1MicroSingleFieldMetric(field="label")
     m.update({"label": "foo"}, {"label": "foo"})
     assert m.compute(m)["f1"] == pytest.approx(1.0)
     m.reset()
@@ -64,7 +64,7 @@ def test_reset() -> None:
 
 
 def test_multi_perfect_matches() -> None:
-    m = F1SingleFieldMetric(field="label")
+    m = F1MicroSingleFieldMetric(field="label")
     m.update({"label": ["foo", "woo"]}, {"label": ["foo", "woo"]})
     m.update({"label": {"bar", "dar"}}, {"label": {"bar", "dar"}})
     out = m.compute(m)
@@ -74,7 +74,7 @@ def test_multi_perfect_matches() -> None:
 
 
 def test_multi_value_all_mismatches() -> None:
-    m = F1SingleFieldMetric(field="label")
+    m = F1MicroSingleFieldMetric(field="label")
     m.update({"label": ["foo", "boo"]}, {"label": ["woo", "doo"]})
     m.update({"label": {"bar", "dar"}}, {"label": {"rar", "sar"}})
     out = m.compute(m)
@@ -84,7 +84,7 @@ def test_multi_value_all_mismatches() -> None:
 
 
 def test_multi_value_mixed_count() -> None:
-    m = F1SingleFieldMetric()
+    m = F1MicroSingleFieldMetric()
     m.update(["foo", True], {"bar", "dar", True})
     out = m.compute(m)
     # tp=1, fp=1, fn=2 -> precision=1/2, recall=1/3, f1=2*(((1/2)*(1/3))/((1/2)+(1/3)))
@@ -94,7 +94,7 @@ def test_multi_value_mixed_count() -> None:
 
 
 def test_multi_value_mixed_counts() -> None:
-    m = F1SingleFieldMetric(field="label")
+    m = F1MicroSingleFieldMetric(field="label")
     # tp
     m.update({"label": {"foo"}}, {"label": ["foo"]})
     # fp and fn and bool
@@ -115,7 +115,7 @@ def test_multi_value_mixed_counts() -> None:
 
 
 def test_multi_value_mixed_counts_no_field() -> None:
-    m = F1SingleFieldMetric()
+    m = F1MicroSingleFieldMetric()
     # tp
     m.update({"foo"}, ["foo"])
     # fp and fn and bool
@@ -136,26 +136,32 @@ def test_multi_value_mixed_counts_no_field() -> None:
 
 
 def test_multiple_fields_single_field() -> None:
-    m = F1MultipleFieldsMetric(fields=["label"])
+    m = F1MicroMultipleFieldsMetric(fields=["label"])
     m.update({"label": "foo"}, {"label": "foo"})
     m.update({"label": "bar"}, {"label": "rar"})
     out = m.compute()
-    assert out == {"label": {"precision": 0.5, "recall": 0.5, "f1": 0.5}}
+    assert out == {
+        "ALL": {"f1": 0.5, "precision": 0.5, "recall": 0.5, "support": 2},
+        "AVG": {"f1": 0.5, "precision": 0.5, "recall": 0.5, "support": 2.0},
+        "label": {"f1": 0.5, "precision": 0.5, "recall": 0.5, "support": 2},
+    }
 
 
 def test_multiple_fields() -> None:
-    m = F1MultipleFieldsMetric(fields=["label1", "label2"])
+    m = F1MicroMultipleFieldsMetric(fields=["label1", "label2"])
     m.update({"label1": "foo", "label2": "A"}, {"label1": "foo", "label2": "B"})
     m.update({"label1": "bar", "label2": "C"}, {"label1": "rar", "label2": "C"})
     out = m.compute()
     assert out == {
-        "label1": {"precision": 0.5, "recall": 0.5, "f1": 0.5},
-        "label2": {"precision": 0.5, "recall": 0.5, "f1": 0.5},
+        "ALL": {"f1": 0.5, "precision": 0.5, "recall": 0.5, "support": 4},
+        "AVG": {"f1": 0.5, "precision": 0.5, "recall": 0.5, "support": 2.0},
+        "label1": {"f1": 0.5, "precision": 0.5, "recall": 0.5, "support": 2},
+        "label2": {"f1": 0.5, "precision": 0.5, "recall": 0.5, "support": 2},
     }
 
 
 def test_multiple_fields_reset() -> None:
-    m = F1MultipleFieldsMetric(fields=["label"])
+    m = F1MicroMultipleFieldsMetric(fields=["label"])
     m.update({"label": "foo"}, {"label": "foo"})
     assert m.compute()["label"]["f1"] == pytest.approx(1.0)
     m.reset()
@@ -164,20 +170,22 @@ def test_multiple_fields_reset() -> None:
 
 
 def test_multiple_fields_format_result_markdown() -> None:
-    m = F1MultipleFieldsMetric(fields=["label1", "label2"], format_as_markdown=True)
+    m = F1MicroMultipleFieldsMetric(fields=["label1", "label2"], format_as_markdown=True)
     m.update({"label1": "foo", "label2": "A"}, {"label1": "foo", "label2": "A"})
     result = m.compute()
     formatted = m._format_result(result)
     assert formatted == (
-        "| field   |   precision |   recall |   f1 |\n"
-        "|:--------|------------:|---------:|-----:|\n"
-        "| label1  |           1 |        1 |    1 |\n"
-        "| label2  |           1 |        1 |    1 |"
+        "| field   |   precision |   recall |   f1 |   support |\n"
+        "|:--------|------------:|---------:|-----:|----------:|\n"
+        "| label1  |           1 |        1 |    1 |         1 |\n"
+        "| label2  |           1 |        1 |    1 |         1 |\n"
+        "| AVG     |           1 |        1 |    1 |         1 |\n"
+        "| ALL     |           1 |        1 |    1 |         2 |"
     )
 
 
 def test_multiple_fields_format_result_json() -> None:
-    m = F1MultipleFieldsMetric(fields=["label"], format_as_markdown=False)
+    m = F1MicroMultipleFieldsMetric(fields=["label"], format_as_markdown=False)
     m.update({"label": "foo"}, {"label": "foo"})
     result = m.compute()
     formatted = m._format_result(result)
@@ -186,7 +194,20 @@ def test_multiple_fields_format_result_json() -> None:
         '  "label": {\n'
         '    "precision": 1.0,\n'
         '    "recall": 1.0,\n'
-        '    "f1": 1.0\n'
+        '    "f1": 1.0,\n'
+        '    "support": 1\n'
+        "  },\n"
+        '  "AVG": {\n'
+        '    "precision": 1.0,\n'
+        '    "recall": 1.0,\n'
+        '    "f1": 1.0,\n'
+        '    "support": 1.0\n'
+        "  },\n"
+        '  "ALL": {\n'
+        '    "precision": 1.0,\n'
+        '    "recall": 1.0,\n'
+        '    "f1": 1.0,\n'
+        '    "support": 1\n'
         "  }\n"
         "}"
     )
@@ -196,7 +217,7 @@ def test_multiple_fields_format_result_json() -> None:
     "format_as_markdown,sort_fields", [(True, True), (True, False), (False, True), (False, False)]
 )
 def test_multiple_fields_show(format_as_markdown: bool, sort_fields: bool, caplog) -> None:
-    m = F1MultipleFieldsMetric(
+    m = F1MicroMultipleFieldsMetric(
         fields=["b_field", "a_field"],
         format_as_markdown=format_as_markdown,
         sort_fields=sort_fields,
@@ -212,17 +233,21 @@ def test_multiple_fields_show(format_as_markdown: bool, sort_fields: bool, caplo
     if format_as_markdown:
         if sort_fields:
             assert logged_output == (
-                "| field   |   precision |   recall |   f1 |\n"
-                "|:--------|------------:|---------:|-----:|\n"
-                "| a_field |           1 |        1 |    1 |\n"
-                "| b_field |           1 |        1 |    1 |\n"
+                "| field   |   precision |   recall |   f1 |   support |\n"
+                "|:--------|------------:|---------:|-----:|----------:|\n"
+                "| a_field |           1 |        1 |    1 |         1 |\n"
+                "| b_field |           1 |        1 |    1 |         1 |\n"
+                "| AVG     |           1 |        1 |    1 |         1 |\n"
+                "| ALL     |           1 |        1 |    1 |         2 |\n"
             )
         else:
             assert logged_output == (
-                "| field   |   precision |   recall |   f1 |\n"
-                "|:--------|------------:|---------:|-----:|\n"
-                "| b_field |           1 |        1 |    1 |\n"
-                "| a_field |           1 |        1 |    1 |\n"
+                "| field   |   precision |   recall |   f1 |   support |\n"
+                "|:--------|------------:|---------:|-----:|----------:|\n"
+                "| b_field |           1 |        1 |    1 |         1 |\n"
+                "| a_field |           1 |        1 |    1 |         1 |\n"
+                "| AVG     |           1 |        1 |    1 |         1 |\n"
+                "| ALL     |           1 |        1 |    1 |         2 |\n"
             )
     else:
         if sort_fields:
@@ -231,12 +256,26 @@ def test_multiple_fields_show(format_as_markdown: bool, sort_fields: bool, caplo
                 '  "a_field": {\n'
                 '    "precision": 1.0,\n'
                 '    "recall": 1.0,\n'
-                '    "f1": 1.0\n'
+                '    "f1": 1.0,\n'
+                '    "support": 1\n'
                 "  },\n"
                 '  "b_field": {\n'
                 '    "precision": 1.0,\n'
                 '    "recall": 1.0,\n'
-                '    "f1": 1.0\n'
+                '    "f1": 1.0,\n'
+                '    "support": 1\n'
+                "  },\n"
+                '  "AVG": {\n'
+                '    "precision": 1.0,\n'
+                '    "recall": 1.0,\n'
+                '    "f1": 1.0,\n'
+                '    "support": 1.0\n'
+                "  },\n"
+                '  "ALL": {\n'
+                '    "precision": 1.0,\n'
+                '    "recall": 1.0,\n'
+                '    "f1": 1.0,\n'
+                '    "support": 2\n'
                 "  }\n"
                 "}\n"
             )
@@ -246,12 +285,26 @@ def test_multiple_fields_show(format_as_markdown: bool, sort_fields: bool, caplo
                 '  "b_field": {\n'
                 '    "precision": 1.0,\n'
                 '    "recall": 1.0,\n'
-                '    "f1": 1.0\n'
+                '    "f1": 1.0,\n'
+                '    "support": 1\n'
                 "  },\n"
                 '  "a_field": {\n'
                 '    "precision": 1.0,\n'
                 '    "recall": 1.0,\n'
-                '    "f1": 1.0\n'
+                '    "f1": 1.0,\n'
+                '    "support": 1\n'
+                "  },\n"
+                '  "AVG": {\n'
+                '    "precision": 1.0,\n'
+                '    "recall": 1.0,\n'
+                '    "f1": 1.0,\n'
+                '    "support": 1.0\n'
+                "  },\n"
+                '  "ALL": {\n'
+                '    "precision": 1.0,\n'
+                '    "recall": 1.0,\n'
+                '    "f1": 1.0,\n'
+                '    "support": 2\n'
                 "  }\n"
                 "}\n"
             )

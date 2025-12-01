@@ -1,0 +1,11 @@
+_target_: kibad_llm.dataset.json.read_and_preprocess
+file: ???
+id_key: file_name
+# strip file extension from predictions to match zotitem_ptr_id in references
+process_id:
+  _partial_: true
+  _target_: kibad_llm.utils.path.strip_filename_extension
+preprocess:
+  _target_: kibad_llm.utils.dictionary.get
+  _partial_: True
+  key: "structured"

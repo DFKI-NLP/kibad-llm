@@ -1,14 +1,15 @@
+from collections import defaultdict
 from typing import Any
 
 from pandas import DataFrame
 
-from kibad_llm.metric import Metric
 from kibad_llm.metrics.base import MetricWithPrepareEntryAsSet
 from kibad_llm.metrics.collection import MetricCollection
 
 
-class F1SingleFieldMetric(MetricWithPrepareEntryAsSet):
-    """Computes precision, recall, and F1 score for single- and multi-label classification tasks.
+class F1MicroSingleFieldMetric(MetricWithPrepareEntryAsSet):
+    """Computes micro averaged precision, recall, and F1 score for single- and multi-label
+    classification tasks.
 
     The metric operates on sets and allows for simple preprocessing, see _prepare_entry for details.
 
@@ -45,30 +46,32 @@ class F1SingleFieldMetric(MetricWithPrepareEntryAsSet):
         self.state["fp"] += len(prediction - reference)
         self.state["fn"] += len(reference - prediction)
 
-    def _compute(self, *args, **kwargs) -> dict[str, Any]:
-        """Computes the micro average of precision, recall and f1
+    @staticmethod
+    def calculate_scores(state: dict[str, int]) -> dict[str, float]:
+        """Calculates precision, recall and f1 from true positives, false positives and false negatives.
+
+        Args:
+            state: dictionary with keys "tp", "fp", "fn"
 
         returns: dictionary with precision, recall and f1
         """
-        precision = (
-            self.state["tp"] / (self.state["tp"] + self.state["fp"])
-            if (self.state["tp"] + self.state["fp"]) > 0
-            else 0.0
-        )
-        recall = (
-            self.state["tp"] / (self.state["tp"] + self.state["fn"])
-            if (self.state["tp"] + self.state["fn"]) > 0
-            else 0.0
-        )
+        tp, fp, fn = state["tp"], state["fp"], state["fn"]
+        precision = tp / (tp + fp) if (tp + fp) > 0 else 0.0
+        recall = tp / (tp + fn) if (tp + fn) > 0 else 0.0
         f1 = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0.0
         return {
             "precision": precision,
             "recall": recall,
             "f1": f1,
+            "support": tp + fn,
         }
 
+    def _compute(self, *args, **kwargs) -> dict[str, Any]:
+        """Computes the micro average of precision, recall and f1 score."""
+        return self.calculate_scores(state=self.state)
 
-class F1MultipleFieldsMetric(MetricCollection):
+
+class F1MicroMultipleFieldsMetric(MetricCollection):
 
     def __init__(
         self,
@@ -77,21 +80,48 @@ class F1MultipleFieldsMetric(MetricCollection):
         sort_fields: bool = False,
         **kwargs,
     ) -> None:
-        """Computes MicroF1Metric for multiple fields at once.
+        """Computes F1MicroSingleFieldMetric for multiple fields at once as well as micro (ALL)
+        and macro (AVG) over all fields.
 
         Args:
-            fields: List of fields to compute MicroF1Metric for.
+            fields: List of fields to compute F1MicroSingleFieldMetric for.
             format_as_markdown: Whether to format the result as a markdown table. Defaults to True.
-            **kwargs: Additional keyword arguments for MicroF1Metric, e.g., ignore_subfields.
+            **kwargs: Additional keyword arguments for F1MicroSingleFieldMetric, e.g., ignore_subfields.
         """
+        # for now, just raise error if fields contain MICRO or MACRO
+        if "ALL" in fields or "AVG" in fields:
+            raise ValueError("Fields cannot contain 'ALL' or 'AVG' as field names.")
+
         if sort_fields:
             fields = sorted(fields)
-        metrics: dict[str, Metric] = {
-            field: F1SingleFieldMetric(field=field, **kwargs) for field in fields
-        }
-        super().__init__(metrics=metrics)
+        super().__init__(
+            metrics={field: F1MicroSingleFieldMetric(field=field, **kwargs) for field in fields}
+        )
 
         self.format_as_markdown = format_as_markdown
+
+    def _compute(self, *args, **kwargs) -> dict[str, Any]:
+        """Computes the results for all sub-metrics and micro average over all instances.
+
+        Returns:
+            A dictionary mapping field names to their computed results.
+        """
+        result = super()._compute(*args, **kwargs)
+        # compute mean for precision, recall, f1 over all fields
+        scores_list = defaultdict(list)
+        for field_result in result.values():
+            for key, value in field_result.items():
+                scores_list[key].append(value)
+        result["AVG"] = {key: sum(values) / len(values) for key, values in scores_list.items()}
+
+        # compute micro average over all instances based on states of all sub-metrics
+        state_total = {
+            "tp": sum(metric.state["tp"] for metric in self.metrics.values()),
+            "fp": sum(metric.state["fp"] for metric in self.metrics.values()),
+            "fn": sum(metric.state["fn"] for metric in self.metrics.values()),
+        }
+        result["ALL"] = F1MicroSingleFieldMetric.calculate_scores(state=state_total)
+        return result
 
     def _format_result(self, result: dict[str, Any]) -> str:
         """Formats the result as a markdown table if specified, otherwise as pretty-printed JSON.

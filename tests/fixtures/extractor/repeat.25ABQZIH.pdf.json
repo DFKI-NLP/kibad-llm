@@ -1,83 +1,26 @@
 {
   "structured": {
+    "habitat": [
+      "Agrar- und Offenland",
+      "Boden"
+    ],
     "natural_region": [
       "Norddeutsches Tiefland",
       "Alpenvorland"
     ],
-    "habitat": [
-      "Boden"
-    ],
-    "landuse": [
-      "Landwirtschaft",
-      "Energieproduktion"
-    ],
     "climate": [
       "Atlantisches Klima",
       "subkontinental"
+    ],
+    "landuse": [
+      "Energieproduktion",
+      "Landwirtschaft",
+      "Bau"
     ]
   },
-  "structured_list": [
-    {
-      "habitat": [
-        "Boden",
-        "Agrar- und Offenland"
-      ],
-      "natural_region": [
-        "Norddeutsches Tiefland",
-        "Alpenvorland"
-      ],
-      "climate": [
-        "Atlantisches Klima",
-        "subkontinental"
-      ],
-      "landuse": [
-        "Landwirtschaft",
-        "Energieproduktion",
-        "Bau"
-      ]
-    },
-    {
-      "habitat": [
-        "Boden"
-      ],
-      "natural_region": [
-        "Norddeutsches Tiefland",
-        "Alpenvorland"
-      ],
-      "climate": [
-        "Atlantisches Klima",
-        "subkontinental"
-      ],
-      "landuse": [
-        "Landwirtschaft",
-        "Energieproduktion"
-      ]
-    },
-    {
-      "habitat": [
-        "Boden"
-      ],
-      "natural_region": [
-        "Norddeutsches Tiefland",
-        "Alpenvorland"
-      ],
-      "climate": [
-        "Atlantisches Klima"
-      ],
-      "landuse": [
-        "Landwirtschaft",
-        "Energieproduktion"
-      ]
-    }
-  ],
   "error_list": [
     null,
     null,
     null
-  ],
-  "response_content_list": [
-    "{\"habitat\":[\"Boden\",\"Agrar- und Offenland\"],\"natural_region\":[\"Norddeutsches Tiefland\",\"Alpenvorland\"],\"climate\":[\"Atlantisches Klima\",\"subkontinental\"],\"landuse\":[\"Landwirtschaft\",\"Energieproduktion\",\"Bau\"]}",
-    "{\"habitat\":[\"Boden\"],\"natural_region\":[\"Norddeutsches Tiefland\",\"Alpenvorland\"],\"climate\":[\"Atlantisches Klima\",\"subkontinental\"],\"landuse\":[\"Landwirtschaft\",\"Energieproduktion\"]}",
-    "{\"habitat\":[\"Boden\"],\"natural_region\":[\"Norddeutsches Tiefland\",\"Alpenvorland\"],\"climate\":[\"Atlantisches Klima\"],\"landuse\":[\"Landwirtschaft\",\"Energieproduktion\"]}"
   ]
 }

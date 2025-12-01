@@ -5,6 +5,7 @@
 PORT=$(shuf -i 10000-60000 -n 1)  # only ports forwarded through vpn
 PARTITION="RTXA6000-SLT"
 TIME=1-00:00:00
+export VLLM_VERSION="latest"
 
 # flag processing for setting vars and displaying help
 while [[ "$1" =~ ^- && ! "$1" == "--" ]]; do case $1 in
@@ -14,16 +15,20 @@ while [[ "$1" =~ ^- && ! "$1" == "--" ]]; do case $1 in
     --------------------------------------------------------------------------------
     It is recommended to pass flag values wrapped in quotes like '$0 ... -v \"model/id --trust-remote-code\" ...'
 
-    -v | --vllm         Arguments with which to run vLLM.
-    -po | --port        Port to run vLLM on.                    default=random(10000-60000)
-    -pa | --partition   Partition to run vLLM on.               default=$PARTITION
-    -t | --time         Max slurm jub runtime.                  default=$TIME
-    -u | --uv           uv args for the python script to run.
+    -v  | --vllm            Arguments with which to run vLLM.
+    -vv | --vllm-version    vLLM version to run.                    default=$VLLM_VERSION
+    -po | --port            Port to run vLLM on.                    default=random(10000-60000)
+    -pa | --partition       Partition to run vLLM on.               default=$PARTITION
+    -t  | --time            Max slurm jub runtime.                  default=$TIME
+    -u  | --uv              uv args for the python script to run.
     "
     exit
     ;;
   -v | --vllm )
     shift; VLLM_ARGS=$1
+    ;;
+  -vv | --vllm-version )
+    shift; export VLLM_VERSION=$1
     ;;
   -po | --port )
     shift; PORT=$1
@@ -40,8 +45,10 @@ while [[ "$1" =~ ^- && ! "$1" == "--" ]]; do case $1 in
 esac; shift; done
 if [[ "$1" == '--' ]]; then shift; fi
 
-export HF_HOME="/netscratch/$USER/.cache/hf"
+export HF_HOME="/netscratch/$USER/cache/hf"
+export VLLM_CACHE_ROOT="/netscratch/$USER/cache/vllm"
 
+# use uuid to prevent job collision
 UUID="$(uuidgen)"
 JOB_NAME="kiba-d_$UUID"
 
@@ -50,6 +57,7 @@ echo ">>> USING PARTITION $PARTITION"
 echo ">>> MAX TIME $TIME"
 echo ">>> SUBMITTED $(date)"
 echo ">>> VLLM_ARGS $VLLM_ARGS --download-dir=/ds/models/llms/cache --port=$PORT"
+echo ">>> VLLM_VERSION $VLLM_VERSION"
 echo ">>> UV_ARGS $UV_ARGS"
 echo ">>> JOB_NAME $JOB_NAME"
 echo "============================================="
@@ -66,7 +74,7 @@ srun --partition=$PARTITION \
      --oversubscribe \
      --time=$TIME \
      uvx --cache-dir /netscratch/$USER/cache/uv \
-         vllm serve "$VLLM_ARGS" \
+         vllm@$VLLM_VERSION serve "$VLLM_ARGS" \
              --download-dir=/ds/models/llms/cache \
              --port=$PORT&
 

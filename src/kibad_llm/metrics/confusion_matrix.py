@@ -63,15 +63,15 @@ class ConfusionMatrix(MetricWithPrepareEntryAsSet):
         counts: dict[tuple[str, str], int] = defaultdict(int)
         # True positives: labels in both reference and prediction
         for label in reference & prediction:
-            counts[(label, label)] += 1
+            counts[(str(label), str(label))] += 1
 
         # False negatives: labels in reference but not in prediction
         for label in reference - prediction:
-            counts[(label, self.undetected_label)] += 1
+            counts[(str(label), self.undetected_label)] += 1
 
         # False positives: labels in prediction but not in reference
         for label in prediction - reference:
-            counts[(self.unassignable_label, label)] += 1
+            counts[(self.unassignable_label, str(label))] += 1
 
         return counts
 

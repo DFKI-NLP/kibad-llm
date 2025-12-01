@@ -1,0 +1,8 @@
+# Merges the references from faktencheck_db_converted into the predictions from extraction_result.
+# The resulting dataset has "prediction" and "reference" fields for each entry and can be used for evaluation.
+
+defaults:
+  - predictions: extraction_result
+  - references: faktencheck_db_converted
+
+_target_: kibad_llm.dataset.utils.merge_references_into_predictions

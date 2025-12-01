@@ -20,8 +20,6 @@ AVAILABLE_METRICS = [
 
 # This was produced with the default pipeline configuration on the PDFs in tests/fixtures/pdfs
 PREDICTIONS_FILE = PROJ_ROOT / "tests" / "fixtures" / "evaluation" / "predictions.jsonl"
-# This was produced by converting the Faktencheck-DB via the script in src/kibad_llm/data_integration/db_converter.py
-REFERENCES_FILE = INTERIM_DATA_DIR / "faktencheck-db" / "faktencheck-db-converted_2025-11-05.jsonl"
 
 
 @pytest.fixture(scope="function", params=AVAILABLE_METRICS)
@@ -36,12 +34,11 @@ def cfg_evaluate(tmp_path, metric_name) -> DictConfig:  # type: ignore
     )
 
     with open_dict(cfg):
-        cfg.predictions_file = str(PREDICTIONS_FILE)
-        cfg.references_file = str(REFERENCES_FILE)
+        cfg.dataset.predictions.file = str(PREDICTIONS_FILE)
         # this produces non-zero results
-        if metric_name in ["confusion_matrix", "f1_single_field"]:
+        if metric_name in ["confusion_matrix", "f1_micro_single_field"]:
             cfg.metric.field = "habitat"
-        elif metric_name == "f1":
+        elif metric_name == "f1_micro":
             cfg.metric.fields = ["habitat", "landuse"]
         else:
             raise ValueError(
@@ -59,9 +56,9 @@ def test_evaluate(tmp_path, cfg_evaluate, metric_name):
     HydraConfig().set_config(cfg_evaluate)
     metric_scores = evaluate(cfg_evaluate)
 
-    if metric_name == "f1_single_field":
+    if metric_name == "f1_micro_single_field":
         assert metric_scores == pytest.approx(
-            {"f1": 2 * ((3 / 8) / (1 + (3 / 8))), "precision": 3 / 8, "recall": 1}
+            {"f1": 2 * ((3 / 8) / (1 + (3 / 8))), "precision": 3 / 8, "recall": 1, "support": 3}
         )
     elif metric_name == "confusion_matrix":
         assert metric_scores == {
@@ -74,10 +71,27 @@ def test_evaluate(tmp_path, cfg_evaluate, metric_name):
                 "Wald": 1,
             },
         }
-    elif metric_name == "f1":
+    elif metric_name == "f1_micro":
         assert metric_scores == {
-            "habitat": {"f1": pytest.approx(0.545454545), "precision": 0.375, "recall": 1.0},
-            "landuse": {"f1": 0.0, "precision": 0.0, "recall": 0.0},
+            "habitat": {
+                "f1": pytest.approx(0.545454545),
+                "precision": 0.375,
+                "recall": 1.0,
+                "support": 3,
+            },
+            "landuse": {"f1": 0.0, "precision": 0.0, "recall": 0.0, "support": 1},
+            "AVG": {
+                "f1": pytest.approx(0.272727272),
+                "precision": 0.1875,
+                "recall": 0.5,
+                "support": 2,
+            },
+            "ALL": {
+                "f1": pytest.approx(0.28571428),
+                "precision": pytest.approx(0.17647058823),
+                "recall": 0.75,
+                "support": 4,
+            },
         }
     else:
         raise ValueError(f"Unexpected metric name: {metric_name}. Please update the test case.")
