@@ -7,7 +7,7 @@ For a log file to the previous, identical run, see
 /netscratch/hennig/kiba-d/logs/runs/default/2025-11-25_09-23-55/predict.log.
 
 Note that not all PDFs were processed, some were too long and others had JSON decode errors, lines look like this:
-{"file_name":"3WEEGFGW.pdf","structured":null}
+{"file_name":"3WEEGFGW.pdf","structured":null,"error_list":["Error code: 400 ..."]}
 
 Run details:
 - Basic + compound types
