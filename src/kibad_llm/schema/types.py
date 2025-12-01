@@ -876,7 +876,7 @@ class OrganismBiodiversityTrend(CompoundFeature):
     """
 
     # The fields below are based Trends-WeightedVoteCount.csv file.
-    # The aliases of the fields are the column names of that table (except for taxa).
+    # The aliases of the fields are the column names of that table.
 
     hauptgruppe_rote_listen: HauptgruppeRoteListenEnum = Field(
         ...,
