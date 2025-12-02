@@ -49,7 +49,6 @@ def test_read_organism_trends_wald_selected_columns() -> None:
             {
                 "Antwortvariable": "Artenzahl",
                 "Hauptgruppe_RoteListen": "Wirbellose",
-                "Key": "324V8DKM",
                 "Lebensraum": "Wald",
                 "Trend": "no",
                 "Untergruppe_RoteListen": "Arthropoden",
@@ -57,7 +56,6 @@ def test_read_organism_trends_wald_selected_columns() -> None:
             {
                 "Antwortvariable": "Artenzahl",
                 "Hauptgruppe_RoteListen": "Wirbellose",
-                "Key": "324V8DKM",
                 "Lebensraum": "Wald",
                 "Trend": "no",
                 "Untergruppe_RoteListen": "Arthropoden",
