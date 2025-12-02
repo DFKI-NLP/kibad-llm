@@ -134,7 +134,9 @@ uv run -m kibad_llm.evaluate \
 dataset.predictions.file=path/to/predictions.jsonl
 ```
 
-This uses uses `data/interim/faktencheck-db/faktencheck-db-converted_2025-11-05.jsonl` as default reference data and calculates micro averaged precision, recall and F1-score for all fields in the Faktencheck database (i.e., `metric=f1_micro`, see [configs/metric/f1_micro.yaml](./configs/metric/f1_micro.yaml) for details). See [configs/metric](./configs/metric) for other available metrics.
+Per default, this uses `dataset=faktencheck` with `data/interim/faktencheck-db/faktencheck-db-converted_2025-11-05.jsonl` as reference data and calculates micro averaged precision, recall and F1-score for all fields in the Faktencheck database (i.e., `metric=f1_micro`, see [configs/metric/f1_micro.yaml](./configs/metric/f1_micro.yaml) for details). See [configs/metric](./configs/metric) for other available metrics.
+
+To evaluate against a different dataset, set the `dataset` parameter. For instance, to evaluate organism trends for the forest habitat, use `dataset=organism_trends_forest`. See [configs/dataset](./configs/dataset) for available datasets.
 
 See [configs/evaluate.yaml](./configs/evaluate.yaml) for further information and options.
 
