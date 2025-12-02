@@ -876,32 +876,27 @@ class OrganismBiodiversityTrend(CompoundFeature):
     """
 
     # The fields below are based Trends-WeightedVoteCount.csv file.
-    # The aliases of the fields are the column names of that table.
+    # We use the column names as field names so that no post-processing is needed.
 
-    hauptgruppe_rote_listen: HauptgruppeRoteListenEnum = Field(
+    Hauptgruppe_RoteListen: HauptgruppeRoteListenEnum = Field(
         ...,
-        alias="Hauptgruppe_RoteListen",
         description="Hauptgruppe der Organismen auf die sich der Trend bezieht.",
     )
     # A bit unexpected, but data contains NA values, so this is optional.
-    untergruppe_rote_listen: UntergruppeRoteListenEnum | None = Field(
+    Untergruppe_RoteListen: UntergruppeRoteListenEnum | None = Field(
         default=None,
-        alias="Untergruppe_RoteListen",
         description="Untergruppe der Organismen auf die sich der Trend bezieht.",
     )
-    habitat: HabitatForOrganismTrendEnum = Field(
+    Lebensraum: HabitatForOrganismTrendEnum = Field(
         ...,
-        alias="Lebensraum",
         description="Auf welchen der folgenden Lebensräume bezieht sich der Trend?",
     )
-    biodiversity_variable: BiodiversityVariableEnum = Field(
+    Antwortvariable: BiodiversityVariableEnum = Field(
         ...,
-        alias="Antwortvariable",
         description="Mithilfe welcher Biodiversitätsvariable wird der Trend gemessen?",
     )
-    trend_category: TrendCategoryEnum = Field(
+    Trend: TrendCategoryEnum = Field(
         ...,
-        alias="Trend",
         description="In welche der folgenden Kategorien lässt sich die Richtung des Trends einordnen?",
     )
 
