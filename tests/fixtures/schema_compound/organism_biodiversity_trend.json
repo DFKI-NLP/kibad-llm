@@ -94,11 +94,11 @@
     },
     "Antwortvariable": {
       "$ref": "#/$defs/BiodiversityVariableEnum",
-      "description": "Mithilfe welcher Biodiversitätsvariable wird der Trend gemessen?"
+      "description": "Mithilfe welcher Biodiversitätsvariable wird der Trend gemessen? \"ENS\" steht für \"Effective Number of Species\" (Effektive Artenzahl)."
     },
     "Trend": {
       "$ref": "#/$defs/TrendCategoryEnum",
-      "description": "In welche der folgenden Kategorien lässt sich die Richtung des Trends einordnen?"
+      "description": "In welche der folgenden Kategorien lässt sich die Richtung des Trends einordnen? \"no\" bedeutet, dass sich die Artengruppe stabil entwickelt."
     }
   },
   "required": [

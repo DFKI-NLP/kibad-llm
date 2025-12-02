@@ -893,11 +893,13 @@ class OrganismBiodiversityTrend(CompoundFeature):
     )
     Antwortvariable: BiodiversityVariableEnum = Field(
         ...,
-        description="Mithilfe welcher Biodiversitätsvariable wird der Trend gemessen?",
+        description="Mithilfe welcher Biodiversitätsvariable wird der Trend gemessen? "
+        '"ENS" steht für "Effective Number of Species" (Effektive Artenzahl).',
     )
     Trend: TrendCategoryEnum = Field(
         ...,
-        description="In welche der folgenden Kategorien lässt sich die Richtung des Trends einordnen?",
+        description="In welche der folgenden Kategorien lässt sich die Richtung des Trends einordnen? "
+        '"no" bedeutet, dass sich die Artengruppe stabil entwickelt.',
     )
 
 
