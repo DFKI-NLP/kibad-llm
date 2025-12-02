@@ -797,21 +797,6 @@ class EcosystemStudyFeaturesCompoundsOnly(BaseEcosystemStudyFeatures):
     )
 
 
-# currently not used
-class SpeciesGroupForTrendEnum(str, Enum):
-    AMPHIBIEN = "Amphibien"
-    ARTHROPODEN = "Arthropoden"
-    FISCHE = "Fische"
-    FLECHTEN = "Flechten"
-    MIKROALGEN = "Mikroalgen"
-    PFLANZEN = "Pflanzen"
-    PILZE = "Pilze"
-    REPTILIEN = "Reptilien"
-    SAEUGER = "Säuger"
-    UEBRIGE_WIRBELLOSE = "Übrige Wirbellose"
-    VOEGEL = "Vögel"
-
-
 class HauptgruppeRoteListenEnum(str, Enum):
     MAKROFAUNA = "Makrofauna"
     MESOFAUNA = "Mesofauna"
