@@ -31,6 +31,8 @@ def read_organism_trends(
     # Group by pdf_id_column and convert each group to a list of dictionaries
     result: dict[str, dict[str, list]] = {}
     for pdf_id, group in df.groupby(pdf_id_column):
+        # remove the pdf_id_column from the group
+        group = group.drop(columns=[pdf_id_column])
         group_dicts = group.to_dict("records")
         if remove_nan:
             group_dicts = [remove_nan_from_dict(d) for d in group_dicts]
