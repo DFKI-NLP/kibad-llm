@@ -1,0 +1,17 @@
+# @package _global_
+
+# This experiment uses a single schema, and thus a single llm query, to extract data for all fields
+# in the Fragenkatalog database.
+
+# To execute this experiment run:
+# uv run -m kibad_llm.predict experiment=single_schema pdf_directory=path/to/pdf/files
+
+defaults:
+  - override /extractor: simple_with_schema
+
+
+extractor:
+  schema:
+    # create the schema from the pydantic model of EcosystemStudyFeaturesAll
+    _target_: kibad_llm.schema.types.EcosystemStudyFeaturesAll.model_json_schema
+    by_alias: false
