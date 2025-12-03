@@ -38,7 +38,7 @@ def cfg_evaluate(tmp_path, metric_name) -> DictConfig:  # type: ignore
         # this produces non-zero results
         if metric_name in ["confusion_matrix", "f1_micro_single_field"]:
             cfg.metric.field = "habitat"
-        elif metric_name == "f1_micro":
+        elif metric_name in ["f1_micro", "f1_micro_flat"]:
             cfg.metric.fields = ["habitat", "landuse"]
         else:
             raise ValueError(
@@ -72,6 +72,28 @@ def test_evaluate(tmp_path, cfg_evaluate, metric_name):
             },
         }
     elif metric_name == "f1_micro":
+        assert metric_scores == {
+            "habitat": {
+                "f1": pytest.approx(0.545454545),
+                "precision": 0.375,
+                "recall": 1.0,
+                "support": 3,
+            },
+            "landuse": {"f1": 0.0, "precision": 0.0, "recall": 0.0, "support": 1},
+            "AVG": {
+                "f1": pytest.approx(0.272727272),
+                "precision": 0.1875,
+                "recall": 0.5,
+                "support": 2,
+            },
+            "ALL": {
+                "f1": pytest.approx(0.28571428),
+                "precision": pytest.approx(0.17647058823),
+                "recall": 0.75,
+                "support": 4,
+            },
+        }
+    elif metric_name == "f1_micro_flat":
         assert metric_scores == {
             "habitat": {
                 "f1": pytest.approx(0.545454545),
