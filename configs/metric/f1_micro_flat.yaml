@@ -1,0 +1,41 @@
+# F1 score metric for single- or multi-label classification for multiple fields.
+
+_target_: kibad_llm.metrics.F1MicroMultipleFieldsMetric
+# compute metrics on flattened fields, i.e. split compounds
+flatten_dicts: true
+
+# the fields in the prediction and reference to compute the F1 score on
+fields:
+ - habitat
+ - natural_region
+ - climate
+ - landuse
+ - spatial_extent
+ - spatial_resolution
+ - spatial_measurements
+ - temporal_extent
+ - temporal_extent_unit
+ - temporal_resolution
+ - temporal_measurements
+ - start_year
+ - end_year
+ - method
+ - study_type
+ - biodiversity_level
+ - biodiversity_variable
+ - ecosystem_type.category
+ - location.name
+ - location.country
+ - location.federal_state
+ - taxa.german_name
+ - taxa.scientific_name
+ - taxa.species_group
+ - soil.name
+ - soil.depth
+ - direct_driver.category
+ - indirect_driver.category
+ - ecosystem_service.term
+ - ecosystem_service.category
+
+format_as_markdown: true
+sort_fields: true
