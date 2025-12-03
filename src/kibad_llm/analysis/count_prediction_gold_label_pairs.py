@@ -1,7 +1,7 @@
-import sys
+from collections import Counter
 import json
 from pathlib import Path
-from collections import Counter
+import sys
 
 
 def load_json_or_ndjson(p: Path):
@@ -53,7 +53,7 @@ def extract_values(obj, path):
         key = parts[idx]
         if isinstance(o, dict):
             if key in o:
-                rec(o[key], idx+1)
+                rec(o[key], idx + 1)
             else:
                 return
         elif isinstance(o, list):
@@ -88,7 +88,7 @@ def main(pred_path, gold_path):
     Matches input and output by file_name and zotitem_ptr_id, s.t. only gold labels with predictions are considered
     """
 
-    #this only works for output predictions that have the "structured" schema
+    # this only works for output predictions that have the "structured" schema
     pred = [clean_pred_dicts(pred_dict) for pred_dict in load_json_or_ndjson(Path(pred_path))]
     gold = load_json_or_ndjson(Path(gold_path))
 
@@ -119,7 +119,7 @@ def main(pred_path, gold_path):
             continue
         print(f"\n=== Key: {k} ===")
         print(f"{'prediction':60} | {'gold':60} | count")
-        print("-"*140)
+        print("-" * 140)
         for (p_val, g_val), count in ctr.most_common():
             print(f"{p_val[:60]:60} | {g_val[:60]:60} | {count}")
 
