@@ -84,7 +84,7 @@ def clean_pred_dicts(pred_dict):
 def main(pred_path, gold_path):
     """
     Quick and dirty script to compare predictions and gold labels and create a table
-    Table shows the confusion matrix as list with count of how manz pairs of (pred, gold) values occured for each field
+    Table shows the confusion matrix as list with count of how manz pairs of (pred, gold) values occurred for each field
     Matches input and output by file_name and zotitem_ptr_id, s.t. only gold labels with predictions are considered
     """
 
