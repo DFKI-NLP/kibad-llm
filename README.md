@@ -116,14 +116,14 @@ This will process all PDF files in `pdf_directory` and save the result in a JSON
 
 See [configs/predict](./configs/predict.yaml) for further information and options.
 
-IMPORTANT: Relevant inference setups should be defined in their own `experiment` config. This allows to easily reproduce results later on by adding `experiment=<experiment_config>` to the command line call. For example, to run the experiment with two schemata ([configs/experiment/two_schemata.yaml](./configs/experiment/two_schemata.yaml)), use:
+IMPORTANT: Relevant inference setups should be defined in their own `experiment/predict` config. This allows to easily reproduce results later on by adding `experiment/predict=<experiment_config>` to the command line call. For example, to run the experiment with two schemata ([configs/experiment/predict/two_schemata.yaml](./configs/experiment/predict/two_schemata.yaml)), use:
 
 ```bash
 uv run -m kibad_llm.predict pdf_directory=path/to/pdf/files \
-experiment=two_schemata
+experiment/predict=two_schemata
 ```
 
-See [configs/experiment](./configs/experiment) for available experiment configs.
+See [configs/experiment/predict](./configs/experiment/predict) for available experiment configs.
 
 #### Evaluation
 
@@ -141,6 +141,16 @@ To evaluate against a different dataset, set the `dataset` parameter. For instan
 See [configs/evaluate.yaml](./configs/evaluate.yaml) for further information and options.
 
 Note: The `confusion_matrix` metric calculates the confusion matrix just for a single field, which needs to be specified (`metric.field=<field>`). To evaluate multiple fields at once, use multirun below.
+
+Same as for inference, relevant evaluation setups should be defined in their own `experiment/evaluate` config. For example, to run the evaluation with the F1 scores on the flattened Faktencheck predictions ([configs/experiment/evaluate/faktencheck_f1_micro_flat.yaml](./configs/experiment/evaluate/faktencheck_f1_micro_flat.yaml)), use:
+
+```bash
+uv run -m kibad_llm.evaluate \
+dataset.predictions.file=path/to/predictions.jsonl \
+experiment/evaluate=faktencheck_f1_micro_flat
+```
+
+See [configs/experiment/evaluate](configs/experiment/evaluate) for available experiment configs.
 
 #### Multirun
 
