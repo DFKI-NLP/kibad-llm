@@ -142,7 +142,7 @@ See [configs/evaluate.yaml](./configs/evaluate.yaml) for further information and
 
 Note: The `confusion_matrix` metric calculates the confusion matrix just for a single field, which needs to be specified (`metric.field=<field>`). To evaluate multiple fields at once, use multirun below.
 
-Same as for inference, relevant evaluation setups should be defined in their own `experiment/evaluate` config. For example, to run the evaluation with the F1 scores on the flattened Faktencheck predictions ([configs/experiment/evaluate/faktencheck_f1_micro_flat.yaml](./configs/experiment/evaluate/faktencheck_f1_micro_flat.yaml)), use:
+Similar as for inference, relevant evaluation setups should be defined in their own `experiment/evaluate` config. For example, to run the evaluation with the F1 scores on the flattened Faktencheck predictions ([configs/experiment/evaluate/faktencheck_f1_micro_flat.yaml](./configs/experiment/evaluate/faktencheck_f1_micro_flat.yaml)), use:
 
 ```bash
 uv run -m kibad_llm.evaluate \
