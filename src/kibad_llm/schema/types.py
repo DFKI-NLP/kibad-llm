@@ -797,6 +797,160 @@ class EcosystemStudyFeaturesCompoundsOnly(BaseEcosystemStudyFeatures):
     )
 
 
+class EcosystemStudyFeaturesAll(BaseEcosystemStudyFeatures):
+    """Angaben zu den ökosystembezogenen Studienmerkmalen."""
+
+    habitat: list[HabitatEnum] = Field(
+        default_factory=list,
+        alias="Lebensräume",
+        description="Um welchen der folgenden Lebensräume oder um welche Kombinationen "
+        "der folgenden Lebensräume geht es in dem Text?",
+    )
+    natural_region: list[NaturalRegionEnum] = Field(
+        default_factory=list,
+        alias="Naturgroßräume",
+        description="Um welchen der folgenden Naturgroßräume geht es in dem Text?",
+    )
+    climate: list[ClimateEnum] = Field(
+        default_factory=list,
+        alias="Klima",
+        description="Welche Umschreibung trifft auf das Klima des Untersuchungsgebiets zu?",
+    )
+    landuse: list[LanduseEnum] = Field(
+        default_factory=list,
+        alias="Landnutzung",
+        description="Welche Landnutzung wird im oder nahe des Untersuchungsgebietes betrieben? "
+        "In welche der folgenden Kategorien fällt die Nutzung?",
+    )
+    spatial_extent: SpatialExtentEnum | None = Field(
+        default=None,
+        alias="Räumliche Ausdehnung",
+        description="Wie ist insgesamt die räumliche Ausdehnung der Studie?",
+    )
+    spatial_resolution: SpatialResolutionEnum | None = Field(
+        default=None,
+        alias="Räumliche Auflösung",
+        description="Mit welcher räumlichen Auflösung wurden die einzelnen Messungen "
+        "in der Studie durchgeführt?",
+    )
+    spatial_measurements: int | None = Field(
+        default=None,
+        alias="Anzahl räumlicher Messungen",
+        description="An wie vielen Stellen wurde gemessen?",
+    )
+    temporal_extent: int | None = Field(
+        default=None,
+        alias="Zeitraum",
+        description="In welchem Zeitraum fanden die Messungen statt?",
+    )
+    temporal_extent_unit: TemporalExtentUnit | None = Field(
+        default=None,
+        alias="Zeiteinheit",
+        description="In welcher der folgenden Zeiteinheiten ist der Zeitraum angegeben?",
+    )
+    temporal_resolution: TemporalResolutionEnum | None = Field(
+        default=None,
+        alias="Zeitliche Auflösung",
+        description="Mit welcher zeitlichen Auflösung wurden die einzelnen Messungen in "
+        "der Studie durchgeführt?",
+    )
+    temporal_measurements: int | None = Field(
+        default=None,
+        alias="Anzahl zeitlicher Messungen",
+        description="Zu wie vielen unterschiedlichen Zeitpunkten wurde gemessen?",
+    )
+    start_year: int | None = Field(
+        default=None,
+        alias="Startjahr",
+        description="In welchem Jahr fand die erste Messung statt?",
+    )
+    end_year: int | None = Field(
+        default=None,
+        alias="Endjahr",
+        description="In welchem Jahr fand die letzte Messung statt?",
+    )
+    method: list[MethodEnum] = Field(
+        default_factory=list,
+        alias="Methoden der Datenaufnahme",
+        description="Mit welcher/welchen Methode(n) wurden die Daten erhoben?",
+    )
+    study_type: list[StudyTypeEnum] = Field(
+        default_factory=list,
+        alias="Studienart",
+        description="Um welche Form der wissenschaftlichen Studie handelt es sich?",
+    )
+    project: str | None = Field(
+        default=None,
+        alias="Projekt/Programm",
+        description="Gehört die Studie zu einem größeren Programm oder Projekt? Wenn ja, zu welchem?",
+    )
+    biodiversity_level: list[BiodiversityLevelEnum] = Field(
+        default_factory=list,
+        alias="Biodiversitätsebene",
+        description="Auf welche der folgenden Ebenen wird Biodiversität in der Studie gemessen?",
+    )
+    biodiversity_variable: list[str] = Field(
+        default_factory=list,
+        alias="Biodiversitätsvariable",
+        description="In welchen Variablen wird die Biodiversität gemessen?",
+    )
+    transformation_potential: list[TransformationPotentialEnum] = Field(
+        default_factory=list,
+        alias="Transformationspotenzial",
+        description="In welche der folgenden Kategorien lässt sich die im Text behandelte Transformation einordnen? ",
+    )
+    ecosystem_type: list[EcosystemType] = Field(
+        default_factory=list,
+        alias="Ökosystemtypen",
+        description="Welche Ökosystemtypen werden in der Studie untersucht?",
+    )
+    location: list[Location] = Field(
+        default_factory=list,
+        alias="Untersuchungsgebiete",
+        description="Welche Untersuchungsgebiete werden in der Studie untersucht?",
+    )
+    taxa: list[Taxa] = Field(
+        default_factory=list,
+        alias="Arten",
+        description="Welche Arten werden in der Studie untersucht?",
+    )
+    soil: list[Soil] = Field(
+        default_factory=list,
+        alias="Böden",
+        description="Welche Bodentypen werden in der Studie untersucht?",
+    )
+    conservation_area: list[ConservationArea] = Field(
+        default_factory=list,
+        alias="Schutzgebiete",
+        description="Welche Schutzgebiete werden in der Studie untersucht?",
+    )
+    management_measure: list[ManagementMeasure] = Field(
+        default_factory=list,
+        alias="Bewirtschaftungsmaßnahmen",
+        description="Wurden Formen der Bewirtschaftung als Maßnahmen für die Biodiversität untersucht?",
+    )
+    impulse_measure: list[ImpulseMeasure] = Field(
+        default_factory=list,
+        alias="Einmalige Maßnahmen",
+        description="Wurden einmalige Maßnahmen für die Biodiversität untersucht?",
+    )
+    direct_driver: list[DirectDriver] = Field(
+        default_factory=list,
+        alias="Direkte Treiber",
+        description="Welche Vorgänge mit direktem Einfluss auf Biodiversität wurden untersucht?",
+    )
+    indirect_driver: list[IndirectDriver] = Field(
+        default_factory=list,
+        alias="Indirekte Treiber",
+        description="Welche Vorgänge mit indirektem Einfluss auf Biodiversität wurden untersucht?",
+    )
+    ecosystem_service: list[EcosystemService] = Field(
+        default_factory=list,
+        alias="Ökosystemleistungen",
+        description="Welche Ökosystemleistungen wurden in der Studie untersucht?",
+    )
+
+
 class HauptgruppeRoteListenEnum(str, Enum):
     MAKROFAUNA = "Makrofauna"
     MESOFAUNA = "Mesofauna"
