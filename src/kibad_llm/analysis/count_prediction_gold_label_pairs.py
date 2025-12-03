@@ -72,8 +72,13 @@ def extract_values(obj, path):
     return sorted(set(cleaned))
 
 
-def safe_name(path):
-    return "".join(c if c.isalnum() else "_" for c in path)
+def clean_pred_dicts(pred_dict):
+    if type(pred_dict.get("structured")) is dict:
+        new_pred_dict = pred_dict["structured"]
+    else:
+        new_pred_dict = {}
+    new_pred_dict["file_name"] = pred_dict["file_name"]
+    return new_pred_dict
 
 
 def main(pred_path, gold_path):
@@ -82,14 +87,16 @@ def main(pred_path, gold_path):
     Table shows the confusion matrix as list with count of how manz pairs of (pred, gold) values occured for each field
     Matches input and output by file_name and zotitem_ptr_id, s.t. only gold labels with predictions are considered
     """
-    pred = load_json_or_ndjson(Path(pred_path))
+
+    #this only works for output predictions that have the "structured" schema
+    pred = [clean_pred_dicts(pred_dict) for pred_dict in load_json_or_ndjson(Path(pred_path))]
     gold = load_json_or_ndjson(Path(gold_path))
 
     pred_map = {p.get("file_name"): p for p in pred}
     gold_map = {g.get("zotitem_ptr_id"): g for g in gold}
 
     keys = set()
-    for obj in gold:
+    for obj in pred:
         keys |= leaf_paths(obj)
 
     keys = sorted(k for k in keys if k)
@@ -100,8 +107,7 @@ def main(pred_path, gold_path):
         if not g_obj:
             continue
         for k in keys:
-            # this only works for output predictions that have the "structured" schema
-            p_vals = extract_values(p_obj, "structured."+k)
+            p_vals = extract_values(p_obj, k)
             g_vals = extract_values(g_obj, k)
             p_repr = ", ".join(p_vals)
             g_repr = ", ".join(g_vals)
