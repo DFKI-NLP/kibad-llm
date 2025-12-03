@@ -1,7 +1,7 @@
 # @package _global_
 
 # This experiment uses a single schema, and thus a single llm query, to extract data for all fields
-# in the Fragenkatalog database.
+# in the Faktencheck database.
 
 # To execute this experiment run:
 # uv run -m kibad_llm.predict experiment=single_schema pdf_directory=path/to/pdf/files
