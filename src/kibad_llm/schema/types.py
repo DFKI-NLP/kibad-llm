@@ -884,7 +884,8 @@ class OrganismBiodiversityTrend(CompoundFeature):
     Trend: TrendCategoryEnum = Field(
         ...,
         description="In welche der folgenden Kategorien lässt sich die Richtung des Trends einordnen? "
-        '"no" bedeutet, dass sich die Artengruppe stabil entwickelt.',
+        '"no" bedeutet, dass es sich um einen neutralen Trend handelt, also keine Zunahme oder '
+        "Abnahme der Organismengruppe festgestellt wurde.",
     )
 
 
