@@ -5,7 +5,6 @@
 #   - EcosystemStudyFeaturesWithoutCompounds: fields without compounds, and
 #   - EcosystemStudyFeaturesCompoundsOnly: compound fields only.
 # Reference: two_schemata.yaml
-
 # To execute this experiment run:
 # python -m kibad_llm.predict experiment=persona
 
