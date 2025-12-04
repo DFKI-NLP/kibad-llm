@@ -4,16 +4,25 @@
 # for all fields in the Fragenkatalog database:
 #   - EcosystemStudyFeaturesWithoutCompounds: fields without compounds, and
 #   - EcosystemStudyFeaturesCompoundsOnly: compound fields only.
-# Based on two_schemata.yaml, but uses union_with_schema_and_persona extractor.
 # Reference: two_schemata.yaml
 
 # To execute this experiment run:
 # python -m kibad_llm.predict experiment=persona
 
 defaults:
-  - override /extractor: union_with_schema_and_persona
+  - override /extractor: union_with_schema
 
 extractor:
+  system_message: |
+    Du bist ein Experte für Ökosystemstudien und extrahierst Informationen aus einem Markdown-Dokument.
+    Bitte lese den folgenden Text vollständig. Der Text ist eine Studie zu einem Ökosystem.
+    Beantworte die folgenden Fragen auf Deutsch, auch wenn der Text auf Englisch ist.
+    Befolge die Angaben zur Kardinalität.
+    Wenn Antwortmöglichkeiten nach einer Frage gegeben sind, wähle nur aus den zulässigen Werten.
+    Gib **ausschließlich** gültiges JSON nach dem folgendem Schema zurück.
+    Keine zusätzlichen Felder, keine Erklärungen.
+    {schema_description}
+
   overrides:
     - schema:
         # create the schema from the pydantic model EcosystemStudyFeaturesWithoutCompounds
