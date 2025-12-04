@@ -16,28 +16,21 @@
 #
 # Usage:
 #    python -m kibad_llm.evaluate \
-#      dataset.predictions.file=path/to/predictions.jsonl \
-#      metric.field=path/in/flattened/reference/jsonl
+#      dataset.predictions.file=path/to/predictions.jsonl
 
 defaults:
+  - _self_
   - paths: default
   - hydra: default
   # this needs to return a dataset with 'prediction' and 'reference' entries
   - dataset: faktencheck
   # this needs to return an instance of kibad_llm.metric.Metric
   - metric: f1_micro
-  - _self_
+  # Experiment configs allow to define specific evaluation setups. This is useful for complex setups to simplify
+  # commands, but especially recommended when some parameters depend on each other.
+  # Note that multiple experiments (if they do not require other dependent settings) can be easily executed
+  # in a single multi-run for fast reproducibility.
+  - experiment/evaluate: null
 
 # name of the run, used in logging and as a subdir of log_dir
 name: "default"
-
-metric:
-  # for compound entries, we may ignore certain subfields during evaluation
-  ignore_subfields:
-    ecosystem_type: ["description"]
-    taxa: ["collective_term"]
-    conservation_area: ["description"]
-    direct_driver: ["details"]
-    indirect_driver: ["details"]
-    # Note: we do not ignore `description` of `management_measure`/`impulse_measure`
-    #  since it holds its main content (and is mandatory)

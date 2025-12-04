@@ -25,7 +25,7 @@ defaults:
   # commands, but especially recommended when some parameters depend on each other.
   # Note that multiple experiments (if they do not require other dependent settings) can be easily executed
   # in a single multi-run for fast reproducibility.
-  - experiment: null
+  - experiment/predict: null
 
 print_config: True
 
