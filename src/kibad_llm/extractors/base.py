@@ -65,6 +65,7 @@ def extract_from_text(
         "structured": None,
         "reasoning_content": None,
         "messages": None,
+        "messages_formatted": None,
         "error": None,
     }
 
