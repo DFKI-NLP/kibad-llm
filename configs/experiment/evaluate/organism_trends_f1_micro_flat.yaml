@@ -1,0 +1,18 @@
+# @package _global_
+
+# F1 score metric for single- or multi-label classification for organism trend predictions,
+# but compounds are flattened into individual entries.
+
+defaults:
+ # derive everything from experiment/evaluate/organism_trends_f1_micro.yaml
+ - organism_trends_f1_micro
+
+metric:
+  # compute metrics on flattened fields, i.e. split compounds
+  flatten_dicts: true
+  # the fields in the prediction and reference to compute the F1 score on
+  fields:
+   - organism_trends.Antwortvariable
+   - organism_trends.Hauptgruppe_RoteListen
+   - organism_trends.Lebensraum
+   - organism_trends.Trend

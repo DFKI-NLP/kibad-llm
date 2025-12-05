@@ -1,0 +1,16 @@
+# @package _global_
+
+# Confusion matrix for single- or multi-label classification for organism trends predictions.
+
+defaults:
+ - override /dataset: organism_trends_forest
+ - override /metric: confusion_matrix
+
+metric:
+  # flatten per default
+  flatten_dicts: true
+  field: ???  # the field in the prediction and reference to compute the confusion matrix on
+  # For compound entries, we may ignore certain subfields during evaluation.
+  # This is just relevant if flatten_dicts is set to false.
+  ignore_subfields:
+    organism_trends: [ "Untergruppe_RoteListen" ]

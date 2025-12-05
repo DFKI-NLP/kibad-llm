@@ -795,3 +795,105 @@ class EcosystemStudyFeaturesCompoundsOnly(BaseEcosystemStudyFeatures):
         alias="Ökosystemleistungen",
         description="Welche Ökosystemleistungen wurden in der Studie untersucht?",
     )
+
+
+class HauptgruppeRoteListenEnum(str, Enum):
+    MAKROFAUNA = "Makrofauna"
+    MESOFAUNA = "Mesofauna"
+    MIKROFAUNA = "Mikrofauna"
+    PFLANZEN = "Pflanzen"
+    PILZE_FLECHTEN = "Pilze_Flechten"
+    WIRBELLOSE = "Wirbellose"
+    WIRBELTIERE = "Wirbeltiere"
+
+
+class UntergruppeRoteListenEnum(str, Enum):
+    AMPHIBIEN = "Amphibien"
+    ANDERE_WIRBELLOSE = "Andere_Wirbellose"
+    ANDERE_WIRBELLOSE_MAKROZOOBENTHOS = "Andere_Wirbellose_Makrozoobenthos"
+    ANDERE_WIRBELLOSE_ZOOPLANKTON = "Andere_Wirbellose_Zooplankton"
+    ARTHROPODEN = "Arthropoden"
+    COLLEMBOLA = "Collembola"
+    FISCHE = "Fische"
+    FLECHTEN = "Flechten"
+    MESOSTIGMATA = "Mesostigmata"
+    MIKROALGEN = "Mikroalgen"
+    MOOSE = "Moose"
+    ORIBATIDA = "Oribatida"
+    PFLANZEN = "Pflanzen"
+    PILZE = "Pilze"
+    REPTILIEN = "Reptilien"
+    SAEUGER = "Saeuger"
+    VOEGEL = "Voegel"
+
+
+class TrendCategoryEnum(str, Enum):
+    POSITIVE = "positive"
+    NEGATIVE = "negative"
+    # "no" means "Die Artengruppe entwickelt sich stabil". It was called "neutral" in the iDiv publication.
+    # Julia recommends to rename to "neutral", but that will require post-processing of existing data,
+    # so for now we keep it as "no".
+    NO = "no"
+    POSITIVE_TO_NEGATIVE = "positive to negative"
+    NEGATIVE_TO_POSITIVE = "negative to positive"
+
+
+class HabitatForOrganismTrendEnum(str, Enum):
+    AGRAR_OFFEN = "AgrarOffen"
+    BINNENGEWAESSER = "Binnengewaesser"
+    BODEN = "Boden"
+    KUESTEN = "Kueste"
+    URBAN = "Urban"
+    WALD = "Wald"
+
+
+class BiodiversityVariableEnum(str, Enum):
+    ABUNDANZ = "Abundanz"
+    ARTENZAHL = "Artenzahl"
+    ENS = "ENS"
+
+
+class OrganismBiodiversityTrend(CompoundFeature):
+    """Organismenbezogener Biodiversitätstrend bestehend aus Organismenhauptgruppe
+    (hauptgruppe_rote_listen), Organismenuntergruppe (untergruppe_rote_listen),
+    Lebensraum (habitat), Biodiversitätsvariable (biodiversity_variable)
+    und Trendrichtung (trend_category).
+    """
+
+    # The fields below are based Trends-WeightedVoteCount.csv file.
+    # We use the column names as field names so that no post-processing is needed.
+
+    Hauptgruppe_RoteListen: HauptgruppeRoteListenEnum = Field(
+        ...,
+        description="Hauptgruppe der Organismen auf die sich der Trend bezieht.",
+    )
+    # A bit unexpected, but data contains NA values, so this is optional.
+    Untergruppe_RoteListen: UntergruppeRoteListenEnum | None = Field(
+        default=None,
+        description="Untergruppe der Organismen auf die sich der Trend bezieht.",
+    )
+    Lebensraum: HabitatForOrganismTrendEnum = Field(
+        ...,
+        description="Auf welchen der folgenden Lebensräume bezieht sich der Trend?",
+    )
+    Antwortvariable: BiodiversityVariableEnum = Field(
+        ...,
+        description="Mithilfe welcher Biodiversitätsvariable wird der Trend gemessen? "
+        '"ENS" steht für "Effective Number of Species" (Effektive Artenzahl).',
+    )
+    Trend: TrendCategoryEnum = Field(
+        ...,
+        description="In welche der folgenden Kategorien lässt sich die Richtung des Trends einordnen? "
+        '"no" bedeutet, dass es sich um einen neutralen Trend handelt, also keine Zunahme oder '
+        "Abnahme der Organismengruppe festgestellt wurde.",
+    )
+
+
+class EcosystemStudyOrganismTrends(BaseEcosystemStudyFeatures):
+    """Angaben zu den im Text beschriebenen organismenbezogenen Biodiversitätstrends."""
+
+    organism_trends: list[OrganismBiodiversityTrend] = Field(
+        default_factory=list,
+        alias="Organismenbezogene Biodiversitätstrends",
+        description="Liste der im Text beschriebenen organismenbezogenen Biodiversitätstrends.",
+    )
