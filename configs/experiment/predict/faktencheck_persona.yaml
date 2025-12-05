@@ -1,0 +1,34 @@
+# @package _global_
+
+# This experiment uses the persona system message with two schemata to extract data
+# for all fields in the Fragenkatalog database:
+#   - EcosystemStudyFeaturesWithoutCompounds: fields without compounds, and
+#   - EcosystemStudyFeaturesCompoundsOnly: compound fields only.
+# Reference: two_schemata.yaml
+
+# To execute this experiment run:
+# python -m kibad_llm.predict experiment=persona
+
+defaults:
+  - override /extractor: union_with_schema
+
+extractor:
+  system_message: |
+    Du bist ein Experte für Ökosystemstudien und extrahierst Informationen aus einem Markdown-Dokument.
+    Bitte lese den folgenden Text vollständig. Der Text ist eine Studie zu einem Ökosystem.
+    Beantworte die folgenden Fragen auf Deutsch, auch wenn der Text auf Englisch ist.
+    Befolge die Angaben zur Kardinalität.
+    Wenn Antwortmöglichkeiten nach einer Frage gegeben sind, wähle nur aus den zulässigen Werten.
+    Gib **ausschließlich** gültiges JSON nach dem folgendem Schema zurück.
+    Keine zusätzlichen Felder, keine Erklärungen.
+    {schema_description}
+
+  overrides:
+    - schema:
+        # create the schema from the pydantic model EcosystemStudyFeaturesWithoutCompounds
+        _target_: kibad_llm.schema.types.EcosystemStudyFeaturesWithoutCompounds.model_json_schema
+        by_alias: false
+    - schema:
+        # create the schema from the pydantic model EcosystemStudyFeaturesCompoundsOnly
+        _target_: kibad_llm.schema.types.EcosystemStudyFeaturesCompoundsOnly.model_json_schema
+        by_alias: false
