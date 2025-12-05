@@ -11,4 +11,6 @@ return_as_list:  # for these fields, return a list of results from each extracti
   - error
   # - response_content
   # - reasoning_content
+  # - messages
+  # - messages_formatted
 return_reasoning: False
