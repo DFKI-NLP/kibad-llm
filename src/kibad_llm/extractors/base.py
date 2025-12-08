@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from functools import lru_cache
 import hashlib
 import json
 import logging
@@ -7,12 +8,17 @@ from typing import Any
 
 from jsonschema.exceptions import ValidationError
 from jsonschema.validators import validator_for
-from llama_index.core import Settings
 from llama_index.core.llms import LLM, ChatMessage, MessageRole
 
 from kibad_llm.schema.utils import build_schema_description
 
 logger = logging.getLogger(__name__)
+
+
+@lru_cache(maxsize=None)
+def warn_once(msg: str) -> None:
+    """Log a warning message only once by caching the function call."""
+    logger.warning(f"{msg} (this message will only be shown once)")
 
 
 def extract_from_text(
@@ -47,8 +53,8 @@ def extract_from_text(
             The schema description will be built from the provided schema.
         schema_description_kwargs: Optional kwargs for build_schema_description when generating
             the schema description.
-        llm: The LLM model to use (defaults to Settings.llm). Must be a chat model (i.e. is_chat_model=True)
-            and support extra_body parameters for guided decoding if schema is provided.
+        llm: The LLM model to use. Must be a chat model (i.e. is_chat_model=True) and support extra_body
+            parameters for guided decoding if schema is provided. If None, no LLM call is made.
         return_reasoning: Whether to return the reasoning done by the model.
         return_messages: Whether to return the used prompt messages, but without input text and
             schema description.
@@ -78,9 +84,6 @@ def extract_from_text(
             "system": system_message,
             "user": user_message,
         }
-
-    if llm is None:
-        llm = Settings.llm
 
     # Build chat messages
     if schema is not None and system_message_requires_schema_description:
@@ -125,37 +128,42 @@ def extract_from_text(
         vllm_extras["guided_json"] = schema
         vllm_extras["guided_decoding_backend"] = "lm-format-enforcer"
 
-    # Chat call (reasoning kept separate by server; final JSON is in message.content)
-    resp = llm.chat(messages, extra_body=vllm_extras)
+    # only proceed if we have an llm
+    if llm is not None:
+        # Chat call (reasoning kept separate by server; final JSON is in message.content)
+        resp = llm.chat(messages, extra_body=vllm_extras)
 
-    response_content = getattr(resp.message, "content", "") or ""
-    out["response_content"] = response_content
+        response_content = getattr(resp.message, "content", "") or ""
+        out["response_content"] = response_content
 
-    if return_reasoning:
-        # we need to get resp.raw.choices[0].message.reasoning_content,
-        # but mypy doesn't permit it. so we:
-        # 1: get resp.raw.choices[0]
-        raw_first_choice = getattr(resp.raw, "choices", "")[0] or None
-        # 2: get .message
-        raw_message = getattr(raw_first_choice, "message", "") or None
-        # 3: get .reasoning_content
-        out["reasoning_content"] = getattr(raw_message, "reasoning_content", "") or None
+        if return_reasoning:
+            # we need to get resp.raw.choices[0].message.reasoning_content,
+            # but mypy doesn't permit it. so we:
+            # 1: get resp.raw.choices[0]
+            raw_first_choice = getattr(resp.raw, "choices", "")[0] or None
+            # 2: get .message
+            raw_message = getattr(raw_first_choice, "message", "") or None
+            # 3: get .reasoning_content
+            out["reasoning_content"] = getattr(raw_message, "reasoning_content", "") or None
 
-    # Parse & validate (schema optional)
-    try:
-        data = json.loads(response_content)
-        out["structured"] = data
-        if schema is not None:
-            validator_cls = validator_for(schema)
-            validator_cls.check_schema(schema)
-            validator = validator_cls(schema)
-            validator.validate(data)
-    except json.JSONDecodeError as e:
-        logger.warning(f"Failed to parse JSON output for document {text_id}")
-        out["error"] = f"JSONDecodeError: {str(e)}"
-    except ValidationError as e:
-        logger.warning(f"Failed to validate structured output for document {text_id}")
-        out["error"] = f"ValidationError: {str(e)}"
+        # Parse & validate (schema optional)
+        try:
+            data = json.loads(response_content)
+            out["structured"] = data
+            if schema is not None:
+                validator_cls = validator_for(schema)
+                validator_cls.check_schema(schema)
+                validator = validator_cls(schema)
+                validator.validate(data)
+        except json.JSONDecodeError as e:
+            logger.warning(f"Failed to parse JSON output for document {text_id}")
+            out["error"] = f"JSONDecodeError: {str(e)}"
+        except ValidationError as e:
+            logger.warning(f"Failed to validate structured output for document {text_id}")
+            out["error"] = f"ValidationError: {str(e)}"
+
+    else:
+        warn_once("No LLM provided for extraction, skipping LLM call.")
 
     return out
 
