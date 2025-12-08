@@ -25,6 +25,9 @@ def extract_from_text(
     schema_description_kwargs: dict[str, Any] | None = None,
     llm: LLM | None = None,
     return_reasoning: bool = False,
+    return_messages: bool = False,
+    return_messages_formatted: bool = False,
+    truncate_user_message_formatted: int | None = 300,
 ) -> dict:
     """Extract structured information from text using an LLM.
 
@@ -47,12 +50,34 @@ def extract_from_text(
         llm: The LLM model to use (defaults to Settings.llm). Must be a chat model (i.e. is_chat_model=True)
             and support extra_body parameters for guided decoding if schema is provided.
         return_reasoning: Whether to return the reasoning done by the model.
+        return_messages: Whether to return the used prompt messages, but without input text and
+            schema description.
+        return_messages_formatted: Whether to return the used prompt messages formatted with
+            input text and schema description.
+        truncate_user_message_formatted: If return_messages_formatted is True, truncate the user message
+            content to this many characters (to avoid huge outputs). Set to None to disable truncation.
 
     Returns:
         A dictionary with keys "text" (the raw LLM output) and "structured" (the parsed JSON or None).
     """
     # setting the log level on every query is suboptimal, but the simplest solution in our current architecture
     logging.getLogger("httpx").setLevel(logging.WARNING)
+
+    out: dict[str, Any | None] = {
+        "response_content": None,
+        "structured": None,
+        "reasoning_content": None,
+        "messages": None,
+        "messages_formatted": None,
+        "error": None,
+    }
+
+    if return_messages:
+        # return the prompt messages without input text and schema description
+        out["messages"] = {
+            "system": system_message,
+            "user": user_message,
+        }
 
     if llm is None:
         llm = Settings.llm
@@ -70,6 +95,18 @@ def extract_from_text(
             )
         system = system_message
     user = user_message.format(document=text) if user_message else text
+
+    if return_messages_formatted:
+        messages_formatted = {"system": system, "user": user}
+        if (
+            truncate_user_message_formatted is not None
+            and len(user) > truncate_user_message_formatted
+        ):
+            messages_formatted["user"] = (
+                f"{user[:truncate_user_message_formatted]}... (truncated @ {truncate_user_message_formatted} chars)"
+            )
+        out["messages_formatted"] = messages_formatted
+
     messages = [
         ChatMessage(role=MessageRole.SYSTEM, content=system),
         ChatMessage(role=MessageRole.USER, content=user),
@@ -92,43 +129,17 @@ def extract_from_text(
     resp = llm.chat(messages, extra_body=vllm_extras)
 
     response_content = getattr(resp.message, "content", "") or ""
-    out: dict[str, Any | None] = {
-        "response_content": response_content,
-        "structured": None,
-        "error": None,
-        "reasoning_content": None,
-    }
+    out["response_content"] = response_content
 
     if return_reasoning:
         # we need to get resp.raw.choices[0].message.reasoning_content,
         # but mypy doesn't permit it. so we:
         # 1: get resp.raw.choices[0]
-        raw_first_choice = (
-            getattr(
-                resp.raw,
-                "choices",
-                "",
-            )[0]
-            or None
-        )
+        raw_first_choice = getattr(resp.raw, "choices", "")[0] or None
         # 2: get .message
-        raw_message = (
-            getattr(
-                raw_first_choice,
-                "message",
-                "",
-            )
-            or None
-        )
+        raw_message = getattr(raw_first_choice, "message", "") or None
         # 3: get .reasoning_content
-        out["reasoning_content"] = (
-            getattr(
-                raw_message,
-                "reasoning_content",
-                "",
-            )
-            or None
-        )
+        out["reasoning_content"] = getattr(raw_message, "reasoning_content", "") or None
 
     # Parse & validate (schema optional)
     try:
@@ -169,8 +180,10 @@ def extract_from_text_lenient(text: str, text_id: str, **kwargs) -> dict:
         logger.error(f"Error processing document {text_id}: {e}")
         # needs to match the output of extract_from_text
         return {
-            "error": str(e),
             "response_content": None,
             "structured": None,
             "reasoning_content": None,
+            "messages": None,
+            "messages_formatted": None,
+            "error": str(e),
         }

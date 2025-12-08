@@ -11,4 +11,8 @@ return_as_list: # for these fields, return a list of results from each repetitio
   - error
   # - response_content
   # - reasoning_content
+  # - messages
+  # - messages_formatted
 return_reasoning: False
+return_messages: False
+return_messages_formatted: False
