@@ -31,9 +31,9 @@ def predictions_dict(cfg_predict_module) -> dict[str, dict]:
         cfg_predict_module.pdf_directory = str(PDF_DIR)
 
     HydraConfig().set_config(cfg_predict_module)
-    predict(cfg_predict_module)
-    # read json line file from cfg_predict_module.output_file
-    with open(cfg_predict_module.output_file) as f:
+    job_return_value = predict(cfg_predict_module)
+
+    with open(job_return_value["output_file"]) as f:
         lines = f.readlines()
 
     # create result as dict keyed by file_name
@@ -79,10 +79,9 @@ def test_predict_fast_dev_run(tmp_path, cfg_predict):
         cfg_predict.fast_dev_run = True
 
     HydraConfig().set_config(cfg_predict)
-    predict(cfg_predict)
+    job_return_value = predict(cfg_predict)
 
-    # read json line file from cfg_predict.output_file
-    with open(cfg_predict.output_file) as f:
+    with open(job_return_value["output_file"]) as f:
         lines = f.readlines()
     results = [json.loads(line) for line in lines]
 
@@ -122,9 +121,9 @@ def cfg_predict_pdf_errors(tmp_path) -> DictConfig:  # type: ignore
 
 @pytest.mark.slow
 def test_prediction_on_pdf_errors(cfg_predict_pdf_errors):
-    predict(cfg_predict_pdf_errors)
-    # read json line file from cfg_predict_module.output_file
-    with open(cfg_predict_pdf_errors.output_file) as f:
+    job_return_value = predict(cfg_predict_pdf_errors)
+
+    with open(job_return_value["output_file"]) as f:
         lines = f.readlines()
 
     # create result as dict keyed by file_name
