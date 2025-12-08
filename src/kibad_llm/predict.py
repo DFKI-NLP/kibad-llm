@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable
+from datetime import datetime
 import logging
 import os
 from pathlib import Path
@@ -35,6 +36,8 @@ def predict(cfg: DictConfig) -> dict[str, Any]:
     Args:
         cfg: OmegaConf configuration. See configs/predict.yaml for details.
     """
+    # use start time as part of output folder to avoid overwriting previous results
+    formatted_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S_%f")
 
     data_base_path = Path(cfg.pdf_directory)
 
@@ -82,10 +85,12 @@ def predict(cfg: DictConfig) -> dict[str, Any]:
     if not cfg.get("store_text_in_predictions", True):
         dataset = dataset.remove_columns("text")
 
-    logger.info(f"Writing results to {cfg.output_file} ...")
-    dataset.to_json(cfg.output_file, force_ascii=False)
+    # use output dir with timestamp to avoid overwriting previous results
+    output_file = os.path.join(cfg.output_dir, formatted_time, "predictions.jsonl")
+    logger.info(f"Writing results to {output_file} ...")
+    dataset.to_json(output_file, force_ascii=False)
     return {
-        "output_file": cfg.output_file,
+        "output_file": output_file,
         "time_pdf_conversion": t_delta_pdf_conversion,
         "time_extraction": t_delta_extraction,
     }
