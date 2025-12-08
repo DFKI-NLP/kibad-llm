@@ -27,6 +27,7 @@ def extract_from_text(
     return_reasoning: bool = False,
     return_messages: bool = False,
     return_messages_formatted: bool = False,
+    truncate_user_message_formatted: int | None = 300,
 ) -> dict:
     """Extract structured information from text using an LLM.
 
@@ -53,6 +54,8 @@ def extract_from_text(
             schema description.
         return_messages_formatted: Whether to return the used prompt messages formatted with
             input text and schema description.
+        truncate_user_message_formatted: If return_messages_formatted is True, truncate the user message
+            content to this many characters (to avoid huge outputs). Set to None to disable truncation.
 
     Returns:
         A dictionary with keys "text" (the raw LLM output) and "structured" (the parsed JSON or None).
@@ -94,10 +97,15 @@ def extract_from_text(
     user = user_message.format(document=text) if user_message else text
 
     if return_messages_formatted:
-        out["messages_formatted"] = {
-            "system": system,
-            "user": user,
-        }
+        messages_formatted = {"system": system, "user": user}
+        if (
+            truncate_user_message_formatted is not None
+            and len(user) > truncate_user_message_formatted
+        ):
+            messages_formatted["user"] = (
+                f"{user[:truncate_user_message_formatted]}... (truncated @ {truncate_user_message_formatted} chars)"
+            )
+        out["messages_formatted"] = messages_formatted
 
     messages = [
         ChatMessage(role=MessageRole.SYSTEM, content=system),
