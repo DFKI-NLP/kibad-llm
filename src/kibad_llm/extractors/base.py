@@ -29,6 +29,8 @@ def extract_from_text(
     schema: dict[str, Any] | None = None,
     system_message_requires_schema_description: bool = False,
     schema_description_kwargs: dict[str, Any] | None = None,
+    use_guided_decoding: bool = True,
+    guided_decoding_backend: str | None = "lm-format-enforcer",
     llm: LLM | None = None,
     return_reasoning: bool = False,
     return_messages: bool = False,
@@ -53,6 +55,8 @@ def extract_from_text(
             The schema description will be built from the provided schema.
         schema_description_kwargs: Optional kwargs for build_schema_description when generating
             the schema description.
+        use_guided_decoding: Whether to use guided decoding.
+        guided_decoding_backend: The backend to use for guided decoding.
         llm: The LLM model to use. Must be a chat model (i.e. is_chat_model=True) and support extra_body
             parameters for guided decoding if schema is provided. If None, no LLM call is made.
         return_reasoning: Whether to return the reasoning done by the model.
@@ -124,9 +128,14 @@ def extract_from_text(
         "top_k": -1,
     }  # vendor-specific → extra_body
 
-    if schema is not None:
+    if use_guided_decoding:
+        if schema is None:
+            raise ValueError(
+                "use_guided_decoding is True but no json schema provided for guided decoding"
+            )
         vllm_extras["guided_json"] = schema
-        vllm_extras["guided_decoding_backend"] = "lm-format-enforcer"
+        if guided_decoding_backend is not None:
+            vllm_extras["guided_decoding_backend"] = guided_decoding_backend
 
     # only proceed if we have an llm
     if llm is not None:
