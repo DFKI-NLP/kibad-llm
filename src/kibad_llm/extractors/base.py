@@ -62,12 +62,6 @@ def build_chat_message(
             schema=schema, **(schema_description_kwargs or {})
         )
         content = content.format(**{schema_description_placeholder: schema_description})
-    else:
-        if schema is not None:
-            warn_once(
-                f"Schema provided but {role.name} message template does not require schema description "
-                f"(it does not contain '{{{schema_description_placeholder}}}')."
-            )
 
     # Check if input text is needed and insert it.
     message_requires_document = "{" + text_placeholder + "}" in content
@@ -174,8 +168,8 @@ def build_chat_messages(
             f"(they do not contain '{{{schema_description_placeholder}}}')."
         )
 
-    # Check where the input text is needed and insert it. At least one message must require it.
-    if not any(meta["has_document"] for meta in all_metas):
+    # Check where the input text is needed and insert it. At least one message must require it (if no history).
+    if not any(meta["has_document"] for meta in all_metas) and not history:
         raise ValueError(
             "At least one of the message templates must require the input text "
             f"(they must contain '{{{text_placeholder}}}')."
