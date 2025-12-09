@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import MutableMapping
 from functools import lru_cache
 import hashlib
 import json
@@ -21,11 +22,10 @@ def warn_once(msg: str) -> None:
     logger.warning(f"{msg} (this message will only be shown once)")
 
 
-def extract_from_text(
-    text: str,
-    text_id: str,
+def build_chat_messages(
     system_message: str,
-    user_message: str | None = None,
+    user_message: str | None,
+    text: str,
     schema: dict[str, Any] | None = None,
     system_message_requires_schema_description: bool = False,
     schema_description_kwargs: dict[str, Any] | None = None,
@@ -37,16 +37,12 @@ def extract_from_text(
     return_messages: bool = False,
     return_messages_formatted: bool = False,
     truncate_user_message_formatted: int | None = 300,
-) -> dict:
-    """Extract structured information from text using an LLM.
-
-    Given a chat llm (per default, uses Settings.llm from llama-index), composes system
-    and user messages, and invokes the model. When a schema is provided, it is used to enforce
-    guided decoding. The output is parsed as JSON and validated against the schema if provided.
+    _out: dict[str, Any] | None = None,
+) -> list[ChatMessage]:
+    """Build chat messages for extraction.
 
     Args:
         text: The text to process.
-        text_id: Text identifier for logging and seeding.
         system_message: The system message template (required). If system_message_requires_schema_description
             is True, it must contain a "{schema_description}" placeholder.
         user_message: The user message template (optional, defaults to just the markdown).
@@ -70,25 +66,14 @@ def extract_from_text(
             input text and schema description.
         truncate_user_message_formatted: If return_messages_formatted is True, truncate the user message
             content to this many characters (to avoid huge outputs). Set to None to disable truncation.
+        _out: Optional output dictionary to store messages in (used internally).
 
     Returns:
-        A dictionary with keys "text" (the raw LLM output) and "structured" (the parsed JSON or None).
+        A list of ChatMessage objects.
     """
-    # setting the log level on every query is suboptimal, but the simplest solution in our current architecture
-    logging.getLogger("httpx").setLevel(logging.WARNING)
-
-    out: dict[str, Any | None] = {
-        "response_content": None,
-        "structured": None,
-        "reasoning_content": None,
-        "messages": None,
-        "messages_formatted": None,
-        "error": None,
-    }
-
-    if return_messages:
+    if return_messages and _out is not None:
         # return the prompt messages without input text and schema description
-        out["messages"] = {
+        _out["messages"] = {
             "system": system_message,
             "user": user_message,
         }
@@ -107,7 +92,7 @@ def extract_from_text(
         system = system_message
     user = user_message.format(document=text) if user_message else text
 
-    if return_messages_formatted:
+    if return_messages_formatted and _out is not None:
         messages_formatted = {"system": system, "user": user}
         if (
             truncate_user_message_formatted is not None
@@ -116,15 +101,63 @@ def extract_from_text(
             messages_formatted["user"] = (
                 f"{user[:truncate_user_message_formatted]}... (truncated @ {truncate_user_message_formatted} chars)"
             )
-        out["messages_formatted"] = messages_formatted
+        _out["messages_formatted"] = messages_formatted
 
     messages = [
         ChatMessage(role=MessageRole.SYSTEM, content=system),
         ChatMessage(role=MessageRole.USER, content=user),
     ]
 
+    return messages
+
+
+def extract_from_text(
+    text: str,
+    text_id: str,
+    schema: dict[str, Any] | None = None,
+    llm: LLM | None = None,
+    return_reasoning: bool = False,
+    **build_messages_kwargs: Any,
+) -> dict:
+    """Extract structured information from text using an LLM.
+
+    Given a chat llm, composes system and user messages, and invokes the model.
+    When a schema is provided, it is used to enforce guided decoding. The output
+    is parsed as JSON and validated against the schema if provided.
+
+    Args:
+        text: The text to process.
+        text_id: Text identifier for logging and seeding.
+        schema: Optional JSON schema for structured output.
+        llm: The LLM model to use. Must be a chat model (i.e. is_chat_model=True) and support extra_body
+            parameters for guided decoding if schema is provided. If None, no LLM call is made.
+        return_reasoning: Whether to return the reasoning done by the model.
+        **build_messages_kwargs: Additional keyword arguments for build_chat_messages.
+
+    Returns:
+        A dictionary with keys "text" (the raw LLM output) and "structured" (the parsed JSON or None).
+    """
+    # setting the log level on every query is suboptimal, but the simplest solution in our current architecture
+    logging.getLogger("httpx").setLevel(logging.WARNING)
+
+    out: dict[str, Any | None] = {
+        "response_content": None,
+        "structured": None,
+        "reasoning_content": None,
+        "messages": None,
+        "messages_formatted": None,
+        "error": None,
+    }
+
+    messages = build_chat_messages(
+        text=text,
+        schema=schema,
+        _out=out,
+        **build_messages_kwargs,
+    )
+
     # Determinism knobs (standard args stay top-level; vendor extras go in extra_body)
-    seed_src = f"{text_id or ''}\n{user}"
+    seed_src = str(messages)
     seed = int(hashlib.sha256(seed_src.encode("utf-8")).hexdigest()[:8], 16)
 
     vllm_extras: dict[str, Any] = {
