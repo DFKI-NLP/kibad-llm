@@ -22,18 +22,18 @@ def warn_once(msg: str) -> None:
 
 
 def build_chat_message(
-    text: str,
+    document: str,
     message: str,
     role: MessageRole,
     schema_description_placeholder: str = "schema_description",
-    text_placeholder: str = "document",
+    document_placeholder: str = "document",
     schema: dict[str, Any] | None = None,
     schema_description_kwargs: dict[str, Any] | None = None,
 ) -> tuple[ChatMessage, dict[str, bool]]:
     """Build a single chat message by inserting text and schema description.
 
     Args:
-        text: The text to process.
+        document: The document text to process.
         message: The message template.
         role: The role of the message (e.g., system, user).
         schema: Optional JSON schema for structured output.
@@ -42,11 +42,12 @@ def build_chat_message(
         schema_description_placeholder: The placeholder in the message template for the
             schema description. If the placeholder is present in the message template,
             the schema must be provided and the description will be generated and inserted.
-        text_placeholder: The placeholder in the message template for the input text. If the
+        document_placeholder: The placeholder in the message template for the input text. If the
             placeholder is present in the message template, it will be replaced with the input text.
 
     Returns:
-        A tuple of (ChatMessage, message_requires_schema_description, message_requires_document).
+        A tuple of ChatMessage and a metadata dictionary indicating whether schema description
+        and text were inserted.
     """
     content = message
 
@@ -63,10 +64,10 @@ def build_chat_message(
         )
         content = content.format(**{schema_description_placeholder: schema_description})
 
-    # Check if input text is needed and insert it.
-    message_requires_document = "{" + text_placeholder + "}" in content
+    # Check if input document is needed and insert it.
+    message_requires_document = "{" + document_placeholder + "}" in content
     if message_requires_document:
-        content = content.format(**{text_placeholder: text})
+        content = content.format(**{document_placeholder: document})
 
     return ChatMessage(role=role, content=content), {
         "has_schema_description": message_requires_schema_description,
@@ -78,7 +79,7 @@ def build_chat_messages(
     system_message: str | None = None,
     user_message: str | None = None,
     schema_description_placeholder: str = "schema_description",
-    text_placeholder: str = "document",
+    document_placeholder: str = "document",
     schema: dict[str, Any] | None = None,
     history: list[ChatMessage] | None = None,
     schema_description_kwargs: dict[str, Any] | None = None,
@@ -93,7 +94,7 @@ def build_chat_messages(
     _out: dict[str, Any] | None = None,
     **build_messages_kwargs: Any,
 ) -> list[ChatMessage]:
-    """Build chat messages for extraction. The text and schema description may be inserted
+    """Build chat messages for extraction. The document text and schema description may be inserted
     into the message templates, depending on the presence of the respective placeholders.
 
     Args:
@@ -103,7 +104,7 @@ def build_chat_messages(
         schema_description_placeholder: The placeholder in the message templates for the
             schema description. If the placeholder is present in the message templates,
             the schema must be provided and the description will be generated and inserted.
-        text_placeholder: The placeholder in the message templates for the input text. If the
+        document_placeholder: The placeholder in the message templates for the input text. If the
             placeholder is present in the message templates, it will be replaced with the input text.
         history: Optional list of ChatMessage objects representing the conversation history.
         use_guided_decoding: Whether to use guided decoding.
@@ -141,7 +142,7 @@ def build_chat_messages(
             role=MessageRole.SYSTEM,
             schema=schema,
             schema_description_placeholder=schema_description_placeholder,
-            text_placeholder=text_placeholder,
+            document_placeholder=document_placeholder,
             **build_messages_kwargs,
         )
         all_metas.append(sys_meta)
@@ -152,7 +153,7 @@ def build_chat_messages(
             role=MessageRole.USER,
             schema=schema,
             schema_description_placeholder=schema_description_placeholder,
-            text_placeholder=text_placeholder,
+            document_placeholder=document_placeholder,
             **build_messages_kwargs,
         )
         all_metas.append(user_meta)
@@ -161,18 +162,18 @@ def build_chat_messages(
     if len(messages) == 0:
         raise ValueError("At least one of system_message or user_message must be provided.")
 
-    # Check if schema description is needed. If not, but schema is provided, warn.
+    # Check if schema description was inserted. At least one message must have it (if schema provided).
     if not any(meta["has_schema_description"] for meta in all_metas) and schema is not None:
         warn_once(
             "Schema provided but message templates do not require schema description "
             f"(they do not contain '{{{schema_description_placeholder}}}')."
         )
 
-    # Check where the input text is needed and insert it. At least one message must require it (if no history).
+    # Check where the input document was inserted. At least one message must have it (if no history).
     if not any(meta["has_document"] for meta in all_metas) and not history:
         raise ValueError(
             "At least one of the message templates must require the input text "
-            f"(they must contain '{{{text_placeholder}}}')."
+            f"(they must contain '{{{document_placeholder}}}')."
         )
 
     # return the prompt messages with input text and schema description formatted in
@@ -233,7 +234,7 @@ def extract_from_text(
     }
 
     messages = build_chat_messages(
-        text=text,
+        document=text,
         schema=schema,
         _out=out,
         **build_messages_kwargs,
