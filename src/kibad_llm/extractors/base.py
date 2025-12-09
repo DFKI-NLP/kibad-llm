@@ -22,11 +22,12 @@ def warn_once(msg: str) -> None:
 
 
 def build_chat_messages(
-    system_message: str,
-    user_message: str | None,
     text: str,
+    system_message: str,
+    user_message: str,
+    schema_description_placeholder: str = "schema_description",
+    text_placeholder: str = "document",
     schema: dict[str, Any] | None = None,
-    system_message_requires_schema_description: bool = False,
     schema_description_kwargs: dict[str, Any] | None = None,
     use_guided_decoding: bool = True,
     guided_decoding_backend: str | None = "lm-format-enforcer",
@@ -42,15 +43,16 @@ def build_chat_messages(
 
     Args:
         text: The text to process.
-        system_message: The system message template (required). If system_message_requires_schema_description
-            is True, it must contain a "{schema_description}" placeholder.
-        user_message: The user message template (optional, defaults to just the markdown).
+        system_message: The system message template.
+        user_message: The user message template.
         schema: Optional JSON schema for structured output.
-        system_message_requires_schema_description: Whether the system message template
-            requires a schema description (will raise an error if True but no schema provided).
-            The schema description will be built from the provided schema.
         schema_description_kwargs: Optional kwargs for build_schema_description when generating
             the schema description.
+        schema_description_placeholder: The placeholder in the message templates for the
+            schema description. If the placeholder is present in the message templates,
+            the schema must be provided and the description will be generated and inserted.
+        text_placeholder: The placeholder in the message templates for the input text. If the
+            placeholder is present in the message templates, it will be replaced with the input text.
         use_guided_decoding: Whether to use guided decoding.
         guided_decoding_backend: The backend to use for guided decoding.
         validate_with_schema: Whether to validate the output against the provided schema.
@@ -70,27 +72,54 @@ def build_chat_messages(
     Returns:
         A list of ChatMessage objects.
     """
+
+    # return the prompt messages without input text and schema description
     if return_messages and _out is not None:
-        # return the prompt messages without input text and schema description
         _out["messages"] = {
             "system": system_message,
             "user": user_message,
         }
 
-    # Build chat messages
-    if schema is not None and system_message_requires_schema_description:
+    system = system_message
+    user = user_message
+
+    # Check if schema description is needed. If so, generate it and insert it.
+    system_message_requires_schema_description = f"{{{schema_description_placeholder}}}" in system
+    user_message_requires_schema_description = f"{{{schema_description_placeholder}}}" in user
+    if system_message_requires_schema_description or user_message_requires_schema_description:
+        if schema is None:
+            raise ValueError(
+                "Schema must be provided if message templates require schema "
+                f"description (it contains '{{{schema_description_placeholder}}}')."
+            )
         schema_description = build_schema_description(
             schema=schema, **(schema_description_kwargs or {})
         )
-        system = system_message.format(schema_description=schema_description)
-    else:
         if system_message_requires_schema_description:
-            raise ValueError(
-                "system_message_requires_schema_description is True but no schema provided"
+            system = system.format(**{schema_description_placeholder: schema_description})
+        if user_message_requires_schema_description:
+            user = user.format(**{schema_description_placeholder: schema_description})
+    else:
+        if schema is not None:
+            warn_once(
+                "Schema provided but message templates do not require schema description "
+                f"(they do not contain '{{{schema_description_placeholder}}}')."
             )
-        system = system_message
-    user = user_message.format(document=text) if user_message else text
 
+    # Check where the input text is needed and insert it. At least one message must require it.
+    system_message_requires_document = "{" + text_placeholder + "}" in system
+    user_message_requires_document = "{" + text_placeholder + "}" in user
+    if system_message_requires_document:
+        system = system.format(**{text_placeholder: text})
+    if user_message_requires_document:
+        user = user.format(**{text_placeholder: text})
+    if not system_message_requires_document and not user_message_requires_document:
+        raise ValueError(
+            "At least one of the message templates must require the input text "
+            f"(they must contain '{{{text_placeholder}}}')."
+        )
+
+    # return the prompt messages with input text and schema description formatted in
     if return_messages_formatted and _out is not None:
         messages_formatted = {"system": system, "user": user}
         if (
@@ -98,7 +127,8 @@ def build_chat_messages(
             and len(user) > truncate_user_message_formatted
         ):
             messages_formatted["user"] = (
-                f"{user[:truncate_user_message_formatted]}... (truncated @ {truncate_user_message_formatted} chars)"
+                f"{user[:truncate_user_message_formatted]}... "
+                f"(truncated @ {truncate_user_message_formatted} chars)"
             )
         _out["messages_formatted"] = messages_formatted
 

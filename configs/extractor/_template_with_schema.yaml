@@ -9,12 +9,13 @@ system_message: |
   Keine zusätzlichen Felder, keine Erklärungen.
   {schema_description}
 
-system_message_requires_schema_description: true
-
 user_message: |
   Dokument in Markdown Format:
 
   {document}
+
+schema_description_placeholder: schema_description
+text_placeholder: document
 
 schema:
   # create the schema from the pydantic model of EcosystemStudyFeaturesSimple
