@@ -1051,3 +1051,122 @@ class EcosystemStudyOrganismTrends(BaseEcosystemStudyFeatures):
         alias="Organismenbezogene Biodiversitätstrends",
         description="Liste der im Text beschriebenen organismenbezogenen Biodiversitätstrends.",
     )
+
+
+class EcosystemStudyFeaturesMostImportant(BaseEcosystemStudyFeatures):
+    """Das Schema sammelt Angaben zu den wichtigsten biodiversitätsbezogenen Merkmalen der Studie:
+       Lebensräume, Naturgroßräume, Ökosystemtypen, Studienorte, untersuchten Arten bzw. Artengruppen,
+       sowie physiogeographischen Rahmenbedingungen der Studie (Klimabedingungen, Landnutzung und Boden).
+    """
+
+    habitat: list[HabitatEnum] = Field(
+        default_factory=list,
+        alias="Lebensräume",
+        description="Um welchen der folgenden Lebensräume oder um welche Kombination "
+        "der folgenden Lebensräume geht es in dem Text?",
+    )
+    natural_region: list[NaturalRegionEnum] = Field(
+        default_factory=list,
+        alias="Naturgroßräume",
+        description="Um welchen der folgenden Naturgroßräume geht es in dem Text? Antworte nur, "
+                    "wenn ein Naturgroßraum explizit als Gegenstand der Studie genannt wurde, "
+                    "sonst lasse das Feld leer. ",
+    )
+    ecosystem_type: list[EcosystemType] = Field(
+        default_factory=list,
+        alias="Ökosystemtypen",
+        description="Welche Ökosystemtypen werden in der Studie untersucht, sofern diese explizit benannt sind? "
+                    "Finde dafür die im Text genannten Begriffe (EcosystemTypeTerm) für die untersuchten "
+                    "Ökosystemtypen, und bilde diese auf Kategorien (EcosystemTypeCategory) ab. Optional "
+                    "ergänze jeden identifizierten Begriff um eine im Text angegebene nähere Beschreibung bzw."
+                    "Erläuterung. ",
+    )
+    location: list[Location] = Field(
+        default_factory=list,
+        alias="Standorte",
+        description="An welchen Standorte wurde die Studie durchgeführt? Nenne Standorte nur, wenn diese explizit "
+                    "als Untersuchungsgebiete genannt werden, ansonsten lasse das Feld leer. Übersetze englische "
+                    "Begriffe ins Deutsche. Gewässer, wie z.B. Seen und Meere, sind valide Standorte. Falls die Studie "
+                    "in einem anderen Land als Deutschland durchgeführt wurde, nutze die im Text verwendeten "
+                    "Begriffe bzw. Namen, ohne sie zu übersetzen."
+    )
+    climate: list[ClimateEnum] = Field(
+        default_factory=list,
+        alias="Klima",
+        description="Welche der folgenden Begriffe zu Klimabedingungen treffen auf das Untersuchungsgebiet bzw. "
+                    "die untersuchten Standorte zu. Wenn Begriffe aus der folgenden Liste im Text direkt genannt "
+                    "werden bzw. aus den im Text verwendeten Formulierungen abgeleitet werden können, nutze diese, "
+                    "ansonsten leite die Begriffe aus deinem Wissen über das Untersuchungsgebiet her.",
+    )
+    landuse: list[LanduseEnum] = Field(
+        default_factory=list,
+        alias="Landnutzung",
+        description="Wie wird das Land / die Natur im oder nahe dem Untersuchungsgebiet vorwiegend genutzt? "
+                    "Nenne eine oder mehrere der folgenden Kategorien, sofern sie sich aus der Studie "
+                    "erschließen lassen bzw. direkt genannt werden. ",
+    )
+    soil: list[Soil] = Field(
+        default_factory=list,
+        alias="Böden",
+        description="Welche Bodentypen werden in der Studie untersucht? Nenne den Bodentyp nur, wenn er in der"
+                    "Studie explizit genannt wird, bzw. wenn die Studie als einen der untersuchten Lebensräume "
+                    "'Boden' nennt. ",
+    )
+    taxa: list[Taxa] = Field(
+        default_factory=list,
+        alias="Arten",
+        description="Welche Arten werden in der Studie untersucht? Verwende die kleinste machbare Ebene: "
+                    "wenn eine Studie nur wenige Arten behandelt, sollten diese auf Artebene mit ihrem "
+                    "wissenschaftlichen und deutschen Namen angegeben werden. Werden jedoch sehr viele Arten "
+                    "behandelt oder eine Artengruppe besprochen, wird die Artengruppe als 'Sammelbegriff' angegeben. "
+                    "Falls die Studie auf englisch ist, übersetze Art- bzw. Artengruppennamen ins Deutsche. "
+                    "Ergänze, wenn nicht angegeben, die wissenschaftlichen Artennamen, und umgekehrt die "
+                    "deutschen Namen, wenn nur die wissenschaftlichen Artennamen verwendet wurden. ",
+    )
+
+class EcosystemStudyFeaturesMostImportantReduced(BaseEcosystemStudyFeatures):
+    """Das Schema sammelt Angaben zu den wichtigsten biodiversitätsbezogenen Merkmalen der Studie:
+       Lebensräume, Naturgroßräume, Studienorte, untersuchten Arten bzw. Artengruppen, sowie Klimabedingungen.
+    """
+
+    habitat: list[HabitatEnum] = Field(
+        default_factory=list,
+        alias="Lebensräume",
+        description="Um welchen der folgenden Lebensräume oder um welche Kombination "
+        "der folgenden Lebensräume geht es in dem Text?",
+    )
+    natural_region: list[NaturalRegionEnum] = Field(
+        default_factory=list,
+        alias="Naturgroßräume",
+        description="Um welchen der folgenden Naturgroßräume geht es in dem Text? Antworte nur, "
+                    "wenn ein Naturgroßraum explizit als Gegenstand der Studie genannt wurde, "
+                    "sonst lasse das Feld leer. ",
+    )
+    location: list[Location] = Field(
+        default_factory=list,
+        alias="Standorte",
+        description="An welchen Standorte wurde die Studie durchgeführt? Nenne Standorte nur, wenn diese explizit "
+                    "als Untersuchungsgebiete genannt werden, ansonsten lasse das Feld leer. Übersetze englische "
+                    "Begriffe ins Deutsche. Gewässer, wie z.B. Seen und Meere, sind valide Standorte. Falls die Studie "
+                    "in einem anderen Land als Deutschland durchgeführt wurde, nutze die im Text verwendeten "
+                    "Begriffe bzw. Namen, ohne sie zu übersetzen."
+    )
+    climate: list[ClimateEnum] = Field(
+        default_factory=list,
+        alias="Klima",
+        description="Welche der folgenden Begriffe zu Klimabedingungen treffen auf das Untersuchungsgebiet bzw. "
+                    "die untersuchten Standorte zu. Wenn Begriffe aus der folgenden Liste im Text direkt genannt "
+                    "werden bzw. aus den im Text verwendeten Formulierungen abgeleitet werden können, nutze diese, "
+                    "ansonsten leite die Begriffe aus deinem Wissen über das Untersuchungsgebiet her.",
+    )
+    taxa: list[Taxa] = Field(
+        default_factory=list,
+        alias="Arten",
+        description="Welche Arten werden in der Studie untersucht? Verwende die kleinste machbare Ebene: "
+                    "wenn eine Studie nur wenige Arten behandelt, sollten diese auf Artebene mit ihrem "
+                    "wissenschaftlichen und deutschen Namen angegeben werden. Werden jedoch sehr viele Arten "
+                    "behandelt oder eine Artengruppe besprochen, wird die Artengruppe als 'Sammelbegriff' angegeben. "
+                    "Falls die Studie auf englisch ist, übersetze Art- bzw. Artengruppennamen ins Deutsche. "
+                    "Ergänze, wenn nicht angegeben, die wissenschaftlichen Artennamen, und umgekehrt die "
+                    "deutschen Namen, wenn nur die wissenschaftlichen Artennamen verwendet wurden. ",
+    )
