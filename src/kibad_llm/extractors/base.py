@@ -81,8 +81,8 @@ def build_chat_message(
 
 
 def build_chat_messages(
-    system_message: str,
-    user_message: str,
+    system_message: str | None = None,
+    user_message: str | None = None,
     schema_description_placeholder: str = "schema_description",
     text_placeholder: str = "document",
     schema: dict[str, Any] | None = None,
@@ -98,7 +98,8 @@ def build_chat_messages(
     _out: dict[str, Any] | None = None,
     **build_messages_kwargs: Any,
 ) -> list[ChatMessage]:
-    """Build chat messages for extraction.
+    """Build chat messages for extraction. The text and schema description may be inserted
+    into the message templates, depending on the presence of the respective placeholders.
 
     Args:
         system_message: The system message template.
@@ -136,37 +137,43 @@ def build_chat_messages(
             "system": system_message,
             "user": user_message,
         }
+    all_metas = []
+    messages = []
+    if system_message is not None:
+        system, sys_meta = build_chat_message(
+            message=system_message,
+            role=MessageRole.SYSTEM,
+            schema=schema,
+            schema_description_placeholder=schema_description_placeholder,
+            text_placeholder=text_placeholder,
+            **build_messages_kwargs,
+        )
+        all_metas.append(sys_meta)
+        messages.append(system)
+    if user_message is not None:
+        user, user_meta = build_chat_message(
+            message=user_message,
+            role=MessageRole.USER,
+            schema=schema,
+            schema_description_placeholder=schema_description_placeholder,
+            text_placeholder=text_placeholder,
+            **build_messages_kwargs,
+        )
+        all_metas.append(user_meta)
+        messages.append(user)
 
-    system, sys_meta = build_chat_message(
-        message=system_message,
-        role=MessageRole.SYSTEM,
-        schema=schema,
-        schema_description_placeholder=schema_description_placeholder,
-        text_placeholder=text_placeholder,
-        **build_messages_kwargs,
-    )
-    user, user_meta = build_chat_message(
-        message=user_message,
-        role=MessageRole.USER,
-        schema=schema,
-        schema_description_placeholder=schema_description_placeholder,
-        text_placeholder=text_placeholder,
-        **build_messages_kwargs,
-    )
+    if len(messages) == 0:
+        raise ValueError("At least one of system_message or user_message must be provided.")
 
     # Check if schema description is needed. If not, but schema is provided, warn.
-    if (
-        not sys_meta["has_schema_description"]
-        and not user_meta["has_schema_description"]
-        and schema is not None
-    ):
+    if not any(meta["has_schema_description"] for meta in all_metas) and schema is not None:
         warn_once(
             "Schema provided but message templates do not require schema description "
             f"(they do not contain '{{{schema_description_placeholder}}}')."
         )
 
     # Check where the input text is needed and insert it. At least one message must require it.
-    if not sys_meta["has_document"] and not user_meta["has_document"]:
+    if not any(meta["has_document"] for meta in all_metas):
         raise ValueError(
             "At least one of the message templates must require the input text "
             f"(they must contain '{{{text_placeholder}}}')."
@@ -174,9 +181,10 @@ def build_chat_messages(
 
     # return the prompt messages with input text and schema description formatted in
     if return_messages_formatted and _out is not None:
-        messages_formatted = {"system": system.content or "", "user": user.content or ""}
+        messages_formatted = {msg.role.name.lower(): msg.content or "" for msg in messages}
         if (
             truncate_user_message_formatted is not None
+            and "user" in messages_formatted
             and len(messages_formatted["user"]) > truncate_user_message_formatted
         ):
             messages_formatted["user"] = (
@@ -184,8 +192,6 @@ def build_chat_messages(
                 f"(truncated @ {truncate_user_message_formatted} chars)"
             )
         _out["messages_formatted"] = messages_formatted
-
-    messages = [system, user]
 
     return messages
 
