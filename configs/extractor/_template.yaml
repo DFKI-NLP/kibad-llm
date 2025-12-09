@@ -18,6 +18,6 @@ user_message: |
 
   {document}
 
-text_placeholder: document
+document_placeholder: document
 
 use_guided_decoding: false

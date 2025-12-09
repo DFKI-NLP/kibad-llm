@@ -15,7 +15,7 @@ user_message: |
   {document}
 
 schema_description_placeholder: schema_description
-text_placeholder: document
+document_placeholder: document
 
 schema:
   # create the schema from the pydantic model of EcosystemStudyFeaturesSimple
