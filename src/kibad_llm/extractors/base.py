@@ -149,12 +149,13 @@ def extract_from_text(
         # Parse & validate (schema optional)
         try:
             data = json.loads(response_content)
-            out["structured"] = data
             if schema is not None:
                 validator_cls = validator_for(schema)
                 validator_cls.check_schema(schema)
                 validator = validator_cls(schema)
                 validator.validate(data)
+            # just assign if we validated successfully
+            out["structured"] = data
         except json.JSONDecodeError as e:
             logger.warning(f"Failed to parse JSON output for document {text_id}")
             out["error"] = f"JSONDecodeError: {str(e)}"
