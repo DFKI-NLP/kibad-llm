@@ -86,6 +86,7 @@ def build_chat_messages(
     schema_description_placeholder: str = "schema_description",
     text_placeholder: str = "document",
     schema: dict[str, Any] | None = None,
+    history: list[ChatMessage] | None = None,
     schema_description_kwargs: dict[str, Any] | None = None,
     use_guided_decoding: bool = True,
     guided_decoding_backend: str | None = "lm-format-enforcer",
@@ -110,6 +111,7 @@ def build_chat_messages(
             the schema must be provided and the description will be generated and inserted.
         text_placeholder: The placeholder in the message templates for the input text. If the
             placeholder is present in the message templates, it will be replaced with the input text.
+        history: Optional list of ChatMessage objects representing the conversation history.
         use_guided_decoding: Whether to use guided decoding.
         guided_decoding_backend: The backend to use for guided decoding.
         validate_with_schema: Whether to validate the output against the provided schema.
@@ -193,6 +195,8 @@ def build_chat_messages(
             )
         _out["messages_formatted"] = messages_formatted
 
+    if history:
+        messages = history + messages
     return messages
 
 
