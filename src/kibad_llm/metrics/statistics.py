@@ -12,10 +12,12 @@ class ErrorCollector(Metric):
 
     Args:
         show_errors (bool): If True, logs each collected error message.
+        type_separator (str): Separator used to split error messages into type and details.
     """
 
-    def __init__(self, show_errors: bool = False) -> None:
+    def __init__(self, show_errors: bool = False, type_separator: str = ": ") -> None:
         self.show_errors = show_errors
+        self.type_separator = type_separator
         self.reset()
 
     def reset(self) -> None:
@@ -39,10 +41,10 @@ class ErrorCollector(Metric):
 
     def _compute(self) -> dict[str, Any]:
 
-        # group errors by message and count occurrences
+        # group errors by message type and count occurrences
         errors_grouped = defaultdict(list)
         for error in self.state:
-            err_parts = str(error).split(": ", 1)
+            err_parts = error.split(self.type_separator, 1)
             errors_grouped[err_parts[0]].append(error)
 
         # just return counts for now
