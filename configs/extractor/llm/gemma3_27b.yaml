@@ -26,6 +26,6 @@ is_chat_model: true
 is_function_calling_model: false
 # Supports up to 128K tokens (max size for https://huggingface.co/google/gemma-3-27b-it).
 # Use lower value to save memory
-context_window: 131072
+context_window: 65536
 timeout: 360
 max_retries: 3
