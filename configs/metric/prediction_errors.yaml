@@ -1,4 +1,5 @@
-# TODO
+# Collects error messages from model predictions and provides statistics on their occurrences.
 
 _target_: kibad_llm.metrics.ErrorCollector
+# If True, logs each collected error message on console.
 show_errors: true

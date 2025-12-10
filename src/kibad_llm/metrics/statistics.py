@@ -8,8 +8,13 @@ logger = logging.getLogger(__name__)
 
 
 class ErrorCollector(Metric):
+    """Collects error messages from model predictions and provides statistics on their occurrences.
 
-    def __init__(self, show_errors: bool = True) -> None:
+    Args:
+        show_errors (bool): If True, logs each collected error message.
+    """
+
+    def __init__(self, show_errors: bool = False) -> None:
         self.show_errors = show_errors
         self.reset()
 
