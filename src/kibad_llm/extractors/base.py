@@ -318,5 +318,5 @@ def extract_from_text_lenient(text: str, text_id: str, **kwargs) -> dict:
             "reasoning_content": None,
             "messages": None,
             "messages_formatted": None,
-            "error": str(e),
+            "error": f"{type(e).__name__}: {str(e)}",
         }
