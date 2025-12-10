@@ -1,12 +1,12 @@
-# Example configuration for using GPT-OSS-20B model with LlamaIndex
+# Example configuration for using Mistral-Small-3.2-24B-Instruct-2506 model with LlamaIndex
 #
-# This requires a local deployment of the GPT-OSS-20B model that is compatible with the OpenAI API.
+# This requires a local deployment of the Mistral-Small-3.2-24B-Instruct-2506 model that is compatible with the OpenAI API.
 # See models/README.md for instructions.
 #
 # To use as an argument for `predict`, specify
 #  `extractor/llm=mistral_small_3_24b --tokenizer_mode mistral --config_format mistral -load_format mistral`
 
-_target_: llama_index.llms.openai_like.OpenAILike
+_target_: llama_index.llms.openai_like.OpenAILikeVllm
 
 # get the API base URL from the environment variable LLM_API_BASE, defaulting to http://127.0.0.1:5001/v1
 api_base: ${oc.env:LLM_API_BASE,http://127.0.0.1:5001/v1}

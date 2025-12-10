@@ -19,7 +19,8 @@ model: "openai/gpt-oss-20b"
 temperature: 0.0
 # presence_penalty and frequency_penalty are also standard if we need them
 
-# this is the maximum context window of GPT-OSS-20B
+# Supports up to 130K tokens (max size for https://platform.openai.com/docs/models/gpt-oss-20b).
+# Use lower value to save memory
 context_window: 131072
 
 timeout: 360 # default is 60
@@ -31,4 +32,6 @@ is_chat_model: true
 # Specify additional parameters to the request body.
 additional_kwargs:
   # set maximum number of generated tokens
+  # the default is None, so we set it to 32768 (recommended for Qwen3_30B).
+  # 131,072 is max size for https://platform.openai.com/docs/models/gpt-oss-20b
   max_completion_tokens: 8192

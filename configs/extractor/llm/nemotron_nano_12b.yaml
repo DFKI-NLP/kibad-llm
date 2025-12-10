@@ -5,7 +5,7 @@
 #
 # To use as an argument for `predict`, specify `extractor/llm=nemotron_nano_12b --trust-remote-code`
 
-_target_: llama_index.llms.openai_like.OpenAILike
+_target_: llama_index.llms.openai_like.OpenAILikeVllm
 
 # get the API base URL from the environment variable LLM_API_BASE, defaulting to http://127.0.0.1:5001/v1
 api_base: ${oc.env:LLM_API_BASE,http://127.0.0.1:5001/v1}

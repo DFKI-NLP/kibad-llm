@@ -1,6 +1,6 @@
-# Example configuration for using GPT-OSS-20B model with LlamaIndex
+# Example configuration for using Ministral-3-14B-Reasoning-2512 model with LlamaIndex
 #
-# This requires a local deployment of the GPT-OSS-20B model that is compatible with the OpenAI API.
+# This requires a local deployment of the Ministral-3-14B-Reasoning-2512 model that is compatible with the OpenAI API.
 # See models/README.md for instructions.
 #
 # To use as an argument for `predict`, specify `extractor/llm=ministral_3_14b `
@@ -9,7 +9,7 @@
 #
 # The model is too big for the RTXA6000's memory, so run it on partitions with more memory (H100) or lower max-model-len
 
-_target_: llama_index.llms.openai_like.OpenAILike
+_target_: llama_index.llms.openai_like.OpenAILikeVllm
 
 # get the API base URL from the environment variable LLM_API_BASE, defaulting to http://127.0.0.1:5001/v1
 api_base: ${oc.env:LLM_API_BASE,http://127.0.0.1:5001/v1}
