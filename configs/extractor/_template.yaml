@@ -17,3 +17,5 @@ user_message: |
   Dokument in Markdown Format:
 
   {document}
+
+use_guided_decoding: false
