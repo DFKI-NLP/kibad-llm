@@ -82,12 +82,6 @@ def build_chat_messages(
     document_placeholder: str = "document",
     schema: dict[str, Any] | None = None,
     history: list[ChatMessage] | None = None,
-    schema_description_kwargs: dict[str, Any] | None = None,
-    use_guided_decoding: bool = True,
-    guided_decoding_backend: str | None = "lm-format-enforcer",
-    validate_with_schema: bool = True,
-    llm: LLM | None = None,
-    return_reasoning: bool = False,
     return_messages: bool = False,
     return_messages_formatted: bool = False,
     truncate_user_message_formatted: int | None = 300,
@@ -107,14 +101,6 @@ def build_chat_messages(
         document_placeholder: The placeholder in the message templates for the input text. If the
             placeholder is present in the message templates, it will be replaced with the input text.
         history: Optional list of ChatMessage objects representing the conversation history.
-        use_guided_decoding: Whether to use guided decoding.
-        guided_decoding_backend: The backend to use for guided decoding.
-        validate_with_schema: Whether to validate the output against the provided schema.
-            IMPORTANT: Disabling validation may lead to invalid structured outputs and, thus,
-            may break result serialization (since we use .map() and .to_json() from datasets).
-        llm: The LLM model to use. Must be a chat model (i.e. is_chat_model=True) and support extra_body
-            parameters for guided decoding if schema is provided. If None, no LLM call is made.
-        return_reasoning: Whether to return the reasoning done by the model.
         return_messages: Whether to return the used prompt messages, but without input text and
             schema description.
         return_messages_formatted: Whether to return the used prompt messages formatted with
@@ -199,6 +185,9 @@ def extract_from_text(
     text: str,
     text_id: str,
     schema: dict[str, Any] | None = None,
+    use_guided_decoding: bool = True,
+    guided_decoding_backend: str | None = "lm-format-enforcer",
+    validate_with_schema: bool = True,
     llm: LLM | None = None,
     return_reasoning: bool = False,
     **build_messages_kwargs: Any,
@@ -213,6 +202,11 @@ def extract_from_text(
         text: The text to process.
         text_id: Text identifier for logging and seeding.
         schema: Optional JSON schema for structured output.
+        use_guided_decoding: Whether to use guided decoding.
+        guided_decoding_backend: The backend to use for guided decoding.
+        validate_with_schema: Whether to validate the output against the provided schema.
+            IMPORTANT: Disabling validation may lead to invalid structured outputs and, thus,
+            may break result serialization (since we use .map() and .to_json() from datasets).
         llm: The LLM model to use. Must be a chat model (i.e. is_chat_model=True) and support extra_body
             parameters for guided decoding if schema is provided. If None, no LLM call is made.
         return_reasoning: Whether to return the reasoning done by the model.
