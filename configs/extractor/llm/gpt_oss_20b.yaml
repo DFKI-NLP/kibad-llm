@@ -2,6 +2,9 @@
 #
 # This requires a local deployment of the GPT-OSS-20B model that is compatible with the OpenAI API.
 # See models/README.md for instructions.
+#
+# To use as an argument for `predict`, specify `extractor/llm=gpt_oss_20b` (but this is also the default,
+# see e.g. extractor/_simple.yaml, extractor/_union.yaml, extractor/_repeat.yaml
 
 # OpenAILikeVllm creates a llama_index.llms.openai_like.OpenAILike by just forwarding all provided parameters. Thus, see
 # https://developers.llamaindex.ai/python/framework-api-reference/llms/openai_like/#llama_index.llms.openai_like.OpenAILike
