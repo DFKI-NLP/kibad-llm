@@ -1,4 +1,5 @@
 from collections import defaultdict
+from collections.abc import Hashable
 import logging
 from typing import Any
 
@@ -23,7 +24,7 @@ class ErrorCollector(Metric):
     def reset(self) -> None:
         self.state: list[str] = []
 
-    def _update(self, prediction: dict[str, Any], reference: dict[str, Any]) -> None:
+    def _update(self, prediction: Any, reference: Any, record_id: Hashable | None = None) -> None:
         errors_with_none = []
         if "error" in prediction:
             errors_with_none.append(prediction["error"])

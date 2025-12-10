@@ -1,4 +1,4 @@
-from collections.abc import Mapping
+from collections.abc import Hashable, Mapping
 from typing import Any, Generic, TypeVar
 
 from kibad_llm.metric import Metric
@@ -22,15 +22,10 @@ class MetricCollection(Metric, Generic[T]):
         for metric in self.metrics.values():
             metric.reset()
 
-    def _update(self, *args, **kwargs) -> None:
-        """Updates all sub-metrics with the given data.
-
-        Args:
-            *args: Positional arguments to pass to each sub-metric's update method.
-            **kwargs: Keyword arguments to pass to each sub-metric's update method.
-        """
+    def _update(self, prediction: Any, reference: Any, record_id: Hashable | None = None) -> None:
+        """Updates all sub-metrics with the given data."""
         for metric in self.metrics.values():
-            metric.update(*args, **kwargs)
+            metric.update(prediction=prediction, reference=reference, record_id=record_id)
 
     def _compute(self, *args, **kwargs) -> dict[str, Any]:
         """Computes and returns the results of all sub-metrics.

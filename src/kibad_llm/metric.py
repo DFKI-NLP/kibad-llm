@@ -1,3 +1,4 @@
+from collections.abc import Hashable
 import json
 import logging
 from typing import Any
@@ -12,12 +13,12 @@ class Metric:
         """Reset all internal states."""
         raise NotImplementedError("Subclasses should implement this method.")
 
-    def _update(self, *args, **kwargs) -> None:
+    def _update(self, prediction: Any, reference: Any, record_id: Hashable | None = None) -> None:
         """Update internal states with new data."""
         raise NotImplementedError("Subclasses should implement this method.")
 
-    def update(self, *args, **kwargs) -> None:
-        self._update(*args, **kwargs)
+    def update(self, prediction: Any, reference: Any, record_id: Hashable | None = None) -> None:
+        self._update(prediction=prediction, reference=reference, record_id=record_id)
 
     def _compute(self, *args, **kwargs) -> dict[str, Any]:
         """Compute and return the metric results."""

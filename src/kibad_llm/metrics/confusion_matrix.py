@@ -1,4 +1,5 @@
 from collections import defaultdict
+from collections.abc import Hashable
 import logging
 from typing import Any
 
@@ -79,7 +80,7 @@ class ConfusionMatrix(MetricWithPrepareEntryAsSet):
         for key, value in counts.items():
             self.counts[key] += value
 
-    def _update(self, prediction: Any, reference: Any) -> None:
+    def _update(self, prediction: Any, reference: Any, record_id: Hashable | None = None) -> None:
         pred_set = self._prepare_entry_as_set(prediction)
         ref_set = self._prepare_entry_as_set(reference)
         new_counts = self.calculate_counts(prediction=pred_set, reference=ref_set)
