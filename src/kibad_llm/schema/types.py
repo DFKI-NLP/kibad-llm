@@ -1084,11 +1084,10 @@ class EcosystemStudyFeaturesMostImportant(BaseEcosystemStudyFeatures):
     location: list[Location] = Field(
         default_factory=list,
         alias="Standorte",
-        description="An welchen Standorte wurde die Studie durchgeführt? Nenne Standorte nur, wenn diese explizit "
+        description="An welchen Standorten wurde die Studie durchgeführt? Nenne Standorte nur, wenn diese explizit "
                     "als Untersuchungsgebiete genannt werden, ansonsten lasse das Feld leer. Übersetze englische "
-                    "Begriffe ins Deutsche. Gewässer, wie z.B. Seen und Meere, sind valide Standorte. Falls die Studie "
-                    "in einem anderen Land als Deutschland durchgeführt wurde, nutze die im Text verwendeten "
-                    "Begriffe bzw. Namen, ohne sie zu übersetzen."
+                    "Begriffe ins Deutsche. Gewässer, wie z.B. Seen und Meere, sind valide Standorte, sollten aber"
+                    "nicht als 'Land' verwendet werden. "
     )
     climate: list[ClimateEnum] = Field(
         default_factory=list,
@@ -1118,7 +1117,7 @@ class EcosystemStudyFeaturesMostImportant(BaseEcosystemStudyFeatures):
         description="Welche Arten werden in der Studie untersucht? Verwende die kleinste machbare Ebene: "
                     "wenn eine Studie nur wenige Arten behandelt, sollten diese auf Artebene mit ihrem "
                     "wissenschaftlichen und deutschen Namen angegeben werden. Werden jedoch sehr viele Arten "
-                    "behandelt oder eine Artengruppe besprochen, wird die Artengruppe als 'Sammelbegriff' angegeben. "
+                    "behandelt oder eine Artengruppe besprochen, wird die Artengruppe als Sammelbegriff angegeben. "
                     "Falls die Studie auf englisch ist, übersetze Art- bzw. Artengruppennamen ins Deutsche. "
                     "Ergänze, wenn nicht angegeben, die wissenschaftlichen Artennamen, und umgekehrt die "
                     "deutschen Namen, wenn nur die wissenschaftlichen Artennamen verwendet wurden. ",
