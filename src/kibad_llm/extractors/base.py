@@ -6,7 +6,6 @@ import json
 import logging
 from typing import Any
 
-from jsonschema.exceptions import ValidationError
 from jsonschema.validators import validator_for
 from llama_index.core.llms import LLM, ChatMessage, MessageRole
 
@@ -254,24 +253,25 @@ def extract_from_text(
 
     # only proceed if we have an llm
     if llm is not None:
-        # Chat call (reasoning kept separate by server; final JSON is in message.content)
-        resp = llm.chat(messages, extra_body=vllm_extras)
-
-        response_content = getattr(resp.message, "content", "") or ""
-        out["response_content"] = response_content
-
-        if return_reasoning:
-            # we need to get resp.raw.choices[0].message.reasoning_content,
-            # but mypy doesn't permit it. so we:
-            # 1: get resp.raw.choices[0]
-            raw_first_choice = getattr(resp.raw, "choices", "")[0] or None
-            # 2: get .message
-            raw_message = getattr(raw_first_choice, "message", "") or None
-            # 3: get .reasoning_content
-            out["reasoning_content"] = getattr(raw_message, "reasoning_content", "") or None
 
         # Parse & validate (schema optional)
         try:
+            # Chat call (reasoning kept separate by server; final JSON is in message.content)
+            resp = llm.chat(messages, extra_body=vllm_extras)
+
+            response_content = getattr(resp.message, "content", "") or ""
+            out["response_content"] = response_content
+
+            if return_reasoning:
+                # we need to get resp.raw.choices[0].message.reasoning_content,
+                # but mypy doesn't permit it. so we:
+                # 1: get resp.raw.choices[0]
+                raw_first_choice = getattr(resp.raw, "choices", "")[0] or None
+                # 2: get .message
+                raw_message = getattr(raw_first_choice, "message", "") or None
+                # 3: get .reasoning_content
+                out["reasoning_content"] = getattr(raw_message, "reasoning_content", "") or None
+
             data = json.loads(response_content)
             if schema is not None and validate_with_schema:
                 validator_cls = validator_for(schema)
@@ -280,12 +280,10 @@ def extract_from_text(
                 validator.validate(data)
             # just assign if we validated successfully
             out["structured"] = data
-        except json.JSONDecodeError as e:
-            logger.warning(f"Failed to parse JSON output for document {text_id}")
-            out["error"] = f"JSONDecodeError: {str(e)}"
-        except ValidationError as e:
-            logger.warning(f"Failed to validate structured output for document {text_id}")
-            out["error"] = f"ValidationError: {str(e)}"
+
+        except Exception as e:
+            logger.warning(f"Failed to process document {text_id}: {str(e)}")
+            out["error"] = f"{type(e).__name__}: {str(e)}"
 
     else:
         warn_once("No LLM provided for extraction, skipping LLM call.")
