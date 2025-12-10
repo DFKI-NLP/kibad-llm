@@ -2,6 +2,10 @@
 #
 # This requires a local deployment of the Qwen3-30B-A3B-Thinking-2507 model that is compatible with the OpenAI API.
 # See models/README.md for instructions.
+#
+# To use as an argument for `predict`, specify `extractor/llm=gemma3_27b_it --hf-token <your_token>`
+# You can specify the HF token as an environment variable, e.g. export HF_TOKEN=..., or
+# use a cached token with `--hf-token True`, see https://docs.vllm.ai/en/latest/cli/serve/#-hf-token
 
 _target_: llama_index.llms.openai_like.OpenAILike
 
