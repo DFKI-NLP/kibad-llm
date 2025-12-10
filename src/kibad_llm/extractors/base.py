@@ -14,6 +14,18 @@ from kibad_llm.schema.utils import build_schema_description
 logger = logging.getLogger(__name__)
 
 
+class MissingResponseContentError(Exception):
+    """Raised when the LLM response message has no content."""
+
+    ...
+
+
+class EmptyResponseMessageError(Exception):
+    """Raised when the LLM response message is empty."""
+
+    ...
+
+
 @lru_cache(maxsize=None)
 def warn_once(msg: str) -> None:
     """Log a warning message only once by caching the function call."""
@@ -259,9 +271,6 @@ def extract_from_text(
             # Chat call (reasoning kept separate by server; final JSON is in message.content)
             resp = llm.chat(messages, extra_body=vllm_extras)
 
-            response_content = getattr(resp.message, "content", "") or ""
-            out["response_content"] = response_content
-
             if return_reasoning:
                 # we need to get resp.raw.choices[0].message.reasoning_content,
                 # but mypy doesn't permit it. so we:
@@ -271,6 +280,13 @@ def extract_from_text(
                 raw_message = getattr(raw_first_choice, "message", "") or None
                 # 3: get .reasoning_content
                 out["reasoning_content"] = getattr(raw_message, "reasoning_content", "") or None
+
+            response_content = resp.message.content
+            if response_content is None:
+                raise MissingResponseContentError("LLM response is missing content.")
+            if not response_content.strip():
+                raise EmptyResponseMessageError("LLM returned an empty message.")
+            out["response_content"] = response_content
 
             data = json.loads(response_content)
             if schema is not None and validate_with_schema:
