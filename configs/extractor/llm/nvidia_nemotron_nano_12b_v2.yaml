@@ -1,28 +1,27 @@
-# Example configuration for using Qwen3-30B-A3B-Thinking-2507 model with LlamaIndex
+# Example configuration for using NVIDIA-Nemotron-Nano-12B-v2 model with LlamaIndex
 #
-# This requires a local deployment of the Qwen3-30B-A3B-Thinking-2507 model that is compatible with the OpenAI API.
+# This requires a local deployment of the NVIDIA-Nemotron-Nano-12B-v2 model that is compatible with the OpenAI API.
 # See models/README.md for instructions.
 #
-# To use as an argument for `predict`, specify `extractor/llm=qwen3_30b_a3b_thinking_2507 --max-model-len 262144 --reasoning-parser deepseek_r1`
-
+# To use as an argument for `predict`, specify `extractor/llm=nvidia_nemotron_nano_12b_v2  --trust-remote-code`
 
 _target_: llama_index.llms.openai_like.OpenAILike
 
 # get the API base URL from the environment variable LLM_API_BASE, defaulting to http://127.0.0.1:5001/v1
 api_base: ${oc.env:LLM_API_BASE,http://127.0.0.1:5001/v1}
 api_key: "dummy"
-model: "Qwen/Qwen3-30B-A3B-Thinking-2507"
+model: "nvidia/NVIDIA-Nemotron-Nano-12B-v2"
 # try to be as deterministic as possible
 temperature: 0.0
 top_p: 1.0
 # presence_penalty and frequency_penalty are also standard if we need them
 
-# the default is None, so we set it to 32,768 (recommended https://huggingface.co/Qwen/Qwen3-30B-A3B-Thinking-2507)
+# the default is None, so we set it to 32,768 (https://huggingface.co/nvidia/NVIDIA-Nemotron-Nano-12B-v2)
 max_tokens: 32768
 # enable to correctly handle (i.e. remove) reasoning traces in the output
 is_chat_model: true
 is_function_calling_model: false
-# Supports up to 256K tokens (max size for https://huggingface.co/Qwen/Qwen3-30B-A3B-Thinking-2507).
+# Supports up to 128K tokens (max size for https://huggingface.co/nvidia/NVIDIA-Nemotron-Nano-12B-v2).
 # Use lower value to save memory
 context_window: 128000
 timeout: 360
