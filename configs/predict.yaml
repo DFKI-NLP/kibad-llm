@@ -45,3 +45,5 @@ fast_dev_run: False
 extraction_caching: False
 # set True to enable storing the text in predictions, costs loads of storage
 store_text_in_predictions: False
+# set to a number of cores you want to use for PDF_to_markdown or 100 for all cores
+pdf_to_md_num_proc: 1

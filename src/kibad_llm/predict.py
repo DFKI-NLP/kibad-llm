@@ -64,6 +64,7 @@ def predict(cfg: DictConfig) -> dict[str, Any]:
         function=pdf_reader_wrapped,
         input_columns=["file_name"],
         fn_kwargs={"base_path": data_base_path},
+        num_proc=cfg.pdf_to_md_num_proc,
     )
     t_delta_pdf_conversion = time.perf_counter() - t_start_pdf_conversion
 
