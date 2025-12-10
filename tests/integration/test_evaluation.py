@@ -40,6 +40,8 @@ def cfg_evaluate(tmp_path, metric_name) -> DictConfig:  # type: ignore
             cfg.metric.field = "habitat"
         elif metric_name == "f1_micro":
             cfg.metric.fields = ["habitat", "landuse"]
+        elif metric_name == "prediction_errors":
+            pass  # no extra config needed
         else:
             raise ValueError(
                 f"Unexpected metric name: {metric_name}. Please update the test case."
@@ -93,5 +95,8 @@ def test_evaluate(tmp_path, cfg_evaluate, metric_name):
                 "support": 4,
             },
         }
+    elif metric_name == "prediction_errors":
+        # we don't have any errors in the predictions file
+        assert metric_scores == {}
     else:
         raise ValueError(f"Unexpected metric name: {metric_name}. Please update the test case.")

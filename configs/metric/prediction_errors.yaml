@@ -1,0 +1,7 @@
+# Collects error messages from model predictions and provides statistics on their occurrences.
+
+_target_: kibad_llm.metrics.ErrorCollector
+# Separator used to split error messages into type and details.
+type_separator: ": "
+# If True, logs each collected error message on console.
+show_errors: true
