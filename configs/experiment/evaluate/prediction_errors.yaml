@@ -1,0 +1,7 @@
+# @package _global_
+
+# Collect prediction errors and show their statistics. See metric/prediction_errors.yaml config for details.
+
+defaults:
+ - override /dataset: predictions_only
+ - override /metric: prediction_errors
