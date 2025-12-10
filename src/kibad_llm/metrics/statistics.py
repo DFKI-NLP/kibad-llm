@@ -36,7 +36,7 @@ class ErrorCollector(Metric):
         errors = [e for e in errors_with_none if e is not None]
         if self.show_errors:
             for error in errors:
-                logger.info(f"Collected error: {error}")
+                logger.info(f"Collected error (id={record_id}): {error}")
         self.state.extend(errors)
         self.state.extend(errors_none)
 
