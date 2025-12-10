@@ -126,43 +126,37 @@ def build_chat_messages(
             "system": system_message,
             "user": user_message,
         }
-    all_metas = []
+
     messages = []
-    if system_message is not None:
-        system, sys_meta = build_chat_message(
-            message=system_message,
-            role=MessageRole.SYSTEM,
-            schema=schema,
-            schema_description_placeholder=schema_description_placeholder,
-            document_placeholder=document_placeholder,
-            **build_messages_kwargs,
-        )
-        all_metas.append(sys_meta)
-        messages.append(system)
-    if user_message is not None:
-        user, user_meta = build_chat_message(
-            message=user_message,
-            role=MessageRole.USER,
-            schema=schema,
-            schema_description_placeholder=schema_description_placeholder,
-            document_placeholder=document_placeholder,
-            **build_messages_kwargs,
-        )
-        all_metas.append(user_meta)
-        messages.append(user)
+    metas = []
+    for msg_str, role in [
+        (system_message, MessageRole.SYSTEM),
+        (user_message, MessageRole.USER),
+    ]:
+        if msg_str is not None:
+            msg, meta = build_chat_message(
+                message=msg_str,
+                role=role,
+                schema=schema,
+                schema_description_placeholder=schema_description_placeholder,
+                document_placeholder=document_placeholder,
+                **build_messages_kwargs,
+            )
+            messages.append(msg)
+            metas.append(meta)
 
     if len(messages) == 0:
         raise ValueError("At least one of system_message or user_message must be provided.")
 
     # Check if schema description was inserted. At least one message must have it (if schema provided).
-    if not any(meta["has_schema_description"] for meta in all_metas) and schema is not None:
+    if not any(meta["has_schema_description"] for meta in metas) and schema is not None:
         warn_once(
             "Schema provided but message templates do not require schema description "
             f"(they do not contain '{{{schema_description_placeholder}}}')."
         )
 
     # Check where the input document was inserted. At least one message must have it (if history is not used).
-    if not any(meta["has_document"] for meta in all_metas) and not history:
+    if not any(meta["has_document"] for meta in metas) and not history:
         raise ValueError(
             "At least one of the message templates must require the input text "
             f"(they must contain '{{{document_placeholder}}}')."
