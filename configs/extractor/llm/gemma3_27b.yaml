@@ -3,7 +3,7 @@
 # This requires a local deployment of the Gemma3-27B-IT model that is compatible with the OpenAI API.
 # See models/README.md for instructions.
 #
-# To use as an argument for `predict`, specify `extractor/llm=gemma3_27b_it --hf-token <your_token>`
+# To use as an argument for `predict`, specify `extractor/llm=gemma3_27b --hf-token <your_token>`
 # You can specify the HF token as an environment variable, e.g. export HF_TOKEN=..., or
 # use a cached token with `--hf-token True`, see https://docs.vllm.ai/en/latest/cli/serve/#-hf-token
 
@@ -25,6 +25,6 @@ is_chat_model: true
 is_function_calling_model: false
 # Supports up to 128K tokens (max size for https://huggingface.co/google/gemma-3-27b-it).
 # Use lower value to save memory
-context_window: 128000
+context_window: 131072
 timeout: 360
 max_retries: 3

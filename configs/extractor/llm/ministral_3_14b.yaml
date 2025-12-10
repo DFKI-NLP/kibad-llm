@@ -3,7 +3,12 @@
 # This requires a local deployment of the GPT-OSS-20B model that is compatible with the OpenAI API.
 # See models/README.md for instructions.
 #
-# To use as an argument for `predict`, specify `extractor/llm=mistral_small_3_2_24b_instruct_2506`
+# To use as an argument for `predict`, specify `extractor/llm=ministral_3_14b `
+#  --tensor-parallel-size 2 \
+#  --tokenizer_mode mistral --config_format mistral --load_format mistral \
+#  --enable-auto-tool-choice --tool-call-parser mistral \
+#  --reasoning-parser mistral
+# Note: not sure if we need the tool and tensor options
 
 _target_: llama_index.llms.openai_like.OpenAILike
 
@@ -17,13 +22,13 @@ top_p: 1.0
 # presence_penalty and frequency_penalty are also standard if we need them
 
 # the default is None, so we set it to 32768 (recommended for Qwen3_30B).
-# 128K is max size for https://huggingface.co/mistralai/Ministral-3-14B-Reasoning-2512
+# 128K is max size for https://huggingface.co/mistralai/Mistral-Small-3.2-24B-Instruct-2506
 max_tokens: 32768
 # enable to correctly handle (i.e. remove) reasoning traces in the output
 is_chat_model: true
 is_function_calling_model: false
-# Supports up to 256K tokens (max size for https://docs.mistral.ai/models/ministral-3-14b-25-12).
+# Supports up to 128K tokens (max size for https://huggingface.co/mistralai/Mistral-Small-3.2-24B-Instruct-2506).
 # Use lower value to save memory
-context_window: 128000
+context_window: 131072
 timeout: 360
 max_retries: 3
