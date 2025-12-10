@@ -48,27 +48,9 @@ If you need a specific version of vLLM, change `@latest` to `@your.version.here`
 
 Note: This may take some time, wait for `Application startup complete.`
 
-For Qwen/Qwen3-30B-A3B-Thinking-2507, use the following VLLM params as suggested in https://huggingface.co/Qwen/Qwen3-30B-A3B-Thinking-2507
-``
-```bash
-export HF_HOME="/netscratch/$USER/cache/hf"
-export VLLM_CACHE_ROOT="/netscratch/$USER/cache/vllm"
-srun --partition=RTXA6000-SLT \
-     --job-name=vllm_serve \
-     --nodes=1 \
-     --ntasks=1 \
-     --cpus-per-task=6 \
-     --gpus-per-task=1 \
-     --mem-per-cpu=4G \
-     --time=0-04:00:00 \
-     uvx --cache-dir /netscratch/$USER/cache/uv \
-         vllm@latest serve "Qwen/Qwen3-30B-A3B-Thinking-2507" \
-             --download-dir=/ds/models/llms/cache \
-             --max-model-len 262144 \
-             --enable-reasoning \
-             --reasoning-parser deepseek_r1 \
-             --port=18000
-```
+**Important**: For models other than gpt-oss-20B, please check the respective configs in configs/extractor/llm for
+additional command line arguments to vllm serve. For example, Qwen3 requires to specify the additional argument
+'--reasoning-parser deepseek_r1', Nemotron-Nano uses '--trust-remote-code' etc.
 
 query:
 

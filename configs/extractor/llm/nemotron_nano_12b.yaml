@@ -3,7 +3,7 @@
 # This requires a local deployment of the Qwen3-30B-A3B-Thinking-2507 model that is compatible with the OpenAI API.
 # See models/README.md for instructions.
 #
-# To use as an argument for `predict`, specify `extractor/llm=nvidia_nemotron_nano_12b_v2  --trust-remote-code`
+# To use as an argument for `predict`, specify `extractor/llm=nemotron_nano_12b --trust-remote-code`
 
 _target_: llama_index.llms.openai_like.OpenAILike
 
@@ -23,6 +23,6 @@ is_chat_model: true
 is_function_calling_model: false
 # Supports up to 128K tokens (max size for https://huggingface.co/nvidia/NVIDIA-Nemotron-Nano-12B-v2).
 # Use lower value to save memory
-context_window: 128000
+context_window: 131072
 timeout: 360
 max_retries: 3
