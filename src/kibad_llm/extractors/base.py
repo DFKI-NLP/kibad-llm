@@ -22,28 +22,29 @@ def warn_once(msg: str) -> None:
 
 
 def build_chat_message(
-    document: str,
     message: str,
     role: MessageRole,
-    schema_description_placeholder: str = "schema_description",
+    document: str | None = None,
     document_placeholder: str = "document",
     schema: dict[str, Any] | None = None,
     schema_description_kwargs: dict[str, Any] | None = None,
+    schema_description_placeholder: str = "schema_description",
 ) -> tuple[ChatMessage, dict[str, bool]]:
-    """Build a single chat message by inserting text and schema description.
+    """Build a single chat message by inserting text and schema description
+    if respective placeholders are present in the message template.
 
     Args:
-        document: The document text to process.
         message: The message template.
         role: The role of the message (e.g., system, user).
+        document: The document text to process.
+        document_placeholder: The placeholder in the message template for the input text. If the
+            placeholder is present in the message template, it will be replaced with the input text.
         schema: Optional JSON schema for structured output.
         schema_description_kwargs: Optional kwargs for build_schema_description when generating
             the schema description.
         schema_description_placeholder: The placeholder in the message template for the
             schema description. If the placeholder is present in the message template,
             the schema must be provided and the description will be generated and inserted.
-        document_placeholder: The placeholder in the message template for the input text. If the
-            placeholder is present in the message template, it will be replaced with the input text.
 
     Returns:
         A tuple of ChatMessage and a metadata dictionary indicating whether schema description
@@ -67,6 +68,11 @@ def build_chat_message(
     # Check if input document is needed and insert it.
     message_requires_document = "{" + document_placeholder + "}" in content
     if message_requires_document:
+        if document is None:
+            raise ValueError(
+                f"Document text must be provided if {role.name} message template requires "
+                f"input text (it contains '{{{document_placeholder}}}')."
+            )
         content = content.format(**{document_placeholder: document})
 
     return ChatMessage(role=role, content=content), {
@@ -155,7 +161,7 @@ def build_chat_messages(
             f"(they do not contain '{{{schema_description_placeholder}}}')."
         )
 
-    # Check where the input document was inserted. At least one message must have it (if no history).
+    # Check where the input document was inserted. At least one message must have it (if history is not used).
     if not any(meta["has_document"] for meta in all_metas) and not history:
         raise ValueError(
             "At least one of the message templates must require the input text "
@@ -199,8 +205,8 @@ def extract_from_text(
     is parsed as JSON and validated against the schema if provided.
 
     Args:
-        text: The text to process.
-        text_id: Text identifier for logging and seeding.
+        text: The document text to process.
+        text_id: Document text identifier for logging.
         schema: Optional JSON schema for structured output.
         use_guided_decoding: Whether to use guided decoding.
         guided_decoding_backend: The backend to use for guided decoding.
