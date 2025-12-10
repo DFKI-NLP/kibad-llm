@@ -1,0 +1,4 @@
+# TODO
+
+_target_: kibad_llm.metrics.ErrorCollector
+show_errors: true
