@@ -4,11 +4,7 @@
 # See models/README.md for instructions.
 #
 # To use as an argument for `predict`, specify
-#  `extractor/llm=mistral_small_3_24b --tokenizer_mode mistral --config_format mistral \
-#     --load_format mistral --tool-call-parser mistral \
-#     --enable-auto-tool-choice --limit-mm-per-prompt '{"image":10}' \
-#     --tensor-parallel-size 2`
-# Note: not sure if we need the tool, tensor and image options
+#  `extractor/llm=mistral_small_3_24b --tokenizer_mode mistral --config_format mistral -load_format mistral`
 
 _target_: llama_index.llms.openai_like.OpenAILike
 
@@ -22,12 +18,12 @@ top_p: 1.0
 # presence_penalty and frequency_penalty are also standard if we need them
 
 # the default is None, so we set it to 32768 (recommended for Qwen3_30B).
-# 128K is max size for https://huggingface.co/mistralai/Ministral-3-14B-Reasoning-2512
+# 128K is max size for https://docs.mistral.ai/models/mistral-small-3-2-25-06
 max_tokens: 32768
 # enable to correctly handle (i.e. remove) reasoning traces in the output
 is_chat_model: true
 is_function_calling_model: false
-# Supports up to 256K tokens (max size for https://docs.mistral.ai/models/ministral-3-14b-25-12).
+# Supports up to 128K tokens (max size for https://docs.mistral.ai/models/mistral-small-3-2-25-06).
 # Use lower value to save memory
 context_window: 131072
 timeout: 360
