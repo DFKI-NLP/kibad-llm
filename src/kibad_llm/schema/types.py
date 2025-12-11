@@ -377,6 +377,12 @@ class EcosystemType(CompoundFeature):
         description="Beschreibung des Ökosystemtyps",
     )
 
+class EcosystemTypeSimple(CompoundFeature):
+    """Ökosystemtyp mit Name."""
+
+    term: EcosystemTypeTermEnum | None = Field(
+        default=None, alias="Term", description="Name des Ökosystemtyps"
+    )
 
 class Location(CompoundFeature):
     """Untersuchungsgebiet mit Land, Bundesland und Ort."""
@@ -1181,15 +1187,6 @@ class EcosystemStudyFeaturesImportantOnly(BaseEcosystemStudyFeatures):
         description="Um welchen der folgenden Lebensräume oder um welche Kombination "
         "der folgenden Lebensräume geht es in dem Text?",
     )
-    ecosystem_type: list[EcosystemType] = Field(
-        default_factory=list,
-        alias="Ökosystemtypen",
-        description="Welche Ökosystemtypen werden in der Studie untersucht, sofern diese explizit benannt sind? "
-                    "Finde dafür die im Text genannten Begriffe (EcosystemTypeTerm) für die untersuchten "
-                    "Ökosystemtypen, und bilde diese auf Kategorien (EcosystemTypeCategory) ab. Optional "
-                    "ergänze jeden identifizierten Begriff um eine im Text angegebene nähere Beschreibung bzw."
-                    "Erläuterung.",
-    )
     taxa: list[Taxa] = Field(
         default_factory=list,
         alias="Arten",
@@ -1206,7 +1203,7 @@ class EcosystemStudyFeaturesImportantOnly(BaseEcosystemStudyFeatures):
         alias="Biodiversitätsebene",
         description="Auf welche der folgenden Ebenen wird Biodiversität in der Studie gemessen?",
     )
-    ecosystem_type: list[EcosystemTypeTermEnum] = Field(
+    ecosystem_type: list[EcosystemTypeSimple] = Field(
         default_factory=list,
         alias="Ökosystemtyp",
         description="Wenn es im Text um Meere oder Küsten geht, welche der folgenden Ökosysteme werden betrachtet? "
