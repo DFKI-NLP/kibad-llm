@@ -17,10 +17,9 @@ extractor:
     Der Text ist eine Biodiversitätsstudie oder ein Bericht zum Stand der Biodiversität, und bezieht sich meist 
     auf eine Gegend in Deutschland oder Gesamtdeutschland. Prüfe, ob der Text biodiversitätsbezogene
     wissenschaftliche Erkenntnisse enthält. Analysiere dafür zunächst den Rahmen der Studie / des Berichts: Um welche
-    Lebensräume, Naturgroßräume und Ökosystemtypen geht es? Werden ein oder mehrere Standorte genannt, an denen 
-    Untersuchungen durchgeführt wurden oder über die berichtet wird? Welche Arten oder Artengruppen wurden untersucht?
-    Enthält der Text Angaben zu den physiogeographischen Rahmenbedingungen der Studie angegeben, so wie die 
-    Klimabedingungen, Landnutzung und zum Boden? Sammle diese und weitere Informationen entsprechend dem nachfolgenden
+    Lebensräume und Ökosystemtypen geht es? Welche Arten oder Artengruppen wurden untersucht?
+    Enthält der Text Angaben zur betrachteten Biodiversitätsebene - z.B. Artenvielfalt, genetische Diversität,
+    oder Habitatdiversität? Sammle diese und weitere Informationen entsprechend dem nachfolgenden
     Schema. Wenn die Studie zum Beispiel ein Überblicks-, Positions- oder Reviewpapier ist, und daher manche der 
     abgefragten Informationen fehlen, lasse die entsprechenden Felder in deiner Antwort leer.  
     
@@ -37,6 +36,6 @@ extractor:
     {schema_description}
 
   schema:
-    # create the schema from the pydantic model of EcosystemStudyFeaturesMostImportantReduced
-    _target_: kibad_llm.schema.types.EcosystemStudyFeaturesMostImportantReduced.model_json_schema
+    # create the schema from the pydantic model of EcosystemStudyFeaturesImportantOnly
+    _target_: kibad_llm.schema.types.EcosystemStudyFeaturesImportantOnly.model_json_schema
     by_alias: false

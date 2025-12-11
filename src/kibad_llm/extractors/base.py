@@ -151,7 +151,7 @@ def extract_from_text(
             validator = validator_cls(schema)
             validator.validate(data)
     except json.JSONDecodeError as e:
-        logger.warning(f"Failed to parse JSON output for document {text_id}, JSON = '{response_content[:min(len(response_content), 1500)]}'")
+        logger.warning(f"Failed to parse JSON output for document {text_id}, response_content = '{response_content[:min(len(response_content), 1500)]}'")
         out["error"] = f"JSONDecodeError: {str(e)}"
     except ValidationError as e:
         logger.warning(f"Failed to validate structured output for document {text_id}")
