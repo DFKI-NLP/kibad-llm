@@ -265,7 +265,7 @@ def extract_from_text(
             raise ValueError(
                 "use_guided_decoding is True but no json schema provided for guided decoding"
             )
-        vllm_extras["guided_json"] = schema
+        vllm_extras["structured_outputs"] = {"json": schema}
         if guided_decoding_backend is not None:
             vllm_extras["guided_decoding_backend"] = guided_decoding_backend
 
