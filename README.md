@@ -125,6 +125,20 @@ experiment/predict=faktencheck_two_schemata
 
 See [configs/experiment/predict](./configs/experiment/predict) for available experiment configs.
 
+<details>
+<summary>There are inference options in [configs/predict](./configs/predict.yaml) that may significantly speed up the process. Those are disabled per default because they have the potential to overwhelm the provided hardware.</summary>
+
+**`pdf_reader_num_proc: <integer greater 0>`:**<br>
+Use this to set the number of parallel processes for converting PDF to Markdown.<br>
+Set the variable to a number smaller than the number of available CPU cores to allow other process to run simultaneously.
+This is important for execution on personal machines or Pegasus login nodes!<br>
+On compute nodes it is recommended to set a large value, like 200. It may be larger than the number of available CPU cores or documents to process.
+
+**`extractor_num_proc: <integer greater 0>`:**<br>
+Use this to send more than one simultaneous request to vLLM.
+
+</details>
+
 #### Evaluation
 
 To evaluate the information extraction results against gold reference data, run:
