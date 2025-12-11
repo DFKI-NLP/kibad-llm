@@ -2,6 +2,7 @@
 
 defaults:
   - llm: gpt_oss_20b
+  - extra_body: default
 
 _target_: kibad_llm.extractors.extract_from_text_lenient
 # mark as partial since it is a function (and not a class to be instantiated)
