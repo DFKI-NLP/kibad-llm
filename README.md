@@ -125,8 +125,10 @@ experiment/predict=faktencheck_two_schemata
 
 See [configs/experiment/predict](./configs/experiment/predict) for available experiment configs.
 
+There are inference options in [configs/predict](./configs/predict.yaml) that may significantly speed up the process. Those are disabled per default because they have the potential to overwhelm the provided hardware.
+
 <details>
-<summary>There are inference options in [configs/predict](./configs/predict.yaml) that may significantly speed up the process. Those are disabled per default because they have the potential to overwhelm the provided hardware.</summary>
+<summary>Click for more info.</summary>
 
 **`pdf_reader_num_proc: <integer greater 0>`:**<br>
 Use this to set the number of parallel processes for converting PDF to Markdown.<br>
