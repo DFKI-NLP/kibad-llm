@@ -282,14 +282,12 @@ def extract_from_text(
                     # we need to get resp.raw.choices[0].message.reasoning_content,
                     # but mypy doesn't permit it. so we:
                     # 1: get resp.raw.choices[0]
-                    raw_first_choice = getattr(resp.raw, "choices", "")[0] or None
+                    raw_first_choice = getattr(resp.raw, "choices")[0]
                     # 2: get .message
-                    raw_message = getattr(raw_first_choice, "message", "") or None
+                    raw_message = getattr(raw_first_choice, "message")
                     # 3: get .reasoning_content
-                    out["reasoning_content"] = (
-                        getattr(raw_message, "reasoning_content", "") or None
-                    )
-                except Exception as e:
+                    out["reasoning_content"] = getattr(raw_message, "reasoning_content")
+                except (AttributeError, IndexError) as e:
                     raise ReasoningContentNotFoundError(
                         f"Failed to extract reasoning content: {str(e)}"
                     ) from e
