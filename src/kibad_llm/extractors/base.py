@@ -203,7 +203,7 @@ def extract_from_text(
     text_id: str,
     schema: dict[str, Any] | None = None,
     use_guided_decoding: bool = True,
-    guided_decoding_backend: str | None = "lm-format-enforcer",
+    guided_decoding_backend: str | None = None,
     validate_with_schema: bool = True,
     llm: LLM | None = None,
     return_reasoning: bool = False,
