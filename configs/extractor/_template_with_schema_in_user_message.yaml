@@ -1,6 +1,6 @@
 # Template for conditional extraction with schema. We put the document in the system message
-# and the instructions in the user message since the conditional extractor adds the
-# system message just once and the user message for each schema.
+# and the schema description in the user message since the conditional extractor adds the
+# system message just once but the user message for each schema.
 
 system_message: |
   Lies das folgende Markdown-Dokument sorgfältig durch, damit du die darin enthaltenen

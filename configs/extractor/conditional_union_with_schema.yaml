@@ -5,7 +5,10 @@
 
 defaults:
   - llm: gpt_oss_20b
-  - _template_conditional_with_schema
+  # special template where the document is in the system message and the schema description
+  # is in the user message since the conditional extractor adds the system message just once,
+  # but the user message for each schema.
+  - _template_with_schema_in_user_message
 
 _target_: kibad_llm.extractors.ConditionalUnionExtractor
 return_as_list:  # for these fields, return a list of results from each extraction
