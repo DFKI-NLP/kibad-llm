@@ -1,0 +1,38 @@
+# @package _global_
+
+# This experiment uses a single schema, and thus a single llm query, to extract data for all fields
+# in the Faktencheck database.
+
+# To execute this experiment run:
+# uv run -m kibad_llm.predict experiment=single_schema pdf_directory=path/to/pdf/files
+
+defaults:
+  - override /extractor: simple_with_schema
+
+
+extractor:
+  system_message: |
+    Bitte lies den folgenden Text vollständig. 
+    
+    Der Text ist eine Biodiversitätsstudie oder ein Bericht zum Stand der Biodiversität, und bezieht sich meist 
+    auf eine Gegend in Deutschland oder Gesamtdeutschland. Prüfe, ob der Text biodiversitätsbezogene
+    wissenschaftliche Erkenntnisse enthält. Sammle die Informationen entsprechend dem nachfolgenden
+    Schema. Wenn die Studie zum Beispiel ein Überblicks-, Positions- oder Reviewpapier ist, und daher manche der 
+    abgefragten Informationen fehlen, lasse die entsprechenden Felder in deiner Antwort leer.  
+    
+    Der Text ist als Markdown formatiert.  
+    Gib die Antworten auf Deutsch, auch wenn der Text auf Englisch ist. 
+    Wenn Antwortmöglichkeiten nach einer Frage gegeben sind, wähle nur aus den durch Semikolon getrennten Antwortmöglichkeiten.
+    Extrahiere dabei nur, was auch im Text steht, konzentriere dich daher auf die Informationen, die du sicher 
+    identifizieren und auch belegen kannst. Für nicht im Text vorhandene Informationen lasse die entsprechenden Antwortfelder leer. 
+    Beachte jedoch auch die Angaben zur Kardinalität jedes Feldes.
+    
+    Erzeuge die Antwort in validem JSON-Format (nicht embedded Markdown!). Keine zusätzlichen Felder, keine Erklärungen. 
+    Gib **ausschließlich** gültiges JSON nach dem folgendem Schema zurück.
+    
+    {schema_description}
+
+  schema:
+    # create the schema from the pydantic model of EcosystemStudyFeaturesEcosystemTypeTerm
+    _target_: kibad_llm.schema.types.EcosystemStudyFeaturesEcosystemTypeTerm.model_json_schema
+    by_alias: false
