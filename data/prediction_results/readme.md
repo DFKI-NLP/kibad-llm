@@ -13,3 +13,30 @@ Run details:
 - Basic + compound types
 - Guided decoding
 - Prompt - original, based on schema
+
+
+
+### 2025-12-10_13-36-31 , EcosystemStudyFeaturesMostImportantReduced, gpt-oss-20b
+Run with minimal schema v1 "EcosystemStudyFeaturesMostImportantReduced" 
+(https://github.com/DFKI-NLP/kibad-llm/blob/dacf42551b3eca182c7dd8b34cfd6af8fea252fe/src/kibad_llm/schema/types.py#L1126C7-L1126C49)
+and lengthier prompt instructions: https://github.com/DFKI-NLP/kibad-llm/blob/dacf42551b3eca182c7dd8b34cfd6af8fea252fe/configs/experiment/predict/faktencheck_most_important_schema.yaml
+
+### 2025-12-10_14-48-27 , EcosystemStudyFeaturesMostImportantReduced, qwen3-30b
+Run with minimal schema v1 "EcosystemStudyFeaturesMostImportantReduced" 
+(https://github.com/DFKI-NLP/kibad-llm/blob/dacf42551b3eca182c7dd8b34cfd6af8fea252fe/src/kibad_llm/schema/types.py#L1126C7-L1126C49)
+and lengthier prompt instructions: https://github.com/DFKI-NLP/kibad-llm/blob/dacf42551b3eca182c7dd8b34cfd6af8fea252fe/configs/experiment/predict/faktencheck_most_important_schema.yaml
+
+### 2025-12-11_09-19-30 , EcosystemStudyFeaturesMostImportantReduced, nemotron-nano-12b
+Run with minimal schema v1 "EcosystemStudyFeaturesMostImportantReduced" 
+(https://github.com/DFKI-NLP/kibad-llm/blob/dacf42551b3eca182c7dd8b34cfd6af8fea252fe/src/kibad_llm/schema/types.py#L1126C7-L1126C49)
+and lengthier prompt instructions: https://github.com/DFKI-NLP/kibad-llm/blob/dacf42551b3eca182c7dd8b34cfd6af8fea252fe/configs/experiment/predict/faktencheck_most_important_schema.yaml
+
+### 2025-12-11_09-23-34 , EcosystemStudyFeaturesMostImportantReduced, mistral small 3.2 24b
+Run with minimal schema v1 "EcosystemStudyFeaturesMostImportantReduced" 
+(https://github.com/DFKI-NLP/kibad-llm/blob/dacf42551b3eca182c7dd8b34cfd6af8fea252fe/src/kibad_llm/schema/types.py#L1126C7-L1126C49)
+and lengthier prompt instructions: https://github.com/DFKI-NLP/kibad-llm/blob/dacf42551b3eca182c7dd8b34cfd6af8fea252fe/configs/experiment/predict/faktencheck_most_important_schema.yaml
+
+### 2025-12-11_10-18-31 , EcosystemStudyFeaturesMostImportantReduced, gemma3-27b
+Run with minimal schema v1 "EcosystemStudyFeaturesMostImportantReduced" 
+(https://github.com/DFKI-NLP/kibad-llm/blob/dacf42551b3eca182c7dd8b34cfd6af8fea252fe/src/kibad_llm/schema/types.py#L1126C7-L1126C49)
+and lengthier prompt instructions: https://github.com/DFKI-NLP/kibad-llm/blob/dacf42551b3eca182c7dd8b34cfd6af8fea252fe/configs/experiment/predict/faktencheck_most_important_schema.yaml
