@@ -119,7 +119,7 @@ class UnionExtractor:
 
     This extractor calls the base extraction function multiple times (for each entry in overrides)
     on the same input text and aggregates the structured outputs. The aggregation is done by union
-    for primitive types and list types.
+    for list types and by ensuring consistency for single-value types.
 
     Args:
         overrides: A list of dictionaries containing parameter overrides for each extraction.

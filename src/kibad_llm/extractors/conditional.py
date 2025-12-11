@@ -10,15 +10,8 @@ class ConditionalUnionExtractor(UnionExtractor):
     """Extractor that repeats extraction multiple times with history and aggregates results per key.
     This extractor calls the base extraction function multiple times (for each entry in overrides)
     on the same input text, passing the history of previous messages to each subsequent call.
-    The aggregation is done by union for primitive types and list types.
 
-    Args:
-        overrides: A list of dictionaries containing parameter overrides for each extraction.
-        skip_type_mismatches: If True, skips keys with inconsistent types across extractions
-            instead of raising an error (default: False)
-        return_as_list: List of field names to return as lists of all extracted values
-            (default: None)
-        **kwargs: Additional keyword arguments passed to the base extraction function.
+    See UnionExtractor for accepted parameters and details about the aggregation logic.
     """
 
     def __call__(self, *args, **kwargs) -> dict[str, Any]:
