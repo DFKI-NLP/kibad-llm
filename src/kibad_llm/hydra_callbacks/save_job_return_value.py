@@ -460,10 +460,10 @@ class SaveJobReturnValueCallback(Callback):
                 # Otherwise, we have only one value for each key. We convert the dict to a pandas Series.
                 series = pd.Series(obj_py_flat)
                 # The series has a MultiIndex because flatten_dict() uses a tuple as key.
-                if len(series.index.levels) <= 1:
+                if series.index.nlevels <= 1:
                     # If there is only one level, we just use the first level values as index.
                     series.index = series.index.get_level_values(0)
-                    result = series
+                    result = pd.DataFrame([series])
                 else:
                     # If there are multiple levels, we unstack the series to get a DataFrame
                     # providing a better overview.
