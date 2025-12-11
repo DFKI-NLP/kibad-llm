@@ -64,6 +64,7 @@ def predict(cfg: DictConfig) -> dict[str, Any]:
         function=pdf_reader_wrapped,
         input_columns=["file_name"],
         fn_kwargs={"base_path": data_base_path},
+        num_proc=cfg.pdf_reader_num_proc,
     )
     t_delta_pdf_conversion = time.perf_counter() - t_start_pdf_conversion
 
@@ -79,6 +80,7 @@ def predict(cfg: DictConfig) -> dict[str, Any]:
         function=extractor,
         input_columns=["text", "file_name"],
         load_from_cache_file=cfg.get("extraction_caching", False),
+        num_proc=cfg.extractor_num_proc,
     )
     t_delta_extraction = time.perf_counter() - t_start_extraction
 

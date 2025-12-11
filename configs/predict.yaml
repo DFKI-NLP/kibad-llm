@@ -45,3 +45,7 @@ fast_dev_run: False
 extraction_caching: False
 # set True to enable storing the text in predictions, costs loads of storage
 store_text_in_predictions: False
+# set to a number of cores (int) you want to use for pdf_reader or 100 for all cores
+# https://huggingface.co/docs/datasets/v1.10.0/package_reference/main_classes.html#datasets.Dataset.map
+pdf_reader_num_proc: null
+extractor_num_proc: null
