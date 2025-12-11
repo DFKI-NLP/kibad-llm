@@ -14,6 +14,9 @@ user_message: |
 
   {document}
 
+# This indicates where to insert the schema description and the document text in the system and/or user message.
+# The schema_description_placeholder should be present in a message if a schema is provided.
+# The document_placeholder needs to be present in either the system or user message.
 schema_description_placeholder: schema_description
 document_placeholder: document
 

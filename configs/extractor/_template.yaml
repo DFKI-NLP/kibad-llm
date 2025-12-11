@@ -18,6 +18,8 @@ user_message: |
 
   {document}
 
+# This indicates where to insert the document text in the user (or system) message.
+# The document_placeholder needs to be present in either the system or user message.
 document_placeholder: document
 
 use_guided_decoding: false
