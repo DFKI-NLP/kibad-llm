@@ -1,6 +1,6 @@
 # Additional vLLM parameters
 
-# TODO: remove (not supported by vllm>=0.12.0)
-guided_decoding_backend: "lm-format-enforcer"
 # TODO: check if this makes sense (was originally written by chatgpt)
 top_k: -1
+# not supported by vllm>=0.12.0 anymore:
+# guided_decoding_backend: "lm-format-enforcer"
