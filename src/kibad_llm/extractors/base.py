@@ -203,7 +203,6 @@ def extract_from_text(
     text_id: str,
     schema: dict[str, Any] | None = None,
     use_guided_decoding: bool = True,
-    guided_decoding_backend: str | None = None,
     validate_with_schema: bool = True,
     llm: LLM | None = None,
     extra_body: dict[str, Any] | None = None,
@@ -221,7 +220,6 @@ def extract_from_text(
         text_id: Document text identifier for logging.
         schema: Optional JSON schema for structured output.
         use_guided_decoding: Whether to use guided decoding.
-        guided_decoding_backend: The backend to use for guided decoding.
         validate_with_schema: Whether to validate the output against the provided schema.
             IMPORTANT: Disabling validation may lead to invalid structured outputs and, thus,
             may break result serialization (since we use .map() and .to_json() from datasets).
@@ -268,8 +266,6 @@ def extract_from_text(
                 "use_guided_decoding is True but no json schema provided for guided decoding"
             )
         extra_body["structured_outputs"] = {"json": schema}
-        if guided_decoding_backend is not None:
-            extra_body["guided_decoding_backend"] = guided_decoding_backend
 
     # only proceed if we have an llm
     if llm is not None:
