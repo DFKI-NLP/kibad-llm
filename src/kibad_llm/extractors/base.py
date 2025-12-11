@@ -14,6 +14,12 @@ from kibad_llm.schema.utils import build_schema_description
 logger = logging.getLogger(__name__)
 
 
+class ReasoningContentNotFoundError(Exception):
+    """Raised when the reasoning content is not found in the LLM response."""
+
+    ...
+
+
 class MissingResponseContentError(Exception):
     """Raised when the LLM response message has no content."""
 
@@ -272,14 +278,21 @@ def extract_from_text(
             resp = llm.chat(messages, extra_body=vllm_extras)
 
             if return_reasoning:
-                # we need to get resp.raw.choices[0].message.reasoning_content,
-                # but mypy doesn't permit it. so we:
-                # 1: get resp.raw.choices[0]
-                raw_first_choice = getattr(resp.raw, "choices", "")[0] or None
-                # 2: get .message
-                raw_message = getattr(raw_first_choice, "message", "") or None
-                # 3: get .reasoning_content
-                out["reasoning_content"] = getattr(raw_message, "reasoning_content", "") or None
+                try:
+                    # we need to get resp.raw.choices[0].message.reasoning_content,
+                    # but mypy doesn't permit it. so we:
+                    # 1: get resp.raw.choices[0]
+                    raw_first_choice = getattr(resp.raw, "choices", "")[0] or None
+                    # 2: get .message
+                    raw_message = getattr(raw_first_choice, "message", "") or None
+                    # 3: get .reasoning_content
+                    out["reasoning_content"] = (
+                        getattr(raw_message, "reasoning_content", "") or None
+                    )
+                except Exception as e:
+                    raise ReasoningContentNotFoundError(
+                        f"Failed to extract reasoning content: {str(e)}"
+                    ) from e
 
             response_content = resp.message.content
             if response_content is None:
