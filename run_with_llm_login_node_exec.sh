@@ -74,7 +74,7 @@ srun --partition=$PARTITION \
      --oversubscribe \
      --time=$TIME \
      uvx --cache-dir /netscratch/$USER/cache/uv \
-         vllm@$VLLM_VERSION serve "$VLLM_ARGS" \
+         vllm@$VLLM_VERSION serve $VLLM_ARGS \
              --download-dir=/ds/models/llms/cache \
              --port=$PORT&
 
