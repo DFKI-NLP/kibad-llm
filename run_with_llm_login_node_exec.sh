@@ -5,7 +5,7 @@
 PORT=$(shuf -i 10000-60000 -n 1)  # only ports forwarded through vpn
 PARTITION="RTXA6000-SLT"
 TIME=1-00:00:00
-export VLLM_VERSION="0.11.2"
+export VLLM_VERSION="0.12.0"
 
 # flag processing for setting vars and displaying help
 while [[ "$1" =~ ^- && ! "$1" == "--" ]]; do case $1 in
