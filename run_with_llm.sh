@@ -62,11 +62,9 @@ echo ">>> UV_ARGS $UV_ARGS"
 echo ">>> JOB_NAME $JOB_NAME"
 echo "============================================="
 
-export VLLM_CONFIGURE_LOGGING=0
-
 job(){
     uvx --cache-dir /netscratch/$USER/cache/uv \
-        vllm@$VLLM_VERSION serve $VLLM_ARGS \
+        vllm@$VLLM_VERSION serve "$VLLM_ARGS" --disable-uvicorn-access-log \
             --download-dir=/ds/models/llms/cache \
             --port=$PORT&
 
