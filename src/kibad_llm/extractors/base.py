@@ -32,6 +32,11 @@ class EmptyResponseMessageError(Exception):
     ...
 
 
+def exception2error_msg(e: Exception) -> str:
+    """Convert an exception to a string with its type and message."""
+    return f"{type(e).__name__}: {str(e)}"
+
+
 @lru_cache(maxsize=None)
 def warn_once(msg: str) -> None:
     """Log a warning message only once by caching the function call."""
@@ -307,8 +312,9 @@ def extract_from_text(
             out["structured"] = data
 
         except Exception as e:
-            logger.warning(f"Failed to process document {text_id}: {str(e)}")
-            out["error"] = f"{type(e).__name__}: {str(e)}"
+            error_msg = exception2error_msg(e)
+            logger.warning(f"Failed to process document {text_id}: {error_msg}")
+            out["error"] = error_msg
 
     else:
         warn_once("No LLM provided for extraction, skipping LLM call.")
@@ -333,7 +339,8 @@ def extract_from_text_lenient(text: str, text_id: str, **kwargs) -> dict:
     try:
         return extract_from_text(text=text, text_id=text_id, **kwargs)
     except Exception as e:
-        logger.error(f"Error processing document {text_id}: {e}")
+        error_msg = exception2error_msg(e)
+        logger.error(f"Error processing document {text_id}: {error_msg}")
         # needs to match the output of extract_from_text
         return {
             "response_content": None,
@@ -341,5 +348,5 @@ def extract_from_text_lenient(text: str, text_id: str, **kwargs) -> dict:
             "reasoning_content": None,
             "messages": None,
             "messages_formatted": None,
-            "error": f"{type(e).__name__}: {str(e)}",
+            "error": error_msg,
         }
