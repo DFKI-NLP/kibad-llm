@@ -203,9 +203,9 @@ def extract_from_text(
     text_id: str,
     schema: dict[str, Any] | None = None,
     use_guided_decoding: bool = True,
-    guided_decoding_backend: str | None = "lm-format-enforcer",
     validate_with_schema: bool = True,
     llm: LLM | None = None,
+    extra_body: dict[str, Any] | None = None,
     return_reasoning: bool = False,
     **build_messages_kwargs: Any,
 ) -> dict:
@@ -220,12 +220,13 @@ def extract_from_text(
         text_id: Document text identifier for logging.
         schema: Optional JSON schema for structured output.
         use_guided_decoding: Whether to use guided decoding.
-        guided_decoding_backend: The backend to use for guided decoding.
         validate_with_schema: Whether to validate the output against the provided schema.
             IMPORTANT: Disabling validation may lead to invalid structured outputs and, thus,
             may break result serialization (since we use .map() and .to_json() from datasets).
         llm: The LLM model to use. Must be a chat model (i.e. is_chat_model=True) and support extra_body
             parameters for guided decoding if schema is provided. If None, no LLM call is made.
+        extra_body: Additional parameters to pass to the LLM chat call. If 'seed' is not provided,
+            a seed is derived from the messages and added to extra_body for determinism.
         return_reasoning: Whether to return the reasoning done by the model.
         **build_messages_kwargs: Additional keyword arguments for build_chat_messages.
 
@@ -251,23 +252,20 @@ def extract_from_text(
         **build_messages_kwargs,
     )
 
-    # Determinism knobs (standard args stay top-level; vendor extras go in extra_body)
-    seed_src = str(messages)
-    seed = int(hashlib.sha256(seed_src.encode("utf-8")).hexdigest()[:8], 16)
+    extra_body = extra_body or {}
 
-    vllm_extras: dict[str, Any] = {
-        "seed": seed,
-        "top_k": -1,
-    }  # vendor-specific → extra_body
+    if "seed" not in extra_body:
+        # Determinism knob: derive seed from messages
+        seed_src = str(messages)
+        seed = int(hashlib.sha256(seed_src.encode("utf-8")).hexdigest()[:8], 16)
+        extra_body["seed"] = seed
 
     if use_guided_decoding:
         if schema is None:
             raise ValueError(
                 "use_guided_decoding is True but no json schema provided for guided decoding"
             )
-        vllm_extras["guided_json"] = schema
-        if guided_decoding_backend is not None:
-            vllm_extras["guided_decoding_backend"] = guided_decoding_backend
+        extra_body["structured_outputs"] = {"json": schema}
 
     # only proceed if we have an llm
     if llm is not None:
@@ -275,7 +273,7 @@ def extract_from_text(
         # Parse & validate (schema optional)
         try:
             # Chat call (reasoning kept separate by server; final JSON is in message.content)
-            resp = llm.chat(messages, extra_body=vllm_extras)
+            resp = llm.chat(messages, extra_body=extra_body)
 
             if return_reasoning:
                 try:
