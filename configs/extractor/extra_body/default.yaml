@@ -1,6 +1,7 @@
 # Additional vLLM parameters
+# see https://docs.vllm.ai/en/v0.11.2/api/vllm/sampling_params/#vllm.sampling_params
 
-# TODO: check if this makes sense (was originally written by chatgpt)
-top_k: -1
+# top_k: 100
+
 # not supported by vllm>=0.12.0 anymore:
 # guided_decoding_backend: "lm-format-enforcer"
