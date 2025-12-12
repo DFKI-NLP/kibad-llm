@@ -30,8 +30,10 @@ def evaluate(cfg: DictConfig) -> dict[str, Any]:
     metric: Metric = instantiate(cfg.metric, _convert_="all")
 
     logger.info("Computing metric ...")
-    for _, example in dataset.items():
-        metric.update(example["prediction"], example["reference"])
+    for record_id, example in dataset.items():
+        metric.update(
+            prediction=example["prediction"], reference=example["reference"], record_id=record_id
+        )
     metric_dict = metric.compute()
 
     metric.show_result(metric_dict)

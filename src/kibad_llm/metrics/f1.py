@@ -1,4 +1,5 @@
 from collections import defaultdict
+from collections.abc import Hashable
 from typing import Any
 
 from pandas import DataFrame
@@ -32,19 +33,16 @@ class F1MicroSingleFieldMetric(MetricWithPrepareEntryAsSet):
         """Resets all values of the internal state to zero"""
         self.state: dict[str, int] = {"tp": 0, "fp": 0, "fn": 0}
 
-    def _update(self, prediction: Any, reference: Any) -> None:
+    def _update(self, prediction: Any, reference: Any, record_id: Hashable | None = None) -> None:
         """Updates the internal state with the given prediction(s) and reference(s).
-
-        Args:
-            prediction: Dict of predicted value(s) or predicted values directly
-            prediction: Dict of reference value(s) or reference values directly, to compare to
+        See `_prepare_entry_as_set` for accepted input formats.
         """
-        prediction = self._prepare_entry_as_set(prediction)
-        reference = self._prepare_entry_as_set(reference)
+        prediction_set = self._prepare_entry_as_set(prediction)
+        reference_set = self._prepare_entry_as_set(reference)
 
-        self.state["tp"] += len(prediction & reference)
-        self.state["fp"] += len(prediction - reference)
-        self.state["fn"] += len(reference - prediction)
+        self.state["tp"] += len(prediction_set & reference_set)
+        self.state["fp"] += len(prediction_set - reference_set)
+        self.state["fn"] += len(reference_set - prediction_set)
 
     @staticmethod
     def calculate_scores(state: dict[str, int]) -> dict[str, float]:
