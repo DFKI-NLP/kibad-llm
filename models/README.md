@@ -39,12 +39,12 @@ srun --partition=RTXA6000-SLT \
      --mem-per-cpu=4G \
      --time=0-04:00:00 \
      uvx --cache-dir /netscratch/$USER/cache/uv \
-         vllm@latest serve "openai/gpt-oss-20b" \
+         vllm@0.11.2 serve "openai/gpt-oss-20b" \
              --download-dir=/ds/models/llms/cache \
              --port=18000
 ```
 
-If you need a specific version of vLLM, change `@latest` to `@your.version.here`. [docs](https://docs.astral.sh/uv/guides/tools/#requesting-specific-versions)
+If you need a different version of vLLM, change `@0.11.2` to `@your.version.here` or `@latest`. [docs](https://docs.astral.sh/uv/guides/tools/#requesting-specific-versions)
 
 Note: This may take some time, wait for `Application startup complete.`
 
@@ -172,7 +172,7 @@ In order to use `run_with_llm.sh` you need to have followed the steps in [Full p
 
 - `-v | --vllm` is used for almost all arguments relevant to vLLM. If there are multiple, make sure to wrap them in quotes like `"some/mistral --trust-remote-code"`. This is a required flag.
 
-- `-vv | --vllm-version` is the vLLM version to run. This is an optional flag and uses the latest stable version per default.
+- `-vv | --vllm-version` is the vLLM version to run. This is an optional flag and uses version 0.11.2 per default.
 
 - `-po | --port` is the port vLLM and the uv code communicate on. This is an optional flag and uses a random port per default.
 
