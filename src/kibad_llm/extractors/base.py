@@ -205,7 +205,7 @@ def build_chat_messages(
     return messages
 
 
-def _call_llm_chat(
+def _call_llm_chat_with_guided_decoding(
     llm: LLM,
     messages: list[ChatMessage],
     *,
@@ -302,7 +302,7 @@ def extract_from_text(
         # Parse & validate (schema optional)
         try:
             # LLM chat call
-            resp = _call_llm_chat(
+            resp = _call_llm_chat_with_guided_decoding(
                 llm=llm,
                 messages=messages,
                 json_schema=schema if use_guided_decoding else None,
