@@ -220,6 +220,13 @@ def _call_llm_chat_with_guided_decoding(
             # vllm hosted models require json schema guided decoding via extra_body
             if "extra_body" not in request_kwargs:
                 request_kwargs["extra_body"] = {}
+            if "structured_outputs" in request_kwargs["extra_body"]:
+                warn_once(
+                    f'Overwriting existing "structured_outputs": '
+                    f'{request_kwargs["extra_body"]["structured_outputs"]} '
+                    'in request_parameters["extra_body"] with provided json schema for '
+                    'guided decoding ("structured_outputs": {"json": schema}).'
+                )
             request_kwargs["extra_body"]["structured_outputs"] = {"json": json_schema}
         return llm.chat(messages, **request_kwargs)
 
