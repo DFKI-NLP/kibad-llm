@@ -1,22 +1,49 @@
 from __future__ import annotations
 
+from functools import lru_cache
 import hashlib
 import json
 import logging
 from typing import Any
 
 from jsonschema.validators import validator_for
+from llama_index.core.base.llms.types import ChatResponse
+from llama_index.core.llms import LLM, ChatMessage, MessageRole
+from llama_index.llms.vllm import Vllm
 
-from kibad_llm.llms.base import LLM, MessageRole, SimpleChatMessage
+from kibad_llm.models import OpenAILikeVllm
 from kibad_llm.schema.utils import build_schema_description
-from kibad_llm.utils.log import warn_once
 
 logger = logging.getLogger(__name__)
+
+
+class ReasoningContentNotFoundError(Exception):
+    """Raised when the reasoning content is not found in the LLM response."""
+
+    ...
+
+
+class MissingResponseContentError(Exception):
+    """Raised when the LLM response message has no content."""
+
+    ...
+
+
+class EmptyResponseMessageError(Exception):
+    """Raised when the LLM response message is empty."""
+
+    ...
 
 
 def exception2error_msg(e: Exception) -> str:
     """Convert an exception to a string with its type and message."""
     return f"{type(e).__name__}: {str(e)}"
+
+
+@lru_cache(maxsize=None)
+def warn_once(msg: str) -> None:
+    """Log a warning message only once by caching the function call."""
+    logger.warning(f"{msg} (this message will only be shown once)")
 
 
 def build_chat_message(
@@ -27,7 +54,7 @@ def build_chat_message(
     schema: dict[str, Any] | None = None,
     schema_description_kwargs: dict[str, Any] | None = None,
     schema_description_placeholder: str = "schema_description",
-) -> tuple[SimpleChatMessage, dict[str, bool]]:
+) -> tuple[ChatMessage, dict[str, bool]]:
     """Build a single chat message by inserting text and schema description
     if respective placeholders are present in the message template.
 
@@ -73,7 +100,7 @@ def build_chat_message(
             )
         content = content.format(**{document_placeholder: document})
 
-    return SimpleChatMessage(role=role, content=content), {
+    return ChatMessage(role=role, content=content), {
         "has_schema_description": message_requires_schema_description,
         "has_document": message_requires_document,
     }
@@ -85,13 +112,13 @@ def build_chat_messages(
     schema_description_placeholder: str = "schema_description",
     document_placeholder: str = "document",
     schema: dict[str, Any] | None = None,
-    history: list[SimpleChatMessage] | None = None,
+    history: list[ChatMessage] | None = None,
     return_messages: bool = False,
     return_messages_formatted: bool = False,
     truncate_user_message_formatted: int | None = 300,
     _out: dict[str, Any] | None = None,
     **build_messages_kwargs: Any,
-) -> list[SimpleChatMessage]:
+) -> list[ChatMessage]:
     """Build chat messages for extraction. The document text and schema description may be inserted
     into the message templates, depending on the presence of the respective placeholders.
 
@@ -179,6 +206,49 @@ def build_chat_messages(
     return messages
 
 
+def _call_llm_chat_with_guided_decoding(
+    llm: LLM,
+    messages: list[ChatMessage],
+    *,
+    json_schema: dict[str, Any] | None = None,
+    **request_kwargs,
+) -> ChatResponse:
+    """Call a chat LLM with optional json schema for guided decoding."""
+    request_kwargs = request_kwargs or {}
+
+    if isinstance(llm, OpenAILikeVllm):
+        if json_schema is not None:
+            # vllm hosted models require json schema guided decoding via extra_body
+            if "extra_body" not in request_kwargs:
+                request_kwargs["extra_body"] = {}
+            if "structured_outputs" in request_kwargs["extra_body"]:
+                warn_once(
+                    f'Overwriting existing "structured_outputs": '
+                    f'{request_kwargs["extra_body"]["structured_outputs"]} '
+                    'in request_parameters["extra_body"] with provided json schema for '
+                    'guided decoding ("structured_outputs": {"json": schema}).'
+                )
+            request_kwargs["extra_body"]["structured_outputs"] = {"json": json_schema}
+        return llm.chat(messages, **request_kwargs)
+
+    if isinstance(llm, Vllm):
+        if json_schema is not None:
+            from vllm.sampling_params import StructuredOutputsParams
+
+            # vllm hosted models require json schema guided decoding via structured_outputs of type StructuredOutputParams
+            if "structured_outputs" in request_kwargs:
+                warn_once(
+                    f'Overwriting existing "structured_outputs": {request_kwargs["structured_outputs"]} '
+                    "in request_parameters with provided json schema for guided decoding."
+                )
+            request_kwargs["structured_outputs"] = StructuredOutputsParams(json=json_schema)
+        return llm.chat(messages, **request_kwargs)
+
+    # Add support for other LLM types with guided decoding here as needed.
+
+    raise NotImplementedError(f"_call_llm_chat not implemented for llm of type {type(llm)}")
+
+
 def extract_from_text(
     text: str,
     text_id: str,
@@ -253,16 +323,33 @@ def extract_from_text(
         # Parse & validate (schema optional)
         try:
             # LLM chat call
-            resp = llm.call_llm_chat_with_guided_decoding(
+            resp = _call_llm_chat_with_guided_decoding(
+                llm=llm,
                 messages=messages,
                 json_schema=schema if use_guided_decoding else None,
                 **request_kwargs,
             )
 
             if return_reasoning:
-                out["reasoning_content"] = llm.get_reasoning_from_chat_response(response=resp)
+                try:
+                    # we need to get resp.raw.choices[0].message.reasoning_content,
+                    # but mypy doesn't permit it. so we:
+                    # 1: get resp.raw.choices[0] (may raise AttributeError or IndexError)
+                    raw_first_choice = getattr(resp.raw, "choices")[0]
+                    # 2: get .message (may raise AttributeError)
+                    raw_message = getattr(raw_first_choice, "message")
+                    # 3: get .reasoning_content (may raise AttributeError)
+                    out["reasoning_content"] = getattr(raw_message, "reasoning_content")
+                except (AttributeError, IndexError) as e:
+                    raise ReasoningContentNotFoundError(
+                        f"Failed to extract reasoning content: {str(e)}"
+                    ) from e
 
-            response_content = llm.get_response_content_from_chat_response(response=resp)
+            response_content = resp.message.content
+            if response_content is None:
+                raise MissingResponseContentError("LLM response is missing content.")
+            if not response_content.strip():
+                raise EmptyResponseMessageError("LLM returned an empty message.")
             out["response_content"] = response_content
 
             data = json.loads(response_content)

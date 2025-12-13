@@ -1,0 +1,25 @@
+# gpt_oss_20b_standalone.yaml
+# Local inference via vLLM (no external OpenAI-compatible server).
+
+_target_: llama_index.llms.vllm.Vllm
+
+model: "openai/gpt-oss-20b"
+
+# Sampling defaults (can still override per-call via llm.chat(..., **kwargs))
+temperature: 0.0
+top_p: 1.0
+max_new_tokens: 4096
+
+# Important for your usage (you call llm.chat)
+is_chat_model: true
+
+# Parallelism / execution
+tensor_parallel_size: ${oc.env:TENSOR_PARALLEL_SIZE,1}
+dtype: "auto"
+trust_remote_code: true
+
+# Extra vLLM engine knobs (forwarded to vllm.LLM(...))
+vllm_kwargs:
+  gpu_memory_utilization: ${oc.env:VLLM_GPU_MEMORY_UTILIZATION,0.90}
+  # If you hit context-length issues, set max_model_len explicitly:
+  # max_model_len: ${oc.env:VLLM_MAX_MODEL_LEN,8192}
