@@ -9,8 +9,8 @@ from typing import Any
 from jsonschema.validators import validator_for
 from llama_index.core.base.llms.types import ChatResponse
 from llama_index.core.llms import LLM, ChatMessage, MessageRole
-from llama_index.llms.openai_like import OpenAILike
 
+from kibad_llm.models import OpenAILikeVllm
 from kibad_llm.schema.utils import build_schema_description
 
 logger = logging.getLogger(__name__)
@@ -215,9 +215,9 @@ def _call_llm_chat(
     """Call a chat LLM with optional json schema for guided decoding."""
     request_kwargs = request_kwargs or {}
 
-    if isinstance(llm, OpenAILike):
+    if isinstance(llm, OpenAILikeVllm):
         if json_schema is not None:
-            # json schema guided decoding via extra_body
+            # vllm hosted models require json schema guided decoding via extra_body
             if "extra_body" not in request_kwargs:
                 request_kwargs["extra_body"] = {}
             request_kwargs["extra_body"]["structured_outputs"] = {"json": json_schema}
