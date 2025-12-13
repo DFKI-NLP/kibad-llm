@@ -6,7 +6,7 @@ from typing import Any
 
 import hydra
 from hydra.utils import instantiate
-from omegaconf import DictConfig
+from omegaconf import DictConfig, OmegaConf
 
 from kibad_llm.config import PROJ_ROOT
 from kibad_llm.metric import Metric
@@ -26,7 +26,7 @@ def evaluate(cfg: DictConfig) -> dict[str, Any]:
     dataset = instantiate(cfg.dataset, _convert_="all")
 
     logger.info("Instantiating metric ...")
-    logger.info(f"Metric config: {dict(cfg.metric)}")
+    logger.info(f"Metric config: {OmegaConf.to_container(cfg.metric, resolve=True)}")
     metric: Metric = instantiate(cfg.metric, _convert_="all")
 
     logger.info("Computing metric ...")
