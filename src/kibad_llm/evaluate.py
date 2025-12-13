@@ -23,6 +23,7 @@ def evaluate(cfg: DictConfig) -> dict[str, Any]:
         A dictionary with evaluation results.
     """
     logger.info("Loading dataset with predictions and references ...")
+    logger.info(f"Dataset config: {OmegaConf.to_container(cfg.dataset, resolve=True)}")
     dataset = instantiate(cfg.dataset, _convert_="all")
 
     logger.info("Instantiating metric ...")
