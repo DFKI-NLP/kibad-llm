@@ -3,7 +3,7 @@
 
 defaults:
   - llm: gpt_oss_20b
-  - extra_body: default
+  - request_parameters: default
 
 _target_: kibad_llm.extractors.UnionExtractor
 overrides: ???  # list of extraction workflows to union

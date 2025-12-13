@@ -3,7 +3,7 @@
 
 defaults:
   - llm: gpt_oss_20b
-  - extra_body: default
+  - request_parameters: default
 
 _target_: kibad_llm.extractors.RepeatingExtractor
 n: 3  # number of repetitions
