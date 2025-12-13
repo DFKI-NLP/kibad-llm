@@ -12,7 +12,7 @@ from datasets import Dataset
 import hydra
 from hydra.utils import instantiate
 from llama_index.core import set_global_handler
-from omegaconf import DictConfig
+from omegaconf import DictConfig, OmegaConf
 
 from kibad_llm.config import PROJ_ROOT
 from kibad_llm.utils.datasets import wrap_map_func
@@ -56,7 +56,7 @@ def predict(cfg: DictConfig) -> dict[str, Any]:
         set_global_handler("simple")
 
     logger.info("Converting PDF to markdown ...")
-    logger.info(f"PDF reader config: {dict(cfg.pdf_reader)}")
+    logger.info(f"PDF reader config: {OmegaConf.to_container(cfg.pdf_reader, resolve=True)}")
     pdf_reader = instantiate(cfg.pdf_reader, _convert_="all")
     pdf_reader_wrapped = wrap_map_func(func=pdf_reader, result_key="text")
     t_start_pdf_conversion = time.perf_counter()
@@ -69,7 +69,7 @@ def predict(cfg: DictConfig) -> dict[str, Any]:
     t_delta_pdf_conversion = time.perf_counter() - t_start_pdf_conversion
 
     logger.info("Instantiating Extractor ...")
-    logger.info(f"Extractor config: {dict(cfg.extractor)}")
+    logger.info(f"Extractor config: {OmegaConf.to_container(cfg.extractor, resolve=True)}")
     # The extractor gets the text and file_name as input
     # and should return a json serializable dictionary with the extracted information.
     extractor: Callable[[str, str], dict[str, Any]] = instantiate(cfg.extractor, _convert_="all")
