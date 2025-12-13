@@ -7,8 +7,10 @@ import logging
 from typing import Any
 
 from jsonschema.validators import validator_for
+from llama_index.core.base.llms.types import ChatResponse
 from llama_index.core.llms import LLM, ChatMessage, MessageRole
 
+from kibad_llm.models import OpenAILikeVllm
 from kibad_llm.schema.utils import build_schema_description
 
 logger = logging.getLogger(__name__)
@@ -203,6 +205,36 @@ def build_chat_messages(
     return messages
 
 
+def _call_llm_chat_with_guided_decoding(
+    llm: LLM,
+    messages: list[ChatMessage],
+    *,
+    json_schema: dict[str, Any] | None = None,
+    **request_kwargs,
+) -> ChatResponse:
+    """Call a chat LLM with optional json schema for guided decoding."""
+    request_kwargs = request_kwargs or {}
+
+    if isinstance(llm, OpenAILikeVllm):
+        if json_schema is not None:
+            # vllm hosted models require json schema guided decoding via extra_body
+            if "extra_body" not in request_kwargs:
+                request_kwargs["extra_body"] = {}
+            if "structured_outputs" in request_kwargs["extra_body"]:
+                warn_once(
+                    f'Overwriting existing "structured_outputs": '
+                    f'{request_kwargs["extra_body"]["structured_outputs"]} '
+                    'in request_parameters["extra_body"] with provided json schema for '
+                    'guided decoding ("structured_outputs": {"json": schema}).'
+                )
+            request_kwargs["extra_body"]["structured_outputs"] = {"json": json_schema}
+        return llm.chat(messages, **request_kwargs)
+
+    # Add support for other LLM types with guided decoding here as needed.
+
+    raise NotImplementedError(f"_call_llm_chat not implemented for llm of type {type(llm)}")
+
+
 def extract_from_text(
     text: str,
     text_id: str,
@@ -210,7 +242,7 @@ def extract_from_text(
     use_guided_decoding: bool = True,
     validate_with_schema: bool = True,
     llm: LLM | None = None,
-    extra_body: dict[str, Any] | None = None,
+    request_parameters: dict[str, Any] | None = None,
     return_reasoning: bool = False,
     **build_messages_kwargs: Any,
 ) -> dict:
@@ -230,8 +262,8 @@ def extract_from_text(
             may break result serialization (since we use .map() and .to_json() from datasets).
         llm: The LLM model to use. Must be a chat model (i.e. is_chat_model=True) and support extra_body
             parameters for guided decoding if schema is provided. If None, no LLM call is made.
-        extra_body: Additional parameters to pass to the LLM chat call. If 'seed' is not provided,
-            a seed is derived from the messages and added to extra_body for determinism.
+        request_parameters: Additional parameters to pass to the LLM chat call. If 'seed' is not provided,
+            a seed is derived from the messages and added to request_parameters for determinism.
         return_reasoning: Whether to return the reasoning done by the model.
         **build_messages_kwargs: Additional keyword arguments for build_chat_messages.
 
@@ -257,28 +289,32 @@ def extract_from_text(
         **build_messages_kwargs,
     )
 
-    extra_body = extra_body or {}
+    request_kwargs = request_parameters or {}
 
-    if "seed" not in extra_body:
+    if "seed" not in request_kwargs:
         # Determinism knob: derive seed from messages
         seed_src = str(messages)
         seed = int(hashlib.sha256(seed_src.encode("utf-8")).hexdigest()[:8], 16)
-        extra_body["seed"] = seed
+        request_kwargs["seed"] = seed
 
     if use_guided_decoding:
         if schema is None:
             raise ValueError(
                 "use_guided_decoding is True but no json schema provided for guided decoding"
             )
-        extra_body["structured_outputs"] = {"json": schema}
 
     # only proceed if we have an llm
     if llm is not None:
 
         # Parse & validate (schema optional)
         try:
-            # Chat call (reasoning kept separate by server; final JSON is in message.content)
-            resp = llm.chat(messages, extra_body=extra_body)
+            # LLM chat call
+            resp = _call_llm_chat_with_guided_decoding(
+                llm=llm,
+                messages=messages,
+                json_schema=schema if use_guided_decoding else None,
+                **request_kwargs,
+            )
 
             if return_reasoning:
                 try:
