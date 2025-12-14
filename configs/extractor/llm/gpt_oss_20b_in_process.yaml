@@ -6,6 +6,14 @@ vllm_kwargs:
   tensor_parallel_size: 1
   # max_model_len: 8192  # optional
 
+# TODO: add description for chat_template_kwargs and use a proper example
+# chat_template_kwargs: ...
+# TODO: add description for add_generation_prompt and use a proper example
+# add_generation_prompt: ...
+
 temperature: 0.0
 top_p: 1.0
 max_tokens: 4096
+
+# TODO: finish this description
+# add any other parameters as needed. These will be passed to model.chat(), if
