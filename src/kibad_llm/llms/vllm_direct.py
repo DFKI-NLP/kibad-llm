@@ -9,7 +9,7 @@ from vllm import SamplingParams
 from vllm.entrypoints.harmony_utils import parse_chat_output
 from vllm.sampling_params import StructuredOutputsParams
 
-from kibad_llm.llms.base import LLM
+from kibad_llm.llms.base import LLM, ReasoningExtractionError
 from kibad_llm.utils.log import warn_once
 
 
@@ -84,3 +84,12 @@ class VllmDirect(LLM):
 
         # raw can be Any|None; store the vLLM object or a trimmed dict :contentReference[oaicite:10]{index=10}
         return ChatResponse(message=msg, raw=req_out, additional_kwargs=additional_kwargs)
+
+    @staticmethod
+    def get_reasoning_from_chat_response(response: ChatResponse) -> str:
+        reasoning = response.additional_kwargs.get(
+            "reasoning"
+        ) or response.message.additional_kwargs.get("reasoning")
+        if not reasoning:
+            raise ReasoningExtractionError("No reasoning found in ChatResponse additional_kwargs.")
+        return reasoning
