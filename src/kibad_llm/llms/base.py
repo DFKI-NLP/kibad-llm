@@ -11,7 +11,7 @@ class MissingRawChatResponseError(Exception):
     pass
 
 
-class ChatMessageExtractionError(Exception):
+class RawMessageExtractionError(Exception):
     """Raised when a message cannot be extracted from a ChatResponse raw attribute."""
 
     pass
@@ -54,9 +54,8 @@ class LLM(ABC):
         """Call a chat LLM with optional json schema for guided decoding."""
         ...
 
-    @staticmethod
-    def get_reasoning_from_chat_response(response: ChatResponse) -> str:
-        """Extract reasoning from chat response."""
+    def get_raw_message_from_chat_response(self, response: ChatResponse) -> Any:
+        """Extract raw message from a chat response."""
 
         raw = response.raw
         if raw is None:
@@ -64,19 +63,37 @@ class LLM(ABC):
 
         try:
             msg = raw.choices[0].message
+            return msg
         except (AttributeError, IndexError, TypeError):
-            raise ChatMessageExtractionError(
+            raise RawMessageExtractionError(
                 "Could not extract message from chat response raw attribute."
             )
 
+    def get_reasoning_from_chat_response(self, response: ChatResponse) -> str:
+        """Extract reasoning from a chat response.
+
+        Reasoning may be normalized into `additional_kwargs` by backend wrappers.
+        For OpenAI-like backends, we fall back to provider-specific fields on `response.raw`.
+        """
+
+        # 1) Preferred: normalized location (works for in-process vLLM).
+        reasoning = response.additional_kwargs.get(
+            "reasoning"
+        ) or response.message.additional_kwargs.get("reasoning")
+        if isinstance(reasoning, str) and reasoning.strip():
+            return reasoning
+
+        # 2) Fallback: OpenAI-like raw response shape (choices[0].message.reasoning[_content]).
+        msg = self.get_raw_message_from_chat_response(response)
+
         # vLLM: prefer `reasoning`, fallback to legacy `reasoning_content`
         result = getattr(msg, "reasoning", None) or getattr(msg, "reasoning_content", None)
-        if result is None:
-            raise ReasoningExtractionError("Could not extract reasoning from chat response.")
-        return result
+        if isinstance(result, str) and result.strip():
+            return result
 
-    @staticmethod
-    def get_response_content_from_chat_response(response: ChatResponse) -> str:
+        raise ReasoningExtractionError("Could not extract reasoning from chat response.")
+
+    def get_response_content_from_chat_response(self, response: ChatResponse) -> str:
         """Extract content from chat response."""
 
         response_content = response.message.content
