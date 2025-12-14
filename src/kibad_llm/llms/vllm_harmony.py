@@ -5,7 +5,7 @@ from llama_index.core.base.llms.types import ChatMessage, ChatResponse
 from llama_index.llms.vllm import Vllm as LlamaIndexVllm
 from vllm.sampling_params import StructuredOutputsParams
 
-from kibad_llm.llms.base import LLM
+from kibad_llm.llms.base import LLM, ReasoningExtractionError
 from kibad_llm.utils.log import warn_once
 
 _ANALYSIS_RE = re.compile(r"<\|channel\|>analysis<\|message\|>(.*?)<\|end\|>", re.S)
@@ -57,9 +57,19 @@ class VllmWithHarmonyParsing(LLM):
 
         final, reasoning = split_harmony(content)
 
-        # normalize
-        response.message.content = final
+        # Store reasoning in a place our pipeline can reliably pick up.
         if reasoning is not None:
             response.additional_kwargs["reasoning"] = reasoning
+            # Also mirror on the message object for convenience.
+            response.message.additional_kwargs["reasoning"] = reasoning
 
         return response
+
+    @staticmethod
+    def get_reasoning_from_chat_response(response: ChatResponse) -> str:
+        reasoning = response.additional_kwargs.get(
+            "reasoning"
+        ) or response.message.additional_kwargs.get("reasoning")
+        if not reasoning:
+            raise ReasoningExtractionError("No reasoning found in ChatResponse additional_kwargs.")
+        return reasoning
