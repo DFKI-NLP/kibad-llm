@@ -18,7 +18,7 @@ from vllm.sampling_params import StructuredOutputsParams
 
 from kibad_llm.llms.base import LLM, ReasoningExtractionError, SimpleChatMessage
 
-# vLLM LLM.chat has these kwargs (non-sampling). Everything else we treat as SamplingParams kwargs. :contentReference[oaicite:2]{index=2}
+# vLLM LLM.chat has these kwargs (non-sampling). Everything else we treat as SamplingParams kwargs.
 _VLLM_CHAT_KWARGS = {
     "use_tqdm",
     "lora_request",
@@ -42,10 +42,10 @@ def _chat_message_to_vllm_param(m: SimpleChatMessage) -> ChatCompletionMessagePa
 class VllmDirect(LLM):
     """
     In-process vLLM backend using vllm.LLM.chat() so the model's chat template
-    is applied automatically. :contentReference[oaicite:3]{index=3}
+    is applied automatically.
 
-    Supports guided decoding via StructuredOutputsParams(json=...). :contentReference[oaicite:4]{index=4}
-    Splits Harmony reasoning/final via vLLM's parse_chat_output(token_ids). :contentReference[oaicite:5]{index=5}
+    Supports guided decoding via StructuredOutputsParams(json=...).
+    Splits Harmony reasoning/final via vLLM's parse_chat_output(token_ids).
     """
 
     def __init__(
