@@ -8,10 +8,10 @@ model: "openai/gpt-oss-20b"
 # Sampling defaults (can still override per-call via llm.chat(..., **kwargs))
 temperature: 0.0
 top_p: 1.0
-max_new_tokens: 4096
+# max_new_tokens: 4096
 
 # Important for your usage (you call llm.chat)
-is_chat_model: true
+# is_chat_model: true
 
 # Parallelism / execution
 #tensor_parallel_size: ${oc.env:TENSOR_PARALLEL_SIZE,1}
