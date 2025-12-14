@@ -16,7 +16,7 @@ from vllm.entrypoints.chat_utils import (
 from vllm.entrypoints.harmony_utils import parse_chat_output
 from vllm.sampling_params import StructuredOutputsParams
 
-from kibad_llm.llms.base import LLM, ReasoningExtractionError, SimpleChatMessage
+from kibad_llm.llms.base import LLM, SimpleChatMessage
 
 # vLLM LLM.chat has these kwargs (non-sampling). Everything else we treat as SamplingParams kwargs.
 _VLLM_CHAT_KWARGS = {
