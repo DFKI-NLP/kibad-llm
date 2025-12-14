@@ -6,9 +6,8 @@ import logging
 from typing import Any
 
 from jsonschema.validators import validator_for
-from llama_index.core.llms import ChatMessage, MessageRole
 
-from kibad_llm.llms.base import LLM
+from kibad_llm.llms.base import LLM, MessageRole, SimpleChatMessage
 from kibad_llm.schema.utils import build_schema_description
 from kibad_llm.utils.log import warn_once
 
@@ -28,7 +27,7 @@ def build_chat_message(
     schema: dict[str, Any] | None = None,
     schema_description_kwargs: dict[str, Any] | None = None,
     schema_description_placeholder: str = "schema_description",
-) -> tuple[ChatMessage, dict[str, bool]]:
+) -> tuple[SimpleChatMessage, dict[str, bool]]:
     """Build a single chat message by inserting text and schema description
     if respective placeholders are present in the message template.
 
@@ -74,7 +73,7 @@ def build_chat_message(
             )
         content = content.format(**{document_placeholder: document})
 
-    return ChatMessage(role=role, content=content), {
+    return SimpleChatMessage(role=role, content=content), {
         "has_schema_description": message_requires_schema_description,
         "has_document": message_requires_document,
     }
@@ -86,13 +85,13 @@ def build_chat_messages(
     schema_description_placeholder: str = "schema_description",
     document_placeholder: str = "document",
     schema: dict[str, Any] | None = None,
-    history: list[ChatMessage] | None = None,
+    history: list[SimpleChatMessage] | None = None,
     return_messages: bool = False,
     return_messages_formatted: bool = False,
     truncate_user_message_formatted: int | None = 300,
     _out: dict[str, Any] | None = None,
     **build_messages_kwargs: Any,
-) -> list[ChatMessage]:
+) -> list[SimpleChatMessage]:
     """Build chat messages for extraction. The document text and schema description may be inserted
     into the message templates, depending on the presence of the respective placeholders.
 

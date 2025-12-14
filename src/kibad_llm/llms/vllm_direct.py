@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from typing import Any, cast
+from typing import Any
 
 from llama_index.core.base.llms.types import (
-    ChatMessage,
     ChatResponse,
     MessageRole,
 )
+from llama_index.core.llms import ChatMessage as LlamaIndexChatMessage
 from vllm import LLM as VllmLLM
 from vllm import SamplingParams
 from vllm.entrypoints.chat_utils import (
@@ -16,7 +16,7 @@ from vllm.entrypoints.chat_utils import (
 from vllm.entrypoints.harmony_utils import parse_chat_output
 from vllm.sampling_params import StructuredOutputsParams
 
-from kibad_llm.llms.base import LLM, ReasoningExtractionError
+from kibad_llm.llms.base import LLM, ReasoningExtractionError, SimpleChatMessage
 
 # vLLM LLM.chat has these kwargs (non-sampling). Everything else we treat as SamplingParams kwargs. :contentReference[oaicite:2]{index=2}
 _VLLM_CHAT_KWARGS = {
@@ -32,35 +32,11 @@ _VLLM_CHAT_KWARGS = {
 }
 
 
-def _lama_index_chat_message_to_vllm_param(m: ChatMessage) -> ChatCompletionMessageParam:
-    # LlamaIndex roles are usually enums with a `.value` like "system"/"user"/"assistant".
+def _chat_message_to_vllm_param(m: SimpleChatMessage) -> ChatCompletionMessageParam:
     role_any = getattr(m.role, "value", m.role)
     role = str(role_any)
-
-    content_obj = m.content
-    if content_obj is None:
-        content = ""
-    elif isinstance(content_obj, str):
-        content = content_obj
-    elif isinstance(content_obj, list):
-        # LlamaIndex sometimes stores content blocks; join any `.text` fields.
-        parts: list[str] = []
-        for b in content_obj:
-            t = getattr(b, "text", None)
-            parts.append(t if isinstance(t, str) else str(b))
-        content = "".join(parts)
-    else:
-        content = str(content_obj)
-
-    msg: CustomChatCompletionMessageParam = {"role": role, "content": content}
-
-    # Optional: propagate an OpenAI-style `name` if you use it
-    name = m.additional_kwargs.get("name") if hasattr(m, "additional_kwargs") else None
-    if isinstance(name, str) and name:
-        msg["name"] = name
-
-    # CustomChatCompletionMessageParam is part of the union accepted by vLLM.
-    return cast(ChatCompletionMessageParam, msg)
+    msg: CustomChatCompletionMessageParam = {"role": role, "content": m.content}
+    return msg
 
 
 class VllmDirect(LLM):
@@ -102,15 +78,15 @@ class VllmDirect(LLM):
 
     def call_llm_chat_with_guided_decoding(
         self,
-        messages: list[ChatMessage],
+        messages: list[SimpleChatMessage],
         *,
         json_schema: dict[str, Any] | None = None,
         **request_kwargs: Any,
     ) -> ChatResponse:
 
-        # Convert LlamaIndex messages -> vLLM chat messages format
-        # Each message is a dict with role + content. :contentReference[oaicite:6]{index=6}
-        convo = [_lama_index_chat_message_to_vllm_param(m) for m in messages]
+        # Convert simple messages -> vLLM chat messages format
+        # Each message is a dict with role + content.
+        convo = [_chat_message_to_vllm_param(m) for m in messages]
 
         # Split kwargs into (a) SamplingParams kwargs and (b) vLLM chat() kwargs
         sampling_kwargs = dict(self._default_sampling)
@@ -125,21 +101,21 @@ class VllmDirect(LLM):
             if k in _VLLM_CHAT_KWARGS:
                 chat_kwargs[k] = sampling_kwargs.pop(k)
 
-        # Guided decoding via structured_outputs in SamplingParams. :contentReference[oaicite:7]{index=7}
+        # Guided decoding via structured_outputs in SamplingParams.
         if json_schema is not None:
             sampling_kwargs["structured_outputs"] = StructuredOutputsParams(json=json_schema)
 
         sampling_params = SamplingParams(**sampling_kwargs)
 
-        # vLLM returns list[RequestOutput] in the same order as inputs. :contentReference[oaicite:8]{index=8}
+        # vLLM returns list[RequestOutput] in the same order as inputs.
         req_out = self._llm.chat(convo, sampling_params=sampling_params, **chat_kwargs)[0]
         comp_out = req_out.outputs[0]  # CompletionOutput: .text, .token_ids
 
-        # Split Harmony into reasoning + final (final is what you want to JSON-parse). :contentReference[oaicite:9]{index=9}
+        # Split Harmony into reasoning + final (final is what you want to JSON-parse).
         reasoning, final, _is_tool_call = parse_chat_output(comp_out.token_ids)
         content = final if final is not None else comp_out.text
 
-        msg = ChatMessage(role=MessageRole.ASSISTANT, content=content)
+        msg = LlamaIndexChatMessage(role=MessageRole.ASSISTANT, content=content)
 
         additional_kwargs: dict[str, Any] = {}
         if reasoning is not None:

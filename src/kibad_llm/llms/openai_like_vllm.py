@@ -1,9 +1,10 @@
 from typing import Any
 
-from llama_index.core.base.llms.types import ChatMessage, ChatResponse
+from llama_index.core.base.llms.types import ChatResponse
+from llama_index.core.llms import ChatMessage as LlamaIndexChatMessage
 from llama_index.llms.openai_like import OpenAILike
 
-from kibad_llm.llms.base import LLM
+from kibad_llm.llms.base import LLM, SimpleChatMessage
 from kibad_llm.utils.log import warn_once
 
 
@@ -15,7 +16,7 @@ class OpenAILikeVllm(LLM):
 
     def call_llm_chat_with_guided_decoding(
         self,
-        messages: list[ChatMessage],
+        messages: list[SimpleChatMessage],
         *,
         json_schema: dict[str, Any] | None = None,
         **request_kwargs,
@@ -32,4 +33,8 @@ class OpenAILikeVllm(LLM):
                     'guided decoding ("structured_outputs": {"json": schema}).'
                 )
             request_kwargs["extra_body"]["structured_outputs"] = {"json": json_schema}
-        return self.model.chat(messages, **request_kwargs)
+
+        llama_index_messages = [
+            LlamaIndexChatMessage(role=msg.role, content=msg.content) for msg in messages
+        ]
+        return self.model.chat(llama_index_messages, **request_kwargs)

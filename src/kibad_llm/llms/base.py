@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
+import dataclasses
 from typing import Any
 
-from llama_index.core.base.llms.types import ChatMessage, ChatResponse
+from llama_index.core.base.llms.types import ChatResponse, MessageRole
 
 
 class MissingRawChatResponseError(Exception):
@@ -34,12 +35,18 @@ class ReasoningExtractionError(Exception):
     ...
 
 
+@dataclasses.dataclass
+class SimpleChatMessage:
+    role: MessageRole
+    content: str
+
+
 class LLM(ABC):
 
     @abstractmethod
     def call_llm_chat_with_guided_decoding(
         self,
-        messages: list[ChatMessage],
+        messages: list[SimpleChatMessage],
         *,
         json_schema: dict[str, Any] | None = None,
         **request_kwargs,
