@@ -1,44 +1,103 @@
 from __future__ import annotations
 
-from collections.abc import Callable
-from typing import Any
+from typing import Any, cast
 
-from llama_index.core.base.llms.types import ChatMessage, ChatResponse, MessageRole
+from llama_index.core.base.llms.types import (
+    ChatMessage,
+    ChatResponse,
+    MessageRole,
+)
 from vllm import LLM as VllmLLM
 from vllm import SamplingParams
+from vllm.entrypoints.chat_utils import (
+    ChatCompletionMessageParam,
+    CustomChatCompletionMessageParam,
+)
 from vllm.entrypoints.harmony_utils import parse_chat_output
 from vllm.sampling_params import StructuredOutputsParams
 
 from kibad_llm.llms.base import LLM, ReasoningExtractionError
-from kibad_llm.utils.log import warn_once
+
+# vLLM LLM.chat has these kwargs (non-sampling). Everything else we treat as SamplingParams kwargs. :contentReference[oaicite:2]{index=2}
+_VLLM_CHAT_KWARGS = {
+    "use_tqdm",
+    "lora_request",
+    "chat_template",
+    "chat_template_content_format",
+    "add_generation_prompt",
+    "continue_final_message",
+    "tools",
+    "chat_template_kwargs",
+    "mm_processor_kwargs",
+}
 
 
-def default_messages_to_prompt(messages: list[ChatMessage]) -> str:
-    # For GPT-OSS you may want to replace this with the model's real chat template.
-    # LlamaIndex's ChatMessage.__str__ is "role: content". :contentReference[oaicite:6]{index=6}
-    return "\n".join(str(m) for m in messages)
+def _lama_index_chat_message_to_vllm_param(m: ChatMessage) -> ChatCompletionMessageParam:
+    # LlamaIndex roles are usually enums with a `.value` like "system"/"user"/"assistant".
+    role_any = getattr(m.role, "value", m.role)
+    role = str(role_any)
+
+    content_obj = m.content
+    if content_obj is None:
+        content = ""
+    elif isinstance(content_obj, str):
+        content = content_obj
+    elif isinstance(content_obj, list):
+        # LlamaIndex sometimes stores content blocks; join any `.text` fields.
+        parts: list[str] = []
+        for b in content_obj:
+            t = getattr(b, "text", None)
+            parts.append(t if isinstance(t, str) else str(b))
+        content = "".join(parts)
+    else:
+        content = str(content_obj)
+
+    msg: CustomChatCompletionMessageParam = {"role": role, "content": content}
+
+    # Optional: propagate an OpenAI-style `name` if you use it
+    name = m.additional_kwargs.get("name") if hasattr(m, "additional_kwargs") else None
+    if isinstance(name, str) and name:
+        msg["name"] = name
+
+    # CustomChatCompletionMessageParam is part of the union accepted by vLLM.
+    return cast(ChatCompletionMessageParam, msg)
 
 
 class VllmDirect(LLM):
+    """
+    In-process vLLM backend using vllm.LLM.chat() so the model's chat template
+    is applied automatically. :contentReference[oaicite:3]{index=3}
+
+    Supports guided decoding via StructuredOutputsParams(json=...). :contentReference[oaicite:4]{index=4}
+    Splits Harmony reasoning/final via vLLM's parse_chat_output(token_ids). :contentReference[oaicite:5]{index=5}
+    """
+
     def __init__(
         self,
         *,
         model: str,
         vllm_kwargs: dict[str, Any] | None = None,
-        messages_to_prompt: Callable[[list[ChatMessage]], str] | None = None,
-        # default sampling kwargs:
+        # default sampling
         temperature: float = 0.0,
         top_p: float = 1.0,
         max_tokens: int = 4096,
-        **extra_sampling_kwargs: Any,
+        # optional defaults for chat templating
+        chat_template_kwargs: dict[str, Any] | None = None,
+        add_generation_prompt: bool = True,
+        **extra_default_sampling_kwargs: Any,
     ) -> None:
+
         self._llm = VllmLLM(model=model, **(vllm_kwargs or {}))
-        self._messages_to_prompt = messages_to_prompt or default_messages_to_prompt
-        self._default_sampling = {
+        self._default_sampling: dict[str, Any] = {
             "temperature": temperature,
             "top_p": top_p,
             "max_tokens": max_tokens,
-            **extra_sampling_kwargs,
+            **extra_default_sampling_kwargs,
+        }
+        self._default_chat_kwargs: dict[str, Any] = {
+            "chat_template_kwargs": chat_template_kwargs,
+            "add_generation_prompt": add_generation_prompt,
+            "use_tqdm": False,
         }
 
     def call_llm_chat_with_guided_decoding(
@@ -48,41 +107,45 @@ class VllmDirect(LLM):
         json_schema: dict[str, Any] | None = None,
         **request_kwargs: Any,
     ) -> ChatResponse:
-        prompt = self._messages_to_prompt(messages)
 
+        # Convert LlamaIndex messages -> vLLM chat messages format
+        # Each message is a dict with role + content. :contentReference[oaicite:6]{index=6}
+        convo = [_lama_index_chat_message_to_vllm_param(m) for m in messages]
+
+        # Split kwargs into (a) SamplingParams kwargs and (b) vLLM chat() kwargs
         sampling_kwargs = dict(self._default_sampling)
         sampling_kwargs.update(request_kwargs)
 
+        # alias: some callers use max_new_tokens
+        if "max_new_tokens" in sampling_kwargs and "max_tokens" not in sampling_kwargs:
+            sampling_kwargs["max_tokens"] = sampling_kwargs.pop("max_new_tokens")
+
+        chat_kwargs = dict(self._default_chat_kwargs)
+        for k in list(sampling_kwargs.keys()):
+            if k in _VLLM_CHAT_KWARGS:
+                chat_kwargs[k] = sampling_kwargs.pop(k)
+
+        # Guided decoding via structured_outputs in SamplingParams. :contentReference[oaicite:7]{index=7}
         if json_schema is not None:
-            if "structured_outputs" in sampling_kwargs:
-                warn_once(
-                    f'Overwriting existing "structured_outputs": {sampling_kwargs["structured_outputs"]} '
-                    "with provided json schema."
-                )
             sampling_kwargs["structured_outputs"] = StructuredOutputsParams(json=json_schema)
 
         sampling_params = SamplingParams(**sampling_kwargs)
-        req_out = self._llm.generate([prompt], sampling_params)[0]
-        comp_out = req_out.outputs[
-            0
-        ]  # CompletionOutput has .text and .token_ids :contentReference[oaicite:7]{index=7}
 
-        reasoning, final, _is_tool_call = parse_chat_output(
-            comp_out.token_ids
-        )  # :contentReference[oaicite:8]{index=8}
-        text = final if final is not None else comp_out.text
+        # vLLM returns list[RequestOutput] in the same order as inputs. :contentReference[oaicite:8]{index=8}
+        req_out = self._llm.chat(convo, sampling_params=sampling_params, **chat_kwargs)[0]
+        comp_out = req_out.outputs[0]  # CompletionOutput: .text, .token_ids
 
-        msg = ChatMessage(
-            role=MessageRole.ASSISTANT, content=text
-        )  # content -> TextBlock :contentReference[oaicite:9]{index=9}
+        # Split Harmony into reasoning + final (final is what you want to JSON-parse). :contentReference[oaicite:9]{index=9}
+        reasoning, final, _is_tool_call = parse_chat_output(comp_out.token_ids)
+        content = final if final is not None else comp_out.text
+
+        msg = ChatMessage(role=MessageRole.ASSISTANT, content=content)
 
         additional_kwargs: dict[str, Any] = {}
         if reasoning is not None:
-            # put it where your pipeline can find it
-            msg.additional_kwargs["reasoning"] = reasoning
             additional_kwargs["reasoning"] = reasoning
+            msg.additional_kwargs["reasoning"] = reasoning
 
-        # raw can be Any|None; store the vLLM object or a trimmed dict :contentReference[oaicite:10]{index=10}
         return ChatResponse(message=msg, raw=req_out, additional_kwargs=additional_kwargs)
 
     @staticmethod
