@@ -80,6 +80,8 @@ def predict(cfg: DictConfig) -> dict[str, Any]:
         function=extractor,
         input_columns=["text", "file_name"],
         load_from_cache_file=cfg.get("extraction_caching", False),
+        # prevent hashing based on the extractor code/content if caching is disabled
+        new_fingerprint="dummy" if not cfg.get("extraction_caching", False) else None,
         num_proc=cfg.extractor_num_proc,
     )
     t_delta_extraction = time.perf_counter() - t_start_extraction
