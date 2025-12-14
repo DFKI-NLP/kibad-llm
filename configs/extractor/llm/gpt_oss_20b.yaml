@@ -3,7 +3,7 @@
 # This requires a local deployment of the GPT-OSS-20B model that is compatible with the OpenAI API.
 # See models/README.md for instructions.
 
-_target_: kibad_llm.models.OpenAILikeVllm
+_target_: kibad_llm.llms.OpenAILikeVllm
 
 # get the API base URL from the environment variable LLM_API_BASE, defaulting to http://127.0.0.1:5001/v1
 api_base: ${oc.env:LLM_API_BASE,http://127.0.0.1:5001/v1}
