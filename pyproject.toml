@@ -26,6 +26,7 @@ dependencies = [
     "llama-index-llms-openai-like>=0.5.3", # for LLM (gpt-oss) integration
     "jsonschema>=4.25.1", # for structured output schema validation
     "types-jsonschema>=4.25.1.20251009",
+    "vllm==0.11.2", # for vLLM-in-process LLM integration
     # utils & other
     "tqdm>=4.67.1",
     "types-tqdm>=4.67.0.20250809",
@@ -38,8 +39,6 @@ dependencies = [
     "datasets<4.0.0",
     "pdfplumber>=0.11.7",
     "tabulate>=0.9.0", # to create markdown from pandas dataframes (e.g., in SaveJobReturnValueCallback)
-    "llama-index-llms-vllm>=0.6.1",
-    "vllm==0.11.2",
 ]
 
 [dependency-groups]
