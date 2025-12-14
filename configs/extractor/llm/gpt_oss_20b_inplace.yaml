@@ -1,7 +1,7 @@
 # gpt_oss_20b_standalone.yaml
 # Local inference via vLLM (no external OpenAI-compatible server).
 
-_target_: kibad_llm.llms.VllmWithHarmonyParsing
+_target_: kibad_llm.llms.VllmDirect
 
 model: "openai/gpt-oss-20b"
 
