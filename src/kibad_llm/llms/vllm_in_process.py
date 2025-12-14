@@ -39,7 +39,7 @@ def _chat_message_to_vllm_param(m: SimpleChatMessage) -> ChatCompletionMessagePa
     return msg
 
 
-class VllmDirect(LLM):
+class VllmInProcess(LLM):
     """
     In-process vLLM backend using vllm.LLM.chat() so the model's chat template
     is applied automatically.

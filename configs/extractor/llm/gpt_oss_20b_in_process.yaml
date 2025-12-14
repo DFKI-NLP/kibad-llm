@@ -1,5 +1,4 @@
-# gpt_oss_20b_inprocess_vllm.yaml
-_target_: kibad_llm.llms.vllm_direct.VllmDirect
+_target_: kibad_llm.llms.VllmInProcess
 
 model: "openai/gpt-oss-20b"
 
