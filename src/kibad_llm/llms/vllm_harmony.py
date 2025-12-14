@@ -3,51 +3,48 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import Any
 
-from llama_index.core.base.llms.types import ChatMessage, ChatResponse
+from llama_index.core.base.llms.generic_utils import (
+    completion_response_to_chat_response,
+)
+from llama_index.core.base.llms.types import (
+    ChatMessage,
+    ChatResponse,
+    CompletionResponse,
+)
 from llama_index.llms.vllm import Vllm as LlamaIndexVllm
-from vllm.entrypoints.harmony_utils import parse_chat_output  # vllm v0.11.x
 from vllm.sampling_params import StructuredOutputsParams
 
-from kibad_llm.llms.base import (
-    LLM,
-    ChatMessageExtractionError,
-    MissingRawChatResponseError,
-    ReasoningExtractionError,
-)
+from kibad_llm.llms.base import LLM, ReasoningExtractionError
 from kibad_llm.utils.log import warn_once
 
-# use this import for v0.12.x of vLLM:
-# from vllm.entrypoints.openai.parser.harmony_utils import parse_chat_output
+
+def _parse_chat_output(token_ids: Sequence[int]) -> tuple[str | None, str | None, bool]:
+    # vLLM 0.11.2 location
+    from vllm.entrypoints.harmony_utils import parse_chat_output
+
+    return parse_chat_output(token_ids)
 
 
-def _extract_generated_token_ids(raw: Any) -> Sequence[int]:
-    """
-    LlamaIndex's Vllm wrapper typically stores a vLLM RequestOutput (or a list of them)
-    in ChatResponse.raw. We want raw.outputs[0].token_ids (generated output tokens).
-    """
-    if raw is None:
-        raise MissingRawChatResponseError("ChatResponse is missing raw attribute.")
+class _LlamaIndexVllmWithRaw(LlamaIndexVllm):
+    """Same as LlamaIndex Vllm, but keeps vLLM RequestOutput in CompletionResponse.raw."""
 
-    # Some wrappers return a list[RequestOutput]
-    if isinstance(raw, list):
-        if not raw:
-            raise ChatMessageExtractionError("ChatResponse.raw is an empty list.")
-        raw0 = raw[0]
-    else:
-        raw0 = raw
+    def complete(self, prompt: str, formatted: bool = False, **kwargs: Any) -> CompletionResponse:
+        kwargs = kwargs if kwargs else {}
+        params = {**self._model_kwargs, **kwargs}
 
-    try:
-        # vLLM RequestOutput -> list[CompletionOutput] in .outputs
-        return raw0.outputs[0].token_ids
-    except Exception as e:
-        raise ChatMessageExtractionError(
-            f"Could not extract token_ids from ChatResponse.raw: {e!r}"
-        ) from e
+        from vllm import SamplingParams
+
+        sampling_params = SamplingParams(**params)
+        outputs = self._client.generate([prompt], sampling_params)
+
+        req_out = outputs[0]  # vLLM RequestOutput
+        comp_out = req_out.outputs[0]  # vLLM CompletionOutput
+        return CompletionResponse(text=comp_out.text, raw=req_out)
 
 
 class VllmWithHarmonyParsing(LLM):
     def __init__(self, *args, **kwargs) -> None:
-        self.model = LlamaIndexVllm(*args, **kwargs)
+        self.model = _LlamaIndexVllmWithRaw(*args, **kwargs)
 
     def call_llm_chat_with_guided_decoding(
         self,
@@ -64,17 +61,18 @@ class VllmWithHarmonyParsing(LLM):
                 )
             request_kwargs["structured_outputs"] = StructuredOutputsParams(json=json_schema)
 
-        response = self.model.chat(messages, **request_kwargs)
+        # Use the normal LlamaIndex path, but now complete() preserves raw.
+        prompt = self.model.messages_to_prompt(messages)
+        completion = self.model.complete(prompt, **request_kwargs)
+        response = completion_response_to_chat_response(completion)
 
-        # --- Harmony split using vLLM's own parser (token-based, robust) ---
-        token_ids = _extract_generated_token_ids(response.raw)
-        reasoning, final, _is_tool_call = parse_chat_output(token_ids)
+        # Harmony split using vLLM's own parser (token-based)
+        req_out = response.raw  # vLLM RequestOutput
+        token_ids = req_out.outputs[0].token_ids
+        reasoning, final, _is_tool_call = _parse_chat_output(token_ids)
 
-        # Normalize: put ONLY final into message.content (so json.loads works),
-        # stash reasoning in additional_kwargs (your extractor can read it from there).
         if final is not None:
             response.message.content = final
-
         if reasoning is not None:
             response.additional_kwargs["reasoning"] = reasoning
 
