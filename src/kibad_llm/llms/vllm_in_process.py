@@ -63,10 +63,6 @@ class VllmInProcess(LLM):
 
         sampling_kwargs = {**self._default_sampling_kwargs, **request_kwargs}
 
-        # alias: some callers use max_new_tokens
-        if "max_new_tokens" in sampling_kwargs and "max_tokens" not in sampling_kwargs:
-            sampling_kwargs["max_tokens"] = sampling_kwargs.pop("max_new_tokens")
-
         # pull out vLLM chat() kwargs; everything else goes into SamplingParams
         chat_kwargs: dict[str, Any] = {"use_tqdm": False}
         for k in list(sampling_kwargs.keys()):
