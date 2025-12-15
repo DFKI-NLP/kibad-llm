@@ -77,16 +77,9 @@ class LLM(ABC):
 
     def get_reasoning_from_chat_response(self, response: ChatResponse) -> str:
         """Extract reasoning from a chat response."""
-
-        # OpenAI-like raw response shape (choices[0].message.reasoning[_content]).
-        msg = self.get_raw_message_from_chat_response(response)
-
-        # vLLM: prefer `reasoning`, fallback to legacy `reasoning_content`
-        result = getattr(msg, "reasoning", None) or getattr(msg, "reasoning_content", None)
-        if isinstance(result, str) and result.strip():
-            return result
-
-        raise ReasoningExtractionError("Could not extract reasoning from chat response.")
+        raise NotImplementedError(
+            f"get_reasoning_from_chat_response() is not implemented for {type(self)}"
+        )
 
     def get_response_content_from_chat_response(self, response: ChatResponse) -> str:
         """Extract content from chat response."""
