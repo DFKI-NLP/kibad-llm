@@ -25,7 +25,7 @@ is_chat_model: true
 
 reasoning_options:
   # effort: low
-  summary: auto  # required to get the reasoning_content
+  summary: auto  # summary is required to get the reasoning_content
 
 # Add additional parameters to OpenAI request body.
 # additional_kwargs:

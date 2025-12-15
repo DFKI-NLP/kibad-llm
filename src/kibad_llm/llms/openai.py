@@ -1,7 +1,7 @@
 import re
 from typing import Any
 
-from llama_index.core.base.llms.types import ChatResponse
+from llama_index.core.base.llms.types import ChatResponse, ThinkingBlock
 from llama_index.core.llms import ChatMessage as LlamaIndexChatMessage
 from llama_index.llms.openai import OpenAIResponses
 
@@ -154,24 +154,16 @@ class OpenAI(LLM):
     def get_reasoning_from_chat_response(self, response: ChatResponse) -> str:
         """Return the OpenAI Responses API reasoning *summary* (not raw CoT)."""
 
-        raw = getattr(response, "raw", None)
-        output = getattr(raw, "output", None) or []
-        for item in output:
-            if getattr(item, "type", None) == "reasoning":
-                summary = getattr(item, "summary", None) or []
-                texts = [getattr(s, "text", "") for s in summary if getattr(s, "text", None)]
-                result = "\n".join(t.strip() for t in texts if t and t.strip()).strip()
-                if result:
-                    return result
-
-        ro = getattr(self.model, "reasoning_options", None) or {}
-        if not (isinstance(ro, dict) and ro.get("summary")):
+        thinking_block_contents = [
+            block.content
+            for block in response.message.blocks
+            if isinstance(block, ThinkingBlock) and block.content is not None
+        ]
+        if len(thinking_block_contents) == 0:
             raise ReasoningExtractionError(
-                "Could not extract reasoning from chat response. "
-                "Hint: enable reasoning summaries via OpenAI Responses API, e.g. "
-                "`reasoning_options={'summary': 'auto'}` (or pass `reasoning={'summary': 'auto'}` per request parameters)."
+                "Could not find any ThinkingBlock content in chat response. "
+                "Did you enable reasoning summaries via OpenAI Responses API, e.g. "
+                "`extractor.llm.reasoning_options.summary=auto`?"
             )
 
-        raise ReasoningExtractionError(
-            "Could not extract reasoning from chat response (reasoning summaries enabled, but none returned)."
-        )
+        return "\n\n".join(thinking_block_contents)
