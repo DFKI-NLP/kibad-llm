@@ -22,7 +22,7 @@ _target_: kibad_llm.llms.VllmInProcess
 model: "openai/gpt-oss-20b"
 
 # Initialization parameters for vLLM LLM engine.
-# See https://docs.vllm.ai/en/v0.11.2/api/vllm/entrypoints/llm/ for details.
+# See https://docs.vllm.ai/en/v0.12.0/api/vllm/entrypoints/llm/ for details.
 vllm_kwargs:
   tensor_parallel_size: 1  # shard across N GPUs
   # gpu_memory_utilization: 0.9 # fraction of GPU memory reserved (impacts KV cache size)
@@ -32,7 +32,7 @@ vllm_kwargs:
 
 # Generation parameters, can be either ...
 # 1) ... vllm.SamplingParams values ...
-# See https://docs.vllm.ai/en/v0.11.2/api/vllm/sampling_params/ for details.
+# See https://docs.vllm.ai/en/v0.12.0/api/vllm/sampling_params/ for details.
 temperature: 0.0
 top_p: 1.0
 max_tokens: 4096
@@ -40,5 +40,5 @@ max_tokens: 4096
 # repetition_penalty: 1.05
 # stop: ["\n\n"]
 # 2) ... or parameters for the llm.chat(...) call.
-# See https://docs.vllm.ai/en/v0.11.2/api/vllm/entrypoints/llm/#vllm.entrypoints.llm.LLM.chat
+# See https://docs.vllm.ai/en/v0.12.0/api/vllm/entrypoints/llm/#vllm.entrypoints.llm.LLM.chat
 # for details
