@@ -249,7 +249,7 @@ def extract_from_text(
 
     # only proceed if we have an llm
     if llm is not None:
-
+        response_content = ""
         # Parse & validate (schema optional)
         try:
             # LLM chat call
@@ -276,7 +276,10 @@ def extract_from_text(
 
         except Exception as e:
             error_msg = exception2error_msg(e)
-            logger.warning(f"Failed to process document {text_id}: {error_msg}")
+            logger.warning(
+                f"Failed to process document {text_id}: {error_msg}, "
+                f"response_content = '{response_content[:min(len(response_content), 1500)]}...'"
+            )
             out["error"] = error_msg
 
     else:
