@@ -35,6 +35,12 @@ class ReasoningExtractionError(Exception):
     ...
 
 
+class EmptyReasoningError(Exception):
+    """Raised when the extracted reasoning is empty."""
+
+    ...
+
+
 @dataclasses.dataclass
 class SimpleChatMessage:
     role: MessageRole
@@ -70,28 +76,10 @@ class LLM(ABC):
             )
 
     def get_reasoning_from_chat_response(self, response: ChatResponse) -> str:
-        """Extract reasoning from a chat response.
-
-        Reasoning may be normalized into `additional_kwargs` by backend wrappers.
-        For OpenAI-like backends, we fall back to provider-specific fields on `response.raw`.
-        """
-
-        # 1) Preferred: normalized location (works for in-process vLLM).
-        reasoning = response.additional_kwargs.get(
-            "reasoning"
-        ) or response.message.additional_kwargs.get("reasoning")
-        if isinstance(reasoning, str) and reasoning.strip():
-            return reasoning
-
-        # 2) Fallback: OpenAI-like raw response shape (choices[0].message.reasoning[_content]).
-        msg = self.get_raw_message_from_chat_response(response)
-
-        # vLLM: prefer `reasoning`, fallback to legacy `reasoning_content`
-        result = getattr(msg, "reasoning", None) or getattr(msg, "reasoning_content", None)
-        if isinstance(result, str) and result.strip():
-            return result
-
-        raise ReasoningExtractionError("Could not extract reasoning from chat response.")
+        """Extract reasoning from a chat response."""
+        raise NotImplementedError(
+            f"get_reasoning_from_chat_response() is not implemented for {type(self)}"
+        )
 
     def get_response_content_from_chat_response(self, response: ChatResponse) -> str:
         """Extract content from chat response."""
