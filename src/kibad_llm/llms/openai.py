@@ -3,9 +3,9 @@ from typing import Any
 
 from llama_index.core.base.llms.types import ChatResponse
 from llama_index.core.llms import ChatMessage as LlamaIndexChatMessage
-from llama_index.llms.openai import OpenAI as LlamaIndexOpenAI
+from llama_index.llms.openai import OpenAIResponses
 
-from kibad_llm.llms.base import LLM, SimpleChatMessage
+from kibad_llm.llms.base import LLM, ReasoningExtractionError, SimpleChatMessage
 from kibad_llm.utils.log import warn_once
 
 _SCHEMA_NAME_RE = re.compile(r"[^a-zA-Z0-9_-]+")
@@ -101,10 +101,10 @@ def make_openai_strict_json_schema(schema: dict[str, Any]) -> dict[str, Any]:
 
 
 class OpenAI(LLM):
-    """Simple wrapper around OpenAI LLMs to handle guided decoding in extractors.extract_from_text"""
+    """OpenAI wrapper that supports Structured Outputs + (optional) reasoning summaries via Responses API."""
 
     def __init__(self, *args, **kwargs) -> None:
-        self.model = LlamaIndexOpenAI(*args, **kwargs)
+        self.model = OpenAIResponses(*args, **kwargs)
 
     def call_llm_chat_with_guided_decoding(
         self,
@@ -113,20 +113,22 @@ class OpenAI(LLM):
         json_schema: dict[str, Any] | None = None,
         **request_kwargs,
     ) -> ChatResponse:
+        seed = request_kwargs.pop("seed", None)
+        if seed is not None:
+            warn_once(
+                "`seed` parameter is not supported by OpenAI Responses API and will be ignored."
+            )
+
         if json_schema is not None:
-            if "response_format" in request_kwargs:
+            if "text" in request_kwargs and "format" in (request_kwargs.get("text") or {}):
                 warn_once(
-                    "`json_schema` was provided but `response_format` is already set; "
-                    "keeping the explicit `response_format`."
+                    "`json_schema` was provided but `text.format` is already set; "
+                    "keeping the explicit `text.format`."
                 )
             else:
                 schema_name = _schema_name_from(json_schema)
-                # Enforce Structured Outputs?
-                # i.e. the model must adhere to the JSON Schema (not just emit valid JSON).
                 strict = request_kwargs.pop("strict_json_schema", True)
                 if strict:
-                    # if strict is True, modify the schema to comply with OpenAI strict mode,
-                    # see documentation of make_openai_strict_json_schema for details
                     json_schema = make_openai_strict_json_schema(json_schema)
                 else:
                     warn_once(
@@ -134,16 +136,42 @@ class OpenAI(LLM):
                         "(strict_json_schema=false) is not recommended; the model may emit "
                         "keys or types not declared in the schema."
                     )
-                request_kwargs["response_format"] = {
-                    "type": "json_schema",
-                    "json_schema": {
+
+                request_kwargs["text"] = {
+                    "format": {
+                        "type": "json_schema",
                         "name": schema_name,
                         "strict": strict,
                         "schema": json_schema,
-                    },
+                    }
                 }
 
         llama_index_messages = [
             LlamaIndexChatMessage(role=msg.role, content=msg.content) for msg in messages
         ]
         return self.model.chat(llama_index_messages, **request_kwargs)
+
+    def get_reasoning_from_chat_response(self, response: ChatResponse) -> str:
+        """Return the OpenAI Responses API reasoning *summary* (not raw CoT)."""
+
+        raw = getattr(response, "raw", None)
+        output = getattr(raw, "output", None) or []
+        for item in output:
+            if getattr(item, "type", None) == "reasoning":
+                summary = getattr(item, "summary", None) or []
+                texts = [getattr(s, "text", "") for s in summary if getattr(s, "text", None)]
+                result = "\n".join(t.strip() for t in texts if t and t.strip()).strip()
+                if result:
+                    return result
+
+        ro = getattr(self.model, "reasoning_options", None) or {}
+        if not (isinstance(ro, dict) and ro.get("summary")):
+            raise ReasoningExtractionError(
+                "Could not extract reasoning from chat response. "
+                "Hint: enable reasoning summaries via OpenAI Responses API, e.g. "
+                "`reasoning_options={'summary': 'auto'}` (or pass `reasoning={'summary': 'auto'}` per request parameters)."
+            )
+
+        raise ReasoningExtractionError(
+            "Could not extract reasoning from chat response (reasoning summaries enabled, but none returned)."
+        )

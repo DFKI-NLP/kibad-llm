@@ -4,8 +4,8 @@
 # Make sure to set the OPENAI_API_KEY environment variable before running
 # by adding it to the .env file or exporting it in your shell.
 
-# This passes all parameters to the LlamaIndex OpenAI LLM wrapper.
-# See https://developers.llamaindex.ai/python/framework-api-reference/llms/openai/
+# This passes all parameters to the LlamaIndex OpenAIResponse class.
+# See https://developers.llamaindex.ai/python/framework-api-reference/llms/openai/#llama_index.llms.openai.OpenAIResponses
 # for available parameters.
 _target_: kibad_llm.llms.OpenAI
 
@@ -22,3 +22,11 @@ max_completion_tokens: 4096
 
 # enable to correctly handle (i.e. remove) reasoning traces in the output
 is_chat_model: true
+
+reasoning_options:
+  # effort: low
+  summary: auto  # required to get the reasoning_content
+
+# Add additional parameters to OpenAI request body.
+# additional_kwargs:
+#   ...
