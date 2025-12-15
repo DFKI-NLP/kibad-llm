@@ -122,7 +122,7 @@ class OpenAI(LLM):
             else:
                 schema_name = _schema_name_from(json_schema)
                 # Enforce Structured Outputs?
-                # i.e. the model must adhere to this JSON Schema (not just emit valid JSON).
+                # i.e. the model must adhere to the JSON Schema (not just emit valid JSON).
                 strict = request_kwargs.pop("strict_json_schema", True)
                 if strict:
                     # if strict is True, modify the schema to comply with OpenAI strict mode,
