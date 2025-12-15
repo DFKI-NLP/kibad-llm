@@ -11,7 +11,12 @@ from vllm.entrypoints.chat_utils import (
 from vllm.entrypoints.harmony_utils import parse_chat_output
 from vllm.sampling_params import StructuredOutputsParams
 
-from kibad_llm.llms.base import LLM, SimpleChatMessage
+from kibad_llm.llms.base import (
+    LLM,
+    EmptyReasoningError,
+    ReasoningExtractionError,
+    SimpleChatMessage,
+)
 
 # vLLM LLM.chat has these kwargs (non-sampling). Everything else we treat as SamplingParams kwargs.
 # Source: https://docs.vllm.ai/en/v0.11.2/api/vllm/entrypoints/llm/#vllm.entrypoints.llm.LLM.chat
@@ -85,7 +90,16 @@ class VllmInProcess(LLM):
 
         additional_kwargs: dict[str, Any] = {}
         if reasoning is not None:
-            additional_kwargs["reasoning"] = reasoning
             msg.additional_kwargs["reasoning"] = reasoning
 
         return ChatResponse(message=msg, raw=req_outputs, additional_kwargs=additional_kwargs)
+
+    def get_reasoning_from_chat_response(self, response: ChatResponse) -> str:
+        """Extract reasoning from a chat response."""
+
+        reasoning = response.message.additional_kwargs.get("reasoning")
+        if not isinstance(reasoning, str):
+            raise ReasoningExtractionError("Could not extract reasoning from chat response.")
+        if not reasoning.strip():
+            raise EmptyReasoningError("Extracted reasoning is empty.")
+        return reasoning
