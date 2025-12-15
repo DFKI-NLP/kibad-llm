@@ -47,10 +47,10 @@ class VllmInProcess(LLM):
         *,
         model: str,
         vllm_kwargs: dict[str, Any] | None = None,
-        **default_sampling_kwargs: Any,
+        **default_request_kwargs: Any,
     ) -> None:
         self._llm = VllmLLM(model=model, **(vllm_kwargs or {}))
-        self._default_sampling_kwargs: dict[str, Any] = default_sampling_kwargs
+        self._default_request_kwargs: dict[str, Any] = default_request_kwargs
 
     def call_llm_chat_with_guided_decoding(
         self,
@@ -61,7 +61,7 @@ class VllmInProcess(LLM):
     ) -> ChatResponse:
         convo = [_chat_message_to_vllm_param(m) for m in messages]
 
-        sampling_kwargs = {**self._default_sampling_kwargs, **request_kwargs}
+        sampling_kwargs = {**self._default_request_kwargs, **request_kwargs}
 
         # pull out vLLM chat() kwargs; everything else goes into SamplingParams
         chat_kwargs: dict[str, Any] = {"use_tqdm": False}
