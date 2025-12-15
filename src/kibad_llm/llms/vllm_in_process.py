@@ -52,10 +52,13 @@ class VllmInProcess(LLM):
         *,
         model: str,
         vllm_kwargs: dict[str, Any] | None = None,
+        # for compatibility with other LlamaIndex LLMs (but directly supported kwargs take precedence)
+        additional_kwargs: dict[str, Any] | None = None,
         **default_request_kwargs: Any,
     ) -> None:
         self._llm = VllmLLM(model=model, **(vllm_kwargs or {}))
-        self._default_request_kwargs: dict[str, Any] = default_request_kwargs
+        self._default_request_kwargs: dict[str, Any] = additional_kwargs or {}
+        self._default_request_kwargs.update(default_request_kwargs)
 
     def call_llm_chat_with_guided_decoding(
         self,

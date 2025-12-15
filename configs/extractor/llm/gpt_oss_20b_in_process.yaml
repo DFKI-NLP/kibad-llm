@@ -42,3 +42,7 @@ max_tokens: 4096
 # 2) ... or parameters for the llm.chat(...) call.
 # See https://docs.vllm.ai/en/v0.12.0/api/vllm/entrypoints/llm/#vllm.entrypoints.llm.LLM.chat
 # for details
+
+# LlamaIndex-style request parameters (they get merged with the parameters above, but take lower precedence)
+# additional_kwargs:
+#   ...
