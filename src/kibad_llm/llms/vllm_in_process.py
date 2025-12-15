@@ -73,8 +73,9 @@ class VllmInProcess(LLM):
             sampling_kwargs["structured_outputs"] = StructuredOutputsParams(json=json_schema)
 
         sampling_params = SamplingParams(**sampling_kwargs)
-        req_out = self._llm.chat(convo, sampling_params=sampling_params, **chat_kwargs)[0]
-        out = req_out.outputs[0]
+        req_outputs = self._llm.chat(convo, sampling_params=sampling_params, **chat_kwargs)
+        # take the first output (we only sent one conversation) and first generation
+        out = req_outputs[0].outputs[0]
 
         # Split Harmony output into reasoning + final (final is what we want to JSON-parse).
         reasoning, final, _is_tool_call = parse_chat_output(out.token_ids)
@@ -87,4 +88,4 @@ class VllmInProcess(LLM):
             additional_kwargs["reasoning"] = reasoning
             msg.additional_kwargs["reasoning"] = reasoning
 
-        return ChatResponse(message=msg, raw=req_out, additional_kwargs=additional_kwargs)
+        return ChatResponse(message=msg, raw=req_outputs, additional_kwargs=additional_kwargs)
