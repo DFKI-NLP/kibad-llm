@@ -26,7 +26,7 @@ dependencies = [
     "llama-index-llms-openai-like>=0.5.3", # for LLM (gpt-oss) integration
     "jsonschema>=4.25.1", # for structured output schema validation
     "types-jsonschema>=4.25.1.20251009",
-    "vllm==0.11.2", # for vLLM-in-process LLM integration
+    "vllm>=0.12.0,<0.13.0", # for vLLM-in-process LLM integration
     # utils & other
     "tqdm>=4.67.1",
     "types-tqdm>=4.67.0.20250809",
