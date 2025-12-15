@@ -39,7 +39,7 @@ max_tokens: 4096
 # top_k: 50
 # repetition_penalty: 1.05
 # stop: ["\n\n"]
-# 2) ... or parameters for the llm.chat(...) call.
+# 2) ... or parameters for the llm.chat(...) call (should be rarely needed).
 # See https://docs.vllm.ai/en/v0.12.0/api/vllm/entrypoints/llm/#vllm.entrypoints.llm.LLM.chat
 # for details
 
