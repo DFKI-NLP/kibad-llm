@@ -1,12 +1,14 @@
 # Example configuration for using GPT models hosted by OpenAI with LlamaIndex.
 #
 # This requires an OpenAI API key with access to the specified model.
-# Make sure to set the OPENAI_API_KEY environment variable before running.
+# Make sure to set the OPENAI_API_KEY environment variable before running
+# by adding it to the .env file or exporting it in your shell.
 
+# This passes all parameters to the LlamaIndex OpenAI LLM wrapper.
+# See https://developers.llamaindex.ai/python/framework-api-reference/llms/openai/
+# for available parameters.
 _target_: kibad_llm.llms.OpenAI
 
-
-# See https://developers.llamaindex.ai/python/framework-api-reference/llms/openai/ for details.
 api_base: "https://api.openai.com/v1"
 api_key: ${oc.env:OPENAI_API_KEY}
 
@@ -16,7 +18,6 @@ model: "gpt-5"
 # try to be as deterministic as possible
 temperature: 0.0
 top_p: 1.0
-
 
 max_completion_tokens: 4096
 
