@@ -47,19 +47,10 @@ class VllmInProcess(LLM):
         *,
         model: str,
         vllm_kwargs: dict[str, Any] | None = None,
-        # default sampling
-        temperature: float = 0.0,
-        top_p: float = 1.0,
-        max_tokens: int = 4096,
-        **extra_default_sampling_kwargs: Any,
+        **default_sampling_kwargs: Any,
     ) -> None:
         self._llm = VllmLLM(model=model, **(vllm_kwargs or {}))
-        self._default_sampling: dict[str, Any] = {
-            "temperature": temperature,
-            "top_p": top_p,
-            "max_tokens": max_tokens,
-            **extra_default_sampling_kwargs,
-        }
+        self._default_sampling_kwargs: dict[str, Any] = default_sampling_kwargs
 
     def call_llm_chat_with_guided_decoding(
         self,
@@ -70,7 +61,7 @@ class VllmInProcess(LLM):
     ) -> ChatResponse:
         convo = [_chat_message_to_vllm_param(m) for m in messages]
 
-        sampling_kwargs = {**self._default_sampling, **request_kwargs}
+        sampling_kwargs = {**self._default_sampling_kwargs, **request_kwargs}
 
         # alias: some callers use max_new_tokens
         if "max_new_tokens" in sampling_kwargs and "max_tokens" not in sampling_kwargs:
