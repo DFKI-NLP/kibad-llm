@@ -9,6 +9,8 @@
 defaults:
   - override /extractor: simple_with_schema
 
+paths:
+  log_dir: ${paths.save_dir}/logs/predict
 
 extractor:
   schema:

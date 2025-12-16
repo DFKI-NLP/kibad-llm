@@ -5,6 +5,9 @@
 defaults:
  - override /metric: f1_micro
 
+paths:
+  log_dir: ${paths.save_dir}/logs/evaluate
+
 metric:
   # the fields in the prediction and reference to compute the F1 score on
   fields:

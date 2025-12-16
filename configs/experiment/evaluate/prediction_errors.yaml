@@ -5,3 +5,6 @@
 defaults:
  - override /dataset: predictions_only
  - override /metric: prediction_errors
+
+paths:
+  log_dir: ${paths.save_dir}/logs/evaluate

@@ -10,6 +10,8 @@
 defaults:
   - override /extractor: union_with_schema
 
+paths:
+  log_dir: ${paths.save_dir}/logs/predict
 
 extractor:
   overrides:
