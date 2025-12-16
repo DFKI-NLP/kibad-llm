@@ -1091,14 +1091,14 @@ class EcosystemStudyFeaturesCoreFields(BaseEcosystemStudyFeatures):
     ecosystem_type: list[EcosystemTypeSimple] = Field(
         default_factory=list,
         alias="Ökosystemtyp",
-        description="Wenn es im Text um Meere oder Küsten geht, welche der folgenden Ökosysteme werden betrachtet? "
+        description="Wenn es im Text um Meere oder Küsten geht, sind nur die folgenden Ökosystemtypen möglich: "
         "Benthal der Nordsee / Benthal der Ostsee / Fels- und Steilküsten / Küstendünen / Pelagial der "
         "Nordsee / Pelagial der Ostsee / Salzgrünland, Brackwasserröhrichte und -Hochstaudenfluren des "
         "Geolitorals der Ostseeküste / Salzgrünland der Nordseeküste (Supralitoral) / Sände, Sand-, "
-        "Geröll- und Blockstrände? Wenn es im Text um Binnengewässer geht, welche der folgenden "
-        "Ökosysteme werden betrachtet? Fließende Gewässer / Grundwasser und Höhlengewässer / Quellen "
+        "Geröll- und Blockstrände? Wenn es im Text um Binnengewässer geht, sind nur die folgenden "
+        "Ökosystemtypen möglich: Fließende Gewässer / Grundwasser und Höhlengewässer / Quellen "
         "(inklusive Quellabfluss (Krenal)) / Stehende Gewässer. Wenn es im Text um Binnenland geht, "
-        "welche der folgenden Ökosysteme werden betrachtet: Äcker und Ackerbrachen / Feldgehölze, "
+        "sind nur die folgenden Ökosystemtypen möglich: Äcker und Ackerbrachen / Feldgehölze, "
         "Gebüsche, Hecken und Gehölzkulturen / Felsen, Block- und Schutthalden, Geröllfelder, offene "
         "Bereiche mit sandigem oder bindigem Substrat / Hoch-, Zwischen- und Übergangsmoore / "
         "Höhlen (einschließlich Stollen, Brunnenschächte etc.) / Laub(Misch)Wälder und -Forste "
@@ -1106,8 +1106,8 @@ class EcosystemStudyFeaturesCoreFields(BaseEcosystemStudyFeatures):
         "Brackwasserröhrichte) / Trockenrasen sowie Grünland trockener bis frischer Standorte / "
         "Waldfreie Niedermoore und Sümpfe / Grünland nasser bis feuchter Standorte / Waldmäntel "
         "und Vorwälder, spezielle Waldnutzungsformen / Wald- und Ufersäume, Staudenfluren / "
-        "Zwergstrauchheiden? Wenn es im Text um technische Biotope geht, welche der folgenden Ökosysteme "
-        "werden betrachtet? Bauwerke / Kleine, unbefestigte Freiflächen des besiedelten Bereiches / "
+        "Zwergstrauchheiden? Wenn es im Text um technische Biotope geht, sind nur die folgenden Ökosystemtypen "
+        "möglich: Bauwerke / Kleine, unbefestigte Freiflächen des besiedelten Bereiches / "
         "Verkehrsanlagen und Plätze? Werden im Text Gebirgsrasen (subalpin bis alpin), Anthropogene "
-        "Rohbodenstandorte und Ruderalfluren oder Grün- und Freiflächen behandelt? oder keine davon?",
+        "Rohbodenstandorte und Ruderalfluren oder Grün- und Freiflächen behandelt? Oder keine davon?",
     )
