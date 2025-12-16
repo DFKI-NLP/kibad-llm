@@ -27,6 +27,9 @@ reasoning_options:
   # effort: low
   summary: auto  # summary is required to get the reasoning_content
 
+timeout: 360
+max_retries: 3
+
 # Add additional parameters to OpenAI request body.
 # additional_kwargs:
 #   ...
