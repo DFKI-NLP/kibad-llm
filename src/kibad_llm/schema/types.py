@@ -1075,8 +1075,8 @@ class EcosystemStudyFeaturesCoreFields(BaseEcosystemStudyFeatures):
     taxa: list[Taxa] = Field(
         default_factory=list,
         alias="Arten",
-        description="Welche Arten werden in der Studie untersucht? Verwende die kleinste machbare Ebene: "
-        "wenn eine Studie nur wenige Arten behandelt, sollten diese auf Artebene mit ihrem "
+        description="Welche Arten bzw. Artengruppen werden in der Studie untersucht? Verwende die kleinste "
+        "machbare Ebene: Wenn eine Studie nur wenige Arten behandelt, sollten diese auf Artebene mit ihrem "
         "wissenschaftlichen und deutschen Namen angegeben werden. Werden jedoch sehr viele Arten "
         "behandelt oder eine Artengruppe besprochen, wird die Artengruppe als 'Sammelbegriff' angegeben. "
         "Falls die Studie auf englisch ist, übersetze Art- bzw. Artengruppennamen ins Deutsche. "
@@ -1086,12 +1086,13 @@ class EcosystemStudyFeaturesCoreFields(BaseEcosystemStudyFeatures):
     biodiversity_level: list[BiodiversityLevelEnum] = Field(
         default_factory=list,
         alias="Biodiversitätsebene",
-        description="Auf welche der folgenden Ebenen wird Biodiversität in der Studie gemessen?",
+        description="Auf welche der folgenden Ebenen wird Biodiversität in der Studie gemessen? ",
     )
     ecosystem_type: list[EcosystemTypeSimple] = Field(
         default_factory=list,
         alias="Ökosystemtyp",
-        description="Wenn es im Text um Meere oder Küsten geht, sind nur die folgenden Ökosystemtypen möglich: "
+        description="Welche der folgenden Ökosystemtypen werden betrachtet? "
+        "Wenn es im Text um Meere oder Küsten geht, sind nur die folgenden Ökosystemtypen möglich: "
         "Benthal der Nordsee / Benthal der Ostsee / Fels- und Steilküsten / Küstendünen / Pelagial der "
         "Nordsee / Pelagial der Ostsee / Salzgrünland, Brackwasserröhrichte und -Hochstaudenfluren des "
         "Geolitorals der Ostseeküste / Salzgrünland der Nordseeküste (Supralitoral) / Sände, Sand-, "
