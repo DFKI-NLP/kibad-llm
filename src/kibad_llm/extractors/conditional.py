@@ -1,6 +1,8 @@
 from typing import Any
 
-from llama_index.core.base.llms.types import ChatMessage
+from llama_index.core.base.llms.types import MessageRole
+
+from kibad_llm.llms.base import SimpleChatMessage
 
 from .base import extract_from_text_lenient
 from .union import UnionExtractor, _aggregate_structured_outputs_union
@@ -17,7 +19,7 @@ class ConditionalUnionExtractor(UnionExtractor):
     def __call__(self, *args, **kwargs) -> dict[str, Any]:
         combined_kwargs = {**self.default_kwargs, **kwargs}
         results = []
-        history: list[ChatMessage] = []
+        history: list[SimpleChatMessage] = []
         for override_params in self.overrides:
             # adjust kwargs:
             # 1) to return formatted messages for history
@@ -35,12 +37,13 @@ class ConditionalUnionExtractor(UnionExtractor):
             current_result = extract_from_text_lenient(*args, **current_kwargs)
 
             # collect messages for history
-            for role, content in current_result["messages_formatted"].items():
-                history.append(ChatMessage(role=role, content=content))
+            for role_str, content in current_result["messages_formatted"].items():
+                role = MessageRole(role_str)
+                history.append(SimpleChatMessage(role=role, content=content))
             # append assistant response or error to history
             history.append(
-                ChatMessage(
-                    role="assistant",
+                SimpleChatMessage(
+                    role=MessageRole.ASSISTANT,
                     content=current_result["response_content"] or current_result["error"],
                 )
             )
