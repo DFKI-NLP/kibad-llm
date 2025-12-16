@@ -10,6 +10,7 @@
 defaults:
   - override /extractor: union_with_schema
 
+
 extractor:
   overrides:
     - schema:

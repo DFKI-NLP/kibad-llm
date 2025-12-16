@@ -9,6 +9,7 @@
 defaults:
   - override /extractor: simple_with_schema
 
+
 extractor:
   schema:
     # create the schema from the pydantic model of EcosystemStudyFeaturesAll
