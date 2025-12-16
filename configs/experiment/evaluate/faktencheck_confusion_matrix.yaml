@@ -5,9 +5,6 @@
 defaults:
  - override /metric: confusion_matrix
 
-paths:
-  log_dir: ${paths.save_dir}/logs/evaluate
-
 metric:
   # for compound entries, we may ignore certain subfields during evaluation
   ignore_subfields:

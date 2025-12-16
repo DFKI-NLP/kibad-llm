@@ -6,9 +6,6 @@ defaults:
  - override /dataset: organism_trends_forest
  - override /metric: confusion_matrix
 
-paths:
-  log_dir: ${paths.save_dir}/logs/evaluate
-
 metric:
   # flatten per default
   flatten_dicts: true

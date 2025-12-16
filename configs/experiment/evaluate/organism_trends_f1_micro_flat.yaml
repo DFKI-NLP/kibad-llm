@@ -7,9 +7,6 @@ defaults:
  # derive everything from experiment/evaluate/organism_trends_f1_micro.yaml
  - organism_trends_f1_micro
 
-paths:
-  log_dir: ${paths.save_dir}/logs/evaluate
-
 metric:
   # compute metrics on flattened fields, i.e. split compounds
   flatten_dicts: true
