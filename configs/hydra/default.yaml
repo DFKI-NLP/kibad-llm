@@ -15,6 +15,7 @@ callbacks:
     multirun_show_file_contents: [job_return_value.md]
     # file names contain the default separator ("-"), so we change it here to avoid conflicts
     multirun_overrides_seperator: "#"
+    multirun_replace_existing_overrides: true
     multirun_aggregator_blacklist: ["min", "25%", "50%", "75%", "max"]
 
 # output directory, generated dynamically on each run

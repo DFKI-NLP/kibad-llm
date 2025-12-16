@@ -223,6 +223,28 @@ def multi_index_to_single(index: pd.MultiIndex, sep: str = ".") -> pd.Index:
     return pd.Index([_filter_nan_and_join(values, sep) for values in index.to_flat_index()])
 
 
+def dict2overrides(d: dict[str, Any]) -> list[str]:
+    return [f"{k}={d[k]}" for k in sorted(d.keys())]
+
+
+def append_overrides_from_return_value(
+    job_return: JobReturn, replace_existing: bool = False
+) -> None:
+    """Append overrides from the job return-value to the job return overrides.
+    Args:
+        job_return (JobReturn): The job return object.
+        replace_existing (bool, optional): If True, replace existing overrides.
+    """
+    if isinstance(job_return.return_value, dict) and "overrides" in job_return.return_value:
+        new_overrides = job_return.return_value.pop("overrides")
+        if new_overrides:
+            overrides = []
+            if job_return.overrides is not None and not replace_existing:
+                overrides = list(job_return.overrides)
+            overrides.extend(dict2overrides(new_overrides))
+            job_return.overrides = overrides
+
+
 class SaveJobReturnValueCallback(Callback):
     """Save the job return-value in ${output_dir}/{job_return_value_filename}.
 
@@ -262,6 +284,10 @@ class SaveJobReturnValueCallback(Callback):
         to the console after saving the multi-run results.
     multirun_overrides_seperator: str (default: "-")
         The separator to use when creating job identifiers from overrides.
+    multirun_replace_existing_overrides: bool (default: False)
+        If True, replace existing overrides in the job return-value with the overrides from the job return
+        object if available. If False, the overrides from the job return-value are only appended if no overrides
+        are available in the job return object.
     paths_file: str (default: None)
         The file to save the paths of the log directories to. If None, the paths are not saved.
     path_id: str (default: None)
@@ -284,6 +310,7 @@ class SaveJobReturnValueCallback(Callback):
         multirun_convert_job_ids: bool = False,
         multirun_show_file_contents: list[str] | None = None,
         multirun_overrides_seperator: str = "-",
+        multirun_replace_existing_overrides: bool = False,
         paths_file: str | None = None,
         path_id: str | None = None,
         multirun_paths_file: str | None = None,
@@ -300,6 +327,7 @@ class SaveJobReturnValueCallback(Callback):
         self.multirun_job_id_key = multirun_job_id_key
         self.multirun_convert_job_ids = multirun_convert_job_ids
         self.multirun_overrides_seperator = multirun_overrides_seperator
+        self.multirun_replace_existing_overrides = multirun_replace_existing_overrides
         self.markdown_round_digits = markdown_round_digits
         self.multirun_paths_file = multirun_paths_file
         self.multirun_path_id = multirun_path_id
@@ -307,6 +335,9 @@ class SaveJobReturnValueCallback(Callback):
         self.path_id = path_id
 
     def on_job_end(self, config: DictConfig, job_return: JobReturn, **kwargs: Any) -> None:
+        append_overrides_from_return_value(
+            job_return, replace_existing=self.multirun_replace_existing_overrides
+        )
         self.job_returns.append(job_return)
         output_dir = Path(config.hydra.runtime.output_dir)  # / Path(config.hydra.output_subdir)
         if self.paths_file is not None:
