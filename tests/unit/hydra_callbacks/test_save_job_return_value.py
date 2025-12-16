@@ -85,10 +85,9 @@ class TestSaveJobReturnValueCallback:
         elif extension == "md":
             content = file_name.read_text()
             assert content == (
-                "|          |    0 |\n"
-                "|:---------|-----:|\n"
-                "| accuracy | 0.95 |\n"
-                "| loss     | 0.05 |"
+                "|    |   accuracy |   loss |\n"
+                "|---:|-----------:|-------:|\n"
+                "|  0 |       0.95 |   0.05 |"
             )
         else:
             pytest.fail(f"Unsupported extension: {extension}")

@@ -66,7 +66,7 @@ export VLLM_CONFIGURE_LOGGING=0
 
 job(){
     uvx --cache-dir /netscratch/$USER/cache/uv \
-        vllm@$VLLM_VERSION serve "$VLLM_ARGS" \
+        vllm@$VLLM_VERSION serve $VLLM_ARGS \
             --download-dir=/ds/models/llms/cache \
             --port=$PORT&
 
