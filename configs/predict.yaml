@@ -49,3 +49,7 @@ store_text_in_predictions: False
 # https://huggingface.co/docs/datasets/v1.10.0/package_reference/main_classes.html#datasets.Dataset.map
 pdf_reader_num_proc: null
 extractor_num_proc: null
+
+paths:
+  # path to logging directory
+  log_dir: ${paths.save_dir}/logs/predict

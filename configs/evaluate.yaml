@@ -35,6 +35,10 @@ defaults:
 # name of the run, used in logging and as a subdir of log_dir
 name: "default"
 
+paths:
+  # path to logging directory
+  log_dir: ${paths.save_dir}/logs/evaluate
+
 # List of log directories containing prediction runs to evaluate.
 # If set, replaces dataset.predictions.log in multi-run mode.
 predictions_multirun_logs: null
