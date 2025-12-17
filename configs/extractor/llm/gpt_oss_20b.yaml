@@ -3,6 +3,9 @@
 # This requires a local deployment of the GPT-OSS-20B model that is compatible with the OpenAI API.
 # See models/README.md for instructions.
 
+# OpenAILikeVllm creates a llama_index.llms.openai_like.OpenAILike by just forwarding all provided parameters. Thus, see
+# https://developers.llamaindex.ai/python/framework-api-reference/llms/openai_like/#llama_index.llms.openai_like.OpenAILike
+# for available parameters.
 _target_: kibad_llm.llms.OpenAILikeVllm
 
 # get the API base URL from the environment variable LLM_API_BASE, defaulting to http://127.0.0.1:5001/v1
@@ -11,11 +14,9 @@ api_key: "dummy"
 model: "openai/gpt-oss-20b"
 # try to be as deterministic as possible
 temperature: 0.0
-top_p: 1.0
 # presence_penalty and frequency_penalty are also standard if we need them
 
 # the default is 16, so we set it to 4096 to allow a reasonable context window
 max_tokens: 4096
 # enable to correctly handle (i.e. remove) reasoning traces in the output
 is_chat_model: true
-is_function_calling_model: false
