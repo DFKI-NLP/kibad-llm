@@ -5,8 +5,6 @@ _target_: kibad_llm.dataset.prediction.load_with_metadata
 # You can also just provide log_subdir instead of log to load from a specific subdirectory
 # of the main log directory.
 log: null
-log_subdir: null
-log_dir: ${paths.log_dir}
 file: null
 
 id_key: file_name
