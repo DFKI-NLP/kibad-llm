@@ -136,6 +136,8 @@ class OpenAI(LLM):
                         "(strict_json_schema=false) is not recommended; the model may emit "
                         "keys or types not declared in the schema."
                     )
+                if "text" not in request_kwargs:
+                    request_kwargs["text"] = {}
 
                 request_kwargs["text"] = {
                     "format": {
