@@ -5,9 +5,6 @@ _target_: kibad_llm.dataset.prediction.load_with_metadata
 file: null
 log: null
 
-# to remove the "+"-prefix from hydra override keys
-strip_plus_from_keys: true
-
 id_key: file_name
 # strip file extension from predictions to match zotitem_ptr_id in references
 process_id:
