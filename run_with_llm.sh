@@ -45,6 +45,10 @@ while [[ "$1" =~ ^- && ! "$1" == "--" ]]; do case $1 in
 esac; shift; done
 if [[ "$1" == '--' ]]; then shift; fi
 
+# add download dir and port to vLLM arguments (works for empty VLLM_ARGS)
+VLLM_ARGS="${VLLM_ARGS:+$VLLM_ARGS }--port=$PORT --download-dir=/ds/models/llms/cache --disable-uvicorn-access-log"
+export VLLM_ARGS
+
 export HF_HOME="/netscratch/$USER/cache/hf"
 export VLLM_CACHE_ROOT="/netscratch/$USER/cache/vllm"
 
@@ -56,7 +60,7 @@ echo "============================================="
 echo ">>> USING PARTITION $PARTITION"
 echo ">>> MAX TIME $TIME"
 echo ">>> SUBMITTED $(date)"
-echo ">>> VLLM_ARGS $VLLM_ARGS --download-dir=/ds/models/llms/cache --port=$PORT"
+echo ">>> VLLM_ARGS $VLLM_ARGS"
 echo ">>> VLLM_VERSION $VLLM_VERSION"
 echo ">>> UV_ARGS $UV_ARGS"
 echo ">>> JOB_NAME $JOB_NAME"
@@ -64,9 +68,7 @@ echo "============================================="
 
 job(){
     uvx --cache-dir /netscratch/$USER/cache/uv --env-file models/vllm.env \
-        vllm@$VLLM_VERSION serve $VLLM_ARGS --disable-uvicorn-access-log \
-            --download-dir=/ds/models/llms/cache \
-            --port=$PORT&
+        vllm@$VLLM_VERSION serve $VLLM_ARGS &
 
     # !the name LLM_API_BASE is important as the extractors hydra config looks for it!
     export LLM_API_BASE="http://localhost:${PORT}/v1"
