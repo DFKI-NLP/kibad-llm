@@ -18,7 +18,7 @@ model: "gpt-5"
 temperature: 0.0
 top_p: 1.0
 
-max_completion_tokens: 4096
+max_completion_tokens: 8192
 
 # enable to correctly handle (i.e. remove) reasoning traces in the output
 is_chat_model: true
