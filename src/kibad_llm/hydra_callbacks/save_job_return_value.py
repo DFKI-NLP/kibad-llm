@@ -278,7 +278,7 @@ class SaveJobReturnValueCallback(Callback):
     multirun_show_file_contents: list[str] (default: None)
         A list of filenames (from the filenames parameter or aggregated files) to log the contents
         to the console after saving the multi-run results.
-    multirun_overrides_seperator: str (default: "-")
+    multirun_overrides_separator: str (default: "-")
         The separator to use when creating job identifiers from overrides.
     multirun_replace_existing_overrides: bool (default: False)
         If True, replace existing overrides in the job return-value with the overrides from the job return
@@ -305,7 +305,7 @@ class SaveJobReturnValueCallback(Callback):
         multirun_job_id_key: str = "job_id",
         multirun_convert_job_ids: bool = False,
         multirun_show_file_contents: list[str] | None = None,
-        multirun_overrides_seperator: str = "-",
+        multirun_overrides_separator: str = "-",
         multirun_replace_existing_overrides: bool = False,
         paths_file: str | None = None,
         path_id: str | None = None,
@@ -322,7 +322,7 @@ class SaveJobReturnValueCallback(Callback):
         self.multirun_create_ids_from_overrides = multirun_create_ids_from_overrides
         self.multirun_job_id_key = multirun_job_id_key
         self.multirun_convert_job_ids = multirun_convert_job_ids
-        self.multirun_overrides_seperator = multirun_overrides_seperator
+        self.multirun_overrides_separator = multirun_overrides_separator
         self.multirun_replace_existing_overrides = multirun_replace_existing_overrides
         self.markdown_round_digits = markdown_round_digits
         self.multirun_paths_file = multirun_paths_file
@@ -349,7 +349,7 @@ class SaveJobReturnValueCallback(Callback):
         if self.multirun_create_ids_from_overrides:
             overrides_per_result = [jr.overrides or [] for jr in self.job_returns]
             job_ids = overrides_to_identifiers(
-                overrides_per_result, sep=self.multirun_overrides_seperator
+                overrides_per_result, sep=self.multirun_overrides_separator
             )
         else:
             job_ids = list(range(len(self.job_returns)))
@@ -401,7 +401,7 @@ class SaveJobReturnValueCallback(Callback):
                 # convert job ids (created from overrides) to dicts
                 obj[self.multirun_job_id_key] = list_of_dicts_to_dict_of_lists_recursive(
                     [
-                        identifier_to_dict(identifier, sep=self.multirun_overrides_seperator)
+                        identifier_to_dict(identifier, sep=self.multirun_overrides_separator)
                         for identifier in obj[self.multirun_job_id_key]
                     ]
                 )
