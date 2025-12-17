@@ -1,0 +1,61 @@
+print_config: true
+name: default
+pdf_directory: tests/fixtures/pdfs
+output_dir: ${paths.prediction_save_dir}
+fast_dev_run: false
+extraction_caching: false
+store_text_in_predictions: false
+pdf_reader_num_proc: null
+extractor_num_proc: null
+paths:
+  root_dir: ${oc.env:PROJECT_ROOT}
+  data_dir: ${paths.root_dir}/data
+  run_subdir: ${name}/${now:%Y-%m-%d_%H-%M-%S}
+  output_dir: ${hydra:runtime.output_dir}
+  save_dir: ${paths.root_dir}
+  log_dir: ${paths.save_dir}/logs
+  work_dir: ${hydra:runtime.cwd}
+  prediction_save_dir: ${paths.save_dir}/predictions/${paths.run_subdir}
+pdf_reader:
+  _target_: kibad_llm.preprocessing.read_pdf_as_markdown_via_pymupdf4llm
+  _partial_: true
+extractor:
+  llm:
+    _target_: kibad_llm.llms.OpenAILikeVllm
+    api_base: ${oc.env:LLM_API_BASE,http://127.0.0.1:5001/v1}
+    api_key: dummy
+    model: openai/gpt-oss-20b
+    temperature: 0.0
+    top_p: 1.0
+    max_tokens: 4096
+    is_chat_model: true
+    is_function_calling_model: false
+  request_parameters: {}
+  _target_: kibad_llm.extractors.extract_from_text_lenient
+  _partial_: true
+  return_reasoning: false
+  return_messages: false
+  return_messages_formatted: false
+  system_message: 'Du extrahierst Informationen aus einem Markdown-Dokument.
+
+    Gib **ausschließlich** gültiges JSON nach dem folgendem Schema zurück.
+
+    Keine zusätzlichen Felder, keine Erklärungen.
+
+    {schema_description}
+
+    '
+  user_message: 'Dokument in Markdown Format:
+
+
+    {document}
+
+    '
+  schema_description_placeholder: schema_description
+  document_placeholder: document
+  schema:
+    _target_: kibad_llm.schema.types.EcosystemStudyFeaturesSimple.model_json_schema
+    by_alias: false
+request_parameters:
+  extra_body:
+    seed: 42

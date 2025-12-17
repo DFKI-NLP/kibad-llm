@@ -9,6 +9,7 @@ from hydra.utils import instantiate
 from omegaconf import DictConfig, OmegaConf
 
 from kibad_llm.config import PROJ_ROOT
+from kibad_llm.dataset.prediction import DictWithMetadata
 from kibad_llm.metric import Metric
 
 logger = logging.getLogger(__name__)
@@ -38,6 +39,9 @@ def evaluate(cfg: DictConfig) -> dict[str, Any]:
     metric_dict = metric.compute()
 
     metric.show_result(metric_dict)
+
+    if isinstance(dataset, DictWithMetadata):
+        metric_dict.update(dataset.metadata)
 
     return metric_dict
 
