@@ -64,7 +64,7 @@ echo "============================================="
 
 job(){
     uvx --cache-dir /netscratch/$USER/cache/uv --env-file models/vllm.env \
-        vllm@$VLLM_VERSION serve "$VLLM_ARGS" --disable-uvicorn-access-log \
+        vllm@$VLLM_VERSION serve $VLLM_ARGS --disable-uvicorn-access-log \
             --download-dir=/ds/models/llms/cache \
             --port=$PORT&
 
