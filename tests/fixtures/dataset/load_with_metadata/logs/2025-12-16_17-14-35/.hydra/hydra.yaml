@@ -125,7 +125,7 @@ hydra:
       - job_return_value.md
       multirun_show_file_contents:
       - job_return_value.md
-      multirun_overrides_seperator: '#'
+      multirun_overrides_separator: '#'
       multirun_aggregator_blacklist:
       - min
       - 25%
