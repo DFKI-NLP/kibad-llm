@@ -19,6 +19,8 @@ class DictWithMetadata(dict):
 
 def load_with_metadata(
     log: str | None = None,
+    log_subdir: str | None = None,
+    log_dir: str | None = None,
     file: str | None = None,
     **load_kwargs,
 ) -> dict:
@@ -27,6 +29,8 @@ def load_with_metadata(
 
     Args:
         log: Path to the prediction log directory.
+        log_subdir: Subdirectory name within `log_dir` for the prediction log.
+        log_dir: Parent directory containing prediction log subdirectories.
         file: Path to the dataset file.
         **load_kwargs: Additional keyword arguments to pass to `read_and_preprocess`.
     Returns:
@@ -34,6 +38,11 @@ def load_with_metadata(
     """
 
     metadata = None
+    if log_subdir is not None and log_dir is not None:
+        if log is not None:
+            raise ValueError("Specify either 'log' or both 'log_dir' and 'log_subdir', not both.")
+        log = os.path.join(log_dir, log_subdir)
+
     if log is not None:
         if file is not None:
             raise ValueError("Specify either 'log' or 'file', not both.")
