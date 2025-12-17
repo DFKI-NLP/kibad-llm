@@ -11,7 +11,6 @@ def test_load_with_metadata():
     # based on configs/dataset/predictions/extraction_result.yaml
     result = load_with_metadata(
         log=str(log),
-        strip_plus_from_keys=True,
         id_key="file_name",
         process_id=strip_filename_extension,
         preprocess=lambda x: x.get("structured", None),
@@ -20,10 +19,10 @@ def test_load_with_metadata():
     assert len(result) == 4
     assert isinstance(result, DictWithMetadata)
     assert result.metadata == {
-        "overrides": {
-            "pdf_directory": "tests/fixtures/pdfs",
-            "request_parameters.extra_body.seed": "42",
-        }
+        "overrides": [
+            "pdf_directory=tests/fixtures/pdfs",
+            "+request_parameters.extra_body.seed=42",
+        ],
     }
 
     # test falling back to file loading

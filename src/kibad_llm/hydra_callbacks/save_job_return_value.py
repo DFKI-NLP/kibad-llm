@@ -223,10 +223,6 @@ def multi_index_to_single(index: pd.MultiIndex, sep: str = ".") -> pd.Index:
     return pd.Index([_filter_nan_and_join(values, sep) for values in index.to_flat_index()])
 
 
-def dict2overrides(d: dict[str, Any]) -> list[str]:
-    return [f"{k}={d[k]}" for k in sorted(d.keys())]
-
-
 def append_overrides_from_return_value(
     job_return: JobReturn, replace_existing: bool = False
 ) -> None:
@@ -241,7 +237,7 @@ def append_overrides_from_return_value(
             overrides = []
             if job_return.overrides is not None and not replace_existing:
                 overrides = list(job_return.overrides)
-            overrides.extend(dict2overrides(new_overrides))
+            overrides.extend(new_overrides)
             job_return.overrides = overrides
 
 
