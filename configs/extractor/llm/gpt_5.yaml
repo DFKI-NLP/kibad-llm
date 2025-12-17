@@ -1,0 +1,35 @@
+# Example configuration for using GPT models hosted by OpenAI with LlamaIndex.
+#
+# This requires an OpenAI API key with access to the specified model.
+# Make sure to set the OPENAI_API_KEY environment variable before running
+# by adding it to the .env file or exporting it in your shell.
+
+# This passes all parameters to the LlamaIndex OpenAIResponse class.
+# See https://developers.llamaindex.ai/python/framework-api-reference/llms/openai/#llama_index.llms.openai.OpenAIResponses
+# for available parameters.
+_target_: kibad_llm.llms.OpenAI
+
+api_base: "https://api.openai.com/v1"
+api_key: ${oc.env:OPENAI_API_KEY}
+
+model: "gpt-5"
+
+# try to be as deterministic as possible
+temperature: 0.0
+top_p: 1.0
+
+max_completion_tokens: 8192
+
+# enable to correctly handle (i.e. remove) reasoning traces in the output
+is_chat_model: true
+
+reasoning_options:
+  # effort: low
+  summary: auto  # summary is required to get the reasoning_content
+
+timeout: 360
+max_retries: 3
+
+# Add additional parameters to OpenAI request body.
+# additional_kwargs:
+#   ...
