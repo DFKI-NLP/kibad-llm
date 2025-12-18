@@ -69,7 +69,7 @@ def predict(cfg: DictConfig) -> dict[str, Any]:
 
     # log git commit info
     git_info = get_git_info()
-    logger.info(f"Git commit: {git_info['commit_hash']}")
+    logger.info(f"Git commit: {git_info['commit_hash']}, branch: {git_info['branch']}")
     if git_info["is_dirty"]:
         logger.warning("Git repository has uncommitted changes!")
 
