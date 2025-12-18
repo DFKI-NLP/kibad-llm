@@ -9,7 +9,9 @@ import time
 from typing import Any
 
 from datasets import Dataset
+import git
 import hydra
+from hydra.core.hydra_config import HydraConfig
 from hydra.utils import instantiate
 from llama_index.core import set_global_handler
 from omegaconf import DictConfig, OmegaConf
@@ -23,6 +25,26 @@ logger = logging.getLogger(__name__)
 def _file_name_generator(file_names: list[str]):
     for file_name in file_names:
         yield {"file_name": file_name}
+
+
+def get_git_info() -> dict[str, str | bool]:
+    """Get current git commit hash and dirty status.
+
+    Returns:
+        Dictionary with 'commit_hash' and 'is_dirty' keys.
+    """
+    try:
+        repo = git.Repo(search_parent_directories=True)
+        return {
+            "commit_hash": repo.head.object.hexsha,
+            "is_dirty": repo.is_dirty(),
+        }
+    except (git.InvalidGitRepositoryError, git.GitCommandError) as e:
+        logger.warning(f"Could not get git info: {e}")
+        return {
+            "commit_hash": "unknown",
+            "is_dirty": False,
+        }
 
 
 def predict(cfg: DictConfig) -> dict[str, Any]:
@@ -42,6 +64,12 @@ def predict(cfg: DictConfig) -> dict[str, Any]:
     # show hydra run log directory
     hydra_cfg = HydraConfig.get()
     logger.info(f"Run log directory: {hydra_cfg.runtime.output_dir}")
+
+    # log git commit info
+    git_info = get_git_info()
+    logger.info(f"Git commit: {git_info['commit_hash']}")
+    if git_info["is_dirty"]:
+        logger.warning("Git repository has uncommitted changes!")
 
     data_base_path = Path(cfg.pdf_directory)
 
@@ -101,6 +129,7 @@ def predict(cfg: DictConfig) -> dict[str, Any]:
         "output_file": output_file,
         "time_pdf_conversion": t_delta_pdf_conversion,
         "time_extraction": t_delta_extraction,
+        **git_info,
     }
 
 
