@@ -41,7 +41,12 @@ def evaluate(cfg: DictConfig) -> dict[str, Any]:
     metric.show_result(metric_dict)
 
     if isinstance(dataset, DictWithMetadata):
-        metric_dict.update(dataset.metadata)
+        if "prediction" in metric_dict:
+            raise ValueError(
+                "Cannot attach metadata to 'prediction' key in metric_dict because it already "
+                "exists as output from the metric computation. Please adjust the metric computation."
+            )
+        metric_dict["prediction"] = dataset.metadata
 
     return metric_dict
 
