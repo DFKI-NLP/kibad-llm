@@ -347,7 +347,13 @@ class SaveJobReturnValueCallback(Callback):
                 file.write(f"{output_dir}\n")
 
         for filename in self.filenames:
-            self._save(obj=job_return.return_value, filename=filename, output_dir=output_dir)
+            # remove "prediction" field from job return-value if it exists before saving.
+            # otherwise, this might destroy the structure of the saved job return-value.
+            obj = job_return.return_value
+            if isinstance(obj, dict) and "prediction" in obj:
+                obj = dict(obj)
+                obj.pop("prediction")
+            self._save(obj=obj, filename=filename, output_dir=output_dir)
 
     def on_multirun_end(self, config: DictConfig, **kwargs: Any) -> None:
         job_ids: list[str] | list[int]
