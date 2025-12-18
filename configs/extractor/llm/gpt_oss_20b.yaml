@@ -21,5 +21,8 @@ max_tokens: 8192
 # this is the maximum context window of GPT-OSS-20B
 context_window: 131072
 
+timeout: 360 # default is 60
+max_retries: 3 # the default is 3
+
 # enable to correctly handle (i.e. remove) reasoning traces in the output
 is_chat_model: true
