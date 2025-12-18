@@ -19,6 +19,11 @@ def test_load_with_metadata():
     assert len(result) == 4
     assert isinstance(result, DictWithMetadata)
     assert result.metadata == {
+        "job_return_value": {
+            "output_file": "tests/fixtures/dataset/load_with_metadata/predictions/2025-12-16_17-14-35/2025-12-16_17-14-35_389616/predictions.jsonl",
+            "time_extraction": 41.152598176000026,
+            "time_pdf_conversion": 0.0015077599999813174,
+        },
         "overrides": [
             "pdf_directory=tests/fixtures/pdfs",
             "+request_parameters.extra_body.seed=42",
