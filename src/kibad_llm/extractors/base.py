@@ -82,6 +82,13 @@ def build_chat_message(
         schema_description = build_schema_description(
             schema=schema, **(schema_description_kwargs or {})
         )
+        logger.info(
+            f"\n{'=' * 80}\n"
+            f"📋 SCHEMA DESCRIPTION (for {role.name} message)\n"
+            f"{'=' * 80}\n"
+            f"{schema_description}\n"
+            f"{'=' * 80}\n"
+        )
         content = content.format(**{schema_description_placeholder: schema_description})
 
     # Check if input document is needed and insert it.
@@ -93,7 +100,14 @@ def build_chat_message(
                 f"input text (it contains '{{{document_placeholder}}}')."
             )
         content = content.format(**{document_placeholder: document})
-
+    logger.info(
+        f"\n{'=' * 80}\n"
+        f"💬 FINAL {role.name} MESSAGE\n"
+        f"Length: {len(content)} characters\n"
+        f"{'=' * 80}\n"
+        f"{content if len(content) <= 2000 else content[:2000] + '...[TRUNCATED]'}\n"
+        f"{'=' * 80}\n"
+    )
     return SimpleChatMessage(role=role, content=content), {
         "has_schema_description": message_requires_schema_description,
         "has_document": message_requires_document,
