@@ -48,7 +48,7 @@ def load_with_metadata(
         overrides_file = os.path.join(log, ".hydra", "overrides.yaml")
         with open(overrides_file) as f:
             overrides = yaml.safe_load(f)
-        metadata = {"overrides": overrides}
+        metadata = {"overrides": overrides, "job_return_value": job_return_value}
 
         # use output file from job return value
         file = job_return_value["output_file"]
