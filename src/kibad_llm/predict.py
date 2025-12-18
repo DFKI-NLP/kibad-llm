@@ -39,6 +39,10 @@ def predict(cfg: DictConfig) -> dict[str, Any]:
     # use start time as part of output folder to avoid overwriting previous results
     formatted_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S_%f")
 
+    # show hydra run log directory
+    hydra_cfg = HydraConfig.get()
+    logger.info(f"Run log directory: {hydra_cfg.runtime.output_dir}")
+
     data_base_path = Path(cfg.pdf_directory)
 
     # Create the dataset based on the sorted file names. This will define the cache key.
