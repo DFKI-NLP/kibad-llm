@@ -28,21 +28,23 @@ def _file_name_generator(file_names: list[str]):
 
 
 def get_git_info() -> dict[str, str | bool]:
-    """Get current git commit hash and dirty status.
+    """Get current git commit hash, branch name, and dirty status.
 
     Returns:
-        Dictionary with 'commit_hash' and 'is_dirty' keys.
+        Dictionary with 'commit_hash', 'branch', and 'is_dirty' keys.
     """
     try:
         repo = git.Repo(search_parent_directories=True)
         return {
             "commit_hash": repo.head.object.hexsha,
+            "branch": repo.active_branch.name,
             "is_dirty": repo.is_dirty(),
         }
     except (git.InvalidGitRepositoryError, git.GitCommandError) as e:
         logger.warning(f"Could not get git info: {e}")
         return {
             "commit_hash": "unknown",
+            "branch": "unknown",
             "is_dirty": False,
         }
 
