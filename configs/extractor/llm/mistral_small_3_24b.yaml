@@ -19,13 +19,12 @@ temperature: 0.0
 top_p: 1.0
 # presence_penalty and frequency_penalty are also standard if we need them
 
-# the default is None, so we set it to 4096,
+# the default is None, so we set it to 8192, to allow enough space for reasoning and output tokens
 # see https://github.com/DFKI-NLP/kibad-llm/issues/198#issuecomment-3666155251
 # 128K is max size for https://docs.mistral.ai/models/mistral-small-3-2-25-06
-max_tokens: 4096
+additional_kwargs.max_completion_tokens: 8192
 # enable to correctly handle (i.e. remove) reasoning traces in the output
 is_chat_model: true
-is_function_calling_model: false
 # Supports up to 128K tokens (max size for https://docs.mistral.ai/models/mistral-small-3-2-25-06).
 # Use lower value to save memory and improve performance
 context_window: 65536
