@@ -3,11 +3,11 @@
 # This requires a local deployment of the Ministral-3-14B-Reasoning-2512 model that is compatible with the OpenAI API.
 # See models/README.md for instructions.
 #
-# To use as an argument for `predict`, specify `extractor/llm=ministral_3_14b `
-#  --tokenizer_mode mistral --config_format mistral --load_format mistral \
-#  --reasoning-parser mistral --max-model-len 131072`
-#
-# The model is too big for the RTXA6000's memory, so run it on partitions with more memory (H100) or lower max-model-len
+# To use as an argument for `predict`, use `extractor/llm=ministral_3_14b`.
+# Run VLLM with `./run_with_llm.sh -v "mistralai/Ministral-3-14B-Reasoning-2512 --tokenizer_mode mistral
+#  --config_format mistral --load_format mistral --max-model-len 65536 --reasoning-parser mistral"`
+# See https://huggingface.co/mistralai/Ministral-3-14B-Reasoning-2512 for VLLM options
+# The model may be too large for the RTXA6000's memory, so run it on partitions with more memory (H100) or lower max-model-len
 
 _target_: llama_index.llms.openai_like.OpenAILikeVllm
 
@@ -20,14 +20,15 @@ temperature: 0.0
 top_p: 1.0
 # presence_penalty and frequency_penalty are also standard if we need them
 
-# the default is None, so we set it to 32768 (recommended for Qwen3_30B).
+# the default is None, so we set it to 4096,
+# see https://github.com/DFKI-NLP/kibad-llm/issues/198#issuecomment-3666155251
 # 128K is max size for https://docs.mistral.ai/models/ministral-3-14b-25-12
-max_tokens: 32768
+max_tokens: 4096
 # enable to correctly handle (i.e. remove) reasoning traces in the output
 is_chat_model: true
 is_function_calling_model: false
 # Supports up to 256K tokens (max size for https://docs.mistral.ai/models/ministral-3-14b-25-12).
-# Use lower value to save memory
-context_window: 131072
+# Use lower value to save memory and improve performance
+context_window: 65536
 timeout: 360
 max_retries: 3

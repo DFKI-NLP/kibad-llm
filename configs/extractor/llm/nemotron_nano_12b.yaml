@@ -3,7 +3,10 @@
 # This requires a local deployment of the NVIDIA-Nemotron-Nano-12B-v2 model that is compatible with the OpenAI API.
 # See models/README.md for instructions.
 #
-# To use as an argument for `predict`, specify `extractor/llm=nemotron_nano_12b --trust-remote-code`
+# To use as an argument for `predict`, use `extractor/llm=nemotron_nano_12b`.
+# Run VLLM with `./run_with_llm.sh -v "nvidia/NVIDIA-Nemotron-Nano-12B-v2 --trust-remote-code
+#  --max-num-seqs 64 --mamba_ssm_cache_dtype float32  --max-model-len 65536"`
+# See https://huggingface.co/nvidia/NVIDIA-Nemotron-Nano-12B-v2 for VLLM options
 
 _target_: llama_index.llms.openai_like.OpenAILikeVllm
 
@@ -16,13 +19,15 @@ temperature: 0.0
 top_p: 1.0
 # presence_penalty and frequency_penalty are also standard if we need them
 
-# the default is None, so we set it to 32,768 (https://huggingface.co/nvidia/NVIDIA-Nemotron-Nano-12B-v2)
-max_tokens: 32768
+# the default is None, so we set it to 4096,
+# see https://github.com/DFKI-NLP/kibad-llm/issues/198#issuecomment-3666155251
+# see also https://huggingface.co/nvidia/NVIDIA-Nemotron-Nano-12B-v2
+max_tokens: 4096
 # enable to correctly handle (i.e. remove) reasoning traces in the output
 is_chat_model: true
 is_function_calling_model: false
 # Supports up to 128K tokens (max size for https://huggingface.co/nvidia/NVIDIA-Nemotron-Nano-12B-v2).
-# Use lower value to save memory
-context_window: 131072
+# Use lower value to save memory and improve performance
+context_window: 65536
 timeout: 360
 max_retries: 3
