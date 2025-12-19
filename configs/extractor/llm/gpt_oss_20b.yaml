@@ -16,8 +16,6 @@ model: "openai/gpt-oss-20b"
 temperature: 0.0
 # presence_penalty and frequency_penalty are also standard if we need them
 
-# set maximum number of generated tokens
-max_tokens: 8192
 # this is the maximum context window of GPT-OSS-20B
 context_window: 131072
 
@@ -26,3 +24,8 @@ max_retries: 3 # the default is 3
 
 # enable to correctly handle (i.e. remove) reasoning traces in the output
 is_chat_model: true
+
+# Specify additional parameters to the request body.
+additional_kwargs:
+  # set maximum number of generated tokens
+  max_completion_tokens: 8192
