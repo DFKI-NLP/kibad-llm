@@ -9,7 +9,7 @@
 
 defaults:
   # We use a polished prompt template with additional instructions for better extraction performance.
-  - override /extractor/prompt_template: faktencheck_core_extended
+  - override /extractor/prompt_template: faktencheck_core_v1
 
 extractor:
   schema:
