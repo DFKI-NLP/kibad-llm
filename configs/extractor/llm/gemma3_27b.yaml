@@ -27,10 +27,10 @@ context_window: 131072
 timeout: 360
 max_retries: 3
 
-# the default is None, so we set it to 8192, to allow enough space for reasoning and output tokens
-# see https://github.com/DFKI-NLP/kibad-llm/issues/198#issuecomment-3666155251
-# see also https://huggingface.co/google/gemma-3-27b-it
 # Specify additional parameters to the request body.
 additional_kwargs:
   # set maximum number of generated tokens
+  # the default is None, so we set it to 8192, to allow enough space for reasoning and output tokens
+  # see https://github.com/DFKI-NLP/kibad-llm/issues/198#issuecomment-3666155251
+  # see also https://huggingface.co/google/gemma-3-27b-it
   max_completion_tokens: 8192
