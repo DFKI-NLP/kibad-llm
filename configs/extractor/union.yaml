@@ -3,7 +3,7 @@
 
 defaults:
   - llm: gpt_oss_20b
-  - prompt_template: with_schema
+  - prompt_template: default
   - request_parameters: default
 
 _target_: kibad_llm.extractors.UnionExtractor
