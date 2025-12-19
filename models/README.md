@@ -48,6 +48,10 @@ If you need a different version of vLLM, change `@0.12.0` to `@your.version.here
 
 Note: This may take some time, wait for `Application startup complete.`
 
+**Important**: For models other than gpt-oss-20B, please check the respective configs in configs/extractor/llm for
+additional command line arguments to vllm serve. For example, Qwen3 requires to specify the additional argument
+'--reasoning-parser deepseek_r1', Nemotron-Nano uses '--trust-remote-code' etc.
+
 query:
 
 ```bash
