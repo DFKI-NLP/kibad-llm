@@ -1,4 +1,4 @@
-# This prompt template is an extension of the default template (with_schema.yaml),
+# This prompt template is an extension of the default template,
 # mainly based on the field hints in the "Literaturdatenbank" documentation
 # (https://docs.google.com/document/d/1MXmzum7hgXNWC_D77TOqk7JclXeN9Io25us1HCU9MSg/edit?tab=t.0),
 # and are optimized for the smaller "core schema" (habitat, ecosystem type, taxa, biodiversity level).
