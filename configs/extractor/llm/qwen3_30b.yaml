@@ -26,9 +26,10 @@ context_window: 131072
 timeout: 360
 max_retries: 3
 
-# the default is None, so we set it to 8192, to allow enough space for reasoning and output tokens
-# see https://github.com/DFKI-NLP/kibad-llm/issues/198#issuecomment-3666155251
-# recommended are 32768 acc to https://huggingface.co/Qwen/Qwen3-30B-A3B-Thinking-2507
+# Specify additional parameters to the request body.
 additional_kwargs:
+  # the default is None, so we set it to 8192, to allow enough space for reasoning and output tokens
+  # see https://github.com/DFKI-NLP/kibad-llm/issues/198#issuecomment-3666155251
+  # recommended are 32768 acc to https://huggingface.co/Qwen/Qwen3-30B-A3B-Thinking-2507
   # set maximum number of generated tokens
   max_completion_tokens: 8192
