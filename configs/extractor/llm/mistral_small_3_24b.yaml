@@ -16,7 +16,6 @@ api_key: "dummy"
 model: "mistralai/Mistral-Small-3.2-24B-Instruct-2506"
 # try to be as deterministic as possible
 temperature: 0.0
-top_p: 1.0
 # presence_penalty and frequency_penalty are also standard if we need them
 
 # the default is None, so we set it to 8192, to allow enough space for reasoning and output tokens
