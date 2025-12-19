@@ -5,7 +5,7 @@
 #
 # To use as an argument for `predict`, use `extractor/llm=nemotron_nano_12b`.
 # Run VLLM with `./run_with_llm.sh -v "nvidia/NVIDIA-Nemotron-Nano-12B-v2 --trust-remote-code
-#  --max-num-seqs 64 --mamba_ssm_cache_dtype float32  --max-model-len 65536"`
+#  --max-num-seqs 64 --mamba_ssm_cache_dtype float32  --max-model-len 131072"`
 # See https://huggingface.co/nvidia/NVIDIA-Nemotron-Nano-12B-v2 for VLLM options
 
 _target_: llama_index.llms.openai_like.OpenAILikeVllm
@@ -27,6 +27,6 @@ additional_kwargs.max_completion_tokens: 8192
 is_chat_model: true
 # Supports up to 128K tokens (max size for https://huggingface.co/nvidia/NVIDIA-Nemotron-Nano-12B-v2).
 # Use lower value to save memory and improve performance
-context_window: 65536
+context_window: 131072
 timeout: 360
 max_retries: 3

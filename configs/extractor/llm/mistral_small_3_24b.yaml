@@ -5,7 +5,7 @@
 #
 # To use as an argument for `predict`, use `extractor/llm=mistral_small_3_24b`.
 # Run VLLM with `./run_with_llm.sh -v "mistralai/Mistral-Small-3.2-24B-Instruct-2506 --tokenizer_mode mistral
-#  --config_format mistral --load_format mistral --max-model-len 65536"`
+#  --config_format mistral --load_format mistral --max-model-len 131072"`
 # See https://huggingface.co/mistralai/Mistral-Small-3.2-24B-Instruct-2506 for VLLM options
 
 _target_: llama_index.llms.openai_like.OpenAILikeVllm
@@ -27,6 +27,6 @@ additional_kwargs.max_completion_tokens: 8192
 is_chat_model: true
 # Supports up to 128K tokens (max size for https://docs.mistral.ai/models/mistral-small-3-2-25-06).
 # Use lower value to save memory and improve performance
-context_window: 65536
+context_window: 131072
 timeout: 360
 max_retries: 3
