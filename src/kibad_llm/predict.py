@@ -15,6 +15,7 @@ from hydra.core.hydra_config import HydraConfig
 from hydra.utils import instantiate
 from llama_index.core import set_global_handler
 from omegaconf import DictConfig, OmegaConf
+from omegaconf.errors import OmegaConfBaseException
 
 from kibad_llm.config import PROJ_ROOT
 from kibad_llm.utils.datasets import wrap_map_func
@@ -49,6 +50,20 @@ def get_git_info() -> dict[str, str | bool]:
         }
 
 
+def get_run_log_dir() -> str | None:
+    """Get the Hydra run log directory from the HydraConfig.
+    If not possible (e.g. during integration tests), returns None.
+
+    Returns:
+        The Hydra run log directory as a string.
+    """
+    try:
+        return HydraConfig.get().runtime.output_dir
+    except (ValueError, OmegaConfBaseException) as e:
+        logger.warning(f"Could not get Hydra run log directory: {e}")
+        return None
+
+
 def predict(cfg: DictConfig) -> dict[str, Any]:
     """Run classification based information extraction on PDF files.
 
@@ -64,8 +79,9 @@ def predict(cfg: DictConfig) -> dict[str, Any]:
     formatted_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S_%f")
 
     # show hydra run log directory
-    hydra_cfg = HydraConfig.get()
-    logger.info(f"Run log directory: {hydra_cfg.runtime.output_dir}")
+    run_log_dir = get_run_log_dir()
+    if run_log_dir is not None:
+        logger.info(f"Run log directory: {run_log_dir}")
 
     # log git commit info
     git_info = get_git_info()
