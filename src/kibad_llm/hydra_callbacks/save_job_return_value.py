@@ -223,16 +223,21 @@ def multi_index_to_single(index: pd.MultiIndex, sep: str = ".") -> pd.Index:
     return pd.Index([_filter_nan_and_join(values, sep) for values in index.to_flat_index()])
 
 
-def append_overrides_from_return_value(
+def append_overrides_from_return_value_prediction(
     job_return: JobReturn, replace_existing: bool = False
 ) -> None:
-    """Append overrides from the job return-value to the job return overrides.
+    """Append overrides from the job return-value's "prediction" field to the job return object's overrides.
     Args:
         job_return (JobReturn): The job return object.
         replace_existing (bool, optional): If True, replace existing overrides.
     """
-    if isinstance(job_return.return_value, dict) and "overrides" in job_return.return_value:
-        new_overrides = job_return.return_value.pop("overrides")
+    if (
+        isinstance(job_return.return_value, dict)
+        and "prediction" in job_return.return_value
+        and isinstance(job_return.return_value["prediction"], dict)
+        and "overrides" in job_return.return_value["prediction"]
+    ):
+        new_overrides = job_return.return_value["prediction"].pop("overrides")
         if new_overrides:
             overrides = []
             if job_return.overrides is not None and not replace_existing:
@@ -331,7 +336,7 @@ class SaveJobReturnValueCallback(Callback):
         self.path_id = path_id
 
     def on_job_end(self, config: DictConfig, job_return: JobReturn, **kwargs: Any) -> None:
-        append_overrides_from_return_value(
+        append_overrides_from_return_value_prediction(
             job_return, replace_existing=self.multirun_replace_existing_overrides
         )
         self.job_returns.append(job_return)
@@ -342,7 +347,13 @@ class SaveJobReturnValueCallback(Callback):
                 file.write(f"{output_dir}\n")
 
         for filename in self.filenames:
-            self._save(obj=job_return.return_value, filename=filename, output_dir=output_dir)
+            # remove "prediction" field from job return-value if it exists before saving.
+            # otherwise, this might destroy the structure of the saved job return-value.
+            obj = job_return.return_value
+            if isinstance(obj, dict) and "prediction" in obj:
+                obj = dict(obj)
+                obj.pop("prediction")
+            self._save(obj=obj, filename=filename, output_dir=output_dir)
 
     def on_multirun_end(self, config: DictConfig, **kwargs: Any) -> None:
         job_ids: list[str] | list[int]
