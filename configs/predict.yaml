@@ -13,7 +13,6 @@
 
 
 defaults:
-  - _self_
   - paths: default
   - hydra: default
   # The PDF reader gets the PDF path as positional argument and needs to return a string with the extracted text.
@@ -26,6 +25,7 @@ defaults:
   # Note that multiple experiments (if they do not require other dependent settings) can be easily executed
   # in a single multi-run for fast reproducibility.
   - experiment/predict: null
+  - _self_
 
 print_config: True
 
