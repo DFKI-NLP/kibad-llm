@@ -3,6 +3,9 @@
 # (https://docs.google.com/document/d/1MXmzum7hgXNWC_D77TOqk7JclXeN9Io25us1HCU9MSg/edit?tab=t.0),
 # and are optimized for the smaller "core schema" (habitat, ecosystem type, taxa, biodiversity level).
 
+defaults:
+  - default
+
 system_message: |
   Bitte lies den folgenden Text vollständig.
 
@@ -28,13 +31,4 @@ system_message: |
 
   {schema_description}
 
-user_message: |
-  Dokument in Markdown Format:
-
-  {document}
-
-# This indicates where to insert the schema description and the document text in the system and/or user message.
-# The schema_description_placeholder should be present in a message if a schema is provided.
-# The document_placeholder needs to be present in either the system or user message.
-schema_description_placeholder: schema_description
-document_placeholder: document
+# user_message: ... (not modified from default.yaml)
