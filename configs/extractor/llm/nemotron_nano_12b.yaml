@@ -18,10 +18,6 @@ model: "nvidia/NVIDIA-Nemotron-Nano-12B-v2"
 temperature: 0.0
 # presence_penalty and frequency_penalty are also standard if we need them
 
-# the default is None, so we set it to 8192, to allow enough space for reasoning and output tokens
-# see https://github.com/DFKI-NLP/kibad-llm/issues/198#issuecomment-3666155251
-# see also https://huggingface.co/nvidia/NVIDIA-Nemotron-Nano-12B-v2
-additional_kwargs.max_completion_tokens: 8192
 # enable to correctly handle (i.e. remove) reasoning traces in the output
 is_chat_model: true
 # Supports up to 128K tokens (max size for https://huggingface.co/nvidia/NVIDIA-Nemotron-Nano-12B-v2).
@@ -29,3 +25,10 @@ is_chat_model: true
 context_window: 131072
 timeout: 360
 max_retries: 3
+
+# the default is None, so we set it to 8192, to allow enough space for reasoning and output tokens
+# see https://github.com/DFKI-NLP/kibad-llm/issues/198#issuecomment-3666155251
+# see also https://huggingface.co/nvidia/NVIDIA-Nemotron-Nano-12B-v2
+additional_kwargs:
+  # set maximum number of generated tokens
+  max_completion_tokens: 8192
