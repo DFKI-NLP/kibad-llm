@@ -362,6 +362,12 @@ class SaveJobReturnValueCallback(Callback):
             job_ids = overrides_to_identifiers(
                 overrides_per_result, sep=self.multirun_overrides_separator
             )
+            if len(set(job_ids)) < len(job_ids):
+                self.log.warning(
+                    "Job identifiers created from overrides are not unique! "
+                    "Use the job indexes instead."
+                )
+                job_ids = list(range(len(self.job_returns)))
         else:
             job_ids = list(range(len(self.job_returns)))
 
