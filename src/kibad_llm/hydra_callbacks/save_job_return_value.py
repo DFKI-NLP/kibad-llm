@@ -199,6 +199,30 @@ def identifier_to_dict(identifier: str, sep: str = "-") -> dict[str, str]:
     return override_dict
 
 
+def overrides_to_dict(
+    overrides: Sequence[str], remove_plus_prefix: bool = False
+) -> dict[str, str]:
+    """Convert a list of overrides to a dictionary.
+
+    Example:
+        >>> overrides = ["a=1", "b=2", "+c=3"]
+        >>> overrides_to_dict(overrides, remove_plus_prefix=True)
+        {'a': '1', 'b': '2', 'c': '3'}
+    Args:
+        overrides (list[str]): The list of overrides.
+        remove_plus_prefix (bool, optional): If True, remove the '+' prefix from keys. Defaults to False.
+    Returns:
+        dict[str, str]: The dictionary of overrides.
+    """
+    override_dict = {}
+    for override in overrides:
+        key, value = override.split("=", 1)
+        if remove_plus_prefix and key.startswith("+"):
+            key = key[1:]
+        override_dict[key] = value
+    return override_dict
+
+
 def _filter_nan_and_join(values: Iterable, sep: str) -> str:
     return sep.join([v for v in values if not isinstance(v, float) or not math.isnan(v)])
 
@@ -276,6 +300,9 @@ class SaveJobReturnValueCallback(Callback):
     multirun_create_ids_from_overrides: bool (default: False)
         Create job identifiers from the overrides of the jobs in a multi-run. If False, the job index is used as
         identifier.
+    multirun_add_overrides_as_dict: bool (default: False)
+        If True, add the overrides as a dictionary to each job return-value in a multi-run
+        under the key "overrides".
     multirun_job_id_key: str (default: "job_id")
         The key to use for the job identifiers in the integrated multi-run result.
     multirun_convert_job_ids: bool (default: False)
@@ -309,6 +336,7 @@ class SaveJobReturnValueCallback(Callback):
         multirun_create_ids_from_overrides: bool = True,
         multirun_job_id_key: str = "job_id",
         multirun_convert_job_ids: bool = False,
+        multirun_add_overrides_as_dict: bool = False,
         multirun_show_file_contents: list[str] | None = None,
         multirun_overrides_separator: str = "-",
         multirun_replace_existing_overrides: bool = False,
@@ -325,6 +353,7 @@ class SaveJobReturnValueCallback(Callback):
         self.multirun_aggregator_blacklist = multirun_aggregator_blacklist
         self.sort_markdown_columns = sort_markdown_columns
         self.multirun_create_ids_from_overrides = multirun_create_ids_from_overrides
+        self.multirun_add_overrides_as_dict = multirun_add_overrides_as_dict
         self.multirun_job_id_key = multirun_job_id_key
         self.multirun_convert_job_ids = multirun_convert_job_ids
         self.multirun_overrides_separator = multirun_overrides_separator
@@ -370,6 +399,12 @@ class SaveJobReturnValueCallback(Callback):
                 job_ids = list(range(len(self.job_returns)))
         else:
             job_ids = list(range(len(self.job_returns)))
+
+        if self.multirun_add_overrides_as_dict:
+            for jr in self.job_returns:
+                jr.return_value["overrides"] = overrides_to_dict(
+                    jr.overrides or [], remove_plus_prefix=True
+                )
 
         if self.integrate_multirun_result:
             # rearrange the job return-values of all jobs from a multi-run into a dict of lists (maybe nested),
