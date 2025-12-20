@@ -13,7 +13,8 @@
 
 
 defaults:
-  - paths: default
+  - _self_
+  - paths: predict
   - hydra: default
   # The PDF reader gets the PDF path as positional argument and needs to return a string with the extracted text.
   - pdf_reader: pymupdf4llm
@@ -25,7 +26,6 @@ defaults:
   # Note that multiple experiments (if they do not require other dependent settings) can be easily executed
   # in a single multi-run for fast reproducibility.
   - experiment/predict: null
-  - _self_
 
 print_config: True
 
@@ -49,7 +49,3 @@ store_text_in_predictions: False
 # https://huggingface.co/docs/datasets/v1.10.0/package_reference/main_classes.html#datasets.Dataset.map
 pdf_reader_num_proc: null
 extractor_num_proc: null
-
-paths:
-  # path to logging directory
-  log_dir: ${paths.save_dir}/logs/predict
