@@ -361,7 +361,7 @@ class SaveJobReturnValueCallback(Callback):
         If True, replace existing overrides in the job return-value with the overrides from the job return
         object if available. If False, the overrides from the job return-value are only appended if no overrides
         are available in the job return object.
-    multirun_group_by: str or list[str] (default: None)
+    multirun_markdown_group_by: str or list[str] (default: None)
         The column(s) to group by when saving the multi-run result as markdown file. For numeric columns,
         the mean and std are calculated. For non-numeric columns, a list of values is created. If None,
         no grouping is applied.
@@ -391,7 +391,7 @@ class SaveJobReturnValueCallback(Callback):
         multirun_show_file_contents: list[str] | None = None,
         multirun_overrides_separator: str = "-",
         multirun_replace_existing_overrides: bool = False,
-        multirun_group_by: str | list[str] | None = None,
+        multirun_markdown_group_by: str | list[str] | None = None,
         multirun_markdown_transpose: bool = False,
         paths_file: str | None = None,
         path_id: str | None = None,
@@ -411,9 +411,9 @@ class SaveJobReturnValueCallback(Callback):
         self.multirun_convert_job_ids = multirun_convert_job_ids
         self.multirun_overrides_separator = multirun_overrides_separator
         self.multirun_replace_existing_overrides = multirun_replace_existing_overrides
-        if isinstance(multirun_group_by, str):
-            multirun_group_by = [multirun_group_by]
-        self.multirun_group_by = multirun_group_by
+        if isinstance(multirun_markdown_group_by, str):
+            multirun_markdown_group_by = [multirun_markdown_group_by]
+        self.multirun_markdown_group_by = multirun_markdown_group_by
         self.multirun_markdown_transpose = multirun_markdown_transpose
         self.markdown_round_digits = markdown_round_digits
         self.multirun_paths_file = multirun_paths_file
@@ -537,7 +537,7 @@ class SaveJobReturnValueCallback(Callback):
                 filename=filename,
                 output_dir=output_dir,
                 is_tabular_data=self.integrate_multirun_result,
-                markdown_group_by=self.multirun_group_by,
+                markdown_group_by=self.multirun_markdown_group_by,
             )
             # if available, also save the aggregated result
             if obj_aggregated is not None:
