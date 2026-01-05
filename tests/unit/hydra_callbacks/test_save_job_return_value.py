@@ -6,7 +6,7 @@ import pytest
 
 from kibad_llm.hydra_callbacks import SaveJobReturnValueCallback
 from kibad_llm.hydra_callbacks.save_job_return_value import (
-    dicts_to_overrides,
+    dict_to_overrides,
     overrides_to_identifiers,
     remove_common_overrides,
 )
@@ -518,14 +518,13 @@ class TestSaveJobReturnValueCallback:
             pytest.fail(f"Unsupported extension: {extension}")
 
 
-def test_dicts_to_overrides():
-    dicts = [{"a": 1, "b": 2}, {"+c": 3}]
-    assert dicts_to_overrides(dicts) == [["a=1", "b=2"], ["+c=3"]]
+def test_dict_to_overrides():
+    assert dict_to_overrides({"a": 1, "b": 2}) == ["a=1", "b=2"]
 
 
-def test_dicts_to_overrides_remove_na():
-    dicts = [{"a": 1, "b": None}, {"+c": 3, "d": float("nan")}]
-    assert dicts_to_overrides(dicts, remove_na=True) == [["a=1"], ["+c=3"]]
+def test_dict_to_overrides_remove_na():
+    assert dict_to_overrides({"a": 1, "b": None}, remove_na=True) == ["a=1"]
+    assert dict_to_overrides({"+c": 3, "d": float("nan")}, remove_na=True) == ["+c=3"]
 
 
 def test_remove_common_overrides():

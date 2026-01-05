@@ -167,7 +167,7 @@ def remove_common_overrides(
     else:
         differing_data = as_df
     differing_as_dicts = [row.to_dict() for _, row in differing_data.iterrows()]
-    differing_overrides = dicts_to_overrides(differing_as_dicts, remove_na=True)
+    differing_overrides = [dict_to_overrides(d, remove_na=True) for d in differing_as_dicts]
     return differing_overrides
 
 
@@ -250,28 +250,22 @@ def overrides_to_dict(
     return override_dict
 
 
-def dicts_to_overrides(
-    dicts: list[dict[Hashable, Any]], remove_na: bool = False
-) -> list[list[str]]:
-    """Convert a list of dictionaries to a list of overrides.
+def dict_to_overrides(d: dict[Hashable, Any], remove_na: bool = False) -> list[str]:
+    """Convert a a dictionary to a overrides.
     Example:
-        >>> dicts = [{"a": 1, "b": 2}, {"+c": 3}]
-        >>> dicts_to_overrides(dicts)
-        [['a=1', 'b=2'], ['+c=3']]
-
-        >>> dicts = [{"a": 1, "b": None}, {"+c": 3, "d": float('nan')}]
-        >>> dicts_to_overrides(dicts, remove_na=True)
-        [['a=1'], ['+c=3']]
+        >>> dict_to_overrides({"a": 1, "b": 2})
+        ['a=1', 'b=2']
+        >>> dict_to_overrides({"a": 1, "b": None}, remove_na=True)
+        ['a=1']
+        >>> dict_to_overrides({"+c": 3, "d": float('nan')}, remove_na=True)
+        ['+c=3']
     """
-    overrides_list = []
-    for d in dicts:
-        overrides = []
-        for key, value in d.items():
-            if remove_na and (value is None or (isinstance(value, float) and math.isnan(value))):
-                continue
-            overrides.append(f"{key}={value}")
-        overrides_list.append(overrides)
-    return overrides_list
+    overrides = []
+    for key, value in d.items():
+        if remove_na and (value is None or (isinstance(value, float) and math.isnan(value))):
+            continue
+        overrides.append(f"{key}={value}")
+    return overrides
 
 
 def _filter_nan_and_join(values: Iterable, sep: str) -> str:
