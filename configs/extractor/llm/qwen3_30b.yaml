@@ -8,7 +8,7 @@
 #  --reasoning-parser deepseek_r1"`
 # See https://huggingface.co/Qwen/Qwen3-30B-A3B-Thinking-2507 for VLLM options
 
-_target_: llama_index.llms.openai_like.OpenAILikeVllm
+_target_: kibad_llm.llms.OpenAILikeVllm
 
 # get the API base URL from the environment variable LLM_API_BASE, defaulting to http://127.0.0.1:5001/v1
 api_base: ${oc.env:LLM_API_BASE,http://127.0.0.1:5001/v1}
