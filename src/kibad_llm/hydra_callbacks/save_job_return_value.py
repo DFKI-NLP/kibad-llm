@@ -1,4 +1,4 @@
-from collections.abc import Generator, Hashable, Iterable, Sequence
+from collections.abc import Generator, Hashable, Iterable
 import json
 import logging
 import math
@@ -143,7 +143,7 @@ def unflatten_dict(
 
 
 def remove_common_overrides(
-    overrides_per_result: Iterable[Sequence[str]],
+    overrides_per_result: Iterable[Iterable[str]],
 ) -> list[list[str]]:
     """Removes the common overrides from a list of lists of overrides.
 
@@ -172,7 +172,7 @@ def remove_common_overrides(
 
 
 def overrides_to_identifiers(
-    overrides_per_result: Iterable[Sequence[str]], sep: str = "-", remove_common: bool = True
+    overrides_per_result: Iterable[Iterable[str]], sep: str = "-", remove_common: bool = True
 ) -> list[str] | None:
     """Converts a list of lists of overrides to a list of identifiers.
 
@@ -225,7 +225,7 @@ def identifier_to_dict(identifier: str, sep: str = "-") -> dict[str, str]:
 
 
 def overrides_to_dict(
-    overrides: Sequence[str], remove_plus_prefix: bool = False
+    overrides: Iterable[str], remove_plus_prefix: bool = False
 ) -> dict[str, str]:
     """Convert a list of overrides to a dictionary.
 
