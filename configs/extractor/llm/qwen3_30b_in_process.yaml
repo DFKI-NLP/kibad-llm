@@ -19,7 +19,7 @@
 _target_: kibad_llm.llms.VllmInProcess
 
 # HuggingFace model id (or local path)
-model: "openai/gpt-oss-20b"
+model: "Qwen/Qwen3-30B-A3B-Thinking-2507"
 
 # Initialization parameters for vLLM LLM engine.
 # See https://docs.vllm.ai/en/v0.12.0/api/vllm/entrypoints/llm/ for details.
