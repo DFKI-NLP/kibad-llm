@@ -653,6 +653,8 @@ class SaveJobReturnValueCallback(Callback):
                 result_non_numeric = result_grouped[cols_non_numeric].agg(list)
                 # combine both results
                 result = pd.concat([result_numeric, result_non_numeric], axis=1)
+                # drop columns that are completely NaN (otherwise to_markdown fails)
+                result = result.dropna(axis=1, how="all")
 
             if self.markdown_round_digits is not None and (
                 isinstance(result, pd.DataFrame) or result.dtype != "object"
