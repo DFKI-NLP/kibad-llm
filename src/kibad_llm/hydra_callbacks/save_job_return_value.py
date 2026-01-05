@@ -365,6 +365,8 @@ class SaveJobReturnValueCallback(Callback):
         The column(s) to group by when saving the multi-run result as markdown file. For numeric columns,
         the mean and std are calculated. For non-numeric columns, a list of values is created. If None,
         no grouping is applied.
+    multirun_markdown_transpose: bool (default: False)
+        If True, transpose the markdown table for multi-run results.
     paths_file: str (default: None)
         The file to save the paths of the log directories to. If None, the paths are not saved.
     path_id: str (default: None)
@@ -390,6 +392,7 @@ class SaveJobReturnValueCallback(Callback):
         multirun_overrides_separator: str = "-",
         multirun_replace_existing_overrides: bool = False,
         multirun_group_by: str | list[str] | None = None,
+        multirun_markdown_transpose: bool = False,
         paths_file: str | None = None,
         path_id: str | None = None,
         multirun_paths_file: str | None = None,
@@ -411,6 +414,7 @@ class SaveJobReturnValueCallback(Callback):
         if isinstance(multirun_group_by, str):
             multirun_group_by = [multirun_group_by]
         self.multirun_group_by = multirun_group_by
+        self.multirun_markdown_transpose = multirun_markdown_transpose
         self.markdown_round_digits = markdown_round_digits
         self.multirun_paths_file = multirun_paths_file
         self.multirun_path_id = multirun_path_id
@@ -654,6 +658,9 @@ class SaveJobReturnValueCallback(Callback):
                 isinstance(result, pd.DataFrame) or result.dtype != "object"
             ):
                 result = result.round(self.markdown_round_digits)
+
+            if self.multirun_markdown_transpose:
+                result = result.T
 
             with open(str(output_dir / filename), "w") as file:
                 file.write(result.to_markdown(index=len(job_id_columns) == 0))
