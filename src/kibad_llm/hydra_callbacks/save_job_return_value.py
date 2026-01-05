@@ -223,6 +223,30 @@ def overrides_to_dict(
     return override_dict
 
 
+def dicts_to_overrides(
+    dicts: list[dict[Hashable, Any]], remove_na: bool = False
+) -> list[list[str]]:
+    """Convert a list of dictionaries to a list of overrides.
+    Example:
+        >>> dicts = [{"a": 1, "b": 2}, {"+c": 3}]
+        >>> dicts_to_overrides(dicts)
+        [['a=1', 'b=2'], ['+c=3']]
+
+        >>> dicts = [{"a": 1, "b": None}, {"+c": 3, "d": float('nan')}]
+        >>> dicts_to_overrides(dicts, remove_na=True)
+        [['a=1'], ['+c=3']]
+    """
+    overrides_list = []
+    for d in dicts:
+        overrides = []
+        for key, value in d.items():
+            if remove_na and (value is None or (isinstance(value, float) and math.isnan(value))):
+                continue
+            overrides.append(f"{key}={value}")
+        overrides_list.append(overrides)
+    return overrides_list
+
+
 def _filter_nan_and_join(values: Iterable, sep: str) -> str:
     return sep.join([v for v in values if not isinstance(v, float) or not math.isnan(v)])
 
