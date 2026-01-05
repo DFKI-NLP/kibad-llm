@@ -172,10 +172,9 @@ def remove_common_overrides(
 
 
 def overrides_to_identifiers(
-    overrides_per_result: list[Sequence[str]], sep: str = "-"
+    overrides_per_result: Iterable[Sequence[str]], sep: str = "-", remove_common: bool = True
 ) -> list[str] | None:
-    """Converts a list of lists of overrides to a list of identifiers. But takes only the overrides
-    into account, that are not identical for all results.
+    """Converts a list of lists of overrides to a list of identifiers.
 
     Example:
         >>> overrides_per_result = [
@@ -189,13 +188,15 @@ def overrides_to_identifiers(
     Args:
         overrides_per_result (list[list[str]]): A list of lists of overrides.
         sep (str, optional): The separator to use between the overrides. Defaults to "-".
+        remove_common (bool, optional): If True, remove common overrides. Defaults to True.
 
     Returns:
         list[str] | None: A list of identifiers or None if the identifiers are not unique.
     """
 
-    differing_overrides = remove_common_overrides(overrides_per_result)
-    identifiers = [sep.join(overrides) for overrides in differing_overrides]
+    if remove_common:
+        overrides_per_result = remove_common_overrides(overrides_per_result)
+    identifiers = [sep.join(overrides) for overrides in overrides_per_result]
     # if not unique identifiers, return None
     if len(set(identifiers)) < len(identifiers):
         return None
@@ -431,7 +432,7 @@ class SaveJobReturnValueCallback(Callback):
         if self.multirun_create_ids_from_overrides:
             overrides_per_result = [jr.overrides or [] for jr in self.job_returns]
             job_ids = overrides_to_identifiers(
-                overrides_per_result, sep=self.multirun_overrides_separator
+                overrides_per_result, sep=self.multirun_overrides_separator, remove_common=True
             )
             if job_ids is None:
                 self.log.warning(
