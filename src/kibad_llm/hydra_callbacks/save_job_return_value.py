@@ -219,11 +219,8 @@ def identifier_to_dict(identifier: str, sep: str = "-") -> dict[str, str]:
         dict[str, str]: The dictionary of overrides.
     """
     overrides = identifier.split(sep)
-    override_dict = {}
-    for override in overrides:
-        key, value = override.split("=", 1)
-        override_dict[key] = value
-    return override_dict
+    as_dict = overrides_to_dict(overrides)
+    return as_dict
 
 
 def overrides_to_dict(
