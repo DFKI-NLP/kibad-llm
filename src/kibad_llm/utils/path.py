@@ -15,7 +15,7 @@ def list_subdirectories_as_string(dir_path: str | list[str] | None, pattern: str
     if dir_path is None:
         return ""
 
-    if not isinstance(dir_path, list):
+    if isinstance(dir_path, str):
         dir_path = [dir_path]
     paths: list[str] = []
     for dir_path in dir_path:
