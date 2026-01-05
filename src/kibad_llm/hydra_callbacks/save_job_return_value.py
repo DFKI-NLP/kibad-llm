@@ -249,7 +249,7 @@ def overrides_to_dict(
 
 
 def dict_to_overrides(d: dict[Hashable, Any], remove_na: bool = False) -> list[str]:
-    """Convert a a dictionary to a overrides.
+    """Convert a dictionary to a overrides.
     Example:
         >>> dict_to_overrides({"a": 1, "b": 2})
         ['a=1', 'b=2']
