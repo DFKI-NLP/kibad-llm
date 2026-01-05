@@ -1,4 +1,4 @@
-from collections.abc import Generator, Iterable, Sequence
+from collections.abc import Generator, Hashable, Iterable, Sequence
 import json
 import logging
 import math
@@ -142,9 +142,38 @@ def unflatten_dict(
     return result
 
 
+def remove_common_overrides(
+    overrides_per_result: Iterable[Sequence[str]],
+) -> list[list[str]]:
+    """Removes the common overrides from a list of lists of overrides.
+
+    Example:
+        >>> overrides_per_result = [
+        ...     ["a=1", "b=2", "c=3"],
+        ...     ["a=1", "b=2", "c=4"],
+        ...     ["a=1", "b=3", "c=3"],
+        ]
+        >>> remove_common_overrides(overrides_per_result)
+        [['b=2', 'c=3'], ['b=2', 'c=4'], ['b=3', 'c=3']]
+    Args:
+        overrides_per_result (list[list[str]]): A list of lists of overrides.
+    Returns:
+        list[list[str]]: A list of lists of overrides with common overrides removed.
+    """
+    as_dicts = [overrides_to_dict(overrides) for overrides in overrides_per_result]
+    as_df = pd.DataFrame(as_dicts)
+    if len(as_df) > 1:
+        differing_data = as_df.loc[:, as_df.nunique(dropna=False) > 1]
+    else:
+        differing_data = as_df
+    differing_as_dicts = [row.to_dict() for _, row in differing_data.iterrows()]
+    differing_overrides = dicts_to_overrides(differing_as_dicts, remove_na=True)
+    return differing_overrides
+
+
 def overrides_to_identifiers(
     overrides_per_result: list[Sequence[str]], sep: str = "-"
-) -> list[str]:
+) -> list[str] | None:
     """Converts a list of lists of overrides to a list of identifiers. But takes only the overrides
     into account, that are not identical for all results.
 
@@ -162,17 +191,15 @@ def overrides_to_identifiers(
         sep (str, optional): The separator to use between the overrides. Defaults to "-".
 
     Returns:
-        list[str]: A list of identifiers.
+        list[str] | None: A list of identifiers or None if the identifiers are not unique.
     """
-    # get the overrides that are not identical for all results
-    overrides_per_result_transposed = np.array(overrides_per_result).T.tolist()
-    indices = [
-        i for i, entries in enumerate(overrides_per_result_transposed) if len(set(entries)) > 1
-    ]
-    # convert the overrides to identifiers
-    identifiers = [
-        sep.join([overrides[idx] for idx in indices]) for overrides in overrides_per_result
-    ]
+
+    differing_overrides = remove_common_overrides(overrides_per_result)
+    identifiers = [sep.join(overrides) for overrides in differing_overrides]
+    # if not unique identifiers, return None
+    if len(set(identifiers)) < len(identifiers):
+        return None
+
     return identifiers
 
 
@@ -409,19 +436,19 @@ class SaveJobReturnValueCallback(Callback):
             self._save(obj=obj, filename=filename, output_dir=output_dir)
 
     def on_multirun_end(self, config: DictConfig, **kwargs: Any) -> None:
-        job_ids: list[str] | list[int]
+        job_ids: list[str] | list[int] | None = None
         if self.multirun_create_ids_from_overrides:
             overrides_per_result = [jr.overrides or [] for jr in self.job_returns]
             job_ids = overrides_to_identifiers(
                 overrides_per_result, sep=self.multirun_overrides_separator
             )
-            if len(set(job_ids)) < len(job_ids):
+            if job_ids is None:
                 self.log.warning(
                     "Job identifiers created from overrides are not unique! "
                     "Use the job indexes instead."
                 )
-                job_ids = list(range(len(self.job_returns)))
-        else:
+
+        if job_ids is None:
             job_ids = list(range(len(self.job_returns)))
 
         if self.multirun_add_overrides_as_dict:
