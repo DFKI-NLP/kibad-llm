@@ -39,7 +39,7 @@ name: "default"
 # If set, replaces dataset.predictions.log in multi-run mode.
 predictions_multirun_logs: null
 # Adjust hydra multi-run settings to run over all subdirectories of the specified
-# log directory. Note that dataset.predictions.log takes precedence if both are set.
+# log directories. Note that dataset.predictions.log takes precedence if both are set.
 hydra:
   mode: MULTIRUN
   sweeper:
