@@ -1,4 +1,4 @@
-# Example configuration for running GPT-OSS-20B fully in-process via vLLM (Python API)
+# Example configuration for running Qwen/Qwen3-30B-A3B-Thinking-2507 fully in-process via vLLM (Python API)
 #
 # - No OpenAI-compatible HTTP server is required; inference runs inside the current Python process.
 # - Uses vllm.LLM.chat(...), which formats the prompt with the model's chat template
@@ -26,6 +26,7 @@ model: "openai/gpt-oss-20b"
 vllm_kwargs:
   tensor_parallel_size: 1  # shard across N GPUs
   max_model_len: 131072
+  reasoning_parser: "deepseek_r1"
   # gpu_memory_utilization: 0.9 # fraction of GPU memory reserved (impacts KV cache size)
   # dtype: "auto"
   # seed: 0

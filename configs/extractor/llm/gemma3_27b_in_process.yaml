@@ -1,4 +1,4 @@
-# Example configuration for running GPT-OSS-20B fully in-process via vLLM (Python API)
+# Example configuration for running Gemma3-27B-IT fully in-process via vLLM (Python API)
 #
 # - No OpenAI-compatible HTTP server is required; inference runs inside the current Python process.
 # - Uses vllm.LLM.chat(...), which formats the prompt with the model's chat template
@@ -19,12 +19,13 @@
 _target_: kibad_llm.llms.VllmInProcess
 
 # HuggingFace model id (or local path)
-model: "openai/gpt-oss-20b"
+model: "google/gemma-3-27b-it"
 
 # Initialization parameters for vLLM LLM engine.
 # See https://docs.vllm.ai/en/v0.12.0/api/vllm/entrypoints/llm/ for details.
 vllm_kwargs:
   tensor_parallel_size: 1  # shard across N GPUs
+  hf_token: ${oc.env:HF_TOKEN}
   max_model_len: 131072
   # gpu_memory_utilization: 0.9 # fraction of GPU memory reserved (impacts KV cache size)
   # dtype: "auto"
