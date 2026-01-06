@@ -267,7 +267,6 @@ def _is_terminal_schema(
     if not isinstance(node, ABCMapping):
         return False
 
-
     if _is_objectish(node) or _is_arrayish(node):
         return False
 
@@ -309,10 +308,7 @@ def _is_terminal_schema(
     for key in ("anyOf", "oneOf"):
         subs = node.get(key)
         if isinstance(subs, list) and subs:
-            return all(
-                _is_terminal_schema(root, s, _ref_stack=_ref_stack)
-                for s in subs
-            )
+            return all(_is_terminal_schema(root, s, _ref_stack=_ref_stack) for s in subs)
 
     # allOf: allow annotation-only subschemas; terminal if:
     # - no subschema is object/array-ish AND
@@ -338,7 +334,9 @@ def _normalize_metadata_schema(metadata_schema: Mapping[str, Any]) -> dict[str, 
     """
 
     # full object schema
-    if isinstance(metadata_schema, ABCMapping) and isinstance(metadata_schema.get("properties"), ABCMapping):
+    if isinstance(metadata_schema, ABCMapping) and isinstance(
+        metadata_schema.get("properties"), ABCMapping
+    ):
         return dict(metadata_schema)
 
     # treat as properties dict
@@ -354,6 +352,7 @@ def _normalize_metadata_schema(metadata_schema: Mapping[str, Any]) -> dict[str, 
         "metadata_schema must be a mapping (either a full object schema with 'properties' "
         "or a mapping of metadata_field -> subschema)."
     )
+
 
 def _is_metadata_wrapper(
     node: Mapping[str, Any],
@@ -403,6 +402,7 @@ def _is_metadata_wrapper(
 
     return True
 
+
 def _wrap_terminal_node(
     terminal_node: Mapping[str, Any],
     *,
@@ -424,7 +424,9 @@ def _wrap_terminal_node(
     description = content_schema.pop("description", None)
 
     meta_props_any = metadata_obj_schema.get("properties", {})
-    meta_props: dict[str, Any] = dict(meta_props_any) if isinstance(meta_props_any, ABCMapping) else {}
+    meta_props: dict[str, Any] = (
+        dict(meta_props_any) if isinstance(meta_props_any, ABCMapping) else {}
+    )
 
     # If caller included a "content" property in metadata, we override it
     meta_props.pop(content_key, None)
@@ -481,7 +483,9 @@ def wrap_terminals_with_metadata(
 
         node_dict: dict[str, Any] = dict(node)
 
-        if _is_metadata_wrapper(node_dict, metadata_obj_schema=metadata_obj_schema, content_key=content_key):
+        if _is_metadata_wrapper(
+            node_dict, metadata_obj_schema=metadata_obj_schema, content_key=content_key
+        ):
             return node_dict
 
         if allow_wrap_here and _is_terminal_schema(root, node_dict):
@@ -500,7 +504,9 @@ def wrap_terminals_with_metadata(
         # object keywords
         props = node_dict.get("properties")
         if isinstance(props, ABCMapping):
-            node_dict["properties"] = {name: transform(spec, allow_wrap_here=True) for name, spec in props.items()}
+            node_dict["properties"] = {
+                name: transform(spec, allow_wrap_here=True) for name, spec in props.items()
+            }
 
         pat_props = node_dict.get("patternProperties")
         if isinstance(pat_props, ABCMapping):
@@ -537,7 +543,9 @@ def wrap_terminals_with_metadata(
         for defs_key in ("$defs", "definitions"):
             defs = node_dict.get(defs_key)
             if isinstance(defs, ABCMapping):
-                node_dict[defs_key] = {n: transform(s, allow_wrap_here=False) for n, s in defs.items()}
+                node_dict[defs_key] = {
+                    n: transform(s, allow_wrap_here=False) for n, s in defs.items()
+                }
 
         return node_dict
 
