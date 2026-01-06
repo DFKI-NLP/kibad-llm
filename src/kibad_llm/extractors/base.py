@@ -9,7 +9,12 @@ from typing import Any
 from jsonschema.validators import validator_for
 
 from kibad_llm.llms.base import LLM, MessageRole, SimpleChatMessage
-from kibad_llm.schema.utils import build_schema_description
+from kibad_llm.schema.utils import (
+    METADATA_SCHEMA_WITH_EVIDENCE_SHORTHAND,
+    WRAPPED_CONTENT_KEY,
+    build_schema_description,
+    wrap_terminals_with_metadata,
+)
 from kibad_llm.utils.log import warn_once
 
 logger = logging.getLogger(__name__)
@@ -233,6 +238,7 @@ def extract_from_text(
     llm: LLM | None = None,
     request_parameters: dict[str, Any] | None = None,
     return_reasoning: bool = False,
+    detect_evidence: bool = False,
     # deprecated arguments
     user_message: str | None = None,
     system_message: str | None = None,
@@ -261,6 +267,13 @@ def extract_from_text(
         request_parameters: Additional parameters to pass to the LLM chat call. If 'seed' is not provided,
             a seed is derived from the messages and added to request_parameters for determinism.
         return_reasoning: Whether to return the reasoning done by the model.
+        detect_evidence: Whether to detect evidence by wrapping value fields in the schema with
+            metadata (requires `schema` and `use_guided_decoding`). If True, the result includes an
+            additional key `structured_with_metadata` containing the raw structured output where each
+            extracted value is represented as an object with `content` plus metadata fields such as
+            `evidence_anchor` (a verbatim quote from the input text supporting the extracted content).
+            For nullable fields, the value may be `null` instead of a wrapped object.
+        user_message: Deprecated. Use prompt_template instead.
         **build_messages_kwargs: Additional keyword arguments for build_chat_messages.
 
     Returns:
@@ -308,10 +321,20 @@ def extract_from_text(
         seed = int(hashlib.sha256(seed_src.encode("utf-8")).hexdigest()[:8], 16)
         request_kwargs["seed"] = seed
 
+    original_schema = None
+
     if use_guided_decoding:
         if schema is None:
             raise ValueError(
                 "use_guided_decoding is True but no json schema provided for guided decoding"
+            )
+        if detect_evidence:
+            # store original schema and modify to include evidence field
+            original_schema = schema
+            schema = wrap_terminals_with_metadata(
+                schema,
+                metadata_schema=METADATA_SCHEMA_WITH_EVIDENCE_SHORTHAND,
+                content_key=WRAPPED_CONTENT_KEY,
             )
 
     # only proceed if we have an llm
@@ -339,7 +362,18 @@ def extract_from_text(
                 validator = validator_cls(schema)
                 validator.validate(data)
             # just assign if we validated successfully
-            out["structured"] = data
+            if original_schema is not None:
+                out["structured_with_metadata"] = data
+                data_without_metadata = strip_metadata(data, content_key=WRAPPED_CONTENT_KEY)
+                # validate stripped version against original schema
+                if validate_with_schema:
+                    validator_cls = validator_for(original_schema)
+                    validator_cls.check_schema(original_schema)
+                    validator = validator_cls(original_schema)
+                    validator.validate(data_without_metadata)
+                out["structured"] = data_without_metadata
+            else:
+                out["structured"] = data
 
         except Exception as e:
             error_msg = exception2error_msg(e)
