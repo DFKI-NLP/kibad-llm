@@ -14,14 +14,17 @@ api_key: ${oc.env:OPENAI_API_KEY}
 
 model: "gpt-5"
 
-# try to be as deterministic as possible
+# try to be as deterministic as possible.
+# Note: As of 2026/01/05 has no effect since
+# OpenAIResponses sets it to 1.0 for O1_MODELS which includes gpt-5
+# See https://github.com/run-llama/llama_index/blob/220e3603dba28c4261f0d618f1672768018fb52e/llama-index-integrations/llms/llama-index-llms-openai/llama_index/llms/openai/responses.py#L318
 temperature: 0.0
-top_p: 1.0
-
-max_completion_tokens: 8192
+max_output_tokens: 8192
+context_window: 131072
 
 # enable to correctly handle (i.e. remove) reasoning traces in the output
-is_chat_model: true
+# Note: Disabled since not available in https://developers.llamaindex.ai/python/framework-api-reference/llms/openai/#llama_index.llms.openai.OpenAIResponses
+# is_chat_model: true
 
 reasoning_options:
   # effort: low
@@ -30,6 +33,13 @@ reasoning_options:
 timeout: 360
 max_retries: 3
 
+# additional args to consider:
+# strict: True
+# top_p: 1.0
+
 # Add additional parameters to OpenAI request body.
-# additional_kwargs:
+additional_kwargs:
+  # kind of redundant to max_output_tokens, but suggested by the OpenAI API
+  max_completion_tokens: 8192
 #   ...
+

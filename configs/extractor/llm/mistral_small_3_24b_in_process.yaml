@@ -38,10 +38,16 @@ vllm_kwargs:
 # 1) ... vllm.SamplingParams values ...
 # See https://docs.vllm.ai/en/v0.12.0/api/vllm/sampling_params/ for details.
 temperature: 0.0
-top_p: 1.0
 max_tokens: 8192
+# Supports up to 128K tokens (max size for https://docs.mistral.ai/models/mistral-small-3-2-25-06).
+# Use lower value to save memory and improve performance
+context_window: 131072
+# Other params maybe to consider
+# top_p: 0.8 (some value < 1)
 # top_k: 50
 # repetition_penalty: 1.05
+# frequency_penalty: ...
+# seed?
 # stop: ["\n\n"]
 # 2) ... or direct parameters for the llm.chat(...) call (should be rarely needed).
 # See https://docs.vllm.ai/en/v0.12.0/api/vllm/entrypoints/llm/#vllm.entrypoints.llm.LLM.chat
