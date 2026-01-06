@@ -2,6 +2,9 @@
 # and the schema description in the user message since the conditional extractor adds the
 # system message just once but the user message for each schema.
 
+defaults:
+  - default
+
 system_message: |
   Lies das folgende Markdown-Dokument sorgfältig durch, damit du die darin enthaltenen
   biodiversitätsbezogenen Informationen extrahieren kannst.
@@ -17,9 +20,3 @@ user_message: |
   Keine zusätzlichen Felder, keine Erklärungen.
 
   {schema_description}
-
-# This indicates where to insert the schema description and the document text in the system and/or user message.
-# The schema_description_placeholder should be present in a message if a schema is provided.
-# The document_placeholder needs to be present in either the system or user message.
-schema_description_placeholder: schema_description
-document_placeholder: document

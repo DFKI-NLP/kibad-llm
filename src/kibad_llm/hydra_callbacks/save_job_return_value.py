@@ -1,4 +1,4 @@
-from collections.abc import Generator, Iterable, Sequence
+from collections.abc import Generator, Hashable, Iterable
 import json
 import logging
 import math
@@ -142,11 +142,39 @@ def unflatten_dict(
     return result
 
 
+def remove_common_overrides(
+    overrides_per_result: Iterable[Iterable[str]],
+) -> list[list[str]]:
+    """Removes the common overrides from a list of lists of overrides.
+
+    Example:
+        >>> overrides_per_result = [
+        ...     ["a=1", "b=2", "c=3"],
+        ...     ["a=1", "b=2", "c=4"],
+        ...     ["a=1", "b=3", "c=3"],
+        ]
+        >>> remove_common_overrides(overrides_per_result)
+        [['b=2', 'c=3'], ['b=2', 'c=4'], ['b=3', 'c=3']]
+    Args:
+        overrides_per_result (list[list[str]]): A list of lists of overrides.
+    Returns:
+        list[list[str]]: A list of lists of overrides with common overrides removed.
+    """
+    as_dicts = [overrides_to_dict(overrides) for overrides in overrides_per_result]
+    as_df = pd.DataFrame(as_dicts)
+    if len(as_df) > 1:
+        differing_data = as_df.loc[:, as_df.nunique(dropna=False) > 1]
+    else:
+        differing_data = as_df
+    differing_as_dicts = [row.to_dict() for _, row in differing_data.iterrows()]
+    differing_overrides = [dict_to_overrides(d, remove_na=True) for d in differing_as_dicts]
+    return differing_overrides
+
+
 def overrides_to_identifiers(
-    overrides_per_result: list[Sequence[str]], sep: str = "-"
-) -> list[str]:
-    """Converts a list of lists of overrides to a list of identifiers. But takes only the overrides
-    into account, that are not identical for all results.
+    overrides_per_result: Iterable[Iterable[str]], sep: str = "-", remove_common: bool = True
+) -> list[str] | None:
+    """Converts a list of lists of overrides to a list of identifiers.
 
     Example:
         >>> overrides_per_result = [
@@ -160,19 +188,19 @@ def overrides_to_identifiers(
     Args:
         overrides_per_result (list[list[str]]): A list of lists of overrides.
         sep (str, optional): The separator to use between the overrides. Defaults to "-".
+        remove_common (bool, optional): If True, remove common overrides. Defaults to True.
 
     Returns:
-        list[str]: A list of identifiers.
+        list[str] | None: A list of identifiers or None if the identifiers are not unique.
     """
-    # get the overrides that are not identical for all results
-    overrides_per_result_transposed = np.array(overrides_per_result).T.tolist()
-    indices = [
-        i for i, entries in enumerate(overrides_per_result_transposed) if len(set(entries)) > 1
-    ]
-    # convert the overrides to identifiers
-    identifiers = [
-        sep.join([overrides[idx] for idx in indices]) for overrides in overrides_per_result
-    ]
+
+    if remove_common:
+        overrides_per_result = remove_common_overrides(overrides_per_result)
+    identifiers = [sep.join(overrides) for overrides in overrides_per_result]
+    # if not unique identifiers, return None
+    if len(set(identifiers)) < len(identifiers):
+        return None
+
     return identifiers
 
 
@@ -192,18 +220,57 @@ def identifier_to_dict(identifier: str, sep: str = "-") -> dict[str, str]:
         dict[str, str]: The dictionary of overrides.
     """
     overrides = identifier.split(sep)
+    as_dict = overrides_to_dict(overrides)
+    return as_dict
+
+
+def overrides_to_dict(
+    overrides: Iterable[str], remove_plus_prefix: bool = False
+) -> dict[str, str]:
+    """Convert a list of overrides to a dictionary.
+
+    Example:
+        >>> overrides = ["a=1", "b=2", "+c=3"]
+        >>> overrides_to_dict(overrides, remove_plus_prefix=True)
+        {'a': '1', 'b': '2', 'c': '3'}
+    Args:
+        overrides (list[str]): The list of overrides.
+        remove_plus_prefix (bool, optional): If True, remove the '+' prefix from keys. Defaults to False.
+    Returns:
+        dict[str, str]: The dictionary of overrides.
+    """
     override_dict = {}
     for override in overrides:
         key, value = override.split("=", 1)
+        if remove_plus_prefix and key.startswith("+"):
+            key = key[1:]
         override_dict[key] = value
     return override_dict
+
+
+def dict_to_overrides(d: dict[Hashable, Any], remove_na: bool = False) -> list[str]:
+    """Convert a dictionary to a overrides.
+    Example:
+        >>> dict_to_overrides({"a": 1, "b": 2})
+        ['a=1', 'b=2']
+        >>> dict_to_overrides({"a": 1, "b": None}, remove_na=True)
+        ['a=1']
+        >>> dict_to_overrides({"+c": 3, "d": float('nan')}, remove_na=True)
+        ['+c=3']
+    """
+    overrides = []
+    for key, value in d.items():
+        if remove_na and (value is None or (isinstance(value, float) and math.isnan(value))):
+            continue
+        overrides.append(f"{key}={value}")
+    return overrides
 
 
 def _filter_nan_and_join(values: Iterable, sep: str) -> str:
     return sep.join([v for v in values if not isinstance(v, float) or not math.isnan(v)])
 
 
-def multi_index_to_single(index: pd.MultiIndex, sep: str = ".") -> pd.Index:
+def multi_index_to_single(index: pd.Index, sep: str = ".") -> pd.Index:
     """Convert a MultiIndex to a single Index by joining the levels with a separator and
     removing NaN values.
 
@@ -219,20 +286,27 @@ def multi_index_to_single(index: pd.MultiIndex, sep: str = ".") -> pd.Index:
     Returns:
         pd.Index: The converted Index.
     """
+    if not isinstance(index, pd.MultiIndex):
+        return index
 
     return pd.Index([_filter_nan_and_join(values, sep) for values in index.to_flat_index()])
 
 
-def append_overrides_from_return_value(
+def append_overrides_from_return_value_prediction(
     job_return: JobReturn, replace_existing: bool = False
 ) -> None:
-    """Append overrides from the job return-value to the job return overrides.
+    """Append overrides from the job return-value's "prediction" field to the job return object's overrides.
     Args:
         job_return (JobReturn): The job return object.
         replace_existing (bool, optional): If True, replace existing overrides.
     """
-    if isinstance(job_return.return_value, dict) and "overrides" in job_return.return_value:
-        new_overrides = job_return.return_value.pop("overrides")
+    if (
+        isinstance(job_return.return_value, dict)
+        and "prediction" in job_return.return_value
+        and isinstance(job_return.return_value["prediction"], dict)
+        and "overrides" in job_return.return_value["prediction"]
+    ):
+        new_overrides = job_return.return_value["prediction"].pop("overrides")
         if new_overrides:
             overrides = []
             if job_return.overrides is not None and not replace_existing:
@@ -271,6 +345,9 @@ class SaveJobReturnValueCallback(Callback):
     multirun_create_ids_from_overrides: bool (default: False)
         Create job identifiers from the overrides of the jobs in a multi-run. If False, the job index is used as
         identifier.
+    multirun_add_overrides_as_dict: bool (default: False)
+        If True, add the overrides as a dictionary to each job return-value in a multi-run
+        under the key "overrides".
     multirun_job_id_key: str (default: "job_id")
         The key to use for the job identifiers in the integrated multi-run result.
     multirun_convert_job_ids: bool (default: False)
@@ -284,6 +361,12 @@ class SaveJobReturnValueCallback(Callback):
         If True, replace existing overrides in the job return-value with the overrides from the job return
         object if available. If False, the overrides from the job return-value are only appended if no overrides
         are available in the job return object.
+    multirun_markdown_group_by: str or list[str] (default: None)
+        The column(s) to group by when saving the multi-run result as markdown file. For numeric columns,
+        the mean and std are calculated. For non-numeric columns, a list of values is created. If None,
+        no grouping is applied.
+    multirun_markdown_transpose: bool (default: False)
+        If True, transpose the markdown table for multi-run results.
     paths_file: str (default: None)
         The file to save the paths of the log directories to. If None, the paths are not saved.
     path_id: str (default: None)
@@ -304,9 +387,12 @@ class SaveJobReturnValueCallback(Callback):
         multirun_create_ids_from_overrides: bool = True,
         multirun_job_id_key: str = "job_id",
         multirun_convert_job_ids: bool = False,
+        multirun_add_overrides_as_dict: bool = False,
         multirun_show_file_contents: list[str] | None = None,
         multirun_overrides_separator: str = "-",
         multirun_replace_existing_overrides: bool = False,
+        multirun_markdown_group_by: str | list[str] | None = None,
+        multirun_markdown_transpose: bool = False,
         paths_file: str | None = None,
         path_id: str | None = None,
         multirun_paths_file: str | None = None,
@@ -320,10 +406,15 @@ class SaveJobReturnValueCallback(Callback):
         self.multirun_aggregator_blacklist = multirun_aggregator_blacklist
         self.sort_markdown_columns = sort_markdown_columns
         self.multirun_create_ids_from_overrides = multirun_create_ids_from_overrides
+        self.multirun_add_overrides_as_dict = multirun_add_overrides_as_dict
         self.multirun_job_id_key = multirun_job_id_key
         self.multirun_convert_job_ids = multirun_convert_job_ids
         self.multirun_overrides_separator = multirun_overrides_separator
         self.multirun_replace_existing_overrides = multirun_replace_existing_overrides
+        if isinstance(multirun_markdown_group_by, str):
+            multirun_markdown_group_by = [multirun_markdown_group_by]
+        self.multirun_markdown_group_by = multirun_markdown_group_by
+        self.multirun_markdown_transpose = multirun_markdown_transpose
         self.markdown_round_digits = markdown_round_digits
         self.multirun_paths_file = multirun_paths_file
         self.multirun_path_id = multirun_path_id
@@ -331,7 +422,7 @@ class SaveJobReturnValueCallback(Callback):
         self.path_id = path_id
 
     def on_job_end(self, config: DictConfig, job_return: JobReturn, **kwargs: Any) -> None:
-        append_overrides_from_return_value(
+        append_overrides_from_return_value_prediction(
             job_return, replace_existing=self.multirun_replace_existing_overrides
         )
         self.job_returns.append(job_return)
@@ -342,17 +433,35 @@ class SaveJobReturnValueCallback(Callback):
                 file.write(f"{output_dir}\n")
 
         for filename in self.filenames:
-            self._save(obj=job_return.return_value, filename=filename, output_dir=output_dir)
+            # remove "prediction" field from job return-value if it exists before saving.
+            # otherwise, this might destroy the structure of the saved job return-value.
+            obj = job_return.return_value
+            if isinstance(obj, dict) and "prediction" in obj:
+                obj = dict(obj)
+                obj.pop("prediction")
+            self._save(obj=obj, filename=filename, output_dir=output_dir)
 
     def on_multirun_end(self, config: DictConfig, **kwargs: Any) -> None:
-        job_ids: list[str] | list[int]
+        job_ids: list[str] | list[int] | None = None
         if self.multirun_create_ids_from_overrides:
             overrides_per_result = [jr.overrides or [] for jr in self.job_returns]
             job_ids = overrides_to_identifiers(
-                overrides_per_result, sep=self.multirun_overrides_separator
+                overrides_per_result, sep=self.multirun_overrides_separator, remove_common=True
             )
-        else:
+            if job_ids is None:
+                self.log.warning(
+                    "Job identifiers created from overrides are not unique! "
+                    "Use the job indexes instead."
+                )
+
+        if job_ids is None:
             job_ids = list(range(len(self.job_returns)))
+
+        if self.multirun_add_overrides_as_dict:
+            for jr in self.job_returns:
+                jr.return_value["overrides"] = overrides_to_dict(
+                    jr.overrides or [], remove_plus_prefix=True
+                )
 
         if self.integrate_multirun_result:
             # rearrange the job return-values of all jobs from a multi-run into a dict of lists (maybe nested),
@@ -428,6 +537,7 @@ class SaveJobReturnValueCallback(Callback):
                 filename=filename,
                 output_dir=output_dir,
                 is_tabular_data=self.integrate_multirun_result,
+                markdown_group_by=self.multirun_markdown_group_by,
             )
             # if available, also save the aggregated result
             if obj_aggregated is not None:
@@ -456,6 +566,7 @@ class SaveJobReturnValueCallback(Callback):
         output_dir: Path,
         is_tabular_data: bool = False,
         unstack_last_index_level: bool = False,
+        markdown_group_by: list[str] | None = None,
     ) -> None:
         self.log.info(f"Saving job_return in {output_dir / filename}")
         output_dir.mkdir(parents=True, exist_ok=True)
@@ -519,10 +630,39 @@ class SaveJobReturnValueCallback(Callback):
             if isinstance(result, pd.DataFrame) and isinstance(result.columns, pd.MultiIndex):
                 result.columns = multi_index_to_single(result.columns)
 
+            # fix dtypes: convert object dtypes to more specific dtypes
+            # required for groupby operations later on
+            if isinstance(result, pd.DataFrame):
+                result = result.convert_dtypes()
+
+            if markdown_group_by is not None:
+                cols_numeric = result.select_dtypes(include=[np.number]).columns.tolist()
+                cols_non_numeric = result.select_dtypes(exclude=[np.number]).columns.tolist()
+                # remove the group_by columns from numeric and non-numeric columns
+                for col in markdown_group_by:
+                    if col in cols_numeric:
+                        cols_numeric.remove(col)
+                    if col in cols_non_numeric:
+                        cols_non_numeric.remove(col)
+                # group by the specified columns ...
+                result_grouped = result.groupby(by=list(markdown_group_by))
+                # ... and calculate the mean and std for numeric columns (and flatten the column MultiIndex)
+                result_numeric = result_grouped[cols_numeric].agg(["mean", "std"])
+                result_numeric.columns = multi_index_to_single(result_numeric.columns, sep=".")
+                # ... and for non-numeric columns, return lists of values
+                result_non_numeric = result_grouped[cols_non_numeric].agg(list)
+                # combine both results
+                result = pd.concat([result_numeric, result_non_numeric], axis=1)
+                # drop columns that are completely NaN (otherwise to_markdown fails)
+                result = result.dropna(axis=1, how="all")
+
             if self.markdown_round_digits is not None and (
                 isinstance(result, pd.DataFrame) or result.dtype != "object"
             ):
                 result = result.round(self.markdown_round_digits)
+
+            if self.multirun_markdown_transpose:
+                result = result.T
 
             with open(str(output_dir / filename), "w") as file:
                 file.write(result.to_markdown(index=len(job_id_columns) == 0))

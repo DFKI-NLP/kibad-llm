@@ -196,12 +196,18 @@ def build_chat_messages(
 def extract_from_text(
     text: str,
     text_id: str,
+    prompt_template: dict[str, str | None],
     schema: dict[str, Any] | None = None,
     use_guided_decoding: bool = True,
     validate_with_schema: bool = True,
     llm: LLM | None = None,
     request_parameters: dict[str, Any] | None = None,
     return_reasoning: bool = False,
+    # deprecated arguments
+    user_message: str | None = None,
+    system_message: str | None = None,
+    schema_description_placeholder: str | None = None,
+    document_placeholder: str | None = None,
     **build_messages_kwargs: Any,
 ) -> dict:
     """Extract structured information from text using an LLM.
@@ -213,6 +219,8 @@ def extract_from_text(
     Args:
         text: The document text to process.
         text_id: Document text identifier for logging.
+        prompt_template: A dictionary with at least one of 'system_message' and 'user_message'
+            templates (or both).
         schema: Optional JSON schema for structured output.
         use_guided_decoding: Whether to use guided decoding.
         validate_with_schema: Whether to validate the output against the provided schema.
@@ -230,6 +238,21 @@ def extract_from_text(
     """
     # setting the log level on every query is suboptimal, but the simplest solution in our current architecture
     logging.getLogger("httpx").setLevel(logging.WARNING)
+
+    if (
+        system_message is not None
+        or user_message is not None
+        or schema_description_placeholder is not None
+        or document_placeholder is not None
+    ):
+        # raise an error if deprecated arguments are used
+        raise DeprecationWarning(
+            "system_message, user_message, schema_description_placeholder, and document_placeholder "
+            "are deprecated. Please provide a prompt_template dictionary containing 'system_message' and/or "
+            "'user_message' (and optionally schema_description_placeholder and document_placeholder)"
+            "instead."
+        )
+    build_messages_kwargs.update(prompt_template)
 
     out: dict[str, Any | None] = {
         "response_content": None,

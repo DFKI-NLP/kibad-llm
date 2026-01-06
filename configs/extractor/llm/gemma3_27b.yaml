@@ -1,0 +1,36 @@
+# Example configuration for using Gemma3-27B-IT model with LlamaIndex
+#
+# This requires a local deployment of the Gemma3-27B-IT model that is compatible with the OpenAI API.
+# See models/README.md for instructions.
+#
+# To use as an argument for `predict`, use `extractor/llm=gemma3_27b`.
+# Run VLLM with `./run_with_llm.sh -v "google/gemma-3-27b-it --max-model-len 131072 --hf-token [$HF_TOKEN|<your_token>|True]"`
+# You can specify the HF token as an environment variable, e.g. export HF_TOKEN=..., or
+# use a cached token with `--hf-token True`, see https://docs.vllm.ai/en/latest/cli/serve/#-hf-token
+# The model may be too large for the RTXA6000's memory, so run it on partitions with more memory (H100) or lower max-model-len
+
+_target_: llama_index.llms.openai_like.OpenAILikeVllm
+
+# get the API base URL from the environment variable LLM_API_BASE, defaulting to http://127.0.0.1:5001/v1
+api_base: ${oc.env:LLM_API_BASE,http://127.0.0.1:5001/v1}
+api_key: "dummy"
+model: "google/gemma-3-27b-it"
+# try to be as deterministic as possible
+temperature: 0.0
+# presence_penalty and frequency_penalty are also standard if we need them
+
+# enable to correctly handle (i.e. remove) reasoning traces in the output
+is_chat_model: true
+# Supports up to 128K tokens (max size for https://huggingface.co/google/gemma-3-27b-it).
+# Use lower value to save memory and improve performance
+context_window: 131072
+timeout: 360
+max_retries: 3
+
+# Specify additional parameters to the request body.
+additional_kwargs:
+  # set maximum number of generated tokens
+  # the default is None, so we set it to 8192, to allow enough space for reasoning and output tokens
+  # see https://github.com/DFKI-NLP/kibad-llm/issues/198#issuecomment-3666155251
+  # see also https://huggingface.co/google/gemma-3-27b-it
+  max_completion_tokens: 8192
