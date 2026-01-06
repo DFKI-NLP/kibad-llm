@@ -270,7 +270,7 @@ def _filter_nan_and_join(values: Iterable, sep: str) -> str:
     return sep.join([v for v in values if not isinstance(v, float) or not math.isnan(v)])
 
 
-def multi_index_to_single(index: pd.MultiIndex, sep: str = ".") -> pd.Index:
+def multi_index_to_single(index: pd.Index, sep: str = ".") -> pd.Index:
     """Convert a MultiIndex to a single Index by joining the levels with a separator and
     removing NaN values.
 
@@ -286,6 +286,8 @@ def multi_index_to_single(index: pd.MultiIndex, sep: str = ".") -> pd.Index:
     Returns:
         pd.Index: The converted Index.
     """
+    if not isinstance(index, pd.MultiIndex):
+        return index
 
     return pd.Index([_filter_nan_and_join(values, sep) for values in index.to_flat_index()])
 
@@ -359,6 +361,12 @@ class SaveJobReturnValueCallback(Callback):
         If True, replace existing overrides in the job return-value with the overrides from the job return
         object if available. If False, the overrides from the job return-value are only appended if no overrides
         are available in the job return object.
+    multirun_markdown_group_by: str or list[str] (default: None)
+        The column(s) to group by when saving the multi-run result as markdown file. For numeric columns,
+        the mean and std are calculated. For non-numeric columns, a list of values is created. If None,
+        no grouping is applied.
+    multirun_markdown_transpose: bool (default: False)
+        If True, transpose the markdown table for multi-run results.
     paths_file: str (default: None)
         The file to save the paths of the log directories to. If None, the paths are not saved.
     path_id: str (default: None)
@@ -383,6 +391,8 @@ class SaveJobReturnValueCallback(Callback):
         multirun_show_file_contents: list[str] | None = None,
         multirun_overrides_separator: str = "-",
         multirun_replace_existing_overrides: bool = False,
+        multirun_markdown_group_by: str | list[str] | None = None,
+        multirun_markdown_transpose: bool = False,
         paths_file: str | None = None,
         path_id: str | None = None,
         multirun_paths_file: str | None = None,
@@ -401,6 +411,10 @@ class SaveJobReturnValueCallback(Callback):
         self.multirun_convert_job_ids = multirun_convert_job_ids
         self.multirun_overrides_separator = multirun_overrides_separator
         self.multirun_replace_existing_overrides = multirun_replace_existing_overrides
+        if isinstance(multirun_markdown_group_by, str):
+            multirun_markdown_group_by = [multirun_markdown_group_by]
+        self.multirun_markdown_group_by = multirun_markdown_group_by
+        self.multirun_markdown_transpose = multirun_markdown_transpose
         self.markdown_round_digits = markdown_round_digits
         self.multirun_paths_file = multirun_paths_file
         self.multirun_path_id = multirun_path_id
@@ -523,6 +537,7 @@ class SaveJobReturnValueCallback(Callback):
                 filename=filename,
                 output_dir=output_dir,
                 is_tabular_data=self.integrate_multirun_result,
+                markdown_group_by=self.multirun_markdown_group_by,
             )
             # if available, also save the aggregated result
             if obj_aggregated is not None:
@@ -551,6 +566,7 @@ class SaveJobReturnValueCallback(Callback):
         output_dir: Path,
         is_tabular_data: bool = False,
         unstack_last_index_level: bool = False,
+        markdown_group_by: list[str] | None = None,
     ) -> None:
         self.log.info(f"Saving job_return in {output_dir / filename}")
         output_dir.mkdir(parents=True, exist_ok=True)
@@ -614,10 +630,39 @@ class SaveJobReturnValueCallback(Callback):
             if isinstance(result, pd.DataFrame) and isinstance(result.columns, pd.MultiIndex):
                 result.columns = multi_index_to_single(result.columns)
 
+            # fix dtypes: convert object dtypes to more specific dtypes
+            # required for groupby operations later on
+            if isinstance(result, pd.DataFrame):
+                result = result.convert_dtypes()
+
+            if markdown_group_by is not None:
+                cols_numeric = result.select_dtypes(include=[np.number]).columns.tolist()
+                cols_non_numeric = result.select_dtypes(exclude=[np.number]).columns.tolist()
+                # remove the group_by columns from numeric and non-numeric columns
+                for col in markdown_group_by:
+                    if col in cols_numeric:
+                        cols_numeric.remove(col)
+                    if col in cols_non_numeric:
+                        cols_non_numeric.remove(col)
+                # group by the specified columns ...
+                result_grouped = result.groupby(by=list(markdown_group_by))
+                # ... and calculate the mean and std for numeric columns (and flatten the column MultiIndex)
+                result_numeric = result_grouped[cols_numeric].agg(["mean", "std"])
+                result_numeric.columns = multi_index_to_single(result_numeric.columns, sep=".")
+                # ... and for non-numeric columns, return lists of values
+                result_non_numeric = result_grouped[cols_non_numeric].agg(list)
+                # combine both results
+                result = pd.concat([result_numeric, result_non_numeric], axis=1)
+                # drop columns that are completely NaN (otherwise to_markdown fails)
+                result = result.dropna(axis=1, how="all")
+
             if self.markdown_round_digits is not None and (
                 isinstance(result, pd.DataFrame) or result.dtype != "object"
             ):
                 result = result.round(self.markdown_round_digits)
+
+            if self.multirun_markdown_transpose:
+                result = result.T
 
             with open(str(output_dir / filename), "w") as file:
                 file.write(result.to_markdown(index=len(job_id_columns) == 0))
