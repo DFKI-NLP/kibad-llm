@@ -273,6 +273,8 @@ def extract_from_text(
             extracted value is represented as an object with `content` plus metadata fields such as
             `evidence_anchor` (a verbatim quote from the input text supporting the extracted content).
             For nullable fields, the value may be `null` instead of a wrapped object.
+            The schema description is constructed from the original schema, so it is recommended to
+            adjust the prompt_template accordingly (e.g., by adding instructions about evidence).
         user_message: Deprecated. Use prompt_template instead.
         **build_messages_kwargs: Additional keyword arguments for build_chat_messages.
 
