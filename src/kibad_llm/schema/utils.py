@@ -107,9 +107,12 @@ def build_schema_description(
     component_separator: str = " | ",
     choices_separator: str = "; ",
     indent_step: str = "  ",
+    include_field_descriptions: bool = False,
+    include_type_descriptions: bool = True,
     # internal args
     indent: int = 0,
     root_schema: Mapping[str, Any] | None = None,
+
 ) -> str:
     """
     Build a human‑readable summary for a JSON Schema.
@@ -158,7 +161,7 @@ def build_schema_description(
 
     # Add description
     schema_desc = schema.get("description", "")
-    if schema_desc and schema_description_prefix is not None:
+    if include_type_descriptions and schema_desc and schema_description_prefix is not None:
         lines.append(f"{prefix}{schema_description_prefix}{schema_desc}")
 
     if header:
@@ -183,7 +186,7 @@ def build_schema_description(
         # Build field line
         hint = f"{prefix}- {name}:"
         # the field description is mandatory (if exists)
-        if desc:
+        if include_field_descriptions and desc:
             hint += f" {desc}"
         if cardinality_prefix is not None:
             hint += f"{component_separator}{cardinality_prefix}{cardinality}"
@@ -214,6 +217,8 @@ def build_schema_description(
                         component_separator=component_separator,
                         choices_separator=choices_separator,
                         indent_step=indent_step,
+                        include_field_descriptions=include_field_descriptions,
+                        include_type_descriptions=include_type_descriptions,
                     )
                     lines.append(nested_content)
 
