@@ -11,8 +11,12 @@ from omegaconf import DictConfig, OmegaConf
 from kibad_llm.config import PROJ_ROOT
 from kibad_llm.dataset.prediction import DictWithMetadata
 from kibad_llm.metric import Metric
+from kibad_llm.utils.path import list_subdirectories_as_string
 
 logger = logging.getLogger(__name__)
+
+# required when using predictions_multirun_logs, see configs/evaluate.yaml
+OmegaConf.register_new_resolver("list_subdirectories", list_subdirectories_as_string)
 
 
 def evaluate(cfg: DictConfig) -> dict[str, Any]:
