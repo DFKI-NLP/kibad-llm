@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Mapping
 import hashlib
 import json
 import logging
@@ -177,6 +178,49 @@ def build_chat_messages(
     if history:
         messages = history + messages
     return messages
+
+
+def strip_metadata(data: Any, *, content_key: str = "content") -> Any:
+    """
+    Strip metadata wrappers from a JSON-parsed result produced by `wrap_terminals_with_metadata`.
+
+    The wrapped output encodes terminal values as objects like:
+        {"<content_key>": <value>, "evidence_anchor": "...", ...}
+
+    This function walks the parsed JSON (dict/list/scalars) and removes such wrappers by
+    replacing the wrapper dict with its `<content_key>` value.
+
+    Wrapper detection (heuristic):
+      - a dict is treated as a wrapper if it has `content_key` AND at least one additional key.
+        (We avoid unwrapping objects that only have `{"content": ...}`.)
+
+    Notes:
+      - This function does not validate that "other keys" are truly metadata. If your original
+        extraction schema contains real objects that also have a `content_key` field and other
+        fields, they may be unwrapped unintentionally. If that’s a concern, use a more unique
+        `content_key` (e.g. "__content") in the schema wrapping step.
+      - The input is not mutated; a transformed copy is returned.
+    """
+
+    def _is_wrapper_dict(d: Mapping[str, Any]) -> bool:
+        return content_key in d and len(d) >= 2
+
+    def _strip(node: Any) -> Any:
+        if isinstance(node, list):
+            return [_strip(x) for x in node]
+
+        if isinstance(node, Mapping):
+            # If this dict is a wrapper, discard metadata and recurse into the content.
+            if _is_wrapper_dict(node):
+                return _strip(node.get(content_key))
+
+            # Otherwise recurse into all values.
+            return {k: _strip(v) for k, v in node.items()}
+
+        # scalars (str/int/float/bool/None)
+        return node
+
+    return _strip(data)
 
 
 def extract_from_text(
