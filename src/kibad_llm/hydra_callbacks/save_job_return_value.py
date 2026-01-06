@@ -638,8 +638,10 @@ class SaveJobReturnValueCallback(Callback):
             if markdown_group_by is not None:
                 cols_numeric = result.select_dtypes(include=[np.number]).columns.tolist()
                 cols_non_numeric = result.select_dtypes(exclude=[np.number]).columns.tolist()
-                # remove the group_by columns from numeric and non-numeric columns
                 for col in markdown_group_by:
+                    # replace na values in col with "" to not miss groupings
+                    result[col] = result[col].fillna("")
+                    # remove the group_by columns from numeric and non-numeric columns
                     if col in cols_numeric:
                         cols_numeric.remove(col)
                     if col in cols_non_numeric:
