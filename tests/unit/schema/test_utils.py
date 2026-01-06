@@ -72,92 +72,98 @@ def test_wrap_terminals_with_metadata_evidence(model_cls: type[BaseModel]):
     assert schema_with_metadata == expected
 
 
-def test_schema_should_be_wrapped_terminal_scalars_and_scalar_lists() -> None:
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+
+def _assert_is_wrapper(
+    node: dict[str, Any],
+    *,
+    content_schema: dict[str, Any],
+    content_key: str = "content",
+    required_meta: tuple[str, ...] = ("evidence_anchor",),
+) -> None:
+    """Assert that `node` is a wrapper object with expected content schema and required metadata."""
+    assert node["type"] == "object"
+    assert node.get("additionalProperties") is False
+
+    props = node["properties"]
+    assert props[content_key] == content_schema
+    for k in required_meta:
+        assert k in props
+
+    req = set(node.get("required", []))
+    assert content_key in req
+    for k in required_meta:
+        assert k in req
+
+
+def _find_wrapped_branch(union_node: dict[str, Any]) -> dict[str, Any]:
+    """Return the first anyOf/oneOf branch that looks like our wrapper."""
+    for key in ("anyOf", "oneOf"):
+        branches = union_node.get(key)
+        if isinstance(branches, list):
+            for b in branches:
+                if (
+                    isinstance(b, dict)
+                    and b.get("type") == "object"
+                    and "properties" in b
+                    and "content" in b["properties"]
+                ):
+                    return b
+    raise AssertionError("No wrapped branch found in union node.")
+
+
+# ---------------------------------------------------------------------------
+# _schema_should_be_wrapped: policy-level unit tests
+# ---------------------------------------------------------------------------
+
+
+def test_schema_should_be_wrapped_value_schemas() -> None:
     root: dict[str, Any] = {}
 
-    # plain scalar: string
+    # plain scalars are wrapped
     assert _schema_should_be_wrapped(root, {"type": "string"}) is True
-
-    # plain scalar: integer
     assert _schema_should_be_wrapped(root, {"type": "integer"}) is True
-
-    # plain scalar: number
     assert _schema_should_be_wrapped(root, {"type": "number"}) is True
-
-    # plain scalar: boolean
     assert _schema_should_be_wrapped(root, {"type": "boolean"}) is True
 
-    # scalar: null
-    assert _schema_should_be_wrapped(root, {"type": "null"}) is False
-
-    # list-of-types incl. null (common Optional pattern)
-    assert _schema_should_be_wrapped(root, {"type": ["string", "null"]}) is False
-
-
-def test_schema_should_be_wrapped_terminal_enum_and_const() -> None:
-    root: dict[str, Any] = {}
-
-    # inline enum
+    # inline enum + non-null const are wrapped
     assert _schema_should_be_wrapped(root, {"type": "string", "enum": ["A", "B"]}) is True
-
-    # const (non-null)
     assert _schema_should_be_wrapped(root, {"const": 123}) is True
 
-    # const (null)
-    assert _schema_should_be_wrapped(root, {"const": None}) is False
 
-
-def test_schema_should_be_wrapped_non_terminals_object_and_array() -> None:
+def test_schema_should_be_wrapped_excludes_null_structural_and_unions() -> None:
     root: dict[str, Any] = {}
 
-    # object is not terminal
+    # null alone must NOT be wrapped (otherwise we'd allow "metadata without content")
+    assert _schema_should_be_wrapped(root, {"type": "null"}) is False
+    assert _schema_should_be_wrapped(root, {"const": None}) is False
+
+    # structural schemas are not wrapped (their children are handled recursively)
     assert (
         _schema_should_be_wrapped(
             root, {"type": "object", "properties": {"x": {"type": "string"}}}
         )
         is False
     )
-
-    # array is not terminal
     assert _schema_should_be_wrapped(root, {"type": "array", "items": {"type": "string"}}) is False
 
-
-def test_schema_should_be_wrapped_unions_anyof_oneof_allof() -> None:
-    root: dict[str, Any] = {}
-
-    # anyOf: nullable scalar union
+    # unions (anyOf/oneOf) are not wrapped at the root; we wrap their branches
     assert (
-        _schema_should_be_wrapped(root, {"anyOf": [{"type": "integer"}, {"type": "null"}]})
-        is False
+        _schema_should_be_wrapped(root, {"anyOf": [{"type": "string"}, {"type": "null"}]}) is False
     )
-
-    # oneOf: nullable scalar union
     assert (
         _schema_should_be_wrapped(root, {"oneOf": [{"type": "string"}, {"type": "null"}]}) is False
     )
 
-    # anyOf: includes object -> not terminal
-    assert (
-        _schema_should_be_wrapped(
-            root, {"anyOf": [{"type": "string"}, {"type": "object", "properties": {}}]}
-        )
-        is False
-    )
-
-    # oneOf: includes array -> not terminal
-    assert (
-        _schema_should_be_wrapped(
-            root, {"oneOf": [{"type": "null"}, {"type": "array", "items": {"type": "string"}}]}
-        )
-        is False
-    )
-
-    # allOf: scalar constraints only -> terminal
+    # allOf: scalar constraints only => treated as wrappable value schema
     assert (
         _schema_should_be_wrapped(root, {"allOf": [{"type": "string"}, {"minLength": 2}]}) is True
     )
 
-    # allOf: includes object -> not terminal
+    # allOf including object/array-ish => not wrappable
     assert (
         _schema_should_be_wrapped(
             root, {"allOf": [{"type": "string"}, {"type": "object", "properties": {}}]}
@@ -165,164 +171,24 @@ def test_schema_should_be_wrapped_unions_anyof_oneof_allof() -> None:
         is False
     )
 
-    assert (
-        _schema_should_be_wrapped(
-            root,
-            {
-                # field can be either a scalar (string) OR an object with an integer field
-                "anyOf": [
-                    {"type": "string"},
-                    {
-                        "type": "object",
-                        "properties": {"x": {"type": "integer"}},
-                        "additionalProperties": False,
-                    },
-                ]
-            },
-        )
-        is False
-    )
 
-
-def test_schema_should_be_wrapped_refs_to_defs_terminal_vs_non_terminal_and_nullable_ref_union() -> (
-    None
-):
-    # $ref to enum def -> terminal
+def test_schema_should_be_wrapped_refs() -> None:
+    # $ref to enum def => wrappable
     root_enum = {"$defs": {"HabitatEnum": {"type": "string", "enum": ["A", "B"]}}}
     assert _schema_should_be_wrapped(root_enum, {"$ref": "#/$defs/HabitatEnum"}) is True
 
-    # $ref to object def -> not terminal
-    root_obj = {
-        "$defs": {
-            "Taxa": {
-                "type": "object",
-                "properties": {"scientific_name": {"type": ["string", "null"]}},
-                "additionalProperties": False,
-            }
-        }
-    }
+    # $ref to object def => not wrappable
+    root_obj = {"$defs": {"Taxa": {"type": "object", "properties": {"x": {"type": "string"}}}}}
     assert _schema_should_be_wrapped(root_obj, {"$ref": "#/$defs/Taxa"}) is False
 
-    # Optional[Enum]-style union (anyOf: enum ref + null) -> not a terminal
-    assert (
-        _schema_should_be_wrapped(
-            root_enum,
-            {"anyOf": [{"$ref": "#/$defs/HabitatEnum"}, {"type": "null"}], "default": None},
-        )
-        is False
-    )
 
-
-def test_wrap_terminals_with_metadata_anyof_scalar_or_object():
-    schema = {
-        "type": "object",
-        "properties": {
-            "mixed": {
-                # field can be either a scalar (string) OR an object with an integer field
-                "anyOf": [
-                    {"type": "string"},
-                    {
-                        "type": "object",
-                        "properties": {"x": {"type": "integer"}},
-                        "additionalProperties": False,
-                    },
-                ]
-            }
-        },
-    }
-
-    metadata_schema = {
-        "evidence_anchor": {
-            "type": "string",
-            "description": "Verbatim excerpt from the source text supporting the extracted content.",
-        }
-    }
-    out = wrap_terminals_with_metadata(schema, metadata_schema=metadata_schema)
-
-    assert out == {
-        "type": "object",
-        "properties": {
-            "mixed": {
-                "anyOf": [
-                    {
-                        "type": "object",
-                        "properties": {
-                            "content": {"type": "string"},
-                            "evidence_anchor": {
-                                "type": "string",
-                                "description": "Verbatim excerpt from the source text supporting the extracted content.",
-                            },
-                        },
-                        "required": ["content", "evidence_anchor"],
-                        "additionalProperties": False,
-                    },
-                    {
-                        "type": "object",
-                        "properties": {
-                            "x": {
-                                "type": "object",
-                                "properties": {
-                                    "content": {"type": "integer"},
-                                    "evidence_anchor": {
-                                        "type": "string",
-                                        "description": "Verbatim excerpt from the source text supporting the extracted content.",
-                                    },
-                                },
-                                "required": ["content", "evidence_anchor"],
-                                "additionalProperties": False,
-                            }
-                        },
-                        "additionalProperties": False,
-                    },
-                ]
-            }
-        },
-    }
-
-
-def test_wrap_terminals_with_metadata_anyof_scalar_or_null():
-    schema = {
-        "type": "object",
-        "properties": {
-            "mixed": {
-                # field can be either a scalar (string) OR null
-                "anyOf": [{"type": "string"}, {"type": "null"}]
-            }
-        },
-    }
-    metadata_schema = {
-        "evidence_anchor": {
-            "type": "string",
-            "description": "Verbatim excerpt from the source text supporting the extracted content.",
-        }
-    }
-    out = wrap_terminals_with_metadata(schema, metadata_schema=metadata_schema)
-    assert out == {
-        "type": "object",
-        "properties": {
-            "mixed": {
-                "anyOf": [
-                    {
-                        "type": "object",
-                        "properties": {
-                            "content": {"type": "string"},
-                            "evidence_anchor": {
-                                "type": "string",
-                                "description": "Verbatim excerpt from the source text supporting the extracted content.",
-                            },
-                        },
-                        "required": ["content", "evidence_anchor"],
-                        "additionalProperties": False,
-                    },
-                    {"type": "null"},
-                ]
-            }
-        },
-    }
+# ---------------------------------------------------------------------------
+# wrap_terminals_with_metadata: behavior tests (critical transformations)
+# ---------------------------------------------------------------------------
 
 
 @pytest.fixture
-def sample_schema() -> dict:
+def sample_schema() -> dict[str, Any]:
     return {
         "type": "object",
         "properties": {
@@ -333,9 +199,9 @@ def sample_schema() -> dict:
             "enum_ref": {"$ref": "#/$defs/HabitatEnum"},
         },
         "$defs": {
-            # terminal def (must NOT be wrapped at the def root)
+            # terminal def: must NOT be wrapped at the def root
             "HabitatEnum": {"type": "string", "enum": ["A", "B"]},
-            # object def (root must NOT be wrapped, but its terminal fields should be)
+            # object def root: must NOT be wrapped, but its terminal children should
             "Taxa": {
                 "type": "object",
                 "properties": {
@@ -347,154 +213,146 @@ def sample_schema() -> dict:
     }
 
 
-DEFAULT_METADATA_SCHEMA = METADATA_SCHEMA_WITH_EVIDENCE
+def test_wrap_terminals_with_metadata_is_pure_and_wraps_simple_property(sample_schema) -> None:
+    schema_before = copy.deepcopy(sample_schema)
+    out = wrap_terminals_with_metadata(
+        sample_schema, metadata_schema=METADATA_SCHEMA_WITH_EVIDENCE
+    )
+
+    # input is not mutated
+    assert sample_schema == schema_before
+
+    # name: string => wrapper
+    _assert_is_wrapper(out["properties"]["name"], content_schema={"type": "string"})
 
 
-def _assert_wrapper(
-    node: dict,
-    *,
-    content_key: str = "content",
-    required_meta: tuple[str, ...] = ("evidence_anchor",),
-):
-    assert node["type"] == "object"
-    assert node.get("additionalProperties") is False
-
-    props = node["properties"]
-    assert content_key in props
-    for k in required_meta:
-        assert k in props
-
-    req = node.get("required", [])
-    assert content_key in req
-    for k in required_meta:
-        assert k in req
-
-
-def test_wraps_terminal_properties_and_is_pure(sample_schema):
-    schema = sample_schema
-    schema_before = copy.deepcopy(schema)
-
-    out = wrap_terminals_with_metadata(schema, metadata_schema=DEFAULT_METADATA_SCHEMA)
-
-    # purity / no mutation
-    assert schema == schema_before
-
-    # name (string) wrapped
-    _assert_wrapper(out["properties"]["name"])
-    assert out["properties"]["name"]["properties"]["content"] == {"type": "string"}
-
-    # age (nullable union) wrapped; content preserves anyOf
-    assert schema["properties"]["age"] == {"anyOf": [{"type": "integer"}, {"type": "null"}]}
-    assert out["properties"]["age"] == {
-        "anyOf": [
-            {
-                "type": "object",
-                "properties": {
-                    "content": {"type": "integer"},
-                    "evidence_anchor": {
-                        "type": "string",
-                        "description": "Verbatim excerpt from the source text supporting the extracted content.",
-                    },
-                },
-                "required": ["content", "evidence_anchor"],
-                "additionalProperties": False,
-            },
-            {"type": "null"},
-        ]
+def test_wrap_terminals_with_metadata_anyof_scalar_or_null_wraps_only_scalar_branch() -> None:
+    schema = {
+        "type": "object",
+        "properties": {"mixed": {"anyOf": [{"type": "string"}, {"type": "null"}]}},
     }
+    out = wrap_terminals_with_metadata(schema, metadata_schema=METADATA_SCHEMA_WITH_EVIDENCE)
+
+    # union preserved
+    mixed = out["properties"]["mixed"]
+    assert "anyOf" in mixed
+
+    # string branch wrapped, null branch unchanged
+    wrapped = _find_wrapped_branch(mixed)
+    _assert_is_wrapper(wrapped, content_schema={"type": "string"})
+    assert {"type": "null"} in mixed["anyOf"]
 
 
-def test_wraps_array_items_but_not_array_node(sample_schema):
-    out = wrap_terminals_with_metadata(sample_schema, metadata_schema=DEFAULT_METADATA_SCHEMA)
+def test_wrap_terminals_with_metadata_anyof_scalar_or_object_wraps_scalar_branch_and_object_leaves() -> (
+    None
+):
+    schema = {
+        "type": "object",
+        "properties": {
+            "mixed": {
+                "anyOf": [
+                    {"type": "string"},
+                    {
+                        "type": "object",
+                        "properties": {"x": {"type": "integer"}},
+                        "additionalProperties": False,
+                    },
+                ]
+            }
+        },
+    }
+    out = wrap_terminals_with_metadata(schema, metadata_schema=METADATA_SCHEMA_WITH_EVIDENCE)
+
+    mixed = out["properties"]["mixed"]
+    assert "anyOf" in mixed and len(mixed["anyOf"]) == 2
+
+    # scalar branch wrapped
+    scalar_branch = mixed["anyOf"][0]
+    _assert_is_wrapper(scalar_branch, content_schema={"type": "string"})
+
+    # object branch not wrapped as a whole, but its leaf x is wrapped
+    obj_branch = mixed["anyOf"][1]
+    assert obj_branch["type"] == "object"
+    assert obj_branch.get("additionalProperties") is False
+    _assert_is_wrapper(obj_branch["properties"]["x"], content_schema={"type": "integer"})
+
+
+def test_wrap_terminals_with_metadata_wraps_array_items_but_not_array_node(sample_schema) -> None:
+    out = wrap_terminals_with_metadata(
+        sample_schema, metadata_schema=METADATA_SCHEMA_WITH_EVIDENCE
+    )
 
     tags = out["properties"]["tags"]
-    assert tags["type"] == "array"  # not wrapped
-    _assert_wrapper(tags["items"])  # items wrapped
-    assert tags["items"]["properties"]["content"] == {"type": "string"}
+    assert tags["type"] == "array"  # array node stays array
+    _assert_is_wrapper(tags["items"], content_schema={"type": "string"})  # items wrapped
 
 
-def test_does_not_wrap_defs_roots_but_wraps_terminals_inside_object_defs(sample_schema):
-    out = wrap_terminals_with_metadata(sample_schema, metadata_schema=DEFAULT_METADATA_SCHEMA)
+def test_wrap_terminals_with_metadata_defs_roots_unchanged_but_children_wrapped(
+    sample_schema,
+) -> None:
+    out = wrap_terminals_with_metadata(
+        sample_schema, metadata_schema=METADATA_SCHEMA_WITH_EVIDENCE
+    )
 
     # terminal def root unchanged
     assert out["$defs"]["HabitatEnum"] == {"type": "string", "enum": ["A", "B"]}
 
-    # object def root unchanged, but its terminal fields wrapped
-    taxa_def = out["$defs"]["Taxa"]
-    assert taxa_def["type"] == "object"
-    assert sample_schema["$defs"]["Taxa"]["properties"]["scientific_name"] == {
-        "anyOf": [{"type": "string"}, {"type": "null"}],
-    }
-    assert taxa_def["properties"]["scientific_name"] == {
-        "anyOf": [
-            {
-                "type": "object",
-                "properties": {
-                    "content": {"type": "string"},
-                    "evidence_anchor": {
-                        "type": "string",
-                        "description": "Verbatim excerpt from the source text supporting the extracted content.",
-                    },
-                },
-                "required": ["content", "evidence_anchor"],
-                "additionalProperties": False,
-            },
-            {"type": "null"},
-        ]
-    }
+    # object def root unchanged, but its terminal child is wrapped (and nullable union is preserved)
+    taxa = out["$defs"]["Taxa"]
+    assert taxa["type"] == "object"
+
+    sci_name = taxa["properties"]["scientific_name"]
+    assert "anyOf" in sci_name
+    wrapped = _find_wrapped_branch(sci_name)
+    _assert_is_wrapper(wrapped, content_schema={"type": "string"})
+    assert {"type": "null"} in sci_name["anyOf"]
 
 
-def test_wraps_ref_to_terminal_def_as_content_ref(sample_schema):
-    out = wrap_terminals_with_metadata(sample_schema, metadata_schema=DEFAULT_METADATA_SCHEMA)
+def test_wrap_terminals_with_metadata_wraps_ref_to_terminal_def_as_content_ref(
+    sample_schema,
+) -> None:
+    out = wrap_terminals_with_metadata(
+        sample_schema, metadata_schema=METADATA_SCHEMA_WITH_EVIDENCE
+    )
 
     enum_ref = out["properties"]["enum_ref"]
-    _assert_wrapper(enum_ref)
-    assert enum_ref["properties"]["content"] == {"$ref": "#/$defs/HabitatEnum"}
+    _assert_is_wrapper(enum_ref, content_schema={"$ref": "#/$defs/HabitatEnum"})
 
 
-def test_custom_metadata_and_content_key(sample_schema):
-    schema = sample_schema
+def test_wrap_terminals_with_metadata_metadata_shorthand_equals_full(sample_schema) -> None:
+    out_full = wrap_terminals_with_metadata(
+        sample_schema, metadata_schema=METADATA_SCHEMA_WITH_EVIDENCE
+    )
+    out_short = wrap_terminals_with_metadata(
+        sample_schema, metadata_schema=METADATA_SCHEMA_WITH_EVIDENCE_SHORTHAND
+    )
+    assert out_short == out_full
+
+
+def test_wrap_terminals_with_metadata_idempotent(sample_schema) -> None:
+    once = wrap_terminals_with_metadata(
+        sample_schema, metadata_schema=METADATA_SCHEMA_WITH_EVIDENCE
+    )
+    twice = wrap_terminals_with_metadata(once, metadata_schema=METADATA_SCHEMA_WITH_EVIDENCE)
+    assert twice == once
+
+
+def test_wrap_terminals_with_metadata_custom_content_key_and_metadata_requirements(
+    sample_schema,
+) -> None:
+    # "properties mapping" shorthand => keys become required (by your normalization rule)
     meta_props_mapping = {
         "evidence_anchor": {"type": "string"},
         "confidence_score": {"type": "number"},
     }
-
     out = wrap_terminals_with_metadata(
-        schema, metadata_schema=meta_props_mapping, content_key="value"
+        sample_schema, metadata_schema=meta_props_mapping, content_key="value"
     )
 
-    node = out["properties"]["name"]
-    # metadata mapping -> no required meta fields by default (only "value" required)
-    _assert_wrapper(node, content_key="value", required_meta=())
-    assert "evidence_anchor" in node["properties"]
-    assert "confidence_score" in node["properties"]
-    assert node["properties"]["value"] == {"type": "string"}
-
-
-def test_wrap_terminals_with_metadata_is_idempotent(sample_schema):
-    schema = sample_schema
-
-    once = wrap_terminals_with_metadata(schema, metadata_schema=DEFAULT_METADATA_SCHEMA)
-    twice = wrap_terminals_with_metadata(once, metadata_schema=DEFAULT_METADATA_SCHEMA)
-
-    assert twice == once
-
-
-def test_wrapped_terminal_not_wrapped_again_inside_content(sample_schema):
-    once = wrap_terminals_with_metadata(sample_schema, metadata_schema=DEFAULT_METADATA_SCHEMA)
-
-    name = once["properties"]["name"]
-    # content should still be the original terminal schema, not another wrapper
-    assert name["properties"]["content"] == {"type": "string"}
-
-
-def test_metadata_schema_shorthand_equals_full(sample_schema):
-    schema = sample_schema
-
-    meta_full = METADATA_SCHEMA_WITH_EVIDENCE
-    meta_shorthand = METADATA_SCHEMA_WITH_EVIDENCE_SHORTHAND
-
-    out_full = wrap_terminals_with_metadata(schema, metadata_schema=meta_full)
-    out_short = wrap_terminals_with_metadata(schema, metadata_schema=meta_shorthand)
-
-    assert out_short == out_full
+    name = out["properties"]["name"]
+    _assert_is_wrapper(
+        name,
+        content_schema={"type": "string"},
+        content_key="value",
+        required_meta=("evidence_anchor", "confidence_score"),
+    )
