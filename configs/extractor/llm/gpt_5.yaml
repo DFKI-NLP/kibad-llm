@@ -42,4 +42,3 @@ additional_kwargs:
   # kind of redundant to max_output_tokens, but suggested by the OpenAI API
   max_completion_tokens: 8192
 #   ...
-
