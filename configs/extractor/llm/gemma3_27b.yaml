@@ -4,7 +4,7 @@
 # See models/README.md for instructions.
 #
 # To use as an argument for `predict`, use `extractor/llm=gemma3_27b`.
-# Run VLLM with `./run_with_llm.sh -v "google/gemma-3-27b-it --max-model-len 131072 --hf-token [$HF_TOKEN|<your_token>|True]"`
+# Run VLLM with `./run_with_llm.sh -v "google/gemma-3-27b-it --max-model-len 65536 --hf-token [$HF_TOKEN|<your_token>|True]"`
 # You can specify the HF token as an environment variable, e.g. export HF_TOKEN=..., or
 # use a cached token with `--hf-token True`, see https://docs.vllm.ai/en/latest/cli/serve/#-hf-token
 # The model may be too large for the RTXA6000's memory, so run it on partitions with more memory (H100) or lower max-model-len
@@ -23,7 +23,7 @@ temperature: 0.0
 is_chat_model: true
 # Supports up to 128K tokens (max size for https://huggingface.co/google/gemma-3-27b-it).
 # Use lower value to save memory and improve performance
-context_window: 131072
+context_window: 65536 # due to memory issues when using 131072
 timeout: 360
 max_retries: 3
 

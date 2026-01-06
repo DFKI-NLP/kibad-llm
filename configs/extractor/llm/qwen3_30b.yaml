@@ -4,7 +4,7 @@
 # See models/README.md for instructions.
 #
 # To use as an argument for `predict`, use `extractor/llm=qwen3_30b`.
-# Run VLLM with `./run_with_llm.sh -v "Qwen/Qwen3-30B-A3B-Thinking-2507 --max-model-len 131072
+# Run VLLM with `./run_with_llm.sh -v "Qwen/Qwen3-30B-A3B-Thinking-2507 --max-model-len 65536
 #  --reasoning-parser deepseek_r1"`
 # See https://huggingface.co/Qwen/Qwen3-30B-A3B-Thinking-2507 for VLLM options
 
@@ -22,7 +22,7 @@ temperature: 0.0
 is_chat_model: true
 # Supports up to 256K tokens (max size for https://huggingface.co/Qwen/Qwen3-30B-A3B-Thinking-2507).
 # Use lower value to save memory and improve performance
-context_window: 131072
+context_window: 65536 # due to memory issues when using 131072
 timeout: 360
 max_retries: 3
 
