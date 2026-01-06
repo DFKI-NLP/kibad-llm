@@ -509,11 +509,14 @@ def _wrap_value_schema_with_metadata(
     return wrapper
 
 
+WRAPPED_CONTENT_KEY = "content"
+
+
 def wrap_terminals_with_metadata(
     schema: Mapping[str, Any],
     metadata_schema: Mapping[str, Any],
     *,
-    content_key: str = "content",
+    content_key: str = WRAPPED_CONTENT_KEY,
 ) -> dict[str, Any]:
     """
     Wrap every terminal field schema (scalars/enums/const, including nullable unions and refs)
