@@ -254,16 +254,56 @@ def _is_arrayish(node: Mapping[str, Any]) -> bool:
     return "items" in node or "prefixItems" in node
 
 
-def _is_terminal_schema(
+def _schema_should_be_wrapped(
     root: Mapping[str, Any],
     node: Any,
     *,
     _ref_stack: set[str] | None = None,
 ) -> bool:
     """
-    Terminal = non-null scalar/enum/const or $ref resolving to such. Unions with null are
-    treated as non-terminal so recursion can wrap only the non-null branches.
+    Decide whether a schema node should be replaced by the metadata wrapper produced by
+    `wrap_terminals_with_metadata()`.
+
+    Intuition
+    ---------
+    The wrapper is meant for "leaf-like" value schemas (e.g., string/integer/enum/const) so
+    the model can return both the extracted value (`content`) and its metadata
+    (e.g., `evidence_anchor`). We therefore wrap *value* nodes, not structural nodes.
+
+    What counts as "should be wrapped"
+    ----------------------------------
+    Returns True if `node` represents a *non-null* scalar value schema, an enum, or a
+    non-null const --- including the case where `node` is a `$ref` that resolves to such
+    a schema.
+
+    Examples that return True:
+      - {"type": "string"}
+      - {"type": "integer"}
+      - {"enum": ["A", "B"], "type": "string"}
+      - {"const": 123}
+      - {"$ref": "#/$defs/HabitatEnum"}  (if that $defs entry is an enum / scalar schema)
+
+    What does NOT get wrapped (and why)
+    -----------------------------------
+    - Objects and arrays are not wrapped because they are structural containers; their
+      *children* (properties/items) are processed recursively instead.
+    - Unions/compositions (anyOf/oneOf/allOf) are not wrapped at the union root if they
+      include `null` or a structural branch. This is intentional:
+        * For Optional[T] patterns (e.g., anyOf: [T, null]) we want the overall field to
+          remain nullable, while only the non-null branch `T` receives metadata.
+          Wrapping the union root would allow invalid combinations like
+          {"content": null, "evidence_anchor": "..."}.
+        * For unions like "string OR object", only the scalar branch should become a
+          wrapper, while the object branch remains an object whose leaf fields are wrapped.
+    - `const: null` is treated as non-wrappable for the same reason as nullable unions:
+      it would again allow metadata without actual content.
+
+    Implementation notes
+    --------------------
+    The function resolves local JSON Schema `$ref`s using `root` and uses `_ref_stack`
+    for cycle protection.
     """
+
     if not isinstance(node, ABCMapping):
         return False
 
@@ -301,7 +341,7 @@ def _is_terminal_schema(
         if ref in _ref_stack:
             return False  # cycle safety
         _ref_stack.add(ref)
-        return _is_terminal_schema(
+        return _schema_should_be_wrapped(
             root,
             target,
             _ref_stack=_ref_stack,
@@ -311,7 +351,7 @@ def _is_terminal_schema(
     for key in ("anyOf", "oneOf"):
         subs = node.get(key)
         if isinstance(subs, list) and subs:
-            return all(_is_terminal_schema(root, s, _ref_stack=_ref_stack) for s in subs)
+            return all(_schema_should_be_wrapped(root, s, _ref_stack=_ref_stack) for s in subs)
 
     # allOf: allow annotation-only subschemas; terminal if:
     # - no subschema is object/array-ish AND
@@ -322,7 +362,7 @@ def _is_terminal_schema(
         for s in subs:
             if isinstance(s, ABCMapping) and (_is_objectish(s) or _is_arrayish(s)):
                 return False
-            if _is_terminal_schema(root, s, _ref_stack=_ref_stack):
+            if _schema_should_be_wrapped(root, s, _ref_stack=_ref_stack):
                 any_terminal = True
         return any_terminal
 
@@ -406,23 +446,36 @@ def _is_metadata_wrapper(
     return True
 
 
-def _wrap_terminal_node(
-    terminal_node: Mapping[str, Any],
+def _wrap_value_schema_with_metadata(
+    value_schema: Mapping[str, Any],
     *,
     metadata_obj_schema: Mapping[str, Any],
     content_key: str,
 ) -> dict[str, Any]:
     """
-    Build wrapper object:
-      {
-        type: "object",
-        properties: { content: <terminal_node>, ...metadata properties... },
-        required: ["content", ...metadata required...],
-        additionalProperties: <metadata additionalProperties or False>
-      }
+    Construct the wrapper-object schema for a single wrappable value schema.
+
+    This takes the original value constraints (e.g., type/enum/const/$ref + validation
+    keywords) and places them under `properties[content_key]`. The remaining properties
+    come from `metadata_obj_schema` (e.g., `evidence_anchor`, later `confidence_score`),
+    and the wrapper's `required` list is built as:
+
+        ["<content_key>", *metadata_obj_schema["required"]]
+
+    Notes:
+    - `title` and `description` from `value_schema` are lifted to the wrapper object so
+      that the field-level documentation stays attached to the field, not buried under
+      `content`.
+    - The wrapper's `additionalProperties` is inherited from `metadata_obj_schema`
+      (defaulting to False if absent) to keep the wrapper strict.
+
+    This function assumes `value_schema` is already a "wrappable" schema node (as
+    determined by `_schema_should_be_wrapped`); it does not attempt to handle unions,
+    nullability, or structural schemas.
     """
+
     # Copy terminal schema into content schema, but lift title/description to wrapper
-    content_schema = dict(terminal_node)
+    content_schema = dict(value_schema)
     title = content_schema.pop("title", None)
     description = content_schema.pop("description", None)
 
@@ -498,8 +551,8 @@ def wrap_terminals_with_metadata(
                 "Please normalize type-lists to anyOf/oneOf first or update the wrapper."
             )
 
-        if allow_wrap_here and _is_terminal_schema(root, node_dict):
-            return _wrap_terminal_node(
+        if allow_wrap_here and _schema_should_be_wrapped(root, node_dict):
+            return _wrap_value_schema_with_metadata(
                 node_dict,
                 metadata_obj_schema=metadata_obj_schema,
                 content_key=content_key,

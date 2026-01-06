@@ -9,7 +9,7 @@ from kibad_llm.config import PROJ_ROOT
 from kibad_llm.schema.utils import (
     METADATA_SCHEMA_WITH_EVIDENCE,
     METADATA_SCHEMA_WITH_EVIDENCE_SHORTHAND,
-    _is_terminal_schema,
+    _schema_should_be_wrapped,
     build_schema_description,
     wrap_terminals_with_metadata,
 )
@@ -72,66 +72,73 @@ def test_wrap_terminals_with_metadata_evidence(model_cls: type[BaseModel]):
     assert schema_with_metadata == expected
 
 
-def test_terminal_scalars_and_scalar_lists() -> None:
+def test_schema_should_be_wrapped_terminal_scalars_and_scalar_lists() -> None:
     root: dict[str, Any] = {}
 
     # plain scalar: string
-    assert _is_terminal_schema(root, {"type": "string"}) is True
+    assert _schema_should_be_wrapped(root, {"type": "string"}) is True
 
     # plain scalar: integer
-    assert _is_terminal_schema(root, {"type": "integer"}) is True
+    assert _schema_should_be_wrapped(root, {"type": "integer"}) is True
 
     # plain scalar: number
-    assert _is_terminal_schema(root, {"type": "number"}) is True
+    assert _schema_should_be_wrapped(root, {"type": "number"}) is True
 
     # plain scalar: boolean
-    assert _is_terminal_schema(root, {"type": "boolean"}) is True
+    assert _schema_should_be_wrapped(root, {"type": "boolean"}) is True
 
     # scalar: null
-    assert _is_terminal_schema(root, {"type": "null"}) is False
+    assert _schema_should_be_wrapped(root, {"type": "null"}) is False
 
     # list-of-types incl. null (common Optional pattern)
-    assert _is_terminal_schema(root, {"type": ["string", "null"]}) is False
+    assert _schema_should_be_wrapped(root, {"type": ["string", "null"]}) is False
 
 
-def test_terminal_enum_and_const() -> None:
+def test_schema_should_be_wrapped_terminal_enum_and_const() -> None:
     root: dict[str, Any] = {}
 
     # inline enum
-    assert _is_terminal_schema(root, {"type": "string", "enum": ["A", "B"]}) is True
+    assert _schema_should_be_wrapped(root, {"type": "string", "enum": ["A", "B"]}) is True
 
     # const (non-null)
-    assert _is_terminal_schema(root, {"const": 123}) is True
+    assert _schema_should_be_wrapped(root, {"const": 123}) is True
 
     # const (null)
-    assert _is_terminal_schema(root, {"const": None}) is False
+    assert _schema_should_be_wrapped(root, {"const": None}) is False
 
 
-def test_non_terminals_object_and_array() -> None:
+def test_schema_should_be_wrapped_non_terminals_object_and_array() -> None:
     root: dict[str, Any] = {}
 
     # object is not terminal
     assert (
-        _is_terminal_schema(root, {"type": "object", "properties": {"x": {"type": "string"}}})
+        _schema_should_be_wrapped(
+            root, {"type": "object", "properties": {"x": {"type": "string"}}}
+        )
         is False
     )
 
     # array is not terminal
-    assert _is_terminal_schema(root, {"type": "array", "items": {"type": "string"}}) is False
+    assert _schema_should_be_wrapped(root, {"type": "array", "items": {"type": "string"}}) is False
 
 
-def test_unions_anyof_oneof_allof() -> None:
+def test_schema_should_be_wrapped_unions_anyof_oneof_allof() -> None:
     root: dict[str, Any] = {}
 
     # anyOf: nullable scalar union
-    assert _is_terminal_schema(root, {"anyOf": [{"type": "integer"}, {"type": "null"}]}) is False
+    assert (
+        _schema_should_be_wrapped(root, {"anyOf": [{"type": "integer"}, {"type": "null"}]})
+        is False
+    )
 
     # oneOf: nullable scalar union
-    assert _is_terminal_schema(root, {"oneOf": [{"type": "string"}, {"type": "null"}]}) is False
+    assert (
+        _schema_should_be_wrapped(root, {"oneOf": [{"type": "string"}, {"type": "null"}]}) is False
+    )
 
     # anyOf: includes object -> not terminal
     assert (
-        _is_terminal_schema(
+        _schema_should_be_wrapped(
             root, {"anyOf": [{"type": "string"}, {"type": "object", "properties": {}}]}
         )
         is False
@@ -139,25 +146,27 @@ def test_unions_anyof_oneof_allof() -> None:
 
     # oneOf: includes array -> not terminal
     assert (
-        _is_terminal_schema(
+        _schema_should_be_wrapped(
             root, {"oneOf": [{"type": "null"}, {"type": "array", "items": {"type": "string"}}]}
         )
         is False
     )
 
     # allOf: scalar constraints only -> terminal
-    assert _is_terminal_schema(root, {"allOf": [{"type": "string"}, {"minLength": 2}]}) is True
+    assert (
+        _schema_should_be_wrapped(root, {"allOf": [{"type": "string"}, {"minLength": 2}]}) is True
+    )
 
     # allOf: includes object -> not terminal
     assert (
-        _is_terminal_schema(
+        _schema_should_be_wrapped(
             root, {"allOf": [{"type": "string"}, {"type": "object", "properties": {}}]}
         )
         is False
     )
 
     assert (
-        _is_terminal_schema(
+        _schema_should_be_wrapped(
             root,
             {
                 # field can be either a scalar (string) OR an object with an integer field
@@ -175,10 +184,12 @@ def test_unions_anyof_oneof_allof() -> None:
     )
 
 
-def test_refs_to_defs_terminal_vs_non_terminal_and_nullable_ref_union() -> None:
+def test_schema_should_be_wrapped_refs_to_defs_terminal_vs_non_terminal_and_nullable_ref_union() -> (
+    None
+):
     # $ref to enum def -> terminal
     root_enum = {"$defs": {"HabitatEnum": {"type": "string", "enum": ["A", "B"]}}}
-    assert _is_terminal_schema(root_enum, {"$ref": "#/$defs/HabitatEnum"}) is True
+    assert _schema_should_be_wrapped(root_enum, {"$ref": "#/$defs/HabitatEnum"}) is True
 
     # $ref to object def -> not terminal
     root_obj = {
@@ -190,11 +201,11 @@ def test_refs_to_defs_terminal_vs_non_terminal_and_nullable_ref_union() -> None:
             }
         }
     }
-    assert _is_terminal_schema(root_obj, {"$ref": "#/$defs/Taxa"}) is False
+    assert _schema_should_be_wrapped(root_obj, {"$ref": "#/$defs/Taxa"}) is False
 
     # Optional[Enum]-style union (anyOf: enum ref + null) -> not a terminal
     assert (
-        _is_terminal_schema(
+        _schema_should_be_wrapped(
             root_enum,
             {"anyOf": [{"$ref": "#/$defs/HabitatEnum"}, {"type": "null"}], "default": None},
         )
