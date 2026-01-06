@@ -18,29 +18,29 @@
       "description": "Ökosystemtyp mit Name.",
       "properties": {
         "term": {
-          "type": "object",
-          "properties": {
-            "content": {
-              "anyOf": [
-                {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "content": {
                   "$ref": "#/$defs/EcosystemTypeTermEnum"
                 },
-                {
-                  "type": "null"
+                "evidence_anchor": {
+                  "type": "string",
+                  "description": "Verbatim excerpt from the source text supporting the extracted content."
                 }
+              },
+              "required": [
+                "content",
+                "evidence_anchor"
               ],
-              "default": null
+              "additionalProperties": false
             },
-            "evidence_anchor": {
-              "type": "string",
-              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            {
+              "type": "null"
             }
-          },
-          "required": [
-            "content",
-            "evidence_anchor"
           ],
-          "additionalProperties": false,
+          "default": null,
           "description": "Name des Ökosystemtyps"
         }
       },
@@ -138,58 +138,58 @@
       "description": "Art mit wissenschaftlichem und deutschem Namen sowie taxonomischer Gruppe.",
       "properties": {
         "scientific_name": {
-          "type": "object",
-          "properties": {
-            "content": {
-              "anyOf": [
-                {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "content": {
                   "type": "string"
                 },
-                {
-                  "type": "null"
+                "evidence_anchor": {
+                  "type": "string",
+                  "description": "Verbatim excerpt from the source text supporting the extracted content."
                 }
+              },
+              "required": [
+                "content",
+                "evidence_anchor"
               ],
-              "default": null
+              "additionalProperties": false
             },
-            "evidence_anchor": {
-              "type": "string",
-              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            {
+              "type": "null"
             }
-          },
-          "required": [
-            "content",
-            "evidence_anchor"
           ],
-          "additionalProperties": false,
-          "title": "Scientific Name",
-          "description": "Wissenschaftlicher Name der Art"
+          "default": null,
+          "description": "Wissenschaftlicher Name der Art",
+          "title": "Scientific Name"
         },
         "german_name": {
-          "type": "object",
-          "properties": {
-            "content": {
-              "anyOf": [
-                {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "content": {
                   "type": "string"
                 },
-                {
-                  "type": "null"
+                "evidence_anchor": {
+                  "type": "string",
+                  "description": "Verbatim excerpt from the source text supporting the extracted content."
                 }
+              },
+              "required": [
+                "content",
+                "evidence_anchor"
               ],
-              "default": null
+              "additionalProperties": false
             },
-            "evidence_anchor": {
-              "type": "string",
-              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            {
+              "type": "null"
             }
-          },
-          "required": [
-            "content",
-            "evidence_anchor"
           ],
-          "additionalProperties": false,
-          "title": "German Name",
-          "description": "Deutscher Name der Art"
+          "default": null,
+          "description": "Deutscher Name der Art",
+          "title": "German Name"
         },
         "species_group": {
           "type": "object",

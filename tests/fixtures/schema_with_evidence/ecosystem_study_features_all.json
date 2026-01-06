@@ -33,58 +33,58 @@
       "description": "Schutzgebiet mit Name, Beschreibung und Erfolg.",
       "properties": {
         "name": {
-          "type": "object",
-          "properties": {
-            "content": {
-              "anyOf": [
-                {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "content": {
                   "type": "string"
                 },
-                {
-                  "type": "null"
+                "evidence_anchor": {
+                  "type": "string",
+                  "description": "Verbatim excerpt from the source text supporting the extracted content."
                 }
+              },
+              "required": [
+                "content",
+                "evidence_anchor"
               ],
-              "default": null
+              "additionalProperties": false
             },
-            "evidence_anchor": {
-              "type": "string",
-              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            {
+              "type": "null"
             }
-          },
-          "required": [
-            "content",
-            "evidence_anchor"
           ],
-          "additionalProperties": false,
-          "title": "Name",
-          "description": "Name des Schutzgebiets"
+          "default": null,
+          "description": "Name des Schutzgebiets",
+          "title": "Name"
         },
         "description": {
-          "type": "object",
-          "properties": {
-            "content": {
-              "anyOf": [
-                {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "content": {
                   "type": "string"
                 },
-                {
-                  "type": "null"
+                "evidence_anchor": {
+                  "type": "string",
+                  "description": "Verbatim excerpt from the source text supporting the extracted content."
                 }
+              },
+              "required": [
+                "content",
+                "evidence_anchor"
               ],
-              "default": null
+              "additionalProperties": false
             },
-            "evidence_anchor": {
-              "type": "string",
-              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            {
+              "type": "null"
             }
-          },
-          "required": [
-            "content",
-            "evidence_anchor"
           ],
-          "additionalProperties": false,
-          "title": "Description",
-          "description": "Charakterisierung des Schutzgebiets"
+          "default": null,
+          "description": "Charakterisierung des Schutzgebiets",
+          "title": "Description"
         },
         "success": {
           "type": "object",
@@ -134,31 +134,31 @@
           "description": "Zu welcher der folgenden Kategorien lässt sich der direkte Treiber zuordnen?"
         },
         "details": {
-          "type": "object",
-          "properties": {
-            "content": {
-              "anyOf": [
-                {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "content": {
                   "type": "string"
                 },
-                {
-                  "type": "null"
+                "evidence_anchor": {
+                  "type": "string",
+                  "description": "Verbatim excerpt from the source text supporting the extracted content."
                 }
+              },
+              "required": [
+                "content",
+                "evidence_anchor"
               ],
-              "default": null
+              "additionalProperties": false
             },
-            "evidence_anchor": {
-              "type": "string",
-              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            {
+              "type": "null"
             }
-          },
-          "required": [
-            "content",
-            "evidence_anchor"
           ],
-          "additionalProperties": false,
-          "title": "Details",
-          "description": "Details zum direkten Treiber"
+          "default": null,
+          "description": "Details zum direkten Treiber",
+          "title": "Details"
         }
       },
       "required": [
@@ -203,57 +203,57 @@
           "description": "In welche der folgenden Kategorien lässt sich die im Text behandelte Ökosystemleistung einordnen?"
         },
         "term": {
-          "type": "object",
-          "properties": {
-            "content": {
-              "anyOf": [
-                {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "content": {
                   "$ref": "#/$defs/EcosystemServiceTermEnum"
                 },
-                {
-                  "type": "null"
+                "evidence_anchor": {
+                  "type": "string",
+                  "description": "Verbatim excerpt from the source text supporting the extracted content."
                 }
+              },
+              "required": [
+                "content",
+                "evidence_anchor"
               ],
-              "default": null
+              "additionalProperties": false
             },
-            "evidence_anchor": {
-              "type": "string",
-              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            {
+              "type": "null"
             }
-          },
-          "required": [
-            "content",
-            "evidence_anchor"
           ],
-          "additionalProperties": false,
+          "default": null,
           "description": "Welche konkrete Ökosystemleistung wurde untersucht?"
         },
         "details": {
-          "type": "object",
-          "properties": {
-            "content": {
-              "anyOf": [
-                {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "content": {
                   "type": "string"
                 },
-                {
-                  "type": "null"
+                "evidence_anchor": {
+                  "type": "string",
+                  "description": "Verbatim excerpt from the source text supporting the extracted content."
                 }
+              },
+              "required": [
+                "content",
+                "evidence_anchor"
               ],
-              "default": null
+              "additionalProperties": false
             },
-            "evidence_anchor": {
-              "type": "string",
-              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            {
+              "type": "null"
             }
-          },
-          "required": [
-            "content",
-            "evidence_anchor"
           ],
-          "additionalProperties": false,
-          "title": "Details",
-          "description": "Details zur Ökosystemleistung"
+          "default": null,
+          "description": "Details zur Ökosystemleistung",
+          "title": "Details"
         }
       },
       "required": [
@@ -367,57 +367,57 @@
           "description": "Kategorie des Ökosystemtyps"
         },
         "term": {
-          "type": "object",
-          "properties": {
-            "content": {
-              "anyOf": [
-                {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "content": {
                   "$ref": "#/$defs/EcosystemTypeTermEnum"
                 },
-                {
-                  "type": "null"
+                "evidence_anchor": {
+                  "type": "string",
+                  "description": "Verbatim excerpt from the source text supporting the extracted content."
                 }
+              },
+              "required": [
+                "content",
+                "evidence_anchor"
               ],
-              "default": null
+              "additionalProperties": false
             },
-            "evidence_anchor": {
-              "type": "string",
-              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            {
+              "type": "null"
             }
-          },
-          "required": [
-            "content",
-            "evidence_anchor"
           ],
-          "additionalProperties": false,
+          "default": null,
           "description": "Name des Ökosystemtyps"
         },
         "description": {
-          "type": "object",
-          "properties": {
-            "content": {
-              "anyOf": [
-                {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "content": {
                   "type": "string"
                 },
-                {
-                  "type": "null"
+                "evidence_anchor": {
+                  "type": "string",
+                  "description": "Verbatim excerpt from the source text supporting the extracted content."
                 }
+              },
+              "required": [
+                "content",
+                "evidence_anchor"
               ],
-              "default": null
+              "additionalProperties": false
             },
-            "evidence_anchor": {
-              "type": "string",
-              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            {
+              "type": "null"
             }
-          },
-          "required": [
-            "content",
-            "evidence_anchor"
           ],
-          "additionalProperties": false,
-          "title": "Description",
-          "description": "Beschreibung des Ökosystemtyps"
+          "default": null,
+          "description": "Beschreibung des Ökosystemtyps",
+          "title": "Description"
         }
       },
       "required": [
@@ -574,31 +574,31 @@
           "description": "Zu welcher der folgenden Kategorien lässt sich der indirekte Treiber zuordnen?"
         },
         "details": {
-          "type": "object",
-          "properties": {
-            "content": {
-              "anyOf": [
-                {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "content": {
                   "type": "string"
                 },
-                {
-                  "type": "null"
+                "evidence_anchor": {
+                  "type": "string",
+                  "description": "Verbatim excerpt from the source text supporting the extracted content."
                 }
+              },
+              "required": [
+                "content",
+                "evidence_anchor"
               ],
-              "default": null
+              "additionalProperties": false
             },
-            "evidence_anchor": {
-              "type": "string",
-              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            {
+              "type": "null"
             }
-          },
-          "required": [
-            "content",
-            "evidence_anchor"
           ],
-          "additionalProperties": false,
-          "title": "Details",
-          "description": "Details zum indirekten Treiber"
+          "default": null,
+          "description": "Details zum indirekten Treiber",
+          "title": "Details"
         }
       },
       "required": [
@@ -645,84 +645,84 @@
       "description": "Untersuchungsgebiet mit Land, Bundesland und Ort.",
       "properties": {
         "country": {
-          "type": "object",
-          "properties": {
-            "content": {
-              "anyOf": [
-                {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "content": {
                   "type": "string"
                 },
-                {
-                  "type": "null"
+                "evidence_anchor": {
+                  "type": "string",
+                  "description": "Verbatim excerpt from the source text supporting the extracted content."
                 }
+              },
+              "required": [
+                "content",
+                "evidence_anchor"
               ],
-              "default": null
+              "additionalProperties": false
             },
-            "evidence_anchor": {
-              "type": "string",
-              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            {
+              "type": "null"
             }
-          },
-          "required": [
-            "content",
-            "evidence_anchor"
           ],
-          "additionalProperties": false,
-          "title": "Country",
-          "description": "Land des Untersuchungsgebietes"
+          "default": null,
+          "description": "Land des Untersuchungsgebietes",
+          "title": "Country"
         },
         "federal_state": {
-          "type": "object",
-          "properties": {
-            "content": {
-              "anyOf": [
-                {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "content": {
                   "$ref": "#/$defs/LocationFederalStateEnum"
                 },
-                {
-                  "type": "null"
+                "evidence_anchor": {
+                  "type": "string",
+                  "description": "Verbatim excerpt from the source text supporting the extracted content."
                 }
+              },
+              "required": [
+                "content",
+                "evidence_anchor"
               ],
-              "default": null
+              "additionalProperties": false
             },
-            "evidence_anchor": {
-              "type": "string",
-              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            {
+              "type": "null"
             }
-          },
-          "required": [
-            "content",
-            "evidence_anchor"
           ],
-          "additionalProperties": false,
+          "default": null,
           "description": "Bundesland des Untersuchungsgebietes"
         },
         "name": {
-          "type": "object",
-          "properties": {
-            "content": {
-              "anyOf": [
-                {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "content": {
                   "type": "string"
                 },
-                {
-                  "type": "null"
+                "evidence_anchor": {
+                  "type": "string",
+                  "description": "Verbatim excerpt from the source text supporting the extracted content."
                 }
+              },
+              "required": [
+                "content",
+                "evidence_anchor"
               ],
-              "default": null
+              "additionalProperties": false
             },
-            "evidence_anchor": {
-              "type": "string",
-              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            {
+              "type": "null"
             }
-          },
-          "required": [
-            "content",
-            "evidence_anchor"
           ],
-          "additionalProperties": false,
-          "title": "Name",
-          "description": "Ort (z.B. Stadt, Gemeinde, Region) des Untersuchungsgebietes"
+          "default": null,
+          "description": "Ort (z.B. Stadt, Gemeinde, Region) des Untersuchungsgebietes",
+          "title": "Name"
         }
       },
       "title": "Location",
@@ -830,55 +830,55 @@
       "description": "Boden mit Kategorie und Tiefe.",
       "properties": {
         "name": {
-          "type": "object",
-          "properties": {
-            "content": {
-              "anyOf": [
-                {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "content": {
                   "$ref": "#/$defs/SoilNameEnum"
                 },
-                {
-                  "type": "null"
+                "evidence_anchor": {
+                  "type": "string",
+                  "description": "Verbatim excerpt from the source text supporting the extracted content."
                 }
+              },
+              "required": [
+                "content",
+                "evidence_anchor"
               ],
-              "default": null
+              "additionalProperties": false
             },
-            "evidence_anchor": {
-              "type": "string",
-              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            {
+              "type": "null"
             }
-          },
-          "required": [
-            "content",
-            "evidence_anchor"
           ],
-          "additionalProperties": false,
+          "default": null,
           "description": "Name des Bodentyps"
         },
         "depth": {
-          "type": "object",
-          "properties": {
-            "content": {
-              "anyOf": [
-                {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "content": {
                   "$ref": "#/$defs/SoilDepthEnum"
                 },
-                {
-                  "type": "null"
+                "evidence_anchor": {
+                  "type": "string",
+                  "description": "Verbatim excerpt from the source text supporting the extracted content."
                 }
+              },
+              "required": [
+                "content",
+                "evidence_anchor"
               ],
-              "default": null
+              "additionalProperties": false
             },
-            "evidence_anchor": {
-              "type": "string",
-              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            {
+              "type": "null"
             }
-          },
-          "required": [
-            "content",
-            "evidence_anchor"
           ],
-          "additionalProperties": false,
+          "default": null,
           "description": "Tiefe des Bodens"
         }
       },
@@ -999,58 +999,58 @@
       "description": "Art mit wissenschaftlichem und deutschem Namen sowie taxonomischer Gruppe.",
       "properties": {
         "scientific_name": {
-          "type": "object",
-          "properties": {
-            "content": {
-              "anyOf": [
-                {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "content": {
                   "type": "string"
                 },
-                {
-                  "type": "null"
+                "evidence_anchor": {
+                  "type": "string",
+                  "description": "Verbatim excerpt from the source text supporting the extracted content."
                 }
+              },
+              "required": [
+                "content",
+                "evidence_anchor"
               ],
-              "default": null
+              "additionalProperties": false
             },
-            "evidence_anchor": {
-              "type": "string",
-              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            {
+              "type": "null"
             }
-          },
-          "required": [
-            "content",
-            "evidence_anchor"
           ],
-          "additionalProperties": false,
-          "title": "Scientific Name",
-          "description": "Wissenschaftlicher Name der Art"
+          "default": null,
+          "description": "Wissenschaftlicher Name der Art",
+          "title": "Scientific Name"
         },
         "german_name": {
-          "type": "object",
-          "properties": {
-            "content": {
-              "anyOf": [
-                {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "content": {
                   "type": "string"
                 },
-                {
-                  "type": "null"
+                "evidence_anchor": {
+                  "type": "string",
+                  "description": "Verbatim excerpt from the source text supporting the extracted content."
                 }
+              },
+              "required": [
+                "content",
+                "evidence_anchor"
               ],
-              "default": null
+              "additionalProperties": false
             },
-            "evidence_anchor": {
-              "type": "string",
-              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            {
+              "type": "null"
             }
-          },
-          "required": [
-            "content",
-            "evidence_anchor"
           ],
-          "additionalProperties": false,
-          "title": "German Name",
-          "description": "Deutscher Name der Art"
+          "default": null,
+          "description": "Deutscher Name der Art",
+          "title": "German Name"
         },
         "species_group": {
           "type": "object",
@@ -1205,243 +1205,243 @@
       "type": "array"
     },
     "spatial_extent": {
-      "type": "object",
-      "properties": {
-        "content": {
-          "anyOf": [
-            {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "content": {
               "$ref": "#/$defs/SpatialExtentEnum"
             },
-            {
-              "type": "null"
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
             }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
           ],
-          "default": null
+          "additionalProperties": false
         },
-        "evidence_anchor": {
-          "type": "string",
-          "description": "Verbatim excerpt from the source text supporting the extracted content."
+        {
+          "type": "null"
         }
-      },
-      "required": [
-        "content",
-        "evidence_anchor"
       ],
-      "additionalProperties": false,
+      "default": null,
       "description": "Wie ist insgesamt die räumliche Ausdehnung der Studie?"
     },
     "spatial_resolution": {
-      "type": "object",
-      "properties": {
-        "content": {
-          "anyOf": [
-            {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "content": {
               "$ref": "#/$defs/SpatialResolutionEnum"
             },
-            {
-              "type": "null"
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
             }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
           ],
-          "default": null
+          "additionalProperties": false
         },
-        "evidence_anchor": {
-          "type": "string",
-          "description": "Verbatim excerpt from the source text supporting the extracted content."
+        {
+          "type": "null"
         }
-      },
-      "required": [
-        "content",
-        "evidence_anchor"
       ],
-      "additionalProperties": false,
+      "default": null,
       "description": "Mit welcher räumlichen Auflösung wurden die einzelnen Messungen in der Studie durchgeführt?"
     },
     "spatial_measurements": {
-      "type": "object",
-      "properties": {
-        "content": {
-          "anyOf": [
-            {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "content": {
               "type": "integer"
             },
-            {
-              "type": "null"
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
             }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
           ],
-          "default": null
+          "additionalProperties": false
         },
-        "evidence_anchor": {
-          "type": "string",
-          "description": "Verbatim excerpt from the source text supporting the extracted content."
+        {
+          "type": "null"
         }
-      },
-      "required": [
-        "content",
-        "evidence_anchor"
       ],
-      "additionalProperties": false,
-      "title": "Spatial Measurements",
-      "description": "An wie vielen Stellen wurde gemessen?"
+      "default": null,
+      "description": "An wie vielen Stellen wurde gemessen?",
+      "title": "Spatial Measurements"
     },
     "temporal_extent": {
-      "type": "object",
-      "properties": {
-        "content": {
-          "anyOf": [
-            {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "content": {
               "type": "integer"
             },
-            {
-              "type": "null"
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
             }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
           ],
-          "default": null
+          "additionalProperties": false
         },
-        "evidence_anchor": {
-          "type": "string",
-          "description": "Verbatim excerpt from the source text supporting the extracted content."
+        {
+          "type": "null"
         }
-      },
-      "required": [
-        "content",
-        "evidence_anchor"
       ],
-      "additionalProperties": false,
-      "title": "Temporal Extent",
-      "description": "In welchem Zeitraum fanden die Messungen statt?"
+      "default": null,
+      "description": "In welchem Zeitraum fanden die Messungen statt?",
+      "title": "Temporal Extent"
     },
     "temporal_extent_unit": {
-      "type": "object",
-      "properties": {
-        "content": {
-          "anyOf": [
-            {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "content": {
               "$ref": "#/$defs/TemporalExtentUnit"
             },
-            {
-              "type": "null"
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
             }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
           ],
-          "default": null
+          "additionalProperties": false
         },
-        "evidence_anchor": {
-          "type": "string",
-          "description": "Verbatim excerpt from the source text supporting the extracted content."
+        {
+          "type": "null"
         }
-      },
-      "required": [
-        "content",
-        "evidence_anchor"
       ],
-      "additionalProperties": false,
+      "default": null,
       "description": "In welcher der folgenden Zeiteinheiten ist der Zeitraum angegeben?"
     },
     "temporal_resolution": {
-      "type": "object",
-      "properties": {
-        "content": {
-          "anyOf": [
-            {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "content": {
               "$ref": "#/$defs/TemporalResolutionEnum"
             },
-            {
-              "type": "null"
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
             }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
           ],
-          "default": null
+          "additionalProperties": false
         },
-        "evidence_anchor": {
-          "type": "string",
-          "description": "Verbatim excerpt from the source text supporting the extracted content."
+        {
+          "type": "null"
         }
-      },
-      "required": [
-        "content",
-        "evidence_anchor"
       ],
-      "additionalProperties": false,
+      "default": null,
       "description": "Mit welcher zeitlichen Auflösung wurden die einzelnen Messungen in der Studie durchgeführt?"
     },
     "temporal_measurements": {
-      "type": "object",
-      "properties": {
-        "content": {
-          "anyOf": [
-            {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "content": {
               "type": "integer"
             },
-            {
-              "type": "null"
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
             }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
           ],
-          "default": null
+          "additionalProperties": false
         },
-        "evidence_anchor": {
-          "type": "string",
-          "description": "Verbatim excerpt from the source text supporting the extracted content."
+        {
+          "type": "null"
         }
-      },
-      "required": [
-        "content",
-        "evidence_anchor"
       ],
-      "additionalProperties": false,
-      "title": "Temporal Measurements",
-      "description": "Zu wie vielen unterschiedlichen Zeitpunkten wurde gemessen?"
+      "default": null,
+      "description": "Zu wie vielen unterschiedlichen Zeitpunkten wurde gemessen?",
+      "title": "Temporal Measurements"
     },
     "start_year": {
-      "type": "object",
-      "properties": {
-        "content": {
-          "anyOf": [
-            {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "content": {
               "type": "integer"
             },
-            {
-              "type": "null"
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
             }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
           ],
-          "default": null
+          "additionalProperties": false
         },
-        "evidence_anchor": {
-          "type": "string",
-          "description": "Verbatim excerpt from the source text supporting the extracted content."
+        {
+          "type": "null"
         }
-      },
-      "required": [
-        "content",
-        "evidence_anchor"
       ],
-      "additionalProperties": false,
-      "title": "Start Year",
-      "description": "In welchem Jahr fand die erste Messung statt?"
+      "default": null,
+      "description": "In welchem Jahr fand die erste Messung statt?",
+      "title": "Start Year"
     },
     "end_year": {
-      "type": "object",
-      "properties": {
-        "content": {
-          "anyOf": [
-            {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "content": {
               "type": "integer"
             },
-            {
-              "type": "null"
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
             }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
           ],
-          "default": null
+          "additionalProperties": false
         },
-        "evidence_anchor": {
-          "type": "string",
-          "description": "Verbatim excerpt from the source text supporting the extracted content."
+        {
+          "type": "null"
         }
-      },
-      "required": [
-        "content",
-        "evidence_anchor"
       ],
-      "additionalProperties": false,
-      "title": "End Year",
-      "description": "In welchem Jahr fand die letzte Messung statt?"
+      "default": null,
+      "description": "In welchem Jahr fand die letzte Messung statt?",
+      "title": "End Year"
     },
     "method": {
       "description": "Mit welcher/welchen Methode(n) wurden die Daten erhoben?",
@@ -1488,31 +1488,31 @@
       "type": "array"
     },
     "project": {
-      "type": "object",
-      "properties": {
-        "content": {
-          "anyOf": [
-            {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "content": {
               "type": "string"
             },
-            {
-              "type": "null"
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
             }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
           ],
-          "default": null
+          "additionalProperties": false
         },
-        "evidence_anchor": {
-          "type": "string",
-          "description": "Verbatim excerpt from the source text supporting the extracted content."
+        {
+          "type": "null"
         }
-      },
-      "required": [
-        "content",
-        "evidence_anchor"
       ],
-      "additionalProperties": false,
-      "title": "Project",
-      "description": "Gehört die Studie zu einem größeren Programm oder Projekt? Wenn ja, zu welchem?"
+      "default": null,
+      "description": "Gehört die Studie zu einem größeren Programm oder Projekt? Wenn ja, zu welchem?",
+      "title": "Project"
     },
     "biodiversity_level": {
       "description": "Auf welche der folgenden Ebenen wird Biodiversität in der Studie gemessen?",

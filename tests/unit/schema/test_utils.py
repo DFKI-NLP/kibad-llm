@@ -88,10 +88,10 @@ def test_terminal_scalars_and_scalar_lists() -> None:
     assert _is_terminal_schema(root, {"type": "boolean"}) is True
 
     # scalar: null
-    assert _is_terminal_schema(root, {"type": "null"}) is True
+    assert _is_terminal_schema(root, {"type": "null"}) is False
 
     # list-of-types incl. null (common Optional pattern)
-    assert _is_terminal_schema(root, {"type": ["string", "null"]}) is True
+    assert _is_terminal_schema(root, {"type": ["string", "null"]}) is False
 
 
 def test_terminal_enum_and_const() -> None:
@@ -104,7 +104,7 @@ def test_terminal_enum_and_const() -> None:
     assert _is_terminal_schema(root, {"const": 123}) is True
 
     # const (null)
-    assert _is_terminal_schema(root, {"const": None}) is True
+    assert _is_terminal_schema(root, {"const": None}) is False
 
 
 def test_non_terminals_object_and_array() -> None:
@@ -124,10 +124,10 @@ def test_unions_anyof_oneof_allof() -> None:
     root: dict[str, Any] = {}
 
     # anyOf: nullable scalar union
-    assert _is_terminal_schema(root, {"anyOf": [{"type": "integer"}, {"type": "null"}]}) is True
+    assert _is_terminal_schema(root, {"anyOf": [{"type": "integer"}, {"type": "null"}]}) is False
 
     # oneOf: nullable scalar union
-    assert _is_terminal_schema(root, {"oneOf": [{"type": "string"}, {"type": "null"}]}) is True
+    assert _is_terminal_schema(root, {"oneOf": [{"type": "string"}, {"type": "null"}]}) is False
 
     # anyOf: includes object -> not terminal
     assert (
@@ -157,7 +157,9 @@ def test_unions_anyof_oneof_allof() -> None:
     )
 
     assert (
-        _is_terminal_schema(root, {
+        _is_terminal_schema(
+            root,
+            {
                 # field can be either a scalar (string) OR an object with an integer field
                 "anyOf": [
                     {"type": "string"},
@@ -167,8 +169,9 @@ def test_unions_anyof_oneof_allof() -> None:
                         "additionalProperties": False,
                     },
                 ]
-            }
-        ) is False
+            },
+        )
+        is False
     )
 
 
@@ -189,13 +192,13 @@ def test_refs_to_defs_terminal_vs_non_terminal_and_nullable_ref_union() -> None:
     }
     assert _is_terminal_schema(root_obj, {"$ref": "#/$defs/Taxa"}) is False
 
-    # Optional[Enum]-style union (anyOf: enum ref + null) -> terminal
+    # Optional[Enum]-style union (anyOf: enum ref + null) -> not a terminal
     assert (
         _is_terminal_schema(
             root_enum,
             {"anyOf": [{"$ref": "#/$defs/HabitatEnum"}, {"type": "null"}], "default": None},
         )
-        is True
+        is False
     )
 
 
@@ -271,11 +274,8 @@ def test_wrap_terminals_with_metadata_anyof_scalar_or_null():
         "type": "object",
         "properties": {
             "mixed": {
-                # field can be either a scalar (string) OR an object with an integer field
-                "anyOf": [
-                    {"type": "string"},
-                    {"type": "null"}
-                ]
+                # field can be either a scalar (string) OR null
+                "anyOf": [{"type": "string"}, {"type": "null"}]
             }
         },
     }
@@ -290,25 +290,25 @@ def test_wrap_terminals_with_metadata_anyof_scalar_or_null():
         "type": "object",
         "properties": {
             "mixed": {
-                "type": "object",
-                "properties": {
-                    "content": {
-                        "anyOf": [
-                            {"type": "string"},
-                            # TODO: this should be outside of content!
-                            {"type": "null"}
-                        ]
+                "anyOf": [
+                    {
+                        "type": "object",
+                        "properties": {
+                            "content": {"type": "string"},
+                            "evidence_anchor": {
+                                "type": "string",
+                                "description": "Verbatim excerpt from the source text supporting the extracted content.",
+                            },
+                        },
+                        "required": ["content", "evidence_anchor"],
+                        "additionalProperties": False,
                     },
-                    "evidence_anchor": {
-                        "type": "string",
-                        "description": "Verbatim excerpt from the source text supporting the extracted content.",
-                    },
-                },
-                "required": ["content", "evidence_anchor"],
-                "additionalProperties": False,
+                    {"type": "null"},
+                ]
             }
         },
     }
+
 
 @pytest.fixture
 def sample_schema() -> dict:
@@ -327,7 +327,9 @@ def sample_schema() -> dict:
             # object def (root must NOT be wrapped, but its terminal fields should be)
             "Taxa": {
                 "type": "object",
-                "properties": {"scientific_name": {"type": ["string", "null"]}},
+                "properties": {
+                    "scientific_name": {"anyOf": [{"type": "string"}, {"type": "null"}]}
+                },
                 "additionalProperties": False,
             },
         },
@@ -371,8 +373,24 @@ def test_wraps_terminal_properties_and_is_pure(sample_schema):
     assert out["properties"]["name"]["properties"]["content"] == {"type": "string"}
 
     # age (nullable union) wrapped; content preserves anyOf
-    _assert_wrapper(out["properties"]["age"])
-    assert "anyOf" in out["properties"]["age"]["properties"]["content"]
+    assert schema["properties"]["age"] == {"anyOf": [{"type": "integer"}, {"type": "null"}]}
+    assert out["properties"]["age"] == {
+        "anyOf": [
+            {
+                "type": "object",
+                "properties": {
+                    "content": {"type": "integer"},
+                    "evidence_anchor": {
+                        "type": "string",
+                        "description": "Verbatim excerpt from the source text supporting the extracted content.",
+                    },
+                },
+                "required": ["content", "evidence_anchor"],
+                "additionalProperties": False,
+            },
+            {"type": "null"},
+        ]
+    }
 
 
 def test_wraps_array_items_but_not_array_node(sample_schema):
@@ -393,9 +411,26 @@ def test_does_not_wrap_defs_roots_but_wraps_terminals_inside_object_defs(sample_
     # object def root unchanged, but its terminal fields wrapped
     taxa_def = out["$defs"]["Taxa"]
     assert taxa_def["type"] == "object"
-    sci = taxa_def["properties"]["scientific_name"]
-    _assert_wrapper(sci)
-    assert sci["properties"]["content"] == {"type": ["string", "null"]}
+    assert sample_schema["$defs"]["Taxa"]["properties"]["scientific_name"] == {
+        "anyOf": [{"type": "string"}, {"type": "null"}],
+    }
+    assert taxa_def["properties"]["scientific_name"] == {
+        "anyOf": [
+            {
+                "type": "object",
+                "properties": {
+                    "content": {"type": "string"},
+                    "evidence_anchor": {
+                        "type": "string",
+                        "description": "Verbatim excerpt from the source text supporting the extracted content.",
+                    },
+                },
+                "required": ["content", "evidence_anchor"],
+                "additionalProperties": False,
+            },
+            {"type": "null"},
+        ]
+    }
 
 
 def test_wraps_ref_to_terminal_def_as_content_ref(sample_schema):

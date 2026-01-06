@@ -57,29 +57,29 @@
           "description": "Hauptgruppe der Organismen auf die sich der Trend bezieht."
         },
         "Untergruppe_RoteListen": {
-          "type": "object",
-          "properties": {
-            "content": {
-              "anyOf": [
-                {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "content": {
                   "$ref": "#/$defs/UntergruppeRoteListenEnum"
                 },
-                {
-                  "type": "null"
+                "evidence_anchor": {
+                  "type": "string",
+                  "description": "Verbatim excerpt from the source text supporting the extracted content."
                 }
+              },
+              "required": [
+                "content",
+                "evidence_anchor"
               ],
-              "default": null
+              "additionalProperties": false
             },
-            "evidence_anchor": {
-              "type": "string",
-              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            {
+              "type": "null"
             }
-          },
-          "required": [
-            "content",
-            "evidence_anchor"
           ],
-          "additionalProperties": false,
+          "default": null,
           "description": "Untergruppe der Organismen auf die sich der Trend bezieht."
         },
         "Lebensraum": {

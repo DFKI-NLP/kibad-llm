@@ -256,243 +256,243 @@
       "type": "array"
     },
     "spatial_extent": {
-      "type": "object",
-      "properties": {
-        "content": {
-          "anyOf": [
-            {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "content": {
               "$ref": "#/$defs/SpatialExtentEnum"
             },
-            {
-              "type": "null"
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
             }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
           ],
-          "default": null
+          "additionalProperties": false
         },
-        "evidence_anchor": {
-          "type": "string",
-          "description": "Verbatim excerpt from the source text supporting the extracted content."
+        {
+          "type": "null"
         }
-      },
-      "required": [
-        "content",
-        "evidence_anchor"
       ],
-      "additionalProperties": false,
+      "default": null,
       "description": "Wie ist insgesamt die räumliche Ausdehnung der Studie?"
     },
     "spatial_resolution": {
-      "type": "object",
-      "properties": {
-        "content": {
-          "anyOf": [
-            {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "content": {
               "$ref": "#/$defs/SpatialResolutionEnum"
             },
-            {
-              "type": "null"
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
             }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
           ],
-          "default": null
+          "additionalProperties": false
         },
-        "evidence_anchor": {
-          "type": "string",
-          "description": "Verbatim excerpt from the source text supporting the extracted content."
+        {
+          "type": "null"
         }
-      },
-      "required": [
-        "content",
-        "evidence_anchor"
       ],
-      "additionalProperties": false,
+      "default": null,
       "description": "Mit welcher räumlichen Auflösung wurden die einzelnen Messungen in der Studie durchgeführt?"
     },
     "spatial_measurements": {
-      "type": "object",
-      "properties": {
-        "content": {
-          "anyOf": [
-            {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "content": {
               "type": "integer"
             },
-            {
-              "type": "null"
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
             }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
           ],
-          "default": null
+          "additionalProperties": false
         },
-        "evidence_anchor": {
-          "type": "string",
-          "description": "Verbatim excerpt from the source text supporting the extracted content."
+        {
+          "type": "null"
         }
-      },
-      "required": [
-        "content",
-        "evidence_anchor"
       ],
-      "additionalProperties": false,
-      "title": "Spatial Measurements",
-      "description": "An wie vielen Stellen wurde gemessen?"
+      "default": null,
+      "description": "An wie vielen Stellen wurde gemessen?",
+      "title": "Spatial Measurements"
     },
     "temporal_extent": {
-      "type": "object",
-      "properties": {
-        "content": {
-          "anyOf": [
-            {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "content": {
               "type": "integer"
             },
-            {
-              "type": "null"
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
             }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
           ],
-          "default": null
+          "additionalProperties": false
         },
-        "evidence_anchor": {
-          "type": "string",
-          "description": "Verbatim excerpt from the source text supporting the extracted content."
+        {
+          "type": "null"
         }
-      },
-      "required": [
-        "content",
-        "evidence_anchor"
       ],
-      "additionalProperties": false,
-      "title": "Temporal Extent",
-      "description": "In welchem Zeitraum fanden die Messungen statt?"
+      "default": null,
+      "description": "In welchem Zeitraum fanden die Messungen statt?",
+      "title": "Temporal Extent"
     },
     "temporal_extent_unit": {
-      "type": "object",
-      "properties": {
-        "content": {
-          "anyOf": [
-            {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "content": {
               "$ref": "#/$defs/TemporalExtentUnit"
             },
-            {
-              "type": "null"
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
             }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
           ],
-          "default": null
+          "additionalProperties": false
         },
-        "evidence_anchor": {
-          "type": "string",
-          "description": "Verbatim excerpt from the source text supporting the extracted content."
+        {
+          "type": "null"
         }
-      },
-      "required": [
-        "content",
-        "evidence_anchor"
       ],
-      "additionalProperties": false,
+      "default": null,
       "description": "In welcher der folgenden Zeiteinheiten ist der Zeitraum angegeben?"
     },
     "temporal_resolution": {
-      "type": "object",
-      "properties": {
-        "content": {
-          "anyOf": [
-            {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "content": {
               "$ref": "#/$defs/TemporalResolutionEnum"
             },
-            {
-              "type": "null"
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
             }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
           ],
-          "default": null
+          "additionalProperties": false
         },
-        "evidence_anchor": {
-          "type": "string",
-          "description": "Verbatim excerpt from the source text supporting the extracted content."
+        {
+          "type": "null"
         }
-      },
-      "required": [
-        "content",
-        "evidence_anchor"
       ],
-      "additionalProperties": false,
+      "default": null,
       "description": "Mit welcher zeitlichen Auflösung wurden die einzelnen Messungen in der Studie durchgeführt?"
     },
     "temporal_measurements": {
-      "type": "object",
-      "properties": {
-        "content": {
-          "anyOf": [
-            {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "content": {
               "type": "integer"
             },
-            {
-              "type": "null"
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
             }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
           ],
-          "default": null
+          "additionalProperties": false
         },
-        "evidence_anchor": {
-          "type": "string",
-          "description": "Verbatim excerpt from the source text supporting the extracted content."
+        {
+          "type": "null"
         }
-      },
-      "required": [
-        "content",
-        "evidence_anchor"
       ],
-      "additionalProperties": false,
-      "title": "Temporal Measurements",
-      "description": "Zu wie vielen unterschiedlichen Zeitpunkten wurde gemessen?"
+      "default": null,
+      "description": "Zu wie vielen unterschiedlichen Zeitpunkten wurde gemessen?",
+      "title": "Temporal Measurements"
     },
     "start_year": {
-      "type": "object",
-      "properties": {
-        "content": {
-          "anyOf": [
-            {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "content": {
               "type": "integer"
             },
-            {
-              "type": "null"
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
             }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
           ],
-          "default": null
+          "additionalProperties": false
         },
-        "evidence_anchor": {
-          "type": "string",
-          "description": "Verbatim excerpt from the source text supporting the extracted content."
+        {
+          "type": "null"
         }
-      },
-      "required": [
-        "content",
-        "evidence_anchor"
       ],
-      "additionalProperties": false,
-      "title": "Start Year",
-      "description": "In welchem Jahr fand die erste Messung statt?"
+      "default": null,
+      "description": "In welchem Jahr fand die erste Messung statt?",
+      "title": "Start Year"
     },
     "end_year": {
-      "type": "object",
-      "properties": {
-        "content": {
-          "anyOf": [
-            {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "content": {
               "type": "integer"
             },
-            {
-              "type": "null"
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
             }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
           ],
-          "default": null
+          "additionalProperties": false
         },
-        "evidence_anchor": {
-          "type": "string",
-          "description": "Verbatim excerpt from the source text supporting the extracted content."
+        {
+          "type": "null"
         }
-      },
-      "required": [
-        "content",
-        "evidence_anchor"
       ],
-      "additionalProperties": false,
-      "title": "End Year",
-      "description": "In welchem Jahr fand die letzte Messung statt?"
+      "default": null,
+      "description": "In welchem Jahr fand die letzte Messung statt?",
+      "title": "End Year"
     },
     "method": {
       "description": "Mit welcher/welchen Methode(n) wurden die Daten erhoben?",
@@ -539,31 +539,31 @@
       "type": "array"
     },
     "project": {
-      "type": "object",
-      "properties": {
-        "content": {
-          "anyOf": [
-            {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "content": {
               "type": "string"
             },
-            {
-              "type": "null"
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
             }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
           ],
-          "default": null
+          "additionalProperties": false
         },
-        "evidence_anchor": {
-          "type": "string",
-          "description": "Verbatim excerpt from the source text supporting the extracted content."
+        {
+          "type": "null"
         }
-      },
-      "required": [
-        "content",
-        "evidence_anchor"
       ],
-      "additionalProperties": false,
-      "title": "Project",
-      "description": "Gehört die Studie zu einem größeren Programm oder Projekt? Wenn ja, zu welchem?"
+      "default": null,
+      "description": "Gehört die Studie zu einem größeren Programm oder Projekt? Wenn ja, zu welchem?",
+      "title": "Project"
     },
     "biodiversity_level": {
       "description": "Auf welche der folgenden Ebenen wird Biodiversität in der Studie gemessen?",

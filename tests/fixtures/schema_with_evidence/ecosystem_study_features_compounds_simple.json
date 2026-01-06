@@ -23,57 +23,57 @@
           "description": "Kategorie des Ökosystemtyps"
         },
         "term": {
-          "type": "object",
-          "properties": {
-            "content": {
-              "anyOf": [
-                {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "content": {
                   "$ref": "#/$defs/EcosystemTypeTermEnum"
                 },
-                {
-                  "type": "null"
+                "evidence_anchor": {
+                  "type": "string",
+                  "description": "Verbatim excerpt from the source text supporting the extracted content."
                 }
+              },
+              "required": [
+                "content",
+                "evidence_anchor"
               ],
-              "default": null
+              "additionalProperties": false
             },
-            "evidence_anchor": {
-              "type": "string",
-              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            {
+              "type": "null"
             }
-          },
-          "required": [
-            "content",
-            "evidence_anchor"
           ],
-          "additionalProperties": false,
+          "default": null,
           "description": "Name des Ökosystemtyps"
         },
         "description": {
-          "type": "object",
-          "properties": {
-            "content": {
-              "anyOf": [
-                {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "content": {
                   "type": "string"
                 },
-                {
-                  "type": "null"
+                "evidence_anchor": {
+                  "type": "string",
+                  "description": "Verbatim excerpt from the source text supporting the extracted content."
                 }
+              },
+              "required": [
+                "content",
+                "evidence_anchor"
               ],
-              "default": null
+              "additionalProperties": false
             },
-            "evidence_anchor": {
-              "type": "string",
-              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            {
+              "type": "null"
             }
-          },
-          "required": [
-            "content",
-            "evidence_anchor"
           ],
-          "additionalProperties": false,
-          "title": "Description",
-          "description": "Beschreibung des Ökosystemtyps"
+          "default": null,
+          "description": "Beschreibung des Ökosystemtyps",
+          "title": "Description"
         }
       },
       "required": [
@@ -151,84 +151,84 @@
       "description": "Untersuchungsgebiet mit Land, Bundesland und Ort.",
       "properties": {
         "country": {
-          "type": "object",
-          "properties": {
-            "content": {
-              "anyOf": [
-                {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "content": {
                   "type": "string"
                 },
-                {
-                  "type": "null"
+                "evidence_anchor": {
+                  "type": "string",
+                  "description": "Verbatim excerpt from the source text supporting the extracted content."
                 }
+              },
+              "required": [
+                "content",
+                "evidence_anchor"
               ],
-              "default": null
+              "additionalProperties": false
             },
-            "evidence_anchor": {
-              "type": "string",
-              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            {
+              "type": "null"
             }
-          },
-          "required": [
-            "content",
-            "evidence_anchor"
           ],
-          "additionalProperties": false,
-          "title": "Country",
-          "description": "Land des Untersuchungsgebietes"
+          "default": null,
+          "description": "Land des Untersuchungsgebietes",
+          "title": "Country"
         },
         "federal_state": {
-          "type": "object",
-          "properties": {
-            "content": {
-              "anyOf": [
-                {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "content": {
                   "$ref": "#/$defs/LocationFederalStateEnum"
                 },
-                {
-                  "type": "null"
+                "evidence_anchor": {
+                  "type": "string",
+                  "description": "Verbatim excerpt from the source text supporting the extracted content."
                 }
+              },
+              "required": [
+                "content",
+                "evidence_anchor"
               ],
-              "default": null
+              "additionalProperties": false
             },
-            "evidence_anchor": {
-              "type": "string",
-              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            {
+              "type": "null"
             }
-          },
-          "required": [
-            "content",
-            "evidence_anchor"
           ],
-          "additionalProperties": false,
+          "default": null,
           "description": "Bundesland des Untersuchungsgebietes"
         },
         "name": {
-          "type": "object",
-          "properties": {
-            "content": {
-              "anyOf": [
-                {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "content": {
                   "type": "string"
                 },
-                {
-                  "type": "null"
+                "evidence_anchor": {
+                  "type": "string",
+                  "description": "Verbatim excerpt from the source text supporting the extracted content."
                 }
+              },
+              "required": [
+                "content",
+                "evidence_anchor"
               ],
-              "default": null
+              "additionalProperties": false
             },
-            "evidence_anchor": {
-              "type": "string",
-              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            {
+              "type": "null"
             }
-          },
-          "required": [
-            "content",
-            "evidence_anchor"
           ],
-          "additionalProperties": false,
-          "title": "Name",
-          "description": "Ort (z.B. Stadt, Gemeinde, Region) des Untersuchungsgebietes"
+          "default": null,
+          "description": "Ort (z.B. Stadt, Gemeinde, Region) des Untersuchungsgebietes",
+          "title": "Name"
         }
       },
       "title": "Location",

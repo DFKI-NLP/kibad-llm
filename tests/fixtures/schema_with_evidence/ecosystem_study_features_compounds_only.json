@@ -5,58 +5,58 @@
       "description": "Schutzgebiet mit Name, Beschreibung und Erfolg.",
       "properties": {
         "name": {
-          "type": "object",
-          "properties": {
-            "content": {
-              "anyOf": [
-                {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "content": {
                   "type": "string"
                 },
-                {
-                  "type": "null"
+                "evidence_anchor": {
+                  "type": "string",
+                  "description": "Verbatim excerpt from the source text supporting the extracted content."
                 }
+              },
+              "required": [
+                "content",
+                "evidence_anchor"
               ],
-              "default": null
+              "additionalProperties": false
             },
-            "evidence_anchor": {
-              "type": "string",
-              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            {
+              "type": "null"
             }
-          },
-          "required": [
-            "content",
-            "evidence_anchor"
           ],
-          "additionalProperties": false,
-          "title": "Name",
-          "description": "Name des Schutzgebiets"
+          "default": null,
+          "description": "Name des Schutzgebiets",
+          "title": "Name"
         },
         "description": {
-          "type": "object",
-          "properties": {
-            "content": {
-              "anyOf": [
-                {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "content": {
                   "type": "string"
                 },
-                {
-                  "type": "null"
+                "evidence_anchor": {
+                  "type": "string",
+                  "description": "Verbatim excerpt from the source text supporting the extracted content."
                 }
+              },
+              "required": [
+                "content",
+                "evidence_anchor"
               ],
-              "default": null
+              "additionalProperties": false
             },
-            "evidence_anchor": {
-              "type": "string",
-              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            {
+              "type": "null"
             }
-          },
-          "required": [
-            "content",
-            "evidence_anchor"
           ],
-          "additionalProperties": false,
-          "title": "Description",
-          "description": "Charakterisierung des Schutzgebiets"
+          "default": null,
+          "description": "Charakterisierung des Schutzgebiets",
+          "title": "Description"
         },
         "success": {
           "type": "object",
@@ -106,31 +106,31 @@
           "description": "Zu welcher der folgenden Kategorien lässt sich der direkte Treiber zuordnen?"
         },
         "details": {
-          "type": "object",
-          "properties": {
-            "content": {
-              "anyOf": [
-                {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "content": {
                   "type": "string"
                 },
-                {
-                  "type": "null"
+                "evidence_anchor": {
+                  "type": "string",
+                  "description": "Verbatim excerpt from the source text supporting the extracted content."
                 }
+              },
+              "required": [
+                "content",
+                "evidence_anchor"
               ],
-              "default": null
+              "additionalProperties": false
             },
-            "evidence_anchor": {
-              "type": "string",
-              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            {
+              "type": "null"
             }
-          },
-          "required": [
-            "content",
-            "evidence_anchor"
           ],
-          "additionalProperties": false,
-          "title": "Details",
-          "description": "Details zum direkten Treiber"
+          "default": null,
+          "description": "Details zum direkten Treiber",
+          "title": "Details"
         }
       },
       "required": [
@@ -175,57 +175,57 @@
           "description": "In welche der folgenden Kategorien lässt sich die im Text behandelte Ökosystemleistung einordnen?"
         },
         "term": {
-          "type": "object",
-          "properties": {
-            "content": {
-              "anyOf": [
-                {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "content": {
                   "$ref": "#/$defs/EcosystemServiceTermEnum"
                 },
-                {
-                  "type": "null"
+                "evidence_anchor": {
+                  "type": "string",
+                  "description": "Verbatim excerpt from the source text supporting the extracted content."
                 }
+              },
+              "required": [
+                "content",
+                "evidence_anchor"
               ],
-              "default": null
+              "additionalProperties": false
             },
-            "evidence_anchor": {
-              "type": "string",
-              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            {
+              "type": "null"
             }
-          },
-          "required": [
-            "content",
-            "evidence_anchor"
           ],
-          "additionalProperties": false,
+          "default": null,
           "description": "Welche konkrete Ökosystemleistung wurde untersucht?"
         },
         "details": {
-          "type": "object",
-          "properties": {
-            "content": {
-              "anyOf": [
-                {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "content": {
                   "type": "string"
                 },
-                {
-                  "type": "null"
+                "evidence_anchor": {
+                  "type": "string",
+                  "description": "Verbatim excerpt from the source text supporting the extracted content."
                 }
+              },
+              "required": [
+                "content",
+                "evidence_anchor"
               ],
-              "default": null
+              "additionalProperties": false
             },
-            "evidence_anchor": {
-              "type": "string",
-              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            {
+              "type": "null"
             }
-          },
-          "required": [
-            "content",
-            "evidence_anchor"
           ],
-          "additionalProperties": false,
-          "title": "Details",
-          "description": "Details zur Ökosystemleistung"
+          "default": null,
+          "description": "Details zur Ökosystemleistung",
+          "title": "Details"
         }
       },
       "required": [
@@ -339,57 +339,57 @@
           "description": "Kategorie des Ökosystemtyps"
         },
         "term": {
-          "type": "object",
-          "properties": {
-            "content": {
-              "anyOf": [
-                {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "content": {
                   "$ref": "#/$defs/EcosystemTypeTermEnum"
                 },
-                {
-                  "type": "null"
+                "evidence_anchor": {
+                  "type": "string",
+                  "description": "Verbatim excerpt from the source text supporting the extracted content."
                 }
+              },
+              "required": [
+                "content",
+                "evidence_anchor"
               ],
-              "default": null
+              "additionalProperties": false
             },
-            "evidence_anchor": {
-              "type": "string",
-              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            {
+              "type": "null"
             }
-          },
-          "required": [
-            "content",
-            "evidence_anchor"
           ],
-          "additionalProperties": false,
+          "default": null,
           "description": "Name des Ökosystemtyps"
         },
         "description": {
-          "type": "object",
-          "properties": {
-            "content": {
-              "anyOf": [
-                {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "content": {
                   "type": "string"
                 },
-                {
-                  "type": "null"
+                "evidence_anchor": {
+                  "type": "string",
+                  "description": "Verbatim excerpt from the source text supporting the extracted content."
                 }
+              },
+              "required": [
+                "content",
+                "evidence_anchor"
               ],
-              "default": null
+              "additionalProperties": false
             },
-            "evidence_anchor": {
-              "type": "string",
-              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            {
+              "type": "null"
             }
-          },
-          "required": [
-            "content",
-            "evidence_anchor"
           ],
-          "additionalProperties": false,
-          "title": "Description",
-          "description": "Beschreibung des Ökosystemtyps"
+          "default": null,
+          "description": "Beschreibung des Ökosystemtyps",
+          "title": "Description"
         }
       },
       "required": [
@@ -534,31 +534,31 @@
           "description": "Zu welcher der folgenden Kategorien lässt sich der indirekte Treiber zuordnen?"
         },
         "details": {
-          "type": "object",
-          "properties": {
-            "content": {
-              "anyOf": [
-                {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "content": {
                   "type": "string"
                 },
-                {
-                  "type": "null"
+                "evidence_anchor": {
+                  "type": "string",
+                  "description": "Verbatim excerpt from the source text supporting the extracted content."
                 }
+              },
+              "required": [
+                "content",
+                "evidence_anchor"
               ],
-              "default": null
+              "additionalProperties": false
             },
-            "evidence_anchor": {
-              "type": "string",
-              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            {
+              "type": "null"
             }
-          },
-          "required": [
-            "content",
-            "evidence_anchor"
           ],
-          "additionalProperties": false,
-          "title": "Details",
-          "description": "Details zum indirekten Treiber"
+          "default": null,
+          "description": "Details zum indirekten Treiber",
+          "title": "Details"
         }
       },
       "required": [
@@ -583,84 +583,84 @@
       "description": "Untersuchungsgebiet mit Land, Bundesland und Ort.",
       "properties": {
         "country": {
-          "type": "object",
-          "properties": {
-            "content": {
-              "anyOf": [
-                {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "content": {
                   "type": "string"
                 },
-                {
-                  "type": "null"
+                "evidence_anchor": {
+                  "type": "string",
+                  "description": "Verbatim excerpt from the source text supporting the extracted content."
                 }
+              },
+              "required": [
+                "content",
+                "evidence_anchor"
               ],
-              "default": null
+              "additionalProperties": false
             },
-            "evidence_anchor": {
-              "type": "string",
-              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            {
+              "type": "null"
             }
-          },
-          "required": [
-            "content",
-            "evidence_anchor"
           ],
-          "additionalProperties": false,
-          "title": "Country",
-          "description": "Land des Untersuchungsgebietes"
+          "default": null,
+          "description": "Land des Untersuchungsgebietes",
+          "title": "Country"
         },
         "federal_state": {
-          "type": "object",
-          "properties": {
-            "content": {
-              "anyOf": [
-                {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "content": {
                   "$ref": "#/$defs/LocationFederalStateEnum"
                 },
-                {
-                  "type": "null"
+                "evidence_anchor": {
+                  "type": "string",
+                  "description": "Verbatim excerpt from the source text supporting the extracted content."
                 }
+              },
+              "required": [
+                "content",
+                "evidence_anchor"
               ],
-              "default": null
+              "additionalProperties": false
             },
-            "evidence_anchor": {
-              "type": "string",
-              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            {
+              "type": "null"
             }
-          },
-          "required": [
-            "content",
-            "evidence_anchor"
           ],
-          "additionalProperties": false,
+          "default": null,
           "description": "Bundesland des Untersuchungsgebietes"
         },
         "name": {
-          "type": "object",
-          "properties": {
-            "content": {
-              "anyOf": [
-                {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "content": {
                   "type": "string"
                 },
-                {
-                  "type": "null"
+                "evidence_anchor": {
+                  "type": "string",
+                  "description": "Verbatim excerpt from the source text supporting the extracted content."
                 }
+              },
+              "required": [
+                "content",
+                "evidence_anchor"
               ],
-              "default": null
+              "additionalProperties": false
             },
-            "evidence_anchor": {
-              "type": "string",
-              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            {
+              "type": "null"
             }
-          },
-          "required": [
-            "content",
-            "evidence_anchor"
           ],
-          "additionalProperties": false,
-          "title": "Name",
-          "description": "Ort (z.B. Stadt, Gemeinde, Region) des Untersuchungsgebietes"
+          "default": null,
+          "description": "Ort (z.B. Stadt, Gemeinde, Region) des Untersuchungsgebietes",
+          "title": "Name"
         }
       },
       "title": "Location",
@@ -742,55 +742,55 @@
       "description": "Boden mit Kategorie und Tiefe.",
       "properties": {
         "name": {
-          "type": "object",
-          "properties": {
-            "content": {
-              "anyOf": [
-                {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "content": {
                   "$ref": "#/$defs/SoilNameEnum"
                 },
-                {
-                  "type": "null"
+                "evidence_anchor": {
+                  "type": "string",
+                  "description": "Verbatim excerpt from the source text supporting the extracted content."
                 }
+              },
+              "required": [
+                "content",
+                "evidence_anchor"
               ],
-              "default": null
+              "additionalProperties": false
             },
-            "evidence_anchor": {
-              "type": "string",
-              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            {
+              "type": "null"
             }
-          },
-          "required": [
-            "content",
-            "evidence_anchor"
           ],
-          "additionalProperties": false,
+          "default": null,
           "description": "Name des Bodentyps"
         },
         "depth": {
-          "type": "object",
-          "properties": {
-            "content": {
-              "anyOf": [
-                {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "content": {
                   "$ref": "#/$defs/SoilDepthEnum"
                 },
-                {
-                  "type": "null"
+                "evidence_anchor": {
+                  "type": "string",
+                  "description": "Verbatim excerpt from the source text supporting the extracted content."
                 }
+              },
+              "required": [
+                "content",
+                "evidence_anchor"
               ],
-              "default": null
+              "additionalProperties": false
             },
-            "evidence_anchor": {
-              "type": "string",
-              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            {
+              "type": "null"
             }
-          },
-          "required": [
-            "content",
-            "evidence_anchor"
           ],
-          "additionalProperties": false,
+          "default": null,
           "description": "Tiefe des Bodens"
         }
       },
@@ -871,58 +871,58 @@
       "description": "Art mit wissenschaftlichem und deutschem Namen sowie taxonomischer Gruppe.",
       "properties": {
         "scientific_name": {
-          "type": "object",
-          "properties": {
-            "content": {
-              "anyOf": [
-                {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "content": {
                   "type": "string"
                 },
-                {
-                  "type": "null"
+                "evidence_anchor": {
+                  "type": "string",
+                  "description": "Verbatim excerpt from the source text supporting the extracted content."
                 }
+              },
+              "required": [
+                "content",
+                "evidence_anchor"
               ],
-              "default": null
+              "additionalProperties": false
             },
-            "evidence_anchor": {
-              "type": "string",
-              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            {
+              "type": "null"
             }
-          },
-          "required": [
-            "content",
-            "evidence_anchor"
           ],
-          "additionalProperties": false,
-          "title": "Scientific Name",
-          "description": "Wissenschaftlicher Name der Art"
+          "default": null,
+          "description": "Wissenschaftlicher Name der Art",
+          "title": "Scientific Name"
         },
         "german_name": {
-          "type": "object",
-          "properties": {
-            "content": {
-              "anyOf": [
-                {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "content": {
                   "type": "string"
                 },
-                {
-                  "type": "null"
+                "evidence_anchor": {
+                  "type": "string",
+                  "description": "Verbatim excerpt from the source text supporting the extracted content."
                 }
+              },
+              "required": [
+                "content",
+                "evidence_anchor"
               ],
-              "default": null
+              "additionalProperties": false
             },
-            "evidence_anchor": {
-              "type": "string",
-              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            {
+              "type": "null"
             }
-          },
-          "required": [
-            "content",
-            "evidence_anchor"
           ],
-          "additionalProperties": false,
-          "title": "German Name",
-          "description": "Deutscher Name der Art"
+          "default": null,
+          "description": "Deutscher Name der Art",
+          "title": "German Name"
         },
         "species_group": {
           "type": "object",

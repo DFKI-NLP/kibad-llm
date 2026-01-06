@@ -261,8 +261,8 @@ def _is_terminal_schema(
     _ref_stack: set[str] | None = None,
 ) -> bool:
     """
-    Terminal = scalar/enum/const (including nullable unions) or $ref resolving to such.
-    Non-terminal = objects/arrays or unions/compositions that include objects/arrays.
+    Terminal = non-null scalar/enum/const or $ref resolving to such. Unions with null are
+    treated as non-terminal so recursion can wrap only the non-null branches.
     """
     if not isinstance(node, ABCMapping):
         return False
@@ -270,20 +270,23 @@ def _is_terminal_schema(
     if _is_objectish(node) or _is_arrayish(node):
         return False
 
-    scalar_types = {"string", "number", "integer", "boolean", "null"}
+    scalar_types = {"string", "number", "integer", "boolean"}
 
     # direct scalar type
     node_type = node.get("type")
     if isinstance(node_type, str):
         if node_type in scalar_types:
             return True
-        if node_type in {"object", "array"}:
+        if node_type in {"object", "array", "null"}:
             return False
     elif isinstance(node_type, list):
         if node_type and all(isinstance(t, str) and t in scalar_types for t in node_type):
             return True
 
     # enum/const
+    if "const" in node and node.get("const") is None:
+        return False
+
     if "enum" in node or "const" in node:
         return True
 
@@ -487,6 +490,13 @@ def wrap_terminals_with_metadata(
             node_dict, metadata_obj_schema=metadata_obj_schema, content_key=content_key
         ):
             return node_dict
+
+        if isinstance(node_dict.get("type"), list):
+            raise ValueError(
+                "Encountered JSON Schema 'type' as a list. "
+                "This code expects Pydantic-style unions via anyOf/oneOf. "
+                "Please normalize type-lists to anyOf/oneOf first or update the wrapper."
+            )
 
         if allow_wrap_here and _is_terminal_schema(root, node_dict):
             return _wrap_terminal_node(
