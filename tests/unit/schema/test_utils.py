@@ -1,12 +1,18 @@
 import copy
 import json
+from typing import Any
 
 from pydantic import BaseModel
 import pytest
 
 from kibad_llm.config import PROJ_ROOT
-from kibad_llm.schema.utils import build_schema_description, wrap_terminals_with_metadata, \
-    METADATA_SCHEMA_WITH_EVIDENCE, METADATA_SCHEMA_WITH_EVIDENCE_SHORTHAND
+from kibad_llm.schema.utils import (
+    METADATA_SCHEMA_WITH_EVIDENCE,
+    METADATA_SCHEMA_WITH_EVIDENCE_SHORTHAND,
+    _is_terminal_schema,
+    build_schema_description,
+    wrap_terminals_with_metadata,
+)
 from tests.conftest import WRITE_FIXTURE_DATA
 from tests.unit.schema import (
     ALL_COMPOUNDS,
@@ -51,7 +57,9 @@ def test_build_schema_description_compound(model_cls: type[BaseModel]):
 @pytest.mark.parametrize("model_cls", list(ALL_MODELS))
 def test_wrap_terminals_with_metadata_evidence(model_cls: type[BaseModel]):
     schema = model_cls.model_json_schema(by_alias=False)
-    schema_with_metadata = wrap_terminals_with_metadata(schema, metadata_schema=METADATA_SCHEMA_WITH_EVIDENCE)
+    schema_with_metadata = wrap_terminals_with_metadata(
+        schema, metadata_schema=METADATA_SCHEMA_WITH_EVIDENCE
+    )
     fixture_fn = f"{camel_case_to_snake_case(model_cls.__name__)}.json"
     path_expected = PROJ_ROOT / "tests" / "fixtures" / "schema_with_evidence" / fixture_fn
     if WRITE_FIXTURE_DATA:
@@ -64,6 +72,243 @@ def test_wrap_terminals_with_metadata_evidence(model_cls: type[BaseModel]):
     assert schema_with_metadata == expected
 
 
+def test_terminal_scalars_and_scalar_lists() -> None:
+    root: dict[str, Any] = {}
+
+    # plain scalar: string
+    assert _is_terminal_schema(root, {"type": "string"}) is True
+
+    # plain scalar: integer
+    assert _is_terminal_schema(root, {"type": "integer"}) is True
+
+    # plain scalar: number
+    assert _is_terminal_schema(root, {"type": "number"}) is True
+
+    # plain scalar: boolean
+    assert _is_terminal_schema(root, {"type": "boolean"}) is True
+
+    # scalar: null
+    assert _is_terminal_schema(root, {"type": "null"}) is True
+
+    # list-of-types incl. null (common Optional pattern)
+    assert _is_terminal_schema(root, {"type": ["string", "null"]}) is True
+
+
+def test_terminal_enum_and_const() -> None:
+    root: dict[str, Any] = {}
+
+    # inline enum
+    assert _is_terminal_schema(root, {"type": "string", "enum": ["A", "B"]}) is True
+
+    # const (non-null)
+    assert _is_terminal_schema(root, {"const": 123}) is True
+
+    # const (null)
+    assert _is_terminal_schema(root, {"const": None}) is True
+
+
+def test_non_terminals_object_and_array() -> None:
+    root: dict[str, Any] = {}
+
+    # object is not terminal
+    assert (
+        _is_terminal_schema(root, {"type": "object", "properties": {"x": {"type": "string"}}})
+        is False
+    )
+
+    # array is not terminal
+    assert _is_terminal_schema(root, {"type": "array", "items": {"type": "string"}}) is False
+
+
+def test_unions_anyof_oneof_allof() -> None:
+    root: dict[str, Any] = {}
+
+    # anyOf: nullable scalar union
+    assert _is_terminal_schema(root, {"anyOf": [{"type": "integer"}, {"type": "null"}]}) is True
+
+    # oneOf: nullable scalar union
+    assert _is_terminal_schema(root, {"oneOf": [{"type": "string"}, {"type": "null"}]}) is True
+
+    # anyOf: includes object -> not terminal
+    assert (
+        _is_terminal_schema(
+            root, {"anyOf": [{"type": "string"}, {"type": "object", "properties": {}}]}
+        )
+        is False
+    )
+
+    # oneOf: includes array -> not terminal
+    assert (
+        _is_terminal_schema(
+            root, {"oneOf": [{"type": "null"}, {"type": "array", "items": {"type": "string"}}]}
+        )
+        is False
+    )
+
+    # allOf: scalar constraints only -> terminal
+    assert _is_terminal_schema(root, {"allOf": [{"type": "string"}, {"minLength": 2}]}) is True
+
+    # allOf: includes object -> not terminal
+    assert (
+        _is_terminal_schema(
+            root, {"allOf": [{"type": "string"}, {"type": "object", "properties": {}}]}
+        )
+        is False
+    )
+
+    assert (
+        _is_terminal_schema(root, {
+                # field can be either a scalar (string) OR an object with an integer field
+                "anyOf": [
+                    {"type": "string"},
+                    {
+                        "type": "object",
+                        "properties": {"x": {"type": "integer"}},
+                        "additionalProperties": False,
+                    },
+                ]
+            }
+        ) is False
+    )
+
+
+def test_refs_to_defs_terminal_vs_non_terminal_and_nullable_ref_union() -> None:
+    # $ref to enum def -> terminal
+    root_enum = {"$defs": {"HabitatEnum": {"type": "string", "enum": ["A", "B"]}}}
+    assert _is_terminal_schema(root_enum, {"$ref": "#/$defs/HabitatEnum"}) is True
+
+    # $ref to object def -> not terminal
+    root_obj = {
+        "$defs": {
+            "Taxa": {
+                "type": "object",
+                "properties": {"scientific_name": {"type": ["string", "null"]}},
+                "additionalProperties": False,
+            }
+        }
+    }
+    assert _is_terminal_schema(root_obj, {"$ref": "#/$defs/Taxa"}) is False
+
+    # Optional[Enum]-style union (anyOf: enum ref + null) -> terminal
+    assert (
+        _is_terminal_schema(
+            root_enum,
+            {"anyOf": [{"$ref": "#/$defs/HabitatEnum"}, {"type": "null"}], "default": None},
+        )
+        is True
+    )
+
+
+def test_wrap_terminals_with_metadata_anyof_scalar_or_object():
+    schema = {
+        "type": "object",
+        "properties": {
+            "mixed": {
+                # field can be either a scalar (string) OR an object with an integer field
+                "anyOf": [
+                    {"type": "string"},
+                    {
+                        "type": "object",
+                        "properties": {"x": {"type": "integer"}},
+                        "additionalProperties": False,
+                    },
+                ]
+            }
+        },
+    }
+
+    metadata_schema = {
+        "evidence_anchor": {
+            "type": "string",
+            "description": "Verbatim excerpt from the source text supporting the extracted content.",
+        }
+    }
+    out = wrap_terminals_with_metadata(schema, metadata_schema=metadata_schema)
+
+    assert out == {
+        "type": "object",
+        "properties": {
+            "mixed": {
+                "anyOf": [
+                    {
+                        "type": "object",
+                        "properties": {
+                            "content": {"type": "string"},
+                            "evidence_anchor": {
+                                "type": "string",
+                                "description": "Verbatim excerpt from the source text supporting the extracted content.",
+                            },
+                        },
+                        "required": ["content", "evidence_anchor"],
+                        "additionalProperties": False,
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "x": {
+                                "type": "object",
+                                "properties": {
+                                    "content": {"type": "integer"},
+                                    "evidence_anchor": {
+                                        "type": "string",
+                                        "description": "Verbatim excerpt from the source text supporting the extracted content.",
+                                    },
+                                },
+                                "required": ["content", "evidence_anchor"],
+                                "additionalProperties": False,
+                            }
+                        },
+                        "additionalProperties": False,
+                    },
+                ]
+            }
+        },
+    }
+
+
+def test_wrap_terminals_with_metadata_anyof_scalar_or_null():
+    schema = {
+        "type": "object",
+        "properties": {
+            "mixed": {
+                # field can be either a scalar (string) OR an object with an integer field
+                "anyOf": [
+                    {"type": "string"},
+                    {"type": "null"}
+                ]
+            }
+        },
+    }
+    metadata_schema = {
+        "evidence_anchor": {
+            "type": "string",
+            "description": "Verbatim excerpt from the source text supporting the extracted content.",
+        }
+    }
+    out = wrap_terminals_with_metadata(schema, metadata_schema=metadata_schema)
+    assert out == {
+        "type": "object",
+        "properties": {
+            "mixed": {
+                "type": "object",
+                "properties": {
+                    "content": {
+                        "anyOf": [
+                            {"type": "string"},
+                            # TODO: this should be outside of content!
+                            {"type": "null"}
+                        ]
+                    },
+                    "evidence_anchor": {
+                        "type": "string",
+                        "description": "Verbatim excerpt from the source text supporting the extracted content.",
+                    },
+                },
+                "required": ["content", "evidence_anchor"],
+                "additionalProperties": False,
+            }
+        },
+    }
 
 @pytest.fixture
 def sample_schema() -> dict:
@@ -88,10 +333,16 @@ def sample_schema() -> dict:
         },
     }
 
+
 DEFAULT_METADATA_SCHEMA = METADATA_SCHEMA_WITH_EVIDENCE
 
 
-def _assert_wrapper(node: dict, *, content_key: str = "content", required_meta: tuple[str, ...] = ("evidence_anchor",)):
+def _assert_wrapper(
+    node: dict,
+    *,
+    content_key: str = "content",
+    required_meta: tuple[str, ...] = ("evidence_anchor",),
+):
     assert node["type"] == "object"
     assert node.get("additionalProperties") is False
 
@@ -162,7 +413,9 @@ def test_custom_metadata_and_content_key(sample_schema):
         "confidence_score": {"type": "number"},
     }
 
-    out = wrap_terminals_with_metadata(schema, metadata_schema=meta_props_mapping, content_key="value")
+    out = wrap_terminals_with_metadata(
+        schema, metadata_schema=meta_props_mapping, content_key="value"
+    )
 
     node = out["properties"]["name"]
     # metadata mapping -> no required meta fields by default (only "value" required)
@@ -171,6 +424,7 @@ def test_custom_metadata_and_content_key(sample_schema):
     assert "confidence_score" in node["properties"]
     assert node["properties"]["value"] == {"type": "string"}
 
+
 def test_wrap_terminals_with_metadata_is_idempotent(sample_schema):
     schema = sample_schema
 
@@ -178,6 +432,7 @@ def test_wrap_terminals_with_metadata_is_idempotent(sample_schema):
     twice = wrap_terminals_with_metadata(once, metadata_schema=DEFAULT_METADATA_SCHEMA)
 
     assert twice == once
+
 
 def test_wrapped_terminal_not_wrapped_again_inside_content(sample_schema):
     once = wrap_terminals_with_metadata(sample_schema, metadata_schema=DEFAULT_METADATA_SCHEMA)
