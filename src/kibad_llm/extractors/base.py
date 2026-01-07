@@ -205,7 +205,7 @@ def _is_wrapper_dict(d: Mapping[str, Any], content_key: str) -> bool:
     return content_key in d and len(d) >= 2
 
 
-def strip_metadata(data: Any, *, content_key: str = "content") -> Any:
+def strip_metadata(data: Any, *, content_key: str) -> Any:
     """
     Strip metadata wrappers from a JSON-parsed result produced by `wrap_terminals_with_metadata`.
 
@@ -217,7 +217,7 @@ def strip_metadata(data: Any, *, content_key: str = "content") -> Any:
 
     Wrapper detection (heuristic):
       - a dict is treated as a wrapper if it has `content_key` AND at least one additional key.
-        (We avoid unwrapping objects that only have `{"content": ...}`.)
+        (We avoid unwrapping objects that only have `{"<content_key>": ...}`.)
 
     Notes:
       - This function does not validate that "other keys" are truly metadata. If your original
@@ -420,7 +420,7 @@ def augment_metadata(
     data: Any,
     *,
     text: str,
-    content_key: str = "content",
+    content_key: str,
     **kwargs: Any,
 ) -> Any:
     """
