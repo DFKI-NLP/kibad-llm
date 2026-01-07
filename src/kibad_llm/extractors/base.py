@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+from collections import defaultdict
 from collections.abc import Mapping
 import dataclasses
 import hashlib
 import json
 import logging
+import re
 from typing import Any
 
 from jsonschema.validators import validator_for
@@ -198,6 +200,11 @@ def build_chat_messages(
     return messages
 
 
+def _is_wrapper_dict(d: Mapping[str, Any], content_key: str) -> bool:
+    """Heuristic to detect whether a dict is a metadata wrapper around content."""
+    return content_key in d and len(d) >= 2
+
+
 def strip_metadata(data: Any, *, content_key: str = "content") -> Any:
     """
     Strip metadata wrappers from a JSON-parsed result produced by `wrap_terminals_with_metadata`.
@@ -220,16 +227,13 @@ def strip_metadata(data: Any, *, content_key: str = "content") -> Any:
       - The input is not mutated; a transformed copy is returned.
     """
 
-    def _is_wrapper_dict(d: Mapping[str, Any]) -> bool:
-        return content_key in d and len(d) >= 2
-
     def _strip(node: Any) -> Any:
         if isinstance(node, list):
             return [_strip(x) for x in node]
 
         if isinstance(node, Mapping):
             # If this dict is a wrapper, discard metadata and recurse into the content.
-            if _is_wrapper_dict(node):
+            if _is_wrapper_dict(d=node, content_key=content_key):
                 return _strip(node.get(content_key))
 
             # Otherwise recurse into all values.
@@ -239,6 +243,238 @@ def strip_metadata(data: Any, *, content_key: str = "content") -> Any:
         return node
 
     return _strip(data)
+
+
+def _snippet_for_span(
+    start: int,
+    end: int,
+    text: str,
+    token_spans: list[tuple[int, int]],
+    token_margin: int = 5,
+) -> str:
+    """Extract a text snippet from `text` that spans `start` to `end` character offsets,
+    extending `token_margin` tokens before and after the span.
+    """
+    if not token_spans:
+        return ""
+
+    # First token whose end is after the start (covers overlap/inside-token cases)
+    start_i = None
+    for i, (_s, e) in enumerate(token_spans):
+        if e > start:
+            start_i = i
+            break
+    if start_i is None:
+        return ""
+
+    # Last token whose start is before the end
+    end_i = None
+    for i in range(len(token_spans) - 1, -1, -1):
+        s, _e = token_spans[i]
+        if s < end:
+            end_i = i
+            break
+    if end_i is None:
+        return ""
+
+    lo = max(0, start_i - token_margin)
+    hi = min(len(token_spans) - 1, end_i + token_margin)
+
+    # Slice original text to preserve whitespace exactly (including newlines, multiple spaces, etc.)
+    snippet_start = token_spans[lo][0]
+    snippet_end = token_spans[hi][1]
+    return text[snippet_start:snippet_end]
+
+
+def _strip_wrapping_quotes(s: str) -> str:
+    """Strip common wrapping quotes from the beginning and end of a string."""
+    # Common quote pairs: ASCII, German/typographic, and apostrophe-like quotes
+    quote_pairs = [
+        ('"', '"'),
+        ("'", "'"),
+        ("`", "`"),
+        ("“", "”"),
+        ("„", "“"),
+        ("„", "”"),
+        ("‘", "’"),
+        ("‚", "‘"),
+        ("«", "»"),
+        ("‹", "›"),
+    ]
+
+    s2 = s.strip()
+    for left, right in quote_pairs:
+        if len(s2) >= 2 and s2.startswith(left) and s2.endswith(right):
+            return s2[1:-1].strip()
+    return s2
+
+
+def _find_anchor_match_spans(text: str, anchor: str) -> list[tuple[int, int]]:
+    """
+    Find all character spans in `text` that match the given `anchor` string.
+    The matching is whitespace-insensitive, meaning that any whitespace in the anchor
+    can match any whitespace in the text (including different kinds of whitespace).
+    Args:
+        text: The original text to search within.
+        anchor: The anchor string to search for.
+    Returns:
+        A list of (start_offset_in_text, end_offset_in_text) tuples for each match of the anchor.
+    """
+
+    # Preprocess anchor: strip wrapping quotes
+    anchor = _strip_wrapping_quotes(anchor)
+
+    # Guard: only search for non-empty string anchors.
+    if not anchor:
+        return []
+
+    # Split the anchor on any whitespace. This lets us treat " " vs "\n" (or multiple spaces/tabs)
+    # as equivalent when searching in the original text.
+    # Example: "foo bar\nbaz" -> ["foo", "bar", "baz"]
+    parts = re.split(r"\s+", anchor.strip())
+
+    # If the anchor was only whitespace (or otherwise produced no meaningful parts), give up.
+    if not parts or not any(parts):
+        return []
+
+    # Build a regex that matches the non-whitespace chunks in order, allowing *any* whitespace
+    # between them in the text. We escape each chunk to avoid regex metacharacters being treated
+    # specially (e.g., "." in the anchor should match a literal dot).
+    # Example parts ["foo","bar"] -> pattern "foo\\s+bar"
+    pattern = r"\s+".join(re.escape(p) for p in parts if p)
+
+    # Find all non-overlapping matches of that pattern in the text and return their character spans.
+    # Each span is (start_offset_in_text, end_offset_in_text).
+    return [(m.start(), m.end()) for m in re.finditer(pattern, text)]
+
+
+def augment_metadata_node_with_evidence(
+    node: Mapping[str, Any],
+    text: str,
+    token_spans: list[tuple[int, int]],
+    *,
+    anchor_key: str = "evidence_anchor",
+    num_matches_key: str = "evidence_num_matches",
+    start_key: str = "first_evidence_start",
+    end_key: str = "first_evidence_end",
+    snippet_key: str = "first_evidence_snippet",
+    snippet_margin: int = 10,
+) -> dict[str, Any]:
+    """
+    Augment a single metadata wrapper dict with evidence location information.
+
+    Given a wrapper object like:
+        {"content": ..., "evidence_anchor": "...", ...}
+
+    this function searches `text` for the anchor (via `_find_anchor_match_spans`). If at least
+    one match is found, it adds:
+      - `num_matches_key`: number of matches
+      - `start_key` / `end_key`: character offsets of the first match
+      - `snippet_key`: a substring of `text` spanning `snippet_margin` tokens around the match
+        (whitespace preserved)
+
+    If no anchor is present (or no matches exist), the wrapper is returned unchanged except for
+    `num_matches_key` (only added when an anchor is a non-empty string).
+
+    Args:
+        node: The metadata wrapper dict to augment.
+        text: The original text to search for evidence anchors.
+        token_spans: Precomputed list of (start_offset, end_offset) tuples for each token in `text`.
+        anchor_key: The key in wrapper dicts that holds the evidence anchor text.
+        num_matches_key: The key to add for the number of matches of the anchor in the text.
+        start_key: The key to add for the start character offset of the anchor.
+        end_key: The key to add for the end character offset of the anchor.
+        snippet_key: The key to add for the evidence snippet text.
+        snippet_margin: Number of tokens to include before and after the anchor span
+            in the snippet.
+    Returns:
+        The augmented metadata wrapper dict with evidence metadata added where applicable.
+    """
+    if snippet_margin < 0:
+        raise ValueError("evidence snippet_margin must be >= 0")
+
+    out: dict[str, Any] = dict(node)
+
+    # do we have a non-empty evidence anchor?
+    anchor = node.get(anchor_key)
+    if isinstance(anchor, str) and anchor:
+        anchor_matches = _find_anchor_match_spans(text=text, anchor=anchor)
+        out[num_matches_key] = len(anchor_matches)
+        if len(anchor_matches) > 0:
+            # just take the first match
+            start, end = anchor_matches[0]
+            out[start_key] = start
+            out[end_key] = end
+            out[snippet_key] = _snippet_for_span(
+                start,
+                end,
+                text=text,
+                token_spans=token_spans,
+                token_margin=snippet_margin,
+            )
+
+    return out
+
+
+def augment_metadata(
+    data: Any,
+    *,
+    text: str,
+    content_key: str = "content",
+    **kwargs: Any,
+) -> Any:
+    """
+    Recursively augment all metadata wrapper dicts in a JSON-parsed result with evidence info.
+
+    Traversal:
+      - walks `data` through nested dicts/lists
+      - detects wrapper dicts via `_is_wrapper_dict(..., content_key=...)`
+      - for each wrapper dict, calls `augment_metadata_node_with_evidence(...)`
+
+    Keyword arguments:
+      - kwargs are namespaced by prefix. Currently supported:
+          * evidence_*  -> forwarded to `augment_metadata_node_with_evidence` (prefix stripped)
+        Example: evidence_snippet_margin=10 sets `snippet_margin=10` for evidence augmentation.
+      - unknown kwargs raise ValueError (fail fast).
+
+    The returned structure mirrors the input but includes added evidence fields where applicable.
+    """
+
+    # split augmentation kwargs into those for evidence and others (future use)
+    augmentation_kwargs: dict[str, dict[str, Any]] = defaultdict(dict)
+    for k in list(kwargs.keys()):
+        for prefix in ["evidence"]:
+            if k.startswith(f"{prefix}_"):
+                k_without_prefix = k[len(f"{prefix}_") :]
+                augmentation_kwargs[prefix][k_without_prefix] = kwargs.pop(k)
+
+    if len(kwargs) > 0:
+        raise ValueError(f"Unknown augmentation kwargs: {list(kwargs.keys())}")
+
+    # Precompute whitespace-token spans once for fast snippet lookup
+    token_matches = list(re.finditer(r"\S+", text))
+    token_spans = [(m.start(), m.end()) for m in token_matches]
+
+    def _augment(node: Any) -> Any:
+        if isinstance(node, list):
+            return [_augment(x) for x in node]
+
+        if isinstance(node, Mapping):
+            # Recurse first (pure functional style)
+            out: dict[str, Any] = {k: _augment(v) for k, v in node.items()}
+
+            if _is_wrapper_dict(d=node, content_key=content_key):
+                out = augment_metadata_node_with_evidence(
+                    node=out,
+                    text=text,
+                    token_spans=token_spans,
+                    **augmentation_kwargs.get("evidence", {}),
+                )
+            return out
+
+        return node
+
+    return _augment(data)
 
 
 def extract_from_text(
@@ -255,6 +491,7 @@ def extract_from_text(
     adjust_schema_for_detect_evidence: bool = False,
     adjust_schema_description_for_detect_evidence: bool = False,
     response_has_metadata: bool = False,
+    augment_metadata_kwargs: dict[str, Any] | None = None,
     # deprecated arguments
     user_message: str | None = None,
     system_message: str | None = None,
@@ -303,6 +540,7 @@ def extract_from_text(
             an object with `content` plus metadata fields. If so, the metadata is stripped and the cleaned
             output is returned under the "structured" key, while the raw output with metadata is returned
             under the "structured_with_metadata" key.
+        augment_metadata_kwargs: Additional keyword arguments for augment_metadata.
         **build_messages_kwargs: Additional keyword arguments for build_chat_messages.
 
     Returns:
@@ -402,7 +640,13 @@ def extract_from_text(
                 validator.validate(data)
 
             if response_has_metadata:
-                out["structured_with_metadata"] = data
+                data_augmented = augment_metadata(
+                    data,
+                    text=text,
+                    content_key=WRAPPED_CONTENT_KEY,
+                    **(augment_metadata_kwargs or {}),
+                )
+                out["structured_with_metadata"] = data_augmented
                 data_without_metadata = strip_metadata(data, content_key=WRAPPED_CONTENT_KEY)
                 # validate stripped version against original schema
                 if validate_with_schema and original_schema is not None:
