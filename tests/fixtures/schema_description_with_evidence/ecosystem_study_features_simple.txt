@@ -1,6 +1,14 @@
 Beschreibung: Angaben zu den ökosystembezogenen Studienmerkmalen.
 Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
 - habitat: Um welchen der folgenden Lebensräume oder in welcher Kombination der folgenden Lebensräume geht es in dem Text? | Kardinalität: 0..* | Typ: object
+  - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Agrar- und Offenland; Binnengewässer und Auen; Boden; Küsten und Küstengewässer; Urbane Räume; Wald
+  - evidence_anchor: Verbatim excerpt from the source text supporting the extracted content. | Kardinalität: 1 | Typ: string
 - natural_region: Um welchen der folgenden Naturgroßräume geht es in dem Text? | Kardinalität: 0..* | Typ: object
+  - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Alpen; Alpenvorland; Mittelgebirgsschwelle; Nord- und Ostsee; Norddeutsches Tiefland; Schichtstufenland beidseits des Oberrheingrabens
+  - evidence_anchor: Verbatim excerpt from the source text supporting the extracted content. | Kardinalität: 1 | Typ: string
 - climate: Welche Umschreibung trifft auf das Klima des Untersuchungsgebiets zu? | Kardinalität: 0..* | Typ: object
+  - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Atlantisches Klima; Gebirgsklima; kontinental; maritim; niederschlagsbenachteiligt; niederschlagsnormal; niederschlagsbegünstigt; subkontinental; submaritim
+  - evidence_anchor: Verbatim excerpt from the source text supporting the extracted content. | Kardinalität: 1 | Typ: string
 - landuse: Welche Landnutzung wird im oder nahe des Untersuchungsgebietes betrieben? In welche der folgenden Kategorien fällt die Nutzung? | Kardinalität: 0..* | Typ: object
+  - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Bau; Bergbau und Steinbruch; Brachliegende Flächen; Energieproduktion; Erholung, Freizeit, Sport; Fischerei und Aquakultur; Forstwirtschaft; Handels-, Finanz-, Berufs- und Informationsdienstleistungen; Industrie und Fertigung; Landwirtschaft; Naturnahe und natürliche Flächen, die nicht genutzt werden; Verkehr, Kommunikationsnetzwerke, Lagerung, Schutzwälle; Wasser- und Abfallbehandlung; Wohngebiete; andere Leistung des Primärsektors; Öffentliche Einrichtungen
+  - evidence_anchor: Verbatim excerpt from the source text supporting the extracted content. | Kardinalität: 1 | Typ: string

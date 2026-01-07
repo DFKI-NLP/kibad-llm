@@ -97,6 +97,25 @@ def _extract_type(schema: Mapping[str, Any], node: Any) -> str | None:
     return None
 
 
+def _pick_preferred_branch(node: Any, root_schema: Mapping[str, Any]) -> Any:
+    """
+    If node is a union (anyOf/oneOf), pick a representative branch for *display* and
+    recursion. We prefer a non-null branch so Optional[T] becomes describable as T.
+    If there is no clear non-null branch, return the node unchanged.
+    """
+    if not isinstance(node, ABCMapping):
+        return node
+    for key in ("anyOf", "oneOf"):
+        subs = node.get(key)
+        if isinstance(subs, list) and subs:
+            for sub in subs:
+                t = _extract_type(root_schema, sub)
+                if t and t != "null":
+                    return sub
+            return subs[0]
+    return node
+
+
 def build_schema_description(
     schema: Mapping[str, Any],
     header: str | None = "Feldhinweise und erlaubte Werte (getrennt durch Semikolons):",
@@ -171,14 +190,15 @@ def build_schema_description(
         # Single check for array vs non-array handling
         is_array = spec.get("type") == "array"
         target = spec.get("items") if is_array else spec
+        target_for_hints = _pick_preferred_branch(target, root_schema)
 
         # Determine cardinality
         has_default = "default" in spec
         cardinality = "0..*" if is_array else ("0..1" if has_default else "1")
 
         # Extract type and choices from target
-        field_type = _extract_type(root_schema, target)
-        choices = _extract_choices(root_schema, target)
+        field_type = _extract_type(root_schema, target_for_hints)
+        choices = _extract_choices(root_schema, target_for_hints)
 
         # Build field line
         hint = f"{prefix}- {name}:"
@@ -194,28 +214,34 @@ def build_schema_description(
 
         lines.append(hint)
 
-        # Handle nested objects recursively
-        if field_type == "object" and isinstance(target, ABCMapping):
-            ref = target.get("$ref")
+        # Handle nested objects recursively:
+        # - $ref objects
+        # - inline object schemas with "properties" (needed for metadata wrappers)
+        if field_type == "object" and isinstance(target_for_hints, ABCMapping):
+            nested_schema: Mapping[str, Any] | None = None
+
+            ref = target_for_hints.get("$ref")
             if isinstance(ref, str):
                 nested_schema = _resolve_ref(root_schema, ref)
-                if nested_schema:
-                    # Recursively process nested properties
-                    nested_content = build_schema_description(
-                        nested_schema,
-                        indent=indent + 1,
-                        root_schema=root_schema,
-                        # no header for nested
-                        header=None,
-                        schema_description_prefix=schema_description_prefix,
-                        cardinality_prefix=cardinality_prefix,
-                        type_prefix=type_prefix,
-                        choices_prefix=choices_prefix,
-                        component_separator=component_separator,
-                        choices_separator=choices_separator,
-                        indent_step=indent_step,
-                    )
-                    lines.append(nested_content)
+            elif isinstance(target_for_hints.get("properties"), ABCMapping):
+                nested_schema = target_for_hints
+
+            if nested_schema:
+                nested_content = build_schema_description(
+                    nested_schema,
+                    indent=indent + 1,
+                    root_schema=root_schema,
+                    # no header for nested
+                    header=None,
+                    schema_description_prefix=schema_description_prefix,
+                    cardinality_prefix=cardinality_prefix,
+                    type_prefix=type_prefix,
+                    choices_prefix=choices_prefix,
+                    component_separator=component_separator,
+                    choices_separator=choices_separator,
+                    indent_step=indent_step,
+                )
+                lines.append(nested_content)
 
     return "\n".join(lines)
 

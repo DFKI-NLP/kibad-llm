@@ -3,45 +3,105 @@ Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
 - ecosystem_type: Welche Ökosystemtypen werden in der Studie untersucht? | Kardinalität: 0..* | Typ: object
   Beschreibung: Ökosystemtyp mit Kategorie, Name und Beschreibung.
   - category: Kategorie des Ökosystemtyps | Kardinalität: 1 | Typ: object
+    Beschreibung: Kategorie des Ökosystemtyps
+    - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: I Biotoptypengruppen der Meere und Küsten; II Biotoptypengruppen der Binnengewässer; III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes; IV Technische Biotoptypengruppen; V Biotoptypengruppen mit Schwerpunkt in den Alpen; VI Weitere
+    - evidence_anchor: Verbatim excerpt from the source text supporting the extracted content. | Kardinalität: 1 | Typ: string
   - term: Name des Ökosystemtyps | Kardinalität: 0..1 | Typ: object
+    - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Anthropogene Rohbodenstandorte und Ruderalfluren; Bauwerke; Benthal der Nordsee; Benthal der Ostsee; Deponien und Rieselfelder; Feldgehölze, Gebüsche, Hecken und Gehölzkulturen; Fels- und Steilküsten; Felsen, Block- und Schutthalden, Geröllfelder, offene Bereiche mit sandigem oder bindigem Substrat; Felsen der subalpinen bis nivalen Stufe; Firn, permanente Schneefelder und Gletscher; Fließende Gewässer; Gebirgsrasen (subalpine bis alpine Stufe); Gebüsche der hochmontanen bis subalpinen Stufe; Gewässer der subalpinen bis alpinen Stufe; Großseggenriede; Grundwasser und Höhlengewässer; Grün- und Freiflächen; Hoch-, Zwischen- und Übergangsmoore; Höhlen (einschließlich Stollen, Brunnenschächte etc.); Kleine, unbefestigte Freiflächen des besiedelten Bereiches; Küstendünen; Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent); Moore der subalpinen bis alpinen Stufe; Nadel(Misch)Wälder und -Forste; Pelagial der Nordsee; Pelagial der Ostsee; Quellen (inklusive Quellabfluss (Krenal)); Röhrichte (ohne Brackwasserröhrichte); Saisonales Meereis der Nordsee; Saisonales Meereis der Ostsee; Salzgrünland der Nordseeküste (Supralitoral); Salzgrünland, Brackwasserröhrichte und -Hochstaudenfluren des Geolitorals der Ostseeküste; Schneeböden, Schneetälchen; Stehende Gewässer; Steinschutthalden und Schotterflächen der subalpinen bis alpinen Stufe; Sände, Sand-, Geröll- und Blockstrände; Stauden- und Lägerfluren der hochmontanen bis alpinen Stufe; Subalpine Wälder; Trockenrasen sowie Grünland trockener bis frischer Standorte; Verkehrsanlagen und Plätze; Wald- und Ufersäume, Staudenfluren; Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte; Waldmäntel und Vorwälder, spezielle Waldnutzungsformen; Zwergstrauchheiden; Zwergstrauchheiden der subalpinen bis alpinen Stufe; Äcker und Ackerbrachen
+    - evidence_anchor: Verbatim excerpt from the source text supporting the extracted content. | Kardinalität: 1 | Typ: string
   - description: Beschreibung des Ökosystemtyps | Kardinalität: 0..1 | Typ: object
+    - content: | Kardinalität: 1 | Typ: string
+    - evidence_anchor: Verbatim excerpt from the source text supporting the extracted content. | Kardinalität: 1 | Typ: string
 - location: Welche Untersuchungsgebiete werden in der Studie untersucht? | Kardinalität: 0..* | Typ: object
   Beschreibung: Untersuchungsgebiet mit Land, Bundesland und Ort.
   - country: Land des Untersuchungsgebietes | Kardinalität: 0..1 | Typ: object
+    - content: | Kardinalität: 1 | Typ: string
+    - evidence_anchor: Verbatim excerpt from the source text supporting the extracted content. | Kardinalität: 1 | Typ: string
   - federal_state: Bundesland des Untersuchungsgebietes | Kardinalität: 0..1 | Typ: object
+    - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Baden-Württemberg; Bayern; Berlin; Brandenburg; Bremen; Hamburg; Hessen; Mecklenburg-Vorpommern; Niedersachsen; Nordrhein-Westfalen; Rheinland-Pfalz; Saarland; Sachsen; Sachsen-Anhalt; Schleswig-Holstein; Thüringen
+    - evidence_anchor: Verbatim excerpt from the source text supporting the extracted content. | Kardinalität: 1 | Typ: string
   - name: Ort (z.B. Stadt, Gemeinde, Region) des Untersuchungsgebietes | Kardinalität: 0..1 | Typ: object
+    - content: | Kardinalität: 1 | Typ: string
+    - evidence_anchor: Verbatim excerpt from the source text supporting the extracted content. | Kardinalität: 1 | Typ: string
 - taxa: Welche Arten werden in der Studie untersucht? | Kardinalität: 0..* | Typ: object
   Beschreibung: Art mit wissenschaftlichem und deutschem Namen sowie taxonomischer Gruppe.
   - scientific_name: Wissenschaftlicher Name der Art | Kardinalität: 0..1 | Typ: object
+    - content: | Kardinalität: 1 | Typ: string
+    - evidence_anchor: Verbatim excerpt from the source text supporting the extracted content. | Kardinalität: 1 | Typ: string
   - german_name: Deutscher Name der Art | Kardinalität: 0..1 | Typ: object
+    - content: | Kardinalität: 1 | Typ: string
+    - evidence_anchor: Verbatim excerpt from the source text supporting the extracted content. | Kardinalität: 1 | Typ: string
   - species_group: Taxonomische Gruppe der Art | Kardinalität: 1 | Typ: object
+    Beschreibung: Taxonomische Gruppe der Art
+    - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Amphibien und Reptilien; Andere; Andere Pflanzen; Andere Wirbellose; Archaeen; Bakterien; Fische; Flechten; Gefäßpflanzen; Insekten; Moose; Pilze; Protisten; Protozoen; Säugetiere; Vögel
+    - evidence_anchor: Verbatim excerpt from the source text supporting the extracted content. | Kardinalität: 1 | Typ: string
 - soil: Welche Bodentypen werden in der Studie untersucht? | Kardinalität: 0..* | Typ: object
   Beschreibung: Boden mit Kategorie und Tiefe.
   - name: Name des Bodentyps | Kardinalität: 0..1 | Typ: object
+    - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Bergbauflächen; Braune Lössböden, einschließlich Sandlöss und lössähnliche Sedimente; Böden aus Geschiebelehm und Geschiebemergel mit sandiger Deckschicht; Böden aus Kalk-, Mergel- und Dolomitgesteinen; Böden aus Ton- und Schluffschiefern; Böden aus kalkfreien Sedimentgesteinen und Quarziten; Böden aus sauren und intermediären magamatischen und metamorphen Gesteinen; Böden aus basischen und intermediären magmatischen und metamorphen Gesteinen; Böden der Flussauen; Böden der Flussterassen und Hochflutsedimente; Boden des Hochgebirges; Böden aus lössvermischten Tertiärablagerungen; Böden der Niederungen und Urstromtäler; Gewässerflächen; Hoch- und Niedermoorböden; Marschböden; Schwarze Lössböden; Siedlungsflächen; Staunasse Lössböden; Trockene Sandböden; Wattböden
+    - evidence_anchor: Verbatim excerpt from the source text supporting the extracted content. | Kardinalität: 1 | Typ: string
   - depth: Tiefe des Bodens | Kardinalität: 0..1 | Typ: object
+    - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Oberboden; Streuschicht; Unbekannt; Unterboden
+    - evidence_anchor: Verbatim excerpt from the source text supporting the extracted content. | Kardinalität: 1 | Typ: string
 - conservation_area: Welche Schutzgebiete werden in der Studie untersucht? | Kardinalität: 0..* | Typ: object
   Beschreibung: Schutzgebiet mit Name, Beschreibung und Erfolg.
   - name: Name des Schutzgebiets | Kardinalität: 0..1 | Typ: object
+    - content: | Kardinalität: 1 | Typ: string
+    - evidence_anchor: Verbatim excerpt from the source text supporting the extracted content. | Kardinalität: 1 | Typ: string
   - description: Charakterisierung des Schutzgebiets | Kardinalität: 0..1 | Typ: object
+    - content: | Kardinalität: 1 | Typ: string
+    - evidence_anchor: Verbatim excerpt from the source text supporting the extracted content. | Kardinalität: 1 | Typ: string
   - success: Hatte das Schutzgebiet einen messbaren Effekt auf die Biodiversität? | Kardinalität: 1 | Typ: object
+    Beschreibung: Hatte das Schutzgebiet einen messbaren Effekt auf die Biodiversität?
+    - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: ja; nein; teilweise; unbekannt
+    - evidence_anchor: Verbatim excerpt from the source text supporting the extracted content. | Kardinalität: 1 | Typ: string
 - management_measure: Wurden Formen der Bewirtschaftung als Maßnahmen für die Biodiversität untersucht? | Kardinalität: 0..* | Typ: object
   Beschreibung: Bewirtschaftungsmaßnahme mit Beschreibung und Erfolg.
   - description: Beschreibung der Bewirtschaftungsmaßnahme | Kardinalität: 1 | Typ: object
+    Beschreibung: Beschreibung der Bewirtschaftungsmaßnahme
+    - content: | Kardinalität: 1 | Typ: string
+    - evidence_anchor: Verbatim excerpt from the source text supporting the extracted content. | Kardinalität: 1 | Typ: string
   - success: Hatte die Bewirtschaftung als Maßnahme für die Biodiversität einen messbaren Effekt?  | Kardinalität: 1 | Typ: object
+    Beschreibung: Hatte die Bewirtschaftung als Maßnahme für die Biodiversität einen messbaren Effekt? 
+    - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: ja; nein; teilweise; unbekannt
+    - evidence_anchor: Verbatim excerpt from the source text supporting the extracted content. | Kardinalität: 1 | Typ: string
 - impulse_measure: Wurden einmalige Maßnahmen für die Biodiversität untersucht? | Kardinalität: 0..* | Typ: object
   Beschreibung: Einmalige Maßnahme mit Beschreibung und Erfolg.
   - description: Beschreibung der einmaligen Maßnahme | Kardinalität: 1 | Typ: object
+    Beschreibung: Beschreibung der einmaligen Maßnahme
+    - content: | Kardinalität: 1 | Typ: string
+    - evidence_anchor: Verbatim excerpt from the source text supporting the extracted content. | Kardinalität: 1 | Typ: string
   - success: Hatte die einmalige Maßnahme für die Biodiversität einen messbaren Effekt?  | Kardinalität: 1 | Typ: object
+    Beschreibung: Hatte die einmalige Maßnahme für die Biodiversität einen messbaren Effekt? 
+    - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: ja; nein; teilweise; unbekannt
+    - evidence_anchor: Verbatim excerpt from the source text supporting the extracted content. | Kardinalität: 1 | Typ: string
 - direct_driver: Welche Vorgänge mit direktem Einfluss auf Biodiversität wurden untersucht? | Kardinalität: 0..* | Typ: object
   Beschreibung: Direkter Treiber mit Kategorie und Details.
   - category: Zu welcher der folgenden Kategorien lässt sich der direkte Treiber zuordnen? | Kardinalität: 1 | Typ: object
+    Beschreibung: Zu welcher der folgenden Kategorien lässt sich der direkte Treiber zuordnen?
+    - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Andere direkte Treiber; Direkte Ressourcenentnahme; Invasive gebietsfremde Arten; Klimawandel; Verschmutzung; Veränderte Land-/Meeresnutzung; Veränderung der Struktur der Landschaft
+    - evidence_anchor: Verbatim excerpt from the source text supporting the extracted content. | Kardinalität: 1 | Typ: string
   - details: Details zum direkten Treiber | Kardinalität: 0..1 | Typ: object
+    - content: | Kardinalität: 1 | Typ: string
+    - evidence_anchor: Verbatim excerpt from the source text supporting the extracted content. | Kardinalität: 1 | Typ: string
 - indirect_driver: Welche Vorgänge mit indirektem Einfluss auf Biodiversität wurden untersucht? | Kardinalität: 0..* | Typ: object
   Beschreibung: Indirekter Treiber mit Kategorie und Details.
   - category: Zu welcher der folgenden Kategorien lässt sich der indirekte Treiber zuordnen? | Kardinalität: 1 | Typ: object
+    Beschreibung: Zu welcher der folgenden Kategorien lässt sich der indirekte Treiber zuordnen?
+    - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Gesellschaftliche Treiber; Politische und rechtliche Treiber - rechtlich-regulativ; Politische und rechtliche Treiber - sozial-informationell; Politische und rechtliche Treiber - ökonomisch-anreizbasiert; Wirtschaftliche und technologische Treiber
+    - evidence_anchor: Verbatim excerpt from the source text supporting the extracted content. | Kardinalität: 1 | Typ: string
   - details: Details zum indirekten Treiber | Kardinalität: 0..1 | Typ: object
+    - content: | Kardinalität: 1 | Typ: string
+    - evidence_anchor: Verbatim excerpt from the source text supporting the extracted content. | Kardinalität: 1 | Typ: string
 - ecosystem_service: Welche Ökosystemleistungen wurden in der Studie untersucht? | Kardinalität: 0..* | Typ: object
   Beschreibung: Ökosystemdienstleistung mit Kategorie, Term und Details.
   - category: In welche der folgenden Kategorien lässt sich die im Text behandelte Ökosystemleistung einordnen? | Kardinalität: 1 | Typ: object
+    Beschreibung: In welche der folgenden Kategorien lässt sich die im Text behandelte Ökosystemleistung einordnen?
+    - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Kulturelle Leistungen; Regulierungs- und Erhaltungsleistungen; Versorgungsleistungen
+    - evidence_anchor: Verbatim excerpt from the source text supporting the extracted content. | Kardinalität: 1 | Typ: string
   - term: Welche konkrete Ökosystemleistung wurde untersucht? | Kardinalität: 0..1 | Typ: object
+    - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: 1.1.1.1 Kultivierte Landpflanzen (einschließlich Pilze und Algen), die zu Ernährungszwecken angebaut werden; 1.1.1.2 Fasern und andere Materialien aus kultivierten Landpflanzen, Pilzen, Algen und Bakterien zur direkten Verwendung oder Verarbeitung (ausgenommen genetisches Material); 1.1.1.3 Kultivierte Landpflanzen (einschließlich Pilze, Algen), die zur Energiegewinnung angebaut werden; 1.1.2.1 Pflanzen aus In-situ-Aquakultur, die zu Ernährungszwecken angebaut werden; 1.1.2.2 Fasern und andere Materialien aus Pflanzen aus In-situ-Aquakultur zur direkten Verwendung oder Verarbeitung (ausgenommen genetisches Material); 1.1.2.3 Pflanzen aus In-situ-Aquakultur, die als Energiequelle angebaut werden; 1.1.3.1 Zu Ernährungszwecken gehaltene Tiere; 1.1.3.2 Fasern und andere Materialien von gehaltenen Tieren zur direkten Verwendung oder Verarbeitung (ausgenommen genetisches Material); 1.1.3.3 Tiere, die zur Energiegewinnung gehalten werden (auch mechanisch); 1.1.4.1 Tiere, die in In-situ-Aquakultur zu Ernährungszwecken aufgezogen werden; 1.1.4.2 Fasern und andere Materialien von Tieren, die in In-situ-Aquakultur gezüchtet werden, zur direkten Verwendung oder Verarbeitung (ausgenommen genetisches Material); 1.1.4.3 In-situ-Aquakultur aufgezogene Tiere als Energiequelle; 1.1.5.1 Wildpflanzen (Land- und Wasserpflanzen, einschließlich Pilze und Algen), die zur Ernährung genutzt werden; 1.1.5.2 Fasern und andere Materialien von Wildpflanzen zur direkten Verwendung oder Verarbeitung (ausgenommen genetisches Material); 1.1.5.3 Wildpflanzen (Land- und Wasserpflanzen, einschließlich Pilze und Algen), die als Energiequelle genutzt werden; 1.1.6.1 Wildtiere (Land- und Wassertiere), die zu Ernährungszwecken verwendet werden; 1.1.6.2 Fasern und andere Materialien von Wildtieren zur direkten Verwendung oder Verarbeitung (ausgenommen genetisches Material); 1.1.6.3 Wildtiere (Land- und Wassertiere), die als Energiequelle genutzt werden; 1.2.1.1 Saatgut, Sporen und anderes Pflanzenmaterial, das zur Erhaltung oder zum Aufbau einer Population gesammelt wird; 1.2.1.2 Höhere und niedere Pflanzen (ganze Organismen), die zur Züchtung neuer Stämme oder Sorten verwendet werden; 1.2.1.3 Einzelne Gene, die aus höheren und niederen Pflanzen für den Entwurf und die Konstruktion neuer biologischer Einheiten gewonnen werden; 1.2.2.1 Tiermaterial, das für die Erhaltung oder den Aufbau einer Population gesammelt wurde; 1.2.2.2 Wildtiere (ganze Organismen), die zur Züchtung neuer Stämme oder Sorten verwendet werden; 1.2.2.3 Einzelne Gene, die aus Organismen extrahiert werden, um neue biologische Einheiten zu entwerfen und zu konstruieren; 1.3.X.X Andere (Versorungsleistungen aus biotischen Quellen); 2.1.1.1 Biosanierung durch Mikroorganismen, Algen, Pflanzen und Tiere; 2.1.1.2 Filtration/Sequestrierung/Speicherung/Akkumulation durch Mikroorganismen, Algen, Pflanzen und Tiere; 2.1.2.1 Reduktion von Gerüchen; 2.1.2.2 Reduktion von Lärm; 2.1.2.3 Sichtschutz (Visual Screening); 2.2.1.1 Kontrolle der Erosionsraten; 2.2.1.2 Pufferung und Abschwächung von Massenbewegungen; 2.2.1.3 Wasserkreislauf und Wasserflussregulierung (einschließlich Hochwasserschutz und Küstenschutz); 2.2.1.4 Windschutz; 2.2.1.5 Feuerschutz; 2.2.2.1 Bestäubung (oder 'Gameten'-Ausbreitung in einem marinen Kontext); 2.2.2.2 Ausbreitung von Saatgut; 2.2.2.3 Aufrechterhaltung von Aufwuchspopulationen und Lebensräumen (einschließlich Schutz des Genpools); 2.2.3.1 Schädlingsbekämpfung (einschließlich invasiver Arten); 2.2.3.2 Krankheitsbekämpfung; 2.2.4.1 Verwitterungsprozesse und ihre Auswirkungen auf die Bodenqualität; 2.2.4.2 Zersetzungs- und Fixierungsprozesse und ihre Auswirkungen auf die Bodenqualität; 2.2.5.1 Regulierung des chemischen Zustands von Süßgewässern durch lebende Prozesse; 2.2.5.2 Regulierung des chemischen Zustands von Salzwasser durch lebende Prozesse; 2.2.6.1 Regulierung der chemischen Zusammensetzung der Atmosphäre und der Ozeane; 2.2.6.2 Regulierung von Temperatur und Feuchtigkeit, einschließlich Belüftung und Transpiration; 2.3.X.X Andere; 3.1.1.1 Merkmale lebender Systeme, die durch aktive oder immersive Interaktionen Aktivitäten ermöglichen, die der Gesundheit, der Erholung oder dem Vergnügen dienen; 3.1.1.2 Merkmale lebender Systeme, die Aktivitäten zur Förderung von Gesundheit, Erholung oder Vergnügen durch passive oder beobachtende Interaktionen ermöglichen; 3.1.2.1 Merkmale lebender Systeme, die eine wissenschaftliche Untersuchung oder die Schaffung von traditionellem ökologischem Wissen ermöglichen; 3.1.2.2 Merkmale lebender Systeme, die Bildung und Ausbildung ermöglichen; 3.1.2.3 Merkmale lebender Systeme, die in Bezug auf die Kultur und Kulturerbe eine Rolle spielen; 3.1.2.4 Merkmale lebender Systeme, die ästhetische Erfahrungen ermöglichen; 3.2.1.1 Elemente von lebenden Systemen, die eine symbolische Bedeutung haben; 3.2.1.2 Elemente von lebenden Systemen, die eine heilige oder religiöse Bedeutung haben; 3.2.1.3 Elemente lebender Systeme, die zur Unterhaltung oder Darstellung verwendet werden; 3.2.2.1 Merkmale oder Eigenschaften von lebenden Systemen, die einen Existenzwert haben; 3.2.2.2 Merkmale oder Eigenschaften von lebenden Systemen, die einen Options- oder Vermächtniswert haben; 3.3.X.X Andere; 4.2.1.1 Oberflächenwasser als Trinkwasser; 4.2.1.2 Oberflächenwasser, das als Material verwendet wird (nicht zu Trinkzwecken); 4.2.1.3 Oberflächenwasser aus Süßwasser, das als Energiequelle genutzt wird; 4.2.1.4 Küsten- und Meereswasser, das als Energiequelle genutzt wird; 4.2.2.1 Grundwasser (und Untergrundwasser) als Trinkwasser; 4.2.2.2 Grundwasser (und Oberflächenwasser), das als Material verwendet wird (nicht zu Trinkzwecken); 4.2.2.3 Grundwasser (und Untergrundwasser), das als Energiequelle genutzt wird; 4.2.X.X Andere (Ökosystemleistungen des Wassers)
+    - evidence_anchor: Verbatim excerpt from the source text supporting the extracted content. | Kardinalität: 1 | Typ: string
   - details: Details zur Ökosystemleistung | Kardinalität: 0..1 | Typ: object
+    - content: | Kardinalität: 1 | Typ: string
+    - evidence_anchor: Verbatim excerpt from the source text supporting the extracted content. | Kardinalität: 1 | Typ: string
