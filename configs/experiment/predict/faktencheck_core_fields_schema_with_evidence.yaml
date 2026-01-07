@@ -43,5 +43,10 @@ extractor:
   # adjust_schema_for_evidence_detection is false).
   # response_has_metadata: true
 
+  # Customize metadata augmentation ...
+  # augment_metadata_kwargs:
+  #   # ... such as the margin (in words) around the evidence snippet
+  #   evidence_snippet_margin: 15
+
 # To verify the evidence anchors wrt. the original text, we return the text from the pdf conversion.
 store_text_in_predictions: true
