@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Mapping, MutableMapping
+from collections.abc import Mapping
 import dataclasses
 import hashlib
 import json
@@ -16,15 +16,14 @@ from kibad_llm.schema.utils import (
     build_schema_description,
     wrap_terminals_with_metadata,
 )
+from kibad_llm.utils.dictionary import FieldDict
 from kibad_llm.utils.log import warn_once
 
 logger = logging.getLogger(__name__)
 
 
 @dataclasses.dataclass
-class SingleExtractionResult(MutableMapping[str, Any]):
-    """Dataclass to hold the result of a single extraction call. Acts like a TypedDict."""
-
+class SingleExtractionResult(FieldDict):
     response_content: str | None = None
     structured: dict[str, Any] | list[Any] | None = None
     structured_with_metadata: dict[str, Any] | list[Any] | None = None
@@ -32,23 +31,6 @@ class SingleExtractionResult(MutableMapping[str, Any]):
     messages: dict[str, str | None] | None = None
     messages_formatted: dict[str, str] | None = None
     error: str | None = None
-
-    def __getitem__(self, key: str) -> Any:
-        return dataclasses.asdict(self)[key]
-
-    def __setitem__(self, key: str, value: Any) -> None:
-        if key not in dataclasses.asdict(self):
-            raise KeyError(f"Key '{key}' not found in SingleExtractionResult.")
-        setattr(self, key, value)
-
-    def __len__(self):
-        return len(dataclasses.asdict(self))
-
-    def __delitem__(self, key, /):
-        raise NotImplementedError("Deletion of items is not supported in SingleExtractionResult.")
-
-    def __iter__(self):
-        return iter(dataclasses.asdict(self))
 
 
 def exception2error_msg(e: Exception) -> str:
