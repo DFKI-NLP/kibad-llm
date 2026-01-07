@@ -72,6 +72,29 @@ def test_wrap_terminals_with_metadata_evidence(model_cls: type[BaseModel]):
     assert schema_with_metadata == expected
 
 
+@pytest.mark.parametrize("model_cls", list(ALL_MODELS))
+def test_wrap_terminals_with_metadata_evidence_and_build_schema_description(
+    model_cls: type[BaseModel],
+):
+    schema = model_cls.model_json_schema(by_alias=False)
+    schema_with_metadata = wrap_terminals_with_metadata(
+        schema, metadata_schema=METADATA_SCHEMA_WITH_EVIDENCE
+    )
+    description = build_schema_description(schema_with_metadata)
+    fixture_fn = f"{camel_case_to_snake_case(model_cls.__name__)}.txt"
+    path_expected = (
+        PROJ_ROOT / "tests" / "fixtures" / "schema_description_with_evidence" / fixture_fn
+    )
+    if WRITE_FIXTURE_DATA:
+        path_expected.parent.mkdir(parents=True, exist_ok=True)
+        with open(path_expected, "w") as f:
+            f.write(description)
+
+    with open(path_expected) as f:
+        expected = f.read()
+    assert description == expected
+
+
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------

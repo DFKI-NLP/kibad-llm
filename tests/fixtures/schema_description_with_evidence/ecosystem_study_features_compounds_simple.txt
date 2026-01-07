@@ -1,0 +1,12 @@
+Beschreibung: Angaben zu den ökosystembezogenen Studienmerkmalen.
+Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
+- ecosystem_type: Welche Ökosystemtypen werden in der Studie untersucht? | Kardinalität: 0..* | Typ: object
+  Beschreibung: Ökosystemtyp mit Kategorie, Name und Beschreibung.
+  - category: Kategorie des Ökosystemtyps | Kardinalität: 1 | Typ: object
+  - term: Name des Ökosystemtyps | Kardinalität: 0..1 | Typ: object
+  - description: Beschreibung des Ökosystemtyps | Kardinalität: 0..1 | Typ: object
+- location: Welche Standorte werden in der Studie untersucht? | Kardinalität: 0..* | Typ: object
+  Beschreibung: Untersuchungsgebiet mit Land, Bundesland und Ort.
+  - country: Land des Untersuchungsgebietes | Kardinalität: 0..1 | Typ: object
+  - federal_state: Bundesland des Untersuchungsgebietes | Kardinalität: 0..1 | Typ: object
+  - name: Ort (z.B. Stadt, Gemeinde, Region) des Untersuchungsgebietes | Kardinalität: 0..1 | Typ: object

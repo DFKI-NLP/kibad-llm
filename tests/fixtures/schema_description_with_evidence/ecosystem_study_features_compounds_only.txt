@@ -1,0 +1,47 @@
+Beschreibung: Angaben zu den ökosystembezogenen Studienmerkmalen.
+Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
+- ecosystem_type: Welche Ökosystemtypen werden in der Studie untersucht? | Kardinalität: 0..* | Typ: object
+  Beschreibung: Ökosystemtyp mit Kategorie, Name und Beschreibung.
+  - category: Kategorie des Ökosystemtyps | Kardinalität: 1 | Typ: object
+  - term: Name des Ökosystemtyps | Kardinalität: 0..1 | Typ: object
+  - description: Beschreibung des Ökosystemtyps | Kardinalität: 0..1 | Typ: object
+- location: Welche Untersuchungsgebiete werden in der Studie untersucht? | Kardinalität: 0..* | Typ: object
+  Beschreibung: Untersuchungsgebiet mit Land, Bundesland und Ort.
+  - country: Land des Untersuchungsgebietes | Kardinalität: 0..1 | Typ: object
+  - federal_state: Bundesland des Untersuchungsgebietes | Kardinalität: 0..1 | Typ: object
+  - name: Ort (z.B. Stadt, Gemeinde, Region) des Untersuchungsgebietes | Kardinalität: 0..1 | Typ: object
+- taxa: Welche Arten werden in der Studie untersucht? | Kardinalität: 0..* | Typ: object
+  Beschreibung: Art mit wissenschaftlichem und deutschem Namen sowie taxonomischer Gruppe.
+  - scientific_name: Wissenschaftlicher Name der Art | Kardinalität: 0..1 | Typ: object
+  - german_name: Deutscher Name der Art | Kardinalität: 0..1 | Typ: object
+  - species_group: Taxonomische Gruppe der Art | Kardinalität: 1 | Typ: object
+- soil: Welche Bodentypen werden in der Studie untersucht? | Kardinalität: 0..* | Typ: object
+  Beschreibung: Boden mit Kategorie und Tiefe.
+  - name: Name des Bodentyps | Kardinalität: 0..1 | Typ: object
+  - depth: Tiefe des Bodens | Kardinalität: 0..1 | Typ: object
+- conservation_area: Welche Schutzgebiete werden in der Studie untersucht? | Kardinalität: 0..* | Typ: object
+  Beschreibung: Schutzgebiet mit Name, Beschreibung und Erfolg.
+  - name: Name des Schutzgebiets | Kardinalität: 0..1 | Typ: object
+  - description: Charakterisierung des Schutzgebiets | Kardinalität: 0..1 | Typ: object
+  - success: Hatte das Schutzgebiet einen messbaren Effekt auf die Biodiversität? | Kardinalität: 1 | Typ: object
+- management_measure: Wurden Formen der Bewirtschaftung als Maßnahmen für die Biodiversität untersucht? | Kardinalität: 0..* | Typ: object
+  Beschreibung: Bewirtschaftungsmaßnahme mit Beschreibung und Erfolg.
+  - description: Beschreibung der Bewirtschaftungsmaßnahme | Kardinalität: 1 | Typ: object
+  - success: Hatte die Bewirtschaftung als Maßnahme für die Biodiversität einen messbaren Effekt?  | Kardinalität: 1 | Typ: object
+- impulse_measure: Wurden einmalige Maßnahmen für die Biodiversität untersucht? | Kardinalität: 0..* | Typ: object
+  Beschreibung: Einmalige Maßnahme mit Beschreibung und Erfolg.
+  - description: Beschreibung der einmaligen Maßnahme | Kardinalität: 1 | Typ: object
+  - success: Hatte die einmalige Maßnahme für die Biodiversität einen messbaren Effekt?  | Kardinalität: 1 | Typ: object
+- direct_driver: Welche Vorgänge mit direktem Einfluss auf Biodiversität wurden untersucht? | Kardinalität: 0..* | Typ: object
+  Beschreibung: Direkter Treiber mit Kategorie und Details.
+  - category: Zu welcher der folgenden Kategorien lässt sich der direkte Treiber zuordnen? | Kardinalität: 1 | Typ: object
+  - details: Details zum direkten Treiber | Kardinalität: 0..1 | Typ: object
+- indirect_driver: Welche Vorgänge mit indirektem Einfluss auf Biodiversität wurden untersucht? | Kardinalität: 0..* | Typ: object
+  Beschreibung: Indirekter Treiber mit Kategorie und Details.
+  - category: Zu welcher der folgenden Kategorien lässt sich der indirekte Treiber zuordnen? | Kardinalität: 1 | Typ: object
+  - details: Details zum indirekten Treiber | Kardinalität: 0..1 | Typ: object
+- ecosystem_service: Welche Ökosystemleistungen wurden in der Studie untersucht? | Kardinalität: 0..* | Typ: object
+  Beschreibung: Ökosystemdienstleistung mit Kategorie, Term und Details.
+  - category: In welche der folgenden Kategorien lässt sich die im Text behandelte Ökosystemleistung einordnen? | Kardinalität: 1 | Typ: object
+  - term: Welche konkrete Ökosystemleistung wurde untersucht? | Kardinalität: 0..1 | Typ: object
+  - details: Details zur Ökosystemleistung | Kardinalität: 0..1 | Typ: object

@@ -1,0 +1,21 @@
+Beschreibung: Angaben zu den ökosystembezogenen Studienmerkmalen.
+Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
+- habitat: Um welchen der folgenden Lebensräume oder um welche Kombinationen der folgenden Lebensräume geht es in dem Text? | Kardinalität: 0..* | Typ: object
+- natural_region: Um welchen der folgenden Naturgroßräume geht es in dem Text? | Kardinalität: 0..* | Typ: object
+- climate: Welche Umschreibung trifft auf das Klima des Untersuchungsgebiets zu? | Kardinalität: 0..* | Typ: object
+- landuse: Welche Landnutzung wird im oder nahe des Untersuchungsgebietes betrieben? In welche der folgenden Kategorien fällt die Nutzung? | Kardinalität: 0..* | Typ: object
+- spatial_extent: Wie ist insgesamt die räumliche Ausdehnung der Studie? | Kardinalität: 0..1 | Typ: object
+- spatial_resolution: Mit welcher räumlichen Auflösung wurden die einzelnen Messungen in der Studie durchgeführt? | Kardinalität: 0..1 | Typ: object
+- spatial_measurements: An wie vielen Stellen wurde gemessen? | Kardinalität: 0..1 | Typ: object
+- temporal_extent: In welchem Zeitraum fanden die Messungen statt? | Kardinalität: 0..1 | Typ: object
+- temporal_extent_unit: In welcher der folgenden Zeiteinheiten ist der Zeitraum angegeben? | Kardinalität: 0..1 | Typ: object
+- temporal_resolution: Mit welcher zeitlichen Auflösung wurden die einzelnen Messungen in der Studie durchgeführt? | Kardinalität: 0..1 | Typ: object
+- temporal_measurements: Zu wie vielen unterschiedlichen Zeitpunkten wurde gemessen? | Kardinalität: 0..1 | Typ: object
+- start_year: In welchem Jahr fand die erste Messung statt? | Kardinalität: 0..1 | Typ: object
+- end_year: In welchem Jahr fand die letzte Messung statt? | Kardinalität: 0..1 | Typ: object
+- method: Mit welcher/welchen Methode(n) wurden die Daten erhoben? | Kardinalität: 0..* | Typ: object
+- study_type: Um welche Form der wissenschaftlichen Studie handelt es sich? | Kardinalität: 0..* | Typ: object
+- project: Gehört die Studie zu einem größeren Programm oder Projekt? Wenn ja, zu welchem? | Kardinalität: 0..1 | Typ: object
+- biodiversity_level: Auf welche der folgenden Ebenen wird Biodiversität in der Studie gemessen? | Kardinalität: 0..* | Typ: object
+- biodiversity_variable: In welchen Variablen wird die Biodiversität gemessen? | Kardinalität: 0..* | Typ: object
+- transformation_potential: In welche der folgenden Kategorien lässt sich die im Text behandelte Transformation einordnen?  | Kardinalität: 0..* | Typ: object

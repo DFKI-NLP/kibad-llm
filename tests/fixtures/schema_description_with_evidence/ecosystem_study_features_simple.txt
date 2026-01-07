@@ -1,0 +1,6 @@
+Beschreibung: Angaben zu den ökosystembezogenen Studienmerkmalen.
+Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
+- habitat: Um welchen der folgenden Lebensräume oder in welcher Kombination der folgenden Lebensräume geht es in dem Text? | Kardinalität: 0..* | Typ: object
+- natural_region: Um welchen der folgenden Naturgroßräume geht es in dem Text? | Kardinalität: 0..* | Typ: object
+- climate: Welche Umschreibung trifft auf das Klima des Untersuchungsgebiets zu? | Kardinalität: 0..* | Typ: object
+- landuse: Welche Landnutzung wird im oder nahe des Untersuchungsgebietes betrieben? In welche der folgenden Kategorien fällt die Nutzung? | Kardinalität: 0..* | Typ: object
