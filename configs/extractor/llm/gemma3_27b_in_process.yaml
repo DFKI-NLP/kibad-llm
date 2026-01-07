@@ -26,6 +26,8 @@ model: "google/gemma-3-27b-it"
 vllm_kwargs:
   tensor_parallel_size: 1  # shard across N GPUs
   hf_token: ${oc.env:HF_TOKEN}
+  # Supports up to 128K tokens (max size for https://huggingface.co/google/gemma-3-27b-it).
+  # Use lower value to save memory and improve performance
   max_model_len: 65536 # due to memory issues when using 131072
   # gpu_memory_utilization: 0.9 # fraction of GPU memory reserved (impacts KV cache size)
   # dtype: "auto"
@@ -37,9 +39,7 @@ vllm_kwargs:
 # See https://docs.vllm.ai/en/v0.12.0/api/vllm/sampling_params/ for details.
 temperature: 0.0
 max_tokens: 8192
-# Supports up to 128K tokens (max size for https://huggingface.co/google/gemma-3-27b-it).
-# Use lower value to save memory and improve performance
-context_window: 65536 # due to memory issues when using 131072
+
 # Other params maybe to consider
 # top_p: 0.8 (some value < 1)
 # top_k: 50

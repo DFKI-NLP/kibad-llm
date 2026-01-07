@@ -25,6 +25,8 @@ model: "mistralai/Ministral-3-14B-Reasoning-2512"
 # See https://docs.vllm.ai/en/v0.12.0/api/vllm/entrypoints/llm/ for details.
 vllm_kwargs:
   tensor_parallel_size: 1  # shard across N GPUs
+  # Supports up to 256K tokens (max size for https://docs.mistral.ai/models/ministral-3-14b-25-12).
+  # Use lower value to save memory and improve performance
   max_model_len: 131072
   tokenizer_mode: "mistral"
   config_format: "mistral"
@@ -40,9 +42,7 @@ vllm_kwargs:
 # See https://docs.vllm.ai/en/v0.12.0/api/vllm/sampling_params/ for details.
 temperature: 0.0
 max_tokens: 8192
-# Supports up to 256K tokens (max size for https://docs.mistral.ai/models/ministral-3-14b-25-12).
-# Use lower value to save memory and improve performance
-context_window: 131072
+
 # Other params maybe to consider
 # top_p: 0.8 (some value < 1)
 # top_k: 50
