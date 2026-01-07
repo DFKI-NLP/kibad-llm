@@ -487,9 +487,8 @@ def extract_from_text(
     llm: LLM | None = None,
     request_parameters: dict[str, Any] | None = None,
     return_reasoning: bool = False,
-    detect_evidence: bool = False,
-    adjust_schema_for_detect_evidence: bool = False,
-    adjust_schema_description_for_detect_evidence: bool = False,
+    adjust_schema_for_evidence_detection: bool = False,
+    adjust_schema_description_for_evidence_detection: bool = False,
     response_has_metadata: bool = False,
     augment_metadata_kwargs: dict[str, Any] | None = None,
     # deprecated arguments
@@ -520,18 +519,15 @@ def extract_from_text(
         request_parameters: Additional parameters to pass to the LLM chat call. If 'seed' is not provided,
             a seed is derived from the messages and added to request_parameters for determinism.
         return_reasoning: Whether to return the reasoning done by the model.
-        detect_evidence: Shorthand to enable evidence detection via automatic schema adjustment
-            (adjust_schema_for_detect_evidence=True) and expecting metadata in the response
-            (see response_has_metadata=True). Per default, the schema description is constructed
-            from the original schema, so it is recommended to adjust the prompt_template accordingly
-            (e.g., by adding instructions about evidence). But see
-            `adjust_schema_description_for_detect_evidence` to switch this behavior.
-        adjust_schema_for_detect_evidence: Whether to adjust the schema to wrap terminal values
+        adjust_schema_for_evidence_detection: Whether to adjust the schema to wrap terminal values
             with metadata. If True, the schema is modified so that each terminal value is replaced
             with an object containing the original value under the key `content` plus a metadata field
             `evidence_anchor` (a verbatim quote from the input text supporting the
             extracted content). Requires a schema to be provided.
-        adjust_schema_description_for_detect_evidence: Whether to adjust the schema description
+            Per default, the schema description is constructed from the original schema, so it is
+            recommended to adjust the prompt_template accordingly (e.g., by adding instructions about
+            evidence). But see `adjust_schema_description_for_detect_evidence` to switch this behavior.
+        adjust_schema_description_for_evidence_detection: Whether to adjust the schema description
             when detect_evidence is True. If True, the schema description will mention that
             each value is accompanied by an evidence_anchor that is a "verbatim excerpt from the source
             text supporting the extracted content" (see METADATA_SCHEMA_WITH_EVIDENCE_SHORTHAND).
@@ -569,28 +565,26 @@ def extract_from_text(
     original_schema = schema
     schema_for_build_messages = schema
 
-    # shorthand for evidence detection
-    if detect_evidence:
-        if not use_guided_decoding:
-            warn_once(
-                "detect_evidence is True but use_guided_decoding is False. "
-                "Enabling detect_evidence adjusts the schema for guided decoding, "
-                "so it is recommended to enable use_guided_decoding as well."
-            )
-        adjust_schema_for_detect_evidence = True
-        response_has_metadata = True
-
-    if adjust_schema_for_detect_evidence:
+    if adjust_schema_for_evidence_detection:
         if schema is None:
             raise ValueError(
                 "adjust_schema_for_detect_evidence is True but no schema provided to adjust."
+            )
+        if not use_guided_decoding:
+            warn_once(
+                "adjust_schema_for_evidence_detection is True but use_guided_decoding is False. "
+                "Enabling adjust_schema_for_evidence_detection adjusts the schema for guided decoding, "
+                "so it is recommended to enable use_guided_decoding as well."
             )
         schema = wrap_terminals_with_metadata(
             schema,
             metadata_schema=METADATA_SCHEMA_WITH_EVIDENCE_SHORTHAND,
             content_key=WRAPPED_CONTENT_KEY,
         )
-        if adjust_schema_description_for_detect_evidence:
+        # since we wrapped terminals with metadata, we expect metadata in the response
+        response_has_metadata = True
+
+        if adjust_schema_description_for_evidence_detection:
             schema_for_build_messages = schema
 
     messages = build_chat_messages(
@@ -648,8 +642,8 @@ def extract_from_text(
                 )
                 out["structured_with_metadata"] = data_augmented
                 data_without_metadata = strip_metadata(data, content_key=WRAPPED_CONTENT_KEY)
-                # validate stripped version against original schema
-                if validate_with_schema and original_schema is not None:
+                # validate stripped version against original schema (if schema is not the original one)
+                if validate_with_schema and original_schema is not None and schema != original_schema:
                     validator_cls = validator_for(original_schema)
                     validator_cls.check_schema(original_schema)
                     validator = validator_cls(original_schema)
