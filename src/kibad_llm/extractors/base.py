@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Mapping, MutableMapping
+import dataclasses
 import hashlib
 import json
 import logging
@@ -18,6 +19,36 @@ from kibad_llm.schema.utils import (
 from kibad_llm.utils.log import warn_once
 
 logger = logging.getLogger(__name__)
+
+
+@dataclasses.dataclass
+class SingleExtractionResult(MutableMapping[str, Any]):
+    """Dataclass to hold the result of a single extraction call. Acts like a TypedDict."""
+
+    response_content: str | None = None
+    structured: dict[str, Any] | list[Any] | None = None
+    structured_with_metadata: dict[str, Any] | list[Any] | None = None
+    reasoning_content: str | None = None
+    messages: dict[str, str | None] | None = None
+    messages_formatted: dict[str, str] | None = None
+    error: str | None = None
+
+    def __getitem__(self, key: str) -> Any:
+        return dataclasses.asdict(self)[key]
+
+    def __setitem__(self, key: str, value: Any) -> None:
+        if key not in dataclasses.asdict(self):
+            raise KeyError(f"Key '{key}' not found in SingleExtractionResult.")
+        setattr(self, key, value)
+
+    def __len__(self):
+        return len(dataclasses.asdict(self))
+
+    def __delitem__(self, key, /):
+        raise NotImplementedError("Deletion of items is not supported in SingleExtractionResult.")
+
+    def __iter__(self):
+        return iter(dataclasses.asdict(self))
 
 
 def exception2error_msg(e: Exception) -> str:
@@ -95,7 +126,7 @@ def build_chat_messages(
     return_messages: bool = False,
     return_messages_formatted: bool = False,
     truncate_user_message_formatted: int | None = 300,
-    _out: dict[str, Any] | None = None,
+    _out: SingleExtractionResult | None = None,
     **build_messages_kwargs: Any,
 ) -> list[SimpleChatMessage]:
     """Build chat messages for extraction. The document text and schema description may be inserted
@@ -248,7 +279,7 @@ def extract_from_text(
     schema_description_placeholder: str | None = None,
     document_placeholder: str | None = None,
     **build_messages_kwargs: Any,
-) -> dict:
+) -> SingleExtractionResult:
     """Extract structured information from text using an LLM.
 
     Given a chat llm, composes system and user messages, and invokes the model.
@@ -293,7 +324,7 @@ def extract_from_text(
         **build_messages_kwargs: Additional keyword arguments for build_chat_messages.
 
     Returns:
-        A dictionary with keys "text" (the raw LLM output) and "structured" (the parsed JSON or None).
+        A SingleExtractionResult object with the extraction result.
     """
     # setting the log level on every query is suboptimal, but the simplest solution in our current architecture
     logging.getLogger("httpx").setLevel(logging.WARNING)
@@ -313,14 +344,7 @@ def extract_from_text(
         )
     build_messages_kwargs.update(prompt_template)
 
-    out: dict[str, Any | None] = {
-        "response_content": None,
-        "structured": None,
-        "reasoning_content": None,
-        "messages": None,
-        "messages_formatted": None,
-        "error": None,
-    }
+    out = SingleExtractionResult()
 
     original_schema = schema
     schema_for_build_messages = schema
@@ -423,7 +447,7 @@ def extract_from_text(
     return out
 
 
-def extract_from_text_lenient(text: str, text_id: str, **kwargs) -> dict:
+def extract_from_text_lenient(text: str, text_id: str, **kwargs) -> SingleExtractionResult:
     """Wrapper around extract_from_text that catches all exceptions.
 
     This is useful when processing multiple documents and we want to
@@ -434,7 +458,7 @@ def extract_from_text_lenient(text: str, text_id: str, **kwargs) -> dict:
         text_id: Text identifier for logging.
         **kwargs: Keyword arguments for extract_from_text.
     Returns:
-        A dictionary with keys "response_content" and "structured" or "error" in the case of failure.
+        A SingleExtractionResult object with the extraction result or error message.
     """
 
     try:
@@ -443,11 +467,4 @@ def extract_from_text_lenient(text: str, text_id: str, **kwargs) -> dict:
         error_msg = exception2error_msg(e)
         logger.error(f"Error processing document {text_id}: {error_msg}")
         # needs to match the output of extract_from_text
-        return {
-            "response_content": None,
-            "structured": None,
-            "reasoning_content": None,
-            "messages": None,
-            "messages_formatted": None,
-            "error": error_msg,
-        }
+        return SingleExtractionResult(error=error_msg)
