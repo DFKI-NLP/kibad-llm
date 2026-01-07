@@ -24,8 +24,8 @@ max_completion_tokens: 8192 # not sure where and how this is processed. If added
 context_window: 131072
 
 # enable to correctly handle (i.e. remove) reasoning traces in the output
-# Note: Disabled since not available in https://developers.llamaindex.ai/python/framework-api-reference/llms/openai/#llama_index.llms.openai.OpenAIResponses
-# is_chat_model: true
+# Note: Should this be disabled since not available in https://developers.llamaindex.ai/python/framework-api-reference/llms/openai/#llama_index.llms.openai.OpenAIResponses ?
+is_chat_model: true
 
 reasoning_options:
   # effort: low
@@ -41,5 +41,6 @@ max_retries: 3
 # Add additional parameters to OpenAI request body.
 #additional_kwargs:
 #  # kind of redundant to max_output_tokens, but suggested by the OpenAI API
+#  # Note: Does not work, throws error "Responses.create() got an unexpected keyword argument 'max_completion_tokens', ..."
 #  max_completion_tokens: 8192
 #  ...
