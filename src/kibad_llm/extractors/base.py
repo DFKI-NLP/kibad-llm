@@ -643,7 +643,11 @@ def extract_from_text(
                 out["structured_with_metadata"] = data_augmented
                 data_without_metadata = strip_metadata(data, content_key=WRAPPED_CONTENT_KEY)
                 # validate stripped version against original schema (if schema is not the original one)
-                if validate_with_schema and original_schema is not None and schema != original_schema:
+                if (
+                    validate_with_schema
+                    and original_schema is not None
+                    and schema != original_schema
+                ):
                     validator_cls = validator_for(original_schema)
                     validator_cls.check_schema(original_schema)
                     validator = validator_cls(original_schema)
