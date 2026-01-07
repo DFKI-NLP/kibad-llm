@@ -290,7 +290,6 @@ def extract_from_text(
             an object with `content` plus metadata fields. If so, the metadata is stripped and the cleaned
             output is returned under the "structured" key, while the raw output with metadata is returned
             under the "structured_with_metadata" key.
-        user_message: Deprecated. Use prompt_template instead.
         **build_messages_kwargs: Additional keyword arguments for build_chat_messages.
 
     Returns:
