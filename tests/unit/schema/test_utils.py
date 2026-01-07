@@ -78,7 +78,13 @@ def test_wrap_terminals_with_metadata_evidence_and_build_schema_description(
 ):
     schema = model_cls.model_json_schema(by_alias=False)
     schema_with_metadata = wrap_terminals_with_metadata(
-        schema, metadata_schema=METADATA_SCHEMA_WITH_EVIDENCE
+        schema,
+        metadata_schema={
+            "evidence_anchor": {
+                "type": "string",
+                "description": "Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt.",
+            }
+        },
     )
     description = build_schema_description(schema_with_metadata)
     fixture_fn = f"{camel_case_to_snake_case(model_cls.__name__)}.txt"

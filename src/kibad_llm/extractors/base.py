@@ -489,6 +489,8 @@ def extract_from_text(
     return_reasoning: bool = False,
     adjust_schema_for_evidence_detection: bool = False,
     adjust_schema_description_for_evidence_detection: bool = False,
+    evidence_anchor_description: str = "Verbatim excerpt from the source text supporting the extracted content.",
+    wrapped_content_description: str | None = None,
     response_has_metadata: bool = False,
     augment_metadata_kwargs: dict[str, Any] | None = None,
     # deprecated arguments
@@ -532,6 +534,8 @@ def extract_from_text(
             each value is accompanied by an evidence_anchor that is a "verbatim excerpt from the source
             text supporting the extracted content" (see METADATA_SCHEMA_WITH_EVIDENCE_SHORTHAND).
             Has only an effect if adjust_schema_for_detect_evidence is also True.
+        evidence_anchor_description: Description for the evidence anchor field.
+        wrapped_content_description: Optional description for the content field in the metadata wrapper.
         response_has_metadata: If True, the output is expected to have each leaf value wrapped in
             an object with `content` plus metadata fields. If so, the metadata is stripped and the cleaned
             output is returned under the "structured" key, while the raw output with metadata is returned
@@ -578,8 +582,14 @@ def extract_from_text(
             )
         schema = wrap_terminals_with_metadata(
             schema,
-            metadata_schema=METADATA_SCHEMA_WITH_EVIDENCE_SHORTHAND,
+            metadata_schema={
+                "evidence_anchor": {
+                    "type": "string",
+                    "description": evidence_anchor_description,
+                }
+            },
             content_key=WRAPPED_CONTENT_KEY,
+            content_description=wrapped_content_description,
         )
         # since we wrapped terminals with metadata, we expect metadata in the response
         response_has_metadata = True

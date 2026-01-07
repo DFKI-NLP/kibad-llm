@@ -477,6 +477,7 @@ def _wrap_value_schema_with_metadata(
     *,
     metadata_obj_schema: Mapping[str, Any],
     content_key: str,
+    content_description: str | None = None,
 ) -> dict[str, Any]:
     """
     Construct the wrapper-object schema for a single wrappable value schema.
@@ -492,6 +493,8 @@ def _wrap_value_schema_with_metadata(
     - `title` and `description` from `value_schema` are lifted to the wrapper object so
       that the field-level documentation stays attached to the field, not buried under
       `content`.
+    - Optionally, `content_description` can be injected into the inner `content` schema
+      to explain the wrapper semantics (e.g., “extracted value; see evidence_anchor”).
     - The wrapper's `additionalProperties` is inherited from `metadata_obj_schema`
       (defaulting to False if absent) to keep the wrapper strict.
 
@@ -500,10 +503,16 @@ def _wrap_value_schema_with_metadata(
     nullability, or structural schemas.
     """
 
-    # Copy terminal schema into content schema, but lift title/description to wrapper
+    # Copy value schema into content schema, but lift title/description to wrapper
     content_schema = dict(value_schema)
     title = content_schema.pop("title", None)
     description = content_schema.pop("description", None)
+
+    # Optionally attach a description to the inner content field.
+    # Note: we popped the original description above (it lives on the wrapper now),
+    # so there is no "existing" description on content_schema at this point.
+    if content_description is not None:
+        content_schema["description"] = content_description
 
     meta_props_any = metadata_obj_schema.get("properties", {})
     meta_props: dict[str, Any] = (
@@ -543,6 +552,7 @@ def wrap_terminals_with_metadata(
     metadata_schema: Mapping[str, Any],
     *,
     content_key: str = WRAPPED_CONTENT_KEY,
+    content_description: str | None = None,
 ) -> dict[str, Any]:
     """
     Wrap every terminal field schema (scalars/enums/const, including nullable unions and refs)
@@ -585,6 +595,7 @@ def wrap_terminals_with_metadata(
                 node_dict,
                 metadata_obj_schema=metadata_obj_schema,
                 content_key=content_key,
+                content_description=content_description,
             )
 
         # combinators
