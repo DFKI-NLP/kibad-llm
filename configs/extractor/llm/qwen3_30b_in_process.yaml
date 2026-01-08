@@ -34,7 +34,7 @@ vllm_kwargs:
   # If enabling this reasoning_parser, as suggested by the HF link above, the model's output contains the
   # reasoning instead of only the structured JSON. Disabling the reasoning parser works. This is unexpected,
   # compared to serving the same model in a separate process. See Issue #253
-  # reasoning_parser: "deepseek_r1"
+  reasoning_parser: "deepseek_r1"
   # gpu_memory_utilization: 0.9 # fraction of GPU memory reserved (impacts KV cache size)
   # dtype: "auto"
   download_dir: ${oc.env:VLLM_DOWNLOAD_DIR}
