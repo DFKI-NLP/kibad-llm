@@ -1,5 +1,8 @@
 # Example configuration for running Qwen/Qwen3-30B-A3B-Thinking-2507 fully in-process via vLLM (Python API)
 #
+# Set the VLLM model download directory in your .env before running this config, e.g.
+# VLLM_DOWNLOAD_DIR=/path/to/download/dir
+#
 # - No OpenAI-compatible HTTP server is required; inference runs inside the current Python process.
 # - Uses vllm.LLM.chat(...), which formats the prompt with the model's chat template
 #   (important for chat/instruction-tuned models and for GPT-OSS' Harmony formatting).
@@ -34,6 +37,7 @@ vllm_kwargs:
   # reasoning_parser: "deepseek_r1"
   # gpu_memory_utilization: 0.9 # fraction of GPU memory reserved (impacts KV cache size)
   # dtype: "auto"
+  download_dir: ${oc.env:VLLM_DOWNLOAD_DIR}
   seed: 1337  # needs to be set starting with vllm 0.13.0
   # others, e.g., quantization / trust_remote_code / swap_space / cpu_offload_gb / ...
 

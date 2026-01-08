@@ -1,5 +1,10 @@
 # Example configuration for running Gemma3-27B-IT fully in-process via vLLM (Python API)
 #
+# IMPORTANT: Set your HF token in .env as 'HF_TOKEN=...' before running this config!
+#
+# Set the VLLM model download directory in your .env before running this config, e.g.
+# VLLM_DOWNLOAD_DIR=/path/to/download/dir
+#
 # - No OpenAI-compatible HTTP server is required; inference runs inside the current Python process.
 # - Uses vllm.LLM.chat(...), which formats the prompt with the model's chat template
 #   (important for chat/instruction-tuned models and for GPT-OSS' Harmony formatting).
@@ -32,6 +37,7 @@ vllm_kwargs:
   # gpu_memory_utilization: 0.9 # fraction of GPU memory reserved (impacts KV cache size)
   # dtype: "auto"
   seed: 1337  # needs to be set starting with vllm 0.13.0
+  download_dir: ${oc.env:VLLM_DOWNLOAD_DIR}
   # others, e.g., quantization / trust_remote_code / swap_space / cpu_offload_gb / ...
 
 # Generation parameters, can be either ...
