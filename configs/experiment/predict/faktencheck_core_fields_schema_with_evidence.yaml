@@ -1,0 +1,52 @@
+# @package _global_
+
+# This experiment config uses the EcosystemStudyFeaturesCoreFields schema, which focuses on
+# a core set of highly relevant fields from the Faktencheck literature database. See
+# https://github.com/DFKI-NLP/kibad-llm/issues/158
+# However, it also enables evidence detection, so that each extracted field value
+# is accompanied by a text snippet from the original document that supports the extraction.
+
+# To execute this experiment run:
+# uv run -m kibad_llm.predict experiment/predict=faktencheck_core_fields_schema_with_evidence pdf_directory=path/to/pdf/files
+
+defaults:
+  # We use a polished prompt template with additional instructions for better extraction performance.
+  - override /extractor/prompt_template: faktencheck_core_v1_with_evidence
+
+extractor:
+  schema:
+    # Create the schema from the pydantic model of EcosystemStudyFeaturesCoreFields
+    _target_: kibad_llm.schema.types.EcosystemStudyFeaturesCoreFields.model_json_schema
+    by_alias: false
+
+  # Enabling this flag will adjust the schema to wrap each field value with evidence detection metadata
+  adjust_schema_for_evidence_detection: true
+
+  # Enabling this flag will create the schema description from the adjusted schema.
+  # If not enabled, the original schema description will be used. In this case, it is
+  # highly recommended to use a prompt template that is aware of evidence detection.
+  adjust_schema_description_for_evidence_detection: false
+
+  # In case of enabled adjust_schema_description_for_evidence_detection, customize
+  # the evidence anchor description here.
+  evidence_anchor_description: "Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt."
+
+  # In case of enabled adjust_schema_description_for_evidence_detection, customize
+  # the wrapped content description here. If not set, no description will be used.
+  # wrapped_content_description: "Der extrahierte Inhalt."
+
+  # Enabling response_has_metadata will cause metadata unwrapping to be performed on the LLM response.
+  # This means that the extracted field values will be unwrapped from their evidence detection
+  # metadata, so that only the raw field "content" values are returned in the final predictions.
+  # If adjust_schema_for_evidence_detection is enabled, this is automatically set to true.
+  # Useful when a handcrafted schema with evidence detection metadata is used (and, thus,
+  # adjust_schema_for_evidence_detection is false).
+  # response_has_metadata: true
+
+  # Customize metadata augmentation ...
+  # augment_metadata_kwargs:
+  #   # ... such as the margin (in words) around the evidence snippet
+  #   evidence_snippet_margin: 15
+
+# To verify the evidence anchors wrt. the original text, we return the text from the pdf conversion.
+store_text_in_predictions: true

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
+import dataclasses
 import logging
 from typing import Any
 
@@ -80,3 +81,43 @@ def get(
     default: Any = None,
 ) -> Any:
     return d.get(key, default)
+
+
+# This base is a "dataclass mixin" only so mypy knows `self` has dataclass metadata
+# (dataclasses.fields / __dataclass_fields__). We disable auto-__init__ generation
+# because subclasses should define the constructor via their own dataclass fields.
+@dataclasses.dataclass(init=False)
+class FieldDict(dict[str, Any]):
+    """Dataclass-backed dict with a fixed set of keys.
+
+    Keys correspond to dataclass fields. Attribute and item assignment stay in sync,
+    so the object behaves like a real dict (e.g., for `json.dump(s)`), while still
+    supporting typed field access.
+    """
+
+    def __post_init__(self) -> None:
+        # Populate the underlying dict so json.dump sees a dict.
+        for f in dataclasses.fields(self):
+            dict.__setitem__(self, f.name, getattr(self, f.name))
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        # Keep dict in sync when assigning attributes.
+        object.__setattr__(self, name, value)
+        if name in getattr(self, "__dataclass_fields__", {}):
+            dict.__setitem__(self, name, value)
+
+    def __setitem__(self, key: str, value: Any) -> None:
+        # Keep attributes in sync when assigning like a dict.
+        if key not in self.__dataclass_fields__:
+            raise KeyError(f"Key '{key}' not found in {self.__class__.__name__}.")
+        setattr(self, key, value)
+
+    def __delitem__(self, key: str) -> None:
+        raise TypeError(f"Deletion of items is not supported in {self.__class__.__name__}.")
+
+    # Optional: block other mutating dict APIs that could desync semantics
+    def pop(self, *args: Any, **kwargs: Any) -> Any:  # type: ignore[override]
+        raise TypeError(f"pop() is not supported in {self.__class__.__name__}.")
+
+    def clear(self) -> None:  # type: ignore[override]
+        raise TypeError(f"clear() is not supported in {self.__class__.__name__}.")
