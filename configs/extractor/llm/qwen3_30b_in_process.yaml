@@ -28,10 +28,13 @@ vllm_kwargs:
   # Supports up to 256K tokens (max size for https://huggingface.co/Qwen/Qwen3-30B-A3B-Thinking-2507).
   # Use lower value to save memory and improve performance
   max_model_len: 65536 # due to memory issues when using 131072
-  reasoning_parser: "deepseek_r1"
+  # If enabling this reasoning_parser, as suggested by the HF link above, the model's output contains the
+  # reasoning instead of only the structured JSON. Disabling the reasoning parser works. This is unexpected,
+  # compared to serving the same model in a separate process. See Issue #253
+  # reasoning_parser: "deepseek_r1"
   # gpu_memory_utilization: 0.9 # fraction of GPU memory reserved (impacts KV cache size)
   # dtype: "auto"
-  # seed: 0
+  seed: 1337  # needs to be set starting with vllm 0.13.0
   # others, e.g., quantization / trust_remote_code / swap_space / cpu_offload_gb / ...
 
 # Generation parameters, can be either ...

@@ -34,7 +34,7 @@ vllm_kwargs:
   reasoning_parser: "mistral"
   # gpu_memory_utilization: 0.9 # fraction of GPU memory reserved (impacts KV cache size)
   # dtype: "auto"
-  # seed: 0
+  seed: 1337  # needs to be set starting with vllm 0.13.0
   # others, e.g., quantization / trust_remote_code / swap_space / cpu_offload_gb / ...
 
 # Generation parameters, can be either ...

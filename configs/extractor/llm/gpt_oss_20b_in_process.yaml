@@ -28,12 +28,12 @@ vllm_kwargs:
   max_model_len: 131072
   # gpu_memory_utilization: 0.9 # fraction of GPU memory reserved (impacts KV cache size)
   # dtype: "auto"
-  # seed: 0
+  seed: 1337  # needs to be set starting with vllm 0.13.0
   # others, e.g., quantization / trust_remote_code / swap_space / cpu_offload_gb / ...
 
 # Generation parameters, can be either ...
 # 1) ... vllm.SamplingParams values ...
-# See https://docs.vllm.ai/en/v0.11.2/api/vllm/sampling_params/ for details.
+# See https://docs.vllm.ai/en/v0.12.0/api/vllm/sampling_params/ for details.
 temperature: 0.0
 max_tokens: 8192
 
