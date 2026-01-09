@@ -1,0 +1,57 @@
+# Example configuration for running GPT-OSS-20B fully in-process via vLLM (Python API)
+#
+# Set the VLLM model download directory in your .env before running this config, e.g.
+# VLLM_DOWNLOAD_DIR=/path/to/download/dir
+#
+# - No OpenAI-compatible HTTP server is required; inference runs inside the current Python process.
+# - Uses vllm.LLM.chat(...), which formats the prompt with the model's chat template
+#   (important for chat/instruction-tuned models and for GPT-OSS' Harmony formatting).
+# - The implementation optionally enables JSON-schema guided decoding via vLLM Structured Outputs
+#   (StructuredOutputsParams(json=...) inside SamplingParams).
+# - The adapter parses GPT-OSS Harmony outputs so that `response.message.content` contains only the
+#   "final" channel (e.g., valid JSON), while any reasoning (analysis) can be exposed separately.
+#
+# Notes:
+# - `vllm_kwargs` are engine/init-time settings applied once when the vLLM engine is created.
+# - Remaining parameters are separated into different generation arguments:
+#   1) vllm.SamplingParams values (temperature, top_p, max_tokens, etc.)
+#   2) parameters for the llm.chat(...) call.
+# - Generation parameters can also be overridden via the extractor's request_parameters,
+#   see configs/extractor/request_parameters/default.yaml for examples.
+
+_target_: kibad_llm.llms.VllmInProcess
+
+# HuggingFace model id (or local path)
+model: "openai/gpt-oss-20b"
+
+# Initialization parameters for vLLM LLM engine.
+# See https://docs.vllm.ai/en/v0.12.0/api/vllm/entrypoints/llm/ for details.
+vllm_kwargs:
+  tensor_parallel_size: 1  # shard across N GPUs
+  max_model_len: 131072
+  # gpu_memory_utilization: 0.9 # fraction of GPU memory reserved (impacts KV cache size)
+  # dtype: "auto"
+  download_dir: ${oc.env:VLLM_DOWNLOAD_DIR}
+  seed: 1337  # needs to be set starting with vllm 0.13.0
+  # others, e.g., quantization / trust_remote_code / swap_space / cpu_offload_gb / ...
+
+# Generation parameters, can be either ...
+# 1) ... vllm.SamplingParams values ...
+# See https://docs.vllm.ai/en/v0.12.0/api/vllm/sampling_params/ for details.
+temperature: 0.0
+max_tokens: 8192
+
+# Other params maybe to consider
+# top_p: 0.8 (some value < 1)
+# top_k: 50
+# repetition_penalty: 1.05
+# frequency_penalty: ...
+# seed?
+# stop: ["\n\n"]
+# 2) ... or direct parameters for the llm.chat(...) call (should be rarely needed).
+# See https://docs.vllm.ai/en/v0.12.0/api/vllm/entrypoints/llm/#vllm.entrypoints.llm.LLM.chat
+# for details.
+
+# LlamaIndex-style request parameters (they get merged with the parameters above, but take lower precedence)
+# additional_kwargs:
+#   ...

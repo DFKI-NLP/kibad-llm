@@ -1,5 +1,12 @@
-_target_: kibad_llm.dataset.json.read_and_preprocess
-file: ???
+_target_: kibad_llm.dataset.prediction.load_with_metadata
+# Either specify a jsonl file or a log directory to load predictions from.
+# When loading from a log directory, metadata (overrides) from the corresponding
+# hydra prediction run will be attached to the dataset.
+# You can also just provide log_subdir instead of log to load from a specific subdirectory
+# of the main log directory.
+log: null
+file: null
+
 id_key: file_name
 # strip file extension from predictions to match zotitem_ptr_id in references
 process_id:

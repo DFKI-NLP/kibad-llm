@@ -1,0 +1,637 @@
+{
+  "$defs": {
+    "BiodiversityLevelEnum": {
+      "enum": [
+        "Artenvielfalt",
+        "Funktionelle Diversität",
+        "Genetische Diversität",
+        "Habitatdiversität",
+        "Phylogenetische Diversität",
+        "Strukturelle Diversität",
+        "Zusammensetzung der Artengemeinschaft"
+      ],
+      "title": "BiodiversityLevelEnum",
+      "type": "string"
+    },
+    "ClimateEnum": {
+      "enum": [
+        "Atlantisches Klima",
+        "Gebirgsklima",
+        "kontinental",
+        "maritim",
+        "niederschlagsbenachteiligt",
+        "niederschlagsnormal",
+        "niederschlagsbegünstigt",
+        "subkontinental",
+        "submaritim"
+      ],
+      "title": "ClimateEnum",
+      "type": "string"
+    },
+    "HabitatEnum": {
+      "enum": [
+        "Agrar- und Offenland",
+        "Binnengewässer und Auen",
+        "Boden",
+        "Küsten und Küstengewässer",
+        "Urbane Räume",
+        "Wald"
+      ],
+      "title": "HabitatEnum",
+      "type": "string"
+    },
+    "LanduseEnum": {
+      "enum": [
+        "Bau",
+        "Bergbau und Steinbruch",
+        "Brachliegende Flächen",
+        "Energieproduktion",
+        "Erholung, Freizeit, Sport",
+        "Fischerei und Aquakultur",
+        "Forstwirtschaft",
+        "Handels-, Finanz-, Berufs- und Informationsdienstleistungen",
+        "Industrie und Fertigung",
+        "Landwirtschaft",
+        "Naturnahe und natürliche Flächen, die nicht genutzt werden",
+        "Verkehr, Kommunikationsnetzwerke, Lagerung, Schutzwälle",
+        "Wasser- und Abfallbehandlung",
+        "Wohngebiete",
+        "andere Leistung des Primärsektors",
+        "Öffentliche Einrichtungen"
+      ],
+      "title": "LanduseEnum",
+      "type": "string"
+    },
+    "MethodEnum": {
+      "enum": [
+        "Citizen Science",
+        "Experiment",
+        "Feldbeobachtung",
+        "Modellierung",
+        "Remote Sensing",
+        "Review",
+        "Synthese",
+        "Umfrage"
+      ],
+      "title": "MethodEnum",
+      "type": "string"
+    },
+    "NaturalRegionEnum": {
+      "enum": [
+        "Alpen",
+        "Alpenvorland",
+        "Mittelgebirgsschwelle",
+        "Nord- und Ostsee",
+        "Norddeutsches Tiefland",
+        "Schichtstufenland beidseits des Oberrheingrabens"
+      ],
+      "title": "NaturalRegionEnum",
+      "type": "string"
+    },
+    "SpatialExtentEnum": {
+      "enum": [
+        "bundesweit",
+        "global",
+        "kontinent",
+        "landschaft",
+        "plot",
+        "punkt",
+        "region"
+      ],
+      "title": "SpatialExtentEnum",
+      "type": "string"
+    },
+    "SpatialResolutionEnum": {
+      "enum": [
+        "bundesweit",
+        "global",
+        "kontinent",
+        "landschaft",
+        "plot",
+        "punkt",
+        "region"
+      ],
+      "title": "SpatialResolutionEnum",
+      "type": "string"
+    },
+    "StudyTypeEnum": {
+      "enum": [
+        "Gutachten",
+        "Meta-Studie",
+        "Nicht Peer-Reviewed",
+        "Originalstudie",
+        "Peer-Reviewed",
+        "Position Paper",
+        "Text Review",
+        "Vote Count"
+      ],
+      "title": "StudyTypeEnum",
+      "type": "string"
+    },
+    "TemporalExtentUnit": {
+      "enum": [
+        "jahre",
+        "jahrzehnte",
+        "minuten",
+        "monate",
+        "stunden",
+        "tage",
+        "wochen"
+      ],
+      "title": "TemporalExtentUnit",
+      "type": "string"
+    },
+    "TemporalResolutionEnum": {
+      "enum": [
+        "jahre",
+        "jahrzehnte",
+        "minuten",
+        "monate",
+        "stunden",
+        "tage",
+        "wochen"
+      ],
+      "title": "TemporalResolutionEnum",
+      "type": "string"
+    },
+    "TransformationPotentialEnum": {
+      "enum": [
+        "Lebensraumspezifischer Wandlungsprozess",
+        "Lebensraumunabhängiger Wandlungsprozess",
+        "Lebensraumübergreifender Wandlungsprozess"
+      ],
+      "title": "TransformationPotentialEnum",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Angaben zu den ökosystembezogenen Studienmerkmalen.",
+  "properties": {
+    "habitat": {
+      "description": "Um welchen der folgenden Lebensräume oder um welche Kombinationen der folgenden Lebensräume geht es in dem Text?",
+      "items": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "$ref": "#/$defs/HabitatEnum"
+          },
+          "evidence_anchor": {
+            "type": "string",
+            "description": "Verbatim excerpt from the source text supporting the extracted content."
+          }
+        },
+        "required": [
+          "content",
+          "evidence_anchor"
+        ],
+        "additionalProperties": false
+      },
+      "title": "Habitat",
+      "type": "array"
+    },
+    "natural_region": {
+      "description": "Um welchen der folgenden Naturgroßräume geht es in dem Text?",
+      "items": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "$ref": "#/$defs/NaturalRegionEnum"
+          },
+          "evidence_anchor": {
+            "type": "string",
+            "description": "Verbatim excerpt from the source text supporting the extracted content."
+          }
+        },
+        "required": [
+          "content",
+          "evidence_anchor"
+        ],
+        "additionalProperties": false
+      },
+      "title": "Natural Region",
+      "type": "array"
+    },
+    "climate": {
+      "description": "Welche Umschreibung trifft auf das Klima des Untersuchungsgebiets zu?",
+      "items": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "$ref": "#/$defs/ClimateEnum"
+          },
+          "evidence_anchor": {
+            "type": "string",
+            "description": "Verbatim excerpt from the source text supporting the extracted content."
+          }
+        },
+        "required": [
+          "content",
+          "evidence_anchor"
+        ],
+        "additionalProperties": false
+      },
+      "title": "Climate",
+      "type": "array"
+    },
+    "landuse": {
+      "description": "Welche Landnutzung wird im oder nahe des Untersuchungsgebietes betrieben? In welche der folgenden Kategorien fällt die Nutzung?",
+      "items": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "$ref": "#/$defs/LanduseEnum"
+          },
+          "evidence_anchor": {
+            "type": "string",
+            "description": "Verbatim excerpt from the source text supporting the extracted content."
+          }
+        },
+        "required": [
+          "content",
+          "evidence_anchor"
+        ],
+        "additionalProperties": false
+      },
+      "title": "Landuse",
+      "type": "array"
+    },
+    "spatial_extent": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "content": {
+              "$ref": "#/$defs/SpatialExtentEnum"
+            },
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Wie ist insgesamt die räumliche Ausdehnung der Studie?"
+    },
+    "spatial_resolution": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "content": {
+              "$ref": "#/$defs/SpatialResolutionEnum"
+            },
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Mit welcher räumlichen Auflösung wurden die einzelnen Messungen in der Studie durchgeführt?"
+    },
+    "spatial_measurements": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "content": {
+              "type": "integer"
+            },
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "An wie vielen Stellen wurde gemessen?",
+      "title": "Spatial Measurements"
+    },
+    "temporal_extent": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "content": {
+              "type": "integer"
+            },
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "In welchem Zeitraum fanden die Messungen statt?",
+      "title": "Temporal Extent"
+    },
+    "temporal_extent_unit": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "content": {
+              "$ref": "#/$defs/TemporalExtentUnit"
+            },
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "In welcher der folgenden Zeiteinheiten ist der Zeitraum angegeben?"
+    },
+    "temporal_resolution": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "content": {
+              "$ref": "#/$defs/TemporalResolutionEnum"
+            },
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Mit welcher zeitlichen Auflösung wurden die einzelnen Messungen in der Studie durchgeführt?"
+    },
+    "temporal_measurements": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "content": {
+              "type": "integer"
+            },
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Zu wie vielen unterschiedlichen Zeitpunkten wurde gemessen?",
+      "title": "Temporal Measurements"
+    },
+    "start_year": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "content": {
+              "type": "integer"
+            },
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "In welchem Jahr fand die erste Messung statt?",
+      "title": "Start Year"
+    },
+    "end_year": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "content": {
+              "type": "integer"
+            },
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "In welchem Jahr fand die letzte Messung statt?",
+      "title": "End Year"
+    },
+    "method": {
+      "description": "Mit welcher/welchen Methode(n) wurden die Daten erhoben?",
+      "items": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "$ref": "#/$defs/MethodEnum"
+          },
+          "evidence_anchor": {
+            "type": "string",
+            "description": "Verbatim excerpt from the source text supporting the extracted content."
+          }
+        },
+        "required": [
+          "content",
+          "evidence_anchor"
+        ],
+        "additionalProperties": false
+      },
+      "title": "Method",
+      "type": "array"
+    },
+    "study_type": {
+      "description": "Um welche Form der wissenschaftlichen Studie handelt es sich?",
+      "items": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "$ref": "#/$defs/StudyTypeEnum"
+          },
+          "evidence_anchor": {
+            "type": "string",
+            "description": "Verbatim excerpt from the source text supporting the extracted content."
+          }
+        },
+        "required": [
+          "content",
+          "evidence_anchor"
+        ],
+        "additionalProperties": false
+      },
+      "title": "Study Type",
+      "type": "array"
+    },
+    "project": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "content": {
+              "type": "string"
+            },
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Gehört die Studie zu einem größeren Programm oder Projekt? Wenn ja, zu welchem?",
+      "title": "Project"
+    },
+    "biodiversity_level": {
+      "description": "Auf welche der folgenden Ebenen wird Biodiversität in der Studie gemessen?",
+      "items": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "$ref": "#/$defs/BiodiversityLevelEnum"
+          },
+          "evidence_anchor": {
+            "type": "string",
+            "description": "Verbatim excerpt from the source text supporting the extracted content."
+          }
+        },
+        "required": [
+          "content",
+          "evidence_anchor"
+        ],
+        "additionalProperties": false
+      },
+      "title": "Biodiversity Level",
+      "type": "array"
+    },
+    "biodiversity_variable": {
+      "description": "In welchen Variablen wird die Biodiversität gemessen?",
+      "items": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string"
+          },
+          "evidence_anchor": {
+            "type": "string",
+            "description": "Verbatim excerpt from the source text supporting the extracted content."
+          }
+        },
+        "required": [
+          "content",
+          "evidence_anchor"
+        ],
+        "additionalProperties": false
+      },
+      "title": "Biodiversity Variable",
+      "type": "array"
+    },
+    "transformation_potential": {
+      "description": "In welche der folgenden Kategorien lässt sich die im Text behandelte Transformation einordnen? ",
+      "items": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "$ref": "#/$defs/TransformationPotentialEnum"
+          },
+          "evidence_anchor": {
+            "type": "string",
+            "description": "Verbatim excerpt from the source text supporting the extracted content."
+          }
+        },
+        "required": [
+          "content",
+          "evidence_anchor"
+        ],
+        "additionalProperties": false
+      },
+      "title": "Transformation Potential",
+      "type": "array"
+    }
+  },
+  "title": "EcosystemStudyFeaturesWithoutCompounds",
+  "type": "object"
+}

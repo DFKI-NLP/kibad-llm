@@ -19,8 +19,3 @@ user_message: |
 # The document_placeholder needs to be present in either the system or user message.
 schema_description_placeholder: schema_description
 document_placeholder: document
-
-schema:
-  # create the schema from the pydantic model of EcosystemStudyFeaturesSimple
-  _target_: kibad_llm.schema.types.EcosystemStudyFeaturesSimple.model_json_schema
-  by_alias: false

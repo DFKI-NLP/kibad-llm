@@ -1,5 +1,7 @@
 from collections.abc import Hashable
 
+from kibad_llm.dataset.prediction import DictWithMetadata
+
 
 def merge_references_into_predictions(
     predictions: dict,
@@ -26,4 +28,11 @@ def merge_references_into_predictions(
     merged_dataset = {
         k: {"prediction": predictions[k], "reference": references.get(k, {})} for k in predictions
     }
+
+    if isinstance(predictions, DictWithMetadata):
+        merged_dataset = DictWithMetadata(
+            merged_dataset,
+            metadata=predictions.metadata,
+        )
+
     return merged_dataset

@@ -8,7 +8,7 @@
 # python -m kibad_llm.predict experiment=two_schemata
 
 defaults:
-  - override /extractor: union_with_schema
+  - override /extractor: union
 
 
 extractor:
