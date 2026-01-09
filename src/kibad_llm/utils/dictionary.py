@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Generator, Mapping
 import dataclasses
 import logging
+import math
 from typing import Any
 
 logger = logging.getLogger(__name__)
@@ -49,6 +50,81 @@ def flatten_dict_simple(d: Mapping[str, Any], sep: str = ".") -> dict[str, Any]:
             else:
                 raise ValueError(f"Cannot flatten list with mixed types: {v}")
 
+    return result
+
+
+KEYS_PAD = math.nan
+
+
+def _flatten_dict_gen(d, parent_key: tuple[str | int, ...] = ()) -> Generator:
+    for k, v in d.items():
+        new_key = parent_key + (k,)
+        if isinstance(v, dict):
+            # no need to build an intermediate dict
+            yield from _flatten_dict_gen(v, new_key)
+        else:
+            yield new_key, v
+
+
+def flatten_dict(
+    d: dict[str | int, Any], pad_keys: bool = True
+) -> dict[tuple[str | int | float, ...], Any]:
+    """Flattens a dictionary with nested keys. Per default, the keys are padded with np.nan to have
+    the same length.
+
+    Example:
+        >>> d = {'a': {'b': {'c': 1, 'd': 2}, 'e': 3}}
+        >>> flatten_dict(d)
+        {('a', 'b', 'c'): 1, ('a', 'b', 'd'): 2, ('a', 'e', np.nan): 3}
+
+        # with padding the keys
+        >>> d = {'a': {'b': {'c': 1, 'd': 2}, 'e': 3}}
+        >>> flatten_dict(d, pad_keys=False)
+        {('a', 'b', 'c'): 1, ('a', 'b', 'd'): 2, ('a', 'e'): 3}
+    """
+    result: dict[tuple[str | int | float, ...], Any] = dict(_flatten_dict_gen(d))
+    # pad the keys with np.nan to have the same length. We use np.nan to be pandas-friendly.
+    if pad_keys:
+        max_num_keys = max(len(k) for k in result.keys())
+        result = {
+            tuple(list(k) + [KEYS_PAD] * (max_num_keys - len(k))): v for k, v in result.items()
+        }
+    return result
+
+
+def flatten_dict_s(d: dict[str | int, Any], sep: str = ".") -> dict[str, Any]:
+    result: dict[tuple[str | int, ...], Any] = dict(_flatten_dict_gen(d))
+    return {sep.join(str(ki) for ki in k): v for k, v in result.items()}
+
+
+def unflatten_dict(
+    d: dict[tuple[str | int | float, ...], Any], unpad_keys: bool = True
+) -> dict[str | int | float, Any] | Any:
+    """Unflattens a dictionary with nested keys. Per default, the keys are unpadded by removing
+    np.nan values.
+
+    Example:
+        >>> d = {("a", "b", "c"): 1, ("a", "b", "d"): 2, ("a", "e"): 3}
+        >>> unflatten_dict(d)
+        {'a': {'b': {'c': 1, 'd': 2}, 'e': 3}}
+
+        # with unpad the keys
+        >>> d = {("a", "b", "c"): 1, ("a", "b", "d"): 2, ("a", "e", float("nan")): 3}
+        >>> unflatten_dict(d)
+        {'a': {'b': {'c': 1, 'd': 2}, 'e': 3}}
+    """
+    result: dict[str | int | float, Any] = {}
+    for k, v in d.items():
+        if unpad_keys:
+            k = tuple(ki for ki in k if not (isinstance(ki, float) and math.isnan(ki)))
+        if len(k) == 0:
+            if len(result) > 1:
+                raise ValueError("Cannot unflatten dictionary with multiple root keys.")
+            return v
+        current = result
+        for key in k[:-1]:
+            current = current.setdefault(key, {})
+        current[k[-1]] = v
     return result
 
 
