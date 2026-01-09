@@ -1,0 +1,2 @@
+- pdf_directory=tests/fixtures/pdfs
+- +request_parameters.extra_body.seed=42

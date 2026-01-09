@@ -378,6 +378,14 @@ class EcosystemType(CompoundFeature):
     )
 
 
+class EcosystemTypeSimple(CompoundFeature):
+    """Ökosystemtyp mit Name."""
+
+    term: EcosystemTypeTermEnum | None = Field(
+        default=None, alias="Term", description="Name des Ökosystemtyps"
+    )
+
+
 class Location(CompoundFeature):
     """Untersuchungsgebiet mit Land, Bundesland und Ort."""
 
@@ -1050,4 +1058,57 @@ class EcosystemStudyOrganismTrends(BaseEcosystemStudyFeatures):
         default_factory=list,
         alias="Organismenbezogene Biodiversitätstrends",
         description="Liste der im Text beschriebenen organismenbezogenen Biodiversitätstrends.",
+    )
+
+
+class EcosystemStudyFeaturesCoreFields(BaseEcosystemStudyFeatures):
+    """Das Schema sammelt Angaben zu den wichtigsten biodiversitätsbezogenen Merkmalen der Studie:
+    Lebensräume, Ökosystemtypen, Arten bzw. Artengruppen, sowie die untersuchte Biodiversitätsebene.
+    """
+
+    habitat: list[HabitatEnum] = Field(
+        default_factory=list,
+        alias="Lebensräume",
+        description="Um welchen der folgenden Lebensräume oder um welche Kombination "
+        "der folgenden Lebensräume geht es in dem Text?",
+    )
+    taxa: list[Taxa] = Field(
+        default_factory=list,
+        alias="Arten",
+        description="Welche Arten bzw. Artengruppen werden in der Studie untersucht? Verwende die kleinste "
+        "machbare Ebene: Wenn eine Studie nur wenige Arten behandelt, sollten diese auf Artebene mit ihrem "
+        "wissenschaftlichen und deutschen Namen angegeben werden. Werden jedoch sehr viele Arten "
+        "behandelt oder eine Artengruppe besprochen, wird die Artengruppe als 'Sammelbegriff' angegeben. "
+        "Falls die Studie auf englisch ist, übersetze Art- bzw. Artengruppennamen ins Deutsche. "
+        "Ergänze, wenn nicht angegeben, die wissenschaftlichen Artennamen, und umgekehrt die "
+        "deutschen Namen, wenn nur die wissenschaftlichen Artennamen verwendet wurden. ",
+    )
+    biodiversity_level: list[BiodiversityLevelEnum] = Field(
+        default_factory=list,
+        alias="Biodiversitätsebene",
+        description="Auf welche der folgenden Ebenen wird Biodiversität in der Studie gemessen? ",
+    )
+    ecosystem_type: list[EcosystemTypeSimple] = Field(
+        default_factory=list,
+        alias="Ökosystemtyp",
+        description="Welche der folgenden Ökosystemtypen werden betrachtet? "
+        "Wenn es im Text um Meere oder Küsten geht, sind nur die folgenden Ökosystemtypen möglich: "
+        "Benthal der Nordsee / Benthal der Ostsee / Fels- und Steilküsten / Küstendünen / Pelagial der "
+        "Nordsee / Pelagial der Ostsee / Salzgrünland, Brackwasserröhrichte und -Hochstaudenfluren des "
+        "Geolitorals der Ostseeküste / Salzgrünland der Nordseeküste (Supralitoral) / Sände, Sand-, "
+        "Geröll- und Blockstrände? Wenn es im Text um Binnengewässer geht, sind nur die folgenden "
+        "Ökosystemtypen möglich: Fließende Gewässer / Grundwasser und Höhlengewässer / Quellen "
+        "(inklusive Quellabfluss (Krenal)) / Stehende Gewässer. Wenn es im Text um Binnenland geht, "
+        "sind nur die folgenden Ökosystemtypen möglich: Äcker und Ackerbrachen / Feldgehölze, "
+        "Gebüsche, Hecken und Gehölzkulturen / Felsen, Block- und Schutthalden, Geröllfelder, offene "
+        "Bereiche mit sandigem oder bindigem Substrat / Hoch-, Zwischen- und Übergangsmoore / "
+        "Höhlen (einschließlich Stollen, Brunnenschächte etc.) / Laub(Misch)Wälder und -Forste "
+        "(Laubbaumanteil über 50 Prozent) / Nadel(Misch)Wälder und -Forste / Röhrichte (ohne "
+        "Brackwasserröhrichte) / Trockenrasen sowie Grünland trockener bis frischer Standorte / "
+        "Waldfreie Niedermoore und Sümpfe / Grünland nasser bis feuchter Standorte / Waldmäntel "
+        "und Vorwälder, spezielle Waldnutzungsformen / Wald- und Ufersäume, Staudenfluren / "
+        "Zwergstrauchheiden? Wenn es im Text um technische Biotope geht, sind nur die folgenden Ökosystemtypen "
+        "möglich: Bauwerke / Kleine, unbefestigte Freiflächen des besiedelten Bereiches / "
+        "Verkehrsanlagen und Plätze? Werden im Text Gebirgsrasen (subalpin bis alpin), Anthropogene "
+        "Rohbodenstandorte und Ruderalfluren oder Grün- und Freiflächen behandelt? Oder keine davon?",
     )
