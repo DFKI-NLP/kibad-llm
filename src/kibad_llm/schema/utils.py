@@ -131,7 +131,6 @@ def build_schema_description(
     # internal args
     indent: int = 0,
     root_schema: Mapping[str, Any] | None = None,
-
 ) -> str:
     """
     Build a human‑readable summary for a JSON Schema.
