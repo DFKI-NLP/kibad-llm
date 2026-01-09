@@ -185,16 +185,42 @@ Each multirun produces a `job_return_value.json` (a nested dictionary) and a `jo
 
 For inference, complex setups are best managed via dedicated `experiment` configs; otherwise, Hydra will generate all combinations of the provided overrides, which may not be intended.
 
-For evaluation, you can additionally request an aggregated result over all runs (e.g., mean and standard deviation across multiple non-deterministic runs or different seeds). To do so, add the `hydra.callbacks.save_job_return.integrate_multirun_result=true` override:
+For evaluation, you can additionally request an aggregated result over all runs (e.g., mean and standard deviation across multiple non-deterministic runs or different seeds). To do so, add the `+hydra.callbacks.save_job_return.multirun_markdown_group_by` override:
 
 ```bash
 uv run -m kibad_llm.evaluate \
   dataset.predictions.file=path/to/A/predictions.jsonl,path/to/B/predictions.jsonl,path/to/C/predictions.jsonl \
-  hydra.callbacks.save_job_return.integrate_multirun_result=true \
+  +hydra.callbacks.save_job_return.multirun_markdown_group_by=overrides.pdf_directory \
   --multirun
 ```
 
 This will create `job_return_value.aggregated.json` and `job_return_value.aggregated.md` alongside the not aggregated outputs, summarizing the metrics across all runs in the multirun.
+
+Below are more complex examples of using multirun for prediction and evaluation:
+For Prediction with Seeds on Cluster we can use this command which uses the `run_with_llm.sh` wrapper to launch a prediction job on specific hardware partitions (-pa), performing a multirun over three different seeds:
+```bash
+./run_with_llm.sh \
+  -v "openai/gpt-oss-20b" \
+  -pa "RTXA6000-SLT,H100-SLT,H100-Trails" \
+  -t 1-00:00:00 \
+  -u "-m kibad_llm.predict \
+      paths.save_dir=/path/to/save/dir \
+      experiment/predict=faktencheck_two_schemata \
+      pdf_directory=tests/fixtures/pdfs \
+      +request_parameters.extra_body.seed=42,1337,7331 \
+      --multirun" \
+  -vv "0.11.2"
+
+```
+And for Evaluation of Multiple Predictions we can use this command `predictions_multirun_logs` which evaluates multiple prediction files (e.g., from different runs or seeds) in a single execution and aggregates the results:
+```bash
+uv run -m kibad_llm.evaluate \
+  predictions_multirun_logs=[log/path/to/multirun/x] \
+  experiment/evaluate=faktencheck_f1_micro_flat \
+  --multirun
+
+```
+
 
 See [configs/hydra/default.yaml](./configs/hydra/default.yaml) for further configuration options and details on the Hydra callback to create the combined output (`save_job_return`).
 
