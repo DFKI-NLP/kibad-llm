@@ -126,8 +126,8 @@ def build_schema_description(
     component_separator: str = " | ",
     choices_separator: str = "; ",
     indent_step: str = "  ",
-    include_field_descriptions: bool = False,
-    include_type_descriptions: bool = False,
+    include_field_descriptions: bool = True,
+    include_type_descriptions: bool = True,
     # internal args
     indent: int = 0,
     root_schema: Mapping[str, Any] | None = None,
