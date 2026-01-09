@@ -15,17 +15,13 @@ api_key: ${oc.env:OPENAI_API_KEY}
 model: "gpt-5"
 
 # try to be as deterministic as possible.
-# Note: As of 2026/01/05 has no effect since
+# Note on temperature: As of 2026/01/05 has no effect since
 # OpenAIResponses sets it to 1.0 for O1_MODELS which includes gpt-5
 # See https://github.com/run-llama/llama_index/blob/220e3603dba28c4261f0d618f1672768018fb52e/llama-index-integrations/llms/llama-index-llms-openai/llama_index/llms/openai/responses.py#L318
-temperature: 0.0
+# temperature: 0.0
+# OpenAI recommends to use `max_completion_tokens`, however, `llama_index.llms.openai.OpenAIResponses` does only support `max_output_tokens` for now
 max_output_tokens: 8192
-max_completion_tokens: 8192 # not sure where and how this is processed. If added to additional_kwargs of OpenAIResponses, throws an error: Responses.create() got an unexpected keyword argument 'max_completion_tokens', ...
 context_window: 131072
-
-# enable to correctly handle (i.e. remove) reasoning traces in the output
-# Note: Should this be disabled since not available in https://developers.llamaindex.ai/python/framework-api-reference/llms/openai/#llama_index.llms.openai.OpenAIResponses ?
-is_chat_model: true
 
 reasoning_options:
   # effort: low
@@ -35,7 +31,7 @@ timeout: 360
 max_retries: 3
 
 # additional args to consider:
-# strict: True
+# Note: We do not need to set 'strict=True' since that is set to True automatically in src/kibad_llm/llms/openai.py#call_llm_chat_with_guided_decoding()
 # top_p: 1.0
 
 # Add additional parameters to OpenAI request body.
