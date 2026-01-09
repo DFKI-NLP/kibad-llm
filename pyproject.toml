@@ -122,10 +122,15 @@ end_of_line = "lf"
 validate = true
 
 # (optional) nbQA-specific knobs if you need them later:
-# [tool.nbqa.config]
+[tool.nbqa.config]
 # black = "pyproject.toml"
 # isort = "pyproject.toml"
 # flake8 = "pyproject.toml"
+
+[tool.nbqa.addopts]
+flake8 = [
+    "--extend-ignore=E501"
+]
 
 [tool.mypy]
 python_version = "3.10"
