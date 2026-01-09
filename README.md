@@ -109,18 +109,24 @@ Follow the instructions [here for a quickstart](./models/README.md#quickstart), 
 The information extraction pipeline can be run with:
 
 ```bash
-uv run -m kibad_llm.predict pdf_directory=path/to/pdf/files
+uv run -m kibad_llm.predict \
+pdf_directory=path/to/pdf/files \
+--multirun
 ```
 
 This will process all PDF files in `pdf_directory` and save the result in a JSON line file.
+
+Note: It is recommended to always add --multirun (even for single runs). This ensures the output structure is compatible with the predictions_multirun_logs option during evaluation, making it easier to reference results later.
 
 See [configs/predict](./configs/predict.yaml) for further information and options.
 
 IMPORTANT: Relevant inference setups should be defined in their own `experiment/predict` config. This allows to easily reproduce results later on by adding `experiment/predict=<experiment_config>` to the command line call. For example, to run the experiment with two schemata ([configs/experiment/predict/faktencheck_two_schemata.yaml](./configs/experiment/predict/faktencheck_two_schemata.yaml)), use:
 
 ```bash
-uv run -m kibad_llm.predict pdf_directory=path/to/pdf/files \
-experiment/predict=faktencheck_two_schemata
+uv run -m kibad_llm.predict \
+pdf_directory=path/to/pdf/files \
+experiment/predict=faktencheck_two_schemata \
+--multirun
 ```
 
 See [configs/experiment/predict](./configs/experiment/predict) for available experiment configs.
@@ -193,10 +199,27 @@ uv run -m kibad_llm.evaluate \
   +hydra.callbacks.save_job_return.multirun_markdown_group_by=overrides.pdf_directory \
   --multirun
 ```
+This also works for multiple columns at once:
+```bash
++hydra.callbacks.save_job_return.multirun_markdown_group_by=[column1,column2]
+```
+See (https://github.com/DFKI-NLP/kibad-llm/pull/241) for details.
 
 This will create `job_return_value.aggregated.json` and `job_return_value.aggregated.md` alongside the not aggregated outputs, summarizing the metrics across all runs in the multirun.
 
 Below are more complex examples of using multirun for prediction and evaluation:
+
+For Evaluation of Multiple Predictions we can use this command `predictions_multirun_logs` which evaluates multiple prediction files (e.g., from different runs or seeds) in a single execution and aggregates the results:
+
+Note: `predictions_multirun_log`s only simplifies path handling; it does not trigger aggregation on its own. Use `multirun_markdown_group_by` (as shown above) if you want to aggregate the loaded results.
+
+```bash
+uv run -m kibad_llm.evaluate \
+  predictions_multirun_logs=[log/path/to/multirun/x] \
+  experiment/evaluate=faktencheck_f1_micro_flat \
+  --multirun
+
+```
 For Prediction with Seeds on Cluster we can use this command which uses the `run_with_llm.sh` wrapper to launch a prediction job on specific hardware partitions (-pa), performing a multirun over three different seeds:
 ```bash
 ./run_with_llm.sh \
@@ -212,15 +235,6 @@ For Prediction with Seeds on Cluster we can use this command which uses the `run
   -vv "0.11.2"
 
 ```
-And for Evaluation of Multiple Predictions we can use this command `predictions_multirun_logs` which evaluates multiple prediction files (e.g., from different runs or seeds) in a single execution and aggregates the results:
-```bash
-uv run -m kibad_llm.evaluate \
-  predictions_multirun_logs=[log/path/to/multirun/x] \
-  experiment/evaluate=faktencheck_f1_micro_flat \
-  --multirun
-
-```
-
 
 See [configs/hydra/default.yaml](./configs/hydra/default.yaml) for further configuration options and details on the Hydra callback to create the combined output (`save_job_return`).
 
