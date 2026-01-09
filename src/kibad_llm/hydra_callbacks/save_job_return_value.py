@@ -1,4 +1,4 @@
-from collections.abc import Generator, Hashable, Iterable
+from collections.abc import Hashable, Iterable
 import json
 import logging
 import math
@@ -11,6 +11,8 @@ from hydra.experimental.callback import Callback
 import numpy as np
 from omegaconf import DictConfig
 import pandas as pd
+
+from kibad_llm.utils.dictionary import flatten_dict, unflatten_dict
 
 
 def to_py_obj(obj):
@@ -74,72 +76,6 @@ def list_of_dicts_to_dict_of_lists_recursive(list_of_dicts):
     else:
         # If items are not all dict/None, just return the list as is (base case).
         return list_of_dicts
-
-
-def _flatten_dict_gen(d, parent_key: tuple[str | int, ...] = ()) -> Generator:
-    for k, v in d.items():
-        new_key = parent_key + (k,)
-        if isinstance(v, dict):
-            yield from dict(_flatten_dict_gen(v, new_key)).items()
-        else:
-            yield new_key, v
-
-
-def flatten_dict(
-    d: dict[str | int, Any], pad_keys: bool = True
-) -> dict[tuple[str | int, ...], Any]:
-    """Flattens a dictionary with nested keys. Per default, the keys are padded with np.nan to have
-    the same length.
-
-    Example:
-        >>> d = {'a': {'b': {'c': 1, 'd': 2}, 'e': 3}}
-        >>> flatten_dict(d)
-        {('a', 'b', 'c'): 1, ('a', 'b', 'd'): 2, ('a', 'e', np.nan): 3}
-
-        # with padding the keys
-        >>> d = {'a': {'b': {'c': 1, 'd': 2}, 'e': 3}}
-        >>> flatten_dict(d, pad_keys=False)
-        {('a', 'b', 'c'): 1, ('a', 'b', 'd'): 2, ('a', 'e'): 3}
-    """
-    result = dict(_flatten_dict_gen(d))
-    # pad the keys with np.nan to have the same length. We use np.nan to be pandas-friendly.
-    if pad_keys:
-        max_num_keys = max(len(k) for k in result.keys())
-        result = {
-            tuple(list(k) + [np.nan] * (max_num_keys - len(k))): v for k, v in result.items()
-        }
-    return result
-
-
-def unflatten_dict(
-    d: dict[tuple[str | int, ...], Any], unpad_keys: bool = True
-) -> dict[str | int, Any] | Any:
-    """Unflattens a dictionary with nested keys. Per default, the keys are unpadded by removing
-    np.nan values.
-
-    Example:
-        >>> d = {("a", "b", "c"): 1, ("a", "b", "d"): 2, ("a", "e"): 3}
-        >>> unflatten_dict(d)
-        {'a': {'b': {'c': 1, 'd': 2}, 'e': 3}}
-
-        # with unpad the keys
-        >>> d = {("a", "b", "c"): 1, ("a", "b", "d"): 2, ("a", "e", np.nan): 3}
-        >>> unflatten_dict(d)
-        {'a': {'b': {'c': 1, 'd': 2}, 'e': 3}}
-    """
-    result: dict[str | int, Any] = {}
-    for k, v in d.items():
-        if unpad_keys:
-            k = tuple([ki for ki in k if not pd.isna(ki)])
-        if len(k) == 0:
-            if len(result) > 1:
-                raise ValueError("Cannot unflatten dictionary with multiple root keys.")
-            return v
-        current = result
-        for key in k[:-1]:
-            current = current.setdefault(key, {})
-        current[k[-1]] = v
-    return result
 
 
 def remove_common_overrides(
@@ -501,7 +437,7 @@ class SaveJobReturnValueCallback(Callback):
                     )
                 # add the aggregation keys (e.g. mean, min, ...) as most inner keys and convert back to dict
                 # TODO: check if "type ignore" is really fine and necessary here
-                obj_flat_aggregated: dict[tuple[str | int, ...], Any] = df_described.T.stack().to_dict()  # type: ignore
+                obj_flat_aggregated: dict[tuple[str | int | float, ...], Any] = df_described.T.stack().to_dict()  # type: ignore
                 # unflatten because _save() works better with nested dicts. But don't remove key padding
                 # since this is required for proper unstacking in _save() for markdown files.
                 obj_aggregated = unflatten_dict(obj_flat_aggregated, unpad_keys=False)
