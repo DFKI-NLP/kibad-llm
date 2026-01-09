@@ -1,4 +1,4 @@
-# Example configuration for running GPT-OSS-20B fully in-process via vLLM (Python API)
+# Example configuration for running Qwen/Qwen3-30B-A3B-Thinking-2507 fully in-process via vLLM (Python API)
 #
 # Set the VLLM model download directory in your .env before running this config, e.g.
 # VLLM_DOWNLOAD_DIR=/path/to/download/dir
@@ -22,13 +22,19 @@
 _target_: kibad_llm.llms.VllmInProcess
 
 # HuggingFace model id (or local path)
-model: "openai/gpt-oss-20b"
+model: "Qwen/Qwen3-30B-A3B-Thinking-2507"
 
 # Initialization parameters for vLLM LLM engine.
 # See https://docs.vllm.ai/en/v0.12.0/api/vllm/entrypoints/llm/ for details.
 vllm_kwargs:
   tensor_parallel_size: 1  # shard across N GPUs
-  max_model_len: 131072
+  # Supports up to 256K tokens (max size for https://huggingface.co/Qwen/Qwen3-30B-A3B-Thinking-2507).
+  # Use lower value to save memory and improve performance
+  max_model_len: 65536 # due to memory issues when using 131072
+  # If enabling this reasoning_parser, as suggested by the HF link above, the model's output contains the
+  # reasoning instead of only the structured JSON. Disabling the reasoning parser works. This is unexpected,
+  # compared to serving the same model in a separate process. See Issue #253
+  reasoning_parser: "deepseek_r1"
   # gpu_memory_utilization: 0.9 # fraction of GPU memory reserved (impacts KV cache size)
   # dtype: "auto"
   download_dir: ${oc.env:VLLM_DOWNLOAD_DIR}

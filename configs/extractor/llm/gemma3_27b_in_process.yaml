@@ -1,4 +1,6 @@
-# Example configuration for running GPT-OSS-20B fully in-process via vLLM (Python API)
+# Example configuration for running Gemma3-27B-IT fully in-process via vLLM (Python API)
+#
+# IMPORTANT: Set your HF token in .env as 'HF_TOKEN=...' before running this config!
 #
 # Set the VLLM model download directory in your .env before running this config, e.g.
 # VLLM_DOWNLOAD_DIR=/path/to/download/dir
@@ -22,17 +24,20 @@
 _target_: kibad_llm.llms.VllmInProcess
 
 # HuggingFace model id (or local path)
-model: "openai/gpt-oss-20b"
+model: "google/gemma-3-27b-it"
 
 # Initialization parameters for vLLM LLM engine.
 # See https://docs.vllm.ai/en/v0.12.0/api/vllm/entrypoints/llm/ for details.
 vllm_kwargs:
   tensor_parallel_size: 1  # shard across N GPUs
-  max_model_len: 131072
+  hf_token: ${oc.env:HF_TOKEN}
+  # Supports up to 128K tokens (max size for https://huggingface.co/google/gemma-3-27b-it).
+  # Use lower value to save memory and improve performance
+  max_model_len: 65536 # due to memory issues when using 131072
   # gpu_memory_utilization: 0.9 # fraction of GPU memory reserved (impacts KV cache size)
   # dtype: "auto"
-  download_dir: ${oc.env:VLLM_DOWNLOAD_DIR}
   seed: 1337  # needs to be set starting with vllm 0.13.0
+  download_dir: ${oc.env:VLLM_DOWNLOAD_DIR}
   # others, e.g., quantization / trust_remote_code / swap_space / cpu_offload_gb / ...
 
 # Generation parameters, can be either ...

@@ -1,17 +1,38 @@
 from __future__ import annotations
 
+from collections import defaultdict
+from collections.abc import Mapping
+import dataclasses
 import hashlib
 import json
 import logging
+import re
 from typing import Any
 
 from jsonschema.validators import validator_for
 
 from kibad_llm.llms.base import LLM, MessageRole, SimpleChatMessage
-from kibad_llm.schema.utils import build_schema_description
+from kibad_llm.schema.utils import (
+    METADATA_SCHEMA_WITH_EVIDENCE_SHORTHAND,
+    WRAPPED_CONTENT_KEY,
+    build_schema_description,
+    wrap_terminals_with_metadata,
+)
+from kibad_llm.utils.dictionary import FieldDict
 from kibad_llm.utils.log import warn_once
 
 logger = logging.getLogger(__name__)
+
+
+@dataclasses.dataclass
+class SingleExtractionResult(FieldDict):
+    response_content: str | None = None
+    structured: dict[str, Any] | list[Any] | None = None
+    structured_with_metadata: dict[str, Any] | list[Any] | None = None
+    reasoning_content: str | None = None
+    messages: dict[str, str | None] | None = None
+    messages_formatted: dict[str, str] | None = None
+    error: str | None = None
 
 
 def exception2error_msg(e: Exception) -> str:
@@ -103,7 +124,7 @@ def build_chat_messages(
     return_messages: bool = False,
     return_messages_formatted: bool = False,
     truncate_user_message_formatted: int | None = 300,
-    _out: dict[str, Any] | None = None,
+    _out: SingleExtractionResult | None = None,
     **build_messages_kwargs: Any,
 ) -> list[SimpleChatMessage]:
     """Build chat messages for extraction. The document text and schema description may be inserted
@@ -193,6 +214,283 @@ def build_chat_messages(
     return messages
 
 
+def _is_wrapper_dict(d: Mapping[str, Any], content_key: str) -> bool:
+    """Heuristic to detect whether a dict is a metadata wrapper around content."""
+    return content_key in d and len(d) >= 2
+
+
+def strip_metadata(data: Any, *, content_key: str) -> Any:
+    """
+    Strip metadata wrappers from a JSON-parsed result produced by `wrap_terminals_with_metadata`.
+
+    The wrapped output encodes terminal values as objects like:
+        {"<content_key>": <value>, "evidence_anchor": "...", ...}
+
+    This function walks the parsed JSON (dict/list/scalars) and removes such wrappers by
+    replacing the wrapper dict with its `<content_key>` value.
+
+    Wrapper detection (heuristic):
+      - a dict is treated as a wrapper if it has `content_key` AND at least one additional key.
+        (We avoid unwrapping objects that only have `{"<content_key>": ...}`.)
+
+    Notes:
+      - This function does not validate that "other keys" are truly metadata. If your original
+        extraction schema contains real objects that also have a `content_key` field and other
+        fields, they may be unwrapped unintentionally. If that’s a concern, use a more unique
+        `content_key` (e.g. "__content") in the schema wrapping step.
+      - The input is not mutated; a transformed copy is returned.
+    """
+
+    def _strip(node: Any) -> Any:
+        if isinstance(node, list):
+            return [_strip(x) for x in node]
+
+        if isinstance(node, Mapping):
+            # If this dict is a wrapper, discard metadata and recurse into the content.
+            if _is_wrapper_dict(d=node, content_key=content_key):
+                return _strip(node.get(content_key))
+
+            # Otherwise recurse into all values.
+            return {k: _strip(v) for k, v in node.items()}
+
+        # scalars (str/int/float/bool/None)
+        return node
+
+    return _strip(data)
+
+
+def _snippet_for_span(
+    start: int,
+    end: int,
+    text: str,
+    token_spans: list[tuple[int, int]],
+    token_margin: int = 5,
+) -> str:
+    """Extract a text snippet from `text` that spans `start` to `end` character offsets,
+    extending `token_margin` tokens before and after the span.
+    """
+    if not token_spans:
+        return ""
+
+    # First token whose end is after the start (covers overlap/inside-token cases)
+    start_i = None
+    for i, (_s, e) in enumerate(token_spans):
+        if e > start:
+            start_i = i
+            break
+    if start_i is None:
+        return ""
+
+    # Last token whose start is before the end
+    end_i = None
+    for i in range(len(token_spans) - 1, -1, -1):
+        s, _e = token_spans[i]
+        if s < end:
+            end_i = i
+            break
+    if end_i is None:
+        return ""
+
+    lo = max(0, start_i - token_margin)
+    hi = min(len(token_spans) - 1, end_i + token_margin)
+
+    # Slice original text to preserve whitespace exactly (including newlines, multiple spaces, etc.)
+    snippet_start = token_spans[lo][0]
+    snippet_end = token_spans[hi][1]
+    return text[snippet_start:snippet_end]
+
+
+def _strip_wrapping_quotes(s: str) -> str:
+    """Strip common wrapping quotes from the beginning and end of a string."""
+    # Common quote pairs: ASCII, German/typographic, and apostrophe-like quotes
+    quote_pairs = [
+        ('"', '"'),
+        ("'", "'"),
+        ("`", "`"),
+        ("“", "”"),
+        ("„", "“"),
+        ("„", "”"),
+        ("‘", "’"),
+        ("‚", "‘"),
+        ("«", "»"),
+        ("‹", "›"),
+    ]
+
+    s2 = s.strip()
+    for left, right in quote_pairs:
+        if len(s2) >= 2 and s2.startswith(left) and s2.endswith(right):
+            return s2[1:-1].strip()
+    return s2
+
+
+def _find_anchor_match_spans(text: str, anchor: str) -> list[tuple[int, int]]:
+    """
+    Find all character spans in `text` that match the given `anchor` string.
+    The matching is whitespace-insensitive, meaning that any whitespace in the anchor
+    can match any whitespace in the text (including different kinds of whitespace).
+    Args:
+        text: The original text to search within.
+        anchor: The anchor string to search for.
+    Returns:
+        A list of (start_offset_in_text, end_offset_in_text) tuples for each match of the anchor.
+    """
+
+    # Preprocess anchor: strip wrapping quotes
+    anchor = _strip_wrapping_quotes(anchor)
+
+    # Guard: only search for non-empty string anchors.
+    if not anchor:
+        return []
+
+    # Split the anchor on any whitespace. This lets us treat " " vs "\n" (or multiple spaces/tabs)
+    # as equivalent when searching in the original text.
+    # Example: "foo bar\nbaz" -> ["foo", "bar", "baz"]
+    parts = re.split(r"\s+", anchor.strip())
+
+    # If the anchor was only whitespace (or otherwise produced no meaningful parts), give up.
+    if not parts or not any(parts):
+        return []
+
+    # Build a regex that matches the non-whitespace chunks in order, allowing *any* whitespace
+    # between them in the text. We escape each chunk to avoid regex metacharacters being treated
+    # specially (e.g., "." in the anchor should match a literal dot).
+    # Example parts ["foo","bar"] -> pattern "foo\\s+bar"
+    pattern = r"\s+".join(re.escape(p) for p in parts if p)
+
+    # Find all non-overlapping matches of that pattern in the text and return their character spans.
+    # Each span is (start_offset_in_text, end_offset_in_text).
+    return [(m.start(), m.end()) for m in re.finditer(pattern, text)]
+
+
+def augment_metadata_node_with_evidence(
+    node: Mapping[str, Any],
+    text: str,
+    token_spans: list[tuple[int, int]],
+    *,
+    anchor_key: str = "evidence_anchor",
+    num_matches_key: str = "evidence_num_matches",
+    start_key: str = "first_evidence_start",
+    end_key: str = "first_evidence_end",
+    snippet_key: str = "first_evidence_snippet",
+    snippet_margin: int = 10,
+) -> dict[str, Any]:
+    """
+    Augment a single metadata wrapper dict with evidence location information.
+
+    Given a wrapper object like:
+        {"content": ..., "evidence_anchor": "...", ...}
+
+    this function searches `text` for the anchor (via `_find_anchor_match_spans`). If at least
+    one match is found, it adds:
+      - `num_matches_key`: number of matches
+      - `start_key` / `end_key`: character offsets of the first match
+      - `snippet_key`: a substring of `text` spanning `snippet_margin` tokens around the match
+        (whitespace preserved)
+
+    If no anchor is present (or no matches exist), the wrapper is returned unchanged except for
+    `num_matches_key` (only added when an anchor is a non-empty string).
+
+    Args:
+        node: The metadata wrapper dict to augment.
+        text: The original text to search for evidence anchors.
+        token_spans: Precomputed list of (start_offset, end_offset) tuples for each token in `text`.
+        anchor_key: The key in wrapper dicts that holds the evidence anchor text.
+        num_matches_key: The key to add for the number of matches of the anchor in the text.
+        start_key: The key to add for the start character offset of the anchor.
+        end_key: The key to add for the end character offset of the anchor.
+        snippet_key: The key to add for the evidence snippet text.
+        snippet_margin: Number of tokens to include before and after the anchor span
+            in the snippet.
+    Returns:
+        The augmented metadata wrapper dict with evidence metadata added where applicable.
+    """
+    if snippet_margin < 0:
+        raise ValueError("evidence snippet_margin must be >= 0")
+
+    out: dict[str, Any] = dict(node)
+
+    # do we have a non-empty evidence anchor?
+    anchor = node.get(anchor_key)
+    if isinstance(anchor, str) and anchor:
+        anchor_matches = _find_anchor_match_spans(text=text, anchor=anchor)
+        out[num_matches_key] = len(anchor_matches)
+        if len(anchor_matches) > 0:
+            # just take the first match
+            start, end = anchor_matches[0]
+            out[start_key] = start
+            out[end_key] = end
+            out[snippet_key] = _snippet_for_span(
+                start,
+                end,
+                text=text,
+                token_spans=token_spans,
+                token_margin=snippet_margin,
+            )
+
+    return out
+
+
+def augment_metadata(
+    data: Any,
+    *,
+    text: str,
+    content_key: str,
+    **kwargs: Any,
+) -> Any:
+    """
+    Recursively augment all metadata wrapper dicts in a JSON-parsed result with evidence info.
+
+    Traversal:
+      - walks `data` through nested dicts/lists
+      - detects wrapper dicts via `_is_wrapper_dict(..., content_key=...)`
+      - for each wrapper dict, calls `augment_metadata_node_with_evidence(...)`
+
+    Keyword arguments:
+      - kwargs are namespaced by prefix. Currently supported:
+          * evidence_*  -> forwarded to `augment_metadata_node_with_evidence` (prefix stripped)
+        Example: evidence_snippet_margin=10 sets `snippet_margin=10` for evidence augmentation.
+      - unknown kwargs raise ValueError (fail fast).
+
+    The returned structure mirrors the input but includes added evidence fields where applicable.
+    """
+
+    # split augmentation kwargs into those for evidence and others (future use)
+    augmentation_kwargs: dict[str, dict[str, Any]] = defaultdict(dict)
+    for k in list(kwargs.keys()):
+        for prefix in ["evidence"]:
+            if k.startswith(f"{prefix}_"):
+                k_without_prefix = k[len(f"{prefix}_") :]
+                augmentation_kwargs[prefix][k_without_prefix] = kwargs.pop(k)
+
+    if len(kwargs) > 0:
+        raise ValueError(f"Unknown augmentation kwargs: {list(kwargs.keys())}")
+
+    # Precompute whitespace-token spans once for fast snippet lookup
+    token_matches = list(re.finditer(r"\S+", text))
+    token_spans = [(m.start(), m.end()) for m in token_matches]
+
+    def _augment(node: Any) -> Any:
+        if isinstance(node, list):
+            return [_augment(x) for x in node]
+
+        if isinstance(node, Mapping):
+            # Recurse first (pure functional style)
+            out: dict[str, Any] = {k: _augment(v) for k, v in node.items()}
+
+            if _is_wrapper_dict(d=node, content_key=content_key):
+                out = augment_metadata_node_with_evidence(
+                    node=out,
+                    text=text,
+                    token_spans=token_spans,
+                    **augmentation_kwargs.get("evidence", {}),
+                )
+            return out
+
+        return node
+
+    return _augment(data)
+
+
 def extract_from_text(
     text: str,
     text_id: str,
@@ -203,13 +501,19 @@ def extract_from_text(
     llm: LLM | None = None,
     request_parameters: dict[str, Any] | None = None,
     return_reasoning: bool = False,
+    adjust_schema_for_evidence_detection: bool = False,
+    adjust_schema_description_for_evidence_detection: bool = False,
+    evidence_anchor_description: str = "Verbatim excerpt from the source text supporting the extracted content.",
+    wrapped_content_description: str | None = None,
+    response_has_metadata: bool = False,
+    augment_metadata_kwargs: dict[str, Any] | None = None,
     # deprecated arguments
     user_message: str | None = None,
     system_message: str | None = None,
     schema_description_placeholder: str | None = None,
     document_placeholder: str | None = None,
     **build_messages_kwargs: Any,
-) -> dict:
+) -> SingleExtractionResult:
     """Extract structured information from text using an LLM.
 
     Given a chat llm, composes system and user messages, and invokes the model.
@@ -231,10 +535,30 @@ def extract_from_text(
         request_parameters: Additional parameters to pass to the LLM chat call. If 'seed' is not provided,
             a seed is derived from the messages and added to request_parameters for determinism.
         return_reasoning: Whether to return the reasoning done by the model.
+        adjust_schema_for_evidence_detection: Whether to adjust the schema to wrap terminal values
+            with metadata. If True, the schema is modified so that each terminal value is replaced
+            with an object containing the original value under the key `content` plus a metadata field
+            `evidence_anchor` (a verbatim quote from the input text supporting the
+            extracted content). Requires a schema to be provided.
+            Per default, the schema description is constructed from the original schema, so it is
+            recommended to adjust the prompt_template accordingly (e.g., by adding instructions about
+            evidence). But see `adjust_schema_description_for_detect_evidence` to switch this behavior.
+        adjust_schema_description_for_evidence_detection: Whether to adjust the schema description
+            when detect_evidence is True. If True, the schema description will mention that
+            each value is accompanied by an evidence_anchor that is a "verbatim excerpt from the source
+            text supporting the extracted content" (see METADATA_SCHEMA_WITH_EVIDENCE_SHORTHAND).
+            Has only an effect if adjust_schema_for_detect_evidence is also True.
+        evidence_anchor_description: Description for the evidence anchor field.
+        wrapped_content_description: Optional description for the content field in the metadata wrapper.
+        response_has_metadata: If True, the output is expected to have each leaf value wrapped in
+            an object with `content` plus metadata fields. If so, the metadata is stripped and the cleaned
+            output is returned under the "structured" key, while the raw output with metadata is returned
+            under the "structured_with_metadata" key.
+        augment_metadata_kwargs: Additional keyword arguments for augment_metadata.
         **build_messages_kwargs: Additional keyword arguments for build_chat_messages.
 
     Returns:
-        A dictionary with keys "text" (the raw LLM output) and "structured" (the parsed JSON or None).
+        A SingleExtractionResult object with the extraction result.
     """
     # setting the log level on every query is suboptimal, but the simplest solution in our current architecture
     logging.getLogger("httpx").setLevel(logging.WARNING)
@@ -254,18 +578,42 @@ def extract_from_text(
         )
     build_messages_kwargs.update(prompt_template)
 
-    out: dict[str, Any | None] = {
-        "response_content": None,
-        "structured": None,
-        "reasoning_content": None,
-        "messages": None,
-        "messages_formatted": None,
-        "error": None,
-    }
+    out = SingleExtractionResult()
+
+    original_schema = schema
+    schema_for_build_messages = schema
+
+    if adjust_schema_for_evidence_detection:
+        if schema is None:
+            raise ValueError(
+                "adjust_schema_for_detect_evidence is True but no schema provided to adjust."
+            )
+        if not use_guided_decoding:
+            warn_once(
+                "adjust_schema_for_evidence_detection is True but use_guided_decoding is False. "
+                "Enabling adjust_schema_for_evidence_detection adjusts the schema for guided decoding, "
+                "so it is recommended to enable use_guided_decoding as well."
+            )
+        schema = wrap_terminals_with_metadata(
+            schema,
+            metadata_schema={
+                "evidence_anchor": {
+                    "type": "string",
+                    "description": evidence_anchor_description,
+                }
+            },
+            content_key=WRAPPED_CONTENT_KEY,
+            content_description=wrapped_content_description,
+        )
+        # since we wrapped terminals with metadata, we expect metadata in the response
+        response_has_metadata = True
+
+        if adjust_schema_description_for_evidence_detection:
+            schema_for_build_messages = schema
 
     messages = build_chat_messages(
         document=text,
-        schema=schema,
+        schema=schema_for_build_messages,
         _out=out,
         **build_messages_kwargs,
     )
@@ -308,6 +656,28 @@ def extract_from_text(
                 validator_cls.check_schema(schema)
                 validator = validator_cls(schema)
                 validator.validate(data)
+
+            if response_has_metadata:
+                data_augmented = augment_metadata(
+                    data,
+                    text=text,
+                    content_key=WRAPPED_CONTENT_KEY,
+                    **(augment_metadata_kwargs or {}),
+                )
+                out["structured_with_metadata"] = data_augmented
+                data_without_metadata = strip_metadata(data, content_key=WRAPPED_CONTENT_KEY)
+                # validate stripped version against original schema (if schema is not the original one)
+                if (
+                    validate_with_schema
+                    and original_schema is not None
+                    and schema != original_schema
+                ):
+                    validator_cls = validator_for(original_schema)
+                    validator_cls.check_schema(original_schema)
+                    validator = validator_cls(original_schema)
+                    validator.validate(data_without_metadata)
+                data = data_without_metadata
+
             # just assign if we validated successfully
             out["structured"] = data
 
@@ -325,7 +695,7 @@ def extract_from_text(
     return out
 
 
-def extract_from_text_lenient(text: str, text_id: str, **kwargs) -> dict:
+def extract_from_text_lenient(text: str, text_id: str, **kwargs) -> SingleExtractionResult:
     """Wrapper around extract_from_text that catches all exceptions.
 
     This is useful when processing multiple documents and we want to
@@ -336,7 +706,7 @@ def extract_from_text_lenient(text: str, text_id: str, **kwargs) -> dict:
         text_id: Text identifier for logging.
         **kwargs: Keyword arguments for extract_from_text.
     Returns:
-        A dictionary with keys "response_content" and "structured" or "error" in the case of failure.
+        A SingleExtractionResult object with the extraction result or error message.
     """
 
     try:
@@ -345,11 +715,4 @@ def extract_from_text_lenient(text: str, text_id: str, **kwargs) -> dict:
         error_msg = exception2error_msg(e)
         logger.error(f"Error processing document {text_id}: {error_msg}")
         # needs to match the output of extract_from_text
-        return {
-            "response_content": None,
-            "structured": None,
-            "reasoning_content": None,
-            "messages": None,
-            "messages_formatted": None,
-            "error": error_msg,
-        }
+        return SingleExtractionResult(error=error_msg)

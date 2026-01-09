@@ -1,0 +1,159 @@
+{
+  "$defs": {
+    "ClimateEnum": {
+      "enum": [
+        "Atlantisches Klima",
+        "Gebirgsklima",
+        "kontinental",
+        "maritim",
+        "niederschlagsbenachteiligt",
+        "niederschlagsnormal",
+        "niederschlagsbegünstigt",
+        "subkontinental",
+        "submaritim"
+      ],
+      "title": "ClimateEnum",
+      "type": "string"
+    },
+    "HabitatEnum": {
+      "enum": [
+        "Agrar- und Offenland",
+        "Binnengewässer und Auen",
+        "Boden",
+        "Küsten und Küstengewässer",
+        "Urbane Räume",
+        "Wald"
+      ],
+      "title": "HabitatEnum",
+      "type": "string"
+    },
+    "LanduseEnum": {
+      "enum": [
+        "Bau",
+        "Bergbau und Steinbruch",
+        "Brachliegende Flächen",
+        "Energieproduktion",
+        "Erholung, Freizeit, Sport",
+        "Fischerei und Aquakultur",
+        "Forstwirtschaft",
+        "Handels-, Finanz-, Berufs- und Informationsdienstleistungen",
+        "Industrie und Fertigung",
+        "Landwirtschaft",
+        "Naturnahe und natürliche Flächen, die nicht genutzt werden",
+        "Verkehr, Kommunikationsnetzwerke, Lagerung, Schutzwälle",
+        "Wasser- und Abfallbehandlung",
+        "Wohngebiete",
+        "andere Leistung des Primärsektors",
+        "Öffentliche Einrichtungen"
+      ],
+      "title": "LanduseEnum",
+      "type": "string"
+    },
+    "NaturalRegionEnum": {
+      "enum": [
+        "Alpen",
+        "Alpenvorland",
+        "Mittelgebirgsschwelle",
+        "Nord- und Ostsee",
+        "Norddeutsches Tiefland",
+        "Schichtstufenland beidseits des Oberrheingrabens"
+      ],
+      "title": "NaturalRegionEnum",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Angaben zu den ökosystembezogenen Studienmerkmalen.",
+  "properties": {
+    "habitat": {
+      "description": "Um welchen der folgenden Lebensräume oder in welcher Kombination der folgenden Lebensräume geht es in dem Text?",
+      "items": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "$ref": "#/$defs/HabitatEnum"
+          },
+          "evidence_anchor": {
+            "type": "string",
+            "description": "Verbatim excerpt from the source text supporting the extracted content."
+          }
+        },
+        "required": [
+          "content",
+          "evidence_anchor"
+        ],
+        "additionalProperties": false
+      },
+      "title": "Habitat",
+      "type": "array"
+    },
+    "natural_region": {
+      "description": "Um welchen der folgenden Naturgroßräume geht es in dem Text?",
+      "items": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "$ref": "#/$defs/NaturalRegionEnum"
+          },
+          "evidence_anchor": {
+            "type": "string",
+            "description": "Verbatim excerpt from the source text supporting the extracted content."
+          }
+        },
+        "required": [
+          "content",
+          "evidence_anchor"
+        ],
+        "additionalProperties": false
+      },
+      "title": "Natural Region",
+      "type": "array"
+    },
+    "climate": {
+      "description": "Welche Umschreibung trifft auf das Klima des Untersuchungsgebiets zu?",
+      "items": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "$ref": "#/$defs/ClimateEnum"
+          },
+          "evidence_anchor": {
+            "type": "string",
+            "description": "Verbatim excerpt from the source text supporting the extracted content."
+          }
+        },
+        "required": [
+          "content",
+          "evidence_anchor"
+        ],
+        "additionalProperties": false
+      },
+      "title": "Climate",
+      "type": "array"
+    },
+    "landuse": {
+      "description": "Welche Landnutzung wird im oder nahe des Untersuchungsgebietes betrieben? In welche der folgenden Kategorien fällt die Nutzung?",
+      "items": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "$ref": "#/$defs/LanduseEnum"
+          },
+          "evidence_anchor": {
+            "type": "string",
+            "description": "Verbatim excerpt from the source text supporting the extracted content."
+          }
+        },
+        "required": [
+          "content",
+          "evidence_anchor"
+        ],
+        "additionalProperties": false
+      },
+      "title": "Landuse",
+      "type": "array"
+    }
+  },
+  "title": "EcosystemStudyFeaturesSimple",
+  "type": "object"
+}
