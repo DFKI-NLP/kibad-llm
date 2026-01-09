@@ -229,23 +229,23 @@ def build_schema_description(
                 nested_schema = target_for_hints
 
             if nested_schema:
-                    nested_content = build_schema_description(
-                        nested_schema,
-                        indent=indent + 1,
-                        root_schema=root_schema,
-                        # no header for nested
-                        header=None,
-                        schema_description_prefix=schema_description_prefix,
-                        cardinality_prefix=cardinality_prefix,
-                        type_prefix=type_prefix,
-                        choices_prefix=choices_prefix,
-                        component_separator=component_separator,
-                        choices_separator=choices_separator,
-                        indent_step=indent_step,
-                        include_field_descriptions=include_field_descriptions,
-                        include_type_descriptions=include_type_descriptions,
-                    )
-                    lines.append(nested_content)
+                nested_content = build_schema_description(
+                    nested_schema,
+                    indent=indent + 1,
+                    root_schema=root_schema,
+                    # no header for nested
+                    header=None,
+                    schema_description_prefix=schema_description_prefix,
+                    cardinality_prefix=cardinality_prefix,
+                    type_prefix=type_prefix,
+                    choices_prefix=choices_prefix,
+                    component_separator=component_separator,
+                    choices_separator=choices_separator,
+                    indent_step=indent_step,
+                    include_field_descriptions=include_field_descriptions,
+                    include_type_descriptions=include_type_descriptions,
+                )
+                lines.append(nested_content)
 
     return "\n".join(lines)
 
