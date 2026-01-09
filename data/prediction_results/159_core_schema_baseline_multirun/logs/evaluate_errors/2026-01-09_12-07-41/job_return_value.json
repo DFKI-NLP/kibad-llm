@@ -1,0 +1,392 @@
+{
+  "+request_parameters.extra_body.seed=42": {
+    "no_error": 80,
+    "BadRequestError": 15,
+    "JSONDecodeError": 3,
+    "MissingResponseContentError": 2,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "/netscratch/hennig/kiba-d/predictions/default/2026-01-05_15-43-25/2026-01-05_15-43-28_289602/predictions.jsonl",
+        "time_pdf_conversion": 0.016583675984293222,
+        "time_extraction": 1555.648521464027,
+        "commit_hash": "d9c85c21b26dc578f0a358c0a31422a4f330e56b",
+        "branch": "main",
+        "is_dirty": false
+      }
+    },
+    "overrides": {
+      "paths.save_dir": "/netscratch/hennig/kiba-d",
+      "experiment/predict": "faktencheck_core_fields_schema",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "request_parameters.extra_body.seed": "42"
+    }
+  },
+  "+request_parameters.extra_body.seed=1337": {
+    "no_error": 81,
+    "BadRequestError": 15,
+    "MissingResponseContentError": 2,
+    "JSONDecodeError": 2,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "/netscratch/hennig/kiba-d/predictions/default/2026-01-05_15-43-25/2026-01-05_16-11-36_107614/predictions.jsonl",
+        "time_pdf_conversion": 0.010035960003733635,
+        "time_extraction": 1492.2828306229785,
+        "commit_hash": "d9c85c21b26dc578f0a358c0a31422a4f330e56b",
+        "branch": "main",
+        "is_dirty": true
+      }
+    },
+    "overrides": {
+      "paths.save_dir": "/netscratch/hennig/kiba-d",
+      "experiment/predict": "faktencheck_core_fields_schema",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "request_parameters.extra_body.seed": "1337"
+    }
+  },
+  "+request_parameters.extra_body.seed=7331": {
+    "no_error": 81,
+    "BadRequestError": 15,
+    "MissingResponseContentError": 2,
+    "JSONDecodeError": 2,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "/netscratch/hennig/kiba-d/predictions/default/2026-01-05_15-43-25/2026-01-05_16-36-28_986760/predictions.jsonl",
+        "time_pdf_conversion": 0.0106894540367648,
+        "time_extraction": 1517.2318289199611,
+        "commit_hash": "d9c85c21b26dc578f0a358c0a31422a4f330e56b",
+        "branch": "main",
+        "is_dirty": true
+      }
+    },
+    "overrides": {
+      "paths.save_dir": "/netscratch/hennig/kiba-d",
+      "experiment/predict": "faktencheck_core_fields_schema",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "request_parameters.extra_body.seed": "7331"
+    }
+  },
+  "+request_parameters.extra_body.seed=42#extractor/llm=nemotron_nano_12b": {
+    "no_error": 79,
+    "BadRequestError": 18,
+    "JSONDecodeError": 3,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "/netscratch/hennig/kiba-d/predictions/default/2026-01-05_16-48-34/2026-01-05_16-48-36_047611/predictions.jsonl",
+        "time_pdf_conversion": 0.009052193025127053,
+        "time_extraction": 628.6699092600029,
+        "commit_hash": "d4c5b0fd702eaba0d92c44e8d69850f0096b0183",
+        "branch": "update_llm_configs",
+        "is_dirty": true
+      }
+    },
+    "overrides": {
+      "paths.save_dir": "/netscratch/hennig/kiba-d",
+      "experiment/predict": "faktencheck_core_fields_schema",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "request_parameters.extra_body.seed": "42",
+      "extractor/llm": "nemotron_nano_12b"
+    }
+  },
+  "+request_parameters.extra_body.seed=1337#extractor/llm=nemotron_nano_12b": {
+    "no_error": 79,
+    "BadRequestError": 18,
+    "JSONDecodeError": 3,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "/netscratch/hennig/kiba-d/predictions/default/2026-01-05_16-48-34/2026-01-05_17-02-05_611020/predictions.jsonl",
+        "time_pdf_conversion": 0.01366743299877271,
+        "time_extraction": 556.4304780790117,
+        "commit_hash": "d4c5b0fd702eaba0d92c44e8d69850f0096b0183",
+        "branch": "update_llm_configs",
+        "is_dirty": true
+      }
+    },
+    "overrides": {
+      "paths.save_dir": "/netscratch/hennig/kiba-d",
+      "experiment/predict": "faktencheck_core_fields_schema",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "request_parameters.extra_body.seed": "1337",
+      "extractor/llm": "nemotron_nano_12b"
+    }
+  },
+  "+request_parameters.extra_body.seed=7331#extractor/llm=nemotron_nano_12b": {
+    "no_error": 79,
+    "BadRequestError": 18,
+    "JSONDecodeError": 3,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "/netscratch/hennig/kiba-d/predictions/default/2026-01-05_16-48-34/2026-01-05_17-11-22_704076/predictions.jsonl",
+        "time_pdf_conversion": 0.01300477999029681,
+        "time_extraction": 556.3605484520085,
+        "commit_hash": "d4c5b0fd702eaba0d92c44e8d69850f0096b0183",
+        "branch": "update_llm_configs",
+        "is_dirty": true
+      }
+    },
+    "overrides": {
+      "paths.save_dir": "/netscratch/hennig/kiba-d",
+      "experiment/predict": "faktencheck_core_fields_schema",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "request_parameters.extra_body.seed": "7331",
+      "extractor/llm": "nemotron_nano_12b"
+    }
+  },
+  "+request_parameters.extra_body.seed=42#extractor/llm=gemma3_27b": {
+    "no_error": 75,
+    "BadRequestError": 25,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "/netscratch/hennig/kiba-d/predictions/default/2026-01-05_16-49-33/2026-01-05_16-49-34_911017/predictions.jsonl",
+        "time_pdf_conversion": 0.007153110986109823,
+        "time_extraction": 631.9256905299844,
+        "commit_hash": "d4c5b0fd702eaba0d92c44e8d69850f0096b0183",
+        "branch": "update_llm_configs",
+        "is_dirty": true
+      }
+    },
+    "overrides": {
+      "paths.save_dir": "/netscratch/hennig/kiba-d",
+      "experiment/predict": "faktencheck_core_fields_schema",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "request_parameters.extra_body.seed": "42",
+      "extractor/llm": "gemma3_27b"
+    }
+  },
+  "+request_parameters.extra_body.seed=1337#extractor/llm=gemma3_27b": {
+    "no_error": 75,
+    "BadRequestError": 25,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "/netscratch/hennig/kiba-d/predictions/default/2026-01-05_16-49-33/2026-01-05_17-03-04_618557/predictions.jsonl",
+        "time_pdf_conversion": 0.00966156495269388,
+        "time_extraction": 617.3860551830148,
+        "commit_hash": "d4c5b0fd702eaba0d92c44e8d69850f0096b0183",
+        "branch": "update_llm_configs",
+        "is_dirty": true
+      }
+    },
+    "overrides": {
+      "paths.save_dir": "/netscratch/hennig/kiba-d",
+      "experiment/predict": "faktencheck_core_fields_schema",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "request_parameters.extra_body.seed": "1337",
+      "extractor/llm": "gemma3_27b"
+    }
+  },
+  "+request_parameters.extra_body.seed=7331#extractor/llm=gemma3_27b": {
+    "no_error": 75,
+    "BadRequestError": 25,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "/netscratch/hennig/kiba-d/predictions/default/2026-01-05_16-49-33/2026-01-05_17-13-22_561248/predictions.jsonl",
+        "time_pdf_conversion": 0.009061509976163507,
+        "time_extraction": 619.0458579719998,
+        "commit_hash": "d4c5b0fd702eaba0d92c44e8d69850f0096b0183",
+        "branch": "update_llm_configs",
+        "is_dirty": true
+      }
+    },
+    "overrides": {
+      "paths.save_dir": "/netscratch/hennig/kiba-d",
+      "experiment/predict": "faktencheck_core_fields_schema",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "request_parameters.extra_body.seed": "7331",
+      "extractor/llm": "gemma3_27b"
+    }
+  },
+  "+request_parameters.extra_body.seed=42#extractor/llm=mistral_small_3_24b": {
+    "no_error": 80,
+    "BadRequestError": 15,
+    "JSONDecodeError": 5,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "/netscratch/hennig/kiba-d/predictions/default/2026-01-05_16-49-42/2026-01-05_16-49-43_624440/predictions.jsonl",
+        "time_pdf_conversion": 0.014937460015062243,
+        "time_extraction": 2119.1226118110353,
+        "commit_hash": "d4c5b0fd702eaba0d92c44e8d69850f0096b0183",
+        "branch": "update_llm_configs",
+        "is_dirty": true
+      }
+    },
+    "overrides": {
+      "paths.save_dir": "/netscratch/hennig/kiba-d",
+      "experiment/predict": "faktencheck_core_fields_schema",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "request_parameters.extra_body.seed": "42",
+      "extractor/llm": "mistral_small_3_24b"
+    }
+  },
+  "+request_parameters.extra_body.seed=1337#extractor/llm=mistral_small_3_24b": {
+    "no_error": 80,
+    "BadRequestError": 15,
+    "JSONDecodeError": 5,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "/netscratch/hennig/kiba-d/predictions/default/2026-01-05_16-49-42/2026-01-05_17-27-54_696555/predictions.jsonl",
+        "time_pdf_conversion": 0.014422473032027483,
+        "time_extraction": 2134.8741594320163,
+        "commit_hash": "d4c5b0fd702eaba0d92c44e8d69850f0096b0183",
+        "branch": "update_llm_configs",
+        "is_dirty": true
+      }
+    },
+    "overrides": {
+      "paths.save_dir": "/netscratch/hennig/kiba-d",
+      "experiment/predict": "faktencheck_core_fields_schema",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "request_parameters.extra_body.seed": "1337",
+      "extractor/llm": "mistral_small_3_24b"
+    }
+  },
+  "+request_parameters.extra_body.seed=7331#extractor/llm=mistral_small_3_24b": {
+    "no_error": 80,
+    "BadRequestError": 15,
+    "JSONDecodeError": 5,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "/netscratch/hennig/kiba-d/predictions/default/2026-01-05_16-49-42/2026-01-05_18-03-30_367524/predictions.jsonl",
+        "time_pdf_conversion": 0.010566516022663563,
+        "time_extraction": 2138.776848973008,
+        "commit_hash": "d4c5b0fd702eaba0d92c44e8d69850f0096b0183",
+        "branch": "update_llm_configs",
+        "is_dirty": true
+      }
+    },
+    "overrides": {
+      "paths.save_dir": "/netscratch/hennig/kiba-d",
+      "experiment/predict": "faktencheck_core_fields_schema",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "request_parameters.extra_body.seed": "7331",
+      "extractor/llm": "mistral_small_3_24b"
+    }
+  },
+  "+request_parameters.extra_body.seed=42#extractor/llm=ministral_3_14b": {
+    "MissingResponseContentError": 85,
+    "BadRequestError": 15,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "/netscratch/hennig/kiba-d/predictions/default/2026-01-05_16-54-54/2026-01-05_16-54-55_650959/predictions.jsonl",
+        "time_pdf_conversion": 0.009516825957689434,
+        "time_extraction": 1420.3799519419554,
+        "commit_hash": "d4c5b0fd702eaba0d92c44e8d69850f0096b0183",
+        "branch": "update_llm_configs",
+        "is_dirty": true
+      }
+    },
+    "overrides": {
+      "paths.save_dir": "/netscratch/hennig/kiba-d",
+      "experiment/predict": "faktencheck_core_fields_schema",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "request_parameters.extra_body.seed": "42",
+      "extractor/llm": "ministral_3_14b"
+    }
+  },
+  "+request_parameters.extra_body.seed=1337#extractor/llm=ministral_3_14b": {
+    "MissingResponseContentError": 85,
+    "BadRequestError": 15,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "/netscratch/hennig/kiba-d/predictions/default/2026-01-05_16-54-54/2026-01-05_17-20-12_492066/predictions.jsonl",
+        "time_pdf_conversion": 0.01140578102786094,
+        "time_extraction": 1422.112133017974,
+        "commit_hash": "d4c5b0fd702eaba0d92c44e8d69850f0096b0183",
+        "branch": "update_llm_configs",
+        "is_dirty": true
+      }
+    },
+    "overrides": {
+      "paths.save_dir": "/netscratch/hennig/kiba-d",
+      "experiment/predict": "faktencheck_core_fields_schema",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "request_parameters.extra_body.seed": "1337",
+      "extractor/llm": "ministral_3_14b"
+    }
+  },
+  "+request_parameters.extra_body.seed=7331#extractor/llm=ministral_3_14b": {
+    "MissingResponseContentError": 85,
+    "BadRequestError": 15,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "/netscratch/hennig/kiba-d/predictions/default/2026-01-05_16-54-54/2026-01-05_17-43-55_409535/predictions.jsonl",
+        "time_pdf_conversion": 0.014151461946312338,
+        "time_extraction": 1423.365550116985,
+        "commit_hash": "d4c5b0fd702eaba0d92c44e8d69850f0096b0183",
+        "branch": "update_llm_configs",
+        "is_dirty": true
+      }
+    },
+    "overrides": {
+      "paths.save_dir": "/netscratch/hennig/kiba-d",
+      "experiment/predict": "faktencheck_core_fields_schema",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "request_parameters.extra_body.seed": "7331",
+      "extractor/llm": "ministral_3_14b"
+    }
+  },
+  "+request_parameters.extra_body.seed=42#extractor/llm=qwen3_30b": {
+    "no_error": 73,
+    "BadRequestError": 26,
+    "MissingResponseContentError": 1,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "/netscratch/hennig/kiba-d/predictions/default/2026-01-06_08-05-12/2026-01-06_08-05-13_659180/predictions.jsonl",
+        "time_pdf_conversion": 0.011988901998847723,
+        "time_extraction": 2000.6560554490425,
+        "commit_hash": "d4c5b0fd702eaba0d92c44e8d69850f0096b0183",
+        "branch": "update_llm_configs",
+        "is_dirty": true
+      }
+    },
+    "overrides": {
+      "paths.save_dir": "/netscratch/hennig/kiba-d",
+      "experiment/predict": "faktencheck_core_fields_schema",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "request_parameters.extra_body.seed": "42",
+      "extractor/llm": "qwen3_30b"
+    }
+  },
+  "+request_parameters.extra_body.seed=1337#extractor/llm=qwen3_30b": {
+    "no_error": 73,
+    "BadRequestError": 26,
+    "MissingResponseContentError": 1,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "/netscratch/hennig/kiba-d/predictions/default/2026-01-06_08-05-12/2026-01-06_08-40-42_294971/predictions.jsonl",
+        "time_pdf_conversion": 0.008951166993938386,
+        "time_extraction": 1998.730593902059,
+        "commit_hash": "d4c5b0fd702eaba0d92c44e8d69850f0096b0183",
+        "branch": "update_llm_configs",
+        "is_dirty": true
+      }
+    },
+    "overrides": {
+      "paths.save_dir": "/netscratch/hennig/kiba-d",
+      "experiment/predict": "faktencheck_core_fields_schema",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "request_parameters.extra_body.seed": "1337",
+      "extractor/llm": "qwen3_30b"
+    }
+  },
+  "+request_parameters.extra_body.seed=7331#extractor/llm=qwen3_30b": {
+    "no_error": 73,
+    "BadRequestError": 26,
+    "MissingResponseContentError": 1,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "/netscratch/hennig/kiba-d/predictions/default/2026-01-06_08-05-12/2026-01-06_09-14-01_582824/predictions.jsonl",
+        "time_pdf_conversion": 0.0137410550378263,
+        "time_extraction": 2005.4311601730296,
+        "commit_hash": "d4c5b0fd702eaba0d92c44e8d69850f0096b0183",
+        "branch": "update_llm_configs",
+        "is_dirty": true
+      }
+    },
+    "overrides": {
+      "paths.save_dir": "/netscratch/hennig/kiba-d",
+      "experiment/predict": "faktencheck_core_fields_schema",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "request_parameters.extra_body.seed": "7331",
+      "extractor/llm": "qwen3_30b"
+    }
+  }
+}
