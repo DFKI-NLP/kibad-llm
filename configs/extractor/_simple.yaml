@@ -1,0 +1,12 @@
+# simple extraction workflow based on a single LLM call using a prompt template
+
+defaults:
+  - llm: gpt_oss_20b
+  - request_parameters: default
+
+_target_: kibad_llm.extractors.extract_from_text_lenient
+# mark as partial since it is a function (and not a class to be instantiated)
+_partial_: True
+return_reasoning: False
+return_messages: False
+return_messages_formatted: False

@@ -5,11 +5,6 @@ from omegaconf import OmegaConf
 import pytest
 
 from kibad_llm.hydra_callbacks import SaveJobReturnValueCallback
-from kibad_llm.hydra_callbacks.save_job_return_value import (
-    dict_to_overrides,
-    overrides_to_identifiers,
-    remove_common_overrides,
-)
 
 
 @pytest.fixture
@@ -516,80 +511,3 @@ class TestSaveJobReturnValueCallback:
             )
         else:
             pytest.fail(f"Unsupported extension: {extension}")
-
-
-def test_dict_to_overrides():
-    assert dict_to_overrides({"a": 1, "b": 2}) == ["a=1", "b=2"]
-
-
-def test_dict_to_overrides_remove_na():
-    assert dict_to_overrides({"a": 1, "b": None}, remove_na=True) == ["a=1"]
-    assert dict_to_overrides({"+c": 3, "d": float("nan")}, remove_na=True) == ["+c=3"]
-
-
-def test_remove_common_overrides():
-    overrides = [
-        ["a=1", "b=2", "+c=3"],
-        ["a=1", "b=2", "+c=4"],
-        ["a=1", "b=3", "+c=3"],
-    ]
-    result = remove_common_overrides(overrides)
-    # 'a=1' is common and should be removed
-    assert result == [["b=2", "+c=3"], ["b=2", "+c=4"], ["b=3", "+c=3"]]
-
-
-def test_remove_common_overrides_all_common():
-    # all overrides have the same keys and values
-    overrides = [
-        ["a=1", "b=2"],
-        ["a=1", "b=2"],
-        ["a=1", "b=2"],
-    ]
-    result = remove_common_overrides(overrides)
-    # all keys are common, so identifiers should be empty strings
-    assert result == [[], [], []]
-
-
-def test_remove_common_overrides_mixed():
-    # not all overrides have the same keys
-    overrides = [
-        ["pdf_directory=tests/fixtures/pdfs", "+request_parameters.extra_body.seed=42"],
-        ["pdf_directory=tests/fixtures/pdfs", "+request_parameters.extra_body.seed=333"],
-        [
-            "pdf_directory=/ds/text/kiba-d/dev-set-100",
-            "paths.save_dir=/netscratch/hennig/kiba-d",
-            "experiment/predict=faktencheck_two_schemata",
-            "extractor/llm=gpt_oss_20b-original",
-        ],
-        [
-            "pdf_directory=/ds/text/kiba-d/dev-set-100",
-            "paths.save_dir=/netscratch/hennig/kiba-d",
-            "experiment/predict=faktencheck_two_schemata",
-            "extractor/llm=gpt_oss_20b",
-        ],
-    ]
-    # should not remove anything
-    result = remove_common_overrides(overrides)
-    assert result == overrides
-
-
-def test_overrides_to_identifiers_single():
-    # all overrides have the same keys and values
-    overrides = [
-        ["a=1", "b=2"],
-    ]
-    result = overrides_to_identifiers(overrides)
-    # all keys are common, so identifiers should be empty strings
-    assert result == ["a=1-b=2"]
-
-
-def test_overrides_to_identifiers_all_common():
-    # all overrides have the same keys and values
-    overrides = [
-        ["a=1", "b=2"],
-        ["a=1", "b=2"],
-        ["a=1", "b=2"],
-    ]
-    result = overrides_to_identifiers(overrides)
-    # all keys are common, so identifiers should be empty strings
-    assert result is None

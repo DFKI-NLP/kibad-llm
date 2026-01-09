@@ -34,14 +34,3 @@ defaults:
 
 # name of the run, used in logging and as a subdir of log_dir
 name: "default"
-
-# List of log directories containing prediction runs to evaluate.
-# If set, replaces dataset.predictions.log in multi-run mode.
-predictions_multirun_logs: null
-# Adjust hydra multi-run settings to run over all subdirectories of the specified
-# log directories. Note that dataset.predictions.log takes precedence if both are set.
-hydra:
-  mode: MULTIRUN
-  sweeper:
-    params:
-      dataset.predictions.log: "${list_subdirectories:${predictions_multirun_logs}}"

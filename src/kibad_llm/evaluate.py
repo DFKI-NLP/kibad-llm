@@ -9,14 +9,9 @@ from hydra.utils import instantiate
 from omegaconf import DictConfig, OmegaConf
 
 from kibad_llm.config import PROJ_ROOT
-from kibad_llm.dataset.prediction import DictWithMetadata
 from kibad_llm.metric import Metric
-from kibad_llm.utils.path import list_subdirectories_as_string
 
 logger = logging.getLogger(__name__)
-
-# required when using predictions_multirun_logs, see configs/evaluate.yaml
-OmegaConf.register_new_resolver("list_subdirectories", list_subdirectories_as_string)
 
 
 def evaluate(cfg: DictConfig) -> dict[str, Any]:
@@ -43,14 +38,6 @@ def evaluate(cfg: DictConfig) -> dict[str, Any]:
     metric_dict = metric.compute()
 
     metric.show_result(metric_dict)
-
-    if isinstance(dataset, DictWithMetadata):
-        if "prediction" in metric_dict:
-            raise ValueError(
-                "Cannot attach metadata to 'prediction' key in metric_dict because it already "
-                "exists as output from the metric computation. Please adjust the metric computation."
-            )
-        metric_dict["prediction"] = dataset.metadata
 
     return metric_dict
 

@@ -1,26 +1,22 @@
 {
   "structured": {
     "habitat": [
-      "Agrar- und Offenland",
       "Boden"
     ],
     "natural_region": [
       "Norddeutsches Tiefland",
       "Alpenvorland"
     ],
-    "climate": [
-      "Atlantisches Klima",
-      "subkontinental"
-    ],
+    "climate": [],
     "landuse": [
-      "Energieproduktion",
       "Landwirtschaft",
+      "Energieproduktion",
       "Bau"
     ]
   },
   "error_list": [
     null,
-    null,
+    "JSONDecodeError: Expecting value: line 1 column 1 (char 0)",
     null
   ]
 }

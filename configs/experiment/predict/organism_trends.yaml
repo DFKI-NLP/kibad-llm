@@ -7,7 +7,7 @@
 # python -m kibad_llm.predict experiment=organism_trends
 
 defaults:
-  - override /extractor: simple
+  - override /extractor: simple_with_schema
 
 extractor:
   schema:

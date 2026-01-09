@@ -2,16 +2,7 @@
 #
 # This requires a local deployment of the GPT-OSS-20B model that is compatible with the OpenAI API.
 # See models/README.md for instructions.
-#
-# To use as an argument for `predict`, use `extractor/llm=gpt_oss_20b`.
-# but this is also the default, see e.g. extractor/simple.yaml, extractor/union.yaml, extractor/repeat.yaml
-# Run VLLM with `./run_with_llm.sh -v "openai/gpt-oss-20b --max-model-len 131072"`
-# See https://huggingface.co/openai/gpt-oss-20b for VLLM options
 
-
-# OpenAILikeVllm creates a llama_index.llms.openai_like.OpenAILike by just forwarding all provided parameters. Thus, see
-# https://developers.llamaindex.ai/python/framework-api-reference/llms/openai_like/#llama_index.llms.openai_like.OpenAILike
-# for available parameters.
 _target_: kibad_llm.llms.OpenAILikeVllm
 
 # get the API base URL from the environment variable LLM_API_BASE, defaulting to http://127.0.0.1:5001/v1
@@ -20,22 +11,11 @@ api_key: "dummy"
 model: "openai/gpt-oss-20b"
 # try to be as deterministic as possible
 temperature: 0.0
+top_p: 1.0
 # presence_penalty and frequency_penalty are also standard if we need them
 
-# Supports up to 128K tokens (max size for https://platform.openai.com/docs/models/gpt-oss-20b).
-# Use lower value to save memory and improve performance
-context_window: 131072
-
-timeout: 360 # default is 60
-max_retries: 3 # the default is 3
-
+# the default is 16, so we set it to 4096 to allow a reasonable context window
+max_tokens: 4096
 # enable to correctly handle (i.e. remove) reasoning traces in the output
 is_chat_model: true
-
-# Specify additional parameters to the request body.
-additional_kwargs:
-  # set maximum number of generated tokens
-  # the default is None, so we set it to 8192, to allow enough space for reasoning and output tokens
-  # see https://github.com/DFKI-NLP/kibad-llm/issues/198#issuecomment-3666155251
-  # 131,072 is max size for https://platform.openai.com/docs/models/gpt-oss-20b
-  max_completion_tokens: 8192
+is_function_calling_model: false
