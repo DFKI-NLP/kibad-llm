@@ -1,6 +1,6 @@
 ## Please describe any files/folders you add to results here!
 
-1. Create a folder for your experiment, naming it '[issue_or_pr_id]_[your_descriptive_name]'
+1. Create a folder for your experiment, naming it `[issue_or_pr_id]_[your_descriptive_name]`
 2. Copy logs/ for your runs from cluster to this folder (`scp `)
    1. Strongly preferred is to copy prediction and evaluation logs into separate folders! 
 3. Copy predictions/ for your runs from cluster to this folder
