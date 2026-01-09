@@ -11,7 +11,7 @@
 
 ### Experiments
 
-| Folder name                       | Date       | Issue Link                                        | Notes                                                              |
-|:----------------------------------|:-----------|:--------------------------------------------------|:-------------------------------------------------------------------|
-| 159_core_schema_baseline_gpt5     | 2026-01-09 | https://github.com/DFKI-NLP/kibad-llm/issues/159  | Only the GPT 5 run, which was a single run setup                   | 
-| 159_core_schema_baseline_multirun | 2026-01-09 | https://github.com/DFKI-NLP/kibad-llm/issues/159  | gpt_oss_20b and qwen3_30b with 3 runs per model setup |
+| Folder name                                                      | Date       | Issue Link                                        | Notes                                                              |
+|:-----------------------------------------------------------------|:-----------|:--------------------------------------------------|:-------------------------------------------------------------------|
+| [159_core_schema_baseline_gpt5](./159_core_schema_baseline_gpt5) | 2026-01-09 | https://github.com/DFKI-NLP/kibad-llm/issues/159  | Only the GPT 5 run, which was a single run setup                   | 
+| [159_core_schema_baseline_multirun](./159_core_schema_baseline_multirun)                          | 2026-01-09 | https://github.com/DFKI-NLP/kibad-llm/issues/159  | gpt_oss_20b and qwen3_30b with 3 runs per model setup |
