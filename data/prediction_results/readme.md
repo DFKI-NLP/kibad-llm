@@ -6,7 +6,8 @@
 3. Copy predictions/ for your runs from cluster to this folder
 4. See `159_core_schema_baseline_gpt5` for an example folder structure for a single run
 5. See `159_core_schema_baseline_multirun` for an example folder structure for a multi-run
-5. If you follow the above structure, you can plot the evaluation results using [this notebook](TODO)
+5. If you follow the above structure, you can plot the evaluation results using the notebooks plot_evaluation.ipynb
+   and plot_multirun_evaluation.ipynb
 
 ### Experiments
 
