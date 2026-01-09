@@ -1,4 +1,4 @@
-# Example configuration for running GPT-OSS-20B fully in-process via vLLM (Python API)
+# Example configuration for running Mistral-Small-3.2-24B-Instruct-2506 fully in-process via vLLM (Python API)
 #
 # Set the VLLM model download directory in your .env before running this config, e.g.
 # VLLM_DOWNLOAD_DIR=/path/to/download/dir
@@ -22,13 +22,18 @@
 _target_: kibad_llm.llms.VllmInProcess
 
 # HuggingFace model id (or local path)
-model: "openai/gpt-oss-20b"
+model: "mistralai/Mistral-Small-3.2-24B-Instruct-2506"
 
 # Initialization parameters for vLLM LLM engine.
 # See https://docs.vllm.ai/en/v0.12.0/api/vllm/entrypoints/llm/ for details.
 vllm_kwargs:
   tensor_parallel_size: 1  # shard across N GPUs
+  # Supports up to 128K tokens (max size for https://docs.mistral.ai/models/mistral-small-3-2-25-06).
+  # Use lower value to save memory and improve performance
   max_model_len: 131072
+  tokenizer_mode: "mistral"
+  config_format: "mistral"
+  load_format: "mistral"
   # gpu_memory_utilization: 0.9 # fraction of GPU memory reserved (impacts KV cache size)
   # dtype: "auto"
   download_dir: ${oc.env:VLLM_DOWNLOAD_DIR}
