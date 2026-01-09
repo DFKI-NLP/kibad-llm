@@ -1,5 +1,5 @@
 {
-  "response_content": "{\"habitat\":[\"Boden\"],\"natural_region\":[\"Norddeutsches Tiefland\",\"Alpenvorland\"],\"climate\":[\"maritim\",\"subkontinental\"],\"landuse\":[\"Landwirtschaft\",\"Bau\",\"Energieproduktion\"]}",
+  "response_content": "{\"habitat\":[\"Boden\"],\"natural_region\":[\"Norddeutsches Tiefland\",\"Alpenvorland\"],\"climate\":[],\"landuse\":[\"Landwirtschaft\",\"Energieproduktion\"]}",
   "structured": {
     "habitat": [
       "Boden"
@@ -8,16 +8,13 @@
       "Norddeutsches Tiefland",
       "Alpenvorland"
     ],
-    "climate": [
-      "maritim",
-      "subkontinental"
-    ],
+    "climate": [],
     "landuse": [
       "Landwirtschaft",
-      "Bau",
       "Energieproduktion"
     ]
   },
+  "structured_with_metadata": null,
   "error": null,
   "reasoning_content": null,
   "messages": null,

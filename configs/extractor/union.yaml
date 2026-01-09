@@ -1,6 +1,12 @@
+# extraction workflow that repeats the extraction for each item in the overrides list
+# and aggregates the results per key by union
+
 defaults:
-  - _union
-  - _template_with_schema
+  - llm: gpt_oss_20b
+  - prompt_template: default
+  - request_parameters: default
+
+_target_: kibad_llm.extractors.UnionExtractor
 
 # Overrides need to be dictionaries that will get instantiated and then passed as kwargs
 # to the respective base extractor. Thus, no hydra-like merging for individual kwargs is
@@ -18,3 +24,17 @@ overrides:
       # create the schema from the pydantic model EcosystemStudyFeaturesCompoundsSimple
       _target_: kibad_llm.schema.types.EcosystemStudyFeaturesCompoundsSimple.model_json_schema
       by_alias: false
+
+# for these fields, return a list of results from each extraction
+return_as_list:
+  # - structured
+  - error
+  # - response_content
+  # - reasoning_content
+  # - messages
+  # - messages_formatted
+
+# general return options (see simple extractor for details)
+return_reasoning: False
+return_messages: False
+return_messages_formatted: False
