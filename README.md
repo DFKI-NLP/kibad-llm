@@ -199,10 +199,13 @@ uv run -m kibad_llm.evaluate \
   +hydra.callbacks.save_job_return.multirun_markdown_group_by=overrides.pdf_directory \
   --multirun
 ```
+
 This also works for multiple columns at once:
+
 ```bash
 +hydra.callbacks.save_job_return.multirun_markdown_group_by=[column1,column2]
 ```
+
 See (https://github.com/DFKI-NLP/kibad-llm/pull/241) for details.
 
 This will create `job_return_value.aggregated.json` and `job_return_value.aggregated.md` alongside the not aggregated outputs, summarizing the metrics across all runs in the multirun.
@@ -220,7 +223,9 @@ uv run -m kibad_llm.evaluate \
   --multirun
 
 ```
+
 For Prediction with Seeds on Cluster we can use this command which uses the `run_with_llm.sh` wrapper to launch a prediction job on specific hardware partitions (-pa), performing a multirun over three different seeds:
+
 ```bash
 ./run_with_llm.sh \
   -v "openai/gpt-oss-20b" \
