@@ -1,0 +1,44 @@
+{
+  "+request_parameters.extra_body.seed=42": {
+    "output_file": "/netscratch/hennig/kiba-d/predictions/default/2026-01-05_15-43-25/2026-01-05_15-43-28_289602/predictions.jsonl",
+    "time_pdf_conversion": 0.016583675984293222,
+    "time_extraction": 1555.648521464027,
+    "commit_hash": "d9c85c21b26dc578f0a358c0a31422a4f330e56b",
+    "branch": "main",
+    "is_dirty": false,
+    "overrides": {
+      "paths.save_dir": "/netscratch/hennig/kiba-d",
+      "experiment/predict": "faktencheck_core_fields_schema",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "request_parameters.extra_body.seed": "42"
+    }
+  },
+  "+request_parameters.extra_body.seed=1337": {
+    "output_file": "/netscratch/hennig/kiba-d/predictions/default/2026-01-05_15-43-25/2026-01-05_16-11-36_107614/predictions.jsonl",
+    "time_pdf_conversion": 0.010035960003733635,
+    "time_extraction": 1492.2828306229785,
+    "commit_hash": "d9c85c21b26dc578f0a358c0a31422a4f330e56b",
+    "branch": "main",
+    "is_dirty": true,
+    "overrides": {
+      "paths.save_dir": "/netscratch/hennig/kiba-d",
+      "experiment/predict": "faktencheck_core_fields_schema",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "request_parameters.extra_body.seed": "1337"
+    }
+  },
+  "+request_parameters.extra_body.seed=7331": {
+    "output_file": "/netscratch/hennig/kiba-d/predictions/default/2026-01-05_15-43-25/2026-01-05_16-36-28_986760/predictions.jsonl",
+    "time_pdf_conversion": 0.0106894540367648,
+    "time_extraction": 1517.2318289199611,
+    "commit_hash": "d9c85c21b26dc578f0a358c0a31422a4f330e56b",
+    "branch": "main",
+    "is_dirty": true,
+    "overrides": {
+      "paths.save_dir": "/netscratch/hennig/kiba-d",
+      "experiment/predict": "faktencheck_core_fields_schema",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "request_parameters.extra_body.seed": "7331"
+    }
+  }
+}
