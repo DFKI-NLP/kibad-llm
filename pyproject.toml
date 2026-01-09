@@ -119,7 +119,7 @@ end_of_line = "lf"
 validate = true
 
 # (optional) nbQA-specific knobs if you need them later:
-[tool.nbqa.config]
+# [tool.nbqa.config]
 # black = "pyproject.toml"
 # isort = "pyproject.toml"
 # flake8 = "pyproject.toml"
