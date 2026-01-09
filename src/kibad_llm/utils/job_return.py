@@ -6,7 +6,7 @@ from kibad_llm.utils.dictionary import flatten_dict_s
 
 def load_subdirs(
     parent_dir: Path,
-    log_filename="job_return_value.json",
+    filename="job_return_value.json",
     strip_id_keys: bool = True,
     flatten: bool = False,
     exclude_keys: list[str] | None = None,
@@ -14,8 +14,8 @@ def load_subdirs(
     """Load job return value json files from subdirectories of the given parent directory.
 
     Args:
-        parent_dir: Path to the parent directory containing subdirectories with log files.
-        log_filename: Name of the log file to load from each subdirectory.
+        parent_dir: Path to the parent directory containing subdirectories with return value files.
+        filename: Name of the file to load from each subdirectory.
         strip_id_keys: Whether to strip the top-level identifier keys from loaded multi-run results.
         flatten: Whether to flatten nested dictionaries in the loaded data.
         exclude_keys: List of keys to exclude from the loaded data. Applied after flattening if enabled.
@@ -28,7 +28,7 @@ def load_subdirs(
     run_dirs = [p for p in Path(parent_dir).iterdir() if p.is_dir()]
 
     # assume that each subdir contains a 'job_return_value.json' from a multi-run evaluation
-    data = [json.loads((subdir / log_filename).read_text()) for subdir in run_dirs]
+    data = [json.loads((subdir / filename).read_text()) for subdir in run_dirs]
 
     # keep the keys / identifiers? If loading multi-run results, the data may have the form
     # [{'id1': {...}, {'id2': {...}}, ...], i.e. each individual dict is wrapped in an id key.
