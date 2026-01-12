@@ -1,3 +1,4 @@
+from collections.abc import Iterable, Iterator
 from typing import Any
 
 from llama_index.core.base.llms.types import MessageRole
@@ -6,7 +7,40 @@ from kibad_llm.llms.base import SimpleChatMessage
 
 from .base import extract_from_text_lenient
 from .union import UnionExtractor, _aggregate_structured_outputs_union
+from .chunking_helpers import tokenizers as tokenizer_lib
+from .chunking_helpers import core
 
+
+def _document_chunk_iterator(
+    document: str, 
+    max_char_buffer: int,
+    tokenizer: tokenizer_lib.Tokenizer,
+    restrict_repeats: bool = True,
+) -> Iterator[core.TextChunk]:
+    """Iterates over documents to yield text chunks along with the document ID.
+
+    Args:
+      documents: A sequence of Document objects.
+      max_char_buffer: The maximum character buffer size for the ChunkIterator.
+      restrict_repeats: Whether to restrict the same document id from being
+        visited more than once.
+      tokenizer: Optional tokenizer instance.
+
+    Yields:
+      TextChunk containing document ID for a corresponding document.
+
+    Raises:
+      InvalidDocumentError: If restrict_repeats is True and the same document ID
+        is visited more than once. Valid documents prior to the error will be
+        returned.
+    """
+    tokenized_text = tokenizer.tokenize(document)
+    yield from core.ChunkIterator(
+        text=tokenized_text,
+        max_char_buffer=max_char_buffer,
+        document=document,
+        tokenizer_impl=tokenizer or tokenizer_lib.RegexTokenizer(),
+    )
 
 class ChunkingExtractor(UnionExtractor):
     """Extractor that chunks extraction and aggregates results per key.

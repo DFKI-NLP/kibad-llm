@@ -29,8 +29,6 @@ import unicodedata
 
 import regex
 
-from langextract.core import debug_utils
-from langextract.core import exceptions
 
 __all__ = [
     "BaseTokenizerError",
@@ -50,7 +48,7 @@ __all__ = [
 ]
 
 
-class BaseTokenizerError(exceptions.LangExtractError):
+class BaseTokenizerError:
   """Base class for all tokenizer-related errors."""
 
 
@@ -184,7 +182,7 @@ class RegexTokenizer(Tokenizer):
   skips involved Unicode handling.
   """
 
-  @debug_utils.debug_log_calls
+  # @debug_utils.debug_log_calls
   def tokenize(self, text: str) -> TokenizedText:
     """Splits text into tokens (words, digits, or punctuation).
 
@@ -332,7 +330,7 @@ class UnicodeTokenizer(Tokenizer):
   Note: Grapheme clustering makes this tokenizer slower than RegexTokenizer.
   """
 
-  @debug_utils.debug_log_calls
+  # @debug_utils.debug_log_calls
   def tokenize(self, text: str) -> TokenizedText:
     """Splits text into tokens using Unicode properties.
 
