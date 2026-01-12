@@ -1,0 +1,47 @@
+{
+  "+request_parameters.extra_body.seed=42": {
+    "output_file": "/netscratch/hennig/kiba-d/predictions/default/2026-01-05_16-49-42/2026-01-05_16-49-43_624440/predictions.jsonl",
+    "time_pdf_conversion": 0.014937460015062243,
+    "time_extraction": 2119.1226118110353,
+    "commit_hash": "d4c5b0fd702eaba0d92c44e8d69850f0096b0183",
+    "branch": "update_llm_configs",
+    "is_dirty": true,
+    "overrides": {
+      "paths.save_dir": "/netscratch/hennig/kiba-d",
+      "experiment/predict": "faktencheck_core_fields_schema",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "request_parameters.extra_body.seed": "42",
+      "extractor/llm": "mistral_small_3_24b"
+    }
+  },
+  "+request_parameters.extra_body.seed=1337": {
+    "output_file": "/netscratch/hennig/kiba-d/predictions/default/2026-01-05_16-49-42/2026-01-05_17-27-54_696555/predictions.jsonl",
+    "time_pdf_conversion": 0.014422473032027483,
+    "time_extraction": 2134.8741594320163,
+    "commit_hash": "d4c5b0fd702eaba0d92c44e8d69850f0096b0183",
+    "branch": "update_llm_configs",
+    "is_dirty": true,
+    "overrides": {
+      "paths.save_dir": "/netscratch/hennig/kiba-d",
+      "experiment/predict": "faktencheck_core_fields_schema",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "request_parameters.extra_body.seed": "1337",
+      "extractor/llm": "mistral_small_3_24b"
+    }
+  },
+  "+request_parameters.extra_body.seed=7331": {
+    "output_file": "/netscratch/hennig/kiba-d/predictions/default/2026-01-05_16-49-42/2026-01-05_18-03-30_367524/predictions.jsonl",
+    "time_pdf_conversion": 0.010566516022663563,
+    "time_extraction": 2138.776848973008,
+    "commit_hash": "d4c5b0fd702eaba0d92c44e8d69850f0096b0183",
+    "branch": "update_llm_configs",
+    "is_dirty": true,
+    "overrides": {
+      "paths.save_dir": "/netscratch/hennig/kiba-d",
+      "experiment/predict": "faktencheck_core_fields_schema",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "request_parameters.extra_body.seed": "7331",
+      "extractor/llm": "mistral_small_3_24b"
+    }
+  }
+}

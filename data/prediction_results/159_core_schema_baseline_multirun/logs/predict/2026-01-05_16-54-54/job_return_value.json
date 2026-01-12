@@ -1,0 +1,47 @@
+{
+  "+request_parameters.extra_body.seed=42": {
+    "output_file": "/netscratch/hennig/kiba-d/predictions/default/2026-01-05_16-54-54/2026-01-05_16-54-55_650959/predictions.jsonl",
+    "time_pdf_conversion": 0.009516825957689434,
+    "time_extraction": 1420.3799519419554,
+    "commit_hash": "d4c5b0fd702eaba0d92c44e8d69850f0096b0183",
+    "branch": "update_llm_configs",
+    "is_dirty": true,
+    "overrides": {
+      "paths.save_dir": "/netscratch/hennig/kiba-d",
+      "experiment/predict": "faktencheck_core_fields_schema",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "request_parameters.extra_body.seed": "42",
+      "extractor/llm": "ministral_3_14b"
+    }
+  },
+  "+request_parameters.extra_body.seed=1337": {
+    "output_file": "/netscratch/hennig/kiba-d/predictions/default/2026-01-05_16-54-54/2026-01-05_17-20-12_492066/predictions.jsonl",
+    "time_pdf_conversion": 0.01140578102786094,
+    "time_extraction": 1422.112133017974,
+    "commit_hash": "d4c5b0fd702eaba0d92c44e8d69850f0096b0183",
+    "branch": "update_llm_configs",
+    "is_dirty": true,
+    "overrides": {
+      "paths.save_dir": "/netscratch/hennig/kiba-d",
+      "experiment/predict": "faktencheck_core_fields_schema",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "request_parameters.extra_body.seed": "1337",
+      "extractor/llm": "ministral_3_14b"
+    }
+  },
+  "+request_parameters.extra_body.seed=7331": {
+    "output_file": "/netscratch/hennig/kiba-d/predictions/default/2026-01-05_16-54-54/2026-01-05_17-43-55_409535/predictions.jsonl",
+    "time_pdf_conversion": 0.014151461946312338,
+    "time_extraction": 1423.365550116985,
+    "commit_hash": "d4c5b0fd702eaba0d92c44e8d69850f0096b0183",
+    "branch": "update_llm_configs",
+    "is_dirty": true,
+    "overrides": {
+      "paths.save_dir": "/netscratch/hennig/kiba-d",
+      "experiment/predict": "faktencheck_core_fields_schema",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "request_parameters.extra_body.seed": "7331",
+      "extractor/llm": "ministral_3_14b"
+    }
+  }
+}

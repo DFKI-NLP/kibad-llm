@@ -1,0 +1,68 @@
+{
+  "": {
+    "biodiversity_level": {
+      "precision": 0.34210526315789475,
+      "recall": 0.582089552238806,
+      "f1": 0.43093922651933697,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.1659919028340081,
+      "recall": 0.7735849056603774,
+      "f1": 0.2733333333333333,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.6545454545454545,
+      "recall": 0.782608695652174,
+      "f1": 0.7128712871287128,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.19822485207100593,
+      "recall": 0.29004329004329005,
+      "f1": 0.23550087873462214,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.22950819672131148,
+      "recall": 0.3553299492385787,
+      "f1": 0.27888446215139445,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.3567567567567568,
+      "recall": 0.6226415094339622,
+      "f1": 0.4536082474226804,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.3245220710144053,
+      "recall": 0.5677163170445314,
+      "f1": 0.39752290588168004,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.28877400295420974,
+      "recall": 0.4936868686868687,
+      "f1": 0.364398881640261,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "/netscratch/hennig/kiba-d/predictions/default/2026-01-08_10-35-47/2026-01-08_10-35-47_225434/predictions.jsonl",
+        "time_pdf_conversion": 0.005473122000694275,
+        "time_extraction": 6349.558457304956,
+        "commit_hash": "cff4416f67a1688f8d785de44f2264e8612bdaf9",
+        "branch": "main",
+        "is_dirty": false
+      }
+    },
+    "overrides": {
+      "paths.save_dir": "/netscratch/hennig/kiba-d",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gpt_5",
+      "experiment/predict": "faktencheck_core_fields_schema"
+    }
+  }
+}

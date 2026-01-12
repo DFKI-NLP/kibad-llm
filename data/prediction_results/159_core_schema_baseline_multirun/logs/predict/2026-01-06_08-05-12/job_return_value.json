@@ -1,0 +1,47 @@
+{
+  "+request_parameters.extra_body.seed=42": {
+    "output_file": "/netscratch/hennig/kiba-d/predictions/default/2026-01-06_08-05-12/2026-01-06_08-05-13_659180/predictions.jsonl",
+    "time_pdf_conversion": 0.011988901998847723,
+    "time_extraction": 2000.6560554490425,
+    "commit_hash": "d4c5b0fd702eaba0d92c44e8d69850f0096b0183",
+    "branch": "update_llm_configs",
+    "is_dirty": true,
+    "overrides": {
+      "paths.save_dir": "/netscratch/hennig/kiba-d",
+      "experiment/predict": "faktencheck_core_fields_schema",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "request_parameters.extra_body.seed": "42",
+      "extractor/llm": "qwen3_30b"
+    }
+  },
+  "+request_parameters.extra_body.seed=1337": {
+    "output_file": "/netscratch/hennig/kiba-d/predictions/default/2026-01-06_08-05-12/2026-01-06_08-40-42_294971/predictions.jsonl",
+    "time_pdf_conversion": 0.008951166993938386,
+    "time_extraction": 1998.730593902059,
+    "commit_hash": "d4c5b0fd702eaba0d92c44e8d69850f0096b0183",
+    "branch": "update_llm_configs",
+    "is_dirty": true,
+    "overrides": {
+      "paths.save_dir": "/netscratch/hennig/kiba-d",
+      "experiment/predict": "faktencheck_core_fields_schema",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "request_parameters.extra_body.seed": "1337",
+      "extractor/llm": "qwen3_30b"
+    }
+  },
+  "+request_parameters.extra_body.seed=7331": {
+    "output_file": "/netscratch/hennig/kiba-d/predictions/default/2026-01-06_08-05-12/2026-01-06_09-14-01_582824/predictions.jsonl",
+    "time_pdf_conversion": 0.0137410550378263,
+    "time_extraction": 2005.4311601730296,
+    "commit_hash": "d4c5b0fd702eaba0d92c44e8d69850f0096b0183",
+    "branch": "update_llm_configs",
+    "is_dirty": true,
+    "overrides": {
+      "paths.save_dir": "/netscratch/hennig/kiba-d",
+      "experiment/predict": "faktencheck_core_fields_schema",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "request_parameters.extra_body.seed": "7331",
+      "extractor/llm": "qwen3_30b"
+    }
+  }
+}
