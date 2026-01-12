@@ -23,12 +23,10 @@ import pydantic
 from typing_extensions import override
 import yaml
 
-from langextract.core import data
-from langextract.core import exceptions
 from langextract.core import format_handler
 
 
-class PromptBuilderError(exceptions.LangExtractError):
+class PromptBuilderError:
   """Failure to build prompt."""
 
 

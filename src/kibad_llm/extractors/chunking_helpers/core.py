@@ -24,15 +24,25 @@ from collections.abc import Iterable, Iterator, Sequence
 import dataclasses
 import re
 
-from absl import logging
-import more_itertools
+import logging
+# import more_itertools
 
-from langextract.core import data
-from langextract.core import exceptions
-from langextract.core import tokenizer as tokenizer_lib
+from . import tokenizers as tokenizer_lib
 
 
-class TokenUtilError(exceptions.LangExtractError):
+@dataclasses.dataclass
+class CharInterval:
+  """Class for representing a character interval.
+
+  Attributes:
+    start_pos: The starting position of the interval (inclusive).
+    end_pos: The ending position of the interval (exclusive).
+  """
+
+  start_pos: int | None = None
+  end_pos: int | None = None
+
+class TokenUtilError:
   """Error raised when token_util returns unexpected values."""
 
 
@@ -46,14 +56,14 @@ class TextChunk:
   """
 
   token_interval: tokenizer_lib.TokenInterval
-  document: data.Document | None = None
+  document: str | None = None
   _chunk_text: str | None = dataclasses.field(
       default=None, init=False, repr=False
   )
   _sanitized_chunk_text: str | None = dataclasses.field(
       default=None, init=False, repr=False
   )
-  _char_interval: data.CharInterval | None = dataclasses.field(
+  _char_interval: CharInterval | None = dataclasses.field(
       default=None, init=False, repr=False
   )
 
@@ -122,7 +132,7 @@ class TextChunk:
     return None
 
   @property
-  def char_interval(self) -> data.CharInterval:
+  def char_interval(self) -> CharInterval:
     """Gets the character interval corresponding to the token interval.
 
     Returns:
@@ -216,7 +226,7 @@ def get_token_interval_text(
 def get_char_interval(
     tokenized_text: tokenizer_lib.TokenizedText,
     token_interval: tokenizer_lib.TokenInterval,
-) -> data.CharInterval:
+) -> CharInterval:
   """Returns the char interval corresponding to the token interval.
 
   Args:
@@ -237,7 +247,7 @@ def get_char_interval(
   start_token = tokenized_text.tokens[token_interval.start_index]
   # Penultimate token prior to interval.end_index
   final_token = tokenized_text.tokens[token_interval.end_index - 1]
-  return data.CharInterval(
+  return CharInterval(
       start_pos=start_token.char_interval.start_pos,
       end_pos=final_token.char_interval.end_pos,
   )
@@ -262,21 +272,21 @@ def _sanitize(text: str) -> str:
   return sanitized_text
 
 
-def make_batches_of_textchunk(
-    chunk_iter: Iterator[TextChunk],
-    batch_length: int,
-) -> Iterable[Sequence[TextChunk]]:
-  """Processes chunks into batches of TextChunk for inference, using itertools.batched.
-
-  Args:
-    chunk_iter: Iterator of TextChunks.
-    batch_length: Number of chunks to include in each batch.
-
-  Yields:
-    Batches of TextChunks.
-  """
-  for batch in more_itertools.batched(chunk_iter, batch_length):
-    yield list(batch)
+# def make_batches_of_textchunk(
+#     chunk_iter: Iterator[TextChunk],
+#     batch_length: int,
+# ) -> Iterable[Sequence[TextChunk]]:
+#   """Processes chunks into batches of TextChunk for inference, using itertools.batched.
+#
+#   Args:
+#     chunk_iter: Iterator of TextChunks.
+#     batch_length: Number of chunks to include in each batch.
+#
+#   Yields:
+#     Batches of TextChunks.
+#   """
+#   for batch in more_itertools.batched(chunk_iter, batch_length):
+#     yield list(batch)
 
 
 class SentenceIterator:
@@ -384,10 +394,9 @@ class ChunkIterator:
 
   def __init__(
       self,
-      text: str | tokenizer_lib.TokenizedText | None,
+      text: str | tokenizer_lib.TokenizedText,
       max_char_buffer: int,
       tokenizer_impl: tokenizer_lib.Tokenizer,
-      document: data.Document | None = None,
   ):
     """Constructor.
 
@@ -397,15 +406,11 @@ class ChunkIterator:
       tokenizer_impl: Tokenizer instance to use.
       document: Optional source document.
     """
-    if text is None:
-      if document is None:
-        raise ValueError("Either text or document must be provided.")
-      text = document.text or ""
 
     if isinstance(text, str):
       text = tokenizer_impl.tokenize(text)
     elif isinstance(text, tokenizer_lib.TokenizedText) and not text.tokens:
-      text_to_tokenize = text.text or (document.text if document else "")
+      text_to_tokenize = text.text
       text = tokenizer_impl.tokenize(text_to_tokenize)
     self.tokenized_text = text
     self.max_char_buffer = max_char_buffer
@@ -413,11 +418,11 @@ class ChunkIterator:
     self.broken_sentence = False
 
     # TODO: Refactor redundancy between document and text.
-    if document is None:
-      self.document = data.Document(text=text.text)
-    else:
-      self.document = document
-    self.document.tokenized_text = self.tokenized_text
+    # if document is None:
+    #   self.document = data.Document(text=text.text)
+    # else:
+    #   self.document = document
+    # self.document.tokenized_text = self.tokenized_text
 
   def __iter__(self) -> Iterator[TextChunk]:
     return self
