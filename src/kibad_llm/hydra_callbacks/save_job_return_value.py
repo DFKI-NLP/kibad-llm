@@ -13,6 +13,7 @@ from omegaconf import DictConfig
 import pandas as pd
 
 from kibad_llm.utils.dictionary import flatten_dict, unflatten_dict
+from kibad_llm.utils.job_return import group_by, multi_index_to_single
 
 
 def to_py_obj(obj):
@@ -200,32 +201,6 @@ def dict_to_overrides(d: dict[Hashable, Any], remove_na: bool = False) -> list[s
             continue
         overrides.append(f"{key}={value}")
     return overrides
-
-
-def _filter_nan_and_join(values: Iterable, sep: str) -> str:
-    return sep.join([v for v in values if not isinstance(v, float) or not math.isnan(v)])
-
-
-def multi_index_to_single(index: pd.Index, sep: str = ".") -> pd.Index:
-    """Convert a MultiIndex to a single Index by joining the levels with a separator and
-    removing NaN values.
-
-    Example:
-        >>> index = pd.MultiIndex.from_tuples([('a', 'b'), ('c', np.nan)])
-        >>> multi_index_to_single(index)
-        Index(['a.b', 'c'], dtype='object')
-
-    Args:
-        index (pd.MultiIndex): The MultiIndex to convert.
-        sep (str, optional): The separator to use between the levels. Defaults to ".".
-
-    Returns:
-        pd.Index: The converted Index.
-    """
-    if not isinstance(index, pd.MultiIndex):
-        return index
-
-    return pd.Index([_filter_nan_and_join(values, sep) for values in index.to_flat_index()])
 
 
 def append_overrides_from_return_value_prediction(
@@ -566,33 +541,14 @@ class SaveJobReturnValueCallback(Callback):
             if isinstance(result, pd.DataFrame) and isinstance(result.columns, pd.MultiIndex):
                 result.columns = multi_index_to_single(result.columns)
 
-            # fix dtypes: convert object dtypes to more specific dtypes
-            # required for groupby operations later on
-            if isinstance(result, pd.DataFrame):
-                result = result.convert_dtypes()
-
             if markdown_group_by is not None:
-                cols_numeric = result.select_dtypes(include=[np.number]).columns.tolist()
-                cols_non_numeric = result.select_dtypes(exclude=[np.number]).columns.tolist()
-                for col in markdown_group_by:
-                    # replace na values in col with "" to not miss groupings
-                    result[col] = result[col].fillna("")
-                    # remove the group_by columns from numeric and non-numeric columns
-                    if col in cols_numeric:
-                        cols_numeric.remove(col)
-                    if col in cols_non_numeric:
-                        cols_non_numeric.remove(col)
-                # group by the specified columns ...
-                result_grouped = result.groupby(by=list(markdown_group_by))
-                # ... and calculate the mean and std for numeric columns (and flatten the column MultiIndex)
-                result_numeric = result_grouped[cols_numeric].agg(["mean", "std"])
-                result_numeric.columns = multi_index_to_single(result_numeric.columns, sep=".")
-                # ... and for non-numeric columns, return lists of values
-                result_non_numeric = result_grouped[cols_non_numeric].agg(list)
-                # combine both results
-                result = pd.concat([result_numeric, result_non_numeric], axis=1)
-                # drop columns that are completely NaN (otherwise to_markdown fails)
-                result = result.dropna(axis=1, how="all")
+                result = group_by(
+                    data=result,
+                    by=markdown_group_by,
+                    numeric_agg_func=["mean", "std"],
+                    numeric_fill_na=0.0,
+                    force_list_col_regex=r"^overrides\.",
+                )
 
             if self.markdown_round_digits is not None and (
                 isinstance(result, pd.DataFrame) or result.dtype != "object"
