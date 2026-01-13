@@ -30,7 +30,6 @@ from . import tokenizers as tokenizer_lib
 # import more_itertools
 
 
-
 @dataclasses.dataclass
 class CharInterval:
     """Class for representing a character interval.

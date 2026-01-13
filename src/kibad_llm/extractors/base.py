@@ -52,6 +52,8 @@ def build_chat_message(
     schema: dict[str, Any] | None = None,
     schema_description_kwargs: dict[str, Any] | None = None,
     schema_description_placeholder: str = "schema_description",
+    previous_chunk_context: str | None = None,
+    previous_chunk_context_placeholder: str = "previous_chunk_context",
 ) -> tuple[SimpleChatMessage, dict[str, bool]]:
     """Build a single chat message by inserting text and schema description
     if respective placeholders are present in the message template.
