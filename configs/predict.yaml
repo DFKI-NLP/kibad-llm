@@ -34,6 +34,8 @@ print_config: True
 # name of the run, used in logging and as a subdir of log_dir
 name: "default"
 
+seed: 1337
+
 # path to the directory containing the PDF files to process
 pdf_directory: ???
 # path to the directory where the JSONL file with the predictions will be saved
