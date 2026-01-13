@@ -116,7 +116,7 @@ pdf_directory=path/to/pdf/files \
 
 This will process all PDF files in `pdf_directory` and save the result in a JSON line file.
 
-Note: It is recommended to always add --multirun (even for single runs). This ensures the output structure is compatible with the predictions_multirun_logs option during evaluation, making it easier to reference results later.
+Note: It is recommended to always add `--multirun` (even for single runs). This ensures the output structure is compatible with the predictions_multirun_logs option during evaluation, making it easier to reference results later.
 
 See [configs/predict](./configs/predict.yaml) for further information and options.
 
@@ -223,7 +223,7 @@ uv run -m kibad_llm.evaluate \
   --multirun
 ```
 
-For Prediction with Seeds on Cluster we can use this command which uses the `run_with_llm.sh` wrapper to launch a prediction job on specific hardware partitions (-pa), performing a multirun over three different seeds:
+For prediction with different random seeds on cluster we can use this command which uses the `run_with_llm.sh` wrapper to launch a prediction job on specific hardware partitions (-pa), performing a multirun over three different seeds:
 
 ```bash
 ./run_with_llm.sh \
