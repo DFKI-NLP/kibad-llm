@@ -64,7 +64,7 @@ class ChunkingExtractor(UnionExtractor):
 
         chunks = _document_chunk_iterator(args[0], 1000, chunking_tokenizer)
         current_kwargs.pop("tokenizer")
-        previous_chunk_context = None
+        previous_chunk_context = "Noch kein Kontext vorhanden."
         results = []
         for i, chunk in enumerate(chunks):
             current_kwargs["text_id"] = f"{args[-1]}_chunk_{i}"

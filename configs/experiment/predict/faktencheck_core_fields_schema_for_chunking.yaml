@@ -1,0 +1,18 @@
+# @package _global_
+
+# This experiment config uses the EcosystemStudyFeaturesCoreFields schema, which focuses on
+# a core set of highly relevant fields from the Faktencheck literature database. See
+# https://github.com/DFKI-NLP/kibad-llm/issues/158
+
+# To execute this experiment run:
+# uv run -m kibad_llm.predict experiment/predict=faktencheck_core_fields_schema pdf_directory=path/to/pdf/files
+
+defaults:
+  # We use a polished prompt template with additional instructions for better extraction performance.
+  - override /extractor/prompt_template: faktencheck_core_v1_for_chunking
+
+extractor:
+  schema:
+    # create the schema from the pydantic model of EcosystemStudyFeaturesCoreFields
+    _target_: kibad_llm.schema.types.EcosystemStudyFeaturesCoreFields.model_json_schema
+    by_alias: false
