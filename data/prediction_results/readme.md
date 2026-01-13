@@ -6,11 +6,7 @@ I.e., `name=[issue_or_pr_id]_[your_descriptive_name]`.
 1. Create a folder for your experiment, naming it `[issue_or_pr_id]_[your_descriptive_name]`
 2. Copy `logs/` for your runs from cluster to this folder (execute from this folder):
    ```
-   scp -r <user>@<machine>:/netscratch/hennig/kiba-d/logs/multiruns/<name> ./logs/
-   ```
-   or for single runs:
-   ```
-   scp -r <user>@<machine>:/netscratch/hennig/kiba-d/logs/runs/<name> ./logs/
+   scp -r <user>@<machine>:/netscratch/hennig/kiba-d/logs/<name> ./logs/
    ```
 3. Copy `predictions/` for your runs from cluster to this folder (execute from this folder):
    ```
