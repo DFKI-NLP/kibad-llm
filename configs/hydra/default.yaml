@@ -21,7 +21,7 @@ callbacks:
 
 # output directory, generated dynamically on each run
 run:
-  dir: ${paths.log_dir}/runs/${paths.run_subdir}
+  dir: ${paths.log_dir}/${name}/runs/${paths.run_subdir}
 sweep:
-  dir: ${paths.log_dir}/multiruns/${paths.run_subdir}
+  dir: ${paths.log_dir}/${name}/multiruns/${paths.run_subdir}
   subdir: ${hydra.job.num}
