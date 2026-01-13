@@ -236,8 +236,7 @@ For Prediction with Seeds on Cluster we can use this command which uses the `run
       experiment/predict=faktencheck_two_schemata \
       pdf_directory=tests/fixtures/pdfs \
       +request_parameters.extra_body.seed=42,1337,7331 \
-      --multirun" \
-  -vv "0.11.2"
+      --multirun"
 
 ```
 
