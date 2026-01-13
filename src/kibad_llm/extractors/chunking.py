@@ -65,6 +65,7 @@ class ChunkingExtractor(UnionExtractor):
         chunks = _document_chunk_iterator(args[0], 1000, chunking_tokenizer)
         current_kwargs.pop("tokenizer")
         previous_chunk_context = None
+        results = []
         for i, chunk in enumerate(chunks):
             current_kwargs["text_id"] = f"{args[-1]}_chunk_{i}"
             current_result = extract_from_text_lenient(
@@ -72,4 +73,17 @@ class ChunkingExtractor(UnionExtractor):
                 previous_chunk_context=previous_chunk_context,
                 **current_kwargs,
             )
+            results.append(current_result)
             previous_chunk_context = chunk.chunk_text
+
+        structured_outputs = [v.get("structured", None) for v in results]
+        aggregated_structured = _aggregate_structured_outputs_union(
+            structured_outputs, skip_type_mismatches=self.skip_type_mismatches
+        )
+
+        result: dict[str, Any] = {
+            "structured": aggregated_structured,
+        }
+        for field in self.return_as_list:
+            result[f"{field}_list"] = [v.get(field, None) for v in results]
+        return result
