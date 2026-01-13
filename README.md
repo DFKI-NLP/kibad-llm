@@ -221,7 +221,6 @@ uv run -m kibad_llm.evaluate \
   predictions_multirun_logs=[log/path/to/multirun/x] \
   experiment/evaluate=faktencheck_f1_micro_flat \
   --multirun
-
 ```
 
 For Prediction with Seeds on Cluster we can use this command which uses the `run_with_llm.sh` wrapper to launch a prediction job on specific hardware partitions (-pa), performing a multirun over three different seeds:
@@ -237,7 +236,6 @@ For Prediction with Seeds on Cluster we can use this command which uses the `run
       pdf_directory=tests/fixtures/pdfs \
       +request_parameters.extra_body.seed=42,1337,7331 \
       --multirun"
-
 ```
 
 See [configs/hydra/default.yaml](./configs/hydra/default.yaml) for further configuration options and details on the Hydra callback to create the combined output (`save_job_return`).
