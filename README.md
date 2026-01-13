@@ -229,9 +229,7 @@ For Prediction with Seeds on Cluster we can use this command which uses the `run
 ./run_with_llm.sh \
   -v "openai/gpt-oss-20b" \
   -pa "RTXA6000-SLT,H100-SLT,H100-Trails" \
-  -t 1-00:00:00 \
   -u "-m kibad_llm.predict \
-      paths.save_dir=/path/to/save/dir \
       experiment/predict=faktencheck_two_schemata \
       pdf_directory=tests/fixtures/pdfs \
       +request_parameters.extra_body.seed=42,1337,7331 \
