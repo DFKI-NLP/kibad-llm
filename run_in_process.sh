@@ -64,7 +64,7 @@ srun --partition=$PARTITION \
      --ntasks=1 \
      --cpus-per-task=6 \
      --gpus-per-task=1 \
-     --mem-per-cpu=4G \
+     --mem=128G \
      --oversubscribe \
      --time=$TIME \
      bash -c job
