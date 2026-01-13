@@ -518,8 +518,7 @@ def extract_from_text(
             may break result serialization (since we use .map() and .to_json() from datasets).
         llm: The LLM model to use. Must be a chat model (i.e. is_chat_model=True) and support extra_body
             parameters for guided decoding if schema is provided. If None, no LLM call is made.
-        request_parameters: Additional parameters to pass to the LLM chat call. If 'seed' is not provided,
-            a seed is derived from the messages and added to request_parameters for determinism.
+        request_parameters: Additional parameters to pass to the LLM chat call.
         return_reasoning: Whether to return the reasoning done by the model.
         adjust_schema_for_evidence_detection: Whether to adjust the schema to wrap terminal values
             with metadata. If True, the schema is modified so that each terminal value is replaced
@@ -605,12 +604,6 @@ def extract_from_text(
     )
 
     request_kwargs = request_parameters or {}
-
-    if "seed" not in request_kwargs:
-        # Determinism knob: derive seed from messages
-        seed_src = str(messages)
-        seed = int(hashlib.sha256(seed_src.encode("utf-8")).hexdigest()[:8], 16)
-        request_kwargs["seed"] = seed
 
     if use_guided_decoding:
         if schema is None:
