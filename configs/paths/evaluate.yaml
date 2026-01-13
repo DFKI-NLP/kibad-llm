@@ -1,4 +1,4 @@
 defaults:
   - default
 
-run_subdir: ${name}/evaluate/${paths.timestamp}
+log_dir: ${paths.save_dir}/logs/${name}/evaluate

@@ -1,4 +1,4 @@
 defaults:
   - default
 
-run_subdir: ${name}/predict/${paths.timestamp}
+log_dir: ${paths.save_dir}/logs/${name}/predict
