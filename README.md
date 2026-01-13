@@ -208,20 +208,21 @@ This also works for multiple columns at once:
 
 See (https://github.com/DFKI-NLP/kibad-llm/pull/241) for details.
 
-This will create `job_return_value.aggregated.json` and `job_return_value.aggregated.md` alongside the not aggregated outputs, summarizing the metrics across all runs in the multirun.
-
 Below are more complex examples of using multirun for prediction and evaluation:
 
-For Evaluation of Multiple Predictions we can use this command `predictions_multirun_logs` which evaluates multiple prediction files (e.g., from different runs or seeds) in a single execution and aggregates the results:
+For evaluation of multiple predictions we can use this command argument `predictions_multirun_logs` which evaluates multiple prediction files (e.g., from different runs or seeds) in a single execution and aggregates the results:
 
 Note: `predictions_multirun_log`s only simplifies path handling; it does not trigger aggregation on its own. Use `multirun_markdown_group_by` (as shown above) if you want to aggregate the loaded results.
 
 ```bash
 uv run -m kibad_llm.evaluate \
   predictions_multirun_logs=[log/path/to/multirun/x] \
-  experiment/evaluate=faktencheck_f1_micro_flat \
   --multirun
 ```
+
+See [configs/hydra/default.yaml](./configs/hydra/default.yaml) for further configuration options and details on the Hydra callback to create the combined output (`save_job_return`).
+
+#### A/B Testing with Multiple Seeds
 
 We can perform a multirun with three different random seeds and A/B testing (see `my_variable`, don't forget to prepend `+` to any variable *not* yet set in the config) like so:
 
@@ -237,12 +238,9 @@ and compute mean and standard deviation like so:
 ```bash
 uv run -m kibad_llm.evaluate \
   predictions_multirun_logs=[log/path/to/multirun/x] \
-  experiment/evaluate=faktencheck_f1_micro_flat \
   +hydra.callbacks.save_job_return.multirun_markdown_group_by=my_variable \
   --multirun
 ```
-
-See [configs/hydra/default.yaml](./configs/hydra/default.yaml) for further configuration options and details on the Hydra callback to create the combined output (`save_job_return`).
 
 ## Project Organization
 
