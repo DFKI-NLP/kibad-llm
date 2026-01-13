@@ -1,4 +1,4 @@
 defaults:
   - default
 
-run_subdir: ${name}/evaluate/${timestamp}
+run_subdir: ${name}/evaluate/${paths.timestamp}
