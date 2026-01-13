@@ -20,7 +20,7 @@
 
 defaults:
   - _self_
-  - paths: default
+  - paths: evaluate
   - hydra: default
   # this needs to return a dataset with 'prediction' and 'reference' entries
   - dataset: faktencheck

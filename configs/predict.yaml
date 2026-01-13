@@ -14,7 +14,7 @@
 
 defaults:
   - _self_
-  - paths: default
+  - paths: predict
   - hydra: default
   # The PDF reader gets the PDF path as positional argument and needs to return a string with the extracted text.
   - pdf_reader: pymupdf4llm
