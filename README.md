@@ -229,7 +229,7 @@ We can perform a multirun with three different random seeds and A/B testing (see
 ```bash
 uv run -m kibad_llm.predict \
     my_variable=value_a,value_b \
-    +request_parameters.extra_body.seed=42,1337,7331 \
+    seed=42,1337,7331 \
     --multirun
 ```
 

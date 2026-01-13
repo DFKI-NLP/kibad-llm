@@ -33,3 +33,4 @@ additional_kwargs:
   # recommended are 32768 acc to https://huggingface.co/Qwen/Qwen3-30B-A3B-Thinking-2507
   # set maximum number of generated tokens
   max_completion_tokens: 8192
+  seed: ${seed}

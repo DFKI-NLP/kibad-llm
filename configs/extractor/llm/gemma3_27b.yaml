@@ -34,3 +34,4 @@ additional_kwargs:
   # see https://github.com/DFKI-NLP/kibad-llm/issues/198#issuecomment-3666155251
   # see also https://huggingface.co/google/gemma-3-27b-it
   max_completion_tokens: 8192
+  seed: ${seed}
