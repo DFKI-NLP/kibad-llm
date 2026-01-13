@@ -46,7 +46,7 @@ esac; shift; done
 if [[ "$1" == '--' ]]; then shift; fi
 
 # add download dir and port to vLLM arguments (works for empty VLLM_ARGS)
-VLLM_ARGS="${VLLM_ARGS:+$VLLM_ARGS }--port=$PORT --download-dir=/ds/models/llms/cache --disable-uvicorn-access-log"
+VLLM_ARGS="${VLLM_ARGS:+$VLLM_ARGS }--port=$PORT --download-dir=/ds/models/llms/cache --disable-uvicorn-access-log --gpu-memory-utilization 0.95"
 export VLLM_ARGS
 
 export HF_HOME="/netscratch/$USER/cache/hf"
@@ -92,7 +92,7 @@ srun --partition=$PARTITION \
      --ntasks=1 \
      --cpus-per-task=6 \
      --gpus-per-task=1 \
-     --mem-per-cpu=4G \
+     --mem=128G \
      --oversubscribe \
      --time=$TIME \
      bash -c job
