@@ -497,6 +497,7 @@ class SaveJobReturnValueCallback(Callback):
                 obj_py = {"value": obj_py}
             obj_py_flat = flatten_dict(obj_py)
 
+            job_id_columns: list[Hashable | None] = []
             if is_tabular_data:
                 # In the case of (not aggregated) integrated multi-run result, we expect to have
                 # multiple values for each key. We therefore just convert the dict to a pandas DataFrame.
@@ -525,7 +526,6 @@ class SaveJobReturnValueCallback(Callback):
                         # i.e. the identifier created from the overrides, and transpose the result
                         # to have the individual jobs as rows.
                         result = series.unstack(0).T
-                job_id_columns = []
 
             if isinstance(result, pd.DataFrame):
                 if self.sort_markdown_columns:
@@ -549,6 +549,8 @@ class SaveJobReturnValueCallback(Callback):
                     numeric_fill_na=0.0,
                     force_list_col_regex=r"^overrides\.",
                 )
+                job_id_columns = list(result.index.names)
+                result = result.reset_index()
 
             if self.markdown_round_digits is not None and (
                 isinstance(result, pd.DataFrame) or result.dtype != "object"
