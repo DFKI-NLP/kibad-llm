@@ -223,7 +223,7 @@ uv run -m kibad_llm.evaluate \
   --multirun
 ```
 
-We can perform a multirun with three different random seeds and A/B testing (see `my_variable`, don't forget to prepend `+` to any variable not yet set in the config) like so:
+We can perform a multirun with three different random seeds and A/B testing (see `my_variable`, don't forget to prepend `+` to any variable *not* yet set in the config) like so:
 
 ```bash
 uv run -m kibad_llm.predict \
