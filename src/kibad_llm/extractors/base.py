@@ -82,6 +82,7 @@ def build_chat_message(
         schema_description = build_schema_description(
             schema=schema, **(schema_description_kwargs or {})
         )
+
         content = content.format(**{schema_description_placeholder: schema_description})
 
     # Check if input document is needed and insert it.
@@ -93,7 +94,6 @@ def build_chat_message(
                 f"input text (it contains '{{{document_placeholder}}}')."
             )
         content = content.format(**{document_placeholder: document})
-
     return SimpleChatMessage(role=role, content=content), {
         "has_schema_description": message_requires_schema_description,
         "has_document": message_requires_document,
