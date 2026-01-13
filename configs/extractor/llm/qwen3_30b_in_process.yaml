@@ -35,7 +35,7 @@ vllm_kwargs:
   # reasoning instead of only the structured JSON. Disabling the reasoning parser works. This is unexpected,
   # compared to serving the same model in a separate process. See Issue #253
   reasoning_parser: "deepseek_r1"
-  gpu_memory_utilization: 1.0 # fraction of GPU memory reserved (impacts KV cache size)
+  gpu_memory_utilization: 0.95 # fraction of GPU memory reserved (impacts KV cache size)
   # dtype: "auto"
   download_dir: ${oc.env:VLLM_DOWNLOAD_DIR}
   seed: 1337  # needs to be set starting with vllm 0.13.0

@@ -29,7 +29,7 @@ model: "openai/gpt-oss-20b"
 vllm_kwargs:
   tensor_parallel_size: 1  # shard across N GPUs
   max_model_len: 131072
-  gpu_memory_utilization: 1.0 # fraction of GPU memory reserved (impacts KV cache size)
+  gpu_memory_utilization: 0.95 # fraction of GPU memory reserved (impacts KV cache size)
   # dtype: "auto"
   download_dir: ${oc.env:VLLM_DOWNLOAD_DIR}
   seed: 1337  # needs to be set starting with vllm 0.13.0
