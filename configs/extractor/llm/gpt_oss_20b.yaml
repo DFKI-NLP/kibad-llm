@@ -39,3 +39,4 @@ additional_kwargs:
   # see https://github.com/DFKI-NLP/kibad-llm/issues/198#issuecomment-3666155251
   # 131,072 is max size for https://platform.openai.com/docs/models/gpt-oss-20b
   max_completion_tokens: 8192
+  seed: ${seed}

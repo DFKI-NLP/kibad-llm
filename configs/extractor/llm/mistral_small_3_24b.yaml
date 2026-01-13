@@ -33,3 +33,4 @@ additional_kwargs:
   # see https://github.com/DFKI-NLP/kibad-llm/issues/198#issuecomment-3666155251
   # 128K is max size for https://docs.mistral.ai/models/mistral-small-3-2-25-06
   max_completion_tokens: 8192
+  seed: ${seed}
