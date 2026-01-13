@@ -14,8 +14,7 @@ I.e., `name=[issue_or_pr_id]_[your_descriptive_name]`.
 3. Create `logs/<name>/readme.md` and describe the setup.
 4. Add a line to the table below with a link to the new log folder, the date, the issue or PR link, and any notes.
 5. See `159_core_schema_baseline_gpt5` for example folder structures for a single run and `159_core_schema_baseline_multirun` for example folder structures for a multi-run.
-6. If you follow the above structure, you can plot the evaluation results using the notebooks plot_evaluation.ipynb
-   and plot_multirun_evaluation.ipynb
+6. If you follow the above structure, you can plot the evaluation results using the notebook `plot_multirun_evaluation.ipynb`.
 
 ### Experiments
 
