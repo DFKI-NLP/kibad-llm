@@ -1,18 +1,20 @@
 from collections.abc import Iterable, Iterator
 from typing import Any
 
+from hydra.core.hydra_config import HydraConfig
+from hydra.utils import instantiate
 from llama_index.core.base.llms.types import MessageRole
 
 from kibad_llm.llms.base import SimpleChatMessage
 
 from .base import extract_from_text_lenient
-from .union import UnionExtractor, _aggregate_structured_outputs_union
-from .chunking_helpers import tokenizers as tokenizer_lib
 from .chunking_helpers import core
+from .chunking_helpers import tokenizers as tokenizer_lib
+from .union import UnionExtractor, _aggregate_structured_outputs_union
 
 
 def _document_chunk_iterator(
-    document: str, 
+    document: str,
     max_char_buffer: int,
     tokenizer: tokenizer_lib.Tokenizer,
     restrict_repeats: bool = True,
@@ -34,18 +36,17 @@ def _document_chunk_iterator(
         is visited more than once. Valid documents prior to the error will be
         returned.
     """
-    tokenized_text = tokenizer.tokenize(document)
     yield from core.ChunkIterator(
-        text=tokenized_text,
+        document,
         max_char_buffer=max_char_buffer,
-        document=document,
         tokenizer_impl=tokenizer or tokenizer_lib.RegexTokenizer(),
     )
+
 
 class ChunkingExtractor(UnionExtractor):
     """Extractor that chunks extraction and aggregates results per key.
     This extractor calls the base extraction function multiple times
-    (for each chunk in the document) on the same input text, 
+    (for each chunk in the document) on the same input text,
     passing some previous context to each subsequent call.
 
     TODO: adapt ->
@@ -59,7 +60,11 @@ class ChunkingExtractor(UnionExtractor):
             **combined_kwargs,
             "return_messages_formatted": True,
             "truncate_user_message_formatted": None,
-        }       
+        }
+        chunking_tokenizer = combined_kwargs["tokenizer"]()
+
+        chunks = _document_chunk_iterator(args[0], 1000, chunking_tokenizer)
+        current_kwargs.pop("tokenizer")
         # text: The document text to process.
         # text_id: Document text identifier for logging.
         # prompt_template: A dictionary with at least one of 'system_message' and 'user_message'
@@ -75,9 +80,9 @@ class ChunkingExtractor(UnionExtractor):
         #     a seed is derived from the messages and added to request_parameters for determinism.
         # return_reasoning: Whether to return the reasoning done by the model.
         # **build_messages_kwargs: Additional keyword arguments for build_chat_messages.
-        current_result = extract_from_text_lenient(*args, **current_kwargs)
-
-
+        for i, chunk in enumerate(chunks):
+            current_kwargs["text_id"] = f"{args[-1]}_chunk_{i}"
+            current_result = extract_from_text_lenient(text=chunk.chunk_text, **current_kwargs)
 
         # results = []
         # history: list[SimpleChatMessage] = []
