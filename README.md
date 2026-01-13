@@ -223,12 +223,11 @@ uv run -m kibad_llm.evaluate \
   --multirun
 ```
 
-We can perform a multirun with three different random seeds:
+We can perform a multirun with three different random seeds and A/B testing (see `my_variable`, don't forget to prepend `+` to any variable not yet set in the config) like so:
 
 ```bash
 uv run -m kibad_llm.predict \
-    experiment/predict=faktencheck_two_schemata \
-    pdf_directory=tests/fixtures/pdfs \
+    my_variable=value_a,value_b \
     +request_parameters.extra_body.seed=42,1337,7331 \
     --multirun
 ```
@@ -239,7 +238,7 @@ and compute mean and standard deviation like so:
 uv run -m kibad_llm.evaluate \
   predictions_multirun_logs=[log/path/to/multirun/x] \
   experiment/evaluate=faktencheck_f1_micro_flat \
-  +hydra.callbacks.save_job_return.multirun_markdown_group_by=overrides.experiment/predict
+  +hydra.callbacks.save_job_return.multirun_markdown_group_by=my_variable \
   --multirun
 ```
 
