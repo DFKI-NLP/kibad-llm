@@ -1,5 +1,5 @@
 _target_: kibad_llm.dataset.csv.read_organism_trends
-file: "data/external/organism_trends/Weighted Vote Count Wald Literatur - Sheet1.csv"
+file: "${paths.root_dir}/data/external/organism_trends/Weighted Vote Count Wald Literatur - Sheet1.csv"
 # pdf_id_column: "Key"
 columns:
   - Hauptgruppe_RoteListen
