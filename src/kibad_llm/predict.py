@@ -124,7 +124,6 @@ def predict(cfg: DictConfig) -> dict[str, Any]:
     logger.info(f"Extractor config: {OmegaConf.to_container(cfg.extractor, resolve=True)}")
     # The extractor gets the text and file_name as input
     # and should return a json serializable dictionary with the extracted information.
-    breakpoint()
     extractor: Callable[[str, str], dict[str, Any]] = instantiate(cfg.extractor, _convert_="all")
 
     logger.info("Extract information from markdown ...")
