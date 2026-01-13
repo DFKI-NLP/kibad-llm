@@ -25,7 +25,7 @@ extractor:
   # Enabling this flag will create the schema description from the adjusted schema.
   # If not enabled, the original schema description will be used. In this case, it is
   # highly recommended to use a prompt template that is aware of evidence detection.
-  adjust_schema_description_for_evidence_detection: false
+  adjust_schema_description_for_evidence_detection: true
 
   # In case of enabled adjust_schema_description_for_evidence_detection, customize
   # the evidence anchor description here.
