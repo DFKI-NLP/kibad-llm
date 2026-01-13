@@ -1,5 +1,9 @@
-# Data
-/data/
+# Data: ignore everything under /data by default
+/data/*
+
+# ...but keep prediction results
+!/data/prediction_results/
+!/data/prediction_results/**
 
 # Run logs
 /logs/
