@@ -3,11 +3,11 @@
 IMPORTANT: Any prediction and evaluation runs should be created with a good `name` argument! 
 I.e., `name=[issue_or_pr_id]_[your_descriptive_name]`. 
 
-1. Copy `logs/` for your runs from cluster to this folder (execute from this folder):
+1. Copy `logs/` for your runs from cluster into the local `logs/` (execute from this folder):
    ```
    scp -r <user>@<machine>:/netscratch/hennig/kiba-d/logs/<name> ./logs/
    ```
-2. Copy `predictions/` for your runs from cluster to this folder (execute from this folder):
+2. Copy `predictions/` for your runs from cluster to the local `predictions/` (execute from this folder):
    ```
    scp -r <user>@<machine>:/netscratch/hennig/kiba-d/predictions/<name> ./predictions/
    ```
