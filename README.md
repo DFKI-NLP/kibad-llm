@@ -109,18 +109,24 @@ Follow the instructions [here for a quickstart](./models/README.md#quickstart), 
 The information extraction pipeline can be run with:
 
 ```bash
-uv run -m kibad_llm.predict pdf_directory=path/to/pdf/files
+uv run -m kibad_llm.predict \
+pdf_directory=path/to/pdf/files \
+--multirun
 ```
 
 This will process all PDF files in `pdf_directory` and save the result in a JSON line file.
+
+Note: It is recommended to always add `--multirun` (even for single runs). This ensures the output structure is compatible with the predictions_multirun_logs option during evaluation, making it easier to reference results later.
 
 See [configs/predict](./configs/predict.yaml) for further information and options.
 
 IMPORTANT: Relevant inference setups should be defined in their own `experiment/predict` config. This allows to easily reproduce results later on by adding `experiment/predict=<experiment_config>` to the command line call. For example, to run the experiment with two schemata ([configs/experiment/predict/faktencheck_two_schemata.yaml](./configs/experiment/predict/faktencheck_two_schemata.yaml)), use:
 
 ```bash
-uv run -m kibad_llm.predict pdf_directory=path/to/pdf/files \
-experiment/predict=faktencheck_two_schemata
+uv run -m kibad_llm.predict \
+pdf_directory=path/to/pdf/files \
+experiment/predict=faktencheck_two_schemata \
+--multirun
 ```
 
 See [configs/experiment/predict](./configs/experiment/predict) for available experiment configs.
@@ -185,18 +191,56 @@ Each multirun produces a `job_return_value.json` (a nested dictionary) and a `jo
 
 For inference, complex setups are best managed via dedicated `experiment` configs; otherwise, Hydra will generate all combinations of the provided overrides, which may not be intended.
 
-For evaluation, you can additionally request an aggregated result over all runs (e.g., mean and standard deviation across multiple non-deterministic runs or different seeds). To do so, add the `hydra.callbacks.save_job_return.integrate_multirun_result=true` override:
+For evaluation, you can additionally request an aggregated result over all runs (e.g., mean and standard deviation across multiple non-deterministic runs or different seeds). To do so, add the `+hydra.callbacks.save_job_return.multirun_markdown_group_by` override:
 
 ```bash
 uv run -m kibad_llm.evaluate \
   dataset.predictions.file=path/to/A/predictions.jsonl,path/to/B/predictions.jsonl,path/to/C/predictions.jsonl \
-  hydra.callbacks.save_job_return.integrate_multirun_result=true \
+  +hydra.callbacks.save_job_return.multirun_markdown_group_by=overrides.pdf_directory \
   --multirun
 ```
 
-This will create `job_return_value.aggregated.json` and `job_return_value.aggregated.md` alongside the not aggregated outputs, summarizing the metrics across all runs in the multirun.
+This also works for multiple columns at once:
+
+```bash
++hydra.callbacks.save_job_return.multirun_markdown_group_by=[column1,column2]
+```
+
+See (https://github.com/DFKI-NLP/kibad-llm/pull/241) for details.
+
+Below are more complex examples of using multirun for prediction and evaluation:
+
+For evaluation of multiple predictions we can use this command argument `predictions_multirun_logs` which evaluates multiple prediction files (e.g., from different runs or seeds) in a single execution and aggregates the results:
+
+Note: `predictions_multirun_log`s only simplifies path handling; it does not trigger aggregation on its own. Use `multirun_markdown_group_by` (as shown above) if you want to aggregate the loaded results.
+
+```bash
+uv run -m kibad_llm.evaluate \
+  predictions_multirun_logs=[log/path/to/multirun/x] \
+  --multirun
+```
 
 See [configs/hydra/default.yaml](./configs/hydra/default.yaml) for further configuration options and details on the Hydra callback to create the combined output (`save_job_return`).
+
+#### A/B Testing with Multiple Seeds
+
+We can perform a multirun with three different random seeds and A/B testing (see `my_variable`, don't forget to prepend `+` to any variable *not* yet set in the config) like so:
+
+```bash
+uv run -m kibad_llm.predict \
+    my_variable=value_a,value_b \
+    +request_parameters.extra_body.seed=42,1337,7331 \
+    --multirun
+```
+
+and compute mean and standard deviation like so:
+
+```bash
+uv run -m kibad_llm.evaluate \
+  predictions_multirun_logs=[log/path/to/multirun/x] \
+  +hydra.callbacks.save_job_return.multirun_markdown_group_by=my_variable \
+  --multirun
+```
 
 ## Project Organization
 
