@@ -38,7 +38,7 @@ vllm_kwargs:
   gpu_memory_utilization: 0.95 # fraction of GPU memory reserved (impacts KV cache size)
   # dtype: "auto"
   download_dir: ${oc.env:VLLM_DOWNLOAD_DIR}
-  seed: 1337  # needs to be set starting with vllm 0.13.0
+  seed: ${seed}  # needs to be set starting with vllm 0.13.0
   # others, e.g., quantization / trust_remote_code / swap_space / cpu_offload_gb / ...
 
 # Generation parameters, can be either ...
