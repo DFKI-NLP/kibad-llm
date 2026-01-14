@@ -1,5 +1,6 @@
 from collections.abc import Callable, Iterable
 import json
+import logging
 import math
 from pathlib import Path
 import re
@@ -10,18 +11,22 @@ import pandas as pd
 
 from kibad_llm.utils.dictionary import flatten_dict_s
 
+logger = logging.getLogger(__name__)
 
-def load_subdirs(
-    parent_dir: Path,
+
+def load(
+    directory: Path,
+    subdir_pattern: str = "",
     filename="job_return_value.json",
     strip_id_keys: bool = True,
     flatten: bool = False,
     exclude_keys: list[str] | None = None,
 ) -> list[dict]:
-    """Load job return value json files from subdirectories of the given parent directory.
+    """Load job return value json file(s) from the given directory.
 
     Args:
-        parent_dir: Path to the parent directory containing subdirectories with return value files.
+        directory: Path to the directory containing return value file(s).
+        subdir_pattern: Pattern to match subdirectories (e.g., "*/" to load from all immediate subdirs).
         filename: Name of the file to load from each subdirectory.
         strip_id_keys: Whether to strip the top-level identifier keys from loaded multi-run results.
         flatten: Whether to flatten nested dictionaries in the loaded data.
@@ -30,12 +35,14 @@ def load_subdirs(
         A list of dictionaries containing the loaded data from each subdirectory.
     """
 
-    # get sub directories, 1 level only
-    # (so we do not load the individual job returns if called on a multi-run directories)
-    run_dirs = [p for p in Path(parent_dir).iterdir() if p.is_dir()]
+    file_paths = list(directory.glob(subdir_pattern + filename))
+    logger.info(
+        f"Loading data from files (subdir_pattern+filename: {subdir_pattern + filename}):\n%s",
+        "\n".join(map(str, file_paths)),
+    )
 
-    # assume that each subdir contains a 'job_return_value.json' from a multi-run evaluation
-    data = [json.loads((subdir / filename).read_text()) for subdir in run_dirs]
+    # read all json files
+    data = [json.loads(file_path.read_text()) for file_path in file_paths]
 
     # keep the keys / identifiers? If loading multi-run results, the data may have the form
     # [{'id1': {...}, {'id2': {...}}, ...], i.e. each individual dict is wrapped in an id key.
