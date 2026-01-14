@@ -70,8 +70,10 @@ def build_chat_message(
         schema_description_placeholder: The placeholder in the message template for the
             schema description. If the placeholder is present in the message template,
             the schema must be provided and the description will be generated and inserted.
-        previous_chunk_context:
-        previous_chunk_context_placeholder:
+        previous_chunk_context: This is the content of the previous chunk if there was one.
+        previous_chunk_context_placeholder: The placeholder in the message template for the
+            previous chunk context. If the placeholder is present in the message template,
+            it will be replaced with the previous chunk context. 
 
     Returns:
         A tuple of ChatMessage and a metadata dictionary indicating whether schema description
@@ -92,7 +94,6 @@ def build_chat_message(
             schema=schema, **(schema_description_kwargs or {})
         )
         formatting[schema_description_placeholder] = schema_description
-        # content = content.format(**{schema_description_placeholder: schema_description})
 
     # Check if input document is needed and insert it.
     message_requires_document = "{" + document_placeholder + "}" in content
@@ -103,7 +104,6 @@ def build_chat_message(
                 f"input text (it contains '{{{document_placeholder}}}')."
             )
         formatting[document_placeholder] = document
-        # content = content.format(**{document_placeholder: document})
 
     # Check if chunk context is needed and insert it.
     message_requires_chunk_context = "{" + previous_chunk_context_placeholder + "}" in content
@@ -114,7 +114,7 @@ def build_chat_message(
                 f"input text (it contains '{{{previous_chunk_context_placeholder}}}')."
             )
         formatting[previous_chunk_context_placeholder] = previous_chunk_context
-        # content = content.format(**{previous_chunk_context_placeholder: previous_chunk_context})
+
     content = content.format(**formatting)
     return SimpleChatMessage(role=role, content=content), {
         "has_schema_description": message_requires_schema_description,
