@@ -6,21 +6,42 @@ def strip_filename_extension(file_path: str) -> str:
     return os.path.splitext(file_path)[0]
 
 
-def list_subdirectories_as_string(dir_path: str | list[str] | None, pattern: str = "*") -> str:
-    """Lists subdirectories in the given directory path(s) matching the pattern and returns
-    them as a comma-separated string. Useful as an OmegaConf resolver to dynamically get
-    directory lists as multirun inputs.
+def get_directories_with_file(
+    paths: str | list[str] | None, filename: str, leafs_only: bool = False
+) -> list[str]:
+    """Find all directories in the given paths that contain a file with the specified filename.
+
+    Args:
+        paths: List of paths.
+        filename: Name of the file to search for in the directories.
+        leafs_only: If True, only return the leaf directories (i.e., those that are not
+            parents of other directories in the list).
+    Returns:
+        List of directory paths where each directory contains the specified filename.
     """
     # this is required so that the resolver does not fail when no input is given (non multirun case)
-    if dir_path is None:
-        return ""
+    if paths is None:
+        return []
 
-    if isinstance(dir_path, str):
-        dir_path = [dir_path]
-    paths: list[str] = []
-    for dir_path in dir_path:
-        paths.extend(str(p) for p in Path(dir_path).glob(pattern) if p.is_dir())
-    if not paths:
-        raise ValueError(f"No directories found in {dir_path!r} with pattern {pattern!r}")
+    if isinstance(paths, str):
+        paths = [paths]
 
-    return ",".join(sorted(paths))
+    result_paths = []
+    for path in paths:
+        current_paths = Path(path).glob(f"**/{filename}")
+        for p in current_paths:
+            result_paths.extend([p.parent])
+
+    # deduplicate and sort
+    result_paths = sorted(set(result_paths))
+
+    # filter to only keep leaf directories if requested
+    if leafs_only:
+        result_paths = [
+            p
+            for p in result_paths
+            if not any(other != p and other.is_relative_to(p) for other in result_paths)
+        ]
+
+    result = [str(p) for p in result_paths]
+    return result
