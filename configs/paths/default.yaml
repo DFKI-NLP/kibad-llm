@@ -6,9 +6,11 @@ root_dir: ${oc.env:PROJECT_ROOT}
 # path to data directory
 data_dir: ${paths.root_dir}/data
 
-# subdirectory for the current run, used in prediction_save_dir and output_dir
+timestamp: ${now:%Y-%m-%d_%H-%M-%S}
+
+# subdirectory for the current run, used in output_dir
 # (indirectly via hydra.run.dir, see hydra/default.yaml)
-run_subdir: ${name}/${now:%Y-%m-%d_%H-%M-%S}
+run_subdir: ${paths.timestamp}
 
 # path to output directory, created dynamically by hydra
 # path generation pattern is specified in `configs/hydra/default.yaml`
@@ -20,10 +22,10 @@ output_dir: ${hydra:runtime.output_dir}
 save_dir: ${paths.root_dir}
 
 # path to logging directory
-log_dir: ${paths.save_dir}/logs
+log_dir: ${paths.save_dir}/logs/${name}
 
 # path to working directory
 work_dir: ${hydra:runtime.cwd}
 
 # predefined path that can be used as output path for the serializer
-prediction_save_dir: ${paths.save_dir}/predictions/${paths.run_subdir}
+prediction_save_dir: ${paths.save_dir}/predictions/${name}/${paths.timestamp}

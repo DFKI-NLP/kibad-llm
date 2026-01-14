@@ -1,4 +1,4 @@
 defaults:
   - default
 
-log_dir: ${paths.save_dir}/logs/predict
+log_dir: ${paths.save_dir}/logs/${name}/predict
