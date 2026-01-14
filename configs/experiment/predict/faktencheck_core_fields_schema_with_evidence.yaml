@@ -50,3 +50,6 @@ extractor:
 
 # To verify the evidence anchors wrt. the original text, we return the text from the pdf conversion.
 store_text_in_predictions: true
+
+# since we store the whole text, enable compression of the output file by setting a .zip extension
+output_file_name: predictions.jsonl.zip
