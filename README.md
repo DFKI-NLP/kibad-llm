@@ -110,13 +110,10 @@ The information extraction pipeline can be run with:
 
 ```bash
 uv run -m kibad_llm.predict \
-pdf_directory=path/to/pdf/files \
---multirun
+pdf_directory=path/to/pdf/files
 ```
 
 This will process all PDF files in `pdf_directory` and save the result in a JSON line file.
-
-Note: It is recommended to always add `--multirun` (even for single runs). This ensures the output structure is compatible with the predictions_multirun_logs option during evaluation, making it easier to reference results later.
 
 See [configs/predict](./configs/predict.yaml) for further information and options.
 
@@ -125,8 +122,7 @@ IMPORTANT: Relevant inference setups should be defined in their own `experiment/
 ```bash
 uv run -m kibad_llm.predict \
 pdf_directory=path/to/pdf/files \
-experiment/predict=faktencheck_two_schemata \
---multirun
+experiment/predict=faktencheck_two_schemata
 ```
 
 See [configs/experiment/predict](./configs/experiment/predict) for available experiment configs.
@@ -216,7 +212,7 @@ Note: `predictions_multirun_log`s only simplifies path handling; it does not tri
 
 ```bash
 uv run -m kibad_llm.evaluate \
-  predictions_multirun_logs=[log/path/to/multirun/x] \
+  predictions_multirun_logs=[log/path/to/(multi)run/x] \
   --multirun
 ```
 
@@ -237,7 +233,7 @@ and compute mean and standard deviation like so:
 
 ```bash
 uv run -m kibad_llm.evaluate \
-  predictions_multirun_logs=[log/path/to/multirun/x] \
+  predictions_multirun_logs=[log/path/to/(multi)run/x] \
   +hydra.callbacks.save_job_return.multirun_markdown_group_by=my_variable \
   --multirun
 ```
