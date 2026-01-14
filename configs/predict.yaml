@@ -40,6 +40,10 @@ seed: 1337
 pdf_directory: ???
 # path to the directory where the JSONL file with the predictions will be saved
 output_dir: ${paths.prediction_save_dir}
+# Name of the output JSONL file containing the predictions. To enable compression,
+# set e.g. to "predictions.jsonl.gz" (handled automatically by pandas,
+# see https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_json.html).
+output_file_name: "predictions.jsonl"
 
 # enable to process only a subset of the data, useful for debugging
 fast_dev_run: False
