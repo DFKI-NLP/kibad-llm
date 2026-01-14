@@ -140,7 +140,7 @@ def predict(cfg: DictConfig) -> dict[str, Any]:
         dataset = dataset.remove_columns("text")
 
     # use output dir with timestamp to avoid overwriting previous results
-    output_file = os.path.join(cfg.output_dir, formatted_time, cfg.file_name)
+    output_file = os.path.join(cfg.output_dir, formatted_time, cfg.output_file_name)
     logger.info(f"Writing results to {output_file} ...")
     dataset.to_json(output_file, force_ascii=False)
     return {
