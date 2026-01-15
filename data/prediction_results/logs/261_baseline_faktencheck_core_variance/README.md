@@ -4,13 +4,22 @@
  - 3 llms: `extractor/llm=gpt_oss_20b_in_process,gemma3_27b_in_process,gpt_5`
  - 3 seeds: `seed=42,1337,7331`
 
-see https://github.com/DFKI-NLP/kibad-llm/issues/261 for details
+see https://github.com/DFKI-NLP/kibad-llm/issues/261 for details.
+S
+## Evaluation Notebook Parameters
+```python
+NAME = "261_baseline_faktencheck_core_variance"
+METRICS_DIR_PATTERN = "evaluate/**/2026-01-15_13-23-46/"
+ERRORS_DIR_PATTERN = "evaluate/**/2026-01-15_13-25-18/"
+# set any missing (default) values as column name -> value
+FILL_NA = {}
+```
 
 ## Outcome
 
 `gpt_5` shows some variance, but `gemma3_27b_in_process` and `gpt_oss_20b_in_process` don't. We should investigate further why these in-process models show no variance at all.
 
-## inference
+## Predict
 - command from [here](https://github.com/DFKI-NLP/kibad-llm/issues/277#issue-3812729930) (adjusted `seed`)
 ```
 ./run_in_process.sh -pa "H100-SLT,H100-Trails,H100,A100-80GB" \
@@ -38,7 +47,7 @@ Running on node(s) serv-3310
 | extractor/llm=gpt_oss_20b_in_process#seed=42   | evaluate/prediction-single-run-logs | b35b5be19ec9c451153ea30580afd67e4959e04f | False      | /netscratch/binder/projects/kibad-llm/predictions/261_baseline_faktencheck_core_variance/2026-01-14_20-01-33/2026-01-14_20-01-34_711848/predictions.jsonl | faktencheck_core_fields_schema_with_evidence | gpt_oss_20b_in_process    | 261_baseline_faktencheck_core_variance | /ds/text/kiba-d/dev-set-100 |               42 |           3534.36 |            0.00473654 |
 | extractor/llm=gpt_oss_20b_in_process#seed=7331 | evaluate/prediction-single-run-logs | b35b5be19ec9c451153ea30580afd67e4959e04f | False      | /netscratch/binder/projects/kibad-llm/predictions/261_baseline_faktencheck_core_variance/2026-01-14_20-01-33/2026-01-14_22-02-30_848268/predictions.jsonl | faktencheck_core_fields_schema_with_evidence | gpt_oss_20b_in_process    | 261_baseline_faktencheck_core_variance | /ds/text/kiba-d/dev-set-100 |             7331 |           3584.31 |            0.00371006 |
 
-## evaluate
+## Evaluate
 
 ### f1
 ```
