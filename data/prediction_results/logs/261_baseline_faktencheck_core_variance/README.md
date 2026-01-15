@@ -35,6 +35,9 @@ Running on node(s) serv-3310
 
 [2026-01-15 07:53:51,762][HYDRA] Contents of /netscratch/binder/projects/kibad-llm/logs/261_baseline_faktencheck_core_variance/predict/multiruns/2026-01-14_20-01-33/job_return_value.md:
 
+<details>
+<summary>click to see content</summary>
+
 |                                                | branch                              | commit_hash                              | is_dirty   | output_file                                                                                                                                               | overrides.experiment/predict                 | overrides.extractor/llm   | overrides.name                         | overrides.pdf_directory     |   overrides.seed |   time_extraction |   time_pdf_conversion |
 |:-----------------------------------------------|:------------------------------------|:-----------------------------------------|:-----------|:----------------------------------------------------------------------------------------------------------------------------------------------------------|:---------------------------------------------|:--------------------------|:---------------------------------------|:----------------------------|-----------------:|------------------:|----------------------:|
 | extractor/llm=gemma3_27b_in_process#seed=1337  | evaluate/prediction-single-run-logs | b35b5be19ec9c451153ea30580afd67e4959e04f | False      | /netscratch/binder/projects/kibad-llm/predictions/261_baseline_faktencheck_core_variance/2026-01-14_20-01-33/2026-01-14_23-25-49_094244/predictions.jsonl | faktencheck_core_fields_schema_with_evidence | gemma3_27b_in_process     | 261_baseline_faktencheck_core_variance | /ds/text/kiba-d/dev-set-100 |             1337 |           1183.71 |            0.00318527 |
@@ -46,6 +49,8 @@ Running on node(s) serv-3310
 | extractor/llm=gpt_oss_20b_in_process#seed=1337 | evaluate/prediction-single-run-logs | b35b5be19ec9c451153ea30580afd67e4959e04f | False      | /netscratch/binder/projects/kibad-llm/predictions/261_baseline_faktencheck_core_variance/2026-01-14_20-01-33/2026-01-14_21-02-04_048772/predictions.jsonl | faktencheck_core_fields_schema_with_evidence | gpt_oss_20b_in_process    | 261_baseline_faktencheck_core_variance | /ds/text/kiba-d/dev-set-100 |             1337 |           3571.3  |            0.00353332 |
 | extractor/llm=gpt_oss_20b_in_process#seed=42   | evaluate/prediction-single-run-logs | b35b5be19ec9c451153ea30580afd67e4959e04f | False      | /netscratch/binder/projects/kibad-llm/predictions/261_baseline_faktencheck_core_variance/2026-01-14_20-01-33/2026-01-14_20-01-34_711848/predictions.jsonl | faktencheck_core_fields_schema_with_evidence | gpt_oss_20b_in_process    | 261_baseline_faktencheck_core_variance | /ds/text/kiba-d/dev-set-100 |               42 |           3534.36 |            0.00473654 |
 | extractor/llm=gpt_oss_20b_in_process#seed=7331 | evaluate/prediction-single-run-logs | b35b5be19ec9c451153ea30580afd67e4959e04f | False      | /netscratch/binder/projects/kibad-llm/predictions/261_baseline_faktencheck_core_variance/2026-01-14_20-01-33/2026-01-14_22-02-30_848268/predictions.jsonl | faktencheck_core_fields_schema_with_evidence | gpt_oss_20b_in_process    | 261_baseline_faktencheck_core_variance | /ds/text/kiba-d/dev-set-100 |             7331 |           3584.31 |            0.00371006 |
+
+</details>
 
 ## Evaluate
 
