@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 def load(
     directory: Path,
-    subdir_pattern: str = "",
+    subdir_pattern: str | list[str] = "",
     filename="job_return_value.json",
     strip_id_keys: bool = True,
     flatten: bool = False,
@@ -26,7 +26,8 @@ def load(
 
     Args:
         directory: Path to the directory containing return value file(s).
-        subdir_pattern: Pattern to match subdirectories (e.g., "*/" to load from all immediate subdirs).
+        subdir_pattern: One or multiple pattern to match subdirectories (e.g., "*/" to load from
+            all immediate subdirs).
         filename: Name of the file to load from each subdirectory.
         strip_id_keys: Whether to strip the top-level identifier keys from loaded multi-run results.
         flatten: Whether to flatten nested dictionaries in the loaded data.
@@ -34,12 +35,18 @@ def load(
     Returns:
         A list of dictionaries containing the loaded data from each subdirectory.
     """
-
-    file_paths = list(directory.glob(subdir_pattern + filename))
-    logger.info(
-        f"Loading data from files (subdir_pattern+filename: {subdir_pattern + filename}):\n%s",
-        "\n".join(map(str, file_paths)),
-    )
+    if isinstance(subdir_pattern, str):
+        subdir_pattern = [subdir_pattern]
+    file_paths = []
+    for s_pattern in subdir_pattern:
+        if s_pattern.strip() != "" and not s_pattern.endswith("/"):
+            raise ValueError(f"subdir_pattern must end with '/', got: {s_pattern}")
+        current_file_paths = list(directory.glob(s_pattern + filename))
+        logger.info(
+            f"Loading data from files (subdir_pattern+filename: {s_pattern + filename}):\n%s",
+            "\n".join(map(str, current_file_paths)),
+        )
+        file_paths.extend(current_file_paths)
 
     # read all json files
     data = [json.loads(file_path.read_text()) for file_path in file_paths]
