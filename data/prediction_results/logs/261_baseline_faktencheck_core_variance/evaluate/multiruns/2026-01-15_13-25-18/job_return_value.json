@@ -5,7 +5,7 @@
     "JSONDecodeError": 22,
     "prediction": {
       "job_return_value": {
-        "output_file": "/netscratch/binder/projects/kibad-llm/predictions/261_baseline_faktencheck_core_variance/2026-01-14_20-01-33/2026-01-14_20-01-34_711848/predictions.jsonl",
+        "output_file": "predictions/261_baseline_faktencheck_core_variance/2026-01-14_20-01-33/2026-01-14_20-01-34_711848/predictions.jsonl.zip",
         "time_pdf_conversion": 0.004736544011393562,
         "time_extraction": 3534.3638722100004,
         "commit_hash": "b35b5be19ec9c451153ea30580afd67e4959e04f",
@@ -27,7 +27,7 @@
     "JSONDecodeError": 22,
     "prediction": {
       "job_return_value": {
-        "output_file": "/netscratch/binder/projects/kibad-llm/predictions/261_baseline_faktencheck_core_variance/2026-01-14_20-01-33/2026-01-14_21-02-04_048772/predictions.jsonl",
+        "output_file": "predictions/261_baseline_faktencheck_core_variance/2026-01-14_20-01-33/2026-01-14_21-02-04_048772/predictions.jsonl.zip",
         "time_pdf_conversion": 0.003533318027621135,
         "time_extraction": 3571.3014659210166,
         "commit_hash": "b35b5be19ec9c451153ea30580afd67e4959e04f",
@@ -49,7 +49,7 @@
     "JSONDecodeError": 22,
     "prediction": {
       "job_return_value": {
-        "output_file": "/netscratch/binder/projects/kibad-llm/predictions/261_baseline_faktencheck_core_variance/2026-01-14_20-01-33/2026-01-14_22-02-30_848268/predictions.jsonl",
+        "output_file": "predictions/261_baseline_faktencheck_core_variance/2026-01-14_20-01-33/2026-01-14_22-02-30_848268/predictions.jsonl.zip",
         "time_pdf_conversion": 0.0037100589834153652,
         "time_extraction": 3584.309483191988,
         "commit_hash": "b35b5be19ec9c451153ea30580afd67e4959e04f",
@@ -70,7 +70,7 @@
     "ValueError": 15,
     "prediction": {
       "job_return_value": {
-        "output_file": "/netscratch/binder/projects/kibad-llm/predictions/261_baseline_faktencheck_core_variance/2026-01-14_20-01-33/2026-01-14_23-03-09_530693/predictions.jsonl",
+        "output_file": "predictions/261_baseline_faktencheck_core_variance/2026-01-14_20-01-33/2026-01-14_23-03-09_530693/predictions.jsonl.zip",
         "time_pdf_conversion": 0.003338593989610672,
         "time_extraction": 1190.8330696720222,
         "commit_hash": "b35b5be19ec9c451153ea30580afd67e4959e04f",
@@ -91,7 +91,7 @@
     "ValueError": 15,
     "prediction": {
       "job_return_value": {
-        "output_file": "/netscratch/binder/projects/kibad-llm/predictions/261_baseline_faktencheck_core_variance/2026-01-14_20-01-33/2026-01-14_23-25-49_094244/predictions.jsonl",
+        "output_file": "predictions/261_baseline_faktencheck_core_variance/2026-01-14_20-01-33/2026-01-14_23-25-49_094244/predictions.jsonl.zip",
         "time_pdf_conversion": 0.0031852730026002973,
         "time_extraction": 1183.71309268201,
         "commit_hash": "b35b5be19ec9c451153ea30580afd67e4959e04f",
@@ -112,7 +112,7 @@
     "ValueError": 15,
     "prediction": {
       "job_return_value": {
-        "output_file": "/netscratch/binder/projects/kibad-llm/predictions/261_baseline_faktencheck_core_variance/2026-01-14_20-01-33/2026-01-14_23-46-52_856949/predictions.jsonl",
+        "output_file": "predictions/261_baseline_faktencheck_core_variance/2026-01-14_20-01-33/2026-01-14_23-46-52_856949/predictions.jsonl.zip",
         "time_pdf_conversion": 0.0032181529968511313,
         "time_extraction": 1185.6990051589964,
         "commit_hash": "b35b5be19ec9c451153ea30580afd67e4959e04f",
@@ -135,7 +135,7 @@
     "JSONDecodeError": 3,
     "prediction": {
       "job_return_value": {
-        "output_file": "/netscratch/binder/projects/kibad-llm/predictions/261_baseline_faktencheck_core_variance/2026-01-14_20-01-33/2026-01-15_00-07-57_741907/predictions.jsonl",
+        "output_file": "predictions/261_baseline_faktencheck_core_variance/2026-01-14_20-01-33/2026-01-15_00-07-57_741907/predictions.jsonl.zip",
         "time_pdf_conversion": 0.0033475350064691156,
         "time_extraction": 8239.5015939,
         "commit_hash": "b35b5be19ec9c451153ea30580afd67e4959e04f",
@@ -158,7 +158,7 @@
     "MissingResponseContentError": 2,
     "prediction": {
       "job_return_value": {
-        "output_file": "/netscratch/binder/projects/kibad-llm/predictions/261_baseline_faktencheck_core_variance/2026-01-14_20-01-33/2026-01-15_02-25-18_645425/predictions.jsonl",
+        "output_file": "predictions/261_baseline_faktencheck_core_variance/2026-01-14_20-01-33/2026-01-15_02-25-18_645425/predictions.jsonl.zip",
         "time_pdf_conversion": 0.0034535370068624616,
         "time_extraction": 9371.31823335102,
         "commit_hash": "b35b5be19ec9c451153ea30580afd67e4959e04f",
@@ -181,7 +181,7 @@
     "MissingResponseContentError": 1,
     "prediction": {
       "job_return_value": {
-        "output_file": "/netscratch/binder/projects/kibad-llm/predictions/261_baseline_faktencheck_core_variance/2026-01-14_20-01-33/2026-01-15_05-01-31_207954/predictions.jsonl",
+        "output_file": "predictions/261_baseline_faktencheck_core_variance/2026-01-14_20-01-33/2026-01-15_05-01-31_207954/predictions.jsonl.zip",
         "time_pdf_conversion": 0.00373618898447603,
         "time_extraction": 10339.411308772018,
         "commit_hash": "b35b5be19ec9c451153ea30580afd67e4959e04f",
