@@ -20,5 +20,4 @@ I.e., `name=[issue_or_pr_id]_[your_descriptive_name]`.
 
 | Log Folder                                                                  | Date       | Issue Link                                        | Notes                                                              |
 |:------------------------------------------------------------------------------|:-----------|:--------------------------------------------------|:-------------------------------------------------------------------|
-| [159_core_schema_baseline_gpt5](./logs/159_core_schema_baseline_gpt5)         | 2026-01-09 | https://github.com/DFKI-NLP/kibad-llm/issues/159  | Only the GPT 5 run, which was a single run setup                   | 
-| [159_core_schema_baseline_multirun](./logs/159_core_schema_baseline_multirun) | 2026-01-09 | https://github.com/DFKI-NLP/kibad-llm/issues/159  | gpt_oss_20b and qwen3_30b with 3 runs per model setup |
+| [159_core_schema_baseline](logs/159_core_schema_baseline)         | 2026-01-09 | https://github.com/DFKI-NLP/kibad-llm/issues/159  | gpt_oss_20b and qwen3_30b with 3 runs per model setup and single GPT 5 run  | 
