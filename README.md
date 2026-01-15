@@ -206,13 +206,13 @@ See (https://github.com/DFKI-NLP/kibad-llm/pull/241) for details.
 
 Below are more complex examples of using multirun for prediction and evaluation:
 
-For evaluation of multiple predictions we can use this command argument `predictions_multirun_logs` which evaluates multiple prediction files (e.g., from different runs or seeds) in a single execution and aggregates the results:
+For evaluation of multiple predictions we can use this command argument `prediction_logs` which evaluates all prediction files (e.g., from different runs or seeds) in a single execution and aggregates the results. In detail, `prediction_logs` accepts a list of paths and all prediction log files beneath them will be read for the location of actual predictions that are then loaded.
 
-Note: `predictions_multirun_log`s only simplifies path handling; it does not trigger aggregation on its own. Use `multirun_markdown_group_by` (as shown above) if you want to aggregate the loaded results.
+Note: `prediction_logs`s only simplifies path handling; it does not trigger aggregation on its own. Use `multirun_markdown_group_by` (as shown above) if you want to aggregate the loaded results.
 
 ```bash
 uv run -m kibad_llm.evaluate \
-  predictions_multirun_logs=[log/path/to/(multi)run/x] \
+  prediction_logs=[log/path/to/(multi)run/x] \
   --multirun
 ```
 
@@ -233,7 +233,7 @@ and compute mean and standard deviation like so:
 
 ```bash
 uv run -m kibad_llm.evaluate \
-  predictions_multirun_logs=[log/path/to/(multi)run/x] \
+  prediction_logs=[log/path/to/(multi)run/x] \
   +hydra.callbacks.save_job_return.multirun_markdown_group_by=my_variable \
   --multirun
 ```
