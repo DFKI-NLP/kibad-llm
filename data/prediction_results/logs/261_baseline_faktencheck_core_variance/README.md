@@ -6,6 +6,10 @@
 
 see https://github.com/DFKI-NLP/kibad-llm/issues/261 for details
 
+## Outcome
+
+`gpt_5` shows some variance, but `gemma3_27b_in_process` and `gpt_oss_20b_in_process` don't. We should investigate further why these in-process models show no variance at all.
+
 ## inference
 - command from [here](https://github.com/DFKI-NLP/kibad-llm/issues/277#issue-3812729930) (adjusted `seed`)
 ```
