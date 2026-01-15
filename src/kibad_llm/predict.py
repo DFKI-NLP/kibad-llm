@@ -144,7 +144,7 @@ def predict(cfg: DictConfig) -> dict[str, Any]:
     logger.info(f"Writing results to {output_file} ...")
     dataset.to_json(output_file, force_ascii=False)
     return {
-        "output_file": output_file,
+        "output_file": os.path.relpath(output_file, start=os.getcwd()),
         "time_pdf_conversion": t_delta_pdf_conversion,
         "time_extraction": t_delta_extraction,
         **git_info,
