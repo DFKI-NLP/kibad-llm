@@ -1,4 +1,4 @@
-# Variance of baseline faktencheck_core with different random seeds
+# Variance Analysis for Faktencheck (Core Fields with Evidence; 3 LLMs; 3 Seeds)
 
 see https://github.com/DFKI-NLP/kibad-llm/issues/261 for details
 
