@@ -145,6 +145,7 @@ def predict(cfg: DictConfig) -> dict[str, Any]:
     dataset.to_json(output_file, force_ascii=False)
     return {
         "output_file": os.path.relpath(output_file, start=os.getcwd()),
+        "output_file_absolute": os.path.abspath(output_file),
         "time_pdf_conversion": t_delta_pdf_conversion,
         "time_extraction": t_delta_extraction,
         **git_info,
