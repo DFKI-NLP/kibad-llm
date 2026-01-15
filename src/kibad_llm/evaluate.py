@@ -11,12 +11,18 @@ from omegaconf import DictConfig, OmegaConf
 from kibad_llm.config import PROJ_ROOT
 from kibad_llm.dataset.prediction import DictWithMetadata
 from kibad_llm.metric import Metric
-from kibad_llm.utils.path import list_subdirectories_as_string
+from kibad_llm.utils.path import get_directories_with_file
 
 logger = logging.getLogger(__name__)
 
 # required when using predictions_multirun_logs, see configs/evaluate.yaml
-OmegaConf.register_new_resolver("list_subdirectories", list_subdirectories_as_string)
+OmegaConf.register_new_resolver(
+    "get_directories_with_file",
+    # join resulting list into a comma-separated string
+    lambda paths, filename, leafs_only: ",".join(
+        get_directories_with_file(paths, filename, leafs_only)
+    ),
+)
 
 
 def evaluate(cfg: DictConfig) -> dict[str, Any]:
