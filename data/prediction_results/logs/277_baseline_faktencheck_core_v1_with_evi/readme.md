@@ -8,6 +8,15 @@ faktencheck_core_v1_with_evidence prompt template, across the following LLMs:
 
 See Issue https://github.com/DFKI-NLP/kibad-llm/issues/260  for more documentation.
 
+Evaluation Notebook Parameters:
+```python
+NAME = "277_baseline_faktencheck_core_v1_with_evi"
+METRICS_DIR_PATTERN = "evaluate/**/2026-01-15_11-58-00/"
+ERRORS_DIR_PATTERN = "evaluate/**/2026-01-15_11-59-44/"
+# set any missing (default) values as column name -> value
+FILL_NA = {}
+```
+
 Inference:
 
 ```
@@ -72,6 +81,7 @@ predictions_multirun_logs=[logs/277_baseline_faktencheck_core_v1_with_evi/predic
 
 </details>
 
+![f1_micro_flat](./metrics.svg)
 
 Evaluate errors:
 
@@ -103,6 +113,8 @@ predictions_multirun_logs=[logs/277_baseline_faktencheck_core_v1_with_evi/predic
 
 
 </details>
+
+![errors](./errors.svg)
 
 Copy to kibad_llm:
 ```

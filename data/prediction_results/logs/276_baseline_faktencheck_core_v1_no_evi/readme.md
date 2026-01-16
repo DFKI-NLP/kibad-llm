@@ -7,6 +7,15 @@ conducted with the faktencheck_core_fields_schema and the faktencheck_core_v1 pr
 
 See Issue https://github.com/DFKI-NLP/kibad-llm/issues/276  for more documentation.
 
+Evaluation Notebook Parameters:
+```python
+NAME = "276_baseline_faktencheck_core_v1_no_evi"
+METRICS_DIR_PATTERN = "evaluate/**/2026-01-15_11-48-12/"
+ERRORS_DIR_PATTERN = "evaluate/**/2026-01-15_11-49-25/"
+# set any missing (default) values as column name -> value
+FILL_NA = {}
+```
+
 Inference:
 
 ```
@@ -66,6 +75,7 @@ experiment/evaluate=faktencheck_core_f1_micro_flat \ predictions_multirun_logs=[
 
 </details>
 
+![f1_micro_flat](./metrics.svg)
 
 Evaluate Errors:
 
@@ -95,7 +105,7 @@ predictions_multirun_logs=[logs/276_baseline_faktencheck_core_v1_no_evi/predict/
 
 </details>
 
-
+![errors](./errors.svg)
 
 
 
