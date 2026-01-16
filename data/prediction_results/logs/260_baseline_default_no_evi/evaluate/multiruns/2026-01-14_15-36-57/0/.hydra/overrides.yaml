@@ -1,0 +1,4 @@
+- dataset.predictions.log=logs/260_baseline_default_no_evi/predict/multiruns/2026-01-14_12-17-35/0
+- name=260_baseline_default_no_evi
+- experiment/evaluate=prediction_errors
+- predictions_multirun_logs=[logs/260_baseline_default_no_evi/predict/multiruns/2026-01-14_12-17-35/]

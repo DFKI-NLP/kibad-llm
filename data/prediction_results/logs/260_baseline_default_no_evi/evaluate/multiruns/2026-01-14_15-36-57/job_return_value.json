@@ -1,0 +1,72 @@
+{
+  "extractor/llm=gpt_oss_20b_in_process": {
+    "JSONDecodeError": 9,
+    "no_error": 76,
+    "ValueError": 15,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "/netscratch/hennig/code/kibad-llm/predictions/260_baseline_default_no_evi/2026-01-14_12-17-35/2026-01-14_12-17-36_177045/predictions.jsonl",
+        "time_pdf_conversion": 0.07951309089548886,
+        "time_extraction": 3990.3343565638643,
+        "commit_hash": "c224f0eafac75c170d28c736c19d718409f42757",
+        "branch": "main",
+        "is_dirty": false
+      }
+    },
+    "overrides": {
+      "name": "260_baseline_default_no_evi",
+      "experiment/predict": "faktencheck_core_fields_schema",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gpt_oss_20b_in_process",
+      "seed": "42",
+      "extractor/prompt_template": "default",
+      "extractor.adjust_schema_for_evidence_detection": "False"
+    }
+  },
+  "extractor/llm=gemma3_27b_in_process": {
+    "no_error": 85,
+    "ValueError": 15,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "/netscratch/hennig/code/kibad-llm/predictions/260_baseline_default_no_evi/2026-01-14_12-17-35/2026-01-14_13-29-53_925770/predictions.jsonl",
+        "time_pdf_conversion": 0.009304470149800181,
+        "time_extraction": 1947.7816827618517,
+        "commit_hash": "c224f0eafac75c170d28c736c19d718409f42757",
+        "branch": "main",
+        "is_dirty": false
+      }
+    },
+    "overrides": {
+      "name": "260_baseline_default_no_evi",
+      "experiment/predict": "faktencheck_core_fields_schema",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gemma3_27b_in_process",
+      "seed": "42",
+      "extractor/prompt_template": "default",
+      "extractor.adjust_schema_for_evidence_detection": "False"
+    }
+  },
+  "extractor/llm=gpt_5": {
+    "no_error": 92,
+    "BadRequestError": 8,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "/netscratch/hennig/code/kibad-llm/predictions/260_baseline_default_no_evi/2026-01-14_12-17-35/2026-01-14_14-04-28_731361/predictions.jsonl",
+        "time_pdf_conversion": 0.008350552059710026,
+        "time_extraction": 4732.348222319037,
+        "commit_hash": "c224f0eafac75c170d28c736c19d718409f42757",
+        "branch": "main",
+        "is_dirty": false
+      }
+    },
+    "overrides": {
+      "name": "260_baseline_default_no_evi",
+      "experiment/predict": "faktencheck_core_fields_schema",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gpt_5",
+      "seed": "42",
+      "extractor/prompt_template": "default",
+      "extractor.adjust_schema_for_evidence_detection": "False"
+    }
+  }
+}

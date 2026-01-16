@@ -1,0 +1,38 @@
+{
+  "organism_trends.Antwortvariable": {
+    "precision": 0.18181818181818182,
+    "recall": 0.4393939393939394,
+    "f1": 0.2572062084257206,
+    "support": 132
+  },
+  "organism_trends.Hauptgruppe_RoteListen": {
+    "precision": 0.2613981762917933,
+    "recall": 0.7478260869565218,
+    "f1": 0.38738738738738737,
+    "support": 115
+  },
+  "organism_trends.Lebensraum": {
+    "precision": 0.21194029850746268,
+    "recall": 0.6396396396396397,
+    "f1": 0.3183856502242153,
+    "support": 111
+  },
+  "organism_trends.Trend": {
+    "precision": 0.14823008849557523,
+    "recall": 0.5037593984962406,
+    "f1": 0.22905982905982905,
+    "support": 133
+  },
+  "AVG": {
+    "precision": 0.20084668627825325,
+    "recall": 0.5826547661215853,
+    "f1": 0.2980097687742881,
+    "support": 122.75
+  },
+  "ALL": {
+    "precision": 0.19651567944250872,
+    "recall": 0.5743380855397149,
+    "f1": 0.2928348909657321,
+    "support": 491
+  }
+}

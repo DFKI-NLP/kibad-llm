@@ -1,0 +1,6 @@
+- name=276_baseline_faktencheck_core_v1_no_evi
+- experiment/predict=faktencheck_core_fields_schema
+- pdf_directory=/ds/text/kiba-d/dev-set-100
+- extractor/llm=gpt_oss_20b_in_process
+- seed=42
+- +extractor.adjust_schema_for_evidence_detection=False

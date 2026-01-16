@@ -1,0 +1,4 @@
+- dataset.predictions.log=logs/277_baseline_faktencheck_core_v1_with_evi/predict/multiruns/2026-01-14_12-20-23/1
+- name=277_baseline_faktencheck_core_v1_with_evi
+- experiment/evaluate=prediction_errors
+- predictions_multirun_logs=[logs/277_baseline_faktencheck_core_v1_with_evi/predict/multiruns/2026-01-14_12-20-23/]
