@@ -160,7 +160,61 @@ srun --your-srun-flag \
      uv run -m your.file.here
 ```
 
-## All-in-one run script
+**Important**: When running experiments for KIBA-D, it is highly (!) recommended to sym-link output directories
+to the folders in `/netscratch/hennig/kiba-d/`, to ensure that everyone has access to the experiment results. Consider
+executing the following on a fresh clone of the `kibad-llm` repository:
+
+```bash
+ln -s /netscratch/hennig/kiba-d/logs ./logs
+ln -s /netscratch/hennig/kiba-d/predictions ./predictions
+```
+
+(If these folders already exist in your kibad-llm repository because you ran inference previously, you might want to
+delete or rename them, and then execute the above commands.)
+
+## All-in-one run script for 'in_process' VLLM configs
+
+To host an llm on the cluster and run uv code against it in a python-internal setup, without the use of an external
+VLLM server, use the all-in-one run script `run_in_process.sh`. Note that this requires the use of the `*_in_process.yaml` configs
+in `configs/extractor/llm` when executing `uv run -m kibad_llm.predict`. 
+
+### Prerequisites
+
+In order to use `run_in_process.sh` you need to have followed the steps in [Full project srun](#full-project-srun)!
+
+In addition, set up your `.env` file:
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` and fill out the following mandatory variables:
+```bash
+HF_TOKEN=<your_hf_token>
+OPENAI_API_KEY=<your_openai_api_key>
+VLLM_DOWNLOAD_DIR=/ds/models/llms/cache
+```
+
+You can create an Open AI key at https://platform.openai.com/api-keys and Huggingface access tokens at https://huggingface.co/settings/tokens.
+
+### Usage
+
+`run_in_process.sh` uses flags with command line arguments.
+
+- `-h | --help` displays very similar help to this.
+
+- `pa | --partition` is the slurm partition to submit the job to. This is an optional flag and uses `"RTX6000-SLT"` per default.
+
+- `-t | --time` is the maximum time the slurm job is allowed to run. This is an optional flag and uses one hour per default.
+
+- `-u | --uv` is used for all `uv run` arguments. If there are multiple, make sure to wrap them in quotes like `"-m some.code"` which results in `uv run -m some.code`. This is a required flag.
+
+The script takes care of everything start to finish and executes all code on the compute node. As soon as the job gets resources, the uv run command (e.g. `predict.py`) starts. 
+
+### The alternatives
+
+
+## All-in-one run 'external VLLM' script
 
 To host an llm on the cluster and run uv code against it as soon as the model is ready, use the all-in-one run script `run_with_llm.sh`
 
@@ -188,7 +242,7 @@ In order to use `run_with_llm.sh` you need to have followed the steps in [Full p
 
 The script takes care of everything start to finish and executes all code on the compute node. As soon as the job gets resources, vLLM starts. The script then waits till vLLm is ready and starts your code with uv right after. This allows you to run heavy jobs without straining the login node. You can cancel the job with `ctrl-c` or `scancel` any time and don't need to worry about residual processes.
 
-### The alternative
+### Run with VLLM but on Login Node
 
 `run_with_llm_login_node_exec.sh` is very similar to `run_with_llm.sh`. The main difference is that this script puts vLLM on the compute node and runs your uv code locally on the login node. You need to be careful when using this script because of the strain you put on the login node.
 Depending on how your uv code fails or the script is cancelled, the slurm job may need to be cancelled separately.
