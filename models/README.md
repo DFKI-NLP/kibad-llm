@@ -7,10 +7,15 @@
   - [The two ways to use uv on Pegasus](#the-two-ways-to-use-uv-on-pegasus)
     - [Single package srun](#single-package-srun)
     - [Full project srun](#full-project-srun)
-  - [All-in-one run script](#all-in-one-run-script)
+  - [All-in-one in process run script](#all-in-one-run-script-for-in_process-vllm-configs)
     - [Prerequisites](#prerequisites-1)
     - [Usage](#usage)
-    - [The alternative](#the-alternative)
+  - [The alternatives](#the-alternatives)
+    - [All-in-one run script](#all-in-one-run-external-vllm-script)
+      - [Prerequisites](#prerequisites-2)
+      - [Usage](#usage-1)
+    - [Run with VLLM but on Login Node](#run-with-vllm-but-on-login-node)
+    
 
 ## Quickstart
 
@@ -172,11 +177,14 @@ ln -s /netscratch/hennig/kiba-d/predictions ./predictions
 (If these folders already exist in your kibad-llm repository because you ran inference previously, you might want to
 delete or rename them, and then execute the above commands.)
 
-## All-in-one run script for 'in_process' VLLM configs
+## All-in-one run script for in_process VLLM configs
 
 To host an llm on the cluster and run uv code against it in a python-internal setup, without the use of an external
 VLLM server, use the all-in-one run script `run_in_process.sh`. Note that this requires the use of the `*_in_process.yaml` configs
-in `configs/extractor/llm` when executing `uv run -m kibad_llm.predict`.
+in `configs/extractor/llm` when executing `uv run -m kibad_llm.predict`. Using the `run_in_process.sh` script also
+allows to run the Open AI models via their API, e.g. GPT-5, see `configs/extractor/llm/gpt_5.yaml`. This can even be done in 
+combination with VLLM-served models in a single experiment run, see for example the template commands in
+https://github.com/DFKI-NLP/kibad-llm/issues/32 . 
 
 ### Prerequisites
 
@@ -212,17 +220,17 @@ You can create an Open AI key at https://platform.openai.com/api-keys and Huggin
 
 The script takes care of everything start to finish and executes all code on the compute node. As soon as the job gets resources, the uv run command (e.g. `predict.py`) starts.
 
-### The alternatives
+## The alternatives
 
-## All-in-one run 'external VLLM' script
+### All-in-one run external VLLM script
 
 To host an llm on the cluster and run uv code against it as soon as the model is ready, use the all-in-one run script `run_with_llm.sh`
 
-### Prerequisites
+#### Prerequisites
 
 In order to use `run_with_llm.sh` you need to have followed the steps in [Full project srun](#full-project-srun)!
 
-### Usage
+#### Usage
 
 `run_with_llm.sh` uses flags with command line arguments.
 
