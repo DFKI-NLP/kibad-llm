@@ -176,7 +176,7 @@ delete or rename them, and then execute the above commands.)
 
 To host an llm on the cluster and run uv code against it in a python-internal setup, without the use of an external
 VLLM server, use the all-in-one run script `run_in_process.sh`. Note that this requires the use of the `*_in_process.yaml` configs
-in `configs/extractor/llm` when executing `uv run -m kibad_llm.predict`. 
+in `configs/extractor/llm` when executing `uv run -m kibad_llm.predict`.
 
 ### Prerequisites
 
@@ -189,6 +189,7 @@ cp .env.example .env
 ```
 
 Edit `.env` and fill out the following mandatory variables:
+
 ```bash
 HF_TOKEN=<your_hf_token>
 OPENAI_API_KEY=<your_openai_api_key>
@@ -209,10 +210,9 @@ You can create an Open AI key at https://platform.openai.com/api-keys and Huggin
 
 - `-u | --uv` is used for all `uv run` arguments. If there are multiple, make sure to wrap them in quotes like `"-m some.code"` which results in `uv run -m some.code`. This is a required flag.
 
-The script takes care of everything start to finish and executes all code on the compute node. As soon as the job gets resources, the uv run command (e.g. `predict.py`) starts. 
+The script takes care of everything start to finish and executes all code on the compute node. As soon as the job gets resources, the uv run command (e.g. `predict.py`) starts.
 
 ### The alternatives
-
 
 ## All-in-one run 'external VLLM' script
 

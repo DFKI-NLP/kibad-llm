@@ -117,8 +117,8 @@ This will process all PDF files in `pdf_directory` and save the result in a JSON
 
 See [configs/predict](./configs/predict.yaml) for further information and options.
 
-**NOTE:** If you plan on using OpenAI API models such as 'gpt_5' or access-restricted Huggingface models such as 
-'gemma3_27b', you need to set the environment variables `OPENAI_API_KEY` and/or `HF_TOKEN` in your `.env` file. 
+**NOTE:** If you plan on using OpenAI API models such as 'gpt_5' or access-restricted Huggingface models such as
+'gemma3_27b', you need to set the environment variables `OPENAI_API_KEY` and/or `HF_TOKEN` in your `.env` file.
 You can create an Open AI key at https://platform.openai.com/api-keys and Huggingface access tokens at https://huggingface.co/settings/tokens.
 
 IMPORTANT: Relevant inference setups should be defined in their own `experiment/predict` config. This allows to easily reproduce results later on by adding `experiment/predict=<experiment_config>` to the command line call. For example, to run the experiment with two schemata ([configs/experiment/predict/faktencheck_two_schemata.yaml](./configs/experiment/predict/faktencheck_two_schemata.yaml)), use:
