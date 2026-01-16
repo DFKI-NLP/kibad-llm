@@ -1,0 +1,5 @@
+- name=261_baseline_faktencheck_core_variance
+- experiment/predict=faktencheck_core_fields_schema_with_evidence
+- pdf_directory=/ds/text/kiba-d/dev-set-100
+- extractor/llm=gpt_oss_20b_in_process
+- seed=1337

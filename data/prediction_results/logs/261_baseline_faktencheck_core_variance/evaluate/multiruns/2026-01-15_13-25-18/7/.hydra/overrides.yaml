@@ -1,0 +1,4 @@
+- dataset.predictions.log=logs/261_baseline_faktencheck_core_variance/predict/multiruns/2026-01-14_20-01-33/7
+- name=261_baseline_faktencheck_core_variance
+- experiment/evaluate=prediction_errors
+- prediction_logs=logs/261_baseline_faktencheck_core_variance/predict/multiruns/2026-01-14_20-01-33
