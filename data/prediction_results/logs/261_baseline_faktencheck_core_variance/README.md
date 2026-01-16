@@ -1,11 +1,12 @@
 # Variance Analysis for Faktencheck
+variance analysis for faktencheck (core fields with evidence; 3 llms; 3 seeds)
  - id: `name=261_baseline_faktencheck_core_variance`
  - core fields with evidence: `experiment/predict=faktencheck_core_fields_schema_with_evidence`
  - 3 llms: `extractor/llm=gpt_oss_20b_in_process,gemma3_27b_in_process,gpt_5`
  - 3 seeds: `seed=42,1337,7331`
 
 see https://github.com/DFKI-NLP/kibad-llm/issues/261 for details.
-S
+
 ## Evaluation Notebook Parameters
 ```python
 NAME = "261_baseline_faktencheck_core_variance"
