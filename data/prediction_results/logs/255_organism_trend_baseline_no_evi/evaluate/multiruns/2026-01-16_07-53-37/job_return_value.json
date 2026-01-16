@@ -1,0 +1,67 @@
+{
+  "extractor/llm=gpt_oss_20b_in_process": {
+    "no_error": 368,
+    "ValueError": 16,
+    "JSONDecodeError": 25,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/255_organism_trend_baseline_no_evi/2026-01-15_14-24-54/2026-01-15_14-24-55_970917/predictions.jsonl",
+        "time_pdf_conversion": 0.11073121498338878,
+        "time_extraction": 14308.05708324397,
+        "commit_hash": "c224f0eafac75c170d28c736c19d718409f42757",
+        "branch": "main",
+        "is_dirty": false
+      }
+    },
+    "overrides": {
+      "name": "255_organism_trend_baseline_no_evi",
+      "experiment/predict": "organism_trends",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-Wald-WVC",
+      "extractor/llm": "gpt_oss_20b_in_process",
+      "seed": "42"
+    }
+  },
+  "extractor/llm=gemma3_27b_in_process": {
+    "no_error": 391,
+    "ValueError": 16,
+    "JSONDecodeError": 2,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/255_organism_trend_baseline_no_evi/2026-01-15_14-24-54/2026-01-15_18-26-57_509523/predictions.jsonl",
+        "time_pdf_conversion": 0.008438077988103032,
+        "time_extraction": 5377.755583450897,
+        "commit_hash": "c224f0eafac75c170d28c736c19d718409f42757",
+        "branch": "main",
+        "is_dirty": false
+      }
+    },
+    "overrides": {
+      "name": "255_organism_trend_baseline_no_evi",
+      "experiment/predict": "organism_trends",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-Wald-WVC",
+      "extractor/llm": "gemma3_27b_in_process",
+      "seed": "42"
+    }
+  },
+  "extractor/llm=gpt_5": {
+    "no_error": 401,
+    "BadRequestError": 8,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/255_organism_trend_baseline_no_evi/2026-01-15_14-24-54/2026-01-15_19-59-00_470705/predictions.jsonl",
+        "time_pdf_conversion": 0.012588819954544306,
+        "time_extraction": 19658.509937728988,
+        "commit_hash": "c224f0eafac75c170d28c736c19d718409f42757",
+        "branch": "main",
+        "is_dirty": false
+      }
+    },
+    "overrides": {
+      "name": "255_organism_trend_baseline_no_evi",
+      "experiment/predict": "organism_trends",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-Wald-WVC",
+      "extractor/llm": "gpt_5",
+      "seed": "42"
+    }
+  }
+}

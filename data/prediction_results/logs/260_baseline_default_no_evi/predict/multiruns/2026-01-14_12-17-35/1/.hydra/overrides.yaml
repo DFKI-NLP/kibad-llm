@@ -1,0 +1,7 @@
+- name=260_baseline_default_no_evi
+- experiment/predict=faktencheck_core_fields_schema
+- pdf_directory=/ds/text/kiba-d/dev-set-100
+- extractor/llm=gemma3_27b_in_process
+- seed=42
+- extractor/prompt_template=default
+- +extractor.adjust_schema_for_evidence_detection=False

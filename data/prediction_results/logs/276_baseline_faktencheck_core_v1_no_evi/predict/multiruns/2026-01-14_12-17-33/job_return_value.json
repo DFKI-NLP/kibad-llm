@@ -1,0 +1,50 @@
+{
+  "extractor/llm=gpt_oss_20b_in_process": {
+    "output_file": "predictions/276_baseline_faktencheck_core_v1_no_evi/2026-01-14_12-17-33/2026-01-14_12-17-34_932811/predictions.jsonl",
+    "time_pdf_conversion": 0.08343147905543447,
+    "time_extraction": 3679.7396334940568,
+    "commit_hash": "c224f0eafac75c170d28c736c19d718409f42757",
+    "branch": "main",
+    "is_dirty": false,
+    "overrides": {
+      "name": "276_baseline_faktencheck_core_v1_no_evi",
+      "experiment/predict": "faktencheck_core_fields_schema",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gpt_oss_20b_in_process",
+      "seed": "42",
+      "extractor.adjust_schema_for_evidence_detection": "False"
+    }
+  },
+  "extractor/llm=gemma3_27b_in_process": {
+    "output_file": "predictions/276_baseline_faktencheck_core_v1_no_evi/2026-01-14_12-17-33/2026-01-14_13-24-42_934207/predictions.jsonl",
+    "time_pdf_conversion": 0.007888695923611522,
+    "time_extraction": 1794.1669277029578,
+    "commit_hash": "c224f0eafac75c170d28c736c19d718409f42757",
+    "branch": "main",
+    "is_dirty": false,
+    "overrides": {
+      "name": "276_baseline_faktencheck_core_v1_no_evi",
+      "experiment/predict": "faktencheck_core_fields_schema",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gemma3_27b_in_process",
+      "seed": "42",
+      "extractor.adjust_schema_for_evidence_detection": "False"
+    }
+  },
+  "extractor/llm=gpt_5": {
+    "output_file": "predictions/276_baseline_faktencheck_core_v1_no_evi/2026-01-14_12-17-33/2026-01-14_13-59-22_006808/predictions.jsonl",
+    "time_pdf_conversion": 0.0068392769899219275,
+    "time_extraction": 5664.268716858001,
+    "commit_hash": "c224f0eafac75c170d28c736c19d718409f42757",
+    "branch": "main",
+    "is_dirty": false,
+    "overrides": {
+      "name": "276_baseline_faktencheck_core_v1_no_evi",
+      "experiment/predict": "faktencheck_core_fields_schema",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gpt_5",
+      "seed": "42",
+      "extractor.adjust_schema_for_evidence_detection": "False"
+    }
+  }
+}
