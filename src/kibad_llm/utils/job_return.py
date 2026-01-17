@@ -100,6 +100,7 @@ def mixed_group_by(
     numeric_agg_func: str | Callable | list[str | Callable] = "mean",
     numeric_fill_na: Any | None = None,
     force_list_col_regex: str | None = None,
+    columns_name: str | None = None,
 ) -> pd.DataFrame:
     """
     Group a DataFrame by one or more columns and aggregate numeric vs. non-numeric
@@ -139,6 +140,8 @@ def mixed_group_by(
         Optional regex. Columns whose names match this pattern are treated as
         non-numeric (i.e., aggregated as ``list``) even if their dtype is numeric.
         Useful for numeric-coded identifiers that should not be summarized.
+    columns_name:
+        Optional name for the resulting DataFrame columns.
 
     Returns
     -------
@@ -208,5 +211,8 @@ def mixed_group_by(
 
     # drop columns that are completely NaN (otherwise to_markdown fails)
     result = result.dropna(axis=1, how="all")
+
+    if columns_name:
+        result.columns.name = columns_name
 
     return result
