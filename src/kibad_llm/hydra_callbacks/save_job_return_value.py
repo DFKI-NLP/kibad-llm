@@ -13,7 +13,7 @@ from omegaconf import DictConfig
 import pandas as pd
 
 from kibad_llm.utils.dictionary import flatten_dict, unflatten_dict
-from kibad_llm.utils.job_return import group_by, multi_index_to_single
+from kibad_llm.utils.job_return import mixed_group_by, multi_index_to_single
 
 
 def to_py_obj(obj):
@@ -542,7 +542,7 @@ class SaveJobReturnValueCallback(Callback):
                 result.columns = multi_index_to_single(result.columns)
 
             if markdown_group_by is not None:
-                result = group_by(
+                result = mixed_group_by(
                     data=result,
                     by=markdown_group_by,
                     numeric_agg_func=["mean", "std"],
