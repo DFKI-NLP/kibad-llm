@@ -7,6 +7,14 @@ conducted with the organism_trends schema and the simple extractor (default prom
 
 See Issue https://github.com/DFKI-NLP/kibad-llm/issues/255  for more documentation.
 
+Evaluation Notebook Parameters:
+```python
+NAME = "255_organism_trend_baseline_no_evi"
+METRICS_DIR_PATTERN = "evaluate/**/2026-01-16_07-52-21/"
+ERRORS_DIR_PATTERN = "evaluate/**/2026-01-16_07-53-37/"
+# set any missing (default) values as column name -> value
+FILL_NA = {}
+```
 
 Inference:
 
@@ -68,6 +76,8 @@ prediction_logs=[logs/255_organism_trend_baseline_no_evi/predict/multiruns/2026-
 
 </details>
 
+![f1_micro_flat](./metrics.svg)
+
 Evaluate errors:
 
 ```
@@ -97,3 +107,5 @@ prediction_logs=[logs/255_organism_trend_baseline_no_evi/predict/multiruns/2026-
 
 
 </details>
+
+![errors](./errors.svg)

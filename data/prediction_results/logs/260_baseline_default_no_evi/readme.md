@@ -7,6 +7,14 @@ conducted with the faktencheck_core_fields_schema and the default prompt templat
 
 See Issue https://github.com/DFKI-NLP/kibad-llm/issues/260  for more documentation.
 
+Evaluation Notebook Parameters:
+```python
+NAME = "260_baseline_default_no_evi"
+METRICS_DIR_PATTERN = "evaluate/**/2026-01-14_15-34-51/"
+ERRORS_DIR_PATTERN = "evaluate/**/2026-01-14_15-36-57/"
+# set any missing (default) values as column name -> value
+FILL_NA = {}
+```
 
 Inference:
 ```
@@ -64,6 +72,7 @@ predictions_multirun_logs=[logs/260_baseline_default_no_evi/predict/multiruns/20
 
 </details>
 
+![f1_micro_flat](./metrics.svg)
 
 Evaluate errors:
 
@@ -94,3 +103,5 @@ e.md
 | gpt_oss_20b_in_process    |                      0 |                     0 |                      9 |                     0 |                15 |                0 |              76 |              0 |                                            3990.33 |                                                 0 |                                                  0.08  |                                                     0 | ['faktencheck_core_fields_schema'] | ['False']                                                  | ['default']                           | ['260_baseline_default_no_evi'] | ['/ds/text/kiba-d/dev-set-100'] | ['42']           | ['main']                             | ['c224f0eafac75c170d28c736c19d718409f42757'] | [np.False_]                            | ['/netscratch/hennig/code/kibad-llm/predictions/260_baseline_default_no_evi/2026-01-14_12-17-35/2026-01-14_12-17-36_177045/predictions.jsonl'] |
 
 </details>
+
+![errors](./errors.svg)
