@@ -5,6 +5,7 @@ from typing import Any
 from llama_index.core.base.llms.types import ChatResponse, ThinkingBlock
 from llama_index.core.llms import ChatMessage as LlamaIndexChatMessage
 from llama_index.llms.openai import OpenAIResponses
+from openai import BadRequestError
 
 from kibad_llm.llms.base import LLM, ReasoningExtractionError, SimpleChatMessage
 from kibad_llm.utils.log import warn_once
@@ -195,7 +196,11 @@ class OpenAI(LLM):
         llama_index_messages = [
             LlamaIndexChatMessage(role=msg.role, content=msg.content) for msg in messages
         ]
-        return self.model.chat(llama_index_messages, **request_kwargs)
+        try:
+            return self.model.chat(llama_index_messages, **request_kwargs)
+        except BadRequestError as e:
+            # align error type with in_process LLMs
+            raise ValueError(e.message) from e
 
     def get_reasoning_from_chat_response(self, response: ChatResponse) -> str:
         """Return the OpenAI Responses API reasoning *summary* (not raw CoT)."""
