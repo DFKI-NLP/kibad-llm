@@ -94,12 +94,13 @@ def multi_index_to_single(index: pd.Index, sep: str = ".") -> pd.Index:
     return index.map(lambda values: _filter_nan_and_join(values, sep))
 
 
-def group_by(
+def mixed_group_by(
     data: pd.DataFrame,
     by: list[str] | str,
     numeric_agg_func: str | Callable | list[str | Callable] = "mean",
     numeric_fill_na: Any | None = None,
     force_list_col_regex: str | None = None,
+    columns_name: str | None = None,
 ) -> pd.DataFrame:
     """
     Group a DataFrame by one or more columns and aggregate numeric vs. non-numeric
@@ -139,6 +140,8 @@ def group_by(
         Optional regex. Columns whose names match this pattern are treated as
         non-numeric (i.e., aggregated as ``list``) even if their dtype is numeric.
         Useful for numeric-coded identifiers that should not be summarized.
+    columns_name:
+        Optional name for the resulting DataFrame columns.
 
     Returns
     -------
@@ -180,20 +183,36 @@ def group_by(
         if col in cols_agg_list:
             cols_agg_list.remove(col)
 
+    dfs_concat = []
     # group by the specified columns ...
     result_grouped = data.groupby(by=list(by))
-    # ... and calculate the mean and std for numeric columns (and flatten the column MultiIndex)
-    result_numeric = result_grouped[cols_agg_numeric].agg(numeric_agg_func)
-    result_numeric.columns = multi_index_to_single(result_numeric.columns, sep=".")
+    if len(cols_agg_numeric) > 0:
+        # ... and calculate the mean and std for numeric columns (and flatten the column MultiIndex)
+        result_numeric = result_grouped[cols_agg_numeric].agg(numeric_agg_func)
+        result_numeric.columns = multi_index_to_single(result_numeric.columns, sep=".")
 
-    if numeric_fill_na is not None:
-        result_numeric = result_numeric.fillna(numeric_fill_na)
+        if numeric_fill_na is not None:
+            result_numeric = result_numeric.fillna(numeric_fill_na)
 
-    # ... and for non-numeric columns, return lists of values
-    result_other = result_grouped[cols_agg_list].agg(list)
+        dfs_concat.append(result_numeric)
+
+    if len(cols_agg_list) > 0:
+        # ... and for non-numeric columns, return lists of values
+        result_other = result_grouped[cols_agg_list].agg(list)
+
+        dfs_concat.append(result_other)
+
+    if len(dfs_concat) == 0:
+        # nothing to aggregate, return empty dataframe with correct index
+        return pd.DataFrame(index=result_grouped.size().index)
+
     # combine both results
-    result = pd.concat([result_numeric, result_other], axis=1)
+    result = pd.concat(dfs_concat, axis=1)
+
     # drop columns that are completely NaN (otherwise to_markdown fails)
     result = result.dropna(axis=1, how="all")
+
+    if columns_name:
+        result.columns.name = columns_name
 
     return result
