@@ -15,7 +15,6 @@
       - [Prerequisites](#prerequisites-2)
       - [Usage](#usage-1)
     - [Run with VLLM but on Login Node](#run-with-vllm-but-on-login-node)
-    
 
 ## Quickstart
 
@@ -182,9 +181,9 @@ delete or rename them, and then execute the above commands.)
 To host an llm on the cluster and run uv code against it in a python-internal setup, without the use of an external
 VLLM server, use the all-in-one run script `run_in_process.sh`. Note that this requires the use of the `*_in_process.yaml` configs
 in `configs/extractor/llm` when executing `uv run -m kibad_llm.predict`. Using the `run_in_process.sh` script also
-allows to run the Open AI models via their API, e.g. GPT-5, see `configs/extractor/llm/gpt_5.yaml`. This can even be done in 
+allows to run the Open AI models via their API, e.g. GPT-5, see `configs/extractor/llm/gpt_5.yaml`. This can even be done in
 combination with VLLM-served models in a single experiment run, see for example the template commands in
-https://github.com/DFKI-NLP/kibad-llm/issues/32 . 
+https://github.com/DFKI-NLP/kibad-llm/issues/32 .
 
 ### Prerequisites
 
