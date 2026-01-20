@@ -490,7 +490,7 @@ def add_response_content_callback(
     out.response_content = llm.get_response_content_from_chat_response(response=response)
 
 
-def add_reasoning_callback(
+def add_reasoning_content_callback(
     out: SingleExtractionResult,
     response: ChatResponse,
     *,
@@ -515,10 +515,12 @@ def add_structured_callback(
             validator_cls = validator_for(schema)
             validator = validator_cls(schema)
             validator.validate(parsed)
+        # set structured output just after successful validation so that the format is guaranteed
+        # when validate_with_schema is True
         out.structured = parsed
 
 
-def add_structured_with_metadata_callback(
+def augment_and_strip_metadata_from_structured_callback(
     out: SingleExtractionResult,
     response: ChatResponse,
     *,
@@ -528,34 +530,38 @@ def add_structured_with_metadata_callback(
     validate_with_schema: bool,
     augment_metadata_kwargs: dict[str, Any] | None = None,
 ) -> None:
-    """Add structured_with_metadata and structured (stripped) output to output dictionary
-    based on the structured output.
-
-    Wraps terminal values in the schema with metadata, then augments the metadata with evidence
-    information extracted from the input text. Finally, strips the metadata to produce the cleaned
-    structured output.
+    """Augment metadata in `structured` output and save it as `structured_with_metadata`.
+    Then, strip metadata and save the cleaned version back to `structured`.
     """
     # no-op if structured is None
     if out.structured is not None:
-        structured = out.structured
-        # clear so if an error occurs below we don't have partial data
+
+        # store original as structured_with_metadata and clear the structured field so
+        # we don't accidentally use it later on
+        structured_with_metadata = out.structured
         out.structured = None
-        data_augmented = augment_metadata(
-            structured,
+
+        # augment metadata
+        out.structured_with_metadata = augment_metadata(
+            structured_with_metadata,
             text=text,
             content_key=WRAPPED_CONTENT_KEY,
             **(augment_metadata_kwargs or {}),
         )
-        out.structured_with_metadata = data_augmented
-        data_without_metadata = strip_metadata(structured, content_key=WRAPPED_CONTENT_KEY)
+
+        # strip metadata to get cleaned version
+        structured = strip_metadata(out.structured_with_metadata, content_key=WRAPPED_CONTENT_KEY)
+
         # validate stripped version against original schema (if schema is not the original one)
         if validate_with_schema and original_schema is not None and schema != original_schema:
             validator_cls = validator_for(original_schema)
             validator_cls.check_schema(original_schema)
             validator = validator_cls(original_schema)
-            validator.validate(data_without_metadata)
+            validator.validate(structured)
 
-        out.structured = data_without_metadata
+        # set structured output just after successful validation so that the format is guaranteed
+        # when validate_with_schema is True
+        out.structured = structured
 
 
 def extract_from_text(
@@ -700,18 +706,18 @@ def extract_from_text(
         postprocessing_callbacks.append(partial(add_response_content_callback, llm=llm))
         # 2) get reasoning if requested
         if return_reasoning:
-            postprocessing_callbacks.append(partial(add_reasoning_callback, llm=llm))
+            postprocessing_callbacks.append(partial(add_reasoning_content_callback, llm=llm))
         # 3) get structured output
         postprocessing_callbacks.append(
             partial(
                 add_structured_callback, schema=schema, validate_with_schema=validate_with_schema
             )
         )
-        # 4) get structured with metadata if requested
+        # 4) handle structured with metadata if requested
         if response_has_metadata:
             postprocessing_callbacks.append(
                 partial(
-                    add_structured_with_metadata_callback,
+                    augment_and_strip_metadata_from_structured_callback,
                     schema=schema,
                     original_schema=original_schema,
                     text=text,
