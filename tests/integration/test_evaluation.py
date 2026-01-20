@@ -29,9 +29,11 @@ def metric_name(request) -> str:
 
 @pytest.fixture(scope="function")
 def cfg_evaluate(tmp_path, metric_name) -> DictConfig:  # type: ignore
-    cfg = cfg_global(
-        out_dir=tmp_path, config_name="evaluate.yaml", overrides=[f"metric={metric_name}"]
-    )
+    overrides = [f"metric={metric_name}"]
+    if metric_name == "prediction_errors":
+        # for this metric, we need to set a specific dataset that does not strip errors
+        overrides.append("dataset=predictions_only")
+    cfg = cfg_global(out_dir=tmp_path, config_name="evaluate.yaml", overrides=overrides)
 
     with open_dict(cfg):
         cfg.dataset.predictions.file = str(PREDICTIONS_FILE)
@@ -97,6 +99,6 @@ def test_evaluate(tmp_path, cfg_evaluate, metric_name):
         }
     elif metric_name == "prediction_errors":
         # we don't have any errors in the predictions file
-        assert metric_scores == {}
+        assert metric_scores == {"no_error": 4}
     else:
         raise ValueError(f"Unexpected metric name: {metric_name}. Please update the test case.")
