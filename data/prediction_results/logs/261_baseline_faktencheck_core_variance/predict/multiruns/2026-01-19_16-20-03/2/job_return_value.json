@@ -1,0 +1,9 @@
+{
+  "output_file": "predictions/261_baseline_faktencheck_core_variance/2026-01-19_16-20-03/2026-01-19_17-26-56_821147/predictions.jsonl.zip",
+  "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/261_baseline_faktencheck_core_variance/2026-01-19_16-20-03/2026-01-19_17-26-56_821147/predictions.jsonl.zip",
+  "time_pdf_conversion": 0.0033585570054128766,
+  "time_extraction": 1935.4586144689238,
+  "commit_hash": "679648010298c91fed1bf2b3070a428a0542a154",
+  "branch": "main",
+  "is_dirty": false
+}

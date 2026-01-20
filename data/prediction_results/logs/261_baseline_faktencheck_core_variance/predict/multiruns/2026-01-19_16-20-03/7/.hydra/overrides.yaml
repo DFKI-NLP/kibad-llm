@@ -1,0 +1,6 @@
+- name=261_baseline_faktencheck_core_variance
+- experiment/predict=faktencheck_core_fields_schema_with_evidence
+- pdf_directory=/ds/text/kiba-d/dev-set-100
+- extractor/llm=gpt_5
+- ++extractor.llm.temperature=1.0
+- seed=1337
