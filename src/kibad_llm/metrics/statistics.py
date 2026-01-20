@@ -25,26 +25,26 @@ class ErrorCollector(Metric):
         self.state: list[list[str]] = []
 
     def _update(self, prediction: Any, reference: Any, record_id: Hashable | None = None) -> None:
-        errors_with_none: list[list[str]] = []
+        errors: list[list[str]] = []
         found_error_keys = []
         if "error" in prediction:
             if prediction["error"] is not None:
-                errors_with_none.append([prediction["error"]])
+                errors.append([prediction["error"]])
             else:
-                errors_with_none.append([])
+                errors.append([])
             found_error_keys.append("error")
         if "error_list" in prediction and isinstance(prediction["error_list"], list):
             for e in prediction["error_list"]:
                 if e is not None:
-                    errors_with_none.append([e])
+                    errors.append([e])
                 else:
-                    errors_with_none.append([])
+                    errors.append([])
             found_error_keys.append("error_list")
         if "errors" in prediction:
-            errors_with_none.append(prediction["errors"])
+            errors.append(prediction["errors"])
             found_error_keys.append("errors")
         if "errors_list" in prediction and isinstance(prediction["errors_list"], list):
-            errors_with_none.extend(prediction["errors_list"])
+            errors.extend(prediction["errors_list"])
             found_error_keys.append("errors_list")
 
         if len(found_error_keys) == 0:
@@ -59,9 +59,9 @@ class ErrorCollector(Metric):
             )
 
         if self.show_errors:
-            for error in errors_with_none:
+            for error in errors:
                 logger.info(f"Collected error (id={record_id}): {error}")
-        self.state.extend(errors_with_none)
+        self.state.extend(errors)
 
     def _compute(self) -> dict[str, Any]:
 
