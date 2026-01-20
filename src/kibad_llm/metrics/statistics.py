@@ -22,31 +22,61 @@ class ErrorCollector(Metric):
         self.reset()
 
     def reset(self) -> None:
-        self.state: list[str] = []
+        self.state: list[list[str]] = []
 
     def _update(self, prediction: Any, reference: Any, record_id: Hashable | None = None) -> None:
-        errors_with_none = []
+        errors_with_none: list[list[str]] = []
+        found_error_keys = []
         if "error" in prediction:
-            errors_with_none.append(prediction["error"])
-        elif "error_list" in prediction and isinstance(prediction["error_list"], list):
-            errors_with_none.extend(prediction["error_list"])
+            if prediction["error"] is not None:
+                errors_with_none.append([prediction["error"]])
+            else:
+                errors_with_none.append([])
+            found_error_keys.append("error")
+        if "error_list" in prediction and isinstance(prediction["error_list"], list):
+            for e in prediction["error_list"]:
+                if e is not None:
+                    errors_with_none.append([e])
+                else:
+                    errors_with_none.append([])
+            found_error_keys.append("error_list")
+        if "errors" in prediction:
+            errors_with_none.append(prediction["errors"])
+            found_error_keys.append("errors")
+        if "errors_list" in prediction and isinstance(prediction["errors_list"], list):
+            errors_with_none.extend(prediction["errors_list"])
+            found_error_keys.append("errors_list")
 
-        # separate None values
-        errors_none = ["no_error" for e in errors_with_none if e is None]
-        errors = [e for e in errors_with_none if e is not None]
+        if len(found_error_keys) == 0:
+            raise ValueError(
+                f"No error keys found in prediction for record id={record_id}. "
+                f"Expected one of: 'error', 'error_list', 'errors', 'errors_list'."
+            )
+        if len(found_error_keys) > 1:
+            raise ValueError(
+                f"Multiple error keys found in prediction for record id={record_id}: "
+                f"{found_error_keys}. Please provide only one of these keys."
+            )
+
         if self.show_errors:
-            for error in errors:
+            for error in errors_with_none:
                 logger.info(f"Collected error (id={record_id}): {error}")
-        self.state.extend(errors)
-        self.state.extend(errors_none)
+        self.state.extend(errors_with_none)
 
     def _compute(self) -> dict[str, Any]:
 
         # group errors by message type and count occurrences
         errors_grouped = defaultdict(list)
-        for error in self.state:
-            err_parts = error.split(self.type_separator, 1)
-            errors_grouped[err_parts[0]].append(error)
+        for errors in self.state:
+            # overall no error / with error
+            if len(errors) == 0:
+                errors_grouped["no_error"].append("")
+            else:
+                errors_grouped["with_error"].append("")
+            # detailed error types
+            for error in errors:
+                err_parts = error.split(self.type_separator, 1)
+                errors_grouped[err_parts[0]].append(error)
 
         # just return counts for now
         counts = {k: len(v) for k, v in errors_grouped.items()}
