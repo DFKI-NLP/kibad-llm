@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 import dataclasses
+from dataclasses import field
+from functools import partial
 import json
 import logging
 import re
@@ -10,6 +12,7 @@ import traceback
 from typing import Any
 
 from jsonschema.validators import validator_for
+from llama_index.core.base.llms.types import ChatResponse
 
 from kibad_llm.llms.base import LLM, MessageRole, SimpleChatMessage
 from kibad_llm.schema.utils import (
@@ -31,7 +34,7 @@ class SingleExtractionResult(FieldDict):
     reasoning_content: str | None = None
     messages: dict[str, str | None] | None = None
     messages_formatted: dict[str, str] | None = None
-    error: str | None = None
+    errors: list[str] = field(default_factory=list)
 
 
 def exception2error_msg(e: BaseException) -> str:
@@ -477,6 +480,84 @@ def augment_metadata(
     return _augment(data)
 
 
+def add_response_content_callback(
+    out: SingleExtractionResult,
+    response: ChatResponse,
+    *,
+    llm: LLM,
+) -> None:
+    """Add `response_content` to output dictionary."""
+    out.response_content = llm.get_response_content_from_chat_response(response=response)
+
+
+def add_reasoning_callback(
+    out: SingleExtractionResult,
+    response: ChatResponse,
+    *,
+    llm: LLM,
+) -> None:
+    """Add `reasoning_content` to output dictionary."""
+    out.reasoning_content = llm.get_reasoning_from_chat_response(response=response)
+
+
+def add_structured_callback(
+    out: SingleExtractionResult,
+    response: ChatResponse,
+    *,
+    schema: dict[str, Any] | None,
+    validate_with_schema: bool,
+) -> None:
+    """Add `structured` output to output dictionary based on response content."""
+    # no-op if response content is None
+    if out.response_content is not None:
+        parsed = json.loads(out.response_content)
+        if validate_with_schema and schema is not None:
+            validator_cls = validator_for(schema)
+            validator = validator_cls(schema)
+            validator.validate(parsed)
+        out.structured = parsed
+
+
+def add_structured_with_metadata_callback(
+    out: SingleExtractionResult,
+    response: ChatResponse,
+    *,
+    schema: dict[str, Any] | None,
+    original_schema: dict[str, Any] | None,
+    text: str,
+    validate_with_schema: bool,
+    augment_metadata_kwargs: dict[str, Any] | None = None,
+) -> None:
+    """Add structured_with_metadata and structured (stripped) output to output dictionary
+    based on the structured output.
+
+    Wraps terminal values in the schema with metadata, then augments the metadata with evidence
+    information extracted from the input text. Finally, strips the metadata to produce the cleaned
+    structured output.
+    """
+    # no-op if structured is None
+    if out.structured is not None:
+        structured = out.structured
+        # clear so if an error occurs below we don't have partial data
+        out.structured = None
+        data_augmented = augment_metadata(
+            structured,
+            text=text,
+            content_key=WRAPPED_CONTENT_KEY,
+            **(augment_metadata_kwargs or {}),
+        )
+        out.structured_with_metadata = data_augmented
+        data_without_metadata = strip_metadata(structured, content_key=WRAPPED_CONTENT_KEY)
+        # validate stripped version against original schema (if schema is not the original one)
+        if validate_with_schema and original_schema is not None and schema != original_schema:
+            validator_cls = validator_for(original_schema)
+            validator_cls.check_schema(original_schema)
+            validator = validator_cls(original_schema)
+            validator.validate(data_without_metadata)
+
+        out.structured = data_without_metadata
+
+
 def extract_from_text(
     text: str,
     text_id: str,
@@ -613,61 +694,50 @@ def extract_from_text(
 
     # only proceed if we have an llm
     if llm is not None:
-        response_content = ""
-        # Parse & validate (schema optional)
-        try:
-            # LLM chat call
-            resp = llm.call_llm_chat_with_guided_decoding(
-                messages=messages,
-                json_schema=schema if use_guided_decoding else None,
-                **request_kwargs,
+        # setup postprocessing callbacks
+        postprocessing_callbacks: list[Callable[[SingleExtractionResult, ChatResponse], None]] = []
+        # 1) get response content
+        postprocessing_callbacks.append(partial(add_response_content_callback, llm=llm))
+        # 2) get reasoning if requested
+        if return_reasoning:
+            postprocessing_callbacks.append(partial(add_reasoning_callback, llm=llm))
+        # 3) get structured output
+        postprocessing_callbacks.append(
+            partial(
+                add_structured_callback, schema=schema, validate_with_schema=validate_with_schema
             )
-
-            if return_reasoning:
-                out["reasoning_content"] = llm.get_reasoning_from_chat_response(response=resp)
-
-            response_content = llm.get_response_content_from_chat_response(response=resp)
-            out["response_content"] = response_content
-
-            data = json.loads(response_content)
-            if schema is not None and validate_with_schema:
-                validator_cls = validator_for(schema)
-                validator_cls.check_schema(schema)
-                validator = validator_cls(schema)
-                validator.validate(data)
-
-            if response_has_metadata:
-                data_augmented = augment_metadata(
-                    data,
+        )
+        # 4) get structured with metadata if requested
+        if response_has_metadata:
+            postprocessing_callbacks.append(
+                partial(
+                    add_structured_with_metadata_callback,
+                    schema=schema,
+                    original_schema=original_schema,
                     text=text,
-                    content_key=WRAPPED_CONTENT_KEY,
-                    **(augment_metadata_kwargs or {}),
+                    validate_with_schema=validate_with_schema,
+                    augment_metadata_kwargs=augment_metadata_kwargs,
                 )
-                out["structured_with_metadata"] = data_augmented
-                data_without_metadata = strip_metadata(data, content_key=WRAPPED_CONTENT_KEY)
-                # validate stripped version against original schema (if schema is not the original one)
-                if (
-                    validate_with_schema
-                    and original_schema is not None
-                    and schema != original_schema
-                ):
-                    validator_cls = validator_for(original_schema)
-                    validator_cls.check_schema(original_schema)
-                    validator = validator_cls(original_schema)
-                    validator.validate(data_without_metadata)
-                data = data_without_metadata
-
-            # just assign if we validated successfully
-            out["structured"] = data
-
-        except Exception as e:
-            error_msg = exception2error_msg(e)
-            error_msg_flat = re.sub(r"\s+", " ", error_msg)
-            logger.warning(
-                f"Failed to process document {text_id}: {error_msg_flat}, "
-                f"response_content = '{response_content[:min(len(response_content), 1500)]}...'"
             )
-            out["error"] = error_msg
+
+        # LLM chat call
+        resp = llm.call_llm_chat_with_guided_decoding(
+            messages=messages,
+            json_schema=schema if use_guided_decoding else None,
+            **request_kwargs,
+        )
+
+        # postprocessing: call each callback in order, but proceed if one fails
+        for callback in postprocessing_callbacks:
+            try:
+                callback(out, resp)
+            except Exception as e:
+                error_msg = exception2error_msg(e)
+                show_msg = f"Failed to process document {text_id}: {error_msg}"
+                # if we have response content, include a snippet for better debugging
+                if out.response_content is not None:
+                    show_msg += f", response_content = '{out.response_content[:1500]}...'"
+                out["errors"].append(error_msg)
 
     else:
         warn_once("No LLM provided for extraction, skipping LLM call.")
@@ -695,5 +765,4 @@ def extract_from_text_lenient(text: str, text_id: str, **kwargs) -> SingleExtrac
         error_msg = exception2error_msg(e)
         error_msg_flat = re.sub(r"\s+", " ", error_msg)
         logger.error(f"Error processing document {text_id}: {error_msg_flat}")
-        # needs to match the output of extract_from_text
-        return SingleExtractionResult(error=error_msg)
+        return SingleExtractionResult(errors=[error_msg])
