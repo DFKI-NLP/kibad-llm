@@ -121,11 +121,11 @@ prediction_logs=logs/261_baseline_faktencheck_core_variance/predict/multiruns/20
 
 #### Outcome
 
-`gpt_5` shows some variance, but `gemma3_27b_in_process` and `gpt_oss_20b_in_process` don't. We should investigate further why these in-process models show no variance at all.
+`gpt_5` shows some variance, but `gemma3_27b_in_process` and `gpt_oss_20b_in_process` don't. We should investigate further why these in-process models show no variance at all. See runs below.
 
 ## temperature=1.0 (different seeds)
 
- - expected outcome: variance for all models
+ - expected outcome: variance for all models :white_check_mark:
  - It looks like that for `gpt_5`, the temperature is hard-coded to `1.0`, so the result is identical to previous runs. However, we include it here again for better result analysis.
  - we prefix `extractor.llm.temperature` with `++` since `*_in_process` have it in the config, but `gpt_5` hasn't
 ```
@@ -207,7 +207,7 @@ prediction_logs=logs/261_baseline_faktencheck_core_variance/predict/multiruns/20
 
 ## temperature=1.0, but identical seed
 
- - expected outcome: no variance
+ - expected outcome: no variance :white_check_mark:
  - `gpt_5` does not allow to set a seed, so we exclude it.
 ```
 ./run_in_process.sh -pa "H100-SLT,H100-Trails,H100" \
