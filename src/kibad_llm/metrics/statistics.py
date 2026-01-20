@@ -70,9 +70,9 @@ class ErrorCollector(Metric):
         for errors in self.state:
             # overall no error / with error
             if len(errors) == 0:
-                errors_grouped["no_error"].append("")
+                errors_grouped["no_error"].append("no_error")
             else:
-                errors_grouped["with_error"].append("")
+                errors_grouped["with_error"].append("with_error")
             # detailed error types
             for error in errors:
                 err_parts = error.split(self.type_separator, 1)
