@@ -102,17 +102,32 @@ def test_predict_fast_dev_run(tmp_path, cfg_predict):
     assert set(result["structured"]) == set(fixture_data["structured"])
 
 
+@pytest.fixture(params=["too_long", "missing_response_content"])
+def error_type(request) -> str:
+    return request.param
+
+
 @pytest.fixture(scope="function")
-def cfg_predict_pdf_errors(tmp_path) -> DictConfig:  # type: ignore
+def cfg_predict_pdf_errors(tmp_path, error_type) -> DictConfig:  # type: ignore
+    overrides = [
+        # don't compress to be able to read error messages easily
+        "output_file_name=predictions.jsonl",
+    ]
+    if error_type in ["too_long"]:
+        # we need the text to check for the length, so enable store_text_in_predictions
+        overrides.append("store_text_in_predictions=true")
+    if error_type in ["missing_response_content"]:
+        # use a more complex schema that is more likely to fail
+        overrides.append("experiment/predict=faktencheck_core_fields_schema_with_evidence")
+
     cfg = cfg_global(
         config_name="predict.yaml",
         out_dir=tmp_path,
-        # we need the text to check for the length, so enable store_text_in_predictions
-        overrides=["store_text_in_predictions=true"],
+        overrides=overrides,
     )
 
     with open_dict(cfg):
-        cfg.pdf_directory = str(PROJ_ROOT / "tests" / "fixtures" / "pdfs_error")
+        cfg.pdf_directory = str(PROJ_ROOT / "tests" / "fixtures" / "pdfs_error" / error_type)
 
     yield cfg
 
@@ -120,7 +135,7 @@ def cfg_predict_pdf_errors(tmp_path) -> DictConfig:  # type: ignore
 
 
 @pytest.mark.slow
-def test_prediction_on_pdf_errors(cfg_predict_pdf_errors):
+def test_prediction_on_pdf_errors(cfg_predict_pdf_errors, error_type):
     job_return_value = predict(cfg_predict_pdf_errors)
 
     with open(job_return_value["output_file"]) as f:
@@ -133,19 +148,32 @@ def test_prediction_on_pdf_errors(cfg_predict_pdf_errors):
         results[result["file_name"]] = result
 
     # check long PDF error
-    file_name_long_pdf = "2E9XWUUE.pdf"
-    assert file_name_long_pdf in results
-    result_long_pdf = results[file_name_long_pdf]
-    # assert that there was some quite long input text
-    text_long_pdf = result_long_pdf.get("text", None)
-    assert text_long_pdf is not None and len(text_long_pdf) > 1_000_000
-    # assert that there is no structured output ...
-    structured_long_pdf = result_long_pdf.get("structured", None)
-    assert structured_long_pdf is None
-    # ... but an error message about max tokens
-    error_long_pdf = result_long_pdf.get("error", None)
-    assert error_long_pdf is not None
-    assert "Error code: 400" in error_long_pdf
-    # check that we got a negative max_tokens error message
-    assert "'message': 'max_tokens must be at least 1, got -" in error_long_pdf
-    assert "'type': 'BadRequestError'" in error_long_pdf
+    if error_type == "too_long":
+        file_name = "2E9XWUUE.pdf"
+        assert file_name in results
+        result = results[file_name]
+        # assert that there was some quite long input text
+        text = result.get("text", None)
+        assert text is not None and len(text) > 1_000_000
+        # assert that there is no structured output ...
+        assert result.get("structured", None) is None
+        # ... but an error message about max tokens
+        error = result.get("error", None)
+        assert error is not None
+        assert error.startswith("ValueError:")
+        assert "Error code: 400" in error
+        assert "'type': 'BadRequestError'" in error
+        # check that we got a negative max_tokens error message
+        assert "'message': 'max_tokens must be at least 1, got -" in error
+    elif error_type == "missing_response_content":
+        file_name = "3Z5BFIBL.pdf"
+        assert file_name in results
+        result = results[file_name]
+        # assert that there is no structured output ...
+        assert result.get("structured", None) is None
+        # ... but an error message about missing response content
+        error = result.get("error", None)
+        assert error is not None
+        assert error.startswith("MissingResponseContentError:")
+    else:
+        pytest.fail(f"Unhandled error_type fixture: {error_type}")
