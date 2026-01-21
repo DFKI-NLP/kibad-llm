@@ -739,7 +739,8 @@ def extract_from_text(
                 callback(out, resp)
             except Exception as e:
                 error_msg = exception2error_msg(e)
-                show_msg = f"Failed to process document {text_id}: {error_msg}"
+                error_msg_flat = re.sub(r"\s+", " ", error_msg)
+                show_msg = f"Failed to process document {text_id}: {error_msg_flat}"
                 # if we have response content, include a snippet for better debugging
                 if out.response_content is not None:
                     show_msg += f", response_content = '{out.response_content[:1500]}...'"
