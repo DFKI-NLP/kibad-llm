@@ -179,8 +179,8 @@ def overrides_to_dict(
     override_dict = {}
     for override in overrides:
         key, value = override.split("=", 1)
-        if remove_plus_prefix and key.startswith("+"):
-            key = key[1:]
+        if remove_plus_prefix:
+            key = key.lstrip("+")
         override_dict[key] = value
     return override_dict
 
