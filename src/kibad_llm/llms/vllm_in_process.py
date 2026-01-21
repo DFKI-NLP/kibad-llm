@@ -89,11 +89,10 @@ class VllmInProcess(LLM):
         reasoning, final, _is_tool_call = parse_chat_output(out.token_ids)
         msg = LlamaIndexChatMessage(role=MessageRole.ASSISTANT, content=final)
 
-        additional_kwargs: dict[str, Any] = {}
         if reasoning is not None:
             msg.additional_kwargs["reasoning"] = reasoning
 
-        return ChatResponse(message=msg, raw=req_outputs, additional_kwargs=additional_kwargs)
+        return ChatResponse(message=msg, raw=req_outputs)
 
     def get_reasoning_from_chat_response(self, response: ChatResponse) -> str:
         """Extract reasoning from a chat response."""
