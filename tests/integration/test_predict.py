@@ -102,17 +102,26 @@ def test_predict_fast_dev_run(tmp_path, cfg_predict):
     assert set(result["structured"]) == set(fixture_data["structured"])
 
 
+@pytest.fixture(params=["too_long"])
+def error_type(request) -> str:
+    return request.param
+
+
 @pytest.fixture(scope="function")
-def cfg_predict_pdf_errors(tmp_path) -> DictConfig:  # type: ignore
+def cfg_predict_pdf_errors(tmp_path, error_type) -> DictConfig:  # type: ignore
     cfg = cfg_global(
         config_name="predict.yaml",
         out_dir=tmp_path,
-        # we need the text to check for the length, so enable store_text_in_predictions
-        overrides=["store_text_in_predictions=true"],
+        overrides=[
+            # we need the text to check for the length, so enable store_text_in_predictions
+            "store_text_in_predictions=true",
+            # don't compress to be able to read error messages easily
+            "output_file_name=predictions.jsonl",
+        ],
     )
 
     with open_dict(cfg):
-        cfg.pdf_directory = str(PROJ_ROOT / "tests" / "fixtures" / "pdfs_error")
+        cfg.pdf_directory = str(PROJ_ROOT / "tests" / "fixtures" / "pdfs_error" / error_type)
 
     yield cfg
 
@@ -120,7 +129,7 @@ def cfg_predict_pdf_errors(tmp_path) -> DictConfig:  # type: ignore
 
 
 @pytest.mark.slow
-def test_prediction_on_pdf_errors(cfg_predict_pdf_errors):
+def test_prediction_on_pdf_errors(cfg_predict_pdf_errors, error_type):
     job_return_value = predict(cfg_predict_pdf_errors)
 
     with open(job_return_value["output_file"]) as f:
@@ -133,19 +142,22 @@ def test_prediction_on_pdf_errors(cfg_predict_pdf_errors):
         results[result["file_name"]] = result
 
     # check long PDF error
-    file_name_long_pdf = "2E9XWUUE.pdf"
-    assert file_name_long_pdf in results
-    result_long_pdf = results[file_name_long_pdf]
-    # assert that there was some quite long input text
-    text_long_pdf = result_long_pdf.get("text", None)
-    assert text_long_pdf is not None and len(text_long_pdf) > 1_000_000
-    # assert that there is no structured output ...
-    structured_long_pdf = result_long_pdf.get("structured", None)
-    assert structured_long_pdf is None
-    # ... but an error message about max tokens
-    error_long_pdf = result_long_pdf.get("error", None)
-    assert error_long_pdf is not None
-    assert "Error code: 400" in error_long_pdf
-    # check that we got a negative max_tokens error message
-    assert "'message': 'max_tokens must be at least 1, got -" in error_long_pdf
-    assert "'type': 'BadRequestError'" in error_long_pdf
+    if error_type == "too_long":
+        file_name_long_pdf = "2E9XWUUE.pdf"
+        assert file_name_long_pdf in results
+        result_long_pdf = results[file_name_long_pdf]
+        # assert that there was some quite long input text
+        text_long_pdf = result_long_pdf.get("text", None)
+        assert text_long_pdf is not None and len(text_long_pdf) > 1_000_000
+        # assert that there is no structured output ...
+        structured_long_pdf = result_long_pdf.get("structured", None)
+        assert structured_long_pdf is None
+        # ... but an error message about max tokens
+        error_long_pdf = result_long_pdf.get("error", None)
+        assert error_long_pdf is not None
+        assert "Error code: 400" in error_long_pdf
+        # check that we got a negative max_tokens error message
+        assert "'message': 'max_tokens must be at least 1, got -" in error_long_pdf
+        assert "'type': 'BadRequestError'" in error_long_pdf
+    else:
+        pytest.fail(f"Unhandled error_type fixture: {error_type}")
