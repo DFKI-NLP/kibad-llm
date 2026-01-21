@@ -102,22 +102,26 @@ def test_predict_fast_dev_run(tmp_path, cfg_predict):
     assert set(result["structured"]) == set(fixture_data["structured"])
 
 
-@pytest.fixture(params=["too_long"])
+@pytest.fixture(params=["too_long", "missing_response_content"])
 def error_type(request) -> str:
     return request.param
 
 
 @pytest.fixture(scope="function")
 def cfg_predict_pdf_errors(tmp_path, error_type) -> DictConfig:  # type: ignore
+    overrides = [
+        # we need the text to check for the length, so enable store_text_in_predictions
+        "store_text_in_predictions=true",
+        # don't compress to be able to read error messages easily
+        "output_file_name=predictions.jsonl",
+    ]
+    if error_type in ["missing_response_content"]:
+        overrides.append("experiment/predict=faktencheck_core_fields_schema_with_evidence")
+
     cfg = cfg_global(
         config_name="predict.yaml",
         out_dir=tmp_path,
-        overrides=[
-            # we need the text to check for the length, so enable store_text_in_predictions
-            "store_text_in_predictions=true",
-            # don't compress to be able to read error messages easily
-            "output_file_name=predictions.jsonl",
-        ],
+        overrides=overrides,
     )
 
     with open_dict(cfg):
@@ -159,5 +163,16 @@ def test_prediction_on_pdf_errors(cfg_predict_pdf_errors, error_type):
         # check that we got a negative max_tokens error message
         assert "'message': 'max_tokens must be at least 1, got -" in error_long_pdf
         assert "'type': 'BadRequestError'" in error_long_pdf
+    elif error_type == "missing_response_content":
+        file_name = "3Z5BFIBL.pdf"
+        assert file_name in results
+        result = results[file_name]
+        # assert that there is no structured output ...
+        structured = result.get("structured", None)
+        assert structured is None
+        # ... but an error message about missing response content
+        error = result.get("error", None)
+        assert error is not None
+        assert error == "MissingResponseContentError: LLM response is missing content."
     else:
         pytest.fail(f"Unhandled error_type fixture: {error_type}")
