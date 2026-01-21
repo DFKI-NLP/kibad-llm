@@ -87,9 +87,7 @@ class VllmInProcess(LLM):
 
         # Split Harmony output into reasoning + final (final is what we want to JSON-parse).
         reasoning, final, _is_tool_call = parse_chat_output(out.token_ids)
-        content = final if final is not None else out.text
-
-        msg = LlamaIndexChatMessage(role=MessageRole.ASSISTANT, content=content)
+        msg = LlamaIndexChatMessage(role=MessageRole.ASSISTANT, content=final)
 
         additional_kwargs: dict[str, Any] = {}
         if reasoning is not None:
