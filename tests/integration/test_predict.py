@@ -158,8 +158,9 @@ def test_prediction_on_pdf_errors(cfg_predict_pdf_errors, error_type):
         # assert that there is no structured output ...
         assert result.get("structured", None) is None
         # ... but an error message about max tokens
-        error = result.get("error", None)
-        assert error is not None
+        errors = result.get("errors", [])
+        assert len(errors) == 1
+        error = errors[0]
         assert error.startswith("ValueError:")
         assert "Error code: 400" in error
         assert "'type': 'BadRequestError'" in error
@@ -172,8 +173,9 @@ def test_prediction_on_pdf_errors(cfg_predict_pdf_errors, error_type):
         # assert that there is no structured output ...
         assert result.get("structured", None) is None
         # ... but an error message about missing response content
-        error = result.get("error", None)
-        assert error is not None
+        errors = result.get("errors", [])
+        assert len(errors) == 1
+        error = errors[0]
         assert error.startswith("MissingResponseContentError:")
     else:
         pytest.fail(f"Unhandled error_type fixture: {error_type}")
