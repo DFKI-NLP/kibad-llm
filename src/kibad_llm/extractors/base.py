@@ -3,17 +3,16 @@ from __future__ import annotations
 from collections import defaultdict
 from collections.abc import Mapping
 import dataclasses
-import hashlib
 import json
 import logging
 import re
+import traceback
 from typing import Any
 
 from jsonschema.validators import validator_for
 
 from kibad_llm.llms.base import LLM, MessageRole, SimpleChatMessage
 from kibad_llm.schema.utils import (
-    METADATA_SCHEMA_WITH_EVIDENCE_SHORTHAND,
     WRAPPED_CONTENT_KEY,
     build_schema_description,
     wrap_terminals_with_metadata,
@@ -35,9 +34,10 @@ class SingleExtractionResult(FieldDict):
     error: str | None = None
 
 
-def exception2error_msg(e: Exception) -> str:
-    """Convert an exception to a string with its type and message."""
-    return f"{type(e).__name__}: {str(e)}"
+def exception2error_msg(e: BaseException) -> str:
+    """Return full traceback for the given exception."""
+    e_with_traceback = "".join(traceback.format_exception(type(e), e, e.__traceback__))
+    return f"{type(e).__name__}: {e_with_traceback}"
 
 
 def build_chat_message(
@@ -662,8 +662,9 @@ def extract_from_text(
 
         except Exception as e:
             error_msg = exception2error_msg(e)
+            error_msg_flat = re.sub(r"\s+", " ", error_msg)
             logger.warning(
-                f"Failed to process document {text_id}: {error_msg}, "
+                f"Failed to process document {text_id}: {error_msg_flat}, "
                 f"response_content = '{response_content[:min(len(response_content), 1500)]}...'"
             )
             out["error"] = error_msg
@@ -692,6 +693,7 @@ def extract_from_text_lenient(text: str, text_id: str, **kwargs) -> SingleExtrac
         return extract_from_text(text=text, text_id=text_id, **kwargs)
     except Exception as e:
         error_msg = exception2error_msg(e)
-        logger.error(f"Error processing document {text_id}: {error_msg}")
+        error_msg_flat = re.sub(r"\s+", " ", error_msg)
+        logger.error(f"Error processing document {text_id}: {error_msg_flat}")
         # needs to match the output of extract_from_text
         return SingleExtractionResult(error=error_msg)
