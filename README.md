@@ -6,7 +6,7 @@
 
 A short description of the project.
 
-## Quickstart XXX
+## Quickstart
 
 ### Setup
 
