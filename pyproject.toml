@@ -7,7 +7,7 @@ name = "kibad-llm"
 version = "0.1.0"
 description = "Add your description here"
 authors = [{ name = "Your name (or your organization/company/team)" }]
-requires-python = ">=3.10.0,<3.11.0"
+requires-python = ">=3.10.0,<3.13.0"
 readme = "README.md"
 classifiers = ["Programming Language :: Python :: 3"]
 dependencies = [
@@ -71,6 +71,9 @@ conflicts = [
     { extra = "cpu" },
     { extra = "cu128" },
   ],
+]
+required-environments = [
+    "sys_platform == 'linux' and platform_machine == 'x86_64'",
 ]
 
 [tool.uv.sources]
