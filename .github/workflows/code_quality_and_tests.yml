@@ -42,7 +42,7 @@ jobs:
             ${{ steps.pre-commit-cache.outputs.result }}-
       - name: Run pre-commits
         run: |
-          uv run --group cicd pre-commit run -a
+          pre-commit run -a
         shell: bash
   pytest:
     name: Tests with Python ${{ matrix.python }} / ${{ matrix.os }}
@@ -64,4 +64,4 @@ jobs:
           python: ${{ matrix.python }}
       - name: Run 'not slow' tests with coverage
         run: |
-          uv run --group cicd pytest -m "not slow" --cov=kibad_llm --cov-report=term-missing
+          pytest -m "not slow" --cov=kibad_llm --cov-report=term-missing
