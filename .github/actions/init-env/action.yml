@@ -13,23 +13,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-    #       free disk space
-    #----------------------------------------------
-    - name: Free Disk Space (Ubuntu)
-      uses: jlumbroso/free-disk-space@main
-      with:
-        # this might remove tools that are actually needed,
-        # if set to "true" but frees about 6 GB
-        tool-cache: false
 
-        # all of these default to true, but feel free to set to
-        # "false" if necessary for your workflow
-        android: true
-        dotnet: true
-        haskell: true
-        large-packages: true
-        docker-images: true
-        swap-storage: true
     #----------------------------------------------
     #       set-up python
     #----------------------------------------------
@@ -43,25 +27,8 @@ runs:
     #  -----  install & configure uv  -----
     #----------------------------------------------
     - name: Install uv
-      uses: astral-sh/setup-uv@v6
+      uses: astral-sh/setup-uv@v7
       with:
-        version: "latest"
+        version: "0.9.26"
         enable-cache: true
-    #   cache-suffix: "optional-suffix"
-
-    #----------------------------------------------
-    #       load cached venv if cache exists
-    #----------------------------------------------
-    - name: Load cached venv
-      id: cached-uv-dependencies
-      uses: actions/cache@v4
-      with:
-        path: .venv
-        key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/uv.lock') }}
-
-    #----------------------------------------------
-    # sync the venv to ensure the cache is up to date
-    #----------------------------------------------
-    - name: Install dependencies
-      run: uv sync --group cicd
-      shell: bash
+        python-version: ${{ inputs.python }}
