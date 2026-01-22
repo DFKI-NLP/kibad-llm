@@ -1,5 +1,6 @@
+from collections.abc import Sequence
 import logging
-from typing import Any
+from typing import Any, Literal
 
 from llama_index.core.base.llms.types import ChatResponse, MessageRole
 from llama_index.core.llms import ChatMessage as LlamaIndexChatMessage
@@ -10,6 +11,7 @@ from vllm.entrypoints.chat_utils import (
     CustomChatCompletionMessageParam,
 )
 from vllm.entrypoints.harmony_utils import parse_chat_output
+from vllm.entrypoints.openai.protocol import ChatCompletionRequest
 from vllm.reasoning import ReasoningParser
 from vllm.reasoning.gptoss_reasoning_parser import GptOssReasoningParser
 from vllm.sampling_params import StructuredOutputsParams
@@ -25,7 +27,7 @@ from kibad_llm.llms.base import (
 logger = logging.getLogger(__name__)
 
 # vLLM LLM.chat has these kwargs (non-sampling). Everything else we treat as SamplingParams kwargs.
-# Source: https://docs.vllm.ai/en/v0.11.2/api/vllm/entrypoints/llm/#vllm.entrypoints.llm.LLM.chat
+# Source: https://docs.vllm.ai/en/stable/api/vllm/entrypoints/llm/#vllm.entrypoints.llm.LLM.chat
 _VLLM_CHAT_KWARGS = {
     "use_tqdm",
     "lora_request",
@@ -50,7 +52,9 @@ class VllmInProcess(LLM):
     is applied automatically.
 
     Supports guided decoding via StructuredOutputsParams(json=...).
-    Splits Harmony reasoning/final via vLLM's parse_chat_output(token_ids).
+
+    In offline mode, vLLM does not automatically split reasoning vs final content
+    for you; we do it here using the configured ReasoningParser (and a Harmony fallback).
     """
 
     def __init__(
@@ -62,13 +66,18 @@ class VllmInProcess(LLM):
         additional_kwargs: dict[str, Any] | None = None,
         **default_request_kwargs: Any,
     ) -> None:
+        self._model_name = model
         self._llm = VllmLLM(model=model, **(vllm_kwargs or {}))
+
         self._default_request_kwargs: dict[str, Any] = additional_kwargs or {}
         self._default_request_kwargs.update(default_request_kwargs)
 
+        # Uses vllm_config.structured_outputs_config.reasoning_parser
+        # to create a ReasoningParser (if configured).
         self._structured_output_manager = StructuredOutputManager(
             vllm_config=self._llm.llm_engine.vllm_config
         )
+        self._reasoning_parser: ReasoningParser | None = self._structured_output_manager.reasoner
 
     def call_llm_chat_with_guided_decoding(
         self,
@@ -95,26 +104,21 @@ class VllmInProcess(LLM):
         # take the first output (we only sent one conversation) and first generation
         out = req_outputs[0].outputs[0]
 
-        # If a reasoning parser is set, we assume that the model's output
-        # includes reasoning that we want to extract.
-        reasoner: ReasoningParser | None = self._structured_output_manager.reasoner
-        if reasoner is not None:
-            logger.warning(f"Using reasoning parser: {reasoner}")
-
-            # TODO: use reasoner directly to extract reasoning/content?
-            if isinstance(reasoner, GptOssReasoningParser):
-                # Split Harmony output into reasoning + final (final is what we want to JSON-parse).
+        if self._reasoning_parser is not None:
+            if isinstance(self._reasoning_parser, GptOssReasoningParser):
+                # Harmony (gpt-oss): split via token ids
                 reasoning, content, _is_tool_call = parse_chat_output(out.token_ids)
             else:
-                raise NotImplementedError(
-                    f"Reasoning parser {type(reasoner)} not supported in VllmInProcess."
+                # create dummy request object for reasoning extraction
+                request_obj = ChatCompletionRequest(messages=convo, model=self._model_name, seed=0)
+                reasoning, content = self._reasoning_parser.extract_reasoning(
+                    model_output=out.text, request=request_obj
                 )
         else:
             reasoning = None
             content = out.text
 
         msg = LlamaIndexChatMessage(role=MessageRole.ASSISTANT, content=content)
-
         if reasoning is not None:
             msg.additional_kwargs["reasoning"] = reasoning
 
