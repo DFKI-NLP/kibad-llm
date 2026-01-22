@@ -52,8 +52,8 @@ def build_chat_message(
     schema: dict[str, Any] | None = None,
     schema_description_kwargs: dict[str, Any] | None = None,
     schema_description_placeholder: str = "schema_description",
-    previous_chunk_context: str | None = None,
-    previous_chunk_context_placeholder: str = "previous_chunk_context",
+    previous_document_chunk: str | None = None,
+    previous_document_chunk_placeholder: str = "previous_document_chunk",
 ) -> tuple[SimpleChatMessage, dict[str, bool]]:
     """Build a single chat message by inserting text and schema description
     if respective placeholders are present in the message template.
@@ -70,8 +70,8 @@ def build_chat_message(
         schema_description_placeholder: The placeholder in the message template for the
             schema description. If the placeholder is present in the message template,
             the schema must be provided and the description will be generated and inserted.
-        previous_chunk_context: This is the content of the previous chunk if there was one.
-        previous_chunk_context_placeholder: The placeholder in the message template for the
+        previous_document_chunk: This is the content of the previous chunk if there was one.
+        previous_document_chunk_placeholder: The placeholder in the message template for the
             previous chunk context. If the placeholder is present in the message template,
             it will be replaced with the previous chunk context. 
 
@@ -106,20 +106,20 @@ def build_chat_message(
         formatting[document_placeholder] = document
 
     # Check if chunk context is needed and insert it.
-    message_requires_chunk_context = "{" + previous_chunk_context_placeholder + "}" in content
+    message_requires_chunk_context = "{" + previous_document_chunk_placeholder + "}" in content
     if message_requires_chunk_context:
-        if previous_chunk_context is None:
+        if previous_document_chunk is None:
             raise ValueError(
                 f"previous chunk context must be provided if {role.name} message template requires "
-                f"input text (it contains '{{{previous_chunk_context_placeholder}}}')."
+                f"input text (it contains '{{{previous_document_chunk_placeholder}}}')."
             )
-        formatting[previous_chunk_context_placeholder] = previous_chunk_context
+        formatting[previous_document_chunk_placeholder] = previous_document_chunk
 
     content = content.format(**formatting)
     return SimpleChatMessage(role=role, content=content), {
         "has_schema_description": message_requires_schema_description,
         "has_document": message_requires_document,
-        "has_previous_chunk_context": message_requires_chunk_context,
+        "has_previous_document_chunk": message_requires_chunk_context,
     }
 
 
@@ -128,7 +128,7 @@ def build_chat_messages(
     user_message: str | None = None,
     schema_description_placeholder: str = "schema_description",
     document_placeholder: str = "document",
-    previous_chunk_context_placeholder: str = "previous_chunk_context",
+    previous_document_chunk_placeholder: str = "previous_document_chunk",
     schema: dict[str, Any] | None = None,
     history: list[SimpleChatMessage] | None = None,
     return_messages: bool = False,
@@ -183,7 +183,7 @@ def build_chat_messages(
                 schema=schema,
                 schema_description_placeholder=schema_description_placeholder,
                 document_placeholder=document_placeholder,
-                previous_chunk_context_placeholder=previous_chunk_context_placeholder,
+                previous_document_chunk_placeholder=previous_document_chunk_placeholder,
                 **build_messages_kwargs,
             )
             messages.append(msg)

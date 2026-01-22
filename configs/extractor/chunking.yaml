@@ -15,4 +15,3 @@ _target_: kibad_llm.extractors.ChunkingExtractor
 max_char_buffer: 10000
 tokenizer:
   _target_: kibad_llm.extractors.chunking_helpers.RegexTokenizer
-  _partial_: true
