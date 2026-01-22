@@ -1,4 +1,6 @@
-from typing import Any
+from collections.abc import Sequence
+import logging
+from typing import Any, Literal
 
 from llama_index.core.base.llms.types import ChatResponse, MessageRole
 from llama_index.core.llms import ChatMessage as LlamaIndexChatMessage
@@ -9,7 +11,11 @@ from vllm.entrypoints.chat_utils import (
     CustomChatCompletionMessageParam,
 )
 from vllm.entrypoints.harmony_utils import parse_chat_output
+from vllm.entrypoints.openai.protocol import ChatCompletionRequest
+from vllm.reasoning import ReasoningParser
+from vllm.reasoning.gptoss_reasoning_parser import GptOssReasoningParser
 from vllm.sampling_params import StructuredOutputsParams
+from vllm.v1.structured_output import StructuredOutputManager
 
 from kibad_llm.llms.base import (
     LLM,
@@ -18,8 +24,10 @@ from kibad_llm.llms.base import (
     SimpleChatMessage,
 )
 
+logger = logging.getLogger(__name__)
+
 # vLLM LLM.chat has these kwargs (non-sampling). Everything else we treat as SamplingParams kwargs.
-# Source: https://docs.vllm.ai/en/v0.11.2/api/vllm/entrypoints/llm/#vllm.entrypoints.llm.LLM.chat
+# Source: https://docs.vllm.ai/en/stable/api/vllm/entrypoints/llm/#vllm.entrypoints.llm.LLM.chat
 _VLLM_CHAT_KWARGS = {
     "use_tqdm",
     "lora_request",
@@ -44,7 +52,9 @@ class VllmInProcess(LLM):
     is applied automatically.
 
     Supports guided decoding via StructuredOutputsParams(json=...).
-    Splits Harmony reasoning/final via vLLM's parse_chat_output(token_ids).
+
+    In offline mode, vLLM does not automatically split reasoning vs final content
+    for you; we do it here using the configured ReasoningParser (and a Harmony fallback).
     """
 
     def __init__(
@@ -56,9 +66,28 @@ class VllmInProcess(LLM):
         additional_kwargs: dict[str, Any] | None = None,
         **default_request_kwargs: Any,
     ) -> None:
+        self._model_name = model
         self._llm = VllmLLM(model=model, **(vllm_kwargs or {}))
+
         self._default_request_kwargs: dict[str, Any] = additional_kwargs or {}
         self._default_request_kwargs.update(default_request_kwargs)
+
+        # Uses vllm_config.structured_outputs_config.reasoning_parser
+        # to create a ReasoningParser (if configured).
+        self._structured_output_manager = StructuredOutputManager(
+            vllm_config=self._llm.llm_engine.vllm_config
+        )
+        self._reasoning_parser: ReasoningParser | None = self._structured_output_manager.reasoner
+        if self._reasoning_parser is not None:
+            logger.info(
+                f"Using reasoning parser: {type(self._reasoning_parser).__name__} "
+                f"for model {self._model_name} to separate reasoning from final content."
+            )
+        else:
+            logger.info(
+                f"No reasoning parser configured for model {self._model_name}. "
+                f"Assuming no reasoning content in outputs."
+            )
 
     def call_llm_chat_with_guided_decoding(
         self,
@@ -85,17 +114,25 @@ class VllmInProcess(LLM):
         # take the first output (we only sent one conversation) and first generation
         out = req_outputs[0].outputs[0]
 
-        # Split Harmony output into reasoning + final (final is what we want to JSON-parse).
-        reasoning, final, _is_tool_call = parse_chat_output(out.token_ids)
-        content = final if final is not None else out.text
+        if self._reasoning_parser is not None:
+            if isinstance(self._reasoning_parser, GptOssReasoningParser):
+                # Harmony (gpt-oss): split via token ids
+                reasoning, content, _is_tool_call = parse_chat_output(out.token_ids)
+            else:
+                # create dummy request object for reasoning extraction
+                request_obj = ChatCompletionRequest(messages=convo, model=self._model_name, seed=0)
+                reasoning, content = self._reasoning_parser.extract_reasoning(
+                    model_output=out.text, request=request_obj
+                )
+        else:
+            reasoning = None
+            content = out.text
 
         msg = LlamaIndexChatMessage(role=MessageRole.ASSISTANT, content=content)
-
-        additional_kwargs: dict[str, Any] = {}
         if reasoning is not None:
             msg.additional_kwargs["reasoning"] = reasoning
 
-        return ChatResponse(message=msg, raw=req_outputs, additional_kwargs=additional_kwargs)
+        return ChatResponse(message=msg, raw=req_outputs)
 
     def get_reasoning_from_chat_response(self, response: ChatResponse) -> str:
         """Extract reasoning from a chat response."""
