@@ -13,6 +13,8 @@ inputs:
 runs:
   using: "composite"
   steps:
+
+    #----------------------------------------------
     #       free disk space
     #----------------------------------------------
     - name: Free Disk Space (Ubuntu)
@@ -30,6 +32,7 @@ runs:
         large-packages: true
         docker-images: true
         swap-storage: true
+
     #----------------------------------------------
     #       set-up python
     #----------------------------------------------
@@ -43,24 +46,14 @@ runs:
     #  -----  install & configure uv  -----
     #----------------------------------------------
     - name: Install uv
-      uses: astral-sh/setup-uv@v6
+      uses: astral-sh/setup-uv@v7
       with:
-        version: "latest"
+        version: "0.9.26"
         enable-cache: true
-    #   cache-suffix: "optional-suffix"
+        python-version: ${{ inputs.python }}
 
     #----------------------------------------------
-    #       load cached venv if cache exists
-    #----------------------------------------------
-    - name: Load cached venv
-      id: cached-uv-dependencies
-      uses: actions/cache@v4
-      with:
-        path: .venv
-        key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/uv.lock') }}
-
-    #----------------------------------------------
-    # sync the venv to ensure the cache is up to date
+    #       install dependencies
     #----------------------------------------------
     - name: Install dependencies
       run: uv sync --group cicd
