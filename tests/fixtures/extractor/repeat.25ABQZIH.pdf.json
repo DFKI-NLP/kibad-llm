@@ -14,9 +14,9 @@
       "Bau"
     ]
   },
-  "error_list": [
-    null,
-    "JSONDecodeError: Expecting value: line 1 column 1 (char 0)",
-    null
+  "errors_list": [
+    [],
+    ["JSONDecodeError: Expecting value: line 1 column 1 (char 0)"],
+    []
   ]
 }
