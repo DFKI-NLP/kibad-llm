@@ -1,0 +1,6 @@
+{
+  "no_error": 90,
+  "BadRequestError": 8,
+  "JSONDecodeError": 1,
+  "MissingResponseContentError": 1
+}

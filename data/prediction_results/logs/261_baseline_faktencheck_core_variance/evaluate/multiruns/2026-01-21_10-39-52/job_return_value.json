@@ -1,0 +1,137 @@
+{
+  "extractor/llm=gpt_oss_20b_in_process#seed=42": {
+    "no_error": 66,
+    "ValueError": 15,
+    "JSONDecodeError": 19,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/261_baseline_faktencheck_core_variance/2026-01-21_02-40-24/2026-01-21_02-40-24_749016/predictions.jsonl.zip",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/261_baseline_faktencheck_core_variance/2026-01-21_02-40-24/2026-01-21_02-40-24_749016/predictions.jsonl.zip",
+        "time_pdf_conversion": 0.0029616410611197352,
+        "time_extraction": 3129.7734107439173,
+        "commit_hash": "1ce70ef457fb0fb8063555361ec6a458c5563052",
+        "branch": "main",
+        "is_dirty": false
+      }
+    },
+    "overrides": {
+      "name": "261_baseline_faktencheck_core_variance",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gpt_oss_20b_in_process",
+      "seed": "42"
+    }
+  },
+  "extractor/llm=gpt_oss_20b_in_process#seed=1337": {
+    "no_error": 66,
+    "ValueError": 15,
+    "JSONDecodeError": 19,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/261_baseline_faktencheck_core_variance/2026-01-21_02-40-24/2026-01-21_03-34-07_716538/predictions.jsonl.zip",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/261_baseline_faktencheck_core_variance/2026-01-21_02-40-24/2026-01-21_03-34-07_716538/predictions.jsonl.zip",
+        "time_pdf_conversion": 0.0042878189124166965,
+        "time_extraction": 3090.4633234119974,
+        "commit_hash": "1ce70ef457fb0fb8063555361ec6a458c5563052",
+        "branch": "main",
+        "is_dirty": false
+      }
+    },
+    "overrides": {
+      "name": "261_baseline_faktencheck_core_variance",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gpt_oss_20b_in_process",
+      "seed": "1337"
+    }
+  },
+  "extractor/llm=gpt_oss_20b_in_process#seed=7331": {
+    "no_error": 66,
+    "ValueError": 15,
+    "JSONDecodeError": 19,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/261_baseline_faktencheck_core_variance/2026-01-21_02-40-24/2026-01-21_04-26-29_699429/predictions.jsonl.zip",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/261_baseline_faktencheck_core_variance/2026-01-21_02-40-24/2026-01-21_04-26-29_699429/predictions.jsonl.zip",
+        "time_pdf_conversion": 0.003255226998589933,
+        "time_extraction": 3155.096123786061,
+        "commit_hash": "1ce70ef457fb0fb8063555361ec6a458c5563052",
+        "branch": "main",
+        "is_dirty": false
+      }
+    },
+    "overrides": {
+      "name": "261_baseline_faktencheck_core_variance",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gpt_oss_20b_in_process",
+      "seed": "7331"
+    }
+  },
+  "extractor/llm=gemma3_27b_in_process#seed=42": {
+    "no_error": 85,
+    "ValueError": 15,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/261_baseline_faktencheck_core_variance/2026-01-21_02-40-24/2026-01-21_05-19-52_002034/predictions.jsonl.zip",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/261_baseline_faktencheck_core_variance/2026-01-21_02-40-24/2026-01-21_05-19-52_002034/predictions.jsonl.zip",
+        "time_pdf_conversion": 0.002992123947478831,
+        "time_extraction": 1203.697240173933,
+        "commit_hash": "1ce70ef457fb0fb8063555361ec6a458c5563052",
+        "branch": "main",
+        "is_dirty": false
+      }
+    },
+    "overrides": {
+      "name": "261_baseline_faktencheck_core_variance",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gemma3_27b_in_process",
+      "seed": "42"
+    }
+  },
+  "extractor/llm=gemma3_27b_in_process#seed=1337": {
+    "no_error": 85,
+    "ValueError": 15,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/261_baseline_faktencheck_core_variance/2026-01-21_02-40-24/2026-01-21_05-41-18_160029/predictions.jsonl.zip",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/261_baseline_faktencheck_core_variance/2026-01-21_02-40-24/2026-01-21_05-41-18_160029/predictions.jsonl.zip",
+        "time_pdf_conversion": 0.0028065190417692065,
+        "time_extraction": 1189.3572937289719,
+        "commit_hash": "1ce70ef457fb0fb8063555361ec6a458c5563052",
+        "branch": "main",
+        "is_dirty": false
+      }
+    },
+    "overrides": {
+      "name": "261_baseline_faktencheck_core_variance",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gemma3_27b_in_process",
+      "seed": "1337"
+    }
+  },
+  "extractor/llm=gemma3_27b_in_process#seed=7331": {
+    "no_error": 85,
+    "ValueError": 15,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/261_baseline_faktencheck_core_variance/2026-01-21_02-40-24/2026-01-21_06-02-24_475551/predictions.jsonl.zip",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/261_baseline_faktencheck_core_variance/2026-01-21_02-40-24/2026-01-21_06-02-24_475551/predictions.jsonl.zip",
+        "time_pdf_conversion": 0.0036706309765577316,
+        "time_extraction": 1187.4727572980337,
+        "commit_hash": "1ce70ef457fb0fb8063555361ec6a458c5563052",
+        "branch": "main",
+        "is_dirty": false
+      }
+    },
+    "overrides": {
+      "name": "261_baseline_faktencheck_core_variance",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gemma3_27b_in_process",
+      "seed": "7331"
+    }
+  }
+}

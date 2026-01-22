@@ -1,0 +1,7 @@
+- name=261_baseline_faktencheck_core_variance
+- experiment/predict=faktencheck_core_fields_schema_with_evidence
+- extractor.return_reasoning=True
+- pdf_directory=/ds/text/kiba-d/dev-set-100
+- extractor/llm=gemma3_27b_in_process
+- ++extractor.llm.temperature=1.0
+- seed=7331

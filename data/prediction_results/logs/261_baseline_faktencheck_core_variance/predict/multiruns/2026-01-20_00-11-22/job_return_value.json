@@ -1,0 +1,104 @@
+{
+  "0": {
+    "output_file": "predictions/261_baseline_faktencheck_core_variance/2026-01-20_00-11-22/2026-01-20_00-11-23_377290/predictions.jsonl.zip",
+    "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/261_baseline_faktencheck_core_variance/2026-01-20_00-11-22/2026-01-20_00-11-23_377290/predictions.jsonl.zip",
+    "time_pdf_conversion": 0.003687865915708244,
+    "time_extraction": 1873.2505363300443,
+    "commit_hash": "71755381336fb3133ebda857474be5b86b11ee20",
+    "branch": "main",
+    "is_dirty": false,
+    "overrides": {
+      "name": "261_baseline_faktencheck_core_variance",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gpt_oss_20b_in_process",
+      "+extractor.llm.temperature": "1.0",
+      "seed": "42"
+    }
+  },
+  "1": {
+    "output_file": "predictions/261_baseline_faktencheck_core_variance/2026-01-20_00-11-22/2026-01-20_00-44-34_987657/predictions.jsonl.zip",
+    "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/261_baseline_faktencheck_core_variance/2026-01-20_00-11-22/2026-01-20_00-44-34_987657/predictions.jsonl.zip",
+    "time_pdf_conversion": 0.0034884100314229727,
+    "time_extraction": 1878.5797861129977,
+    "commit_hash": "71755381336fb3133ebda857474be5b86b11ee20",
+    "branch": "main",
+    "is_dirty": false,
+    "overrides": {
+      "name": "261_baseline_faktencheck_core_variance",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gpt_oss_20b_in_process",
+      "+extractor.llm.temperature": "1.0",
+      "seed": "42"
+    }
+  },
+  "2": {
+    "output_file": "predictions/261_baseline_faktencheck_core_variance/2026-01-20_00-11-22/2026-01-20_01-16-40_742954/predictions.jsonl.zip",
+    "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/261_baseline_faktencheck_core_variance/2026-01-20_00-11-22/2026-01-20_01-16-40_742954/predictions.jsonl.zip",
+    "time_pdf_conversion": 0.0028542920481413603,
+    "time_extraction": 1877.6813081719447,
+    "commit_hash": "71755381336fb3133ebda857474be5b86b11ee20",
+    "branch": "main",
+    "is_dirty": false,
+    "overrides": {
+      "name": "261_baseline_faktencheck_core_variance",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gpt_oss_20b_in_process",
+      "+extractor.llm.temperature": "1.0",
+      "seed": "42"
+    }
+  },
+  "3": {
+    "output_file": "predictions/261_baseline_faktencheck_core_variance/2026-01-20_00-11-22/2026-01-20_01-48-44_037595/predictions.jsonl.zip",
+    "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/261_baseline_faktencheck_core_variance/2026-01-20_00-11-22/2026-01-20_01-48-44_037595/predictions.jsonl.zip",
+    "time_pdf_conversion": 0.0027432870119810104,
+    "time_extraction": 1150.119364648941,
+    "commit_hash": "71755381336fb3133ebda857474be5b86b11ee20",
+    "branch": "main",
+    "is_dirty": false,
+    "overrides": {
+      "name": "261_baseline_faktencheck_core_variance",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gemma3_27b_in_process",
+      "+extractor.llm.temperature": "1.0",
+      "seed": "42"
+    }
+  },
+  "4": {
+    "output_file": "predictions/261_baseline_faktencheck_core_variance/2026-01-20_00-11-22/2026-01-20_02-09-12_949950/predictions.jsonl.zip",
+    "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/261_baseline_faktencheck_core_variance/2026-01-20_00-11-22/2026-01-20_02-09-12_949950/predictions.jsonl.zip",
+    "time_pdf_conversion": 0.002780670067295432,
+    "time_extraction": 1142.8620035920758,
+    "commit_hash": "71755381336fb3133ebda857474be5b86b11ee20",
+    "branch": "main",
+    "is_dirty": false,
+    "overrides": {
+      "name": "261_baseline_faktencheck_core_variance",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gemma3_27b_in_process",
+      "+extractor.llm.temperature": "1.0",
+      "seed": "42"
+    }
+  },
+  "5": {
+    "output_file": "predictions/261_baseline_faktencheck_core_variance/2026-01-20_00-11-22/2026-01-20_02-29-33_325555/predictions.jsonl.zip",
+    "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/261_baseline_faktencheck_core_variance/2026-01-20_00-11-22/2026-01-20_02-29-33_325555/predictions.jsonl.zip",
+    "time_pdf_conversion": 0.0038477740017697215,
+    "time_extraction": 1145.4137248130282,
+    "commit_hash": "71755381336fb3133ebda857474be5b86b11ee20",
+    "branch": "main",
+    "is_dirty": false,
+    "overrides": {
+      "name": "261_baseline_faktencheck_core_variance",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gemma3_27b_in_process",
+      "+extractor.llm.temperature": "1.0",
+      "seed": "42"
+    }
+  }
+}
