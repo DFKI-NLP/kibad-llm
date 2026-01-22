@@ -51,6 +51,7 @@ runs:
         version: "0.9.26"
         enable-cache: true
         python-version: ${{ inputs.python }}
+        activate-environment: "true"
 
     #----------------------------------------------
     #       install dependencies
