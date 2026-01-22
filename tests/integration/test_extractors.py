@@ -66,11 +66,12 @@ def test_extractor(tmp_path, cfg_predict_extractor, extractor_name):
     with open(expected_result_path) as f:
         expected_result = json.load(f)
 
-    error = result.get("error", None)
-    assert error is None
-
-    errors = result.get("error_list", [])
-    assert errors == [None] * len(errors)
+    # ensure that there are no errors
+    if extractor_name == "simple":
+        assert result["errors"] == []
+    else:
+        errors_list = result["errors_list"]
+        assert errors_list == [[]] * len(errors_list)
 
     # check top-level keys
     assert set(result) == set(expected_result)
