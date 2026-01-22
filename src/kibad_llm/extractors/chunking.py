@@ -53,6 +53,24 @@ class ChunkingExtractor(UnionExtractor):
     See UnionExtractor for accepted parameters and details about the aggregation logic.
     """
 
+    def __init__(
+        self,
+        overrides: list[dict],
+        skip_type_mismatches: bool = False,
+        return_as_list: list[str] | None = None,
+        tokenizer: tokenizer_lib.Tokenizer | None = None,
+        max_char_buffer: int = 10000,
+        **kwargs,
+    ):
+        if len(overrides) < 1:
+            raise ValueError("overrides must contain at least one set of parameters")
+        self.overrides = overrides
+        self.skip_type_mismatches = skip_type_mismatches
+        self.return_as_list = return_as_list or []
+        self.default_kwargs = kwargs
+        self.tokenizer = tokenizer
+        self.max_char_buffer = max_char_buffer
+
     def __call__(self, *args, **kwargs) -> dict[str, Any]:
         combined_kwargs = {**self.default_kwargs, **kwargs}
         current_kwargs = {
@@ -60,11 +78,8 @@ class ChunkingExtractor(UnionExtractor):
             "return_messages_formatted": True,
             "truncate_user_message_formatted": None,
         }
-        chunking_tokenizer = combined_kwargs["tokenizer"]()
 
-        chunks = _document_chunk_iterator(args[0], self.default_kwargs["max_char_buffer"], chunking_tokenizer)
-        current_kwargs.pop("tokenizer")
-        current_kwargs.pop("max_char_buffer")
+        chunks = _document_chunk_iterator(args[0], self.max_char_buffer, self.tokenizer)
         previous_chunk_context = "Noch kein Kontext vorhanden."
         results = []
         for i, chunk in enumerate(chunks):
