@@ -57,5 +57,5 @@ runs:
     #       install dependencies
     #----------------------------------------------
     - name: Install dependencies
-      run: uv sync --group cicd
+      run: uv sync --group cicd --torch-backend cpu
       shell: bash
