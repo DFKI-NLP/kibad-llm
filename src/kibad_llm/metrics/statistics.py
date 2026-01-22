@@ -59,8 +59,9 @@ class ErrorCollector(Metric):
             )
 
         if self.show_errors:
-            for error in errors:
-                logger.info(f"Collected error (id={record_id}): {error}")
+            for errors_per_request in errors:
+                for error in errors_per_request:
+                    logger.info(f"Collected error (id={record_id}): {error}")
         self.state.extend(errors)
 
     def _compute(self) -> dict[str, Any]:
