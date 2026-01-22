@@ -1,3 +1,4 @@
+import logging
 from typing import Any
 
 from llama_index.core.base.llms.types import ChatResponse, MessageRole
@@ -9,7 +10,10 @@ from vllm.entrypoints.chat_utils import (
     CustomChatCompletionMessageParam,
 )
 from vllm.entrypoints.harmony_utils import parse_chat_output
+from vllm.reasoning import ReasoningParser
+from vllm.reasoning.gptoss_reasoning_parser import GptOssReasoningParser
 from vllm.sampling_params import StructuredOutputsParams
+from vllm.v1.structured_output import StructuredOutputManager
 
 from kibad_llm.llms.base import (
     LLM,
@@ -17,6 +21,8 @@ from kibad_llm.llms.base import (
     ReasoningExtractionError,
     SimpleChatMessage,
 )
+
+logger = logging.getLogger(__name__)
 
 # vLLM LLM.chat has these kwargs (non-sampling). Everything else we treat as SamplingParams kwargs.
 # Source: https://docs.vllm.ai/en/v0.11.2/api/vllm/entrypoints/llm/#vllm.entrypoints.llm.LLM.chat
@@ -60,6 +66,10 @@ class VllmInProcess(LLM):
         self._default_request_kwargs: dict[str, Any] = additional_kwargs or {}
         self._default_request_kwargs.update(default_request_kwargs)
 
+        self._structured_output_manager = StructuredOutputManager(
+            vllm_config=self._llm.llm_engine.vllm_config
+        )
+
     def call_llm_chat_with_guided_decoding(
         self,
         messages: list[SimpleChatMessage],
@@ -85,9 +95,25 @@ class VllmInProcess(LLM):
         # take the first output (we only sent one conversation) and first generation
         out = req_outputs[0].outputs[0]
 
-        # Split Harmony output into reasoning + final (final is what we want to JSON-parse).
-        reasoning, final, _is_tool_call = parse_chat_output(out.token_ids)
-        msg = LlamaIndexChatMessage(role=MessageRole.ASSISTANT, content=final)
+        # If a reasoning parser is set, we assume that the model's output
+        # includes reasoning that we want to extract.
+        reasoner: ReasoningParser | None = self._structured_output_manager.reasoner
+        if reasoner is not None:
+            logger.warning(f"Using reasoning parser: {reasoner}")
+
+            # TODO: use reasoner directly to extract reasoning/content?
+            if isinstance(reasoner, GptOssReasoningParser):
+                # Split Harmony output into reasoning + final (final is what we want to JSON-parse).
+                reasoning, content, _is_tool_call = parse_chat_output(out.token_ids)
+            else:
+                raise NotImplementedError(
+                    f"Reasoning parser {type(reasoner)} not supported in VllmInProcess."
+                )
+        else:
+            reasoning = None
+            content = out.text
+
+        msg = LlamaIndexChatMessage(role=MessageRole.ASSISTANT, content=content)
 
         if reasoning is not None:
             msg.additional_kwargs["reasoning"] = reasoning
