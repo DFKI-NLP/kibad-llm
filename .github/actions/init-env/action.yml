@@ -51,11 +51,11 @@ runs:
         version: "0.9.26"
         enable-cache: true
         python-version: ${{ inputs.python }}
-        activate-environment: "true"
+        #activate-environment: "true"
 
     #----------------------------------------------
     #       install dependencies
     #----------------------------------------------
-    - name: Install dependencies
-      run: uv sync --group cicd --torch-backend cpu
-      shell: bash
+    #- name: Install dependencies
+    #  run: uv sync --group cicd --torch-backend cpu
+    #  shell: bash
