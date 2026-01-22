@@ -35,12 +35,13 @@ class SingleExtractionResult(FieldDict):
     messages: dict[str, str | None] | None = None
     messages_formatted: dict[str, str] | None = None
     errors: list[str] = field(default_factory=list)
+    errors_long: list[str] = field(default_factory=list)
 
 
-def exception2error_msg(e: BaseException) -> str:
-    """Return full traceback for the given exception."""
+def exception2error_msg(e: BaseException) -> tuple[str, str]:
+    """Return short and long (including traceback) error messages for an exception."""
     e_with_traceback = "".join(traceback.format_exception(type(e), e, e.__traceback__))
-    return f"{type(e).__name__}: {e_with_traceback}"
+    return f"{type(e).__name__}: {str(e)}", f"{type(e).__name__}: {e_with_traceback}"
 
 
 def build_chat_message(
@@ -738,13 +739,13 @@ def extract_from_text(
             try:
                 callback(out, resp)
             except Exception as e:
-                error_msg = exception2error_msg(e)
-                error_msg_flat = re.sub(r"\s+", " ", error_msg)
-                show_msg = f"Failed to process document {text_id}: {error_msg_flat}"
+                error_msg_short, error_msg_long = exception2error_msg(e)
+                show_msg = f"Failed to process document {text_id}: {error_msg_short}"
                 # if we have response content, include a snippet for better debugging
                 if out.response_content is not None:
                     show_msg += f", response_content = '{out.response_content[:1500]}...'"
-                out["errors"].append(error_msg)
+                out["errors"].append(error_msg_short)
+                out["errors_long"].append(error_msg_long)
 
     else:
         warn_once("No LLM provided for extraction, skipping LLM call.")
@@ -769,7 +770,6 @@ def extract_from_text_lenient(text: str, text_id: str, **kwargs) -> SingleExtrac
     try:
         return extract_from_text(text=text, text_id=text_id, **kwargs)
     except Exception as e:
-        error_msg = exception2error_msg(e)
-        error_msg_flat = re.sub(r"\s+", " ", error_msg)
-        logger.error(f"Error processing document {text_id}: {error_msg_flat}")
-        return SingleExtractionResult(errors=[error_msg])
+        error_msg_short, error_msg_long = exception2error_msg(e)
+        logger.error(f"Error processing document {text_id}: {error_msg_short}")
+        return SingleExtractionResult(errors=[error_msg_short], errors_long=[error_msg_long])
