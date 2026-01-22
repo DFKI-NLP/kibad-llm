@@ -105,6 +105,7 @@ class VllmInProcess(LLM):
         out = req_outputs[0].outputs[0]
 
         if self._reasoning_parser is not None:
+            logger.warning(f"Using reasoning parser: {type(self._reasoning_parser).__name__}")
             if isinstance(self._reasoning_parser, GptOssReasoningParser):
                 # Harmony (gpt-oss): split via token ids
                 reasoning, content, _is_tool_call = parse_chat_output(out.token_ids)
