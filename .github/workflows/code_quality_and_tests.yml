@@ -42,7 +42,7 @@ jobs:
             ${{ steps.pre-commit-cache.outputs.result }}-
       - name: Run pre-commits
         run: |
-          uv run --group cicd --torch-backend cpu pre-commit run -a
+          uv run --group cicd --extra cpu pre-commit run -a
         shell: bash
   pytest:
     name: Tests with Python ${{ matrix.python }} / ${{ matrix.os }}
@@ -64,4 +64,4 @@ jobs:
           python: ${{ matrix.python }}
       - name: Run 'not slow' tests with coverage
         run: |
-          uv run --group cicd --torch-backend cpu pytest -m "not slow" --cov=kibad_llm --cov-report=term-missing
+          uv run --group cicd --extra cpu pytest -m "not slow" --cov=kibad_llm --cov-report=term-missing
