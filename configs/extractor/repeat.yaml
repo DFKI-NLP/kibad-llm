@@ -15,7 +15,7 @@ skip_type_mismatches: false
 # for these fields, return a list of results from each repetition
 return_as_list:
   # - structured
-  - error
+  - errors
   # - response_content
   # - reasoning_content
   # - messages
