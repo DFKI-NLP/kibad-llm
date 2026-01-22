@@ -78,6 +78,16 @@ class VllmInProcess(LLM):
             vllm_config=self._llm.llm_engine.vllm_config
         )
         self._reasoning_parser: ReasoningParser | None = self._structured_output_manager.reasoner
+        if self._reasoning_parser is not None:
+            logger.info(
+                f"Using reasoning parser: {type(self._reasoning_parser).__name__} "
+                f"for model {self._model_name} to separate reasoning from final content."
+            )
+        else:
+            logger.info(
+                f"No reasoning parser configured for model {self._model_name}. "
+                f"Assuming no reasoning content in outputs."
+            )
 
     def call_llm_chat_with_guided_decoding(
         self,
@@ -105,7 +115,6 @@ class VllmInProcess(LLM):
         out = req_outputs[0].outputs[0]
 
         if self._reasoning_parser is not None:
-            logger.warning(f"Using reasoning parser: {type(self._reasoning_parser).__name__}")
             if isinstance(self._reasoning_parser, GptOssReasoningParser):
                 # Harmony (gpt-oss): split via token ids
                 reasoning, content, _is_tool_call = parse_chat_output(out.token_ids)
