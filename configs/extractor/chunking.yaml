@@ -9,6 +9,7 @@ defaults:
   # is in the user message since the conditional extractor adds the system message just once,
   # but the user message for each schema.
   - override prompt_template: schema_in_user_message
+  - prompt_template: default_for_chunking
 
 _target_: kibad_llm.extractors.ChunkingExtractor
 
