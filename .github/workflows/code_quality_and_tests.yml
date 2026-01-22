@@ -16,7 +16,7 @@ jobs:
     steps:
       - name: Check out the repository
         uses: actions/checkout@v4
-      - name: Set up python environment
+      - name: Set up python & uv
         uses: ./.github/actions/init-env
         with:
           os: "ubuntu-latest"
@@ -57,7 +57,7 @@ jobs:
     steps:
       - name: Check out the repository
         uses: actions/checkout@v4
-      - name: Set up python environment
+      - name: Set up python & uv
         uses: ./.github/actions/init-env
         with:
           os: ${{ matrix.os }}
