@@ -60,8 +60,18 @@ cpu = [
   "torch>=2.9.0",
   "torchvision>=0.24.0",
 ]
+cu128 = [
+  "torch>=2.9.0",
+  "torchvision>=0.24.0",
+]
 
 [tool.uv]
+conflicts = [
+  [
+    { extra = "cpu" },
+    { extra = "cu128" },
+  ],
+]
 required-environments = [
     "sys_platform == 'linux' and platform_machine == 'x86_64'",
 ]
@@ -69,14 +79,21 @@ required-environments = [
 [tool.uv.sources]
 torch = [
   { index = "pytorch-cpu", extra = "cpu" },
+  { index = "pytorch-cu128", extra = "cu128" },
 ]
 torchvision = [
   { index = "pytorch-cpu", extra = "cpu" },
+  { index = "pytorch-cu128", extra = "cu128" },
 ]
 
 [[tool.uv.index]]
 name = "pytorch-cpu"
 url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
 explicit = true
 
 [tool.hatch.build.targets.sdist]
