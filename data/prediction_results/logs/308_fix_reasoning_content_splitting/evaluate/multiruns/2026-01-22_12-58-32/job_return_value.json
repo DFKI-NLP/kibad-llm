@@ -1,0 +1,150 @@
+{
+  "extractor/llm=gpt_oss_20b_in_process#seed=42": {
+    "no_error": 65,
+    "with_error": 35,
+    "MissingResponseContentError": 20,
+    "ValueError": 15,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/308_fix_reasoning_content_splitting/2026-01-22_04-18-16/2026-01-22_04-18-17_274937/predictions.jsonl.gz",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/308_fix_reasoning_content_splitting/2026-01-22_04-18-16/2026-01-22_04-18-17_274937/predictions.jsonl.gz",
+        "time_pdf_conversion": 0.04811293096281588,
+        "time_extraction": 6159.934120588005,
+        "commit_hash": "832cbe9116653245b2c8d1e478984e845b5cd456",
+        "branch": "llms/fix-empty-content-for-vllm_in_process",
+        "is_dirty": false
+      }
+    },
+    "overrides": {
+      "name": "308_fix_reasoning_content_splitting",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gpt_oss_20b_in_process",
+      "output_file_name": "predictions.jsonl.gz",
+      "seed": "42"
+    }
+  },
+  "extractor/llm=gpt_oss_20b_in_process#seed=1337": {
+    "no_error": 68,
+    "with_error": 32,
+    "ValueError": 15,
+    "MissingResponseContentError": 17,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/308_fix_reasoning_content_splitting/2026-01-22_04-18-16/2026-01-22_06-03-50_430848/predictions.jsonl.gz",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/308_fix_reasoning_content_splitting/2026-01-22_04-18-16/2026-01-22_06-03-50_430848/predictions.jsonl.gz",
+        "time_pdf_conversion": 0.003343268996104598,
+        "time_extraction": 5891.978419933002,
+        "commit_hash": "34f21585a8525ae88545fb992e20b3ca4624bf71",
+        "branch": "llms/fix-empty-content-for-vllm_in_process",
+        "is_dirty": false
+      }
+    },
+    "overrides": {
+      "name": "308_fix_reasoning_content_splitting",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gpt_oss_20b_in_process",
+      "output_file_name": "predictions.jsonl.gz",
+      "seed": "1337"
+    }
+  },
+  "extractor/llm=gpt_oss_20b_in_process#seed=7331": {
+    "no_error": 65,
+    "with_error": 35,
+    "ValueError": 15,
+    "MissingResponseContentError": 19,
+    "JSONDecodeError": 1,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/308_fix_reasoning_content_splitting/2026-01-22_04-18-16/2026-01-22_07-43-11_271176/predictions.jsonl.gz",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/308_fix_reasoning_content_splitting/2026-01-22_04-18-16/2026-01-22_07-43-11_271176/predictions.jsonl.gz",
+        "time_pdf_conversion": 0.005778081947937608,
+        "time_extraction": 5688.022247017128,
+        "commit_hash": "34f21585a8525ae88545fb992e20b3ca4624bf71",
+        "branch": "llms/fix-empty-content-for-vllm_in_process",
+        "is_dirty": false
+      }
+    },
+    "overrides": {
+      "name": "308_fix_reasoning_content_splitting",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gpt_oss_20b_in_process",
+      "output_file_name": "predictions.jsonl.gz",
+      "seed": "7331"
+    }
+  },
+  "extractor/llm=gemma3_27b_in_process#seed=42": {
+    "no_error": 85,
+    "with_error": 15,
+    "ValueError": 15,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/308_fix_reasoning_content_splitting/2026-01-22_04-18-16/2026-01-22_09-19-09_503305/predictions.jsonl.gz",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/308_fix_reasoning_content_splitting/2026-01-22_04-18-16/2026-01-22_09-19-09_503305/predictions.jsonl.gz",
+        "time_pdf_conversion": 0.005144899012520909,
+        "time_extraction": 2152.5410349841695,
+        "commit_hash": "34f21585a8525ae88545fb992e20b3ca4624bf71",
+        "branch": "llms/fix-empty-content-for-vllm_in_process",
+        "is_dirty": false
+      }
+    },
+    "overrides": {
+      "name": "308_fix_reasoning_content_splitting",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gemma3_27b_in_process",
+      "output_file_name": "predictions.jsonl.gz",
+      "seed": "42"
+    }
+  },
+  "extractor/llm=gemma3_27b_in_process#seed=1337": {
+    "no_error": 85,
+    "with_error": 15,
+    "ValueError": 15,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/308_fix_reasoning_content_splitting/2026-01-22_04-18-16/2026-01-22_09-57-27_727791/predictions.jsonl.gz",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/308_fix_reasoning_content_splitting/2026-01-22_04-18-16/2026-01-22_09-57-27_727791/predictions.jsonl.gz",
+        "time_pdf_conversion": 0.00475184409879148,
+        "time_extraction": 2150.9755865021143,
+        "commit_hash": "34f21585a8525ae88545fb992e20b3ca4624bf71",
+        "branch": "llms/fix-empty-content-for-vllm_in_process",
+        "is_dirty": false
+      }
+    },
+    "overrides": {
+      "name": "308_fix_reasoning_content_splitting",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gemma3_27b_in_process",
+      "output_file_name": "predictions.jsonl.gz",
+      "seed": "1337"
+    }
+  },
+  "extractor/llm=gemma3_27b_in_process#seed=7331": {
+    "no_error": 85,
+    "with_error": 15,
+    "ValueError": 15,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/308_fix_reasoning_content_splitting/2026-01-22_04-18-16/2026-01-22_10-35-16_304783/predictions.jsonl.gz",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/308_fix_reasoning_content_splitting/2026-01-22_04-18-16/2026-01-22_10-35-16_304783/predictions.jsonl.gz",
+        "time_pdf_conversion": 0.004627726972103119,
+        "time_extraction": 2147.7264143591747,
+        "commit_hash": "34f21585a8525ae88545fb992e20b3ca4624bf71",
+        "branch": "llms/fix-empty-content-for-vllm_in_process",
+        "is_dirty": false
+      }
+    },
+    "overrides": {
+      "name": "308_fix_reasoning_content_splitting",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gemma3_27b_in_process",
+      "output_file_name": "predictions.jsonl.gz",
+      "seed": "7331"
+    }
+  }
+}

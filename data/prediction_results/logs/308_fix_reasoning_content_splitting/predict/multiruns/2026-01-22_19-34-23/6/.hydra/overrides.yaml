@@ -1,0 +1,6 @@
+- name=308_fix_reasoning_content_splitting
+- experiment/predict=faktencheck_core_fields_schema_with_evidence
+- pdf_directory=/ds/text/kiba-d/dev-set-100
+- extractor.return_reasoning=True
+- extractor/llm=nemotron_nano_12b_in_process
+- seed=42

@@ -1,0 +1,9 @@
+{
+  "output_file": "predictions/308_fix_reasoning_content_splitting/2026-01-22_04-18-16/2026-01-22_09-57-27_727791/predictions.jsonl.gz",
+  "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/308_fix_reasoning_content_splitting/2026-01-22_04-18-16/2026-01-22_09-57-27_727791/predictions.jsonl.gz",
+  "time_pdf_conversion": 0.00475184409879148,
+  "time_extraction": 2150.9755865021143,
+  "commit_hash": "34f21585a8525ae88545fb992e20b3ca4624bf71",
+  "branch": "llms/fix-empty-content-for-vllm_in_process",
+  "is_dirty": false
+}

@@ -1,0 +1,4 @@
+- dataset.predictions.log=logs/308_fix_reasoning_content_splitting/predict/multiruns/2026-01-22_04-18-16/0
+- name=308_fix_reasoning_content_splitting
+- experiment/evaluate=faktencheck_core_f1_micro_flat
+- prediction_logs=logs/308_fix_reasoning_content_splitting/predict/multiruns/2026-01-22_04-18-16
