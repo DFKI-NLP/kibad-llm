@@ -1,0 +1,9 @@
+{
+  "output_file": "predictions/308_fix_reasoning_content_splitting/2026-01-22_19-34-23/2026-01-22_20-47-15_842988/predictions.jsonl.gz",
+  "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/308_fix_reasoning_content_splitting/2026-01-22_19-34-23/2026-01-22_20-47-15_842988/predictions.jsonl.gz",
+  "time_pdf_conversion": 0.0036891528870910406,
+  "time_extraction": 3884.4596942630596,
+  "commit_hash": "d3e801376aa5a446906096d81e6e76f2449b7099",
+  "branch": "main",
+  "is_dirty": false
+}

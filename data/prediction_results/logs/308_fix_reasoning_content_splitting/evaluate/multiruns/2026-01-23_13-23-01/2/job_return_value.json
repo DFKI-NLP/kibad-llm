@@ -1,0 +1,6 @@
+{
+  "with_error": 100,
+  "ReasoningExtractionError": 85,
+  "ValueError": 15,
+  "JSONDecodeError": 8
+}

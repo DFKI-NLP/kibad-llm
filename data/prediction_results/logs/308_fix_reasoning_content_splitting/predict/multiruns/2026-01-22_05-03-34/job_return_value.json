@@ -1,0 +1,53 @@
+{
+  "seed=42": {
+    "output_file": "predictions/308_fix_reasoning_content_splitting/2026-01-22_05-03-34/2026-01-22_05-03-35_045493/predictions.jsonl.gz",
+    "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/308_fix_reasoning_content_splitting/2026-01-22_05-03-34/2026-01-22_05-03-35_045493/predictions.jsonl.gz",
+    "time_pdf_conversion": 0.0037579440977424383,
+    "time_extraction": 4871.98630430107,
+    "commit_hash": "34f21585a8525ae88545fb992e20b3ca4624bf71",
+    "branch": "llms/fix-empty-content-for-vllm_in_process",
+    "is_dirty": false,
+    "overrides": {
+      "name": "308_fix_reasoning_content_splitting",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "qwen3_30b_in_process",
+      "output_file_name": "predictions.jsonl.gz",
+      "seed": "42"
+    }
+  },
+  "seed=1337": {
+    "output_file": "predictions/308_fix_reasoning_content_splitting/2026-01-22_05-03-34/2026-01-22_06-26-26_180754/predictions.jsonl.gz",
+    "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/308_fix_reasoning_content_splitting/2026-01-22_05-03-34/2026-01-22_06-26-26_180754/predictions.jsonl.gz",
+    "time_pdf_conversion": 0.004598858067765832,
+    "time_extraction": 4836.889050710015,
+    "commit_hash": "34f21585a8525ae88545fb992e20b3ca4624bf71",
+    "branch": "llms/fix-empty-content-for-vllm_in_process",
+    "is_dirty": false,
+    "overrides": {
+      "name": "308_fix_reasoning_content_splitting",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "qwen3_30b_in_process",
+      "output_file_name": "predictions.jsonl.gz",
+      "seed": "1337"
+    }
+  },
+  "seed=7331": {
+    "output_file": "predictions/308_fix_reasoning_content_splitting/2026-01-22_05-03-34/2026-01-22_07-48-25_656227/predictions.jsonl.gz",
+    "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/308_fix_reasoning_content_splitting/2026-01-22_05-03-34/2026-01-22_07-48-25_656227/predictions.jsonl.gz",
+    "time_pdf_conversion": 0.00516417995095253,
+    "time_extraction": 4855.556957956869,
+    "commit_hash": "34f21585a8525ae88545fb992e20b3ca4624bf71",
+    "branch": "llms/fix-empty-content-for-vllm_in_process",
+    "is_dirty": false,
+    "overrides": {
+      "name": "308_fix_reasoning_content_splitting",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "qwen3_30b_in_process",
+      "output_file_name": "predictions.jsonl.gz",
+      "seed": "7331"
+    }
+  }
+}
