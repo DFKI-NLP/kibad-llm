@@ -38,13 +38,17 @@ vllm_kwargs:
 # Generation parameters, can be either ...
 # 1) ... vllm.SamplingParams values ...
 # See https://docs.vllm.ai/en/v0.12.0/api/vllm/sampling_params/ for details.
-temperature: 0.0
+# ChatGPT says community settings are often like here https://lmstudio.ai/models/openai/gpt-oss-20b
+# Official recommendation from OpenAI https://github.com/openai/gpt-oss?tab=readme-ov-file#recommended-sampling-parameters
+# See also https://muxup.com/2025q2/recommended-llm-parameter-quick-reference for recommendations
+temperature: 1.0 # LMStudio suggests 0.8,  ChatGPT suggests for long-PDF IE a small value like 0.15-0.25, see #320
 max_tokens: 8192
+min_p: 0.05 # LMStudio
+top_k: 40 # LMStudio, ChatGPT
+top_p: 1.0 # LMStudio suggests 0.8,  ChatGPT suggests for long-PDF IE a value like 0.9-0.95, see #320
+repetition_penalty: 1.1 # suggested by ChatGPT, see #320
 
 # Other params maybe to consider
-# top_p: 0.8 (some value < 1)
-# top_k: 50
-# repetition_penalty: 1.05
 # frequency_penalty: ...
 # seed?
 # stop: ["\n\n"]
