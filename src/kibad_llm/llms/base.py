@@ -75,7 +75,7 @@ class LLM(ABC):
                 "Could not extract message from chat response raw attribute."
             )
 
-    def get_reasoning_from_chat_response(self, response: ChatResponse) -> str:
+    def get_reasoning_from_chat_response(self, response: ChatResponse) -> str | None:
         """Extract reasoning from a chat response."""
         raise NotImplementedError(
             f"get_reasoning_from_chat_response() is not implemented for {type(self)}"

@@ -134,8 +134,12 @@ class VllmInProcess(LLM):
 
         return ChatResponse(message=msg, raw=req_outputs)
 
-    def get_reasoning_from_chat_response(self, response: ChatResponse) -> str:
+    def get_reasoning_from_chat_response(self, response: ChatResponse) -> str | None:
         """Extract reasoning from a chat response."""
+
+        # don't attempt extraction if no reasoning parser configured (and thus don't raise errors)
+        if self._reasoning_parser is None:
+            return None
 
         reasoning = response.message.additional_kwargs.get("reasoning")
         if not isinstance(reasoning, str):
