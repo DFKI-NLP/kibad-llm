@@ -134,3 +134,26 @@ prediction_logs=logs/311_better_default_temperature/predict/multiruns/2026-01-23
 | qwen3_30b_in_process           |                  1     |                 0     |                                  1 |                                 0 |                16 |                0 |          83.333 |          1.155 |                                            2632.66 |                                            84.833 |                                                  0.007 |                                                 0     |            16.667 |            1.155 | ['faktencheck_core_fields_schema_with_evidence', 'faktencheck_core_fields_schema_with_evidence', 'faktencheck_core_fields_schema_with_evidence'] | ['True', 'True', 'True']               | ['311_better_default_temperature', '311_better_default_temperature', '311_better_default_temperature'] | ['/ds/text/kiba-d/dev-set-100', '/ds/text/kiba-d/dev-set-100', '/ds/text/kiba-d/dev-set-100'] | ['1337', '42', '7331'] | ['feature/temperature_config', 'feature/temperature_config', 'feature/temperature_config'] | ['7197d3bf97007b8a8e7b212a900e4c0bb574f62a', '7197d3bf97007b8a8e7b212a900e4c0bb574f62a', '7197d3bf97007b8a8e7b212a900e4c0bb574f62a'] | [np.False_, np.False_, np.False_]      | ['predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_19-11-52_469585/predictions.jsonl.gz', 'predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_18-26-07_774743/predictions.jsonl.gz', 'predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_19-58-50_450263/predictions.jsonl.gz'] | ['/netscratch/hennig/code/kibad-llm/predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_19-11-52_469585/predictions.jsonl.gz', '/netscratch/hennig/code/kibad-llm/predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_18-26-07_774743/predictions.jsonl.gz', '/netscratch/hennig/code/kibad-llm/predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_19-58-50_450263/predictions.jsonl.gz'] |
 
 </details>
+
+## Comparison with Baseline
+- see [311_better_default_temperature_baseline](../311_better_default_temperature_baseline) for baseline results
+
+notebook parameters:
+```python
+NAME = "311_better_default_temperature"
+METRICS_DIR_PATTERN = ["evaluate/**/2026-01-26_08-58-14/", "../311_better_default_temperature_baseline/evaluate/**/2026-01-26_03-05-47/"]
+ERRORS_DIR_PATTERN = ["evaluate/**/2026-01-26_09-05-58/", "../311_better_default_temperature_baseline/evaluate/**/2026-01-26_03-07-48/"]
+# used to group the data
+INDEX_COLUMNS = ["overrides.extractor/llm", "prediction.job_return_value.branch"]
+PLOT_KWARGS = {
+    # can be either "metric" or one of the INDEX_COLUMNS (or multiple of them)
+    "xgroup": "prediction.job_return_value.branch",
+    "create_subplot_for_each": "metric",
+    # add any more arguments passed to pd.DataFrame.plot
+}
+```
+
+![comparison_metrics.svg](comparison_metrics.svg)
+![comparison_metrics_details.svg](comparison_metrics_detail.svg)
+![comparison_errors.svg](comparison_errors.svg)
+![comparison_errors_detail.svg](comparison_errors_detail.svg)
