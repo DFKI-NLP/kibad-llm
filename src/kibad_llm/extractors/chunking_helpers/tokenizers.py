@@ -47,7 +47,7 @@ __all__ = [
 ]
 
 
-class BaseTokenizerError:
+class BaseTokenizerError(BaseException):
     """Base class for all tokenizer-related errors."""
 
 
@@ -299,6 +299,7 @@ def _get_common_script_cached(c: str) -> str | Sentinel:
     """Determines script using regex, cached for performance."""
     match = _COMMON_SCRIPTS_PATTERN.match(c)
     if match:
+        assert match.lastgroup is not None
         return match.lastgroup
     return _UNKNOWN_SCRIPT
 
@@ -331,7 +332,7 @@ class UnicodeTokenizer(Tokenizer):
 
         current_start = 0
         current_type = None
-        current_script = None
+        current_script: str | Sentinel | None = None
         previous_end = 0
 
         for match in regex.finditer(r"\X", text):

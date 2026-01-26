@@ -73,7 +73,7 @@ def build_chat_message(
         previous_document_chunk: This is the content of the previous chunk if there was one.
         previous_document_chunk_placeholder: The placeholder in the message template for the
             previous chunk context. If the placeholder is present in the message template,
-            it will be replaced with the previous chunk context. 
+            it will be replaced with the previous chunk context.
 
     Returns:
         A tuple of ChatMessage and a metadata dictionary indicating whether schema description
