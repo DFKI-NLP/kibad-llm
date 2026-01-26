@@ -72,9 +72,9 @@ seed=42,1337,7331 \
 
 </details>
 
-### evaluate
+## evaluate
 
-#### f1
+### f1
 
 ```bash
 uv run -m kibad_llm.evaluate \
@@ -105,7 +105,7 @@ prediction_logs=logs/311_better_default_temperature/predict/multiruns/2026-01-23
 </details>
 
 
-#### errors
+### errors
 
 ```bash
 uv run -m kibad_llm.evaluate \
