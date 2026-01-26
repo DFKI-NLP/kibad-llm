@@ -184,6 +184,28 @@ def mixed_group_by(
         if col in cols_agg_list:
             cols_agg_list.remove(col)
 
+    print("pandas", pd.__version__, "numpy", np.__version__)
+    print("len(data)", len(data))
+    print("index type", type(data.index), "index dtype", getattr(data.index, "dtype", None))
+    print("group key dtype", data[by[0]].dtype, "NA in key", data[by[0]].isna().sum())
+
+    dtypes = data[cols_agg_numeric].dtypes
+    print("numeric dtypes value_counts:\n", dtypes.value_counts())
+    print(
+        "nullable columns:",
+        [c for c in cols_agg_numeric if str(data[c].dtype) in ("Float64", "Int64", "boolean")][
+            :20
+        ],
+    )
+
+    g = data.groupby(by=by)
+    for c in cols_agg_numeric:
+        try:
+            _ = g[c].mean()
+        except Exception as e:
+            print("FAILS on column:", c, "dtype:", data[c].dtype)
+            raise
+
     dfs_concat = []
     # group by the specified columns ...
     result_grouped = data.groupby(by=list(by))
