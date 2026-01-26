@@ -1,0 +1,6 @@
+{
+  "no_error": 75,
+  "with_error": 25,
+  "ValueError": 15,
+  "JSONDecodeError": 10
+}

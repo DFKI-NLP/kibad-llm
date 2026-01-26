@@ -1,0 +1,7 @@
+{
+  "no_error": 67,
+  "with_error": 33,
+  "ValueError": 15,
+  "MissingResponseContentError": 16,
+  "JSONDecodeError": 2
+}

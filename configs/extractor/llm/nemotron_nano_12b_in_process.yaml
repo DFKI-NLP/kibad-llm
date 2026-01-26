@@ -43,13 +43,15 @@ vllm_kwargs:
 # Generation parameters, can be either ...
 # 1) ... vllm.SamplingParams values ...
 # See https://docs.vllm.ai/en/v0.12.0/api/vllm/sampling_params/ for details.
-temperature: 0.0
+# See https://huggingface.co/nvidia/NVIDIA-Nemotron-Nano-12B-v2/blob/main/README.md examples for recommended settings
+# See also https://muxup.com/2025q2/recommended-llm-parameter-quick-reference for recommendations
+temperature: 0.6  # however, ChatGPT suggests for long-PDF IE a small value like 0.1-0.2, see #320
 max_tokens: 8192
+top_p: 0.95
+top_k: 40 # see #320
+repetition_penalty: 1.1 # suggested by ChatGPT, see #320
 
 # Other params maybe to consider
-# top_p: 0.8 (some value < 1)
-# top_k: 50
-# repetition_penalty: 1.05
 # frequency_penalty: ...
 # seed?
 # stop: ["\n\n"]

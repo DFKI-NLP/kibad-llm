@@ -1,0 +1,4 @@
+- dataset.predictions.log=logs/311_better_default_temperature_baseline/predict/multiruns/2026-01-23_15-36-01/9
+- name=311_better_default_temperature_baseline
+- experiment/evaluate=faktencheck_core_f1_micro_flat
+- prediction_logs=logs/311_better_default_temperature_baseline/predict/multiruns/2026-01-23_15-36-01

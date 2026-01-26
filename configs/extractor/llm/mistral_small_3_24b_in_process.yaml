@@ -43,13 +43,19 @@ vllm_kwargs:
 # Generation parameters, can be either ...
 # 1) ... vllm.SamplingParams values ...
 # See https://docs.vllm.ai/en/v0.12.0/api/vllm/sampling_params/ for details.
-temperature: 0.0
+# See https://huggingface.co/mistralai/Mistral-Small-24B-Instruct-2501#vllm for recommended settings
+# See also https://muxup.com/2025q2/recommended-llm-parameter-quick-reference for recommendations
+temperature: 0.15  # 0.15 seems really low compared to the other models and maybe only refers to the 'instruct' mode ?
+                   # also, the muxup link suggests they use 0.3 now?
+                   # however, ChatGPT suggests for long-PDF IE a small value like 0.1-0.2, see #320
 max_tokens: 8192
+# chatgpt suggests community configs like https://huggingface.co/muranAI/Mistral-Small-3.1-24B-Instruct-2503-GGUF#using-with-ollama
+# for other settings
+top_k: 40 # see #320
+repetition_penalty: 1.1 # suggested by ChatGPT, see #320
+top_p: 0.95 # see #320
 
 # Other params maybe to consider
-# top_p: 0.8 (some value < 1)
-# top_k: 50
-# repetition_penalty: 1.05
 # frequency_penalty: ...
 # seed?
 # stop: ["\n\n"]

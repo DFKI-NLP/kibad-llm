@@ -1,0 +1,9 @@
+{
+  "output_file": "predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_21-03-57_566220/predictions.jsonl.gz",
+  "output_file_absolute": "/netscratch/hennig/code/kibad-llm/predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_21-03-57_566220/predictions.jsonl.gz",
+  "time_pdf_conversion": 0.006217374000698328,
+  "time_extraction": 1141.7019540710608,
+  "commit_hash": "7197d3bf97007b8a8e7b212a900e4c0bb574f62a",
+  "branch": "feature/temperature_config",
+  "is_dirty": false
+}
