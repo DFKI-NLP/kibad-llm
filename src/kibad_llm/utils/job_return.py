@@ -4,6 +4,7 @@ import logging
 import math
 from pathlib import Path
 import re
+import traceback
 from typing import Any
 
 import numpy as np
@@ -196,6 +197,9 @@ def mixed_group_by(
             print("all columns:", data.columns.tolist())
             print("by:", by)
             print("numeric_agg_func:", numeric_agg_func)
+            # show full stack trace
+            e_with_traceback = "".join(traceback.format_exception(type(e), e, e.__traceback__))
+            print(e_with_traceback)
             raise e
 
         result_numeric.columns = multi_index_to_single(result_numeric.columns, sep=".")
