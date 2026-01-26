@@ -4,7 +4,6 @@ import logging
 import math
 from pathlib import Path
 import re
-import traceback
 from typing import Any
 
 import numpy as np
@@ -184,50 +183,17 @@ def mixed_group_by(
         if col in cols_agg_list:
             cols_agg_list.remove(col)
 
-    print("pandas", pd.__version__, "numpy", np.__version__)
-    print("len(data)", len(data))
-    print("index type", type(data.index), "index dtype", getattr(data.index, "dtype", None))
-    print("group key dtype", data[by[0]].dtype, "NA in key", data[by[0]].isna().sum())
-
-    dtypes = data[cols_agg_numeric].dtypes
-    print("numeric dtypes value_counts:\n", dtypes.value_counts())
-    print(
-        "nullable columns:",
-        [c for c in cols_agg_numeric if str(data[c].dtype) in ("Float64", "Int64", "boolean")][
-            :20
-        ],
-    )
-
-    g = data.groupby(by=by)
-    for c in cols_agg_numeric:
-        try:
-            _ = g[c].mean()
-        except Exception as e:
-            print("FAILS on column:", c, "dtype:", data[c].dtype)
-            raise
-
     dfs_concat = []
     # group by the specified columns ...
     result_grouped = data.groupby(by=list(by))
     if len(cols_agg_numeric) > 0:
-        try:
-            # ... and calculate the mean and std for numeric columns (and flatten the column MultiIndex)
-            result_numeric = result_grouped[cols_agg_numeric].agg(numeric_agg_func)
-        except Exception as e:
-            print("Error during aggregation:", e)
-            print("cols_agg_numeric:", cols_agg_numeric)
-            print("all columns:", data.columns.tolist())
-            print("by:", by)
-            print("numeric_agg_func:", numeric_agg_func)
-            # show full stack trace
-            e_with_traceback = "".join(traceback.format_exception(type(e), e, e.__traceback__))
-            print(e_with_traceback)
-            raise e
-
+        # ... and calculate the mean and std for numeric columns (and flatten the column MultiIndex)
+        result_numeric = result_grouped[cols_agg_numeric].agg(numeric_agg_func)
         result_numeric.columns = multi_index_to_single(result_numeric.columns, sep=".")
 
         if numeric_fill_na is not None:
             result_numeric = result_numeric.fillna(numeric_fill_na)
+
         dfs_concat.append(result_numeric)
 
     if len(cols_agg_list) > 0:
