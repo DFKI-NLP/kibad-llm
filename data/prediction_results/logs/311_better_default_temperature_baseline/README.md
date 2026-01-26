@@ -1,9 +1,9 @@
-# 311_better_default_temperature
+# 311_better_default_temperature_baseline
 
 evaluate setting temperature, top_p, top_k and repetition penalty to recommended values per model
 see https://github.com/DFKI-NLP/kibad-llm/issues/311 / https://github.com/DFKI-NLP/kibad-llm/pull/322 for details
  - models: gpt_oss_20b, gemma3_27b, qwen3_30b, mistral_small_3_24b, and nemotron_nano_12b_v2 (all in-process)
- - `temperature=0.0`
+ - `temperature=0.0` (implicit via old defaults)
  - faktencheck core schema + detect evidence
  - with `return_reasoning=true`
 
