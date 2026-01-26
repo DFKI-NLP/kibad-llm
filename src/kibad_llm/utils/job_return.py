@@ -187,18 +187,22 @@ def mixed_group_by(
     # group by the specified columns ...
     result_grouped = data.groupby(by=list(by))
     if len(cols_agg_numeric) > 0:
-        print("A")
-        # ... and calculate the mean and std for numeric columns (and flatten the column MultiIndex)
-        result_numeric = result_grouped[cols_agg_numeric].agg(numeric_agg_func)
-        print("B")
+        try:
+            # ... and calculate the mean and std for numeric columns (and flatten the column MultiIndex)
+            result_numeric = result_grouped[cols_agg_numeric].agg(numeric_agg_func)
+        except Exception as e:
+            print("Error during aggregation:", e)
+            print("cols_agg_numeric:", cols_agg_numeric)
+            print("all columns:", data.columns.tolist())
+            print("by:", by)
+            print("numeric_agg_func:", numeric_agg_func)
+            raise e
+
         result_numeric.columns = multi_index_to_single(result_numeric.columns, sep=".")
-        print("C")
 
         if numeric_fill_na is not None:
             result_numeric = result_numeric.fillna(numeric_fill_na)
-        print("D")
         dfs_concat.append(result_numeric)
-        print("E")
 
     if len(cols_agg_list) > 0:
         # ... and for non-numeric columns, return lists of values
