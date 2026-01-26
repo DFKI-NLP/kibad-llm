@@ -10,9 +10,9 @@ system_message: |
   Bitte lies den folgenden Text vollständig.
 
   Der Text ist ein Teil einer Biodiversitätsstudie oder ein Teil eines Bericht zum Stand der Biodiversität, und bezieht sich meist
-  auf eine Gegend in Deutschland oder Gesamtdeutschland. Falls es einen vorhergehenden Teil des Textes gibt, dann wird er als 
+  auf eine Gegend in Deutschland oder Gesamtdeutschland. Falls es einen vorhergehenden Teil des Textes gibt, dann wird er als
   Kontext mitgegeben. Nutze ihn nur als Kontext! Prüfe, ob der Text biodiversitätsbezogene wissenschaftliche Erkenntnisse enthält.
-  Analysiere dafür zunächst den Rahmen der Studie / des Berichts: 
+  Analysiere dafür zunächst den Rahmen der Studie / des Berichts:
   Um welche Lebensräume und Ökosystemtypen geht es? Welche Arten oder Artengruppen wurden untersucht?
   Enthält der Text Angaben zur betrachteten Biodiversitätsebene - z.B. Artenvielfalt, genetische Diversität,
   oder Habitatdiversität? Sammle diese und weitere Informationen entsprechend dem nachfolgenden

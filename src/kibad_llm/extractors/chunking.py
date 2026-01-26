@@ -16,16 +16,13 @@ from .union import UnionExtractor, _aggregate_structured_outputs_union
 def _document_chunk_iterator(
     document: str,
     max_char_buffer: int,
-    tokenizer: tokenizer_lib.Tokenizer,
-    restrict_repeats: bool = True,
+    tokenizer: tokenizer_lib.Tokenizer | None,
 ) -> Iterator[core.TextChunk]:
     """Iterates over documents to yield text chunks along with the document ID.
 
     Args:
       documents: A sequence of Document objects.
       max_char_buffer: The maximum character buffer size for the ChunkIterator.
-      restrict_repeats: Whether to restrict the same document id from being
-        visited more than once.
       tokenizer: Optional tokenizer instance.
 
     Yields:

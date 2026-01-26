@@ -27,8 +27,6 @@ import re
 
 from . import tokenizers as tokenizer_lib
 
-# import more_itertools
-
 
 @dataclasses.dataclass
 class CharInterval:
@@ -43,7 +41,7 @@ class CharInterval:
     end_pos: int | None = None
 
 
-class TokenUtilError:
+class TokenUtilError(BaseException):
     """Error raised when token_util returns unexpected values."""
 
 
@@ -101,13 +99,6 @@ class TextChunk:
         if self._sanitized_chunk_text is None:
             self._sanitized_chunk_text = _sanitize(self.chunk_text)
         return self._sanitized_chunk_text
-
-    @property
-    def additional_context(self) -> str | None:
-        """Gets the additional context for prompting from the source document."""
-        if self.document is not None:
-            return self.document.additional_context
-        return None
 
     @property
     def char_interval(self) -> CharInterval:
@@ -395,6 +386,8 @@ class ChunkIterator:
           True if the token interval exceeds the maximum buffer size.
         """
         char_interval = get_char_interval(self.tokenized_text, token_interval)
+        if char_interval.start_pos is None or char_interval.end_pos is None:
+            return False
         return (char_interval.end_pos - char_interval.start_pos) > self.max_char_buffer
 
     def __next__(self) -> TextChunk:

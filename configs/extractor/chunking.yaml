@@ -8,8 +8,10 @@ defaults:
   # special template where the document is in the system message and the schema description
   # is in the user message since the conditional extractor adds the system message just once,
   # but the user message for each schema.
-  - override prompt_template: schema_in_user_message
+  #
+  # TODO: fix this!
   - prompt_template: default_for_chunking
+  - override prompt_template: schema_in_user_message
 
 _target_: kibad_llm.extractors.ChunkingExtractor
 
