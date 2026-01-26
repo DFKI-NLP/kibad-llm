@@ -535,16 +535,14 @@ class SaveJobReturnValueCallback(Callback):
                 other_columns = [col for col in result.columns if col not in job_id_columns]
                 result = result[job_id_columns_sorted + other_columns]
 
-            print("A")
             # flatten the index values and column names
             if isinstance(result.index, pd.MultiIndex):
                 result.index = multi_index_to_single(result.index)
-            print("B")
             if isinstance(result, pd.DataFrame) and isinstance(result.columns, pd.MultiIndex):
                 result.columns = multi_index_to_single(result.columns)
 
-            print("C")
             if markdown_group_by is not None:
+                print("A")
                 result = mixed_group_by(
                     data=result,
                     by=markdown_group_by,
@@ -552,10 +550,12 @@ class SaveJobReturnValueCallback(Callback):
                     numeric_fill_na=0.0,
                     force_list_col_regex=r"^overrides\.",
                 )
+                print("B")
                 job_id_columns = list(result.index.names)
+                print("C")
                 result = result.reset_index()
+                print("D")
 
-            print("D")
             if self.markdown_round_digits is not None and (
                 isinstance(result, pd.DataFrame) or result.dtype != "object"
             ):
