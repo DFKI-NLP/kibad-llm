@@ -1,0 +1,6 @@
+- name=311_better_default_temperature_baseline
+- experiment/predict=faktencheck_core_fields_schema_with_evidence
+- pdf_directory=/ds/text/kiba-d/dev-set-100
+- extractor.return_reasoning=True
+- extractor/llm=nemotron_nano_12b_in_process
+- seed=42

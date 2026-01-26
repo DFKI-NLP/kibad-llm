@@ -1,0 +1,9 @@
+{
+  "output_file": "predictions/311_better_default_temperature_baseline/2026-01-23_15-36-01/2026-01-23_17-24-26_293566/predictions.jsonl.gz",
+  "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/311_better_default_temperature_baseline/2026-01-23_15-36-01/2026-01-23_17-24-26_293566/predictions.jsonl.gz",
+  "time_pdf_conversion": 0.0028295780066400766,
+  "time_extraction": 3136.2704763109796,
+  "commit_hash": "96efc8cbaf31910ffab43b74a2a0b89184634a01",
+  "branch": "main",
+  "is_dirty": false
+}
