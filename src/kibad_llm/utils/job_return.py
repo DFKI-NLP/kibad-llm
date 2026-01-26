@@ -153,7 +153,6 @@ def mixed_group_by(
         - and no all-NA columns.
     """
 
-    print("A")
     # make a copy to not modify the original data
     data = data.copy()
 
@@ -163,13 +162,11 @@ def mixed_group_by(
     # fix dtypes: convert object dtypes to more specific dtypes
     data = data.convert_dtypes()
 
-    print("B")
     additional_cols_not_numeric = []
     if force_list_col_regex is not None:
         pattern = re.compile(force_list_col_regex)
         additional_cols_not_numeric = [col for col in data.columns if pattern.match(col)]
 
-    print("C")
     cols_agg_numeric = [
         col
         for col in data.select_dtypes(include=[np.number]).columns
@@ -177,7 +174,6 @@ def mixed_group_by(
     ]
     cols_agg_list = [col for col in data.columns if col not in cols_agg_numeric]
 
-    print("D")
     for col in by:
         # replace na values in col with "" to not miss groupings
         data[col] = data[col].fillna("")
@@ -187,43 +183,40 @@ def mixed_group_by(
         if col in cols_agg_list:
             cols_agg_list.remove(col)
 
-    print("E")
     dfs_concat = []
     # group by the specified columns ...
     result_grouped = data.groupby(by=list(by))
     if len(cols_agg_numeric) > 0:
+        print("A")
         # ... and calculate the mean and std for numeric columns (and flatten the column MultiIndex)
         result_numeric = result_grouped[cols_agg_numeric].agg(numeric_agg_func)
+        print("B")
         result_numeric.columns = multi_index_to_single(result_numeric.columns, sep=".")
+        print("C")
 
         if numeric_fill_na is not None:
             result_numeric = result_numeric.fillna(numeric_fill_na)
-
+        print("D")
         dfs_concat.append(result_numeric)
+        print("E")
 
-    print("F")
     if len(cols_agg_list) > 0:
         # ... and for non-numeric columns, return lists of values
         result_other = result_grouped[cols_agg_list].agg(list)
 
         dfs_concat.append(result_other)
 
-    print("G")
     if len(dfs_concat) == 0:
         # nothing to aggregate, return empty dataframe with correct index
         return pd.DataFrame(index=result_grouped.size().index)
 
-    print("H")
     # combine both results
     result = pd.concat(dfs_concat, axis=1)
 
-    print("I")
     # drop columns that are completely NaN (otherwise to_markdown fails)
     result = result.dropna(axis=1, how="all")
 
-    print("J")
     if columns_name:
         result.columns.name = columns_name
 
-    print("K")
     return result
