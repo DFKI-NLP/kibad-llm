@@ -4,6 +4,9 @@
 # ...but keep prediction results
 !/data/prediction_results/
 !/data/prediction_results/**
+# ... and processed data
+!/data/processed/
+!/data/processed/**
 
 # Run logs
 /logs/

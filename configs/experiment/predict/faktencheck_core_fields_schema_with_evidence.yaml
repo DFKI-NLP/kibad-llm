@@ -48,8 +48,8 @@ extractor:
   #   # ... such as the margin (in words) around the evidence snippet
   #   evidence_snippet_margin: 15
 
-# To verify the evidence anchors wrt. the original text, we return the text from the pdf conversion.
-store_text_in_predictions: true
+# To verify the evidence anchors wrt. the original text, we may return the text from the pdf conversion.
+# store_text_in_predictions: true
 
-# since we store the whole text, enable compression of the output file by setting a .gz extension
-output_file_name: predictions.jsonl.gz
+# If we store the whole text, enable compression of the output file by setting a .gz extension
+# output_file_name: predictions.jsonl.gz
