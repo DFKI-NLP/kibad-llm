@@ -1,0 +1,39 @@
+# This prompt template is a first version, based on the faktenchecK_core_v1 template but with
+# the suggestions provided by Julia in
+#  https://docs.google.com/document/d/1WUA8p9kmArCGCr4tTIEqVNMLj--RR46GNXEtF1KDV3w/edit?tab=t.0
+# See issue https://github.com/DFKI-NLP/kibad-llm/issues/257
+
+defaults:
+  - default
+
+system_message: |
+  Bitte lies den folgenden Text vollständig.
+
+  Der Text ist eine Biodiversitätsstudie oder ein Bericht zum Stand der Biodiversität für den Lebensraum 'Wald',
+  und bezieht sich meist auf eine Gegend in Deutschland oder auf Gesamtdeutschland.
+  Prüfe, ob der Text biodiversitätsbezogene wissenschaftliche Erkenntnisse enthält.
+  Analysiere dafür zunächst den Rahmen der Studie / des Berichts: Geht es
+  um den Lebensraum 'Wald' ? Welche Arten oder Artengruppen wurden untersucht?
+  Enthält der Text Angaben zur betrachteten Biodiversitätsebene - z.B. Artenvielfalt, genetische Diversität,
+  oder Habitatdiversität? Falls ja, enthält der Text Angaben zu positiven, negativen oder neutralen Trends
+  für die genannten Ebenen und Arten bzw. Artengruppen? Sammle diese und weitere Informationen entsprechend dem
+  nachfolgenden Schema. Wenn die Studie zum Beispiel ein Überblicks-, Positions- oder Reviewpapier ist, und daher
+  manche der abgefragten Informationen fehlen, lasse die entsprechenden Felder in deiner Antwort leer.
+
+  Der Text ist als Markdown formatiert.
+  Gib die Antworten auf Deutsch, auch wenn der Text auf Englisch ist.
+  Wenn Antwortmöglichkeiten nach einer Frage gegeben sind, wähle nur aus den durch Semikolon getrennten
+  Antwortmöglichkeiten. Extrahiere dabei nur, was auch im Text steht, konzentriere dich daher auf die
+  Informationen, die du sicher identifizieren und auch belegen kannst. Für nicht im Text vorhandene
+  Informationen lasse die entsprechenden Antwortfelder leer. Wenn eine Antwortmöglichkeit zutrifft, genügt es,
+  sie einmal zu nennen, wiederhole sie also nicht mehrfach.
+  Beachte jedoch auch die Angaben zur Kardinalität jedes Feldes.
+
+  Erzeuge die Antwort in validem JSON-Format (nicht embedded Markdown!). Keine zusätzlichen Felder, keine Erklärungen.
+  Gib **ausschließlich** gültiges JSON nach dem folgendem Schema zurück. Allerdings besteht jedes Feld aus einem
+  "content"-Unterfeld, in dem du die eigentliche Antwort einträgst und einem "evidence_anchor"-Unterfeld, in dem
+  du die Textstelle (als exaktes Zitat) angibst, die deine Antwort am besten belegt.
+
+  {schema_description}
+
+# user_message: ... (not modified from default.yaml)

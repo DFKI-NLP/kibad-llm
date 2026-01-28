@@ -1050,11 +1050,12 @@ class OrganismBiodiversityTrend(CompoundFeature):
         "Abnahme der Organismengruppe festgestellt wurde.",
     )
 
-class OrganismBiodiversityTrendV2(CompoundFeature):
+
+class OrganismBiodiversityTrendV1(CompoundFeature):
     """Organismenbezogener Biodiversitätstrend bestehend aus Organismenhauptgruppe
-        (hauptgruppe_rote_listen), Organismenuntergruppe (untergruppe_rote_listen),
-        Lebensraum (habitat), Biodiversitätsvariable (biodiversity_variable)
-        und Trendrichtung (trend_category).
+    (hauptgruppe_rote_listen), Organismenuntergruppe (untergruppe_rote_listen),
+    Lebensraum (habitat), Biodiversitätsvariable (biodiversity_variable)
+    und Trendrichtung (trend_category).
     """
 
     # The fields below are based Trends-WeightedVoteCount.csv file.
@@ -1076,20 +1077,21 @@ class OrganismBiodiversityTrendV2(CompoundFeature):
     Antwortvariable: BiodiversityVariableEnum = Field(
         ...,
         description="Mithilfe welcher Biodiversitätsvariable wird der Trend gemessen? 'ENS' steht dabei "
-                    "für 'Effective Number of Species' und ist ein Index, der angibt, wie viele Arten es "
-                    "gibt und wie gleichmäßig die Individuen auf die verschiedenen Arten verteilt "
-                    "sind (Effektive Artenzahl). 'Artenanzahl' gibt nur die die Anzahl der verschiedenen Arten "
-                    "an. 'Abundanz' gibt die Häufigkeit einer Art oder Gruppe an.",
+        "für 'Effective Number of Species' und ist ein Index, der angibt, wie viele Arten es "
+        "gibt und wie gleichmäßig die Individuen auf die verschiedenen Arten verteilt "
+        "sind (Effektive Artenzahl). 'Artenanzahl' gibt nur die die Anzahl der verschiedenen Arten "
+        "an. 'Abundanz' gibt die Häufigkeit einer Art oder Gruppe an.",
     )
     Trend: TrendCategoryEnum = Field(
         ...,
         description="In welche der folgenden Kategorien lässt sich die Richtung des Trends einordnen? "
-                    "'neutral' bedeutet, dass auf Trends untersucht wurde, aber keine Zunahme oder Abnahme "
-                    "der Organismengruppe festgestellt wurde. 'positiv' bedeutet einen zunehmenden Trend, "
-                    "'negativ' einen abnehmenden Trend. Bei 'positiv zu negativ' geht ein zunehmender Trend "
-                    "in einen abnehmenden Trend über. Bei 'negativ zu positiv' geht ein abnehmender Trend in "
-                    "einen zunehmenden Trend über.",
+        "'neutral' bedeutet, dass auf Trends untersucht wurde, aber keine Zunahme oder Abnahme "
+        "der Organismengruppe festgestellt wurde. 'positiv' bedeutet einen zunehmenden Trend, "
+        "'negativ' einen abnehmenden Trend. Bei 'positiv zu negativ' geht ein zunehmender Trend "
+        "in einen abnehmenden Trend über. Bei 'negativ zu positiv' geht ein abnehmender Trend in "
+        "einen zunehmenden Trend über.",
     )
+
 
 class EcosystemStudyOrganismTrends(BaseEcosystemStudyFeatures):
     """Angaben zu den im Text beschriebenen organismenbezogenen Biodiversitätstrends."""
@@ -1100,10 +1102,11 @@ class EcosystemStudyOrganismTrends(BaseEcosystemStudyFeatures):
         description="Liste der im Text beschriebenen organismenbezogenen Biodiversitätstrends.",
     )
 
-class EcosystemStudyOrganismTrendsV2(BaseEcosystemStudyFeatures):
+
+class EcosystemStudyOrganismTrendsV1(BaseEcosystemStudyFeatures):
     """Das Schema sammelt Angaben zu den im Text beschriebenen organismenbezogenen Biodiversitätstrends."""
 
-    organism_trends: list[OrganismBiodiversityTrendV2] = Field(
+    organism_trends: list[OrganismBiodiversityTrendV1] = Field(
         default_factory=list,
         alias="Organismenbezogene Biodiversitätstrends",
         description="Erstelle eine Liste der im Text beschriebenen organismenbezogenen Biodiversitätstrends.",

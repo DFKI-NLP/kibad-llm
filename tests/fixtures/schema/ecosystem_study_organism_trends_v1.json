@@ -1,0 +1,128 @@
+{
+  "$defs": {
+    "BiodiversityVariableEnum": {
+      "enum": [
+        "Abundanz",
+        "Artenzahl",
+        "ENS"
+      ],
+      "title": "BiodiversityVariableEnum",
+      "type": "string"
+    },
+    "HabitatForOrganismTrendEnum": {
+      "enum": [
+        "AgrarOffen",
+        "Binnengewaesser",
+        "Boden",
+        "Kueste",
+        "Urban",
+        "Wald"
+      ],
+      "title": "HabitatForOrganismTrendEnum",
+      "type": "string"
+    },
+    "HauptgruppeRoteListenEnum": {
+      "enum": [
+        "Makrofauna",
+        "Mesofauna",
+        "Mikrofauna",
+        "Pflanzen",
+        "Pilze_Flechten",
+        "Wirbellose",
+        "Wirbeltiere"
+      ],
+      "title": "HauptgruppeRoteListenEnum",
+      "type": "string"
+    },
+    "OrganismBiodiversityTrendV1": {
+      "additionalProperties": false,
+      "description": "Organismenbezogener Biodiversitätstrend bestehend aus Organismenhauptgruppe\n(hauptgruppe_rote_listen), Organismenuntergruppe (untergruppe_rote_listen),\nLebensraum (habitat), Biodiversitätsvariable (biodiversity_variable)\nund Trendrichtung (trend_category).",
+      "properties": {
+        "Hauptgruppe_RoteListen": {
+          "$ref": "#/$defs/HauptgruppeRoteListenEnum",
+          "description": "Auf welche Organismen-Hautgruppe bezieht sich der angegebene Trend?"
+        },
+        "Untergruppe_RoteListen": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UntergruppeRoteListenEnum"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Auf welche Organismen-Untergruppe bezieht sich der angegebene Trend?"
+        },
+        "Lebensraum": {
+          "$ref": "#/$defs/HabitatForOrganismTrendEnum",
+          "description": "Auf welchen der folgenden Lebensräume bezieht sich der Trend?"
+        },
+        "Antwortvariable": {
+          "$ref": "#/$defs/BiodiversityVariableEnum",
+          "description": "Mithilfe welcher Biodiversitätsvariable wird der Trend gemessen? 'ENS' steht dabei für 'Effective Number of Species' und ist ein Index, der angibt, wie viele Arten es gibt und wie gleichmäßig die Individuen auf die verschiedenen Arten verteilt sind (Effektive Artenzahl). 'Artenanzahl' gibt nur die die Anzahl der verschiedenen Arten an. 'Abundanz' gibt die Häufigkeit einer Art oder Gruppe an."
+        },
+        "Trend": {
+          "$ref": "#/$defs/TrendCategoryEnum",
+          "description": "In welche der folgenden Kategorien lässt sich die Richtung des Trends einordnen? 'neutral' bedeutet, dass auf Trends untersucht wurde, aber keine Zunahme oder Abnahme der Organismengruppe festgestellt wurde. 'positiv' bedeutet einen zunehmenden Trend, 'negativ' einen abnehmenden Trend. Bei 'positiv zu negativ' geht ein zunehmender Trend in einen abnehmenden Trend über. Bei 'negativ zu positiv' geht ein abnehmender Trend in einen zunehmenden Trend über."
+        }
+      },
+      "required": [
+        "Hauptgruppe_RoteListen",
+        "Lebensraum",
+        "Antwortvariable",
+        "Trend"
+      ],
+      "title": "OrganismBiodiversityTrendV1",
+      "type": "object"
+    },
+    "TrendCategoryEnum": {
+      "enum": [
+        "positive",
+        "negative",
+        "no",
+        "positive to negative",
+        "negative to positive"
+      ],
+      "title": "TrendCategoryEnum",
+      "type": "string"
+    },
+    "UntergruppeRoteListenEnum": {
+      "enum": [
+        "Amphibien",
+        "Andere_Wirbellose",
+        "Andere_Wirbellose_Makrozoobenthos",
+        "Andere_Wirbellose_Zooplankton",
+        "Arthropoden",
+        "Collembola",
+        "Fische",
+        "Flechten",
+        "Mesostigmata",
+        "Mikroalgen",
+        "Moose",
+        "Oribatida",
+        "Pflanzen",
+        "Pilze",
+        "Reptilien",
+        "Saeuger",
+        "Voegel"
+      ],
+      "title": "UntergruppeRoteListenEnum",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Das Schema sammelt Angaben zu den im Text beschriebenen organismenbezogenen Biodiversitätstrends.",
+  "properties": {
+    "organism_trends": {
+      "description": "Erstelle eine Liste der im Text beschriebenen organismenbezogenen Biodiversitätstrends.",
+      "items": {
+        "$ref": "#/$defs/OrganismBiodiversityTrendV1"
+      },
+      "title": "Organism Trends",
+      "type": "array"
+    }
+  },
+  "title": "EcosystemStudyOrganismTrendsV1",
+  "type": "object"
+}
