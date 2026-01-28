@@ -3,7 +3,11 @@
 See #327 and #155 for details.
 
 ## notebook parameters
+
+### just this experiment
+
 ```python
+
 NAME = "327_faktencheck_core_with_persona"
 METRICS_DIR_PATTERN = "evaluate/**/2026-01-28_12-19-32/"
 ERRORS_DIR_PATTERN = "evaluate/**/2026-01-28_12-20-17/"
@@ -16,6 +20,41 @@ PLOT_KWARGS = {
     # add any more arguments passed to pd.DataFrame.plot
 }
 ```
+
+![metrics.svg](metrics.svg)
+![errors.svg](errors.svg)
+![errors_detail.svg](errors_detail.svg)
+
+### comparison with baseline
+
+```python
+# comparison with baseline
+NAME = "327_faktencheck_core_with_persona"
+METRICS_DIR_PATTERN = [
+    "evaluate/**/2026-01-28_12-19-32/", 
+    "../311_better_default_temperature/evaluate/**/2026-01-26_08-58-14/", 
+    "../261_baseline_faktencheck_core_variance/evaluate/**/2026-01-21_10-41-13/",
+]
+ERRORS_DIR_PATTERN = [
+    "evaluate/**/2026-01-28_12-20-17/",
+    "../311_better_default_temperature/evaluate/**/2026-01-26_09-05-58/",
+    "../261_baseline_faktencheck_core_variance/evaluate/**/2026-01-21_10-41-50/",
+]
+
+# used to group the data
+INDEX_COLUMNS = ["overrides.extractor/prompt_template", "overrides.extractor/llm"]
+PLOT_KWARGS = {
+    # can be either "metric" or one of the INDEX_COLUMNS (or multiple of them)
+    "xgroup": "overrides.extractor/llm",
+    # add any more arguments passed to pd.DataFrame.plot
+}
+```
+
+![comparison_metrics.svg](comparison_metrics.svg)
+![comparison_metrics_details.svg](comparison_metrics_details.svg)
+
+![comparison_errors.svg](comparison_errors.svg)
+![comparison_errors_detail.svg](comparison_errors_detail.svg)
 
 ## inference
  - based on command from [here](https://github.com/DFKI-NLP/kibad-llm/issues/311#issuecomment-3790517808)
