@@ -54,7 +54,7 @@ FILL_NA = {
 }
 ```
 
-**IMPORTANT: This requires some filtering of the data, since the other experiments contain multipel data points for llms other than gpt5.** Do this:
+**IMPORTANT: This requires some filtering of the data, since the other experiments contain multiple data points for llms other than gpt5.** Do this:
 ```python
 mask = (metrics_df["overrides.extractor/llm"] == "gpt_5") | (
     metrics_df["prediction.job_return_value.branch"] != "main"
