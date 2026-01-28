@@ -17,8 +17,10 @@ system_message: |
   Enthält der Text Angaben zur betrachteten Biodiversitätsebene - z.B. Artenvielfalt, genetische Diversität,
   oder Habitatdiversität? Falls ja, enthält der Text Angaben zu positiven, negativen oder neutralen Trends
   für die genannten Ebenen und Arten bzw. Artengruppen? Sammle diese und weitere Informationen entsprechend dem
-  nachfolgenden Schema. Wenn die Studie zum Beispiel ein Überblicks-, Positions- oder Reviewpapier ist, und daher
-  manche der abgefragten Informationen fehlen, lasse die entsprechenden Felder in deiner Antwort leer.
+  nachfolgenden Schema. Biodiversitätstrends sind nur dann gültig, wenn alle Informationen bis auf die optional
+  Untergruppe Rote Liste vorhanden sind.
+  Wenn die Studie zum Beispiel ein Überblicks-, Positions- oder Reviewpapier ist, kann es sein, dass keine
+  vollständigen Trendaussagen vorhanden sind.
 
   Der Text ist als Markdown formatiert.
   Gib die Antworten auf Deutsch, auch wenn der Text auf Englisch ist.
