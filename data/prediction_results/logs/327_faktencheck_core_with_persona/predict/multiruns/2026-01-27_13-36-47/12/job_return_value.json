@@ -1,0 +1,9 @@
+{
+  "output_file": "predictions/327_faktencheck_core_with_persona/2026-01-27_13-36-47/2026-01-27_19-52-41_948089/predictions.jsonl",
+  "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/327_faktencheck_core_with_persona/2026-01-27_13-36-47/2026-01-27_19-52-41_948089/predictions.jsonl",
+  "time_pdf_conversion": 0.003141792956739664,
+  "time_extraction": 8708.89788489393,
+  "commit_hash": "bf86451a2404f64307c3512a8ad38921a1dd9e58",
+  "branch": "faktencheck-with-persona",
+  "is_dirty": false
+}
