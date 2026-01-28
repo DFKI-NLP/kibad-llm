@@ -26,13 +26,11 @@ PLOT_KWARGS = {
 ![errors_detail.svg](errors_detail.svg)
 
 ### comparison with baseline
-
 ```python
-# comparison with baseline
 NAME = "327_faktencheck_core_with_persona"
 METRICS_DIR_PATTERN = [
-    "evaluate/**/2026-01-28_12-19-32/", 
-    "../311_better_default_temperature/evaluate/**/2026-01-26_08-58-14/", 
+    "evaluate/**/2026-01-28_12-19-32/",
+    "../311_better_default_temperature/evaluate/**/2026-01-26_08-58-14/",
     "../261_baseline_faktencheck_core_variance/evaluate/**/2026-01-21_10-41-13/",
 ]
 ERRORS_DIR_PATTERN = [
@@ -45,10 +43,33 @@ ERRORS_DIR_PATTERN = [
 INDEX_COLUMNS = ["overrides.extractor/prompt_template", "overrides.extractor/llm"]
 PLOT_KWARGS = {
     # can be either "metric" or one of the INDEX_COLUMNS (or multiple of them)
-    "xgroup": "overrides.extractor/llm",
+    "xgroup": "overrides.extractor/prompt_template",
     # add any more arguments passed to pd.DataFrame.plot
+    "create_subplot_for_each": "metric",
+    "subplot_columns": 2,
+}
+FILL_NA = {
+    "overrides.extractor/prompt_template": "default",
+    "overrides.+extractor.llm.temperature": 1.0,
 }
 ```
+
+**IMPORTANT: This requires some filtering of the data, since the other experiments contain multipel data points for llms other than gpt5.** Do this:
+```python
+mask = (metrics_df["overrides.extractor/llm"] == "gpt_5") | (
+    metrics_df["prediction.job_return_value.branch"] != "main"
+)
+metrics_df = metrics_df[mask]
+```
+and similarly for errors_df:
+```python
+mask = (errors_df["overrides.extractor/llm"] == "gpt_5") | (
+    errors_df["prediction.job_return_value.branch"] != "main"
+)
+errors_df = errors_df[mask]
+```
+before plotting.
+
 
 ![comparison_metrics.svg](comparison_metrics.svg)
 ![comparison_metrics_details.svg](comparison_metrics_details.svg)
