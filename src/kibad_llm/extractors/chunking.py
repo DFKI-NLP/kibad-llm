@@ -70,8 +70,8 @@ class ChunkingExtractor(UnionExtractor):
         skip_type_mismatches: bool = False,
         return_as_list: list[str] | None = None,
         tokenizer: tokenizer_lib.Tokenizer | None = None,
-        max_char_buffer: int = 10000,
-        stride: int = 0,
+        max_char_buffer: int = 20000,
+        stride: int = 1000,
         **kwargs,
     ):
         if len(overrides) < 1:
@@ -93,17 +93,14 @@ class ChunkingExtractor(UnionExtractor):
         }
 
         chunks = _document_chunk_iterator(args[0], self.max_char_buffer, self.tokenizer, self.stride)
-        previous_document_chunk = "Noch kein Kontext vorhanden."
         results = []
         for i, chunk in enumerate(chunks):
             current_kwargs["text_id"] = f"{args[-1]}_chunk_{i}"
             current_result = extract_from_text_lenient(
                 text=chunk.chunk_text,
-                previous_document_chunk=previous_document_chunk,
                 **current_kwargs,
             )
             results.append(current_result)
-            previous_document_chunk = chunk.chunk_text
 
         structured_outputs = [v.get("structured", None) for v in results]
         aggregated_structured = _aggregate_structured_outputs_union(
