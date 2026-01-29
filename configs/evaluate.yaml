@@ -47,3 +47,6 @@ hydra:
       # Get all directories under the specified log directories that contain a job_return_value.json file,
       # but only return the leafs (i.e. exclude multi-run outputs).
       dataset.predictions.log: "${get_directories_with_file:${prediction_logs},job_return_value.json,True}"
+  callbacks:
+    save_job_return:
+      handle_previous_result: "prediction"

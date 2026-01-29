@@ -203,27 +203,33 @@ def dict_to_overrides(d: dict[Hashable, Any], remove_na: bool = False) -> list[s
     return overrides
 
 
-def append_overrides_from_return_value_prediction(
-    job_return: JobReturn, replace_existing: bool = False
+def handle_previous_overrides(
+    job_return: JobReturn, key: str, replace_existing: bool = False
 ) -> None:
-    """Append overrides from the job return-value's "prediction" field to the job return object's overrides.
+    """Handle previous result overrides in the job return object. If the job return value contains a
+    <key>> field with an "overrides" field, the overrides are either used to replace the existing
+    overrides in the job return object (if replace_existing is True) or simply converted to a dictionary.
+
     Args:
         job_return (JobReturn): The job return object.
-        replace_existing (bool, optional): If True, replace existing overrides.
+        key (str): The key to look for in the job return value (e.g. "prediction").
+        replace_existing (bool, optional): If True, replace existing overrides by the prediction overrides.
+            Defaults to False.
     """
     if (
         isinstance(job_return.return_value, dict)
-        and "prediction" in job_return.return_value
-        and isinstance(job_return.return_value["prediction"], dict)
-        and "overrides" in job_return.return_value["prediction"]
+        and key in job_return.return_value
+        and isinstance(job_return.return_value[key], dict)
+        and "overrides" in job_return.return_value[key]
     ):
-        new_overrides = job_return.return_value["prediction"].pop("overrides")
-        if new_overrides:
-            overrides = []
-            if job_return.overrides is not None and not replace_existing:
-                overrides = list(job_return.overrides)
-            overrides.extend(new_overrides)
-            job_return.overrides = overrides
+        prediction_overrides = job_return.return_value[key].pop("overrides")
+        if prediction_overrides:
+            if replace_existing:
+                job_return.overrides = list(prediction_overrides)
+            else:
+                job_return.return_value[key]["overrides"] = overrides_to_dict(
+                    prediction_overrides, remove_plus_prefix=True
+                )
 
 
 class SaveJobReturnValueCallback(Callback):
@@ -256,9 +262,17 @@ class SaveJobReturnValueCallback(Callback):
     multirun_create_ids_from_overrides: bool (default: False)
         Create job identifiers from the overrides of the jobs in a multi-run. If False, the job index is used as
         identifier.
-    multirun_add_overrides_as_dict: bool (default: False)
-        If True, add the overrides as a dictionary to each job return-value in a multi-run
-        under the key "overrides".
+    handle_previous_result: str (default: None)
+        If provided, assume that the job return-value contains a field with the given name (e.g. "prediction") that itself
+        contains an "overrides" field, the overrides from this field are either used to replace the existing overrides
+        in the job return object (if replace_existing_overrides is True) or simply converted to a dictionary and added
+        back to the job return-value (if replace_existing_overrides is False). Furthermore, the field is removed from
+        the job return-value before saving it as markdown to avoid destroying the table structure.
+    replace_existing_overrides: bool (default: False)
+        If True, replace existing overrides in the job return-value with the overrides from the job return
+        object if available. If False, the overrides are just converted to a dictionary, if available.
+    add_overrides_as_dict: bool (default: False)
+        If True, add the overrides as a dictionary to each job return-value under the key "overrides".
     multirun_job_id_key: str (default: "job_id")
         The key to use for the job identifiers in the integrated multi-run result.
     multirun_convert_job_ids: bool (default: False)
@@ -268,10 +282,6 @@ class SaveJobReturnValueCallback(Callback):
         to the console after saving the multi-run results.
     multirun_overrides_separator: str (default: "-")
         The separator to use when creating job identifiers from overrides.
-    multirun_replace_existing_overrides: bool (default: False)
-        If True, replace existing overrides in the job return-value with the overrides from the job return
-        object if available. If False, the overrides from the job return-value are only appended if no overrides
-        are available in the job return object.
     multirun_markdown_group_by: str or list[str] (default: None)
         The column(s) to group by when saving the multi-run result as markdown file. For numeric columns,
         the mean and std are calculated. For non-numeric columns, a list of values is created. If None,
@@ -298,10 +308,11 @@ class SaveJobReturnValueCallback(Callback):
         multirun_create_ids_from_overrides: bool = True,
         multirun_job_id_key: str = "job_id",
         multirun_convert_job_ids: bool = False,
-        multirun_add_overrides_as_dict: bool = False,
+        handle_previous_result: str | None = None,
+        add_overrides_as_dict: bool = False,
         multirun_show_file_contents: list[str] | None = None,
         multirun_overrides_separator: str = "-",
-        multirun_replace_existing_overrides: bool = False,
+        replace_existing_overrides: bool = False,
         multirun_markdown_group_by: str | list[str] | None = None,
         multirun_markdown_transpose: bool = False,
         paths_file: str | None = None,
@@ -317,11 +328,12 @@ class SaveJobReturnValueCallback(Callback):
         self.multirun_aggregator_blacklist = multirun_aggregator_blacklist
         self.sort_markdown_columns = sort_markdown_columns
         self.multirun_create_ids_from_overrides = multirun_create_ids_from_overrides
-        self.multirun_add_overrides_as_dict = multirun_add_overrides_as_dict
+        self.handle_previous_result = handle_previous_result
+        self.replace_existing_overrides = replace_existing_overrides
+        self.add_overrides_as_dict = add_overrides_as_dict
         self.multirun_job_id_key = multirun_job_id_key
         self.multirun_convert_job_ids = multirun_convert_job_ids
         self.multirun_overrides_separator = multirun_overrides_separator
-        self.multirun_replace_existing_overrides = multirun_replace_existing_overrides
         if isinstance(multirun_markdown_group_by, str):
             multirun_markdown_group_by = [multirun_markdown_group_by]
         self.multirun_markdown_group_by = multirun_markdown_group_by
@@ -333,9 +345,16 @@ class SaveJobReturnValueCallback(Callback):
         self.path_id = path_id
 
     def on_job_end(self, config: DictConfig, job_return: JobReturn, **kwargs: Any) -> None:
-        append_overrides_from_return_value_prediction(
-            job_return, replace_existing=self.multirun_replace_existing_overrides
-        )
+        if self.handle_previous_result is not None:
+            handle_previous_overrides(
+                job_return,
+                key=self.handle_previous_result,
+                replace_existing=self.replace_existing_overrides,
+            )
+        if self.add_overrides_as_dict:
+            job_return.return_value["overrides"] = overrides_to_dict(
+                job_return.overrides or [], remove_plus_prefix=True
+            )
         self.job_returns.append(job_return)
         output_dir = Path(config.hydra.runtime.output_dir)  # / Path(config.hydra.output_subdir)
         if self.paths_file is not None:
@@ -344,12 +363,17 @@ class SaveJobReturnValueCallback(Callback):
                 file.write(f"{output_dir}\n")
 
         for filename in self.filenames:
-            # remove "prediction" field from job return-value if it exists before saving.
-            # otherwise, this might destroy the structure of the saved job return-value.
+            # Remove previous result field and "overrides" from job return-value before saving as markdown.
+            # Otherwise, this may destroy the table structure of the saved job return-value.
             obj = job_return.return_value
-            if isinstance(obj, dict) and "prediction" in obj:
-                obj = dict(obj)
-                obj.pop("prediction")
+            if filename.lower().endswith(".md") and isinstance(obj, dict):
+                if self.handle_previous_result is not None and self.handle_previous_result in obj:
+                    if self.handle_previous_result in obj:
+                        obj = dict(obj)
+                        obj.pop(self.handle_previous_result)
+                if "overrides" in obj:
+                    obj = dict(obj)
+                    obj.pop("overrides")
             self._save(obj=obj, filename=filename, output_dir=output_dir)
 
     def on_multirun_end(self, config: DictConfig, **kwargs: Any) -> None:
@@ -367,12 +391,6 @@ class SaveJobReturnValueCallback(Callback):
 
         if job_ids is None:
             job_ids = list(range(len(self.job_returns)))
-
-        if self.multirun_add_overrides_as_dict:
-            for jr in self.job_returns:
-                jr.return_value["overrides"] = overrides_to_dict(
-                    jr.overrides or [], remove_plus_prefix=True
-                )
 
         if self.integrate_multirun_result:
             # rearrange the job return-values of all jobs from a multi-run into a dict of lists (maybe nested),
