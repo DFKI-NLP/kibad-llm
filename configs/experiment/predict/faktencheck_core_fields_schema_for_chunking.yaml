@@ -11,6 +11,7 @@
 
 defaults:
   # We use a polished prompt template with additional instructions for better extraction performance.
+  - override /extractor: chunking
   - override /extractor/prompt_template: faktencheck_core_v1_for_chunking
 
 extractor:

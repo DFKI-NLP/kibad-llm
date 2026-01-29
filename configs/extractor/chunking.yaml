@@ -9,12 +9,11 @@ defaults:
   # is in the user message since the conditional extractor adds the system message just once,
   # but the user message for each schema.
   #
-  # TODO: fix this!
   - prompt_template: default_for_chunking
-  - override prompt_template: schema_in_user_message
 
 _target_: kibad_llm.extractors.ChunkingExtractor
 
 max_char_buffer: 10000
+stride: 1000
 tokenizer:
   _target_: kibad_llm.extractors.chunking_helpers.RegexTokenizer
