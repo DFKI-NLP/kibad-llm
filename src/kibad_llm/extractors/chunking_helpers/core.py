@@ -353,14 +353,15 @@ class ChunkIterator:
         document: str,
         max_char_buffer: int,
         tokenizer_impl: tokenizer_lib.Tokenizer,
+        stride: int,
     ):
         """Constructor.
 
         Args:
-          text: Document to chunk. Can be either a string or a tokenized text.
-          max_char_buffer: Size of buffer that we can run inference on.
-          tokenizer_impl: Tokenizer instance to use.
-          document: Optional source document.
+            document: Document to chunk. Can be either a string or a tokenized text.
+            max_char_buffer: Size of buffer that we can run inference on.
+            tokenizer_impl: Tokenizer instance to use.
+            stride: Number of characters to overlap the chunks.
         """
 
         if isinstance(document, str):
@@ -372,6 +373,7 @@ class ChunkIterator:
         self.sentence_iter = SentenceIterator(self.tokenized_text)
         self.broken_sentence = False
         self.document = document
+        self.stride = stride
 
     def __iter__(self) -> Iterator[TextChunk]:
         return self
@@ -392,6 +394,9 @@ class ChunkIterator:
 
     def __next__(self) -> TextChunk:
         sentence = next(self.sentence_iter)
+        sentence.start_index -= self.stride
+        if sentence.start_index < 0:
+            sentence.start_index = 0
         # If the next token is greater than the max_char_buffer, let it be the
         # entire chunk.
         curr_chunk = create_token_interval(sentence.start_index, sentence.start_index + 1)

@@ -17,6 +17,7 @@ def _document_chunk_iterator(
     document: str,
     max_char_buffer: int,
     tokenizer: tokenizer_lib.Tokenizer | None,
+    stride: int,
 ) -> Iterator[core.TextChunk]:
     """Iterates over documents to yield text chunks along with the document ID.
 
@@ -24,6 +25,7 @@ def _document_chunk_iterator(
       documents: A sequence of Document objects.
       max_char_buffer: The maximum character buffer size for the ChunkIterator.
       tokenizer: Optional tokenizer instance.
+      stride: Number of characters to overlap the chunks.
 
     Yields:
       TextChunk containing document ID for a corresponding document.
@@ -37,6 +39,7 @@ def _document_chunk_iterator(
         document,
         max_char_buffer=max_char_buffer,
         tokenizer_impl=tokenizer or tokenizer_lib.RegexTokenizer(),
+        stride=stride,
     )
 
 
@@ -48,6 +51,17 @@ class ChunkingExtractor(UnionExtractor):
 
     TODO: adapt ->
     See UnionExtractor for accepted parameters and details about the aggregation logic.
+
+    Args:
+        overrides: A list of dictionaries containing parameter overrides for each extraction.
+        skip_type_mismatches: If True, skips keys with inconsistent types across extractions
+            instead of raising an error (default: False)
+        return_as_list: List of field names to return as lists of all extracted values
+            (default: None)
+        tokenizer: tokenizer to use for chunking
+        max_char_buffer: Max chunk size in characters
+        stride: Number of characters to overlap chunks
+        **kwargs: Additional keyword arguments passed to the base extraction function.
     """
 
     def __init__(
@@ -57,6 +71,7 @@ class ChunkingExtractor(UnionExtractor):
         return_as_list: list[str] | None = None,
         tokenizer: tokenizer_lib.Tokenizer | None = None,
         max_char_buffer: int = 10000,
+        stride: int = 0,
         **kwargs,
     ):
         if len(overrides) < 1:
@@ -67,6 +82,7 @@ class ChunkingExtractor(UnionExtractor):
         self.default_kwargs = kwargs
         self.tokenizer = tokenizer
         self.max_char_buffer = max_char_buffer
+        self.stride = stride
 
     def __call__(self, *args, **kwargs) -> dict[str, Any]:
         combined_kwargs = {**self.default_kwargs, **kwargs}
@@ -76,7 +92,7 @@ class ChunkingExtractor(UnionExtractor):
             "truncate_user_message_formatted": None,
         }
 
-        chunks = _document_chunk_iterator(args[0], self.max_char_buffer, self.tokenizer)
+        chunks = _document_chunk_iterator(args[0], self.max_char_buffer, self.tokenizer, self.stride)
         previous_document_chunk = "Noch kein Kontext vorhanden."
         results = []
         for i, chunk in enumerate(chunks):
