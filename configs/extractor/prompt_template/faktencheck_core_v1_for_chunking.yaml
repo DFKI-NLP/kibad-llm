@@ -4,7 +4,7 @@
 # and are optimized for the smaller "core schema" (habitat, ecosystem type, taxa, biodiversity level).
 
 defaults:
-  - default_for_chunking
+  - default
 
 system_message: |
   Bitte lies den folgenden Text vollständig.
@@ -33,6 +33,5 @@ system_message: |
   du die Textstelle (als exaktes Zitat) angibst, die deine Antwort am besten belegt.
 
   {schema_description}
-
 
 # user_message: ... (not modified from default.yaml)
