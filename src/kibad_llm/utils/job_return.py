@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 
 from kibad_llm.utils.dictionary import flatten_dict_s
+from kibad_llm.utils.path import get_directories_with_file
 
 logger = logging.getLogger(__name__)
 
@@ -56,6 +57,52 @@ def load(
     has_id_keys = all(isinstance(d, dict) for d in data)
     if has_id_keys and strip_id_keys:
         data = [subdict for d in data for subdict in d.values()]
+
+    if flatten:
+        data = [flatten_dict_s(d, sep=".") for d in data]
+
+    if exclude_keys is not None:
+        for d in data:
+            for key in exclude_keys:
+                if key in d:
+                    del d[key]
+    return data
+
+
+def load_v2(
+    directory: Path,
+    subdir: str | list[str] = "",
+    filename="job_return_value.json",
+    flatten: bool = False,
+    exclude_keys: list[str] | None = None,
+) -> list[dict]:
+    """Load job return value json file(s) from subdirectories of the given directory. Only the
+    leaf subdirectories containing the specified filename are considered (i.e. multi-run
+    results are excluded).
+
+    Args:
+        directory: Path to the directory containing return value file(s).
+        subdir: One or multiple subdirectory names under `directory` to search in.
+        filename: Name of the file to load from each subdirectory.
+        flatten: Whether to flatten nested dictionaries in the loaded data.
+        exclude_keys: List of keys to exclude from the loaded data. Applied after flattening if enabled.
+    """
+
+    if isinstance(subdir, str):
+        subdir = [subdir]
+
+    dir_paths = get_directories_with_file(
+        paths=[str(directory / sub_dir) for sub_dir in subdir],
+        filename=filename,
+        leafs_only=True,
+    )
+    logger.info(
+        f"Loading {filename} from {len(dir_paths)} directories (directory: {directory}, subdir: {subdir}):\n%s",
+        "\n".join(map(str, dir_paths)),
+    )
+
+    # read all json files
+    data = [json.loads((Path(dir_path) / filename).read_text()) for dir_path in dir_paths]
 
     if flatten:
         data = [flatten_dict_s(d, sep=".") for d in data]
