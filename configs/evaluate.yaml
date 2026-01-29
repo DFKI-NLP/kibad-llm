@@ -49,4 +49,8 @@ hydra:
       dataset.predictions.log: "${get_directories_with_file:${prediction_logs},job_return_value.json,True}"
   callbacks:
     save_job_return:
+      # We assume that the result of evaluation contains a "prediction" field with metadata as well as overrides
+      # used to create the loaded predictions. This will be handled as follows:
+      #  - its overrides get converted to dicts to access them easily later at `prediction.overrides.` on, and
+      #  - it is removed when writing single job results to *markdown* to not destroy the table structure.
       handle_previous_result: "prediction"
