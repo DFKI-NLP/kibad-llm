@@ -20,6 +20,36 @@ PLOT_KWARGS = {
     # add any more arguments passed to pd.DataFrame.plot
 }
 ```
+IMPORTANT: Since #337, you need the following code to get the `metrics_df` and `errors_df` with this evaluation data correctly:
+```python
+from kibad_llm.utils.job_return import load
+
+errors_df = (
+    pd.DataFrame.from_records(
+        load(
+            directory=BASE_LOG_DIR / NAME,
+            subdir_pattern=ERRORS_DIR_PATTERN,
+            strip_id_keys=True,
+            flatten=True,
+            exclude_keys=EXCLUDE_KEYS,
+        )
+    )
+    .fillna(FILL_NA)
+    .fillna(0)
+)
+# display(errors_df)
+
+metrics_df = pd.DataFrame.from_records(
+    load(
+        directory=BASE_LOG_DIR / NAME,
+        subdir_pattern=METRICS_DIR_PATTERN,
+        strip_id_keys=True,
+        flatten=True,
+        exclude_keys=EXCLUDE_KEYS,
+    )
+).fillna(FILL_NA)
+# display(metrics_df)
+```
 
 ![metrics.svg](metrics.svg)
 ![errors.svg](errors.svg)
@@ -52,6 +82,36 @@ FILL_NA = {
     "overrides.extractor/prompt_template": "default",
     "overrides.+extractor.llm.temperature": 1.0,
 }
+```
+IMPORTANT: Since #337, you need the following code to get the `metrics_df` and `errors_df` with this evaluation data correctly:
+```python
+from kibad_llm.utils.job_return import load
+
+errors_df = (
+    pd.DataFrame.from_records(
+        load(
+            directory=BASE_LOG_DIR / NAME,
+            subdir_pattern=ERRORS_DIR_PATTERN,
+            strip_id_keys=True,
+            flatten=True,
+            exclude_keys=EXCLUDE_KEYS,
+        )
+    )
+    .fillna(FILL_NA)
+    .fillna(0)
+)
+# display(errors_df)
+
+metrics_df = pd.DataFrame.from_records(
+    load(
+        directory=BASE_LOG_DIR / NAME,
+        subdir_pattern=METRICS_DIR_PATTERN,
+        strip_id_keys=True,
+        flatten=True,
+        exclude_keys=EXCLUDE_KEYS,
+    )
+).fillna(FILL_NA)
+# display(metrics_df)
 ```
 
 **IMPORTANT: This requires some filtering of the data, since the other experiments contain multiple data points for llms other than gpt5.** Do this:
