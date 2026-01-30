@@ -125,7 +125,6 @@ def load_run(
         A dictionary containing the loaded data.
     """
     file_path = directory / filename
-    logger.info(f"Loading job return value from file: {file_path}")
     data = json.loads(file_path.read_text())
 
     if load_overrides:
@@ -171,9 +170,10 @@ def load_runs(
         filename=filename,
         leafs_only=True,
     )
+    dir_paths_parent = sorted({str(Path(dir_path).parent) for dir_path in dir_paths})
     logger.info(
-        f"Loading {filename} from {len(dir_paths)} directories (directory: {directory}, subdir: {subdir}):\n%s",
-        "\n".join(map(str, dir_paths)),
+        f"Loading {filename} from {len(dir_paths)} files from the following parent directories (directory: {directory}, subdir: {subdir}):\n%s",
+        "\n".join(dir_paths_parent),
     )
 
     # read all json files
