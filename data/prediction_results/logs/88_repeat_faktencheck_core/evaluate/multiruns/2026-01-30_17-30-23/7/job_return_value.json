@@ -1,0 +1,70 @@
+{
+  "biodiversity_level": {
+    "precision": 0.20967741935483872,
+    "recall": 0.19402985074626866,
+    "f1": 0.2015503875968992,
+    "support": 67
+  },
+  "ecosystem_type.term": {
+    "precision": 0.16666666666666666,
+    "recall": 0.07547169811320754,
+    "f1": 0.10389610389610389,
+    "support": 53
+  },
+  "habitat": {
+    "precision": 0.4716981132075472,
+    "recall": 0.36231884057971014,
+    "f1": 0.4098360655737705,
+    "support": 138
+  },
+  "taxa.german_name": {
+    "precision": 0.5471698113207547,
+    "recall": 0.12554112554112554,
+    "f1": 0.20422535211267603,
+    "support": 231
+  },
+  "taxa.scientific_name": {
+    "precision": 0.46296296296296297,
+    "recall": 0.12690355329949238,
+    "f1": 0.199203187250996,
+    "support": 197
+  },
+  "taxa.species_group": {
+    "precision": 0.41304347826086957,
+    "recall": 0.1792452830188679,
+    "f1": 0.25,
+    "support": 106
+  },
+  "AVG": {
+    "precision": 0.37853640862894,
+    "recall": 0.17725172521644536,
+    "f1": 0.22811851607174094,
+    "support": 132.0
+  },
+  "ALL": {
+    "precision": 0.4057971014492754,
+    "recall": 0.17676767676767677,
+    "f1": 0.2462620932277924,
+    "support": 792
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/88_repeat_faktencheck_core/2026-01-28_22-20-19/2026-01-29_02-54-06_866742/predictions.jsonl",
+      "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/88_repeat_faktencheck_core/2026-01-28_22-20-19/2026-01-29_02-54-06_866742/predictions.jsonl",
+      "time_pdf_conversion": 0.002571666846051812,
+      "time_extraction": 2107.185839083977,
+      "commit_hash": "c5b7387b495e7871fc5b3e3abec22a61dfd9bd74",
+      "branch": "main",
+      "is_dirty": false
+    },
+    "overrides": {
+      "name": "88_repeat_faktencheck_core",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "extractor": "repeat",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor.return_reasoning": "True",
+      "extractor/llm": "gemma3_27b_in_process",
+      "seed": "7331"
+    }
+  }
+}
