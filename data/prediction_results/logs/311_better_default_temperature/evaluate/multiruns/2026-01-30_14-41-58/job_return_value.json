@@ -1,0 +1,463 @@
+{
+  "dataset.predictions.log=logs/311_better_default_temperature/predict/multiruns/2026-01-23_16-12-26/0": {
+    "no_error": 85,
+    "with_error": 15,
+    "ValueError": 15,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_16-12-29_165418/predictions.jsonl.gz",
+        "output_file_absolute": "/netscratch/hennig/code/kibad-llm/predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_16-12-29_165418/predictions.jsonl.gz",
+        "time_pdf_conversion": 0.008128860034048557,
+        "time_extraction": 1309.984350217972,
+        "commit_hash": "7197d3bf97007b8a8e7b212a900e4c0bb574f62a",
+        "branch": "feature/temperature_config",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "311_better_default_temperature",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gpt_oss_20b_in_process",
+        "seed": "42"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/311_better_default_temperature/predict/multiruns/2026-01-23_16-12-26/0",
+      "name": "311_better_default_temperature",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "logs/311_better_default_temperature/predict/multiruns/2026-01-23_16-12-26"
+    }
+  },
+  "dataset.predictions.log=logs/311_better_default_temperature/predict/multiruns/2026-01-23_16-12-26/1": {
+    "no_error": 85,
+    "with_error": 15,
+    "ValueError": 15,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_16-38-11_868087/predictions.jsonl.gz",
+        "output_file_absolute": "/netscratch/hennig/code/kibad-llm/predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_16-38-11_868087/predictions.jsonl.gz",
+        "time_pdf_conversion": 0.006151312962174416,
+        "time_extraction": 1427.4584828140214,
+        "commit_hash": "7197d3bf97007b8a8e7b212a900e4c0bb574f62a",
+        "branch": "feature/temperature_config",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "311_better_default_temperature",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gpt_oss_20b_in_process",
+        "seed": "1337"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/311_better_default_temperature/predict/multiruns/2026-01-23_16-12-26/1",
+      "name": "311_better_default_temperature",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "logs/311_better_default_temperature/predict/multiruns/2026-01-23_16-12-26"
+    }
+  },
+  "dataset.predictions.log=logs/311_better_default_temperature/predict/multiruns/2026-01-23_16-12-26/10": {
+    "no_error": 76,
+    "with_error": 24,
+    "ValueError": 15,
+    "JSONDecodeError": 9,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_21-03-57_566220/predictions.jsonl.gz",
+        "output_file_absolute": "/netscratch/hennig/code/kibad-llm/predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_21-03-57_566220/predictions.jsonl.gz",
+        "time_pdf_conversion": 0.006217374000698328,
+        "time_extraction": 1141.7019540710608,
+        "commit_hash": "7197d3bf97007b8a8e7b212a900e4c0bb574f62a",
+        "branch": "feature/temperature_config",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "311_better_default_temperature",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "nemotron_nano_12b_in_process",
+        "seed": "1337"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/311_better_default_temperature/predict/multiruns/2026-01-23_16-12-26/10",
+      "name": "311_better_default_temperature",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "logs/311_better_default_temperature/predict/multiruns/2026-01-23_16-12-26"
+    }
+  },
+  "dataset.predictions.log=logs/311_better_default_temperature/predict/multiruns/2026-01-23_16-12-26/11": {
+    "no_error": 75,
+    "with_error": 25,
+    "ValueError": 15,
+    "JSONDecodeError": 10,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_21-23-58_576065/predictions.jsonl.gz",
+        "output_file_absolute": "/netscratch/hennig/code/kibad-llm/predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_21-23-58_576065/predictions.jsonl.gz",
+        "time_pdf_conversion": 0.009223200031556189,
+        "time_extraction": 1253.1102179909358,
+        "commit_hash": "7197d3bf97007b8a8e7b212a900e4c0bb574f62a",
+        "branch": "feature/temperature_config",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "311_better_default_temperature",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "nemotron_nano_12b_in_process",
+        "seed": "7331"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/311_better_default_temperature/predict/multiruns/2026-01-23_16-12-26/11",
+      "name": "311_better_default_temperature",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "logs/311_better_default_temperature/predict/multiruns/2026-01-23_16-12-26"
+    }
+  },
+  "dataset.predictions.log=logs/311_better_default_temperature/predict/multiruns/2026-01-23_16-12-26/12": {
+    "no_error": 80,
+    "with_error": 20,
+    "ValueError": 15,
+    "JSONDecodeError": 5,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_21-45-51_380492/predictions.jsonl.gz",
+        "output_file_absolute": "/netscratch/hennig/code/kibad-llm/predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_21-45-51_380492/predictions.jsonl.gz",
+        "time_pdf_conversion": 0.00689981400500983,
+        "time_extraction": 2833.3370730840834,
+        "commit_hash": "7197d3bf97007b8a8e7b212a900e4c0bb574f62a",
+        "branch": "feature/temperature_config",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "311_better_default_temperature",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "mistral_small_3_24b_in_process",
+        "seed": "42"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/311_better_default_temperature/predict/multiruns/2026-01-23_16-12-26/12",
+      "name": "311_better_default_temperature",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "logs/311_better_default_temperature/predict/multiruns/2026-01-23_16-12-26"
+    }
+  },
+  "dataset.predictions.log=logs/311_better_default_temperature/predict/multiruns/2026-01-23_16-12-26/13": {
+    "no_error": 78,
+    "with_error": 22,
+    "ValueError": 15,
+    "JSONDecodeError": 7,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_22-34-36_701477/predictions.jsonl.gz",
+        "output_file_absolute": "/netscratch/hennig/code/kibad-llm/predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_22-34-36_701477/predictions.jsonl.gz",
+        "time_pdf_conversion": 0.009678098955191672,
+        "time_extraction": 2817.3928160399664,
+        "commit_hash": "7197d3bf97007b8a8e7b212a900e4c0bb574f62a",
+        "branch": "feature/temperature_config",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "311_better_default_temperature",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "mistral_small_3_24b_in_process",
+        "seed": "1337"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/311_better_default_temperature/predict/multiruns/2026-01-23_16-12-26/13",
+      "name": "311_better_default_temperature",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "logs/311_better_default_temperature/predict/multiruns/2026-01-23_16-12-26"
+    }
+  },
+  "dataset.predictions.log=logs/311_better_default_temperature/predict/multiruns/2026-01-23_16-12-26/14": {
+    "no_error": 78,
+    "with_error": 22,
+    "ValueError": 15,
+    "JSONDecodeError": 7,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_23-23-06_575041/predictions.jsonl.gz",
+        "output_file_absolute": "/netscratch/hennig/code/kibad-llm/predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_23-23-06_575041/predictions.jsonl.gz",
+        "time_pdf_conversion": 0.008974681026302278,
+        "time_extraction": 2869.737297718064,
+        "commit_hash": "7197d3bf97007b8a8e7b212a900e4c0bb574f62a",
+        "branch": "feature/temperature_config",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "311_better_default_temperature",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "mistral_small_3_24b_in_process",
+        "seed": "7331"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/311_better_default_temperature/predict/multiruns/2026-01-23_16-12-26/14",
+      "name": "311_better_default_temperature",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "logs/311_better_default_temperature/predict/multiruns/2026-01-23_16-12-26"
+    }
+  },
+  "dataset.predictions.log=logs/311_better_default_temperature/predict/multiruns/2026-01-23_16-12-26/2": {
+    "no_error": 84,
+    "with_error": 16,
+    "ValueError": 15,
+    "JSONDecodeError": 1,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_17-03-07_771891/predictions.jsonl.gz",
+        "output_file_absolute": "/netscratch/hennig/code/kibad-llm/predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_17-03-07_771891/predictions.jsonl.gz",
+        "time_pdf_conversion": 0.006409907015040517,
+        "time_extraction": 1529.8307584520662,
+        "commit_hash": "7197d3bf97007b8a8e7b212a900e4c0bb574f62a",
+        "branch": "feature/temperature_config",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "311_better_default_temperature",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gpt_oss_20b_in_process",
+        "seed": "7331"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/311_better_default_temperature/predict/multiruns/2026-01-23_16-12-26/2",
+      "name": "311_better_default_temperature",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "logs/311_better_default_temperature/predict/multiruns/2026-01-23_16-12-26"
+    }
+  },
+  "dataset.predictions.log=logs/311_better_default_temperature/predict/multiruns/2026-01-23_16-12-26/3": {
+    "no_error": 84,
+    "with_error": 16,
+    "ValueError": 15,
+    "JSONDecodeError": 1,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_17-29-45_078167/predictions.jsonl.gz",
+        "output_file_absolute": "/netscratch/hennig/code/kibad-llm/predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_17-29-45_078167/predictions.jsonl.gz",
+        "time_pdf_conversion": 0.006070001982152462,
+        "time_extraction": 1129.8193038570462,
+        "commit_hash": "7197d3bf97007b8a8e7b212a900e4c0bb574f62a",
+        "branch": "feature/temperature_config",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "311_better_default_temperature",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gemma3_27b_in_process",
+        "seed": "42"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/311_better_default_temperature/predict/multiruns/2026-01-23_16-12-26/3",
+      "name": "311_better_default_temperature",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "logs/311_better_default_temperature/predict/multiruns/2026-01-23_16-12-26"
+    }
+  },
+  "dataset.predictions.log=logs/311_better_default_temperature/predict/multiruns/2026-01-23_16-12-26/4": {
+    "no_error": 85,
+    "with_error": 15,
+    "ValueError": 15,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_17-50-38_952627/predictions.jsonl.gz",
+        "output_file_absolute": "/netscratch/hennig/code/kibad-llm/predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_17-50-38_952627/predictions.jsonl.gz",
+        "time_pdf_conversion": 0.007323778001591563,
+        "time_extraction": 890.5144957010634,
+        "commit_hash": "7197d3bf97007b8a8e7b212a900e4c0bb574f62a",
+        "branch": "feature/temperature_config",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "311_better_default_temperature",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gemma3_27b_in_process",
+        "seed": "1337"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/311_better_default_temperature/predict/multiruns/2026-01-23_16-12-26/4",
+      "name": "311_better_default_temperature",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "logs/311_better_default_temperature/predict/multiruns/2026-01-23_16-12-26"
+    }
+  },
+  "dataset.predictions.log=logs/311_better_default_temperature/predict/multiruns/2026-01-23_16-12-26/5": {
+    "no_error": 84,
+    "with_error": 16,
+    "ValueError": 15,
+    "JSONDecodeError": 1,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_18-07-08_773377/predictions.jsonl.gz",
+        "output_file_absolute": "/netscratch/hennig/code/kibad-llm/predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_18-07-08_773377/predictions.jsonl.gz",
+        "time_pdf_conversion": 0.008902110042981803,
+        "time_extraction": 1031.8514835060341,
+        "commit_hash": "7197d3bf97007b8a8e7b212a900e4c0bb574f62a",
+        "branch": "feature/temperature_config",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "311_better_default_temperature",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gemma3_27b_in_process",
+        "seed": "7331"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/311_better_default_temperature/predict/multiruns/2026-01-23_16-12-26/5",
+      "name": "311_better_default_temperature",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "logs/311_better_default_temperature/predict/multiruns/2026-01-23_16-12-26"
+    }
+  },
+  "dataset.predictions.log=logs/311_better_default_temperature/predict/multiruns/2026-01-23_16-12-26/6": {
+    "no_error": 82,
+    "with_error": 18,
+    "ValueError": 16,
+    "JSONDecodeError": 1,
+    "MissingResponseContentError": 1,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_18-26-07_774743/predictions.jsonl.gz",
+        "output_file_absolute": "/netscratch/hennig/code/kibad-llm/predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_18-26-07_774743/predictions.jsonl.gz",
+        "time_pdf_conversion": 0.00677752192132175,
+        "time_extraction": 2600.6029643769143,
+        "commit_hash": "7197d3bf97007b8a8e7b212a900e4c0bb574f62a",
+        "branch": "feature/temperature_config",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "311_better_default_temperature",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "qwen3_30b_in_process",
+        "seed": "42"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/311_better_default_temperature/predict/multiruns/2026-01-23_16-12-26/6",
+      "name": "311_better_default_temperature",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "logs/311_better_default_temperature/predict/multiruns/2026-01-23_16-12-26"
+    }
+  },
+  "dataset.predictions.log=logs/311_better_default_temperature/predict/multiruns/2026-01-23_16-12-26/7": {
+    "no_error": 84,
+    "with_error": 16,
+    "ValueError": 16,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_19-11-52_469585/predictions.jsonl.gz",
+        "output_file_absolute": "/netscratch/hennig/code/kibad-llm/predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_19-11-52_469585/predictions.jsonl.gz",
+        "time_pdf_conversion": 0.006730461027473211,
+        "time_extraction": 2728.8435785049805,
+        "commit_hash": "7197d3bf97007b8a8e7b212a900e4c0bb574f62a",
+        "branch": "feature/temperature_config",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "311_better_default_temperature",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "qwen3_30b_in_process",
+        "seed": "1337"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/311_better_default_temperature/predict/multiruns/2026-01-23_16-12-26/7",
+      "name": "311_better_default_temperature",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "logs/311_better_default_temperature/predict/multiruns/2026-01-23_16-12-26"
+    }
+  },
+  "dataset.predictions.log=logs/311_better_default_temperature/predict/multiruns/2026-01-23_16-12-26/8": {
+    "no_error": 84,
+    "with_error": 16,
+    "ValueError": 16,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_19-58-50_450263/predictions.jsonl.gz",
+        "output_file_absolute": "/netscratch/hennig/code/kibad-llm/predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_19-58-50_450263/predictions.jsonl.gz",
+        "time_pdf_conversion": 0.007570041925646365,
+        "time_extraction": 2568.5170851550065,
+        "commit_hash": "7197d3bf97007b8a8e7b212a900e4c0bb574f62a",
+        "branch": "feature/temperature_config",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "311_better_default_temperature",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "qwen3_30b_in_process",
+        "seed": "7331"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/311_better_default_temperature/predict/multiruns/2026-01-23_16-12-26/8",
+      "name": "311_better_default_temperature",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "logs/311_better_default_temperature/predict/multiruns/2026-01-23_16-12-26"
+    }
+  },
+  "dataset.predictions.log=logs/311_better_default_temperature/predict/multiruns/2026-01-23_16-12-26/9": {
+    "no_error": 77,
+    "with_error": 23,
+    "ValueError": 15,
+    "JSONDecodeError": 8,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_20-43-05_643545/predictions.jsonl.gz",
+        "output_file_absolute": "/netscratch/hennig/code/kibad-llm/predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_20-43-05_643545/predictions.jsonl.gz",
+        "time_pdf_conversion": 0.007474272046238184,
+        "time_extraction": 1150.6632150789956,
+        "commit_hash": "7197d3bf97007b8a8e7b212a900e4c0bb574f62a",
+        "branch": "feature/temperature_config",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "311_better_default_temperature",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "nemotron_nano_12b_in_process",
+        "seed": "42"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/311_better_default_temperature/predict/multiruns/2026-01-23_16-12-26/9",
+      "name": "311_better_default_temperature",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "logs/311_better_default_temperature/predict/multiruns/2026-01-23_16-12-26"
+    }
+  }
+}

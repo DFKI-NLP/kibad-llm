@@ -28,6 +28,11 @@ def get_directories_with_file(
 
     result_paths = []
     for path in paths:
+        # raise an error if path contains glob patterns
+        if any(char in path for char in "*?[]{}"):
+            raise ValueError(
+                f"Path '{path}' contains glob patterns. Please provide explicit paths without glob patterns."
+            )
         current_paths = Path(path).glob(f"**/{filename}")
         for p in current_paths:
             result_paths.extend([p.parent])

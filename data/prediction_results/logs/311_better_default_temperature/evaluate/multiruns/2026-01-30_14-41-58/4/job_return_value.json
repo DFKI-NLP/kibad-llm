@@ -1,0 +1,25 @@
+{
+  "no_error": 80,
+  "with_error": 20,
+  "ValueError": 15,
+  "JSONDecodeError": 5,
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_21-45-51_380492/predictions.jsonl.gz",
+      "output_file_absolute": "/netscratch/hennig/code/kibad-llm/predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_21-45-51_380492/predictions.jsonl.gz",
+      "time_pdf_conversion": 0.00689981400500983,
+      "time_extraction": 2833.3370730840834,
+      "commit_hash": "7197d3bf97007b8a8e7b212a900e4c0bb574f62a",
+      "branch": "feature/temperature_config",
+      "is_dirty": false
+    },
+    "overrides": {
+      "name": "311_better_default_temperature",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor.return_reasoning": "True",
+      "extractor/llm": "mistral_small_3_24b_in_process",
+      "seed": "42"
+    }
+  }
+}

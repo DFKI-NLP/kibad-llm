@@ -1,0 +1,69 @@
+{
+  "biodiversity_level": {
+    "precision": 0.2222222222222222,
+    "recall": 0.3582089552238806,
+    "f1": 0.27428571428571424,
+    "support": 67
+  },
+  "ecosystem_type.term": {
+    "precision": 0.09502262443438914,
+    "recall": 0.39622641509433965,
+    "f1": 0.15328467153284672,
+    "support": 53
+  },
+  "habitat": {
+    "precision": 0.7764705882352941,
+    "recall": 0.4782608695652174,
+    "f1": 0.5919282511210763,
+    "support": 138
+  },
+  "taxa.german_name": {
+    "precision": 0.1815068493150685,
+    "recall": 0.22943722943722944,
+    "f1": 0.20267686424474188,
+    "support": 231
+  },
+  "taxa.scientific_name": {
+    "precision": 0.1598639455782313,
+    "recall": 0.23857868020304568,
+    "f1": 0.1914460285132383,
+    "support": 197
+  },
+  "taxa.species_group": {
+    "precision": 0.29577464788732394,
+    "recall": 0.39622641509433965,
+    "f1": 0.33870967741935487,
+    "support": 106
+  },
+  "AVG": {
+    "precision": 0.28847681294542155,
+    "recall": 0.3494897607696754,
+    "f1": 0.2920552011861621,
+    "support": 132.0
+  },
+  "ALL": {
+    "precision": 0.22154115586690018,
+    "recall": 0.3194444444444444,
+    "f1": 0.2616339193381592,
+    "support": 792
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/311_better_default_temperature_baseline/2026-01-23_15-36-01/2026-01-23_23-03-02_317682/predictions.jsonl.gz",
+      "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/311_better_default_temperature_baseline/2026-01-23_15-36-01/2026-01-23_23-03-02_317682/predictions.jsonl.gz",
+      "time_pdf_conversion": 0.003688869997859001,
+      "time_extraction": 3813.689171695034,
+      "commit_hash": "96efc8cbaf31910ffab43b74a2a0b89184634a01",
+      "branch": "main",
+      "is_dirty": false
+    },
+    "overrides": {
+      "name": "311_better_default_temperature_baseline",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor.return_reasoning": "True",
+      "extractor/llm": "mistral_small_3_24b_in_process",
+      "seed": "42"
+    }
+  }
+}
