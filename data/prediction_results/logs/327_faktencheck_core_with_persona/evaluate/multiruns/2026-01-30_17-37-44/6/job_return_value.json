@@ -1,0 +1,70 @@
+{
+  "biodiversity_level": {
+    "precision": 0.3157894736842105,
+    "recall": 0.44776119402985076,
+    "f1": 0.37037037037037035,
+    "support": 67
+  },
+  "ecosystem_type.term": {
+    "precision": 0.2553191489361702,
+    "recall": 0.6792452830188679,
+    "f1": 0.37113402061855666,
+    "support": 53
+  },
+  "habitat": {
+    "precision": 0.6940298507462687,
+    "recall": 0.6739130434782609,
+    "f1": 0.6838235294117647,
+    "support": 138
+  },
+  "taxa.german_name": {
+    "precision": 0.3372093023255814,
+    "recall": 0.12554112554112554,
+    "f1": 0.1829652996845426,
+    "support": 231
+  },
+  "taxa.scientific_name": {
+    "precision": 0.25,
+    "recall": 0.24873096446700507,
+    "f1": 0.24936386768447838,
+    "support": 197
+  },
+  "taxa.species_group": {
+    "precision": 0.3870967741935484,
+    "recall": 0.5660377358490566,
+    "f1": 0.45977011494252873,
+    "support": 106
+  },
+  "AVG": {
+    "precision": 0.37324075831429654,
+    "recall": 0.4568715577306945,
+    "f1": 0.38623786711870695,
+    "support": 132.0
+  },
+  "ALL": {
+    "precision": 0.3680297397769517,
+    "recall": 0.375,
+    "f1": 0.3714821763602252,
+    "support": 792
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/327_faktencheck_core_with_persona/2026-01-27_13-36-47/2026-01-28_00-41-26_525072/predictions.jsonl",
+      "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/327_faktencheck_core_with_persona/2026-01-27_13-36-47/2026-01-28_00-41-26_525072/predictions.jsonl",
+      "time_pdf_conversion": 0.003729964140802622,
+      "time_extraction": 7073.538128487999,
+      "commit_hash": "bf86451a2404f64307c3512a8ad38921a1dd9e58",
+      "branch": "faktencheck-with-persona",
+      "is_dirty": false
+    },
+    "overrides": {
+      "name": "327_faktencheck_core_with_persona",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "extractor/prompt_template": "faktencheck_core_v1_with_evidence_and_persona",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor.return_reasoning": "True",
+      "extractor/llm": "gpt_5",
+      "seed": "7331"
+    }
+  }
+}

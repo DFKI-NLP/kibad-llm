@@ -1,0 +1,28 @@
+{
+  "no_error": 84,
+  "with_error": 16,
+  "ValueError": 8,
+  "JSONDecodeError": 6,
+  "MissingResponseContentError": 1,
+  "ReasoningExtractionError": 1,
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/327_faktencheck_core_with_persona/2026-01-27_13-36-47/2026-01-27_22-17-52_687695/predictions.jsonl",
+      "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/327_faktencheck_core_with_persona/2026-01-27_13-36-47/2026-01-27_22-17-52_687695/predictions.jsonl",
+      "time_pdf_conversion": 0.003134105121716857,
+      "time_extraction": 8613.142952008871,
+      "commit_hash": "bf86451a2404f64307c3512a8ad38921a1dd9e58",
+      "branch": "faktencheck-with-persona",
+      "is_dirty": false
+    },
+    "overrides": {
+      "name": "327_faktencheck_core_with_persona",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "extractor/prompt_template": "faktencheck_core_v1_with_evidence_and_persona",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor.return_reasoning": "True",
+      "extractor/llm": "gpt_5",
+      "seed": "1337"
+    }
+  }
+}
