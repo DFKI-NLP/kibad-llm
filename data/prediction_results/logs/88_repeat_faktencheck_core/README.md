@@ -38,6 +38,24 @@ PLOT_KWARGS = {
     "subplot_columns": 2,
 }
 ```
+
+### f1
+
+![comparison_metrics.svg](comparison_metrics.svg)
+![comparison_metrics_details.svg](comparison_metrics_detail.svg)
+
+### precision
+
+![comparison_metrics_precision.svg](comparison_metrics_precision.svg)
+![comparison_metrics_precision_details.svg](comparison_metrics_precision_detail.svg)
+
+### recall
+
+![comparison_metrics_recall.svg](comparison_metrics_recall.svg)
+![comparison_metrics_recall_details.svg](comparison_metrics_recall_detail.svg)
+
+### errors
+
 Note: We normalize the number of errors by the number of LLM queries since the repeat extractor issues multiple queries per document (after `errors_df` is loaded):
 ```python
 error_cols = [col for col in errors_df.columns if "rror" in col]
@@ -45,8 +63,6 @@ errors_df.loc[errors_df["prediction.overrides.extractor"] == "repeat",error_cols
 errors_df.loc[errors_df["prediction.overrides.extractor"] != "repeat",error_cols] = errors_df.loc[errors_df["prediction.overrides.extractor"] != "repeat",error_cols] / 100.0
 ```
 
-![comparison_metrics.svg](comparison_metrics.svg)
-![comparison_metrics_details.svg](comparison_metrics_detail.svg)
 ![comparison_errors.svg](comparison_errors.svg)
 ![comparison_errors_detail.svg](comparison_errors_detail.svg)
 
