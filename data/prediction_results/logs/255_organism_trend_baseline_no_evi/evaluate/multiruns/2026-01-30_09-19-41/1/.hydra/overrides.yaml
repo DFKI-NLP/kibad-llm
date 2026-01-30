@@ -1,0 +1,4 @@
+- dataset.predictions.log=logs/255_organism_trend_baseline_no_evi/predict/multiruns/2026-01-28_13-34-25/1
+- name=255_organism_trend_baseline_no_evi
+- experiment/evaluate=prediction_errors
+- prediction_logs=[logs/255_organism_trend_baseline_no_evi/predict/multiruns/2026-01-28_13-34-25,logs/255_organism_trend_baseline_no_evi/predict/multiruns/2026-01-29_13-43-56]
