@@ -131,47 +131,19 @@ prediction_logs=logs/311_better_default_temperature/predict/multiruns/2026-01-23
 notebook parameters:
 ```python
 NAME = "311_better_default_temperature"
-METRICS_DIR_PATTERN = ["evaluate/**/2026-01-26_08-58-14/", "../311_better_default_temperature_baseline/evaluate/**/2026-01-26_03-05-47/"]
-ERRORS_DIR_PATTERN = ["evaluate/**/2026-01-26_09-05-58/", "../311_better_default_temperature_baseline/evaluate/**/2026-01-26_03-07-48/"]
+
+SUBDIR = ["evaluate", "../311_better_default_temperature_baseline/evaluate"]
 # used to group the data
-INDEX_COLUMNS = ["overrides.extractor/llm", "prediction.job_return_value.branch"]
+INDEX_COLUMNS = ["prediction.overrides.extractor/llm", "prediction.job_return_value.branch"]
 PLOT_KWARGS = {
     # can be either "metric" or one of the INDEX_COLUMNS (or multiple of them)
     "xgroup": "prediction.job_return_value.branch",
     "create_subplot_for_each": "metric",
     # add any more arguments passed to pd.DataFrame.plot
+    "subplot_columns": 2,
 }
 ```
-IMPORTANT: Since #337, you need the following code to get the `metrics_df` and `errors_df` with this evaluation data correctly:
-```python
-from kibad_llm.utils.job_return import load
 
-errors_df = (
-    pd.DataFrame.from_records(
-        load(
-            directory=BASE_LOG_DIR / NAME,
-            subdir_pattern=ERRORS_DIR_PATTERN,
-            strip_id_keys=True,
-            flatten=True,
-            exclude_keys=EXCLUDE_KEYS,
-        )
-    )
-    .fillna(FILL_NA)
-    .fillna(0)
-)
-# display(errors_df)
-
-metrics_df = pd.DataFrame.from_records(
-    load(
-        directory=BASE_LOG_DIR / NAME,
-        subdir_pattern=METRICS_DIR_PATTERN,
-        strip_id_keys=True,
-        flatten=True,
-        exclude_keys=EXCLUDE_KEYS,
-    )
-).fillna(FILL_NA)
-# display(metrics_df)
-```
 
 ![comparison_metrics.svg](comparison_metrics.svg)
 ![comparison_metrics_details.svg](comparison_metrics_detail.svg)
