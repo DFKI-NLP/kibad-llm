@@ -17,7 +17,7 @@ return_as_list:
   # - structured
   - errors
   # - response_content
-  # - reasoning_content
+  - reasoning_content
   # - messages
   # - messages_formatted
 
