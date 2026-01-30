@@ -1,0 +1,24 @@
+{
+  "no_error": 85,
+  "with_error": 15,
+  "ValueError": 15,
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/311_better_default_temperature_baseline/2026-01-23_15-36-01/2026-01-23_19-00-04_947040/predictions.jsonl.gz",
+      "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/311_better_default_temperature_baseline/2026-01-23_15-36-01/2026-01-23_19-00-04_947040/predictions.jsonl.gz",
+      "time_pdf_conversion": 0.0028501279884949327,
+      "time_extraction": 1174.118724031956,
+      "commit_hash": "96efc8cbaf31910ffab43b74a2a0b89184634a01",
+      "branch": "main",
+      "is_dirty": false
+    },
+    "overrides": {
+      "name": "311_better_default_temperature_baseline",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor.return_reasoning": "True",
+      "extractor/llm": "gemma3_27b_in_process",
+      "seed": "7331"
+    }
+  }
+}

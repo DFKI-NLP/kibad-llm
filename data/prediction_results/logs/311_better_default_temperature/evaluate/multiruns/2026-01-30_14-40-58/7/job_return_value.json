@@ -1,0 +1,69 @@
+{
+  "biodiversity_level": {
+    "precision": 0.273972602739726,
+    "recall": 0.29850746268656714,
+    "f1": 0.2857142857142857,
+    "support": 67
+  },
+  "ecosystem_type.term": {
+    "precision": 0.31666666666666665,
+    "recall": 0.3584905660377358,
+    "f1": 0.336283185840708,
+    "support": 53
+  },
+  "habitat": {
+    "precision": 0.6804123711340206,
+    "recall": 0.4782608695652174,
+    "f1": 0.5617021276595745,
+    "support": 138
+  },
+  "taxa.german_name": {
+    "precision": 0.14388489208633093,
+    "recall": 0.08658008658008658,
+    "f1": 0.1081081081081081,
+    "support": 231
+  },
+  "taxa.scientific_name": {
+    "precision": 0.22596153846153846,
+    "recall": 0.23857868020304568,
+    "f1": 0.23209876543209876,
+    "support": 197
+  },
+  "taxa.species_group": {
+    "precision": 0.5411764705882353,
+    "recall": 0.4339622641509434,
+    "f1": 0.481675392670157,
+    "support": 106
+  },
+  "AVG": {
+    "precision": 0.36367909027941964,
+    "recall": 0.31572998820393267,
+    "f1": 0.33426364423748867,
+    "support": 132.0
+  },
+  "ALL": {
+    "precision": 0.3293051359516616,
+    "recall": 0.27525252525252525,
+    "f1": 0.2998624484181568,
+    "support": 792
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_17-03-07_771891/predictions.jsonl.gz",
+      "output_file_absolute": "/netscratch/hennig/code/kibad-llm/predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_17-03-07_771891/predictions.jsonl.gz",
+      "time_pdf_conversion": 0.006409907015040517,
+      "time_extraction": 1529.8307584520662,
+      "commit_hash": "7197d3bf97007b8a8e7b212a900e4c0bb574f62a",
+      "branch": "feature/temperature_config",
+      "is_dirty": false
+    },
+    "overrides": {
+      "name": "311_better_default_temperature",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor.return_reasoning": "True",
+      "extractor/llm": "gpt_oss_20b_in_process",
+      "seed": "7331"
+    }
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "biodiversity_level": {
+    "precision": 0.17142857142857143,
+    "recall": 0.1791044776119403,
+    "f1": 0.1751824817518248,
+    "support": 67
+  },
+  "ecosystem_type.term": {
+    "precision": 0.11764705882352941,
+    "recall": 0.11320754716981132,
+    "f1": 0.11538461538461538,
+    "support": 53
+  },
+  "habitat": {
+    "precision": 0.4835164835164835,
+    "recall": 0.3188405797101449,
+    "f1": 0.38427947598253276,
+    "support": 138
+  },
+  "taxa.german_name": {
+    "precision": 0.14285714285714285,
+    "recall": 0.047619047619047616,
+    "f1": 0.07142857142857142,
+    "support": 231
+  },
+  "taxa.scientific_name": {
+    "precision": 0.2222222222222222,
+    "recall": 0.1116751269035533,
+    "f1": 0.14864864864864866,
+    "support": 197
+  },
+  "taxa.species_group": {
+    "precision": 0.359375,
+    "recall": 0.2169811320754717,
+    "f1": 0.27058823529411763,
+    "support": 106
+  },
+  "AVG": {
+    "precision": 0.24950774647465823,
+    "recall": 0.16457131851499485,
+    "f1": 0.1942520047483851,
+    "support": 132.0
+  },
+  "ALL": {
+    "precision": 0.2610619469026549,
+    "recall": 0.14898989898989898,
+    "f1": 0.1897106109324759,
+    "support": 792
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_21-23-58_576065/predictions.jsonl.gz",
+      "output_file_absolute": "/netscratch/hennig/code/kibad-llm/predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_21-23-58_576065/predictions.jsonl.gz",
+      "time_pdf_conversion": 0.009223200031556189,
+      "time_extraction": 1253.1102179909358,
+      "commit_hash": "7197d3bf97007b8a8e7b212a900e4c0bb574f62a",
+      "branch": "feature/temperature_config",
+      "is_dirty": false
+    },
+    "overrides": {
+      "name": "311_better_default_temperature",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor.return_reasoning": "True",
+      "extractor/llm": "nemotron_nano_12b_in_process",
+      "seed": "7331"
+    }
+  }
+}

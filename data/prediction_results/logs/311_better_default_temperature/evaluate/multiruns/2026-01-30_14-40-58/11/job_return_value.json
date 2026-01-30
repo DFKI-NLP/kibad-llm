@@ -1,0 +1,69 @@
+{
+  "biodiversity_level": {
+    "precision": 0.25806451612903225,
+    "recall": 0.23880597014925373,
+    "f1": 0.24806201550387597,
+    "support": 67
+  },
+  "ecosystem_type.term": {
+    "precision": 0.35443037974683544,
+    "recall": 0.5283018867924528,
+    "f1": 0.42424242424242425,
+    "support": 53
+  },
+  "habitat": {
+    "precision": 0.7611940298507462,
+    "recall": 0.3695652173913043,
+    "f1": 0.49756097560975604,
+    "support": 138
+  },
+  "taxa.german_name": {
+    "precision": 0.0875,
+    "recall": 0.030303030303030304,
+    "f1": 0.045016077170418,
+    "support": 231
+  },
+  "taxa.scientific_name": {
+    "precision": 0.35,
+    "recall": 0.14213197969543148,
+    "f1": 0.20216606498194947,
+    "support": 197
+  },
+  "taxa.species_group": {
+    "precision": 0.4945054945054945,
+    "recall": 0.42452830188679247,
+    "f1": 0.45685279187817257,
+    "support": 106
+  },
+  "AVG": {
+    "precision": 0.3842824033720181,
+    "recall": 0.28893939770304417,
+    "f1": 0.312316724897766,
+    "support": 132.0
+  },
+  "ALL": {
+    "precision": 0.3812636165577342,
+    "recall": 0.22095959595959597,
+    "f1": 0.2797761790567546,
+    "support": 792
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_18-26-07_774743/predictions.jsonl.gz",
+      "output_file_absolute": "/netscratch/hennig/code/kibad-llm/predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_18-26-07_774743/predictions.jsonl.gz",
+      "time_pdf_conversion": 0.00677752192132175,
+      "time_extraction": 2600.6029643769143,
+      "commit_hash": "7197d3bf97007b8a8e7b212a900e4c0bb574f62a",
+      "branch": "feature/temperature_config",
+      "is_dirty": false
+    },
+    "overrides": {
+      "name": "311_better_default_temperature",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor.return_reasoning": "True",
+      "extractor/llm": "qwen3_30b_in_process",
+      "seed": "42"
+    }
+  }
+}
