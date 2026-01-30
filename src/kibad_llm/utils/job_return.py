@@ -147,7 +147,7 @@ def load_runs(
     subdir: str | list[str] = "",
     filename: str = "job_return_value.json",
     load_overrides: bool = True,
-    flatten: bool = False,
+    flatten: bool = True,
     exclude_keys: list[str] | None = None,
 ) -> list[dict]:
     """Load job return value json file(s) from subdirectories of the given directory. Only the
