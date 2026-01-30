@@ -27,6 +27,6 @@ schema:
   by_alias: false
 
 # general return options (see simple extractor for details)
-return_reasoning: False
+return_reasoning: True
 return_messages: False
 return_messages_formatted: False
