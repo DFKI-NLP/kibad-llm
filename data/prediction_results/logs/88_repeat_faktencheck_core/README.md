@@ -38,6 +38,12 @@ PLOT_KWARGS = {
     "subplot_columns": 2,
 }
 ```
+Note: We normalize the number of errors by the number of LLM queries since the repeat extractor issues multiple queries per document (after `errors_df` is loaded):
+```python
+error_cols = [col for col in errors_df.columns if "rror" in col]
+errors_df.loc[errors_df["prediction.overrides.extractor"] == "repeat",error_cols] = errors_df.loc[errors_df["prediction.overrides.extractor"] == "repeat",error_cols] / 300.0
+errors_df.loc[errors_df["prediction.overrides.extractor"] != "repeat",error_cols] = errors_df.loc[errors_df["prediction.overrides.extractor"] != "repeat",error_cols] / 100.0
+```
 
 ![comparison_metrics.svg](comparison_metrics.svg)
 ![comparison_metrics_details.svg](comparison_metrics_detail.svg)
