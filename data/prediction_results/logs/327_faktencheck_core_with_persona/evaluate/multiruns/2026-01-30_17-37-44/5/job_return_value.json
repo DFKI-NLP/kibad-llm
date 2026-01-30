@@ -1,0 +1,70 @@
+{
+  "biodiversity_level": {
+    "precision": 0.3404255319148936,
+    "recall": 0.47761194029850745,
+    "f1": 0.3975155279503106,
+    "support": 67
+  },
+  "ecosystem_type.term": {
+    "precision": 0.22875816993464052,
+    "recall": 0.660377358490566,
+    "f1": 0.33980582524271846,
+    "support": 53
+  },
+  "habitat": {
+    "precision": 0.6901408450704225,
+    "recall": 0.7101449275362319,
+    "f1": 0.7,
+    "support": 138
+  },
+  "taxa.german_name": {
+    "precision": 0.3170731707317073,
+    "recall": 0.16883116883116883,
+    "f1": 0.22033898305084748,
+    "support": 231
+  },
+  "taxa.scientific_name": {
+    "precision": 0.33540372670807456,
+    "recall": 0.27411167512690354,
+    "f1": 0.3016759776536313,
+    "support": 197
+  },
+  "taxa.species_group": {
+    "precision": 0.38513513513513514,
+    "recall": 0.5377358490566038,
+    "f1": 0.4488188976377953,
+    "support": 106
+  },
+  "AVG": {
+    "precision": 0.3828227632491456,
+    "recall": 0.47146881988999695,
+    "f1": 0.4013592019225505,
+    "support": 132.0
+  },
+  "ALL": {
+    "precision": 0.38367844092570036,
+    "recall": 0.3977272727272727,
+    "f1": 0.3905765654060756,
+    "support": 792
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/327_faktencheck_core_with_persona/2026-01-27_13-36-47/2026-01-27_22-17-52_687695/predictions.jsonl",
+      "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/327_faktencheck_core_with_persona/2026-01-27_13-36-47/2026-01-27_22-17-52_687695/predictions.jsonl",
+      "time_pdf_conversion": 0.003134105121716857,
+      "time_extraction": 8613.142952008871,
+      "commit_hash": "bf86451a2404f64307c3512a8ad38921a1dd9e58",
+      "branch": "faktencheck-with-persona",
+      "is_dirty": false
+    },
+    "overrides": {
+      "name": "327_faktencheck_core_with_persona",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "extractor/prompt_template": "faktencheck_core_v1_with_evidence_and_persona",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor.return_reasoning": "True",
+      "extractor/llm": "gpt_5",
+      "seed": "1337"
+    }
+  }
+}
