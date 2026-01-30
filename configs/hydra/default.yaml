@@ -6,14 +6,14 @@ defaults:
 callbacks:
   save_job_return:
     _target_: kibad_llm.hydra_callbacks.SaveJobReturnValueCallback
-    integrate_multirun_result: false
-    add_overrides_as_dict: true
     replace_existing_overrides: false
-    multirun_convert_job_ids: true
     sort_markdown_columns: true
     filenames:
       - job_return_value.json
       - job_return_value.md
+    integrate_multirun_result: false
+    multirun_add_overrides_as_dict: true
+    multirun_convert_job_ids: true
     multirun_show_file_contents: [job_return_value.md]
     # file names contain the default separator ("-"), so we change it here to avoid conflicts
     multirun_overrides_separator: "#"

@@ -272,10 +272,10 @@ class SaveJobReturnValueCallback(Callback):
         multirun_job_id_key: str = "job_id",
         multirun_convert_job_ids: bool = False,
         handle_previous_result: str | None = None,
-        add_overrides_as_dict: bool = False,
+        replace_existing_overrides: bool = False,
+        multirun_add_overrides_as_dict: bool = False,
         multirun_show_file_contents: list[str] | None = None,
         multirun_overrides_separator: str = "-",
-        replace_existing_overrides: bool = False,
         multirun_markdown_group_by: str | list[str] | None = None,
         multirun_markdown_transpose: bool = False,
         paths_file: str | None = None,
@@ -293,7 +293,7 @@ class SaveJobReturnValueCallback(Callback):
         self.multirun_create_ids_from_overrides = multirun_create_ids_from_overrides
         self.handle_previous_result = handle_previous_result
         self.replace_existing_overrides = replace_existing_overrides
-        self.add_overrides_as_dict = add_overrides_as_dict
+        self.multirun_add_overrides_as_dict = multirun_add_overrides_as_dict
         self.multirun_job_id_key = multirun_job_id_key
         self.multirun_convert_job_ids = multirun_convert_job_ids
         self.multirun_overrides_separator = multirun_overrides_separator
@@ -314,10 +314,6 @@ class SaveJobReturnValueCallback(Callback):
                 key=self.handle_previous_result,
                 replace_existing=self.replace_existing_overrides,
             )
-        if self.add_overrides_as_dict:
-            job_return.return_value["overrides"] = overrides_to_dict(
-                job_return.overrides or [], remove_plus_prefix=True
-            )
         self.job_returns.append(job_return)
         output_dir = Path(config.hydra.runtime.output_dir)  # / Path(config.hydra.output_subdir)
         if self.paths_file is not None:
@@ -334,9 +330,6 @@ class SaveJobReturnValueCallback(Callback):
                     if self.handle_previous_result in obj:
                         obj = dict(obj)
                         obj.pop(self.handle_previous_result)
-                if "overrides" in obj:
-                    obj = dict(obj)
-                    obj.pop("overrides")
             self._save(obj=obj, filename=filename, output_dir=output_dir)
 
     def on_multirun_end(self, config: DictConfig, **kwargs: Any) -> None:
@@ -354,6 +347,12 @@ class SaveJobReturnValueCallback(Callback):
 
         if job_ids is None:
             job_ids = list(range(len(self.job_returns)))
+
+        if self.multirun_add_overrides_as_dict:
+            for jr in self.job_returns:
+                jr.return_value["overrides"] = overrides_to_dict(
+                    jr.overrides or [], remove_plus_prefix=True
+                )
 
         if self.integrate_multirun_result:
             # rearrange the job return-values of all jobs from a multi-run into a dict of lists (maybe nested),
