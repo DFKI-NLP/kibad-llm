@@ -1,4 +1,4 @@
-from collections.abc import Callable, Iterable
+from collections.abc import Callable, Hashable, Iterable
 import json
 import logging
 import math
@@ -8,11 +8,54 @@ from typing import Any
 
 import numpy as np
 import pandas as pd
+import yaml
 
 from kibad_llm.utils.dictionary import flatten_dict_s
 from kibad_llm.utils.path import get_directories_with_file
 
 logger = logging.getLogger(__name__)
+
+
+def overrides_to_dict(
+    overrides: Iterable[str], remove_plus_prefix: bool = False
+) -> dict[str, str]:
+    """Convert a list of overrides to a dictionary.
+
+    Example:
+        >>> overrides = ["a=1", "b=2", "+c=3"]
+        >>> overrides_to_dict(overrides, remove_plus_prefix=True)
+        {'a': '1', 'b': '2', 'c': '3'}
+    Args:
+        overrides (list[str]): The list of overrides.
+        remove_plus_prefix (bool, optional): If True, remove the '+' prefix from keys. Defaults to False.
+    Returns:
+        dict[str, str]: The dictionary of overrides.
+    """
+    override_dict = {}
+    for override in overrides:
+        key, value = override.split("=", 1)
+        if remove_plus_prefix:
+            key = key.lstrip("+")
+        override_dict[key] = value
+    return override_dict
+
+
+def dict_to_overrides(d: dict[Hashable, Any], remove_na: bool = False) -> list[str]:
+    """Convert a dictionary to a overrides.
+    Example:
+        >>> dict_to_overrides({"a": 1, "b": 2})
+        ['a=1', 'b=2']
+        >>> dict_to_overrides({"a": 1, "b": None}, remove_na=True)
+        ['a=1']
+        >>> dict_to_overrides({"+c": 3, "d": float('nan')}, remove_na=True)
+        ['+c=3']
+    """
+    overrides = []
+    for key, value in d.items():
+        if remove_na and (value is None or (isinstance(value, float) and math.isnan(value))):
+            continue
+        overrides.append(f"{key}={value}")
+    return overrides
 
 
 def load(
@@ -69,10 +112,41 @@ def load(
     return data
 
 
-def load_v2(
+def load_run(
+    directory: Path, filename: str = "job_return_value.json", load_overrides: bool = True
+) -> dict:
+    """Load a job return value json file from the given directory.
+
+    Args:
+        directory: Path to the directory containing the return value file.
+        filename: Name of the file to load.
+        load_overrides: Whether to load overrides from '.hydra/overrides.yaml' if it exists and
+    Returns:
+        A dictionary containing the loaded data.
+    """
+    file_path = directory / filename
+    logger.info(f"Loading job return value from file: {file_path}")
+    data = json.loads(file_path.read_text())
+
+    if load_overrides:
+        overrides_path = directory / ".hydra" / "overrides.yaml"
+        if overrides_path.exists():
+            if "overrides" in data:
+                logger.warning(
+                    f"Overrides already exist in job return value data, but will be overwritten: "
+                    f"{data['overrides']}"
+                )
+            overrides = yaml.safe_load(overrides_path.read_text())
+            data["overrides"] = overrides_to_dict(overrides, remove_plus_prefix=True)
+
+    return data
+
+
+def load_runs(
     directory: Path,
     subdir: str | list[str] = "",
-    filename="job_return_value.json",
+    filename: str = "job_return_value.json",
+    load_overrides: bool = True,
     flatten: bool = False,
     exclude_keys: list[str] | None = None,
 ) -> list[dict]:
@@ -84,6 +158,7 @@ def load_v2(
         directory: Path to the directory containing return value file(s).
         subdir: One or multiple subdirectory names under `directory` to search in.
         filename: Name of the file to load from each subdirectory.
+        load_overrides: Whether to load overrides from '.hydra/overrides.yaml' if it exists.
         flatten: Whether to flatten nested dictionaries in the loaded data.
         exclude_keys: List of keys to exclude from the loaded data. Applied after flattening if enabled.
     """
@@ -102,7 +177,10 @@ def load_v2(
     )
 
     # read all json files
-    data = [json.loads((Path(dir_path) / filename).read_text()) for dir_path in dir_paths]
+    data = [
+        load_run(directory=Path(dir_path), filename=filename, load_overrides=load_overrides)
+        for dir_path in dir_paths
+    ]
 
     if flatten:
         data = [flatten_dict_s(d, sep=".") for d in data]

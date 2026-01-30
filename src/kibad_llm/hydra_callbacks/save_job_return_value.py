@@ -13,7 +13,12 @@ from omegaconf import DictConfig
 import pandas as pd
 
 from kibad_llm.utils.dictionary import flatten_dict, unflatten_dict
-from kibad_llm.utils.job_return import mixed_group_by, multi_index_to_single
+from kibad_llm.utils.job_return import (
+    dict_to_overrides,
+    mixed_group_by,
+    multi_index_to_single,
+    overrides_to_dict,
+)
 
 
 def to_py_obj(obj):
@@ -159,48 +164,6 @@ def identifier_to_dict(identifier: str, sep: str = "-") -> dict[str, str]:
     overrides = identifier.split(sep)
     as_dict = overrides_to_dict(overrides)
     return as_dict
-
-
-def overrides_to_dict(
-    overrides: Iterable[str], remove_plus_prefix: bool = False
-) -> dict[str, str]:
-    """Convert a list of overrides to a dictionary.
-
-    Example:
-        >>> overrides = ["a=1", "b=2", "+c=3"]
-        >>> overrides_to_dict(overrides, remove_plus_prefix=True)
-        {'a': '1', 'b': '2', 'c': '3'}
-    Args:
-        overrides (list[str]): The list of overrides.
-        remove_plus_prefix (bool, optional): If True, remove the '+' prefix from keys. Defaults to False.
-    Returns:
-        dict[str, str]: The dictionary of overrides.
-    """
-    override_dict = {}
-    for override in overrides:
-        key, value = override.split("=", 1)
-        if remove_plus_prefix:
-            key = key.lstrip("+")
-        override_dict[key] = value
-    return override_dict
-
-
-def dict_to_overrides(d: dict[Hashable, Any], remove_na: bool = False) -> list[str]:
-    """Convert a dictionary to a overrides.
-    Example:
-        >>> dict_to_overrides({"a": 1, "b": 2})
-        ['a=1', 'b=2']
-        >>> dict_to_overrides({"a": 1, "b": None}, remove_na=True)
-        ['a=1']
-        >>> dict_to_overrides({"+c": 3, "d": float('nan')}, remove_na=True)
-        ['+c=3']
-    """
-    overrides = []
-    for key, value in d.items():
-        if remove_na and (value is None or (isinstance(value, float) and math.isnan(value))):
-            continue
-        overrides.append(f"{key}={value}")
-    return overrides
 
 
 def handle_previous_overrides(
