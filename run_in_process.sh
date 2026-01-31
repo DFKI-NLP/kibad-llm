@@ -5,6 +5,7 @@
 #export PORT=$(shuf -i 10000-60000 -n 1)  # only ports forwarded through vpn
 PARTITION="RTXA6000-SLT"
 TIME=1-00:00:00
+N_GPUS=1
 
 # flag processing for setting vars and displaying help
 while [[ "$1" =~ ^- && ! "$1" == "--" ]]; do case $1 in
@@ -28,6 +29,9 @@ while [[ "$1" =~ ^- && ! "$1" == "--" ]]; do case $1 in
     ;;
   -u | --uv )
     shift; export UV_ARGS=$1
+    ;;
+  -ng | --n-gpus )
+    shift; N_GPUS=$1
     ;;
 esac; shift; done
 if [[ "$1" == '--' ]]; then shift; fi
@@ -63,7 +67,7 @@ srun --partition=$PARTITION \
      --nodes=1 \
      --ntasks=1 \
      --cpus-per-task=6 \
-     --gpus-per-task=1 \
+     --gpus-per-task=$N_GPUS \
      --mem=128G \
      --oversubscribe \
      --time=$TIME \
