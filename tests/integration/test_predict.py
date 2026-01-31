@@ -119,6 +119,8 @@ def cfg_predict_pdf_errors(tmp_path, error_type) -> DictConfig:  # type: ignore
     if error_type in ["missing_response_content"]:
         # use a more complex schema that is more likely to fail
         overrides.append("experiment/predict=faktencheck_core_fields_schema_with_evidence")
+        # set temperature to 0, otherwise the LLM might not fail
+        overrides.append("extractor.llm.temperature=0.0")
 
     cfg = cfg_global(
         config_name="predict.yaml",

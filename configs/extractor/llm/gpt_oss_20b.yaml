@@ -18,8 +18,7 @@ _target_: kibad_llm.llms.OpenAILikeVllm
 api_base: ${oc.env:LLM_API_BASE,http://127.0.0.1:5001/v1}
 api_key: "dummy"
 model: "openai/gpt-oss-20b"
-# try to be as deterministic as possible
-temperature: 0.0
+temperature: 1.0 # LMStudio suggests 0.8,  ChatGPT suggests for long-PDF IE a small value like 0.15-0.25, see #320
 # presence_penalty and frequency_penalty are also standard if we need them
 
 # Supports up to 128K tokens (max size for https://platform.openai.com/docs/models/gpt-oss-20b).
@@ -40,3 +39,7 @@ additional_kwargs:
   # 131,072 is max size for https://platform.openai.com/docs/models/gpt-oss-20b
   max_completion_tokens: 8192
   seed: ${seed}
+  #min_p: 0.05 # LMStudio
+  #top_k: 40 # LMStudio, ChatGPT
+  top_p: 1.0 # LMStudio suggests 0.8,  ChatGPT suggests for long-PDF IE a value like 0.9-0.95, see #320
+  #repetition_penalty: 1.1 # suggested by ChatGPT, see #320

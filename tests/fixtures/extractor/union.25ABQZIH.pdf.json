@@ -1,48 +1,56 @@
 {
   "structured": {
-    "natural_region": [
-      "Alpenvorland",
-      "Norddeutsches Tiefland"
-    ],
-    "climate": [
-      "maritim"
-    ],
-    "location": [
-      {
-        "country": "Germany",
-        "federal_state": "Bayern"
-      },
-      {
-        "country": "Germany",
-        "federal_state": "Brandenburg"
-      },
-      {
-        "country": "Germany",
-        "federal_state": "Mecklenburg-Vorpommern",
-        "name": "Greifswald"
-      },
-      {
-        "country": "Germany",
-        "federal_state": "Niedersachsen"
-      },
-      {
-        "country": "Germany",
-        "federal_state": "Schleswig-Holstein"
-      }
-    ],
-    "landuse": [
-      "Bau",
-      "Energieproduktion",
-      "Landwirtschaft"
-    ],
     "ecosystem_type": [
       {
         "category": "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes",
+        "description": "Peatland ecosystems studied in the research.",
         "term": "Hoch-, Zwischen- und \u00dcbergangsmoore"
       }
     ],
+    "landuse": [
+      "Energieproduktion",
+      "Landwirtschaft"
+    ],
+    "climate": [],
+    "location": [
+      {
+        "country": "Deutschland",
+        "federal_state": "Baden-W\u00fcrttemberg",
+        "name": "Baden-W\u00fcrttemberg"
+      },
+      {
+        "country": "Deutschland",
+        "federal_state": "Bayern",
+        "name": "Bayern"
+      },
+      {
+        "country": "Deutschland",
+        "federal_state": "Brandenburg",
+        "name": "Brandenburg"
+      },
+      {
+        "country": "Deutschland",
+        "federal_state": "Mecklenburg-Vorpommern",
+        "name": "Mecklenburg-Vorpommern"
+      },
+      {
+        "country": "Deutschland",
+        "federal_state": "Niedersachsen",
+        "name": "Niedersachsen"
+      },
+      {
+        "country": "Deutschland",
+        "federal_state": "Schleswig-Holstein",
+        "name": "Schleswig-Holstein"
+      }
+    ],
     "habitat": [
+      "Agrar- und Offenland",
       "Boden"
+    ],
+    "natural_region": [
+      "Alpenvorland",
+      "Norddeutsches Tiefland"
     ]
   },
   "errors_list": [

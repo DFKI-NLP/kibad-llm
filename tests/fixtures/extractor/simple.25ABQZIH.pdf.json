@@ -1,23 +1,25 @@
 {
-  "response_content": "{\"habitat\":[\"Boden\"],\"natural_region\":[\"Norddeutsches Tiefland\",\"Alpenvorland\"],\"climate\":[],\"landuse\":[\"Landwirtschaft\",\"Energieproduktion\"]}",
+  "response_content": "{\"habitat\":[\"Boden\",\"Agrar- und Offenland\"],\"natural_region\":[\"Alpenvorland\",\"Norddeutsches Tiefland\"],\"climate\":[],\"landuse\":[\"Bau\",\"Landwirtschaft\",\"Energieproduktion\"]}",
   "structured": {
     "habitat": [
-      "Boden"
+      "Boden",
+      "Agrar- und Offenland"
     ],
     "natural_region": [
-      "Norddeutsches Tiefland",
-      "Alpenvorland"
+      "Alpenvorland",
+      "Norddeutsches Tiefland"
     ],
     "climate": [],
     "landuse": [
+      "Bau",
       "Landwirtschaft",
       "Energieproduktion"
     ]
   },
   "structured_with_metadata": null,
-  "errors": [],
-  "errors_long": [],
   "reasoning_content": null,
   "messages": null,
-  "messages_formatted": null
+  "messages_formatted": null,
+  "errors": [],
+  "errors_long": []
 }
