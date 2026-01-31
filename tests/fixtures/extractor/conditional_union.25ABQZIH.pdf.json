@@ -1,58 +1,57 @@
 {
   "structured": {
-    "climate": [
-      "maritim",
-      "subkontinental"
-    ],
-    "natural_region": [
-      "Alpenvorland",
-      "Norddeutsches Tiefland"
-    ],
-    "habitat": [
-      "Boden"
-    ],
     "ecosystem_type": [
       {
         "category": "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes",
-        "description": "Moorb\u00f6den (Peatlands) sind wasserbetonte, saure B\u00f6den mit hoher Biodiversit\u00e4t, die in Deutschland vor allem im Norddeutschen Tiefland und Alpenvorland vorkommen.",
-        "term": "Hoch-, Zwischen- und \u00dcbergangsmoore"
-      }
-    ],
-    "location": [
-      {
-        "country": "Germany",
-        "federal_state": "Baden-W\u00fcrttemberg",
-        "name": ""
-      },
-      {
-        "country": "Germany",
-        "federal_state": "Bayern",
-        "name": ""
-      },
-      {
-        "country": "Germany",
-        "federal_state": "Brandenburg",
-        "name": ""
-      },
-      {
-        "country": "Germany",
-        "federal_state": "Mecklenburg-Vorpommern",
-        "name": ""
-      },
-      {
-        "country": "Germany",
-        "federal_state": "Niedersachsen",
-        "name": ""
-      },
-      {
-        "country": "Germany",
-        "federal_state": "Schleswig-Holstein",
-        "name": ""
+        "description": "Niedermoore, feuchte, teilweise bewaldete oder laubhafter Feuchtfl\u00e4chen, die vor allem f\u00fcr Halbwetter-Paludi-Kulturen und Photovoltaikanlagen in regenerativer Nutzung verwendet werden.",
+        "term": "Waldfreie Niedermoore und S\u00fcmpfe, Gr\u00fcnland nasser bis feuchter Standorte"
       }
     ],
     "landuse": [
       "Energieproduktion",
       "Landwirtschaft"
+    ],
+    "climate": [
+      "maritim"
+    ],
+    "location": [
+      {
+        "country": "Germany",
+        "federal_state": "Baden-W\u00fcrttemberg",
+        "name": "Baden-W\u00fcrttemberg"
+      },
+      {
+        "country": "Germany",
+        "federal_state": "Bayern",
+        "name": "Bayern"
+      },
+      {
+        "country": "Germany",
+        "federal_state": "Brandenburg",
+        "name": "Brandenburg"
+      },
+      {
+        "country": "Germany",
+        "federal_state": "Mecklenburg-Vorpommern",
+        "name": "Mecklenburg-Vorpommern"
+      },
+      {
+        "country": "Germany",
+        "federal_state": "Niedersachsen",
+        "name": "Niedersachsen"
+      },
+      {
+        "country": "Germany",
+        "federal_state": "Schleswig-Holstein",
+        "name": "Schleswig-Holstein"
+      }
+    ],
+    "habitat": [
+      "Boden"
+    ],
+    "natural_region": [
+      "Alpenvorland",
+      "Norddeutsches Tiefland"
     ]
   },
   "errors_list": [
