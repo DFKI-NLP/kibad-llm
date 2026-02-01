@@ -1,0 +1,9 @@
+{
+  "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-30_18-26-25_266431/predictions.jsonl",
+  "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-30_18-26-25_266431/predictions.jsonl",
+  "time_pdf_conversion": 0.0029751609545201063,
+  "time_extraction": 1011.2443496750202,
+  "commit_hash": "02dfc60fee42df6c76bf67c280cf7327f910e976",
+  "branch": "main",
+  "is_dirty": false
+}

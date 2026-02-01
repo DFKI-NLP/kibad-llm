@@ -1,0 +1,71 @@
+{
+  "biodiversity_level": {
+    "precision": 0.24285714285714285,
+    "recall": 0.2537313432835821,
+    "f1": 0.24817518248175185,
+    "support": 67
+  },
+  "ecosystem_type.term": {
+    "precision": 0.14634146341463414,
+    "recall": 0.11320754716981132,
+    "f1": 0.1276595744680851,
+    "support": 53
+  },
+  "habitat": {
+    "precision": 0.4485981308411215,
+    "recall": 0.34782608695652173,
+    "f1": 0.39183673469387753,
+    "support": 138
+  },
+  "taxa.german_name": {
+    "precision": 0.32,
+    "recall": 0.1038961038961039,
+    "f1": 0.1568627450980392,
+    "support": 231
+  },
+  "taxa.scientific_name": {
+    "precision": 0.3170731707317073,
+    "recall": 0.1319796954314721,
+    "f1": 0.1863799283154122,
+    "support": 197
+  },
+  "taxa.species_group": {
+    "precision": 0.3829787234042553,
+    "recall": 0.33962264150943394,
+    "f1": 0.36,
+    "support": 106
+  },
+  "AVG": {
+    "precision": 0.30964143854147685,
+    "recall": 0.21504390304115417,
+    "f1": 0.24515236084286096,
+    "support": 132.0
+  },
+  "ALL": {
+    "precision": 0.3347547974413646,
+    "recall": 0.19823232323232323,
+    "f1": 0.2490087232355274,
+    "support": 792
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-30_19-02-07_995649/predictions.jsonl",
+      "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-30_19-02-07_995649/predictions.jsonl",
+      "time_pdf_conversion": 0.0030537541024386883,
+      "time_extraction": 928.3842838020064,
+      "commit_hash": "02dfc60fee42df6c76bf67c280cf7327f910e976",
+      "branch": "main",
+      "is_dirty": false
+    },
+    "overrides": {
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "extractor.schema_description_kwargs.include_field_descriptions": "True",
+      "extractor.schema_description_kwargs.include_type_descriptions": "False",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor.return_reasoning": "True",
+      "extractor/llm": "gemma3_27b_in_process",
+      "seed": "7331"
+    }
+  }
+}
