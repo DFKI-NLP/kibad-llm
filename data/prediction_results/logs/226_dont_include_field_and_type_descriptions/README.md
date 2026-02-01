@@ -1,5 +1,7 @@
 # 226_dont_include_field_and_type_descriptions
 
+See https://github.com/DFKI-NLP/kibad-llm/issues/226 for the experiments and https://github.com/DFKI-NLP/kibad-llm/pull/254 for description of the varied parameters.
+
 ## notebook parameters
 
 ```python
