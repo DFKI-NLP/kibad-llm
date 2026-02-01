@@ -1,5 +1,28 @@
 # 226_dont_include_field_and_type_descriptions
 
+## notebook parameters
+
+```python
+NAME = "226_dont_include_field_and_type_descriptions"
+# used to group the data
+INDEX_COLUMNS = ["prediction.overrides.extractor/llm","prediction.overrides.extractor.schema_description_kwargs.include_field_descriptions","prediction.overrides.extractor.schema_description_kwargs.include_type_descriptions"]
+PLOT_KWARGS = {
+    # can be either "metric" or one of the INDEX_COLUMNS (or multiple of them)
+    "xgroup": ["prediction.overrides.extractor.schema_description_kwargs.include_field_descriptions","prediction.overrides.extractor.schema_description_kwargs.include_type_descriptions"],
+    # add any more arguments passed to pd.DataFrame.plot
+    "create_subplot_for_each": "metric",
+    "subplot_columns": 2,
+}
+```
+
+## metrics
+![comparison_metrics.svg](comparison_metrics.svg)
+![comparison_metrics_detail.svg](comparison_metrics_detail.svg)
+
+## errors
+![comparison_errors.svg](comparison_errors.svg)
+![comparison_errors_detail.svg](comparison_errors_detail.svg)
+
 
 Details below.
 
