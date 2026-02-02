@@ -52,7 +52,6 @@ PLOT_KWARGS = {
     "subplot_columns": 2,
 }
 FILL_NA = {}
-
 ```
 IMPORTANT: Since #337, you need the following code to get the `metrics_df` and `errors_df` with this evaluation data correctly:
 ```python

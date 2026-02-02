@@ -35,26 +35,23 @@ PLOT_KWARGS = {
 NAME = "335_organism_trends_ensemble"
 METRICS_DIR_PATTERN = [
     "evaluate/**/2026-02-02_11-27-46/",
-    "../255_organism_trend_baseline_no_evi/evaluate/**/XXX/",
+    "../255_organism_trend_baseline_no_evi/evaluate/**/2026-02-02_11-36-38/",
 ]
 ERRORS_DIR_PATTERN = [
     "evaluate/**/2026-02-02_11-29-05/",
-    "../255_organism_trend_baseline_no_evi/evaluate/**/XXX/",
+    "../255_organism_trend_baseline_no_evi/evaluate/**/2026-02-02_11-37-16/",
 ]
 
 # used to group the data
-INDEX_COLUMNS = ["overrides.extractor/prompt_template", "overrides.extractor/llm"]
+INDEX_COLUMNS = ["prediction.overrides.extractor/llm"]
 PLOT_KWARGS = {
     # can be either "metric" or one of the INDEX_COLUMNS (or multiple of them)
-    "xgroup": "overrides.extractor/prompt_template",
+    "xgroup": "prediction.overrides.extractor/llm",
     # add any more arguments passed to pd.DataFrame.plot
     "create_subplot_for_each": "metric",
     "subplot_columns": 2,
 }
-FILL_NA = {
-    "overrides.extractor/prompt_template": "default",
-    "overrides.+extractor.llm.temperature": 1.0,
-}
+FILL_NA = {}
 ```
 IMPORTANT: Since #337, you need the following code to get the `metrics_df` and `errors_df` with this evaluation data correctly:
 ```python
