@@ -1,0 +1,57 @@
+{
+  "biodiversity_level": {
+    "precision": 0.34782608695652173,
+    "recall": 0.47761194029850745,
+    "f1": 0.4025157232704402,
+    "support": 67
+  },
+  "ecosystem_type": {
+    "precision": 0.22784810126582278,
+    "recall": 0.6792452830188679,
+    "f1": 0.34123222748815163,
+    "support": 53
+  },
+  "habitat": {
+    "precision": 0.6530612244897959,
+    "recall": 0.6956521739130435,
+    "f1": 0.6736842105263158,
+    "support": 138
+  },
+  "taxa": {
+    "precision": 0.20233463035019456,
+    "recall": 0.23318385650224216,
+    "f1": 0.21666666666666667,
+    "support": 223
+  },
+  "AVG": {
+    "precision": 0.3577675107655837,
+    "recall": 0.5214233134331653,
+    "f1": 0.40852470698789356,
+    "support": 120.25
+  },
+  "ALL": {
+    "precision": 0.3302752293577982,
+    "recall": 0.4490644490644491,
+    "f1": 0.38061674008810575,
+    "support": 481
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/88_faktencheck_core_gpt5_baseline/2026-01-31_16-22-31/2026-01-31_16-22-31_957220/predictions.jsonl",
+      "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/88_faktencheck_core_gpt5_baseline/2026-01-31_16-22-31/2026-01-31_16-22-31_957220/predictions.jsonl",
+      "time_pdf_conversion": 0.03614697931334376,
+      "time_extraction": 8128.767694094218,
+      "commit_hash": "dd1413a20fc344dbbb95a79b18a4ab5c625cd3c5",
+      "branch": "run-script/parametrize-num-gpus",
+      "is_dirty": false
+    },
+    "overrides": {
+      "name": "88_faktencheck_core_gpt5_baseline",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor.return_reasoning": "True",
+      "extractor/llm": "gpt_5",
+      "seed": "42"
+    }
+  }
+}
