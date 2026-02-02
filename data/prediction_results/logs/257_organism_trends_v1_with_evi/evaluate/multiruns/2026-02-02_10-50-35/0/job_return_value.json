@@ -1,0 +1,25 @@
+{
+  "no_error": 392,
+  "with_error": 17,
+  "ValueError": 16,
+  "JSONDecodeError": 1,
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/257_organism_trends_v1_with_evi/2026-01-28_13-51-36/2026-01-28_13-51-39_512590/predictions.jsonl",
+      "output_file_absolute": "/netscratch/hennig/code/kibad-llm/predictions/257_organism_trends_v1_with_evi/2026-01-28_13-51-36/2026-01-28_13-51-39_512590/predictions.jsonl",
+      "time_pdf_conversion": 0.008363784058019519,
+      "time_extraction": 4746.358912558993,
+      "commit_hash": "5fe16c6fc677d4a9ddc8c0a4d75888d7f369b3ae",
+      "branch": "main",
+      "is_dirty": false
+    },
+    "overrides": {
+      "name": "257_organism_trends_v1_with_evi",
+      "experiment/predict": "organism_trends_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-Wald-WVC",
+      "extractor.return_reasoning": "True",
+      "extractor/llm": "gpt_oss_20b_in_process",
+      "seed": "42"
+    }
+  }
+}

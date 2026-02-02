@@ -1,0 +1,9 @@
+{
+  "output_file": "predictions/333_organism_trends_with_persona/2026-01-30_11-20-01/2026-01-30_16-40-15_624544/predictions.jsonl",
+  "output_file_absolute": "/netscratch/hennig/code/tmp/kibad-llm/predictions/333_organism_trends_with_persona/2026-01-30_11-20-01/2026-01-30_16-40-15_624544/predictions.jsonl",
+  "time_pdf_conversion": 0.0056912899017333984,
+  "time_extraction": 9195.177491291892,
+  "commit_hash": "5a4e9f6557883763fb8b307c339c5a898d2b8c5b",
+  "branch": "organism-trends-with-persona",
+  "is_dirty": false
+}

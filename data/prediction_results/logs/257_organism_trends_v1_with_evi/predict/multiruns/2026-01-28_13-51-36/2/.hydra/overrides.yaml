@@ -1,0 +1,6 @@
+- name=257_organism_trends_v1_with_evi
+- experiment/predict=organism_trends_with_evidence
+- pdf_directory=/ds/text/kiba-d/dev-set-Wald-WVC
+- extractor.return_reasoning=True
+- extractor/llm=gpt_oss_20b_in_process
+- seed=7331
