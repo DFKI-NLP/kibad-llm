@@ -41,22 +41,21 @@ PLOT_KWARGS = {
 }
 ```
 
-### f1
+### F1
+![comparison_metrics_f1.svg](comparison_metrics_f1.svg)
+![comparison_metrics_f1_detail.svg](comparison_metrics_f1_detail.svg)
 
-![comparison_metrics.svg](comparison_metrics.svg)
-![comparison_metrics_details.svg](comparison_metrics_detail.svg)
-
-### precision
+### Precision
 
 ![comparison_metrics_precision.svg](comparison_metrics_precision.svg)
 ![comparison_metrics_precision_details.svg](comparison_metrics_precision_detail.svg)
 
-### recall
+### Recall
 
 ![comparison_metrics_recall.svg](comparison_metrics_recall.svg)
 ![comparison_metrics_recall_details.svg](comparison_metrics_recall_detail.svg)
 
-### errors
+### Errors
 
 Note: We normalize the number of errors by the number of LLM queries since the repeat extractor issues multiple queries per document (after `errors_df` is loaded):
 ```python
