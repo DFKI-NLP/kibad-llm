@@ -92,10 +92,19 @@ class ChunkingExtractor(UnionExtractor):
             "truncate_user_message_formatted": None,
         }
 
-        chunks = _document_chunk_iterator(args[0], self.max_char_buffer, self.tokenizer, self.stride)
+        chunks = _document_chunk_iterator(
+            args[0], self.max_char_buffer, self.tokenizer, self.stride
+        )
         results = []
         for i, chunk in enumerate(chunks):
             current_kwargs["text_id"] = f"{args[-1]}_chunk_{i}"
+            current_kwargs.update(
+                {
+                    "augment_metadata_kwargs": {
+                        "evidence_character_offset": chunk.char_interval.start_pos
+                    }
+                }
+            )
             current_result = extract_from_text_lenient(
                 text=chunk.chunk_text,
                 **current_kwargs,

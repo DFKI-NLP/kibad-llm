@@ -365,6 +365,7 @@ def augment_metadata_node_with_evidence(
     end_key: str = "first_evidence_end",
     snippet_key: str = "first_evidence_snippet",
     snippet_margin: int = 10,
+    character_offset: int = 0,
 ) -> dict[str, Any]:
     """
     Augment a single metadata wrapper dict with evidence location information.
@@ -409,8 +410,8 @@ def augment_metadata_node_with_evidence(
         if len(anchor_matches) > 0:
             # just take the first match
             start, end = anchor_matches[0]
-            out[start_key] = start
-            out[end_key] = end
+            out[start_key] = start + character_offset
+            out[end_key] = end + character_offset
             out[snippet_key] = _snippet_for_span(
                 start,
                 end,
