@@ -22,7 +22,11 @@ PLOT_KWARGS = {
 ![errors.svg](errors.svg)
 ![errors_detail.svg](errors_detail.svg)
 
-## comparison with baseline (327_faktencheck_core_with_persona)
+## comparison with baseline
+baselines:
+ - gpt5: [88_faktencheck_core_gpt5_baseline](../88_faktencheck_core_gpt5_baseline)
+ - others: [327_faktencheck_core_with_persona](../327_faktencheck_core_with_persona)
+
 ```python
 NAME = "88_repeat_faktencheck_core"
 
