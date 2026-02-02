@@ -1,0 +1,100 @@
+{
+  "dataset.predictions.log=logs/88_faktencheck_core_gpt5_baseline/predict/multiruns/2026-01-31_16-22-31/0": {
+    "no_error": 86,
+    "with_error": 14,
+    "ValueError": 8,
+    "ReasoningExtractionError": 1,
+    "JSONDecodeError": 3,
+    "MissingResponseContentError": 2,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/88_faktencheck_core_gpt5_baseline/2026-01-31_16-22-31/2026-01-31_16-22-31_957220/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/88_faktencheck_core_gpt5_baseline/2026-01-31_16-22-31/2026-01-31_16-22-31_957220/predictions.jsonl",
+        "time_pdf_conversion": 0.03614697931334376,
+        "time_extraction": 8128.767694094218,
+        "commit_hash": "dd1413a20fc344dbbb95a79b18a4ab5c625cd3c5",
+        "branch": "run-script/parametrize-num-gpus",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "88_faktencheck_core_gpt5_baseline",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gpt_5",
+        "seed": "42"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/88_faktencheck_core_gpt5_baseline/predict/multiruns/2026-01-31_16-22-31/0",
+      "name": "88_faktencheck_core_gpt5_baseline",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "logs/88_faktencheck_core_gpt5_baseline/predict"
+    }
+  },
+  "dataset.predictions.log=logs/88_faktencheck_core_gpt5_baseline/predict/multiruns/2026-01-31_16-22-31/1": {
+    "no_error": 89,
+    "with_error": 11,
+    "ValueError": 8,
+    "MissingResponseContentError": 1,
+    "JSONDecodeError": 2,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/88_faktencheck_core_gpt5_baseline/2026-01-31_16-22-31/2026-01-31_18-38-49_281164/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/88_faktencheck_core_gpt5_baseline/2026-01-31_16-22-31/2026-01-31_18-38-49_281164/predictions.jsonl",
+        "time_pdf_conversion": 0.0046476637944579124,
+        "time_extraction": 6390.365083742887,
+        "commit_hash": "dd1413a20fc344dbbb95a79b18a4ab5c625cd3c5",
+        "branch": "run-script/parametrize-num-gpus",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "88_faktencheck_core_gpt5_baseline",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gpt_5",
+        "seed": "1337"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/88_faktencheck_core_gpt5_baseline/predict/multiruns/2026-01-31_16-22-31/1",
+      "name": "88_faktencheck_core_gpt5_baseline",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "logs/88_faktencheck_core_gpt5_baseline/predict"
+    }
+  },
+  "dataset.predictions.log=logs/88_faktencheck_core_gpt5_baseline/predict/multiruns/2026-01-31_16-22-31/2": {
+    "no_error": 85,
+    "with_error": 15,
+    "ValueError": 8,
+    "ReasoningExtractionError": 2,
+    "MissingResponseContentError": 3,
+    "JSONDecodeError": 2,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/88_faktencheck_core_gpt5_baseline/2026-01-31_16-22-31/2026-01-31_20-25-20_287885/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/88_faktencheck_core_gpt5_baseline/2026-01-31_16-22-31/2026-01-31_20-25-20_287885/predictions.jsonl",
+        "time_pdf_conversion": 0.002903885208070278,
+        "time_extraction": 6135.298247504048,
+        "commit_hash": "dd1413a20fc344dbbb95a79b18a4ab5c625cd3c5",
+        "branch": "run-script/parametrize-num-gpus",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "88_faktencheck_core_gpt5_baseline",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gpt_5",
+        "seed": "7331"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/88_faktencheck_core_gpt5_baseline/predict/multiruns/2026-01-31_16-22-31/2",
+      "name": "88_faktencheck_core_gpt5_baseline",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "logs/88_faktencheck_core_gpt5_baseline/predict"
+    }
+  }
+}

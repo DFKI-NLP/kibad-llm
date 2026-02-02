@@ -26,7 +26,9 @@ PLOT_KWARGS = {
 ```python
 NAME = "88_repeat_faktencheck_core"
 
-SUBDIR = ["evaluate", "../327_faktencheck_core_with_persona/evaluate"]
+SUBDIR = ["evaluate", "../327_faktencheck_core_with_persona/evaluate", "../88_faktencheck_core_gpt5_baseline/evaluate"]
+
+FILL_NA = {"prediction.overrides.extractor": "simple"}
 
 # used to group the data
 INDEX_COLUMNS = ["prediction.overrides.extractor/llm", "prediction.overrides.extractor"]
