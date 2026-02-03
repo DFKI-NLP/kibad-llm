@@ -34,25 +34,24 @@ PLOT_KWARGS = {
 ### comparison with baseline
 ```python
 NAME = "333_organism_trends_with_persona"
-METRICS_DIR_PATTERN = [
-    "evaluate/**/2026-02-02_XXX/",
-    "../255_organism_trend_baseline_no_evi/evaluate/**/2026-02-02_11-36-38/",
-]
-ERRORS_DIR_PATTERN = [
-    "evaluate/**/2026-02-02_XXX/",
-    "../255_organism_trend_baseline_no_evi/evaluate/**/2026-02-02_11-37-16/",
+
+SUBDIR = [
+    "evaluate",
+    "../255_organism_trend_baseline_no_evi/evaluate",
 ]
 
+FILL_NA = {"prediction.overrides.extractor": "simple"}
+
 # used to group the data
-INDEX_COLUMNS = ["prediction.overrides.extractor/llm"]
+INDEX_COLUMNS = ["prediction.overrides.extractor/llm", "prediction.overrides.experiment/predict" ]
 PLOT_KWARGS = {
     # can be either "metric" or one of the INDEX_COLUMNS (or multiple of them)
-    "xgroup": "prediction.overrides.extractor/llm",
-    # add any more arguments passed to pd.DataFrame.plot
+    "xgroup": ["prediction.overrides.experiment/predict"],
     "create_subplot_for_each": "metric",
+    # add any more arguments passed to pd.DataFrame.plot
     "subplot_columns": 2,
 }
-FILL_NA = {}
+
 ```
 
 
