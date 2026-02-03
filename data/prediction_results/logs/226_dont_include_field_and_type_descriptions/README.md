@@ -26,9 +26,7 @@ PLOT_KWARGS = {
 ![comparison_errors_detail.svg](comparison_errors_detail.svg)
 
 
-Details below.
-
----
+## inference
 
  - based on command from [here](https://github.com/DFKI-NLP/kibad-llm/issues/311#issuecomment-3790517808)
  - use `name=226_dont_include_field_and_type_descriptions`
