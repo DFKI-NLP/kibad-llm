@@ -5,6 +5,7 @@
 #
 # This config is intended for use with the faktencheck_core_fields_schema, it defines only fields
 # from that schema, which is the only difference to the 'faktencheck_f1_micro' config.
+# TODO: mention that german_name (taxa) is ignored here
 
 defaults:
  - override /metric: f1_micro
