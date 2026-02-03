@@ -15,6 +15,36 @@ ERRORS_DIR_PATTERN = "evaluate/**/2026-01-16_07-53-37/"
 # set any missing (default) values as column name -> value
 FILL_NA = {}
 ```
+IMPORTANT: Since #337, you need the following code to get the `metrics_df` and `errors_df` with this evaluation data correctly:
+```python
+from kibad_llm.utils.job_return import load
+
+errors_df = (
+    pd.DataFrame.from_records(
+        load(
+            directory=BASE_LOG_DIR / NAME,
+            subdir_pattern=ERRORS_DIR_PATTERN,
+            strip_id_keys=True,
+            flatten=True,
+            exclude_keys=EXCLUDE_KEYS,
+        )
+    )
+    .fillna(FILL_NA)
+    .fillna(0)
+)
+# display(errors_df)
+
+metrics_df = pd.DataFrame.from_records(
+    load(
+        directory=BASE_LOG_DIR / NAME,
+        subdir_pattern=METRICS_DIR_PATTERN,
+        strip_id_keys=True,
+        flatten=True,
+        exclude_keys=EXCLUDE_KEYS,
+    )
+).fillna(FILL_NA)
+# display(metrics_df)
+```
 
 Inference:
 

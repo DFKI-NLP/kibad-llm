@@ -1,0 +1,69 @@
+{
+  "biodiversity_level": {
+    "precision": 0.1891891891891892,
+    "recall": 0.31343283582089554,
+    "f1": 0.23595505617977527,
+    "support": 67
+  },
+  "ecosystem_type.term": {
+    "precision": 0.14204545454545456,
+    "recall": 0.4716981132075472,
+    "f1": 0.2183406113537118,
+    "support": 53
+  },
+  "habitat": {
+    "precision": 0.7926829268292683,
+    "recall": 0.47101449275362317,
+    "f1": 0.5909090909090908,
+    "support": 138
+  },
+  "taxa.german_name": {
+    "precision": 0.10622710622710622,
+    "recall": 0.12554112554112554,
+    "f1": 0.11507936507936509,
+    "support": 231
+  },
+  "taxa.scientific_name": {
+    "precision": 0.15789473684210525,
+    "recall": 0.25888324873096447,
+    "f1": 0.19615384615384615,
+    "support": 197
+  },
+  "taxa.species_group": {
+    "precision": 0.3697478991596639,
+    "recall": 0.41509433962264153,
+    "f1": 0.39111111111111113,
+    "support": 106
+  },
+  "AVG": {
+    "precision": 0.29296455213213124,
+    "recall": 0.3426106926127996,
+    "f1": 0.29125818013115007,
+    "support": 132.0
+  },
+  "ALL": {
+    "precision": 0.21678966789667897,
+    "recall": 0.2967171717171717,
+    "f1": 0.2505330490405117,
+    "support": 792
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_21-45-51_380492/predictions.jsonl.gz",
+      "output_file_absolute": "/netscratch/hennig/code/kibad-llm/predictions/311_better_default_temperature/2026-01-23_16-12-26/2026-01-23_21-45-51_380492/predictions.jsonl.gz",
+      "time_pdf_conversion": 0.00689981400500983,
+      "time_extraction": 2833.3370730840834,
+      "commit_hash": "7197d3bf97007b8a8e7b212a900e4c0bb574f62a",
+      "branch": "feature/temperature_config",
+      "is_dirty": false
+    },
+    "overrides": {
+      "name": "311_better_default_temperature",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor.return_reasoning": "True",
+      "extractor/llm": "mistral_small_3_24b_in_process",
+      "seed": "42"
+    }
+  }
+}

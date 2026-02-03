@@ -1,0 +1,29 @@
+name: 311_better_default_temperature
+prediction_logs: logs/311_better_default_temperature/predict/multiruns/2026-01-23_16-12-26
+paths:
+  root_dir: ${oc.env:PROJECT_ROOT}
+  data_dir: ${paths.root_dir}/data
+  timestamp: ${now:%Y-%m-%d_%H-%M-%S}
+  run_subdir: ${paths.timestamp}
+  output_dir: ${hydra:runtime.output_dir}
+  save_dir: ${paths.root_dir}
+  log_dir: ${paths.save_dir}/logs/${name}/evaluate
+  work_dir: ${hydra:runtime.cwd}
+  prediction_save_dir: ${paths.save_dir}/predictions/${name}/${paths.timestamp}
+dataset:
+  predictions:
+    _target_: kibad_llm.dataset.prediction.load_with_metadata
+    log: logs/311_better_default_temperature/predict/multiruns/2026-01-23_16-12-26/6
+    file: null
+    id_key: file_name
+    process_id:
+      _partial_: true
+      _target_: kibad_llm.utils.path.strip_filename_extension
+    preprocess: null
+  _target_: kibad_llm.dataset.utils.merge_references_into_predictions
+  references: {}
+  allow_missing_references: true
+metric:
+  _target_: kibad_llm.metrics.ErrorCollector
+  type_separator: ': '
+  show_errors: true
