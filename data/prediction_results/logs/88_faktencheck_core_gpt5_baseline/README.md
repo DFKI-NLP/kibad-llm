@@ -25,9 +25,7 @@ PLOT_KWARGS = {
 ![errors.svg](errors.svg)
 ![errors_detail.svg](errors_detail.svg)
 
-details below.
-
----
+## inference
 
  - use distinct `name=88_faktencheck_core_gpt5_baseline` so this can be easily used in future comparisons
  - requires #342 for `-ng 0`
