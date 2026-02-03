@@ -1,0 +1,4 @@
+- dataset.predictions.log=logs/334_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-29_13-34-33/29
+- name=334_dont_include_field_and_type_descriptions
+- experiment/evaluate=organism_trends_f1_micro_flat
+- prediction_logs=[logs/334_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-29_13-34-33,logs/334_dont_include_field_and_type_descriptions/predict/multiruns/2026-02-02_16-51-12]

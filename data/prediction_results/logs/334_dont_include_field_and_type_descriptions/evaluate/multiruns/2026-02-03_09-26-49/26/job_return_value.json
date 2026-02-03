@@ -1,0 +1,60 @@
+{
+  "organism_trends.Antwortvariable": {
+    "precision": 0.38461538461538464,
+    "recall": 0.45454545454545453,
+    "f1": 0.41666666666666663,
+    "support": 132
+  },
+  "organism_trends.Hauptgruppe_RoteListen": {
+    "precision": 0.5,
+    "recall": 0.6869565217391305,
+    "f1": 0.5787545787545788,
+    "support": 115
+  },
+  "organism_trends.Lebensraum": {
+    "precision": 0.5165562913907285,
+    "recall": 0.7027027027027027,
+    "f1": 0.5954198473282443,
+    "support": 111
+  },
+  "organism_trends.Trend": {
+    "precision": 0.3254437869822485,
+    "recall": 0.41353383458646614,
+    "f1": 0.3642384105960264,
+    "support": 133
+  },
+  "AVG": {
+    "precision": 0.4316538657470904,
+    "recall": 0.5644346283934385,
+    "f1": 0.488769875836379,
+    "support": 122.75
+  },
+  "ALL": {
+    "precision": 0.42902208201892744,
+    "recall": 0.5539714867617108,
+    "f1": 0.4835555555555555,
+    "support": 491
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/334_dont_include_field_and_type_descriptions/2026-01-29_13-34-33/2026-01-31_17-48-55_632242/predictions.jsonl",
+      "output_file_absolute": "/netscratch/hennig/code/tmp/kibad-llm/predictions/334_dont_include_field_and_type_descriptions/2026-01-29_13-34-33/2026-01-31_17-48-55_632242/predictions.jsonl",
+      "time_pdf_conversion": 0.010291852988302708,
+      "time_extraction": 7203.505250750808,
+      "commit_hash": "5a4e9f6557883763fb8b307c339c5a898d2b8c5b",
+      "branch": "organism-trends-with-persona",
+      "is_dirty": false
+    },
+    "overrides": {
+      "name": "334_dont_include_field_and_type_descriptions",
+      "experiment/predict": "organism_trends_with_evidence",
+      "extractor/prompt_template": "organism_trends_v1_with_evidence_and_persona",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-Wald-WVC",
+      "extractor.schema_description_kwargs.include_field_descriptions": "True",
+      "extractor.schema_description_kwargs.include_type_descriptions": "False",
+      "extractor.return_reasoning": "True",
+      "extractor/llm": "qwen3_30b_in_process",
+      "seed": "7331"
+    }
+  }
+}

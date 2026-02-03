@@ -1,0 +1,60 @@
+{
+  "organism_trends.Antwortvariable": {
+    "precision": 0.25084745762711863,
+    "recall": 0.5606060606060606,
+    "f1": 0.3466042154566744,
+    "support": 132
+  },
+  "organism_trends.Hauptgruppe_RoteListen": {
+    "precision": 0.30824372759856633,
+    "recall": 0.7478260869565218,
+    "f1": 0.4365482233502538,
+    "support": 115
+  },
+  "organism_trends.Lebensraum": {
+    "precision": 0.3014705882352941,
+    "recall": 0.7387387387387387,
+    "f1": 0.4281984334203655,
+    "support": 111
+  },
+  "organism_trends.Trend": {
+    "precision": 0.1897018970189702,
+    "recall": 0.5263157894736842,
+    "f1": 0.2788844621513944,
+    "support": 133
+  },
+  "AVG": {
+    "precision": 0.2625659176199873,
+    "recall": 0.6433716689437513,
+    "f1": 0.372558833594672,
+    "support": 122.75
+  },
+  "ALL": {
+    "precision": 0.25679012345679014,
+    "recall": 0.6354378818737271,
+    "f1": 0.36576787807737404,
+    "support": 491
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/334_dont_include_field_and_type_descriptions/2026-01-29_13-34-33/2026-02-01_04-21-50_145685/predictions.jsonl",
+      "output_file_absolute": "/netscratch/hennig/code/tmp/kibad-llm/predictions/334_dont_include_field_and_type_descriptions/2026-01-29_13-34-33/2026-02-01_04-21-50_145685/predictions.jsonl",
+      "time_pdf_conversion": 0.004906120011582971,
+      "time_extraction": 4404.386234413134,
+      "commit_hash": "5a4e9f6557883763fb8b307c339c5a898d2b8c5b",
+      "branch": "organism-trends-with-persona",
+      "is_dirty": false
+    },
+    "overrides": {
+      "name": "334_dont_include_field_and_type_descriptions",
+      "experiment/predict": "organism_trends_with_evidence",
+      "extractor/prompt_template": "organism_trends_v1_with_evidence_and_persona",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-Wald-WVC",
+      "extractor.schema_description_kwargs.include_field_descriptions": "True",
+      "extractor.schema_description_kwargs.include_type_descriptions": "True",
+      "extractor.return_reasoning": "True",
+      "extractor/llm": "gpt_oss_20b_in_process",
+      "seed": "1337"
+    }
+  }
+}
