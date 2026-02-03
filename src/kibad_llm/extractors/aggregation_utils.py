@@ -4,10 +4,15 @@ from typing import Any
 from .utils import collect_values_and_type_per_key, make_hashable_simple
 
 
+class AggregationError(ValueError):
+    """Raised when aggregation of structured outputs fails due to conflicts or inconsistencies."""
+    pass
+
+
 def _majority_vote(values: list) -> Any:
     """Return the majority value from a list of values. Returns None on ties."""
     if len(values) == 0:
-        raise ValueError("Cannot perform majority vote on empty list")
+        raise AggregationError("Cannot perform majority vote on empty list")
     value_counts = Counter(values)
     most_common = value_counts.most_common()
     top_value, top_count = most_common[0]
@@ -50,7 +55,9 @@ def _multi_entry_majority_vote(values: list[list | None], n: int | None = None) 
         # all items are primitive types
         pass
     else:
-        raise ValueError(f"Unsupported entry type in multi-entry majority vote: {entry_type}")
+        raise NotImplementedError(
+            f"Unsupported entry type in multi-entry majority vote: {entry_type}"
+        )
     return majority_items
 
 
@@ -62,7 +69,7 @@ def _aggregate_structured_outputs(
     Entries with the same key are aggregated based on their value types:
     - Primitive types (str, int, float, bool): majority vote
     - List types: majority vote per item
-    - Dict types: Not yet implemented (raises ValueError)
+    - Dict types: Not yet implemented (raises NotImplementedError)
 
     Args:
         structured_outputs: list of structured outputs from multiple extractions
@@ -103,7 +110,7 @@ def _aggregate_structured_outputs(
                 # be None and thus not in current values
                 aggregated[key] = _multi_entry_majority_vote(values, n=len(structured_outputs))
             else:
-                raise ValueError(f"Unsupported value type for aggregation: {value_type}")
+                raise NotImplementedError(f"Unsupported value type for aggregation: {value_type}")
 
     return aggregated
 
@@ -122,7 +129,7 @@ def _union_single(values: list) -> Any:
         The single consistent value, or None if all values are None
 
     Raises:
-        ValueError: If the list contains multiple different non-None values
+        AggregationError: If the list contains multiple different non-None values
     """
 
     # if only None or empty list, return None
@@ -132,7 +139,7 @@ def _union_single(values: list) -> Any:
     values = [v for v in values if v is not None]
     if len(set(values)) == 1:
         return values[0]
-    raise ValueError(f"Conflicting values for union with single entry: {set(values)}")
+    raise AggregationError(f"Conflicting values for union with single entry: {set(values)}")
 
 
 def _multi_entry_union(values: list[list | None]) -> list:
@@ -171,9 +178,9 @@ def _aggregate_structured_outputs_union(
     """Aggregate structured outputs from multiple extractions.
 
     Entries with the same key are aggregated based on their value types:
-    - Primitive types (str, int, float, bool): return value if all extractions agree, else raise ValueError
+    - Primitive types (str, int, float, bool): return value if all extractions agree, else raise AggregationError
     - List types: union of all items across extractions
-    - Dict types: return value if all extractions agree, else raise ValueError
+    - Dict types: return value if all extractions agree, else raise AggregationError
 
     Args:
         structured_outputs: list of structured outputs from multiple extractions
@@ -198,10 +205,10 @@ def _aggregate_structured_outputs_union(
         else:
             # Aggregate based on type
             if issubclass(value_type, (str, int, float, bool)):
-                # single-value: this should be identical across all outputs, raises ValueError if not
+                # single-value: this should be identical across all outputs, raises AggregationError if not
                 aggregated[key] = _union_single(values)
             elif issubclass(value_type, dict):
-                # single-value: this should be identical across all outputs, raises ValueError if not
+                # single-value: this should be identical across all outputs, raises AggregationError if not
                 # make dicts hashable for comparison
                 values_hashable = [
                     make_hashable_simple(v) if v is not None else None for v in values
@@ -213,6 +220,6 @@ def _aggregate_structured_outputs_union(
                 # multi-value: union per item for list types
                 aggregated[key] = _multi_entry_union(values)
             else:
-                raise ValueError(f"Unsupported value type for aggregation: {value_type}")
+                raise NotImplementedError(f"Unsupported value type for aggregation: {value_type}")
 
     return aggregated
