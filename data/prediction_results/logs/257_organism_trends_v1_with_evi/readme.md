@@ -33,72 +33,24 @@ PLOT_KWARGS = {
 ### comparison with baseline
 ```python
 NAME = "257_organism_trends_v1_with_evi"
-METRICS_DIR_PATTERN = [
-    "evaluate/**/2026-02-02_10-48-14/",
-    "../255_organism_trend_baseline_no_evi/evaluate/**/2026-02-02_11-36-38/",
+
+SUBDIR = [
+    "evaluate",
+    "../255_organism_trend_baseline_no_evi/evaluate",
 ]
-ERRORS_DIR_PATTERN = [
-    "evaluate/**/2026-02-02_10-48-14/",
-    "../255_organism_trend_baseline_no_evi/evaluate/**/2026-02-02_11-37-16/",
-]
+
+FILL_NA = {"prediction.overrides.extractor": "simple"}
 
 # used to group the data
-INDEX_COLUMNS = ["prediction.overrides.extractor/llm"]
+INDEX_COLUMNS = ["prediction.overrides.extractor/llm", "prediction.overrides.experiment/predict" ]
 PLOT_KWARGS = {
     # can be either "metric" or one of the INDEX_COLUMNS (or multiple of them)
-    "xgroup": "prediction.overrides.extractor/llm",
-    # add any more arguments passed to pd.DataFrame.plot
+    "xgroup": ["prediction.overrides.experiment/predict"],
     "create_subplot_for_each": "metric",
+    # add any more arguments passed to pd.DataFrame.plot
     "subplot_columns": 2,
 }
-FILL_NA = {}
 ```
-IMPORTANT: Since #337, you need the following code to get the `metrics_df` and `errors_df` with this evaluation data correctly:
-```python
-from kibad_llm.utils.job_return import load
-
-errors_df = (
-    pd.DataFrame.from_records(
-        load(
-            directory=BASE_LOG_DIR / NAME,
-            subdir_pattern=ERRORS_DIR_PATTERN,
-            strip_id_keys=True,
-            flatten=True,
-            exclude_keys=EXCLUDE_KEYS,
-        )
-    )
-    .fillna(FILL_NA)
-    .fillna(0)
-)
-# display(errors_df)
-
-metrics_df = pd.DataFrame.from_records(
-    load(
-        directory=BASE_LOG_DIR / NAME,
-        subdir_pattern=METRICS_DIR_PATTERN,
-        strip_id_keys=True,
-        flatten=True,
-        exclude_keys=EXCLUDE_KEYS,
-    )
-).fillna(FILL_NA)
-# display(metrics_df)
-```
-
-**IMPORTANT: This requires some filtering of the data, since the other experiments contain multiple data points for llms other than gpt5.** Do this:
-```python
-mask = (metrics_df["overrides.extractor/llm"] == "gpt_5") | (
-    metrics_df["prediction.job_return_value.branch"] != "main"
-)
-metrics_df = metrics_df[mask]
-```
-and similarly for errors_df:
-```python
-mask = (errors_df["overrides.extractor/llm"] == "gpt_5") | (
-    errors_df["prediction.job_return_value.branch"] != "main"
-)
-errors_df = errors_df[mask]
-```
-before plotting.
 
 
 ![comparison_metrics.svg](comparison_metrics.svg)

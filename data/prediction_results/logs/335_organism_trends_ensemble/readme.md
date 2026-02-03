@@ -35,9 +35,9 @@ PLOT_KWARGS = {
 NAME = "335_organism_trends_ensemble"
 
 SUBDIR = [
-    "evaluate",
     "../255_organism_trend_baseline_no_evi/evaluate",
     "../257_organism_trends_v1_with_evi/evaluate",
+    "evaluate",
 ]
 
 FILL_NA = {"prediction.overrides.extractor": "simple"}
