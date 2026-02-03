@@ -11,6 +11,9 @@ NAME = "88_repeat_faktencheck_core"
 
 # used to group the data
 INDEX_COLUMNS = ["prediction.overrides.extractor/llm"]
+
+METRICS = ["f1", "precision", "recall"]
+
 PLOT_KWARGS = {
     # can be either "metric" or one of the INDEX_COLUMNS (or multiple of them)
     "xgroup": "prediction.overrides.extractor/llm",
@@ -18,7 +21,9 @@ PLOT_KWARGS = {
 }
 ```
 
-![metrics.svg](metrics.svg)
+![metrics_f1.svg](metrics_f1.svg)
+![metrics_precision.svg](metrics_precision.svg)
+![metrics_recall.svg](metrics_recall.svg)
 ![errors.svg](errors.svg)
 ![errors_detail.svg](errors_detail.svg)
 
@@ -33,6 +38,8 @@ NAME = "88_repeat_faktencheck_core"
 SUBDIR = ["evaluate", "../327_faktencheck_core_with_persona/evaluate", "../88_faktencheck_core_gpt5_baseline/evaluate"]
 
 FILL_NA = {"prediction.overrides.extractor": "simple"}
+
+METRICS = ["f1", "precision", "recall"]
 
 # used to group the data
 INDEX_COLUMNS = ["prediction.overrides.extractor/llm", "prediction.overrides.extractor"]
