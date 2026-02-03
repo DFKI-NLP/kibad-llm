@@ -1,4 +1,0 @@
-- dataset.predictions.log=logs/333_organism_trends_with_persona/predict/multiruns/2026-01-28_22-15-00/8
-- name=333_organism_trends_with_persona
-- experiment/evaluate=prediction_errors
-- prediction_logs=[logs/333_organism_trends_with_persona/predict/multiruns/2026-01-28_22-15-00,logs/333_organism_trends_with_persona/predict/multiruns/2026-01-29_14-01-06,logs/333_organism_trends_with_persona/predict/multiruns/2026-01-30_11-20-01]
