@@ -1,4 +1,0 @@
-- dataset.predictions.log=logs/88_faktencheck_core_gpt5_baseline/predict/multiruns/2026-01-31_16-22-31/0
-- name=88_faktencheck_core_gpt5_baseline
-- experiment/evaluate=faktencheck_core_f1_micro
-- prediction_logs=logs/88_faktencheck_core_gpt5_baseline/predict
