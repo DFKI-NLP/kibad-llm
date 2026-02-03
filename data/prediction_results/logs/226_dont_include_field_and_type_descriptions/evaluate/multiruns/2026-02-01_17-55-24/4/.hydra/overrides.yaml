@@ -1,0 +1,4 @@
+- dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/12
+- name=226_dont_include_field_and_type_descriptions
+- experiment/evaluate=prediction_errors
+- prediction_logs=logs/226_dont_include_field_and_type_descriptions/predict

@@ -1,0 +1,116 @@
+{
+  "+extractor.schema_description_kwargs.include_type_descriptions=False#seed=42": {
+    "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-31_15-04-22/2026-01-31_15-04-23_660449/predictions.jsonl",
+    "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-31_15-04-22/2026-01-31_15-04-23_660449/predictions.jsonl",
+    "time_pdf_conversion": 0.11961993761360645,
+    "time_extraction": 7807.53146728687,
+    "commit_hash": "dd1413a20fc344dbbb95a79b18a4ab5c625cd3c5",
+    "branch": "run-script/parametrize-num-gpus",
+    "is_dirty": false,
+    "overrides": {
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "extractor.schema_description_kwargs.include_field_descriptions": "True",
+      "extractor.schema_description_kwargs.include_type_descriptions": "False",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor.return_reasoning": "True",
+      "extractor/llm": "gpt_5",
+      "seed": "42"
+    }
+  },
+  "+extractor.schema_description_kwargs.include_type_descriptions=False#seed=1337": {
+    "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-31_15-04-22/2026-01-31_17-15-06_667710/predictions.jsonl",
+    "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-31_15-04-22/2026-01-31_17-15-06_667710/predictions.jsonl",
+    "time_pdf_conversion": 0.0030028801411390305,
+    "time_extraction": 7030.81455810694,
+    "commit_hash": "dd1413a20fc344dbbb95a79b18a4ab5c625cd3c5",
+    "branch": "run-script/parametrize-num-gpus",
+    "is_dirty": false,
+    "overrides": {
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "extractor.schema_description_kwargs.include_field_descriptions": "True",
+      "extractor.schema_description_kwargs.include_type_descriptions": "False",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor.return_reasoning": "True",
+      "extractor/llm": "gpt_5",
+      "seed": "1337"
+    }
+  },
+  "+extractor.schema_description_kwargs.include_type_descriptions=False#seed=7331": {
+    "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-31_15-04-22/2026-01-31_19-12-18_089591/predictions.jsonl",
+    "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-31_15-04-22/2026-01-31_19-12-18_089591/predictions.jsonl",
+    "time_pdf_conversion": 0.002852795645594597,
+    "time_extraction": 6475.451875769068,
+    "commit_hash": "dd1413a20fc344dbbb95a79b18a4ab5c625cd3c5",
+    "branch": "run-script/parametrize-num-gpus",
+    "is_dirty": false,
+    "overrides": {
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "extractor.schema_description_kwargs.include_field_descriptions": "True",
+      "extractor.schema_description_kwargs.include_type_descriptions": "False",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor.return_reasoning": "True",
+      "extractor/llm": "gpt_5",
+      "seed": "7331"
+    }
+  },
+  "+extractor.schema_description_kwargs.include_type_descriptions=True#seed=42": {
+    "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-31_15-04-22/2026-01-31_21-00-14_037151/predictions.jsonl",
+    "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-31_15-04-22/2026-01-31_21-00-14_037151/predictions.jsonl",
+    "time_pdf_conversion": 0.0029258541762828827,
+    "time_extraction": 6582.579247422051,
+    "commit_hash": "dd1413a20fc344dbbb95a79b18a4ab5c625cd3c5",
+    "branch": "run-script/parametrize-num-gpus",
+    "is_dirty": false,
+    "overrides": {
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "extractor.schema_description_kwargs.include_field_descriptions": "True",
+      "extractor.schema_description_kwargs.include_type_descriptions": "True",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor.return_reasoning": "True",
+      "extractor/llm": "gpt_5",
+      "seed": "42"
+    }
+  },
+  "+extractor.schema_description_kwargs.include_type_descriptions=True#seed=1337": {
+    "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-31_15-04-22/2026-01-31_22-49-57_144695/predictions.jsonl",
+    "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-31_15-04-22/2026-01-31_22-49-57_144695/predictions.jsonl",
+    "time_pdf_conversion": 0.0030330070294439793,
+    "time_extraction": 7845.314360121265,
+    "commit_hash": "dd1413a20fc344dbbb95a79b18a4ab5c625cd3c5",
+    "branch": "run-script/parametrize-num-gpus",
+    "is_dirty": false,
+    "overrides": {
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "extractor.schema_description_kwargs.include_field_descriptions": "True",
+      "extractor.schema_description_kwargs.include_type_descriptions": "True",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor.return_reasoning": "True",
+      "extractor/llm": "gpt_5",
+      "seed": "1337"
+    }
+  },
+  "+extractor.schema_description_kwargs.include_type_descriptions=True#seed=7331": {
+    "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-31_15-04-22/2026-02-01_01-00-43_056378/predictions.jsonl",
+    "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-31_15-04-22/2026-02-01_01-00-43_056378/predictions.jsonl",
+    "time_pdf_conversion": 0.003820541314780712,
+    "time_extraction": 8494.372741605155,
+    "commit_hash": "dd1413a20fc344dbbb95a79b18a4ab5c625cd3c5",
+    "branch": "run-script/parametrize-num-gpus",
+    "is_dirty": false,
+    "overrides": {
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "extractor.schema_description_kwargs.include_field_descriptions": "True",
+      "extractor.schema_description_kwargs.include_type_descriptions": "True",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor.return_reasoning": "True",
+      "extractor/llm": "gpt_5",
+      "seed": "7331"
+    }
+  }
+}

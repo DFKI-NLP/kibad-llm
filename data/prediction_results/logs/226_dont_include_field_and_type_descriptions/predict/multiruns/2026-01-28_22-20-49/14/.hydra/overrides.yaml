@@ -1,0 +1,8 @@
+- name=226_dont_include_field_and_type_descriptions
+- experiment/predict=faktencheck_core_fields_schema_with_evidence
+- +extractor.schema_description_kwargs.include_field_descriptions=False
+- +extractor.schema_description_kwargs.include_type_descriptions=False
+- pdf_directory=/ds/text/kiba-d/dev-set-100
+- extractor.return_reasoning=True
+- extractor/llm=gpt_5
+- seed=7331

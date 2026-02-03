@@ -1,0 +1,71 @@
+{
+  "biodiversity_level": {
+    "precision": 0.20952380952380953,
+    "recall": 0.3283582089552239,
+    "f1": 0.2558139534883721,
+    "support": 67
+  },
+  "ecosystem_type.term": {
+    "precision": 0.11666666666666667,
+    "recall": 0.39622641509433965,
+    "f1": 0.18025751072961374,
+    "support": 53
+  },
+  "habitat": {
+    "precision": 0.7875,
+    "recall": 0.45652173913043476,
+    "f1": 0.5779816513761469,
+    "support": 138
+  },
+  "taxa.german_name": {
+    "precision": 0.12015503875968993,
+    "recall": 0.1341991341991342,
+    "f1": 0.12678936605316976,
+    "support": 231
+  },
+  "taxa.scientific_name": {
+    "precision": 0.16607773851590105,
+    "recall": 0.23857868020304568,
+    "f1": 0.19583333333333333,
+    "support": 197
+  },
+  "taxa.species_group": {
+    "precision": 0.34306569343065696,
+    "recall": 0.44339622641509435,
+    "f1": 0.3868312757201647,
+    "support": 106
+  },
+  "AVG": {
+    "precision": 0.2904981578161207,
+    "recall": 0.3328800673328787,
+    "f1": 0.28725118178346676,
+    "support": 132.0
+  },
+  "ALL": {
+    "precision": 0.2214765100671141,
+    "recall": 0.2916666666666667,
+    "f1": 0.25177111716621253,
+    "support": 792
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-30_21-14-12_744616/predictions.jsonl",
+      "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-30_21-14-12_744616/predictions.jsonl",
+      "time_pdf_conversion": 0.002939063822850585,
+      "time_extraction": 2523.751933318097,
+      "commit_hash": "02dfc60fee42df6c76bf67c280cf7327f910e976",
+      "branch": "main",
+      "is_dirty": false
+    },
+    "overrides": {
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "extractor.schema_description_kwargs.include_field_descriptions": "True",
+      "extractor.schema_description_kwargs.include_type_descriptions": "False",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor.return_reasoning": "True",
+      "extractor/llm": "mistral_small_3_24b_in_process",
+      "seed": "42"
+    }
+  }
+}

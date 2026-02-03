@@ -29,6 +29,7 @@ I.e., `name=[issue_or_pr_id]_[your_descriptive_name]`.
 | [308_fix_reasoning_content_splitting](logs/308_fix_reasoning_content_splitting)             | 2026-01-16 | https://github.com/DFKI-NLP/kibad-llm/issues/308 | gpt_oss_20b, gemma3_27, qwen3_30b, ministral, mistral, and nemotron; all in-process; temperature 0.0; faktencheck core  |
 | [311_better_default_temperature_baseline](logs/311_better_default_temperature_baseline)         | 2026-01-26 | https://github.com/DFKI-NLP/kibad-llm/issues/311 | gpt_oss_20b, gemma3_27, qwen3_30b, mistral, and nemotron; all in-process; temperature 0.0; faktencheck core             |
 | [311_better_default_temperature](logs/311_better_default_temperature)                  | 2026-01-26 | https://github.com/DFKI-NLP/kibad-llm/issues/311 | gpt_oss_20b, gemma3_27, qwen3_30b, mistral, and nemotron; all in-process; temperature variable; faktencheck core        |
-| [327_faktencheck_core_with_persona](logs/327_faktencheck_core_with_persona)                  | 2026-01-28 | https://github.com/DFKI-NLP/kibad-llm/pull/327 | gpt_oss_20b, gemma3_27, qwen3_30b, mistral, and gpt_5; with adjusted template that mentions a persona; faktencheck core |
+| [327_faktencheck_core_with_persona](logs/327_faktencheck_core_with_persona)                  | 2026-01-28 | https://github.com/DFKI-NLP/kibad-llm/pull/327   | gpt_oss_20b, gemma3_27, qwen3_30b, mistral, and gpt_5; with adjusted template that mentions a persona; faktencheck core |
+| [226_dont_include_field_and_type_descriptions](logs/226_dont_include_field_and_type_descriptions)                  | 2026-02-01 | https://github.com/DFKI-NLP/kibad-llm/pull/226   | gpt_oss_20b, gemma3_27, qwen3_30b, mistral, and gpt_5; include/exclude field/type descriptions; faktencheck core        |
 
 
