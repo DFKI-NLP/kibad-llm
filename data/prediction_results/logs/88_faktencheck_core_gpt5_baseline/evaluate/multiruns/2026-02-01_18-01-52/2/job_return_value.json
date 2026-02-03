@@ -1,0 +1,69 @@
+{
+  "biodiversity_level": {
+    "precision": 0.3181818181818182,
+    "recall": 0.417910447761194,
+    "f1": 0.36129032258064514,
+    "support": 67
+  },
+  "ecosystem_type.term": {
+    "precision": 0.23333333333333334,
+    "recall": 0.660377358490566,
+    "f1": 0.3448275862068966,
+    "support": 53
+  },
+  "habitat": {
+    "precision": 0.6802721088435374,
+    "recall": 0.7246376811594203,
+    "f1": 0.7017543859649122,
+    "support": 138
+  },
+  "taxa.german_name": {
+    "precision": 0.3611111111111111,
+    "recall": 0.11255411255411256,
+    "f1": 0.1716171617161716,
+    "support": 231
+  },
+  "taxa.scientific_name": {
+    "precision": 0.30405405405405406,
+    "recall": 0.22842639593908629,
+    "f1": 0.2608695652173913,
+    "support": 197
+  },
+  "taxa.species_group": {
+    "precision": 0.38650306748466257,
+    "recall": 0.5943396226415094,
+    "f1": 0.46840148698884754,
+    "support": 106
+  },
+  "AVG": {
+    "precision": 0.38057591550141945,
+    "recall": 0.4563742697576481,
+    "f1": 0.3847934181124774,
+    "support": 132.0
+  },
+  "ALL": {
+    "precision": 0.38671875,
+    "recall": 0.375,
+    "f1": 0.38076923076923075,
+    "support": 792
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/88_faktencheck_core_gpt5_baseline/2026-01-31_16-22-31/2026-01-31_20-25-20_287885/predictions.jsonl",
+      "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/88_faktencheck_core_gpt5_baseline/2026-01-31_16-22-31/2026-01-31_20-25-20_287885/predictions.jsonl",
+      "time_pdf_conversion": 0.002903885208070278,
+      "time_extraction": 6135.298247504048,
+      "commit_hash": "dd1413a20fc344dbbb95a79b18a4ab5c625cd3c5",
+      "branch": "run-script/parametrize-num-gpus",
+      "is_dirty": false
+    },
+    "overrides": {
+      "name": "88_faktencheck_core_gpt5_baseline",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor.return_reasoning": "True",
+      "extractor/llm": "gpt_5",
+      "seed": "7331"
+    }
+  }
+}
