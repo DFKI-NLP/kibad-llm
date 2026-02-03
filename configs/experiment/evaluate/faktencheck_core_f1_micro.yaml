@@ -1,10 +1,10 @@
 # @package _global_
 
-# F1 score metric for single- or multi-label classification for multiple fields,
-# but compounds are flattened into individual entries.
+# F1 score metric for single- or multi-label classification for multiple fields.
+# Compounds are *not* flattened into individual entries.
 #
 # This config is intended for use with the faktencheck_core_fields_schema, it defines only fields
-# from that schema, which is the only difference to the 'faktencheck_f1_micro_flat' config.
+# from that schema, which is the only difference to the 'faktencheck_f1_micro' config.
 
 defaults:
  - override /metric: f1_micro
