@@ -15,6 +15,6 @@ schema:
   by_alias: false
 
 # return options
-return_reasoning: False
+return_reasoning: True
 return_messages: False
 return_messages_formatted: False
