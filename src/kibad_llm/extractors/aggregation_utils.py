@@ -241,7 +241,7 @@ def _multi_entry_union(values: list[list | None]) -> list:
         return sorted(item_set)
 
 
-def aggregate_unanimous_union(
+def aggregate_single_unanimous_list_union(
     structured_outputs: list[dict | None], skip_type_mismatches: bool = False
 ) -> dict[str, Any] | None:
     """Aggregate structured outputs from multiple extractions.

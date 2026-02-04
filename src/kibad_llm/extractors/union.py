@@ -1,6 +1,6 @@
 from typing import Any
 
-from .aggregation_utils import aggregate_unanimous_union
+from .aggregation_utils import aggregate_single_unanimous_list_union
 from .base import extract_from_text_lenient
 
 
@@ -43,7 +43,7 @@ class UnionExtractor:
             results.append(current_result)
 
         structured_outputs = [v.get("structured", None) for v in results]
-        aggregated_structured = aggregate_unanimous_union(
+        aggregated_structured = aggregate_single_unanimous_list_union(
             structured_outputs, skip_type_mismatches=self.skip_type_mismatches
         )
 
