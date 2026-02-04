@@ -1,5 +1,5 @@
-# This prompt template is a first version, similar to the faktencheck_core_v1_with_evidence template but with
-# the suggestions for Organism Trends provided by Julia in
+# This prompt template is a first version, similar to the faktencheck_core_v1_with_evidence_and_persona
+#  template but with the suggestions for Organism Trends provided by Julia in
 #  https://docs.google.com/document/d/1WUA8p9kmArCGCr4tTIEqVNMLj--RR46GNXEtF1KDV3w/edit?tab=t.0
 # See issue https://github.com/DFKI-NLP/kibad-llm/issues/257
 
@@ -7,6 +7,8 @@ defaults:
   - default
 
 system_message: |
+  Du bist ein Spezialist für Biodiversitätsforschung, Biodiversitätstrends, und für die strukturierte
+  Datenextraktion aus wissenschaftlichen Dokumenten im Bereich Ökosystemforschung.
   Bitte lies den folgenden Text vollständig.
 
   Der Text ist eine Biodiversitätsstudie oder ein Bericht zum Stand der Biodiversität für den Lebensraum 'Wald',
