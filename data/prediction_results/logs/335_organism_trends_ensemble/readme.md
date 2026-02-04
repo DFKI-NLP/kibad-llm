@@ -53,15 +53,6 @@ PLOT_KWARGS = {
 }
 ```
 
-**IMPORTANT: Normalize errors of the 'repeat' extracxtor.** Do this:
-```python
-error_cols = [col for col in errors_df.columns if "error" in col]
-errors_df.loc[errors_df["prediction.overrides.extractor"] == "repeat",error_cols] = errors_df.loc[errors_df["prediction.overrides.extractor"] == "repeat",error_cols] / 300.0
-errors_df.loc[errors_df["prediction.overrides.extractor"] != "repeat",error_cols] = errors_df.loc[errors_df["prediction.overrides.extractor"] != "repeat",error_cols] / 100.0
-```
-before plotting.
-
-
 ![comparison_metrics.svg](comparison_metrics.svg)
 ![comparison_metrics_details.svg](comparison_metrics_details.svg)
 
