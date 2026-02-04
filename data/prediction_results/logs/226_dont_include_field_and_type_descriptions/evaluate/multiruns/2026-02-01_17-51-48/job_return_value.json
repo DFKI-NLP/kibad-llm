@@ -1,0 +1,4622 @@
+{
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/0": {
+    "biodiversity_level": {
+      "precision": 0.288135593220339,
+      "recall": 0.2537313432835821,
+      "f1": 0.2698412698412699,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.21621621621621623,
+      "recall": 0.1509433962264151,
+      "f1": 0.1777777777777778,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.6626506024096386,
+      "recall": 0.39855072463768115,
+      "f1": 0.49773755656108604,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.2,
+      "recall": 0.047619047619047616,
+      "f1": 0.07692307692307693,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.3617021276595745,
+      "recall": 0.25888324873096447,
+      "f1": 0.3017751479289941,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.4482758620689655,
+      "recall": 0.36792452830188677,
+      "f1": 0.40414507772020725,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.3628300669291223,
+      "recall": 0.2462753814665962,
+      "f1": 0.2880333177920687,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.3917748917748918,
+      "recall": 0.22853535353535354,
+      "f1": 0.2886762360446571,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-28_22-20-56_050894/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-28_22-20-56_050894/predictions.jsonl",
+        "time_pdf_conversion": 0.0032160580158233643,
+        "time_extraction": 1207.835433196975,
+        "commit_hash": "c5b7387b495e7871fc5b3e3abec22a61dfd9bd74",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "False",
+        "extractor.schema_description_kwargs.include_type_descriptions": "False",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gpt_oss_20b_in_process",
+        "seed": "42"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/0",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/1": {
+    "biodiversity_level": {
+      "precision": 0.24561403508771928,
+      "recall": 0.208955223880597,
+      "f1": 0.22580645161290322,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.25925925925925924,
+      "recall": 0.1320754716981132,
+      "f1": 0.17499999999999996,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.6979166666666666,
+      "recall": 0.4855072463768116,
+      "f1": 0.5726495726495726,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.109375,
+      "recall": 0.030303030303030304,
+      "f1": 0.04745762711864407,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.3037974683544304,
+      "recall": 0.2436548223350254,
+      "f1": 0.27042253521126763,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.3411764705882353,
+      "recall": 0.27358490566037735,
+      "f1": 0.30366492146596863,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.3261898166593851,
+      "recall": 0.2290134500423258,
+      "f1": 0.26583351800972604,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.3531827515400411,
+      "recall": 0.21717171717171718,
+      "f1": 0.2689601250977326,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-28_22-43-12_659894/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-28_22-43-12_659894/predictions.jsonl",
+        "time_pdf_conversion": 0.002665927866473794,
+        "time_extraction": 1182.9431491428986,
+        "commit_hash": "c5b7387b495e7871fc5b3e3abec22a61dfd9bd74",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "False",
+        "extractor.schema_description_kwargs.include_type_descriptions": "False",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gpt_oss_20b_in_process",
+        "seed": "1337"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/1",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/10": {
+    "biodiversity_level": {
+      "precision": 0.1827956989247312,
+      "recall": 0.2537313432835821,
+      "f1": 0.21250000000000002,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.08411214953271028,
+      "recall": 0.33962264150943394,
+      "f1": 0.1348314606741573,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.7432432432432432,
+      "recall": 0.39855072463768115,
+      "f1": 0.5188679245283019,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.16265060240963855,
+      "recall": 0.11688311688311688,
+      "f1": 0.13602015113350124,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.18775510204081633,
+      "recall": 0.233502538071066,
+      "f1": 0.2081447963800905,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.23163841807909605,
+      "recall": 0.3867924528301887,
+      "f1": 0.28975265017667845,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.2653658690383726,
+      "recall": 0.2881804695358448,
+      "f1": 0.25001949714878824,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.21052631578947367,
+      "recall": 0.25757575757575757,
+      "f1": 0.23168654173764905,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_02-53-38_481214/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_02-53-38_481214/predictions.jsonl",
+        "time_pdf_conversion": 0.0027637090533971786,
+        "time_extraction": 2824.05069622281,
+        "commit_hash": "c5b7387b495e7871fc5b3e3abec22a61dfd9bd74",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "False",
+        "extractor.schema_description_kwargs.include_type_descriptions": "False",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "mistral_small_3_24b_in_process",
+        "seed": "1337"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/10",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/11": {
+    "biodiversity_level": {
+      "precision": 0.2087912087912088,
+      "recall": 0.2835820895522388,
+      "f1": 0.24050632911392408,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.11764705882352941,
+      "recall": 0.3018867924528302,
+      "f1": 0.16931216931216933,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.7317073170731707,
+      "recall": 0.43478260869565216,
+      "f1": 0.5454545454545455,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.13414634146341464,
+      "recall": 0.09523809523809523,
+      "f1": 0.11139240506329115,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.12666666666666668,
+      "recall": 0.19289340101522842,
+      "f1": 0.1529175050301811,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.2751677852348993,
+      "recall": 0.3867924528301887,
+      "f1": 0.3215686274509804,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.2656877296754816,
+      "recall": 0.28252923996403895,
+      "f1": 0.25685859690418195,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.21258134490238612,
+      "recall": 0.2474747474747475,
+      "f1": 0.22870478413068843,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_03-41-36_729665/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_03-41-36_729665/predictions.jsonl",
+        "time_pdf_conversion": 0.0025956269819289446,
+        "time_extraction": 2428.277964519104,
+        "commit_hash": "c5b7387b495e7871fc5b3e3abec22a61dfd9bd74",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "False",
+        "extractor.schema_description_kwargs.include_type_descriptions": "False",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "mistral_small_3_24b_in_process",
+        "seed": "7331"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/11",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/12": {
+    "biodiversity_level": {
+      "precision": 0.32432432432432434,
+      "recall": 0.5373134328358209,
+      "f1": 0.4044943820224719,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.2422360248447205,
+      "recall": 0.7358490566037735,
+      "f1": 0.3644859813084112,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.6710526315789473,
+      "recall": 0.7391304347826086,
+      "f1": 0.7034482758620689,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.1346153846153846,
+      "recall": 0.06060606060606061,
+      "f1": 0.08358208955223881,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.25,
+      "recall": 0.2436548223350254,
+      "f1": 0.2467866323907455,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.34782608695652173,
+      "recall": 0.6037735849056604,
+      "f1": 0.4413793103448276,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.3283424087199831,
+      "recall": 0.48672123201149153,
+      "f1": 0.374029445246794,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.33517699115044247,
+      "recall": 0.38257575757575757,
+      "f1": 0.35731132075471694,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_04-22-58_013162/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_04-22-58_013162/predictions.jsonl",
+        "time_pdf_conversion": 0.002598874969407916,
+        "time_extraction": 5310.2848799659405,
+        "commit_hash": "c5b7387b495e7871fc5b3e3abec22a61dfd9bd74",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "False",
+        "extractor.schema_description_kwargs.include_type_descriptions": "False",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gpt_5",
+        "seed": "42"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/12",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/13": {
+    "biodiversity_level": {
+      "precision": 0.3300970873786408,
+      "recall": 0.5074626865671642,
+      "f1": 0.4,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.2484076433121019,
+      "recall": 0.7358490566037735,
+      "f1": 0.3714285714285714,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.6689655172413793,
+      "recall": 0.7028985507246377,
+      "f1": 0.6855123674911662,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.1348314606741573,
+      "recall": 0.05194805194805195,
+      "f1": 0.075,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.26881720430107525,
+      "recall": 0.25380710659898476,
+      "f1": 0.2610966057441253,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.3559322033898305,
+      "recall": 0.5943396226415094,
+      "f1": 0.4452296819787986,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.33450851938286413,
+      "recall": 0.4743841791806869,
+      "f1": 0.37304453777377694,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.3442240373395566,
+      "recall": 0.37247474747474746,
+      "f1": 0.3577926015767131,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_05-51-30_163130/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_05-51-30_163130/predictions.jsonl",
+        "time_pdf_conversion": 0.002663098042830825,
+        "time_extraction": 7098.18030811497,
+        "commit_hash": "c5b7387b495e7871fc5b3e3abec22a61dfd9bd74",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "False",
+        "extractor.schema_description_kwargs.include_type_descriptions": "False",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gpt_5",
+        "seed": "1337"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/13",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/14": {
+    "biodiversity_level": {
+      "precision": 0.34375,
+      "recall": 0.4925373134328358,
+      "f1": 0.4049079754601227,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.24203821656050956,
+      "recall": 0.7169811320754716,
+      "f1": 0.3619047619047619,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.678082191780822,
+      "recall": 0.717391304347826,
+      "f1": 0.6971830985915494,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.10638297872340426,
+      "recall": 0.04329004329004329,
+      "f1": 0.061538461538461535,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.2265193370165746,
+      "recall": 0.20812182741116753,
+      "f1": 0.21693121693121695,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.36024844720496896,
+      "recall": 0.5471698113207547,
+      "f1": 0.4344569288389513,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.3261701952143799,
+      "recall": 0.45424857197968316,
+      "f1": 0.3628204072108439,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.3341317365269461,
+      "recall": 0.3522727272727273,
+      "f1": 0.3429625076828519,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_07-49-48_993542/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_07-49-48_993542/predictions.jsonl",
+        "time_pdf_conversion": 0.0026818178594112396,
+        "time_extraction": 8879.522138721077,
+        "commit_hash": "c5b7387b495e7871fc5b3e3abec22a61dfd9bd74",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "False",
+        "extractor.schema_description_kwargs.include_type_descriptions": "False",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gpt_5",
+        "seed": "7331"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/14",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/15": {
+    "biodiversity_level": {
+      "precision": 0.2857142857142857,
+      "recall": 0.23880597014925373,
+      "f1": 0.26016260162601623,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.17647058823529413,
+      "recall": 0.05660377358490566,
+      "f1": 0.08571428571428572,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.6853932584269663,
+      "recall": 0.4420289855072464,
+      "f1": 0.5374449339207049,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.1111111111111111,
+      "recall": 0.05194805194805195,
+      "f1": 0.07079646017699115,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.3161290322580645,
+      "recall": 0.24873096446700507,
+      "f1": 0.2784090909090909,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.43661971830985913,
+      "recall": 0.29245283018867924,
+      "f1": 0.35028248587570626,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.33523966567593017,
+      "recall": 0.221761762640857,
+      "f1": 0.26380164303713255,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.3467741935483871,
+      "recall": 0.21717171717171718,
+      "f1": 0.2670807453416149,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_10-17-49_123985/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_10-17-49_123985/predictions.jsonl",
+        "time_pdf_conversion": 0.0032408861443400383,
+        "time_extraction": 1100.8756695829798,
+        "commit_hash": "c5b7387b495e7871fc5b3e3abec22a61dfd9bd74",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "False",
+        "extractor.schema_description_kwargs.include_type_descriptions": "True",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gpt_oss_20b_in_process",
+        "seed": "42"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/15",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/16": {
+    "biodiversity_level": {
+      "precision": 0.3103448275862069,
+      "recall": 0.26865671641791045,
+      "f1": 0.288,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.3,
+      "recall": 0.11320754716981132,
+      "f1": 0.1643835616438356,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.6804123711340206,
+      "recall": 0.4782608695652174,
+      "f1": 0.5617021276595745,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.1267605633802817,
+      "recall": 0.03896103896103896,
+      "f1": 0.059602649006622516,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.2765957446808511,
+      "recall": 0.19796954314720813,
+      "f1": 0.23076923076923078,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.5797101449275363,
+      "recall": 0.37735849056603776,
+      "f1": 0.45714285714285713,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.37897060861814946,
+      "recall": 0.245735700971204,
+      "f1": 0.29360007103702007,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.39035087719298245,
+      "recall": 0.22474747474747475,
+      "f1": 0.28525641025641024,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_10-37-00_813776/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_10-37-00_813776/predictions.jsonl",
+        "time_pdf_conversion": 0.002538336208090186,
+        "time_extraction": 1027.672180277994,
+        "commit_hash": "c5b7387b495e7871fc5b3e3abec22a61dfd9bd74",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "False",
+        "extractor.schema_description_kwargs.include_type_descriptions": "True",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gpt_oss_20b_in_process",
+        "seed": "1337"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/16",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/17": {
+    "biodiversity_level": {
+      "precision": 0.2807017543859649,
+      "recall": 0.23880597014925373,
+      "f1": 0.2580645161290322,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.18518518518518517,
+      "recall": 0.09433962264150944,
+      "f1": 0.125,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.6781609195402298,
+      "recall": 0.427536231884058,
+      "f1": 0.5244444444444444,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.30526315789473685,
+      "recall": 0.12554112554112554,
+      "f1": 0.17791411042944782,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.2909090909090909,
+      "recall": 0.2436548223350254,
+      "f1": 0.26519337016574585,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.5128205128205128,
+      "recall": 0.37735849056603776,
+      "f1": 0.43478260869565216,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.37550677012262007,
+      "recall": 0.25120604385283496,
+      "f1": 0.2975665083107204,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.38703339882121807,
+      "recall": 0.24873737373737373,
+      "f1": 0.3028439661798616,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_10-54-56_832053/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_10-54-56_832053/predictions.jsonl",
+        "time_pdf_conversion": 0.0028145601972937584,
+        "time_extraction": 1121.9797823310364,
+        "commit_hash": "c5b7387b495e7871fc5b3e3abec22a61dfd9bd74",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "False",
+        "extractor.schema_description_kwargs.include_type_descriptions": "True",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gpt_oss_20b_in_process",
+        "seed": "7331"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/17",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/18": {
+    "biodiversity_level": {
+      "precision": 0.25675675675675674,
+      "recall": 0.2835820895522388,
+      "f1": 0.2695035460992907,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.09615384615384616,
+      "recall": 0.09433962264150944,
+      "f1": 0.09523809523809523,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.3978494623655914,
+      "recall": 0.26811594202898553,
+      "f1": 0.3203463203463204,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.2127659574468085,
+      "recall": 0.12987012987012986,
+      "f1": 0.16129032258064513,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.10638297872340426,
+      "recall": 0.07614213197969544,
+      "f1": 0.08875739644970415,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.5370370370370371,
+      "recall": 0.27358490566037735,
+      "f1": 0.36250000000000004,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.2678243397472407,
+      "recall": 0.18760580362215606,
+      "f1": 0.2162726134523426,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.24324324324324326,
+      "recall": 0.17045454545454544,
+      "f1": 0.20044543429844094,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_11-14-26_931016/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_11-14-26_931016/predictions.jsonl",
+        "time_pdf_conversion": 0.0026748881209641695,
+        "time_extraction": 1221.518790368922,
+        "commit_hash": "c5b7387b495e7871fc5b3e3abec22a61dfd9bd74",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "False",
+        "extractor.schema_description_kwargs.include_type_descriptions": "True",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gemma3_27b_in_process",
+        "seed": "42"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/18",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/19": {
+    "biodiversity_level": {
+      "precision": 0.23728813559322035,
+      "recall": 0.208955223880597,
+      "f1": 0.22222222222222224,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.10204081632653061,
+      "recall": 0.09433962264150944,
+      "f1": 0.09803921568627452,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.38271604938271603,
+      "recall": 0.2246376811594203,
+      "f1": 0.2831050228310502,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.2972972972972973,
+      "recall": 0.09523809523809523,
+      "f1": 0.14426229508196722,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.25301204819277107,
+      "recall": 0.1065989847715736,
+      "f1": 0.15000000000000002,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.6,
+      "recall": 0.25471698113207547,
+      "f1": 0.3576158940397351,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.3120590577987559,
+      "recall": 0.16408109813721183,
+      "f1": 0.20920744164354155,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.3069053708439898,
+      "recall": 0.15151515151515152,
+      "f1": 0.20287404902789516,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_11-36-07_550777/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_11-36-07_550777/predictions.jsonl",
+        "time_pdf_conversion": 0.003202875144779682,
+        "time_extraction": 915.3902922719717,
+        "commit_hash": "c5b7387b495e7871fc5b3e3abec22a61dfd9bd74",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "False",
+        "extractor.schema_description_kwargs.include_type_descriptions": "True",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gemma3_27b_in_process",
+        "seed": "1337"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/19",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/2": {
+    "biodiversity_level": {
+      "precision": 0.2777777777777778,
+      "recall": 0.22388059701492538,
+      "f1": 0.2479338842975207,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.28,
+      "recall": 0.1320754716981132,
+      "f1": 0.1794871794871795,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.7590361445783133,
+      "recall": 0.45652173913043476,
+      "f1": 0.5701357466063348,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.15584415584415584,
+      "recall": 0.05194805194805195,
+      "f1": 0.07792207792207793,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.24157303370786518,
+      "recall": 0.2182741116751269,
+      "f1": 0.22933333333333333,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.44565217391304346,
+      "recall": 0.3867924528301887,
+      "f1": 0.41414141414141414,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.3599805476368592,
+      "recall": 0.24491540404947346,
+      "f1": 0.28649227263131005,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.3555992141453831,
+      "recall": 0.22853535353535354,
+      "f1": 0.2782475019215988,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-28_23-03-44_773923/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-28_23-03-44_773923/predictions.jsonl",
+        "time_pdf_conversion": 0.002674211049452424,
+        "time_extraction": 1362.5016359600704,
+        "commit_hash": "c5b7387b495e7871fc5b3e3abec22a61dfd9bd74",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "False",
+        "extractor.schema_description_kwargs.include_type_descriptions": "False",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gpt_oss_20b_in_process",
+        "seed": "7331"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/2",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/20": {
+    "biodiversity_level": {
+      "precision": 0.12727272727272726,
+      "recall": 0.1044776119402985,
+      "f1": 0.11475409836065573,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.06451612903225806,
+      "recall": 0.1509433962264151,
+      "f1": 0.0903954802259887,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.43137254901960786,
+      "recall": 0.3188405797101449,
+      "f1": 0.36666666666666664,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.2840909090909091,
+      "recall": 0.10822510822510822,
+      "f1": 0.15673981191222572,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.2159090909090909,
+      "recall": 0.09644670050761421,
+      "f1": 0.13333333333333333,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.4878048780487805,
+      "recall": 0.18867924528301888,
+      "f1": 0.272108843537415,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.26849438056222896,
+      "recall": 0.16126877364876663,
+      "f1": 0.18899970567271418,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.2469879518072289,
+      "recall": 0.1553030303030303,
+      "f1": 0.19069767441860466,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_11-53-14_319675/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_11-53-14_319675/predictions.jsonl",
+        "time_pdf_conversion": 0.002667727880179882,
+        "time_extraction": 927.4086825570557,
+        "commit_hash": "c5b7387b495e7871fc5b3e3abec22a61dfd9bd74",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "False",
+        "extractor.schema_description_kwargs.include_type_descriptions": "True",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gemma3_27b_in_process",
+        "seed": "7331"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/20",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/21": {
+    "biodiversity_level": {
+      "precision": 0.32142857142857145,
+      "recall": 0.26865671641791045,
+      "f1": 0.2926829268292683,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.3116883116883117,
+      "recall": 0.4528301886792453,
+      "f1": 0.3692307692307692,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.7605633802816901,
+      "recall": 0.391304347826087,
+      "f1": 0.5167464114832535,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.2361111111111111,
+      "recall": 0.0735930735930736,
+      "f1": 0.11221122112211222,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.25833333333333336,
+      "recall": 0.15736040609137056,
+      "f1": 0.19558359621451107,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.5970149253731343,
+      "recall": 0.37735849056603776,
+      "f1": 0.4624277456647399,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.4141899388693587,
+      "recall": 0.28685053719562076,
+      "f1": 0.324813778424109,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.39740820734341253,
+      "recall": 0.23232323232323232,
+      "f1": 0.2932270916334661,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_12-09-59_825973/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_12-09-59_825973/predictions.jsonl",
+        "time_pdf_conversion": 0.002618418075144291,
+        "time_extraction": 2331.859484433895,
+        "commit_hash": "c5b7387b495e7871fc5b3e3abec22a61dfd9bd74",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "False",
+        "extractor.schema_description_kwargs.include_type_descriptions": "True",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "qwen3_30b_in_process",
+        "seed": "42"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/21",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/22": {
+    "biodiversity_level": {
+      "precision": 0.23636363636363636,
+      "recall": 0.19402985074626866,
+      "f1": 0.2131147540983607,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.3333333333333333,
+      "recall": 0.41509433962264153,
+      "f1": 0.36974789915966383,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.6909090909090909,
+      "recall": 0.2753623188405797,
+      "f1": 0.39378238341968913,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.06,
+      "recall": 0.012987012987012988,
+      "f1": 0.021352313167259787,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.2809917355371901,
+      "recall": 0.17258883248730963,
+      "f1": 0.21383647798742136,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.6363636363636364,
+      "recall": 0.330188679245283,
+      "f1": 0.4347826086956522,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.3729935720844812,
+      "recall": 0.23337517232151592,
+      "f1": 0.2744360727546745,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.36069651741293535,
+      "recall": 0.1830808080808081,
+      "f1": 0.24288107202680068,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_12-49-50_595987/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_12-49-50_595987/predictions.jsonl",
+        "time_pdf_conversion": 0.002663019113242626,
+        "time_extraction": 2279.0749224259052,
+        "commit_hash": "c5b7387b495e7871fc5b3e3abec22a61dfd9bd74",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "False",
+        "extractor.schema_description_kwargs.include_type_descriptions": "True",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "qwen3_30b_in_process",
+        "seed": "1337"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/22",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/23": {
+    "biodiversity_level": {
+      "precision": 0.3064516129032258,
+      "recall": 0.2835820895522388,
+      "f1": 0.2945736434108527,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.2619047619047619,
+      "recall": 0.41509433962264153,
+      "f1": 0.32116788321167883,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.8032786885245902,
+      "recall": 0.35507246376811596,
+      "f1": 0.4924623115577889,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.3114754098360656,
+      "recall": 0.08225108225108226,
+      "f1": 0.13013698630136988,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.24509803921568626,
+      "recall": 0.12690355329949238,
+      "f1": 0.16722408026755853,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.64,
+      "recall": 0.3018867924528302,
+      "f1": 0.4102564102564102,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.428034752064055,
+      "recall": 0.2607983868244002,
+      "f1": 0.3026368858342765,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.3952380952380952,
+      "recall": 0.20959595959595959,
+      "f1": 0.2739273927392739,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_13-29-07_015036/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_13-29-07_015036/predictions.jsonl",
+        "time_pdf_conversion": 0.0028254888020455837,
+        "time_extraction": 2352.155497703934,
+        "commit_hash": "c5b7387b495e7871fc5b3e3abec22a61dfd9bd74",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "False",
+        "extractor.schema_description_kwargs.include_type_descriptions": "True",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "qwen3_30b_in_process",
+        "seed": "7331"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/23",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/24": {
+    "biodiversity_level": {
+      "precision": 0.20588235294117646,
+      "recall": 0.31343283582089554,
+      "f1": 0.2485207100591716,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.06333333333333334,
+      "recall": 0.3584905660377358,
+      "f1": 0.1076487252124646,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.5909090909090909,
+      "recall": 0.37681159420289856,
+      "f1": 0.46017699115044247,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.16022099447513813,
+      "recall": 0.12554112554112554,
+      "f1": 0.1407766990291262,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.1519434628975265,
+      "recall": 0.2182741116751269,
+      "f1": 0.17916666666666667,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.3357142857142857,
+      "recall": 0.44339622641509435,
+      "f1": 0.38211382113821135,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.25133392004509186,
+      "recall": 0.3059910766154795,
+      "f1": 0.25306726887601383,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.19287020109689215,
+      "recall": 0.26641414141414144,
+      "f1": 0.22375397667020153,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_14-09-19_703655/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_14-09-19_703655/predictions.jsonl",
+        "time_pdf_conversion": 0.002725577913224697,
+        "time_extraction": 2585.4129043121357,
+        "commit_hash": "c5b7387b495e7871fc5b3e3abec22a61dfd9bd74",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "False",
+        "extractor.schema_description_kwargs.include_type_descriptions": "True",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "mistral_small_3_24b_in_process",
+        "seed": "42"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/24",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/25": {
+    "biodiversity_level": {
+      "precision": 0.22,
+      "recall": 0.3283582089552239,
+      "f1": 0.26347305389221554,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.08275862068965517,
+      "recall": 0.22641509433962265,
+      "f1": 0.12121212121212122,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.625,
+      "recall": 0.36231884057971014,
+      "f1": 0.4587155963302752,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.14619883040935672,
+      "recall": 0.10822510822510822,
+      "f1": 0.12437810945273631,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.15384615384615385,
+      "recall": 0.19289340101522842,
+      "f1": 0.17117117117117114,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.3140495867768595,
+      "recall": 0.3584905660377358,
+      "f1": 0.33480176211453744,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.2569755319536709,
+      "recall": 0.2627835365254382,
+      "f1": 0.24562530236217614,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.21412037037037038,
+      "recall": 0.2335858585858586,
+      "f1": 0.22342995169082128,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_14-53-30_683076/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_14-53-30_683076/predictions.jsonl",
+        "time_pdf_conversion": 0.002709857886657119,
+        "time_extraction": 2259.373910072958,
+        "commit_hash": "c5b7387b495e7871fc5b3e3abec22a61dfd9bd74",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "False",
+        "extractor.schema_description_kwargs.include_type_descriptions": "True",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "mistral_small_3_24b_in_process",
+        "seed": "1337"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/25",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/26": {
+    "biodiversity_level": {
+      "precision": 0.1875,
+      "recall": 0.26865671641791045,
+      "f1": 0.22085889570552147,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.06018518518518518,
+      "recall": 0.24528301886792453,
+      "f1": 0.09665427509293681,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.5955056179775281,
+      "recall": 0.38405797101449274,
+      "f1": 0.46696035242290745,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.13368983957219252,
+      "recall": 0.10822510822510822,
+      "f1": 0.11961722488038277,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.16091954022988506,
+      "recall": 0.2131979695431472,
+      "f1": 0.18340611353711792,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.3939393939393939,
+      "recall": 0.36792452830188677,
+      "f1": 0.3804878048780488,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.2552899294840308,
+      "recall": 0.26455755206174497,
+      "f1": 0.24466411108615252,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.20042194092827004,
+      "recall": 0.2398989898989899,
+      "f1": 0.21839080459770113,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_15-32-19_016310/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_15-32-19_016310/predictions.jsonl",
+        "time_pdf_conversion": 0.0027139100711792707,
+        "time_extraction": 2412.700377512956,
+        "commit_hash": "c5b7387b495e7871fc5b3e3abec22a61dfd9bd74",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "False",
+        "extractor.schema_description_kwargs.include_type_descriptions": "True",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "mistral_small_3_24b_in_process",
+        "seed": "7331"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/26",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/27": {
+    "biodiversity_level": {
+      "precision": 0.3177570093457944,
+      "recall": 0.5074626865671642,
+      "f1": 0.39080459770114945,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.24050632911392406,
+      "recall": 0.7169811320754716,
+      "f1": 0.36018957345971564,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.696551724137931,
+      "recall": 0.7318840579710145,
+      "f1": 0.7137809187279152,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.28695652173913044,
+      "recall": 0.14285714285714285,
+      "f1": 0.1907514450867052,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.2727272727272727,
+      "recall": 0.25888324873096447,
+      "f1": 0.265625,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.36363636363636365,
+      "recall": 0.6037735849056604,
+      "f1": 0.45390070921985815,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.36302253678340274,
+      "recall": 0.4936403088512364,
+      "f1": 0.39584204069922396,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.3614864864864865,
+      "recall": 0.4053030303030303,
+      "f1": 0.3821428571428572,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_16-13-40_418000/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_16-13-40_418000/predictions.jsonl",
+        "time_pdf_conversion": 0.0036871039774268866,
+        "time_extraction": 10340.049663651967,
+        "commit_hash": "c5b7387b495e7871fc5b3e3abec22a61dfd9bd74",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "False",
+        "extractor.schema_description_kwargs.include_type_descriptions": "True",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gpt_5",
+        "seed": "42"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/27",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/28": {
+    "biodiversity_level": {
+      "precision": 0.34375,
+      "recall": 0.4925373134328358,
+      "f1": 0.4049079754601227,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.2483221476510067,
+      "recall": 0.6981132075471698,
+      "f1": 0.36633663366336633,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.7142857142857143,
+      "recall": 0.7246376811594203,
+      "f1": 0.7194244604316546,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.18018018018018017,
+      "recall": 0.08658008658008658,
+      "f1": 0.11695906432748536,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.2958579881656805,
+      "recall": 0.25380710659898476,
+      "f1": 0.27322404371584696,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.3625,
+      "recall": 0.5471698113207547,
+      "f1": 0.4360902255639098,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.3574826717137636,
+      "recall": 0.4671408677732087,
+      "f1": 0.38615706719373094,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.3612121212121212,
+      "recall": 0.37626262626262624,
+      "f1": 0.36858379715522577,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_19-06-01_505734/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_19-06-01_505734/predictions.jsonl",
+        "time_pdf_conversion": 0.0041936589404940605,
+        "time_extraction": 11390.43140837201,
+        "commit_hash": "c5b7387b495e7871fc5b3e3abec22a61dfd9bd74",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "False",
+        "extractor.schema_description_kwargs.include_type_descriptions": "True",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gpt_5",
+        "seed": "1337"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/28",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/3": {
+    "biodiversity_level": {
+      "precision": 0.2413793103448276,
+      "recall": 0.31343283582089554,
+      "f1": 0.2727272727272727,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.08181818181818182,
+      "recall": 0.16981132075471697,
+      "f1": 0.11042944785276074,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.4205607476635514,
+      "recall": 0.32608695652173914,
+      "f1": 0.36734693877551017,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.2,
+      "recall": 0.09956709956709957,
+      "f1": 0.1329479768786127,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.08849557522123894,
+      "recall": 0.050761421319796954,
+      "f1": 0.06451612903225805,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.45161290322580644,
+      "recall": 0.2641509433962264,
+      "f1": 0.3333333333333333,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.2473111197122677,
+      "recall": 0.20396842956341243,
+      "f1": 0.21355018309995796,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.22895622895622897,
+      "recall": 0.1717171717171717,
+      "f1": 0.19624819624819623,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-28_23-27-15_617755/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-28_23-27-15_617755/predictions.jsonl",
+        "time_pdf_conversion": 0.0026242181193083525,
+        "time_extraction": 1214.0535599410068,
+        "commit_hash": "c5b7387b495e7871fc5b3e3abec22a61dfd9bd74",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "False",
+        "extractor.schema_description_kwargs.include_type_descriptions": "False",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gemma3_27b_in_process",
+        "seed": "42"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/3",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/4": {
+    "biodiversity_level": {
+      "precision": 0.2535211267605634,
+      "recall": 0.26865671641791045,
+      "f1": 0.2608695652173913,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.037383177570093455,
+      "recall": 0.07547169811320754,
+      "f1": 0.049999999999999996,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.39805825242718446,
+      "recall": 0.2971014492753623,
+      "f1": 0.3402489626556016,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.23809523809523808,
+      "recall": 0.08658008658008658,
+      "f1": 0.12698412698412698,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.13131313131313133,
+      "recall": 0.06598984771573604,
+      "f1": 0.08783783783783786,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.5263157894736842,
+      "recall": 0.2830188679245283,
+      "f1": 0.36809815950920244,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.2641144526066492,
+      "recall": 0.17946977767113856,
+      "f1": 0.20567310870069336,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.2418426103646833,
+      "recall": 0.1590909090909091,
+      "f1": 0.19192688499619193,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-28_23-49-12_114794/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-28_23-49-12_114794/predictions.jsonl",
+        "time_pdf_conversion": 0.0026143689174205065,
+        "time_extraction": 945.6043822909705,
+        "commit_hash": "c5b7387b495e7871fc5b3e3abec22a61dfd9bd74",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "False",
+        "extractor.schema_description_kwargs.include_type_descriptions": "False",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gemma3_27b_in_process",
+        "seed": "1337"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/4",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/5": {
+    "biodiversity_level": {
+      "precision": 0.16666666666666666,
+      "recall": 0.208955223880597,
+      "f1": 0.18543046357615892,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.08421052631578947,
+      "recall": 0.1509433962264151,
+      "f1": 0.1081081081081081,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.40186915887850466,
+      "recall": 0.3115942028985507,
+      "f1": 0.3510204081632653,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.25742574257425743,
+      "recall": 0.11255411255411256,
+      "f1": 0.1566265060240964,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.21296296296296297,
+      "recall": 0.116751269035533,
+      "f1": 0.15081967213114753,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.5079365079365079,
+      "recall": 0.3018867924528302,
+      "f1": 0.378698224852071,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.2718452608891148,
+      "recall": 0.20044749950800642,
+      "f1": 0.2217838971424745,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.2616487455197133,
+      "recall": 0.18434343434343434,
+      "f1": 0.2162962962962963,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_00-06-15_785264/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_00-06-15_785264/predictions.jsonl",
+        "time_pdf_conversion": 0.002702031983062625,
+        "time_extraction": 1008.7572593509685,
+        "commit_hash": "c5b7387b495e7871fc5b3e3abec22a61dfd9bd74",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "False",
+        "extractor.schema_description_kwargs.include_type_descriptions": "False",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gemma3_27b_in_process",
+        "seed": "7331"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/5",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/6": {
+    "biodiversity_level": {
+      "precision": 0.23636363636363636,
+      "recall": 0.19402985074626866,
+      "f1": 0.2131147540983607,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.3728813559322034,
+      "recall": 0.41509433962264153,
+      "f1": 0.3928571428571429,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.7619047619047619,
+      "recall": 0.34782608695652173,
+      "f1": 0.4776119402985074,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.125,
+      "recall": 0.021645021645021644,
+      "f1": 0.03690036900369004,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.5116279069767442,
+      "recall": 0.1116751269035533,
+      "f1": 0.18333333333333332,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.5205479452054794,
+      "recall": 0.3584905660377358,
+      "f1": 0.4245810055865921,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.42138760106380424,
+      "recall": 0.2414601653186238,
+      "f1": 0.2880664241962711,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.4444444444444444,
+      "recall": 0.18686868686868688,
+      "f1": 0.26311111111111113,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_00-24-54_638308/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_00-24-54_638308/predictions.jsonl",
+        "time_pdf_conversion": 0.0027371509931981564,
+        "time_extraction": 2004.919541249983,
+        "commit_hash": "c5b7387b495e7871fc5b3e3abec22a61dfd9bd74",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "False",
+        "extractor.schema_description_kwargs.include_type_descriptions": "False",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "qwen3_30b_in_process",
+        "seed": "42"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/6",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/7": {
+    "biodiversity_level": {
+      "precision": 0.2777777777777778,
+      "recall": 0.22388059701492538,
+      "f1": 0.2479338842975207,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.3559322033898305,
+      "recall": 0.39622641509433965,
+      "f1": 0.375,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.6885245901639344,
+      "recall": 0.30434782608695654,
+      "f1": 0.42211055276381915,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.11764705882352941,
+      "recall": 0.017316017316017316,
+      "f1": 0.030188679245283016,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.2549019607843137,
+      "recall": 0.06598984771573604,
+      "f1": 0.10483870967741936,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.5428571428571428,
+      "recall": 0.3584905660377358,
+      "f1": 0.43181818181818177,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.3729401222994215,
+      "recall": 0.22770854487761846,
+      "f1": 0.268648334633704,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.40425531914893614,
+      "recall": 0.16792929292929293,
+      "f1": 0.23728813559322035,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_01-00-10_219752/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_01-00-10_219752/predictions.jsonl",
+        "time_pdf_conversion": 0.0026612591464072466,
+        "time_extraction": 2149.90055841906,
+        "commit_hash": "c5b7387b495e7871fc5b3e3abec22a61dfd9bd74",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "False",
+        "extractor.schema_description_kwargs.include_type_descriptions": "False",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "qwen3_30b_in_process",
+        "seed": "1337"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/7",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/8": {
+    "biodiversity_level": {
+      "precision": 0.2631578947368421,
+      "recall": 0.22388059701492538,
+      "f1": 0.24193548387096775,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.23880597014925373,
+      "recall": 0.3018867924528302,
+      "f1": 0.26666666666666666,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.75,
+      "recall": 0.34782608695652173,
+      "f1": 0.4752475247524752,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.05263157894736842,
+      "recall": 0.004329004329004329,
+      "f1": 0.008,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.3870967741935484,
+      "recall": 0.06091370558375635,
+      "f1": 0.10526315789473685,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.5384615384615384,
+      "recall": 0.39622641509433965,
+      "f1": 0.4565217391304348,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.37169229274809185,
+      "recall": 0.22251043357189626,
+      "f1": 0.2589390953858802,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.4240506329113924,
+      "recall": 0.1691919191919192,
+      "f1": 0.24187725631768955,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_01-36-56_270034/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_01-36-56_270034/predictions.jsonl",
+        "time_pdf_conversion": 0.002627090085297823,
+        "time_extraction": 2104.4276012829505,
+        "commit_hash": "c5b7387b495e7871fc5b3e3abec22a61dfd9bd74",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "False",
+        "extractor.schema_description_kwargs.include_type_descriptions": "False",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "qwen3_30b_in_process",
+        "seed": "7331"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/8",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/9": {
+    "biodiversity_level": {
+      "precision": 0.20754716981132076,
+      "recall": 0.3283582089552239,
+      "f1": 0.2543352601156069,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.07222222222222222,
+      "recall": 0.24528301886792453,
+      "f1": 0.111587982832618,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.7558139534883721,
+      "recall": 0.47101449275362317,
+      "f1": 0.5803571428571429,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.05202312138728324,
+      "recall": 0.03896103896103896,
+      "f1": 0.04455445544554455,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.14184397163120568,
+      "recall": 0.20304568527918782,
+      "f1": 0.16701461377870563,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.2716049382716049,
+      "recall": 0.41509433962264153,
+      "f1": 0.3283582089552239,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.2501758961353348,
+      "recall": 0.28362613073994,
+      "f1": 0.24770127733080696,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.19514661274014156,
+      "recall": 0.24368686868686867,
+      "f1": 0.2167321729365525,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_02-12-58_449728/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-28_22-20-49/2026-01-29_02-12-58_449728/predictions.jsonl",
+        "time_pdf_conversion": 0.002702499972656369,
+        "time_extraction": 2374.5459864169825,
+        "commit_hash": "c5b7387b495e7871fc5b3e3abec22a61dfd9bd74",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "False",
+        "extractor.schema_description_kwargs.include_type_descriptions": "False",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "mistral_small_3_24b_in_process",
+        "seed": "42"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-28_22-20-49/9",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/0": {
+    "biodiversity_level": {
+      "precision": 0.27848101265822783,
+      "recall": 0.3283582089552239,
+      "f1": 0.3013698630136986,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.3333333333333333,
+      "recall": 0.39622641509433965,
+      "f1": 0.3620689655172413,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.7191011235955056,
+      "recall": 0.463768115942029,
+      "f1": 0.5638766519823788,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.21232876712328766,
+      "recall": 0.1341991341991342,
+      "f1": 0.16445623342175067,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.22268907563025211,
+      "recall": 0.26903553299492383,
+      "f1": 0.24367816091954023,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.40186915887850466,
+      "recall": 0.4056603773584906,
+      "f1": 0.403755868544601,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.3613004118698519,
+      "recall": 0.33287463075735685,
+      "f1": 0.3398676238998684,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.32409972299168976,
+      "recall": 0.29545454545454547,
+      "f1": 0.3091149273447821,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-30_17-11-06_093175/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-30_17-11-06_093175/predictions.jsonl",
+        "time_pdf_conversion": 0.004609453026205301,
+        "time_extraction": 1431.4140734430403,
+        "commit_hash": "02dfc60fee42df6c76bf67c280cf7327f910e976",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "True",
+        "extractor.schema_description_kwargs.include_type_descriptions": "False",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gpt_oss_20b_in_process",
+        "seed": "42"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/0",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/1": {
+    "biodiversity_level": {
+      "precision": 0.3387096774193548,
+      "recall": 0.31343283582089554,
+      "f1": 0.32558139534883723,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.3090909090909091,
+      "recall": 0.32075471698113206,
+      "f1": 0.3148148148148148,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.6210526315789474,
+      "recall": 0.427536231884058,
+      "f1": 0.5064377682403434,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.16149068322981366,
+      "recall": 0.11255411255411256,
+      "f1": 0.1326530612244898,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.2554112554112554,
+      "recall": 0.29949238578680204,
+      "f1": 0.2757009345794393,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.4174757281553398,
+      "recall": 0.4056603773584906,
+      "f1": 0.41148325358851673,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.35053848081427,
+      "recall": 0.3132384433975818,
+      "f1": 0.32777853796607354,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.31824611032531824,
+      "recall": 0.2840909090909091,
+      "f1": 0.3002001334222815,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-30_17-36-23_341433/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-30_17-36-23_341433/predictions.jsonl",
+        "time_pdf_conversion": 0.002752488013356924,
+        "time_extraction": 1404.1458067079075,
+        "commit_hash": "02dfc60fee42df6c76bf67c280cf7327f910e976",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "True",
+        "extractor.schema_description_kwargs.include_type_descriptions": "False",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gpt_oss_20b_in_process",
+        "seed": "1337"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/1",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/10": {
+    "biodiversity_level": {
+      "precision": 0.21904761904761905,
+      "recall": 0.34328358208955223,
+      "f1": 0.26744186046511625,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.10434782608695652,
+      "recall": 0.4528301886792453,
+      "f1": 0.1696113074204947,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.7613636363636364,
+      "recall": 0.4855072463768116,
+      "f1": 0.5929203539823008,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.05517241379310345,
+      "recall": 0.06926406926406926,
+      "f1": 0.061420345489443376,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.13592233009708737,
+      "recall": 0.2131979695431472,
+      "f1": 0.1660079051383399,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.3333333333333333,
+      "recall": 0.4339622641509434,
+      "f1": 0.3770491803278688,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.26819785978695604,
+      "recall": 0.33300755335062815,
+      "f1": 0.27240849213726065,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.1879310344827586,
+      "recall": 0.27525252525252525,
+      "f1": 0.22336065573770492,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-30_21-57-37_135632/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-30_21-57-37_135632/predictions.jsonl",
+        "time_pdf_conversion": 0.002674098126590252,
+        "time_extraction": 2541.2756905581336,
+        "commit_hash": "02dfc60fee42df6c76bf67c280cf7327f910e976",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "True",
+        "extractor.schema_description_kwargs.include_type_descriptions": "False",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "mistral_small_3_24b_in_process",
+        "seed": "1337"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/10",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/11": {
+    "biodiversity_level": {
+      "precision": 0.1926605504587156,
+      "recall": 0.31343283582089554,
+      "f1": 0.2386363636363637,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.109375,
+      "recall": 0.39622641509433965,
+      "f1": 0.17142857142857143,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.7857142857142857,
+      "recall": 0.4782608695652174,
+      "f1": 0.5945945945945946,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.11437908496732026,
+      "recall": 0.15151515151515152,
+      "f1": 0.13035381750465547,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.14029850746268657,
+      "recall": 0.23857868020304568,
+      "f1": 0.1766917293233083,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.3191489361702128,
+      "recall": 0.42452830188679247,
+      "f1": 0.3643724696356276,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.27692939412887013,
+      "recall": 0.3337570423475737,
+      "f1": 0.27934625768718685,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.20137103684661525,
+      "recall": 0.2967171717171717,
+      "f1": 0.23991832567636548,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-30_22-41-08_853240/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-30_22-41-08_853240/predictions.jsonl",
+        "time_pdf_conversion": 0.0027714679017663,
+        "time_extraction": 2674.7556120508816,
+        "commit_hash": "02dfc60fee42df6c76bf67c280cf7327f910e976",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "True",
+        "extractor.schema_description_kwargs.include_type_descriptions": "False",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "mistral_small_3_24b_in_process",
+        "seed": "7331"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/11",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/12": {
+    "biodiversity_level": {
+      "precision": 0.2857142857142857,
+      "recall": 0.26865671641791045,
+      "f1": 0.2769230769230769,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.2542372881355932,
+      "recall": 0.2830188679245283,
+      "f1": 0.2678571428571429,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.6770833333333334,
+      "recall": 0.47101449275362317,
+      "f1": 0.5555555555555555,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.16233766233766234,
+      "recall": 0.10822510822510822,
+      "f1": 0.12987012987012986,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.21524663677130046,
+      "recall": 0.2436548223350254,
+      "f1": 0.2285714285714286,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.5647058823529412,
+      "recall": 0.4528301886792453,
+      "f1": 0.5026178010471204,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.359887514774186,
+      "recall": 0.30456669938924014,
+      "f1": 0.326899189137409,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.3220588235294118,
+      "recall": 0.2765151515151515,
+      "f1": 0.2975543478260869,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-30_23-26-55_868180/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-30_23-26-55_868180/predictions.jsonl",
+        "time_pdf_conversion": 0.003127173986285925,
+        "time_extraction": 1460.0526639998425,
+        "commit_hash": "02dfc60fee42df6c76bf67c280cf7327f910e976",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "True",
+        "extractor.schema_description_kwargs.include_type_descriptions": "True",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gpt_oss_20b_in_process",
+        "seed": "42"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/12",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/13": {
+    "biodiversity_level": {
+      "precision": 0.29577464788732394,
+      "recall": 0.31343283582089554,
+      "f1": 0.3043478260869565,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.29411764705882354,
+      "recall": 0.2830188679245283,
+      "f1": 0.2884615384615385,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.6288659793814433,
+      "recall": 0.4420289855072464,
+      "f1": 0.5191489361702128,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.12105263157894737,
+      "recall": 0.09956709956709957,
+      "f1": 0.10926365795724466,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.17253521126760563,
+      "recall": 0.24873096446700507,
+      "f1": 0.20374220374220375,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.41509433962264153,
+      "recall": 0.41509433962264153,
+      "f1": 0.41509433962264153,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.32124007613279754,
+      "recall": 0.3003121821515694,
+      "f1": 0.30667641700679965,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.2665832290362954,
+      "recall": 0.2689393939393939,
+      "f1": 0.2677561282212445,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-30_23-52-14_478576/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-30_23-52-14_478576/predictions.jsonl",
+        "time_pdf_conversion": 0.002693998161703348,
+        "time_extraction": 1463.1870199858677,
+        "commit_hash": "02dfc60fee42df6c76bf67c280cf7327f910e976",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "True",
+        "extractor.schema_description_kwargs.include_type_descriptions": "True",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gpt_oss_20b_in_process",
+        "seed": "1337"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/13",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/14": {
+    "biodiversity_level": {
+      "precision": 0.29850746268656714,
+      "recall": 0.29850746268656714,
+      "f1": 0.29850746268656714,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.25806451612903225,
+      "recall": 0.3018867924528302,
+      "f1": 0.27826086956521745,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.6914893617021277,
+      "recall": 0.47101449275362317,
+      "f1": 0.5603448275862069,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.23308270676691728,
+      "recall": 0.1341991341991342,
+      "f1": 0.17032967032967034,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.2559241706161137,
+      "recall": 0.27411167512690354,
+      "f1": 0.26470588235294124,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.4148936170212766,
+      "recall": 0.36792452830188677,
+      "f1": 0.39,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.3586603058203391,
+      "recall": 0.30794068092015753,
+      "f1": 0.3270247854201005,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.340393343419062,
+      "recall": 0.2840909090909091,
+      "f1": 0.30970406056434957,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-31_00-18-16_706829/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-31_00-18-16_706829/predictions.jsonl",
+        "time_pdf_conversion": 0.003033143002539873,
+        "time_extraction": 1344.1504601931665,
+        "commit_hash": "02dfc60fee42df6c76bf67c280cf7327f910e976",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "True",
+        "extractor.schema_description_kwargs.include_type_descriptions": "True",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gpt_oss_20b_in_process",
+        "seed": "7331"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/14",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/15": {
+    "biodiversity_level": {
+      "precision": 0.25,
+      "recall": 0.23880597014925373,
+      "f1": 0.24427480916030533,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.06557377049180328,
+      "recall": 0.07547169811320754,
+      "f1": 0.07017543859649124,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.422680412371134,
+      "recall": 0.2971014492753623,
+      "f1": 0.3489361702127659,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.2222222222222222,
+      "recall": 0.09523809523809523,
+      "f1": 0.13333333333333333,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.25471698113207547,
+      "recall": 0.13705583756345177,
+      "f1": 0.17821782178217818,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.35714285714285715,
+      "recall": 0.2830188679245283,
+      "f1": 0.3157894736842105,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.26205604056001536,
+      "recall": 0.18778198637731647,
+      "f1": 0.2151211744615474,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.273972602739726,
+      "recall": 0.17676767676767677,
+      "f1": 0.214888718342287,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-31_00-41-29_990227/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-31_00-41-29_990227/predictions.jsonl",
+        "time_pdf_conversion": 0.0028736598324030638,
+        "time_extraction": 958.7108857578132,
+        "commit_hash": "02dfc60fee42df6c76bf67c280cf7327f910e976",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "True",
+        "extractor.schema_description_kwargs.include_type_descriptions": "True",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gemma3_27b_in_process",
+        "seed": "42"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/15",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/16": {
+    "biodiversity_level": {
+      "precision": 0.16129032258064516,
+      "recall": 0.14925373134328357,
+      "f1": 0.15503875968992248,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.12962962962962962,
+      "recall": 0.1320754716981132,
+      "f1": 0.1308411214953271,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.4897959183673469,
+      "recall": 0.34782608695652173,
+      "f1": 0.4067796610169491,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.32558139534883723,
+      "recall": 0.12121212121212122,
+      "f1": 0.17665615141955837,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.3253012048192771,
+      "recall": 0.13705583756345177,
+      "f1": 0.19285714285714284,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.44776119402985076,
+      "recall": 0.2830188679245283,
+      "f1": 0.3468208092485549,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.3132266107959311,
+      "recall": 0.1950736861163366,
+      "f1": 0.23483227428790912,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.3333333333333333,
+      "recall": 0.1893939393939394,
+      "f1": 0.24154589371980673,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-31_00-58-50_478317/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-31_00-58-50_478317/predictions.jsonl",
+        "time_pdf_conversion": 0.0024815250653773546,
+        "time_extraction": 888.9110428360291,
+        "commit_hash": "02dfc60fee42df6c76bf67c280cf7327f910e976",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "True",
+        "extractor.schema_description_kwargs.include_type_descriptions": "True",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gemma3_27b_in_process",
+        "seed": "1337"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/16",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/17": {
+    "biodiversity_level": {
+      "precision": 0.2222222222222222,
+      "recall": 0.208955223880597,
+      "f1": 0.21538461538461537,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.06153846153846154,
+      "recall": 0.07547169811320754,
+      "f1": 0.06779661016949154,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.45454545454545453,
+      "recall": 0.36231884057971014,
+      "f1": 0.40322580645161293,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.3,
+      "recall": 0.1038961038961039,
+      "f1": 0.15434083601286175,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.17333333333333334,
+      "recall": 0.06598984771573604,
+      "f1": 0.09558823529411765,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.39325842696629215,
+      "recall": 0.330188679245283,
+      "f1": 0.358974358974359,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.26748298310096064,
+      "recall": 0.1911367322384396,
+      "f1": 0.21588507704784302,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.29045643153526973,
+      "recall": 0.17676767676767677,
+      "f1": 0.2197802197802198,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-31_01-15-00_268624/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-31_01-15-00_268624/predictions.jsonl",
+        "time_pdf_conversion": 0.0025716559030115604,
+        "time_extraction": 902.0574138239026,
+        "commit_hash": "02dfc60fee42df6c76bf67c280cf7327f910e976",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "True",
+        "extractor.schema_description_kwargs.include_type_descriptions": "True",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gemma3_27b_in_process",
+        "seed": "7331"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/17",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/18": {
+    "biodiversity_level": {
+      "precision": 0.30303030303030304,
+      "recall": 0.29850746268656714,
+      "f1": 0.3007518796992481,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.3333333333333333,
+      "recall": 0.5094339622641509,
+      "f1": 0.4029850746268656,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.7857142857142857,
+      "recall": 0.39855072463768115,
+      "f1": 0.5288461538461539,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.32941176470588235,
+      "recall": 0.12121212121212122,
+      "f1": 0.17721518987341775,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.36363636363636365,
+      "recall": 0.16243654822335024,
+      "f1": 0.22456140350877196,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.5679012345679012,
+      "recall": 0.4339622641509434,
+      "f1": 0.4919786096256684,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.4471712141646782,
+      "recall": 0.32068384719580234,
+      "f1": 0.35438971853002094,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.4416135881104034,
+      "recall": 0.26262626262626265,
+      "f1": 0.32937450514647665,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-31_01-31-48_189968/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-31_01-31-48_189968/predictions.jsonl",
+        "time_pdf_conversion": 0.0026425260584801435,
+        "time_extraction": 2568.2102551211137,
+        "commit_hash": "02dfc60fee42df6c76bf67c280cf7327f910e976",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "True",
+        "extractor.schema_description_kwargs.include_type_descriptions": "True",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "qwen3_30b_in_process",
+        "seed": "42"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/18",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/19": {
+    "biodiversity_level": {
+      "precision": 0.2542372881355932,
+      "recall": 0.22388059701492538,
+      "f1": 0.2380952380952381,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.275,
+      "recall": 0.41509433962264153,
+      "f1": 0.33082706766917297,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.8356164383561644,
+      "recall": 0.4420289855072464,
+      "f1": 0.5781990521327015,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.373134328358209,
+      "recall": 0.10822510822510822,
+      "f1": 0.16778523489932887,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.35714285714285715,
+      "recall": 0.12690355329949238,
+      "f1": 0.18726591760299627,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.42391304347826086,
+      "recall": 0.36792452830188677,
+      "f1": 0.3939393939393939,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.4198406592451807,
+      "recall": 0.2806761853285501,
+      "f1": 0.3160186507231386,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.42403628117913833,
+      "recall": 0.2361111111111111,
+      "f1": 0.3033252230332522,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-31_02-15-32_375896/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-31_02-15-32_375896/predictions.jsonl",
+        "time_pdf_conversion": 0.004016566090285778,
+        "time_extraction": 2327.0262681739405,
+        "commit_hash": "02dfc60fee42df6c76bf67c280cf7327f910e976",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "True",
+        "extractor.schema_description_kwargs.include_type_descriptions": "True",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "qwen3_30b_in_process",
+        "seed": "1337"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/19",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/2": {
+    "biodiversity_level": {
+      "precision": 0.22972972972972974,
+      "recall": 0.2537313432835821,
+      "f1": 0.24113475177304963,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.2878787878787879,
+      "recall": 0.3584905660377358,
+      "f1": 0.31932773109243695,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.6702127659574468,
+      "recall": 0.45652173913043476,
+      "f1": 0.543103448275862,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.15254237288135594,
+      "recall": 0.07792207792207792,
+      "f1": 0.10315186246418338,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.18076923076923077,
+      "recall": 0.23857868020304568,
+      "f1": 0.20568927789934355,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.49019607843137253,
+      "recall": 0.4716981132075472,
+      "f1": 0.4807692307692308,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.3352214942746539,
+      "recall": 0.30949041996407056,
+      "f1": 0.31552938371235106,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.29971988795518206,
+      "recall": 0.2702020202020202,
+      "f1": 0.28419654714475434,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-30_18-00-40_396761/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-30_18-00-40_396761/predictions.jsonl",
+        "time_pdf_conversion": 0.002797509077936411,
+        "time_extraction": 1487.9594855259638,
+        "commit_hash": "02dfc60fee42df6c76bf67c280cf7327f910e976",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "True",
+        "extractor.schema_description_kwargs.include_type_descriptions": "False",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gpt_oss_20b_in_process",
+        "seed": "7331"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/2",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/20": {
+    "biodiversity_level": {
+      "precision": 0.3064516129032258,
+      "recall": 0.2835820895522388,
+      "f1": 0.2945736434108527,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.31645569620253167,
+      "recall": 0.4716981132075472,
+      "f1": 0.37878787878787884,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.7733333333333333,
+      "recall": 0.42028985507246375,
+      "f1": 0.5446009389671361,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.29473684210526313,
+      "recall": 0.12121212121212122,
+      "f1": 0.17177914110429449,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.3619047619047619,
+      "recall": 0.19289340101522842,
+      "f1": 0.25165562913907286,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.5569620253164557,
+      "recall": 0.41509433962264153,
+      "f1": 0.4756756756756757,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.4349740452942619,
+      "recall": 0.3174616532803735,
+      "f1": 0.35284548451415176,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.42828282828282827,
+      "recall": 0.2676767676767677,
+      "f1": 0.32944832944832947,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-31_02-55-25_236155/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-31_02-55-25_236155/predictions.jsonl",
+        "time_pdf_conversion": 0.002630665898323059,
+        "time_extraction": 2478.875872831093,
+        "commit_hash": "02dfc60fee42df6c76bf67c280cf7327f910e976",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "True",
+        "extractor.schema_description_kwargs.include_type_descriptions": "True",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "qwen3_30b_in_process",
+        "seed": "7331"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/20",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/21": {
+    "biodiversity_level": {
+      "precision": 0.2079207920792079,
+      "recall": 0.31343283582089554,
+      "f1": 0.25,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.11009174311926606,
+      "recall": 0.4528301886792453,
+      "f1": 0.1771217712177122,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.7526881720430108,
+      "recall": 0.5072463768115942,
+      "f1": 0.6060606060606061,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.13333333333333333,
+      "recall": 0.1645021645021645,
+      "f1": 0.14728682170542634,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.15771812080536912,
+      "recall": 0.23857868020304568,
+      "f1": 0.1898989898989899,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.3559322033898305,
+      "recall": 0.39622641509433965,
+      "f1": 0.375,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.2862807274616696,
+      "recall": 0.34546944351854747,
+      "f1": 0.29089469814712243,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.2174303683737646,
+      "recall": 0.3055555555555556,
+      "f1": 0.25406824146981627,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-31_03-37-48_797791/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-31_03-37-48_797791/predictions.jsonl",
+        "time_pdf_conversion": 0.002594518009573221,
+        "time_extraction": 2298.9727716040798,
+        "commit_hash": "02dfc60fee42df6c76bf67c280cf7327f910e976",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "True",
+        "extractor.schema_description_kwargs.include_type_descriptions": "True",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "mistral_small_3_24b_in_process",
+        "seed": "42"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/21",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/22": {
+    "biodiversity_level": {
+      "precision": 0.18867924528301888,
+      "recall": 0.29850746268656714,
+      "f1": 0.23121387283236994,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.0945945945945946,
+      "recall": 0.39622641509433965,
+      "f1": 0.15272727272727274,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.788235294117647,
+      "recall": 0.4855072463768116,
+      "f1": 0.600896860986547,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.11784511784511785,
+      "recall": 0.15151515151515152,
+      "f1": 0.1325757575757576,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.14423076923076922,
+      "recall": 0.22842639593908629,
+      "f1": 0.17681728880157171,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.3181818181818182,
+      "recall": 0.39622641509433965,
+      "f1": 0.3529411764705882,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.27529447320882766,
+      "recall": 0.32606818111771596,
+      "f1": 0.2745287048990179,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.19930675909878684,
+      "recall": 0.2904040404040404,
+      "f1": 0.23638232271325796,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-31_04-17-08_550736/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-31_04-17-08_550736/predictions.jsonl",
+        "time_pdf_conversion": 0.0027054278180003166,
+        "time_extraction": 2370.5065331240185,
+        "commit_hash": "02dfc60fee42df6c76bf67c280cf7327f910e976",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "True",
+        "extractor.schema_description_kwargs.include_type_descriptions": "True",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "mistral_small_3_24b_in_process",
+        "seed": "1337"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/22",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/23": {
+    "biodiversity_level": {
+      "precision": 0.19230769230769232,
+      "recall": 0.29850746268656714,
+      "f1": 0.23391812865497075,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.10526315789473684,
+      "recall": 0.41509433962264153,
+      "f1": 0.1679389312977099,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.7976190476190477,
+      "recall": 0.4855072463768116,
+      "f1": 0.6036036036036037,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.13257575757575757,
+      "recall": 0.15151515151515152,
+      "f1": 0.14141414141414144,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.17454545454545456,
+      "recall": 0.2436548223350254,
+      "f1": 0.2033898305084746,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.35537190082644626,
+      "recall": 0.4056603773584906,
+      "f1": 0.37885462555066085,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.2929471684615225,
+      "recall": 0.3333232333157813,
+      "f1": 0.28818654350492684,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.22232734153263956,
+      "recall": 0.2967171717171717,
+      "f1": 0.2541914548404543,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-31_04-57-37_114784/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-31_04-57-37_114784/predictions.jsonl",
+        "time_pdf_conversion": 0.0030097540002316236,
+        "time_extraction": 2644.283413131954,
+        "commit_hash": "02dfc60fee42df6c76bf67c280cf7327f910e976",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "True",
+        "extractor.schema_description_kwargs.include_type_descriptions": "True",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "mistral_small_3_24b_in_process",
+        "seed": "7331"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/23",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/3": {
+    "biodiversity_level": {
+      "precision": 0.2602739726027397,
+      "recall": 0.2835820895522388,
+      "f1": 0.2714285714285714,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.05714285714285714,
+      "recall": 0.07547169811320754,
+      "f1": 0.06504065040650406,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.4594594594594595,
+      "recall": 0.3695652173913043,
+      "f1": 0.4096385542168674,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.29292929292929293,
+      "recall": 0.12554112554112554,
+      "f1": 0.17575757575757578,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.09803921568627451,
+      "recall": 0.050761421319796954,
+      "f1": 0.06688963210702341,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.4,
+      "recall": 0.33962264150943394,
+      "f1": 0.36734693877551017,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.2613074663034373,
+      "recall": 0.2074240322378512,
+      "f1": 0.22601698711534204,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.27339449541284405,
+      "recall": 0.18813131313131312,
+      "f1": 0.2228870605833957,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-30_18-26-25_266431/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-30_18-26-25_266431/predictions.jsonl",
+        "time_pdf_conversion": 0.0029751609545201063,
+        "time_extraction": 1011.2443496750202,
+        "commit_hash": "02dfc60fee42df6c76bf67c280cf7327f910e976",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "True",
+        "extractor.schema_description_kwargs.include_type_descriptions": "False",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gemma3_27b_in_process",
+        "seed": "42"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/3",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/4": {
+    "biodiversity_level": {
+      "precision": 0.1780821917808219,
+      "recall": 0.19402985074626866,
+      "f1": 0.18571428571428572,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.11538461538461539,
+      "recall": 0.11320754716981132,
+      "f1": 0.11428571428571428,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.4725274725274725,
+      "recall": 0.3115942028985507,
+      "f1": 0.37554585152838427,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.24761904761904763,
+      "recall": 0.11255411255411256,
+      "f1": 0.15476190476190477,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.14432989690721648,
+      "recall": 0.07106598984771574,
+      "f1": 0.09523809523809525,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.3493975903614458,
+      "recall": 0.27358490566037735,
+      "f1": 0.3068783068783069,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.25122346909676996,
+      "recall": 0.17933943481280604,
+      "f1": 0.20540402640111521,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.26147704590818366,
+      "recall": 0.16540404040404041,
+      "f1": 0.20262954369682906,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-30_18-44-48_086416/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-30_18-44-48_086416/predictions.jsonl",
+        "time_pdf_conversion": 0.002690998138859868,
+        "time_extraction": 960.513134468114,
+        "commit_hash": "02dfc60fee42df6c76bf67c280cf7327f910e976",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "True",
+        "extractor.schema_description_kwargs.include_type_descriptions": "False",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gemma3_27b_in_process",
+        "seed": "1337"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/4",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/5": {
+    "biodiversity_level": {
+      "precision": 0.24285714285714285,
+      "recall": 0.2537313432835821,
+      "f1": 0.24817518248175185,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.14634146341463414,
+      "recall": 0.11320754716981132,
+      "f1": 0.1276595744680851,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.4485981308411215,
+      "recall": 0.34782608695652173,
+      "f1": 0.39183673469387753,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.32,
+      "recall": 0.1038961038961039,
+      "f1": 0.1568627450980392,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.3170731707317073,
+      "recall": 0.1319796954314721,
+      "f1": 0.1863799283154122,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.3829787234042553,
+      "recall": 0.33962264150943394,
+      "f1": 0.36,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.30964143854147685,
+      "recall": 0.21504390304115417,
+      "f1": 0.24515236084286096,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.3347547974413646,
+      "recall": 0.19823232323232323,
+      "f1": 0.2490087232355274,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-30_19-02-07_995649/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-30_19-02-07_995649/predictions.jsonl",
+        "time_pdf_conversion": 0.0030537541024386883,
+        "time_extraction": 928.3842838020064,
+        "commit_hash": "02dfc60fee42df6c76bf67c280cf7327f910e976",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "True",
+        "extractor.schema_description_kwargs.include_type_descriptions": "False",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gemma3_27b_in_process",
+        "seed": "7331"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/5",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/6": {
+    "biodiversity_level": {
+      "precision": 0.2714285714285714,
+      "recall": 0.2835820895522388,
+      "f1": 0.27737226277372257,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.32222222222222224,
+      "recall": 0.5471698113207547,
+      "f1": 0.40559440559440557,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.7368421052631579,
+      "recall": 0.4057971014492754,
+      "f1": 0.5233644859813084,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.39622641509433965,
+      "recall": 0.09090909090909091,
+      "f1": 0.14788732394366197,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.23529411764705882,
+      "recall": 0.08121827411167512,
+      "f1": 0.12075471698113208,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.4725274725274725,
+      "recall": 0.4056603773584906,
+      "f1": 0.4365482233502538,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.40575681736380376,
+      "recall": 0.30238945745025425,
+      "f1": 0.3185869031040807,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.4107142857142857,
+      "recall": 0.23232323232323232,
+      "f1": 0.2967741935483871,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-30_19-19-06_827286/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-30_19-19-06_827286/predictions.jsonl",
+        "time_pdf_conversion": 0.0030036529060453176,
+        "time_extraction": 2270.1661766860634,
+        "commit_hash": "02dfc60fee42df6c76bf67c280cf7327f910e976",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "True",
+        "extractor.schema_description_kwargs.include_type_descriptions": "False",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "qwen3_30b_in_process",
+        "seed": "42"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/6",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/7": {
+    "biodiversity_level": {
+      "precision": 0.288135593220339,
+      "recall": 0.2537313432835821,
+      "f1": 0.2698412698412699,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.325,
+      "recall": 0.49056603773584906,
+      "f1": 0.3909774436090225,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.746268656716418,
+      "recall": 0.36231884057971014,
+      "f1": 0.48780487804878053,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.12,
+      "recall": 0.012987012987012988,
+      "f1": 0.0234375,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.5365853658536586,
+      "recall": 0.1116751269035533,
+      "f1": 0.18487394957983194,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.45454545454545453,
+      "recall": 0.37735849056603776,
+      "f1": 0.41237113402061865,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.41175584505597834,
+      "recall": 0.2681061420092909,
+      "f1": 0.2948843625165873,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.4388888888888889,
+      "recall": 0.1994949494949495,
+      "f1": 0.2743055555555556,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-30_19-57-58_695477/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-30_19-57-58_695477/predictions.jsonl",
+        "time_pdf_conversion": 0.0035503110848367214,
+        "time_extraction": 2109.5853791648988,
+        "commit_hash": "02dfc60fee42df6c76bf67c280cf7327f910e976",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "True",
+        "extractor.schema_description_kwargs.include_type_descriptions": "False",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "qwen3_30b_in_process",
+        "seed": "1337"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/7",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/8": {
+    "biodiversity_level": {
+      "precision": 0.29850746268656714,
+      "recall": 0.29850746268656714,
+      "f1": 0.29850746268656714,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.29545454545454547,
+      "recall": 0.49056603773584906,
+      "f1": 0.36879432624113473,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.7407407407407407,
+      "recall": 0.43478260869565216,
+      "f1": 0.5479452054794521,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.5128205128205128,
+      "recall": 0.08658008658008658,
+      "f1": 0.14814814814814814,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.42857142857142855,
+      "recall": 0.1065989847715736,
+      "f1": 0.17073170731707316,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.5340909090909091,
+      "recall": 0.44339622641509435,
+      "f1": 0.4845360824742268,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.46836426656078395,
+      "recall": 0.31007190114747046,
+      "f1": 0.336443822057767,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.470873786407767,
+      "recall": 0.24494949494949494,
+      "f1": 0.3222591362126246,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-30_20-34-18_715944/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-30_20-34-18_715944/predictions.jsonl",
+        "time_pdf_conversion": 0.0030081039294600487,
+        "time_extraction": 2326.860446384875,
+        "commit_hash": "02dfc60fee42df6c76bf67c280cf7327f910e976",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "True",
+        "extractor.schema_description_kwargs.include_type_descriptions": "False",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "qwen3_30b_in_process",
+        "seed": "7331"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/8",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/9": {
+    "biodiversity_level": {
+      "precision": 0.20952380952380953,
+      "recall": 0.3283582089552239,
+      "f1": 0.2558139534883721,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.11666666666666667,
+      "recall": 0.39622641509433965,
+      "f1": 0.18025751072961374,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.7875,
+      "recall": 0.45652173913043476,
+      "f1": 0.5779816513761469,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.12015503875968993,
+      "recall": 0.1341991341991342,
+      "f1": 0.12678936605316976,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.16607773851590105,
+      "recall": 0.23857868020304568,
+      "f1": 0.19583333333333333,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.34306569343065696,
+      "recall": 0.44339622641509435,
+      "f1": 0.3868312757201647,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.2904981578161207,
+      "recall": 0.3328800673328787,
+      "f1": 0.28725118178346676,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.2214765100671141,
+      "recall": 0.2916666666666667,
+      "f1": 0.25177111716621253,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-30_21-14-12_744616/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-11-03/2026-01-30_21-14-12_744616/predictions.jsonl",
+        "time_pdf_conversion": 0.002939063822850585,
+        "time_extraction": 2523.751933318097,
+        "commit_hash": "02dfc60fee42df6c76bf67c280cf7327f910e976",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "True",
+        "extractor.schema_description_kwargs.include_type_descriptions": "False",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "mistral_small_3_24b_in_process",
+        "seed": "42"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-11-03/9",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-22-25/0": {
+    "biodiversity_level": {
+      "precision": 0.32989690721649484,
+      "recall": 0.47761194029850745,
+      "f1": 0.3902439024390244,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.1896551724137931,
+      "recall": 0.6226415094339622,
+      "f1": 0.2907488986784141,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.6845637583892618,
+      "recall": 0.7391304347826086,
+      "f1": 0.710801393728223,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.1875,
+      "recall": 0.07792207792207792,
+      "f1": 0.11009174311926605,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.24864864864864866,
+      "recall": 0.233502538071066,
+      "f1": 0.24083769633507854,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.39375,
+      "recall": 0.5943396226415094,
+      "f1": 0.47368421052631576,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.3390024144446997,
+      "recall": 0.4575246871916219,
+      "f1": 0.36940130747105365,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.34146341463414637,
+      "recall": 0.3712121212121212,
+      "f1": 0.35571687840290384,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-22-25/2026-01-30_17-22-25_853702/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-30_17-22-25/2026-01-30_17-22-25_853702/predictions.jsonl",
+        "time_pdf_conversion": 0.003112673992291093,
+        "time_extraction": 9898.56971444306,
+        "commit_hash": "02dfc60fee42df6c76bf67c280cf7327f910e976",
+        "branch": "main",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "False",
+        "extractor.schema_description_kwargs.include_type_descriptions": "True",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gpt_5",
+        "seed": "7331"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-30_17-22-25/0",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-31_15-04-22/0": {
+    "biodiversity_level": {
+      "precision": 0.297029702970297,
+      "recall": 0.44776119402985076,
+      "f1": 0.3571428571428571,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.25,
+      "recall": 0.660377358490566,
+      "f1": 0.3626943005181347,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.6944444444444444,
+      "recall": 0.7246376811594203,
+      "f1": 0.7092198581560285,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.3829787234042553,
+      "recall": 0.15584415584415584,
+      "f1": 0.22153846153846155,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.36024844720496896,
+      "recall": 0.29441624365482233,
+      "f1": 0.3240223463687151,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.3609467455621302,
+      "recall": 0.5754716981132075,
+      "f1": 0.44363636363636366,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.39094134393101604,
+      "recall": 0.47641805521533714,
+      "f1": 0.4030423645600934,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.39555006180469715,
+      "recall": 0.40404040404040403,
+      "f1": 0.3997501561524047,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-31_15-04-22/2026-01-31_15-04-23_660449/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-31_15-04-22/2026-01-31_15-04-23_660449/predictions.jsonl",
+        "time_pdf_conversion": 0.11961993761360645,
+        "time_extraction": 7807.53146728687,
+        "commit_hash": "dd1413a20fc344dbbb95a79b18a4ab5c625cd3c5",
+        "branch": "run-script/parametrize-num-gpus",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "True",
+        "extractor.schema_description_kwargs.include_type_descriptions": "False",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gpt_5",
+        "seed": "42"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-31_15-04-22/0",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-31_15-04-22/1": {
+    "biodiversity_level": {
+      "precision": 0.28431372549019607,
+      "recall": 0.43283582089552236,
+      "f1": 0.3431952662721893,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.22151898734177214,
+      "recall": 0.660377358490566,
+      "f1": 0.3317535545023697,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.7062937062937062,
+      "recall": 0.7318840579710145,
+      "f1": 0.7188612099644127,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.34285714285714286,
+      "recall": 0.15584415584415584,
+      "f1": 0.21428571428571427,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.2804232804232804,
+      "recall": 0.26903553299492383,
+      "f1": 0.27461139896373055,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.40939597315436244,
+      "recall": 0.5754716981132075,
+      "f1": 0.47843137254901963,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.37413380259341,
+      "recall": 0.470908104051565,
+      "f1": 0.3935230860895727,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.3723404255319149,
+      "recall": 0.3977272727272727,
+      "f1": 0.3846153846153846,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-31_15-04-22/2026-01-31_17-15-06_667710/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-31_15-04-22/2026-01-31_17-15-06_667710/predictions.jsonl",
+        "time_pdf_conversion": 0.0030028801411390305,
+        "time_extraction": 7030.81455810694,
+        "commit_hash": "dd1413a20fc344dbbb95a79b18a4ab5c625cd3c5",
+        "branch": "run-script/parametrize-num-gpus",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "True",
+        "extractor.schema_description_kwargs.include_type_descriptions": "False",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gpt_5",
+        "seed": "1337"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-31_15-04-22/1",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-31_15-04-22/2": {
+    "biodiversity_level": {
+      "precision": 0.3177570093457944,
+      "recall": 0.5074626865671642,
+      "f1": 0.39080459770114945,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.2251655629139073,
+      "recall": 0.6415094339622641,
+      "f1": 0.3333333333333333,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.6758620689655173,
+      "recall": 0.7101449275362319,
+      "f1": 0.6925795053003534,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.25,
+      "recall": 0.15151515151515152,
+      "f1": 0.18867924528301888,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.23853211009174313,
+      "recall": 0.2639593908629442,
+      "f1": 0.25060240963855424,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.34523809523809523,
+      "recall": 0.5471698113207547,
+      "f1": 0.4233576642335766,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.3420924744258429,
+      "recall": 0.47029356696075175,
+      "f1": 0.37989279258166436,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.33476856835306784,
+      "recall": 0.3926767676767677,
+      "f1": 0.3614177803602557,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-31_15-04-22/2026-01-31_19-12-18_089591/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-31_15-04-22/2026-01-31_19-12-18_089591/predictions.jsonl",
+        "time_pdf_conversion": 0.002852795645594597,
+        "time_extraction": 6475.451875769068,
+        "commit_hash": "dd1413a20fc344dbbb95a79b18a4ab5c625cd3c5",
+        "branch": "run-script/parametrize-num-gpus",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "True",
+        "extractor.schema_description_kwargs.include_type_descriptions": "False",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gpt_5",
+        "seed": "7331"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-31_15-04-22/2",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-31_15-04-22/3": {
+    "biodiversity_level": {
+      "precision": 0.34831460674157305,
+      "recall": 0.4626865671641791,
+      "f1": 0.3974358974358975,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.2125,
+      "recall": 0.6415094339622641,
+      "f1": 0.3192488262910798,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.6689655172413793,
+      "recall": 0.7028985507246377,
+      "f1": 0.6855123674911662,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.32407407407407407,
+      "recall": 0.15151515151515152,
+      "f1": 0.20648967551622419,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.26373626373626374,
+      "recall": 0.2436548223350254,
+      "f1": 0.2532981530343008,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.3558282208588957,
+      "recall": 0.5471698113207547,
+      "f1": 0.4312267657992565,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.3622364471086976,
+      "recall": 0.4582390561703354,
+      "f1": 0.38220194759465415,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.3577331759149941,
+      "recall": 0.38257575757575757,
+      "f1": 0.3697376449054301,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-31_15-04-22/2026-01-31_21-00-14_037151/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-31_15-04-22/2026-01-31_21-00-14_037151/predictions.jsonl",
+        "time_pdf_conversion": 0.0029258541762828827,
+        "time_extraction": 6582.579247422051,
+        "commit_hash": "dd1413a20fc344dbbb95a79b18a4ab5c625cd3c5",
+        "branch": "run-script/parametrize-num-gpus",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "True",
+        "extractor.schema_description_kwargs.include_type_descriptions": "True",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gpt_5",
+        "seed": "42"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-31_15-04-22/3",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-31_15-04-22/4": {
+    "biodiversity_level": {
+      "precision": 0.31,
+      "recall": 0.4626865671641791,
+      "f1": 0.3712574850299401,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.23026315789473684,
+      "recall": 0.660377358490566,
+      "f1": 0.3414634146341463,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.6783216783216783,
+      "recall": 0.7028985507246377,
+      "f1": 0.6903914590747331,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.2032520325203252,
+      "recall": 0.10822510822510822,
+      "f1": 0.14124293785310735,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.22950819672131148,
+      "recall": 0.2131979695431472,
+      "f1": 0.22105263157894736,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.4090909090909091,
+      "recall": 0.5943396226415094,
+      "f1": 0.4846153846153846,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.34340599575816017,
+      "recall": 0.4569541961315246,
+      "f1": 0.37500388546437646,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.34269005847953216,
+      "recall": 0.369949494949495,
+      "f1": 0.35579842137219186,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-31_15-04-22/2026-01-31_22-49-57_144695/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-31_15-04-22/2026-01-31_22-49-57_144695/predictions.jsonl",
+        "time_pdf_conversion": 0.0030330070294439793,
+        "time_extraction": 7845.314360121265,
+        "commit_hash": "dd1413a20fc344dbbb95a79b18a4ab5c625cd3c5",
+        "branch": "run-script/parametrize-num-gpus",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "True",
+        "extractor.schema_description_kwargs.include_type_descriptions": "True",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gpt_5",
+        "seed": "1337"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-31_15-04-22/4",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  },
+  "dataset.predictions.log=logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-31_15-04-22/5": {
+    "biodiversity_level": {
+      "precision": 0.3402061855670103,
+      "recall": 0.4925373134328358,
+      "f1": 0.4024390243902439,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.2413793103448276,
+      "recall": 0.660377358490566,
+      "f1": 0.3535353535353535,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.6618705035971223,
+      "recall": 0.6666666666666666,
+      "f1": 0.6642599277978339,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.22608695652173913,
+      "recall": 0.11255411255411256,
+      "f1": 0.15028901734104047,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.2727272727272727,
+      "recall": 0.22842639593908629,
+      "f1": 0.24861878453038672,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.3885350318471338,
+      "recall": 0.5754716981132075,
+      "f1": 0.46387832699619774,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.355134210100851,
+      "recall": 0.45600559086607917,
+      "f1": 0.380503405765176,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.3569682151589242,
+      "recall": 0.3686868686868687,
+      "f1": 0.36273291925465834,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-31_15-04-22/2026-02-01_01-00-43_056378/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-31_15-04-22/2026-02-01_01-00-43_056378/predictions.jsonl",
+        "time_pdf_conversion": 0.003820541314780712,
+        "time_extraction": 8494.372741605155,
+        "commit_hash": "dd1413a20fc344dbbb95a79b18a4ab5c625cd3c5",
+        "branch": "run-script/parametrize-num-gpus",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "226_dont_include_field_and_type_descriptions",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor.schema_description_kwargs.include_field_descriptions": "True",
+        "extractor.schema_description_kwargs.include_type_descriptions": "True",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gpt_5",
+        "seed": "7331"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/226_dont_include_field_and_type_descriptions/predict/multiruns/2026-01-31_15-04-22/5",
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/226_dont_include_field_and_type_descriptions/predict"
+    }
+  }
+}

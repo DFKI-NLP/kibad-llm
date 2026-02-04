@@ -30,11 +30,11 @@ return_as_list:
   # - structured
   - errors
   # - response_content
-  # - reasoning_content
+  - reasoning_content
   # - messages
   # - messages_formatted
 
 # general return options (see simple extractor for details)
-return_reasoning: False
+return_reasoning: True
 return_messages: False
 return_messages_formatted: False

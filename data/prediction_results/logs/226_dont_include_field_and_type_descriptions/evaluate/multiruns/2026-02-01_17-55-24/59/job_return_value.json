@@ -1,0 +1,28 @@
+{
+  "no_error": 85,
+  "with_error": 15,
+  "ValueError": 8,
+  "JSONDecodeError": 4,
+  "MissingResponseContentError": 3,
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-31_15-04-22/2026-02-01_01-00-43_056378/predictions.jsonl",
+      "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-31_15-04-22/2026-02-01_01-00-43_056378/predictions.jsonl",
+      "time_pdf_conversion": 0.003820541314780712,
+      "time_extraction": 8494.372741605155,
+      "commit_hash": "dd1413a20fc344dbbb95a79b18a4ab5c625cd3c5",
+      "branch": "run-script/parametrize-num-gpus",
+      "is_dirty": false
+    },
+    "overrides": {
+      "name": "226_dont_include_field_and_type_descriptions",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "extractor.schema_description_kwargs.include_field_descriptions": "True",
+      "extractor.schema_description_kwargs.include_type_descriptions": "True",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor.return_reasoning": "True",
+      "extractor/llm": "gpt_5",
+      "seed": "7331"
+    }
+  }
+}

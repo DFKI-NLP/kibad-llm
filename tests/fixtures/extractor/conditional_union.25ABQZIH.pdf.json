@@ -1,61 +1,70 @@
 {
   "structured": {
-    "ecosystem_type": [
-      {
-        "category": "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes",
-        "description": "Niedermoore, feuchte, teilweise bewaldete oder laubhafter Feuchtfl\u00e4chen, die vor allem f\u00fcr Halbwetter-Paludi-Kulturen und Photovoltaikanlagen in regenerativer Nutzung verwendet werden.",
-        "term": "Waldfreie Niedermoore und S\u00fcmpfe, Gr\u00fcnland nasser bis feuchter Standorte"
-      }
+    "natural_region": [
+      "Alpenvorland",
+      "Norddeutsches Tiefland"
+    ],
+    "habitat": [
+      "Boden"
+    ],
+    "climate": [
+      "Atlantisches Klima"
     ],
     "landuse": [
       "Energieproduktion",
       "Landwirtschaft"
     ],
-    "climate": [
-      "maritim"
+    "ecosystem_type": [
+      {
+        "category": "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes",
+        "description": "Niedermoore und S\u00fcmpfe ohne Wald, typische Feuchtfl\u00e4chen, die f\u00fcr Landnutzung im Rahmen von Paludikultur vorgesehen sind.",
+        "term": "Waldfreie Niedermoore und S\u00fcmpfe, Gr\u00fcnland nasser bis feuchter Standorte"
+      },
+      {
+        "category": "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes",
+        "description": "Tiefgreifende Moorbiotope im Binnenland \u2013 hoch, zwischen und \u00dcbergangsbereiche, die f\u00fcr Paludikultur und Photovoltaikanlagen geeignet sind.",
+        "term": "Hoch-, Zwischen- und \u00dcbergangsmoore"
+      }
     ],
     "location": [
       {
-        "country": "Germany",
+        "country": "Deutschland",
         "federal_state": "Baden-W\u00fcrttemberg",
-        "name": "Baden-W\u00fcrttemberg"
+        "name": "Region Baden-W\u00fcrttemberg"
       },
       {
-        "country": "Germany",
+        "country": "Deutschland",
         "federal_state": "Bayern",
-        "name": "Bayern"
+        "name": "Region Bayern"
       },
       {
-        "country": "Germany",
+        "country": "Deutschland",
         "federal_state": "Brandenburg",
-        "name": "Brandenburg"
+        "name": "Region Brandenburg"
       },
       {
-        "country": "Germany",
+        "country": "Deutschland",
         "federal_state": "Mecklenburg-Vorpommern",
-        "name": "Mecklenburg-Vorpommern"
+        "name": "Region Mecklenburg-Vorpommern"
       },
       {
-        "country": "Germany",
+        "country": "Deutschland",
         "federal_state": "Niedersachsen",
-        "name": "Niedersachsen"
+        "name": "Region Niedersachsen"
       },
       {
-        "country": "Germany",
+        "country": "Deutschland",
         "federal_state": "Schleswig-Holstein",
-        "name": "Schleswig-Holstein"
+        "name": "Region Schleswig-Holstein"
       }
-    ],
-    "habitat": [
-      "Boden"
-    ],
-    "natural_region": [
-      "Alpenvorland",
-      "Norddeutsches Tiefland"
     ]
   },
   "errors_list": [
     [],
     []
+  ],
+  "reasoning_content_list": [
+    "We need to extract info from the markdown about ecosystem-related study features. Specifically the fields: habitat, natural_region, climate, landuse. We need to use allowed values for each. The document is about photovoltaic installations on wetlands (moor soils). We need to identify habitat types present. The key habitat: Moorb\u00f6den, which are wetlands. Which categories: \"Binnengew\u00e4sser und Auen\" maybe? Baths? Moorland is a wetland; we have \"Boden\" (soil) but also wetlands. But allowed habitats are: Agrar- und Offenland; Binnengew\u00e4sser und Auen; Boden; K\u00fcsten und K\u00fcstengew\u00e4sser; Urbane R\u00e4ume; Wald. Moor is wetland, similar to Binnengew\u00e4sser und Auen (river floodplains) or Boden? \"Boden\" refers to soils, maybe appropriate. So habitat likely \"Boden\" and maybe \"Binnengew\u00e4sser und Auen\". If want combination. Might pick single for simplicity: \"Boden\".\n\nNatural region: the document mentions \"norddeutschen Tiefebene\" (Norddeutsches Tiefland) and \"Alpenvorland\" and \"Mecklenburg-Vorpommern\" (north)? The allowed: Alpen; Alpenvorland; Mittelgebirgsschwelle; Nord- und Ostsee; Norddeutsches Tiefland; Schichtstufenland beidseits des Oberrheingrabens. Moorb\u00f6den in Germany: northlowland and alpine. The illustrative mentions: \"Norddeutsche Tiefebene\" = Norddeutsches Tiefland; \"Alpenvorland\" too. So natural_region = [\"Norddeutsches Tiefland\", \"Alpenvorland\"]. Could include both.\n\nClimate: climate descriptors: Atlantisches Klima; Gebirgsklima; kontinental; maritim; niederschlagsbenachteiligt; niederschlagsnormal; niederschlagsbeg\u00fcnstigt; subkontinental; submaritim. Moor soil in north Germany has a maritime climate (coastal, Atlantic). The document likely describes that but not explicitly. The general climate of the region: maybe \"maritim\" or \"Atlantisches Klima\" or \"submaritim\"? The Atlantic climate is used for the North Sea area. Let's choose \"Atlantisches Klima\". \"maritim\" also? Which allowed values: \"Atlantisches Klima\" appears, it's a synonym. Let's select \"Atlantisches Klima\".\n\nLanduse: categories: Landscape. Moorb\u00f6den used for agriculture (landwirtschaftlich) primarily 70% farmland. So landuse includes \"Landwirtschaft\". Also, the Moor is being used for energy production via PV, so \"Energieproduktion\" might be included. Also \"Naturnahe und nat\u00fcrliche Fl\u00e4chen\" maybe not because they are drained. The document about PVA expands. So include \"Landwirtschaft\" and \"Energieproduktion\". Possibly \"Bau\" but maybe not. I'll include \"Landwirtschaft\" and \"Energieproduktion\".\n\nThus JSON:\n\n{\n  \"habitat\": [...],\n  \"natural_region\": [...],\n  \"climate\": [...],\n  \"landuse\": [...]\n}\n\nReturn only valid JSON, no extra fields. Ensure proper formatting.\n\n",
+    "We need to extract ecosystem_type and location from doc.\n\nDoc mentions moorlands (Peatbogland). Terrestrial and semiterrestrial biotop groups: \"Hoch-, Zwischen- und \u00dcbergangsmoore\" fits category III Terrestrische ... The term list includes \"Waldfreie Niedermoore und S\u00fcmpfe, Gr\u00fcnland nasser bis feuchter Standorte\"; also \"Hoch-, Zwischen- und \u00dcbergangsmoore\". So ecosystem types could include \"Niedermoore\" or \"Hochmoore\". The study deals with moor soils (entw\u00e4sserte Moorb\u00f6den). We need ecosystem_type objects with category, term, description.\n\nWe should mention \"Hoch-, Zwischen- und \u00dcbergangsmoore\" with description possibly \"Pervious peatland types among peat bogs in Germany, used in Paludiculture\". Also \"Waldfreie Niedermoore und S\u00fcmpfe, Gr\u00fcnland nasser bis feuchter Standorte\". Describe.\n\nLocation: study conducted in Germany. Specific Bundesl\u00e4nder: Mecklenburg-Vorpommern, Niedersachsen, Baden-W\u00fcrttemberg, Brandenburg, Schleswig-Holstein, Bayern, Berlin? The doc mentions several. We can list multiple location objects. Each with country: \"Deutschland\", federal_state: each.\n\nWe might list all Bundesl\u00e4nder that are mentioned as having Paludikultur-Fl\u00e4chenkulthough etc: Mecklenburg-Vorpommern, Baden-W\u00fcrttemberg, Brandenburg, Schleswig-Holstein, Niedersachsen, Bayern. Also mention also Schleswig-Holstein.\n\nWe need separate objects maybe multiple. They want array of objects.\n\nSo:\n\necosystem_type: [\n{category:\"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes\", term:\"Hoch-, Zwischen- und \u00dcbergangsmoore\", description:\"Tiefgreifende Moorbiotope im Binnenland, hoch, zwischen und \u00dcbergangsbereiche\"},\n{category:\"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes\", term:\"Waldfreie Niedermoore und S\u00fcmpfe, Gr\u00fcnland nasser bis feuchter Standorte\", description:\"Niedermoore und S\u00fcmpfe ohne Wald, geeignet f\u00fcr Paludikultur\"}\n]\n\nThen location: [\n{country:\"Deutschland\", federal_state:\"Mecklenburg-Vorpommern\", name:\"Mecklenburg-Vorpommern Region\"},\n{country:\"Deutschland\", federal_state:\"Baden-W\u00fcrttemberg\", name:\"Baden-W\u00fcrttemberg Region\"},\n{country:\"Deutschland\", federal_state:\"Brandenburg\", name:\"Brandenburg Region\"},\n{country:\"Deutschland\", federal_state:\"Schleswig-Holstein\", name:\"Schleswig-Holstein Region\"},\n{country:\"Deutschland\", federal_state:\"Niedersachsen\", name:\"Niedersachsen Region\"},\n{country:\"Deutschland\", federal_state:\"Bayern\", name:\"Bayern Region\"}\n]\n\nDo we need \"name\" specifics? maybe just \"Region\". It's okay.\n\nReturn JSON.\n\n"
   ]
 }

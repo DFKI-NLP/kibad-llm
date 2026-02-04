@@ -1,0 +1,9 @@
+{
+  "output_file": "predictions/226_dont_include_field_and_type_descriptions/2026-01-31_15-04-22/2026-01-31_19-12-18_089591/predictions.jsonl",
+  "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/226_dont_include_field_and_type_descriptions/2026-01-31_15-04-22/2026-01-31_19-12-18_089591/predictions.jsonl",
+  "time_pdf_conversion": 0.002852795645594597,
+  "time_extraction": 6475.451875769068,
+  "commit_hash": "dd1413a20fc344dbbb95a79b18a4ab5c625cd3c5",
+  "branch": "run-script/parametrize-num-gpus",
+  "is_dirty": false
+}

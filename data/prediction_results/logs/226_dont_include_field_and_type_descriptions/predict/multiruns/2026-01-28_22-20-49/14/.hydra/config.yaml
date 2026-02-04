@@ -1,0 +1,125 @@
+print_config: true
+name: 226_dont_include_field_and_type_descriptions
+seed: 7331
+pdf_directory: /ds/text/kiba-d/dev-set-100
+output_dir: ${paths.prediction_save_dir}
+output_file_name: predictions.jsonl
+fast_dev_run: false
+extraction_caching: false
+store_text_in_predictions: false
+pdf_reader_num_proc: null
+extractor_num_proc: null
+paths:
+  root_dir: ${oc.env:PROJECT_ROOT}
+  data_dir: ${paths.root_dir}/data
+  timestamp: ${now:%Y-%m-%d_%H-%M-%S}
+  run_subdir: ${paths.timestamp}
+  output_dir: ${hydra:runtime.output_dir}
+  save_dir: ${paths.root_dir}
+  log_dir: ${paths.save_dir}/logs/${name}/predict
+  work_dir: ${hydra:runtime.cwd}
+  prediction_save_dir: ${paths.save_dir}/predictions/${name}/${paths.timestamp}
+pdf_reader:
+  _target_: kibad_llm.preprocessing.read_pdf_as_markdown_via_pymupdf4llm
+  _partial_: true
+extractor:
+  llm:
+    _target_: kibad_llm.llms.OpenAI
+    api_base: https://api.openai.com/v1
+    api_key: ${oc.env:OPENAI_API_KEY}
+    model: gpt-5
+    max_output_tokens: 8192
+    context_window: 131072
+    reasoning_options:
+      summary: auto
+    timeout: 360
+    max_retries: 3
+  prompt_template:
+    system_message: 'Du bist ein Spezialist für die strukturierte Datenextraktion
+      aus wissenschaftlichen Dokumenten im Bereich
+
+      Ökosystemforschung. Bitte lies den folgenden Text vollständig.
+
+
+      Der Text ist eine Biodiversitätsstudie oder ein Bericht zum Stand der Biodiversität,
+      und bezieht sich meist
+
+      auf eine Gegend in Deutschland oder Gesamtdeutschland. Prüfe, ob der Text biodiversitätsbezogene
+
+      wissenschaftliche Erkenntnisse enthält. Analysiere dafür zunächst den Rahmen
+      der Studie / des Berichts: Um welche
+
+      Lebensräume und Ökosystemtypen geht es? Welche Arten oder Artengruppen wurden
+      untersucht?
+
+      Enthält der Text Angaben zur betrachteten Biodiversitätsebene - z.B. Artenvielfalt,
+      genetische Diversität,
+
+      oder Habitatdiversität? Sammle diese und weitere Informationen entsprechend
+      dem nachfolgenden
+
+      Schema. Wenn die Studie zum Beispiel ein Überblicks-, Positions- oder Reviewpapier
+      ist, und daher manche der
+
+      abgefragten Informationen fehlen, lasse die entsprechenden Felder in deiner
+      Antwort leer.
+
+
+      Der Text ist als Markdown formatiert.
+
+      Gib die Antworten auf Deutsch, auch wenn der Text auf Englisch ist.
+
+      Wenn Antwortmöglichkeiten nach einer Frage gegeben sind, wähle nur aus den durch
+      Semikolon getrennten Antwortmöglichkeiten.
+
+      Extrahiere dabei nur, was auch im Text steht, konzentriere dich daher auf die
+      Informationen, die du sicher
+
+      identifizieren und auch belegen kannst. Für nicht im Text vorhandene Informationen
+      lasse die entsprechenden Antwortfelder leer.
+
+      Wenn eine Antwortmöglichkeit zutrifft, genügt es, sie einmal zu nennen, wiederhole
+      sie also nicht mehrfach.
+
+      Beachte jedoch auch die Angaben zur Kardinalität jedes Feldes.
+
+
+      Erzeuge die Antwort in validem JSON-Format (nicht embedded Markdown!). Keine
+      zusätzlichen Felder, keine Erklärungen.
+
+      Gib **ausschließlich** gültiges JSON nach dem folgendem Schema zurück. Allerdings
+      besteht jedes Feld aus einem
+
+      "content"-Unterfeld, in dem du die eigentliche Antwort einträgst und einem "evidence_anchor"-Unterfeld,
+      in dem
+
+      du die Textstelle (als exaktes Zitat) angibst, die deine Antwort am besten belegt.
+
+
+      {schema_description}
+
+      '
+    user_message: 'Dokument in Markdown Format:
+
+
+      {document}
+
+      '
+    schema_description_placeholder: schema_description
+    document_placeholder: document
+  request_parameters: {}
+  _target_: kibad_llm.extractors.extract_from_text_lenient
+  _partial_: true
+  schema:
+    _target_: kibad_llm.schema.types.EcosystemStudyFeaturesCoreFields.model_json_schema
+    by_alias: false
+  return_reasoning: true
+  return_messages: false
+  return_messages_formatted: false
+  adjust_schema_for_evidence_detection: true
+  adjust_schema_description_for_evidence_detection: true
+  evidence_anchor_description: Wörtliches Zitat aus dem Originaltext, das den extrahierten
+    Inhalt belegt.
+  schema_description_kwargs:
+    include_field_descriptions: false
+    include_type_descriptions: false
