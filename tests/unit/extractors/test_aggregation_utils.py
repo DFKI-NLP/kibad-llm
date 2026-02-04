@@ -70,7 +70,7 @@ def test_multi_entry_majority_vote_dict_entries_with_lists():
         [{"k1": ["v3"]}],
     ]
     res = _multi_entry_majority_vote(values)
-    assert res == [{"k1": ("v1",)}]
+    assert res == [{"k1": ["v1"]}]
 
 
 # --- Tests for _aggregate_structured_outputs ---
