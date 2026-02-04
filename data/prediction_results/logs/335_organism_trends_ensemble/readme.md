@@ -42,20 +42,29 @@ SUBDIR = [
 
 FILL_NA = {"prediction.overrides.extractor": "simple"}
 
+METRICS = ["f1", "recall"]
+
 # used to group the data
 INDEX_COLUMNS = ["prediction.overrides.extractor/llm", "prediction.overrides.extractor", "prediction.overrides.experiment/predict" ]
 PLOT_KWARGS = {
     # can be either "metric" or one of the INDEX_COLUMNS (or multiple of them)
     "xgroup": ["prediction.overrides.extractor",  "prediction.overrides.experiment/predict"],
     "create_subplot_for_each": "metric",
+    "set_missing_values_to_zero": True,
     # add any more arguments passed to pd.DataFrame.plot
     "subplot_columns": 2,
 }
 ```
 
-![comparison_metrics.svg](comparison_metrics.svg)
-![comparison_metrics_details.svg](comparison_metrics_details.svg)
+### f1
+![comparison_metrics_f1.svg](comparison_metrics_f1.svg)
+![comparison_metrics_f1_detail.svg](comparison_metrics_f1_detail.svg)
 
+### recall
+![comparison_metrics_recall.svg](comparison_metrics_recall.svg)
+![comparison_metrics_recall_detail.svg](comparison_metrics_recall_detail.svg)
+
+### errors
 ![comparison_errors.svg](comparison_errors.svg)
 ![comparison_errors_detail.svg](comparison_errors_detail.svg)
 

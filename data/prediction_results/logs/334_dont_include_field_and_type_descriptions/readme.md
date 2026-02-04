@@ -17,20 +17,28 @@ and https://github.com/DFKI-NLP/kibad-llm/pull/338 for description of the varied
 NAME = "334_dont_include_field_and_type_descriptions"
 # used to group the data
 INDEX_COLUMNS = ["prediction.overrides.extractor/llm","prediction.overrides.extractor.schema_description_kwargs.include_field_descriptions","prediction.overrides.extractor.schema_description_kwargs.include_type_descriptions"]
+
+METRICS = ["f1", "recall"]
+
 PLOT_KWARGS = {
     # can be either "metric" or one of the INDEX_COLUMNS (or multiple of them)
     "xgroup": ["prediction.overrides.extractor.schema_description_kwargs.include_field_descriptions","prediction.overrides.extractor.schema_description_kwargs.include_type_descriptions"],
     # add any more arguments passed to pd.DataFrame.plot
     "create_subplot_for_each": "metric",
+    "set_missing_values_to_zero": True,
     "subplot_columns": 2,
 }
 ```
 
-## Metrics
-![comparison_metrics.svg](comparison_metrics.svg)
-![comparison_metrics_detail.svg](comparison_metrics_detail.svg)
+### f1
+![comparison_metrics_f1.svg](comparison_metrics_f1.svg)
+![comparison_metrics_f1_detail.svg](comparison_metrics_f1_detail.svg)
 
-## Errors
+### recall
+![comparison_metrics_recall.svg](comparison_metrics_recall.svg)
+![comparison_metrics_recall_detail.svg](comparison_metrics_recall_detail.svg)
+
+### errors
 ![comparison_errors.svg](comparison_errors.svg)
 ![comparison_errors_detail.svg](comparison_errors_detail.svg)
 
@@ -85,8 +93,6 @@ seed=42,1337,7331 \
 Output folder: `logs/334_dont_
 include_field_and_type_descriptions/predict/multiruns/2026-02-02_16-51-12`
 
-
-</details>
 
 ## Evaluate F1
 
