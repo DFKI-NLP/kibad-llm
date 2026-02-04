@@ -41,7 +41,7 @@ SUBDIR = [
     "../257_organism_trends_v1_with_evi/evaluate",
 ]
 
-FILL_NA = {"prediction.overrides.extractor": "simple"}
+FILL_NA = {"prediction.overrides.extractor/prompt_template": "as_defined_in_experiment/predict"}
 
 # used to group the data
 INDEX_COLUMNS = ["prediction.overrides.extractor/llm", "prediction.overrides.experiment/predict", "prediction.overrides.extractor/prompt_template" ]
