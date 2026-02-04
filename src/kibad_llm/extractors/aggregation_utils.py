@@ -124,8 +124,8 @@ def aggregate_majority_vote(
 
     Entries with the same key are aggregated based on their value types:
     - Primitive types (str, int, float, bool): majority vote
-    - List types: majority vote per item
-    - Dict types: Not yet implemented (raises NotImplementedError)
+    - Dict types: majority vote
+    - List types: majority vote per item (TODO: check if this is correct)
 
     Args:
         structured_outputs: list of structured outputs from multiple extractions
@@ -160,10 +160,14 @@ def aggregate_majority_vote(
                 majority = _majority_vote(values_hashable)
                 # convert back to dict
                 aggregated[key] = dict(majority) if majority is not None else None
+                # TODO: use mapping to get original dicts instead of reconstructing
+                #  mapping = dict(zip(values_hashable, values))
+                #  aggregated[key] = mapping[majority] if majority is not None else None
             elif issubclass(value_type, list):
                 # multi-value: majority vote per item for list types
                 # explicitly pass the number of structured outputs since some values may
                 # be None and thus not in current values
+                # TODO: review if this is really correct (I have the feeling we should not provide n here)
                 aggregated[key] = _multi_entry_majority_vote(values, n=len(structured_outputs))
             else:
                 raise NotImplementedError(f"Unsupported value type for aggregation: {value_type}")
@@ -222,6 +226,7 @@ def _multi_entry_union(values: list[list | None]) -> list:
             v_hashable = (make_hashable_simple(item) for item in vs if item is not None)
             item_set.update(v_hashable)
     # convert back to original types
+    # TODO: use mapping to get original dicts instead of reconstructing
     if entry_type is dict:
         return [dict(item) for item in sorted(item_set)]
     else:
@@ -235,8 +240,8 @@ def aggregate_unanimous_union(
 
     Entries with the same key are aggregated based on their value types:
     - Primitive types (str, int, float, bool): return value if all extractions agree, else raise AggregationError
-    - List types: union of all items across extractions
     - Dict types: return value if all extractions agree, else raise AggregationError
+    - List types: union of all items across extractions
 
     Args:
         structured_outputs: list of structured outputs from multiple extractions
@@ -271,6 +276,9 @@ def aggregate_unanimous_union(
                 ]
                 majority = _aggregate_unanimous(values_hashable)
                 # convert back to dict
+                # TODO: use mapping to get original dicts instead of reconstructing
+                # mapping = dict(zip(values_hashable, values))
+                # aggregated[key] = mapping[majority] if majority is not None else None
                 aggregated[key] = dict(majority) if majority is not None else None
             elif issubclass(value_type, list):
                 # multi-value: union per item for list types
