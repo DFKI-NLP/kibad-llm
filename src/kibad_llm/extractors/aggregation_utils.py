@@ -226,6 +226,48 @@ def _multi_entry_union(values: list[list | None]) -> list:
     return [mapping[item_hashable] for item_hashable in sorted(item_set)]
 
 
+def aggregate_unanimous(
+    structured_outputs: list[dict | None], skip_type_mismatches: bool = False
+) -> dict[str, Any] | None:
+    """Aggregate structured outputs from multiple extractions.
+    If all values for a key are identical (or None), that value is kept. If there are
+    conflicting values, an AggregationError is raised.
+
+    Args:
+        structured_outputs: list of structured outputs from multiple extractions
+        skip_type_mismatches: If True, skips keys with inconsistent types across extractions
+            instead of raising an error (default: False)
+
+    Returns:
+        aggregated structured output or None if all entries are None
+    """
+
+    raise NotImplementedError("aggregate_unanimous is not yet implemented")
+
+
+def aggregate_single_majority_vote_multi_union(
+    structured_outputs: list[dict | None], skip_type_mismatches: bool = False
+) -> dict[str, Any] | None:
+    """Aggregate structured outputs from multiple extractions.
+
+    Entries with the same key are aggregated based on their value types:
+    - Primitive types (str, int, float, bool): majority vote
+    - Dict types: majority vote
+    - List types: union of all items across extractions
+
+    Args:
+        structured_outputs: list of structured outputs from multiple extractions
+        skip_type_mismatches: If True, skips keys with inconsistent types across extractions
+            instead of raising an error (default: False)
+
+    Returns:
+        aggregated structured output or None if all entries are None
+    """
+
+    raise NotImplementedError("aggregate_single_majority_vote_multi_union is not yet implemented")
+
+
+# TODO: remove this! strange mix of unanimous and union aggregation. One of the above should be used instead.
 def aggregate_single_unanimous_multi_union(
     structured_outputs: list[dict | None], skip_type_mismatches: bool = False
 ) -> dict[str, Any] | None:
