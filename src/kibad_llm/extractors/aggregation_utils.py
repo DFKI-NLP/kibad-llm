@@ -117,7 +117,7 @@ def _multi_entry_majority_vote(values: list[list | None], n: int | None = None) 
     return majority_items
 
 
-def _aggregate_structured_outputs(
+def aggregate_majority_vote(
     structured_outputs: list[dict | None], skip_type_mismatches: bool = False
 ) -> dict[str, Any] | None:
     """Aggregate structured outputs from multiple extractions.
@@ -171,7 +171,7 @@ def _aggregate_structured_outputs(
     return aggregated
 
 
-def _union_single(values: list) -> Any:
+def _aggregate_unanimous(values: list) -> Any:
     """Return a single value if all non-None values in the list are identical.
 
     This function is used to aggregate values that should be the same across multiple
@@ -228,7 +228,7 @@ def _multi_entry_union(values: list[list | None]) -> list:
         return sorted(item_set)
 
 
-def _aggregate_structured_outputs_union(
+def aggregate_unanimous_union(
     structured_outputs: list[dict | None], skip_type_mismatches: bool = False
 ) -> dict[str, Any] | None:
     """Aggregate structured outputs from multiple extractions.
@@ -262,14 +262,14 @@ def _aggregate_structured_outputs_union(
             # Aggregate based on type
             if issubclass(value_type, (str, int, float, bool)):
                 # single-value: this should be identical across all outputs, raises AggregationError if not
-                aggregated[key] = _union_single(values)
+                aggregated[key] = _aggregate_unanimous(values)
             elif issubclass(value_type, dict):
                 # single-value: this should be identical across all outputs, raises AggregationError if not
                 # make dicts hashable for comparison
                 values_hashable = [
                     make_hashable_simple(v) if v is not None else None for v in values
                 ]
-                majority = _union_single(values_hashable)
+                majority = _aggregate_unanimous(values_hashable)
                 # convert back to dict
                 aggregated[key] = dict(majority) if majority is not None else None
             elif issubclass(value_type, list):

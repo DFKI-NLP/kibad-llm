@@ -1,6 +1,6 @@
 from typing import Any
 
-from .aggregation_utils import _aggregate_structured_outputs
+from .aggregation_utils import aggregate_majority_vote
 from .base import extract_from_text_lenient
 
 
@@ -42,7 +42,7 @@ class RepeatingExtractor:
             results.append(current_result)
 
         structured_outputs = [v.get("structured", None) for v in results]
-        aggregated_structured = _aggregate_structured_outputs(
+        aggregated_structured = aggregate_majority_vote(
             structured_outputs, skip_type_mismatches=self.skip_type_mismatches
         )
         result: dict[str, Any] = {

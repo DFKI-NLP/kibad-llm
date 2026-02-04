@@ -1,12 +1,12 @@
 import pytest
 
 from kibad_llm.extractors.aggregation_utils import (
-    _aggregate_structured_outputs,
-    _aggregate_structured_outputs_union,
+    _aggregate_unanimous,
     _majority_vote,
     _multi_entry_majority_vote,
     _multi_entry_union,
-    _union_single,
+    aggregate_majority_vote,
+    aggregate_unanimous_union,
 )
 
 # --- Tests for _majority_vote ---
@@ -83,7 +83,7 @@ def test_aggregate_structured_outputs_primitives_majority_with_nones():
         {"s": "a", "i": 2, "f": 2.0, "b": False},
         {"s": "a", "i": 2, "f": 2.0, "b": False, "extra": None},
     ]
-    res = _aggregate_structured_outputs(structured_outputs)
+    res = aggregate_majority_vote(structured_outputs)
     assert res["s"] == "a"
     assert res["i"] == 2
     assert res["f"] == 2.0
@@ -99,7 +99,7 @@ def test_aggregate_structured_outputs_lists_majority_with_missing_entries():
         {},  # key missing
         {"l": ["x", "y"]},
     ]
-    res = _aggregate_structured_outputs(structured_outputs)
+    res = aggregate_majority_vote(structured_outputs)
     assert res["l"] == ["x"]
 
 
@@ -110,13 +110,13 @@ def test_aggregate_structured_outputs_lists_with_nones():
         {"l": None},
     ]
     # n=3; 'a' occurs once -> not > 1.5; expect empty list
-    res = _aggregate_structured_outputs(structured_outputs)
+    res = aggregate_majority_vote(structured_outputs)
     assert res["l"] == []
 
 
 def test_aggregate_structured_outputs_all_none_results_in_none():
     structured_outputs = [{"x": None}, {"x": None}]
-    res = _aggregate_structured_outputs(structured_outputs)
+    res = aggregate_majority_vote(structured_outputs)
     assert res["x"] is None
 
 
@@ -127,7 +127,7 @@ def test_aggregate_structured_outputs_dict():
         {"d": {"k1": 1, "k3": 3}},
         {"d": {"k1": [1, 2, 3], "k3": 3}},
     ]
-    res = _aggregate_structured_outputs(structured_outputs)
+    res = aggregate_majority_vote(structured_outputs)
     assert res == {"d": {"k1": 1, "k3": 3}}
 
 
@@ -136,14 +136,14 @@ def test_aggregate_structured_outputs_dict_tie():
         {"d": {"k1": 0, "k2": 2}},
         {"d": {"k1": 1, "k2": 2}},
     ]
-    res = _aggregate_structured_outputs(structured_outputs)
+    res = aggregate_majority_vote(structured_outputs)
     assert res == {"d": None}
 
 
 def test_aggregate_structured_outputs_inconsistent_types_raises():
     structured_outputs = [{"k": 1}, {"k": "1"}]
     with pytest.raises(ValueError, match="Inconsistent types for key 'k'"):
-        _aggregate_structured_outputs(structured_outputs)
+        aggregate_majority_vote(structured_outputs)
 
 
 def test_aggregate_structured_outputs_missing_first_key():
@@ -153,7 +153,7 @@ def test_aggregate_structured_outputs_missing_first_key():
         {"A": 1},
         {"A": 2},
     ]
-    res = _aggregate_structured_outputs(structured_outputs)
+    res = aggregate_majority_vote(structured_outputs)
     assert res == {"A": None}
 
     # the result should be the same even if the first entry has the key missing
@@ -162,7 +162,7 @@ def test_aggregate_structured_outputs_missing_first_key():
         {"A": 1},
         {"A": 2},
     ]
-    res2 = _aggregate_structured_outputs(structured_outputs2)
+    res2 = aggregate_majority_vote(structured_outputs2)
     assert res2 == {"A": None}
 
 
@@ -173,7 +173,7 @@ def test_aggregate_structured_outputs_none():
         None,
         {"A": 1},
     ]
-    res = _aggregate_structured_outputs(structured_outputs)
+    res = aggregate_majority_vote(structured_outputs)
     assert res == {"A": 1}
 
     # if all entries are None, the result should be None
@@ -181,28 +181,28 @@ def test_aggregate_structured_outputs_none():
         None,
         None,
     ]
-    res2 = _aggregate_structured_outputs(structured_outputs2)
+    res2 = aggregate_majority_vote(structured_outputs2)
     assert res2 is None
 
 
 class TestUnionSingle:
     def test_all_same_values(self):
-        assert _union_single([1, 1, 1]) == 1
-        assert _union_single(["a", "a"]) == "a"
+        assert _aggregate_unanimous([1, 1, 1]) == 1
+        assert _aggregate_unanimous(["a", "a"]) == "a"
 
     def test_with_none_values(self):
-        assert _union_single([1, None, 1]) == 1
-        assert _union_single([None, "a", None, "a"]) == "a"
+        assert _aggregate_unanimous([1, None, 1]) == 1
+        assert _aggregate_unanimous([None, "a", None, "a"]) == "a"
 
     def test_all_none(self):
-        assert _union_single([None, None]) is None
+        assert _aggregate_unanimous([None, None]) is None
 
     def test_empty_list(self):
-        assert _union_single([]) is None
+        assert _aggregate_unanimous([]) is None
 
     def test_conflicting_values(self):
         with pytest.raises(ValueError, match="Conflicting values"):
-            _union_single([1, 2, 3])
+            _aggregate_unanimous([1, 2, 3])
 
 
 class TestMultiEntryUnion:
@@ -225,28 +225,28 @@ class TestMultiEntryUnion:
 class TestAggregateStructuredOutputs:
     def test_primitive_types(self):
         outputs = [{"name": "John", "age": 30}, {"name": "John"}]
-        result = _aggregate_structured_outputs_union(outputs)
+        result = aggregate_unanimous_union(outputs)
         assert result == {"name": "John", "age": 30}
 
     def test_list_union(self):
         outputs = [{"tags": ["a", "b"]}, {"tags": ["b", "c"]}]
-        result = _aggregate_structured_outputs_union(outputs)
+        result = aggregate_unanimous_union(outputs)
         assert result == {"tags": ["a", "b", "c"]}
 
     def test_all_none(self):
-        assert _aggregate_structured_outputs_union([None, None]) is None
+        assert aggregate_unanimous_union([None, None]) is None
 
     def test_type_mismatch_raises(self):
         outputs = [{"value": 1}, {"value": "string"}]
         with pytest.raises(ValueError, match="Inconsistent types"):
-            _aggregate_structured_outputs_union(outputs)
+            aggregate_unanimous_union(outputs)
 
     def test_type_mismatch_skip(self):
         outputs = [{"value": 1}, {"value": "string"}]
-        result = _aggregate_structured_outputs_union(outputs, skip_type_mismatches=True)
+        result = aggregate_unanimous_union(outputs, skip_type_mismatches=True)
         assert result == {"value": None}
 
     def test_conflicting_primitives(self):
         outputs = [{"name": "John"}, {"name": "Jane"}]
         with pytest.raises(ValueError, match="Conflicting values"):
-            _aggregate_structured_outputs_union(outputs)
+            aggregate_unanimous_union(outputs)
