@@ -46,6 +46,7 @@ def collect_values_and_type_per_key(
     type_per_key: dict[str, type | None] = dict()
     # get values and type per key
     for res in structured_outputs:
+        # skip if complete structured_output is None (LLM query failed)
         if res is not None:
             for key in all_keys:
                 value = res.get(key, None)
