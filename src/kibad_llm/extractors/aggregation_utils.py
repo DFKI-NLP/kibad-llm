@@ -157,12 +157,14 @@ def aggregate_majority_vote(
             # Aggregate based on type
             if issubclass(value_type, (str, int, float, bool)):
                 # single-value: majority vote for primitive types
+                # TODO: use exclude_none=True?
                 aggregated[key] = _majority_vote(values)
             elif issubclass(value_type, dict):
                 # single-value: majority vote for dicts
                 values_hashable = [
                     make_hashable_simple(v) if v is not None else None for v in values
                 ]
+                # TODO: use exclude_none=True?
                 majority = _majority_vote(values_hashable)
                 # convert back to dict
                 aggregated[key] = dict(majority) if majority is not None else None
