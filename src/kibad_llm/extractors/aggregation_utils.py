@@ -226,7 +226,7 @@ def _multi_entry_union(values: list[list | None]) -> list:
     return [mapping[item_hashable] for item_hashable in sorted(item_set)]
 
 
-def aggregate_single_unanimous_list_union(
+def aggregate_single_unanimous_multi_union(
     structured_outputs: list[dict | None], skip_type_mismatches: bool = False
 ) -> dict[str, Any] | None:
     """Aggregate structured outputs from multiple extractions.
