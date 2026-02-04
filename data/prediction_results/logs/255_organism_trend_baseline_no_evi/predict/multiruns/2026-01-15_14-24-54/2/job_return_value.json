@@ -1,5 +1,5 @@
 {
-  "output_file": "predictions/255_organism_trend_baseline_no_evi/2026-01-15_14-24-54/2026-01-15_19-59-00_470705/predictions.jsonl",
+  "output_file": "/netscratch/hennig/code/kibad-llm/predictions/255_organism_trend_baseline_no_evi/2026-01-15_14-24-54/2026-01-15_19-59-00_470705/predictions.jsonl",
   "time_pdf_conversion": 0.012588819954544306,
   "time_extraction": 19658.509937728988,
   "commit_hash": "c224f0eafac75c170d28c736c19d718409f42757",

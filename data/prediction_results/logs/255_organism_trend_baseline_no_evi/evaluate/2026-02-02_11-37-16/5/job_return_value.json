@@ -1,0 +1,25 @@
+{
+  "no_error": 379,
+  "with_error": 30,
+  "ReasoningExtractionError": 22,
+  "ValueError": 8,
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/255_organism_trend_baseline_no_evi/2026-01-28_13-34-25/2026-01-29_05-11-50_865289/predictions.jsonl",
+      "output_file_absolute": "/netscratch/hennig/code/kibad-llm/predictions/255_organism_trend_baseline_no_evi/2026-01-28_13-34-25/2026-01-29_05-11-50_865289/predictions.jsonl",
+      "time_pdf_conversion": 0.006036676000803709,
+      "time_extraction": 14663.002205568133,
+      "commit_hash": "5ef34482e2f0e2c83bf9aac2319d36e912532e47",
+      "branch": "main",
+      "is_dirty": false
+    },
+    "overrides": {
+      "name": "255_organism_trend_baseline_no_evi",
+      "experiment/predict": "organism_trends",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-Wald-WVC",
+      "extractor.return_reasoning": "True",
+      "extractor/llm": "gpt_5",
+      "seed": "1337"
+    }
+  }
+}

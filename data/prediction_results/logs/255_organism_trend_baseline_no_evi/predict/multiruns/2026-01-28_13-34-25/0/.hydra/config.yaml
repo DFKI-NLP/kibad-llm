@@ -1,0 +1,67 @@
+print_config: true
+name: 255_organism_trend_baseline_no_evi
+seed: 42
+pdf_directory: /ds/text/kiba-d/dev-set-Wald-WVC
+output_dir: ${paths.prediction_save_dir}
+output_file_name: predictions.jsonl
+fast_dev_run: false
+extraction_caching: false
+store_text_in_predictions: false
+pdf_reader_num_proc: null
+extractor_num_proc: null
+paths:
+  root_dir: ${oc.env:PROJECT_ROOT}
+  data_dir: ${paths.root_dir}/data
+  timestamp: ${now:%Y-%m-%d_%H-%M-%S}
+  run_subdir: ${paths.timestamp}
+  output_dir: ${hydra:runtime.output_dir}
+  save_dir: ${paths.root_dir}
+  log_dir: ${paths.save_dir}/logs/${name}/predict
+  work_dir: ${hydra:runtime.cwd}
+  prediction_save_dir: ${paths.save_dir}/predictions/${name}/${paths.timestamp}
+pdf_reader:
+  _target_: kibad_llm.preprocessing.read_pdf_as_markdown_via_pymupdf4llm
+  _partial_: true
+extractor:
+  llm:
+    _target_: kibad_llm.llms.VllmInProcess
+    model: openai/gpt-oss-20b
+    vllm_kwargs:
+      tensor_parallel_size: 1
+      max_model_len: 131072
+      gpu_memory_utilization: 0.95
+      download_dir: ${oc.env:VLLM_DOWNLOAD_DIR}
+      seed: ${seed}
+    temperature: 1.0
+    max_tokens: 8192
+    min_p: 0.05
+    top_k: 40
+    top_p: 1.0
+    repetition_penalty: 1.1
+  prompt_template:
+    system_message: 'Du extrahierst Informationen aus einem Markdown-Dokument.
+
+      Gib **ausschließlich** gültiges JSON nach dem folgendem Schema zurück.
+
+      Keine zusätzlichen Felder, keine Erklärungen.
+
+      {schema_description}
+
+      '
+    user_message: 'Dokument in Markdown Format:
+
+
+      {document}
+
+      '
+    schema_description_placeholder: schema_description
+    document_placeholder: document
+  request_parameters: {}
+  _target_: kibad_llm.extractors.extract_from_text_lenient
+  _partial_: true
+  schema:
+    _target_: kibad_llm.schema.types.EcosystemStudyOrganismTrends.model_json_schema
+    by_alias: false
+  return_reasoning: true
+  return_messages: false
+  return_messages_formatted: false

@@ -1,0 +1,401 @@
+{
+  "dataset.predictions.log=logs/335_organism_trends_ensemble/predict/multiruns/2026-01-29_10-23-02/0": {
+    "no_error": 1178,
+    "with_error": 49,
+    "ValueError": 48,
+    "JSONDecodeError": 1,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/335_organism_trends_ensemble/2026-01-29_10-23-02/2026-01-29_10-23-04_059598/predictions.jsonl",
+        "output_file_absolute": "/netscratch/hennig/code/tmp/kibad-llm/predictions/335_organism_trends_ensemble/2026-01-29_10-23-02/2026-01-29_10-23-04_059598/predictions.jsonl",
+        "time_pdf_conversion": 0.007558805868029594,
+        "time_extraction": 12159.703863568138,
+        "commit_hash": "5a4e9f6557883763fb8b307c339c5a898d2b8c5b",
+        "branch": "organism-trends-with-persona",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "335_organism_trends_ensemble",
+        "experiment/predict": "organism_trends_with_evidence",
+        "extractor": "repeat",
+        "extractor/prompt_template": "organism_trends_v1_with_evidence_and_persona",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-Wald-WVC",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gpt_oss_20b_in_process",
+        "seed": "42"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/335_organism_trends_ensemble/predict/multiruns/2026-01-29_10-23-02/0",
+      "name": "335_organism_trends_ensemble",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "[logs/335_organism_trends_ensemble/predict/multiruns/2026-01-29_10-23-02,logs/335_organism_trends_ensemble/predict/multiruns/2026-01-30_10-32-08]"
+    }
+  },
+  "dataset.predictions.log=logs/335_organism_trends_ensemble/predict/multiruns/2026-01-29_10-23-02/1": {
+    "no_error": 1178,
+    "with_error": 49,
+    "ValueError": 48,
+    "JSONDecodeError": 1,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/335_organism_trends_ensemble/2026-01-29_10-23-02/2026-01-29_13-47-18_242059/predictions.jsonl",
+        "output_file_absolute": "/netscratch/hennig/code/tmp/kibad-llm/predictions/335_organism_trends_ensemble/2026-01-29_10-23-02/2026-01-29_13-47-18_242059/predictions.jsonl",
+        "time_pdf_conversion": 0.005078831920400262,
+        "time_extraction": 12697.996679852018,
+        "commit_hash": "5a4e9f6557883763fb8b307c339c5a898d2b8c5b",
+        "branch": "organism-trends-with-persona",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "335_organism_trends_ensemble",
+        "experiment/predict": "organism_trends_with_evidence",
+        "extractor": "repeat",
+        "extractor/prompt_template": "organism_trends_v1_with_evidence_and_persona",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-Wald-WVC",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gpt_oss_20b_in_process",
+        "seed": "1337"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/335_organism_trends_ensemble/predict/multiruns/2026-01-29_10-23-02/1",
+      "name": "335_organism_trends_ensemble",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "[logs/335_organism_trends_ensemble/predict/multiruns/2026-01-29_10-23-02,logs/335_organism_trends_ensemble/predict/multiruns/2026-01-30_10-32-08]"
+    }
+  },
+  "dataset.predictions.log=logs/335_organism_trends_ensemble/predict/multiruns/2026-01-29_10-23-02/2": {
+    "no_error": 1178,
+    "with_error": 49,
+    "ValueError": 48,
+    "JSONDecodeError": 1,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/335_organism_trends_ensemble/2026-01-29_10-23-02/2026-01-29_17-19-44_360232/predictions.jsonl",
+        "output_file_absolute": "/netscratch/hennig/code/tmp/kibad-llm/predictions/335_organism_trends_ensemble/2026-01-29_10-23-02/2026-01-29_17-19-44_360232/predictions.jsonl",
+        "time_pdf_conversion": 0.0050010590348392725,
+        "time_extraction": 12633.186917983927,
+        "commit_hash": "5a4e9f6557883763fb8b307c339c5a898d2b8c5b",
+        "branch": "organism-trends-with-persona",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "335_organism_trends_ensemble",
+        "experiment/predict": "organism_trends_with_evidence",
+        "extractor": "repeat",
+        "extractor/prompt_template": "organism_trends_v1_with_evidence_and_persona",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-Wald-WVC",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gpt_oss_20b_in_process",
+        "seed": "7331"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/335_organism_trends_ensemble/predict/multiruns/2026-01-29_10-23-02/2",
+      "name": "335_organism_trends_ensemble",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "[logs/335_organism_trends_ensemble/predict/multiruns/2026-01-29_10-23-02,logs/335_organism_trends_ensemble/predict/multiruns/2026-01-30_10-32-08]"
+    }
+  },
+  "dataset.predictions.log=logs/335_organism_trends_ensemble/predict/multiruns/2026-01-29_10-23-02/3": {
+    "no_error": 1174,
+    "with_error": 53,
+    "ValueError": 48,
+    "JSONDecodeError": 5,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/335_organism_trends_ensemble/2026-01-29_10-23-02/2026-01-29_20-51-18_697547/predictions.jsonl",
+        "output_file_absolute": "/netscratch/hennig/code/tmp/kibad-llm/predictions/335_organism_trends_ensemble/2026-01-29_10-23-02/2026-01-29_20-51-18_697547/predictions.jsonl",
+        "time_pdf_conversion": 0.005096187116578221,
+        "time_extraction": 11860.119071505964,
+        "commit_hash": "5a4e9f6557883763fb8b307c339c5a898d2b8c5b",
+        "branch": "organism-trends-with-persona",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "335_organism_trends_ensemble",
+        "experiment/predict": "organism_trends_with_evidence",
+        "extractor": "repeat",
+        "extractor/prompt_template": "organism_trends_v1_with_evidence_and_persona",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-Wald-WVC",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gemma3_27b_in_process",
+        "seed": "42"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/335_organism_trends_ensemble/predict/multiruns/2026-01-29_10-23-02/3",
+      "name": "335_organism_trends_ensemble",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "[logs/335_organism_trends_ensemble/predict/multiruns/2026-01-29_10-23-02,logs/335_organism_trends_ensemble/predict/multiruns/2026-01-30_10-32-08]"
+    }
+  },
+  "dataset.predictions.log=logs/335_organism_trends_ensemble/predict/multiruns/2026-01-29_10-23-02/4": {
+    "no_error": 1176,
+    "with_error": 51,
+    "ValueError": 48,
+    "JSONDecodeError": 3,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/335_organism_trends_ensemble/2026-01-29_10-23-02/2026-01-30_00-11-01_698418/predictions.jsonl",
+        "output_file_absolute": "/netscratch/hennig/code/tmp/kibad-llm/predictions/335_organism_trends_ensemble/2026-01-29_10-23-02/2026-01-30_00-11-01_698418/predictions.jsonl",
+        "time_pdf_conversion": 0.006963987834751606,
+        "time_extraction": 11332.42065127613,
+        "commit_hash": "5a4e9f6557883763fb8b307c339c5a898d2b8c5b",
+        "branch": "organism-trends-with-persona",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "335_organism_trends_ensemble",
+        "experiment/predict": "organism_trends_with_evidence",
+        "extractor": "repeat",
+        "extractor/prompt_template": "organism_trends_v1_with_evidence_and_persona",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-Wald-WVC",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gemma3_27b_in_process",
+        "seed": "1337"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/335_organism_trends_ensemble/predict/multiruns/2026-01-29_10-23-02/4",
+      "name": "335_organism_trends_ensemble",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "[logs/335_organism_trends_ensemble/predict/multiruns/2026-01-29_10-23-02,logs/335_organism_trends_ensemble/predict/multiruns/2026-01-30_10-32-08]"
+    }
+  },
+  "dataset.predictions.log=logs/335_organism_trends_ensemble/predict/multiruns/2026-01-29_10-23-02/5": {
+    "no_error": 1172,
+    "with_error": 55,
+    "ValueError": 48,
+    "JSONDecodeError": 7,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/335_organism_trends_ensemble/2026-01-29_10-23-02/2026-01-30_03-21-30_638878/predictions.jsonl",
+        "output_file_absolute": "/netscratch/hennig/code/tmp/kibad-llm/predictions/335_organism_trends_ensemble/2026-01-29_10-23-02/2026-01-30_03-21-30_638878/predictions.jsonl",
+        "time_pdf_conversion": 0.006592602003365755,
+        "time_extraction": 11988.769684824161,
+        "commit_hash": "5a4e9f6557883763fb8b307c339c5a898d2b8c5b",
+        "branch": "organism-trends-with-persona",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "335_organism_trends_ensemble",
+        "experiment/predict": "organism_trends_with_evidence",
+        "extractor": "repeat",
+        "extractor/prompt_template": "organism_trends_v1_with_evidence_and_persona",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-Wald-WVC",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gemma3_27b_in_process",
+        "seed": "7331"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/335_organism_trends_ensemble/predict/multiruns/2026-01-29_10-23-02/5",
+      "name": "335_organism_trends_ensemble",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "[logs/335_organism_trends_ensemble/predict/multiruns/2026-01-29_10-23-02,logs/335_organism_trends_ensemble/predict/multiruns/2026-01-30_10-32-08]"
+    }
+  },
+  "dataset.predictions.log=logs/335_organism_trends_ensemble/predict/multiruns/2026-01-30_10-32-08/0": {
+    "no_error": 1167,
+    "with_error": 60,
+    "ValueError": 51,
+    "MissingResponseContentError": 5,
+    "JSONDecodeError": 4,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/335_organism_trends_ensemble/2026-01-30_10-32-08/2026-01-30_10-32-09_620103/predictions.jsonl",
+        "output_file_absolute": "/netscratch/hennig/code/tmp/kibad-llm/predictions/335_organism_trends_ensemble/2026-01-30_10-32-08/2026-01-30_10-32-09_620103/predictions.jsonl",
+        "time_pdf_conversion": 0.006460144184529781,
+        "time_extraction": 21762.023792697117,
+        "commit_hash": "5a4e9f6557883763fb8b307c339c5a898d2b8c5b",
+        "branch": "organism-trends-with-persona",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "335_organism_trends_ensemble",
+        "experiment/predict": "organism_trends_with_evidence",
+        "extractor": "repeat",
+        "extractor/prompt_template": "organism_trends_v1_with_evidence_and_persona",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-Wald-WVC",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "qwen3_30b_in_process",
+        "seed": "42"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/335_organism_trends_ensemble/predict/multiruns/2026-01-30_10-32-08/0",
+      "name": "335_organism_trends_ensemble",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "[logs/335_organism_trends_ensemble/predict/multiruns/2026-01-29_10-23-02,logs/335_organism_trends_ensemble/predict/multiruns/2026-01-30_10-32-08]"
+    }
+  },
+  "dataset.predictions.log=logs/335_organism_trends_ensemble/predict/multiruns/2026-01-30_10-32-08/1": {
+    "no_error": 1169,
+    "with_error": 58,
+    "ValueError": 51,
+    "JSONDecodeError": 3,
+    "MissingResponseContentError": 4,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/335_organism_trends_ensemble/2026-01-30_10-32-08/2026-01-30_16-36-17_436912/predictions.jsonl",
+        "output_file_absolute": "/netscratch/hennig/code/tmp/kibad-llm/predictions/335_organism_trends_ensemble/2026-01-30_10-32-08/2026-01-30_16-36-17_436912/predictions.jsonl",
+        "time_pdf_conversion": 0.005633828928694129,
+        "time_extraction": 20518.39940631413,
+        "commit_hash": "5a4e9f6557883763fb8b307c339c5a898d2b8c5b",
+        "branch": "organism-trends-with-persona",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "335_organism_trends_ensemble",
+        "experiment/predict": "organism_trends_with_evidence",
+        "extractor": "repeat",
+        "extractor/prompt_template": "organism_trends_v1_with_evidence_and_persona",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-Wald-WVC",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "qwen3_30b_in_process",
+        "seed": "1337"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/335_organism_trends_ensemble/predict/multiruns/2026-01-30_10-32-08/1",
+      "name": "335_organism_trends_ensemble",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "[logs/335_organism_trends_ensemble/predict/multiruns/2026-01-29_10-23-02,logs/335_organism_trends_ensemble/predict/multiruns/2026-01-30_10-32-08]"
+    }
+  },
+  "dataset.predictions.log=logs/335_organism_trends_ensemble/predict/multiruns/2026-01-30_10-32-08/2": {
+    "no_error": 1170,
+    "with_error": 57,
+    "ValueError": 51,
+    "JSONDecodeError": 2,
+    "MissingResponseContentError": 4,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/335_organism_trends_ensemble/2026-01-30_10-32-08/2026-01-30_22-19-33_141315/predictions.jsonl",
+        "output_file_absolute": "/netscratch/hennig/code/tmp/kibad-llm/predictions/335_organism_trends_ensemble/2026-01-30_10-32-08/2026-01-30_22-19-33_141315/predictions.jsonl",
+        "time_pdf_conversion": 0.005255025113001466,
+        "time_extraction": 19666.146558762994,
+        "commit_hash": "5a4e9f6557883763fb8b307c339c5a898d2b8c5b",
+        "branch": "organism-trends-with-persona",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "335_organism_trends_ensemble",
+        "experiment/predict": "organism_trends_with_evidence",
+        "extractor": "repeat",
+        "extractor/prompt_template": "organism_trends_v1_with_evidence_and_persona",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-Wald-WVC",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "qwen3_30b_in_process",
+        "seed": "7331"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/335_organism_trends_ensemble/predict/multiruns/2026-01-30_10-32-08/2",
+      "name": "335_organism_trends_ensemble",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "[logs/335_organism_trends_ensemble/predict/multiruns/2026-01-29_10-23-02,logs/335_organism_trends_ensemble/predict/multiruns/2026-01-30_10-32-08]"
+    }
+  },
+  "dataset.predictions.log=logs/335_organism_trends_ensemble/predict/multiruns/2026-01-30_10-32-08/3": {
+    "no_error": 1113,
+    "with_error": 114,
+    "ValueError": 48,
+    "JSONDecodeError": 66,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/335_organism_trends_ensemble/2026-01-30_10-32-08/2026-01-31_03-48-15_244345/predictions.jsonl",
+        "output_file_absolute": "/netscratch/hennig/code/tmp/kibad-llm/predictions/335_organism_trends_ensemble/2026-01-30_10-32-08/2026-01-31_03-48-15_244345/predictions.jsonl",
+        "time_pdf_conversion": 0.004938848782330751,
+        "time_extraction": 26631.118204508908,
+        "commit_hash": "5a4e9f6557883763fb8b307c339c5a898d2b8c5b",
+        "branch": "organism-trends-with-persona",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "335_organism_trends_ensemble",
+        "experiment/predict": "organism_trends_with_evidence",
+        "extractor": "repeat",
+        "extractor/prompt_template": "organism_trends_v1_with_evidence_and_persona",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-Wald-WVC",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "mistral_small_3_24b_in_process",
+        "seed": "42"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/335_organism_trends_ensemble/predict/multiruns/2026-01-30_10-32-08/3",
+      "name": "335_organism_trends_ensemble",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "[logs/335_organism_trends_ensemble/predict/multiruns/2026-01-29_10-23-02,logs/335_organism_trends_ensemble/predict/multiruns/2026-01-30_10-32-08]"
+    }
+  },
+  "dataset.predictions.log=logs/335_organism_trends_ensemble/predict/multiruns/2026-01-30_10-32-08/4": {
+    "no_error": 1119,
+    "with_error": 108,
+    "ValueError": 48,
+    "JSONDecodeError": 60,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/335_organism_trends_ensemble/2026-01-30_10-32-08/2026-01-31_11-13-01_741587/predictions.jsonl",
+        "output_file_absolute": "/netscratch/hennig/code/tmp/kibad-llm/predictions/335_organism_trends_ensemble/2026-01-30_10-32-08/2026-01-31_11-13-01_741587/predictions.jsonl",
+        "time_pdf_conversion": 0.005079881055280566,
+        "time_extraction": 26446.25725461007,
+        "commit_hash": "5a4e9f6557883763fb8b307c339c5a898d2b8c5b",
+        "branch": "organism-trends-with-persona",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "335_organism_trends_ensemble",
+        "experiment/predict": "organism_trends_with_evidence",
+        "extractor": "repeat",
+        "extractor/prompt_template": "organism_trends_v1_with_evidence_and_persona",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-Wald-WVC",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "mistral_small_3_24b_in_process",
+        "seed": "1337"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/335_organism_trends_ensemble/predict/multiruns/2026-01-30_10-32-08/4",
+      "name": "335_organism_trends_ensemble",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "[logs/335_organism_trends_ensemble/predict/multiruns/2026-01-29_10-23-02,logs/335_organism_trends_ensemble/predict/multiruns/2026-01-30_10-32-08]"
+    }
+  },
+  "dataset.predictions.log=logs/335_organism_trends_ensemble/predict/multiruns/2026-01-30_10-32-08/5": {
+    "no_error": 1121,
+    "with_error": 106,
+    "ValueError": 48,
+    "JSONDecodeError": 58,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/335_organism_trends_ensemble/2026-01-30_10-32-08/2026-01-31_18-34-51_595193/predictions.jsonl",
+        "output_file_absolute": "/netscratch/hennig/code/tmp/kibad-llm/predictions/335_organism_trends_ensemble/2026-01-30_10-32-08/2026-01-31_18-34-51_595193/predictions.jsonl",
+        "time_pdf_conversion": 0.0052460660226643085,
+        "time_extraction": 26693.13704121788,
+        "commit_hash": "5a4e9f6557883763fb8b307c339c5a898d2b8c5b",
+        "branch": "organism-trends-with-persona",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "335_organism_trends_ensemble",
+        "experiment/predict": "organism_trends_with_evidence",
+        "extractor": "repeat",
+        "extractor/prompt_template": "organism_trends_v1_with_evidence_and_persona",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-Wald-WVC",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "mistral_small_3_24b_in_process",
+        "seed": "7331"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/335_organism_trends_ensemble/predict/multiruns/2026-01-30_10-32-08/5",
+      "name": "335_organism_trends_ensemble",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "[logs/335_organism_trends_ensemble/predict/multiruns/2026-01-29_10-23-02,logs/335_organism_trends_ensemble/predict/multiruns/2026-01-30_10-32-08]"
+    }
+  }
+}

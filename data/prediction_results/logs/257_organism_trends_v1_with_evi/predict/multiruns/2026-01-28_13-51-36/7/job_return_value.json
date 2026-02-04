@@ -1,0 +1,9 @@
+{
+  "output_file": "predictions/257_organism_trends_v1_with_evi/2026-01-28_13-51-36/2026-01-29_00-06-53_963897/predictions.jsonl",
+  "output_file_absolute": "/netscratch/hennig/code/kibad-llm/predictions/257_organism_trends_v1_with_evi/2026-01-28_13-51-36/2026-01-29_00-06-53_963897/predictions.jsonl",
+  "time_pdf_conversion": 0.007775088073685765,
+  "time_extraction": 8552.864092673175,
+  "commit_hash": "5ef34482e2f0e2c83bf9aac2319d36e912532e47",
+  "branch": "main",
+  "is_dirty": false
+}

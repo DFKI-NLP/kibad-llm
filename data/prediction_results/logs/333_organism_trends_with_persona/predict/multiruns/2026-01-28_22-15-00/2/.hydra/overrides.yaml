@@ -1,0 +1,7 @@
+- name=333_organism_trends_with_persona
+- experiment/predict=organism_trends_with_evidence
+- extractor/prompt_template=organism_trends_v1_with_evidence_and_persona
+- pdf_directory=/ds/text/kiba-d/dev-set-Wald-WVC
+- extractor.return_reasoning=True
+- extractor/llm=gpt_oss_20b_in_process
+- seed=7331

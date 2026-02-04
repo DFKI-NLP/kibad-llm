@@ -1,0 +1,199 @@
+hydra:
+  run:
+    dir: ${paths.log_dir}/runs/${paths.run_subdir}
+  sweep:
+    dir: ${paths.log_dir}/multiruns/${paths.run_subdir}
+    subdir: ${hydra.job.num}
+  launcher:
+    _target_: hydra._internal.core_plugins.basic_launcher.BasicLauncher
+  sweeper:
+    _target_: hydra._internal.core_plugins.basic_sweeper.BasicSweeper
+    max_batch_size: null
+    params: null
+  help:
+    app_name: ${hydra.job.name}
+    header: '${hydra.help.app_name} is powered by Hydra.
+
+      '
+    footer: 'Powered by Hydra (https://hydra.cc)
+
+      Use --hydra-help to view Hydra specific help
+
+      '
+    template: '${hydra.help.header}
+
+      == Configuration groups ==
+
+      Compose your configuration from those groups (group=option)
+
+
+      $APP_CONFIG_GROUPS
+
+
+      == Config ==
+
+      Override anything in the config (foo.bar=value)
+
+
+      $CONFIG
+
+
+      ${hydra.help.footer}
+
+      '
+  hydra_help:
+    template: 'Hydra (${hydra.runtime.version})
+
+      See https://hydra.cc for more info.
+
+
+      == Flags ==
+
+      $FLAGS_HELP
+
+
+      == Configuration groups ==
+
+      Compose your configuration from those groups (For example, append hydra/job_logging=disabled
+      to command line)
+
+
+      $HYDRA_CONFIG_GROUPS
+
+
+      Use ''--cfg hydra'' to Show the Hydra config.
+
+      '
+    hydra_help: ???
+  hydra_logging:
+    version: 1
+    formatters:
+      colorlog:
+        (): colorlog.ColoredFormatter
+        format: '[%(cyan)s%(asctime)s%(reset)s][%(purple)sHYDRA%(reset)s] %(message)s'
+    handlers:
+      console:
+        class: logging.StreamHandler
+        formatter: colorlog
+        stream: ext://sys.stdout
+    root:
+      level: INFO
+      handlers:
+      - console
+    disable_existing_loggers: false
+  job_logging:
+    version: 1
+    formatters:
+      simple:
+        format: '[%(asctime)s][%(name)s][%(levelname)s] - %(message)s'
+      colorlog:
+        (): colorlog.ColoredFormatter
+        format: '[%(cyan)s%(asctime)s%(reset)s][%(blue)s%(name)s%(reset)s][%(log_color)s%(levelname)s%(reset)s]
+          - %(message)s'
+        log_colors:
+          DEBUG: purple
+          INFO: green
+          WARNING: yellow
+          ERROR: red
+          CRITICAL: red
+    handlers:
+      console:
+        class: logging.StreamHandler
+        formatter: colorlog
+        stream: ext://sys.stdout
+      file:
+        class: logging.FileHandler
+        formatter: simple
+        filename: ${hydra.job.name}.log
+    root:
+      level: INFO
+      handlers:
+      - console
+      - file
+    disable_existing_loggers: false
+  env: {}
+  mode: MULTIRUN
+  searchpath: []
+  callbacks:
+    save_job_return:
+      _target_: kibad_llm.hydra_callbacks.SaveJobReturnValueCallback
+      integrate_multirun_result: false
+      multirun_convert_job_ids: true
+      multirun_add_overrides_as_dict: true
+      sort_markdown_columns: true
+      filenames:
+      - job_return_value.json
+      - job_return_value.md
+      multirun_show_file_contents:
+      - job_return_value.md
+      multirun_overrides_separator: '#'
+      multirun_replace_existing_overrides: true
+      multirun_aggregator_blacklist:
+      - min
+      - 25%
+      - 50%
+      - 75%
+      - max
+  output_subdir: .hydra
+  overrides:
+    hydra:
+    - hydra.mode=MULTIRUN
+    task:
+    - name=333_organism_trends_with_persona
+    - experiment/predict=organism_trends_with_evidence
+    - extractor/prompt_template=organism_trends_v1_with_evidence_and_persona
+    - pdf_directory=/ds/text/kiba-d/dev-set-Wald-WVC
+    - extractor.return_reasoning=True
+    - extractor/llm=gemma3_27b_in_process
+    - seed=42
+  job:
+    name: predict
+    chdir: null
+    override_dirname: experiment/predict=organism_trends_with_evidence,extractor.return_reasoning=True,extractor/llm=gemma3_27b_in_process,extractor/prompt_template=organism_trends_v1_with_evidence_and_persona,name=333_organism_trends_with_persona,pdf_directory=/ds/text/kiba-d/dev-set-Wald-WVC,seed=42
+    id: '3'
+    num: 3
+    config_name: predict.yaml
+    env_set: {}
+    env_copy: []
+    config:
+      override_dirname:
+        kv_sep: '='
+        item_sep: ','
+        exclude_keys: []
+  runtime:
+    version: 1.3.2
+    version_base: '1.3'
+    cwd: /netscratch/hennig/code/tmp/kibad-llm
+    config_sources:
+    - path: hydra.conf
+      schema: pkg
+      provider: hydra
+    - path: /netscratch/hennig/code/tmp/kibad-llm/configs
+      schema: file
+      provider: main
+    - path: hydra_plugins.hydra_colorlog.conf
+      schema: pkg
+      provider: hydra-colorlog
+    - path: ''
+      schema: structured
+      provider: schema
+    output_dir: /netscratch/hennig/code/tmp/kibad-llm/logs/333_organism_trends_with_persona/predict/multiruns/2026-01-28_22-15-00/3
+    choices:
+      experiment/predict: organism_trends_with_evidence
+      extractor: simple
+      extractor/request_parameters: default
+      extractor/prompt_template: organism_trends_v1_with_evidence_and_persona
+      extractor/llm: gemma3_27b_in_process
+      pdf_reader: pymupdf4llm
+      hydra: default
+      paths: predict
+      hydra/env: default
+      hydra/callbacks: null
+      hydra/job_logging: colorlog
+      hydra/hydra_logging: colorlog
+      hydra/hydra_help: default
+      hydra/help: default
+      hydra/sweeper: basic
+      hydra/launcher: basic
+      hydra/output: default
+  verbose: false

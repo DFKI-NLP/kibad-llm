@@ -1,0 +1,57 @@
+{
+  "organism_trends.Antwortvariable": {
+    "precision": 0.12181303116147309,
+    "recall": 0.32575757575757575,
+    "f1": 0.17731958762886596,
+    "support": 132
+  },
+  "organism_trends.Hauptgruppe_RoteListen": {
+    "precision": 0.21026894865525672,
+    "recall": 0.7478260869565218,
+    "f1": 0.32824427480916035,
+    "support": 115
+  },
+  "organism_trends.Lebensraum": {
+    "precision": 0.27899686520376177,
+    "recall": 0.8018018018018018,
+    "f1": 0.41395348837209306,
+    "support": 111
+  },
+  "organism_trends.Trend": {
+    "precision": 0.13496932515337423,
+    "recall": 0.49624060150375937,
+    "f1": 0.21221864951768488,
+    "support": 133
+  },
+  "AVG": {
+    "precision": 0.18651204254346646,
+    "recall": 0.5929065165049147,
+    "f1": 0.282934000081951,
+    "support": 122.75
+  },
+  "ALL": {
+    "precision": 0.18089171974522292,
+    "recall": 0.5784114052953157,
+    "f1": 0.27559437166424067,
+    "support": 491
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/257_organism_trends_v1_with_evi/2026-01-30_09-16-13/2026-01-30_15-15-58_178041/predictions.jsonl",
+      "output_file_absolute": "/netscratch/hennig/code/kibad-llm/predictions/257_organism_trends_v1_with_evi/2026-01-30_09-16-13/2026-01-30_15-15-58_178041/predictions.jsonl",
+      "time_pdf_conversion": 0.007967641111463308,
+      "time_extraction": 20149.02825941192,
+      "commit_hash": "5ef34482e2f0e2c83bf9aac2319d36e912532e47",
+      "branch": "main",
+      "is_dirty": false
+    },
+    "overrides": {
+      "name": "257_organism_trends_v1_with_evi",
+      "experiment/predict": "organism_trends_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-Wald-WVC",
+      "extractor.return_reasoning": "True",
+      "extractor/llm": "mistral_small_3_24b_in_process",
+      "seed": "1337"
+    }
+  }
+}
