@@ -66,10 +66,14 @@ def collect_values_and_type_per_key(
     return values_per_key, type_per_key
 
 
-def _majority_vote(values: list) -> Any:
+def _majority_vote(values: list, exclude_none: bool = False) -> Any:
     """Return the majority value from a list of values. Returns None on ties."""
     if len(values) == 0:
         raise AggregationError("Cannot perform majority vote on empty list")
+    if exclude_none:
+        values = [v for v in values if v is not None]
+    if len(values) == 0:
+        return None
     value_counts = Counter(values)
     most_common = value_counts.most_common()
     top_value, top_count = most_common[0]
