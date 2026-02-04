@@ -99,27 +99,17 @@ def _multi_entry_majority_vote(values: list[list | None], n: int | None = None) 
     if n is None:
         n = len(values)
     item_counts: Counter = Counter()
-    entry_type: type | None = None
+    mapping: dict = dict()  # mapping from hashable to original item
     for vs in values:
         if vs is not None:
-            # if the list contains dicts, we need to keep track of that ...
-            if any(isinstance(item, dict) for item in vs):
-                entry_type = dict
-            # ... and make items hashable
-            v_hashable = (make_hashable_simple(item) for item in vs if item is not None)
-            item_counts.update(v_hashable)
-    majority_items = [item for item, count in item_counts.items() if count > n / 2]
-    # convert back to original types (but nested structures remain hashable tuples!)
-    # TODO: use mapping to get original dicts instead of reconstructing
-    if entry_type is dict:
-        majority_items = [dict(item) for item in majority_items]
-    elif entry_type is None:
-        # all items are primitive types
-        pass
-    else:
-        raise NotImplementedError(
-            f"Unsupported entry type in multi-entry majority vote: {entry_type}"
-        )
+            for item in vs:
+                if item is not None:
+                    item_hashable = make_hashable_simple(item)
+                    item_counts[item_hashable] += 1
+                    mapping[item_hashable] = item
+    majority_items = [
+        mapping[item_hashable] for item_hashable, count in item_counts.items() if count > n / 2
+    ]
     return majority_items
 
 
@@ -165,12 +155,12 @@ def aggregate_majority_vote(
                     make_hashable_simple(v) if v is not None else None for v in values
                 ]
                 # TODO: use exclude_none=True?
-                majority = _majority_vote(values_hashable)
+                majority_hashable = _majority_vote(values_hashable)
                 # convert back to dict
-                aggregated[key] = dict(majority) if majority is not None else None
-                # TODO: use mapping to get original dicts instead of reconstructing
-                #  mapping = dict(zip(values_hashable, values))
-                #  aggregated[key] = mapping[majority] if majority is not None else None
+                mapping = dict(zip(values_hashable, values))
+                aggregated[key] = (
+                    mapping[majority_hashable] if majority_hashable is not None else None
+                )
             elif issubclass(value_type, list):
                 # multi-value: majority vote per item for list types
                 # explicitly pass the number of structured outputs since some values may
@@ -224,21 +214,16 @@ def _multi_entry_union(values: list[list | None]) -> list:
         Sorted list of unique items from all input lists
     """
     item_set: set = set()
-    entry_type: type | None = None
+    mapping = dict()
     for vs in values:
         if vs is not None:
-            # if the list contains dicts, we need to keep track of that ...
-            if any(isinstance(item, dict) for item in vs):
-                entry_type = dict
-            # ... and make items hashable
-            v_hashable = (make_hashable_simple(item) for item in vs if item is not None)
-            item_set.update(v_hashable)
-    # convert back to original types
-    # TODO: use mapping to get original dicts instead of reconstructing
-    if entry_type is dict:
-        return [dict(item) for item in sorted(item_set)]
-    else:
-        return sorted(item_set)
+            for item in vs:
+                if item is not None:
+                    item_hashable = make_hashable_simple(item)
+                    item_set.add(item_hashable)
+                    mapping[item_hashable] = item
+    # return sorted list of unique items
+    return [mapping[item_hashable] for item_hashable in sorted(item_set)]
 
 
 def aggregate_single_unanimous_list_union(
@@ -282,12 +267,12 @@ def aggregate_single_unanimous_list_union(
                 values_hashable = [
                     make_hashable_simple(v) if v is not None else None for v in values
                 ]
-                majority = _aggregate_unanimous(values_hashable)
+                majority_hashable = _aggregate_unanimous(values_hashable)
                 # convert back to dict
-                # TODO: use mapping to get original dicts instead of reconstructing
-                # mapping = dict(zip(values_hashable, values))
-                # aggregated[key] = mapping[majority] if majority is not None else None
-                aggregated[key] = dict(majority) if majority is not None else None
+                mapping = dict(zip(values_hashable, values))
+                aggregated[key] = (
+                    mapping[majority_hashable] if majority_hashable is not None else None
+                )
             elif issubclass(value_type, list):
                 # multi-value: union per item for list types
                 aggregated[key] = _multi_entry_union(values)
