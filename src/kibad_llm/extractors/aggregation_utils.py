@@ -105,6 +105,7 @@ def _multi_entry_majority_vote(values: list[list | None], n: int | None = None) 
             item_counts.update(v_hashable)
     majority_items = [item for item, count in item_counts.items() if count > n / 2]
     # convert back to original types (but nested structures remain hashable tuples!)
+    # TODO: use mapping to get original dicts instead of reconstructing
     if entry_type is dict:
         majority_items = [dict(item) for item in majority_items]
     elif entry_type is None:
@@ -125,7 +126,7 @@ def aggregate_majority_vote(
     Entries with the same key are aggregated based on their value types:
     - Primitive types (str, int, float, bool): majority vote
     - Dict types: majority vote
-    - List types: majority vote per item (TODO: check if this is correct)
+    - List types: majority vote per item
 
     Args:
         structured_outputs: list of structured outputs from multiple extractions
