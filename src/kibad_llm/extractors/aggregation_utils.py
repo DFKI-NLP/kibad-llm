@@ -57,7 +57,7 @@ def collect_values_and_type_per_key(
                     else:
                         if type_per_key[key] != type(value):
                             if not skip_type_mismatches:
-                                raise ValueError(
+                                raise AggregationError(
                                     f"Inconsistent types for key '{key}': "
                                     f"{type_per_key[key]} vs {type(value)}"
                                 )
@@ -171,8 +171,7 @@ def aggregate_majority_vote(
                 # multi-value: majority vote per item for list types
                 # explicitly pass the number of structured outputs since some values may
                 # be None and thus not in current values
-                # TODO: review if this is really correct (I have the feeling we should not provide n here)
-                aggregated[key] = _multi_entry_majority_vote(values, n=len(structured_outputs))
+                aggregated[key] = _multi_entry_majority_vote(values)
             else:
                 raise NotImplementedError(f"Unsupported value type for aggregation: {value_type}")
 
@@ -346,63 +345,6 @@ def aggregate_single_majority_vote_multi_union(
                     make_hashable_simple(v) if v is not None else None for v in values
                 ]
                 majority_hashable = _majority_vote(values_hashable, exclude_none=True)
-                # convert back to dict
-                mapping = dict(zip(values_hashable, values))
-                aggregated[key] = (
-                    mapping[majority_hashable] if majority_hashable is not None else None
-                )
-            elif issubclass(value_type, list):
-                # multi-value: union per item for list types
-                aggregated[key] = _multi_entry_union(values)
-            else:
-                raise NotImplementedError(f"Unsupported value type for aggregation: {value_type}")
-
-    return aggregated
-
-
-# TODO: remove this! strange mix of unanimous and union aggregation. One of the above should be used instead.
-def aggregate_single_unanimous_multi_union(
-    structured_outputs: list[dict | None], skip_type_mismatches: bool = False
-) -> dict[str, Any] | None:
-    """Aggregate structured outputs from multiple extractions.
-
-    Entries with the same key are aggregated based on their value types:
-    - Primitive types (str, int, float, bool): return value if all extractions agree, else raise AggregationError
-    - Dict types: return value if all extractions agree, else raise AggregationError
-    - List types: union of all items across extractions
-
-    Args:
-        structured_outputs: list of structured outputs from multiple extractions
-        skip_type_mismatches: If True, skips keys with inconsistent types across extractions
-            instead of raising an error (default: False)
-    Returns:
-        aggregated structured output or None if all entries are None
-    """
-    if all(res is None for res in structured_outputs):
-        return None
-
-    values_per_key, type_per_key = collect_values_and_type_per_key(
-        structured_outputs, skip_type_mismatches=skip_type_mismatches
-    )
-
-    aggregated: dict[str, Any] = dict()
-    for key, values in values_per_key.items():
-        value_type = type_per_key.get(key, None)
-        if value_type is None:
-            # if all values are None
-            aggregated[key] = None
-        else:
-            # Aggregate based on type
-            if issubclass(value_type, (str, int, float, bool)):
-                # single-value: this should be identical across all outputs, raises AggregationError if not
-                aggregated[key] = _aggregate_unanimous(values)
-            elif issubclass(value_type, dict):
-                # single-value: this should be identical across all outputs, raises AggregationError if not
-                # make dicts hashable for comparison
-                values_hashable = [
-                    make_hashable_simple(v) if v is not None else None for v in values
-                ]
-                majority_hashable = _aggregate_unanimous(values_hashable)
                 # convert back to dict
                 mapping = dict(zip(values_hashable, values))
                 aggregated[key] = (

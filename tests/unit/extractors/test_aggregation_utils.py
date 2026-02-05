@@ -1,12 +1,13 @@
 import pytest
 
 from kibad_llm.extractors.aggregation_utils import (
+    AggregationError,
     _aggregate_unanimous,
     _majority_vote,
     _multi_entry_majority_vote,
     _multi_entry_union,
     aggregate_majority_vote,
-    aggregate_single_unanimous_multi_union,
+    aggregate_unanimous,
 )
 
 # --- Tests for _majority_vote ---
@@ -225,28 +226,28 @@ class TestMultiEntryUnion:
 class TestAggregateStructuredOutputs:
     def test_primitive_types(self):
         outputs = [{"name": "John", "age": 30}, {"name": "John"}]
-        result = aggregate_single_unanimous_multi_union(outputs)
+        result = aggregate_unanimous(outputs)
         assert result == {"name": "John", "age": 30}
 
     def test_list_union(self):
         outputs = [{"tags": ["a", "b"]}, {"tags": ["b", "c"]}]
-        result = aggregate_single_unanimous_multi_union(outputs)
-        assert result == {"tags": ["a", "b", "c"]}
+        with pytest.raises(AggregationError, match="Conflicting values"):
+            aggregate_unanimous(outputs)
 
     def test_all_none(self):
-        assert aggregate_single_unanimous_multi_union([None, None]) is None
+        assert aggregate_unanimous([None, None]) is None
 
     def test_type_mismatch_raises(self):
         outputs = [{"value": 1}, {"value": "string"}]
-        with pytest.raises(ValueError, match="Inconsistent types"):
-            aggregate_single_unanimous_multi_union(outputs)
+        with pytest.raises(AggregationError, match="Inconsistent types"):
+            aggregate_unanimous(outputs)
 
     def test_type_mismatch_skip(self):
         outputs = [{"value": 1}, {"value": "string"}]
-        result = aggregate_single_unanimous_multi_union(outputs, skip_type_mismatches=True)
+        result = aggregate_unanimous(outputs, skip_type_mismatches=True)
         assert result == {"value": None}
 
     def test_conflicting_primitives(self):
         outputs = [{"name": "John"}, {"name": "Jane"}]
-        with pytest.raises(ValueError, match="Conflicting values"):
-            aggregate_single_unanimous_multi_union(outputs)
+        with pytest.raises(AggregationError, match="Conflicting values"):
+            aggregate_unanimous(outputs)
