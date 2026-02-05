@@ -232,7 +232,7 @@ def _multi_entry_union(values: list[list | None]) -> list:
     return [mapping[item_hashable] for item_hashable in sorted(item_set)]
 
 
-def aggregate_unanimous_union(
+def aggregate_unanimous(
     structured_outputs: list[dict | None], skip_type_mismatches: bool = False
 ) -> dict[str, Any] | None:
     """Aggregate structured outputs with non-overlapping keys.
