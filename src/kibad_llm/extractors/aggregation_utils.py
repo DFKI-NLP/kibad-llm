@@ -123,6 +123,11 @@ def aggregate_majority_vote(
     - Dict types: majority vote
     - List types: majority vote per item
 
+    This is meant to aggregate outputs from repeated queries with the same schema,
+    where each extraction may produce slightly different results due to LLM variability.
+    The majority vote ensures that only values consistently appearing across extractions
+    are kept, reducing noise and improving reliability.
+
     Args:
         structured_outputs: list of structured outputs from multiple extractions
         skip_type_mismatches: If True, skips keys with inconsistent types across extractions
@@ -226,12 +231,14 @@ def _multi_entry_union(values: list[list | None]) -> list:
     return [mapping[item_hashable] for item_hashable in sorted(item_set)]
 
 
-def aggregate_unanimous(
+def aggregate_union(
     structured_outputs: list[dict | None], skip_type_mismatches: bool = False
 ) -> dict[str, Any] | None:
-    """Aggregate structured outputs from multiple extractions.
-    If all values for a key are identical (or None), that value is kept. If there are
-    conflicting values, an AggregationError is raised.
+    """Aggregate structured outputs with non-overlapping keys.
+
+    Combines results from multiple extractions where each extraction is expected to
+    populate different keys (e.g., when a complex schema is split into multiple simpler
+    queries). Each key should appear with a non-None value in at most one extraction.
 
     Args:
         structured_outputs: list of structured outputs from multiple extractions
@@ -240,9 +247,12 @@ def aggregate_unanimous(
 
     Returns:
         aggregated structured output or None if all entries are None
+
+    Raises:
+        AggregationError: If the same key has non-None values in multiple extractions
     """
 
-    raise NotImplementedError("aggregate_unanimous is not yet implemented")
+    raise NotImplementedError("aggregate_union is not yet implemented")
 
 
 def aggregate_single_majority_vote_multi_union(
@@ -254,6 +264,11 @@ def aggregate_single_majority_vote_multi_union(
     - Primitive types (str, int, float, bool): majority vote
     - Dict types: majority vote
     - List types: union of all items across extractions
+
+    This is meant to aggregate outputs from queries over different document chunks,
+    where single-valued fields (primitives, dicts) should converge to a consistent
+    value via majority vote, while multi-valued fields (lists) may contain different
+    valid items from each chunk that should all be collected.
 
     Args:
         structured_outputs: list of structured outputs from multiple extractions
