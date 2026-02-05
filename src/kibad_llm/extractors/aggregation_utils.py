@@ -253,7 +253,48 @@ def aggregate_unanimous(
         AggregationError: If the same key has non-None values in multiple extractions
     """
 
-    raise NotImplementedError("aggregate_union is not yet implemented")
+    if all(res is None for res in structured_outputs):
+        return None
+
+    values_per_key, type_per_key = collect_values_and_type_per_key(
+        structured_outputs, skip_type_mismatches=skip_type_mismatches
+    )
+
+    aggregated: dict[str, Any] = dict()
+    for key, values in values_per_key.items():
+        value_type = type_per_key.get(key, None)
+        if value_type is None:
+            # if all values are None
+            aggregated[key] = None
+        else:
+            # Aggregate based on type: all non-None values must be identical, otherwise raise error
+            if issubclass(value_type, (str, int, float, bool)):
+                aggregated[key] = _aggregate_unanimous(values)
+            elif issubclass(value_type, dict):
+                # make dicts hashable for comparison
+                values_hashable = [
+                    make_hashable_simple(v) if v is not None else None for v in values
+                ]
+                majority_hashable = _aggregate_unanimous(values_hashable)
+                # convert back to dict
+                mapping = dict(zip(values_hashable, values))
+                aggregated[key] = (
+                    mapping[majority_hashable] if majority_hashable is not None else None
+                )
+            elif issubclass(value_type, list):
+                values_hashable = [
+                    make_hashable_simple(v) if v is not None else None for v in values
+                ]
+                majority_hashable = _aggregate_unanimous(values_hashable)
+                # convert back to dict
+                mapping = dict(zip(values_hashable, values))
+                aggregated[key] = (
+                    mapping[majority_hashable] if majority_hashable is not None else None
+                )
+            else:
+                raise NotImplementedError(f"Unsupported value type for aggregation: {value_type}")
+
+    return aggregated
 
 
 def aggregate_single_majority_vote_multi_union(
@@ -280,7 +321,43 @@ def aggregate_single_majority_vote_multi_union(
         aggregated structured output or None if all entries are None
     """
 
-    raise NotImplementedError("aggregate_single_majority_vote_multi_union is not yet implemented")
+    if all(res is None for res in structured_outputs):
+        return None
+
+    values_per_key, type_per_key = collect_values_and_type_per_key(
+        structured_outputs, skip_type_mismatches=skip_type_mismatches
+    )
+
+    aggregated: dict[str, Any] = dict()
+    for key, values in values_per_key.items():
+        value_type = type_per_key.get(key, None)
+        if value_type is None:
+            # if all values are None
+            aggregated[key] = None
+        else:
+            # Aggregate based on type
+            if issubclass(value_type, (str, int, float, bool)):
+                # single-value: this should be identical across all outputs, raises AggregationError if not
+                aggregated[key] = _majority_vote(values, exclude_none=True)
+            elif issubclass(value_type, dict):
+                # single-value: this should be identical across all outputs, raises AggregationError if not
+                # make dicts hashable for comparison
+                values_hashable = [
+                    make_hashable_simple(v) if v is not None else None for v in values
+                ]
+                majority_hashable = _majority_vote(values_hashable, exclude_none=True)
+                # convert back to dict
+                mapping = dict(zip(values_hashable, values))
+                aggregated[key] = (
+                    mapping[majority_hashable] if majority_hashable is not None else None
+                )
+            elif issubclass(value_type, list):
+                # multi-value: union per item for list types
+                aggregated[key] = _multi_entry_union(values)
+            else:
+                raise NotImplementedError(f"Unsupported value type for aggregation: {value_type}")
+
+    return aggregated
 
 
 # TODO: remove this! strange mix of unanimous and union aggregation. One of the above should be used instead.
