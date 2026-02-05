@@ -28,11 +28,11 @@ model: "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B"
 # See https://docs.vllm.ai/en/v0.12.0/api/vllm/entrypoints/llm/ for details.
 vllm_kwargs:
   tensor_parallel_size: 1  # shard across N GPUs
-  # Supports up to 256K tokens (max size for https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Qwen-32B).
-  # Use lower value to save memory and improve performance
+  # Supports up to 128K tokens (max size for https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Qwen-32B).
+  # Use lower value to save memory and improve performance (recommendation by HF model card)
   max_model_len: 32768
   # This model requires the deepseek_r1 reasoning parser (see HF model card).
-  #reasoning_parser: "deepseek_r1"
+  reasoning_parser: "deepseek_r1"
   gpu_memory_utilization: 0.95 # fraction of GPU memory reserved (impacts KV cache size)
   # dtype: "auto"
   download_dir: ${oc.env:VLLM_DOWNLOAD_DIR}
