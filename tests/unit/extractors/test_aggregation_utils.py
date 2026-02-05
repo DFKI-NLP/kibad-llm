@@ -1,253 +1,299 @@
 import pytest
 
-from kibad_llm.extractors.aggregation_utils import (
-    AggregationError,
-    _aggregate_unanimous,
-    _majority_vote,
-    _multi_entry_majority_vote,
-    _multi_entry_union,
-    aggregate_majority_vote,
-    aggregate_unanimous,
-)
-
-# --- Tests for _majority_vote ---
+from kibad_llm.extractors import aggregation_utils as au
 
 
-def test_majority_vote_basic():
-    assert _majority_vote(["a", "b", "a", "c", "a"]) == "a"
+# -----------------------------
+# make_hashable_simple
+# -----------------------------
+def test_make_hashable_simple_primitives_passthrough():
+    assert au.make_hashable_simple(1) == 1
+    assert au.make_hashable_simple("x") == "x"
+    assert au.make_hashable_simple(None) is None
+    assert au.make_hashable_simple(True) is True
 
 
-def test_majority_vote_tie_returns_one_of():
-    # In a tie, there is no majority; function should return None
-    res = _majority_vote(["x", "y"])
-    assert res is None
+def test_make_hashable_simple_list_set_tuple_dict_behavior():
+    # list: sorted, None removed
+    assert au.make_hashable_simple([3, None, 1, 2]) == (1, 2, 3)
+
+    # set: sorted, None removed
+    assert au.make_hashable_simple({3, None, 1, 2}) == (1, 2, 3)
+
+    # tuple: order kept, None kept
+    assert au.make_hashable_simple((3, None, 1)) == (3, None, 1)
+
+    # dict: items sorted by key, None-valued entries removed
+    assert au.make_hashable_simple({"b": 2, "a": 1, "c": None}) == (("a", 1), ("b", 2))
 
 
-def test_majority_vote_empty_raises():
-    with pytest.raises(ValueError, match="majority vote on empty list"):
-        _majority_vote([])
+def test_make_hashable_simple_nested_structures():
+    value = {
+        "x": [2, None, 1],
+        "y": None,
+        "z": ({"b": None, "a": 3}, None, [5, 4]),
+    }
+    # dict: sorted items, None values removed
+    # list: sorted, None removed
+    # tuple: order preserved, None preserved
+    expected = (
+        ("x", (1, 2)),
+        ("z", ((("a", 3),), None, (4, 5))),
+    )
+    assert au.make_hashable_simple(value) == expected
 
 
-# --- Tests for _multi_entry_majority_vote ---
-
-
-def test_multi_entry_majority_vote_basic():
-    values = [["x", "y"], ["x"], ["y", "z"]]
-    # n defaults to len(values)=3; majority threshold is > 1.5 -> 2
-    res = _multi_entry_majority_vote(values)
-    assert set(res) == {"x", "y"}
-
-
-def test_multi_entry_majority_vote_handles_none_and_default_n():
-    values = [["a"], None, ["a", "b"]]
-    # n defaults to 3; 'a' appears twice -> included; 'b' appears once -> excluded
-    res = _multi_entry_majority_vote(values)
-    assert res == ["a"]
-
-
-def test_multi_entry_majority_vote_with_explicit_n_strict_threshold():
-    values = [["a"], ["a"]]
-    # Explicit n=4 -> need > 2 occurrences; only 2 present -> exclude
-    res = _multi_entry_majority_vote(values, n=4)
-    assert res == []
-
-
-def test_multi_entry_majority_vote_empty_values_returns_empty():
-    assert _multi_entry_majority_vote([]) == []
-
-
-def test_multi_entry_majority_vote_dict_entries():
-    # lists consisting of dicts
-    values = [[{"k1": "v1", "k2": None}, {"k1": "v2"}], [{"k1": "v1"}], [{"k1": "v3"}]]
-    res = _multi_entry_majority_vote(values)
-    assert res == [{"k1": "v1"}]
-
-
-def test_multi_entry_majority_vote_dict_entries_with_lists():
-    # lists consisting of dicts with list values
-    values = [
-        [{"k1": ["v1", None], "k2": None}, {"k1": ["v2"]}],
-        [{"k1": ["v1"]}],
-        [{"k1": ["v3"]}],
-    ]
-    res = _multi_entry_majority_vote(values)
-    assert res == [{"k1": ["v1"]}]
-
-
-# --- Tests for _aggregate_structured_outputs ---
-
-
-def test_aggregate_structured_outputs_primitives_majority_with_nones():
-    # Mix of primitives with some None values
+# -----------------------------
+# collect_values_and_type_per_key
+# -----------------------------
+def test_collect_values_and_type_per_key_handles_missing_keys_and_none_outputs():
     structured_outputs = [
-        {"s": "a", "i": 1, "f": 1.0, "b": True},
-        {"s": "a", "i": 2, "f": 2.0, "b": False},
-        {"s": "a", "i": 2, "f": 2.0, "b": False, "extra": None},
+        {"a": 1},  # missing b
+        None,  # whole output missing (skipped)
+        {"b": "x"},  # missing a
+        {"a": None, "b": "y"},  # explicit None
     ]
-    res = aggregate_majority_vote(structured_outputs)
-    assert res["s"] == "a"
-    assert res["i"] == 2
-    assert res["f"] == 2.0
-    assert res["b"] is False
-    # 'extra' is only None everywhere -> should be present as None
-    assert "extra" in res and res["extra"] is None
+    values_per_key, type_per_key = au.collect_values_and_type_per_key(structured_outputs)
+
+    # Note: the None entry is skipped entirely, so we only have 3 "rows" for each key
+    assert values_per_key["a"] == [1, None, None]
+    assert values_per_key["b"] == [None, "x", "y"]
+
+    assert type_per_key["a"] is int
+    assert type_per_key["b"] is str
 
 
-def test_aggregate_structured_outputs_lists_majority_with_missing_entries():
-    # Key 'l' missing entirely in one extraction; majority computed with n=len(results)=3
+def test_collect_values_and_type_per_key_all_values_none_yields_no_type_entry():
+    values_per_key, type_per_key = au.collect_values_and_type_per_key([{"a": None}, {"a": None}])
+    assert values_per_key["a"] == [None, None]
+    assert "a" not in type_per_key  # never saw a non-None value
+
+
+def test_collect_values_and_type_per_key_type_mismatch_raises():
+    with pytest.raises(au.AggregationError, match="Inconsistent types for key 'a'"):
+        au.collect_values_and_type_per_key([{"a": 1}, {"a": "1"}])
+
+
+def test_collect_values_and_type_per_key_skip_type_mismatch_sets_type_none():
+    values_per_key, type_per_key = au.collect_values_and_type_per_key(
+        [{"a": 1}, {"a": "1"}, {"a": 2}],
+        skip_type_mismatches=True,
+    )
+    assert values_per_key["a"] == [1, "1", 2]
+    assert type_per_key["a"] is None
+
+
+# -----------------------------
+# _majority_vote
+# -----------------------------
+def test_majority_vote_empty_list_raises():
+    with pytest.raises(au.AggregationError, match="empty list"):
+        au._majority_vote([])
+
+
+def test_majority_vote_exclude_none_filters_and_can_return_none_if_all_none():
+    assert au._majority_vote([None, None], exclude_none=True) is None
+    assert au._majority_vote([None, 1, 1, 2], exclude_none=True) == 1
+
+
+def test_majority_vote_tie_returns_none():
+    assert au._majority_vote([1, 1, 2, 2], exclude_none=False) is None
+    assert au._majority_vote([None, 1, 2], exclude_none=True) is None  # tie after filtering
+
+
+def test_majority_vote_none_can_win_when_not_excluding():
+    # None participates intentionally when exclude_none=False
+    assert au._majority_vote([None, None, "x"], exclude_none=False) is None
+
+
+# -----------------------------
+# _multi_entry_majority_vote
+# -----------------------------
+def _as_hashable_set(items):
+    """Compare list outputs without relying on ordering or unhashable items."""
+    return {au.make_hashable_simple(i) for i in items}
+
+
+def test_multi_entry_majority_vote_majority_over_lists():
+    values = [[1, 2], [2, 3], [2]]
+    assert au._multi_entry_majority_vote(values) == [2]
+
+
+def test_multi_entry_majority_vote_ignores_none_lists_and_items_and_uses_n_default():
+    values = [None, [1, None], [1]]
+    # n defaults to len(values)=3; 1 appears twice -> 2 > 1.5 => included
+    assert au._multi_entry_majority_vote(values) == [1]
+
+
+def test_multi_entry_majority_vote_respects_explicit_n():
+    values = [[1], [1]]  # only 2 lists provided here
+    # but if total n=3, still majority because 2 > 1.5
+    assert au._multi_entry_majority_vote(values, n=3) == [1]
+
+
+def test_multi_entry_majority_vote_with_dict_items_dedup_by_hashable():
+    d1 = {"a": 1, "b": None}
+    d2 = {"a": 1}  # hash-equal to d1 due to None removal
+    d3 = {"a": 2}
+    values = [[d1], [d2], [d3]]
+    # majority requires > 1.5; (a=1) appears twice
+    result = au._multi_entry_majority_vote(values)
+    assert _as_hashable_set(result) == {au.make_hashable_simple({"a": 1})}
+
+
+# -----------------------------
+# aggregate_majority_vote
+# -----------------------------
+def test_aggregate_majority_vote_all_none_returns_none():
+    assert au.aggregate_majority_vote([None, None]) is None
+
+
+def test_aggregate_majority_vote_primitives_missing_keys_and_none_participation():
     structured_outputs = [
-        {"l": ["x"]},
-        {},  # key missing
-        {"l": ["x", "y"]},
+        {"a": 1, "b": "x"},
+        {"a": 1},  # missing b -> None
+        {"a": None, "b": "x"},  # explicit None
     ]
-    res = aggregate_majority_vote(structured_outputs)
-    assert res["l"] == ["x"]
+    aggregated = au.aggregate_majority_vote(structured_outputs)
+
+    # a values: [1,1,None] => majority 1
+    assert aggregated["a"] == 1
+    # b values: ["x",None,"x"] => majority "x"
+    assert aggregated["b"] == "x"
 
 
-def test_aggregate_structured_outputs_lists_with_nones():
+def test_aggregate_majority_vote_dict_majority_uses_hashable_equivalence_and_returns_last_seen_mapping():
+    d1 = {"a": 1, "b": None}
+    d2 = {"a": 1}  # hash-equal to d1
+    d3 = {"a": 2}
+    structured_outputs = [{"d": d1}, {"d": d2}, {"d": d3}]
+    aggregated = au.aggregate_majority_vote(structured_outputs)
+
+    # hash-majority corresponds to {"a": 1}; mapping returns the last dict seen for that hash (d2)
+    assert aggregated["d"] == d2
+
+
+def test_aggregate_majority_vote_list_majority_items():
     structured_outputs = [
-        {"l": None},
-        {"l": ["a"]},
-        {"l": None},
+        {"tags": ["a", "b"]},
+        {"tags": ["b", "c"]},
+        {"tags": ["b"]},
     ]
-    # n=3; 'a' occurs once -> not > 1.5; expect empty list
-    res = aggregate_majority_vote(structured_outputs)
-    assert res["l"] == []
+    aggregated = au.aggregate_majority_vote(structured_outputs)
+    assert aggregated["tags"] == ["b"]
 
 
-def test_aggregate_structured_outputs_all_none_results_in_none():
-    structured_outputs = [{"x": None}, {"x": None}]
-    res = aggregate_majority_vote(structured_outputs)
-    assert res["x"] is None
+def test_aggregate_majority_vote_type_mismatch_raises_by_default():
+    with pytest.raises(au.AggregationError, match="Inconsistent types for key 'a'"):
+        au.aggregate_majority_vote([{"a": 1}, {"a": "1"}])
 
 
-def test_aggregate_structured_outputs_dict():
-    # None values inside dicts should be ignored in majority vote
+def test_aggregate_majority_vote_type_mismatch_skip_sets_key_to_none():
+    aggregated = au.aggregate_majority_vote(
+        [{"a": 1}, {"a": "1"}, {"a": 2}],
+        skip_type_mismatches=True,
+    )
+    assert aggregated["a"] is None
+
+
+def test_aggregate_majority_vote_unsupported_type_raises_not_implemented():
+    with pytest.raises(NotImplementedError, match="Unsupported value type"):
+        au.aggregate_majority_vote([{"x": {1, 2}}, {"x": {1, 2}}])
+
+
+# -----------------------------
+# _aggregate_unanimous
+# -----------------------------
+def test_aggregate_unanimous_private_all_none_returns_none():
+    assert au._aggregate_unanimous([None, None]) is None
+
+
+def test_aggregate_unanimous_private_identical_ignoring_none_returns_value():
+    assert au._aggregate_unanimous([None, 1, 1]) == 1
+
+
+def test_aggregate_unanimous_private_conflict_raises():
+    with pytest.raises(au.AggregationError, match="Conflicting values"):
+        au._aggregate_unanimous([1, 2, None])
+
+
+# -----------------------------
+# _multi_entry_union
+# -----------------------------
+def test_multi_entry_union_primitives_and_dicts_dedup_sorted_ignores_none():
+    d1 = {"a": 1, "b": None}
+    d2 = {"a": 2}
+    d3 = {"a": 1}  # hash-equal to d1
+
+    values = [[d1, None, d2], None, [d3]]
+    result = au._multi_entry_union(values)
+
+    # d1 and d3 hash-equal; mapping keeps the last seen (d3).
+    assert result == [d3, d2]  # sorted by hashable: a=1 then a=2
+
+
+# -----------------------------
+# aggregate_unanimous (public)
+# -----------------------------
+def test_aggregate_unanimous_all_none_returns_none():
+    assert au.aggregate_unanimous([None, None]) is None
+
+
+def test_aggregate_unanimous_primitives_requires_unanimity_across_non_none():
+    aggregated = au.aggregate_unanimous([{"a": 1}, {"a": None}, {"a": 1}])
+    assert aggregated["a"] == 1
+
+    with pytest.raises(au.AggregationError, match="Conflicting values"):
+        au.aggregate_unanimous([{"a": 1}, {"a": 2}])
+
+
+def test_aggregate_unanimous_dicts_consider_hashable_equivalence_and_return_last_seen():
+    d1 = {"x": 1, "y": None}
+    d2 = {"x": 1}
+    structured_outputs = [{"d": d1}, {"d": d2}]
+    aggregated = au.aggregate_unanimous(structured_outputs)
+    assert aggregated["d"] == d2  # last seen for that hash
+
+
+def test_aggregate_unanimous_lists_compare_via_hashable_and_return_last_seen():
+    # lists are normalized (sorted, None removed) for comparison
+    l1 = [3, None, 1, 2]
+    l2 = [1, 2, 3]
+    aggregated = au.aggregate_unanimous([{"l": l1}, {"l": l2}])
+    assert aggregated["l"] == l2  # last seen for that hash
+
+
+# -----------------------------
+# aggregate_single_majority_vote_multi_union
+# -----------------------------
+def test_aggregate_single_majority_vote_multi_union_mixes_majority_for_single_and_union_for_lists():
     structured_outputs = [
-        {"d": {"k1": 1, "k2": None, "k3": 3}},
-        {"d": {"k1": 1, "k3": 3}},
-        {"d": {"k1": [1, 2, 3], "k3": 3}},
+        {"x": 1, "d": {"a": 1, "b": None}, "tags": ["b", "a"]},
+        {"x": 1, "d": {"a": 1}, "tags": ["c", "b", None]},
+        {"x": None, "d": None, "tags": None},
     ]
-    res = aggregate_majority_vote(structured_outputs)
-    assert res == {"d": {"k1": 1, "k3": 3}}
+    aggregated = au.aggregate_single_majority_vote_multi_union(structured_outputs)
+
+    # x: majority excluding None => [1,1] => 1
+    assert aggregated["x"] == 1
+
+    # d: majority excluding None; {"a":1,"b":None} hash-equal to {"a":1}; mapping returns last seen dict for that hash
+    assert aggregated["d"] == {"a": 1}
+
+    # tags: union across lists, sorted
+    assert aggregated["tags"] == ["a", "b", "c"]
 
 
-def test_aggregate_structured_outputs_dict_tie():
-    structured_outputs = [
-        {"d": {"k1": 0, "k2": 2}},
-        {"d": {"k1": 1, "k2": 2}},
-    ]
-    res = aggregate_majority_vote(structured_outputs)
-    assert res == {"d": None}
+def test_aggregate_single_majority_vote_multi_union_tie_for_single_value_returns_none():
+    structured_outputs = [{"x": 1}, {"x": 2}, {"x": None}]
+    aggregated = au.aggregate_single_majority_vote_multi_union(structured_outputs)
+    # exclude_none=True => [1,2] tie => None
+    assert aggregated["x"] is None
 
 
-def test_aggregate_structured_outputs_inconsistent_types_raises():
-    structured_outputs = [{"k": 1}, {"k": "1"}]
-    with pytest.raises(ValueError, match="Inconsistent types for key 'k'"):
-        aggregate_majority_vote(structured_outputs)
-
-
-def test_aggregate_structured_outputs_missing_first_key():
-
-    structured_outputs = [
-        {"A": None},
-        {"A": 1},
-        {"A": 2},
-    ]
-    res = aggregate_majority_vote(structured_outputs)
-    assert res == {"A": None}
-
-    # the result should be the same even if the first entry has the key missing
-    structured_outputs2 = [
-        {},
-        {"A": 1},
-        {"A": 2},
-    ]
-    res2 = aggregate_majority_vote(structured_outputs2)
-    assert res2 == {"A": None}
-
-
-def test_aggregate_structured_outputs_none():
-
-    # if at least one entry has a value, it should be used
-    structured_outputs = [
-        None,
-        {"A": 1},
-    ]
-    res = aggregate_majority_vote(structured_outputs)
-    assert res == {"A": 1}
-
-    # if all entries are None, the result should be None
-    structured_outputs2 = [
-        None,
-        None,
-    ]
-    res2 = aggregate_majority_vote(structured_outputs2)
-    assert res2 is None
-
-
-class TestUnionSingle:
-    def test_all_same_values(self):
-        assert _aggregate_unanimous([1, 1, 1]) == 1
-        assert _aggregate_unanimous(["a", "a"]) == "a"
-
-    def test_with_none_values(self):
-        assert _aggregate_unanimous([1, None, 1]) == 1
-        assert _aggregate_unanimous([None, "a", None, "a"]) == "a"
-
-    def test_all_none(self):
-        assert _aggregate_unanimous([None, None]) is None
-
-    def test_empty_list(self):
-        assert _aggregate_unanimous([]) is None
-
-    def test_conflicting_values(self):
-        with pytest.raises(ValueError, match="Conflicting values"):
-            _aggregate_unanimous([1, 2, 3])
-
-
-class TestMultiEntryUnion:
-    def test_union_of_lists(self):
-        result = _multi_entry_union([[1, 2], [2, 3], [3, 4]])
-        assert result == [1, 2, 3, 4]
-
-    def test_with_none_lists(self):
-        result = _multi_entry_union([[1, 2], None, [3, 4]])
-        assert result == [1, 2, 3, 4]
-
-    def test_with_dicts(self):
-        result = _multi_entry_union([[{"a": 1}, {"b": 2}], [{"a": 1}]])
-        assert result == [{"a": 1}, {"b": 2}]
-
-    def test_empty_lists(self):
-        assert _multi_entry_union([[], []]) == []
-
-
-class TestAggregateStructuredOutputs:
-    def test_primitive_types(self):
-        outputs = [{"name": "John", "age": 30}, {"name": "John"}]
-        result = aggregate_unanimous(outputs)
-        assert result == {"name": "John", "age": 30}
-
-    def test_list_union(self):
-        outputs = [{"tags": ["a", "b"]}, {"tags": ["b", "c"]}]
-        with pytest.raises(AggregationError, match="Conflicting values"):
-            aggregate_unanimous(outputs)
-
-    def test_all_none(self):
-        assert aggregate_unanimous([None, None]) is None
-
-    def test_type_mismatch_raises(self):
-        outputs = [{"value": 1}, {"value": "string"}]
-        with pytest.raises(AggregationError, match="Inconsistent types"):
-            aggregate_unanimous(outputs)
-
-    def test_type_mismatch_skip(self):
-        outputs = [{"value": 1}, {"value": "string"}]
-        result = aggregate_unanimous(outputs, skip_type_mismatches=True)
-        assert result == {"value": None}
-
-    def test_conflicting_primitives(self):
-        outputs = [{"name": "John"}, {"name": "Jane"}]
-        with pytest.raises(AggregationError, match="Conflicting values"):
-            aggregate_unanimous(outputs)
+def test_aggregate_single_majority_vote_multi_union_type_mismatch_skip_sets_key_none():
+    aggregated = au.aggregate_single_majority_vote_multi_union(
+        [{"x": 1}, {"x": "1"}],
+        skip_type_mismatches=True,
+    )
+    assert aggregated["x"] is None
