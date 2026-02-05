@@ -150,17 +150,18 @@ def aggregate_majority_vote(
             aggregated[key] = None
         else:
             # Aggregate based on type
+            # Note: None values participate in voting intentionally. For repeated queries
+            # on the same input, frequent None results indicate genuine extraction difficulty,
+            # and the aggregated result should reflect this uncertainty.
             if issubclass(value_type, (str, int, float, bool)):
                 # single-value: majority vote for primitive types
-                # TODO: use exclude_none=True?
-                aggregated[key] = _majority_vote(values)
+                aggregated[key] = _majority_vote(values, exclude_none=False)
             elif issubclass(value_type, dict):
                 # single-value: majority vote for dicts
                 values_hashable = [
                     make_hashable_simple(v) if v is not None else None for v in values
                 ]
-                # TODO: use exclude_none=True?
-                majority_hashable = _majority_vote(values_hashable)
+                majority_hashable = _majority_vote(values_hashable, exclude_none=False)
                 # convert back to dict
                 mapping = dict(zip(values_hashable, values))
                 aggregated[key] = (
