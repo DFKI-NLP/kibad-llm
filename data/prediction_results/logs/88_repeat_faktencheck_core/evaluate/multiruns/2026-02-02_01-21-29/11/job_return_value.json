@@ -1,0 +1,26 @@
+{
+  "no_error": 239,
+  "with_error": 61,
+  "ValueError": 45,
+  "JSONDecodeError": 16,
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/88_repeat_faktencheck_core/2026-01-28_22-20-19/2026-01-29_09-25-26_568851/predictions.jsonl",
+      "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/88_repeat_faktencheck_core/2026-01-28_22-20-19/2026-01-29_09-25-26_568851/predictions.jsonl",
+      "time_pdf_conversion": 0.002655257936567068,
+      "time_extraction": 7383.378692528931,
+      "commit_hash": "c5b7387b495e7871fc5b3e3abec22a61dfd9bd74",
+      "branch": "main",
+      "is_dirty": false
+    },
+    "overrides": {
+      "name": "88_repeat_faktencheck_core",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "extractor": "repeat",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor.return_reasoning": "True",
+      "extractor/llm": "mistral_small_3_24b_in_process",
+      "seed": "42"
+    }
+  }
+}

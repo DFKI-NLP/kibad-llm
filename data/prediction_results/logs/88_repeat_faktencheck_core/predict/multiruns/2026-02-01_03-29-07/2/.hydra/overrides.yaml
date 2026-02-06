@@ -1,0 +1,7 @@
+- name=88_repeat_faktencheck_core
+- experiment/predict=faktencheck_core_fields_schema_with_evidence
+- extractor=repeat
+- pdf_directory=/ds/text/kiba-d/dev-set-100
+- extractor.return_reasoning=True
+- extractor/llm=gpt_5
+- seed=7331

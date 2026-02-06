@@ -1,0 +1,9 @@
+{
+  "output_file": "predictions/88_repeat_faktencheck_core/2026-02-01_03-29-07/2026-02-01_09-29-41_107067/predictions.jsonl",
+  "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/88_repeat_faktencheck_core/2026-02-01_03-29-07/2026-02-01_09-29-41_107067/predictions.jsonl",
+  "time_pdf_conversion": 0.0050545260310173035,
+  "time_extraction": 23638.213642725023,
+  "commit_hash": "dd1413a20fc344dbbb95a79b18a4ab5c625cd3c5",
+  "branch": "run-script/parametrize-num-gpus",
+  "is_dirty": false
+}

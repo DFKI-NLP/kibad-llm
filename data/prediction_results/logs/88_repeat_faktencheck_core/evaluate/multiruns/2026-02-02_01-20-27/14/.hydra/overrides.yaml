@@ -1,0 +1,4 @@
+- dataset.predictions.log=logs/88_repeat_faktencheck_core/predict/multiruns/2026-02-01_03-29-07/2
+- name=88_repeat_faktencheck_core
+- experiment/evaluate=faktencheck_core_f1_micro_flat
+- prediction_logs=logs/88_repeat_faktencheck_core/predict

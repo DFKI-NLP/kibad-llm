@@ -1,0 +1,70 @@
+{
+  "biodiversity_level": {
+    "precision": 0.35789473684210527,
+    "recall": 0.5074626865671642,
+    "f1": 0.41975308641975306,
+    "support": 67
+  },
+  "ecosystem_type.term": {
+    "precision": 0.23870967741935484,
+    "recall": 0.6981132075471698,
+    "f1": 0.35576923076923084,
+    "support": 53
+  },
+  "habitat": {
+    "precision": 0.6923076923076923,
+    "recall": 0.717391304347826,
+    "f1": 0.7046263345195729,
+    "support": 138
+  },
+  "taxa.german_name": {
+    "precision": 0.2261904761904762,
+    "recall": 0.08225108225108226,
+    "f1": 0.12063492063492064,
+    "support": 231
+  },
+  "taxa.scientific_name": {
+    "precision": 0.25,
+    "recall": 0.20304568527918782,
+    "f1": 0.22408963585434175,
+    "support": 197
+  },
+  "taxa.species_group": {
+    "precision": 0.45925925925925926,
+    "recall": 0.5849056603773585,
+    "f1": 0.5145228215767634,
+    "support": 106
+  },
+  "AVG": {
+    "precision": 0.37072697366981466,
+    "recall": 0.46552827106163147,
+    "f1": 0.3898993382957638,
+    "support": 132.0
+  },
+  "ALL": {
+    "precision": 0.37694300518134716,
+    "recall": 0.36742424242424243,
+    "f1": 0.3721227621483376,
+    "support": 792
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/88_repeat_faktencheck_core/2026-02-01_03-29-07/2026-02-01_09-29-41_107067/predictions.jsonl",
+      "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/88_repeat_faktencheck_core/2026-02-01_03-29-07/2026-02-01_09-29-41_107067/predictions.jsonl",
+      "time_pdf_conversion": 0.0050545260310173035,
+      "time_extraction": 23638.213642725023,
+      "commit_hash": "dd1413a20fc344dbbb95a79b18a4ab5c625cd3c5",
+      "branch": "run-script/parametrize-num-gpus",
+      "is_dirty": false
+    },
+    "overrides": {
+      "name": "88_repeat_faktencheck_core",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "extractor": "repeat",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor.return_reasoning": "True",
+      "extractor/llm": "gpt_5",
+      "seed": "1337"
+    }
+  }
+}
