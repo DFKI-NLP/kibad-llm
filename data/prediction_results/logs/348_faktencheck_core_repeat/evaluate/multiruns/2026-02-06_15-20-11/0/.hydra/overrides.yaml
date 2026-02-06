@@ -1,0 +1,4 @@
+- dataset.predictions.log=logs/348_faktencheck_core_repeat/predict/multiruns/2026-02-06_02-15-40/0
+- name=348_faktencheck_core_repeat
+- experiment/evaluate=prediction_errors
+- prediction_logs=logs/348_faktencheck_core_repeat/predict/multiruns/2026-02-06_02-15-40

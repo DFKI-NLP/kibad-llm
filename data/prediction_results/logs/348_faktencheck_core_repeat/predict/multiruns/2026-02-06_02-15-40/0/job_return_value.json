@@ -1,0 +1,9 @@
+{
+  "output_file": "predictions/348_faktencheck_core_repeat/2026-02-06_02-15-40/2026-02-06_02-15-40_952160/predictions.jsonl",
+  "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/348_faktencheck_core_repeat/2026-02-06_02-15-40/2026-02-06_02-15-40_952160/predictions.jsonl",
+  "time_pdf_conversion": 0.003156167000270216,
+  "time_extraction": 6086.938207943003,
+  "commit_hash": "76d5c9c76f66545cae943feae416fcb8558b1f3d",
+  "branch": "extractor/outsource-aggregation_utils",
+  "is_dirty": false
+}

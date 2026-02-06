@@ -1,0 +1,69 @@
+{
+  "biodiversity_level": {
+    "precision": 0.32786885245901637,
+    "recall": 0.29850746268656714,
+    "f1": 0.3125,
+    "support": 67
+  },
+  "ecosystem_type.term": {
+    "precision": 0.35714285714285715,
+    "recall": 0.2830188679245283,
+    "f1": 0.3157894736842105,
+    "support": 53
+  },
+  "habitat": {
+    "precision": 0.6630434782608695,
+    "recall": 0.4420289855072464,
+    "f1": 0.5304347826086956,
+    "support": 138
+  },
+  "taxa.german_name": {
+    "precision": 0.36666666666666664,
+    "recall": 0.09523809523809523,
+    "f1": 0.15120274914089346,
+    "support": 231
+  },
+  "taxa.scientific_name": {
+    "precision": 0.2815533980582524,
+    "recall": 0.14720812182741116,
+    "f1": 0.19333333333333333,
+    "support": 197
+  },
+  "taxa.species_group": {
+    "precision": 0.5294117647058824,
+    "recall": 0.25471698113207547,
+    "f1": 0.3439490445859873,
+    "support": 106
+  },
+  "AVG": {
+    "precision": 0.42094783621559073,
+    "recall": 0.2534530857193206,
+    "f1": 0.3078682305588534,
+    "support": 132.0
+  },
+  "ALL": {
+    "precision": 0.4254278728606357,
+    "recall": 0.2196969696969697,
+    "f1": 0.28975853455453787,
+    "support": 792
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/348_faktencheck_core_repeat/2026-02-05_21-59-57/2026-02-06_00-02-44_879120/predictions.jsonl",
+      "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/348_faktencheck_core_repeat/2026-02-05_21-59-57/2026-02-06_00-02-44_879120/predictions.jsonl",
+      "time_pdf_conversion": 0.0026062300021294504,
+      "time_extraction": 3891.1011950209977,
+      "commit_hash": "76d5c9c76f66545cae943feae416fcb8558b1f3d",
+      "branch": "extractor/outsource-aggregation_utils",
+      "is_dirty": false
+    },
+    "overrides": {
+      "name": "348_faktencheck_core_repeat",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "extractor": "repeat",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gpt_oss_20b_in_process",
+      "seed": "7331"
+    }
+  }
+}
