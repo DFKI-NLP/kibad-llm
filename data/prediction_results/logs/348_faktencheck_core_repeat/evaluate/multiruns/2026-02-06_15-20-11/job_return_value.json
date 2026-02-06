@@ -1,0 +1,97 @@
+{
+  "dataset.predictions.log=logs/348_faktencheck_core_repeat/predict/multiruns/2026-02-06_02-15-40/0": {
+    "no_error": 425,
+    "with_error": 75,
+    "ValueError": 75,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/348_faktencheck_core_repeat/2026-02-06_02-15-40/2026-02-06_02-15-40_952160/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/348_faktencheck_core_repeat/2026-02-06_02-15-40/2026-02-06_02-15-40_952160/predictions.jsonl",
+        "time_pdf_conversion": 0.003156167000270216,
+        "time_extraction": 6086.938207943003,
+        "commit_hash": "76d5c9c76f66545cae943feae416fcb8558b1f3d",
+        "branch": "extractor/outsource-aggregation_utils",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "348_faktencheck_core_repeat",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor": "repeat",
+        "extractor.n": "5",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor/llm": "gpt_oss_20b_in_process",
+        "seed": "42"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/348_faktencheck_core_repeat/predict/multiruns/2026-02-06_02-15-40/0",
+      "name": "348_faktencheck_core_repeat",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "logs/348_faktencheck_core_repeat/predict/multiruns/2026-02-06_02-15-40"
+    }
+  },
+  "dataset.predictions.log=logs/348_faktencheck_core_repeat/predict/multiruns/2026-02-06_02-15-40/1": {
+    "no_error": 424,
+    "with_error": 76,
+    "ValueError": 75,
+    "JSONDecodeError": 1,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/348_faktencheck_core_repeat/2026-02-06_02-15-40/2026-02-06_03-58-57_153792/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/348_faktencheck_core_repeat/2026-02-06_02-15-40/2026-02-06_03-58-57_153792/predictions.jsonl",
+        "time_pdf_conversion": 0.0047320949961431324,
+        "time_extraction": 6031.902941957,
+        "commit_hash": "76d5c9c76f66545cae943feae416fcb8558b1f3d",
+        "branch": "extractor/outsource-aggregation_utils",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "348_faktencheck_core_repeat",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor": "repeat",
+        "extractor.n": "5",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor/llm": "gpt_oss_20b_in_process",
+        "seed": "1337"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/348_faktencheck_core_repeat/predict/multiruns/2026-02-06_02-15-40/1",
+      "name": "348_faktencheck_core_repeat",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "logs/348_faktencheck_core_repeat/predict/multiruns/2026-02-06_02-15-40"
+    }
+  },
+  "dataset.predictions.log=logs/348_faktencheck_core_repeat/predict/multiruns/2026-02-06_02-15-40/2": {
+    "no_error": 424,
+    "with_error": 76,
+    "ValueError": 75,
+    "JSONDecodeError": 1,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/348_faktencheck_core_repeat/2026-02-06_02-15-40/2026-02-06_05-40-36_710728/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/348_faktencheck_core_repeat/2026-02-06_02-15-40/2026-02-06_05-40-36_710728/predictions.jsonl",
+        "time_pdf_conversion": 0.005938419002632145,
+        "time_extraction": 6118.879328720999,
+        "commit_hash": "76d5c9c76f66545cae943feae416fcb8558b1f3d",
+        "branch": "extractor/outsource-aggregation_utils",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "348_faktencheck_core_repeat",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor": "repeat",
+        "extractor.n": "5",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor/llm": "gpt_oss_20b_in_process",
+        "seed": "7331"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/348_faktencheck_core_repeat/predict/multiruns/2026-02-06_02-15-40/2",
+      "name": "348_faktencheck_core_repeat",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "logs/348_faktencheck_core_repeat/predict/multiruns/2026-02-06_02-15-40"
+    }
+  }
+}

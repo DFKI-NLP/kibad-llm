@@ -1,0 +1,227 @@
+{
+  "dataset.predictions.log=logs/348_faktencheck_core_repeat/predict/multiruns/2026-02-05_21-59-57/0": {
+    "biodiversity_level": {
+      "precision": 0.29850746268656714,
+      "recall": 0.29850746268656714,
+      "f1": 0.29850746268656714,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.375,
+      "recall": 0.33962264150943394,
+      "f1": 0.3564356435643565,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.6597938144329897,
+      "recall": 0.463768115942029,
+      "f1": 0.5446808510638298,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.3492063492063492,
+      "recall": 0.09523809523809523,
+      "f1": 0.14965986394557823,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.23076923076923078,
+      "recall": 0.1065989847715736,
+      "f1": 0.14583333333333334,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.5,
+      "recall": 0.2169811320754717,
+      "f1": 0.3026315789473684,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.40221280951585614,
+      "recall": 0.25345273870386176,
+      "f1": 0.2996247889235056,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.4077669902912621,
+      "recall": 0.21212121212121213,
+      "f1": 0.27906976744186046,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/348_faktencheck_core_repeat/2026-02-05_21-59-57/2026-02-05_21-59-58_011563/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/348_faktencheck_core_repeat/2026-02-05_21-59-57/2026-02-05_21-59-58_011563/predictions.jsonl",
+        "time_pdf_conversion": 0.05702102199938963,
+        "time_extraction": 3633.6604192560008,
+        "commit_hash": "76d5c9c76f66545cae943feae416fcb8558b1f3d",
+        "branch": "extractor/outsource-aggregation_utils",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "348_faktencheck_core_repeat",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor": "repeat",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor/llm": "gpt_oss_20b_in_process",
+        "seed": "42"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/348_faktencheck_core_repeat/predict/multiruns/2026-02-05_21-59-57/0",
+      "name": "348_faktencheck_core_repeat",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/348_faktencheck_core_repeat/predict/multiruns/2026-02-05_21-59-57"
+    }
+  },
+  "dataset.predictions.log=logs/348_faktencheck_core_repeat/predict/multiruns/2026-02-05_21-59-57/1": {
+    "biodiversity_level": {
+      "precision": 0.265625,
+      "recall": 0.2537313432835821,
+      "f1": 0.2595419847328244,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.46938775510204084,
+      "recall": 0.4339622641509434,
+      "f1": 0.4509803921568628,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.6989247311827957,
+      "recall": 0.47101449275362317,
+      "f1": 0.5627705627705627,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.1568627450980392,
+      "recall": 0.03463203463203463,
+      "f1": 0.056737588652482275,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.24752475247524752,
+      "recall": 0.12690355329949238,
+      "f1": 0.16778523489932887,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.55,
+      "recall": 0.20754716981132076,
+      "f1": 0.30136986301369867,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.3980541639763539,
+      "recall": 0.2546318096551661,
+      "f1": 0.29986427103762664,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.4020100502512563,
+      "recall": 0.20202020202020202,
+      "f1": 0.2689075630252101,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/348_faktencheck_core_repeat/2026-02-05_21-59-57/2026-02-05_23-03-39_305226/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/348_faktencheck_core_repeat/2026-02-05_21-59-57/2026-02-05_23-03-39_305226/predictions.jsonl",
+        "time_pdf_conversion": 0.003196920999471331,
+        "time_extraction": 3484.4808060270007,
+        "commit_hash": "76d5c9c76f66545cae943feae416fcb8558b1f3d",
+        "branch": "extractor/outsource-aggregation_utils",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "348_faktencheck_core_repeat",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor": "repeat",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor/llm": "gpt_oss_20b_in_process",
+        "seed": "1337"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/348_faktencheck_core_repeat/predict/multiruns/2026-02-05_21-59-57/1",
+      "name": "348_faktencheck_core_repeat",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/348_faktencheck_core_repeat/predict/multiruns/2026-02-05_21-59-57"
+    }
+  },
+  "dataset.predictions.log=logs/348_faktencheck_core_repeat/predict/multiruns/2026-02-05_21-59-57/2": {
+    "biodiversity_level": {
+      "precision": 0.32786885245901637,
+      "recall": 0.29850746268656714,
+      "f1": 0.3125,
+      "support": 67
+    },
+    "ecosystem_type.term": {
+      "precision": 0.35714285714285715,
+      "recall": 0.2830188679245283,
+      "f1": 0.3157894736842105,
+      "support": 53
+    },
+    "habitat": {
+      "precision": 0.6630434782608695,
+      "recall": 0.4420289855072464,
+      "f1": 0.5304347826086956,
+      "support": 138
+    },
+    "taxa.german_name": {
+      "precision": 0.36666666666666664,
+      "recall": 0.09523809523809523,
+      "f1": 0.15120274914089346,
+      "support": 231
+    },
+    "taxa.scientific_name": {
+      "precision": 0.2815533980582524,
+      "recall": 0.14720812182741116,
+      "f1": 0.19333333333333333,
+      "support": 197
+    },
+    "taxa.species_group": {
+      "precision": 0.5294117647058824,
+      "recall": 0.25471698113207547,
+      "f1": 0.3439490445859873,
+      "support": 106
+    },
+    "AVG": {
+      "precision": 0.42094783621559073,
+      "recall": 0.2534530857193206,
+      "f1": 0.3078682305588534,
+      "support": 132.0
+    },
+    "ALL": {
+      "precision": 0.4254278728606357,
+      "recall": 0.2196969696969697,
+      "f1": 0.28975853455453787,
+      "support": 792
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/348_faktencheck_core_repeat/2026-02-05_21-59-57/2026-02-06_00-02-44_879120/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/348_faktencheck_core_repeat/2026-02-05_21-59-57/2026-02-06_00-02-44_879120/predictions.jsonl",
+        "time_pdf_conversion": 0.0026062300021294504,
+        "time_extraction": 3891.1011950209977,
+        "commit_hash": "76d5c9c76f66545cae943feae416fcb8558b1f3d",
+        "branch": "extractor/outsource-aggregation_utils",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "348_faktencheck_core_repeat",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor": "repeat",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor/llm": "gpt_oss_20b_in_process",
+        "seed": "7331"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/348_faktencheck_core_repeat/predict/multiruns/2026-02-05_21-59-57/2",
+      "name": "348_faktencheck_core_repeat",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "prediction_logs": "logs/348_faktencheck_core_repeat/predict/multiruns/2026-02-05_21-59-57"
+    }
+  }
+}
