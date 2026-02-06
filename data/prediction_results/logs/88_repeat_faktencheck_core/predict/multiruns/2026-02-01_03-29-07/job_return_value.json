@@ -1,0 +1,56 @@
+{
+  "seed=42": {
+    "output_file": "predictions/88_repeat_faktencheck_core/2026-02-01_03-29-07/2026-02-01_03-29-08_213298/predictions.jsonl",
+    "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/88_repeat_faktencheck_core/2026-02-01_03-29-07/2026-02-01_03-29-08_213298/predictions.jsonl",
+    "time_pdf_conversion": 0.0032996570225805044,
+    "time_extraction": 21587.523545998847,
+    "commit_hash": "dd1413a20fc344dbbb95a79b18a4ab5c625cd3c5",
+    "branch": "run-script/parametrize-num-gpus",
+    "is_dirty": false,
+    "overrides": {
+      "name": "88_repeat_faktencheck_core",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "extractor": "repeat",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor.return_reasoning": "True",
+      "extractor/llm": "gpt_5",
+      "seed": "42"
+    }
+  },
+  "seed=1337": {
+    "output_file": "predictions/88_repeat_faktencheck_core/2026-02-01_03-29-07/2026-02-01_09-29-41_107067/predictions.jsonl",
+    "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/88_repeat_faktencheck_core/2026-02-01_03-29-07/2026-02-01_09-29-41_107067/predictions.jsonl",
+    "time_pdf_conversion": 0.0050545260310173035,
+    "time_extraction": 23638.213642725023,
+    "commit_hash": "dd1413a20fc344dbbb95a79b18a4ab5c625cd3c5",
+    "branch": "run-script/parametrize-num-gpus",
+    "is_dirty": false,
+    "overrides": {
+      "name": "88_repeat_faktencheck_core",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "extractor": "repeat",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor.return_reasoning": "True",
+      "extractor/llm": "gpt_5",
+      "seed": "1337"
+    }
+  },
+  "seed=7331": {
+    "output_file": "predictions/88_repeat_faktencheck_core/2026-02-01_03-29-07/2026-02-01_16-03-40_212624/predictions.jsonl",
+    "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/88_repeat_faktencheck_core/2026-02-01_03-29-07/2026-02-01_16-03-40_212624/predictions.jsonl",
+    "time_pdf_conversion": 0.0045546421315521,
+    "time_extraction": 24009.008280577138,
+    "commit_hash": "dd1413a20fc344dbbb95a79b18a4ab5c625cd3c5",
+    "branch": "run-script/parametrize-num-gpus",
+    "is_dirty": false,
+    "overrides": {
+      "name": "88_repeat_faktencheck_core",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "extractor": "repeat",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor.return_reasoning": "True",
+      "extractor/llm": "gpt_5",
+      "seed": "7331"
+    }
+  }
+}

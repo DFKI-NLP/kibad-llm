@@ -1,0 +1,70 @@
+{
+  "biodiversity_level": {
+    "precision": 0.18867924528301888,
+    "recall": 0.14925373134328357,
+    "f1": 0.16666666666666666,
+    "support": 67
+  },
+  "ecosystem_type.term": {
+    "precision": 0.15625,
+    "recall": 0.09433962264150944,
+    "f1": 0.11764705882352942,
+    "support": 53
+  },
+  "habitat": {
+    "precision": 0.4725274725274725,
+    "recall": 0.3115942028985507,
+    "f1": 0.37554585152838427,
+    "support": 138
+  },
+  "taxa.german_name": {
+    "precision": 0.4166666666666667,
+    "recall": 0.08658008658008658,
+    "f1": 0.14336917562724014,
+    "support": 231
+  },
+  "taxa.scientific_name": {
+    "precision": 0.04,
+    "recall": 0.01015228426395939,
+    "f1": 0.016194331983805668,
+    "support": 197
+  },
+  "taxa.species_group": {
+    "precision": 0.4523809523809524,
+    "recall": 0.1792452830188679,
+    "f1": 0.25675675675675674,
+    "support": 106
+  },
+  "AVG": {
+    "precision": 0.2877507228096851,
+    "recall": 0.13852753512437627,
+    "f1": 0.1793633068977305,
+    "support": 132.0
+  },
+  "ALL": {
+    "precision": 0.31329113924050633,
+    "recall": 0.125,
+    "f1": 0.17870036101083034,
+    "support": 792
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/88_repeat_faktencheck_core/2026-01-28_22-20-19/2026-01-29_02-18-54_731254/predictions.jsonl",
+      "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/88_repeat_faktencheck_core/2026-01-28_22-20-19/2026-01-29_02-18-54_731254/predictions.jsonl",
+      "time_pdf_conversion": 0.002684487961232662,
+      "time_extraction": 2004.78689885512,
+      "commit_hash": "c5b7387b495e7871fc5b3e3abec22a61dfd9bd74",
+      "branch": "main",
+      "is_dirty": false
+    },
+    "overrides": {
+      "name": "88_repeat_faktencheck_core",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "extractor": "repeat",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor.return_reasoning": "True",
+      "extractor/llm": "gemma3_27b_in_process",
+      "seed": "1337"
+    }
+  }
+}
