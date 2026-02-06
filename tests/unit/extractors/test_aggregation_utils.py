@@ -125,12 +125,6 @@ def test_multi_entry_majority_vote_ignores_none_lists_and_items_and_uses_n_defau
     assert au._multi_entry_majority_vote(values) == [1]
 
 
-def test_multi_entry_majority_vote_respects_explicit_n():
-    values = [[1], [1]]  # only 2 lists provided here
-    # but if total n=3, still majority because 2 > 1.5
-    assert au._multi_entry_majority_vote(values, n=3) == [1]
-
-
 def test_multi_entry_majority_vote_with_dict_items_dedup_by_hashable():
     d1 = {"a": 1, "b": None}
     d2 = {"a": 1}  # hash-equal to d1 due to None removal

@@ -83,7 +83,7 @@ def _majority_vote(values: list, exclude_none: bool = False) -> Any:
     return top_value
 
 
-def _multi_entry_majority_vote(values: list[list | None], n: int | None = None) -> list:
+def _multi_entry_majority_vote(values: list[list | None]) -> list:
     """Return the majority items from a list of lists.
 
     An item is included in the result if it appears in more than half of the lists.
@@ -92,12 +92,10 @@ def _multi_entry_majority_vote(values: list[list | None], n: int | None = None) 
 
     Args:
         values: list of lists (or None)
-        n: total number of lists (if None, uses len(values))
     Returns:
         list of majority items
     """
-    if n is None:
-        n = len(values)
+    n = len(values)
     item_counts: Counter = Counter()
     mapping: dict = dict()  # mapping from hashable to original item
     for vs in values:
