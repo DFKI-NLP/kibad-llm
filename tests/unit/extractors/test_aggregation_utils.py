@@ -98,7 +98,8 @@ def test_majority_vote_exclude_none_filters_and_can_return_none_if_all_none():
 
 def test_majority_vote_tie_returns_none():
     assert au._majority_vote([1, 1, 2, 2], exclude_none=False) is None
-    assert au._majority_vote([None, 1, 2], exclude_none=True) is None  # tie after filtering
+    assert au._majority_vote([None, None, 1, 2], exclude_none=True) is None  # tie after filtering
+    assert au._majority_vote([None, 1], exclude_none=False) is None  # tie without filtering
 
 
 def test_majority_vote_none_can_win_when_not_excluding():
