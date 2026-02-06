@@ -35,6 +35,8 @@ NAME = "348_faktencheck_core_repeat"
 
 SUBDIR = ["evaluate", "../327_faktencheck_core_with_persona/evaluate"]
 
+FILE_NAME_PREFIX = "baseline_"
+
 FILL_NA = {"prediction.overrides.extractor.n": 3, "prediction.overrides.extractor": "simple"}
 
 METRICS = ["f1", "recall", "precision"]
@@ -51,20 +53,55 @@ PLOT_KWARGS = {
 ```
 #### f1
 
-![comparison_metrics_f1.svg](comparison_metrics_f1.svg)
-![comparison_metrics_f1_detail.svg](comparison_metrics_f1_detail.svg)
+![baseline_comparison_metrics_f1.svg](baseline_comparison_metrics_f1.svg)
+![baseline_comparison_metrics_f1_detail.svg](baseline_comparison_metrics_f1_detail.svg)
 
 #### recall
 
-![comparison_metrics_recall.svg](comparison_metrics_recall.svg)
-![comparison_metrics_recall_detail.svg](comparison_metrics_recall_detail.svg)
+![baseline_comparison_metrics_recall.svg](baseline_comparison_metrics_recall.svg)
+![baseline_comparison_metrics_recall_detail.svg](baseline_comparison_metrics_recall_detail.svg)
 
 #### precision
 
-![comparison_metrics_precision.svg](comparison_metrics_precision.svg)
-![comparison_metrics_precision_detail.svg](comparison_metrics_precision_detail.svg)
+![baseline_comparison_metrics_precision.svg](baseline_comparison_metrics_precision.svg)
+![baseline_comparison_metrics_precision_detail.svg](baseline_comparison_metrics_precision_detail.svg)
 
 #### errors
 
-![comparison_errors.svg](comparison_errors.svg)
-![comparison_errors_detail.svg](comparison_errors_detail.svg)
+![baseline_comparison_errors.svg](baseline_comparison_errors.svg)
+![baseline_comparison_errors_detail.svg](baseline_comparison_errors_detail.svg)
+
+
+### comparison with previous repeat experiment
+previous repeat experiment: [88_repeat_faktencheck_core](../88_repeat_faktencheck_core/)
+
+```python
+NAME = "348_faktencheck_core_repeat"
+
+SUBDIR = [
+    # take only n=3 runs from current experiment
+    "evaluate/multiruns/2026-02-06_15-15-35",
+    "evaluate/multiruns/2026-02-06_15-16-29", 
+    "../88_repeat_faktencheck_core/evaluate",
+]
+
+FILE_NAME_PREFIX = "previous_comparison_"
+
+METRICS = ["f1", "recall", "precision"]
+# used to group the data
+INDEX_COLUMNS = ["prediction.overrides.extractor/llm", "prediction.overrides.name"]
+PLOT_KWARGS = {
+    # can be either "metric" or one of the INDEX_COLUMNS (or multiple of them)
+    "xgroup": ["prediction.overrides.name"],
+    # add any more arguments passed to pd.DataFrame.plot
+    #"create_subplot_for_each": "metric",
+    #"set_missing_values_to_zero": True,
+    #"subplot_columns": 2,
+}
+```
+
+![previous_comparison_metrics_f1.svg](previous_comparison_metrics_f1.svg)
+![previous_comparison_metrics_precision.svg](previous_comparison_metrics_precision.svg)
+![previous_comparison_metrics_recall.svg](previous_comparison_metrics_recall.svg)
+![previous_comparison_errors.svg](previous_comparison_errors.svg)
+![previous_comparison_errors_detail.svg](previous_comparison_errors_detail.svg)
