@@ -4,8 +4,9 @@ from llama_index.core.base.llms.types import MessageRole
 
 from kibad_llm.llms.base import SimpleChatMessage
 
+from .aggregation_utils import aggregate_unanimous
 from .base import extract_from_text_lenient
-from .union import UnionExtractor, _aggregate_structured_outputs_union
+from .union import UnionExtractor
 
 
 class ConditionalUnionExtractor(UnionExtractor):
@@ -51,7 +52,7 @@ class ConditionalUnionExtractor(UnionExtractor):
             results.append(current_result)
 
         structured_outputs = [v.get("structured", None) for v in results]
-        aggregated_structured = _aggregate_structured_outputs_union(
+        aggregated_structured = aggregate_unanimous(
             structured_outputs, skip_type_mismatches=self.skip_type_mismatches
         )
 
