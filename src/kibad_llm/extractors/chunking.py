@@ -76,9 +76,7 @@ class ChunkingExtractor(UnionExtractor):
         **kwargs,
     ):
         if len(overrides) < 1:
-            raise ValueError(
-                "overrides must contain at least one set of parameters"
-            )
+            raise ValueError("overrides must contain at least one set of parameters")
         self.overrides = overrides
         self.skip_type_mismatches = skip_type_mismatches
         self.return_as_list = return_as_list or []
