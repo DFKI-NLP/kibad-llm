@@ -143,13 +143,18 @@ def predict(cfg: DictConfig) -> dict[str, Any]:
     output_file = os.path.join(cfg.output_dir, formatted_time, cfg.output_file_name)
     logger.info(f"Writing results to {output_file} ...")
     dataset.to_json(output_file, force_ascii=False)
-    return {
+    result = {
         "output_file": os.path.relpath(output_file, start=os.getcwd()),
         "output_file_absolute": os.path.abspath(output_file),
         "time_pdf_conversion": t_delta_pdf_conversion,
         "time_extraction": t_delta_extraction,
         **git_info,
     }
+    # if running on a SLURM cluster, also log the job ID for easier tracking
+    job_id = os.getenv("SLURM_JOB_ID")
+    if job_id is not None:
+        result["slurm_job_id"] = job_id
+    return result
 
 
 @hydra.main(version_base="1.3", config_path=str(PROJ_ROOT / "configs"), config_name="predict.yaml")
