@@ -78,6 +78,8 @@ def predict(cfg: DictConfig) -> dict[str, Any]:
     # use start time as part of output folder to avoid overwriting previous results
     formatted_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S_%f")
 
+    time_start = time.time()
+
     # show hydra run log directory
     run_log_dir = get_run_log_dir()
     if run_log_dir is not None:
@@ -148,6 +150,8 @@ def predict(cfg: DictConfig) -> dict[str, Any]:
         "output_file_absolute": os.path.abspath(output_file),
         "time_pdf_conversion": t_delta_pdf_conversion,
         "time_extraction": t_delta_extraction,
+        "time_start": int(time_start),
+        "time_end": int(time.time()),
         **git_info,
     }
     # if running on a SLURM cluster, also log the job ID for easier tracking
