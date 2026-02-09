@@ -7,10 +7,11 @@ from llama_index.core.base.llms.types import MessageRole
 
 from kibad_llm.llms.base import SimpleChatMessage
 
+from .aggregation_utils import aggregate_single_majority_vote_multi_union
 from .base import extract_from_text_lenient
 from .chunking_helpers import core
 from .chunking_helpers import tokenizers as tokenizer_lib
-from .union import UnionExtractor, _aggregate_structured_outputs_union
+from .union import UnionExtractor
 
 
 def _document_chunk_iterator(
@@ -75,7 +76,9 @@ class ChunkingExtractor(UnionExtractor):
         **kwargs,
     ):
         if len(overrides) < 1:
-            raise ValueError("overrides must contain at least one set of parameters")
+            raise ValueError(
+                "overrides must contain at least one set of parameters"
+            )
         self.overrides = overrides
         self.skip_type_mismatches = skip_type_mismatches
         self.return_as_list = return_as_list or []
@@ -112,7 +115,7 @@ class ChunkingExtractor(UnionExtractor):
             results.append(current_result)
 
         structured_outputs = [v.get("structured", None) for v in results]
-        aggregated_structured = _aggregate_structured_outputs_union(
+        aggregated_structured = aggregate_single_majority_vote_multi_union(
             structured_outputs, skip_type_mismatches=self.skip_type_mismatches
         )
 
