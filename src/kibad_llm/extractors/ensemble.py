@@ -1,6 +1,7 @@
 from typing import Any
 
 from ..llms import VllmInProcess
+from ..llms.vllm_in_process import cleanup
 from .aggregation_utils import aggregate_majority_vote
 from .base import extract_from_text_lenient
 
@@ -53,9 +54,10 @@ class EnsembleExtractor:
             # Put the vllm llm to sleep after each override if it exists, since it
             # can be quite large. Usually, just one llm instance fits in memory and multiple
             # overrides with different llm instances can cause OOM.
-            llm = override_params.get("llm", None)
             if isinstance(llm, VllmInProcess):
+                print("XXX")
                 llm.llm.sleep(level=2)
+                cleanup()
 
         structured_outputs = [v.get("structured", None) for v in results]
         aggregated_structured = aggregate_majority_vote(
