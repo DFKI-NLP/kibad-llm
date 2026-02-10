@@ -51,8 +51,7 @@ class EnsembleExtractor:
             # overrides with different llm instances can cause OOM.
             llm = override_params.get("llm", None)
             if isinstance(llm, VllmInProcess):
-                # TODO: call llm.destroy() # requires implementation of VllmInProcess.destroy(), see #361
-                pass
+                llm.destroy()
 
         structured_outputs = [v.get("structured", None) for v in results]
         aggregated_structured = aggregate_majority_vote(
