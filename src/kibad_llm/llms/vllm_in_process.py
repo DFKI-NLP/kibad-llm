@@ -128,6 +128,9 @@ class VllmInProcess(LLM):
             del self._reasoning_parser
         cleanup()
 
+    def __del__(self):
+        self.destroy()
+
     def call_llm_chat_with_guided_decoding(
         self,
         messages: list[SimpleChatMessage],

@@ -138,6 +138,9 @@ def predict(cfg: DictConfig) -> dict[str, Any]:
     )
     t_delta_extraction = time.perf_counter() - t_start_extraction
 
+    # delete the extractor (may free up GPU memory if the extractor contains a vllm in-process LLM)
+    del extractor
+
     if not cfg.get("store_text_in_predictions", True):
         dataset = dataset.remove_columns("text")
 
