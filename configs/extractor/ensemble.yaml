@@ -1,0 +1,31 @@
+# extraction workflow that repeats the extraction n times for each entry in overrides
+# and aggregates the results per key by majority voting
+
+defaults:
+  - prompt_template: default
+  - request_parameters: default
+
+_target_: kibad_llm.extractors.RepeatingExtractor
+n: 3  # number of repetitions
+# skips keys with values of inconsistent types across extractions
+# when aggregating results instead of raising an error.
+# required when using use_guided_decoding=false.
+skip_type_mismatches: false
+# for these fields, return a list of results from each repetition
+return_as_list:
+  # - structured
+  - errors
+  # - response_content
+  - reasoning_content
+  # - messages
+  # - messages_formatted
+
+schema:
+  # create the schema from the pydantic model of EcosystemStudyFeaturesSimple
+  _target_: kibad_llm.schema.types.EcosystemStudyFeaturesSimple.model_json_schema
+  by_alias: false
+
+# general return options (see simple extractor for details)
+return_reasoning: True
+return_messages: False
+return_messages_formatted: False
