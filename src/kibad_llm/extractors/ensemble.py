@@ -42,16 +42,20 @@ class EnsembleExtractor:
         combined_kwargs = {**self.default_kwargs, **kwargs}
         results = []
         for override_name, override_params in self.overrides.items():
+            llm = override_params.get("llm", None)
+            if isinstance(llm, VllmInProcess):
+                llm.llm.wake_up()
+
             current_kwargs = {**combined_kwargs, **override_params}
             current_result = extract_from_text_lenient(*args, **current_kwargs)
             results.append(current_result)
 
-            # Destroy the llm to clear memory after each override if it exists, since it
+            # Put the vllm llm to sleep after each override if it exists, since it
             # can be quite large. Usually, just one llm instance fits in memory and multiple
             # overrides with different llm instances can cause OOM.
             llm = override_params.get("llm", None)
             if isinstance(llm, VllmInProcess):
-                llm.destroy()
+                llm.llm.sleep(level=1)
 
         structured_outputs = [v.get("structured", None) for v in results]
         aggregated_structured = aggregate_majority_vote(
