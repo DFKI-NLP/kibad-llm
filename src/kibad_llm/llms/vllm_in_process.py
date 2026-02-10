@@ -1,8 +1,7 @@
-from collections.abc import Sequence
 import contextlib
 import gc
 import logging
-from typing import Any, Literal
+from typing import Any
 
 from llama_index.core.base.llms.types import ChatResponse, MessageRole
 from llama_index.core.llms import ChatMessage as LlamaIndexChatMessage
@@ -19,7 +18,6 @@ from vllm.entrypoints.openai.protocol import ChatCompletionRequest
 from vllm.reasoning import ReasoningParser
 from vllm.reasoning.gptoss_reasoning_parser import GptOssReasoningParser
 from vllm.sampling_params import StructuredOutputsParams
-from vllm.utils import is_cpu
 from vllm.v1.structured_output import StructuredOutputManager
 
 from kibad_llm.llms.base import (
@@ -38,8 +36,7 @@ def cleanup():
     with contextlib.suppress(AssertionError):
         torch.distributed.destroy_process_group()
     gc.collect()
-    if not is_cpu():
-        torch.cuda.empty_cache()
+    torch.cuda.empty_cache()
 
 
 # vLLM LLM.chat has these kwargs (non-sampling). Everything else we treat as SamplingParams kwargs.
