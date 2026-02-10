@@ -1,11 +1,14 @@
-from collections.abc import Sequence
+import contextlib
+import gc
 import logging
-from typing import Any, Literal
+from typing import Any
 
 from llama_index.core.base.llms.types import ChatResponse, MessageRole
 from llama_index.core.llms import ChatMessage as LlamaIndexChatMessage
+import torch
 from vllm import LLM as VllmLLM
 from vllm import SamplingParams
+from vllm.distributed import destroy_distributed_environment, destroy_model_parallel
 from vllm.entrypoints.chat_utils import (
     ChatCompletionMessageParam,
     CustomChatCompletionMessageParam,
@@ -25,6 +28,16 @@ from kibad_llm.llms.base import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+def cleanup():
+    destroy_model_parallel()
+    destroy_distributed_environment()
+    with contextlib.suppress(AssertionError):
+        torch.distributed.destroy_process_group()
+    gc.collect()
+    torch.cuda.empty_cache()
+
 
 # vLLM LLM.chat has these kwargs (non-sampling). Everything else we treat as SamplingParams kwargs.
 # Source: https://docs.vllm.ai/en/stable/api/vllm/entrypoints/llm/#vllm.entrypoints.llm.LLM.chat
@@ -62,32 +75,61 @@ class VllmInProcess(LLM):
         *,
         model: str,
         vllm_kwargs: dict[str, Any] | None = None,
+        lazy: bool = False,
         # for compatibility with other LlamaIndex LLMs (but directly supported kwargs take precedence)
         additional_kwargs: dict[str, Any] | None = None,
         **default_request_kwargs: Any,
     ) -> None:
         self._model_name = model
-        self._llm = VllmLLM(model=model, **(vllm_kwargs or {}))
+        self._vllm_kwargs = vllm_kwargs or {}
+        if not lazy:
+            # trigger vLLM initialization now (instead of waiting for first call)
+            # so that any errors are raised during LLM setup instead of at call time
+            _ = self.llm
+            _ = self.reasoning_parser
 
         self._default_request_kwargs: dict[str, Any] = additional_kwargs or {}
         self._default_request_kwargs.update(default_request_kwargs)
 
-        # Uses vllm_config.structured_outputs_config.reasoning_parser
-        # to create a ReasoningParser (if configured).
-        self._structured_output_manager = StructuredOutputManager(
-            vllm_config=self._llm.llm_engine.vllm_config
-        )
-        self._reasoning_parser: ReasoningParser | None = self._structured_output_manager.reasoner
-        if self._reasoning_parser is not None:
-            logger.info(
-                f"Using reasoning parser: {type(self._reasoning_parser).__name__} "
-                f"for model {self._model_name} to separate reasoning from final content."
+    @property
+    def llm(self) -> VllmLLM:
+        if not hasattr(self, "_llm"):
+            self._llm = VllmLLM(model=self._model_name, **self._vllm_kwargs)
+
+        return self._llm
+
+    @property
+    def reasoning_parser(self) -> ReasoningParser | None:
+        if not hasattr(self, "_reasoning_parser"):
+            # Uses vllm_config.structured_outputs_config.reasoning_parser
+            # to create a ReasoningParser (if configured).
+            structured_output_manager = StructuredOutputManager(
+                vllm_config=self.llm.llm_engine.vllm_config
             )
-        else:
-            logger.info(
-                f"No reasoning parser configured for model {self._model_name}. "
-                f"Assuming no reasoning content in outputs."
-            )
+            self._reasoning_parser: ReasoningParser | None = structured_output_manager.reasoner
+            if self._reasoning_parser is not None:
+                logger.info(
+                    f"Using reasoning parser: {type(self._reasoning_parser).__name__} "
+                    f"for model {self._model_name} to separate reasoning from final content."
+                )
+            else:
+                logger.info(
+                    f"No reasoning parser configured for model {self._model_name}. "
+                    f"Assuming no reasoning content in outputs."
+                )
+
+        return self._reasoning_parser
+
+    def destroy(self) -> None:
+        """Clean up vLLM resources."""
+        if hasattr(self, "_llm"):
+            del self._llm
+        if hasattr(self, "_reasoning_parser"):
+            del self._reasoning_parser
+        cleanup()
+
+    def __del__(self):
+        self.destroy()
 
     def call_llm_chat_with_guided_decoding(
         self,
@@ -110,18 +152,18 @@ class VllmInProcess(LLM):
             sampling_kwargs["structured_outputs"] = StructuredOutputsParams(json=json_schema)
 
         sampling_params = SamplingParams(**sampling_kwargs)
-        req_outputs = self._llm.chat(convo, sampling_params=sampling_params, **chat_kwargs)
+        req_outputs = self.llm.chat(convo, sampling_params=sampling_params, **chat_kwargs)
         # take the first output (we only sent one conversation) and first generation
         out = req_outputs[0].outputs[0]
 
-        if self._reasoning_parser is not None:
-            if isinstance(self._reasoning_parser, GptOssReasoningParser):
+        if self.reasoning_parser is not None:
+            if isinstance(self.reasoning_parser, GptOssReasoningParser):
                 # Harmony (gpt-oss): split via token ids
                 reasoning, content, _is_tool_call = parse_chat_output(out.token_ids)
             else:
                 # create dummy request object for reasoning extraction
                 request_obj = ChatCompletionRequest(messages=convo, model=self._model_name, seed=0)
-                reasoning, content = self._reasoning_parser.extract_reasoning(
+                reasoning, content = self.reasoning_parser.extract_reasoning(
                     model_output=out.text, request=request_obj
                 )
         else:
@@ -138,7 +180,7 @@ class VllmInProcess(LLM):
         """Extract reasoning from a chat response."""
 
         # don't attempt extraction if no reasoning parser configured (and thus don't raise errors)
-        if self._reasoning_parser is None:
+        if self.reasoning_parser is None:
             return None
 
         reasoning = response.message.additional_kwargs.get("reasoning")
