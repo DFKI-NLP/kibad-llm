@@ -6,14 +6,13 @@ from .base import extract_from_text_lenient
 
 
 class EnsembleExtractor:
-    """Extractor that repeats extraction multiple times and aggregates results per key.
+    """Extractor that executes extraction for multiple override configs and aggregates results per key.
 
-    This extractor calls the base extraction function multiple times for each entry in overrides,
-    repeats this process multiple times and aggregates the structured outputs. The aggregation is
-    done by majority vote for primitive types and list types.
+    This extractor calls the base extraction function multiple times for each entry in overrides
+    and aggregates the structured outputs. The aggregation is done by majority vote for primitive
+    types and list types (same as in RepeatingExtractor).
 
     Args:
-        n: Number of repetitions per override (default: None, which means 1 repetition per override)
         overrides: A list of dictionaries containing parameter overrides for each extraction (default: None,
             which means no overrides and just one extraction per repetition)
         skip_type_mismatches: If True, skips keys with inconsistent types across extractions
@@ -26,16 +25,12 @@ class EnsembleExtractor:
     def __init__(
         self,
         overrides: list[dict] | dict[str, dict] | None = None,
-        n: int | None = None,
         skip_type_mismatches: bool = False,
         return_as_list: list[str] | None = None,
         **kwargs,
     ):
-        if n is not None and n < 1:
-            raise ValueError("n must be at least 1")
         if overrides is not None and len(overrides) < 1:
             raise ValueError("overrides must contain at least one set of parameters if provided")
-        self.n = n or 1
         if isinstance(overrides, list):
             overrides = {str(i): override for i, override in enumerate(overrides)}
         self.overrides = overrides or {"default": {}}
@@ -48,15 +43,15 @@ class EnsembleExtractor:
         results = []
         for override_name, override_params in self.overrides.items():
             current_kwargs = {**combined_kwargs, **override_params}
-            for i in range(self.n):
-                current_result = extract_from_text_lenient(*args, **current_kwargs)
-                results.append(current_result)
-            # delete the llm from override_params to clear memory after each override if it exists,
-            # since it can be large (usually just one llm instance fits in memory and multiple
-            # overrides with different llm instances can cause OOM)
+            current_result = extract_from_text_lenient(*args, **current_kwargs)
+            results.append(current_result)
+
+            # Destroy the llm to clear memory after each override if it exists, since it
+            # can be quite large. Usually, just one llm instance fits in memory and multiple
+            # overrides with different llm instances can cause OOM.
             llm = override_params.get("llm", None)
             if isinstance(llm, VllmInProcess):
-                # llm.destroy() # requires implementation of VllmInProcess.destroy()
+                # TODO: call llm.destroy() # requires implementation of VllmInProcess.destroy(), see #361
                 pass
 
         structured_outputs = [v.get("structured", None) for v in results]
