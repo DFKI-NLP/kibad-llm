@@ -43,8 +43,10 @@ class EnsembleExtractor:
         combined_kwargs = {**self.default_kwargs, **kwargs}
         results = []
         for override_name, override_params in self.overrides.items():
+            print(f"EXECUTE OVERRIDE: {override_name}")
             llm = override_params.get("llm", None)
             if isinstance(llm, VllmInProcess):
+                print("WAAAKE UP")
                 llm.llm.wake_up()
 
             current_kwargs = {**combined_kwargs, **override_params}
