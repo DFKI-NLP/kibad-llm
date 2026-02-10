@@ -6,7 +6,7 @@
 # uv run -m kibad_llm.predict experiment/predict=faktencheck_core_ensemble_gpt_oss_and_qwen3 pdf_directory=path/to/pdf/files
 
 defaults:
-  - /extractor/llm@extractor.overrides.1.llm: gpt_oss_20b_in_proces
+  - /extractor/llm@extractor.overrides.1.llm: gpt_oss_20b_in_process
   - /extractor/llm@extractor.overrides.2.llm: qwen3_30b_in_process
   - override /extractor: ensemble
   # We use a polished prompt template with additional instructions for better extraction performance.
