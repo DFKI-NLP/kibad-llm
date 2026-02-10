@@ -17,8 +17,6 @@ extractor:
     # Create the schema from the pydantic model of EcosystemStudyFeaturesCoreFields
     _target_: kibad_llm.schema.types.EcosystemStudyFeaturesCoreFields.model_json_schema
     by_alias: false
-  llm:
-    lazy: true  # important to avoid loading both LLMs at the same time at the beginning of the extraction process
 
   # Enabling this flag will adjust the schema to wrap each field value with evidence detection metadata
   adjust_schema_for_evidence_detection: true

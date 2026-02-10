@@ -75,7 +75,7 @@ class VllmInProcess(LLM):
         *,
         model: str,
         vllm_kwargs: dict[str, Any] | None = None,
-        lazy: bool = False,
+        lazy: bool = True,
         # for compatibility with other LlamaIndex LLMs (but directly supported kwargs take precedence)
         additional_kwargs: dict[str, Any] | None = None,
         **default_request_kwargs: Any,
