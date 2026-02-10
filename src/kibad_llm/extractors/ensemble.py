@@ -55,7 +55,7 @@ class EnsembleExtractor:
             # can be quite large. Usually, just one llm instance fits in memory and multiple
             # overrides with different llm instances can cause OOM.
             if isinstance(llm, VllmInProcess):
-                llm.llm.sleep(level=2)
+                llm.llm.sleep(level=1)
                 cleanup()
 
         structured_outputs = [v.get("structured", None) for v in results]
