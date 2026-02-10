@@ -82,6 +82,9 @@ class VllmInProcess(LLM):
     ) -> None:
         self._model_name = model
         self._vllm_kwargs = vllm_kwargs or {}
+        if "enable_sleep_mode" not in self._vllm_kwargs:
+            # enable sleep mode by default to allow calling llm.sleep() to free up GPU memory
+            self._vllm_kwargs["enable_sleep_mode"] = True
         if not lazy:
             # trigger vLLM initialization now (instead of waiting for first call)
             # so that any errors are raised during LLM setup instead of at call time
