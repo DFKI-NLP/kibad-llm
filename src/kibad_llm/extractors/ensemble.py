@@ -1,7 +1,6 @@
 from typing import Any
 
 from ..llms import VllmInProcess
-from ..llms.vllm_in_process import cleanup
 from .aggregation_utils import aggregate_majority_vote
 from .base import extract_from_text_lenient
 
@@ -16,6 +15,10 @@ class EnsembleExtractor:
     Args:
         overrides: A list of dictionaries containing parameter overrides for each extraction (default: None,
             which means no overrides and just one extraction per repetition)
+        vllm_sleep_level: If using vLLM in any of the overrides, the sleep level to put the vLLM to after
+            each extraction (default: 2). See https://docs.vllm.ai/en/latest/features/sleep_mode/ for details.
+            Setting this to None will disable putting the vLLM to sleep, which can lead to OOM if multiple
+            overrides with different vLLM instances are used.
         skip_type_mismatches: If True, skips keys with inconsistent types across extractions
             instead of raising an error (default: False)
         return_as_list: List of field names to return as lists of all extracted values
@@ -26,6 +29,7 @@ class EnsembleExtractor:
     def __init__(
         self,
         overrides: list[dict] | dict[str, dict] | None = None,
+        vllm_sleep_level: int | None = 2,
         skip_type_mismatches: bool = False,
         return_as_list: list[str] | None = None,
         **kwargs,
@@ -38,15 +42,14 @@ class EnsembleExtractor:
         self.skip_type_mismatches = skip_type_mismatches
         self.return_as_list = return_as_list or []
         self.default_kwargs = kwargs
+        self.vllm_sleep_level = vllm_sleep_level
 
     def __call__(self, *args, **kwargs) -> dict[str, Any]:
         combined_kwargs = {**self.default_kwargs, **kwargs}
         results = []
         for override_name, override_params in self.overrides.items():
-            print(f"EXECUTE OVERRIDE: {override_name}")
             llm = override_params.get("llm", None)
             if isinstance(llm, VllmInProcess):
-                print("WAAAKE UP")
                 llm.llm.wake_up()
 
             current_kwargs = {**combined_kwargs, **override_params}
@@ -56,11 +59,8 @@ class EnsembleExtractor:
             # Put the vllm llm to sleep after each override if it exists, since it
             # can be quite large. Usually, just one llm instance fits in memory and multiple
             # overrides with different llm instances can cause OOM.
-            if isinstance(llm, VllmInProcess):
-                print("SLEEEEP")
-                llm.llm.sleep(level=2)
-                # TODO: check if removing this is fine
-                # cleanup()
+            if isinstance(llm, VllmInProcess) and self.vllm_sleep_level is not None:
+                llm.llm.sleep(level=self.vllm_sleep_level)
 
         structured_outputs = [v.get("structured", None) for v in results]
         aggregated_structured = aggregate_majority_vote(
