@@ -1,8 +1,8 @@
 from typing import Any
 
+from ..llms import VllmInProcess
 from .aggregation_utils import aggregate_majority_vote
 from .base import extract_from_text_lenient
-from ..llms import VllmInProcess
 
 
 class EnsembleExtractor:
@@ -46,7 +46,7 @@ class EnsembleExtractor:
     def __call__(self, *args, **kwargs) -> dict[str, Any]:
         combined_kwargs = {**self.default_kwargs, **kwargs}
         results = []
-        for override_name, override_params in self.overrides:
+        for override_name, override_params in self.overrides.items():
             current_kwargs = {**combined_kwargs, **override_params}
             for i in range(self.n):
                 current_result = extract_from_text_lenient(*args, **current_kwargs)
