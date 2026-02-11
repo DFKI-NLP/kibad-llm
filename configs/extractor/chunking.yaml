@@ -23,7 +23,7 @@ stride: 1000
 
 # the tokenizer ensures that any chunk produced is split at sane points.
 # whilst this tokenizer won't match the llms tokenizer, it ensures "more sensible" chunks.
-# for more details on how the tokenizer works, please refer to the docstring in it's implementation
+# for more details on how the tokenizer works, please refer to the docstring of ChunkIterator.
 tokenizer:
   _target_: kibad_llm.extractors.chunking_helpers.RegexTokenizer
 

@@ -20,7 +20,7 @@ document into chunks of a required maximum length that we can perform
 inference on.
 """
 
-from collections.abc import Iterable, Iterator, Sequence
+from collections.abc import Iterator
 import dataclasses
 import logging
 import re
@@ -51,6 +51,7 @@ class TextChunk:
 
     Attributes:
       token_interval: The token interval of the chunk in the source document.
+      tokenized_text: The source document in its tokenized form as TokenizedText obj.
       document: The source document.
     """
 
