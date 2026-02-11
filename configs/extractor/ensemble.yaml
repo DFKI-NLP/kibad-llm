@@ -2,6 +2,7 @@
 # and aggregates the results per key by majority voting
 
 defaults:
+  - aggregator: majority_vote
   - prompt_template: default
   - request_parameters: default
 
@@ -35,7 +36,3 @@ schema:
   # create the schema from the pydantic model of EcosystemStudyFeaturesSimple
   _target_: kibad_llm.schema.types.EcosystemStudyFeaturesSimple.model_json_schema
   by_alias: false
-# skips keys with values of inconsistent types across extractions
-# when aggregating results instead of raising an error.
-# required when using use_guided_decoding=false.
-skip_type_mismatches: false

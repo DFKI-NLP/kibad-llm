@@ -1,7 +1,7 @@
 from typing import Any
 
 from ..llms import VllmInProcess
-from .aggregation_utils import aggregate_majority_vote
+from .aggregation_utils import Aggregator, aggregate_majority_vote
 from .base import extract_from_text_lenient
 
 
@@ -28,9 +28,9 @@ class EnsembleExtractor:
 
     def __init__(
         self,
+        aggregator: Aggregator,
         overrides: list[dict] | dict[str, dict] | None = None,
         vllm_sleep_level: int | None = 2,
-        skip_type_mismatches: bool = False,
         return_as_list: list[str] | None = None,
         **kwargs,
     ):
@@ -39,7 +39,7 @@ class EnsembleExtractor:
         if isinstance(overrides, list):
             overrides = {str(i): override for i, override in enumerate(overrides)}
         self.overrides = overrides or {"default": {}}
-        self.skip_type_mismatches = skip_type_mismatches
+        self.aggregator = aggregator
         self.return_as_list = return_as_list or []
         self.default_kwargs = kwargs
         self.vllm_sleep_level = vllm_sleep_level
@@ -63,9 +63,7 @@ class EnsembleExtractor:
                 llm.llm.sleep(level=self.vllm_sleep_level)
 
         structured_outputs = [v.get("structured", None) for v in results]
-        aggregated_structured = aggregate_majority_vote(
-            structured_outputs, skip_type_mismatches=self.skip_type_mismatches
-        )
+        aggregated_structured = self.aggregator(structured_outputs)
         result: dict[str, Any] = {
             "structured": aggregated_structured,
         }
