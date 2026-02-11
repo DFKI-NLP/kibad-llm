@@ -10,7 +10,7 @@
 # uv run -m kibad_llm.predict experiment/predict=faktencheck_core_fields_schema_with_evidence pdf_directory=path/to/pdf/files
 
 defaults:
-  #- _with_evidence
+  - _with_evidence
   - override /extractor/schema: faktencheck_core
   # We use a polished prompt template with additional instructions for better extraction performance.
   - override /extractor/prompt_template: faktencheck_core_v1_with_evidence_and_persona
