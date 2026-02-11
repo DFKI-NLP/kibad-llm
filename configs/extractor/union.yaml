@@ -3,6 +3,7 @@
 # on the same value, otherwise an error is raised)
 
 defaults:
+  # schema is defined in the overrides list below, so no default here
   - aggregator: unanimous
   - llm: gpt_oss_20b
   - prompt_template: default

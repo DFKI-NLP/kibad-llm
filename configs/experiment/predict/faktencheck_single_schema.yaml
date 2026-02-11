@@ -8,10 +8,4 @@
 
 defaults:
   - override /extractor: simple
-
-
-extractor:
-  schema:
-    # create the schema from the pydantic model of EcosystemStudyFeaturesAll
-    _target_: kibad_llm.schema.types.EcosystemStudyFeaturesAll.model_json_schema
-    by_alias: false
+  - override /extractor/schema: faktencheck_all

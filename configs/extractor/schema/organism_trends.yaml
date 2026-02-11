@@ -1,0 +1,3 @@
+# create the schema from the pydantic model EcosystemStudyOrganismTrends
+_target_: kibad_llm.schema.types.EcosystemStudyOrganismTrends.model_json_schema
+by_alias: false

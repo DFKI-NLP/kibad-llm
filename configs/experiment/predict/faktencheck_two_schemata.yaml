@@ -8,8 +8,8 @@
 # python -m kibad_llm.predict experiment=two_schemata
 
 defaults:
+  # schema is defined in the overrides list below, so no default here
   - override /extractor: union
-
 
 extractor:
   overrides:
