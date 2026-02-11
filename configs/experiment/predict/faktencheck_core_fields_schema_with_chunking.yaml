@@ -1,8 +1,8 @@
 # @package _global_
 
-# This experiment config focuses on spliting texts into smaller chunks, in hopes to improve
-# performace and to fit large documents into small contexts.
-# As it is based on faktencheck_core_fields_schema_with_evidence, 
+# This experiment config focuses on splitting texts into smaller chunks, in hopes to improve
+# performance and to fit large documents into small contexts.
+# As it is based on faktencheck_core_fields_schema_with_evidence,
 # this experiment config uses the EcosystemStudyFeaturesCoreFields schema, which focuses on
 # a core set of highly relevant fields from the Faktencheck literature database. See
 # https://github.com/DFKI-NLP/kibad-llm/issues/158
