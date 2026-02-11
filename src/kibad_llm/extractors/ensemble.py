@@ -1,7 +1,7 @@
 from typing import Any
 
 from ..llms import VllmInProcess
-from .aggregation_utils import Aggregator, aggregate_majority_vote
+from .aggregation_utils import Aggregator
 from .base import extract_from_text_lenient
 
 
