@@ -10,12 +10,12 @@
 # is accompanied by a text snippet from the original document that supports the extraction.
 
 # To execute this experiment run:
-# uv run -m kibad_llm.predict experiment/predict=faktencheck_core_fields_schema_for_chunking pdf_directory=path/to/pdf/files
+# uv run -m kibad_llm.predict experiment/predict=faktencheck_core_fields_schema_with_chunking pdf_directory=path/to/pdf/files
 
 defaults:
   # We use a polished prompt template with additional instructions for better extraction performance.
   - override /extractor: chunking
-  - override /extractor/prompt_template: faktencheck_core_v1_for_chunking
+  - override /extractor/prompt_template: faktencheck_core_v1_with_chunking
 
 extractor:
   schema:
