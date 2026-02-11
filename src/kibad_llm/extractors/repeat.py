@@ -1,6 +1,6 @@
 from typing import Any
 
-from .aggregation_utils import aggregate_majority_vote
+from .aggregation_utils import Aggregator
 from .base import extract_from_text_lenient
 
 
@@ -8,13 +8,11 @@ class RepeatingExtractor:
     """Extractor that repeats extraction multiple times and aggregates results per key.
 
     This extractor calls the base extraction function multiple times (n times) on the same
-    input text and aggregates the structured outputs. The aggregation is done by majority vote
-    for primitive types and list types.
+    input text and aggregates the structured outputs.
 
     Args:
+        aggregator: Aggregator function to use for aggregating results
         n: Number of repetitions (default: 3)
-        skip_type_mismatches: If True, skips keys with inconsistent types across extractions
-            instead of raising an error (default: False)
         return_as_list: List of field names to return as lists of all extracted values
             (default: None)
         **kwargs: Additional keyword arguments passed to the base extraction function.
@@ -22,15 +20,15 @@ class RepeatingExtractor:
 
     def __init__(
         self,
+        aggregator: Aggregator,
         n: int = 3,
-        skip_type_mismatches: bool = False,
         return_as_list: list[str] | None = None,
         **kwargs,
     ):
         if n < 1:
             raise ValueError("n must be at least 1")
         self.n = n
-        self.skip_type_mismatches = skip_type_mismatches
+        self.aggregator = aggregator
         self.return_as_list = return_as_list or []
         self.default_kwargs = kwargs
 
@@ -42,9 +40,7 @@ class RepeatingExtractor:
             results.append(current_result)
 
         structured_outputs = [v.get("structured", None) for v in results]
-        aggregated_structured = aggregate_majority_vote(
-            structured_outputs, skip_type_mismatches=self.skip_type_mismatches
-        )
+        aggregated_structured = self.aggregator(structured_outputs)
         result: dict[str, Any] = {
             "structured": aggregated_structured,
         }

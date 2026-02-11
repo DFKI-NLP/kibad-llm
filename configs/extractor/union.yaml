@@ -1,7 +1,9 @@
 # extraction workflow that repeats the extraction for each item in the overrides list
-# and aggregates the results per key by union
+# and aggregates the results per key unanimously (i.e., only if all extractions agree
+# on the same value, otherwise an error is raised)
 
 defaults:
+  - aggregator: unanimous
   - llm: gpt_oss_20b
   - prompt_template: default
   - request_parameters: default

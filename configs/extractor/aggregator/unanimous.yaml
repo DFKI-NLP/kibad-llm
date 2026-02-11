@@ -1,0 +1,12 @@
+# Aggregate structured outputs with non-overlapping keys.
+#
+# Combines results from multiple extractions where each extraction is expected to
+# populate different keys (e.g., when a complex schema is split into multiple simpler
+# queries). Each key should appear with a non-None value in at most one extraction.
+
+_target_: kibad_llm.extractors.aggregation_utils.aggregate_unanimous
+_partial_: true
+# skips keys with values of inconsistent types across extractions
+# when aggregating results instead of raising an error.
+# required when using use_guided_decoding=false.
+skip_type_mismatches: false

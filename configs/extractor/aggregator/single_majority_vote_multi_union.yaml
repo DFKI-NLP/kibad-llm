@@ -1,0 +1,19 @@
+# Aggregate structured outputs from multiple extractions by majority voting
+# on primitive and dict keys, and union on list keys.
+#
+# Entries with the same key are aggregated based on their value types:
+#  - Primitive types (str, int, float, bool): majority vote
+#  - Dict types: majority vote
+#  - List types: union of all items across extractions
+#
+# This is meant to aggregate outputs from queries over different document chunks,
+# where single-valued fields (primitives, dicts) should converge to a consistent
+# value via majority vote, while multi-valued fields (lists) may contain different
+# valid items from each chunk that should all be collected.
+
+_target_: kibad_llm.extractors.aggregation_utils.aggregate_single_majority_vote_multi_union
+_partial_: true
+# skips keys with values of inconsistent types across extractions
+# when aggregating results instead of raising an error.
+# required when using use_guided_decoding=false.
+skip_type_mismatches: false

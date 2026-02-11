@@ -1,0 +1,18 @@
+# Aggregate structured outputs from multiple extractions by majority voting on each key.
+#
+# Entries with the same key are aggregated based on their value types:
+#  - Primitive types (str, int, float, bool): majority vote
+#  - Dict types: majority vote
+#  - List types: majority vote per item
+#
+# This is meant to aggregate outputs from repeated queries with the same schema,
+# where each extraction may produce slightly different results due to LLM variability.
+# The majority vote ensures that only values consistently appearing across extractions
+# are kept, reducing noise and improving reliability.
+
+_target_: kibad_llm.extractors.aggregation_utils.aggregate_majority_vote
+_partial_: true
+# skips keys with values of inconsistent types across extractions
+# when aggregating results instead of raising an error.
+# required when using use_guided_decoding=false.
+skip_type_mismatches: false
