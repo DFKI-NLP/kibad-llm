@@ -1,7 +1,7 @@
 from collections.abc import Iterator
 from typing import Any
 
-from .aggregation_utils import aggregate_single_majority_vote_multi_union
+from .aggregation_utils import Aggregator
 from .base import extract_from_text_lenient
 from .chunking_utils import core
 from .chunking_utils import tokenizers as tokenizer_lib
@@ -59,14 +59,14 @@ class ChunkingExtractor:
 
     def __init__(
         self,
-        skip_type_mismatches: bool = False,
+        aggregator: Aggregator,
         return_as_list: list[str] | None = None,
         tokenizer: tokenizer_lib.Tokenizer | None = None,
         max_char_buffer: int = 20000,
         stride: int = 1000,
         **kwargs,
     ):
-        self.skip_type_mismatches = skip_type_mismatches
+        self.aggregator = aggregator
         self.return_as_list = return_as_list or []
         self.default_kwargs = kwargs
         self.tokenizer = tokenizer
@@ -101,9 +101,7 @@ class ChunkingExtractor:
             results.append(current_result)
 
         structured_outputs = [v.get("structured", None) for v in results]
-        aggregated_structured = aggregate_single_majority_vote_multi_union(
-            structured_outputs, skip_type_mismatches=self.skip_type_mismatches
-        )
+        aggregated_structured = self.aggregator(structured_outputs)
 
         result: dict[str, Any] = {
             "structured": aggregated_structured,
