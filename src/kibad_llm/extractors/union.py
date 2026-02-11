@@ -20,13 +20,15 @@ class UnionExtractor:
 
     def __init__(
         self,
-        overrides: list[dict],
+        overrides: list[dict] | dict[str, dict],
         aggregator: Aggregator,
         return_as_list: list[str] | None = None,
         **kwargs,
     ):
         if len(overrides) < 1:
             raise ValueError("overrides must contain at least one set of parameters")
+        if isinstance(overrides, list):
+            overrides = {str(i): override for i, override in enumerate(overrides)}
         self.overrides = overrides
         self.aggregator = aggregator
         self.return_as_list = return_as_list or []
@@ -35,7 +37,7 @@ class UnionExtractor:
     def __call__(self, *args, **kwargs) -> dict[str, Any]:
         combined_kwargs = {**self.default_kwargs, **kwargs}
         results = []
-        for override_params in self.overrides:
+        for override_name, override_params in self.overrides.items():
             current_kwargs = {**combined_kwargs, **override_params}
             current_result = extract_from_text_lenient(*args, **current_kwargs)
             results.append(current_result)
