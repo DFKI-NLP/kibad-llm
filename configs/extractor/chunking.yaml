@@ -24,6 +24,8 @@ _target_: kibad_llm.extractors.ChunkingExtractor
 # values are calculated with regards to gpt_oss_20b, using the heuristic of 5 characters per token
 max_char_buffer: 20000
 stride: 1000
+# if stride factor is set to anything greater than 0, it overrides stride with int(max_char_buffer * stride_factor)
+stride_factor: -1.0
 
 # the tokenizer ensures that any chunk produced is split at sane points.
 # whilst this tokenizer won't match the llms tokenizer, it ensures "more sensible" chunks.
