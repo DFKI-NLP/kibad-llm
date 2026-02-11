@@ -54,6 +54,7 @@ class ChunkingExtractor:
         tokenizer: tokenizer to use for chunking
         max_char_buffer: Max chunk size in characters
         stride: Number of characters to overlap chunks
+        stride_factor: If provided, overrides stride with a fraction of max_char_buffer (e.g. 0.1 for 10% overlap)
         **kwargs: Additional keyword arguments passed to the base extraction function.
     """
 
@@ -64,7 +65,7 @@ class ChunkingExtractor:
         tokenizer: tokenizer_lib.Tokenizer | None = None,
         max_char_buffer: int = 20000,
         stride: int = 1000,
-        stride_factor: float = -1.0,
+        stride_factor: float | None = None,
         **kwargs,
     ):
         self.aggregator = aggregator
@@ -72,7 +73,7 @@ class ChunkingExtractor:
         self.default_kwargs = kwargs
         self.tokenizer = tokenizer
         self.max_char_buffer = max_char_buffer
-        if stride_factor > 0:
+        if stride_factor is not None:
             self.stride = int(max_char_buffer * stride_factor)
         else:
             self.stride = stride
