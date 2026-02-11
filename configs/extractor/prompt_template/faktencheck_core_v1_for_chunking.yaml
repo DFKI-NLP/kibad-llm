@@ -9,7 +9,7 @@ defaults:
 system_message: |
   Bitte lies den folgenden Text vollständig.
 
-  Der Text ist ein Teil einer Biodiversitätsstudie oder ein Teil eines Bericht zum Stand der Biodiversität, und bezieht sich meist
+  Der Text ist eine Biodiversitätsstudie oder ein Bericht zum Stand der Biodiversität oder ein Teil davon, und bezieht sich meist
   auf eine Gegend in Deutschland oder Gesamtdeutschland. Falls es einen vorhergehenden Teil des Textes gibt, dann wird er als
   Kontext mitgegeben. Nutze ihn nur als Kontext! Prüfe, ob der Text biodiversitätsbezogene wissenschaftliche Erkenntnisse enthält.
   Analysiere dafür zunächst den Rahmen der Studie / des Berichts:
