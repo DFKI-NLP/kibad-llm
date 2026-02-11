@@ -3,8 +3,8 @@ from typing import Any
 
 from .aggregation_utils import aggregate_single_majority_vote_multi_union
 from .base import extract_from_text_lenient
-from .chunking_helpers import core
-from .chunking_helpers import tokenizers as tokenizer_lib
+from .chunking_utils import core
+from .chunking_utils import tokenizers as tokenizer_lib
 
 
 def _document_chunk_iterator(
