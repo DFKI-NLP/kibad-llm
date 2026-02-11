@@ -1,0 +1,3 @@
+# create the schema from the pydantic model EcosystemStudyFeaturesWithoutCompounds
+_target_: kibad_llm.schema.types.EcosystemStudyFeaturesWithoutCompounds.model_json_schema
+by_alias: false

@@ -2,6 +2,7 @@
 # per key by majority voting
 
 defaults:
+  - schema: faktencheck_simple
   - aggregator: majority_vote
   - llm: gpt_oss_20b
   - prompt_template: default
@@ -17,11 +18,6 @@ return_as_list:
   - reasoning_content
   # - messages
   # - messages_formatted
-
-schema:
-  # create the schema from the pydantic model of EcosystemStudyFeaturesSimple
-  _target_: kibad_llm.schema.types.EcosystemStudyFeaturesSimple.model_json_schema
-  by_alias: false
 
 # general return options (see simple extractor for details)
 return_reasoning: True

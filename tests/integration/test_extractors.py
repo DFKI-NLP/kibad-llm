@@ -26,9 +26,19 @@ def extractor_name(request) -> str:
 
 @pytest.fixture(scope="function")
 def cfg_predict_extractor(tmp_path, extractor_name) -> DictConfig:  # type: ignore
+    overrides = [f"extractor={extractor_name}"]
+
+    if extractor_name in ["union", "conditional_union"]:
+        # For union extractors, we need to define extractor overrides. Use two simple
+        # setups (setup_a and setup_b) with different schemas.
+        overrides.append("+extractor/schema@extractor.overrides.setup_a.schema=faktencheck_simple")
+        overrides.append(
+            "+extractor/schema@extractor.overrides.setup_b.schema=faktencheck_compounds_simple"
+        )
+
     cfg = cfg_global(
         out_dir=tmp_path,
-        overrides=[f"extractor={extractor_name}"],
+        overrides=overrides,
         config_name="predict.yaml",
     )
 

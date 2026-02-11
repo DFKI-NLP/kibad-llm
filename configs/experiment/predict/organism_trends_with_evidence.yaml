@@ -10,12 +10,9 @@
 
 defaults:
   - override /extractor/prompt_template: organism_trends_v1_with_evidence_and_persona
+  - override /extractor/schema: organism_trends_v1
 
 extractor:
-  schema:
-    # create the schema from the pydantic model EcosystemStudyOrganismTrendsV1
-    _target_: kibad_llm.schema.types.EcosystemStudyOrganismTrendsV1.model_json_schema
-    by_alias: false
 
   # Enabling this flag will adjust the schema to wrap each field value with evidence detection metadata
   adjust_schema_for_evidence_detection: true
