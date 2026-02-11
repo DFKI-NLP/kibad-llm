@@ -1,17 +1,10 @@
-from collections.abc import Iterable, Iterator
+from collections.abc import Iterator
 from typing import Any
-
-from hydra.core.hydra_config import HydraConfig
-from hydra.utils import instantiate
-from llama_index.core.base.llms.types import MessageRole
-
-from kibad_llm.llms.base import SimpleChatMessage
 
 from .aggregation_utils import aggregate_single_majority_vote_multi_union
 from .base import extract_from_text_lenient
 from .chunking_helpers import core
 from .chunking_helpers import tokenizers as tokenizer_lib
-from .union import UnionExtractor
 
 
 def _document_chunk_iterator(
@@ -44,7 +37,7 @@ def _document_chunk_iterator(
     )
 
 
-class ChunkingExtractor(UnionExtractor):
+class ChunkingExtractor:
     """Extractor that chunks extraction and aggregates results per key.
     This extractor calls the base extraction function multiple times
     (for each chunk in the document) on the same input text,
@@ -54,7 +47,6 @@ class ChunkingExtractor(UnionExtractor):
     See UnionExtractor for accepted parameters and details about the aggregation logic.
 
     Args:
-        overrides: A list of dictionaries containing parameter overrides for each extraction.
         skip_type_mismatches: If True, skips keys with inconsistent types across extractions
             instead of raising an error (default: False)
         return_as_list: List of field names to return as lists of all extracted values
@@ -67,7 +59,6 @@ class ChunkingExtractor(UnionExtractor):
 
     def __init__(
         self,
-        overrides: list[dict],
         skip_type_mismatches: bool = False,
         return_as_list: list[str] | None = None,
         tokenizer: tokenizer_lib.Tokenizer | None = None,
@@ -75,9 +66,6 @@ class ChunkingExtractor(UnionExtractor):
         stride: int = 1000,
         **kwargs,
     ):
-        if len(overrides) < 1:
-            raise ValueError("overrides must contain at least one set of parameters")
-        self.overrides = overrides
         self.skip_type_mismatches = skip_type_mismatches
         self.return_as_list = return_as_list or []
         self.default_kwargs = kwargs
