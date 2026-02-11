@@ -1,9 +1,12 @@
 # @package _global_
 
-# This experiment config uses the EcosystemStudyFeaturesCoreFields schema, which focuses on
+# This experiment config focuses on spliting texts into smaller chunks, in hopes to improve
+# performace and to fit large documents into small contexts.
+# As it is based on faktencheck_core_fields_schema_with_evidence, 
+# this experiment config uses the EcosystemStudyFeaturesCoreFields schema, which focuses on
 # a core set of highly relevant fields from the Faktencheck literature database. See
 # https://github.com/DFKI-NLP/kibad-llm/issues/158
-# However, it also enables evidence detection, so that each extracted field value
+# Therefore, it also enables evidence detection, so that each extracted field value
 # is accompanied by a text snippet from the original document that supports the extraction.
 
 # To execute this experiment run:
@@ -49,8 +52,8 @@ extractor:
   #   # ... such as the margin (in words) around the evidence snippet
   #   evidence_snippet_margin: 15
 
-# To verify the evidence anchors wrt. the original text, we return the text from the pdf conversion.
-store_text_in_predictions: true
+# To verify the evidence anchors wrt. the original text, we may return the text from the pdf conversion.
+# store_text_in_predictions: true
 
-# since we store the whole text, enable compression of the output file by setting a .gz extension
-output_file_name: predictions.jsonl.gz
+# If we store the whole text, enable compression of the output file by setting a .gz extension
+# output_file_name: predictions.jsonl.gz
