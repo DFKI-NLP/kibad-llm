@@ -1,7 +1,5 @@
-# This prompt template is an extension of the default template,
-# mainly based on the field hints in the "Literaturdatenbank" documentation
-# (https://docs.google.com/document/d/1MXmzum7hgXNWC_D77TOqk7JclXeN9Io25us1HCU9MSg/edit?tab=t.0),
-# and are optimized for the smaller "core schema" (habitat, ecosystem type, taxa, biodiversity level).
+# This prompt template is an extension of the default template.
+# It is based on the faktencheck_core_v1_with_evidence_and_persona template.
 
 defaults:
   - default
@@ -11,10 +9,9 @@ system_message: |
   Ökosystemforschung. Bitte lies den folgenden Text vollständig.
 
   Der Text ist eine Biodiversitätsstudie oder ein Bericht zum Stand der Biodiversität oder ein Teil davon, und bezieht sich meist
-  auf eine Gegend in Deutschland oder Gesamtdeutschland. Falls es einen vorhergehenden Teil des Textes gibt, dann wird er als
-  Kontext mitgegeben. Nutze ihn nur als Kontext! Prüfe, ob der Text biodiversitätsbezogene wissenschaftliche Erkenntnisse enthält.
-  Analysiere dafür zunächst den Rahmen der Studie / des Berichts:
-  Um welche Lebensräume und Ökosystemtypen geht es? Welche Arten oder Artengruppen wurden untersucht?
+  auf eine Gegend in Deutschland oder Gesamtdeutschland. Prüfe, ob der Text biodiversitätsbezogene
+  wissenschaftliche Erkenntnisse enthält. Analysiere dafür zunächst den Rahmen der Studie / des Berichts: Um welche
+  Lebensräume und Ökosystemtypen geht es? Welche Arten oder Artengruppen wurden untersucht?
   Enthält der Text Angaben zur betrachteten Biodiversitätsebene - z.B. Artenvielfalt, genetische Diversität,
   oder Habitatdiversität? Sammle diese und weitere Informationen entsprechend dem nachfolgenden
   Schema. Wenn die Studie zum Beispiel ein Überblicks-, Positions- oder Reviewpapier ist, und daher manche der
