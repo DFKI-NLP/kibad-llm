@@ -41,7 +41,8 @@ def cfg_predict_extractor(tmp_path, extractor_name) -> DictConfig:  # type: igno
         overrides.append("extractor.overrides.1.llm.additional_kwargs.seed=123")
         overrides.append("+extractor/llm@extractor.overrides.2.llm=gpt_oss_20b")
         overrides.append("extractor.overrides.2.llm.additional_kwargs.seed=456")
-        # ensure that the extractor returns both errors and also structured output as lists to test the aggregation logic
+        # ensure that the extractor returns both errors and also structured output as lists to allow
+        # to see individual outputs of each extraction in addition to the aggregated structured output
         overrides.append("extractor.return_as_list=[errors,structured]")
 
     cfg = cfg_global(
