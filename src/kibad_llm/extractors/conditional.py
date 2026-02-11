@@ -20,7 +20,7 @@ class ConditionalUnionExtractor(UnionExtractor):
         combined_kwargs = {**self.default_kwargs, **kwargs}
         results = []
         history: list[SimpleChatMessage] = []
-        for override_params in self.overrides:
+        for override_name, override_params in self.overrides.items():
             # adjust kwargs:
             # 1) to return formatted messages for history
             current_kwargs = {
