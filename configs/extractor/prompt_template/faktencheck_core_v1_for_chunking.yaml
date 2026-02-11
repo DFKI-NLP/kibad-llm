@@ -7,7 +7,8 @@ defaults:
   - default
 
 system_message: |
-  Bitte lies den folgenden Text vollständig.
+  Du bist ein Spezialist für die strukturierte Datenextraktion aus wissenschaftlichen Dokumenten im Bereich
+  Ökosystemforschung. Bitte lies den folgenden Text vollständig.
 
   Der Text ist eine Biodiversitätsstudie oder ein Bericht zum Stand der Biodiversität oder ein Teil davon, und bezieht sich meist
   auf eine Gegend in Deutschland oder Gesamtdeutschland. Falls es einen vorhergehenden Teil des Textes gibt, dann wird er als
