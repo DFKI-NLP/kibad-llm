@@ -1,3 +1,5 @@
+# @package _global_
+
 # This is a helper configuration file to enable evidence detection in the experiments. It can be used in
 # combination with any of the experiment/predict configurations by adding it to the defaults list.
 # See experiment/predict/faktencheck_core_fields_schema_with_evidence.yaml for an example.
