@@ -7,6 +7,7 @@
 # overlap between chunks called stride. The results are then aggregated across extractions.
 
 defaults:
+  - aggregator: single_majority_vote_multi_union
   - llm: gpt_oss_20b
   - prompt_template: default
   - request_parameters: default
