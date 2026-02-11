@@ -8,15 +8,12 @@
 defaults:
   - /extractor/llm@extractor.overrides.1.llm: gpt_oss_20b_in_process
   - /extractor/llm@extractor.overrides.2.llm: qwen3_30b_in_process
+  - /extractor/schema: faktencheck_core
   - override /extractor: ensemble
   # We use a polished prompt template with additional instructions for better extraction performance.
   - override /extractor/prompt_template: faktencheck_core_v1_with_evidence_and_persona
 
 extractor:
-  schema:
-    # Create the schema from the pydantic model of EcosystemStudyFeaturesCoreFields
-    _target_: kibad_llm.schema.types.EcosystemStudyFeaturesCoreFields.model_json_schema
-    by_alias: false
 
   # Enabling this flag will adjust the schema to wrap each field value with evidence detection metadata
   adjust_schema_for_evidence_detection: true
