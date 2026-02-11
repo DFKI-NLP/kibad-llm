@@ -8,18 +8,7 @@
 # python -m kibad_llm.predict experiment=two_schemata
 
 defaults:
-  # schema is defined in the overrides list below, so no default here
+  # use two override setups (setup_a and setup_b) to extract with two different schemas separately
+  - /extractor/schema@extractor.overrides.setup_a.schema: faktencheck_without_compounds
+  - /extractor/schema@extractor.overrides.setup_b.schema: faktencheck_compounds_only
   - override /extractor: union
-
-extractor:
-  overrides:
-    setup_a:
-      schema:
-        # create the schema from the pydantic model EcosystemStudyFeaturesWithoutCompounds
-        _target_: kibad_llm.schema.types.EcosystemStudyFeaturesWithoutCompounds.model_json_schema
-        by_alias: false
-    setup_b:
-      schema:
-        # create the schema from the pydantic model EcosystemStudyFeaturesCompoundsOnly
-        _target_: kibad_llm.schema.types.EcosystemStudyFeaturesCompoundsOnly.model_json_schema
-        by_alias: false
