@@ -18,11 +18,13 @@ _target_: kibad_llm.extractors.UnionExtractor
 # Use two dummy schemata (...Simple) per default. Overrides is a list, so setting it
 # somewhere else will completely replace the list.
 overrides:
-  - schema:
+  setup_a:
+    schema:
       # create the schema from the pydantic model EcosystemStudyFeaturesSimple
       _target_: kibad_llm.schema.types.EcosystemStudyFeaturesSimple.model_json_schema
       by_alias: false
-  - schema:
+  setup_b:
+    schema:
       # create the schema from the pydantic model EcosystemStudyFeaturesCompoundsSimple
       _target_: kibad_llm.schema.types.EcosystemStudyFeaturesCompoundsSimple.model_json_schema
       by_alias: false
