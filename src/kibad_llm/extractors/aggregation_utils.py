@@ -1,5 +1,12 @@
 from collections import Counter, defaultdict
-from typing import Any
+from collections.abc import Callable
+from typing import Any, TypeAlias
+
+# For now, just a type alias for the aggregation function signature, but could be extended
+# to a class hierarchy if we want to support multiple aggregation strategies with shared code.
+InputType: TypeAlias = list[dict[str, Any] | None]
+OutputType: TypeAlias = dict[str, Any] | None
+Aggregator: TypeAlias = Callable[[InputType], OutputType]
 
 
 class AggregationError(ValueError):
@@ -112,8 +119,8 @@ def _multi_entry_majority_vote(values: list[list | None]) -> list:
 
 
 def aggregate_majority_vote(
-    structured_outputs: list[dict | None], skip_type_mismatches: bool = False
-) -> dict[str, Any] | None:
+    structured_outputs: InputType, skip_type_mismatches: bool = False
+) -> OutputType:
     """Aggregate structured outputs from multiple extractions.
 
     Entries with the same key are aggregated based on their value types:
@@ -230,8 +237,8 @@ def _multi_entry_union(values: list[list | None]) -> list:
 
 
 def aggregate_unanimous(
-    structured_outputs: list[dict | None], skip_type_mismatches: bool = False
-) -> dict[str, Any] | None:
+    structured_outputs: InputType, skip_type_mismatches: bool = False
+) -> OutputType:
     """Aggregate structured outputs with non-overlapping keys.
 
     Combines results from multiple extractions where each extraction is expected to
@@ -295,8 +302,8 @@ def aggregate_unanimous(
 
 
 def aggregate_single_majority_vote_multi_union(
-    structured_outputs: list[dict | None], skip_type_mismatches: bool = False
-) -> dict[str, Any] | None:
+    structured_outputs: InputType, skip_type_mismatches: bool = False
+) -> OutputType:
     """Aggregate structured outputs from multiple extractions.
 
     Entries with the same key are aggregated based on their value types:
