@@ -1,7 +1,10 @@
-# This configuration file defines a ConditionalUnionExtractor that uses two different
-# schemata for extracting information. The llm is queried sequentially with each schema,
-# but the result from previous extractions is passed as history to condition the subsequent
-# extractions.
+# This configuration file defines a ChunkingExtractor that chunks documents before
+# extracting from them. The chunks are provided by a ChunkIterator based on googles langextract:
+# https://github.com/google/langextract 
+# It uses a clever Tokenizer that tries to strike a balance between chunking speed and 
+# cohesive contexts, by taking sentence structures into account.
+# The llm is queried sequentially with each chunk, and an optional 
+# overlap between chunks called stride. The results are then aggregated across extractions.
 
 defaults:
   - llm: gpt_oss_20b
