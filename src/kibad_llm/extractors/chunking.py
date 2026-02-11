@@ -64,6 +64,7 @@ class ChunkingExtractor:
         tokenizer: tokenizer_lib.Tokenizer | None = None,
         max_char_buffer: int = 20000,
         stride: int = 1000,
+        stride_factor: float = -1.0,
         **kwargs,
     ):
         self.aggregator = aggregator
@@ -71,7 +72,10 @@ class ChunkingExtractor:
         self.default_kwargs = kwargs
         self.tokenizer = tokenizer
         self.max_char_buffer = max_char_buffer
-        self.stride = stride
+        if stride_factor > 0:
+            self.stride = int(max_char_buffer * stride_factor)
+        else:
+            self.stride = stride
 
     def __call__(self, *args, **kwargs) -> dict[str, Any]:
         combined_kwargs = {**self.default_kwargs, **kwargs}
