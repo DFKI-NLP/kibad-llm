@@ -1,3 +1,7 @@
+# This is a helper configuration file to enable evidence detection in the experiments. It can be used in
+# combination with any of the experiment/predict configurations by adding it to the defaults list.
+# See experiment/predict/faktencheck_core_fields_schema_with_evidence.yaml for an example.
+
 extractor:
   # Enabling this flag will adjust the schema to wrap each field value with evidence detection metadata
   adjust_schema_for_evidence_detection: true
