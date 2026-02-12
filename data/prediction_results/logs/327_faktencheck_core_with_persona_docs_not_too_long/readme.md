@@ -1,6 +1,6 @@
 # 327_faktencheck_core_with_persona_docs_not_too_long
 
- same as [327_faktencheck_core_with_persona](../327_faktencheck_core_with_persona), but evaluated only on docs that do not throw "document too long" errors (uses `dataset.predictions.skip_by_id` to specify the docs to skip, see https://github.com/DFKI-NLP/kibad-llm/pull/367 for details)
+same as [327_faktencheck_core_with_persona](../327_faktencheck_core_with_persona), but evaluated only on docs that do not throw "document too long" errors (uses `dataset.predictions.skip_by_id` to specify the docs to skip, see https://github.com/DFKI-NLP/kibad-llm/pull/367 for details)
 
 ## notebook parameters
 
