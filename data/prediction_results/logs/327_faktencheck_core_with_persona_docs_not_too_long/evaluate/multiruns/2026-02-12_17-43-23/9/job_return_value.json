@@ -1,0 +1,70 @@
+{
+  "biodiversity_level": {
+    "precision": 0.16129032258064516,
+    "recall": 0.2127659574468085,
+    "f1": 0.1834862385321101,
+    "support": 47
+  },
+  "ecosystem_type.term": {
+    "precision": 0.12962962962962962,
+    "recall": 0.14285714285714285,
+    "f1": 0.1359223300970874,
+    "support": 49
+  },
+  "habitat": {
+    "precision": 0.4897959183673469,
+    "recall": 0.46153846153846156,
+    "f1": 0.4752475247524753,
+    "support": 104
+  },
+  "taxa.german_name": {
+    "precision": 0.32558139534883723,
+    "recall": 0.1407035175879397,
+    "f1": 0.19649122807017544,
+    "support": 199
+  },
+  "taxa.scientific_name": {
+    "precision": 0.3253012048192771,
+    "recall": 0.1534090909090909,
+    "f1": 0.2084942084942085,
+    "support": 176
+  },
+  "taxa.species_group": {
+    "precision": 0.44776119402985076,
+    "recall": 0.3488372093023256,
+    "f1": 0.3921568627450981,
+    "support": 86
+  },
+  "AVG": {
+    "precision": 0.3132266107959311,
+    "recall": 0.24335189660696152,
+    "f1": 0.2652997321151925,
+    "support": 110.16666666666667
+  },
+  "ALL": {
+    "precision": 0.3333333333333333,
+    "recall": 0.22692889561270801,
+    "f1": 0.27002700270027,
+    "support": 661
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/327_faktencheck_core_with_persona/2026-01-27_13-36-47/2026-01-27_15-09-09_288140/predictions.jsonl",
+      "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/327_faktencheck_core_with_persona/2026-01-27_13-36-47/2026-01-27_15-09-09_288140/predictions.jsonl",
+      "time_pdf_conversion": 0.005490445997565985,
+      "time_extraction": 880.1974824049976,
+      "commit_hash": "bf86451a2404f64307c3512a8ad38921a1dd9e58",
+      "branch": "faktencheck-with-persona",
+      "is_dirty": false
+    },
+    "overrides": {
+      "name": "327_faktencheck_core_with_persona",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "extractor/prompt_template": "faktencheck_core_v1_with_evidence_and_persona",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor.return_reasoning": "True",
+      "extractor/llm": "gemma3_27b_in_process",
+      "seed": "1337"
+    }
+  }
+}

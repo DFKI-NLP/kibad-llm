@@ -1,0 +1,5 @@
+- dataset.predictions.log=logs/327_faktencheck_core_with_persona/predict/multiruns/2026-01-27_13-36-47/10
+- name=327_faktencheck_core_with_persona_docs_not_too_long
+- experiment/evaluate=faktencheck_core_f1_micro_flat
+- prediction_logs=logs/327_faktencheck_core_with_persona/predict/multiruns/2026-01-27_13-36-47
+- +dataset.predictions.skip_by_id=[2E9XWUUE,2EUNPHDZ,2P53UVJA,2RXMDX8I,3LGPK6BL,3WEEGFGW,46RX4AEN,4YXRYRJC,4Z67G9T5,5SIYLM9W,6D23L7B5,6G2THNDX,7DSY6RMR,84QQ9F5S,885FDL5Z]

@@ -1,0 +1,478 @@
+{
+  "dataset.predictions.log=logs/327_faktencheck_core_with_persona/predict/multiruns/2026-01-27_13-36-47/0": {
+    "no_error": 85,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/327_faktencheck_core_with_persona/2026-01-27_13-36-47/2026-01-27_13-36-48_883603/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/327_faktencheck_core_with_persona/2026-01-27_13-36-47/2026-01-27_13-36-48_883603/predictions.jsonl",
+        "time_pdf_conversion": 0.00299055315554142,
+        "time_extraction": 1379.378564836923,
+        "commit_hash": "bf86451a2404f64307c3512a8ad38921a1dd9e58",
+        "branch": "faktencheck-with-persona",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "327_faktencheck_core_with_persona",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor/prompt_template": "faktencheck_core_v1_with_evidence_and_persona",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gpt_oss_20b_in_process",
+        "seed": "42"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/327_faktencheck_core_with_persona/predict/multiruns/2026-01-27_13-36-47/0",
+      "name": "327_faktencheck_core_with_persona_docs_not_too_long",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "logs/327_faktencheck_core_with_persona/predict/multiruns/2026-01-27_13-36-47",
+      "dataset.predictions.skip_by_id": "[2E9XWUUE,2EUNPHDZ,2P53UVJA,2RXMDX8I,3LGPK6BL,3WEEGFGW,46RX4AEN,4YXRYRJC,4Z67G9T5,5SIYLM9W,6D23L7B5,6G2THNDX,7DSY6RMR,84QQ9F5S,885FDL5Z]"
+    }
+  },
+  "dataset.predictions.log=logs/327_faktencheck_core_with_persona/predict/multiruns/2026-01-27_13-36-47/1": {
+    "no_error": 85,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/327_faktencheck_core_with_persona/2026-01-27_13-36-47/2026-01-27_14-01-27_861892/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/327_faktencheck_core_with_persona/2026-01-27_13-36-47/2026-01-27_14-01-27_861892/predictions.jsonl",
+        "time_pdf_conversion": 0.0026400480419397354,
+        "time_extraction": 1517.552485038992,
+        "commit_hash": "bf86451a2404f64307c3512a8ad38921a1dd9e58",
+        "branch": "faktencheck-with-persona",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "327_faktencheck_core_with_persona",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor/prompt_template": "faktencheck_core_v1_with_evidence_and_persona",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gpt_oss_20b_in_process",
+        "seed": "1337"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/327_faktencheck_core_with_persona/predict/multiruns/2026-01-27_13-36-47/1",
+      "name": "327_faktencheck_core_with_persona_docs_not_too_long",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "logs/327_faktencheck_core_with_persona/predict/multiruns/2026-01-27_13-36-47",
+      "dataset.predictions.skip_by_id": "[2E9XWUUE,2EUNPHDZ,2P53UVJA,2RXMDX8I,3LGPK6BL,3WEEGFGW,46RX4AEN,4YXRYRJC,4Z67G9T5,5SIYLM9W,6D23L7B5,6G2THNDX,7DSY6RMR,84QQ9F5S,885FDL5Z]"
+    }
+  },
+  "dataset.predictions.log=logs/327_faktencheck_core_with_persona/predict/multiruns/2026-01-27_13-36-47/10": {
+    "no_error": 82,
+    "with_error": 3,
+    "JSONDecodeError": 3,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/327_faktencheck_core_with_persona/2026-01-27_13-36-47/2026-01-27_18-27-42_829400/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/327_faktencheck_core_with_persona/2026-01-27_13-36-47/2026-01-27_18-27-42_829400/predictions.jsonl",
+        "time_pdf_conversion": 0.0025300951674580574,
+        "time_extraction": 2356.364529049024,
+        "commit_hash": "bf86451a2404f64307c3512a8ad38921a1dd9e58",
+        "branch": "faktencheck-with-persona",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "327_faktencheck_core_with_persona",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor/prompt_template": "faktencheck_core_v1_with_evidence_and_persona",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "mistral_small_3_24b_in_process",
+        "seed": "1337"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/327_faktencheck_core_with_persona/predict/multiruns/2026-01-27_13-36-47/10",
+      "name": "327_faktencheck_core_with_persona_docs_not_too_long",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "logs/327_faktencheck_core_with_persona/predict/multiruns/2026-01-27_13-36-47",
+      "dataset.predictions.skip_by_id": "[2E9XWUUE,2EUNPHDZ,2P53UVJA,2RXMDX8I,3LGPK6BL,3WEEGFGW,46RX4AEN,4YXRYRJC,4Z67G9T5,5SIYLM9W,6D23L7B5,6G2THNDX,7DSY6RMR,84QQ9F5S,885FDL5Z]"
+    }
+  },
+  "dataset.predictions.log=logs/327_faktencheck_core_with_persona/predict/multiruns/2026-01-27_13-36-47/11": {
+    "no_error": 80,
+    "with_error": 5,
+    "JSONDecodeError": 5,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/327_faktencheck_core_with_persona/2026-01-27_13-36-47/2026-01-27_19-07-56_601164/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/327_faktencheck_core_with_persona/2026-01-27_13-36-47/2026-01-27_19-07-56_601164/predictions.jsonl",
+        "time_pdf_conversion": 0.0025867498479783535,
+        "time_extraction": 2630.3169042679947,
+        "commit_hash": "bf86451a2404f64307c3512a8ad38921a1dd9e58",
+        "branch": "faktencheck-with-persona",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "327_faktencheck_core_with_persona",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor/prompt_template": "faktencheck_core_v1_with_evidence_and_persona",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "mistral_small_3_24b_in_process",
+        "seed": "7331"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/327_faktencheck_core_with_persona/predict/multiruns/2026-01-27_13-36-47/11",
+      "name": "327_faktencheck_core_with_persona_docs_not_too_long",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "logs/327_faktencheck_core_with_persona/predict/multiruns/2026-01-27_13-36-47",
+      "dataset.predictions.skip_by_id": "[2E9XWUUE,2EUNPHDZ,2P53UVJA,2RXMDX8I,3LGPK6BL,3WEEGFGW,46RX4AEN,4YXRYRJC,4Z67G9T5,5SIYLM9W,6D23L7B5,6G2THNDX,7DSY6RMR,84QQ9F5S,885FDL5Z]"
+    }
+  },
+  "dataset.predictions.log=logs/327_faktencheck_core_with_persona/predict/multiruns/2026-01-27_13-36-47/12": {
+    "no_error": 78,
+    "with_error": 7,
+    "JSONDecodeError": 5,
+    "MissingResponseContentError": 1,
+    "ReasoningExtractionError": 1,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/327_faktencheck_core_with_persona/2026-01-27_13-36-47/2026-01-27_19-52-41_948089/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/327_faktencheck_core_with_persona/2026-01-27_13-36-47/2026-01-27_19-52-41_948089/predictions.jsonl",
+        "time_pdf_conversion": 0.003141792956739664,
+        "time_extraction": 8708.89788489393,
+        "commit_hash": "bf86451a2404f64307c3512a8ad38921a1dd9e58",
+        "branch": "faktencheck-with-persona",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "327_faktencheck_core_with_persona",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor/prompt_template": "faktencheck_core_v1_with_evidence_and_persona",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gpt_5",
+        "seed": "42"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/327_faktencheck_core_with_persona/predict/multiruns/2026-01-27_13-36-47/12",
+      "name": "327_faktencheck_core_with_persona_docs_not_too_long",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "logs/327_faktencheck_core_with_persona/predict/multiruns/2026-01-27_13-36-47",
+      "dataset.predictions.skip_by_id": "[2E9XWUUE,2EUNPHDZ,2P53UVJA,2RXMDX8I,3LGPK6BL,3WEEGFGW,46RX4AEN,4YXRYRJC,4Z67G9T5,5SIYLM9W,6D23L7B5,6G2THNDX,7DSY6RMR,84QQ9F5S,885FDL5Z]"
+    }
+  },
+  "dataset.predictions.log=logs/327_faktencheck_core_with_persona/predict/multiruns/2026-01-27_13-36-47/13": {
+    "no_error": 77,
+    "with_error": 8,
+    "JSONDecodeError": 6,
+    "MissingResponseContentError": 1,
+    "ReasoningExtractionError": 1,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/327_faktencheck_core_with_persona/2026-01-27_13-36-47/2026-01-27_22-17-52_687695/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/327_faktencheck_core_with_persona/2026-01-27_13-36-47/2026-01-27_22-17-52_687695/predictions.jsonl",
+        "time_pdf_conversion": 0.003134105121716857,
+        "time_extraction": 8613.142952008871,
+        "commit_hash": "bf86451a2404f64307c3512a8ad38921a1dd9e58",
+        "branch": "faktencheck-with-persona",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "327_faktencheck_core_with_persona",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor/prompt_template": "faktencheck_core_v1_with_evidence_and_persona",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gpt_5",
+        "seed": "1337"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/327_faktencheck_core_with_persona/predict/multiruns/2026-01-27_13-36-47/13",
+      "name": "327_faktencheck_core_with_persona_docs_not_too_long",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "logs/327_faktencheck_core_with_persona/predict/multiruns/2026-01-27_13-36-47",
+      "dataset.predictions.skip_by_id": "[2E9XWUUE,2EUNPHDZ,2P53UVJA,2RXMDX8I,3LGPK6BL,3WEEGFGW,46RX4AEN,4YXRYRJC,4Z67G9T5,5SIYLM9W,6D23L7B5,6G2THNDX,7DSY6RMR,84QQ9F5S,885FDL5Z]"
+    }
+  },
+  "dataset.predictions.log=logs/327_faktencheck_core_with_persona/predict/multiruns/2026-01-27_13-36-47/14": {
+    "no_error": 79,
+    "with_error": 6,
+    "JSONDecodeError": 6,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/327_faktencheck_core_with_persona/2026-01-27_13-36-47/2026-01-28_00-41-26_525072/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/327_faktencheck_core_with_persona/2026-01-27_13-36-47/2026-01-28_00-41-26_525072/predictions.jsonl",
+        "time_pdf_conversion": 0.003729964140802622,
+        "time_extraction": 7073.538128487999,
+        "commit_hash": "bf86451a2404f64307c3512a8ad38921a1dd9e58",
+        "branch": "faktencheck-with-persona",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "327_faktencheck_core_with_persona",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor/prompt_template": "faktencheck_core_v1_with_evidence_and_persona",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gpt_5",
+        "seed": "7331"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/327_faktencheck_core_with_persona/predict/multiruns/2026-01-27_13-36-47/14",
+      "name": "327_faktencheck_core_with_persona_docs_not_too_long",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "logs/327_faktencheck_core_with_persona/predict/multiruns/2026-01-27_13-36-47",
+      "dataset.predictions.skip_by_id": "[2E9XWUUE,2EUNPHDZ,2P53UVJA,2RXMDX8I,3LGPK6BL,3WEEGFGW,46RX4AEN,4YXRYRJC,4Z67G9T5,5SIYLM9W,6D23L7B5,6G2THNDX,7DSY6RMR,84QQ9F5S,885FDL5Z]"
+    }
+  },
+  "dataset.predictions.log=logs/327_faktencheck_core_with_persona/predict/multiruns/2026-01-27_13-36-47/2": {
+    "no_error": 85,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/327_faktencheck_core_with_persona/2026-01-27_13-36-47/2026-01-27_14-27-32_640241/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/327_faktencheck_core_with_persona/2026-01-27_13-36-47/2026-01-27_14-27-32_640241/predictions.jsonl",
+        "time_pdf_conversion": 0.0028509909752756357,
+        "time_extraction": 1384.2598335680086,
+        "commit_hash": "bf86451a2404f64307c3512a8ad38921a1dd9e58",
+        "branch": "faktencheck-with-persona",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "327_faktencheck_core_with_persona",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor/prompt_template": "faktencheck_core_v1_with_evidence_and_persona",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gpt_oss_20b_in_process",
+        "seed": "7331"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/327_faktencheck_core_with_persona/predict/multiruns/2026-01-27_13-36-47/2",
+      "name": "327_faktencheck_core_with_persona_docs_not_too_long",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "logs/327_faktencheck_core_with_persona/predict/multiruns/2026-01-27_13-36-47",
+      "dataset.predictions.skip_by_id": "[2E9XWUUE,2EUNPHDZ,2P53UVJA,2RXMDX8I,3LGPK6BL,3WEEGFGW,46RX4AEN,4YXRYRJC,4Z67G9T5,5SIYLM9W,6D23L7B5,6G2THNDX,7DSY6RMR,84QQ9F5S,885FDL5Z]"
+    }
+  },
+  "dataset.predictions.log=logs/327_faktencheck_core_with_persona/predict/multiruns/2026-01-27_13-36-47/3": {
+    "no_error": 85,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/327_faktencheck_core_with_persona/2026-01-27_13-36-47/2026-01-27_14-51-25_389556/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/327_faktencheck_core_with_persona/2026-01-27_13-36-47/2026-01-27_14-51-25_389556/predictions.jsonl",
+        "time_pdf_conversion": 0.0078002288937568665,
+        "time_extraction": 952.901404986158,
+        "commit_hash": "bf86451a2404f64307c3512a8ad38921a1dd9e58",
+        "branch": "faktencheck-with-persona",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "327_faktencheck_core_with_persona",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor/prompt_template": "faktencheck_core_v1_with_evidence_and_persona",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gemma3_27b_in_process",
+        "seed": "42"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/327_faktencheck_core_with_persona/predict/multiruns/2026-01-27_13-36-47/3",
+      "name": "327_faktencheck_core_with_persona_docs_not_too_long",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "logs/327_faktencheck_core_with_persona/predict/multiruns/2026-01-27_13-36-47",
+      "dataset.predictions.skip_by_id": "[2E9XWUUE,2EUNPHDZ,2P53UVJA,2RXMDX8I,3LGPK6BL,3WEEGFGW,46RX4AEN,4YXRYRJC,4Z67G9T5,5SIYLM9W,6D23L7B5,6G2THNDX,7DSY6RMR,84QQ9F5S,885FDL5Z]"
+    }
+  },
+  "dataset.predictions.log=logs/327_faktencheck_core_with_persona/predict/multiruns/2026-01-27_13-36-47/4": {
+    "no_error": 85,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/327_faktencheck_core_with_persona/2026-01-27_13-36-47/2026-01-27_15-09-09_288140/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/327_faktencheck_core_with_persona/2026-01-27_13-36-47/2026-01-27_15-09-09_288140/predictions.jsonl",
+        "time_pdf_conversion": 0.005490445997565985,
+        "time_extraction": 880.1974824049976,
+        "commit_hash": "bf86451a2404f64307c3512a8ad38921a1dd9e58",
+        "branch": "faktencheck-with-persona",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "327_faktencheck_core_with_persona",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor/prompt_template": "faktencheck_core_v1_with_evidence_and_persona",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gemma3_27b_in_process",
+        "seed": "1337"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/327_faktencheck_core_with_persona/predict/multiruns/2026-01-27_13-36-47/4",
+      "name": "327_faktencheck_core_with_persona_docs_not_too_long",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "logs/327_faktencheck_core_with_persona/predict/multiruns/2026-01-27_13-36-47",
+      "dataset.predictions.skip_by_id": "[2E9XWUUE,2EUNPHDZ,2P53UVJA,2RXMDX8I,3LGPK6BL,3WEEGFGW,46RX4AEN,4YXRYRJC,4Z67G9T5,5SIYLM9W,6D23L7B5,6G2THNDX,7DSY6RMR,84QQ9F5S,885FDL5Z]"
+    }
+  },
+  "dataset.predictions.log=logs/327_faktencheck_core_with_persona/predict/multiruns/2026-01-27_13-36-47/5": {
+    "no_error": 85,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/327_faktencheck_core_with_persona/2026-01-27_13-36-47/2026-01-27_15-25-09_825282/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/327_faktencheck_core_with_persona/2026-01-27_13-36-47/2026-01-27_15-25-09_825282/predictions.jsonl",
+        "time_pdf_conversion": 0.0026409290730953217,
+        "time_extraction": 895.3498635741416,
+        "commit_hash": "bf86451a2404f64307c3512a8ad38921a1dd9e58",
+        "branch": "faktencheck-with-persona",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "327_faktencheck_core_with_persona",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor/prompt_template": "faktencheck_core_v1_with_evidence_and_persona",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "gemma3_27b_in_process",
+        "seed": "7331"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/327_faktencheck_core_with_persona/predict/multiruns/2026-01-27_13-36-47/5",
+      "name": "327_faktencheck_core_with_persona_docs_not_too_long",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "logs/327_faktencheck_core_with_persona/predict/multiruns/2026-01-27_13-36-47",
+      "dataset.predictions.skip_by_id": "[2E9XWUUE,2EUNPHDZ,2P53UVJA,2RXMDX8I,3LGPK6BL,3WEEGFGW,46RX4AEN,4YXRYRJC,4Z67G9T5,5SIYLM9W,6D23L7B5,6G2THNDX,7DSY6RMR,84QQ9F5S,885FDL5Z]"
+    }
+  },
+  "dataset.predictions.log=logs/327_faktencheck_core_with_persona/predict/multiruns/2026-01-27_13-36-47/6": {
+    "no_error": 82,
+    "with_error": 3,
+    "ValueError": 1,
+    "JSONDecodeError": 1,
+    "MissingResponseContentError": 1,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/327_faktencheck_core_with_persona/2026-01-27_13-36-47/2026-01-27_15-41-22_963686/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/327_faktencheck_core_with_persona/2026-01-27_13-36-47/2026-01-27_15-41-22_963686/predictions.jsonl",
+        "time_pdf_conversion": 0.002552946098148823,
+        "time_extraction": 2586.614675846882,
+        "commit_hash": "bf86451a2404f64307c3512a8ad38921a1dd9e58",
+        "branch": "faktencheck-with-persona",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "327_faktencheck_core_with_persona",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor/prompt_template": "faktencheck_core_v1_with_evidence_and_persona",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "qwen3_30b_in_process",
+        "seed": "42"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/327_faktencheck_core_with_persona/predict/multiruns/2026-01-27_13-36-47/6",
+      "name": "327_faktencheck_core_with_persona_docs_not_too_long",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "logs/327_faktencheck_core_with_persona/predict/multiruns/2026-01-27_13-36-47",
+      "dataset.predictions.skip_by_id": "[2E9XWUUE,2EUNPHDZ,2P53UVJA,2RXMDX8I,3LGPK6BL,3WEEGFGW,46RX4AEN,4YXRYRJC,4Z67G9T5,5SIYLM9W,6D23L7B5,6G2THNDX,7DSY6RMR,84QQ9F5S,885FDL5Z]"
+    }
+  },
+  "dataset.predictions.log=logs/327_faktencheck_core_with_persona/predict/multiruns/2026-01-27_13-36-47/7": {
+    "no_error": 82,
+    "with_error": 3,
+    "ValueError": 1,
+    "JSONDecodeError": 2,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/327_faktencheck_core_with_persona/2026-01-27_13-36-47/2026-01-27_16-25-26_250488/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/327_faktencheck_core_with_persona/2026-01-27_13-36-47/2026-01-27_16-25-26_250488/predictions.jsonl",
+        "time_pdf_conversion": 0.002641138155013323,
+        "time_extraction": 2363.55978929298,
+        "commit_hash": "bf86451a2404f64307c3512a8ad38921a1dd9e58",
+        "branch": "faktencheck-with-persona",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "327_faktencheck_core_with_persona",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor/prompt_template": "faktencheck_core_v1_with_evidence_and_persona",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "qwen3_30b_in_process",
+        "seed": "1337"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/327_faktencheck_core_with_persona/predict/multiruns/2026-01-27_13-36-47/7",
+      "name": "327_faktencheck_core_with_persona_docs_not_too_long",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "logs/327_faktencheck_core_with_persona/predict/multiruns/2026-01-27_13-36-47",
+      "dataset.predictions.skip_by_id": "[2E9XWUUE,2EUNPHDZ,2P53UVJA,2RXMDX8I,3LGPK6BL,3WEEGFGW,46RX4AEN,4YXRYRJC,4Z67G9T5,5SIYLM9W,6D23L7B5,6G2THNDX,7DSY6RMR,84QQ9F5S,885FDL5Z]"
+    }
+  },
+  "dataset.predictions.log=logs/327_faktencheck_core_with_persona/predict/multiruns/2026-01-27_13-36-47/8": {
+    "no_error": 83,
+    "with_error": 2,
+    "ValueError": 1,
+    "MissingResponseContentError": 1,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/327_faktencheck_core_with_persona/2026-01-27_13-36-47/2026-01-27_17-05-47_899751/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/327_faktencheck_core_with_persona/2026-01-27_13-36-47/2026-01-27_17-05-47_899751/predictions.jsonl",
+        "time_pdf_conversion": 0.0029870430007576942,
+        "time_extraction": 2482.290698681958,
+        "commit_hash": "bf86451a2404f64307c3512a8ad38921a1dd9e58",
+        "branch": "faktencheck-with-persona",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "327_faktencheck_core_with_persona",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor/prompt_template": "faktencheck_core_v1_with_evidence_and_persona",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "qwen3_30b_in_process",
+        "seed": "7331"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/327_faktencheck_core_with_persona/predict/multiruns/2026-01-27_13-36-47/8",
+      "name": "327_faktencheck_core_with_persona_docs_not_too_long",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "logs/327_faktencheck_core_with_persona/predict/multiruns/2026-01-27_13-36-47",
+      "dataset.predictions.skip_by_id": "[2E9XWUUE,2EUNPHDZ,2P53UVJA,2RXMDX8I,3LGPK6BL,3WEEGFGW,46RX4AEN,4YXRYRJC,4Z67G9T5,5SIYLM9W,6D23L7B5,6G2THNDX,7DSY6RMR,84QQ9F5S,885FDL5Z]"
+    }
+  },
+  "dataset.predictions.log=logs/327_faktencheck_core_with_persona/predict/multiruns/2026-01-27_13-36-47/9": {
+    "no_error": 82,
+    "with_error": 3,
+    "JSONDecodeError": 3,
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/327_faktencheck_core_with_persona/2026-01-27_13-36-47/2026-01-27_17-48-13_367547/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/327_faktencheck_core_with_persona/2026-01-27_13-36-47/2026-01-27_17-48-13_367547/predictions.jsonl",
+        "time_pdf_conversion": 0.0026917990762740374,
+        "time_extraction": 2298.4574749998283,
+        "commit_hash": "bf86451a2404f64307c3512a8ad38921a1dd9e58",
+        "branch": "faktencheck-with-persona",
+        "is_dirty": false
+      },
+      "overrides": {
+        "name": "327_faktencheck_core_with_persona",
+        "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+        "extractor/prompt_template": "faktencheck_core_v1_with_evidence_and_persona",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor.return_reasoning": "True",
+        "extractor/llm": "mistral_small_3_24b_in_process",
+        "seed": "42"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/327_faktencheck_core_with_persona/predict/multiruns/2026-01-27_13-36-47/9",
+      "name": "327_faktencheck_core_with_persona_docs_not_too_long",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "logs/327_faktencheck_core_with_persona/predict/multiruns/2026-01-27_13-36-47",
+      "dataset.predictions.skip_by_id": "[2E9XWUUE,2EUNPHDZ,2P53UVJA,2RXMDX8I,3LGPK6BL,3WEEGFGW,46RX4AEN,4YXRYRJC,4Z67G9T5,5SIYLM9W,6D23L7B5,6G2THNDX,7DSY6RMR,84QQ9F5S,885FDL5Z]"
+    }
+  }
+}
