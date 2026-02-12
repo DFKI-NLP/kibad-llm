@@ -1,9 +1,12 @@
 import json
+import logging
 import os
 
 import yaml
 
 from kibad_llm.dataset.json import read_and_preprocess
+
+logger = logging.getLogger(__name__)
 
 
 class DictWithMetadata(dict):
@@ -20,6 +23,7 @@ class DictWithMetadata(dict):
 def load_with_metadata(
     log: str | None = None,
     file: str | None = None,
+    skip_by_id: list[str] | None = None,
     **load_kwargs,
 ) -> dict:
     """Load a dataset from a prediction log directory, extracting metadata such as Hydra overrides
@@ -28,6 +32,7 @@ def load_with_metadata(
     Args:
         log: Path to the prediction log directory.
         file: Path to the dataset file.
+        skip_by_id: Optional list of IDs to drop respective entries from the dataset after loading.
         **load_kwargs: Additional keyword arguments to pass to `read_and_preprocess`.
     Returns:
         The loaded dataset, possibly wrapped in `DictWithMetadata` if loaded from a log directory.
@@ -57,6 +62,10 @@ def load_with_metadata(
             raise ValueError("Either 'log' or 'file' must be specified.")
 
     dataset = read_and_preprocess(file=file, **load_kwargs)
+    if skip_by_id is not None:
+        skipped = set(skip_by_id) & set(dataset.keys())
+        dataset = {k: v for k, v in dataset.items() if k not in skip_by_id}
+        logger.warning(f"Skipped {len(skipped)} entries from loaded data: {sorted(skipped)}")
     if metadata is not None:
         dataset = DictWithMetadata(dataset, metadata=metadata)
     return dataset
