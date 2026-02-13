@@ -13,16 +13,12 @@
 # uv run -m kibad_llm.predict experiment/predict=faktencheck_core_fields_schema_with_chunking pdf_directory=path/to/pdf/files
 
 defaults:
+  - override /extractor/schema: faktencheck_core
   # We use a polished prompt template with additional instructions for better extraction performance.
   - override /extractor: chunking
   - override /extractor/prompt_template: faktencheck_core_v1_with_chunking
 
 extractor:
-  schema:
-    # Create the schema from the pydantic model of EcosystemStudyFeaturesCoreFields
-    _target_: kibad_llm.schema.types.EcosystemStudyFeaturesCoreFields.model_json_schema
-    by_alias: false
-
   # Enabling this flag will adjust the schema to wrap each field value with evidence detection metadata
   adjust_schema_for_evidence_detection: true
 
