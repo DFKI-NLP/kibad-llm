@@ -19,7 +19,7 @@ mkdocs build
 Serve locally with:
 
 ```
-uv run mkdocs serve -f docs/mkdocs.yml 
+uv run mkdocs serve -f docs/mkdocs.yml
 ```
 
 ## Tools

@@ -8,7 +8,7 @@ theme:
   font:
     text: Merriweather Sans
     code: Red Hat Mono
-  palette: 
+  palette:
     # Dark Mode
     - scheme: slate
       toggle:
@@ -27,4 +27,3 @@ theme:
 
 plugins:
   - mkdocstrings
-
