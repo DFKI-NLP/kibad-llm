@@ -1,3 +1,4 @@
+from tqdm import tqdm
 from collections.abc import Iterator
 from typing import Any
 
@@ -90,7 +91,7 @@ class ChunkingExtractor:
             args[0], self.max_char_buffer, self.tokenizer, self.stride
         )
         results = []
-        for i, chunk in enumerate(chunks):
+        for i, chunk in enumerate(tqdm(list(chunks), desc=args[-1])):
             current_kwargs["text_id"] = f"{args[-1]}_chunk_{i}"
             current_kwargs.update(
                 {
