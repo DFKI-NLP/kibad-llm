@@ -1171,5 +1171,5 @@ class EcosystemStudyFeaturesCoreFields(BaseEcosystemStudyFeatures):
         "/ Stauden- und Lägerfluren (hochmontan bis alpin) / Zwergstrauchheiden (subalpin bis alpin) / "
         "Gebüsche (hochmontan bis subalpin) / Wälder (subalpin)\n"
         "Passt keine der genannten, sind immer folgende Ökosystemtypen möglich: Rohbodenstandorte "
-        "und Ruderalfluren / Grün- und Freiflächen / Keine",
+        "und Ruderalfluren / Grün- und Freiflächen",
     )
