@@ -1,12 +1,14 @@
 from tqdm import tqdm
 from collections.abc import Iterator
 from typing import Any
+import logging
 
 from .aggregation_utils import Aggregator
 from .base import extract_from_text_lenient
 from .chunking_utils import core
 from .chunking_utils import tokenizers as tokenizer_lib
 
+logger = logging.getLogger(__name__)
 
 def _document_chunk_iterator(
     document: str,
@@ -86,12 +88,17 @@ class ChunkingExtractor:
             "return_messages_formatted": True,
             "truncate_user_message_formatted": None,
         }
+        breakpoint()
 
         chunks = _document_chunk_iterator(
             args[0], self.max_char_buffer, self.tokenizer, self.stride
         )
         results = []
+        logger.info(f"starting processing for text {args[-1]}")
         for i, chunk in enumerate(tqdm(list(chunks), desc=args[-1])):
+            # if self.default_kwargs.get("llm", dict()) is dict():
+            #     continue
+
             current_kwargs["text_id"] = f"{args[-1]}_chunk_{i}"
             current_kwargs.update(
                 {
