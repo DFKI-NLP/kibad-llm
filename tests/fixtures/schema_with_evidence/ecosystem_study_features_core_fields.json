@@ -18,32 +18,27 @@
       "description": "Ökosystemtyp mit Name.",
       "properties": {
         "term": {
-          "anyOf": [
-            {
-              "type": "object",
-              "properties": {
-                "content": {
-                  "$ref": "#/$defs/EcosystemTypeTermEnum"
-                },
-                "evidence_anchor": {
-                  "type": "string",
-                  "description": "Verbatim excerpt from the source text supporting the extracted content."
-                }
-              },
-              "required": [
-                "content",
-                "evidence_anchor"
-              ],
-              "additionalProperties": false
+          "type": "object",
+          "properties": {
+            "content": {
+              "$ref": "#/$defs/EcosystemTypeTermEnum"
             },
-            {
-              "type": "null"
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
             }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
           ],
-          "default": null,
+          "additionalProperties": false,
           "description": "Name des Ökosystemtyps"
         }
       },
+      "required": [
+        "term"
+      ],
       "title": "EcosystemTypeSimple",
       "type": "object"
     },
