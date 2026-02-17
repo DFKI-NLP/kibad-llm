@@ -18,13 +18,18 @@
       "description": "Ökosystemtyp mit Name.",
       "properties": {
         "term": {
-          "$ref": "#/$defs/EcosystemTypeTermEnum",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EcosystemTypeTermEnum"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
           "description": "Name des Ökosystemtyps"
         }
       },
-      "required": [
-        "term"
-      ],
       "title": "EcosystemTypeSimple",
       "type": "object"
     },

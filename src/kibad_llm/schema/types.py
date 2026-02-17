@@ -381,7 +381,9 @@ class EcosystemType(CompoundFeature):
 class EcosystemTypeSimple(CompoundFeature):
     """Ökosystemtyp mit Name."""
 
-    term: EcosystemTypeTermEnum = Field(..., alias="Term", description="Name des Ökosystemtyps")
+    term: EcosystemTypeTermEnum | None = Field(
+        default=None, alias="Term", description="Name des Ökosystemtyps"
+    )
 
 
 class Location(CompoundFeature):
