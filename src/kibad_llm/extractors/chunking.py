@@ -88,7 +88,6 @@ class ChunkingExtractor:
             "return_messages_formatted": True,
             "truncate_user_message_formatted": None,
         }
-        breakpoint()
 
         chunks = _document_chunk_iterator(
             args[0], self.max_char_buffer, self.tokenizer, self.stride
