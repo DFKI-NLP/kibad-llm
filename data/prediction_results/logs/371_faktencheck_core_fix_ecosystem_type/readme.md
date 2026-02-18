@@ -10,23 +10,26 @@ See [#371](https://github.com/DFKI-NLP/kibad-llm/pull/371) for details.
 ```python
 NAME = "371_faktencheck_core_fix_ecosystem_type"
 
-FILE_NAME_PREFIX = "description_and_cardinality_change_baseline_"
-
 SUBDIR =[
-    # metrics
-    "evaluate/multiruns/2026-02-17_09-59-34",
-    # errors
-    "evaluate/multiruns/2026-02-17_10-00-13",
+    "evaluate",
     # baseline metrics and errors
     "../327_faktencheck_core_with_persona/evaluate",
 ]
+# mapping from commit hash to descriptive name (used for better plot labels)
+commit_hash_mapping = {
+    "bf86451a2404f64307c3512a8ad38921a1dd9e58": "baseline",
+    "1bbffda9bb6b96bbecdfdeda933d1107bd0a4998": "description_and_cardinality_change",
+    "9e95554b4c40bec1d64cfb9ae9f7951f3492c46f": "description_change_only",
+}
+MAP_VALUES = {"func": lambda x: commit_hash_mapping.get(x, x)}
+    
 
 METRICS = ["f1", "recall"]
 # used to group the data
-INDEX_COLUMNS = ["prediction.overrides.extractor/llm", "prediction.job_return_value.branch"]
+INDEX_COLUMNS = ["prediction.overrides.extractor/llm", "prediction.job_return_value.commit_hash"]
 PLOT_KWARGS = {
     # can be either "metric" or one of the INDEX_COLUMNS (or multiple of them)
-    "xgroup": "prediction.job_return_value.branch",
+    "xgroup": "prediction.job_return_value.commit_hash",
     "create_subplot_for_each": "metric",
     "subplot_columns": 2,
     # add any more arguments passed to pd.DataFrame.plot
@@ -34,16 +37,16 @@ PLOT_KWARGS = {
 ```
 
 ### f1
-![description_and_cardinality_change_baseline_comparison_metrics_f1.svg](description_and_cardinality_change_baseline_comparison_metrics_f1.svg)
-![description_and_cardinality_change_baseline_comparison_metrics_f1_detail.svg](description_and_cardinality_change_baseline_comparison_metrics_f1_detail.svg)
+![comparison_metrics_f1.svg](comparison_metrics_f1.svg)
+![comparison_metrics_f1_detail.svg](comparison_metrics_f1_detail.svg)
 
 ### recall
-![description_and_cardinality_change_baseline_comparison_metrics_recall.svg](description_and_cardinality_change_baseline_comparison_metrics_recall.svg)
-![description_and_cardinality_change_baseline_comparison_metrics_recall_detail.svg](description_and_cardinality_change_baseline_comparison_metrics_recall_detail.svg)
+![comparison_metrics_recall.svg](comparison_metrics_recall.svg)
+![comparison_metrics_recall_detail.svg](comparison_metrics_recall_detail.svg)
 
 ### errors
-![description_and_cardinality_change_baseline_comparison_errors.svg](description_and_cardinality_change_baseline_comparison_errors.svg)
-![description_and_cardinality_change_baseline_comparison_errors_detail.svg](description_and_cardinality_change_baseline_comparison_errors_detail.svg)
+![comparison_errors.svg](comparison_errors.svg)
+![comparison_errors_detail.svg](comparison_errors_detail.svg)
 
 ## evaluate description content and cardinality change
 - commit: [1bbffda](https://github.com/DFKI-NLP/kibad-llm/pull/371/commits/1bbffda9bb6b96bbecdfdeda933d1107bd0a4998)

@@ -1,0 +1,71 @@
+{
+  "biodiversity_level": {
+    "precision": 0.2753623188405797,
+    "recall": 0.2835820895522388,
+    "f1": 0.2794117647058823,
+    "support": 67
+  },
+  "ecosystem_type.term": {
+    "precision": 0.26436781609195403,
+    "recall": 0.4339622641509434,
+    "f1": 0.32857142857142857,
+    "support": 53
+  },
+  "habitat": {
+    "precision": 0.7714285714285715,
+    "recall": 0.391304347826087,
+    "f1": 0.5192307692307693,
+    "support": 138
+  },
+  "taxa.german_name": {
+    "precision": 0.2882882882882883,
+    "recall": 0.13852813852813853,
+    "f1": 0.18713450292397657,
+    "support": 231
+  },
+  "taxa.scientific_name": {
+    "precision": 0.34146341463414637,
+    "recall": 0.2131979695431472,
+    "f1": 0.2625,
+    "support": 197
+  },
+  "taxa.species_group": {
+    "precision": 0.4888888888888889,
+    "recall": 0.41509433962264153,
+    "f1": 0.44897959183673475,
+    "support": 106
+  },
+  "AVG": {
+    "precision": 0.40496654969540474,
+    "recall": 0.31261152487053273,
+    "f1": 0.3376380095447986,
+    "support": 132.0
+  },
+  "ALL": {
+    "precision": 0.3890909090909091,
+    "recall": 0.2702020202020202,
+    "f1": 0.3189269746646796,
+    "support": 792
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-17_12-12-03/2026-02-17_14-22-41_199298/predictions.jsonl",
+      "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-17_12-12-03/2026-02-17_14-22-41_199298/predictions.jsonl",
+      "time_pdf_conversion": 0.0027820479590445757,
+      "time_extraction": 2354.537007667008,
+      "time_start": 1771334561,
+      "time_end": 1771337006,
+      "commit_hash": "9e95554b4c40bec1d64cfb9ae9f7951f3492c46f",
+      "branch": "schema/fix-ecosystem_type-description-for-core",
+      "is_dirty": false,
+      "slurm_job_id": "2543345"
+    },
+    "overrides": {
+      "name": "371_faktencheck_core_fix_ecosystem_type",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "qwen3_30b_in_process",
+      "seed": "42"
+    }
+  }
+}

@@ -1,0 +1,230 @@
+{
+  "extractor/llm=gpt_oss_20b_in_process#seed=42": {
+    "output_file": "predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-17_12-12-03/2026-02-17_12-12-04_611744/predictions.jsonl",
+    "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-17_12-12-03/2026-02-17_12-12-04_611744/predictions.jsonl",
+    "time_pdf_conversion": 0.004560893983580172,
+    "time_extraction": 1378.9102286979905,
+    "time_start": 1771326724,
+    "time_end": 1771328199,
+    "commit_hash": "9e95554b4c40bec1d64cfb9ae9f7951f3492c46f",
+    "branch": "schema/fix-ecosystem_type-description-for-core",
+    "is_dirty": false,
+    "slurm_job_id": "2543345",
+    "overrides": {
+      "name": "371_faktencheck_core_fix_ecosystem_type",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gpt_oss_20b_in_process",
+      "seed": "42"
+    }
+  },
+  "extractor/llm=gpt_oss_20b_in_process#seed=1337": {
+    "output_file": "predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-17_12-12-03/2026-02-17_12-36-39_692221/predictions.jsonl",
+    "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-17_12-12-03/2026-02-17_12-36-39_692221/predictions.jsonl",
+    "time_pdf_conversion": 0.0029789709951728582,
+    "time_extraction": 1346.394529636018,
+    "time_start": 1771328199,
+    "time_end": 1771329600,
+    "commit_hash": "9e95554b4c40bec1d64cfb9ae9f7951f3492c46f",
+    "branch": "schema/fix-ecosystem_type-description-for-core",
+    "is_dirty": false,
+    "slurm_job_id": "2543345",
+    "overrides": {
+      "name": "371_faktencheck_core_fix_ecosystem_type",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gpt_oss_20b_in_process",
+      "seed": "1337"
+    }
+  },
+  "extractor/llm=gpt_oss_20b_in_process#seed=7331": {
+    "output_file": "predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-17_12-12-03/2026-02-17_13-00-00_910348/predictions.jsonl",
+    "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-17_12-12-03/2026-02-17_13-00-00_910348/predictions.jsonl",
+    "time_pdf_conversion": 0.0026486070128157735,
+    "time_extraction": 1520.1326283870148,
+    "time_start": 1771329600,
+    "time_end": 1771331167,
+    "commit_hash": "9e95554b4c40bec1d64cfb9ae9f7951f3492c46f",
+    "branch": "schema/fix-ecosystem_type-description-for-core",
+    "is_dirty": false,
+    "slurm_job_id": "2543345",
+    "overrides": {
+      "name": "371_faktencheck_core_fix_ecosystem_type",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gpt_oss_20b_in_process",
+      "seed": "7331"
+    }
+  },
+  "extractor/llm=gemma3_27b_in_process#seed=42": {
+    "output_file": "predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-17_12-12-03/2026-02-17_13-26-07_921945/predictions.jsonl",
+    "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-17_12-12-03/2026-02-17_13-26-07_921945/predictions.jsonl",
+    "time_pdf_conversion": 0.004661977000068873,
+    "time_extraction": 1085.6589131690562,
+    "time_start": 1771331167,
+    "time_end": 1771332338,
+    "commit_hash": "9e95554b4c40bec1d64cfb9ae9f7951f3492c46f",
+    "branch": "schema/fix-ecosystem_type-description-for-core",
+    "is_dirty": false,
+    "slurm_job_id": "2543345",
+    "overrides": {
+      "name": "371_faktencheck_core_fix_ecosystem_type",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gemma3_27b_in_process",
+      "seed": "42"
+    }
+  },
+  "extractor/llm=gemma3_27b_in_process#seed=1337": {
+    "output_file": "predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-17_12-12-03/2026-02-17_13-45-39_042383/predictions.jsonl",
+    "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-17_12-12-03/2026-02-17_13-45-39_042383/predictions.jsonl",
+    "time_pdf_conversion": 0.002621476072818041,
+    "time_extraction": 906.0841160410782,
+    "time_start": 1771332339,
+    "time_end": 1771333323,
+    "commit_hash": "9e95554b4c40bec1d64cfb9ae9f7951f3492c46f",
+    "branch": "schema/fix-ecosystem_type-description-for-core",
+    "is_dirty": false,
+    "slurm_job_id": "2543345",
+    "overrides": {
+      "name": "371_faktencheck_core_fix_ecosystem_type",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gemma3_27b_in_process",
+      "seed": "1337"
+    }
+  },
+  "extractor/llm=gemma3_27b_in_process#seed=7331": {
+    "output_file": "predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-17_12-12-03/2026-02-17_14-02-03_861586/predictions.jsonl",
+    "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-17_12-12-03/2026-02-17_14-02-03_861586/predictions.jsonl",
+    "time_pdf_conversion": 0.0026177960680797696,
+    "time_extraction": 1156.7595127229579,
+    "time_start": 1771333323,
+    "time_end": 1771334560,
+    "commit_hash": "9e95554b4c40bec1d64cfb9ae9f7951f3492c46f",
+    "branch": "schema/fix-ecosystem_type-description-for-core",
+    "is_dirty": false,
+    "slurm_job_id": "2543345",
+    "overrides": {
+      "name": "371_faktencheck_core_fix_ecosystem_type",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gemma3_27b_in_process",
+      "seed": "7331"
+    }
+  },
+  "extractor/llm=qwen3_30b_in_process#seed=42": {
+    "output_file": "predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-17_12-12-03/2026-02-17_14-22-41_199298/predictions.jsonl",
+    "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-17_12-12-03/2026-02-17_14-22-41_199298/predictions.jsonl",
+    "time_pdf_conversion": 0.0027820479590445757,
+    "time_extraction": 2354.537007667008,
+    "time_start": 1771334561,
+    "time_end": 1771337006,
+    "commit_hash": "9e95554b4c40bec1d64cfb9ae9f7951f3492c46f",
+    "branch": "schema/fix-ecosystem_type-description-for-core",
+    "is_dirty": false,
+    "slurm_job_id": "2543345",
+    "overrides": {
+      "name": "371_faktencheck_core_fix_ecosystem_type",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "qwen3_30b_in_process",
+      "seed": "42"
+    }
+  },
+  "extractor/llm=qwen3_30b_in_process#seed=1337": {
+    "output_file": "predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-17_12-12-03/2026-02-17_15-03-26_947863/predictions.jsonl",
+    "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-17_12-12-03/2026-02-17_15-03-26_947863/predictions.jsonl",
+    "time_pdf_conversion": 0.002574317972175777,
+    "time_extraction": 2442.905144852004,
+    "time_start": 1771337006,
+    "time_end": 1771339506,
+    "commit_hash": "9e95554b4c40bec1d64cfb9ae9f7951f3492c46f",
+    "branch": "schema/fix-ecosystem_type-description-for-core",
+    "is_dirty": false,
+    "slurm_job_id": "2543345",
+    "overrides": {
+      "name": "371_faktencheck_core_fix_ecosystem_type",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "qwen3_30b_in_process",
+      "seed": "1337"
+    }
+  },
+  "extractor/llm=qwen3_30b_in_process#seed=7331": {
+    "output_file": "predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-17_12-12-03/2026-02-17_15-45-06_477038/predictions.jsonl",
+    "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-17_12-12-03/2026-02-17_15-45-06_477038/predictions.jsonl",
+    "time_pdf_conversion": 0.0026161259738728404,
+    "time_extraction": 2336.1719558810582,
+    "time_start": 1771339506,
+    "time_end": 1771341903,
+    "commit_hash": "9e95554b4c40bec1d64cfb9ae9f7951f3492c46f",
+    "branch": "schema/fix-ecosystem_type-description-for-core",
+    "is_dirty": false,
+    "slurm_job_id": "2543345",
+    "overrides": {
+      "name": "371_faktencheck_core_fix_ecosystem_type",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "qwen3_30b_in_process",
+      "seed": "7331"
+    }
+  },
+  "extractor/llm=mistral_small_3_24b_in_process#seed=42": {
+    "output_file": "predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-17_12-12-03/2026-02-17_16-25-03_906220/predictions.jsonl",
+    "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-17_12-12-03/2026-02-17_16-25-03_906220/predictions.jsonl",
+    "time_pdf_conversion": 0.002809799974784255,
+    "time_extraction": 2842.820028404938,
+    "time_start": 1771341903,
+    "time_end": 1771344841,
+    "commit_hash": "9e95554b4c40bec1d64cfb9ae9f7951f3492c46f",
+    "branch": "schema/fix-ecosystem_type-description-for-core",
+    "is_dirty": false,
+    "slurm_job_id": "2543345",
+    "overrides": {
+      "name": "371_faktencheck_core_fix_ecosystem_type",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "mistral_small_3_24b_in_process",
+      "seed": "42"
+    }
+  },
+  "extractor/llm=mistral_small_3_24b_in_process#seed=1337": {
+    "output_file": "predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-17_12-12-03/2026-02-17_17-14-01_931723/predictions.jsonl",
+    "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-17_12-12-03/2026-02-17_17-14-01_931723/predictions.jsonl",
+    "time_pdf_conversion": 0.0027458079857751727,
+    "time_extraction": 2522.4235527319834,
+    "time_start": 1771344841,
+    "time_end": 1771347427,
+    "commit_hash": "9e95554b4c40bec1d64cfb9ae9f7951f3492c46f",
+    "branch": "schema/fix-ecosystem_type-description-for-core",
+    "is_dirty": false,
+    "slurm_job_id": "2543345",
+    "overrides": {
+      "name": "371_faktencheck_core_fix_ecosystem_type",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "mistral_small_3_24b_in_process",
+      "seed": "1337"
+    }
+  },
+  "extractor/llm=mistral_small_3_24b_in_process#seed=7331": {
+    "output_file": "predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-17_12-12-03/2026-02-17_17-57-07_991699/predictions.jsonl",
+    "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-17_12-12-03/2026-02-17_17-57-07_991699/predictions.jsonl",
+    "time_pdf_conversion": 0.003208837006241083,
+    "time_extraction": 2978.4125880120555,
+    "time_start": 1771347427,
+    "time_end": 1771350473,
+    "commit_hash": "9e95554b4c40bec1d64cfb9ae9f7951f3492c46f",
+    "branch": "schema/fix-ecosystem_type-description-for-core",
+    "is_dirty": false,
+    "slurm_job_id": "2543345",
+    "overrides": {
+      "name": "371_faktencheck_core_fix_ecosystem_type",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "mistral_small_3_24b_in_process",
+      "seed": "7331"
+    }
+  }
+}

@@ -1,0 +1,5 @@
+- name=371_faktencheck_core_fix_ecosystem_type
+- experiment/predict=faktencheck_core_fields_schema_with_evidence
+- pdf_directory=/ds/text/kiba-d/dev-set-100
+- extractor/llm=gemma3_27b_in_process
+- seed=1337
