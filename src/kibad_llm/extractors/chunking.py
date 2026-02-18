@@ -69,6 +69,7 @@ class ChunkingExtractor:
         max_char_buffer: int = 20000,
         stride: int = 1000,
         stride_factor: float | None = None,
+        verbose: bool = False,
         **kwargs,
     ):
         self.aggregator = aggregator
@@ -80,6 +81,7 @@ class ChunkingExtractor:
             self.stride = int(max_char_buffer * stride_factor)
         else:
             self.stride = stride
+        self.verbose = verbose
 
     def __call__(self, *args, **kwargs) -> dict[str, Any]:
         combined_kwargs = {**self.default_kwargs, **kwargs}
@@ -93,8 +95,11 @@ class ChunkingExtractor:
             args[0], self.max_char_buffer, self.tokenizer, self.stride
         )
         results = []
-        logger.info(f"starting processing for text {args[-1]}")
-        for i, chunk in enumerate(tqdm(list(chunks), desc=args[-1])):
+        if self.verbose:
+            logger.info(f"starting processing for text {args[-1]}")
+            logger.info(args[0])
+            chunks = tqdm(list(chunks), desc=args[-1])
+        for i, chunk in enumerate(chunks):
             # if self.default_kwargs.get("llm", dict()) is dict():
             #     continue
 
