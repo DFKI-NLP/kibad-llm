@@ -38,15 +38,33 @@ PLOT_KWARGS = {
 
 ### f1
 ![comparison_metrics_f1.svg](comparison_metrics_f1.svg)
+
+<details>
+<summary>click to see plots for individual fields</summary>
+
 ![comparison_metrics_f1_detail.svg](comparison_metrics_f1_detail.svg)
+
+</details>
 
 ### recall
 ![comparison_metrics_recall.svg](comparison_metrics_recall.svg)
+
+<details>
+<summary>click to see plots for individual fields</summary>
+
 ![comparison_metrics_recall_detail.svg](comparison_metrics_recall_detail.svg)
+
+</details>
 
 ### errors
 ![comparison_errors.svg](comparison_errors.svg)
+
+<details>
+<summary>click to see plots for individual fields</summary>
+
 ![comparison_errors_detail.svg](comparison_errors_detail.svg)
+
+</details>
 
 ## evaluate description content and cardinality change
 - commit: [1bbffda](https://github.com/DFKI-NLP/kibad-llm/pull/371/commits/1bbffda9bb6b96bbecdfdeda933d1107bd0a4998)
