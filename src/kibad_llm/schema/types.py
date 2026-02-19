@@ -379,9 +379,38 @@ class EcosystemType(CompoundFeature):
 
 
 class EcosystemTypeSimple(CompoundFeature):
-    """Ökosystemtyp mit Name."""
+    """Ökosystemtyp mit Name. Wenn es im Text um Meere oder Küsten geht, sind nur die Ökosystemtypen mit folgenden Namen möglich:
+    Benthal der Nordsee / Benthal der Ostsee / Fels- und Steilküsten / Küstendünen / Pelagial
+    der Nordsee / Pelagial der Ostsee / Saisonales Meereis der Nordsee / Saisonales Meereis der
+    Ostsee / Salzgrünland, Brackwasserröhrichte und -Hochstaudenfluren des Geolitorals der
+    Ostseeküste / Salzgrünland der Nordseeküste (Supralitoral) / Sände, Sand-, Geröll- und Blockstrände.
+    Wenn es im Text um Binnengewässer geht, sind nur die Ökosystemtypen mit folgenden Namen möglich:
+    Fließende Gewässer / Grundwasser und Höhlengewässer / Quellen (inklusive Quellabfluss (Krenal))
+    / Stehende Gewässer. Wenn es im Text um terrestrisches oder semiterrestrisches Binnenland geht, sind nur die
+    Ökosystemtypen mit folgenden Namen möglich: Äcker und Ackerbrachen / Feldgehölze, Gebüsche, Hecken und
+    Gehölzkulturen / Felsen, Block- und Schutthalden, Geröllfelder, offene Bereiche mit sandigem
+    oder bindigem Substrat / Hoch-, Zwischen- und Übergangsmoore / Höhlen (einschließlich Stollen,
+    Brunnenschächte etc.) / Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent) /
+    Nadel(Misch)Wälder und -Forste / Röhrichte (ohne Brackwasserröhrichte) / Trockenrasen sowie
+    Grünland trockener bis frischer Standorte / Waldfreie Niedermoore und Sümpfe, Grünland nasser
+    bis feuchter Standorte / Waldmäntel und Vorwälder, spezielle Waldnutzungsformen / Wald- und
+    Ufersäume, Staudenfluren / Zwergstrauchheiden / Großseggenriede.
+    Wenn es im Text um technische Biotope geht, sind nur die Ökosystemtypen mit folgenden Namen möglich:
+    Bauwerke / Kleine, unbefestigte Freiflächen des besiedelten Bereiches / Verkehrsanlagen und
+    Plätze / Deponien und Rieselfelder. Werden im Text Biotope mit Schwerpunkt im Gebirge behandelt, sind nur die Ökosystemtypen mit
+    folgenden Namen möglich: Gebirgsrasen (subalpin bis alpin) / Gewässer (subalpin bis alpin) / Firn,
+    permanente Schneefelder und Gletscher / Felsen (subalpin bis nival) / Steinschutthalden und
+    Schotterflächen (subalpin bis alpin) / Schneeböden, Schneetälchen / Moore (subalpin bis alpin)
+    / Stauden- und Lägerfluren (hochmontan bis alpin) / Zwergstrauchheiden (subalpin bis alpin) /
+    Gebüsche (hochmontan bis subalpin) / Wälder (subalpin). Passt keine der genannten, sind immer die Ökosystemtypen mit folgenden Namen möglich:
+    Rohbodenstandorte und Ruderalfluren / Grün- und Freiflächen
+    """
 
-    term: EcosystemTypeTermEnum = Field(..., alias="Term", description="Name des Ökosystemtyps")
+    term: EcosystemTypeTermEnum = Field(
+        ...,
+        alias="Term",
+        description="Name des Ökosystemtyps. ",
+    )
 
 
 class Location(CompoundFeature):
@@ -1141,24 +1170,5 @@ class EcosystemStudyFeaturesCoreFields(BaseEcosystemStudyFeatures):
     ecosystem_type: list[EcosystemTypeSimple] = Field(
         default_factory=list,
         alias="Ökosystemtyp",
-        description="Welche der folgenden Ökosystemtypen werden betrachtet? "
-        "Wenn es im Text um Meere oder Küsten geht, sind nur die folgenden Ökosystemtypen möglich: "
-        "Benthal der Nordsee / Benthal der Ostsee / Fels- und Steilküsten / Küstendünen / Pelagial der "
-        "Nordsee / Pelagial der Ostsee / Salzgrünland, Brackwasserröhrichte und -Hochstaudenfluren des "
-        "Geolitorals der Ostseeküste / Salzgrünland der Nordseeküste (Supralitoral) / Sände, Sand-, "
-        "Geröll- und Blockstrände? Wenn es im Text um Binnengewässer geht, sind nur die folgenden "
-        "Ökosystemtypen möglich: Fließende Gewässer / Grundwasser und Höhlengewässer / Quellen "
-        "(inklusive Quellabfluss (Krenal)) / Stehende Gewässer. Wenn es im Text um Binnenland geht, "
-        "sind nur die folgenden Ökosystemtypen möglich: Äcker und Ackerbrachen / Feldgehölze, "
-        "Gebüsche, Hecken und Gehölzkulturen / Felsen, Block- und Schutthalden, Geröllfelder, offene "
-        "Bereiche mit sandigem oder bindigem Substrat / Hoch-, Zwischen- und Übergangsmoore / "
-        "Höhlen (einschließlich Stollen, Brunnenschächte etc.) / Laub(Misch)Wälder und -Forste "
-        "(Laubbaumanteil über 50 Prozent) / Nadel(Misch)Wälder und -Forste / Röhrichte (ohne "
-        "Brackwasserröhrichte) / Trockenrasen sowie Grünland trockener bis frischer Standorte / "
-        "Waldfreie Niedermoore und Sümpfe / Grünland nasser bis feuchter Standorte / Waldmäntel "
-        "und Vorwälder, spezielle Waldnutzungsformen / Wald- und Ufersäume, Staudenfluren / "
-        "Zwergstrauchheiden? Wenn es im Text um technische Biotope geht, sind nur die folgenden Ökosystemtypen "
-        "möglich: Bauwerke / Kleine, unbefestigte Freiflächen des besiedelten Bereiches / "
-        "Verkehrsanlagen und Plätze? Werden im Text Gebirgsrasen (subalpin bis alpin), Anthropogene "
-        "Rohbodenstandorte und Ruderalfluren oder Grün- und Freiflächen behandelt? Oder keine davon?",
+        description="Welche Ökosystemtypen werden betrachtet?",
     )
