@@ -13,13 +13,14 @@ NAME = "371_faktencheck_core_fix_ecosystem_type"
 SUBDIR =[
     "evaluate",
     # baseline metrics and errors
-    "../327_faktencheck_core_with_persona/evaluate",
+    #"../327_faktencheck_core_with_persona/evaluate",
 ]
 # mapping from commit hash to descriptive name (used for better plot labels)
 commit_hash_mapping = {
-    "bf86451a2404f64307c3512a8ad38921a1dd9e58": "baseline",
-    "1bbffda9bb6b96bbecdfdeda933d1107bd0a4998": "description_and_cardinality_change",
-    "9e95554b4c40bec1d64cfb9ae9f7951f3492c46f": "description_change_only",
+    "bf86451a2404f64307c3512a8ad38921a1dd9e58": "0. baseline_327",
+    "71c0148a2ff631464b3d2f2cb21539e141161c4f": "0. baseline",
+    "1bbffda9bb6b96bbecdfdeda933d1107bd0a4998": "2. description_and_cardinality_change",
+    "9e95554b4c40bec1d64cfb9ae9f7951f3492c46f": "1. description_change_only",
 }
 MAP_VALUES = {"func": lambda x: commit_hash_mapping.get(x, x)}
     
