@@ -28,6 +28,9 @@ stride: 1000
 # if stride factor is provided, it overrides stride with int(max_char_buffer * stride_factor)
 # stride_factor: 0.1
 
+# if chunking is taking longer than an hour, something must be wrong with the text. so, we skip it
+chunking_timout: 3600
+
 # the tokenizer ensures that any chunk produced is split at sane points.
 # whilst this tokenizer won't match the llms tokenizer, it ensures "more sensible" chunks.
 # for more details on how the tokenizer works, please refer to the docstring of ChunkIterator.

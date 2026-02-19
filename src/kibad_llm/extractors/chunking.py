@@ -1,7 +1,9 @@
-from tqdm import tqdm
-from collections.abc import Iterator
-from typing import Any
 import logging
+from multiprocessing import Pool
+from multiprocessing.context import TimeoutError
+from typing import Any
+
+from tqdm import tqdm
 
 from .aggregation_utils import Aggregator
 from .base import extract_from_text_lenient
@@ -10,12 +12,13 @@ from .chunking_utils import tokenizers as tokenizer_lib
 
 logger = logging.getLogger(__name__)
 
+
 def _document_chunk_iterator(
     document: str,
     max_char_buffer: int,
     tokenizer: tokenizer_lib.Tokenizer | None,
     stride: int,
-) -> Iterator[core.TextChunk]:
+) -> tuple[core.TextChunk]:
     """Iterates over documents to yield text chunks along with the document ID.
 
     Args:
@@ -32,11 +35,13 @@ def _document_chunk_iterator(
         is visited more than once. Valid documents prior to the error will be
         returned.
     """
-    yield from core.ChunkIterator(
-        document,
-        max_char_buffer=max_char_buffer,
-        tokenizer_impl=tokenizer or tokenizer_lib.RegexTokenizer(),
-        stride=stride,
+    return tuple(
+        core.ChunkIterator(
+            document,
+            max_char_buffer=max_char_buffer,
+            tokenizer_impl=tokenizer or tokenizer_lib.RegexTokenizer(),
+            stride=stride,
+        )
     )
 
 
@@ -70,6 +75,7 @@ class ChunkingExtractor:
         stride: int = 1000,
         stride_factor: float | None = None,
         verbose: bool = False,
+        chunking_timout: int = 3600,
         **kwargs,
     ):
         self.aggregator = aggregator
@@ -82,6 +88,7 @@ class ChunkingExtractor:
         else:
             self.stride = stride
         self.verbose = verbose
+        self.chunking_timout = chunking_timout
 
     def __call__(self, *args, **kwargs) -> dict[str, Any]:
         combined_kwargs = {**self.default_kwargs, **kwargs}
@@ -91,17 +98,33 @@ class ChunkingExtractor:
             "truncate_user_message_formatted": None,
         }
 
-        chunks = _document_chunk_iterator(
-            args[0], self.max_char_buffer, self.tokenizer, self.stride
-        )
+        try:
+            with Pool(1) as p:
+                chunks = p.apply_async(
+                    _document_chunk_iterator,
+                    (
+                        args[0],
+                        self.max_char_buffer,
+                        self.tokenizer,
+                        self.stride,
+                    ),
+                ).get(timeout=self.chunking_timout)
+        except TimeoutError:
+            logger.warning(f"skipping {args[-1]} due to chunking timeout")
+            return dict()
+
+        if self.default_kwargs.get("llm", dict()) == dict():
+            logging.info(
+                f"{str(len(chunks)).rjust(4, ' ')} chunks in document {args[-1]}"
+            )
+            return dict()
+
         results = []
         if self.verbose:
             logger.info(f"starting processing for text {args[-1]}")
             logger.info(args[0])
-            chunks = tqdm(list(chunks), desc=args[-1])
+            chunks = tqdm(chunks, desc=args[-1])
         for i, chunk in enumerate(chunks):
-            # if self.default_kwargs.get("llm", dict()) is dict():
-            #     continue
 
             current_kwargs["text_id"] = f"{args[-1]}_chunk_{i}"
             current_kwargs.update(
