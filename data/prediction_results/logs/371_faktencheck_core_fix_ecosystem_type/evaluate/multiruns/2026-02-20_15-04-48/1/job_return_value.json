@@ -1,0 +1,26 @@
+{
+  "no_error": 85,
+  "with_error": 15,
+  "ValueError": 15,
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-19_19-33-37/2026-02-19_20-25-06_013288/predictions.jsonl",
+      "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-19_19-33-37/2026-02-19_20-25-06_013288/predictions.jsonl",
+      "time_pdf_conversion": 0.0029197140247561038,
+      "time_extraction": 2528.03266947699,
+      "time_start": 1771529106,
+      "time_end": 1771531700,
+      "commit_hash": "8e716f9efcbd73a0ce941a1b9ef2d1fee999486e",
+      "branch": "schema/fix-ecosystem_type-description-for-core",
+      "is_dirty": false,
+      "slurm_job_id": "2553763"
+    },
+    "overrides": {
+      "name": "371_faktencheck_core_fix_ecosystem_type",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gpt_oss_20b_in_process",
+      "seed": "1337"
+    }
+  }
+}
