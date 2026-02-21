@@ -22,7 +22,7 @@ commit_hash_mapping = {
     "1bbffda9bb6b96bbecdfdeda933d1107bd0a4998": "2. description_and_cardinality_change",
     "9e95554b4c40bec1d64cfb9ae9f7951f3492c46f": "1.a description_change_only",
     "8e716f9efcbd73a0ce941a1b9ef2d1fee999486e": "1.b cardinality_change_only",
-    "938fddc3bbce0d6e754d32851aa97e7cf0703ceb": "3. 2. + also move description"
+    "938fddc3bbce0d6e754d32851aa97e7cf0703ceb": "3. (2.) + move description"
 }
 MAP_VALUES = {"func": lambda x: commit_hash_mapping.get(x, x)}
     
