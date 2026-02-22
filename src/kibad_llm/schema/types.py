@@ -406,10 +406,8 @@ class EcosystemTypeSimple(CompoundFeature):
     Rohbodenstandorte und Ruderalfluren / Grün- und Freiflächen
     """
 
-    term: EcosystemTypeTermEnum = Field(
-        ...,
-        alias="Term",
-        description="Name des Ökosystemtyps. ",
+    term: EcosystemTypeTermEnum | None = Field(
+        default=None, alias="Term", description="Name des Ökosystemtyps"
     )
 
 
