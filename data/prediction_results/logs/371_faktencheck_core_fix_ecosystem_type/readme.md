@@ -19,10 +19,11 @@ SUBDIR =[
 commit_hash_mapping = {
     "bf86451a2404f64307c3512a8ad38921a1dd9e58": "0. baseline_327",
     "71c0148a2ff631464b3d2f2cb21539e141161c4f": "0. baseline",
-    "1bbffda9bb6b96bbecdfdeda933d1107bd0a4998": "2. description_and_cardinality_change",
-    "9e95554b4c40bec1d64cfb9ae9f7951f3492c46f": "1.a description_change_only",
-    "8e716f9efcbd73a0ce941a1b9ef2d1fee999486e": "1.b cardinality_change_only",
-    "938fddc3bbce0d6e754d32851aa97e7cf0703ceb": "3. (2.) + move description"
+    "1bbffda9bb6b96bbecdfdeda933d1107bd0a4998": "1.c description_change + cardinality_change",
+    "9e95554b4c40bec1d64cfb9ae9f7951f3492c46f": "1.a description_change",
+    "8e716f9efcbd73a0ce941a1b9ef2d1fee999486e": "1.b cardinality_change",
+    "938fddc3bbce0d6e754d32851aa97e7cf0703ceb": "2.c description_change + cardinality_change + move_description",
+    "45ef75d750feeb749a4c0a94232d248a83ea5640": "2.a description_change + move_description",
 }
 MAP_VALUES = {"func": lambda x: commit_hash_mapping.get(x, x)}
     
