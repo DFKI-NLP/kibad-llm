@@ -381,33 +381,33 @@ class EcosystemType(CompoundFeature):
 class EcosystemTypeSimple(CompoundFeature):
     """Ökosystemtyp mit Kategorie und (wenn möglich) mit Name.
     Wenn es im Text um die Ökosystemtyp-Kategorien Meere oder Küsten geht, sind nur die Ökosystemtypen (Namen)
-    möglich: Benthal der Nordsee / Benthal der Ostsee / Fels- und Steilküsten / Küstendünen / Pelagial
-    der Nordsee / Pelagial der Ostsee / Saisonales Meereis der Nordsee / Saisonales Meereis der
-    Ostsee / Salzgrünland, Brackwasserröhrichte und -Hochstaudenfluren des Geolitorals der
-    Ostseeküste / Salzgrünland der Nordseeküste (Supralitoral) / Sände, Sand-, Geröll- und Blockstrände.
+    möglich: Benthal der Nordsee; Benthal der Ostsee; Fels- und Steilküsten; Küstendünen; Pelagial
+    der Nordsee; Pelagial der Ostsee; Saisonales Meereis der Nordsee; Saisonales Meereis der
+    Ostsee; Salzgrünland, Brackwasserröhrichte und -Hochstaudenfluren des Geolitorals der
+    Ostseeküste; Salzgrünland der Nordseeküste (Supralitoral); Sände, Sand-, Geröll- und Blockstrände.
     Wenn es im Text um die Ökosystemtyp-Kategorien Binnengewässer geht, sind nur die folgenden Ökosystemtypen
-    (Namen) möglich: Fließende Gewässer / Grundwasser und Höhlengewässer / Quellen (inklusive Quellabfluss (Krenal))
-    / Stehende Gewässer.
+    (Namen) möglich: Fließende Gewässer; Grundwasser und Höhlengewässer; Quellen (inklusive Quellabfluss (Krenal));
+    Stehende Gewässer.
     Wenn es im Text um Ökosystemtyp-Kategorien terrestrisches oder semiterrestrisches Binnenland
-    geht, sind nur die folgenden Ökosystemtypen (Namen) möglich: Äcker und Ackerbrachen / Feldgehölze,
-    Gebüsche, Hecken und Gehölzkulturen / Felsen, Block- und Schutthalden, Geröllfelder, offene Bereiche
-    mit sandigem oder bindigem Substrat / Hoch-, Zwischen- und Übergangsmoore / Höhlen (einschließlich Stollen,
-    Brunnenschächte etc.) / Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent) /
-    Nadel(Misch)Wälder und -Forste / Röhrichte (ohne Brackwasserröhrichte) / Trockenrasen sowie
-    Grünland trockener bis frischer Standorte / Waldfreie Niedermoore und Sümpfe, Grünland nasser
-    bis feuchter Standorte / Waldmäntel und Vorwälder, spezielle Waldnutzungsformen / Wald- und
-    Ufersäume, Staudenfluren / Zwergstrauchheiden / Großseggenriede.
+    geht, sind nur die folgenden Ökosystemtypen (Namen) möglich: Äcker und Ackerbrachen; Feldgehölze,
+    Gebüsche, Hecken und Gehölzkulturen; Felsen, Block- und Schutthalden, Geröllfelder, offene Bereiche
+    mit sandigem oder bindigem Substrat; Hoch-, Zwischen- und Übergangsmoore; Höhlen (einschließlich Stollen,
+    Brunnenschächte etc.); Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent);
+    Nadel(Misch)Wälder und -Forste; Röhrichte (ohne Brackwasserröhrichte); Trockenrasen sowie
+    Grünland trockener bis frischer Standorte; Waldfreie Niedermoore und Sümpfe, Grünland nasser
+    bis feuchter Standorte; Waldmäntel und Vorwälder, spezielle Waldnutzungsformen; Wald- und
+    Ufersäume, Staudenfluren; Zwergstrauchheiden; Großseggenriede.
     Wenn es im Text um die Ökosystemtyp-Kategorie technische Biotope geht, sind nur die folgenden
-    Ökosystemtypen (Namen) möglich: Bauwerke / Kleine, unbefestigte Freiflächen des besiedelten Bereiches
-    / Verkehrsanlagen und Plätze / Deponien und Rieselfelder.
+    Ökosystemtypen (Namen) möglich: Bauwerke; Kleine, unbefestigte Freiflächen des besiedelten Bereiches;
+    Verkehrsanlagen und Plätze; Deponien und Rieselfelder.
     Wenn es im Text um die Ökosystemtyp-Kategorie Biotope mit Schwerpunkt in den Alpen geht, sind nur die
-    folgenden Ökosystemtypen (Namen) möglich: Gebirgsrasen (subalpin bis alpin) / Gewässer (subalpin bis alpin)
-    / Firn, permanente Schneefelder und Gletscher / Felsen (subalpin bis nival) / Steinschutthalden und
-    Schotterflächen (subalpin bis alpin) / Schneeböden, Schneetälchen / Moore (subalpin bis alpin)
-    / Stauden- und Lägerfluren (hochmontan bis alpin) / Zwergstrauchheiden (subalpin bis alpin) /
-    Gebüsche (hochmontan bis subalpin) / Wälder (subalpin).
+    folgenden Ökosystemtypen (Namen) möglich: Gebirgsrasen (subalpin bis alpin); Gewässer (subalpin bis alpin);
+    Firn, permanente Schneefelder und Gletscher; Felsen (subalpin bis nival); Steinschutthalden und
+    Schotterflächen (subalpin bis alpin); Schneeböden, Schneetälchen; Moore (subalpin bis alpin);
+    Stauden- und Lägerfluren (hochmontan bis alpin); Zwergstrauchheiden (subalpin bis alpin);
+    Gebüsche (hochmontan bis subalpin); Wälder (subalpin).
     Passt keine der genannten Ökosystemtyp-Kategorien (d.h. Ökosystemtyp-Kategorie Weitere), sind immer
-    die folgenden Ökosystemtypen (Namen) möglich: Rohbodenstandorte und Ruderalfluren / Grün- und Freiflächen
+    die folgenden Ökosystemtypen (Namen) möglich: Rohbodenstandorte und Ruderalfluren; Grün- und Freiflächen
     """
 
     category: EcosystemTypeCategoryEnum = Field(
