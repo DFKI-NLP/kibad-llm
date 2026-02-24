@@ -51,11 +51,8 @@ def _extract_choices_with_description(
         Treat as a union of alternatives (common for Optional/Union types). We therefore
         collect enum values from all branches and de-duplicate them while preserving order.
     - ``allOf``:
-        ``allOf`` imposes an intersection of constraints. In principle, combining multiple
-        enums would require computing the intersection of their allowed values. However,
-        in many generated schemas (e.g., Pydantic) ``allOf`` is frequently used as a wrapper
-        for "apply this $ref plus additional metadata", where at most one branch provides
-        the actual enum constraint. For that reason, we pick the first enum encountered.
+        ``allOf`` imposes an intersection of constraints. We therefore take the intersection
+        of enum values across branches (i.e., only values allowed by all branches are valid).
 
     Description handling:
     - We collect all non-empty descriptions found (including wrapper descriptions) and
@@ -96,6 +93,12 @@ def _extract_choices_with_description(
 
         values: list[str] = []
         descs: list[str] = []
+        no_values_allowed = False  # for allOf, detect if intersection is empty
+
+        # include wrapper description too
+        wrapper_desc = _norm_desc(node.get("description"))
+        if wrapper_desc:
+            descs.append(wrapper_desc)
 
         for sub in subs:
             res = _extract_choices_with_description(
@@ -105,34 +108,42 @@ def _extract_choices_with_description(
             )
             if not res:
                 continue
+
             sub_values, sub_desc = res
 
             if key == "allOf":
-                # allOf means "all constraints apply" (intersection). In many generated schemas,
-                # it's used to combine a single enum constraint with additional metadata (e.g., $ref).
-                # If multiple enums appear here, the strictly correct merge would be an intersection.
-                # We therefore take the first enum-bearing branch as the representative constraint.
-                if not values and sub_values:
-                    values = sub_values
+                # allOf combines constraints. If multiple enum constraints are present,
+                # only values allowed by *all* of them are valid (intersection).
+                if sub_values:
+                    if values:
+                        # calculate intersection
+                        allowed = set(sub_values)
+                        values = [v for v in values if v in allowed]
+                        if not values:
+                            no_values_allowed = True
+                    else:
+                        values = sub_values
+
             else:
                 # anyOf/oneOf represent alternatives -> union of allowed values
                 values.extend(sub_values)
 
-            if isinstance(sub_desc, str):
+            if sub_desc:
                 descs.append(sub_desc)
 
-        if not values:
+        if not values and not no_values_allowed:
             continue
 
         # de-duplicate union results (preserve order)
         if key in ("anyOf", "oneOf"):
-            # de-duplicate while preserving order
             values = list(dict.fromkeys(values))
 
-        # include wrapper description too
-        wrapper_desc = _norm_desc(node.get("description"))
-        if isinstance(wrapper_desc, str):
-            descs.append(wrapper_desc)
+        # Note: `_extract_choices_with_description` aggregates wrapper + nested descriptions
+        # at every composition level. If a branch contains its own anyOf/oneOf/allOf, its
+        # returned `sub_desc` can already include some of the same wrapper/enum descriptions
+        # we are collecting at this level. To avoid repeated text in the final output,
+        # de-duplicate the description segments (order-preserving).
+        descs = list(dict.fromkeys(descs))
 
         desc = description_separator.join(descs) or None
         return values, desc
