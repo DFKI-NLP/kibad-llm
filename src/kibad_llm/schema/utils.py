@@ -185,7 +185,7 @@ def build_schema_description(
         if schema_desc:
             # remove all newlines and extra spaces from the description
             schema_desc = " ".join(schema_desc.split())
-            lines.append(f"{prefix}{type_description_prefix or ""}{schema_desc}")
+            lines.append(f"{prefix}{type_description_prefix or ''}{schema_desc}")
 
     if header:
         lines.append(header)
