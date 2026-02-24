@@ -1022,8 +1022,10 @@ class UntergruppeRoteListenEnum(str, Enum):
 
 
 class TrendCategoryEnum(str, Enum):
-    """ "no" bedeutet, dass es sich um einen neutralen Trend handelt, also keine Zunahme
-    oder Abnahme der Organismengruppe festgestellt wurde."""
+    """ "neutral" bedeutet, dass auf Trends untersucht wurde, aber keine Zunahme oder Abnahme der Organismengruppe
+    festgestellt wurde. "positiv" bedeutet einen zunehmenden Trend, "negativ" einen abnehmenden Trend.
+    Bei "positiv zu negativ" geht ein zunehmender Trend in einen abnehmenden Trend über. Bei "negativ zu positiv"
+    geht ein abnehmender Trend in einen zunehmenden Trend über."""
 
     POSITIVE = "positive"
     NEGATIVE = "negative"
@@ -1045,7 +1047,10 @@ class HabitatForOrganismTrendEnum(str, Enum):
 
 
 class BiodiversityVariableEnum(str, Enum):
-    """ "ENS" steht für "Effective Number of Species" (Effektive Artenzahl)."""
+    """ "ENS" steht dabei für "Effective Number of Species" und ist ein Index, der angibt, wie viele Arten
+    es gibt und wie gleichmäßig die Individuen auf die verschiedenen Arten verteilt sind (Effektive Artenzahl).
+    "Artenanzahl" gibt nur die die Anzahl der verschiedenen Arten an. "Abundanz" gibt die Häufigkeit einer
+    Art oder Gruppe an."""
 
     ABUNDANZ = "Abundanz"
     ARTENZAHL = "Artenzahl"
@@ -1110,20 +1115,11 @@ class OrganismBiodiversityTrendV1(CompoundFeature):
     )
     Antwortvariable: BiodiversityVariableEnum = Field(
         ...,
-        description="Mithilfe welcher Biodiversitätsvariable wird der Trend gemessen? 'ENS' steht dabei "
-        "für 'Effective Number of Species' und ist ein Index, der angibt, wie viele Arten es "
-        "gibt und wie gleichmäßig die Individuen auf die verschiedenen Arten verteilt "
-        "sind (Effektive Artenzahl). 'Artenanzahl' gibt nur die die Anzahl der verschiedenen Arten "
-        "an. 'Abundanz' gibt die Häufigkeit einer Art oder Gruppe an.",
+        description="Mithilfe welcher Biodiversitätsvariable wird der Trend gemessen?",
     )
     Trend: TrendCategoryEnum = Field(
         ...,
-        description="In welche der folgenden Kategorien lässt sich die Richtung des Trends einordnen? "
-        "'neutral' bedeutet, dass auf Trends untersucht wurde, aber keine Zunahme oder Abnahme "
-        "der Organismengruppe festgestellt wurde. 'positiv' bedeutet einen zunehmenden Trend, "
-        "'negativ' einen abnehmenden Trend. Bei 'positiv zu negativ' geht ein zunehmender Trend "
-        "in einen abnehmenden Trend über. Bei 'negativ zu positiv' geht ein abnehmender Trend in "
-        "einen zunehmenden Trend über.",
+        description="In welche der folgenden Kategorien lässt sich die Richtung des Trends einordnen?",
     )
 
 

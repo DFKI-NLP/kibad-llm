@@ -1,7 +1,7 @@
 {
   "$defs": {
     "BiodiversityVariableEnum": {
-      "description": "\"ENS\" steht für \"Effective Number of Species\" (Effektive Artenzahl).",
+      "description": "\"ENS\" steht dabei für \"Effective Number of Species\" und ist ein Index, der angibt, wie viele Arten\nes gibt und wie gleichmäßig die Individuen auf die verschiedenen Arten verteilt sind (Effektive Artenzahl).\n\"Artenanzahl\" gibt nur die die Anzahl der verschiedenen Arten an. \"Abundanz\" gibt die Häufigkeit einer\nArt oder Gruppe an.",
       "enum": [
         "Abundanz",
         "Artenzahl",
@@ -78,7 +78,7 @@
       "type": "object"
     },
     "TrendCategoryEnum": {
-      "description": "\"no\" bedeutet, dass es sich um einen neutralen Trend handelt, also keine Zunahme\noder Abnahme der Organismengruppe festgestellt wurde.",
+      "description": "\"neutral\" bedeutet, dass auf Trends untersucht wurde, aber keine Zunahme oder Abnahme der Organismengruppe\nfestgestellt wurde. \"positiv\" bedeutet einen zunehmenden Trend, \"negativ\" einen abnehmenden Trend.\nBei \"positiv zu negativ\" geht ein zunehmender Trend in einen abnehmenden Trend über. Bei \"negativ zu positiv\"\ngeht ein abnehmender Trend in einen zunehmenden Trend über.",
       "enum": [
         "positive",
         "negative",

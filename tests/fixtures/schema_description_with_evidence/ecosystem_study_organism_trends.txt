@@ -15,9 +15,9 @@ Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
     - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
   - Antwortvariable: Mithilfe welcher Biodiversitätsvariable wird der Trend gemessen? | Kardinalität: 1 | Typ: object
     Beschreibung: Mithilfe welcher Biodiversitätsvariable wird der Trend gemessen?
-    - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Abundanz; Artenzahl; ENS | Hinweise zu den Werten: "ENS" steht für "Effective Number of Species" (Effektive Artenzahl).
+    - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Abundanz; Artenzahl; ENS | Hinweise zu den Werten: "ENS" steht dabei für "Effective Number of Species" und ist ein Index, der angibt, wie viele Arten es gibt und wie gleichmäßig die Individuen auf die verschiedenen Arten verteilt sind (Effektive Artenzahl). "Artenanzahl" gibt nur die die Anzahl der verschiedenen Arten an. "Abundanz" gibt die Häufigkeit einer Art oder Gruppe an.
     - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
   - Trend: In welche der folgenden Kategorien lässt sich die Richtung des Trends einordnen? | Kardinalität: 1 | Typ: object
     Beschreibung: In welche der folgenden Kategorien lässt sich die Richtung des Trends einordnen?
-    - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: positive; negative; no; positive to negative; negative to positive | Hinweise zu den Werten: "no" bedeutet, dass es sich um einen neutralen Trend handelt, also keine Zunahme oder Abnahme der Organismengruppe festgestellt wurde.
+    - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: positive; negative; no; positive to negative; negative to positive | Hinweise zu den Werten: "neutral" bedeutet, dass auf Trends untersucht wurde, aber keine Zunahme oder Abnahme der Organismengruppe festgestellt wurde. "positiv" bedeutet einen zunehmenden Trend, "negativ" einen abnehmenden Trend. Bei "positiv zu negativ" geht ein zunehmender Trend in einen abnehmenden Trend über. Bei "negativ zu positiv" geht ein abnehmender Trend in einen zunehmenden Trend über.
     - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
