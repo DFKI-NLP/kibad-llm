@@ -35,15 +35,39 @@ def _resolve_ref(schema: Mapping[str, Any], ref: str) -> Mapping[str, Any] | Non
 def _extract_choices_with_description(
     schema: Mapping[str, Any],
     node: Any,
+    *,
+    description_separator: str = "; ",
 ) -> tuple[list[str], str | None] | None:
     """
-    Extract enum values *and* an optional enum/type description from a schema node, handling:
-    - inline 'enum' (+ optional 'description')
-    - direct '$ref' (recursively)
-    - composition via 'allOf'/'anyOf'/'oneOf'
+    Extract enum choices and an optional description from a JSON Schema node.
+
+    Supported patterns:
+    - Inline enums via ``{"enum": [...]}`` (returns values and the node's ``description`` if present)
+    - Local references via ``{"$ref": "#/..."} `` (recursively resolves and extracts)
+    - Compositions via ``allOf`` / ``anyOf`` / ``oneOf``
+
+    Composition handling:
+    - ``anyOf`` / ``oneOf``:
+        Treat as a union of alternatives (common for Optional/Union types). We therefore
+        collect enum values from all branches and de-duplicate them while preserving order.
+    - ``allOf``:
+        ``allOf`` imposes an intersection of constraints. In principle, combining multiple
+        enums would require computing the intersection of their allowed values. However,
+        in many generated schemas (e.g., Pydantic) ``allOf`` is frequently used as a wrapper
+        for "apply this $ref plus additional metadata", where at most one branch provides
+        the actual enum constraint. For that reason, we pick the first enum encountered.
+
+    Description handling:
+    - We collect all non-empty descriptions found (including wrapper descriptions) and
+      concatenate them with ``description_separator``.
+
+    Args:
+        schema: Root schema (needed for resolving local ``$ref`` targets).
+        node: Current schema node to inspect.
+        description_separator: Separator used when concatenating multiple descriptions.
 
     Returns:
-        (values, description) or None
+        ``(values, description)`` if enum values can be found, otherwise ``None``.
     """
     if not isinstance(node, ABCMapping):
         return None
@@ -51,38 +75,67 @@ def _extract_choices_with_description(
     # inline enum
     enum = node.get("enum")
     if isinstance(enum, list) and enum:
-        return [str(v) for v in enum], node.get("description")
+        return [str(v) for v in enum], _norm_desc(node.get("description"))
 
-    # direct $ref (recurse, so we also support enums nested under allOf/anyOf/oneOf in $defs)
+    # direct $ref (recurse)
     ref = node.get("$ref")
     if isinstance(ref, str):
         ref_schema = _resolve_ref(schema, ref)
         if isinstance(ref_schema, ABCMapping):
-            return _extract_choices_with_description(schema, ref_schema)
+            return _extract_choices_with_description(
+                schema,
+                ref_schema,
+                description_separator=description_separator,
+            )
 
-    # composition wrappers: try to find enum values; if description is missing, keep scanning for one
+    # composition wrappers
     for key in ("allOf", "anyOf", "oneOf"):
         subs = node.get(key)
-        if isinstance(subs, list) and subs:
-            values: list[str] | None = None
-            desc: str | None = None
-            # TODO: Should we extract from all subschemas and combine, or just pick the first one with values?
-            #  For now we pick the first one with values, but if there are multiple subschemas with enums
-            #  this might miss some values.
-            for sub in subs:
-                res = _extract_choices_with_description(schema, sub)
-                if not res:
-                    continue
-                sub_values, sub_desc = res
-                if values is None:
+        if not isinstance(subs, list) or not subs:
+            continue
+
+        values: list[str] = []
+        descs: list[str] = []
+
+        for sub in subs:
+            res = _extract_choices_with_description(
+                schema,
+                sub,
+                description_separator=description_separator,
+            )
+            if not res:
+                continue
+            sub_values, sub_desc = res
+
+            if key == "allOf":
+                # allOf means "all constraints apply" (intersection). In many generated schemas,
+                # it's used to combine a single enum constraint with additional metadata (e.g., $ref).
+                # If multiple enums appear here, the strictly correct merge would be an intersection.
+                # We therefore take the first enum-bearing branch as the representative constraint.
+                if not values and sub_values:
                     values = sub_values
-                if desc is None and sub_desc is not None:
-                    desc = sub_desc
-                if values is not None and desc is not None:
-                    break
-            if values is not None:
-                # If nothing provided a description, also consider the wrapper node's own description
-                return values, desc or node.get("description")
+            else:
+                # anyOf/oneOf represent alternatives -> union of allowed values
+                values.extend(sub_values)
+
+            if isinstance(sub_desc, str):
+                descs.append(sub_desc)
+
+        if not values:
+            continue
+
+        # de-duplicate union results (preserve order)
+        if key in ("anyOf", "oneOf"):
+            # de-duplicate while preserving order
+            values = list(dict.fromkeys(values))
+
+        # include wrapper description too
+        wrapper_desc = _norm_desc(node.get("description"))
+        if isinstance(wrapper_desc, str):
+            descs.append(wrapper_desc)
+
+        desc = description_separator.join(descs) or None
+        return values, desc
 
     return None
 
@@ -241,7 +294,10 @@ def build_schema_description(
 
         # Extract type and choices from target
         field_type = _extract_type(root_schema, target_for_hints)
-        choices_with_description = _extract_choices_with_description(root_schema, target_for_hints)
+        # use choices_separator also to join the enum *descriptions* if needed
+        choices_with_description = _extract_choices_with_description(
+            root_schema, target_for_hints, description_separator=choices_separator
+        )
 
         # Build field line
         hint = f"{prefix}- {name}:"
