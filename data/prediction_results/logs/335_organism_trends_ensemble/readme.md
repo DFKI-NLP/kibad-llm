@@ -103,6 +103,9 @@ PLOT_KWARGS = {
     "set_missing_values_to_zero": True,
     # add any more arguments passed to pd.DataFrame.plot
     "subplot_columns": 2,
+    # rotate x-axis tics by 45°
+    "rot": 45,
+    # alternative: add `fig.axes[0].tick_params("x", rotation=45)` after the plot command to produce rotated x tick labels 
 }
 ```
 
@@ -112,7 +115,6 @@ changing
 for col in errors_cols:
     errors_normalized_df_plot[col] = errors_df_plot[col] / queries_total * 409
 ```
-I also added `fig.axes[0].tick_params("x", rotation=45)` after the plot command to produce rotated x tick labels. 
 
 
 ![group_comparison_per_experiment_errors.svg](group_comparison_per_experiment_errors.svg)
@@ -147,6 +149,9 @@ PLOT_KWARGS = {
     "set_missing_values_to_zero": True,
     # add any more arguments passed to pd.DataFrame.plot
     "subplot_columns": 2,
+    # rotate x-axis tics by 45°
+    "rot": 45,
+    # alternative: add `fig.axes[0].tick_params("x", rotation=45)` after the plot command to produce rotated x tick labels 
 }
 ```
 
@@ -156,7 +161,6 @@ changing
 for col in errors_cols:
     errors_normalized_df_plot[col] = errors_df_plot[col] / queries_total * 409
 ```
-I also added `fig.axes[0].tick_params("x", rotation=45)` after the plot command to produce rotated x tick labels. 
 
 ![group_comparison_per_model_errors.svg](group_comparison_per_model_errors.svg)
 ![group_comparison_per_model_errors_detail.svg](group_comparison_per_model_errors_detail.svg)
