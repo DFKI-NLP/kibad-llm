@@ -59,7 +59,7 @@ PLOT_KWARGS = {
 ### Producing a plot with error rates per experiment
 ```python
 NAME = "335_organism_trends_ensemble"
-
+FILE_NAME_PREFIX = "group_comparison_per_experiment_"
 SUBDIR = [
     "../255_organism_trend_baseline_no_evi/evaluate",
     "../257_organism_trends_v1_with_evi/evaluate",
@@ -114,10 +114,15 @@ for col in errors_cols:
 ```
 I also added `fig.axes[0].tick_params("x", rotation=45)` after the plot command to produce rotated x tick labels. 
 
+
+![group_comparison_per_experiment_errors.svg](group_comparison_per_experiment_errors.svg)
+![group_comparison_per_experiment__errors_detail.svg](group_comparison_per_experiment__errors_detail.svg)
+![group_comparison_per_experiment__metrics_f1.svg](group_comparison_per_experiment__metrics_f1.svg)
+
 ### Producing a plot with error rates per model
 ```python
 NAME = "335_organism_trends_ensemble"
-
+FILE_NAME_PREFIX = "group_comparison_per_model_"
 SUBDIR = [
     "../255_organism_trend_baseline_no_evi/evaluate",
     "../257_organism_trends_v1_with_evi/evaluate",
@@ -152,6 +157,10 @@ for col in errors_cols:
     errors_normalized_df_plot[col] = errors_df_plot[col] / queries_total * 409
 ```
 I also added `fig.axes[0].tick_params("x", rotation=45)` after the plot command to produce rotated x tick labels. 
+
+![group_comparison_per_model_errors.svg](group_comparison_per_model_errors.svg)
+![group_comparison_per_model_errors_detail.svg](group_comparison_per_model_errors_detail.svg)
+![group_comparison_per_model_metrics_f1.svg](group_comparison_per_model_metrics_f1.svg)
 
 ### f1
 ![comparison_metrics_f1.svg](comparison_metrics_f1.svg)
