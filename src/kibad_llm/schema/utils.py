@@ -158,7 +158,7 @@ def build_schema_description(
     Args:
         schema: The JSON Schema dictionary to process
         header: Header text for field list (only shown at top level, None to omit)
-        schema_description_prefix: Prefix for schema descriptions (None to omit schema descriptions)
+        schema_description_prefix: Prefix for type descriptions
         cardinality_prefix: Prefix for cardinality information (None to omit cardinality)
         type_prefix: Prefix for type information (None to omit types)
         choices_prefix: Prefix for choices value lists (None to omit choices)
@@ -180,17 +180,18 @@ def build_schema_description(
     prefix = indent_step * indent
 
     # Add description
-    schema_desc = schema.get("description", "")
-    if include_type_descriptions and schema_desc and schema_description_prefix is not None:
-        lines.append(f"{prefix}{schema_description_prefix}{schema_desc}")
+    if include_type_descriptions is not None:
+        schema_desc = schema.get("description", "")
+        if schema_desc:
+            # remove all newlines and extra spaces from the description
+            schema_desc = " ".join(schema_desc.split())
+            lines.append(f"{prefix}{schema_description_prefix or ""}{schema_desc}")
 
     if header:
         lines.append(header)
 
     props = schema.get("properties", {}) or {}
     for name, spec in props.items():
-        desc = spec.get("description", "")
-
         # Single check for array vs non-array handling
         is_array = spec.get("type") == "array"
         target = spec.get("items") if is_array else spec
@@ -207,8 +208,12 @@ def build_schema_description(
         # Build field line
         hint = f"{prefix}- {name}:"
         # the field description is mandatory (if exists)
-        if include_field_descriptions and desc:
-            hint += f" {desc}"
+        if include_field_descriptions:
+            desc = spec.get("description", "")
+            # remove all newlines and extra spaces from the description
+            desc = " ".join(desc.split())
+            if desc:
+                hint += f" {desc}"
         if cardinality_prefix is not None:
             hint += f"{component_separator}{cardinality_prefix}{cardinality}"
         if field_type and type_prefix is not None:

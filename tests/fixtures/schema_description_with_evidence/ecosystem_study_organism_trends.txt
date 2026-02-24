@@ -1,10 +1,7 @@
 Beschreibung: Angaben zu den im Text beschriebenen organismenbezogenen Biodiversitätstrends.
 Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
 - organism_trends: Liste der im Text beschriebenen organismenbezogenen Biodiversitätstrends. | Kardinalität: 0..* | Typ: object
-  Beschreibung: Organismenbezogener Biodiversitätstrend bestehend aus Organismenhauptgruppe
-(hauptgruppe_rote_listen), Organismenuntergruppe (untergruppe_rote_listen),
-Lebensraum (habitat), Biodiversitätsvariable (biodiversity_variable)
-und Trendrichtung (trend_category).
+  Beschreibung: Organismenbezogener Biodiversitätstrend bestehend aus Organismenhauptgruppe (hauptgruppe_rote_listen), Organismenuntergruppe (untergruppe_rote_listen), Lebensraum (habitat), Biodiversitätsvariable (biodiversity_variable) und Trendrichtung (trend_category).
   - Hauptgruppe_RoteListen: Hauptgruppe der Organismen auf die sich der Trend bezieht. | Kardinalität: 1 | Typ: object
     Beschreibung: Hauptgruppe der Organismen auf die sich der Trend bezieht.
     - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Makrofauna; Mesofauna; Mikrofauna; Pflanzen; Pilze_Flechten; Wirbellose; Wirbeltiere
