@@ -119,7 +119,7 @@ def _pick_preferred_branch(node: Any, root_schema: Mapping[str, Any]) -> Any:
 def build_schema_description(
     schema: Mapping[str, Any],
     header: str | None = "Feldhinweise und erlaubte Werte (getrennt durch Semikolons):",
-    schema_description_prefix: str | None = "Beschreibung: ",
+    type_description_prefix: str | None = "Beschreibung: ",
     cardinality_prefix: str | None = "Kardinalität: ",
     type_prefix: str | None = "Typ: ",
     choices_prefix: str | None = "Zulässige Werte: ",
@@ -136,7 +136,7 @@ def build_schema_description(
     Build a human‑readable summary for a JSON Schema.
 
     Output format:
-    - Optional first line: "<schema_description_prefix><schema.description>" if schema_description_prefix is not None and description exists
+    - Optional first line: "<type_description_prefix><schema.description>" if include_type_descriptions and the description exists
     - Optional header line (only at top level if header is not None)
     - One line per property with format depending on which prefix parameters are not None:
       "<indent>- <name>[: <description>][<separator><cardinality_prefix><cardinality>][<separator><type_prefix><type>][<separator><enum_prefix><values>]"
@@ -158,7 +158,7 @@ def build_schema_description(
     Args:
         schema: The JSON Schema dictionary to process
         header: Header text for field list (only shown at top level, None to omit)
-        schema_description_prefix: Prefix for type descriptions
+        type_description_prefix: Prefix for type descriptions (descriptions for the overall schema and nested schemas, not field descriptions)
         cardinality_prefix: Prefix for cardinality information (None to omit cardinality)
         type_prefix: Prefix for type information (None to omit types)
         choices_prefix: Prefix for choices value lists (None to omit choices)
@@ -185,7 +185,7 @@ def build_schema_description(
         if schema_desc:
             # remove all newlines and extra spaces from the description
             schema_desc = " ".join(schema_desc.split())
-            lines.append(f"{prefix}{schema_description_prefix or ""}{schema_desc}")
+            lines.append(f"{prefix}{type_description_prefix or ""}{schema_desc}")
 
     if header:
         lines.append(header)
@@ -242,7 +242,7 @@ def build_schema_description(
                     root_schema=root_schema,
                     # no header for nested
                     header=None,
-                    schema_description_prefix=schema_description_prefix,
+                    type_description_prefix=type_description_prefix,
                     cardinality_prefix=cardinality_prefix,
                     type_prefix=type_prefix,
                     choices_prefix=choices_prefix,
