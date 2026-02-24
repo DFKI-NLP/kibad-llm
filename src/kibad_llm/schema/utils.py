@@ -5,6 +5,14 @@ from collections.abc import Mapping as ABCMapping
 from typing import Any
 
 
+def _norm_desc(desc: Any) -> str | None:
+    """remove all newlines and extra spaces from the description"""
+    if isinstance(desc, str):
+        d = " ".join(desc.split())
+        return d or None
+    return None
+
+
 def _resolve_ref(schema: Mapping[str, Any], ref: str) -> Mapping[str, Any] | None:
     """Resolve local JSON Schema $refs like '#/$defs/Name'."""
     if not ref.startswith("#/"):
@@ -181,10 +189,9 @@ def build_schema_description(
 
     # Add description
     if include_type_descriptions is not None:
-        schema_desc = schema.get("description", "")
+        # remove all newlines and extra spaces from the description
+        schema_desc = _norm_desc(schema.get("description"))
         if schema_desc:
-            # remove all newlines and extra spaces from the description
-            schema_desc = " ".join(schema_desc.split())
             lines.append(f"{prefix}{type_description_prefix or ''}{schema_desc}")
 
     if header:
@@ -209,9 +216,8 @@ def build_schema_description(
         hint = f"{prefix}- {name}:"
         # the field description is mandatory (if exists)
         if include_field_descriptions:
-            desc = spec.get("description", "")
             # remove all newlines and extra spaces from the description
-            desc = " ".join(desc.split())
+            desc = _norm_desc(spec.get("description"))
             if desc:
                 hint += f" {desc}"
         if cardinality_prefix is not None:
