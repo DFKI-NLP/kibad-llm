@@ -4,6 +4,8 @@ from collections.abc import Mapping
 from collections.abc import Mapping as ABCMapping
 from typing import Any
 
+from kibad_llm.utils.log import warn_once
+
 
 def _norm_desc(desc: Any) -> str | None:
     """remove all newlines and extra spaces from the description"""
@@ -195,13 +197,21 @@ def build_schema_description(
         choices_separator: Separator between individual choices values
         indent_step: String used for each indentation level
         include_field_descriptions: Whether to include field/property descriptions in the output
-        include_type_descriptions: Whether to include schema/type descriptions (top-level and nested) in the output
+        include_type_descriptions: Whether to include schema/type descriptions (top-level and nested) in the output.
+            NOTE: This is deprecated; please set type_description_prefix to None to omit type descriptions instead.
         indent: Current indentation level (internal, for recursion)
         root_schema: Root schema containing $defs (internal, for recursion)
 
     Returns:
         Multi-line string summarizing schema structure, fields, and constraints
     """
+    if not include_type_descriptions:
+        type_description_prefix = None
+        warn_once(
+            "include_type_descriptions is deprecated; please set type_description_prefix to None instead "
+            "of using include_type_descriptions=False."
+        )
+
     if root_schema is None:
         root_schema = schema
 
@@ -209,11 +219,11 @@ def build_schema_description(
     prefix = indent_step * indent
 
     # Add description
-    if include_type_descriptions is not None:
+    if type_description_prefix is not None:
         # remove all newlines and extra spaces from the description
         schema_desc = _norm_desc(schema.get("description"))
         if schema_desc:
-            lines.append(f"{prefix}{type_description_prefix or ''}{schema_desc}")
+            lines.append(f"{prefix}{type_description_prefix}{schema_desc}")
 
     if header:
         lines.append(header)
@@ -282,7 +292,6 @@ def build_schema_description(
                     choices_separator=choices_separator,
                     indent_step=indent_step,
                     include_field_descriptions=include_field_descriptions,
-                    include_type_descriptions=include_type_descriptions,
                 )
                 lines.append(nested_content)
 
