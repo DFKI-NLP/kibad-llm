@@ -118,8 +118,8 @@ for col in errors_cols:
 
 
 ![group_comparison_per_experiment_errors.svg](group_comparison_per_experiment_errors.svg)
-![group_comparison_per_experiment__errors_detail.svg](group_comparison_per_experiment__errors_detail.svg)
-![group_comparison_per_experiment__metrics_f1.svg](group_comparison_per_experiment__metrics_f1.svg)
+![group_comparison_per_experiment_errors_detail.svg](group_comparison_per_experiment_errors_detail.svg)
+![group_comparison_per_experiment_metrics_f1.svg](group_comparison_per_experiment_metrics_f1.svg)
 
 ### Producing a plot with error rates per model
 ```python
