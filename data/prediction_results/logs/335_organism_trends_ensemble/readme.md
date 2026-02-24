@@ -56,6 +56,116 @@ PLOT_KWARGS = {
 }
 ```
 
+### Producing a plot with error rates per experiment
+```python
+NAME = "335_organism_trends_ensemble"
+FILE_NAME_PREFIX = "group_comparison_per_experiment_"
+SUBDIR = [
+    "../255_organism_trend_baseline_no_evi/evaluate",
+    "../257_organism_trends_v1_with_evi/evaluate",
+    "../333_organism_trends_with_persona/evaluate",
+    "../334_dont_include_field_and_type_descriptions/evaluate",
+    "evaluate",
+]
+
+FILL_NA = {"prediction.overrides.extractor": "simple",
+          "prediction.overrides.extractor.schema_description_kwargs.include_field_descriptions": True,
+          "prediction.overrides.extractor.schema_description_kwargs.include_type_descriptions": True,
+          "prediction.overrides.extractor/prompt_template": "as_defined_in_experiment/predict"}
+
+METRICS = ["f1"]
+
+# create a new "group" column with the entries of the original INDEX_COLUMNS
+COMBINE_COLUMNS = {
+    "group": ["prediction.overrides.experiment/predict", "prediction.overrides.extractor/prompt_template", "prediction.overrides.extractor.schema_description_kwargs.include_field_descriptions","prediction.overrides.extractor.schema_description_kwargs.include_type_descriptions"],
+} 
+# not absolutely necessary, but will cause logging the mapping and thus the unique values  
+#ENUMERATE_UNIQUE_VALUES_COLUMNS = ["group"]
+# map the values for column "group" to more descriptive ones. If ENUMERATE_UNIQUE_VALUES_COLUMNS is not set, use the unique values of the group column instead of 0, 1, 2, etc as keys.
+MAP_VALUES = {
+    "group": lambda x: {"experiment/predict=organism_trends,extractor/prompt_template=as_defined_in_experiment/predict,include_field_descriptions=True,include_type_descriptions=True": "no_evi,f=T/t=T",
+                        "experiment/predict=organism_trends_with_evidence,extractor/prompt_template=as_defined_in_experiment/predict,include_field_descriptions=True,include_type_descriptions=True": "with_evi,f=T/t=T",
+                        "experiment/predict=organism_trends_with_evidence,extractor/prompt_template=organism_trends_v1_with_evidence_and_persona,include_field_descriptions=False,include_type_descriptions=False": "with_evi_persona,f=F/t=F",
+                        "experiment/predict=organism_trends_with_evidence,extractor/prompt_template=organism_trends_v1_with_evidence_and_persona,include_field_descriptions=False,include_type_descriptions=True": "with_evi_persona,f=F/t=T",
+                        "experiment/predict=organism_trends_with_evidence,extractor/prompt_template=organism_trends_v1_with_evidence_and_persona,include_field_descriptions=True,include_type_descriptions=False": "with_evi_persona,f=T/t=F",
+                        "experiment/predict=organism_trends_with_evidence,extractor/prompt_template=organism_trends_v1_with_evidence_and_persona,include_field_descriptions=True,include_type_descriptions=True": "with_evi_persona,f=T/t=T",
+                       }.get(x, x)
+}
+
+
+# used to group the data
+#INDEX_COLUMNS = ["prediction.overrides.experiment/predict", "prediction.overrides.extractor/prompt_template", "prediction.overrides.extractor.schema_description_kwargs.include_field_descriptions","prediction.overrides.extractor.schema_description_kwargs.include_type_descriptions"] #, "prediction.overrides.extractor", "prediction.overrides.experiment/predict", "prediction.overrides.extractor/prompt_template", "prediction.overrides.extractor.schema_description_kwargs.include_field_descriptions","prediction.overrides.extractor.schema_description_kwargs.include_type_descriptions" ]
+INDEX_COLUMNS = ["group"]
+PLOT_KWARGS = {
+    # can be either "metric" or one of the INDEX_COLUMNS (or multiple of them)
+    "xgroup": "group",
+    #"create_subplot_for_each": "metric",
+    "set_missing_values_to_zero": True,
+    # add any more arguments passed to pd.DataFrame.plot
+    "subplot_columns": 2,
+    # rotate x-axis tics by 45°
+    "rot": 45,
+    # alternative: add `fig.axes[0].tick_params("x", rotation=45)` after the plot command to produce rotated x tick labels 
+}
+```
+
+Note that I also used a `* 409` multiplier to scale the y-axes xtick labels to absolute values for OrganismTrend, by
+changing 
+```python
+for col in errors_cols:
+    errors_normalized_df_plot[col] = errors_df_plot[col] / queries_total * 409
+```
+
+
+![group_comparison_per_experiment_errors.svg](group_comparison_per_experiment_errors.svg)
+![group_comparison_per_experiment_errors_detail.svg](group_comparison_per_experiment_errors_detail.svg)
+![group_comparison_per_experiment_metrics_f1.svg](group_comparison_per_experiment_metrics_f1.svg)
+
+### Producing a plot with error rates per model
+```python
+NAME = "335_organism_trends_ensemble"
+FILE_NAME_PREFIX = "group_comparison_per_model_"
+SUBDIR = [
+    "../255_organism_trend_baseline_no_evi/evaluate",
+    "../257_organism_trends_v1_with_evi/evaluate",
+    "../333_organism_trends_with_persona/evaluate",
+    "../334_dont_include_field_and_type_descriptions/evaluate",
+    "evaluate",
+]
+
+FILL_NA = {"prediction.overrides.extractor": "simple",
+          "prediction.overrides.extractor.schema_description_kwargs.include_field_descriptions": True,
+          "prediction.overrides.extractor.schema_description_kwargs.include_type_descriptions": True,
+          "prediction.overrides.extractor/prompt_template": "as_defined_in_experiment/predict"}
+
+METRICS = ["f1"]
+
+# used to group the data
+INDEX_COLUMNS = ["prediction.overrides.extractor/llm"]
+PLOT_KWARGS = {
+    # can be either "metric" or one of the INDEX_COLUMNS (or multiple of them)
+    "xgroup": ["prediction.overrides.extractor/llm"],
+    #"create_subplot_for_each": "metric",
+    "set_missing_values_to_zero": True,
+    # add any more arguments passed to pd.DataFrame.plot
+    "subplot_columns": 2,
+    # rotate x-axis tics by 45°
+    "rot": 45,
+    # alternative: add `fig.axes[0].tick_params("x", rotation=45)` after the plot command to produce rotated x tick labels 
+}
+```
+
+Note that I also used a `* 409` multiplier to scale the y-axes xtick labels to absolute values for OrganismTrend, by
+changing 
+```python
+for col in errors_cols:
+    errors_normalized_df_plot[col] = errors_df_plot[col] / queries_total * 409
+```
+
+![group_comparison_per_model_errors.svg](group_comparison_per_model_errors.svg)
+![group_comparison_per_model_errors_detail.svg](group_comparison_per_model_errors_detail.svg)
+![group_comparison_per_model_metrics_f1.svg](group_comparison_per_model_metrics_f1.svg)
+
 ### f1
 ![comparison_metrics_f1.svg](comparison_metrics_f1.svg)
 ![comparison_metrics_f1_detail.svg](comparison_metrics_f1_detail.svg)

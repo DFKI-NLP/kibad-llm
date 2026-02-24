@@ -32,7 +32,7 @@ SUBDIR = [
     "../327_faktencheck_core_with_persona/evaluate",
 ]
 MAP_VALUES = {
-    "func": lambda x: "without too long documents" if x == "[2E9XWUUE,2EUNPHDZ,2P53UVJA,2RXMDX8I,3LGPK6BL,3WEEGFGW,46RX4AEN,4YXRYRJC,4Z67G9T5,5SIYLM9W,6D23L7B5,6G2THNDX,7DSY6RMR,84QQ9F5S,885FDL5Z]" else x
+    "overrides.dataset.predictions.skip_by_id": lambda x: "without too long documents" if x == "[2E9XWUUE,2EUNPHDZ,2P53UVJA,2RXMDX8I,3LGPK6BL,3WEEGFGW,46RX4AEN,4YXRYRJC,4Z67G9T5,5SIYLM9W,6D23L7B5,6G2THNDX,7DSY6RMR,84QQ9F5S,885FDL5Z]" else x
 }
 FILL_NA = {"overrides.dataset.predictions.skip_by_id": "all documents"}
 
