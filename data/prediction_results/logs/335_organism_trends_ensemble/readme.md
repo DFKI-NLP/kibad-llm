@@ -103,6 +103,9 @@ PLOT_KWARGS = {
     "set_missing_values_to_zero": True,
     # add any more arguments passed to pd.DataFrame.plot
     "subplot_columns": 2,
+    # rotate x-axis tics by 45°
+    "rot": 45,
+    # alternative: add `fig.axes[0].tick_params("x", rotation=45)` after the plot command to produce rotated x tick labels 
 }
 ```
 
@@ -112,7 +115,6 @@ changing
 for col in errors_cols:
     errors_normalized_df_plot[col] = errors_df_plot[col] / queries_total * 409
 ```
-I also added `fig.axes[0].tick_params("x", rotation=45)` after the plot command to produce rotated x tick labels. 
 
 ### Producing a plot with error rates per model
 ```python
@@ -142,6 +144,9 @@ PLOT_KWARGS = {
     "set_missing_values_to_zero": True,
     # add any more arguments passed to pd.DataFrame.plot
     "subplot_columns": 2,
+    # rotate x-axis tics by 45°
+    "rot": 45,
+    # alternative: add `fig.axes[0].tick_params("x", rotation=45)` after the plot command to produce rotated x tick labels 
 }
 ```
 
@@ -151,7 +156,6 @@ changing
 for col in errors_cols:
     errors_normalized_df_plot[col] = errors_df_plot[col] / queries_total * 409
 ```
-I also added `fig.axes[0].tick_params("x", rotation=45)` after the plot command to produce rotated x tick labels. 
 
 ### f1
 ![comparison_metrics_f1.svg](comparison_metrics_f1.svg)
