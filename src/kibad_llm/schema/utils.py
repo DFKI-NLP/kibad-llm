@@ -30,12 +30,18 @@ def _resolve_ref(schema: Mapping[str, Any], ref: str) -> Mapping[str, Any] | Non
     return node
 
 
-def _extract_choices(schema: Mapping[str, Any], node: Any) -> list[str] | None:
+def _extract_choices_with_description(
+    schema: Mapping[str, Any],
+    node: Any,
+) -> tuple[list[str], str | None] | None:
     """
-    Extract enum values from a schema node, handling:
-    - inline 'enum'
-    - direct '$ref'
-    - composition via 'allOf'/'anyOf'/'oneOf' that contain refs or enums
+    Extract enum values *and* an optional enum/type description from a schema node, handling:
+    - inline 'enum' (+ optional 'description')
+    - direct '$ref' (recursively)
+    - composition via 'allOf'/'anyOf'/'oneOf'
+
+    Returns:
+        (values, description) or None
     """
     if not isinstance(node, ABCMapping):
         return None
@@ -43,25 +49,38 @@ def _extract_choices(schema: Mapping[str, Any], node: Any) -> list[str] | None:
     # inline enum
     enum = node.get("enum")
     if isinstance(enum, list) and enum:
-        return [str(v) for v in enum]
+        return [str(v) for v in enum], node.get("description")
 
-    # direct $ref
+    # direct $ref (recurse, so we also support enums nested under allOf/anyOf/oneOf in $defs)
     ref = node.get("$ref")
     if isinstance(ref, str):
         ref_schema = _resolve_ref(schema, ref)
         if isinstance(ref_schema, ABCMapping):
-            ref_enum = ref_schema.get("enum")
-            if isinstance(ref_enum, list) and ref_enum:
-                return [str(v) for v in ref_enum]
+            return _extract_choices_with_description(schema, ref_schema)
 
-    # composition wrappers
+    # composition wrappers: try to find enum values; if description is missing, keep scanning for one
     for key in ("allOf", "anyOf", "oneOf"):
         subs = node.get(key)
-        if isinstance(subs, list):
+        if isinstance(subs, list) and subs:
+            values: list[str] | None = None
+            desc: str | None = None
+            # TODO: Should we extract from all subschemas and combine, or just pick the first one with values?
+            #  For now we pick the first one with values, but if there are multiple subschemas with enums
+            #  this might miss some values.
             for sub in subs:
-                values = _extract_choices(schema, sub)
-                if values:
-                    return values
+                res = _extract_choices_with_description(schema, sub)
+                if not res:
+                    continue
+                sub_values, sub_desc = res
+                if values is None:
+                    values = sub_values
+                if desc is None and sub_desc is not None:
+                    desc = sub_desc
+                if values is not None and desc is not None:
+                    break
+            if values is not None:
+                # If nothing provided a description, also consider the wrapper node's own description
+                return values, desc or node.get("description")
 
     return None
 
@@ -131,6 +150,7 @@ def build_schema_description(
     cardinality_prefix: str | None = "Kardinalität: ",
     type_prefix: str | None = "Typ: ",
     choices_prefix: str | None = "Zulässige Werte: ",
+    choices_description_prefix: str | None = "Hinweise zu den Werten: ",
     component_separator: str = " | ",
     choices_separator: str = "; ",
     indent_step: str = "  ",
@@ -170,6 +190,7 @@ def build_schema_description(
         cardinality_prefix: Prefix for cardinality information (None to omit cardinality)
         type_prefix: Prefix for type information (None to omit types)
         choices_prefix: Prefix for choices value lists (None to omit choices)
+        choices_description_prefix: Prefix for choices descriptions (None to omit choices descriptions)
         component_separator: Separator between field components (name, cardinality, type, choices)
         choices_separator: Separator between individual choices values
         indent_step: String used for each indentation level
@@ -210,7 +231,7 @@ def build_schema_description(
 
         # Extract type and choices from target
         field_type = _extract_type(root_schema, target_for_hints)
-        choices = _extract_choices(root_schema, target_for_hints)
+        choices_with_description = _extract_choices_with_description(root_schema, target_for_hints)
 
         # Build field line
         hint = f"{prefix}- {name}:"
@@ -224,8 +245,13 @@ def build_schema_description(
             hint += f"{component_separator}{cardinality_prefix}{cardinality}"
         if field_type and type_prefix is not None:
             hint += f"{component_separator}{type_prefix}{field_type}"
-        if choices and choices_prefix is not None:
+        if choices_with_description and choices_prefix is not None:
+            choices, choices_desc = choices_with_description
             hint += f"{component_separator}{choices_prefix}" + choices_separator.join(choices)
+            # remove all newlines and extra spaces from the choices description
+            choices_desc = _norm_desc(choices_desc)
+            if choices_desc and choices_description_prefix is not None:
+                hint += f"{component_separator}{choices_description_prefix}{choices_desc}"
 
         lines.append(hint)
 
