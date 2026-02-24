@@ -1022,6 +1022,9 @@ class UntergruppeRoteListenEnum(str, Enum):
 
 
 class TrendCategoryEnum(str, Enum):
+    """ "no" bedeutet, dass es sich um einen neutralen Trend handelt, also keine Zunahme
+    oder Abnahme der Organismengruppe festgestellt wurde."""
+
     POSITIVE = "positive"
     NEGATIVE = "negative"
     # "no" means "Die Artengruppe entwickelt sich stabil". It was called "neutral" in the iDiv publication.
@@ -1042,6 +1045,8 @@ class HabitatForOrganismTrendEnum(str, Enum):
 
 
 class BiodiversityVariableEnum(str, Enum):
+    """ "ENS" steht für "Effective Number of Species" (Effektive Artenzahl)."""
+
     ABUNDANZ = "Abundanz"
     ARTENZAHL = "Artenzahl"
     ENS = "ENS"
@@ -1072,14 +1077,11 @@ class OrganismBiodiversityTrend(CompoundFeature):
     )
     Antwortvariable: BiodiversityVariableEnum = Field(
         ...,
-        description="Mithilfe welcher Biodiversitätsvariable wird der Trend gemessen? "
-        '"ENS" steht für "Effective Number of Species" (Effektive Artenzahl).',
+        description="Mithilfe welcher Biodiversitätsvariable wird der Trend gemessen? ",
     )
     Trend: TrendCategoryEnum = Field(
         ...,
-        description="In welche der folgenden Kategorien lässt sich die Richtung des Trends einordnen? "
-        '"no" bedeutet, dass es sich um einen neutralen Trend handelt, also keine Zunahme oder '
-        "Abnahme der Organismengruppe festgestellt wurde.",
+        description="In welche der folgenden Kategorien lässt sich die Richtung des Trends einordnen?",
     )
 
 
