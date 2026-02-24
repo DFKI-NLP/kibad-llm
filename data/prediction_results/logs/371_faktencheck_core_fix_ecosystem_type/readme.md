@@ -2,6 +2,8 @@
 
 See [#371](https://github.com/DFKI-NLP/kibad-llm/pull/371) for details.
 
+Important: This is **without the actual predictions** since they are too many and would bloat the repository even more.
+
 ## notebook parameters
 
 ### comparing description and cardinality change with baseline
