@@ -75,12 +75,18 @@ if [[ "$SYNC_REMOTE" == "1" ]]; then
   fi
 fi
 
-# Validate ref early (fail before allocating GPUs)
+# Validate ref early (fail before allocating GPUs) + DWIM fallback to origin/<ref>
 if [[ -n "$GIT_REF" ]]; then
   echo ">>> Validating git ref: $GIT_REF"
-  if ! git -C "$REPO_ROOT" rev-parse --verify "$GIT_REF^{commit}" >/dev/null; then
+
+  if git -C "$REPO_ROOT" rev-parse --verify "$GIT_REF^{commit}" >/dev/null 2>&1; then
+    :
+  elif [[ "$GIT_REF" != origin/* ]] && git -C "$REPO_ROOT" rev-parse --verify "origin/$GIT_REF^{commit}" >/dev/null 2>&1; then
+    echo ">>> Ref '$GIT_REF' not found locally; using 'origin/$GIT_REF'"
+    GIT_REF="origin/$GIT_REF"
+  else
     echo "ERROR: GIT_REF '$GIT_REF' is not a valid commit-ish in $REPO_ROOT" >&2
-    echo "       Tip: run with --sync-remote if you reference origin/<branch> and it's not fetched locally yet." >&2
+    echo "       Tip: run with --sync-remote if you reference a remote branch." >&2
     exit 2
   fi
 fi
