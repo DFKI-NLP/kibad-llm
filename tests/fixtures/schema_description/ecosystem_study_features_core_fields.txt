@@ -10,33 +10,33 @@ Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
 - biodiversity_level: Auf welche der folgenden Ebenen wird Biodiversität in der Studie gemessen?  | Kardinalität: 0..* | Typ: string | Zulässige Werte: Artenvielfalt; Funktionelle Diversität; Genetische Diversität; Habitatdiversität; Phylogenetische Diversität; Strukturelle Diversität; Zusammensetzung der Artengemeinschaft
 - ecosystem_type: Welche Ökosystemtypen werden betrachtet? | Kardinalität: 0..* | Typ: object
   Beschreibung: Ökosystemtyp mit Kategorie und (wenn möglich) mit Name.
-Wenn es im Text um die Ökosystemtyp-Kategorien Meere oder Küsten geht, sind nur die Ökosystemtypen (Namen)
-möglich: Benthal der Nordsee; Benthal der Ostsee; Fels- und Steilküsten; Küstendünen; Pelagial
-der Nordsee; Pelagial der Ostsee; Saisonales Meereis der Nordsee; Saisonales Meereis der
-Ostsee; Salzgrünland, Brackwasserröhrichte und -Hochstaudenfluren des Geolitorals der
-Ostseeküste; Salzgrünland der Nordseeküste (Supralitoral); Sände, Sand-, Geröll- und Blockstrände.
-Wenn es im Text um die Ökosystemtyp-Kategorien Binnengewässer geht, sind nur die folgenden Ökosystemtypen
-(Namen) möglich: Fließende Gewässer; Grundwasser und Höhlengewässer; Quellen (inklusive Quellabfluss (Krenal));
-Stehende Gewässer.
-Wenn es im Text um Ökosystemtyp-Kategorien terrestrisches oder semiterrestrisches Binnenland
-geht, sind nur die folgenden Ökosystemtypen (Namen) möglich: Äcker und Ackerbrachen; Feldgehölze,
-Gebüsche, Hecken und Gehölzkulturen; Felsen, Block- und Schutthalden, Geröllfelder, offene Bereiche
-mit sandigem oder bindigem Substrat; Hoch-, Zwischen- und Übergangsmoore; Höhlen (einschließlich Stollen,
-Brunnenschächte etc.); Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent);
-Nadel(Misch)Wälder und -Forste; Röhrichte (ohne Brackwasserröhrichte); Trockenrasen sowie
-Grünland trockener bis frischer Standorte; Waldfreie Niedermoore und Sümpfe, Grünland nasser
-bis feuchter Standorte; Waldmäntel und Vorwälder, spezielle Waldnutzungsformen; Wald- und
-Ufersäume, Staudenfluren; Zwergstrauchheiden; Großseggenriede.
-Wenn es im Text um die Ökosystemtyp-Kategorie technische Biotope geht, sind nur die folgenden
-Ökosystemtypen (Namen) möglich: Bauwerke; Kleine, unbefestigte Freiflächen des besiedelten Bereiches;
-Verkehrsanlagen und Plätze; Deponien und Rieselfelder.
-Wenn es im Text um die Ökosystemtyp-Kategorie Biotope mit Schwerpunkt in den Alpen geht, sind nur die
-folgenden Ökosystemtypen (Namen) möglich: Gebirgsrasen (subalpin bis alpin); Gewässer (subalpin bis alpin);
-Firn, permanente Schneefelder und Gletscher; Felsen (subalpin bis nival); Steinschutthalden und
-Schotterflächen (subalpin bis alpin); Schneeböden, Schneetälchen; Moore (subalpin bis alpin);
-Stauden- und Lägerfluren (hochmontan bis alpin); Zwergstrauchheiden (subalpin bis alpin);
-Gebüsche (hochmontan bis subalpin); Wälder (subalpin).
-Passt keine der genannten Ökosystemtyp-Kategorien (d.h. Ökosystemtyp-Kategorie Weitere), sind immer
+Wenn es im Text um die Ökosystemtyp-Kategorie "I Biotoptypengruppen der Meere und Küsten" geht,
+sind nur die Ökosystemtypen (Namen) möglich: Benthal der Nordsee; Benthal der Ostsee; Fels- und
+Steilküsten; Küstendünen; Pelagial der Nordsee; Pelagial der Ostsee; Saisonales Meereis der Nordsee;
+Saisonales Meereis der Ostsee; Salzgrünland, Brackwasserröhrichte und -Hochstaudenfluren des Geolitorals
+der Ostseeküste; Salzgrünland der Nordseeküste (Supralitoral); Sände, Sand-, Geröll- und Blockstrände.
+Wenn es im Text um die Ökosystemtyp-Kategorie "II Biotoptypengruppen der Binnengewässer" geht,
+sind nur die folgenden Ökosystemtypen (Namen) möglich: Fließende Gewässer; Grundwasser und Höhlengewässer;
+Quellen (inklusive Quellabfluss (Krenal)); Stehende Gewässer.
+Wenn es im Text um Ökosystemtyp-Kategorie "III Terrestrische und semiterrestrische Biotoptypengruppen
+des Binnenlandes" geht, sind nur die folgenden Ökosystemtypen (Namen) möglich: Äcker und Ackerbrachen;
+Feldgehölze, Gebüsche, Hecken und Gehölzkulturen; Felsen, Block- und Schutthalden, Geröllfelder, offene
+Bereiche mit sandigem oder bindigem Substrat; Hoch-, Zwischen- und Übergangsmoore; Höhlen (einschließlich
+Stollen, Brunnenschächte etc.); Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent);
+Nadel(Misch)Wälder und -Forste; Röhrichte (ohne Brackwasserröhrichte); Trockenrasen sowie Grünland
+trockener bis frischer Standorte; Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte;
+Waldmäntel und Vorwälder, spezielle Waldnutzungsformen; Wald- und Ufersäume, Staudenfluren;
+Zwergstrauchheiden; Großseggenriede.
+Wenn es im Text um die Ökosystemtyp-Kategorie "IV Technische Biotoptypengruppen" geht,
+sind nur die folgenden Ökosystemtypen (Namen) möglich: Bauwerke; Kleine, unbefestigte Freiflächen
+des besiedelten Bereiches; Verkehrsanlagen und Plätze; Deponien und Rieselfelder.
+Wenn es im Text um die Ökosystemtyp-Kategorie "V Biotoptypengruppen mit Schwerpunkt in den Alpen" geht,
+sind nur die folgenden Ökosystemtypen (Namen) möglich: Gebirgsrasen (subalpin bis alpin);
+Gewässer (subalpin bis alpin); Firn, permanente Schneefelder und Gletscher; Felsen (subalpin bis nival);
+Steinschutthalden und Schotterflächen (subalpin bis alpin); Schneeböden, Schneetälchen;
+Moore (subalpin bis alpin); Stauden- und Lägerfluren (hochmontan bis alpin); Zwergstrauchheiden
+(subalpin bis alpin); Gebüsche (hochmontan bis subalpin); Wälder (subalpin).
+Passt keine der genannten Ökosystemtyp-Kategorien (d.h. Ökosystemtyp-Kategorie "VI Weitere"), sind immer
 die folgenden Ökosystemtypen (Namen) möglich: Rohbodenstandorte und Ruderalfluren; Grün- und Freiflächen
   - category: Kategorie des Ökosystemtyps | Kardinalität: 1 | Typ: string | Zulässige Werte: I Biotoptypengruppen der Meere und Küsten; II Biotoptypengruppen der Binnengewässer; III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes; IV Technische Biotoptypengruppen; V Biotoptypengruppen mit Schwerpunkt in den Alpen; VI Weitere
   - term: Name des Ökosystemtyps | Kardinalität: 0..1 | Typ: string | Zulässige Werte: Anthropogene Rohbodenstandorte und Ruderalfluren; Bauwerke; Benthal der Nordsee; Benthal der Ostsee; Deponien und Rieselfelder; Feldgehölze, Gebüsche, Hecken und Gehölzkulturen; Fels- und Steilküsten; Felsen, Block- und Schutthalden, Geröllfelder, offene Bereiche mit sandigem oder bindigem Substrat; Felsen der subalpinen bis nivalen Stufe; Firn, permanente Schneefelder und Gletscher; Fließende Gewässer; Gebirgsrasen (subalpine bis alpine Stufe); Gebüsche der hochmontanen bis subalpinen Stufe; Gewässer der subalpinen bis alpinen Stufe; Großseggenriede; Grundwasser und Höhlengewässer; Grün- und Freiflächen; Hoch-, Zwischen- und Übergangsmoore; Höhlen (einschließlich Stollen, Brunnenschächte etc.); Kleine, unbefestigte Freiflächen des besiedelten Bereiches; Küstendünen; Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent); Moore der subalpinen bis alpinen Stufe; Nadel(Misch)Wälder und -Forste; Pelagial der Nordsee; Pelagial der Ostsee; Quellen (inklusive Quellabfluss (Krenal)); Röhrichte (ohne Brackwasserröhrichte); Saisonales Meereis der Nordsee; Saisonales Meereis der Ostsee; Salzgrünland der Nordseeküste (Supralitoral); Salzgrünland, Brackwasserröhrichte und -Hochstaudenfluren des Geolitorals der Ostseeküste; Schneeböden, Schneetälchen; Stehende Gewässer; Steinschutthalden und Schotterflächen der subalpinen bis alpinen Stufe; Sände, Sand-, Geröll- und Blockstrände; Stauden- und Lägerfluren der hochmontanen bis alpinen Stufe; Subalpine Wälder; Trockenrasen sowie Grünland trockener bis frischer Standorte; Verkehrsanlagen und Plätze; Wald- und Ufersäume, Staudenfluren; Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte; Waldmäntel und Vorwälder, spezielle Waldnutzungsformen; Zwergstrauchheiden; Zwergstrauchheiden der subalpinen bis alpinen Stufe; Äcker und Ackerbrachen
