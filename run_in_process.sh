@@ -63,16 +63,26 @@ export DEFAULT_RUN_BASE_DIR="/netscratch/$USER/tmp"
 # Resolve repo root
 REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 
-# Optional: sync remote refs before submitting
+# Optional: sync remote refs before submitting (ensures origin/<branch> etc. are up to date)
 if [[ "$SYNC_REMOTE" == "1" ]]; then
-  echo ">>> git fetch (submit node) in $REPO_ROOT"
-  git -C "$REPO_ROOT" fetch --prune --tags
+  echo ">>> Syncing git refs (git fetch --prune --tags) in $REPO_ROOT"
+  if ! git -C "$REPO_ROOT" fetch --prune --tags; then
+    echo "ERROR: git fetch failed (likely missing credentials / broken ssh-agent forwarding)." >&2
+    echo "       SSH_AUTH_SOCK=${SSH_AUTH_SOCK:-<unset>}" >&2
+    echo "       Check: ssh-add -l   and   ssh -T git@github.com" >&2
+    echo "       Tip: inside screen, SSH_AUTH_SOCK is often stale; start a new screen or update SSH_AUTH_SOCK." >&2
+    exit 2
+  fi
 fi
 
 # Validate ref early (fail before allocating GPUs)
 if [[ -n "$GIT_REF" ]]; then
-  git -C "$REPO_ROOT" rev-parse --verify "$GIT_REF^{commit}" >/dev/null \
-    || { echo "ERROR: GIT_REF '$GIT_REF' is not a valid commit-ish in $REPO_ROOT"; exit 2; }
+  echo ">>> Validating git ref: $GIT_REF"
+  if ! git -C "$REPO_ROOT" rev-parse --verify "$GIT_REF^{commit}" >/dev/null; then
+    echo "ERROR: GIT_REF '$GIT_REF' is not a valid commit-ish in $REPO_ROOT" >&2
+    echo "       Tip: run with --sync-remote if you reference origin/<branch> and it's not fetched locally yet." >&2
+    exit 2
+  fi
 fi
 
 # use uuid to prevent job collision
