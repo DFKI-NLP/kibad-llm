@@ -123,9 +123,17 @@ job(){
 
         # Local, fast clone sharing objects with original repo (no network needed)
         git clone --shared --no-checkout "$REPO_ROOT" "$SNAP_DIR"
-        git -C "$SNAP_DIR" checkout --detach "$GIT_REF"
 
-        echo ">>> Snapshot commit: $(git -C "$SNAP_DIR" rev-parse HEAD)"
+        # Resolve ref to a commit and check out a local branch (avoids detached HEAD)
+        TARGET_COMMIT="$(git -C "$SNAP_DIR" rev-parse "$GIT_REF^{commit}")"
+        BRANCH_LABEL="$GIT_REF"
+        if [[ "$GIT_REF" =~ ^[0-9a-fA-F]{7,40}$ ]]; then
+          BRANCH_LABEL="commit/${GIT_REF:0:12}"
+        fi
+        git -C "$SNAP_DIR" checkout -B "$BRANCH_LABEL" "$TARGET_COMMIT"
+
+        echo ">>> Snapshot commit: $TARGET_COMMIT"
+        echo ">>> Snapshot branch: $BRANCH_LABEL"
 
         # Recreate top-level symlinks (e.g., data -> /netscratch/...)
         # If you need nested symlinks too, increase -maxdepth.
