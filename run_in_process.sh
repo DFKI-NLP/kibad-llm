@@ -93,6 +93,7 @@ fi
 echo "============================================="
 
 job(){
+    # Safer bash: exit on error/unset var, and propagate failures through pipes
     set -euo pipefail
 
     # Make these available inside the srun/bash -c environment
@@ -138,6 +139,7 @@ job(){
     echo ">>> DONE WITH UV"
 }
 
+# Export the 'job' bash function so it is available in the new shell started by `srun ... bash -c job`.
 export -f job
 
 # Export needed vars for the srun environment
