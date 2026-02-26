@@ -152,12 +152,13 @@ job(){
 
         # Copy top-level *.env files (often untracked local config needed at runtime)
         (
-          # Avoid the literal pattern "*.env" when there are no matches.
+          # Avoid the literal pattern when there are no matches.
           shopt -s nullglob
-          for envfile in "$REPO_ROOT"/*.env; do
+          for envfile in "$REPO_ROOT"/.env "$REPO_ROOT"/.*.env "$REPO_ROOT"/*.env; do
             base="$(basename "$envfile")"
             # Avoid overwriting env files that are tracked and already present in the snapshot.
             if [[ ! -e "$SNAP_DIR/$base" ]]; then
+              echo ">>> Copying local env file to snapshot: $base"
               # Preserve timestamps/permissions.
               cp -p "$envfile" "$SNAP_DIR/$base"
             fi
