@@ -1,0 +1,5 @@
+- name=380_organism_trends
+- experiment/predict=organism_trends_with_evidence
+- pdf_directory=/ds/text/kiba-d/dev-set-Wald-WVC
+- extractor/llm=mistral_small_3_24b_in_process
+- seed=1337
