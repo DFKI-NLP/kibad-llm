@@ -150,6 +150,20 @@ job(){
           fi
         done < <(find "$REPO_ROOT" -maxdepth 1 -type l -print0)
 
+        # Copy top-level *.env files (often untracked local config needed at runtime)
+        (
+          # Avoid the literal pattern "*.env" when there are no matches.
+          shopt -s nullglob
+          for envfile in "$REPO_ROOT"/*.env; do
+            base="$(basename "$envfile")"
+            # Avoid overwriting env files that are tracked and already present in the snapshot.
+            if [[ ! -e "$SNAP_DIR/$base" ]]; then
+              # Preserve timestamps/permissions.
+              cp -p "$envfile" "$SNAP_DIR/$base"
+            fi
+          done
+        )
+
         cd "$SNAP_DIR"
     else
         echo ">>> No --ref provided; running from current working tree at: $REPO_ROOT"
