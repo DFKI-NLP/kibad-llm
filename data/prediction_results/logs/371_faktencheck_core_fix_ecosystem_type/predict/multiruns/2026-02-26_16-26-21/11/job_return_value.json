@@ -1,0 +1,12 @@
+{
+  "output_file": "predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-26_16-26-21/2026-02-26_22-22-09_012539/predictions.jsonl",
+  "output_file_absolute": "/netscratch/binder/tmp/kiba-d_16a42684-7242-404e-9e24-7cdc4b57f9af/repo/predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-26_16-26-21/2026-02-26_22-22-09_012539/predictions.jsonl",
+  "time_pdf_conversion": 0.0026509049348533154,
+  "time_extraction": 2438.5263869520277,
+  "time_start": 1772140929,
+  "time_end": 1772143428,
+  "commit_hash": "cc6c56a0c1fa49a67bf1c5daf7837df557271cb3",
+  "branch": "commit/cc6c56a0c1fa",
+  "is_dirty": false,
+  "slurm_job_id": "2581544"
+}

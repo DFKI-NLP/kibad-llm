@@ -1,0 +1,230 @@
+{
+  "extractor/llm=gpt_oss_20b_in_process#seed=42": {
+    "output_file": "predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-26_16-26-21/2026-02-26_16-26-22_645321/predictions.jsonl",
+    "output_file_absolute": "/netscratch/binder/tmp/kiba-d_16a42684-7242-404e-9e24-7cdc4b57f9af/repo/predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-26_16-26-21/2026-02-26_16-26-22_645321/predictions.jsonl",
+    "time_pdf_conversion": 0.0030725831165909767,
+    "time_extraction": 1448.5961993508972,
+    "time_start": 1772119582,
+    "time_end": 1772121257,
+    "commit_hash": "cc6c56a0c1fa49a67bf1c5daf7837df557271cb3",
+    "branch": "commit/cc6c56a0c1fa",
+    "is_dirty": false,
+    "slurm_job_id": "2581544",
+    "overrides": {
+      "name": "371_faktencheck_core_fix_ecosystem_type",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gpt_oss_20b_in_process",
+      "seed": "42"
+    }
+  },
+  "extractor/llm=gpt_oss_20b_in_process#seed=1337": {
+    "output_file": "predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-26_16-26-21/2026-02-26_16-54-17_994830/predictions.jsonl",
+    "output_file_absolute": "/netscratch/binder/tmp/kiba-d_16a42684-7242-404e-9e24-7cdc4b57f9af/repo/predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-26_16-26-21/2026-02-26_16-54-17_994830/predictions.jsonl",
+    "time_pdf_conversion": 0.008380676852539182,
+    "time_extraction": 1478.8956636749208,
+    "time_start": 1772121257,
+    "time_end": 1772122783,
+    "commit_hash": "cc6c56a0c1fa49a67bf1c5daf7837df557271cb3",
+    "branch": "commit/cc6c56a0c1fa",
+    "is_dirty": false,
+    "slurm_job_id": "2581544",
+    "overrides": {
+      "name": "371_faktencheck_core_fix_ecosystem_type",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gpt_oss_20b_in_process",
+      "seed": "1337"
+    }
+  },
+  "extractor/llm=gpt_oss_20b_in_process#seed=7331": {
+    "output_file": "predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-26_16-26-21/2026-02-26_17-19-43_911513/predictions.jsonl",
+    "output_file_absolute": "/netscratch/binder/tmp/kiba-d_16a42684-7242-404e-9e24-7cdc4b57f9af/repo/predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-26_16-26-21/2026-02-26_17-19-43_911513/predictions.jsonl",
+    "time_pdf_conversion": 0.002788322977721691,
+    "time_extraction": 1367.9291558309924,
+    "time_start": 1772122783,
+    "time_end": 1772124197,
+    "commit_hash": "cc6c56a0c1fa49a67bf1c5daf7837df557271cb3",
+    "branch": "commit/cc6c56a0c1fa",
+    "is_dirty": false,
+    "slurm_job_id": "2581544",
+    "overrides": {
+      "name": "371_faktencheck_core_fix_ecosystem_type",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gpt_oss_20b_in_process",
+      "seed": "7331"
+    }
+  },
+  "extractor/llm=gemma3_27b_in_process#seed=42": {
+    "output_file": "predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-26_16-26-21/2026-02-26_17-43-18_268045/predictions.jsonl",
+    "output_file_absolute": "/netscratch/binder/tmp/kiba-d_16a42684-7242-404e-9e24-7cdc4b57f9af/repo/predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-26_16-26-21/2026-02-26_17-43-18_268045/predictions.jsonl",
+    "time_pdf_conversion": 0.006045651854947209,
+    "time_extraction": 1064.4448045350146,
+    "time_start": 1772124198,
+    "time_end": 1772125418,
+    "commit_hash": "cc6c56a0c1fa49a67bf1c5daf7837df557271cb3",
+    "branch": "commit/cc6c56a0c1fa",
+    "is_dirty": false,
+    "slurm_job_id": "2581544",
+    "overrides": {
+      "name": "371_faktencheck_core_fix_ecosystem_type",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gemma3_27b_in_process",
+      "seed": "42"
+    }
+  },
+  "extractor/llm=gemma3_27b_in_process#seed=1337": {
+    "output_file": "predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-26_16-26-21/2026-02-26_18-03-38_666762/predictions.jsonl",
+    "output_file_absolute": "/netscratch/binder/tmp/kiba-d_16a42684-7242-404e-9e24-7cdc4b57f9af/repo/predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-26_16-26-21/2026-02-26_18-03-38_666762/predictions.jsonl",
+    "time_pdf_conversion": 0.006915801204741001,
+    "time_extraction": 1283.5572202659678,
+    "time_start": 1772125418,
+    "time_end": 1772126792,
+    "commit_hash": "cc6c56a0c1fa49a67bf1c5daf7837df557271cb3",
+    "branch": "commit/cc6c56a0c1fa",
+    "is_dirty": false,
+    "slurm_job_id": "2581544",
+    "overrides": {
+      "name": "371_faktencheck_core_fix_ecosystem_type",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gemma3_27b_in_process",
+      "seed": "1337"
+    }
+  },
+  "extractor/llm=gemma3_27b_in_process#seed=7331": {
+    "output_file": "predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-26_16-26-21/2026-02-26_18-26-32_284206/predictions.jsonl",
+    "output_file_absolute": "/netscratch/binder/tmp/kiba-d_16a42684-7242-404e-9e24-7cdc4b57f9af/repo/predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-26_16-26-21/2026-02-26_18-26-32_284206/predictions.jsonl",
+    "time_pdf_conversion": 0.0030128611251711845,
+    "time_extraction": 1205.3980577900074,
+    "time_start": 1772126792,
+    "time_end": 1772128081,
+    "commit_hash": "cc6c56a0c1fa49a67bf1c5daf7837df557271cb3",
+    "branch": "commit/cc6c56a0c1fa",
+    "is_dirty": false,
+    "slurm_job_id": "2581544",
+    "overrides": {
+      "name": "371_faktencheck_core_fix_ecosystem_type",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gemma3_27b_in_process",
+      "seed": "7331"
+    }
+  },
+  "extractor/llm=qwen3_30b_in_process#seed=42": {
+    "output_file": "predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-26_16-26-21/2026-02-26_18-48-01_984952/predictions.jsonl",
+    "output_file_absolute": "/netscratch/binder/tmp/kiba-d_16a42684-7242-404e-9e24-7cdc4b57f9af/repo/predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-26_16-26-21/2026-02-26_18-48-01_984952/predictions.jsonl",
+    "time_pdf_conversion": 0.0047208648175001144,
+    "time_extraction": 2342.8046176210046,
+    "time_start": 1772128081,
+    "time_end": 1772130595,
+    "commit_hash": "cc6c56a0c1fa49a67bf1c5daf7837df557271cb3",
+    "branch": "commit/cc6c56a0c1fa",
+    "is_dirty": false,
+    "slurm_job_id": "2581544",
+    "overrides": {
+      "name": "371_faktencheck_core_fix_ecosystem_type",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "qwen3_30b_in_process",
+      "seed": "42"
+    }
+  },
+  "extractor/llm=qwen3_30b_in_process#seed=1337": {
+    "output_file": "predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-26_16-26-21/2026-02-26_19-29-55_388022/predictions.jsonl",
+    "output_file_absolute": "/netscratch/binder/tmp/kiba-d_16a42684-7242-404e-9e24-7cdc4b57f9af/repo/predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-26_16-26-21/2026-02-26_19-29-55_388022/predictions.jsonl",
+    "time_pdf_conversion": 0.0031658660154789686,
+    "time_extraction": 2629.7098357258365,
+    "time_start": 1772130595,
+    "time_end": 1772133305,
+    "commit_hash": "cc6c56a0c1fa49a67bf1c5daf7837df557271cb3",
+    "branch": "commit/cc6c56a0c1fa",
+    "is_dirty": false,
+    "slurm_job_id": "2581544",
+    "overrides": {
+      "name": "371_faktencheck_core_fix_ecosystem_type",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "qwen3_30b_in_process",
+      "seed": "1337"
+    }
+  },
+  "extractor/llm=qwen3_30b_in_process#seed=7331": {
+    "output_file": "predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-26_16-26-21/2026-02-26_20-15-05_791409/predictions.jsonl",
+    "output_file_absolute": "/netscratch/binder/tmp/kiba-d_16a42684-7242-404e-9e24-7cdc4b57f9af/repo/predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-26_16-26-21/2026-02-26_20-15-05_791409/predictions.jsonl",
+    "time_pdf_conversion": 0.0028370069339871407,
+    "time_extraction": 2476.7342123431154,
+    "time_start": 1772133305,
+    "time_end": 1772135848,
+    "commit_hash": "cc6c56a0c1fa49a67bf1c5daf7837df557271cb3",
+    "branch": "commit/cc6c56a0c1fa",
+    "is_dirty": false,
+    "slurm_job_id": "2581544",
+    "overrides": {
+      "name": "371_faktencheck_core_fix_ecosystem_type",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "qwen3_30b_in_process",
+      "seed": "7331"
+    }
+  },
+  "extractor/llm=mistral_small_3_24b_in_process#seed=42": {
+    "output_file": "predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-26_16-26-21/2026-02-26_20-57-28_347147/predictions.jsonl",
+    "output_file_absolute": "/netscratch/binder/tmp/kiba-d_16a42684-7242-404e-9e24-7cdc4b57f9af/repo/predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-26_16-26-21/2026-02-26_20-57-28_347147/predictions.jsonl",
+    "time_pdf_conversion": 0.002585024805739522,
+    "time_extraction": 2431.63412806415,
+    "time_start": 1772135848,
+    "time_end": 1772138426,
+    "commit_hash": "cc6c56a0c1fa49a67bf1c5daf7837df557271cb3",
+    "branch": "commit/cc6c56a0c1fa",
+    "is_dirty": false,
+    "slurm_job_id": "2581544",
+    "overrides": {
+      "name": "371_faktencheck_core_fix_ecosystem_type",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "mistral_small_3_24b_in_process",
+      "seed": "42"
+    }
+  },
+  "extractor/llm=mistral_small_3_24b_in_process#seed=1337": {
+    "output_file": "predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-26_16-26-21/2026-02-26_21-40-26_535689/predictions.jsonl",
+    "output_file_absolute": "/netscratch/binder/tmp/kiba-d_16a42684-7242-404e-9e24-7cdc4b57f9af/repo/predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-26_16-26-21/2026-02-26_21-40-26_535689/predictions.jsonl",
+    "time_pdf_conversion": 0.002645594999194145,
+    "time_extraction": 2439.442114160862,
+    "time_start": 1772138426,
+    "time_end": 1772140928,
+    "commit_hash": "cc6c56a0c1fa49a67bf1c5daf7837df557271cb3",
+    "branch": "commit/cc6c56a0c1fa",
+    "is_dirty": false,
+    "slurm_job_id": "2581544",
+    "overrides": {
+      "name": "371_faktencheck_core_fix_ecosystem_type",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "mistral_small_3_24b_in_process",
+      "seed": "1337"
+    }
+  },
+  "extractor/llm=mistral_small_3_24b_in_process#seed=7331": {
+    "output_file": "predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-26_16-26-21/2026-02-26_22-22-09_012539/predictions.jsonl",
+    "output_file_absolute": "/netscratch/binder/tmp/kiba-d_16a42684-7242-404e-9e24-7cdc4b57f9af/repo/predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-26_16-26-21/2026-02-26_22-22-09_012539/predictions.jsonl",
+    "time_pdf_conversion": 0.0026509049348533154,
+    "time_extraction": 2438.5263869520277,
+    "time_start": 1772140929,
+    "time_end": 1772143428,
+    "commit_hash": "cc6c56a0c1fa49a67bf1c5daf7837df557271cb3",
+    "branch": "commit/cc6c56a0c1fa",
+    "is_dirty": false,
+    "slurm_job_id": "2581544",
+    "overrides": {
+      "name": "371_faktencheck_core_fix_ecosystem_type",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "mistral_small_3_24b_in_process",
+      "seed": "7331"
+    }
+  }
+}
