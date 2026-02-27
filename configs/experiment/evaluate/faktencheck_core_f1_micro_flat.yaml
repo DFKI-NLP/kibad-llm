@@ -17,6 +17,7 @@ metric:
    - habitat
    - biodiversity_level
    - ecosystem_type.term
+   - ecosystem_type.category
    - taxa.german_name
    - taxa.scientific_name
    - taxa.species_group
