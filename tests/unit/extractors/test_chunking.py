@@ -14,9 +14,7 @@ def test_pdf_as_md_bmten2fg() -> None:
     document_from_pdf = read_pdf_as_markdown_via_pymupdf4llm(
         "BMTEN2FG.pdf", Path("./tests/fixtures/pdfs_error/chunking_fail/")
     )
-    document_from_md = Path(
-        "./tests/fixtures/pdfs_error/chunking_fail/BMTEN2FG.md"
-    ).read_text()
+    document_from_md = Path("./tests/fixtures/pdfs_error/chunking_fail/BMTEN2FG.md").read_text()
     assert document_from_md == document_from_pdf
 
 
@@ -25,9 +23,7 @@ def test_chunking_timout() -> None:
     Chunking it should trigger a timeout, returning None.
     """
 
-    document_from_md = Path(
-        "./tests/fixtures/pdfs_error/chunking_fail/BMTEN2FG.md"
-    ).read_text()
+    document_from_md = Path("./tests/fixtures/pdfs_error/chunking_fail/BMTEN2FG.md").read_text()
 
     assert (
         _document_chunk_iterator(

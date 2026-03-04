@@ -18,7 +18,8 @@ def _document_chunk_iterator(
     max_char_buffer: int,
     tokenizer: tokenizer_lib.Tokenizer | None,
     stride: int,
-) -> tuple[core.TextChunk]:
+    chunking_timout: int,
+) -> tuple[core.TextChunk] | None:
     """Iterates over documents to yield text chunks along with the document ID.
 
     Args:
@@ -35,14 +36,20 @@ def _document_chunk_iterator(
         is visited more than once. Valid documents prior to the error will be
         returned.
     """
-    return tuple(
-        core.ChunkIterator(
-            document,
-            max_char_buffer=max_char_buffer,
-            tokenizer_impl=tokenizer or tokenizer_lib.RegexTokenizer(),
-            stride=stride,
-        )
-    )
+    try:
+        with Pool(1) as p:
+            return p.apply_async(
+                tuple,
+                core.ChunkIterator(
+                    document,
+                    max_char_buffer=max_char_buffer,
+                    tokenizer_impl=tokenizer or tokenizer_lib.RegexTokenizer(),
+                    stride=stride,
+                ),
+            ).get(timeout=chunking_timout)
+    except TimeoutError:
+        logger.warning(f"skipping {document} due to chunking timeout")
+        return None
 
 
 class ChunkingExtractor:
@@ -98,32 +105,28 @@ class ChunkingExtractor:
             "truncate_user_message_formatted": None,
         }
 
-        try:
-            with Pool(1) as p:
-                chunks = p.apply_async(
-                    _document_chunk_iterator,
-                    (
-                        args[0],
-                        self.max_char_buffer,
-                        self.tokenizer,
-                        self.stride,
-                    ),
-                ).get(timeout=self.chunking_timout)
-        except TimeoutError:
-            logger.warning(f"skipping {args[-1]} due to chunking timeout")
+        chunks = _document_chunk_iterator(
+            args[0],
+            self.max_char_buffer,
+            self.tokenizer,
+            self.stride,
+            self.chunking_timout,
+        )
+
+        if chunks is None:
             return dict()
 
         if self.default_kwargs.get("llm", dict()) == dict():
-            logging.info(
-                f"{str(len(chunks)).rjust(4, ' ')} chunks in document {args[-1]}"
-            )
+            logging.info(f"{str(len(chunks)).rjust(4, ' ')} chunks in document {args[-1]}")
             return dict()
 
         results = []
         if self.verbose:
             logger.info(f"starting processing for text {args[-1]}")
             logger.info(args[0])
-            chunks = tqdm(chunks, desc=args[-1])
+            # wrapping in tqdm doesn't change the functionality but upsets mypy.
+            # hence we need the '# type: ignore' comment
+            chunks = tqdm(chunks, desc=args[-1])  # type: ignore
         for i, chunk in enumerate(chunks):
 
             current_kwargs["text_id"] = f"{args[-1]}_chunk_{i}"
