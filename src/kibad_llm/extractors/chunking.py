@@ -37,15 +37,16 @@ def _document_chunk_iterator(
         returned.
     """
     try:
+        chunks =  core.ChunkIterator(
+            document,
+            max_char_buffer=max_char_buffer,
+            tokenizer_impl=tokenizer or tokenizer_lib.RegexTokenizer(),
+            stride=stride,
+        )
         with Pool(1) as p:
             return p.apply_async(
-                tuple,
-                core.ChunkIterator(
-                    document,
-                    max_char_buffer=max_char_buffer,
-                    tokenizer_impl=tokenizer or tokenizer_lib.RegexTokenizer(),
-                    stride=stride,
-                ),
+                func=tuple,
+                args=(chunks,)
             ).get(timeout=chunking_timout)
     except TimeoutError:
         logger.warning(f"skipping {document} due to chunking timeout")
