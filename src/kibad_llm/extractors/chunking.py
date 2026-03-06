@@ -6,7 +6,7 @@ from typing import Any
 from tqdm import tqdm
 
 from .aggregation_utils import Aggregator
-from .base import extract_from_text_lenient, exception2error_msg
+from .base import exception2error_msg, extract_from_text_lenient
 from .chunking_utils import core
 from .chunking_utils import tokenizers as tokenizer_lib
 
@@ -32,23 +32,20 @@ def _document_chunk_iterator(
       TextChunk containing document ID for a corresponding document.
 
     Raises:
-      TimeoutError: If the chunks cannot be returned within the timeout, 
+      TimeoutError: If the chunks cannot be returned within the timeout,
         a TimeoutError is raised
       InvalidDocumentError: If restrict_repeats is True and the same document ID
         is visited more than once. Valid documents prior to the error will be
         returned.
     """
-    chunks =  core.ChunkIterator(
+    chunks = core.ChunkIterator(
         document,
         max_char_buffer=max_char_buffer,
         tokenizer_impl=tokenizer or tokenizer_lib.RegexTokenizer(),
         stride=stride,
     )
     with Pool(1) as p:
-        return p.apply_async(
-            func=tuple,
-            args=(chunks,)
-        ).get(timeout=chunking_timout)
+        return p.apply_async(func=tuple, args=(chunks,)).get(timeout=chunking_timout)
 
 
 class ChunkingExtractor:
@@ -121,7 +118,7 @@ class ChunkingExtractor:
                 self.chunking_timout,
             )
         except TimeoutError as e:
-            out = dict()
+            out: dict[str, Any] = dict()
             error_msg_short, error_msg_long = exception2error_msg(e)
             show_msg = f"Failed to process document {text_id}: {error_msg_short}"
             # if we have response content, include a snippet for better debugging
