@@ -18,7 +18,7 @@ def _document_chunk_iterator(
     max_char_buffer: int,
     tokenizer: tokenizer_lib.Tokenizer | None,
     stride: int,
-    chunking_timout: int,
+    chunking_timeout: int,
 ) -> tuple[core.TextChunk, ...]:
     """Iterates over documents to yield text chunks along with the document ID.
 
@@ -45,7 +45,7 @@ def _document_chunk_iterator(
         stride=stride,
     )
     with Pool(1) as p:
-        return p.apply_async(func=tuple, args=(chunks,)).get(timeout=chunking_timout)
+        return p.apply_async(func=tuple, args=(chunks,)).get(timeout=chunking_timeout)
 
 
 class ChunkingExtractor:
@@ -78,7 +78,7 @@ class ChunkingExtractor:
         stride: int = 1000,
         stride_factor: float | None = None,
         verbose: bool = False,
-        chunking_timout: int = 3600,
+        chunking_timeout: int = 3600,
         **kwargs,
     ):
         self.aggregator = aggregator
@@ -91,7 +91,7 @@ class ChunkingExtractor:
         else:
             self.stride = stride
         self.verbose = verbose
-        self.chunking_timout = chunking_timout
+        self.chunking_timeout = chunking_timeout
 
     def __call__(self, *args, **kwargs) -> dict[str, Any]:
         text = kwargs.pop("text", None)
@@ -115,15 +115,18 @@ class ChunkingExtractor:
                 self.max_char_buffer,
                 self.tokenizer,
                 self.stride,
-                self.chunking_timout,
+                self.chunking_timeout,
             )
         except TimeoutError as e:
             out: dict[str, Any] = dict()
             error_msg_short, error_msg_long = exception2error_msg(e)
             show_msg = f"Failed to process document {text_id}: {error_msg_short}"
             # if we have response content, include a snippet for better debugging
-            out["errors"].append(error_msg_short)
-            out["errors_long"].append(error_msg_long)
+            out["structured"] = dict()  # TODO: doublecheck
+            out["errors"] = error_msg_short
+            out["errors_long"] = error_msg_long
+            out["errors_list"] = list()  # TODO: doublecheck
+            out["reasoning_content_list"] = list()  # TODO: doublecheck
             return out
 
         if self.default_kwargs.get("llm", dict()) == dict():

@@ -21,7 +21,7 @@ def test_pdf_as_md_bmten2fg() -> None:
     assert document_from_md == document_from_pdf
 
 
-def test_chunking_timout() -> None:
+def test_chunking_timeout() -> None:
     """BMTEN2FG.md is known to be very slow to chunk.
     Chunking it should trigger a timeout, returning None.
     """
