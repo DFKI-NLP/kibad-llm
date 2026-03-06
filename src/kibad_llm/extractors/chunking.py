@@ -6,7 +6,7 @@ from typing import Any
 from tqdm import tqdm
 
 from .aggregation_utils import Aggregator
-from .base import extract_from_text_lenient
+from .base import extract_from_text_lenient, exception2error_msg
 from .chunking_utils import core
 from .chunking_utils import tokenizers as tokenizer_lib
 
@@ -19,7 +19,7 @@ def _document_chunk_iterator(
     tokenizer: tokenizer_lib.Tokenizer | None,
     stride: int,
     chunking_timout: int,
-) -> tuple[core.TextChunk] | None:
+) -> tuple[core.TextChunk, ...]:
     """Iterates over documents to yield text chunks along with the document ID.
 
     Args:
@@ -32,25 +32,23 @@ def _document_chunk_iterator(
       TextChunk containing document ID for a corresponding document.
 
     Raises:
+      TimeoutError: If the chunks cannot be returned within the timeout, 
+        a TimeoutError is raised
       InvalidDocumentError: If restrict_repeats is True and the same document ID
         is visited more than once. Valid documents prior to the error will be
         returned.
     """
-    try:
-        chunks =  core.ChunkIterator(
-            document,
-            max_char_buffer=max_char_buffer,
-            tokenizer_impl=tokenizer or tokenizer_lib.RegexTokenizer(),
-            stride=stride,
-        )
-        with Pool(1) as p:
-            return p.apply_async(
-                func=tuple,
-                args=(chunks,)
-            ).get(timeout=chunking_timout)
-    except TimeoutError:
-        logger.warning(f"skipping {document} due to chunking timeout")
-        return None
+    chunks =  core.ChunkIterator(
+        document,
+        max_char_buffer=max_char_buffer,
+        tokenizer_impl=tokenizer or tokenizer_lib.RegexTokenizer(),
+        stride=stride,
+    )
+    with Pool(1) as p:
+        return p.apply_async(
+            func=tuple,
+            args=(chunks,)
+        ).get(timeout=chunking_timout)
 
 
 class ChunkingExtractor:
@@ -99,6 +97,14 @@ class ChunkingExtractor:
         self.chunking_timout = chunking_timout
 
     def __call__(self, *args, **kwargs) -> dict[str, Any]:
+        text = kwargs.pop("text", None)
+        if text is None:
+            text = args[0]
+
+        text_id = kwargs.pop("text_id", None)
+        if text_id is None:
+            text_id = args[-1]
+
         combined_kwargs = {**self.default_kwargs, **kwargs}
         current_kwargs = {
             **combined_kwargs,
@@ -106,16 +112,22 @@ class ChunkingExtractor:
             "truncate_user_message_formatted": None,
         }
 
-        chunks = _document_chunk_iterator(
-            args[0],
-            self.max_char_buffer,
-            self.tokenizer,
-            self.stride,
-            self.chunking_timout,
-        )
-
-        if chunks is None:
-            return dict()
+        try:
+            chunks = _document_chunk_iterator(
+                text,
+                self.max_char_buffer,
+                self.tokenizer,
+                self.stride,
+                self.chunking_timout,
+            )
+        except TimeoutError as e:
+            out = dict()
+            error_msg_short, error_msg_long = exception2error_msg(e)
+            show_msg = f"Failed to process document {text_id}: {error_msg_short}"
+            # if we have response content, include a snippet for better debugging
+            out["errors"].append(error_msg_short)
+            out["errors_long"].append(error_msg_long)
+            return out
 
         if self.default_kwargs.get("llm", dict()) == dict():
             logging.info(f"{str(len(chunks)).rjust(4, ' ')} chunks in document {args[-1]}")
@@ -123,14 +135,14 @@ class ChunkingExtractor:
 
         results = []
         if self.verbose:
-            logger.info(f"starting processing for text {args[-1]}")
-            logger.info(args[0])
+            logger.info(f"starting processing for text {text_id}")
+            logger.info(text)
             # wrapping in tqdm doesn't change the functionality but upsets mypy.
             # hence we need the '# type: ignore' comment
-            chunks = tqdm(chunks, desc=args[-1])  # type: ignore
+            chunks = tqdm(chunks, desc=text_id)  # type: ignore
         for i, chunk in enumerate(chunks):
 
-            current_kwargs["text_id"] = f"{args[-1]}_chunk_{i}"
+            current_kwargs["text_id"] = f"{text_id}_chunk_{i}"
             current_kwargs.update(
                 {
                     "augment_metadata_kwargs": {

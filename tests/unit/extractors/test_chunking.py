@@ -1,4 +1,6 @@
 from pathlib import Path
+import pytest
+from multiprocessing.context import TimeoutError
 
 from kibad_llm.extractors.chunking import _document_chunk_iterator
 from kibad_llm.extractors.chunking_utils import RegexTokenizer
@@ -25,7 +27,7 @@ def test_chunking_timout() -> None:
 
     document_from_md = Path("./tests/fixtures/pdfs_error/chunking_fail/BMTEN2FG.md").read_text()
 
-    assert (
+    with pytest.raises(TimeoutError) as e_info:
         _document_chunk_iterator(
             document_from_md,
             20000,
@@ -33,5 +35,3 @@ def test_chunking_timout() -> None:
             1000,
             10,
         )
-        is None
-    )
