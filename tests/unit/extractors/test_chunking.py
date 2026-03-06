@@ -1,6 +1,7 @@
-from pathlib import Path
-import pytest
 from multiprocessing.context import TimeoutError
+from pathlib import Path
+
+import pytest
 
 from kibad_llm.extractors.chunking import _document_chunk_iterator
 from kibad_llm.extractors.chunking_utils import RegexTokenizer
