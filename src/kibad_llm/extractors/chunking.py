@@ -6,7 +6,7 @@ from typing import Any
 from tqdm import tqdm
 
 from .aggregation_utils import Aggregator
-from .base import exception2error_msg, extract_from_text_lenient
+from .base import SingleExtractionResult, exception2error_msg, extract_from_text_lenient
 from .chunking_utils import core
 from .chunking_utils import tokenizers as tokenizer_lib
 
@@ -118,20 +118,28 @@ class ChunkingExtractor:
                 self.chunking_timeout,
             )
         except TimeoutError as e:
-            out: dict[str, Any] = dict()
+            logger.error(f"document {text_id} timed out during chunking")
+            out = SingleExtractionResult()
             error_msg_short, error_msg_long = exception2error_msg(e)
-            show_msg = f"Failed to process document {text_id}: {error_msg_short}"
-            # if we have response content, include a snippet for better debugging
-            out["structured"] = dict()  # TODO: doublecheck
-            out["errors"] = error_msg_short
-            out["errors_long"] = error_msg_long
-            out["errors_list"] = list()  # TODO: doublecheck
-            out["reasoning_content_list"] = list()  # TODO: doublecheck
-            return out
+            out["errors"].append(error_msg_short)
+            out["errors_long"].append(error_msg_long)
+
+            err_result: dict[str, Any] = {
+                "structured": out.structured,
+            }
+            for field in self.return_as_list:
+                err_result[f"{field}_list"] = [out.get(field, None)]
+            return err_result
 
         if self.default_kwargs.get("llm", dict()) == dict():
             logging.info(f"{str(len(chunks)).rjust(4, ' ')} chunks in document {args[-1]}")
-            return dict()
+            out = SingleExtractionResult()
+            empty_result: dict[str, Any] = {
+                "structured": out.structured,
+            }
+            for field in self.return_as_list:
+                empty_result[f"{field}_list"] = [out.get(field, None)]
+            return empty_result
 
         results = []
         if self.verbose:
