@@ -1,0 +1,12 @@
+{
+  "output_file": "predictions/282_faktencheck_core_v1_for_chunking/2026-03-06_15-59-25/2026-03-06_23-33-23_835428/predictions.jsonl",
+  "output_file_absolute": "/home/hmeinhof/programming/kiba/predictions/282_faktencheck_core_v1_for_chunking/2026-03-06_15-59-25/2026-03-06_23-33-23_835428/predictions.jsonl",
+  "time_pdf_conversion": 0.002900082152336836,
+  "time_extraction": 27215.01545339008,
+  "time_start": 1772836403,
+  "time_end": 1772863685,
+  "commit_hash": "1501df109f57d69925494f939b999602ec48af66",
+  "branch": "feat/chunking-extractor",
+  "is_dirty": false,
+  "slurm_job_id": "2604133"
+}

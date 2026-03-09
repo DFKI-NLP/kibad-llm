@@ -1,0 +1,4 @@
+- dataset.predictions.log=logs/282_faktencheck_core_v1_for_chunking/predict/multiruns/2026-03-06_15-59-25/0
+- name=282_faktencheck_core_v1_for_chunking
+- experiment/evaluate=faktencheck_core_f1_micro_flat
+- prediction_logs=logs/282_faktencheck_core_v1_for_chunking/predict/multiruns/2026-03-06_15-59-25/
