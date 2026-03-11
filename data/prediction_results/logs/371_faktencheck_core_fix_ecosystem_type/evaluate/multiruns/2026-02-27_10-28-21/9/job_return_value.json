@@ -1,0 +1,77 @@
+{
+  "biodiversity_level": {
+    "precision": 0.3275862068965517,
+    "recall": 0.2835820895522388,
+    "f1": 0.304,
+    "support": 67
+  },
+  "ecosystem_type.category": {
+    "precision": 0.4666666666666667,
+    "recall": 0.6086956521739131,
+    "f1": 0.5283018867924527,
+    "support": 46
+  },
+  "ecosystem_type.term": {
+    "precision": 0.24691358024691357,
+    "recall": 0.37735849056603776,
+    "f1": 0.2985074626865672,
+    "support": 53
+  },
+  "habitat": {
+    "precision": 0.7368421052631579,
+    "recall": 0.4057971014492754,
+    "f1": 0.5233644859813084,
+    "support": 138
+  },
+  "taxa.german_name": {
+    "precision": 0.2524271844660194,
+    "recall": 0.11255411255411256,
+    "f1": 0.15568862275449102,
+    "support": 231
+  },
+  "taxa.scientific_name": {
+    "precision": 0.3673469387755102,
+    "recall": 0.18274111675126903,
+    "f1": 0.24406779661016945,
+    "support": 197
+  },
+  "taxa.species_group": {
+    "precision": 0.5853658536585366,
+    "recall": 0.4528301886792453,
+    "f1": 0.5106382978723404,
+    "support": 106
+  },
+  "AVG": {
+    "precision": 0.4261640765676223,
+    "recall": 0.3462226788180131,
+    "f1": 0.36636693609961846,
+    "support": 119.71428571428571
+  },
+  "ALL": {
+    "precision": 0.4175627240143369,
+    "recall": 0.27804295942720764,
+    "f1": 0.33381088825214905,
+    "support": 838
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-26_16-26-21/2026-02-26_19-29-55_388022/predictions.jsonl",
+      "output_file_absolute": "/netscratch/binder/tmp/kiba-d_16a42684-7242-404e-9e24-7cdc4b57f9af/repo/predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-26_16-26-21/2026-02-26_19-29-55_388022/predictions.jsonl",
+      "time_pdf_conversion": 0.0031658660154789686,
+      "time_extraction": 2629.7098357258365,
+      "time_start": 1772130595,
+      "time_end": 1772133305,
+      "commit_hash": "cc6c56a0c1fa49a67bf1c5daf7837df557271cb3",
+      "branch": "commit/cc6c56a0c1fa",
+      "is_dirty": false,
+      "slurm_job_id": "2581544"
+    },
+    "overrides": {
+      "name": "371_faktencheck_core_fix_ecosystem_type",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "qwen3_30b_in_process",
+      "seed": "1337"
+    }
+  }
+}

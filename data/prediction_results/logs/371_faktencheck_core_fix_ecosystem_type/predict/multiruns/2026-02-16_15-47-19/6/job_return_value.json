@@ -1,0 +1,12 @@
+{
+  "output_file": "predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-16_15-47-19/2026-02-16_17-58-57_207848/predictions.jsonl",
+  "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-16_15-47-19/2026-02-16_17-58-57_207848/predictions.jsonl",
+  "time_pdf_conversion": 0.0025200339732691646,
+  "time_extraction": 2377.048123501998,
+  "time_start": 1771261137,
+  "time_end": 1771263618,
+  "commit_hash": "1bbffda9bb6b96bbecdfdeda933d1107bd0a4998",
+  "branch": "schema/fix-ecosystem_type-description-for-core",
+  "is_dirty": false,
+  "slurm_job_id": "2539943"
+}

@@ -1,0 +1,28 @@
+{
+  "no_error": 82,
+  "with_error": 18,
+  "ValueError": 16,
+  "JSONDecodeError": 1,
+  "MissingResponseContentError": 1,
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-18_12-32-32/2026-02-18_14-38-38_583956/predictions.jsonl",
+      "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/371_faktencheck_core_fix_ecosystem_type/2026-02-18_12-32-32/2026-02-18_14-38-38_583956/predictions.jsonl",
+      "time_pdf_conversion": 0.0024966539349406958,
+      "time_extraction": 2580.4791426850716,
+      "time_start": 1771421918,
+      "time_end": 1771424592,
+      "commit_hash": "71c0148a2ff631464b3d2f2cb21539e141161c4f",
+      "branch": "main",
+      "is_dirty": false,
+      "slurm_job_id": "2550315"
+    },
+    "overrides": {
+      "name": "371_faktencheck_core_fix_ecosystem_type",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "qwen3_30b_in_process",
+      "seed": "42"
+    }
+  }
+}
