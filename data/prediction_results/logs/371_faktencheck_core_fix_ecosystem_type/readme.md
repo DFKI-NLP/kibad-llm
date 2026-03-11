@@ -26,8 +26,8 @@ commit_hash_mapping = {
     "8e716f9efcbd73a0ce941a1b9ef2d1fee999486e": "1.b cardinality_change",
     "938fddc3bbce0d6e754d32851aa97e7cf0703ceb": "2.c description_change + cardinality_change + move_description",
     "45ef75d750feeb749a4c0a94232d248a83ea5640": "2.a description_change + move_description",
-    "9210d4874148527f36c0b875d1715c3fb14570c7": "3.d description_change + move_description + add_category + replace_separator",
-    "cc6c56a0c1fa49a67bf1c5daf7837df557271cb3": "3.e description_change + move_description + add_category + replace_separator + category_constraints",
+    "9210d4874148527f36c0b875d1715c3fb14570c7": "3.d (MERGED) description_change + move_description + add_category + replace_separator",
+    "cc6c56a0c1fa49a67bf1c5daf7837df557271cb3": "3.e (REVERTED) description_change + move_description + add_category + replace_separator + category_constraints",
 }
 MAP_VALUES = {"prediction.job_return_value.commit_hash": lambda x: commit_hash_mapping.get(x, x)}
     
