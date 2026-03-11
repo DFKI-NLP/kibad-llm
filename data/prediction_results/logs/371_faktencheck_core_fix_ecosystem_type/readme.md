@@ -672,10 +672,11 @@ prediction_logs=logs/371_faktencheck_core_fix_ecosystem_type/predict/multiruns/2
 
 </details>
 
-## evaluate: add category and replace separator
+## evaluate: add category and replace separator (FINAL)
  - implements #374
  - includes: adjust description, cardinality change, move description
  - commit (this branch): [9210d48](https://github.com/DFKI-NLP/kibad-llm/pull/371/commits/9210d4874148527f36c0b875d1715c3fb14570c7)
+ - **this is the final version of the schema change which got merged into main**
 
 ### Inference
 ```
@@ -770,7 +771,7 @@ prediction_logs=logs/371_faktencheck_core_fix_ecosystem_type/predict/multiruns/2
 
 </details>
 
-## evaluate: use exact `category` names in constraints
+## evaluate: use exact `category` names in constraints (REVERTED!)
  - includes everything from above
  - commit (this branch): [cc6c56a](https://github.com/DFKI-NLP/kibad-llm/pull/371/commits/cc6c56a0c1fa49a67bf1c5daf7837df557271cb3)
 
