@@ -1,5 +1,7 @@
 # 380_organism_trends
 
+see https://github.com/DFKI-NLP/kibad-llm/pull/380 for details.
+
 ## comparison with baseline
 
 ```python
