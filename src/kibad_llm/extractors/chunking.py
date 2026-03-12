@@ -6,7 +6,11 @@ from typing import Any
 from tqdm import tqdm
 
 from .aggregation_utils import Aggregator
-from .base import SingleExtractionResult, exception2error_msg, extract_from_text_lenient
+from .base import (
+    SingleExtractionResult,
+    exception2error_msg,
+    extract_from_text_lenient,
+)
 from .chunking_utils import core
 from .chunking_utils import tokenizers as tokenizer_lib
 
@@ -20,23 +24,24 @@ def _document_chunk_iterator(
     stride: int,
     chunking_timeout: int,
 ) -> tuple[core.TextChunk, ...]:
-    """Iterates over documents to yield text chunks along with the document ID.
+    """Iterates over documents to return text chunks along with the document ID.
 
     Args:
-      documents: A sequence of Document objects.
-      max_char_buffer: The maximum character buffer size for the ChunkIterator.
-      tokenizer: Optional tokenizer instance.
-      stride: Number of characters to overlap the chunks.
+        documents: A sequence of Document objects.
+        max_char_buffer: The maximum character buffer size for the ChunkIterator.
+        tokenizer: Optional tokenizer instance.
+        stride: Number of characters to overlap the chunks.
+        chunking_timeout: Number of seconds after which to raise the TimeoutError.
 
-    Yields:
-      TextChunk containing document ID for a corresponding document.
+    Returns:
+        TextChunk containing document ID for a corresponding document.
 
     Raises:
-      TimeoutError: If the chunks cannot be returned within the timeout,
-        a TimeoutError is raised
-      InvalidDocumentError: If restrict_repeats is True and the same document ID
-        is visited more than once. Valid documents prior to the error will be
-        returned.
+        TimeoutError: If the chunks cannot be returned within the timeout,
+            a TimeoutError is raised
+        InvalidDocumentError: If restrict_repeats is True and the same document ID
+            is visited more than once. Valid documents prior to the error will be
+            returned.
     """
     chunks = core.ChunkIterator(
         document,
@@ -54,18 +59,17 @@ class ChunkingExtractor:
     (for each chunk in the document) on the same input text,
     passing some previous context to each subsequent call.
 
-    TODO: adapt ->
-    See UnionExtractor for accepted parameters and details about the aggregation logic.
+    Pass llm=None to get the number of chunks per document without inference.
 
     Args:
-        skip_type_mismatches: If True, skips keys with inconsistent types across extractions
-            instead of raising an error (default: False)
+        aggregator: Method to aggregate the llm output before returning
         return_as_list: List of field names to return as lists of all extracted values
-            (default: None)
         tokenizer: tokenizer to use for chunking
         max_char_buffer: Max chunk size in characters
         stride: Number of characters to overlap chunks
         stride_factor: If provided, overrides stride with a fraction of max_char_buffer (e.g. 0.1 for 10% overlap)
+        verbose: Adds verbose logging
+        chunking_timeout: Time after which chunking is cancelled because of gibberish input
         **kwargs: Additional keyword arguments passed to the base extraction function.
     """
 
