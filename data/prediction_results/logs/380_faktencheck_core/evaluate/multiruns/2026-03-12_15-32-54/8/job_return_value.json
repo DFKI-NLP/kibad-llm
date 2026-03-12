@@ -1,0 +1,77 @@
+{
+  "biodiversity_level": {
+    "precision": 0.20967741935483872,
+    "recall": 0.19402985074626866,
+    "f1": 0.2015503875968992,
+    "support": 67
+  },
+  "ecosystem_type.category": {
+    "precision": 0.41935483870967744,
+    "recall": 0.5652173913043478,
+    "f1": 0.4814814814814815,
+    "support": 46
+  },
+  "ecosystem_type.term": {
+    "precision": 0.3116883116883117,
+    "recall": 0.4528301886792453,
+    "f1": 0.3692307692307692,
+    "support": 53
+  },
+  "habitat": {
+    "precision": 0.7971014492753623,
+    "recall": 0.39855072463768115,
+    "f1": 0.5314009661835749,
+    "support": 138
+  },
+  "taxa.german_name": {
+    "precision": 0.29213483146067415,
+    "recall": 0.11255411255411256,
+    "f1": 0.1625,
+    "support": 231
+  },
+  "taxa.scientific_name": {
+    "precision": 0.3670886075949367,
+    "recall": 0.14720812182741116,
+    "f1": 0.21014492753623187,
+    "support": 197
+  },
+  "taxa.species_group": {
+    "precision": 0.48148148148148145,
+    "recall": 0.36792452830188677,
+    "f1": 0.41711229946524064,
+    "support": 106
+  },
+  "AVG": {
+    "precision": 0.41121813422361175,
+    "recall": 0.31975927400727905,
+    "f1": 0.33906011878488534,
+    "support": 119.71428571428571
+  },
+  "ALL": {
+    "precision": 0.40847784200385356,
+    "recall": 0.2529832935560859,
+    "f1": 0.31245394252026526,
+    "support": 838
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/380_faktencheck_core/2026-03-11_16-30-57/2026-03-11_21-27-09_460921/predictions.jsonl",
+      "output_file_absolute": "/netscratch/binder/tmp/kiba-d_66fd30bc-c8ef-42d5-b670-0644beb7bf52/repo/predictions/380_faktencheck_core/2026-03-11_16-30-57/2026-03-11_21-27-09_460921/predictions.jsonl",
+      "time_pdf_conversion": 0.0031321390997618437,
+      "time_extraction": 3419.3729192151222,
+      "time_start": 1773260829,
+      "time_end": 1773264445,
+      "commit_hash": "ba4177888275db7c8dc2ddf46678dde450aa11f4",
+      "branch": "commit/ba4177888275",
+      "is_dirty": false,
+      "slurm_job_id": "2616389"
+    },
+    "overrides": {
+      "name": "380_faktencheck_core",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "qwen3_30b_in_process",
+      "seed": "42"
+    }
+  }
+}
