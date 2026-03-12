@@ -1,8 +1,8 @@
 {
   "dataset.predictions.log=logs/282_faktencheck_core_v1_for_chunking/predict/multiruns/2026-03-06_15-59-25/0": {
-    "no_error": 498,
-    "with_error": 3,
-    "JSONDecodeError": 2,
+    "no_error": 2129,
+    "with_error": 8,
+    "JSONDecodeError": 7,
     "TimeoutError": 1,
     "prediction": {
       "job_return_value": {
@@ -29,13 +29,13 @@
       "dataset.predictions.log": "logs/282_faktencheck_core_v1_for_chunking/predict/multiruns/2026-03-06_15-59-25/0",
       "name": "282_faktencheck_core_v1_for_chunking",
       "experiment/evaluate": "prediction_errors",
-      "prediction_logs": "logs/282_faktencheck_core_v1_for_chunking/predict/multiruns/2026-03-06_15-59-25/",
-      "dataset.predictions.skip_by_id": "[2E9XWUUE,2EUNPHDZ,2P53UVJA,2RXMDX8I,3LGPK6BL,3WEEGFGW,46RX4AEN,4YXRYRJC,4Z67G9T5,5SIYLM9W,6D23L7B5,6G2THNDX,7DSY6RMR,84QQ9F5S,885FDL5Z]"
+      "prediction_logs": "logs/282_faktencheck_core_v1_for_chunking/predict/multiruns/2026-03-06_15-59-25/"
     }
   },
   "dataset.predictions.log=logs/282_faktencheck_core_v1_for_chunking/predict/multiruns/2026-03-06_15-59-25/1": {
-    "no_error": 500,
-    "with_error": 1,
+    "no_error": 2127,
+    "with_error": 10,
+    "JSONDecodeError": 9,
     "TimeoutError": 1,
     "prediction": {
       "job_return_value": {
@@ -62,14 +62,13 @@
       "dataset.predictions.log": "logs/282_faktencheck_core_v1_for_chunking/predict/multiruns/2026-03-06_15-59-25/1",
       "name": "282_faktencheck_core_v1_for_chunking",
       "experiment/evaluate": "prediction_errors",
-      "prediction_logs": "logs/282_faktencheck_core_v1_for_chunking/predict/multiruns/2026-03-06_15-59-25/",
-      "dataset.predictions.skip_by_id": "[2E9XWUUE,2EUNPHDZ,2P53UVJA,2RXMDX8I,3LGPK6BL,3WEEGFGW,46RX4AEN,4YXRYRJC,4Z67G9T5,5SIYLM9W,6D23L7B5,6G2THNDX,7DSY6RMR,84QQ9F5S,885FDL5Z]"
+      "prediction_logs": "logs/282_faktencheck_core_v1_for_chunking/predict/multiruns/2026-03-06_15-59-25/"
     }
   },
   "dataset.predictions.log=logs/282_faktencheck_core_v1_for_chunking/predict/multiruns/2026-03-06_15-59-25/2": {
-    "no_error": 498,
-    "with_error": 3,
-    "JSONDecodeError": 2,
+    "no_error": 2131,
+    "with_error": 6,
+    "JSONDecodeError": 5,
     "TimeoutError": 1,
     "prediction": {
       "job_return_value": {
@@ -96,8 +95,7 @@
       "dataset.predictions.log": "logs/282_faktencheck_core_v1_for_chunking/predict/multiruns/2026-03-06_15-59-25/2",
       "name": "282_faktencheck_core_v1_for_chunking",
       "experiment/evaluate": "prediction_errors",
-      "prediction_logs": "logs/282_faktencheck_core_v1_for_chunking/predict/multiruns/2026-03-06_15-59-25/",
-      "dataset.predictions.skip_by_id": "[2E9XWUUE,2EUNPHDZ,2P53UVJA,2RXMDX8I,3LGPK6BL,3WEEGFGW,46RX4AEN,4YXRYRJC,4Z67G9T5,5SIYLM9W,6D23L7B5,6G2THNDX,7DSY6RMR,84QQ9F5S,885FDL5Z]"
+      "prediction_logs": "logs/282_faktencheck_core_v1_for_chunking/predict/multiruns/2026-03-06_15-59-25/"
     }
   }
 }
