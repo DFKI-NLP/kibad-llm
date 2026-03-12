@@ -1,7 +1,7 @@
 ---
 title: Overview
 hide:
-- kibad llm
+  - kibad llm
 ---
 
---8<-- "README.md"
+--8\<-- "README.md"

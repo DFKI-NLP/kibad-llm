@@ -11,13 +11,9 @@ for src_path in Path("./src").rglob("*"):
         # skip specific files
         continue
     if src_path.is_file() and src_path.suffix == ".py":
-        dest_path = Path("./docs") / src_path.relative_to(
-            "./src"
-        ).with_suffix(".md")
+        dest_path = Path("./docs") / src_path.relative_to("./src").with_suffix(".md")
         if not dest_path.is_file():
-            logging.info(
-                f"Creating basic doc file for {src_path} at {dest_path}"
-            )
+            logging.info(f"Creating basic doc file for {src_path} at {dest_path}")
             dest_path.parent.mkdir(parents=True, exist_ok=True)
             dest_path.write_text(
                 f":::{src_path.relative_to('./src').with_suffix('').__str__().replace('/','.')}"
