@@ -27,3 +27,7 @@ theme:
 
 plugins:
   - mkdocstrings
+
+markdown_extensions:
+  - pymdownx.snippets:
+      check_paths: true

@@ -59,6 +59,7 @@ cicd = [
     "prek>=0.3.8",
     "mkdocs-material>=9.7.1",
     "mkdocstrings[python]>=1.0.3",
+    "pymdown-extensions>=10.20.1",
 ]
 
 [tool.hatch.build.targets.sdist]
