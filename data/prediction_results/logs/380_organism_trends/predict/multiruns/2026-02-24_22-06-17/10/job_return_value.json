@@ -1,0 +1,12 @@
+{
+  "output_file": "predictions/380_organism_trends/2026-02-24_22-06-17/2026-02-26_03-02-50_216387/predictions.jsonl",
+  "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/380_organism_trends/2026-02-24_22-06-17/2026-02-26_03-02-50_216387/predictions.jsonl",
+  "time_pdf_conversion": 0.003568864078260958,
+  "time_extraction": 20257.924613273004,
+  "time_start": 1772071370,
+  "time_end": 1772091726,
+  "commit_hash": "67cce08ad646158085c4b7fc53c8fa2216227125",
+  "branch": "build_schema_description/improve-newline-handling",
+  "is_dirty": true,
+  "slurm_job_id": "2573358"
+}

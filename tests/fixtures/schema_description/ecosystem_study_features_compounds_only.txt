@@ -27,11 +27,11 @@ Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
 - management_measure: Wurden Formen der Bewirtschaftung als Maßnahmen für die Biodiversität untersucht? | Kardinalität: 0..* | Typ: object
   Beschreibung: Bewirtschaftungsmaßnahme mit Beschreibung und Erfolg.
   - description: Beschreibung der Bewirtschaftungsmaßnahme | Kardinalität: 1 | Typ: string
-  - success: Hatte die Bewirtschaftung als Maßnahme für die Biodiversität einen messbaren Effekt?  | Kardinalität: 1 | Typ: string | Zulässige Werte: ja; nein; teilweise; unbekannt
+  - success: Hatte die Bewirtschaftung als Maßnahme für die Biodiversität einen messbaren Effekt? | Kardinalität: 1 | Typ: string | Zulässige Werte: ja; nein; teilweise; unbekannt
 - impulse_measure: Wurden einmalige Maßnahmen für die Biodiversität untersucht? | Kardinalität: 0..* | Typ: object
   Beschreibung: Einmalige Maßnahme mit Beschreibung und Erfolg.
   - description: Beschreibung der einmaligen Maßnahme | Kardinalität: 1 | Typ: string
-  - success: Hatte die einmalige Maßnahme für die Biodiversität einen messbaren Effekt?  | Kardinalität: 1 | Typ: string | Zulässige Werte: ja; nein; teilweise; unbekannt
+  - success: Hatte die einmalige Maßnahme für die Biodiversität einen messbaren Effekt? | Kardinalität: 1 | Typ: string | Zulässige Werte: ja; nein; teilweise; unbekannt
 - direct_driver: Welche Vorgänge mit direktem Einfluss auf Biodiversität wurden untersucht? | Kardinalität: 0..* | Typ: object
   Beschreibung: Direkter Treiber mit Kategorie und Details.
   - category: Zu welcher der folgenden Kategorien lässt sich der direkte Treiber zuordnen? | Kardinalität: 1 | Typ: string | Zulässige Werte: Andere direkte Treiber; Direkte Ressourcenentnahme; Invasive gebietsfremde Arten; Klimawandel; Verschmutzung; Veränderte Land-/Meeresnutzung; Veränderung der Struktur der Landschaft

@@ -61,8 +61,8 @@ Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
     Beschreibung: Beschreibung der Bewirtschaftungsmaßnahme
     - content: | Kardinalität: 1 | Typ: string
     - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
-  - success: Hatte die Bewirtschaftung als Maßnahme für die Biodiversität einen messbaren Effekt?  | Kardinalität: 1 | Typ: object
-    Beschreibung: Hatte die Bewirtschaftung als Maßnahme für die Biodiversität einen messbaren Effekt? 
+  - success: Hatte die Bewirtschaftung als Maßnahme für die Biodiversität einen messbaren Effekt? | Kardinalität: 1 | Typ: object
+    Beschreibung: Hatte die Bewirtschaftung als Maßnahme für die Biodiversität einen messbaren Effekt?
     - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: ja; nein; teilweise; unbekannt
     - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
 - impulse_measure: Wurden einmalige Maßnahmen für die Biodiversität untersucht? | Kardinalität: 0..* | Typ: object
@@ -71,8 +71,8 @@ Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
     Beschreibung: Beschreibung der einmaligen Maßnahme
     - content: | Kardinalität: 1 | Typ: string
     - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
-  - success: Hatte die einmalige Maßnahme für die Biodiversität einen messbaren Effekt?  | Kardinalität: 1 | Typ: object
-    Beschreibung: Hatte die einmalige Maßnahme für die Biodiversität einen messbaren Effekt? 
+  - success: Hatte die einmalige Maßnahme für die Biodiversität einen messbaren Effekt? | Kardinalität: 1 | Typ: object
+    Beschreibung: Hatte die einmalige Maßnahme für die Biodiversität einen messbaren Effekt?
     - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: ja; nein; teilweise; unbekannt
     - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
 - direct_driver: Welche Vorgänge mit direktem Einfluss auf Biodiversität wurden untersucht? | Kardinalität: 0..* | Typ: object

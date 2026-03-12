@@ -1,0 +1,27 @@
+{
+  "no_error": 390,
+  "with_error": 19,
+  "ValueError": 17,
+  "JSONDecodeError": 2,
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/380_organism_trends/2026-02-24_22-06-17/2026-02-25_08-25-25_533804/predictions.jsonl",
+      "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/380_organism_trends/2026-02-24_22-06-17/2026-02-25_08-25-25_533804/predictions.jsonl",
+      "time_pdf_conversion": 0.004245114047080278,
+      "time_extraction": 8571.548241248005,
+      "time_start": 1772004325,
+      "time_end": 1772013011,
+      "commit_hash": "67cce08ad646158085c4b7fc53c8fa2216227125",
+      "branch": "build_schema_description/improve-newline-handling",
+      "is_dirty": false,
+      "slurm_job_id": "2573358"
+    },
+    "overrides": {
+      "name": "380_organism_trends",
+      "experiment/predict": "organism_trends_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-Wald-WVC",
+      "extractor/llm": "gemma3_27b_in_process",
+      "seed": "1337"
+    }
+  }
+}

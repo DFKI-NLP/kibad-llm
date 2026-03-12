@@ -54,6 +54,6 @@ Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
 - biodiversity_variable: In welchen Variablen wird die Biodiversität gemessen? | Kardinalität: 0..* | Typ: object
   - content: | Kardinalität: 1 | Typ: string
   - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
-- transformation_potential: In welche der folgenden Kategorien lässt sich die im Text behandelte Transformation einordnen?  | Kardinalität: 0..* | Typ: object
+- transformation_potential: In welche der folgenden Kategorien lässt sich die im Text behandelte Transformation einordnen? | Kardinalität: 0..* | Typ: object
   - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Lebensraumspezifischer Wandlungsprozess; Lebensraumunabhängiger Wandlungsprozess; Lebensraumübergreifender Wandlungsprozess
   - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string

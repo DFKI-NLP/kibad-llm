@@ -1,10 +1,9 @@
-Beschreibung: Das Schema sammelt Angaben zu den wichtigsten biodiversitätsbezogenen Merkmalen der Studie:
-Lebensräume, Ökosystemtypen, Arten bzw. Artengruppen, sowie die untersuchte Biodiversitätsebene.
+Beschreibung: Das Schema sammelt Angaben zu den wichtigsten biodiversitätsbezogenen Merkmalen der Studie: Lebensräume, Ökosystemtypen, Arten bzw. Artengruppen, sowie die untersuchte Biodiversitätsebene.
 Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
 - habitat: Um welchen der folgenden Lebensräume oder um welche Kombination der folgenden Lebensräume geht es in dem Text? | Kardinalität: 0..* | Typ: object
   - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Agrar- und Offenland; Binnengewässer und Auen; Boden; Küsten und Küstengewässer; Urbane Räume; Wald
   - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
-- taxa: Welche Arten bzw. Artengruppen werden in der Studie untersucht? Verwende die kleinste machbare Ebene: Wenn eine Studie nur wenige Arten behandelt, sollten diese auf Artebene mit ihrem wissenschaftlichen und deutschen Namen angegeben werden. Werden jedoch sehr viele Arten behandelt oder eine Artengruppe besprochen, wird die Artengruppe als 'Sammelbegriff' angegeben. Falls die Studie auf englisch ist, übersetze Art- bzw. Artengruppennamen ins Deutsche. Ergänze, wenn nicht angegeben, die wissenschaftlichen Artennamen, und umgekehrt die deutschen Namen, wenn nur die wissenschaftlichen Artennamen verwendet wurden.  | Kardinalität: 0..* | Typ: object
+- taxa: Welche Arten bzw. Artengruppen werden in der Studie untersucht? Verwende die kleinste machbare Ebene: Wenn eine Studie nur wenige Arten behandelt, sollten diese auf Artebene mit ihrem wissenschaftlichen und deutschen Namen angegeben werden. Werden jedoch sehr viele Arten behandelt oder eine Artengruppe besprochen, wird die Artengruppe als 'Sammelbegriff' angegeben. Falls die Studie auf englisch ist, übersetze Art- bzw. Artengruppennamen ins Deutsche. Ergänze, wenn nicht angegeben, die wissenschaftlichen Artennamen, und umgekehrt die deutschen Namen, wenn nur die wissenschaftlichen Artennamen verwendet wurden. | Kardinalität: 0..* | Typ: object
   Beschreibung: Art mit wissenschaftlichem und deutschem Namen sowie taxonomischer Gruppe.
   - scientific_name: Wissenschaftlicher Name der Art | Kardinalität: 0..1 | Typ: object
     - content: | Kardinalität: 1 | Typ: string
@@ -16,39 +15,11 @@ Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
     Beschreibung: Taxonomische Gruppe der Art
     - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Amphibien und Reptilien; Andere; Andere Pflanzen; Andere Wirbellose; Archaeen; Bakterien; Fische; Flechten; Gefäßpflanzen; Insekten; Moose; Pilze; Protisten; Protozoen; Säugetiere; Vögel
     - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
-- biodiversity_level: Auf welche der folgenden Ebenen wird Biodiversität in der Studie gemessen?  | Kardinalität: 0..* | Typ: object
+- biodiversity_level: Auf welche der folgenden Ebenen wird Biodiversität in der Studie gemessen? | Kardinalität: 0..* | Typ: object
   - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Artenvielfalt; Funktionelle Diversität; Genetische Diversität; Habitatdiversität; Phylogenetische Diversität; Strukturelle Diversität; Zusammensetzung der Artengemeinschaft
   - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
 - ecosystem_type: Welche Ökosystemtypen werden betrachtet? | Kardinalität: 0..* | Typ: object
-  Beschreibung: Ökosystemtyp mit Kategorie und (wenn möglich) mit Name.
-Wenn es im Text um die Ökosystemtyp-Kategorien Meere oder Küsten geht, sind nur die Ökosystemtypen (Namen)
-möglich: Benthal der Nordsee; Benthal der Ostsee; Fels- und Steilküsten; Küstendünen; Pelagial
-der Nordsee; Pelagial der Ostsee; Saisonales Meereis der Nordsee; Saisonales Meereis der
-Ostsee; Salzgrünland, Brackwasserröhrichte und -Hochstaudenfluren des Geolitorals der
-Ostseeküste; Salzgrünland der Nordseeküste (Supralitoral); Sände, Sand-, Geröll- und Blockstrände.
-Wenn es im Text um die Ökosystemtyp-Kategorien Binnengewässer geht, sind nur die folgenden Ökosystemtypen
-(Namen) möglich: Fließende Gewässer; Grundwasser und Höhlengewässer; Quellen (inklusive Quellabfluss (Krenal));
-Stehende Gewässer.
-Wenn es im Text um Ökosystemtyp-Kategorien terrestrisches oder semiterrestrisches Binnenland
-geht, sind nur die folgenden Ökosystemtypen (Namen) möglich: Äcker und Ackerbrachen; Feldgehölze,
-Gebüsche, Hecken und Gehölzkulturen; Felsen, Block- und Schutthalden, Geröllfelder, offene Bereiche
-mit sandigem oder bindigem Substrat; Hoch-, Zwischen- und Übergangsmoore; Höhlen (einschließlich Stollen,
-Brunnenschächte etc.); Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent);
-Nadel(Misch)Wälder und -Forste; Röhrichte (ohne Brackwasserröhrichte); Trockenrasen sowie
-Grünland trockener bis frischer Standorte; Waldfreie Niedermoore und Sümpfe, Grünland nasser
-bis feuchter Standorte; Waldmäntel und Vorwälder, spezielle Waldnutzungsformen; Wald- und
-Ufersäume, Staudenfluren; Zwergstrauchheiden; Großseggenriede.
-Wenn es im Text um die Ökosystemtyp-Kategorie technische Biotope geht, sind nur die folgenden
-Ökosystemtypen (Namen) möglich: Bauwerke; Kleine, unbefestigte Freiflächen des besiedelten Bereiches;
-Verkehrsanlagen und Plätze; Deponien und Rieselfelder.
-Wenn es im Text um die Ökosystemtyp-Kategorie Biotope mit Schwerpunkt in den Alpen geht, sind nur die
-folgenden Ökosystemtypen (Namen) möglich: Gebirgsrasen (subalpin bis alpin); Gewässer (subalpin bis alpin);
-Firn, permanente Schneefelder und Gletscher; Felsen (subalpin bis nival); Steinschutthalden und
-Schotterflächen (subalpin bis alpin); Schneeböden, Schneetälchen; Moore (subalpin bis alpin);
-Stauden- und Lägerfluren (hochmontan bis alpin); Zwergstrauchheiden (subalpin bis alpin);
-Gebüsche (hochmontan bis subalpin); Wälder (subalpin).
-Passt keine der genannten Ökosystemtyp-Kategorien (d.h. Ökosystemtyp-Kategorie Weitere), sind immer
-die folgenden Ökosystemtypen (Namen) möglich: Rohbodenstandorte und Ruderalfluren; Grün- und Freiflächen
+  Beschreibung: Ökosystemtyp mit Kategorie und (wenn möglich) mit Name. Wenn es im Text um die Ökosystemtyp-Kategorien Meere oder Küsten geht, sind nur die Ökosystemtypen (Namen) möglich: Benthal der Nordsee; Benthal der Ostsee; Fels- und Steilküsten; Küstendünen; Pelagial der Nordsee; Pelagial der Ostsee; Saisonales Meereis der Nordsee; Saisonales Meereis der Ostsee; Salzgrünland, Brackwasserröhrichte und -Hochstaudenfluren des Geolitorals der Ostseeküste; Salzgrünland der Nordseeküste (Supralitoral); Sände, Sand-, Geröll- und Blockstrände. Wenn es im Text um die Ökosystemtyp-Kategorien Binnengewässer geht, sind nur die folgenden Ökosystemtypen (Namen) möglich: Fließende Gewässer; Grundwasser und Höhlengewässer; Quellen (inklusive Quellabfluss (Krenal)); Stehende Gewässer. Wenn es im Text um Ökosystemtyp-Kategorien terrestrisches oder semiterrestrisches Binnenland geht, sind nur die folgenden Ökosystemtypen (Namen) möglich: Äcker und Ackerbrachen; Feldgehölze, Gebüsche, Hecken und Gehölzkulturen; Felsen, Block- und Schutthalden, Geröllfelder, offene Bereiche mit sandigem oder bindigem Substrat; Hoch-, Zwischen- und Übergangsmoore; Höhlen (einschließlich Stollen, Brunnenschächte etc.); Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent); Nadel(Misch)Wälder und -Forste; Röhrichte (ohne Brackwasserröhrichte); Trockenrasen sowie Grünland trockener bis frischer Standorte; Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte; Waldmäntel und Vorwälder, spezielle Waldnutzungsformen; Wald- und Ufersäume, Staudenfluren; Zwergstrauchheiden; Großseggenriede. Wenn es im Text um die Ökosystemtyp-Kategorie technische Biotope geht, sind nur die folgenden Ökosystemtypen (Namen) möglich: Bauwerke; Kleine, unbefestigte Freiflächen des besiedelten Bereiches; Verkehrsanlagen und Plätze; Deponien und Rieselfelder. Wenn es im Text um die Ökosystemtyp-Kategorie Biotope mit Schwerpunkt in den Alpen geht, sind nur die folgenden Ökosystemtypen (Namen) möglich: Gebirgsrasen (subalpin bis alpin); Gewässer (subalpin bis alpin); Firn, permanente Schneefelder und Gletscher; Felsen (subalpin bis nival); Steinschutthalden und Schotterflächen (subalpin bis alpin); Schneeböden, Schneetälchen; Moore (subalpin bis alpin); Stauden- und Lägerfluren (hochmontan bis alpin); Zwergstrauchheiden (subalpin bis alpin); Gebüsche (hochmontan bis subalpin); Wälder (subalpin). Passt keine der genannten Ökosystemtyp-Kategorien (d.h. Ökosystemtyp-Kategorie Weitere), sind immer die folgenden Ökosystemtypen (Namen) möglich: Rohbodenstandorte und Ruderalfluren; Grün- und Freiflächen
   - category: Kategorie des Ökosystemtyps | Kardinalität: 1 | Typ: object
     Beschreibung: Kategorie des Ökosystemtyps
     - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: I Biotoptypengruppen der Meere und Küsten; II Biotoptypengruppen der Binnengewässer; III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes; IV Technische Biotoptypengruppen; V Biotoptypengruppen mit Schwerpunkt in den Alpen; VI Weitere

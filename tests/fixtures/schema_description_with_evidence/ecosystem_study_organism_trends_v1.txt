@@ -1,10 +1,7 @@
 Beschreibung: Das Schema sammelt Angaben zu den im Text beschriebenen organismenbezogenen Biodiversitätstrends.
 Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
 - organism_trends: Erstelle eine Liste der im Text beschriebenen organismenbezogenen Biodiversitätstrends. | Kardinalität: 0..* | Typ: object
-  Beschreibung: Organismenbezogener Biodiversitätstrend bestehend aus Organismenhauptgruppe
-(hauptgruppe_rote_listen), Organismenuntergruppe (untergruppe_rote_listen),
-Lebensraum (habitat), Biodiversitätsvariable (biodiversity_variable)
-und Trendrichtung (trend_category).
+  Beschreibung: Organismenbezogener Biodiversitätstrend bestehend aus Organismenhauptgruppe (hauptgruppe_rote_listen), Organismenuntergruppe (untergruppe_rote_listen), Lebensraum (habitat), Biodiversitätsvariable (biodiversity_variable) und Trendrichtung (trend_category).
   - Hauptgruppe_RoteListen: Auf welche Organismen-Hautgruppe bezieht sich der angegebene Trend? | Kardinalität: 1 | Typ: object
     Beschreibung: Auf welche Organismen-Hautgruppe bezieht sich der angegebene Trend?
     - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Makrofauna; Mesofauna; Mikrofauna; Pflanzen; Pilze_Flechten; Wirbellose; Wirbeltiere
@@ -16,11 +13,11 @@ und Trendrichtung (trend_category).
     Beschreibung: Auf welchen der folgenden Lebensräume bezieht sich der Trend?
     - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: AgrarOffen; Binnengewaesser; Boden; Kueste; Urban; Wald
     - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
-  - Antwortvariable: Mithilfe welcher Biodiversitätsvariable wird der Trend gemessen? 'ENS' steht dabei für 'Effective Number of Species' und ist ein Index, der angibt, wie viele Arten es gibt und wie gleichmäßig die Individuen auf die verschiedenen Arten verteilt sind (Effektive Artenzahl). 'Artenanzahl' gibt nur die die Anzahl der verschiedenen Arten an. 'Abundanz' gibt die Häufigkeit einer Art oder Gruppe an. | Kardinalität: 1 | Typ: object
-    Beschreibung: Mithilfe welcher Biodiversitätsvariable wird der Trend gemessen? 'ENS' steht dabei für 'Effective Number of Species' und ist ein Index, der angibt, wie viele Arten es gibt und wie gleichmäßig die Individuen auf die verschiedenen Arten verteilt sind (Effektive Artenzahl). 'Artenanzahl' gibt nur die die Anzahl der verschiedenen Arten an. 'Abundanz' gibt die Häufigkeit einer Art oder Gruppe an.
-    - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Abundanz; Artenzahl; ENS
+  - Antwortvariable: Mithilfe welcher Biodiversitätsvariable wird der Trend gemessen? | Kardinalität: 1 | Typ: object
+    Beschreibung: Mithilfe welcher Biodiversitätsvariable wird der Trend gemessen?
+    - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Abundanz; Artenzahl; ENS | Hinweise zu den Werten: "ENS" steht dabei für "Effective Number of Species" und ist ein Index, der angibt, wie viele Arten es gibt und wie gleichmäßig die Individuen auf die verschiedenen Arten verteilt sind (Effektive Artenzahl). "Artenanzahl" gibt nur die die Anzahl der verschiedenen Arten an. "Abundanz" gibt die Häufigkeit einer Art oder Gruppe an.
     - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
-  - Trend: In welche der folgenden Kategorien lässt sich die Richtung des Trends einordnen? 'neutral' bedeutet, dass auf Trends untersucht wurde, aber keine Zunahme oder Abnahme der Organismengruppe festgestellt wurde. 'positiv' bedeutet einen zunehmenden Trend, 'negativ' einen abnehmenden Trend. Bei 'positiv zu negativ' geht ein zunehmender Trend in einen abnehmenden Trend über. Bei 'negativ zu positiv' geht ein abnehmender Trend in einen zunehmenden Trend über. | Kardinalität: 1 | Typ: object
-    Beschreibung: In welche der folgenden Kategorien lässt sich die Richtung des Trends einordnen? 'neutral' bedeutet, dass auf Trends untersucht wurde, aber keine Zunahme oder Abnahme der Organismengruppe festgestellt wurde. 'positiv' bedeutet einen zunehmenden Trend, 'negativ' einen abnehmenden Trend. Bei 'positiv zu negativ' geht ein zunehmender Trend in einen abnehmenden Trend über. Bei 'negativ zu positiv' geht ein abnehmender Trend in einen zunehmenden Trend über.
-    - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: positive; negative; no; positive to negative; negative to positive
+  - Trend: In welche der folgenden Kategorien lässt sich die Richtung des Trends einordnen? | Kardinalität: 1 | Typ: object
+    Beschreibung: In welche der folgenden Kategorien lässt sich die Richtung des Trends einordnen?
+    - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: positive; negative; no; positive to negative; negative to positive | Hinweise zu den Werten: "neutral" bedeutet, dass auf Trends untersucht wurde, aber keine Zunahme oder Abnahme der Organismengruppe festgestellt wurde. "positiv" bedeutet einen zunehmenden Trend, "negativ" einen abnehmenden Trend. Bei "positiv zu negativ" geht ein zunehmender Trend in einen abnehmenden Trend über. Bei "negativ zu positiv" geht ein abnehmender Trend in einen zunehmenden Trend über.
     - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
