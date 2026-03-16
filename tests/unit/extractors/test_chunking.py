@@ -1,4 +1,3 @@
-from time import time
 from multiprocessing.context import TimeoutError
 from pathlib import Path
 
@@ -11,6 +10,7 @@ from kibad_llm.preprocessing import read_pdf_as_markdown_via_pymupdf4llm
 from tests import FIXTURE_DATA_ROOT
 
 FIXTURE_DATA = FIXTURE_DATA_ROOT / "chunking"
+
 
 def test_pdf_as_md_bmten2fg() -> None:
     """currently pymupdf fails to convert BMTEN2FG.pdf properly.
