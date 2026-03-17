@@ -62,7 +62,7 @@ class ChunkingExtractor:
     Pass llm=None to get the number of chunks per document without inference.
 
     Args:
-        aggregator: Method to aggregate the llm output before returning
+        aggregator: Method to aggregate the llm output for the individual chunks before returning
         return_as_list: List of field names to return as lists of all extracted values
         tokenizer: tokenizer to use for chunking
         max_char_buffer: Max chunk size in characters
