@@ -148,7 +148,7 @@ class ChunkingExtractor:
         results = []
         if self.verbose:
             logger.info(f"starting processing for text {text_id}")
-            logger.info(text)
+            logger.info(f"{text[:100]}[...]{text[100:]}" if len(text) > 200 else text)
             # wrapping in tqdm doesn't change the functionality but upsets mypy.
             # hence we need the '# type: ignore' comment
             chunks = tqdm(chunks, desc=text_id)  # type: ignore
