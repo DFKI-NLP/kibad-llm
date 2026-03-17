@@ -38,7 +38,7 @@ def test_chunking_timeout() -> None:
             20000,
             None,
             1000,
-            10,
+            0.00001,
         )
 
 
@@ -57,3 +57,28 @@ def test_stride() -> None:
         10,
     )
     # TODO: assert content of chunks
+
+
+def test_stride_overlaps() -> None:
+
+    document_from_md = Path("./tests/fixtures/pdfs_error/chunking_fail/BMTEN2FG.md").read_text()
+
+    chunks: tuple[TextChunk, ...] = _document_chunk_iterator(
+        document_from_md,
+        1000,
+        None,
+        100,
+        600,
+    )
+    previous_chunk = chunks[0].document_text
+    assert previous_chunk is not None
+    for chunk in chunks[1:]:
+        assert chunk.document_text is not None
+        for i in range(1, len(previous_chunk) + 1):
+            if chunk.document_text.startswith(previous_chunk[i:]):
+                break
+        else:
+            raise ValueError(
+                f"chunks not overlapping!\n{previous_chunk}\nthere should be some overlap here\n{chunk.document_text}"
+            )
+        previous_chunk = chunk.document_text
