@@ -277,15 +277,18 @@ class SentenceIterator:
                 f"document {self.token_len}."
             )
         self.curr_token_pos = curr_token_pos
+        self.temporary_stride = 0
 
     def __iter__(self) -> Iterator[tokenizer_lib.TokenInterval]:
         return self
 
     def __next__(self) -> tokenizer_lib.TokenInterval:
-        """Returns next sentence's interval starting from current token position.
+        """Returns next sentence's interval starting from current token position minus
+           the temporary_stride.
 
         Returns:
-          Next sentence token interval starting from current token position.
+          Next sentence token interval starting from current token position minus
+          the temporary_stride.
 
         Raises:
           StopIteration: If end of text is reached.
@@ -300,11 +303,34 @@ class SentenceIterator:
             self.curr_token_pos,
         )
         assert sentence_range
+        # If there is a temporary_stride, we need to add this to the interval.
+        # For self.temporary_stride > 0 this method returns the next sentence
+        # plus the previous context tokens up to self.temporary_stride characters.
+        self._move_by_stride()
         # Start the sentence from the current token position.
         # If we are in the middle of a sentence, we should start from there.
         sentence_range = create_token_interval(self.curr_token_pos, sentence_range.end_index)
         self.curr_token_pos = sentence_range.end_index
         return sentence_range
+
+    def _move_by_stride(self):
+        """move the curr_token_pos back by approximately stride characters."""
+        last_good_token_pos = self.curr_token_pos
+        char_interval_len = 0
+        for i in range(self.curr_token_pos, 0, -1):
+            char_interval = get_char_interval(
+                self.tokenized_text,
+                tokenizer_lib.TokenInterval(i - 1, self.curr_token_pos),
+            )
+            char_interval_len = char_interval.end_pos - char_interval.start_pos
+            if char_interval_len > self.temporary_stride:
+                break
+            else:
+                last_good_token_pos = i
+
+        self.curr_token_pos = last_good_token_pos
+        self.temporary_stride = 0
+        return char_interval_len
 
 
 class ChunkIterator:
@@ -375,6 +401,7 @@ class ChunkIterator:
         self.broken_sentence = False
         self.document = document
         self.stride = stride
+        assert self.stride < self.max_char_buffer
 
     def __iter__(self) -> Iterator[TextChunk]:
         return self
@@ -394,10 +421,8 @@ class ChunkIterator:
         return (char_interval.end_pos - char_interval.start_pos) > self.max_char_buffer
 
     def __next__(self) -> TextChunk:
+        self.sentence_iter.temporary_stride = self.stride
         sentence = next(self.sentence_iter)
-        sentence.start_index -= self.stride
-        if sentence.start_index < 0:
-            sentence.start_index = 0
         # If the next token is greater than the max_char_buffer, let it be the
         # entire chunk.
         curr_chunk = create_token_interval(sentence.start_index, sentence.start_index + 1)
@@ -443,7 +468,8 @@ class ChunkIterator:
                 test_chunk = create_token_interval(curr_chunk.start_index, sentence.end_index)
                 if self._tokens_exceed_buffer(test_chunk):
                     self.sentence_iter = SentenceIterator(
-                        self.tokenized_text, curr_token_pos=curr_chunk.end_index
+                        self.tokenized_text,
+                        curr_token_pos=curr_chunk.end_index,
                     )
                     return TextChunk(
                         token_interval=curr_chunk,
@@ -452,7 +478,6 @@ class ChunkIterator:
                     )
                 else:
                     curr_chunk = test_chunk
-
         return TextChunk(
             token_interval=curr_chunk,
             document_text=self.document,

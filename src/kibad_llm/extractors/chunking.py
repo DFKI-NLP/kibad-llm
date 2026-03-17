@@ -22,7 +22,7 @@ def _document_chunk_iterator(
     max_char_buffer: int,
     tokenizer: tokenizer_lib.Tokenizer | None,
     stride: int,
-    chunking_timeout: int,
+    chunking_timeout: float,
 ) -> tuple[core.TextChunk, ...]:
     """Iterates over documents to return text chunks along with the document ID.
 
