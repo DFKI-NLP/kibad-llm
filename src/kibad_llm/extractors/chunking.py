@@ -30,7 +30,7 @@ def _document_chunk_iterator(
         documents: A sequence of Document objects.
         max_char_buffer: The maximum character buffer size for the ChunkIterator.
         tokenizer: Optional tokenizer instance.
-        stride: Number of characters to overlap the chunks.
+        stride: Max approx Number of characters to overlap chunks
         chunking_timeout: Number of seconds after which to raise the TimeoutError.
 
     Returns:
@@ -66,7 +66,7 @@ class ChunkingExtractor:
         return_as_list: List of field names to return as lists of all extracted values
         tokenizer: tokenizer to use for chunking
         max_char_buffer: Max chunk size in characters
-        stride: Number of characters to overlap chunks
+        stride: Max approx Number of characters to overlap chunks
         stride_factor: If provided, overrides stride with a fraction of max_char_buffer (e.g. 0.1 for 10% overlap)
         verbose: Adds verbose logging
         chunking_timeout: Time after which chunking is cancelled because of gibberish input
