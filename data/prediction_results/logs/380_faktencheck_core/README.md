@@ -37,7 +37,6 @@ PLOT_KWARGS = {
 }
 ```
 
-
 ### f1
 ![baseline_comparison_metrics_f1.svg](baseline_comparison_metrics_f1.svg)
 
@@ -78,6 +77,70 @@ PLOT_KWARGS = {
 
 </details>
 
+## comparison vs corrected reference data
+- the eval result is not committed, so execute yourself if you want to see the results (and copy results to `evaluate/multiruns/` to create the plots with the notebook parameters below)
+
+eval command:
+```
+uv run -m kibad_llm.evaluate \
+name=380_faktencheck_core  \
+experiment/evaluate=faktencheck_core_f1_micro_flat_corrected \
+prediction_logs=logs/380_faktencheck_core/predict \
++hydra.callbacks.save_job_return.multirun_markdown_group_by=prediction.overrides.extractor/llm \
+--multirun
+```
+
+### notebook parameters
+```python
+NAME = "380_faktencheck_core"
+
+SUBDIR = ["evaluate"]
+
+FILE_NAME_PREFIX = "corrected_"
+
+METRICS = ["f1", "recall", "precision"]
+# used to group the data
+INDEX_COLUMNS = ["prediction.overrides.extractor/llm", "overrides.experiment/evaluate"]
+PLOT_KWARGS = {
+    # can be either "metric" or one of the INDEX_COLUMNS (or multiple of them)
+    "xgroup": ["overrides.experiment/evaluate"],
+    # add any more arguments passed to pd.DataFrame.plot
+    "create_subplot_for_each": "metric",
+    #"set_missing_values_to_zero": True,
+    "subplot_columns": 2,
+}
+```
+
+
+### f1
+![corrected_comparison_metrics_f1.svg](corrected_comparison_metrics_f1.svg)
+
+<details>
+<summary>see detailed metrics</summary>
+
+![corrected_comparison_metrics_f1_detail.svg](corrected_comparison_metrics_f1_detail.svg)
+
+</details>
+
+### recall
+![corrected_comparison_metrics_recall.svg](corrected_comparison_metrics_recall.svg)
+
+<details>
+<summary>see detailed metrics</summary>
+
+![corrected_comparison_metrics_recall_detail.svg](corrected_comparison_metrics_recall_detail.svg)
+
+</details>
+
+### precision
+![corrected_comparison_metrics_precision.svg](corrected_comparison_metrics_precision.svg)
+
+<details>
+<summary>see detailed metrics</summary>
+
+![corrected_comparison_metrics_precision_detail.svg](corrected_comparison_metrics_precision_detail.svg)
+
+</details>
 
 
 ## Inference
