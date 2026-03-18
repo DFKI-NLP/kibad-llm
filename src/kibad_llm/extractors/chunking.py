@@ -135,15 +135,9 @@ class ChunkingExtractor:
                 err_result[f"{field}_list"] = [out.get(field, None)]
             return err_result
 
-        if self.default_kwargs.get("llm", dict()) == dict():
+        if current_kwargs.get("llm", dict()) == dict():
             logging.info(f"{str(len(chunks)).rjust(4, ' ')} chunks in document {args[-1]}")
-            out = SingleExtractionResult()
-            empty_result: dict[str, Any] = {
-                "structured": out.structured,
-            }
-            for field in self.return_as_list:
-                empty_result[f"{field}_list"] = [out.get(field, None)]
-            return empty_result
+            current_kwargs["llm"] = None
 
         results = []
         if self.verbose:
