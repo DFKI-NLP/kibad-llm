@@ -155,12 +155,11 @@ class ChunkingExtractor:
         for i, chunk in enumerate(chunks):
 
             current_kwargs["text_id"] = f"{text_id}_chunk_{i}"
-            current_kwargs.update(
-                {
-                    "augment_metadata_kwargs": {
-                        "evidence_character_offset": chunk.char_interval.start_pos
-                    }
-                }
+            current_kwargs["augment_metadata_kwargs"] = current_kwargs.get(
+                "augment_metadata_kwargs", dict()
+            )
+            current_kwargs["augment_metadata_kwargs"].update(
+                {"evidence_character_offset": chunk.char_interval.start_pos}
             )
             current_result = extract_from_text_lenient(
                 text=chunk.chunk_text,
