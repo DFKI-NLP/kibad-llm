@@ -58,7 +58,7 @@ class TextChunk:
     Properties:
       get_tokenized_text: TokenizedText of the current document.
       chunk_text: Text of the current chunk as string.
-      sanitized_chunk_text Text of the current chunk as a sanitized string. 
+      sanitized_chunk_text Text of the current chunk as a sanitized string.
         -> _sanitize: Converts all whitespace characters in input text to a single space.
       char_interval: CharInterval of the chunk.
 
