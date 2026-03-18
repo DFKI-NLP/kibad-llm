@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 
 from kibad_llm.config import PROJ_ROOT
 from kibad_llm.preprocessing import read_pdf_as_markdown_via_pymupdf4llm
@@ -28,3 +29,16 @@ def test_read_pdf_as_markdown_via_pymupdf4llm():
     result_expected = markdown_data["text"]
 
     assert result == result_expected
+
+
+def test_pdf_as_md_bmten2fg() -> None:
+    """Currently pymupdf fails to convert BMTEN2FG.pdf properly.
+
+    **IF THIS TEST FAILS**
+    Check the converted output of pymupdf for BMTEN2FG.pdf. If it is converted correctly, adapt the test.
+    """
+    document_from_pdf = read_pdf_as_markdown_via_pymupdf4llm(
+        "BMTEN2FG.pdf", Path("./tests/fixtures/pdfs_error/chunking_fail/")
+    )
+    document_from_md = Path("./tests/fixtures/pdfs_error/chunking_fail/BMTEN2FG.md").read_text()
+    assert document_from_md == document_from_pdf
