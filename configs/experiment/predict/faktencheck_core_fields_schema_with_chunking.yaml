@@ -15,6 +15,5 @@
 defaults:
   - _with_evidence
   - override /extractor/schema: faktencheck_core
-  # We use a polished prompt template with additional instructions for better extraction performance.
   - override /extractor: chunking
   - override /extractor/prompt_template: faktencheck_core_v1_with_chunking
