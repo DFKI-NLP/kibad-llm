@@ -55,6 +55,13 @@ class TextChunk:
       token_interval: The token interval of the chunk in the source document.
       tokenized_text: The source document in its tokenized form as TokenizedText obj.
       document: The source document.
+    Properties:
+      get_tokenized_text: TokenizedText of the current document.
+      chunk_text: Text of the current chunk as string.
+      sanitized_chunk_text Text of the current chunk as a sanitized string. 
+        -> _sanitize: Converts all whitespace characters in input text to a single space.
+      char_interval: CharInterval of the chunk.
+
     """
 
     token_interval: tokenizer_lib.TokenInterval
