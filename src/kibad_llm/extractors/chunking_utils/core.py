@@ -314,14 +314,33 @@ class SentenceIterator:
         return sentence_range
 
     def _move_by_stride(self):
-        """move the curr_token_pos back by approximately stride characters."""
+        """Move the curr_token_pos back by approximately stride characters.
+
+        Iterate backwards through the tokens previous to self.curr_token_pos.
+        Include the maximum number of those tokens with a total character
+        count <= the stride.
+        If the token immediately previous to the curr_token_pos is larger than
+        the stride, no change is made, meaning the stride is 0 and no overlap
+        is generated.
+
+        side effect:
+            set self.curr_token_pos back by approximately stride characters
+
+        returns:
+            char_interval_len int: the length of the stride taken
+
+        CAVEAT: If the last token is larger than stride characters, no overlap
+        is generated!"""
+        if self.curr_token_pos == 0:
+            return 0
         last_good_token_pos = self.curr_token_pos
         char_interval_len = 0
-        for i in range(self.curr_token_pos, 0, -1):
+        for i in reversed(range(0, self.curr_token_pos)):
             char_interval = get_char_interval(
                 self.tokenized_text,
-                tokenizer_lib.TokenInterval(i - 1, self.curr_token_pos),
+                tokenizer_lib.TokenInterval(i, self.curr_token_pos),
             )
+            assert char_interval.start_pos is not None and char_interval.end_pos is not None
             char_interval_len = char_interval.end_pos - char_interval.start_pos
             if char_interval_len > self.temporary_stride:
                 break
@@ -338,6 +357,9 @@ class ChunkIterator:
 
     Chunks may consist of sentences or sentence fragments that can fit into the
     maximum character buffer that we can run inference on.
+    They overlap by up to stride characters.
+
+    Chunk cases:
 
     A)
     If a sentence length exceeds the max char buffer, then it needs to be broken
@@ -373,6 +395,17 @@ class ChunkIterator:
     With max_char_buffer=60, the chunks are:
     * "Roses are red. Violets are blue. Flowers are nice." len=50
     * "And so are you." len=15
+
+    Stride:
+
+    Chunks are built by requesting sentences from the SentenceIterator until the max_char_buffer
+    is reached. For every first sentence of a chunk, the stride is requested from the SentenceIterator.
+    In case A), the max_char_buffer would cover the stride, as well as part of the next sentence.
+    In case B), the max_char_buffer would cover the stride, as well as the next token.
+    In case C), the max_char_buffer would cover the stride, the first sentence, as well as a variable
+    amount of subsequent sentences. Those subsequent sentences can be obtained by iterating through
+    the SentenceIterator normally, as the temporary_stride has only been requested from the first sentence,
+    and does not apply again.
     """
 
     def __init__(
