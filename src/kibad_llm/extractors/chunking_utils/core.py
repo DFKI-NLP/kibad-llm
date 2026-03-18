@@ -1,3 +1,5 @@
+# This file has been partially adapted by the dfki from the original version by google:
+#
 # Copyright 2025 Google LLC.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
