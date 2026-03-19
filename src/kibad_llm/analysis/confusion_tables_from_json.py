@@ -151,8 +151,8 @@ def main() -> int:
         grouped_runs.setdefault(tuple(group_values), []).append(extract_confusion(run_payload))
 
     sections: list[str] = []
-    for group_values in sorted(grouped_runs):
-        runs = grouped_runs[group_values]
+    for group_key_values in sorted(grouped_runs):
+        runs = grouped_runs[group_key_values]
 
         all_rows: set[str] = set()
         all_cols: set[str] = set()
@@ -182,7 +182,7 @@ def main() -> int:
             build_markdown_table(
                 group_labels=[
                     (simplify_group_key(group_key), group_value)
-                    for group_key, group_value in zip(args.group_by, group_values)
+                    for group_key, group_value in zip(args.group_by, group_key_values)
                 ],
                 cell_series=cell_series,
                 row_labels=row_labels,
