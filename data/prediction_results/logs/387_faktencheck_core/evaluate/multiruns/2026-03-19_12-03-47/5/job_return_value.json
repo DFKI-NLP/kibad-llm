@@ -1,0 +1,59 @@
+{
+  "biodiversity_level": {
+    "precision": 0.4326923076923077,
+    "recall": 0.3409090909090909,
+    "f1": 0.3813559322033898,
+    "support": 132
+  },
+  "ecosystem_type.term": {
+    "precision": 0.26063829787234044,
+    "recall": 0.2149122807017544,
+    "f1": 0.2355769230769231,
+    "support": 228
+  },
+  "habitat": {
+    "precision": 0.8072289156626506,
+    "recall": 0.3544973544973545,
+    "f1": 0.49264705882352944,
+    "support": 189
+  },
+  "taxa.species_group": {
+    "precision": 0.47761194029850745,
+    "recall": 0.32,
+    "f1": 0.38323353293413176,
+    "support": 200
+  },
+  "AVG": {
+    "precision": 0.49454286538145154,
+    "recall": 0.30757968152704995,
+    "f1": 0.37320336175949353,
+    "support": 187.25
+  },
+  "ALL": {
+    "precision": 0.44204322200392926,
+    "recall": 0.30040053404539385,
+    "f1": 0.35771065182829886,
+    "support": 749
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/380_faktencheck_core/2026-03-11_16-30-57/2026-03-12_01-47-06_568328/predictions.jsonl",
+      "output_file_absolute": "/netscratch/binder/tmp/kiba-d_66fd30bc-c8ef-42d5-b670-0644beb7bf52/repo/predictions/380_faktencheck_core/2026-03-11_16-30-57/2026-03-12_01-47-06_568328/predictions.jsonl",
+      "time_pdf_conversion": 0.0033962081652134657,
+      "time_extraction": 5297.511355714174,
+      "time_start": 1773276426,
+      "time_end": 1773281827,
+      "commit_hash": "ba4177888275db7c8dc2ddf46678dde450aa11f4",
+      "branch": "commit/ba4177888275",
+      "is_dirty": false,
+      "slurm_job_id": "2616389"
+    },
+    "overrides": {
+      "name": "380_faktencheck_core",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "mistral_small_3_24b_in_process",
+      "seed": "1337"
+    }
+  }
+}
