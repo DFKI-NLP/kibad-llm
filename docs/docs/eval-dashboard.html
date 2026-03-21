@@ -1731,8 +1731,19 @@
         runCells.push(map);
       }
 
-      const rows = Array.from(rowLabels).sort((a, b) => a.localeCompare(b));
-      const cols = Array.from(colLabels).sort((a, b) => a.localeCompare(b));
+      const sortWithForcedLast = (values, forcedLast) =>
+        Array.from(values).sort((a, b) => {
+          if (a === forcedLast && b !== forcedLast) {
+            return 1;
+          }
+          if (b === forcedLast && a !== forcedLast) {
+            return -1;
+          }
+          return a.localeCompare(b);
+        });
+
+      const rows = sortWithForcedLast(rowLabels, "UNASSIGNABLE");
+      const cols = sortWithForcedLast(colLabels, "UNDETECTED");
       const cells = new Map();
       for (const row of rows) {
         for (const col of cols) {
