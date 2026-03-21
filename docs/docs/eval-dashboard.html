@@ -592,6 +592,11 @@
     <button id="plotTabsByPrefixButton" class="prediction-action-button" type="button">prefix</button>
     <button id="plotTabsBySuffixButton" class="prediction-action-button" type="button">suffix</button>
   </div>
+  <div id="plotConfusionTabsByRow" class="prediction-actions">
+    <strong>Create tabs by:</strong>
+    <button id="confusionTabsByMetricFieldButton" class="prediction-action-button" type="button">overrides.metric.field</button>
+    <button id="confusionTabsByPredictionGroupButton" class="prediction-action-button" type="button">prediction group</button>
+  </div>
   <div id="plotGroupBarsRow" class="plot-group-bars-controls">
     <strong>Group bars:</strong>
     <div id="plotGroupBarsList" class="plot-group-bars-list"></div>
@@ -619,6 +624,7 @@
       plotGroupBarFields: new Set(),
       plotMode: "auto",
       plotRoundingPrecision: 2,
+      confusionTabsBy: "prediction_group",
     };
 
     const folderInput = document.getElementById("folderInput");
@@ -646,6 +652,9 @@
     const plotRoundingPrecision = document.getElementById("plotRoundingPrecision");
     const plotModeEffective = document.getElementById("plotModeEffective");
     const plotTabsByRow = document.getElementById("plotTabsByRow");
+    const plotConfusionTabsByRow = document.getElementById("plotConfusionTabsByRow");
+    const confusionTabsByMetricFieldButton = document.getElementById("confusionTabsByMetricFieldButton");
+    const confusionTabsByPredictionGroupButton = document.getElementById("confusionTabsByPredictionGroupButton");
     const plotGroupBarsRow = document.getElementById("plotGroupBarsRow");
     const plotGroupBarsList = document.getElementById("plotGroupBarsList");
     const evalPlotTabs = document.getElementById("evalPlotTabs");
@@ -826,10 +835,19 @@
     function renderPlotTabModeControls(effectiveMode) {
       plotTabsByPrefixButton.classList.toggle("active", state.plotTabsBy === "prefix");
       plotTabsBySuffixButton.classList.toggle("active", state.plotTabsBy === "suffix");
+      confusionTabsByMetricFieldButton.classList.toggle(
+        "active",
+        state.confusionTabsBy === "metric_field"
+      );
+      confusionTabsByPredictionGroupButton.classList.toggle(
+        "active",
+        state.confusionTabsBy === "prediction_group"
+      );
       plotModeSelect.value = state.plotMode;
       plotRoundingPrecision.value = String(state.plotRoundingPrecision);
       plotModeEffective.textContent = state.plotMode === "auto" ? `(→ ${effectiveMode})` : "";
       plotTabsByRow.style.display = effectiveMode === "f1" ? "" : "none";
+      plotConfusionTabsByRow.style.display = effectiveMode === "confusion_matrix" ? "" : "none";
       plotGroupBarsRow.style.display = effectiveMode === "confusion_matrix" ? "none" : "";
     }
 
@@ -861,6 +879,24 @@
         return;
       }
       state.plotTabsBy = "suffix";
+      state.activeEvalPlotTab = null;
+      renderEvaluations();
+    });
+
+    confusionTabsByMetricFieldButton.addEventListener("click", () => {
+      if (state.confusionTabsBy === "metric_field") {
+        return;
+      }
+      state.confusionTabsBy = "metric_field";
+      state.activeEvalPlotTab = null;
+      renderEvaluations();
+    });
+
+    confusionTabsByPredictionGroupButton.addEventListener("click", () => {
+      if (state.confusionTabsBy === "prediction_group") {
+        return;
+      }
+      state.confusionTabsBy = "prediction_group";
       state.activeEvalPlotTab = null;
       renderEvaluations();
     });
@@ -1856,6 +1892,55 @@
       return svg;
     }
 
+    function buildConfusionTabMap(activeExperiment, selectedGroups, experimentRuns) {
+      const tabMap = new Map();
+      const varyingFields = getVaryingGroupByFields(selectedGroups);
+      const labelFields = varyingFields.length ? varyingFields : state.groupByFields;
+      const groupEntries = selectedGroups
+        .map((group, index) => ({
+          key: `group|#|${group.groupId}`,
+          label: getPredictionGroupDisplayLabel(group, index, labelFields),
+          runs: group.predictions
+            .flatMap((prediction) => prediction.evalRuns)
+            .filter((run) => run.experimentEvaluate === activeExperiment),
+        }))
+        .filter((entry) => entry.runs.length > 0);
+
+      if (state.confusionTabsBy === "metric_field") {
+        for (const run of experimentRuns) {
+          const rawField = normalizeValue(run.evalOverrides["metric.field"]);
+          const fieldLabel = rawField || "(missing metric.field)";
+          if (!tabMap.has(fieldLabel)) {
+            tabMap.set(fieldLabel, { label: fieldLabel, plots: [] });
+          }
+        }
+
+        for (const [fieldKey, tab] of tabMap.entries()) {
+          for (const groupEntry of groupEntries) {
+            const runsForFieldAndGroup = groupEntry.runs.filter((run) => {
+              const rawField = normalizeValue(run.evalOverrides["metric.field"]);
+              const fieldLabel = rawField || "(missing metric.field)";
+              return fieldLabel === fieldKey;
+            });
+            if (runsForFieldAndGroup.length === 0) {
+              continue;
+            }
+            tab.plots.push({ label: groupEntry.label, runs: runsForFieldAndGroup });
+          }
+        }
+        return tabMap;
+      }
+
+      for (const groupEntry of groupEntries) {
+        tabMap.set(groupEntry.key, {
+          label: groupEntry.label,
+          plots: [{ label: groupEntry.label, runs: groupEntry.runs }],
+        });
+      }
+
+      return tabMap;
+    }
+
     function renderGroupBarChips(varyingGroupByFields, activeExperiment) {
       if (varyingGroupByFields.length === 0) {
         const noOptions = document.createElement("span");
@@ -2030,8 +2115,11 @@
       );
 
       if (effectiveMode === "confusion_matrix") {
-        const aggregation = getConfusionMatrixAggregation(experimentRuns);
-        if (!aggregation.rows.length || !aggregation.cols.length) {
+        const confusionTabMap = buildConfusionTabMap(activeExperiment, selectedGroups, experimentRuns);
+        const sortedConfusionTabKeys = Array.from(confusionTabMap.keys()).sort((a, b) =>
+          confusionTabMap.get(a).label.localeCompare(confusionTabMap.get(b).label)
+        );
+        if (sortedConfusionTabKeys.length === 0) {
           const msg = document.createElement("p");
           msg.className = "plot-empty";
           msg.textContent = `No confusion matrix data found for ${activeExperiment}.`;
@@ -2039,16 +2127,61 @@
           return;
         }
 
-        const card = document.createElement("section");
-        card.className = "plot-card";
-        const title = document.createElement("p");
-        title.className = "plot-title";
-        title.textContent = `${getConfusionMatrixTitle(experimentRuns)} (mean ± std)`;
-        card.appendChild(title);
-        card.appendChild(
-          createConfusionMatrixHeatmapSvg(aggregation, state.plotRoundingPrecision)
-        );
-        evalPlotContent.appendChild(card);
+        if (!state.activeEvalPlotTab || !confusionTabMap.has(state.activeEvalPlotTab)) {
+          state.activeEvalPlotTab = sortedConfusionTabKeys[0];
+        }
+
+        for (const key of sortedConfusionTabKeys) {
+          const entry = confusionTabMap.get(key);
+          const runCount = entry.plots.reduce((sum, plot) => sum + plot.runs.length, 0);
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "tab-button" + (key === state.activeEvalPlotTab ? " active" : "");
+          button.textContent = `${entry.label} (${runCount})`;
+          button.title = entry.label;
+          button.addEventListener("click", () => {
+            state.activeEvalPlotTab = key;
+            renderEvaluationPlots(activeExperiment);
+          });
+          evalPlotTabs.appendChild(button);
+        }
+
+        const activeConfusionEntry = confusionTabMap.get(state.activeEvalPlotTab);
+        const grid = document.createElement("div");
+        grid.className = "plot-grid";
+
+        for (const plotEntry of activeConfusionEntry.plots) {
+          const aggregation = getConfusionMatrixAggregation(plotEntry.runs);
+          if (!aggregation.rows.length || !aggregation.cols.length) {
+            continue;
+          }
+
+          const card = document.createElement("section");
+          card.className = "plot-card";
+          const title = document.createElement("p");
+          title.className = "plot-title";
+          const fieldTitle = getConfusionMatrixTitle(plotEntry.runs);
+          if (state.confusionTabsBy === "metric_field") {
+            title.textContent = `${plotEntry.label} (mean ± std)`;
+          } else {
+            title.textContent = `${fieldTitle} (mean ± std)`;
+          }
+          card.appendChild(title);
+          card.appendChild(
+            createConfusionMatrixHeatmapSvg(aggregation, state.plotRoundingPrecision)
+          );
+          grid.appendChild(card);
+        }
+
+        if (!grid.childElementCount) {
+          const msg = document.createElement("p");
+          msg.className = "plot-empty";
+          msg.textContent = `No confusion matrix values found for ${activeConfusionEntry.label}.`;
+          evalPlotContent.appendChild(msg);
+          return;
+        }
+
+        evalPlotContent.appendChild(grid);
         return;
       }
 
