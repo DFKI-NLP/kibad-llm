@@ -468,6 +468,22 @@
       margin: 0;
       color: var(--muted);
     }
+    .bar-tooltip {
+      position: fixed;
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 0.82rem;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      white-space: pre;
+      pointer-events: none;
+      z-index: 9999;
+      display: none;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.35);
+      line-height: 1.5;
+    }
     .plot-mode-select {
       border: 1px solid var(--border);
       background: var(--surface-2);
@@ -603,6 +619,7 @@
   </div>
   <div id="evalPlotTabs" class="tabs"></div>
   <div id="evalPlotContent" class="plot-content"></div>
+  <div id="barTooltip" class="bar-tooltip" aria-hidden="true"></div>
 
   <script>
     const state = {
@@ -659,6 +676,31 @@
     const plotGroupBarsList = document.getElementById("plotGroupBarsList");
     const evalPlotTabs = document.getElementById("evalPlotTabs");
     const evalPlotContent = document.getElementById("evalPlotContent");
+    const barTooltip = document.getElementById("barTooltip");
+
+    function showBarTooltip(event, lines) {
+      barTooltip.textContent = lines.join("\n");
+      barTooltip.style.display = "block";
+      positionBarTooltip(event);
+    }
+
+    function positionBarTooltip(event) {
+      const pad = 14;
+      let x = event.clientX + pad;
+      let y = event.clientY - pad - barTooltip.offsetHeight;
+      if (x + barTooltip.offsetWidth > window.innerWidth - pad) {
+        x = event.clientX - barTooltip.offsetWidth - pad;
+      }
+      if (y < pad) {
+        y = event.clientY + pad;
+      }
+      barTooltip.style.left = `${x}px`;
+      barTooltip.style.top = `${y}px`;
+    }
+
+    function hideBarTooltip() {
+      barTooltip.style.display = "none";
+    }
 
     function renderEvalJsonTabs() {
       evalJsonTabEvaluation.classList.toggle("active", state.activeEvalJsonTab === "evaluation");
@@ -1492,6 +1534,16 @@
         rect.setAttribute("width", String(barWidth));
         rect.setAttribute("height", String(Math.max(0, barHeight)));
         rect.setAttribute("fill", "#60a5fa");
+        rect.style.cursor = "crosshair";
+        rect.addEventListener("mouseover", (event) => {
+          showBarTooltip(event, [
+            point.label,
+            `mean: ${Number(point.mean).toFixed(4)}`,
+            `std:  ${Number(point.std).toFixed(4)}`,
+          ]);
+        });
+        rect.addEventListener("mousemove", positionBarTooltip);
+        rect.addEventListener("mouseout", hideBarTooltip);
         svg.appendChild(rect);
 
         const errTop = margin.top + chartHeight - ((point.mean + point.std) / yMax) * chartHeight;
@@ -1623,6 +1675,20 @@
           rect.setAttribute("width", String(barWidth));
           rect.setAttribute("height", String(Math.max(0, barHeight)));
           rect.setAttribute("fill", color);
+          rect.style.cursor = "crosshair";
+          rect.addEventListener("mouseover", (event) => {
+            const tooltipLines = [category];
+            if (seriesOrder.length > 1) {
+              tooltipLines.push(`series: ${series}`);
+            }
+            tooltipLines.push(
+              `mean: ${Number(point.mean).toFixed(4)}`,
+              `std:  ${Number(point.std).toFixed(4)}`
+            );
+            showBarTooltip(event, tooltipLines);
+          });
+          rect.addEventListener("mousemove", positionBarTooltip);
+          rect.addEventListener("mouseout", hideBarTooltip);
           svg.appendChild(rect);
 
           const errTop = margin.top + chartHeight - ((point.mean + point.std) / yMax) * chartHeight;
