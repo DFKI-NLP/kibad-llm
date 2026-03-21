@@ -1926,6 +1926,17 @@
           rect.setAttribute("fill", fill);
           rect.setAttribute("stroke", "#33415555");
           rect.setAttribute("stroke-width", "1");
+          rect.style.cursor = "crosshair";
+          rect.addEventListener("mouseover", (event) => {
+            showBarTooltip(event, [
+              `actual:    ${row}`,
+              `predicted: ${col}`,
+              `mean: ${formatRounded(stats.mean, precision)}`,
+              `std:  ${formatRounded(stats.std, precision)}`,
+            ]);
+          });
+          rect.addEventListener("mousemove", positionBarTooltip);
+          rect.addEventListener("mouseout", hideBarTooltip);
           svg.appendChild(rect);
 
           const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
