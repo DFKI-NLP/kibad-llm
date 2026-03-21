@@ -348,7 +348,7 @@
         width: 100%;
       }
     }
-    #predictionsTable {
+    .dashboard-data-table {
       border-collapse: separate;
       border-spacing: 0;
       table-layout: auto;
@@ -359,8 +359,8 @@
       --sticky-col-2-left: 0px;
       --sticky-col-3-left: 0px;
     }
-    #predictionsTable th,
-    #predictionsTable td {
+    .dashboard-data-table th,
+    .dashboard-data-table td {
       border: 0;
       border-right: 1px solid var(--border);
       border-bottom: 1px solid var(--border);
@@ -371,47 +371,21 @@
       text-overflow: clip;
       background: var(--surface);
     }
-    #predictionsTable th:nth-child(-n+2),
-    #predictionsTable td:nth-child(-n+2) {
+    .dashboard-data-table th:nth-child(-n+2),
+    .dashboard-data-table td:nth-child(-n+2) {
       text-align: center;
     }
-    #predictionsTable th:nth-child(3),
-    #predictionsTable td:nth-child(3) {
+    .dashboard-data-table th:nth-child(3),
+    .dashboard-data-table td:nth-child(3) {
       text-align: center;
     }
-    #evaluationsTable {
-      border-collapse: separate;
-      border-spacing: 0;
-      table-layout: auto;
-      width: max-content;
-      min-width: 100%;
-      margin: 0;
-      --sticky-col-1-left: 0px;
-      --sticky-col-2-left: 0px;
-      --sticky-col-3-left: 0px;
-    }
-    #evaluationsTable th,
-    #evaluationsTable td {
-      border: 0;
-      border-right: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-      white-space: nowrap;
-      overflow-wrap: normal;
-      word-break: normal;
-      max-width: none;
-      text-overflow: clip;
-      background: var(--surface);
-    }
-    #predictionsTable tr > *:last-child,
-    #evaluationsTable tr > *:last-child {
+    .dashboard-data-table tr > *:last-child {
       border-right: 0;
     }
-    #predictionsTable tbody tr:last-child > td,
-    #evaluationsTable tbody tr:last-child > td {
+    .dashboard-data-table tbody tr:last-child > td {
       border-bottom: 0;
     }
-    #predictionsTable th,
-    #evaluationsTable th {
+    .dashboard-data-table th {
       background: var(--surface-2);
     }
     #evaluationsTable thead tr:first-child th:nth-child(-n+2),
@@ -423,48 +397,39 @@
       text-align: center;
     }
     /* Keep key control columns visible while horizontally scrolling the tables. */
-    #predictionsTable thead tr:first-child th:nth-child(1),
-    #predictionsTable tbody td:nth-child(1),
-    #evaluationsTable thead tr:first-child th:nth-child(1),
-    #evaluationsTable tbody td:nth-child(1) {
+    .dashboard-data-table thead tr:first-child th:nth-child(1),
+    .dashboard-data-table tbody td:nth-child(1) {
       position: sticky;
       left: var(--sticky-col-1-left);
       z-index: 3;
       background: var(--surface);
       box-shadow: 1px 0 0 var(--border);
     }
-    #predictionsTable thead tr:first-child th:nth-child(2),
-    #predictionsTable tbody td:nth-child(2),
-    #evaluationsTable thead tr:first-child th:nth-child(2),
-    #evaluationsTable tbody td:nth-child(2) {
+    .dashboard-data-table thead tr:first-child th:nth-child(2),
+    .dashboard-data-table tbody td:nth-child(2) {
       position: sticky;
       left: var(--sticky-col-2-left);
       z-index: 3;
       background: var(--surface);
       box-shadow: 1px 0 0 var(--border);
     }
-    #predictionsTable thead tr:first-child th:nth-child(3),
-    #predictionsTable tbody td:nth-child(3),
-    #evaluationsTable thead tr:first-child th:nth-child(3),
-    #evaluationsTable tbody td:nth-child(3) {
+    .dashboard-data-table thead tr:first-child th:nth-child(3),
+    .dashboard-data-table tbody td:nth-child(3) {
       position: sticky;
       left: var(--sticky-col-3-left);
       z-index: 3;
       background: var(--surface);
       box-shadow: 1px 0 0 var(--border);
     }
-    #predictionsTable thead tr:first-child th:nth-child(-n+3),
-    #evaluationsTable thead tr:first-child th:nth-child(-n+3) {
+    .dashboard-data-table thead tr:first-child th:nth-child(-n+3) {
       background: var(--surface-2);
       z-index: 4;
     }
-    #predictionsTable tbody td:nth-child(-n+3),
-    #evaluationsTable tbody td:nth-child(-n+3) {
+    .dashboard-data-table tbody td:nth-child(-n+3) {
       background: var(--surface);
       z-index: 2;
     }
-    #predictionsTable tbody tr.member-row td:nth-child(-n+3),
-    #evaluationsTable tbody tr.member-row td:nth-child(-n+3) {
+    .dashboard-data-table tbody tr.member-row td:nth-child(-n+3) {
       background: var(--surface-2);
     }
     #evaluationsTable tbody tr.eval-row-selected td:nth-child(-n+3) {
@@ -475,17 +440,8 @@
       font-weight: 700;
       color: var(--text);
     }
-    #predictionsTable th.truncate-enabled,
-    #predictionsTable td.truncate-enabled {
-      white-space: nowrap;
-      overflow-wrap: normal;
-      word-break: normal;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 320px;
-    }
-    #evaluationsTable th.truncate-enabled,
-    #evaluationsTable td.truncate-enabled {
+    .dashboard-data-table th.truncate-enabled,
+    .dashboard-data-table td.truncate-enabled {
       white-space: nowrap;
       overflow-wrap: normal;
       word-break: normal;
@@ -659,7 +615,7 @@
     </div>
   </details>
   <div class="table-container">
-    <table id="predictionsTable"></table>
+    <table id="predictionsTable" class="dashboard-data-table"></table>
   </div>
 
   <h2>Evaluations</h2>
@@ -686,7 +642,7 @@
   </details>
   <div id="evalLayout" class="eval-layout">
     <div class="table-container">
-      <table id="evaluationsTable"></table>
+      <table id="evaluationsTable" class="dashboard-data-table"></table>
     </div>
     <div id="evalJsonPane" class="eval-json-pane">
       <div class="eval-json-tabs">
