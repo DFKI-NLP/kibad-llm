@@ -1932,10 +1932,23 @@
       }
 
       for (const groupEntry of groupEntries) {
-        tabMap.set(groupEntry.key, {
-          label: groupEntry.label,
-          plots: [{ label: groupEntry.label, runs: groupEntry.runs }],
-        });
+        // Split runs by metric.field so different fields don't get mixed into one matrix.
+        const byField = new Map();
+        for (const run of groupEntry.runs) {
+          const rawField = normalizeValue(run.evalOverrides["metric.field"]);
+          const fieldLabel = rawField || "(missing metric.field)";
+          if (!byField.has(fieldLabel)) {
+            byField.set(fieldLabel, []);
+          }
+          byField.get(fieldLabel).push(run);
+        }
+        const plots = Array.from(byField.entries())
+          .sort(([a], [b]) => a.localeCompare(b))
+          .map(([fieldLabel, runs]) => ({
+            label: fieldLabel,
+            runs,
+          }));
+        tabMap.set(groupEntry.key, { label: groupEntry.label, plots });
       }
 
       return tabMap;
