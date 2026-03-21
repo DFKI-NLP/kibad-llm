@@ -341,53 +341,77 @@
       }
     }
     #predictionsTable {
+      border-collapse: separate;
+      border-spacing: 0;
       table-layout: auto;
       width: max-content;
       min-width: 100%;
+      margin: 0;
+      --sticky-col-1-left: 0px;
+      --sticky-col-2-left: 0px;
+      --sticky-col-3-left: 0px;
     }
     #predictionsTable th,
     #predictionsTable td {
+      border: 0;
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
       white-space: nowrap;
       overflow-wrap: normal;
       word-break: normal;
       max-width: none;
       text-overflow: clip;
+      background: var(--surface);
     }
     #predictionsTable th:nth-child(-n+2),
     #predictionsTable td:nth-child(-n+2) {
-      width: 38px;
-      max-width: 38px;
       text-align: center;
     }
     #predictionsTable th:nth-child(3),
     #predictionsTable td:nth-child(3) {
-      width: 72px;
-      max-width: 72px;
       text-align: center;
     }
     #evaluationsTable {
+      border-collapse: separate;
+      border-spacing: 0;
       table-layout: auto;
       width: max-content;
       min-width: 100%;
+      margin: 0;
+      --sticky-col-1-left: 0px;
+      --sticky-col-2-left: 0px;
+      --sticky-col-3-left: 0px;
     }
     #evaluationsTable th,
     #evaluationsTable td {
+      border: 0;
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
       white-space: nowrap;
       overflow-wrap: normal;
       word-break: normal;
       max-width: none;
       text-overflow: clip;
+      background: var(--surface);
+    }
+    #predictionsTable tr > *:last-child,
+    #evaluationsTable tr > *:last-child {
+      border-right: 0;
+    }
+    #predictionsTable tbody tr:last-child > td,
+    #evaluationsTable tbody tr:last-child > td {
+      border-bottom: 0;
+    }
+    #predictionsTable th,
+    #evaluationsTable th {
+      background: var(--surface-2);
     }
     #evaluationsTable thead tr:first-child th:nth-child(-n+2),
     #evaluationsTable tbody td:nth-child(-n+2) {
-      width: 38px;
-      max-width: 38px;
       text-align: center;
     }
     #evaluationsTable thead tr:first-child th:nth-child(3),
     #evaluationsTable tbody td:nth-child(3) {
-      width: 72px;
-      max-width: 72px;
       text-align: center;
     }
     /* Keep key control columns visible while horizontally scrolling the tables. */
@@ -396,27 +420,35 @@
     #evaluationsTable thead tr:first-child th:nth-child(1),
     #evaluationsTable tbody td:nth-child(1) {
       position: sticky;
-      left: 0;
+      left: var(--sticky-col-1-left);
       z-index: 3;
-      background: var(--surface-2);
+      background: var(--surface);
+      box-shadow: 1px 0 0 var(--border);
     }
     #predictionsTable thead tr:first-child th:nth-child(2),
     #predictionsTable tbody td:nth-child(2),
     #evaluationsTable thead tr:first-child th:nth-child(2),
     #evaluationsTable tbody td:nth-child(2) {
       position: sticky;
-      left: 38px;
+      left: var(--sticky-col-2-left);
       z-index: 3;
-      background: var(--surface-2);
+      background: var(--surface);
+      box-shadow: 1px 0 0 var(--border);
     }
     #predictionsTable thead tr:first-child th:nth-child(3),
     #predictionsTable tbody td:nth-child(3),
     #evaluationsTable thead tr:first-child th:nth-child(3),
     #evaluationsTable tbody td:nth-child(3) {
       position: sticky;
-      left: 76px;
+      left: var(--sticky-col-3-left);
       z-index: 3;
+      background: var(--surface);
+      box-shadow: 1px 0 0 var(--border);
+    }
+    #predictionsTable thead tr:first-child th:nth-child(-n+3),
+    #evaluationsTable thead tr:first-child th:nth-child(-n+3) {
       background: var(--surface-2);
+      z-index: 4;
     }
     #predictionsTable tbody td:nth-child(-n+3),
     #evaluationsTable tbody td:nth-child(-n+3) {
@@ -426,6 +458,9 @@
     #predictionsTable tbody tr.member-row td:nth-child(-n+3),
     #evaluationsTable tbody tr.member-row td:nth-child(-n+3) {
       background: var(--surface-2);
+    }
+    #evaluationsTable tbody tr.eval-row-selected td:nth-child(-n+3) {
+      background: color-mix(in srgb, var(--accent) 18%, var(--surface));
     }
     .section-header {
       text-align: center;
@@ -1418,6 +1453,30 @@
       return td;
     }
 
+    function updateStickyControlColumnOffsets(tableElement) {
+      if (!tableElement) {
+        return;
+      }
+      const firstHeaderRow = tableElement.tHead?.rows?.[0];
+      if (!firstHeaderRow || firstHeaderRow.cells.length < 3) {
+        tableElement.style.setProperty("--sticky-col-1-left", "0px");
+        tableElement.style.setProperty("--sticky-col-2-left", "0px");
+        tableElement.style.setProperty("--sticky-col-3-left", "0px");
+        return;
+      }
+      const widths = Array.from(firstHeaderRow.cells)
+        .slice(0, 3)
+        .map((cell) => Math.ceil(cell.getBoundingClientRect().width));
+      tableElement.style.setProperty("--sticky-col-1-left", "0px");
+      tableElement.style.setProperty("--sticky-col-2-left", `${widths[0]}px`);
+      tableElement.style.setProperty("--sticky-col-3-left", `${widths[0] + widths[1]}px`);
+    }
+
+    window.addEventListener("resize", () => {
+      updateStickyControlColumnOffsets(predictionsTable);
+      updateStickyControlColumnOffsets(evaluationsTable);
+    });
+
     function getGroupValueDisplay(group, column) {
       const values = new Set(
         group.predictions.map((prediction) => normalizeValue(prediction.predictionMeta[column]))
@@ -1482,7 +1541,7 @@
           staticControl.className = "header-static-control";
           const caption = document.createElement("span");
           caption.className = "header-caption";
-          caption.textContent = header;
+          caption.textContent = header === "group_size" ? "#" : header;
           staticControl.appendChild(caption);
           th.appendChild(staticControl);
         }
@@ -1600,6 +1659,7 @@
       }
 
       predictionsTable.appendChild(tbody);
+      updateStickyControlColumnOffsets(predictionsTable);
     }
 
     function gatherSelectedRuns() {
@@ -2749,7 +2809,7 @@
           staticControl.className = "header-static-control";
           const caption = document.createElement("span");
           caption.className = "header-caption";
-          caption.textContent = header;
+          caption.textContent = header === "group_size" ? "#" : header;
           staticControl.appendChild(caption);
           th.appendChild(staticControl);
         }
@@ -2934,6 +2994,7 @@
         }
       }
       evaluationsTable.appendChild(tbody);
+      updateStickyControlColumnOffsets(evaluationsTable);
 
       if (evalTabState.selectedEvalRunDir !== null || evalTabState.selectedEvalGroupId !== null) {
         const selectedRun = tabRuns.find((run) => run.runDir === evalTabState.selectedEvalRunDir) || null;
