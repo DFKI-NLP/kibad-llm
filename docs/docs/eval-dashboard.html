@@ -958,8 +958,8 @@
         )
         .sort();
       return [
-        { label: "job_return_value", columns: jobReturnValue },
         { label: "overrides", columns: overrides },
+        { label: "job_return_value", columns: jobReturnValue },
         { label: "other", columns: other },
       ].filter((section) => section.columns.length > 0);
     }
@@ -2120,7 +2120,15 @@
     }
 
     function renderPlotTabsAndGrid(tabMap, activeExperiment, groupBarFields) {
-      const sortedTabKeys = Array.from(tabMap.keys()).sort((a, b) => a.localeCompare(b));
+      const tabPriority = ["total", "details"];
+      const sortedTabKeys = Array.from(tabMap.keys()).sort((a, b) => {
+        const pa = tabPriority.indexOf(a);
+        const pb = tabPriority.indexOf(b);
+        if (pa !== -1 && pb !== -1) return pa - pb;
+        if (pa !== -1) return -1;
+        if (pb !== -1) return 1;
+        return a.localeCompare(b);
+      });
       if (!state.activeEvalPlotTab || !tabMap.has(state.activeEvalPlotTab)) {
         state.activeEvalPlotTab = sortedTabKeys[0] || null;
       }
