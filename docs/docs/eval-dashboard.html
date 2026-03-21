@@ -1784,19 +1784,6 @@
       yAxisTitle.textContent = "Actual label";
       svg.appendChild(yAxisTitle);
 
-      cols.forEach((col, colIndex) => {
-        const x = margin.left + colIndex * cellSize + cellSize / 2;
-        const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        label.setAttribute("x", String(x));
-        label.setAttribute("y", String(margin.top - 12));
-        label.setAttribute("transform", `rotate(-35 ${x} ${margin.top - 12})`);
-        label.setAttribute("text-anchor", "end");
-        label.setAttribute("fill", "currentColor");
-        label.setAttribute("font-size", "11");
-        label.textContent = col;
-        svg.appendChild(label);
-      });
-
       rows.forEach((row, rowIndex) => {
         const y = margin.top + rowIndex * cellSize + cellSize / 2;
         const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
@@ -1837,6 +1824,22 @@
           text.textContent = `${formatRounded(stats.mean, precision)}±${formatRounded(stats.std, precision)}`;
           svg.appendChild(text);
         });
+      });
+
+      // Draw predicted-label ticks last so they stay visible above heatmap cells.
+      cols.forEach((col, colIndex) => {
+        const x = margin.left + colIndex * cellSize + cellSize / 2;
+        const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        const y = margin.top - 10;
+        label.setAttribute("x", String(x + 2));
+        label.setAttribute("y", String(y));
+        label.setAttribute("transform", `rotate(-35 ${x + 2} ${y})`);
+        // Anchor from the tick position so the label text grows away from the matrix.
+        label.setAttribute("text-anchor", "start");
+        label.setAttribute("fill", "currentColor");
+        label.setAttribute("font-size", "11");
+        label.textContent = col;
+        svg.appendChild(label);
       });
 
       return svg;
