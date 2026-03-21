@@ -574,9 +574,10 @@
 <body>
   <h1>Evaluation Dashboard</h1>
   <p class="hint">
-    Select one logs folder (for example <code>data/prediction_results/logs/380_faktencheck_core</code>).<br>
-    The dashboard only loads single-run entries from <code>evaluate</code> subfolders where both
-    <code>job_return_value.json</code> and <code>.hydra/overrides.yaml</code> are present.
+    Select a logs folder (for example <code>data/prediction_results/logs/380_faktencheck_core</code>).<br>
+    The dashboard loads all single evaluation-run folders where both
+    <code>job_return_value.json</code> and <code>.hydra/overrides.yaml</code> are present. Runs inside
+    <code>predict</code> are ignored.
   </p>
 
   <div class="controls">
@@ -1222,8 +1223,9 @@
       });
     }
 
-    // Load only single evaluation runs: folders inside evaluate/ that also have .hydra/overrides.yaml.
-    // The prediction part is kept as metadata so prediction/evaluation views can stay linked later on.
+    // Load only single evaluation runs: any selected folder tree can contribute runs as long as a run
+    // directory contains both job_return_value.json and .hydra/overrides.yaml. predict runs are excluded,
+    // and the prediction part is kept as metadata so prediction/evaluation views stay linked later on.
     async function loadRunsFromFiles(files) {
       if (!files.length) {
         loadStatus.textContent = "No files selected.";
@@ -1241,30 +1243,53 @@
         byPath.set(file.webkitRelativePath, file);
       }
 
-      const candidateJobFiles = files.filter((file) => {
+      const hydraRunDirs = new Set();
+      const jobRunDirs = new Set();
+      for (const file of files) {
         const rel = file.webkitRelativePath || "";
-        return /(^|\/)evaluate\/.*\/job_return_value\.json$/.test(rel);
-      });
+        if (/(^|\/)\.hydra\/overrides\.yaml$/.test(rel)) {
+          hydraRunDirs.add(rel.slice(0, -"/.hydra/overrides.yaml".length));
+        }
+        if (/(^|\/)job_return_value\.json$/.test(rel)) {
+          jobRunDirs.add(rel.slice(0, -"/job_return_value.json".length));
+        }
+      }
+
+      const isPredictRunDir = (runDir) => /(^|\/)predict(\/|$)/.test(runDir);
+      const allSeenRunDirs = new Set([...hydraRunDirs, ...jobRunDirs]);
+      let skippedPredictRuns = 0;
+      for (const runDir of allSeenRunDirs) {
+        if (isPredictRunDir(runDir)) {
+          skippedPredictRuns += 1;
+        }
+      }
+
+      const candidateRunDirs = Array.from(hydraRunDirs)
+        .filter((runDir) => jobRunDirs.has(runDir) && !isPredictRunDir(runDir))
+        .sort();
 
       let loadedCount = 0;
-      let skippedMissingHydra = 0;
+      let skippedMissingJob = 0;
       let skippedInvalid = 0;
       let skippedDuplicate = 0;
       const knownRunDirs = new Set(state.runs.map((run) => run.runDir));
 
-      for (const jobFile of candidateJobFiles) {
-        const jobPath = jobFile.webkitRelativePath;
-        const runDir = jobPath.slice(0, -"/job_return_value.json".length);
+      for (const runDir of hydraRunDirs) {
+        if (!jobRunDirs.has(runDir) && !isPredictRunDir(runDir)) {
+          skippedMissingJob += 1;
+        }
+      }
+
+      for (const runDir of candidateRunDirs) {
         if (knownRunDirs.has(runDir)) {
           skippedDuplicate += 1;
           continue;
         }
+        const jobFile = byPath.get(`${runDir}/job_return_value.json`);
         const overridesPath = `${runDir}/.hydra/overrides.yaml`;
         const overridesFile = byPath.get(overridesPath);
 
-        // Skip multirun aggregates and partial folders: only keep single-run folders with .hydra.
-        if (!overridesFile) {
-          skippedMissingHydra += 1;
+        if (!jobFile || !overridesFile) {
           continue;
         }
 
@@ -1338,11 +1363,12 @@
       const loadedFolders = Array.from(state.loadedFolders).sort();
       loadStatus.textContent = [
         `Loaded folders (${loadedFolders.length}): ${loadedFolders.join(", ")}`,
-        `Candidate eval job files: ${candidateJobFiles.length}`,
+        `Skipped (is predict run): ${skippedPredictRuns}`,
+        `Candidate evaluation runs: ${candidateRunDirs.length}`,
         `New evaluation runs loaded: ${loadedCount}`,
         `Skipped (already loaded): ${skippedDuplicate}`,
         `Evaluation runs loaded: ${state.runs.length}`,
-        `Skipped (no .hydra/overrides.yaml): ${skippedMissingHydra}`,
+        `Skipped (missing job_return_value.json): ${skippedMissingJob}`,
         `Skipped (invalid JSON/YAML): ${skippedInvalid}`,
       ].join("\n");
     }
