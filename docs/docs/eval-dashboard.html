@@ -732,6 +732,7 @@
   <div id="barTooltip" class="bar-tooltip" aria-hidden="true"></div>
 
   <script>
+    // Central UI state: loaded runs, current grouping/selection, and per-eval-tab view state.
     const state = {
       runs: [],
       predictionEntries: [],
@@ -1265,6 +1266,8 @@
       });
     }
 
+    // Load only single evaluation runs: folders inside evaluate/ that also have .hydra/overrides.yaml.
+    // The prediction part is kept as metadata so prediction/evaluation views can stay linked later on.
     async function loadRunsFromFiles(files) {
       if (!files.length) {
         loadStatus.textContent = "No files selected.";
@@ -1388,6 +1391,7 @@
       ].join("\n");
     }
 
+    // First grouping step: collapse multiple evaluation runs that belong to the same prediction config.
     function buildGroups() {
       const map = new Map();
       const groupBy = state.groupByFields;
@@ -1461,6 +1465,7 @@
       return td;
     }
 
+    // Sticky left offsets depend on rendered widths, so measure them after each table render.
     function updateStickyControlColumnOffsets(tableElement) {
       if (!tableElement) {
         return;
@@ -1689,6 +1694,8 @@
       return state.groups.filter((group) => state.selectedGroupIds.has(group.groupId));
     }
 
+    // Second grouping step: within the selected predictions, group evaluation runs by eval overrides
+    // while still respecting the active prediction grouping from the upper table.
     function buildEvaluationGroups(runs, groupByFields, predictionGroupByFields = state.groupByFields) {
       const map = new Map();
       for (const run of runs) {
@@ -2123,6 +2130,7 @@
       };
     }
 
+    // In auto mode, infer the plotting branch from the experiment/evaluate name.
     function getEffectivePlotMode(activeExperiment) {
       if (state.plotMode !== "auto") {
         return state.plotMode;
@@ -2155,6 +2163,8 @@
       return `mixed metric.field: ${Array.from(fieldValues).sort((a, b) => a.localeCompare(b)).join(", ")}`;
     }
 
+    // Convert per-run confusion counts into one aligned matrix with mean/std per cell.
+    // Missing cells are treated as zeros so runs with different support can still be aggregated together.
     function getConfusionMatrixAggregation(experimentRuns) {
       const rowLabels = new Set();
       const colLabels = new Set();
@@ -2212,6 +2222,7 @@
       return `rgb(${mix(startRgb[0], endRgb[0])}, ${mix(startRgb[1], endRgb[1])}, ${mix(startRgb[2], endRgb[2])})`;
     }
 
+    // Render an already-aggregated confusion matrix as an SVG heatmap with values and tooltips.
     function createConfusionMatrixHeatmapSvg(aggregation, precision) {
       const { rows, cols, cells } = aggregation;
       const cellSize = 96;
@@ -2316,6 +2327,8 @@
       return svg;
     }
 
+    // Depending on the current tab strategy, group confusion plots either by metric.field or by
+    // the active prediction/evaluation grouping, while keeping different metric.field values separate.
     function buildConfusionTabMap(activeExperiment, plotGroups, experimentRuns, labelFields) {
       const tabMap = new Map();
       const groupEntries = plotGroups
@@ -2532,6 +2545,8 @@
       evalPlotContent.appendChild(grid);
     }
 
+    // Plot rendering always starts from the currently selected prediction groups and selected eval groups,
+    // then branches into mode-specific aggregation/rendering (f1, errors, confusion matrix).
     function renderEvaluationPlots(activeExperiment) {
       const effectiveMode = getEffectivePlotMode(activeExperiment);
       renderPlotTabModeControls(effectiveMode);
@@ -2589,6 +2604,8 @@
       const varyingPlotGroupFields = getVaryingFields(plotGroups, plotGroupFields);
 
       if (effectiveMode === "confusion_matrix") {
+        // Confusion plots do not reuse the generic bar-plot path below; they get their own tab map
+        // and heatmap rendering because the aggregation shape is matrix-like instead of metric-like.
         const labelFields = varyingPlotGroupFields.length ? varyingPlotGroupFields : plotGroupFields;
         const confusionTabMap = buildConfusionTabMap(activeExperiment, plotGroups, experimentRuns, labelFields);
         const sortedConfusionTabKeys = Array.from(confusionTabMap.keys()).sort((a, b) =>
