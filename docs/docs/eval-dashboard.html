@@ -378,45 +378,53 @@
       max-width: none;
       text-overflow: clip;
     }
-    #evaluationsTable th:nth-child(-n+2),
-    #evaluationsTable td:nth-child(-n+2) {
+    #evaluationsTable thead tr:first-child th:nth-child(-n+2),
+    #evaluationsTable tbody td:nth-child(-n+2) {
       width: 38px;
       max-width: 38px;
       text-align: center;
     }
-    #evaluationsTable th:nth-child(3),
-    #evaluationsTable td:nth-child(3) {
+    #evaluationsTable thead tr:first-child th:nth-child(3),
+    #evaluationsTable tbody td:nth-child(3) {
       width: 72px;
       max-width: 72px;
       text-align: center;
     }
-    /* Keep key control columns visible while horizontally scrolling the predictions table. */
+    /* Keep key control columns visible while horizontally scrolling the tables. */
     #predictionsTable thead tr:first-child th:nth-child(1),
-    #predictionsTable tbody td:nth-child(1) {
+    #predictionsTable tbody td:nth-child(1),
+    #evaluationsTable thead tr:first-child th:nth-child(1),
+    #evaluationsTable tbody td:nth-child(1) {
       position: sticky;
       left: 0;
       z-index: 3;
       background: var(--surface-2);
     }
     #predictionsTable thead tr:first-child th:nth-child(2),
-    #predictionsTable tbody td:nth-child(2) {
+    #predictionsTable tbody td:nth-child(2),
+    #evaluationsTable thead tr:first-child th:nth-child(2),
+    #evaluationsTable tbody td:nth-child(2) {
       position: sticky;
       left: 38px;
       z-index: 3;
       background: var(--surface-2);
     }
     #predictionsTable thead tr:first-child th:nth-child(3),
-    #predictionsTable tbody td:nth-child(3) {
+    #predictionsTable tbody td:nth-child(3),
+    #evaluationsTable thead tr:first-child th:nth-child(3),
+    #evaluationsTable tbody td:nth-child(3) {
       position: sticky;
       left: 76px;
       z-index: 3;
       background: var(--surface-2);
     }
-    #predictionsTable tbody td:nth-child(-n+3) {
+    #predictionsTable tbody td:nth-child(-n+3),
+    #evaluationsTable tbody td:nth-child(-n+3) {
       background: var(--surface);
       z-index: 2;
     }
-    #predictionsTable tbody tr.member-row td:nth-child(-n+3) {
+    #predictionsTable tbody tr.member-row td:nth-child(-n+3),
+    #evaluationsTable tbody tr.member-row td:nth-child(-n+3) {
       background: var(--surface-2);
     }
     .section-header {
