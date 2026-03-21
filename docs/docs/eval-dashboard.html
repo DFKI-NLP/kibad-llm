@@ -159,8 +159,16 @@
       margin: 0;
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
       font-size: 0.82rem;
-      white-space: pre-wrap;
-      overflow-wrap: anywhere;
+      white-space: pre;
+      overflow-x: auto;
+      overflow-y: auto;
+      overflow-wrap: normal;
+      word-break: normal;
+      max-width: 100%;
+    }
+    #evalJsonCode {
+      display: inline-block;
+      min-width: max-content;
     }
     .eval-row-selected td {
       background: color-mix(in srgb, var(--accent) 18%, var(--surface));
