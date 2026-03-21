@@ -468,6 +468,31 @@
       margin: 0;
       color: var(--muted);
     }
+    .plot-mode-select {
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text);
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+    .plot-mode-effective {
+      font-size: 0.82rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      white-space: nowrap;
+      border: 0;
+    }
   </style>
 </head>
 <body>
@@ -539,6 +564,16 @@
   </div>
   <h3>Evaluation plots</h3>
   <div class="prediction-actions">
+    <strong>Plot mode:</strong>
+    <label for="plotModeSelect" class="sr-only">Plot mode</label>
+    <select id="plotModeSelect" class="plot-mode-select">
+      <option value="auto">auto</option>
+      <option value="f1">f1</option>
+      <option value="errors">errors</option>
+    </select>
+    <span id="plotModeEffective" class="plot-mode-effective"></span>
+  </div>
+  <div id="plotTabsByRow" class="prediction-actions">
     <strong>Create tabs by:</strong>
     <button id="plotTabsByPrefixButton" class="prediction-action-button" type="button">prefix</button>
     <button id="plotTabsBySuffixButton" class="prediction-action-button" type="button">suffix</button>
@@ -568,6 +603,7 @@
       plotTabsBy: "prefix",
       activeEvalPlotTab: null,
       plotGroupBarFields: new Set(),
+      plotMode: "auto",
     };
 
     const folderInput = document.getElementById("folderInput");
@@ -591,6 +627,9 @@
     const evaluationsTable = document.getElementById("evaluationsTable");
     const plotTabsByPrefixButton = document.getElementById("plotTabsByPrefixButton");
     const plotTabsBySuffixButton = document.getElementById("plotTabsBySuffixButton");
+    const plotModeSelect = document.getElementById("plotModeSelect");
+    const plotModeEffective = document.getElementById("plotModeEffective");
+    const plotTabsByRow = document.getElementById("plotTabsByRow");
     const plotGroupBarsList = document.getElementById("plotGroupBarsList");
     const evalPlotTabs = document.getElementById("evalPlotTabs");
     const evalPlotContent = document.getElementById("evalPlotContent");
@@ -767,10 +806,19 @@
       renderPredictions();
     });
 
-    function renderPlotTabModeControls() {
+    function renderPlotTabModeControls(effectiveMode) {
       plotTabsByPrefixButton.classList.toggle("active", state.plotTabsBy === "prefix");
       plotTabsBySuffixButton.classList.toggle("active", state.plotTabsBy === "suffix");
+      plotModeSelect.value = state.plotMode;
+      plotModeEffective.textContent = state.plotMode === "auto" ? `(→ ${effectiveMode})` : "";
+      plotTabsByRow.style.display = effectiveMode === "errors" ? "none" : "";
     }
+
+    plotModeSelect.addEventListener("change", () => {
+      state.plotMode = plotModeSelect.value;
+      state.activeEvalPlotTab = null;
+      renderEvaluations();
+    });
 
     plotTabsByPrefixButton.addEventListener("click", () => {
       if (state.plotTabsBy === "prefix") {
@@ -1599,50 +1647,17 @@
       };
     }
 
-    function renderEvaluationPlots(activeExperiment) {
-      renderPlotTabModeControls();
-      evalPlotTabs.innerHTML = "";
-      evalPlotContent.innerHTML = "";
-      plotGroupBarsList.innerHTML = "";
-
-      const selectedGroups = getSelectedPredictionGroups();
-      if (selectedGroups.length === 0) {
-        const msg = document.createElement("p");
-        msg.className = "plot-empty";
-        msg.textContent = "Select prediction groups to generate plots.";
-        evalPlotContent.appendChild(msg);
-        return;
+    function getEffectivePlotMode(activeExperiment) {
+      if (state.plotMode !== "auto") {
+        return state.plotMode;
       }
-
-      const experimentRuns = gatherSelectedRuns().filter(
-        (run) => run.experimentEvaluate === activeExperiment
-      );
-      const metricPaths = Array.from(
-        experimentRuns.reduce(
-          (acc, run) => collectNumericMetricLeafPaths(run.evalContent, [], acc),
-          new Map()
-        )
-      )
-        .map(([, pathParts]) => ({
-          parts: pathParts,
-          label: pathParts.join("."),
-        }))
-        .sort((a, b) => a.label.localeCompare(b.label));
-
-      if (metricPaths.length === 0) {
-        const msg = document.createElement("p");
-        msg.className = "plot-empty";
-        msg.textContent = `No numeric metric data found for ${activeExperiment}.`;
-        evalPlotContent.appendChild(msg);
-        return;
+      if (/error/i.test(activeExperiment)) {
+        return "errors";
       }
+      return "f1";
+    }
 
-      const varyingGroupByFields = getVaryingGroupByFields(selectedGroups);
-      const validGroupBarFields = new Set(varyingGroupByFields);
-      state.plotGroupBarFields = new Set(
-        Array.from(state.plotGroupBarFields).filter((field) => validGroupBarFields.has(field))
-      );
-      plotGroupBarsList.innerHTML = "";
+    function renderGroupBarChips(varyingGroupByFields, activeExperiment) {
       if (varyingGroupByFields.length === 0) {
         const noOptions = document.createElement("span");
         noOptions.className = "hint";
@@ -1670,11 +1685,10 @@
           plotGroupBarsList.appendChild(chip);
         }
       }
+    }
 
-      const groupBarFields = varyingGroupByFields.filter((field) => state.plotGroupBarFields.has(field));
-      const categoryFields = varyingGroupByFields.filter((field) => !groupBarFields.includes(field));
-      const plotEntries = [];
-
+    function buildPlotEntries(metricPaths, selectedGroups, activeExperiment, groupBarFields, categoryFields) {
+      const entries = [];
       for (const metricPath of metricPaths) {
         const points = [];
         selectedGroups.forEach((group, index) => {
@@ -1694,31 +1708,18 @@
           const seriesLabel = groupBarFields.length
             ? getGroupLabelForFields(group, groupBarFields, "series")
             : "__single__";
-          points.push({
-            label: categoryLabel,
-            category: categoryLabel,
-            series: seriesLabel,
-            mean: stats.mean,
-            std: stats.std,
-          });
+          points.push({ label: categoryLabel, category: categoryLabel, series: seriesLabel, mean: stats.mean, std: stats.std });
         });
-
         if (!points.length) {
           continue;
         }
-
         const split = splitMetricLabelAtLastDot(metricPath.label);
-        plotEntries.push({ metricLabel: metricPath.label, points, ...split });
+        entries.push({ metricLabel: metricPath.label, parts: metricPath.parts, points, ...split });
       }
+      return entries;
+    }
 
-      if (!plotEntries.length) {
-        const msg = document.createElement("p");
-        msg.className = "plot-empty";
-        msg.textContent = `No plottable metric values found for ${activeExperiment}.`;
-        evalPlotContent.appendChild(msg);
-        return;
-      }
-
+    function buildF1TabMap(plotEntries) {
       const tabMap = new Map();
       for (const entry of plotEntries) {
         const tabKey = state.plotTabsBy === "suffix" ? entry.suffix : entry.prefix;
@@ -1727,11 +1728,28 @@
         }
         tabMap.get(tabKey).push(entry);
       }
+      return tabMap;
+    }
+
+    function buildErrorsTabMap(plotEntries) {
+      const totalKeys = new Set(["with_error", "no_error"]);
+      const total = plotEntries.filter((entry) => totalKeys.has(entry.parts[0]));
+      const details = plotEntries.filter((entry) => !totalKeys.has(entry.parts[0]));
+      const tabMap = new Map();
+      if (total.length) {
+        tabMap.set("total", total);
+      }
+      if (details.length) {
+        tabMap.set("details", details);
+      }
+      return tabMap;
+    }
+
+    function renderPlotTabsAndGrid(tabMap, activeExperiment, groupBarFields) {
       const sortedTabKeys = Array.from(tabMap.keys()).sort((a, b) => a.localeCompare(b));
       if (!state.activeEvalPlotTab || !tabMap.has(state.activeEvalPlotTab)) {
         state.activeEvalPlotTab = sortedTabKeys[0] || null;
       }
-
       for (const key of sortedTabKeys) {
         const button = document.createElement("button");
         button.type = "button";
@@ -1744,7 +1762,6 @@
         });
         evalPlotTabs.appendChild(button);
       }
-
       const activeEntries = tabMap.get(state.activeEvalPlotTab) || [];
       const grid = document.createElement("div");
       grid.className = "plot-grid";
@@ -1754,11 +1771,10 @@
         const title = document.createElement("p");
         title.className = "plot-title";
         const groupedByText = groupBarFields.length
-          ? ` | grouped bars: ${groupBarFields.map((field) => displayPredictionColumnName(field)).join(", ")}`
+          ? ` | grouped by: ${groupBarFields.map((f) => displayPredictionColumnName(f)).join(", ")}`
           : "";
-        title.textContent = `${entry.metricLabel} (mean +/- std)${groupedByText}`;
+        title.textContent = `${entry.metricLabel} (mean ± std)${groupedByText}`;
         card.appendChild(title);
-
         if (groupBarFields.length) {
           const grouped = createGroupedBarPlotSvg(entry.points);
           if (grouped.seriesOrder.length > 1) {
@@ -1784,8 +1800,63 @@
         }
         grid.appendChild(card);
       }
-
       if (!grid.childElementCount) {
+        const msg = document.createElement("p");
+        msg.className = "plot-empty";
+        msg.textContent = "No plottable metric values found for the active tab.";
+        evalPlotContent.appendChild(msg);
+        return;
+      }
+      evalPlotContent.appendChild(grid);
+    }
+
+    function renderEvaluationPlots(activeExperiment) {
+      const effectiveMode = getEffectivePlotMode(activeExperiment);
+      renderPlotTabModeControls(effectiveMode);
+      evalPlotTabs.innerHTML = "";
+      evalPlotContent.innerHTML = "";
+      plotGroupBarsList.innerHTML = "";
+
+      const selectedGroups = getSelectedPredictionGroups();
+      if (selectedGroups.length === 0) {
+        const msg = document.createElement("p");
+        msg.className = "plot-empty";
+        msg.textContent = "Select prediction groups to generate plots.";
+        evalPlotContent.appendChild(msg);
+        return;
+      }
+
+      const experimentRuns = gatherSelectedRuns().filter(
+        (run) => run.experimentEvaluate === activeExperiment
+      );
+      const metricPaths = Array.from(
+        experimentRuns.reduce(
+          (acc, run) => collectNumericMetricLeafPaths(run.evalContent, [], acc),
+          new Map()
+        )
+      )
+        .map(([, pathParts]) => ({ parts: pathParts, label: pathParts.join(".") }))
+        .sort((a, b) => a.label.localeCompare(b.label));
+
+      if (metricPaths.length === 0) {
+        const msg = document.createElement("p");
+        msg.className = "plot-empty";
+        msg.textContent = `No numeric metric data found for ${activeExperiment}.`;
+        evalPlotContent.appendChild(msg);
+        return;
+      }
+
+      const varyingGroupByFields = getVaryingGroupByFields(selectedGroups);
+      state.plotGroupBarFields = new Set(
+        Array.from(state.plotGroupBarFields).filter((field) => new Set(varyingGroupByFields).has(field))
+      );
+      renderGroupBarChips(varyingGroupByFields, activeExperiment);
+
+      const groupBarFields = varyingGroupByFields.filter((field) => state.plotGroupBarFields.has(field));
+      const categoryFields = varyingGroupByFields.filter((field) => !groupBarFields.includes(field));
+
+      const plotEntries = buildPlotEntries(metricPaths, selectedGroups, activeExperiment, groupBarFields, categoryFields);
+      if (!plotEntries.length) {
         const msg = document.createElement("p");
         msg.className = "plot-empty";
         msg.textContent = `No plottable metric values found for ${activeExperiment}.`;
@@ -1793,7 +1864,11 @@
         return;
       }
 
-      evalPlotContent.appendChild(grid);
+      const tabMap = effectiveMode === "errors"
+        ? buildErrorsTabMap(plotEntries)
+        : buildF1TabMap(plotEntries);
+
+      renderPlotTabsAndGrid(tabMap, activeExperiment, groupBarFields);
     }
 
     function renderEvaluations() {
