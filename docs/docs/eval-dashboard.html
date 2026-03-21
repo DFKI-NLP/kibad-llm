@@ -477,6 +477,15 @@
       font-size: 0.9rem;
       cursor: pointer;
     }
+    .plot-number-input {
+      width: 70px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text);
+      border-radius: 6px;
+      padding: 4px 6px;
+      font-size: 0.9rem;
+    }
     .plot-mode-effective {
       font-size: 0.82rem;
       color: var(--muted);
@@ -570,15 +579,20 @@
       <option value="auto">auto</option>
       <option value="f1">f1</option>
       <option value="errors">errors</option>
+      <option value="confusion_matrix">confusion matrix</option>
     </select>
     <span id="plotModeEffective" class="plot-mode-effective"></span>
+  </div>
+  <div class="prediction-actions">
+    <label for="plotRoundingPrecision"><strong>Rounding:</strong></label>
+    <input id="plotRoundingPrecision" class="plot-number-input" type="number" min="0" max="6" step="1" value="2">
   </div>
   <div id="plotTabsByRow" class="prediction-actions">
     <strong>Create tabs by:</strong>
     <button id="plotTabsByPrefixButton" class="prediction-action-button" type="button">prefix</button>
     <button id="plotTabsBySuffixButton" class="prediction-action-button" type="button">suffix</button>
   </div>
-  <div class="plot-group-bars-controls">
+  <div id="plotGroupBarsRow" class="plot-group-bars-controls">
     <strong>Group bars:</strong>
     <div id="plotGroupBarsList" class="plot-group-bars-list"></div>
   </div>
@@ -604,6 +618,7 @@
       activeEvalPlotTab: null,
       plotGroupBarFields: new Set(),
       plotMode: "auto",
+      plotRoundingPrecision: 2,
     };
 
     const folderInput = document.getElementById("folderInput");
@@ -628,8 +643,10 @@
     const plotTabsByPrefixButton = document.getElementById("plotTabsByPrefixButton");
     const plotTabsBySuffixButton = document.getElementById("plotTabsBySuffixButton");
     const plotModeSelect = document.getElementById("plotModeSelect");
+    const plotRoundingPrecision = document.getElementById("plotRoundingPrecision");
     const plotModeEffective = document.getElementById("plotModeEffective");
     const plotTabsByRow = document.getElementById("plotTabsByRow");
+    const plotGroupBarsRow = document.getElementById("plotGroupBarsRow");
     const plotGroupBarsList = document.getElementById("plotGroupBarsList");
     const evalPlotTabs = document.getElementById("evalPlotTabs");
     const evalPlotContent = document.getElementById("evalPlotContent");
@@ -810,13 +827,23 @@
       plotTabsByPrefixButton.classList.toggle("active", state.plotTabsBy === "prefix");
       plotTabsBySuffixButton.classList.toggle("active", state.plotTabsBy === "suffix");
       plotModeSelect.value = state.plotMode;
+      plotRoundingPrecision.value = String(state.plotRoundingPrecision);
       plotModeEffective.textContent = state.plotMode === "auto" ? `(→ ${effectiveMode})` : "";
-      plotTabsByRow.style.display = effectiveMode === "errors" ? "none" : "";
+      plotTabsByRow.style.display = effectiveMode === "f1" ? "" : "none";
+      plotGroupBarsRow.style.display = effectiveMode === "confusion_matrix" ? "none" : "";
     }
 
     plotModeSelect.addEventListener("change", () => {
       state.plotMode = plotModeSelect.value;
       state.activeEvalPlotTab = null;
+      renderEvaluations();
+    });
+
+    plotRoundingPrecision.addEventListener("change", () => {
+      const parsed = Number.parseInt(plotRoundingPrecision.value, 10);
+      const clamped = Number.isFinite(parsed) ? Math.max(0, Math.min(6, parsed)) : 2;
+      state.plotRoundingPrecision = clamped;
+      plotRoundingPrecision.value = String(clamped);
       renderEvaluations();
     });
 
@@ -1651,10 +1678,168 @@
       if (state.plotMode !== "auto") {
         return state.plotMode;
       }
+      if (/confusion_matrix/i.test(activeExperiment)) {
+        return "confusion_matrix";
+      }
       if (/error/i.test(activeExperiment)) {
         return "errors";
       }
       return "f1";
+    }
+
+    function formatRounded(value, precision) {
+      return Number(value).toFixed(precision);
+    }
+
+    function getConfusionMatrixTitle(experimentRuns) {
+      const fieldValues = new Set(
+        experimentRuns
+          .map((run) => normalizeValue(run.evalOverrides["metric.field"]))
+          .filter((value) => value)
+      );
+      if (fieldValues.size === 0) {
+        return "(missing metric.field)";
+      }
+      if (fieldValues.size === 1) {
+        return Array.from(fieldValues)[0];
+      }
+      return `mixed metric.field: ${Array.from(fieldValues).sort((a, b) => a.localeCompare(b)).join(", ")}`;
+    }
+
+    function getConfusionMatrixAggregation(experimentRuns) {
+      const rowLabels = new Set();
+      const colLabels = new Set();
+      const runCells = [];
+
+      for (const run of experimentRuns) {
+        const map = new Map();
+        const evalContent = run.evalContent || {};
+        for (const [actualLabel, predictedMap] of Object.entries(evalContent)) {
+          if (!predictedMap || typeof predictedMap !== "object" || Array.isArray(predictedMap)) {
+            continue;
+          }
+          for (const [predictedLabel, rawValue] of Object.entries(predictedMap)) {
+            if (!Number.isFinite(rawValue)) {
+              continue;
+            }
+            const value = Number(rawValue);
+            rowLabels.add(actualLabel);
+            colLabels.add(predictedLabel);
+            map.set(`${actualLabel}|#|${predictedLabel}`, value);
+          }
+        }
+        runCells.push(map);
+      }
+
+      const rows = Array.from(rowLabels).sort((a, b) => a.localeCompare(b));
+      const cols = Array.from(colLabels).sort((a, b) => a.localeCompare(b));
+      const cells = new Map();
+      for (const row of rows) {
+        for (const col of cols) {
+          const key = `${row}|#|${col}`;
+          const values = runCells.map((cellMap) => cellMap.get(key) ?? 0);
+          const stats = meanAndStd(values) || { mean: 0, std: 0 };
+          cells.set(key, stats);
+        }
+      }
+
+      return { rows, cols, cells };
+    }
+
+    function interpolateColor(startRgb, endRgb, t) {
+      const clamp = Math.max(0, Math.min(1, t));
+      const mix = (a, b) => Math.round(a + (b - a) * clamp);
+      return `rgb(${mix(startRgb[0], endRgb[0])}, ${mix(startRgb[1], endRgb[1])}, ${mix(startRgb[2], endRgb[2])})`;
+    }
+
+    function createConfusionMatrixHeatmapSvg(aggregation, precision) {
+      const { rows, cols, cells } = aggregation;
+      const cellSize = 96;
+      const margin = { top: 130, right: 20, bottom: 20, left: 280 };
+      const width = margin.left + cols.length * cellSize + margin.right;
+      const height = margin.top + rows.length * cellSize + margin.bottom;
+      const maxMean = Math.max(0, ...Array.from(cells.values()).map((cell) => cell.mean));
+
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svg.setAttribute("width", String(width));
+      svg.setAttribute("height", String(height));
+      svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+
+      const xAxisTitle = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      xAxisTitle.setAttribute("x", String(margin.left + (cols.length * cellSize) / 2));
+      xAxisTitle.setAttribute("y", "20");
+      xAxisTitle.setAttribute("text-anchor", "middle");
+      xAxisTitle.setAttribute("fill", "currentColor");
+      xAxisTitle.setAttribute("font-size", "13");
+      xAxisTitle.textContent = "Predicted label";
+      svg.appendChild(xAxisTitle);
+
+      const yAxisTitle = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      yAxisTitle.setAttribute("x", "20");
+      yAxisTitle.setAttribute("y", String(margin.top + (rows.length * cellSize) / 2));
+      yAxisTitle.setAttribute("transform", `rotate(-90 20 ${margin.top + (rows.length * cellSize) / 2})`);
+      yAxisTitle.setAttribute("text-anchor", "middle");
+      yAxisTitle.setAttribute("fill", "currentColor");
+      yAxisTitle.setAttribute("font-size", "13");
+      yAxisTitle.textContent = "Actual label";
+      svg.appendChild(yAxisTitle);
+
+      cols.forEach((col, colIndex) => {
+        const x = margin.left + colIndex * cellSize + cellSize / 2;
+        const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        label.setAttribute("x", String(x));
+        label.setAttribute("y", String(margin.top - 12));
+        label.setAttribute("transform", `rotate(-35 ${x} ${margin.top - 12})`);
+        label.setAttribute("text-anchor", "end");
+        label.setAttribute("fill", "currentColor");
+        label.setAttribute("font-size", "11");
+        label.textContent = col;
+        svg.appendChild(label);
+      });
+
+      rows.forEach((row, rowIndex) => {
+        const y = margin.top + rowIndex * cellSize + cellSize / 2;
+        const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        label.setAttribute("x", String(margin.left - 10));
+        label.setAttribute("y", String(y + 4));
+        label.setAttribute("text-anchor", "end");
+        label.setAttribute("fill", "currentColor");
+        label.setAttribute("font-size", "11");
+        label.textContent = row;
+        svg.appendChild(label);
+      });
+
+      rows.forEach((row, rowIndex) => {
+        cols.forEach((col, colIndex) => {
+          const key = `${row}|#|${col}`;
+          const stats = cells.get(key) || { mean: 0, std: 0 };
+          const x = margin.left + colIndex * cellSize;
+          const y = margin.top + rowIndex * cellSize;
+          const t = maxMean > 0 ? stats.mean / maxMean : 0;
+          const fill = interpolateColor([247, 251, 255], [8, 48, 107], t);
+
+          const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+          rect.setAttribute("x", String(x));
+          rect.setAttribute("y", String(y));
+          rect.setAttribute("width", String(cellSize));
+          rect.setAttribute("height", String(cellSize));
+          rect.setAttribute("fill", fill);
+          rect.setAttribute("stroke", "#33415555");
+          rect.setAttribute("stroke-width", "1");
+          svg.appendChild(rect);
+
+          const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+          text.setAttribute("x", String(x + cellSize / 2));
+          text.setAttribute("y", String(y + cellSize / 2 + 4));
+          text.setAttribute("text-anchor", "middle");
+          text.setAttribute("fill", t > 0.55 ? "#f8fafc" : "#0f172a");
+          text.setAttribute("font-size", "11");
+          text.textContent = `${formatRounded(stats.mean, precision)}±${formatRounded(stats.std, precision)}`;
+          svg.appendChild(text);
+        });
+      });
+
+      return svg;
     }
 
     function renderGroupBarChips(varyingGroupByFields, activeExperiment) {
@@ -1829,6 +2014,30 @@
       const experimentRuns = gatherSelectedRuns().filter(
         (run) => run.experimentEvaluate === activeExperiment
       );
+
+      if (effectiveMode === "confusion_matrix") {
+        const aggregation = getConfusionMatrixAggregation(experimentRuns);
+        if (!aggregation.rows.length || !aggregation.cols.length) {
+          const msg = document.createElement("p");
+          msg.className = "plot-empty";
+          msg.textContent = `No confusion matrix data found for ${activeExperiment}.`;
+          evalPlotContent.appendChild(msg);
+          return;
+        }
+
+        const card = document.createElement("section");
+        card.className = "plot-card";
+        const title = document.createElement("p");
+        title.className = "plot-title";
+        title.textContent = `${getConfusionMatrixTitle(experimentRuns)} (mean ± std)`;
+        card.appendChild(title);
+        card.appendChild(
+          createConfusionMatrixHeatmapSvg(aggregation, state.plotRoundingPrecision)
+        );
+        evalPlotContent.appendChild(card);
+        return;
+      }
+
       const metricPaths = Array.from(
         experimentRuns.reduce(
           (acc, run) => collectNumericMetricLeafPaths(run.evalContent, [], acc),
