@@ -10,4 +10,4 @@ The Makefile contains the central entry points for common tasks related to this 
 
 ## Tools
 
-- Evaluation dashboard: [eval-dashboard.html](eval-dashboard.html)
+- [eval-dashboard](eval-dashboard.html): view and compare evaluation results
