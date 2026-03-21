@@ -283,6 +283,7 @@
     #truncateColumnsList,
     #evalTruncateColumnsList {
       width: 100%;
+      box-sizing: border-box;
       max-height: 150px;
       overflow: auto;
       background: var(--surface);
@@ -294,6 +295,14 @@
       flex-wrap: wrap;
       gap: 4px 8px;
       align-content: flex-start;
+    }
+    /* Eval options have no right-side panel, so let the chips column fully own the row width. */
+    #evalOptionsPanelTruncate .truncate-controls {
+      justify-content: flex-start;
+    }
+    #evalOptionsPanelTruncate .truncate-controls-main {
+      flex: 1 1 100%;
+      min-width: 0;
     }
     .truncate-item {
       display: inline-flex;
@@ -620,10 +629,6 @@
           <div class="truncate-controls-main">
             <div id="evalTruncateColumnsList"></div>
           </div>
-          <div class="truncate-controls-side">
-            <div class="hint">Defaults: columns containing <code>file</code> or <code>run</code>.</div>
-            <button id="evalTruncateDefaultsButton" type="button">Reset defaults</button>
-          </div>
         </div>
       </div>
     </div>
@@ -712,7 +717,6 @@
     const evalSummary = document.getElementById("evalSummary");
     const evalOptionsTabs = document.getElementById("evalOptionsTabs");
     const evalTruncateColumnsList = document.getElementById("evalTruncateColumnsList");
-    const evalTruncateDefaultsButton = document.getElementById("evalTruncateDefaultsButton");
     const evalLayout = document.getElementById("evalLayout");
     const evalJsonPane = document.getElementById("evalJsonPane");
     const evalJsonTabEvaluation = document.getElementById("evalJsonTabEvaluation");
@@ -865,14 +869,7 @@
     }
 
     function getDefaultEvalTruncateColumns(evalColumns) {
-      const defaults = new Set();
-      for (const column of evalColumns) {
-        const name = displayEvalColumnName(column);
-        if (/file|run/i.test(name) || /file|run/i.test(column)) {
-          defaults.add(column);
-        }
-      }
-      return defaults;
+      return new Set();
     }
 
     function getTruncateColumnOptions() {
@@ -893,8 +890,8 @@
         state.evalTabStates[experiment] = {
           knownColumns: [...evalColumns],
           groupByFields: getDefaultEvalGroupByFields(evalColumns),
-              truncateEnabledColumns: getDefaultEvalTruncateColumns(evalColumns),
-              activeOptionsTab: "truncate",
+          truncateEnabledColumns: new Set(),
+          activeOptionsTab: "truncate",
           selectedGroupIds: null,
           expandedGroupIds: new Set(),
           selectedEvalGroupId: null,
@@ -914,15 +911,14 @@
           if (getDefaultEvalGroupByFields([column]).length) {
             tabState.groupByFields = [...new Set([...tabState.groupByFields, column])];
           }
-          if (getDefaultEvalTruncateColumns([column]).has(column)) {
-            tabState.truncateEnabledColumns.add(column);
-          }
         }
       }
       tabState.knownColumns = [...known];
       tabState.groupByFields = tabState.groupByFields.filter((field) => known.has(field));
       tabState.truncateEnabledColumns = new Set(
-        Array.from(tabState.truncateEnabledColumns).filter((field) => known.has(field))
+        Array.from(tabState.truncateEnabledColumns).filter(
+          (field) => known.has(field) || field === "eval_run_dir"
+        )
       );
       if (!tabState.activeOptionsTab) {
         tabState.activeOptionsTab = "truncate";
@@ -1007,8 +1003,9 @@
         return;
       }
       const tabState = state.evalTabStates[activeExperiment];
+      const optionColumns = [...new Set([...evalColumns, "eval_run_dir"])];
       evalTruncateColumnsList.innerHTML = "";
-      for (const column of evalColumns) {
+      for (const column of optionColumns) {
         const wrapper = document.createElement("label");
         wrapper.className = "truncate-item";
         const checkbox = document.createElement("input");
@@ -1061,14 +1058,6 @@
       renderPredictions();
     });
 
-    evalTruncateDefaultsButton.addEventListener("click", () => {
-      if (!state.activeEvalTab || !state.evalTabStates[state.activeEvalTab]) {
-        return;
-      }
-      const tabState = state.evalTabStates[state.activeEvalTab];
-      tabState.truncateEnabledColumns = getDefaultEvalTruncateColumns(tabState.knownColumns || []);
-      renderEvaluations();
-    });
 
     function renderPlotTabModeControls(effectiveMode) {
       plotTabsByPrefixButton.classList.toggle("active", state.plotTabsBy === "prefix");
@@ -2765,6 +2754,12 @@
       overridesSection.colSpan = Math.max(orderedEvalOverrideColumns.length, 1);
       overridesSection.textContent = "overrides";
       sectionRow.appendChild(overridesSection);
+
+      const evalRunDirSection = document.createElement("th");
+      evalRunDirSection.className = "section-header";
+      evalRunDirSection.colSpan = 1;
+      evalRunDirSection.textContent = "meta";
+      sectionRow.appendChild(evalRunDirSection);
       thead.appendChild(sectionRow);
 
       const columnRow = document.createElement("tr");
@@ -2775,7 +2770,9 @@
             th.classList.add("truncate-enabled");
           }
           const label = document.createElement("div");
-          label.textContent = displayEvalColumnName(column);
+          const headerLabel = displayEvalColumnName(column);
+          label.textContent = headerLabel;
+          th.style.minWidth = `${Math.max(140, headerLabel.length * 8)}px`;
 
           const toggle = document.createElement("label");
           toggle.className = "group-toggle";
@@ -2804,6 +2801,14 @@
         th.textContent = "(no overrides columns)";
         columnRow.appendChild(th);
       }
+
+      const runDirTh = document.createElement("th");
+      if (evalTabState.truncateEnabledColumns.has("eval_run_dir")) {
+        runDirTh.classList.add("truncate-enabled");
+      }
+      runDirTh.textContent = "eval_run_dir";
+      runDirTh.style.minWidth = "240px";
+      columnRow.appendChild(runDirTh);
       thead.appendChild(columnRow);
       evaluationsTable.appendChild(thead);
 
@@ -2862,6 +2867,9 @@
 
         tr.appendChild(createCell(String(group.runs.length)));
 
+        if (orderedEvalOverrideColumns.length === 0) {
+          tr.appendChild(createCell(""));
+        }
         for (const column of orderedEvalOverrideColumns) {
           tr.appendChild(
             createEvalCell(
@@ -2871,6 +2879,13 @@
             )
           );
         }
+        tr.appendChild(
+          createEvalCell(
+            getGroupValueDisplayFromRuns(group.runs, (run) => run.runDir),
+            "eval_run_dir",
+            evalTabState
+          )
+        );
         tbody.appendChild(tr);
 
         if (evalTabState.expandedGroupIds.has(group.groupId)) {
@@ -2895,11 +2910,17 @@
             memberRow.appendChild(createCell(""));
             memberRow.appendChild(createCell(""));
             memberRow.appendChild(createCell("member"));
+            if (orderedEvalOverrideColumns.length === 0) {
+              memberRow.appendChild(createCell(""));
+            }
             for (const column of orderedEvalOverrideColumns) {
               memberRow.appendChild(
                 createEvalCell(normalizeValue(run.evalOverrides[column]), column, evalTabState)
               );
             }
+            memberRow.appendChild(
+              createEvalCell(normalizeValue(run.runDir), "eval_run_dir", evalTabState)
+            );
             tbody.appendChild(memberRow);
           }
         }
