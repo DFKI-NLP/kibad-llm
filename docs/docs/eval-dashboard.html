@@ -112,6 +112,10 @@
       gap: 10px;
       align-items: start;
     }
+    .eval-layout > .table-container,
+    .eval-layout > .eval-json-pane {
+      min-width: 0;
+    }
     .eval-json-pane {
       display: none;
       border: 1px solid var(--border);
@@ -3001,7 +3005,6 @@
         }
       }
       evaluationsTable.appendChild(tbody);
-      updateStickyControlColumnOffsets(evaluationsTable);
 
       if (evalTabState.selectedEvalRunDir !== null || evalTabState.selectedEvalGroupId !== null) {
         const selectedRun = tabRuns.find((run) => run.runDir === evalTabState.selectedEvalRunDir) || null;
@@ -3018,6 +3021,9 @@
           evalJsonCode.innerHTML = highlightJsonContent(tabContent);
         }
       }
+
+      updateStickyControlColumnOffsets(evaluationsTable);
+      requestAnimationFrame(() => updateStickyControlColumnOffsets(evaluationsTable));
 
       const selectedEvalRunsCount = evalGroups
         .filter((group) => evalTabState.selectedGroupIds.has(group.groupId))
