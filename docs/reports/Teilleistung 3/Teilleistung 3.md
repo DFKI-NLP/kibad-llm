@@ -23,7 +23,7 @@ Puschstraße 4 Email: info@idiv.de
     1.2. Ziele Teilleistung 3
     1.3. Struktur des Dokuments
 2.  LLM-basierte Contentextraktion
-    2.1. Implementation
+    2.1. Implementierung
     2.2. Eingesetzte Software
     2.3. IT Infrastruktur / Ressourcenbedarf
 3.  Aufbereitung von Testdatensätzen
@@ -49,72 +49,73 @@ Das folgende Kapitel 2 beschreibt die Implementierung der Workflows. Anschließe
 
 # 2. LLM-basierte Contentextraktion
 
-## 2.1. Implementation
+## 2.1. Implementierung
 
-Die technische Umsetzung des in Teilleistung 2 konzipierten Proof-of-Concept Workflows für ausgewählte Content-Extraktionsaufgaben erfolgt über das Python-basierte Framework `kibad-llm`. Die Codebasis ist stark modularisiert und nutzt Hydra zur Konfigurations- und Experiment-Orchestrierung. Dies erlaubt eine flexible Steuerung verschiedener LLM-Backends, Extraktions-Schemata und Evaluierungsdurchläufe (via `configs/predict.yaml` und `configs/evaluate.yaml`), ohne den Kerncode anpassen zu müssen. Die generelle Code-Qualität wird durch den Einsatz von pre-commit Hooks, `pytest` für automatisierte Tests (inklusive Integrations-, Schema- und Aggregationstests) sowie GitHub CI sichergestellt.
+Die technische Umsetzung des in Teilleistung 2 konzipierten Proof-of-Concept-Workflows für ausgewählte Content-Extraktionsaufgaben erfolgt über das Python-basierte Framework `kibad-llm`. Die Codebasis ist modular aufgebaut und nutzt Hydra zur Konfigurations- und Experiment-Orchestrierung. Dadurch können unterschiedliche LLM-Backends, Extraktionsschemata, Promptvarianten, Datensätze und Evaluationskonfigurationen flexibel über Konfigurationsdateien wie `configs/predict.yaml` und `configs/evaluate.yaml` kombiniert werden, ohne dass der Kerncode angepasst werden muss. Die Qualitätssicherung der Implementierung wird durch automatisierte Tests mit `pytest` sowie lokale Qualitätsprüfungen über `pre-commit` unterstützt.
 
-Der Kern der Implementierung ist die Extraktions-Pipeline, welche über den zentralen Einstiegspunkt `predict.py` angesteuert wird und vollständig parallelisierbar (Batchverarbeitung) ist.
+Kern der Umsetzung ist eine dokumentzentrierte Extraktionspipeline, die über den Einstiegspunkt `predict.py` ausgeführt wird. Die Verarbeitung erfolgt in Batchform über eine Hugging-Face-`datasets`-Pipeline und unterstützt – abhängig von der gewählten Konfiguration – auch parallele Verarbeitungsschritte, insbesondere bei der PDF-Konvertierung und Extraktion.
 
-Abbildung "Eingabe-Processing-Ausgabe"
+Abbildung "Eingabe-Processing-Ausgabe"  
 ![Eingabe-Processing-Ausgabe.png](images/Eingabe-Processing-Ausgabe.png)
 
 ### 2.1.1. Vorverarbeitung und PDF-Konvertierung
 
-Als Voraussetzung für die LLM-Verarbeitung müssen die Eingabe-PDFs in ein maschinenlesbares Format überführt werden, das semantische Strukturen beibehält. Das Modul `kibad_llm.preprocessing` nutzt hierfür `PyMuPDF4LLM` zur Konvertierung der PDFs in Markdown-Text. Dies erhält wichtige Layout-Informationen wie Tabellen und Überschriften für das Sprachmodell. Der Workflow ist darauf ausgelegt, perspektivisch um OCR (für Bild-basierte Scans) oder Konverter für andere Dokumentarten (z.B. docx-to-text) erweitert zu werden.
+Vor der eigentlichen Extraktion werden die Eingabe-PDFs in eine maschinenlesbare Textrepräsentation überführt. Standardmäßig nutzt das Modul `kibad_llm.preprocessing` hierfür `PyMuPDF4LLM`, um PDF-Dokumente in Markdown zu konvertieren. Diese Darstellung erhält wesentliche semantische und strukturelle Informationen des Dokuments, etwa Überschriften, Absätze oder Tabellen, und ist damit besser für die nachgelagerte Verarbeitung durch Sprachmodelle geeignet als reiner Fließtext.
 
-Abbildung "Pipeline - Teil 1 - Schemata und Vorverarbeitung"
+Die Vorverarbeitungskomponente ist bewusst einfach gehalten und über Hydra austauschbar. Damit ist die Architektur offen für spätere Erweiterungen, beispielsweise um OCR-basierte Verarbeitung von Scan-PDFs oder um zusätzliche Konverter für andere Dokumentformate.
+
+Abbildung "Pipeline - Teil 1 - Schemata und Vorverarbeitung"  
 ![Pipeline - Teil 1 - Schemata und Vorverarbeitung.png](images/Pipeline%20-%20Teil%201%20-%20Schemata%20und%20Vorverarbeitung.png)
 
 ### 2.1.2. Schema-Definition und dynamisches Prompting
 
-Um die in Teilleistung 2 definierten, unterschiedlich komplexen Informationsbedarfe abzubilden, wird das erwartete Datenformat strikt als Pydantic-Datenmodell (in `src/kibad_llm/schema/types.py`) definiert. Aktuell sind Schemata wie *Full*, *Kern* und *OrganismTrend* implementiert.
+Zur Abbildung der in Teilleistung 2 beschriebenen, unterschiedlich komplexen Informationsbedarfe werden die Zielstrukturen der Extraktion als Pydantic-Modelle in `src/kibad_llm/schema/types.py` definiert. Implementiert sind unter anderem Schemata für das Kernset an Faktencheck-Annotationen sowie für Organismentrends. Aus diesen Modellen werden JSON-Schemata erzeugt, die sowohl für die Strukturvorgabe an das Modell als auch für die nachgelagerte Validierung verwendet werden.
 
-Das Modul `src/kibad_llm/schema/utils.py` übernimmt dabei die entscheidende Vermittlerrolle zwischen Datenmodell und Modell-Prompt:
+Eine zentrale Rolle übernimmt dabei `src/kibad_llm/schema/utils.py`. Dieses Modul erzeugt aus den Schemadefinitionen eine textuelle Beschreibung des erwarteten Ausgabeformats, die in die Prompts eingebettet werden kann. Zusätzlich kann das Schema so erweitert werden, dass das Modell neben den eigentlichen Feldinhalten auch Evidenz-Anker, also möglichst wörtliche Belegstellen aus dem Dokument, zurückliefert.
 
-  * **Automatische Schema-Generierung:** Aus den Pydantic-Modellen wird automatisch das benötigte JSON-Schema sowie eine textuelle Beschreibung des geforderten Datenformats generiert.
-  * **Evidenz-Anpassung:** Das Schema wird automatisch erweitert, um sogenannte Evidenz-Anker (exakte Zitate zur Belegung extrahierter Informationen) vom LLM einzufordern.
+Das Prompting ist insgesamt konfigurationsgetrieben. Das finale Prompt setzt sich aus dem gewählten Prompt-Template, der automatisch erzeugten Schemabeschreibung und dem konvertierten Dokumenttext zusammen. Auf diese Weise können unterschiedliche Promptvarianten für verschiedene Aufgaben und Experimente eingesetzt werden, etwa Varianten mit Evidenzanforderung, mit zusätzlicher fachlicher Instruktion oder mit angepasster Platzierung der Schemabeschreibung innerhalb der Nachrichtenstruktur.
 
-Das finale Prompting setzt sich dynamisch aus dem manuell definierten Prompt-Text (Aufgabenstellung, Persona), der generierten Datenformat-Beschreibung und dem konvertierten Dokumententext zusammen. Es wurden drei konfigurierbare "Basisprompts" (auf Basis der Annotationsrichtlinien von iDiv) implementiert: *Mit Evidenz*, *Mit Persona* und *Ohne Feld- bzw. Typ-Beschreibungen*.
-
-Abbildung "Prompt"
+Abbildung "Prompt"  
 ![Prompt.png](images/Prompt.png)
 
 ### 2.1.3. LLM-Engine und Inferenz
 
-Die LLM-basierte Textgenerierung ist über abstrakte Basisklassen (`src/kibad_llm/llms/base.py`) gekapselt, was die in TL 2 geforderte Austauschbarkeit der Modelle garantiert. Für kommerzielle Modelle (wie OpenAI GPTs) erfolgt die Anbindung via Llama-Index, während für selbst-gehostete Open-Source-Modelle (wie Qwen) vLLM als performante Inferenz-Engine genutzt wird.
+Die Anbindung der Sprachmodelle erfolgt über eine einheitliche Abstraktionsschicht in `src/kibad_llm/llms/`. Diese kapselt unterschiedliche Backends und erleichtert damit den Austausch zwischen proprietären und selbst gehosteten Modellen. Für proprietäre Modelle, insbesondere OpenAI-Modelle, erfolgt die Einbindung über LlamaIndex-basierte Wrapper. Für lokal oder serverseitig betriebene Open-Source-Modelle wird vLLM genutzt, entweder über eine OpenAI-kompatible Schnittstelle oder in einem In-Process-Setup.
 
-Um die strikte Einhaltung der Pydantic-Schemata zu garantieren, wird **JSON Schema basiertes Guided Decoding** (Strukturiertes Output) eingesetzt. Zusätzlich nutzt das System, sofern vom LLM unterstützt, **Reasoning-Traces** (Ausgabe von Gedankengängen in `<think>`-Tags), um die Qualität der Extraktionen bei komplexen kausalen Zusammenhängen zu steigern.
+Für die strukturierte Ausgabe nutzt das System JSON-Schema-basiertes Guided Decoding. Dadurch wird die Erzeugung von Ausgaben unterstützt, die dem erwarteten Schema möglichst genau entsprechen. Zusätzlich kann die generierte Antwort nach dem Modellaufruf gegen das jeweilige Schema validiert werden. Dieser Mechanismus ist zentral für die zuverlässige Weiterverarbeitung der Extraktionsergebnisse.
 
-Zur weiteren Stabilisierung und Leistungssteigerung unterstützt das System (`kibad_llm.extractors.base.py`) optional verschiedene Ergebnis-Aggregationen:
+Sofern das verwendete Modell dies unterstützt, können außerdem zusätzliche Reasoning-Informationen bzw. Begründungszusammenfassungen mitgeführt und gespeichert werden. Diese Informationen dienen vor allem der späteren Analyse und Fehlerdiagnose, nicht aber als eigener Bestandteil der fachlichen Zielannotation.
 
-  * **Ensemble-Methoden:** Majority-Voting über mehrere LLM-Antworten für robustere Ausgaben.
-  * **Problemzerlegung:** Aufteilung komplexer Schemata in unabhängige oder konditionale Einzelschritte zur Komplexitätsreduktion (kleinere Prompts machen die Aufgabe für das LLM leichter).
-  * **Dokument-Chunking:** Falls Dokumente den maximalen Kontextbereich überschreiten.
+Zur Erhöhung der Robustheit unterstützt das System außerdem verschiedene Extraktions- und Aggregationsstrategien in `src/kibad_llm/extractors/`. Dazu gehören wiederholte Abfragen desselben Dokuments, Vereinigungs- und Mehrheitsentscheidungsstrategien für mehrere Modellantworten sowie mehrstufige bzw. bedingte Extraktionsabläufe für komplexere Schemata. Die Architektur ist damit so angelegt, dass perspektivisch auch weitergehende orchestrierte oder mehrschrittige Prompt-Workflows integriert werden können.
 
-Perspektivisch bildet dies die Grundlage für komplexe konditionale, orchestrierte oder agentische Promptflows.
-
-Abbildung "Pipeline - Teil 2 - LLM Engine"
+Abbildung "Pipeline - Teil 2 - LLM Engine"  
 ![Pipeline - Teil 2 - LLM Engine.png](images/Pipeline%20-%20Teil%202%20-%20LLM%20Engine.png)
 
 ### 2.1.4. Post-Processing und finales Datenformat
 
-Nach der Textgenerierung verarbeitet das System die vom LLM extrahierten Evidenz-Anker weiter. Falls ein Anker im Eingabe-Text erfolgreich gefunden wird, generiert das System ein **Evidenz-Snippet**, indem es den Anker um einen Kontext von *k* Wörtern erweitert. Dies setzt die Anforderung des Daten-Governance-Konzepts (TL 2) um, die Herkunft extrahierter Fakten nachvollziehbar zu belegen.
+Nach dem Modellaufruf werden die strukturierten Ausgaben im Post-Processing weiterverarbeitet. Wenn Evidenz-Anker angefordert wurden, versucht das System, diese Anker im konvertierten Dokumenttext wiederzufinden. Für gefundene Anker werden zusätzliche Metadaten erzeugt, darunter die Anzahl der Treffer, die Position des ersten Treffers im Text sowie ein Evidenz-Snippet mit umgebendem Kontext. Auf diese Weise wird die Herkunft extrahierter Informationen auf Feldebene besser nachvollziehbar.
 
-Das Ergebnis der Extraktions-Pipeline wird als finales JSON(L) gespeichert. Neben den strukturierten Extraktionsdaten enthält das finale Objekt zusätzliche Metadaten für die spätere Fehleranalyse:
+Die Ergebnisse der Pipeline werden als JSONL-Dateien gespeichert. Im finalen Ausgabedatensatz stehen sowohl die bereinigten strukturierten Inhalte als auch – sofern aktiviert – erweiterte Metadaten zur Verfügung. Dazu gehören insbesondere:
 
-  * Unverarbeitete LLM-Antworten
-  * Reasoning-Traces
-  * Evidenz-Snippets inklusive ihrer exakten Position im Originaltext
-  * Aufgetretene Fehler und System-Messages
+  * die strukturierte Extraktion im Zielschema,
+  * optional eine Variante mit zusätzlichen Evidenz-Metadaten,
+  * die rohe Modellantwort,
+  * gegebenenfalls Reasoning-Informationen,
+  * Evidenz-Snippets und Positionsangaben im konvertierten Dokumenttext,
+  * sowie aufgetretene Fehler und weitere Diagnoseinformationen.
 
-Abbildung "Extraktions-Ergebnis"
+Dieses Ausgabeformat dient sowohl der qualitativen Analyse einzelner Vorhersagen als auch der späteren automatischen Evaluation.
+
+Abbildung "Extraktions-Ergebnis"  
 ![Extraktions-Ergebnis.png](images/Extraktions-Ergebnis.png)
 
-### 2.1.5. Evaluation (evaluate.py)
+### 2.1.5. Evaluation (`evaluate.py`)
 
-Die Pipeline wird durch das Modul `predict.py`s Gegenstück, `evaluate.py`, komplettiert. Dieses Modul steuert den Batch-Evaluationsprozess und ermöglicht den Abgleich der Vorhersagen mit den Referenzdatensätzen (`src/kibad_llm/dataset/*`).
+Die Extraktionspipeline wird durch das Modul `evaluate.py` ergänzt. Dieses Modul lädt Vorhersagen und Referenzdaten, instanziiert die jeweils konfigurierte Metrik und führt die Evaluation über den gesamten Datensatz aus. Auch hier folgt die Implementierung dem in Teilleistung 2 beschriebenen, modularen Ansatz: Datensätze und Metriken werden nicht fest im Code verdrahtet, sondern über Hydra konfiguriert.
 
-Dabei werden die in TL 2 skizzierten Evaluationskonzepte angewendet: Das System erlaubt die Unterscheidung zwischen "flacher" und "komplexer" Evaluation bei geschachtelten Hierarchien. Die Metriken-Logik (`src/kibad_llm/metrics/*`) berechnet detailliert F1-Score, Precision und Recall (sowohl pro Klasse als auch als Averages) und gibt zusätzlich Confusion Matrices sowie Listen spezifischer Fehlerfälle aus. Über Hydra Callbacks (`save_job_return_value.py`) werden die Evaluationsergebnisse konsistent über mehrere multirun-Experimente hinweg aggregiert und gespeichert.
+Die Referenz- und Vorhersagedaten werden über Komponenten aus `src/kibad_llm/dataset/` geladen. Die eigentliche Evaluationslogik liegt in `src/kibad_llm/metrics/` bzw. `src/kibad_llm/metric.py`. Implementiert sind unter anderem feldbasierte Precision-, Recall- und F1-Metriken, aggregierte Kennzahlen über mehrere Felder, Konfusionsmatrizen sowie Fehlerstatistiken. Damit können sowohl einfache Feldvergleiche als auch komplexere, geschachtelte Strukturen ausgewertet werden.
+
+Für die Durchführung größerer Versuchsreihen nutzt das Projekt zudem Hydra-Callbacks aus `src/kibad_llm/hydra_callbacks/`, insbesondere zur Speicherung von Rückgabewerten einzelner Runs und Multiruns. Dadurch lassen sich Evaluationsergebnisse, Laufmetadaten und Konfigurationen konsistent dokumentieren und später reproduzierbar auswerten.
 
 Abbildung "Pipeline - Teil 3 - Evaluation"
 ![Pipeline - Teil 3 - Evaluation.png](images/Pipeline%20-%20Teil%203%20-%20Evaluation.png)
