@@ -140,11 +140,3 @@ Einige der in der Literaturdatenbank annotierten Werte bilden zusammengehörige 
 Die Evaluation von Elementen mit festgelegten bzw. offen erweiterbaren Kategorien ist relativ unproblematisch, da hier auch nur ein Vergleich auf der Ebene einzelner Annotationen erfolgt.   Es können quantitative Metriken wie Precision, Recall, F1 und Accuracy eingesetzt werden. Für Elemente mit festgelegten Kategorien können allerdings über das Schema stärkere Vorgaben gemacht werden, d.h. Begriffe und deren Schreibweise sind fest definiert. Bei offenen Kategorien kann es hingegen vorkommen, dass das LLM Synonyme oder einfach nur andere Schreibweisen des Referenzbegriffs generiert, die dann zu einem Mismatch führen.
 Schwieriger ist die Evaluation von Elementen mit Freitextantworten. Das betrifft hauptsächlich die Informationstypen, die “Beschreibungen” als Teilfeld enthalten, also z.B. Ökosystemtyp, Treiber, Schutzgebiete, etc. Hier ist ein wortgenauer Vergleich nicht geeignet, da bereits minimale Unterschiede (linker bzw. rechter Rand, fehlende oder zusätzliche Wörter, Umformulierungen) zu einem “Fehlerfall” bei Metriken wie Accuracy oder F1 führen. Klassischerweise sollten daher Ähnlichkeitsmaße (z.B. ROUGE, BLEU, BertScore) oder schnittmengenbasierte Metriken eingesetzt werden (z.B. Jaccard-Koeffizient, Longest Common Substring).
 Offene Fragen, die letzte Kategorie von Fragetypen des Fragenkatalogs, sind von den Biodiversitätsexpertinnen zusätzlich formulierte Fragestellungen, die nicht in der Literaturdatenbank annotiert sind. Eine typische Fragestellung wäre z.B. “Wie beeinflussen die direkten Treiber den Trend?”. Das erwartete Output des LLMs wäre hier also eine Freitextantwort, die typischerweise mit einem festgelegten Bewertungsraster evaluiert werden sollte. Das Bewertungsraster definiert Kriterien/Fragestellungen, wie z.B. ‘Passgenauigkeit der Antwort’, ‘Enthält die Antwort halluzinierte Elemente’, usw., die anhand einer festen Skala (z. B. Ordinalskala, Likert-Skala) bewertet werden. Hierfür können neben der Bewertung durch Expertinnen auch LLM-as-a-judge-Ansätze eingesetzt werden, um eine Skalierung auf größere Datenmengen zu ermöglichen. Ein Vergleich der automatischen Bewertungen mit Expertenbewertungen sollte jedoch auf jeden Fall durchgeführt werden, um die  Qualität der automatischen Bewertungen einschätzen zu können.
-
-
-
-
-
-
-
-

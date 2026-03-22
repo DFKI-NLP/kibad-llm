@@ -4,7 +4,7 @@ Die technische Umsetzung des in Teilleistung 2 konzipierten Proof-of-Concept-Wor
 
 Kern der Umsetzung ist eine dokumentzentrierte Extraktionspipeline, die über den Einstiegspunkt `predict.py` ausgeführt wird. Die Verarbeitung erfolgt in Batchform über eine Hugging-Face-`datasets`-Pipeline und unterstützt – abhängig von der gewählten Konfiguration – auch parallele Verarbeitungsschritte, insbesondere bei der PDF-Konvertierung und Extraktion.
 
-Abbildung "Eingabe-Processing-Ausgabe"  
+Abbildung "Eingabe-Processing-Ausgabe"
 ![Eingabe-Processing-Ausgabe.png](images/Eingabe-Processing-Ausgabe.png)
 
 ### 2.1.1. Vorverarbeitung und PDF-Konvertierung
@@ -13,7 +13,7 @@ Vor der eigentlichen Extraktion werden die Eingabe-PDFs in eine maschinenlesbare
 
 Die Vorverarbeitungskomponente ist bewusst einfach gehalten und über Hydra austauschbar. Damit ist die Architektur offen für spätere Erweiterungen, beispielsweise um OCR-basierte Verarbeitung von Scan-PDFs oder um zusätzliche Konverter für andere Dokumentformate.
 
-Abbildung "Pipeline - Teil 1 - Schemata und Vorverarbeitung"  
+Abbildung "Pipeline - Teil 1 - Schemata und Vorverarbeitung"
 ![Pipeline - Teil 1 - Schemata und Vorverarbeitung.png](images/Pipeline%20-%20Teil%201%20-%20Schemata%20und%20Vorverarbeitung.png)
 
 ### 2.1.2. Schema-Definition und dynamisches Prompting
@@ -24,7 +24,7 @@ Eine zentrale Rolle übernimmt dabei `src/kibad_llm/schema/utils.py`. Dieses Mod
 
 Das Prompting ist insgesamt konfigurationsgetrieben. Das finale Prompt setzt sich aus dem gewählten Prompt-Template, der automatisch erzeugten Schemabeschreibung und dem konvertierten Dokumenttext zusammen. Auf diese Weise können unterschiedliche Promptvarianten für verschiedene Aufgaben und Experimente eingesetzt werden, etwa Varianten mit Evidenzanforderung, mit zusätzlicher fachlicher Instruktion oder mit angepasster Platzierung der Schemabeschreibung innerhalb der Nachrichtenstruktur.
 
-Abbildung "Prompt"  
+Abbildung "Prompt"
 ![Prompt.png](images/Prompt.png)
 
 ### 2.1.3. LLM-Engine und Inferenz
@@ -37,7 +37,7 @@ Sofern das verwendete Modell dies unterstützt, können außerdem zusätzliche R
 
 Zur Erhöhung der Robustheit unterstützt das System außerdem verschiedene Extraktions- und Aggregationsstrategien in `src/kibad_llm/extractors/`. Dazu gehören wiederholte Abfragen desselben Dokuments, Vereinigungs- und Mehrheitsentscheidungsstrategien für mehrere Modellantworten sowie mehrstufige bzw. bedingte Extraktionsabläufe für komplexere Schemata. Die Architektur ist damit so angelegt, dass perspektivisch auch weitergehende orchestrierte oder mehrschrittige Prompt-Workflows integriert werden können.
 
-Abbildung "Pipeline - Teil 2 - LLM Engine"  
+Abbildung "Pipeline - Teil 2 - LLM Engine"
 ![Pipeline - Teil 2 - LLM Engine.png](images/Pipeline%20-%20Teil%202%20-%20LLM%20Engine.png)
 
 ### 2.1.4. Post-Processing und finales Datenformat
@@ -46,16 +46,16 @@ Nach dem Modellaufruf werden die strukturierten Ausgaben im Post-Processing weit
 
 Die Ergebnisse der Pipeline werden als JSONL-Dateien gespeichert. Im finalen Ausgabedatensatz stehen sowohl die bereinigten strukturierten Inhalte als auch – sofern aktiviert – erweiterte Metadaten zur Verfügung. Dazu gehören insbesondere:
 
-  * die strukturierte Extraktion im Zielschema,
-  * optional eine Variante mit zusätzlichen Evidenz-Metadaten,
-  * die rohe Modellantwort,
-  * gegebenenfalls Reasoning-Informationen,
-  * Evidenz-Snippets und Positionsangaben im konvertierten Dokumenttext,
-  * sowie aufgetretene Fehler und weitere Diagnoseinformationen.
+- die strukturierte Extraktion im Zielschema,
+- optional eine Variante mit zusätzlichen Evidenz-Metadaten,
+- die rohe Modellantwort,
+- gegebenenfalls Reasoning-Informationen,
+- Evidenz-Snippets und Positionsangaben im konvertierten Dokumenttext,
+- sowie aufgetretene Fehler und weitere Diagnoseinformationen.
 
 Dieses Ausgabeformat dient sowohl der qualitativen Analyse einzelner Vorhersagen als auch der späteren automatischen Evaluation.
 
-Abbildung "Extraktions-Ergebnis"  
+Abbildung "Extraktions-Ergebnis"
 ![Extraktions-Ergebnis.png](images/Extraktions-Ergebnis.png)
 
 ### 2.1.5. Evaluation (`evaluate.py`)
@@ -66,5 +66,5 @@ Die Referenz- und Vorhersagedaten werden über Komponenten aus `src/kibad_llm/da
 
 Für die Durchführung größerer Versuchsreihen nutzt das Projekt zudem Hydra-Callbacks aus `src/kibad_llm/hydra_callbacks/`, insbesondere zur Speicherung von Rückgabewerten einzelner Runs und Multiruns. Dadurch lassen sich Evaluationsergebnisse, Laufmetadaten und Konfigurationen konsistent dokumentieren und später reproduzierbar auswerten.
 
-Abbildung "Pipeline - Teil 3 - Evaluation"  
+Abbildung "Pipeline - Teil 3 - Evaluation"
 ![Pipeline - Teil 3 - Evaluation.png](images/Pipeline%20-%20Teil%203%20-%20Evaluation.png)

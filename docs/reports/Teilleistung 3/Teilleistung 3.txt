@@ -181,14 +181,3 @@ Der Top-Level-Ordner enthält separate Unterordner für die logs/ und prediction
 Im logs/-Ordner werden zusätzlich eine “readme.md” sowie die mit einem Jupyter Notebook erzeugten Grafiken zu den automatischen Metriken und Fehlern abgelegt. Die Readme enthält alle notwendigen Informationen zur Reproduktion des Experiments, inklusive einer Beschreibung des Experiments, relevanter Log-Ausgaben, Konfigurationsparameter für das Jupyter Notebook, der Dokumentation der Inferenz- und Evaluationsskriptaufrufe sowie Links zu relevanten Github Issues und weiterer Dokumentation.
 
 Insgesamt wurden  für die Analysen in TL4 die Ergebnisse von  18 Experimenten aufbereitet. Die meisten Experimente nutzen alle in Teilleistung 2, Abschnitt 2.4 aufgeführten Modelle, bis auf Ministral 3. Von den Experimenten entfallen 10 auf das Faktencheck Kernschema, und 8 auf das Organismentrendschema. Je Experiment und Modell wurden meist 3 Durchläufe mit verschiedenen Random Seeds ausgeführt. Ausnahme war GPT 5, wo wir oft nur einen Durchlauf verwendeten, um die Kosten niedrig zu halten. Insgesamt entstanden so mehr als 120 Modelldurchläufe für das Kernschema, und etwas mehr als 90 Durchläufe für die Organismentrends.
-
-
-
-
-
-
-
-
-
-
-

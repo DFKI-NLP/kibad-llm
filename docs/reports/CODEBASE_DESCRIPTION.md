@@ -16,12 +16,12 @@
 At a high level, the main runtime flows are:
 
 1. **Prediction flow**: `PDF -> markdown text -> extractor -> JSONL predictions`
-2. **Evaluation flow**: `predictions + references -> metric -> JSON/Markdown result`
-3. **Data preparation flow**: PostgreSQL / Zotero / Nextcloud / analysis helpers -> intermediate data used by prediction or evaluation
+1. **Evaluation flow**: `predictions + references -> metric -> JSON/Markdown result`
+1. **Data preparation flow**: PostgreSQL / Zotero / Nextcloud / analysis helpers -> intermediate data used by prediction or evaluation
 
 The repository is structured around the package in `src/kibad_llm`, Hydra config groups in `configs/`, and a test suite in `tests/`.
 
----
+______________________________________________________________________
 
 ## High-level architecture
 
@@ -52,7 +52,7 @@ The project uses **Hydra** heavily:
 
 This makes the project strongly configuration-driven: the Python entry points are intentionally generic and delegate most concrete behavior to instantiated config targets.
 
----
+______________________________________________________________________
 
 ## Runtime flow
 
@@ -63,14 +63,14 @@ This makes the project strongly configuration-driven: the Python entry points ar
 Core steps:
 
 1. Determine Hydra run directory and Git metadata.
-2. Build a Hugging Face `datasets.Dataset` from all `*.pdf` files in `cfg.pdf_directory`.
-3. Instantiate the configured PDF reader from `cfg.pdf_reader`.
-4. Convert each PDF to markdown text via `dataset.map(...)`.
-5. Instantiate the configured extractor from `cfg.extractor`.
-6. Run extraction over the text dataset with optional caching and multiprocessing.
-7. Optionally remove the raw text from the saved predictions.
-8. Write predictions to JSONL under `cfg.output_dir/<timestamp>/<output_file_name>`.
-9. Return run metadata such as output path, timings, Git revision, and possibly `SLURM_JOB_ID`.
+1. Build a Hugging Face `datasets.Dataset` from all `*.pdf` files in `cfg.pdf_directory`.
+1. Instantiate the configured PDF reader from `cfg.pdf_reader`.
+1. Convert each PDF to markdown text via `dataset.map(...)`.
+1. Instantiate the configured extractor from `cfg.extractor`.
+1. Run extraction over the text dataset with optional caching and multiprocessing.
+1. Optionally remove the raw text from the saved predictions.
+1. Write predictions to JSONL under `cfg.output_dir/<timestamp>/<output_file_name>`.
+1. Return run metadata such as output path, timings, Git revision, and possibly `SLURM_JOB_ID`.
 
 Notable implementation details:
 
@@ -87,12 +87,12 @@ Notable implementation details:
 Core steps:
 
 1. Instantiate the configured dataset from `cfg.dataset`.
-2. Instantiate the configured metric from `cfg.metric`.
-3. Iterate over all dataset records.
-4. Call `metric.update(prediction=..., reference=..., record_id=...)`.
-5. Compute results via `metric.compute()`.
-6. Log formatted output.
-7. If predictions came from a run log and therefore carry metadata, attach that metadata under `prediction` in the metric result.
+1. Instantiate the configured metric from `cfg.metric`.
+1. Iterate over all dataset records.
+1. Call `metric.update(prediction=..., reference=..., record_id=...)`.
+1. Compute results via `metric.compute()`.
+1. Log formatted output.
+1. If predictions came from a run log and therefore carry metadata, attach that metadata under `prediction` in the metric result.
 
 Notable implementation details:
 
@@ -100,7 +100,7 @@ Notable implementation details:
 - Accepts datasets that may carry metadata via `DictWithMetadata`.
 - Treats the metric as a generic pluggable object implementing the `Metric` interface.
 
----
+______________________________________________________________________
 
 ## Source tree (`src/kibad_llm`)
 
@@ -161,16 +161,18 @@ src/kibad_llm/
     └── path.py
 ```
 
----
+______________________________________________________________________
 
 ## Module-by-module description of all implemented Python modules
 
 ## Package root modules
 
 ### `src/kibad_llm/__init__.py`
+
 Very small package initializer. It imports `kibad_llm.config` for side effects so that path constants, `.env` loading, and logging setup happen when the package is imported.
 
 ### `src/kibad_llm/config.py`
+
 Central path/bootstrap module.
 
 Responsibilities:
@@ -186,6 +188,7 @@ Responsibilities:
 This file is foundational because many modules import `PROJ_ROOT` or data-directory constants from here.
 
 ### `src/kibad_llm/predict.py`
+
 Primary inference entry point.
 
 Key functions:
@@ -203,6 +206,7 @@ Important design decisions:
 - Explicitly deletes the extractor after use to potentially free GPU memory, especially relevant for in-process vLLM models.
 
 ### `src/kibad_llm/evaluate.py`
+
 Primary evaluation entry point.
 
 Key functions:
@@ -215,6 +219,7 @@ Notable feature:
 - Registers a custom OmegaConf resolver to derive prediction-run directories from log roots for Hydra multirun evaluation.
 
 ### `src/kibad_llm/preprocessing.py`
+
 Minimal PDF preprocessing module.
 
 Key function:
@@ -224,6 +229,7 @@ Key function:
 In practice, this function is used as the default `pdf_reader` target via Hydra.
 
 ### `src/kibad_llm/metric.py`
+
 Defines the abstract metric interface used by evaluation.
 
 Main class:
@@ -240,14 +246,16 @@ Methods:
 
 This base class is intentionally lightweight and is extended by concrete metrics in `kibad_llm.metrics`.
 
----
+______________________________________________________________________
 
 ## `data_integration` modules
 
 ### `src/kibad_llm/data_integration/__init__.py`
+
 Empty package marker.
 
 ### `src/kibad_llm/data_integration/db_converter.py`
+
 Converts the Faktencheck PostgreSQL database into JSONL.
 
 Key concepts:
@@ -270,6 +278,7 @@ Important constant:
 This is the main bridge from the relational database into evaluation-ready JSONL reference data.
 
 ### `src/kibad_llm/data_integration/zotero_download.py`
+
 Downloads PDFs using Zotero exports and Semantic Scholar.
 
 Main capabilities:
@@ -291,6 +300,7 @@ Key functions:
 This module is an ingestion utility rather than part of the prediction runtime.
 
 ### `src/kibad_llm/data_integration/extract_vocabulary_enums.py`
+
 Extracts enumeration values from the Faktencheck database for schema or analysis support.
 
 Main capabilities:
@@ -314,6 +324,7 @@ Important constant:
 - `DIRECT_COLUMNS` — non-vocabulary-table fields queried directly from base tables.
 
 ### `src/kibad_llm/data_integration/synch_nextcloud_with_cluster.py`
+
 Synchronizes a public Nextcloud share with a local/cluster directory.
 
 Main capabilities:
@@ -334,6 +345,7 @@ Key functions:
 This is operational infrastructure code for maintaining the PDF collection.
 
 ### `src/kibad_llm/data_integration/database_unique_summary.py`
+
 Inspection utility for analyzing uniqueness and value distributions in JSONL exports.
 
 Main capabilities:
@@ -352,14 +364,16 @@ Key functions:
 
 Useful during schema design and reference-dataset understanding.
 
----
+______________________________________________________________________
 
 ## `dataset` modules
 
 ### `src/kibad_llm/dataset/__init__.py`
+
 Empty package marker.
 
 ### `src/kibad_llm/dataset/compression.py`
+
 Generic text-file opener with transparent compression support.
 
 Supported formats:
@@ -380,6 +394,7 @@ Key functions:
 This module underpins robust dataset loading from compressed reference or prediction files.
 
 ### `src/kibad_llm/dataset/csv.py`
+
 CSV loader for organism trend reference data.
 
 Key functions:
@@ -390,6 +405,7 @@ Key functions:
 This is the reference-data loader for the organism trends evaluation setup.
 
 ### `src/kibad_llm/dataset/json.py`
+
 JSON / JSONL dataset loader with optional preprocessing.
 
 Key function:
@@ -406,6 +422,7 @@ Capabilities:
 This is the general-purpose loader for reference JSONL data and predictions.
 
 ### `src/kibad_llm/dataset/prediction.py`
+
 Prediction-loader helpers with run metadata support.
 
 Main class:
@@ -428,6 +445,7 @@ Behavior:
 This module is important because evaluation can preserve provenance from prediction runs.
 
 ### `src/kibad_llm/dataset/utils.py`
+
 Helpers for combining dataset pieces.
 
 Key function:
@@ -443,11 +461,12 @@ Behavior:
 
 This function is the glue used by dataset Hydra configs such as `configs/dataset/faktencheck.yaml`.
 
----
+______________________________________________________________________
 
 ## `extractors` modules
 
 ### `src/kibad_llm/extractors/__init__.py`
+
 Re-export module.
 
 Exports:
@@ -459,6 +478,7 @@ Exports:
 - `UnionExtractor`
 
 ### `src/kibad_llm/extractors/aggregation_utils.py`
+
 Aggregation primitives for combining multiple extraction runs.
 
 Key types:
@@ -485,18 +505,19 @@ This module defines the semantics for repeated or multi-schema extraction:
 - **mixed strategy** for scalar/list combinations.
 
 ### `src/kibad_llm/extractors/base.py`
+
 The core extraction engine and the largest single module in the package.
 
 Major responsibilities:
 
 1. Build chat prompts from templates and schema descriptions.
-2. Call a configured LLM backend.
-3. Parse response content into JSON.
-4. Validate against JSON Schema when requested.
-5. Optionally wrap outputs with metadata/evidence anchors.
-6. Strip metadata back to clean structured outputs.
-7. Return a rich `SingleExtractionResult` object.
-8. Offer a lenient wrapper that catches all exceptions.
+1. Call a configured LLM backend.
+1. Parse response content into JSON.
+1. Validate against JSON Schema when requested.
+1. Optionally wrap outputs with metadata/evidence anchors.
+1. Strip metadata back to clean structured outputs.
+1. Return a rich `SingleExtractionResult` object.
+1. Offer a lenient wrapper that catches all exceptions.
 
 Important class:
 
@@ -534,6 +555,7 @@ Main execution functions:
 This is the central abstraction of the entire project. Everything else in extraction either configures or composes this module.
 
 ### `src/kibad_llm/extractors/repeat.py`
+
 Implements repeated extraction on the same text.
 
 Main class:
@@ -551,6 +573,7 @@ Use case:
 - Reduce stochastic LLM variation through majority voting.
 
 ### `src/kibad_llm/extractors/union.py`
+
 Implements multi-setup extraction over one text.
 
 Main class:
@@ -569,6 +592,7 @@ Use case:
 - Split a complex schema into multiple extraction setups and merge results.
 
 ### `src/kibad_llm/extractors/conditional.py`
+
 Implements a sequential union extractor where later extractions see previous prompt/response history.
 
 Main class:
@@ -587,14 +611,16 @@ Use case:
 
 - Multi-stage extraction where later schema queries depend on the earlier interaction context.
 
----
+______________________________________________________________________
 
 ## `hydra_callbacks` modules
 
 ### `src/kibad_llm/hydra_callbacks/__init__.py`
+
 Re-export module exposing `SaveJobReturnValueCallback`.
 
 ### `src/kibad_llm/hydra_callbacks/save_job_return_value.py`
+
 Hydra callback for persisting single-run and multirun return values.
 
 This module is central to experiment bookkeeping.
@@ -624,11 +650,12 @@ Key capabilities:
 
 This callback makes Hydra output directly useful for experiment tracking and later analysis.
 
----
+______________________________________________________________________
 
 ## `llms` modules
 
 ### `src/kibad_llm/llms/__init__.py`
+
 Re-export module.
 
 Exports:
@@ -638,6 +665,7 @@ Exports:
 - `VllmInProcess`
 
 ### `src/kibad_llm/llms/base.py`
+
 Defines the LLM abstraction used by extractors.
 
 Important exception classes:
@@ -667,6 +695,7 @@ Methods:
 This abstraction allows the extraction layer to stay backend-agnostic.
 
 ### `src/kibad_llm/llms/openai.py`
+
 OpenAI backend wrapper using the Responses API.
 
 Key helper functions:
@@ -688,6 +717,7 @@ Key features:
 The schema-patching logic is important because OpenAI’s strict structured output subset is narrower than general JSON Schema.
 
 ### `src/kibad_llm/llms/openai_like_vllm.py`
+
 Wrapper for OpenAI-compatible externally hosted models, especially vLLM servers.
 
 Main class:
@@ -703,6 +733,7 @@ Key behavior:
 This is the default family for self-hosted vLLM-compatible endpoints.
 
 ### `src/kibad_llm/llms/vllm_in_process.py`
+
 In-process vLLM backend.
 
 Key functions:
@@ -724,11 +755,12 @@ Key capabilities:
 
 This backend is useful when the model should run inside the same Python process rather than through an external API server.
 
----
+______________________________________________________________________
 
 ## `metrics` modules
 
 ### `src/kibad_llm/metrics/__init__.py`
+
 Re-export module.
 
 Exports:
@@ -740,6 +772,7 @@ Exports:
 - `ErrorCollector`
 
 ### `src/kibad_llm/metrics/base.py`
+
 Shared helpers for metrics that normalize entries into sets.
 
 Key helper:
@@ -759,6 +792,7 @@ Key behavior:
 This base class is used by the F1 and confusion-matrix metrics.
 
 ### `src/kibad_llm/metrics/collection.py`
+
 Composite metric container.
 
 Main class:
@@ -772,6 +806,7 @@ Behavior:
 - Returns a dict keyed by submetric name.
 
 ### `src/kibad_llm/metrics/confusion_matrix.py`
+
 Confusion matrix for single-label and multi-label set-style classification.
 
 Main class:
@@ -794,6 +829,7 @@ Methods of note:
 - `_compute(...)`
 
 ### `src/kibad_llm/metrics/f1.py`
+
 Micro-F1 metrics for one or many fields.
 
 Main classes:
@@ -816,6 +852,7 @@ Main classes:
 - optionally formats output as a markdown table.
 
 ### `src/kibad_llm/metrics/statistics.py`
+
 Error-frequency analysis metric.
 
 Main class:
@@ -834,14 +871,16 @@ Behavior:
 
 This metric is aimed at debugging extraction robustness rather than comparing semantic field accuracy.
 
----
+______________________________________________________________________
 
 ## `schema` modules
 
 ### `src/kibad_llm/schema/__init__.py`
+
 Empty package marker.
 
 ### `src/kibad_llm/schema/types.py`
+
 Large Pydantic schema library describing the extraction targets.
 
 This is one of the most important domain modules in the repository. It defines:
@@ -926,14 +965,15 @@ These top-level models are selected by Hydra config files under `configs/extract
 In effect, `schema/types.py` contains the project’s domain ontology for structured extraction.
 
 ### `src/kibad_llm/schema/utils.py`
+
 JSON-schema processing utilities used mainly during prompt construction and evidence-aware extraction.
 
 Main capabilities:
 
 1. Turn JSON Schema into human-readable prompt instructions.
-2. Resolve local `$ref` definitions.
-3. Analyze enum choices and types across composed schemas.
-4. Wrap terminal schema fields with metadata objects such as evidence anchors.
+1. Resolve local `$ref` definitions.
+1. Analyze enum choices and types across composed schemas.
+1. Wrap terminal schema fields with metadata objects such as evidence anchors.
 
 Important helpers for schema description:
 
@@ -962,11 +1002,12 @@ Important metadata-wrapping helpers:
 
 This module is crucial for the project’s advanced extraction mode where leaf values are returned together with textual evidence anchors.
 
----
+______________________________________________________________________
 
 ## `utils` modules
 
 ### `src/kibad_llm/utils/datasets.py`
+
 Tiny adapter module.
 
 Key function:
@@ -974,6 +1015,7 @@ Key function:
 - `wrap_map_func(func, result_key)` — wraps a plain callable so that it returns a dictionary suitable for `datasets.Dataset.map`.
 
 ### `src/kibad_llm/utils/dictionary.py`
+
 Dictionary flattening/unflattening and dict-backed dataclass utilities.
 
 Key functions:
@@ -993,6 +1035,7 @@ Important class:
 `FieldDict` keeps dataclass fields and dictionary items synchronized, which is what enables `SingleExtractionResult` to behave both like a typed object and like a JSON-serializable dict.
 
 ### `src/kibad_llm/utils/job_return.py`
+
 Helpers for loading and aggregating Hydra job-return artifacts.
 
 Key functions:
@@ -1009,6 +1052,7 @@ Key functions:
 This module complements the Hydra callback module and is mainly for later programmatic analysis of experiment outputs.
 
 ### `src/kibad_llm/utils/log.py`
+
 Very small logging helper.
 
 Key function:
@@ -1018,6 +1062,7 @@ Key function:
 Widely used in schema/extractor/LLM code where repetitive warnings would otherwise be noisy.
 
 ### `src/kibad_llm/utils/path.py`
+
 Path and directory-discovery helpers.
 
 Key functions:
@@ -1027,7 +1072,7 @@ Key functions:
 
 The latter is especially important for Hydra evaluation multiruns because it resolves nested run directories containing `job_return_value.json`.
 
----
+______________________________________________________________________
 
 ## Configuration tree (`configs/`)
 
@@ -1121,13 +1166,14 @@ configs/
     └── pymupdf4llm.yaml
 ```
 
----
+______________________________________________________________________
 
 ## How the Hydra configs fit together
 
 ## Root configs
 
 ### `configs/predict.yaml`
+
 Top-level prediction composition.
 
 Defaults:
@@ -1154,6 +1200,7 @@ Main fields:
 This config defines the complete inference application surface.
 
 ### `configs/evaluate.yaml`
+
 Top-level evaluation composition.
 
 Defaults:
@@ -1175,6 +1222,7 @@ This config supports both single evaluation runs and multirun evaluation over mu
 ## Dataset configs
 
 ### `configs/dataset/faktencheck.yaml`
+
 Creates the default merged evaluation dataset by combining:
 
 - predictions from `dataset/predictions/extraction_result.yaml`
@@ -1185,12 +1233,15 @@ Target:
 - `kibad_llm.dataset.utils.merge_references_into_predictions`
 
 ### `configs/dataset/organism_trends_forest.yaml`
+
 Same merge pattern, but uses the organism-trends reference CSV loader.
 
 ### `configs/dataset/predictions_only.yaml`
+
 Builds a dataset with predictions only and empty/default references. Used especially for metrics like `prediction_errors`.
 
 ### `configs/dataset/predictions/extraction_result.yaml`
+
 Prediction loader config.
 
 Target:
@@ -1200,11 +1251,13 @@ Target:
 Top-level keys include `log`, `file`, `id_key`, `process_id`, `preprocess`.
 
 ### `configs/dataset/references/faktencheck_db_converted.yaml`
+
 Reference loader config using:
 
 - `kibad_llm.dataset.json.read_and_preprocess`
 
 ### `configs/dataset/references/organism_trends_weighted_vote_count_wald_literatur.yaml`
+
 Reference loader config using:
 
 - `kibad_llm.dataset.csv.read_organism_trends`
@@ -1214,19 +1267,23 @@ Reference loader config using:
 ### Workflow configs
 
 - `configs/extractor/simple.yaml`
+
   - target: `kibad_llm.extractors.extract_from_text_lenient`
   - partial callable
   - default single-call extraction
 
 - `configs/extractor/repeat.yaml`
+
   - target: `kibad_llm.extractors.RepeatingExtractor`
   - repeated extraction with configurable repetition count and aggregation
 
 - `configs/extractor/union.yaml`
+
   - target: `kibad_llm.extractors.UnionExtractor`
   - multi-setup extraction with per-setup overrides
 
 - `configs/extractor/conditional_union.yaml`
+
   - target: `kibad_llm.extractors.ConditionalUnionExtractor`
   - sequential union with history propagation
 
@@ -1243,10 +1300,12 @@ These are configured as partial callables so the extractor classes can receive t
 Two broad families exist:
 
 1. **Externally hosted OpenAI-like endpoints**
+
    - targets such as `kibad_llm.llms.OpenAILikeVllm`
    - examples: `gpt_oss_20b.yaml`, `gemma3_27b.yaml`, `qwen3_30b.yaml`
 
-2. **In-process vLLM instances**
+1. **In-process vLLM instances**
+
    - target `kibad_llm.llms.VllmInProcess`
    - examples: `*_in_process.yaml`
 
@@ -1323,6 +1382,7 @@ These mainly override the dataset and/or metric groups.
 ## Hydra and path configs
 
 ### `configs/hydra/default.yaml`
+
 Configures:
 
 - color logging,
@@ -1332,6 +1392,7 @@ Configures:
 - multirun markdown/JSON behavior.
 
 ### `configs/paths/default.yaml`
+
 Defines reusable path interpolations such as:
 
 - `root_dir`
@@ -1345,16 +1406,18 @@ Defines reusable path interpolations such as:
 - `prediction_save_dir`
 
 ### `configs/paths/predict.yaml` and `configs/paths/evaluate.yaml`
+
 Small overrides of the default path layout for task-specific logging.
 
 ## PDF reader config
 
 ### `configs/pdf_reader/pymupdf4llm.yaml`
+
 Default PDF reader target:
 
 - `kibad_llm.preprocessing.read_pdf_as_markdown_via_pymupdf4llm`
 
----
+______________________________________________________________________
 
 ## Tests
 
@@ -1401,6 +1464,7 @@ tests/
 ## Test infrastructure
 
 ### `tests/conftest.py`
+
 Provides common fixtures and Hydra composition helpers.
 
 Key elements:
@@ -1415,6 +1479,7 @@ A notable feature is that tests override `cfg.paths.root_dir` with `PROJ_ROOT` a
 ## Integration tests
 
 ### `tests/integration/test_predict.py`
+
 End-to-end prediction tests.
 
 Covers:
@@ -1426,6 +1491,7 @@ Covers:
 It checks prediction structure and selected error properties rather than deterministic extraction content.
 
 ### `tests/integration/test_extractors.py`
+
 Parameterized integration tests over all extractor configs found in `configs/extractor/`.
 
 Covers:
@@ -1437,6 +1503,7 @@ Covers:
 - expected error-list semantics.
 
 ### `tests/integration/test_evaluation.py`
+
 End-to-end evaluation tests over all metric configs.
 
 Covers:
@@ -1448,18 +1515,23 @@ Covers:
 ## Unit tests
 
 ### `tests/unit/test_db_converter.py`
+
 Tests formatting behavior of `db_converter.format_result`.
 
 ### `tests/unit/test_preprocessing.py`
+
 Tests PDF-to-markdown reading through the preprocessing layer.
 
 ### `tests/unit/dataset/test_csv.py`
+
 Tests CSV-based organism-trend loading.
 
 ### `tests/unit/dataset/test_prediction.py`
+
 Tests prediction loading with metadata.
 
 ### `tests/unit/extractors/test_aggregation_utils.py`
+
 Extensive coverage of all aggregation behaviors:
 
 - hashability conversion,
@@ -1470,9 +1542,11 @@ Extensive coverage of all aggregation behaviors:
 - error conditions and type mismatches.
 
 ### `tests/unit/extractors/test_base.py`
+
 Focused tests for metadata stripping logic in `extractors.base`.
 
 ### `tests/unit/hydra_callbacks/test_save_job_return_value.py`
+
 Substantial tests for callback behavior:
 
 - initialization,
@@ -1482,21 +1556,27 @@ Substantial tests for callback behavior:
 - override handling.
 
 ### `tests/unit/llms/test_openai.py`
+
 Tests OpenAI strict-schema conversion logic in detail.
 
 ### `tests/unit/metrics/test_base.py`
+
 Tests normalization to sets in `MetricWithPrepareEntryAsSet`.
 
 ### `tests/unit/metrics/test_confusion_matrix.py`
+
 Tests confusion-matrix counting, reset logic, reserved-label guards, and markdown logging.
 
 ### `tests/unit/metrics/test_f1.py`
+
 Tests single-field and multi-field micro-F1 calculations plus formatting behavior.
 
 ### `tests/unit/schema/test_types.py`
+
 Parameterized validation tests over all schema models and compound models.
 
 ### `tests/unit/schema/test_utils.py`
+
 Broad tests for:
 
 - schema-description generation,
@@ -1505,11 +1585,12 @@ Broad tests for:
 - handling of refs, arrays, unions, and custom content keys.
 
 ### `tests/fixtures/test_dont_write.py`
+
 Additional safety test ensuring fixture-writing mode is not accidentally enabled.
 
 Overall, the test suite is strongest around schema handling, aggregation logic, metrics, and Hydra callback behavior.
 
----
+______________________________________________________________________
 
 ## `pyproject.toml`
 
@@ -1585,7 +1666,7 @@ Notable details:
 
 In short, `pyproject.toml` is both the build manifest and the repository’s main static-quality control center.
 
----
+______________________________________________________________________
 
 ## `.pre-commit-config.yaml`
 
@@ -1598,6 +1679,7 @@ The pre-commit setup is comprehensive and aligned with the `pyproject.toml` tool
 ## Hook groups
 
 ### Housekeeping hooks (`pre-commit-hooks`)
+
 Includes checks such as:
 
 - trailing whitespace
@@ -1635,27 +1717,27 @@ Includes checks such as:
 
 This setup indicates that the project treats code, markdown, and notebooks as first-class maintainable artifacts.
 
----
+______________________________________________________________________
 
 ## Relationship between code, configs, and tests
 
 A useful way to read the project is:
 
 1. **Schemas in `schema/types.py`** define what can be extracted.
-2. **Schema utilities in `schema/utils.py`** turn those schemas into prompt guidance and metadata-aware variants.
-3. **LLM wrappers in `llms/`** define how prompts are executed against different backends.
-4. **Extractor logic in `extractors/base.py`** translates text and schema into structured predictions.
-5. **Extractor workflow configs in `configs/extractor/`** decide whether extraction is single-shot, repeated, unioned, or conditional.
-6. **`predict.py`** applies that extractor at dataset scale.
-7. **Dataset loaders in `dataset/` plus dataset configs in `configs/dataset/`** merge predictions with references.
-8. **Metrics in `metrics/` plus metric configs in `configs/metric/`** compute task-specific evaluation outputs.
-9. **`evaluate.py`** runs the evaluation loop.
-10. **Hydra callback logic** writes out reproducible experiment artifacts.
-11. **Tests** verify the individual layers and several end-to-end paths.
+1. **Schema utilities in `schema/utils.py`** turn those schemas into prompt guidance and metadata-aware variants.
+1. **LLM wrappers in `llms/`** define how prompts are executed against different backends.
+1. **Extractor logic in `extractors/base.py`** translates text and schema into structured predictions.
+1. **Extractor workflow configs in `configs/extractor/`** decide whether extraction is single-shot, repeated, unioned, or conditional.
+1. **`predict.py`** applies that extractor at dataset scale.
+1. **Dataset loaders in `dataset/` plus dataset configs in `configs/dataset/`** merge predictions with references.
+1. **Metrics in `metrics/` plus metric configs in `configs/metric/`** compute task-specific evaluation outputs.
+1. **`evaluate.py`** runs the evaluation loop.
+1. **Hydra callback logic** writes out reproducible experiment artifacts.
+1. **Tests** verify the individual layers and several end-to-end paths.
 
 This layered structure is one of the strengths of the repository: most complexity is isolated into reusable modules, while Hydra handles composition.
 
----
+______________________________________________________________________
 
 ## Strengths and notable design choices
 
@@ -1684,24 +1766,24 @@ This layered structure is one of the strengths of the repository: most complexit
 - The README’s “Project Organization” section appears to be inherited from a template and is no longer an exact description of the real code structure.
 - The package is config-rich; understanding actual behavior requires reading both Python and Hydra config composition.
 
----
+______________________________________________________________________
 
 ## Recommended reading order for a new contributor
 
 1. `README.md`
-2. `pyproject.toml`
-3. `configs/predict.yaml` and `configs/evaluate.yaml`
-4. `src/kibad_llm/predict.py`
-5. `src/kibad_llm/evaluate.py`
-6. `src/kibad_llm/extractors/base.py`
-7. `src/kibad_llm/llms/base.py` and the concrete LLM backends
-8. `src/kibad_llm/schema/types.py` and `src/kibad_llm/schema/utils.py`
-9. `src/kibad_llm/dataset/*`
-10. `src/kibad_llm/metrics/*`
-11. `src/kibad_llm/hydra_callbacks/save_job_return_value.py`
-12. `tests/`, especially integration tests and schema/aggregation tests
+1. `pyproject.toml`
+1. `configs/predict.yaml` and `configs/evaluate.yaml`
+1. `src/kibad_llm/predict.py`
+1. `src/kibad_llm/evaluate.py`
+1. `src/kibad_llm/extractors/base.py`
+1. `src/kibad_llm/llms/base.py` and the concrete LLM backends
+1. `src/kibad_llm/schema/types.py` and `src/kibad_llm/schema/utils.py`
+1. `src/kibad_llm/dataset/*`
+1. `src/kibad_llm/metrics/*`
+1. `src/kibad_llm/hydra_callbacks/save_job_return_value.py`
+1. `tests/`, especially integration tests and schema/aggregation tests
 
----
+______________________________________________________________________
 
 ## Summary
 
@@ -1719,4 +1801,3 @@ The repository’s most important technical pillars are:
 - `configs/` as the composition layer tying everything together.
 
 For anyone extending the project, the critical skill is understanding the interaction between **Hydra config composition**, **schema definitions**, and **extractor behavior**.
-

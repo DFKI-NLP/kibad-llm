@@ -14,22 +14,22 @@ Trippstadter Straße 122 Email: info@dfki.de
 Puschstraße 4 Email: info@idiv.de
 04103 Leipzig Web: www.idiv.de
 
------
+______________________________________________________________________
 
 ## Inhaltsverzeichnis
 
-1.  Einleitung
-    1.1. Überblick AP 1
-    1.2. Ziele Teilleistung 3
-    1.3. Struktur des Dokuments
-2.  LLM-basierte Contentextraktion
-    2.1. Implementierung
-    2.2. Eingesetzte Software
-    2.3. IT Infrastruktur / Ressourcenbedarf
-3.  Aufbereitung von Testdatensätzen
-4.  Bereitgestellte Daten für TL 4
+1. Einleitung
+   1.1. Überblick AP 1
+   1.2. Ziele Teilleistung 3
+   1.3. Struktur des Dokuments
+1. LLM-basierte Contentextraktion
+   2.1. Implementierung
+   2.2. Eingesetzte Software
+   2.3. IT Infrastruktur / Ressourcenbedarf
+1. Aufbereitung von Testdatensätzen
+1. Bereitgestellte Daten für TL 4
 
------
+______________________________________________________________________
 
 # 1. Einleitung
 
@@ -55,7 +55,7 @@ Die technische Umsetzung des in Teilleistung 2 konzipierten Proof-of-Concept-Wor
 
 Kern der Umsetzung ist eine dokumentzentrierte Extraktionspipeline, die über den Einstiegspunkt `predict.py` ausgeführt wird. Die Verarbeitung erfolgt in Batchform über eine Hugging-Face-`datasets`-Pipeline und unterstützt – abhängig von der gewählten Konfiguration – auch parallele Verarbeitungsschritte, insbesondere bei der PDF-Konvertierung und Extraktion.
 
-Abbildung "Eingabe-Processing-Ausgabe"  
+Abbildung "Eingabe-Processing-Ausgabe"
 ![Eingabe-Processing-Ausgabe.png](images/Eingabe-Processing-Ausgabe.png)
 
 ### 2.1.1. Vorverarbeitung und PDF-Konvertierung
@@ -64,7 +64,7 @@ Vor der eigentlichen Extraktion werden die Eingabe-PDFs in eine maschinenlesbare
 
 Die Vorverarbeitungskomponente ist bewusst einfach gehalten und über Hydra austauschbar. Damit ist die Architektur offen für spätere Erweiterungen, beispielsweise um OCR-basierte Verarbeitung von Scan-PDFs oder um zusätzliche Konverter für andere Dokumentformate.
 
-Abbildung "Pipeline - Teil 1 - Schemata und Vorverarbeitung"  
+Abbildung "Pipeline - Teil 1 - Schemata und Vorverarbeitung"
 ![Pipeline - Teil 1 - Schemata und Vorverarbeitung.png](images/Pipeline%20-%20Teil%201%20-%20Schemata%20und%20Vorverarbeitung.png)
 
 ### 2.1.2. Schema-Definition und dynamisches Prompting
@@ -75,7 +75,7 @@ Eine zentrale Rolle übernimmt dabei `src/kibad_llm/schema/utils.py`. Dieses Mod
 
 Das Prompting ist insgesamt konfigurationsgetrieben. Das finale Prompt setzt sich aus dem gewählten Prompt-Template, der automatisch erzeugten Schemabeschreibung und dem konvertierten Dokumenttext zusammen. Auf diese Weise können unterschiedliche Promptvarianten für verschiedene Aufgaben und Experimente eingesetzt werden, etwa Varianten mit Evidenzanforderung, mit zusätzlicher fachlicher Instruktion oder mit angepasster Platzierung der Schemabeschreibung innerhalb der Nachrichtenstruktur.
 
-Abbildung "Prompt"  
+Abbildung "Prompt"
 ![Prompt.png](images/Prompt.png)
 
 ### 2.1.3. LLM-Engine und Inferenz
@@ -88,7 +88,7 @@ Sofern das verwendete Modell dies unterstützt, können außerdem zusätzliche R
 
 Zur Erhöhung der Robustheit unterstützt das System außerdem verschiedene Extraktions- und Aggregationsstrategien in `src/kibad_llm/extractors/`. Dazu gehören wiederholte Abfragen desselben Dokuments, Vereinigungs- und Mehrheitsentscheidungsstrategien für mehrere Modellantworten sowie mehrstufige bzw. bedingte Extraktionsabläufe für komplexere Schemata. Die Architektur ist damit so angelegt, dass perspektivisch auch weitergehende orchestrierte oder mehrschrittige Prompt-Workflows integriert werden können.
 
-Abbildung "Pipeline - Teil 2 - LLM Engine"  
+Abbildung "Pipeline - Teil 2 - LLM Engine"
 ![Pipeline - Teil 2 - LLM Engine.png](images/Pipeline%20-%20Teil%202%20-%20LLM%20Engine.png)
 
 ### 2.1.4. Post-Processing und finales Datenformat
@@ -97,16 +97,16 @@ Nach dem Modellaufruf werden die strukturierten Ausgaben im Post-Processing weit
 
 Die Ergebnisse der Pipeline werden als JSONL-Dateien gespeichert. Im finalen Ausgabedatensatz stehen sowohl die bereinigten strukturierten Inhalte als auch – sofern aktiviert – erweiterte Metadaten zur Verfügung. Dazu gehören insbesondere:
 
-  * die strukturierte Extraktion im Zielschema,
-  * optional eine Variante mit zusätzlichen Evidenz-Metadaten,
-  * die rohe Modellantwort,
-  * gegebenenfalls Reasoning-Informationen,
-  * Evidenz-Snippets und Positionsangaben im konvertierten Dokumenttext,
-  * sowie aufgetretene Fehler und weitere Diagnoseinformationen.
+- die strukturierte Extraktion im Zielschema,
+- optional eine Variante mit zusätzlichen Evidenz-Metadaten,
+- die rohe Modellantwort,
+- gegebenenfalls Reasoning-Informationen,
+- Evidenz-Snippets und Positionsangaben im konvertierten Dokumenttext,
+- sowie aufgetretene Fehler und weitere Diagnoseinformationen.
 
 Dieses Ausgabeformat dient sowohl der qualitativen Analyse einzelner Vorhersagen als auch der späteren automatischen Evaluation.
 
-Abbildung "Extraktions-Ergebnis"  
+Abbildung "Extraktions-Ergebnis"
 ![Extraktions-Ergebnis.png](images/Extraktions-Ergebnis.png)
 
 ### 2.1.5. Evaluation (`evaluate.py`)
@@ -132,8 +132,8 @@ OpenAI API: Kosten (in €) pro Run?
 
 vielleicht hier nur eine knappe Beschreibung, was bisher so verwendet wurde bzw. wie lange es dauert
 
-  * GPUs: H100 / A100 GPUs
-  * grobe Dauer, für 100 Test-PDFs ca X Minuten für Inferenz
+- GPUs: H100 / A100 GPUs
+- grobe Dauer, für 100 Test-PDFs ca X Minuten für Inferenz
 
 # 3. Aufbereitung von Testdatensätzen
 
@@ -143,15 +143,15 @@ Die Annotationen der Literaturdatenbank wurden mit einem Pythonskript[1] aus dem
 
 Für das Einlesen der Trenddatensätze, die in Form von Exceltabellen vorliegen, wurde durch das DFKI ein CSV-Reader[2] implementiert, der direkt die Daten in eine analoge JSON-Schemastruktur überführt (ohne den Zwischenschritt der Konvertierung in eine JSONL-Datei). Die folgende Abbildung zeigt einen Ausschnitt der konvertierten Testdaten für die Literaturdatenbankeinträge im JSONL-Format. Die Testdaten für die Organismentrends bzw. ÖSL-Trends sehen ähnlich aus, allerdings mit anderen Feldern pro Trend (entsprechend den in den Exceltabellen definierten Attributen / Spalten).
 
-Abbildung X Testdatenformat für Literaturdatenbank 
+Abbildung X Testdatenformat für Literaturdatenbank
 
 Literaturdatenbank: Alle Einträge der Literaturdatenbank, für die ein PDF vorhanden ist, wurden zur Erstellung eines Train / Dev / Test-Splits für die Optimierung bzw. Evaluation der Workflows genutzt. Annotierte Dokumente wurden zufällig den 3 Splits zugeordnet. Nicht annotierte Dokumente bilden einen separaten Split. Tabelle X zeigt die Verteilung auf die Splits.
 
-Tabelle X Verteilung der Dokumente auf die Splits 
+Tabelle X Verteilung der Dokumente auf die Splits
 
 | Train | Validation | Test | Unlabeled | Total |
-| :-: | :-: | :-: | :-: | :-: |
-| 900 | 900 | 500 | 1.609 | 3.917 |
+| :---: | :--------: | :--: | :-------: | :---: |
+|  900  |    900     | 500  |   1.609   | 3.917 |
 
 Für die initiale Entwicklung und erste Experimente wurde zusätzlich ein kleineres Testset von 100 Dokumenten erstellt. Dokumente wurden dabei zufällig ausgewählt, es wurde jedoch darauf geachtet, dass die Verteilung über Dokumentarten (wiss. Artikel, Buch, Bericht; Doktorarbeit, Präsentation) in etwa repräsentativ für den Gesamtkorpus war. Die Auswahl für das Testset ist hier[3] dokumentiert.
 
@@ -161,9 +161,10 @@ Weitere Testdatensätze, z.B. für die ÖSL-Trends bzw. für weitere LLM-Aufgabe
 
 # 4. Bereitgestellte Daten für TL 4
 
-Für die Analysen in TL4 haben wir eine Reihe von Experimenten mit verschiedenen Modellen, Prompts, Hyperparametern, und anderen Änderungen durchgeführt (für Details siehe TL4). Pro Durchlauf, also einer konkreten Konfiguration eines Experiments, werden sowohl Modellausgaben als auch Loggingdaten (während Inferenz und während Evaluation) gespeichert. Die Modellausgaben werden in dem in Abschnitt 2.1 beschriebenen, "finalen" JSON-Line-Format abgelegt. Die Inhalte der "structured" bzw. "structured\_with\_metadata" Elemente entsprechen dabei im Wesentlichen dem Format der aufbereiteten Testdaten, bis auf die zusätzlichen Informationen wie Evidenzsnippets. Die Loggingdaten werden mit dem Standard "logging"-Paket von Python erzeugt. Die Daten werden in folgender Struktur abgelegt: 
+Für die Analysen in TL4 haben wir eine Reihe von Experimenten mit verschiedenen Modellen, Prompts, Hyperparametern, und anderen Änderungen durchgeführt (für Details siehe TL4). Pro Durchlauf, also einer konkreten Konfiguration eines Experiments, werden sowohl Modellausgaben als auch Loggingdaten (während Inferenz und während Evaluation) gespeichert. Die Modellausgaben werden in dem in Abschnitt 2.1 beschriebenen, "finalen" JSON-Line-Format abgelegt. Die Inhalte der "structured" bzw. "structured_with_metadata" Elemente entsprechen dabei im Wesentlichen dem Format der aufbereiteten Testdaten, bis auf die zusätzlichen Informationen wie Evidenzsnippets. Die Loggingdaten werden mit dem Standard "logging"-Paket von Python erzeugt. Die Daten werden in folgender Struktur abgelegt:
 
 Abbildung: Struktur der bereitgestellten Experimentdaten
+
 ```
 results/
     predictions/
@@ -194,16 +195,16 @@ results/
                 predict/ (selbe Struktur wie in evaluate/)
 ```
 
-Der Top-Level-Ordner enthält separate Unterordner für die logs/ und predictions/. Predictions werden über ein benanntes Experiment gruppiert und jeder Run enthält einen Zeitstempel. Die Logdateien speichern im Unterordner ".hydra" die Metadaten zu den einzelnen Runs, insbesondere die exakte Hydra-Konfiguration (config.yaml), die für diesen Run spezifischen Parameter (overrides.yaml) sowie weitere, während des Runs produzierte Metadaten (job\_return\_value.json). Darüber ist jederzeit nachvollziehbar, welche Prediction-Datei mit welchen Hyperparametern, Random Seed, Modell, Commit oder Branch, etc. erzeugt wurde. Über den Commit-Hash kann das Experiment ggf. reproduziert werden. Die Zeitstempel für predictions/ und dem zugehörigen logs/predict/ Ordner sind identisch, für leichtere Zuordnung. Die logs/evaluate Zeitstempel sind, weil die Evaluation separat gestartet wird, verschieden von den predict/ - Zeitstempeln.
+Der Top-Level-Ordner enthält separate Unterordner für die logs/ und predictions/. Predictions werden über ein benanntes Experiment gruppiert und jeder Run enthält einen Zeitstempel. Die Logdateien speichern im Unterordner ".hydra" die Metadaten zu den einzelnen Runs, insbesondere die exakte Hydra-Konfiguration (config.yaml), die für diesen Run spezifischen Parameter (overrides.yaml) sowie weitere, während des Runs produzierte Metadaten (job_return_value.json). Darüber ist jederzeit nachvollziehbar, welche Prediction-Datei mit welchen Hyperparametern, Random Seed, Modell, Commit oder Branch, etc. erzeugt wurde. Über den Commit-Hash kann das Experiment ggf. reproduziert werden. Die Zeitstempel für predictions/ und dem zugehörigen logs/predict/ Ordner sind identisch, für leichtere Zuordnung. Die logs/evaluate Zeitstempel sind, weil die Evaluation separat gestartet wird, verschieden von den predict/ - Zeitstempeln.
 
 Im logs/-Ordner werden zusätzlich eine "readme.md" sowie die mit einem Jupyter Notebook[4] erzeugten Grafiken zu den automatischen Metriken und Fehlern abgelegt. Die Readme enthält alle notwendigen Informationen zur Reproduktion des Experiments, inklusive einer Beschreibung des Experiments, relevanter Log-Ausgaben, Konfigurationsparameter für das Jupyter Notebook, der Dokumentation der Inferenz- und Evaluationsskriptaufrufe sowie Links zu relevanten Github Issues und weiterer Dokumentation.
 
 Insgesamt wurden für die Analysen in TL4 die Ergebnisse von 18 Experimenten aufbereitet. Die meisten Experimente nutzen alle in Teilleistung 2, Abschnitt 2.4 aufgeführten Modelle, bis auf Ministral 3[5]. Von den Experimenten entfallen 10 auf das Faktencheck Kernschema, und 8 auf das Organismentrendschema. Je Experiment und Modell wurden meist 3 Durchläufe mit verschiedenen Random Seeds ausgeführt. Ausnahme war GPT 5, wo wir oft nur einen Durchlauf verwendeten, um die Kosten niedrig zu halten. Insgesamt entstanden so mehr als 120 Modelldurchläufe für das Kernschema, und etwas mehr als 90 Durchläufe für die Organismentrends.
 
------
+______________________________________________________________________
 
-[1] kibad-llm/src/kibad\_llm/data\_integration/db\_converter.py (Hinweis: Der Pfad bezieht sich auf das kibad-llm Coderepository, das separat zur Verfügung gestellt wird) 
-[2] kibad-llm/src/kibad\_llm/datasets/csv.py 
-[3] Copy of Faktencheck Artenvielfalt Literaturdatenbank-neu.xlsx 
-[4] kibad-llm/notebooks/plot\_multirun\_evaluation.ipynb 
-[5] Das Modell Ministral 3 wurde nach den ersten Tests nicht mehr verwendet, da es zu viele Fehler produzierte. 
+[1] kibad-llm/src/kibad_llm/data_integration/db_converter.py (Hinweis: Der Pfad bezieht sich auf das kibad-llm Coderepository, das separat zur Verfügung gestellt wird)
+[2] kibad-llm/src/kibad_llm/datasets/csv.py
+[3] Copy of Faktencheck Artenvielfalt Literaturdatenbank-neu.xlsx
+[4] kibad-llm/notebooks/plot_multirun_evaluation.ipynb
+[5] Das Modell Ministral 3 wurde nach den ersten Tests nicht mehr verwendet, da es zu viele Fehler produzierte.

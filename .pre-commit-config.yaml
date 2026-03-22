@@ -69,6 +69,7 @@ repos:
       - id: codespell
         # For Python < 3.11, TOML parsing needs tomli
         additional_dependencies: ["tomli"]
+        args: ["--skip=docs/reports/*"] # skip German reports
 
   # Strip Jupyter outputs
   - repo: https://github.com/kynan/nbstripout

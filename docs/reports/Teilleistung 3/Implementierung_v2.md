@@ -20,8 +20,8 @@ Um die in Teilleistung 2 definierten, unterschiedlich komplexen Informationsbeda
 
 Das Modul `src/kibad_llm/schema/utils.py` übernimmt dabei die entscheidende Vermittlerrolle zwischen Datenmodell und Modell-Prompt:
 
-  * **Automatische Schema-Generierung:** Aus den Pydantic-Modellen wird automatisch das benötigte JSON-Schema sowie eine textuelle Beschreibung des geforderten Datenformats generiert.
-  * **Evidenz-Anpassung:** Das Schema wird automatisch erweitert, um sogenannte Evidenz-Anker (exakte Zitate zur Belegung extrahierter Informationen) vom LLM einzufordern.
+- **Automatische Schema-Generierung:** Aus den Pydantic-Modellen wird automatisch das benötigte JSON-Schema sowie eine textuelle Beschreibung des geforderten Datenformats generiert.
+- **Evidenz-Anpassung:** Das Schema wird automatisch erweitert, um sogenannte Evidenz-Anker (exakte Zitate zur Belegung extrahierter Informationen) vom LLM einzufordern.
 
 Das finale Prompting setzt sich dynamisch aus dem manuell definierten Prompt-Text (Aufgabenstellung, Persona), der generierten Datenformat-Beschreibung und dem konvertierten Dokumententext zusammen. Es wurden drei konfigurierbare "Basisprompts" (auf Basis der Annotationsrichtlinien von iDiv) implementiert: *Mit Evidenz*, *Mit Persona* und *Ohne Feld- bzw. Typ-Beschreibungen*.
 
@@ -36,9 +36,9 @@ Um die strikte Einhaltung der Pydantic-Schemata zu garantieren, wird **JSON Sche
 
 Zur weiteren Stabilisierung und Leistungssteigerung unterstützt das System (`kibad_llm.extractors.base.py`) optional verschiedene Ergebnis-Aggregationen:
 
-  * **Ensemble-Methoden:** Majority-Voting über mehrere LLM-Antworten für robustere Ausgaben.
-  * **Problemzerlegung:** Aufteilung komplexer Schemata in unabhängige oder konditionale Einzelschritte zur Komplexitätsreduktion (kleinere Prompts machen die Aufgabe für das LLM leichter).
-  * **Dokument-Chunking:** Falls Dokumente den maximalen Kontextbereich überschreiten.
+- **Ensemble-Methoden:** Majority-Voting über mehrere LLM-Antworten für robustere Ausgaben.
+- **Problemzerlegung:** Aufteilung komplexer Schemata in unabhängige oder konditionale Einzelschritte zur Komplexitätsreduktion (kleinere Prompts machen die Aufgabe für das LLM leichter).
+- **Dokument-Chunking:** Falls Dokumente den maximalen Kontextbereich überschreiten.
 
 Perspektivisch bildet dies die Grundlage für komplexe konditionale, orchestrierte oder agentische Promptflows.
 
@@ -51,10 +51,10 @@ Nach der Textgenerierung verarbeitet das System die vom LLM extrahierten Evidenz
 
 Das Ergebnis der Extraktions-Pipeline wird als finales JSON(L) gespeichert. Neben den strukturierten Extraktionsdaten enthält das finale Objekt zusätzliche Metadaten für die spätere Fehleranalyse:
 
-  * Unverarbeitete LLM-Antworten
-  * Reasoning-Traces
-  * Evidenz-Snippets inklusive ihrer exakten Position im Originaltext
-  * Aufgetretene Fehler und System-Messages
+- Unverarbeitete LLM-Antworten
+- Reasoning-Traces
+- Evidenz-Snippets inklusive ihrer exakten Position im Originaltext
+- Aufgetretene Fehler und System-Messages
 
 Abbildung "Extraktions-Ergebnis"
 ![Extraktions-Ergebnis.png](images/Extraktions-Ergebnis.png)

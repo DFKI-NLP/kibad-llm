@@ -16,18 +16,18 @@ Puschstraße 4 Email: info@idiv.de
 
 ## Inhaltsverzeichnis
 
-  * 1. Einleitung 3
-      * 1.1. Überblick AP 1 3
-      * 1.2. Ziele Teilleistung 2 3
-      * 1.3. Struktur des Dokuments 3
-  * 2. Entwicklung des Proof-of-Concept Workflows 3
-      * 2.1. Hintergrund und Motivation 3
-      * 2.2. Überblick und Architektur 4
-      * 2.3. Anwendungsfälle 7
-      * 2.4. Modellauswahl und -bewertung 7
-      * 2.5. Frameworks und Bibliotheken 8
-      * 2.6. Integration Daten-Governance-Konzept 9
-      * 2.7. Evaluationskonzept für die automatische Evaluation 10
+- 1. Einleitung 3
+  - 1.1. Überblick AP 1 3
+  - 1.2. Ziele Teilleistung 2 3
+  - 1.3. Struktur des Dokuments 3
+- 2. Entwicklung des Proof-of-Concept Workflows 3
+  - 2.1. Hintergrund und Motivation 3
+  - 2.2. Überblick und Architektur 4
+  - 2.3. Anwendungsfälle 7
+  - 2.4. Modellauswahl und -bewertung 7
+  - 2.5. Frameworks und Bibliotheken 8
+  - 2.6. Integration Daten-Governance-Konzept 9
+  - 2.7. Evaluationskonzept für die automatische Evaluation 10
 
 # 1. Einleitung
 
@@ -53,12 +53,12 @@ Die zentrale Aufgabe der Anwendungsfälle zur Rekreierung des Faktencheck Artenv
 
 Die Anforderungsanalyse und die Auswertung der verfügbaren Datenbasis ergaben inhaltlichen Herausforderungen, die bei der Systementwicklung zu berücksichtigen sind:
 
-  * Die zu extrahierenden Inhalte haben stark differenzierte "Schwierigkeitsgrade"
-  * Klassische Eigennamenerkennung auf Wortebene (z.B. Ort, Taxon), teilweise mit vorgegebenen Antwortmöglichkeiten (z.B. Lebensraum)
-  * Komplexere Datentypen auf Basis von längeren Wortgruppen und inklusive Klassifikationsschritt in vorgegebene Antwortmöglichkeiten (z.B. Ökosystemtyp - Beschreibung, Term und Kategorie)
-  * Aussagenerkennung auf Satzebene / satzübergreifend (z.B. Trends, kausale Zusammenhänge)
-  * Annotationen sind in der Literaturdatenbank nur auf Dokumentebene verfügbar, nicht auf Wortebene
-  * Die Extraktion erfolgt je Dokument, und als Ergebnis produziert das System eine Reihe von Metadaten/Annotationen, wie sie für die Literaturdatenbank, die Weighted Vote Counts, etc., benötigt werden.
+- Die zu extrahierenden Inhalte haben stark differenzierte "Schwierigkeitsgrade"
+- Klassische Eigennamenerkennung auf Wortebene (z.B. Ort, Taxon), teilweise mit vorgegebenen Antwortmöglichkeiten (z.B. Lebensraum)
+- Komplexere Datentypen auf Basis von längeren Wortgruppen und inklusive Klassifikationsschritt in vorgegebene Antwortmöglichkeiten (z.B. Ökosystemtyp - Beschreibung, Term und Kategorie)
+- Aussagenerkennung auf Satzebene / satzübergreifend (z.B. Trends, kausale Zusammenhänge)
+- Annotationen sind in der Literaturdatenbank nur auf Dokumentebene verfügbar, nicht auf Wortebene
+- Die Extraktion erfolgt je Dokument, und als Ergebnis produziert das System eine Reihe von Metadaten/Annotationen, wie sie für die Literaturdatenbank, die Weighted Vote Counts, etc., benötigt werden.
 
 Zusätzlich waren die weiteren technischen Anforderungen (siehe TL1, Abschnitt 2.3) zu berücksichtigen.
 
@@ -78,12 +78,12 @@ Abbildung 2 Konzeptuelle Systemarchitektur für die Informationsextraktionspipel
 
 Die gewählte Architektur bietet verschiedene Vorteile:
 
-  * Instruktionen und Beispiele für das LLM via Prompts
-  * Unterstützung für flexible Datenschemas und Prompt Templates
-  * Austauschbare LLMs
-  * Integrierte Evaluation
-  * Parallelisierbarkeit
-  * Mehrschrittige Prompt-Workflows
+- Instruktionen und Beispiele für das LLM via Prompts
+- Unterstützung für flexible Datenschemas und Prompt Templates
+- Austauschbare LLMs
+- Integrierte Evaluation
+- Parallelisierbarkeit
+- Mehrschrittige Prompt-Workflows
 
 Die Logik des Workflows ist relativ Standard im Vergleich zu klassischen NLP-Pipelines. Die Vorverarbeitungskomponente ist dafür zuständig, verschiedene Inputformate in ein normalisiertes Format, auf Textbasis, zu konvertieren. Zudem werden weitere Normalisierungs- und Säuberungsschritte ausgeführt, oft heuristisch gesteuert (z.B. Beheben von Encodingproblemen, Entfernen nicht-relevanter Textabschnitte wie z.B. Literaturverzeichnisse bei Publikationen). Eine Verarbeitung von Bilddaten via OCR würde ebenfalls hier durchgeführt werden.
 
@@ -117,10 +117,10 @@ Tabelle 1 Modellauswahl für initiale Experimente im Proof-of-Concept Workflow (
 
 Parallel zur Entwicklung der Architektur des Proof-of-Concept Workflows wurden LLM-Frameworks und Bibliotheken gesammelt und evaluiert, die die Basis für die Umsetzung der Workflows bilden könnten. Aufgrund unserer Recherchen haben wir uns für folgende Frameworks entschieden:
 
-  * LlamaIndex [1]: LlamaIndex ist eine Bibliothek für die Umsetzung dokumentorientierter Workflows mit LLMs, und unterstützt agentische / RAG Setups, aber auch OCR. Als Alternative hatten wir LangChain [2] in Betracht gezogen, das letztere erschien uns jedoch aktuell als unnötig komplex für unsere Anwendungsfälle. LangChain integriert jedoch Speicher-, Agenten- und Werkzeugnutzungskonzepte, und könnte sich daher besser für das Projekt eignen, wenn die abgebildeten Workflows von KIBA-D umfangreicher werden.
-  * vLLM [3]: Eine schnelle und einfach zu bedienende Bibliothek für LLM-Inferenz und -Bereitstellung. Im Gegensatz zur anderen populären Alternative Ollama [4] ist für den High-Performance-Serverbetrieb optimiert, statt für die lokale Entwicklung
-  * Hydra [5]: Hydra ist ein Framework zur einfachen Konfiguration von komplexen Anwendungen. Es ermöglicht komponierbare Konfigurationen und unterstützt damit vor allem die effiziente Durchführung vieler ähnlicher Experimente.
-  * Pydantic [6]: Pydantic ist eine Datenvalidierungsbibliothek für Python, die es uns erlaubt, Datenschemas zu definieren und das Output der KI-Modelle zu validieren.
+- LlamaIndex \[1\]: LlamaIndex ist eine Bibliothek für die Umsetzung dokumentorientierter Workflows mit LLMs, und unterstützt agentische / RAG Setups, aber auch OCR. Als Alternative hatten wir LangChain [2] in Betracht gezogen, das letztere erschien uns jedoch aktuell als unnötig komplex für unsere Anwendungsfälle. LangChain integriert jedoch Speicher-, Agenten- und Werkzeugnutzungskonzepte, und könnte sich daher besser für das Projekt eignen, wenn die abgebildeten Workflows von KIBA-D umfangreicher werden.
+- vLLM \[3\]: Eine schnelle und einfach zu bedienende Bibliothek für LLM-Inferenz und -Bereitstellung. Im Gegensatz zur anderen populären Alternative Ollama [4] ist für den High-Performance-Serverbetrieb optimiert, statt für die lokale Entwicklung
+- Hydra \[5\]: Hydra ist ein Framework zur einfachen Konfiguration von komplexen Anwendungen. Es ermöglicht komponierbare Konfigurationen und unterstützt damit vor allem die effiziente Durchführung vieler ähnlicher Experimente.
+- Pydantic \[6\]: Pydantic ist eine Datenvalidierungsbibliothek für Python, die es uns erlaubt, Datenschemas zu definieren und das Output der KI-Modelle zu validieren.
 
 Weitere Frameworks, die im Verlauf des Projekts eine Rolle spielen könnten, sind DSPy [7] zur automatischen Optimierung von Prompts, und Evaluationsframeworks wie DeepEval [8] oder Promptfoo [9], die eine Reihe von weiteren Metriken zur Bewertung des Outputs generativer LLMs bereitstellen. Aktuell implementieren wir die Evaluationslogik und Metriken selbst, siehe Abschnitt 2.7.
 
@@ -136,11 +136,11 @@ Als Teil der Entwicklung der LLM-Pipeline haben wir eine automatische Evaluation
 
 Bei der Entwicklung des Konzepts für die automatische Evaluation der Modellvorhersagen mit den Referenzannotationen der Testdaten ergaben sich nach der Erarbeitung des Fragenkatalogs verschiedene Aspekte, die zu berücksichtigen waren:
 
-  * Komplexe Elemente versus einfache Elemente
-  * Elemente mit festgelegten Kategorien versus offene oder erweiterbare Kategorien
-  * Elemente mit Freitextantworten
-  * Offene Fragen
-  * Auswahl der Metriken
+- Komplexe Elemente versus einfache Elemente
+- Elemente mit festgelegten Kategorien versus offene oder erweiterbare Kategorien
+- Elemente mit Freitextantworten
+- Offene Fragen
+- Auswahl der Metriken
 
 Einige der in der Literaturdatenbank annotierten Werte bilden zusammengehörige Informationsgruppen, andere stehen als Einzelfelder für sich. So ist zum Beispiel der "Ökosystemtyp" durch drei Felder - "Kategorie", "Begriff", und "Beschreibung" definiert, während z.B. "Lebensraum" unabhängig von anderen Elementen ist [10]. Für einfache Elemente genügt ein direkter Vergleich des vorhergesagten Werts mit der Referenzannotation. Bei komplexen Elementen kann eine strikte Evaluationssicht angewendet werden, wonach das komplexe Element nur korrekt ist, wenn alle Teilelemente im Vergleich zur jeweiligen Referenzannotation den richtigen Wert haben. Alternativ kann man partielle Matches erlauben, z.B. beim Ökosystemtyp den Wert für "Beschreibung" als optional betrachten. Eine dritte Möglichkeit ist es, komplexe Elemente in ihre Subelemente aufzulösen und alle Informationstypen als einfache Elemente zu betrachten ("flache Evaluation"). Dabei geht allerdings die Zusammengehörigkeit verloren, was insbesondere dann wichtig wird, wenn für ein Dokumente mehrere Vorhersagen für einen komplexen Typ (z.B. mehrere Ökosystemtypen) erzeugt werden bzw. in den Referenzen annotiert sind. In diesem Fall kann die flache Evaluation Zuordnungsfehler des LLMs verschleiern (z.B. falsche Kombination von Kategorie und Term). Dies ist insbesondere bei der Evaluation der Trendaussagen relevant, da hier im Fall von mehreren Trends in einem Dokument nur die korrekte Kombination der Einzelelemente - also z.B. Lebensraum, Artengruppe, Biodiversitätsvariable mit einem Trend - als richtig gewertet werden kann.
 
@@ -150,7 +150,7 @@ Schwieriger ist die Evaluation von Elementen mit Freitextantworten. Das betrifft
 
 Offene Fragen, die letzte Kategorie von Fragetypen des Fragenkatalogs, sind von den Biodiversitätsexpertinnen zusätzlich formulierte Fragestellungen, die nicht in der Literaturdatenbank annotiert sind. Eine typische Fragestellung wäre z.B. "Wie beeinflussen die direkten Treiber den Trend?". Das erwartete Output des LLMs wäre hier also eine Freitextantwort, die typischerweise mit einem festgelegten Bewertungsraster evaluiert werden sollte. Das Bewertungsraster definiert Kriterien/Fragestellungen, wie z.B. 'Passgenauigkeit der Antwort', 'Enthält die Antwort halluzinierte Elemente', usw., die anhand einer festen Skala (z. B. Ordinalskala, Likert-Skala) bewertet werden. Hierfür können neben der Bewertung durch Expertinnen auch LLM-as-a-judge-Ansätze eingesetzt werden, um eine Skalierung auf größere Datenmengen zu ermöglichen. Ein Vergleich der automatischen Bewertungen mit Expertenbewertungen sollte jedoch auf jeden Fall durchgeführt werden, um die Qualität der automatischen Bewertungen einschätzen zu können.
 
------
+______________________________________________________________________
 
 [1] [https://www.llamaindex.ai/](https://www.google.com/url?sa=E&source=gmail&q=https://www.llamaindex.ai/)
 [2] [https://www.langchain.com/](https://www.google.com/url?sa=E&source=gmail&q=https://www.langchain.com/)
