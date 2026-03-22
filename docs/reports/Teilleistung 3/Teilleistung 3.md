@@ -163,7 +163,36 @@ Weitere Testdatensätze, z.B. für die ÖSL-Trends bzw. für weitere LLM-Aufgabe
 
 Für die Analysen in TL4 haben wir eine Reihe von Experimenten mit verschiedenen Modellen, Prompts, Hyperparametern, und anderen Änderungen durchgeführt (für Details siehe TL4). Pro Durchlauf, also einer konkreten Konfiguration eines Experiments, werden sowohl Modellausgaben als auch Loggingdaten (während Inferenz und während Evaluation) gespeichert. Die Modellausgaben werden in dem in Abschnitt 2.1 beschriebenen, "finalen" JSON-Line-Format abgelegt. Die Inhalte der "structured" bzw. "structured\_with\_metadata" Elemente entsprechen dabei im Wesentlichen dem Format der aufbereiteten Testdaten, bis auf die zusätzlichen Informationen wie Evidenzsnippets. Die Loggingdaten werden mit dem Standard "logging"-Paket von Python erzeugt. Die Daten werden in folgender Struktur abgelegt: 
 
-Abbildung X Struktur der bereitgestellten Experimentdaten 
+Abbildung: Struktur der bereitgestellten Experimentdaten
+```
+results/
+    predictions/
+        experiment_name/time_stamp/
+            run_id_1/
+                predictions.jsonl
+            run_id_2/
+                predictions.jsonl
+            …
+    logs/
+        experiment_name/
+                readme.md
+                metrics.svg
+                errors.svg
+                …
+                evaluate/multiruns/timestamp/
+                    0/
+                        job_return_value.json
+                        .hydra/
+                            config.yaml
+                            hydra.yaml
+                            overrides.yaml
+                    1/
+                        job_return_value.json
+                        …
+                    …
+                    multirun.yaml
+                predict/ (selbe Struktur wie in evaluate/)
+```
 
 Der Top-Level-Ordner enthält separate Unterordner für die logs/ und predictions/. Predictions werden über ein benanntes Experiment gruppiert und jeder Run enthält einen Zeitstempel. Die Logdateien speichern im Unterordner ".hydra" die Metadaten zu den einzelnen Runs, insbesondere die exakte Hydra-Konfiguration (config.yaml), die für diesen Run spezifischen Parameter (overrides.yaml) sowie weitere, während des Runs produzierte Metadaten (job\_return\_value.json). Darüber ist jederzeit nachvollziehbar, welche Prediction-Datei mit welchen Hyperparametern, Random Seed, Modell, Commit oder Branch, etc. erzeugt wurde. Über den Commit-Hash kann das Experiment ggf. reproduziert werden. Die Zeitstempel für predictions/ und dem zugehörigen logs/predict/ Ordner sind identisch, für leichtere Zuordnung. Die logs/evaluate Zeitstempel sind, weil die Evaluation separat gestartet wird, verschieden von den predict/ - Zeitstempeln.
 
