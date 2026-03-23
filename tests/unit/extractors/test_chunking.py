@@ -22,136 +22,139 @@ def test_chunking_timeout() -> None:
             document_from_md,
             20000,
             None,
-            1000,
             0.00001,
         )
 
 
-def test_stride() -> None:
-    """x.md is a very simplified version of BMTEN2FG.md with just 233 characters.
-    It should not time out.
-
-    The overlap is "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD", as it is smaller than 100 characters.
-    The overlap is not "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
-    because that would be 101 characters, which is more than the stride of 100.
-    """
-
-    document_from_md = (FIXTURE_DATA / "x.md").read_text()
-
-    chunks: tuple[TextChunk, ...] = _document_chunk_iterator(
-        document_from_md,
-        200,
-        None,
-        100,
-        10,
-    )
-    for predict, gold in zip(
-        chunks,
-        [
-            "AAAAAAAAAAAAAAA BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
-            "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE",
-        ],
-    ):
-        assert predict.chunk_text == gold
-
-
-def test_stride_no_overlap() -> None:
-    """x.md is a very simplified version of BMTEN2FG.md with just 233 characters.
-    It should not time out.
-
-    There is no overlap because the stride of 10 characters is smaller than the last token
-    "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD", which is 46 characters.
-    """
-
-    document_from_md = (FIXTURE_DATA / "x.md").read_text()
-
-    chunks: tuple[TextChunk, ...] = _document_chunk_iterator(
-        document_from_md,
-        200,
-        None,
-        10,
-        10,
-    )
-    for predict, gold in zip(
-        chunks,
-        [
-            "AAAAAAAAAAAAAAA BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
-            "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE",
-        ],
-    ):
-        assert predict.chunk_text == gold
-
-
-def test_stride_overlaps() -> None:
-    """This tests for overlapping chunks."""
-
-    document_from_md = Path("./tests/fixtures/pdfs_error/chunking_fail/BMTEN2FG.md").read_text()
-
-    chunks: tuple[TextChunk, ...] = _document_chunk_iterator(
-        document_from_md,
-        1000,
-        None,
-        100,
-        600,
-    )
-    previous_chunk = chunks[0].chunk_text
-    for chunk in chunks[1:]:
-        assert previous_chunk is not None
-        assert chunk.chunk_text is not None
-        # chunks should overlap at least ten characters
-        for i in range(0, len(previous_chunk) - 10):
-            if chunk.chunk_text.startswith(previous_chunk[i:]):
-                break
-        else:
-            raise ValueError(
-                f"chunks not overlapping!\n{previous_chunk}\nthere should be some overlap here\n{chunk.chunk_text}"
-            )
-        previous_chunk = chunk.chunk_text
-
-
-def test_no_stride_no_overlaps() -> None:
-    """This tests for non overlapping chunks at stride 0"""
-
-    document_from_md = (FIXTURE_DATA / "x.md").read_text()
-
-    chunks: tuple[TextChunk, ...] = _document_chunk_iterator(
-        document_from_md,
-        100,
-        None,
-        0,
-        600,
-    )
-    assert len(chunks) > 1
-    previous_chunk = chunks[0].chunk_text
-    for chunk in chunks[1:]:
-        assert previous_chunk is not None
-        assert chunk.chunk_text is not None
-        # overlap is only counted as such when its 10 characters
-        for i in range(0, len(previous_chunk) - 10):
-            if chunk.chunk_text.startswith(previous_chunk[i:]):
-                raise ValueError(
-                    f"chunks overlapping with {len(previous_chunk[i:])} characters!\n{previous_chunk[i:]}\nthere should be no overlap here\n{chunk.chunk_text[:len(previous_chunk[i:])]}"
-                )
-        previous_chunk = chunk.chunk_text
-
 def test_first_token_too_long() -> None:
+    """If a token is larger than max_char_buffer, it gets its own chunk."""
 
+    input_text = [
+        # token gets its own chunk as it's bigger than max_char_buffer
+        "TooBigTokennnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn",  # 60 chars
+        # rest of the "broken" sentence gets its own chunk
+        "normal tokens here.",  # 19
+        # new complete sentence gets its own chunk because the next sentence wouldn't
+        # fit into max_char_buffer
+        "some more.",  # 10
+        # start of sentence gets its own chunk, because the total sentence is too big
+        "more normal tokens",  # 18 chars
+        # token gets its own chunk as it's bigger than max_char_buffer,
+        # even within sentences
+        "tooBigTokennnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn",  # 60 chars
+        # rest of the "broken" sentence gets its own chunk
+        "and normal end.",  # 15 chars
+        # start of sentence gets its own chunk, because the total sentence is too big
+        "normal start here",
+        "tooBigTokennnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn",  # 60 chars
+        ".",  # 1 char
+        "normal sentence here. the end.",  # 30 chars
+    ]
     chunks: tuple[TextChunk, ...] = _document_chunk_iterator(
-        "123456789",
-        5,
+        " ".join(input_text),
+        50,
         None,
-        1,
         10,
     )
-    assert chunks[0].chunk_text == "123456789"
+    chunk_texts = [chunk.chunk_text for chunk in chunks]
+    assert chunk_texts == input_text
 
-def test_infinite_loop() -> None:
 
-    with pytest.raises(TimeoutError) as e_info:
-        _document_chunk_iterator(
-            "123456789 12",
-            10,
-            None,
-            9,
-            10,
-        )
+def test_chunk_case_a() -> None:
+    """
+    A)
+    If a sentence length exceeds the max char buffer, then it needs to be broken
+    into chunks that can fit within the max char buffer. We do this in a way that
+    maximizes the chunk length while respecting newlines (if present) and token
+    boundaries.
+    Consider this sentence from a poem by John Donne:
+    ```
+    No man is an island,
+    Entire of itself,
+    Every man is a piece of the continent,
+    A part of the main.
+    ```
+    With max_char_buffer=40, the chunks are:
+    * "No man is an island,\nEntire of itself," len=38
+    * "Every man is a piece of the continent," len=38
+    * "A part of the main." len=19
+
+    """
+
+    input_text = "No man is an island,\nEntire of itself,\nEvery man is a piece of the continent,\nA part of the main."
+    expected_chunks = [
+        "No man is an island,\nEntire of itself,",  # len=38
+        "Every man is a piece of the continent,",  # len=38
+        "A part of the main.",  # len=19
+    ]
+
+    chunks: tuple[TextChunk, ...] = _document_chunk_iterator(
+        input_text,
+        40,
+        None,
+        10,
+    )
+
+    chunk_texts = [chunk.chunk_text for chunk in chunks]
+    assert chunk_texts == expected_chunks
+
+
+def test_chunk_case_b() -> None:
+    """
+    B)
+    If a single token exceeds the max char buffer, it comprises the whole chunk.
+    Consider the sentence:
+    "This is antidisestablishmentarianism."
+    With max_char_buffer=20, the chunks are:
+    * "This is" len=7
+    * "antidisestablishmentarianism" len=28
+    * "." len(1)
+    """
+
+    input_text = "This is antidisestablishmentarianism."
+
+    expected_chunks = [
+        "This is",  # len=7
+        "antidisestablishmentarianism",  # len=28
+        ".",  # len(1)
+    ]
+
+    chunks: tuple[TextChunk, ...] = _document_chunk_iterator(
+        input_text,
+        20,
+        None,
+        10,
+    )
+
+    chunk_texts = [chunk.chunk_text for chunk in chunks]
+    assert chunk_texts == expected_chunks
+
+
+def test_chunk_case_c() -> None:
+    """
+    C)
+    If multiple *whole* sentences can fit within the max char buffer, then they
+    are used to form the chunk.
+    Consider the sentences:
+    "Roses are red. Violets are blue. Flowers are nice. And so are you."
+    With max_char_buffer=60, the chunks are:
+    * "Roses are red. Violets are blue. Flowers are nice." len=50
+    * "And so are you." len=15
+    """
+
+    input_text = "Roses are red. Violets are blue. Flowers are nice. And so are you."
+
+    expected_chunks = [
+        "Roses are red. Violets are blue. Flowers are nice.",  # len=50
+        "And so are you.",  # len=15
+    ]
+
+    chunks: tuple[TextChunk, ...] = _document_chunk_iterator(
+        input_text,
+        60,
+        None,
+        10,
+    )
+
+    chunk_texts = [chunk.chunk_text for chunk in chunks]
+    assert chunk_texts == expected_chunks

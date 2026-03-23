@@ -3,8 +3,7 @@
 # https://github.com/google/langextract
 # It uses a clever Tokenizer that tries to strike a balance between chunking speed and
 # cohesive contexts, by taking sentence structures into account.
-# The llm is queried sequentially with each chunk, and an optional
-# overlap between chunks called stride. The results are then aggregated across extractions.
+# The llm is queried sequentially with each chunk. The results are then aggregated across extractions.
 
 defaults:
   - schema: faktencheck_simple
@@ -24,9 +23,6 @@ _target_: kibad_llm.extractors.ChunkingExtractor
 #
 # values are calculated with regards to gpt_oss_20b, using the heuristic of 5 characters per token
 max_char_buffer: 20000
-stride: 1000
-# if stride factor is provided, it overrides stride with int(max_char_buffer * stride_factor)
-# stride_factor: 0.1
 
 # if chunking is taking longer than an hour, something must be wrong with the text. so, we skip it
 chunking_timeout: 3600

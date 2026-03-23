@@ -21,7 +21,6 @@ def _document_chunk_iterator(
     document: str,
     max_char_buffer: int,
     tokenizer: tokenizer_lib.Tokenizer | None,
-    stride: int,
     chunking_timeout: float,
 ) -> tuple[core.TextChunk, ...]:
     """Iterates over documents to return text chunks along with the document ID.
@@ -30,7 +29,6 @@ def _document_chunk_iterator(
         documents: A sequence of Document objects.
         max_char_buffer: The maximum character buffer size for the ChunkIterator.
         tokenizer: Optional tokenizer instance.
-        stride: Max approx Number of characters to overlap chunks
         chunking_timeout: Number of seconds after which to raise the TimeoutError.
 
     Returns:
@@ -47,7 +45,6 @@ def _document_chunk_iterator(
         document,
         max_char_buffer=max_char_buffer,
         tokenizer_impl=tokenizer or tokenizer_lib.RegexTokenizer(),
-        stride=stride,
     )
     with Pool(1) as p:
         return p.apply_async(func=tuple, args=(chunks,)).get(timeout=chunking_timeout)
@@ -66,8 +63,6 @@ class ChunkingExtractor:
         return_as_list: List of field names to return as lists of all extracted values
         tokenizer: tokenizer to use for chunking
         max_char_buffer: Max chunk size in characters
-        stride: Max approx Number of characters to overlap chunks
-        stride_factor: If provided, overrides stride with a fraction of max_char_buffer (e.g. 0.1 for 10% overlap)
         verbose: Adds verbose logging
         chunking_timeout: Time after which chunking is cancelled because of gibberish input
         **kwargs: Additional keyword arguments passed to the base extraction function.
@@ -79,8 +74,6 @@ class ChunkingExtractor:
         return_as_list: list[str] | None = None,
         tokenizer: tokenizer_lib.Tokenizer | None = None,
         max_char_buffer: int = 20000,
-        stride: int = 1000,
-        stride_factor: float | None = None,
         verbose: bool = False,
         chunking_timeout: int = 3600,
         **kwargs,
@@ -90,10 +83,6 @@ class ChunkingExtractor:
         self.default_kwargs = kwargs
         self.tokenizer = tokenizer
         self.max_char_buffer = max_char_buffer
-        if stride_factor is not None:
-            self.stride = int(max_char_buffer * stride_factor)
-        else:
-            self.stride = stride
         self.verbose = verbose
         self.chunking_timeout = chunking_timeout
 
@@ -118,7 +107,6 @@ class ChunkingExtractor:
                 text,
                 self.max_char_buffer,
                 self.tokenizer,
-                self.stride,
                 self.chunking_timeout,
             )
         except TimeoutError as e:

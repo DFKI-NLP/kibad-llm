@@ -345,7 +345,12 @@ class UnicodeTokenizer(Tokenizer):
             if grapheme.isspace():
                 if current_type is not None:
                     self._emit_token(
-                        tokens, text, current_start, start, current_type, previous_end
+                        tokens,
+                        text,
+                        current_start,
+                        start,
+                        current_type,
+                        previous_end,
                     )
                     previous_end = start
                     current_type = None
@@ -403,7 +408,12 @@ class UnicodeTokenizer(Tokenizer):
                 # Flush previous token if exists
                 if current_type is not None:
                     self._emit_token(
-                        tokens, text, current_start, start, current_type, previous_end
+                        tokens,
+                        text,
+                        current_start,
+                        start,
+                        current_type,
+                        previous_end,
                     )
                     previous_end = start
 
@@ -423,7 +433,14 @@ class UnicodeTokenizer(Tokenizer):
 
         # 4. Flush final token
         if current_type is not None:
-            self._emit_token(tokens, text, current_start, len(text), current_type, previous_end)
+            self._emit_token(
+                tokens,
+                text,
+                current_start,
+                len(text),
+                current_type,
+                previous_end,
+            )
 
         return TokenizedText(text=text, tokens=tokens)
 

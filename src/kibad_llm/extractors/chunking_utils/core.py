@@ -286,18 +286,15 @@ class SentenceIterator:
                 f"document {self.token_len}."
             )
         self.curr_token_pos = curr_token_pos
-        self.temporary_stride = 0
 
     def __iter__(self) -> Iterator[tokenizer_lib.TokenInterval]:
         return self
 
     def __next__(self) -> tokenizer_lib.TokenInterval:
-        """Returns next sentence's interval starting from current token position minus
-           the temporary_stride.
+        """Returns next sentence's interval starting from current token position.
 
         Returns:
-          Next sentence token interval starting from current token position minus
-          the temporary_stride.
+          Next sentence token interval starting from current token position.
 
         Raises:
           StopIteration: If end of text is reached.
@@ -312,53 +309,11 @@ class SentenceIterator:
             self.curr_token_pos,
         )
         assert sentence_range
-        # If there is a temporary_stride, we need to add this to the interval.
-        # For self.temporary_stride > 0 this method returns the next sentence
-        # plus the previous context tokens up to self.temporary_stride characters.
-        self._move_by_stride()
         # Start the sentence from the current token position.
         # If we are in the middle of a sentence, we should start from there.
         sentence_range = create_token_interval(self.curr_token_pos, sentence_range.end_index)
         self.curr_token_pos = sentence_range.end_index
         return sentence_range
-
-    def _move_by_stride(self):
-        """Move the curr_token_pos back by approximately stride characters.
-
-        Iterate backwards through the tokens previous to self.curr_token_pos.
-        Include the maximum number of those tokens with a total character
-        count <= the stride.
-        If the token immediately previous to the curr_token_pos is larger than
-        the stride, no change is made, meaning the stride is 0 and no overlap
-        is generated.
-
-        side effect:
-            set self.curr_token_pos back by approximately stride characters
-
-        returns:
-            char_interval_len int: the length of the stride taken
-
-        CAVEAT: If the last token is larger than stride characters, no overlap
-        is generated!"""
-        if self.curr_token_pos == 0:
-            return 0
-        last_good_token_pos = self.curr_token_pos
-        char_interval_len = 0
-        for i in reversed(range(0, self.curr_token_pos)):
-            char_interval = get_char_interval(
-                self.tokenized_text,
-                tokenizer_lib.TokenInterval(i, self.curr_token_pos),
-            )
-            assert char_interval.start_pos is not None and char_interval.end_pos is not None
-            char_interval_len = char_interval.end_pos - char_interval.start_pos
-            if char_interval_len > self.temporary_stride:
-                break
-            else:
-                last_good_token_pos = i
-
-        self.curr_token_pos = last_good_token_pos
-        self.temporary_stride = 0
-        return char_interval_len
 
 
 class ChunkIterator:
@@ -366,7 +321,6 @@ class ChunkIterator:
 
     Chunks may consist of sentences or sentence fragments that can fit into the
     maximum character buffer that we can run inference on.
-    They overlap by up to stride characters.
 
     Chunk cases:
 
@@ -404,17 +358,6 @@ class ChunkIterator:
     With max_char_buffer=60, the chunks are:
     * "Roses are red. Violets are blue. Flowers are nice." len=50
     * "And so are you." len=15
-
-    Stride:
-
-    Chunks are built by requesting sentences from the SentenceIterator until the max_char_buffer
-    is reached. For every first sentence of a chunk, the stride is requested from the SentenceIterator.
-    In case A), the max_char_buffer would cover the stride, as well as part of the next sentence.
-    In case B), the max_char_buffer would cover the stride, as well as the next token.
-    In case C), the max_char_buffer would cover the stride, the first sentence, as well as a variable
-    amount of subsequent sentences. Those subsequent sentences can be obtained by iterating through
-    the SentenceIterator normally, as the temporary_stride has only been requested from the first sentence,
-    and does not apply again.
     """
 
     def __init__(
@@ -422,7 +365,6 @@ class ChunkIterator:
         document: str,
         max_char_buffer: int,
         tokenizer_impl: tokenizer_lib.Tokenizer,
-        stride: int,
     ):
         """Constructor.
 
@@ -430,7 +372,6 @@ class ChunkIterator:
             document: Document to chunk. Can be either a string or a tokenized text.
             max_char_buffer: Size of buffer that we can run inference on.
             tokenizer_impl: Tokenizer instance to use.
-            stride: Number of characters to overlap the chunks.
         """
 
         if isinstance(document, str):
@@ -442,8 +383,6 @@ class ChunkIterator:
         self.sentence_iter = SentenceIterator(self.tokenized_text)
         self.broken_sentence = False
         self.document = document
-        self.stride = stride
-        assert self.stride < self.max_char_buffer
 
     def __iter__(self) -> Iterator[TextChunk]:
         return self
@@ -463,7 +402,6 @@ class ChunkIterator:
         return (char_interval.end_pos - char_interval.start_pos) > self.max_char_buffer
 
     def __next__(self) -> TextChunk:
-        self.sentence_iter.temporary_stride = self.stride
         sentence = next(self.sentence_iter)
         # If the next token is greater than the max_char_buffer, let it be the
         # entire chunk.
