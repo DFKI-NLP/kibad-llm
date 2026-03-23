@@ -133,3 +133,25 @@ def test_no_stride_no_overlaps() -> None:
                     f"chunks overlapping with {len(previous_chunk[i:])} characters!\n{previous_chunk[i:]}\nthere should be no overlap here\n{chunk.chunk_text[:len(previous_chunk[i:])]}"
                 )
         previous_chunk = chunk.chunk_text
+
+def test_first_token_too_long() -> None:
+
+    chunks: tuple[TextChunk, ...] = _document_chunk_iterator(
+        "123456789",
+        5,
+        None,
+        1,
+        10,
+    )
+    assert chunks[0].chunk_text == "123456789"
+
+def test_infinite_loop() -> None:
+
+    with pytest.raises(TimeoutError) as e_info:
+        _document_chunk_iterator(
+            "123456789 12",
+            10,
+            None,
+            9,
+            10,
+        )
