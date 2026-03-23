@@ -1,0 +1,3044 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Evaluation Dashboard</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      font-family: Inter, Arial, sans-serif;
+      --text: #1f2937;
+      --muted: #4b5563;
+      --border: #d1d5db;
+      --surface: #ffffff;
+      --surface-2: #f9fafb;
+      --accent: #2563eb;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --text: #e5e7eb;
+        --muted: #cbd5e1;
+        --border: #475569;
+        --surface: #111827;
+        --surface-2: #1f2937;
+        --accent: #60a5fa;
+      }
+    }
+    body {
+      margin: 24px;
+      max-width: 1400px;
+      color: var(--text);
+      background: var(--surface);
+    }
+    h1, h2 {
+      margin-bottom: 8px;
+    }
+    .hint {
+      margin-top: 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    .controls {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      margin: 16px 0 20px 0;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface-2);
+    }
+    .status {
+      margin-top: 4px;
+      font-family: monospace;
+      white-space: pre-wrap;
+    }
+    .tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 12px 0;
+    }
+    .tab-button {
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text);
+      border-radius: 6px;
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+    .tab-button.active {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent) inset;
+    }
+    input[type="file"], input[type="checkbox"] {
+      accent-color: var(--accent);
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 8px 0 18px 0;
+      font-size: 0.93rem;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 6px 8px;
+      text-align: left;
+      vertical-align: top;
+      max-width: 300px;
+      overflow-wrap: anywhere;
+    }
+    th {
+      position: sticky;
+      top: 0;
+      background: var(--surface-2);
+      z-index: 1;
+    }
+    .table-container {
+      max-height: 420px;
+      overflow: auto;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+    }
+    .eval-layout {
+      display: block;
+    }
+    .eval-layout.split {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 10px;
+      align-items: start;
+    }
+    .eval-layout > .table-container,
+    .eval-layout > .eval-json-pane {
+      min-width: 0;
+    }
+    .eval-json-pane {
+      display: none;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+      height: 420px;
+      overflow: auto;
+      padding: 8px;
+      box-sizing: border-box;
+    }
+    .eval-json-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+    .eval-json-tab-button {
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text);
+      border-radius: 6px;
+      padding: 4px 10px;
+      cursor: pointer;
+      font-size: 0.86rem;
+    }
+    .eval-json-tab-button.active {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent) inset;
+    }
+    .eval-layout.split .eval-json-pane {
+      display: block;
+    }
+    .json-key { color: #93c5fd; }
+    .json-string { color: #86efac; }
+    .json-number { color: #fca5a5; }
+    .json-boolean { color: #c4b5fd; }
+    .json-null { color: #fcd34d; }
+    .eval-json-title {
+      margin: 0 0 8px 0;
+      font-size: 0.9rem;
+      color: var(--muted);
+      font-family: monospace;
+    }
+    .eval-json-pre {
+      margin: 0;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.82rem;
+      white-space: pre;
+      overflow-x: auto;
+      overflow-y: auto;
+      overflow-wrap: normal;
+      word-break: normal;
+      max-width: 100%;
+    }
+    #evalJsonCode {
+      display: inline-block;
+      min-width: max-content;
+    }
+    .eval-row-selected td {
+      background: color-mix(in srgb, var(--accent) 18%, var(--surface));
+    }
+    .expand-button {
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text);
+      border-radius: 4px;
+      width: 28px;
+      height: 24px;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .member-row td {
+      background: var(--surface-2);
+    }
+    .group-toggle {
+      display: inline-flex;
+      align-items: center;
+      margin-top: 4px;
+      font-size: 0.74rem;
+      color: var(--muted);
+      user-select: none;
+      white-space: nowrap;
+      line-height: 1;
+    }
+    .header-static-control,
+    .header-select-control {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .header-caption {
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1;
+    }
+    .prediction-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin: 8px 0;
+    }
+    .prediction-action-button {
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text);
+      border-radius: 6px;
+      padding: 4px 10px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .prediction-action-button.active {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent) inset;
+    }
+    .options-panel {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface-2);
+      padding: 8px;
+      margin: 8px 0;
+    }
+    .options-summary {
+      font-weight: 700;
+      cursor: pointer;
+      user-select: none;
+      padding: 2px 0;
+    }
+    .options-summary::marker {
+      color: var(--muted);
+    }
+    .options-content {
+      margin-top: 8px;
+    }
+    .options-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+    .options-tab-button {
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text);
+      border-radius: 6px;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+    .options-tab-button.active {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent) inset;
+      background: color-mix(in srgb, var(--surface-2) 75%, var(--surface));
+    }
+    .options-tab-panel {
+      display: none;
+    }
+    .options-tab-panel.active {
+      display: block;
+    }
+    .truncate-panel-title {
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .truncate-controls {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      width: 100%;
+    }
+    .truncate-controls-main {
+      flex: 1 1 680px;
+      min-width: 320px;
+    }
+    #truncateColumnsList,
+    #evalTruncateColumnsList {
+      width: 100%;
+      box-sizing: border-box;
+      max-height: 150px;
+      overflow: auto;
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 4px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 8px;
+      align-content: flex-start;
+    }
+    /* Eval options have no right-side panel, so let the chips column fully own the row width. */
+    #evalOptionsPanelTruncate .truncate-controls {
+      justify-content: flex-start;
+    }
+    #evalOptionsPanelTruncate .truncate-controls-main {
+      flex: 1 1 100%;
+      min-width: 0;
+    }
+    .truncate-item {
+      display: inline-flex;
+      gap: 5px;
+      align-items: center;
+      white-space: nowrap;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 2px 7px;
+      line-height: 1.1;
+      background: color-mix(in srgb, var(--surface) 90%, var(--surface-2));
+    }
+    .truncate-controls-side {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 220px;
+      max-width: 320px;
+      padding-left: 12px;
+    }
+    .truncate-controls button {
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text);
+      border-radius: 6px;
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+    @media (max-width: 980px) {
+      .truncate-controls-side {
+        border-top: 0;
+        padding-left: 0;
+        padding-top: 10px;
+        max-width: none;
+        width: 100%;
+      }
+    }
+    .dashboard-data-table {
+      border-collapse: separate;
+      border-spacing: 0;
+      table-layout: auto;
+      width: max-content;
+      min-width: 100%;
+      margin: 0;
+      --sticky-col-1-left: 0px;
+      --sticky-col-2-left: 0px;
+      --sticky-col-3-left: 0px;
+    }
+    .dashboard-data-table th,
+    .dashboard-data-table td {
+      border: 0;
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+      overflow-wrap: normal;
+      word-break: normal;
+      max-width: none;
+      text-overflow: clip;
+      background: var(--surface);
+    }
+    .dashboard-data-table th:nth-child(-n+2),
+    .dashboard-data-table td:nth-child(-n+2) {
+      text-align: center;
+    }
+    .dashboard-data-table th:nth-child(3),
+    .dashboard-data-table td:nth-child(3) {
+      text-align: center;
+    }
+    .dashboard-data-table tr > *:last-child {
+      border-right: 0;
+    }
+    .dashboard-data-table tbody tr:last-child > td {
+      border-bottom: 0;
+    }
+    .dashboard-data-table th {
+      background: var(--surface-2);
+    }
+    #evaluationsTable thead tr:first-child th:nth-child(-n+2),
+    #evaluationsTable tbody td:nth-child(-n+2) {
+      text-align: center;
+    }
+    #evaluationsTable thead tr:first-child th:nth-child(3),
+    #evaluationsTable tbody td:nth-child(3) {
+      text-align: center;
+    }
+    /* Keep key control columns visible while horizontally scrolling the tables. */
+    .dashboard-data-table thead tr:first-child th:nth-child(1),
+    .dashboard-data-table tbody td:nth-child(1) {
+      position: sticky;
+      left: var(--sticky-col-1-left);
+      z-index: 3;
+      background: var(--surface);
+      box-shadow: 1px 0 0 var(--border);
+    }
+    .dashboard-data-table thead tr:first-child th:nth-child(2),
+    .dashboard-data-table tbody td:nth-child(2) {
+      position: sticky;
+      left: var(--sticky-col-2-left);
+      z-index: 3;
+      background: var(--surface);
+      box-shadow: 1px 0 0 var(--border);
+    }
+    .dashboard-data-table thead tr:first-child th:nth-child(3),
+    .dashboard-data-table tbody td:nth-child(3) {
+      position: sticky;
+      left: var(--sticky-col-3-left);
+      z-index: 3;
+      background: var(--surface);
+      box-shadow: 1px 0 0 var(--border);
+    }
+    .dashboard-data-table thead tr:first-child th:nth-child(-n+3) {
+      background: var(--surface-2);
+      z-index: 4;
+    }
+    .dashboard-data-table tbody td:nth-child(-n+3) {
+      background: var(--surface);
+      z-index: 2;
+    }
+    .dashboard-data-table tbody tr.member-row td:nth-child(-n+3) {
+      background: var(--surface-2);
+    }
+    #evaluationsTable tbody tr.eval-row-selected td:nth-child(-n+3) {
+      background: color-mix(in srgb, var(--accent) 18%, var(--surface));
+    }
+    .section-header {
+      text-align: center;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .dashboard-data-table th.truncate-enabled,
+    .dashboard-data-table td.truncate-enabled {
+      white-space: nowrap;
+      overflow-wrap: normal;
+      word-break: normal;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 320px;
+    }
+    .plot-content {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+      padding: 10px;
+      overflow: auto;
+      min-height: 180px;
+    }
+    .plot-group-bars-controls {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      margin: 6px 0 10px 0;
+    }
+    .plot-group-bars-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 8px;
+      align-items: center;
+      min-height: 28px;
+    }
+    .plot-legend {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 0 0 8px 0;
+    }
+    .plot-legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 2px 8px;
+      background: color-mix(in srgb, var(--surface) 90%, var(--surface-2));
+    }
+    .plot-legend-swatch {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      display: inline-block;
+    }
+    .plot-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(520px, 1fr));
+      gap: 12px;
+    }
+    .plot-card {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--surface) 94%, var(--surface-2));
+      padding: 8px;
+      overflow: auto;
+    }
+    .plot-card svg {
+      display: block;
+    }
+    .plot-title {
+      margin: 0 0 8px 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+      font-family: monospace;
+    }
+    .plot-empty {
+      margin: 0;
+      color: var(--muted);
+    }
+    .bar-tooltip {
+      position: fixed;
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 0.82rem;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      white-space: pre;
+      pointer-events: none;
+      z-index: 9999;
+      display: none;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.35);
+      line-height: 1.5;
+    }
+    .plot-mode-select {
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text);
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+    .plot-number-input {
+      width: 70px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text);
+      border-radius: 6px;
+      padding: 4px 6px;
+      font-size: 0.9rem;
+    }
+    .plot-mode-effective {
+      font-size: 0.82rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      white-space: nowrap;
+      border: 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Evaluation Dashboard</h1>
+  <p class="hint">
+    Select a logs folder (for example <code>data/prediction_results/logs/380_faktencheck_core</code>).<br>
+    The dashboard loads all single evaluation-run folders where both
+    <code>job_return_value.json</code> and <code>.hydra/overrides.yaml</code> are present. Runs inside
+    <code>predict</code> are ignored.
+  </p>
+
+  <div class="controls">
+    <div>
+      <label for="folderInput"><strong>1) Load Folder</strong></label><br>
+      <input id="folderInput" type="file" webkitdirectory directory multiple>
+      <div id="loadStatus" class="status">No folder loaded.</div>
+    </div>
+  </div>
+
+  <h2>Predictions</h2>
+  <div id="predictionSummary" class="hint">No data loaded yet.</div>
+  <div class="prediction-actions">
+    <strong>Group-by:</strong>
+    <button id="groupByAllButton" class="prediction-action-button" type="button">all</button>
+    <button id="groupByNoneButton" class="prediction-action-button" type="button">none</button>
+    <button id="groupByToggleButton" class="prediction-action-button" type="button">toggle</button>
+  </div>
+  <details class="options-panel">
+    <summary class="options-summary">Table display options</summary>
+    <div class="options-content">
+      <div id="optionsTabs" class="options-tabs">
+        <button id="optionsTabTruncate" class="options-tab-button" data-tab="truncate" type="button">Truncate columns</button>
+      </div>
+      <div id="optionsPanelTruncate" class="options-tab-panel" data-tab-panel="truncate">
+        <div id="truncateControls" class="truncate-controls">
+          <div class="truncate-controls-main">
+            <div id="truncateColumnsList"></div>
+          </div>
+          <div class="truncate-controls-side">
+            <div class="hint">Defaults: columns containing <code>file</code> or <code>run</code>.</div>
+            <button id="truncateDefaultsButton" type="button">Reset defaults</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </details>
+  <div class="table-container">
+    <table id="predictionsTable" class="dashboard-data-table"></table>
+  </div>
+
+  <h2>Evaluations</h2>
+  <p class="hint">
+    Shows only eval metadata from <code>.hydra/overrides.yaml</code> for runs connected to selected prediction groups.
+    Tabs are split by <code>experiment/evaluate</code>.
+  </p>
+  <div id="evalTabs" class="tabs"></div>
+  <div id="evalSummary" class="hint">Select one or more prediction groups to view evaluation metadata.</div>
+  <details class="options-panel">
+    <summary class="options-summary">Table display options</summary>
+    <div class="options-content">
+      <div id="evalOptionsTabs" class="options-tabs">
+        <button id="evalOptionsTabTruncate" class="options-tab-button" data-eval-tab="truncate" type="button">Truncate columns</button>
+      </div>
+      <div id="evalOptionsPanelTruncate" class="options-tab-panel" data-eval-tab-panel="truncate">
+        <div class="truncate-controls">
+          <div class="truncate-controls-main">
+            <div id="evalTruncateColumnsList"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </details>
+  <div id="evalLayout" class="eval-layout">
+    <div class="table-container">
+      <table id="evaluationsTable" class="dashboard-data-table"></table>
+    </div>
+    <div id="evalJsonPane" class="eval-json-pane">
+      <div class="eval-json-tabs">
+        <button id="evalJsonTabEvaluation" class="eval-json-tab-button" type="button">Evaluation data</button>
+        <button id="evalJsonTabPrediction" class="eval-json-tab-button" type="button">Prediction metadata</button>
+      </div>
+      <p id="evalJsonTitle" class="eval-json-title"></p>
+      <pre class="eval-json-pre"><code id="evalJsonCode"></code></pre>
+    </div>
+  </div>
+  <h3>Evaluation plots</h3>
+  <div class="prediction-actions">
+    <strong>Plot mode:</strong>
+    <label for="plotModeSelect" class="sr-only">Plot mode</label>
+    <select id="plotModeSelect" class="plot-mode-select">
+      <option value="auto">auto</option>
+      <option value="f1">f1</option>
+      <option value="errors">errors</option>
+      <option value="confusion_matrix">confusion matrix</option>
+    </select>
+    <span id="plotModeEffective" class="plot-mode-effective"></span>
+  </div>
+  <div class="prediction-actions">
+    <label for="plotRoundingPrecision"><strong>Rounding:</strong></label>
+    <input id="plotRoundingPrecision" class="plot-number-input" type="number" min="0" max="6" step="1" value="2">
+  </div>
+  <div id="plotTabsByRow" class="prediction-actions">
+    <strong>Create tabs by:</strong>
+    <button id="plotTabsByPrefixButton" class="prediction-action-button" type="button">prefix</button>
+    <button id="plotTabsBySuffixButton" class="prediction-action-button" type="button">suffix</button>
+  </div>
+  <div id="plotConfusionTabsByRow" class="prediction-actions">
+    <strong>Create tabs by:</strong>
+    <button id="confusionTabsByMetricFieldButton" class="prediction-action-button" type="button">overrides.metric.field</button>
+    <button id="confusionTabsByPredictionGroupButton" class="prediction-action-button" type="button">prediction group</button>
+  </div>
+  <div id="plotGroupBarsRow" class="plot-group-bars-controls">
+    <strong>Group bars:</strong>
+    <div id="plotGroupBarsList" class="plot-group-bars-list"></div>
+  </div>
+  <div id="evalPlotTabs" class="tabs"></div>
+  <div id="evalPlotContent" class="plot-content"></div>
+  <div id="barTooltip" class="bar-tooltip" aria-hidden="true"></div>
+
+  <script>
+    // Central UI state: loaded runs, current grouping/selection, and per-eval-tab view state.
+    const state = {
+      runs: [],
+      predictionEntries: [],
+      predictionColumns: [],
+      loadedFolders: new Set(),
+      selectedGroupIds: new Set(),
+      expandedGroupIds: new Set(),
+      activeEvalTab: null,
+      groups: [],
+      groupByFields: [],
+      truncateEnabledColumns: new Set(),
+      activeOptionsTab: "truncate",
+      evalTabStates: {},
+      activeEvalJsonTab: "evaluation",
+      plotTabsBy: "prefix",
+      activeEvalPlotTab: null,
+      plotGroupBarFields: new Set(),
+      plotMode: "auto",
+      plotRoundingPrecision: 2,
+      confusionTabsBy: "prediction_group",
+    };
+
+    const folderInput = document.getElementById("folderInput");
+    const loadStatus = document.getElementById("loadStatus");
+    const predictionSummary = document.getElementById("predictionSummary");
+    const groupByAllButton = document.getElementById("groupByAllButton");
+    const groupByNoneButton = document.getElementById("groupByNoneButton");
+    const groupByToggleButton = document.getElementById("groupByToggleButton");
+    const optionsTabs = document.getElementById("optionsTabs");
+    const truncateColumnsList = document.getElementById("truncateColumnsList");
+    const truncateDefaultsButton = document.getElementById("truncateDefaultsButton");
+    const predictionsTable = document.getElementById("predictionsTable");
+    const evalTabs = document.getElementById("evalTabs");
+    const evalSummary = document.getElementById("evalSummary");
+    const evalOptionsTabs = document.getElementById("evalOptionsTabs");
+    const evalTruncateColumnsList = document.getElementById("evalTruncateColumnsList");
+    const evalLayout = document.getElementById("evalLayout");
+    const evalJsonPane = document.getElementById("evalJsonPane");
+    const evalJsonTabEvaluation = document.getElementById("evalJsonTabEvaluation");
+    const evalJsonTabPrediction = document.getElementById("evalJsonTabPrediction");
+    const evalJsonTitle = document.getElementById("evalJsonTitle");
+    const evalJsonCode = document.getElementById("evalJsonCode");
+    const evaluationsTable = document.getElementById("evaluationsTable");
+    const plotTabsByPrefixButton = document.getElementById("plotTabsByPrefixButton");
+    const plotTabsBySuffixButton = document.getElementById("plotTabsBySuffixButton");
+    const plotModeSelect = document.getElementById("plotModeSelect");
+    const plotRoundingPrecision = document.getElementById("plotRoundingPrecision");
+    const plotModeEffective = document.getElementById("plotModeEffective");
+    const plotTabsByRow = document.getElementById("plotTabsByRow");
+    const plotConfusionTabsByRow = document.getElementById("plotConfusionTabsByRow");
+    const confusionTabsByMetricFieldButton = document.getElementById("confusionTabsByMetricFieldButton");
+    const confusionTabsByPredictionGroupButton = document.getElementById("confusionTabsByPredictionGroupButton");
+    const plotGroupBarsRow = document.getElementById("plotGroupBarsRow");
+    const plotGroupBarsList = document.getElementById("plotGroupBarsList");
+    const evalPlotTabs = document.getElementById("evalPlotTabs");
+    const evalPlotContent = document.getElementById("evalPlotContent");
+    const barTooltip = document.getElementById("barTooltip");
+
+    function showBarTooltip(event, lines) {
+      barTooltip.textContent = lines.join("\n");
+      barTooltip.style.display = "block";
+      positionBarTooltip(event);
+    }
+
+    function positionBarTooltip(event) {
+      const pad = 14;
+      let x = event.clientX + pad;
+      let y = event.clientY - pad - barTooltip.offsetHeight;
+      if (x + barTooltip.offsetWidth > window.innerWidth - pad) {
+        x = event.clientX - barTooltip.offsetWidth - pad;
+      }
+      if (y < pad) {
+        y = event.clientY + pad;
+      }
+      barTooltip.style.left = `${x}px`;
+      barTooltip.style.top = `${y}px`;
+    }
+
+    function hideBarTooltip() {
+      barTooltip.style.display = "none";
+    }
+
+    function renderEvalJsonTabs() {
+      evalJsonTabEvaluation.classList.toggle("active", state.activeEvalJsonTab === "evaluation");
+      evalJsonTabPrediction.classList.toggle("active", state.activeEvalJsonTab === "prediction");
+    }
+
+    function escapeHtml(text) {
+      return String(text)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;");
+    }
+
+    function highlightJsonContent(value) {
+      const json = JSON.stringify(value ?? {}, null, 2);
+      const escaped = escapeHtml(json);
+      return escaped.replace(
+        /(\"(?:\\u[0-9a-fA-F]{4}|\\[^u]|[^\\\"])*\"(?:\s*:)?|\btrue\b|\bfalse\b|\bnull\b|-?\d+(?:\.\d+)?(?:[eE][+\-]?\d+)?)/g,
+        (match) => {
+          if (match.endsWith(":")) {
+            return `<span class="json-key">${match}</span>`;
+          }
+          if (match.startsWith("\"")) {
+            return `<span class="json-string">${match}</span>`;
+          }
+          if (match === "true" || match === "false") {
+            return `<span class="json-boolean">${match}</span>`;
+          }
+          if (match === "null") {
+            return `<span class="json-null">${match}</span>`;
+          }
+          return `<span class="json-number">${match}</span>`;
+        }
+      );
+    }
+
+    evalJsonTabEvaluation.addEventListener("click", () => {
+      if (state.activeEvalJsonTab === "evaluation") {
+        return;
+      }
+      state.activeEvalJsonTab = "evaluation";
+      renderEvaluations();
+    });
+
+    evalJsonTabPrediction.addEventListener("click", () => {
+      if (state.activeEvalJsonTab === "prediction") {
+        return;
+      }
+      state.activeEvalJsonTab = "prediction";
+      renderEvaluations();
+    });
+
+    folderInput.addEventListener("change", async (event) => {
+      const files = Array.from(event.target.files || []);
+      await loadRunsFromFiles(files);
+      renderPredictions();
+      renderEvaluations();
+    });
+
+    function displayPredictionColumnName(column) {
+      if (column.startsWith("prediction.job_return_value.")) {
+        return column.replace("prediction.job_return_value.", "");
+      }
+      if (column.startsWith("prediction.overrides.")) {
+        return column.replace("prediction.overrides.", "");
+      }
+      return column.replace(/^predictions?\./, "");
+    }
+
+    function displayEvalColumnName(column) {
+      return column.replace(/^overrides\./, "");
+    }
+
+    function displayGroupFieldName(column) {
+      if (column.startsWith("overrides.")) {
+        return displayEvalColumnName(column);
+      }
+      return displayPredictionColumnName(column);
+    }
+
+    function getDefaultTruncateColumns(predictionColumns) {
+      const defaults = new Set();
+      for (const column of predictionColumns) {
+        const name = displayPredictionColumnName(column);
+        if (/file|run/i.test(name) || /file|run/i.test(column)) {
+          defaults.add(column);
+        }
+      }
+      return defaults;
+    }
+
+    function getDefaultGroupByFields(predictionColumns) {
+      return predictionColumns.filter(
+        (column) =>
+          column.startsWith("prediction.overrides.") &&
+          displayPredictionColumnName(column).toLowerCase() !== "seed"
+      );
+    }
+
+    function getDefaultEvalGroupByFields(evalColumns) {
+      return evalColumns.filter((column) => {
+        const normalized = column.replace(/^overrides\./, "");
+        return normalized !== "dataset.predictions.log";
+      });
+    }
+
+    function getDefaultEvalTruncateColumns(evalColumns) {
+      return new Set();
+    }
+
+    function getTruncateColumnOptions() {
+      return state.predictionColumns.map((column) => ({
+        value: column,
+        label: displayPredictionColumnName(column),
+      }));
+    }
+
+    function setGroupByFields(columns) {
+      state.groupByFields = [...columns];
+      renderPredictions();
+      renderEvaluations();
+    }
+
+    function ensureEvalTabState(experiment, evalColumns) {
+      if (!state.evalTabStates[experiment]) {
+        state.evalTabStates[experiment] = {
+          knownColumns: [...evalColumns],
+          groupByFields: getDefaultEvalGroupByFields(evalColumns),
+          truncateEnabledColumns: new Set(),
+          activeOptionsTab: "truncate",
+          selectedGroupIds: null,
+          expandedGroupIds: new Set(),
+          selectedEvalGroupId: null,
+          selectedEvalRunDir: null,
+        };
+        return state.evalTabStates[experiment];
+      }
+
+      const tabState = state.evalTabStates[experiment];
+      const known = new Set(tabState.knownColumns || []);
+      if (!(tabState.truncateEnabledColumns instanceof Set)) {
+        tabState.truncateEnabledColumns = getDefaultEvalTruncateColumns(tabState.knownColumns || []);
+      }
+      for (const column of evalColumns) {
+        if (!known.has(column)) {
+          known.add(column);
+          if (getDefaultEvalGroupByFields([column]).length) {
+            tabState.groupByFields = [...new Set([...tabState.groupByFields, column])];
+          }
+        }
+      }
+      tabState.knownColumns = [...known];
+      tabState.groupByFields = tabState.groupByFields.filter((field) => known.has(field));
+      tabState.truncateEnabledColumns = new Set(
+        Array.from(tabState.truncateEnabledColumns).filter(
+          (field) => known.has(field) || field === "eval_run_dir"
+        )
+      );
+      if (!tabState.activeOptionsTab) {
+        tabState.activeOptionsTab = "truncate";
+      }
+      return tabState;
+    }
+
+    groupByAllButton.addEventListener("click", () => {
+      setGroupByFields(state.predictionColumns);
+    });
+
+    groupByNoneButton.addEventListener("click", () => {
+      setGroupByFields([]);
+    });
+
+    groupByToggleButton.addEventListener("click", () => {
+      const nextGroupByFields = state.predictionColumns.filter(
+        (column) => !state.groupByFields.includes(column)
+      );
+      setGroupByFields(nextGroupByFields);
+    });
+
+    function renderTruncateControls() {
+      const options = getTruncateColumnOptions();
+      truncateColumnsList.innerHTML = "";
+      for (const option of options) {
+        const wrapper = document.createElement("label");
+        wrapper.className = "truncate-item";
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = state.truncateEnabledColumns.has(option.value);
+        checkbox.addEventListener("change", () => {
+          if (checkbox.checked) {
+            state.truncateEnabledColumns.add(option.value);
+          } else {
+            state.truncateEnabledColumns.delete(option.value);
+          }
+          renderPredictions();
+        });
+        const text = document.createElement("span");
+        text.textContent = option.label;
+        wrapper.appendChild(checkbox);
+        wrapper.appendChild(text);
+        truncateColumnsList.appendChild(wrapper);
+      }
+    }
+
+    function renderOptionsTabs() {
+      const tabButtons = optionsTabs.querySelectorAll(".options-tab-button");
+      const tabPanels = document.querySelectorAll(".options-tab-panel");
+
+      for (const button of tabButtons) {
+        const tab = button.getAttribute("data-tab");
+        button.classList.toggle("active", tab === state.activeOptionsTab);
+      }
+      for (const panel of tabPanels) {
+        const tabPanel = panel.getAttribute("data-tab-panel");
+        panel.classList.toggle("active", tabPanel === state.activeOptionsTab);
+      }
+    }
+
+    function renderEvalOptionsTabs(activeExperiment) {
+      if (!activeExperiment || !state.evalTabStates[activeExperiment]) {
+        return;
+      }
+      const tabState = state.evalTabStates[activeExperiment];
+      const tabButtons = evalOptionsTabs.querySelectorAll(".options-tab-button");
+      const tabPanels = document.querySelectorAll(".options-tab-panel[data-eval-tab-panel]");
+      for (const button of tabButtons) {
+        const tab = button.getAttribute("data-eval-tab");
+        button.classList.toggle("active", tab === tabState.activeOptionsTab);
+      }
+      for (const panel of tabPanels) {
+        const tabPanel = panel.getAttribute("data-eval-tab-panel");
+        panel.classList.toggle("active", tabPanel === tabState.activeOptionsTab);
+      }
+    }
+
+    function renderEvalTruncateControls(activeExperiment, evalColumns) {
+      if (!activeExperiment || !state.evalTabStates[activeExperiment]) {
+        evalTruncateColumnsList.innerHTML = "";
+        return;
+      }
+      const tabState = state.evalTabStates[activeExperiment];
+      const optionColumns = [...new Set([...evalColumns, "eval_run_dir"])];
+      evalTruncateColumnsList.innerHTML = "";
+      for (const column of optionColumns) {
+        const wrapper = document.createElement("label");
+        wrapper.className = "truncate-item";
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = tabState.truncateEnabledColumns.has(column);
+        checkbox.addEventListener("change", () => {
+          if (checkbox.checked) {
+            tabState.truncateEnabledColumns.add(column);
+          } else {
+            tabState.truncateEnabledColumns.delete(column);
+          }
+          renderEvaluations();
+        });
+        const text = document.createElement("span");
+        text.textContent = displayEvalColumnName(column);
+        wrapper.appendChild(checkbox);
+        wrapper.appendChild(text);
+        evalTruncateColumnsList.appendChild(wrapper);
+      }
+    }
+
+    optionsTabs.addEventListener("click", (event) => {
+      const button = event.target.closest(".options-tab-button");
+      if (!button) {
+        return;
+      }
+      const tab = button.getAttribute("data-tab");
+      if (!tab || tab === state.activeOptionsTab) {
+        return;
+      }
+      state.activeOptionsTab = tab;
+      renderOptionsTabs();
+    });
+
+    evalOptionsTabs.addEventListener("click", (event) => {
+      const button = event.target.closest(".options-tab-button");
+      if (!button || !state.activeEvalTab || !state.evalTabStates[state.activeEvalTab]) {
+        return;
+      }
+      const tab = button.getAttribute("data-eval-tab");
+      if (!tab || tab === state.evalTabStates[state.activeEvalTab].activeOptionsTab) {
+        return;
+      }
+      state.evalTabStates[state.activeEvalTab].activeOptionsTab = tab;
+      renderEvalOptionsTabs(state.activeEvalTab);
+    });
+
+    truncateDefaultsButton.addEventListener("click", () => {
+      state.truncateEnabledColumns = getDefaultTruncateColumns(state.predictionColumns);
+      renderPredictions();
+    });
+
+
+    function renderPlotTabModeControls(effectiveMode) {
+      plotTabsByPrefixButton.classList.toggle("active", state.plotTabsBy === "prefix");
+      plotTabsBySuffixButton.classList.toggle("active", state.plotTabsBy === "suffix");
+      confusionTabsByMetricFieldButton.classList.toggle(
+        "active",
+        state.confusionTabsBy === "metric_field"
+      );
+      confusionTabsByPredictionGroupButton.classList.toggle(
+        "active",
+        state.confusionTabsBy === "prediction_group"
+      );
+      plotModeSelect.value = state.plotMode;
+      plotRoundingPrecision.value = String(state.plotRoundingPrecision);
+      plotModeEffective.textContent = state.plotMode === "auto" ? `(→ ${effectiveMode})` : "";
+      plotTabsByRow.style.display = effectiveMode === "f1" ? "" : "none";
+      plotConfusionTabsByRow.style.display = effectiveMode === "confusion_matrix" ? "" : "none";
+      plotGroupBarsRow.style.display = effectiveMode === "confusion_matrix" ? "none" : "";
+    }
+
+    plotModeSelect.addEventListener("change", () => {
+      state.plotMode = plotModeSelect.value;
+      state.activeEvalPlotTab = null;
+      renderEvaluations();
+    });
+
+    plotRoundingPrecision.addEventListener("change", () => {
+      const parsed = Number.parseInt(plotRoundingPrecision.value, 10);
+      const clamped = Number.isFinite(parsed) ? Math.max(0, Math.min(6, parsed)) : 2;
+      state.plotRoundingPrecision = clamped;
+      plotRoundingPrecision.value = String(clamped);
+      renderEvaluations();
+    });
+
+    plotTabsByPrefixButton.addEventListener("click", () => {
+      if (state.plotTabsBy === "prefix") {
+        return;
+      }
+      state.plotTabsBy = "prefix";
+      state.activeEvalPlotTab = null;
+      renderEvaluations();
+    });
+
+    plotTabsBySuffixButton.addEventListener("click", () => {
+      if (state.plotTabsBy === "suffix") {
+        return;
+      }
+      state.plotTabsBy = "suffix";
+      state.activeEvalPlotTab = null;
+      renderEvaluations();
+    });
+
+    confusionTabsByMetricFieldButton.addEventListener("click", () => {
+      if (state.confusionTabsBy === "metric_field") {
+        return;
+      }
+      state.confusionTabsBy = "metric_field";
+      state.activeEvalPlotTab = null;
+      renderEvaluations();
+    });
+
+    confusionTabsByPredictionGroupButton.addEventListener("click", () => {
+      if (state.confusionTabsBy === "prediction_group") {
+        return;
+      }
+      state.confusionTabsBy = "prediction_group";
+      state.activeEvalPlotTab = null;
+      renderEvaluations();
+    });
+
+    function getPredictionColumnSections() {
+      const jobReturnValue = state.predictionColumns
+        .filter((column) => column.startsWith("prediction.job_return_value."))
+        .sort();
+      const overrides = state.predictionColumns
+        .filter((column) => column.startsWith("prediction.overrides."))
+        .sort();
+      const other = state.predictionColumns
+        .filter(
+          (column) =>
+            !column.startsWith("prediction.job_return_value.") &&
+            !column.startsWith("prediction.overrides.")
+        )
+        .sort();
+      return [
+        { label: "overrides", columns: overrides },
+        { label: "job_return_value", columns: jobReturnValue },
+        { label: "other", columns: other },
+      ].filter((section) => section.columns.length > 0);
+    }
+
+    function normalizeValue(value) {
+      if (value === null || value === undefined) return "";
+      if (typeof value === "object") return JSON.stringify(value);
+      return String(value);
+    }
+
+    function flattenObject(obj, prefix = "", out = {}) {
+      if (!obj || typeof obj !== "object") {
+        return out;
+      }
+      for (const [key, value] of Object.entries(obj)) {
+        const fullKey = prefix ? `${prefix}.${key}` : key;
+        if (Array.isArray(value)) {
+          out[fullKey] = JSON.stringify(value);
+        } else if (value && typeof value === "object") {
+          flattenObject(value, fullKey, out);
+        } else {
+          out[fullKey] = value;
+        }
+      }
+      return out;
+    }
+
+    function getStableObjectSignature(obj) {
+      return JSON.stringify(
+        Object.fromEntries(
+          Object.entries(obj)
+            .map(([key, value]) => [key, normalizeValue(value)])
+            .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
+        )
+      );
+    }
+
+    function parseOverridesYaml(text) {
+      const result = {};
+      const lines = text.split(/\r?\n/);
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed || trimmed.startsWith("#")) {
+          continue;
+        }
+        if (!trimmed.startsWith("- ")) {
+          continue;
+        }
+        const item = trimmed.slice(2).trim();
+        const separatorIndex = item.indexOf("=");
+        if (separatorIndex === -1) {
+          continue;
+        }
+        const key = item.slice(0, separatorIndex).replace(/^\+/, "").trim();
+        const value = item.slice(separatorIndex + 1).trim();
+        result[key] = value;
+      }
+      return result;
+    }
+
+    async function readTextFile(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result || ""));
+        reader.onerror = () => reject(reader.error || new Error("Failed to read file."));
+        reader.readAsText(file);
+      });
+    }
+
+    // Load only single evaluation runs: any selected folder tree can contribute runs as long as a run
+    // directory contains both job_return_value.json and .hydra/overrides.yaml. predict runs are excluded,
+    // and the prediction part is kept as metadata so prediction/evaluation views stay linked later on.
+    async function loadRunsFromFiles(files) {
+      if (!files.length) {
+        loadStatus.textContent = "No files selected.";
+        return;
+      }
+
+      const rootLabel = files[0].webkitRelativePath.split("/")[0] || "selected folder";
+      state.loadedFolders.add(rootLabel);
+
+      const byPath = new Map();
+      for (const file of files) {
+        if (!file.webkitRelativePath) {
+          continue;
+        }
+        byPath.set(file.webkitRelativePath, file);
+      }
+
+      const hydraRunDirs = new Set();
+      const jobRunDirs = new Set();
+      for (const file of files) {
+        const rel = file.webkitRelativePath || "";
+        if (/(^|\/)\.hydra\/overrides\.yaml$/.test(rel)) {
+          hydraRunDirs.add(rel.slice(0, -"/.hydra/overrides.yaml".length));
+        }
+        if (/(^|\/)job_return_value\.json$/.test(rel)) {
+          jobRunDirs.add(rel.slice(0, -"/job_return_value.json".length));
+        }
+      }
+
+      const isPredictRunDir = (runDir) => /(^|\/)predict(\/|$)/.test(runDir);
+      const allSeenRunDirs = new Set([...hydraRunDirs, ...jobRunDirs]);
+      let skippedPredictRuns = 0;
+      for (const runDir of allSeenRunDirs) {
+        if (isPredictRunDir(runDir)) {
+          skippedPredictRuns += 1;
+        }
+      }
+
+      const candidateRunDirs = Array.from(hydraRunDirs)
+        .filter((runDir) => jobRunDirs.has(runDir) && !isPredictRunDir(runDir))
+        .sort();
+
+      let loadedCount = 0;
+      let skippedMissingJob = 0;
+      let skippedInvalid = 0;
+      let skippedDuplicate = 0;
+      const knownRunDirs = new Set(state.runs.map((run) => run.runDir));
+
+      for (const runDir of hydraRunDirs) {
+        if (!jobRunDirs.has(runDir) && !isPredictRunDir(runDir)) {
+          skippedMissingJob += 1;
+        }
+      }
+
+      for (const runDir of candidateRunDirs) {
+        if (knownRunDirs.has(runDir)) {
+          skippedDuplicate += 1;
+          continue;
+        }
+        const jobFile = byPath.get(`${runDir}/job_return_value.json`);
+        const overridesPath = `${runDir}/.hydra/overrides.yaml`;
+        const overridesFile = byPath.get(overridesPath);
+
+        if (!jobFile || !overridesFile) {
+          continue;
+        }
+
+        try {
+          const [jobText, overridesText] = await Promise.all([
+            readTextFile(jobFile),
+            readTextFile(overridesFile),
+          ]);
+
+          const job = JSON.parse(jobText);
+          const evalOverrides = parseOverridesYaml(overridesText);
+          const prediction = job.prediction || {};
+
+          const predictionMeta = {
+            ...flattenObject(prediction.overrides || {}, "prediction.overrides"),
+            ...flattenObject(prediction.job_return_value || {}, "prediction.job_return_value"),
+          };
+
+          const experimentEvaluate =
+            evalOverrides["experiment/evaluate"] || "(missing experiment/evaluate)";
+
+          const evalContent = Object.fromEntries(
+            Object.entries(job).filter(([key]) => key !== "prediction")
+          );
+
+          state.runs.push({
+            runDir,
+            predictionMeta,
+            evalOverrides,
+            experimentEvaluate,
+            evalContent,
+            predictionContent: prediction,
+          });
+          knownRunDirs.add(runDir);
+          loadedCount += 1;
+        } catch (error) {
+          skippedInvalid += 1;
+          console.error(`Failed to parse run at ${runDir}`, error);
+        }
+      }
+
+      const predictionColumns = new Set();
+      for (const run of state.runs) {
+        for (const key of Object.keys(run.predictionMeta)) {
+          predictionColumns.add(key);
+        }
+      }
+
+      const predictionEntriesBySignature = new Map();
+      for (const run of state.runs) {
+        const signature = getStableObjectSignature(run.predictionMeta);
+        if (!predictionEntriesBySignature.has(signature)) {
+          predictionEntriesBySignature.set(signature, {
+            predictionId: signature,
+            predictionMeta: run.predictionMeta,
+            evalRuns: [],
+          });
+        }
+        predictionEntriesBySignature.get(signature).evalRuns.push(run);
+      }
+
+      state.predictionColumns = Array.from(predictionColumns).sort();
+      state.predictionEntries = Array.from(predictionEntriesBySignature.values());
+      state.groupByFields = getDefaultGroupByFields(state.predictionColumns);
+      state.truncateEnabledColumns = getDefaultTruncateColumns(state.predictionColumns);
+
+      // Default to all groups selected for the freshly loaded dataset.
+      buildGroups();
+      state.selectedGroupIds = new Set(state.groups.map((group) => group.groupId));
+
+      const loadedFolders = Array.from(state.loadedFolders).sort();
+      loadStatus.textContent = [
+        `Loaded folders (${loadedFolders.length}): ${loadedFolders.join(", ")}`,
+        `Skipped (is predict run): ${skippedPredictRuns}`,
+        `Candidate evaluation runs: ${candidateRunDirs.length}`,
+        `New evaluation runs loaded: ${loadedCount}`,
+        `Skipped (already loaded): ${skippedDuplicate}`,
+        `Evaluation runs loaded: ${state.runs.length}`,
+        `Skipped (missing job_return_value.json): ${skippedMissingJob}`,
+        `Skipped (invalid JSON/YAML): ${skippedInvalid}`,
+      ].join("\n");
+    }
+
+    // First grouping step: collapse multiple evaluation runs that belong to the same prediction config.
+    function buildGroups() {
+      const map = new Map();
+      const groupBy = state.groupByFields;
+
+      for (const predictionEntry of state.predictionEntries) {
+        let key;
+        if (!groupBy.length) {
+          key = predictionEntry.predictionId;
+        } else {
+          key = groupBy
+            .map((field) => `${field}=${normalizeValue(predictionEntry.predictionMeta[field])}`)
+            .join(" | ");
+        }
+
+        if (!map.has(key)) {
+          map.set(key, {
+            groupId: key,
+            predictions: [],
+            values: Object.fromEntries(
+              groupBy.map((field) => [field, predictionEntry.predictionMeta[field] ?? ""])
+            ),
+          });
+        }
+        map.get(key).predictions.push(predictionEntry);
+      }
+
+      state.groups = Array.from(map.values()).sort((a, b) => b.predictions.length - a.predictions.length);
+
+      // Keep only valid selected groups after regrouping.
+      const validIds = new Set(state.groups.map((g) => g.groupId));
+      state.selectedGroupIds = new Set(
+        Array.from(state.selectedGroupIds).filter((groupId) => validIds.has(groupId))
+      );
+      state.expandedGroupIds = new Set(
+        Array.from(state.expandedGroupIds).filter((groupId) => validIds.has(groupId))
+      );
+    }
+
+    function setSelectedGroupIds(groupIds) {
+      state.selectedGroupIds = new Set(groupIds);
+      renderPredictions();
+      renderEvaluations();
+    }
+
+    function getDisplayedSelectionState() {
+      const displayedGroupIds = state.groups.map((group) => group.groupId);
+      const selectedCount = displayedGroupIds.filter((groupId) => state.selectedGroupIds.has(groupId)).length;
+      return {
+        displayedGroupIds,
+        selectedCount,
+        allSelected: displayedGroupIds.length > 0 && selectedCount === displayedGroupIds.length,
+        someSelected: selectedCount > 0 && selectedCount < displayedGroupIds.length,
+      };
+    }
+
+    function createCell(content, columnKey = "") {
+      const td = document.createElement("td");
+      td.textContent = content;
+      if (columnKey && state.truncateEnabledColumns.has(columnKey)) {
+        td.classList.add("truncate-enabled");
+      }
+      return td;
+    }
+
+    function createEvalCell(content, columnKey, evalTabState) {
+      const td = document.createElement("td");
+      td.textContent = content;
+      if (columnKey && evalTabState?.truncateEnabledColumns?.has(columnKey)) {
+        td.classList.add("truncate-enabled");
+      }
+      return td;
+    }
+
+    // Sticky left offsets depend on rendered widths, so measure them after each table render.
+    function updateStickyControlColumnOffsets(tableElement) {
+      if (!tableElement) {
+        return;
+      }
+      const firstHeaderRow = tableElement.tHead?.rows?.[0];
+      if (!firstHeaderRow || firstHeaderRow.cells.length < 3) {
+        tableElement.style.setProperty("--sticky-col-1-left", "0px");
+        tableElement.style.setProperty("--sticky-col-2-left", "0px");
+        tableElement.style.setProperty("--sticky-col-3-left", "0px");
+        return;
+      }
+      const widths = Array.from(firstHeaderRow.cells)
+        .slice(0, 3)
+        .map((cell) => Math.ceil(cell.getBoundingClientRect().width));
+      tableElement.style.setProperty("--sticky-col-1-left", "0px");
+      tableElement.style.setProperty("--sticky-col-2-left", `${widths[0]}px`);
+      tableElement.style.setProperty("--sticky-col-3-left", `${widths[0] + widths[1]}px`);
+    }
+
+    window.addEventListener("resize", () => {
+      updateStickyControlColumnOffsets(predictionsTable);
+      updateStickyControlColumnOffsets(evaluationsTable);
+    });
+
+    function getGroupValueDisplay(group, column) {
+      const values = new Set(
+        group.predictions.map((prediction) => normalizeValue(prediction.predictionMeta[column]))
+      );
+      if (values.size <= 1) {
+        return values.values().next().value || "";
+      }
+      return `(mixed: ${values.size} values)`;
+    }
+
+    function renderPredictions() {
+      buildGroups();
+
+      predictionsTable.innerHTML = "";
+      if (!state.groups.length) {
+        predictionSummary.textContent = "No predictions found. Load a folder containing evaluate run outputs.";
+        return;
+      }
+
+      predictionSummary.textContent =
+        `Predictions: ${state.predictionEntries.length} | Groups: ${state.groups.length} | Group-by: ` +
+        (state.groupByFields.length
+          ? state.groupByFields.map((field) => displayPredictionColumnName(field)).join(", ")
+          : "(none; one row per unique prediction)");
+
+      const predictionSections = getPredictionColumnSections();
+      const orderedPredictionColumns = predictionSections.flatMap((section) => section.columns);
+      renderOptionsTabs();
+      renderTruncateControls();
+
+      const thead = document.createElement("thead");
+      const sectionRow = document.createElement("tr");
+      const selectionState = getDisplayedSelectionState();
+      ["expand", "select", "group_size"].forEach((header) => {
+        const th = document.createElement("th");
+        if (header === "select") {
+          const selectControl = document.createElement("div");
+          selectControl.className = "header-select-control";
+          const selectCaption = document.createElement("span");
+          selectCaption.className = "header-caption";
+          selectCaption.textContent = "select";
+          const selectAllCheckbox = document.createElement("input");
+          selectAllCheckbox.type = "checkbox";
+          selectAllCheckbox.checked = selectionState.allSelected;
+          selectAllCheckbox.indeterminate = selectionState.someSelected;
+          selectAllCheckbox.title = "Select or deselect all displayed groups";
+          selectAllCheckbox.setAttribute("aria-label", "Select or deselect all displayed prediction groups");
+          selectAllCheckbox.addEventListener("change", () => {
+            if (selectAllCheckbox.checked) {
+              setSelectedGroupIds(selectionState.displayedGroupIds);
+            } else {
+              setSelectedGroupIds([]);
+            }
+          });
+          selectAllCheckbox.setAttribute("aria-describedby", "predictions-select-caption");
+          selectCaption.id = "predictions-select-caption";
+          selectControl.appendChild(selectCaption);
+          selectControl.appendChild(selectAllCheckbox);
+          th.appendChild(selectControl);
+        } else {
+          const staticControl = document.createElement("div");
+          staticControl.className = "header-static-control";
+          const caption = document.createElement("span");
+          caption.className = "header-caption";
+          caption.textContent = header === "group_size" ? "#" : header;
+          staticControl.appendChild(caption);
+          th.appendChild(staticControl);
+        }
+        th.rowSpan = 2;
+        sectionRow.appendChild(th);
+      });
+      for (const section of predictionSections) {
+        const th = document.createElement("th");
+        th.className = "section-header";
+        th.colSpan = section.columns.length;
+        th.textContent = section.label;
+        sectionRow.appendChild(th);
+      }
+      thead.appendChild(sectionRow);
+
+      const columnRow = document.createElement("tr");
+      for (const header of orderedPredictionColumns) {
+        const th = document.createElement("th");
+        if (state.truncateEnabledColumns.has(header)) {
+          th.classList.add("truncate-enabled");
+        }
+        const label = document.createElement("div");
+        label.textContent = displayPredictionColumnName(header);
+
+        const toggle = document.createElement("label");
+        toggle.className = "group-toggle";
+        toggle.title = "Use this column for grouping";
+        const toggleCb = document.createElement("input");
+        toggleCb.type = "checkbox";
+        toggleCb.setAttribute("aria-label", `Group by ${displayPredictionColumnName(header)}`);
+        toggleCb.checked = state.groupByFields.includes(header);
+        toggleCb.addEventListener("change", () => {
+          const nextGroupByFields = new Set(state.groupByFields);
+          if (toggleCb.checked) {
+            nextGroupByFields.add(header);
+          } else {
+            nextGroupByFields.delete(header);
+          }
+          setGroupByFields(nextGroupByFields);
+        });
+        toggle.appendChild(toggleCb);
+
+        th.appendChild(label);
+        th.appendChild(toggle);
+        columnRow.appendChild(th);
+      }
+      thead.appendChild(columnRow);
+      predictionsTable.appendChild(thead);
+
+      const tbody = document.createElement("tbody");
+      for (const group of state.groups) {
+        const tr = document.createElement("tr");
+
+        const expandTd = document.createElement("td");
+        const expandButton = document.createElement("button");
+        const isExpanded = state.expandedGroupIds.has(group.groupId);
+        expandButton.type = "button";
+        expandButton.className = "expand-button";
+        expandButton.textContent = isExpanded ? "-" : "+";
+        expandButton.title = isExpanded ? "Collapse group members" : "Expand group members";
+        expandButton.addEventListener("click", () => {
+          if (state.expandedGroupIds.has(group.groupId)) {
+            state.expandedGroupIds.delete(group.groupId);
+          } else {
+            state.expandedGroupIds.add(group.groupId);
+          }
+          renderPredictions();
+        });
+        expandTd.appendChild(expandButton);
+        tr.appendChild(expandTd);
+
+        const selectTd = document.createElement("td");
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = state.selectedGroupIds.has(group.groupId);
+        checkbox.addEventListener("change", () => {
+          const nextSelectedGroupIds = new Set(state.selectedGroupIds);
+          if (checkbox.checked) {
+            nextSelectedGroupIds.add(group.groupId);
+          } else {
+            nextSelectedGroupIds.delete(group.groupId);
+          }
+          setSelectedGroupIds(nextSelectedGroupIds);
+        });
+        selectTd.appendChild(checkbox);
+        tr.appendChild(selectTd);
+
+        tr.appendChild(createCell(String(group.predictions.length)));
+
+        for (const field of orderedPredictionColumns) {
+          tr.appendChild(createCell(getGroupValueDisplay(group, field), field));
+        }
+        tbody.appendChild(tr);
+
+        if (isExpanded) {
+          const sortedMembers = [...group.predictions].sort((a, b) =>
+            getStableObjectSignature(a.predictionMeta).localeCompare(
+              getStableObjectSignature(b.predictionMeta)
+            )
+          );
+          for (const member of sortedMembers) {
+            const memberRow = document.createElement("tr");
+            memberRow.className = "member-row";
+            memberRow.appendChild(createCell(""));
+            memberRow.appendChild(createCell(""));
+            memberRow.appendChild(createCell("member"));
+            for (const field of orderedPredictionColumns) {
+              memberRow.appendChild(
+                createCell(normalizeValue(member.predictionMeta[field]), field)
+              );
+            }
+            tbody.appendChild(memberRow);
+          }
+        }
+      }
+
+      predictionsTable.appendChild(tbody);
+      updateStickyControlColumnOffsets(predictionsTable);
+    }
+
+    function gatherSelectedRuns() {
+      if (!state.selectedGroupIds.size) {
+        return [];
+      }
+      const selected = [];
+      for (const group of state.groups) {
+        if (state.selectedGroupIds.has(group.groupId)) {
+          for (const prediction of group.predictions) {
+            selected.push(...prediction.evalRuns);
+          }
+        }
+      }
+      return selected;
+    }
+
+    function getSelectedPredictionGroups() {
+      return state.groups.filter((group) => state.selectedGroupIds.has(group.groupId));
+    }
+
+    // Second grouping step: within the selected predictions, group evaluation runs by eval overrides
+    // while still respecting the active prediction grouping from the upper table.
+    function buildEvaluationGroups(runs, groupByFields, predictionGroupByFields = state.groupByFields) {
+      const map = new Map();
+      for (const run of runs) {
+        const keyParts = [];
+        for (const field of predictionGroupByFields) {
+          keyParts.push(`prediction.${field}=${normalizeValue(run.predictionMeta[field])}`);
+        }
+        for (const field of groupByFields) {
+          keyParts.push(`eval.${field}=${normalizeValue(run.evalOverrides[field])}`);
+        }
+        const groupId = keyParts.length ? keyParts.join(" | ") : run.runDir;
+        if (!map.has(groupId)) {
+          map.set(groupId, {
+            groupId,
+            runs: [],
+            values: Object.fromEntries(
+              groupByFields.map((field) => [field, run.evalOverrides[field] ?? ""])
+            ),
+          });
+        }
+        map.get(groupId).runs.push(run);
+      }
+      return Array.from(map.values()).sort((a, b) => b.runs.length - a.runs.length);
+    }
+
+    function getGroupValueDisplayFromRuns(runs, getter) {
+      const values = new Set(runs.map((run) => normalizeValue(getter(run))));
+      if (values.size <= 1) {
+        return values.values().next().value || "";
+      }
+      return `(mixed: ${values.size} values)`;
+    }
+
+    function meanAndStd(values) {
+      if (values.length === 0) {
+        return null;
+      }
+      const mean = values.reduce((sum, value) => sum + value, 0) / values.length;
+      const variance =
+        values.reduce((sum, value) => sum + (value - mean) ** 2, 0) / values.length;
+      return { mean, std: Math.sqrt(variance) };
+    }
+
+    function getVaryingGroupByFields(groups) {
+      if (!state.groupByFields.length || groups.length <= 1) {
+        return [];
+      }
+      return state.groupByFields.filter((field) => {
+        const values = new Set(
+          groups.map((group) => normalizeValue(group.values?.[field]))
+        );
+        return values.size > 1;
+      });
+    }
+
+    function getVaryingFields(groups, fields) {
+      if (!fields.length || groups.length <= 1) {
+        return [];
+      }
+      return fields.filter((field) => {
+        const values = new Set(groups.map((group) => normalizeValue(group.values?.[field])));
+        return values.size > 1;
+      });
+    }
+
+    function getPredictionGroupDisplayLabel(group, index, labelFields = state.groupByFields) {
+      if (labelFields.length === 0) {
+        return `group ${index + 1}`;
+      }
+      return labelFields
+        .map(
+          (field) =>
+            `${displayPredictionColumnName(field)}=${normalizeValue(group.values[field])}`
+        )
+        .join(" | ");
+    }
+
+    function getGroupLabelForFields(group, labelFields, fallback) {
+      if (labelFields.length === 0) {
+        return fallback;
+      }
+      return labelFields
+        .map(
+          (field) =>
+            `${displayGroupFieldName(field)}=${normalizeValue(group.values[field])}`
+        )
+        .join(" | ");
+    }
+
+    function getCombinedPlotGroups(activeExperiment, selectedEvalGroups, evalGroupByFields) {
+      const allFields = [...new Set([
+        ...state.groupByFields,
+        ...evalGroupByFields.map((field) => `overrides.${field}`),
+      ])];
+
+      const map = new Map();
+      for (const evalGroup of selectedEvalGroups) {
+        for (const run of evalGroup.runs) {
+          if (run.experimentEvaluate !== activeExperiment) {
+            continue;
+          }
+          const values = {};
+          for (const field of allFields) {
+            if (field.startsWith("overrides.")) {
+              values[field] = run.evalOverrides[field.replace(/^overrides\./, "")] ?? "";
+            } else {
+              values[field] = run.predictionMeta[field] ?? "";
+            }
+          }
+          const groupId = allFields.length
+            ? allFields.map((field) => `${field}=${normalizeValue(values[field])}`).join(" | ")
+            : run.runDir;
+          if (!map.has(groupId)) {
+            map.set(groupId, { groupId, values, runs: [] });
+          }
+          map.get(groupId).runs.push(run);
+        }
+      }
+
+      const groups = Array.from(map.values()).sort((a, b) => b.runs.length - a.runs.length);
+      return { groups, fields: allFields };
+    }
+
+    function getBarColor(index) {
+      const palette = [
+        "#60a5fa",
+        "#f97316",
+        "#22c55e",
+        "#a78bfa",
+        "#f43f5e",
+        "#14b8a6",
+        "#eab308",
+        "#8b5cf6",
+        "#06b6d4",
+        "#ef4444",
+      ];
+      return palette[index % palette.length];
+    }
+
+    function createBarPlotSvg(points) {
+      const width = Math.max(720, points.length * 150);
+      const height = 320;
+      const margin = { top: 18, right: 20, bottom: 95, left: 60 };
+      const chartWidth = width - margin.left - margin.right;
+      const chartHeight = height - margin.top - margin.bottom;
+      const yMax = Math.max(
+        0.05,
+        ...points.map((point) => point.mean + point.std)
+      );
+      const step = chartWidth / Math.max(points.length, 1);
+      const barWidth = Math.max(20, Math.min(60, step * 0.55));
+
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svg.setAttribute("width", String(width));
+      svg.setAttribute("height", String(height));
+      svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+
+      const yTicks = 5;
+      for (let tick = 0; tick <= yTicks; tick += 1) {
+        const value = (yMax * tick) / yTicks;
+        const y = margin.top + chartHeight - (value / yMax) * chartHeight;
+        const grid = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        grid.setAttribute("x1", String(margin.left));
+        grid.setAttribute("x2", String(width - margin.right));
+        grid.setAttribute("y1", String(y));
+        grid.setAttribute("y2", String(y));
+        grid.setAttribute("stroke", "#64748b66");
+        grid.setAttribute("stroke-width", "1");
+        svg.appendChild(grid);
+
+        const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        label.setAttribute("x", String(margin.left - 8));
+        label.setAttribute("y", String(y + 4));
+        label.setAttribute("text-anchor", "end");
+        label.setAttribute("fill", "currentColor");
+        label.setAttribute("font-size", "11");
+        label.textContent = value.toFixed(2);
+        svg.appendChild(label);
+      }
+
+      for (const [index, point] of points.entries()) {
+        const centerX = margin.left + step * index + step / 2;
+        const barHeight = (point.mean / yMax) * chartHeight;
+        const barY = margin.top + chartHeight - barHeight;
+        const barX = centerX - barWidth / 2;
+
+        const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        rect.setAttribute("x", String(barX));
+        rect.setAttribute("y", String(barY));
+        rect.setAttribute("width", String(barWidth));
+        rect.setAttribute("height", String(Math.max(0, barHeight)));
+        rect.setAttribute("fill", "#60a5fa");
+        rect.style.cursor = "crosshair";
+        rect.addEventListener("mouseover", (event) => {
+          showBarTooltip(event, [
+            point.label,
+            `mean: ${Number(point.mean).toFixed(4)}`,
+            `std:  ${Number(point.std).toFixed(4)}`,
+          ]);
+        });
+        rect.addEventListener("mousemove", positionBarTooltip);
+        rect.addEventListener("mouseout", hideBarTooltip);
+        svg.appendChild(rect);
+
+        const errTop = margin.top + chartHeight - ((point.mean + point.std) / yMax) * chartHeight;
+        const errBottom = margin.top + chartHeight - ((point.mean - point.std) / yMax) * chartHeight;
+        const errorLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        errorLine.setAttribute("x1", String(centerX));
+        errorLine.setAttribute("x2", String(centerX));
+        errorLine.setAttribute("y1", String(errTop));
+        errorLine.setAttribute("y2", String(errBottom));
+        errorLine.setAttribute("stroke", "#e5e7eb");
+        errorLine.setAttribute("stroke-width", "2");
+        svg.appendChild(errorLine);
+
+        const capTop = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        capTop.setAttribute("x1", String(centerX - 6));
+        capTop.setAttribute("x2", String(centerX + 6));
+        capTop.setAttribute("y1", String(errTop));
+        capTop.setAttribute("y2", String(errTop));
+        capTop.setAttribute("stroke", "#e5e7eb");
+        capTop.setAttribute("stroke-width", "2");
+        svg.appendChild(capTop);
+
+        const capBottom = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        capBottom.setAttribute("x1", String(centerX - 6));
+        capBottom.setAttribute("x2", String(centerX + 6));
+        capBottom.setAttribute("y1", String(errBottom));
+        capBottom.setAttribute("y2", String(errBottom));
+        capBottom.setAttribute("stroke", "#e5e7eb");
+        capBottom.setAttribute("stroke-width", "2");
+        svg.appendChild(capBottom);
+
+        const xLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        xLabel.setAttribute("x", String(centerX));
+        xLabel.setAttribute("y", String(height - margin.bottom + 16));
+        xLabel.setAttribute("transform", `rotate(-28 ${centerX} ${height - margin.bottom + 16})`);
+        xLabel.setAttribute("text-anchor", "end");
+        xLabel.setAttribute("fill", "currentColor");
+        xLabel.setAttribute("font-size", "11");
+        xLabel.textContent = point.label;
+        svg.appendChild(xLabel);
+      }
+
+      return svg;
+    }
+
+    function createGroupedBarPlotSvg(points) {
+      const categoryOrder = [];
+      const categorySet = new Set();
+      const seriesOrder = [];
+      const seriesSet = new Set();
+      const valueMap = new Map();
+
+      for (const point of points) {
+        if (!categorySet.has(point.category)) {
+          categorySet.add(point.category);
+          categoryOrder.push(point.category);
+        }
+        if (!seriesSet.has(point.series)) {
+          seriesSet.add(point.series);
+          seriesOrder.push(point.series);
+        }
+        valueMap.set(`${point.category}|#|${point.series}`, point);
+      }
+
+      const seriesCount = Math.max(1, seriesOrder.length);
+      const width = Math.max(760, categoryOrder.length * (120 + seriesCount * 26));
+      const height = 340;
+      const margin = { top: 18, right: 20, bottom: 95, left: 60 };
+      const chartWidth = width - margin.left - margin.right;
+      const chartHeight = height - margin.top - margin.bottom;
+      const yMax = Math.max(
+        0.05,
+        ...points.map((point) => point.mean + point.std)
+      );
+      const categoryStep = chartWidth / Math.max(categoryOrder.length, 1);
+      const categoryWidth = categoryStep * 0.82;
+      const barGap = 4;
+      const barWidth = Math.max(
+        10,
+        Math.min(26, (categoryWidth - barGap * Math.max(0, seriesCount - 1)) / seriesCount)
+      );
+      const groupPixelWidth = barWidth * seriesCount + barGap * Math.max(0, seriesCount - 1);
+
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svg.setAttribute("width", String(width));
+      svg.setAttribute("height", String(height));
+      svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+
+      const yTicks = 5;
+      for (let tick = 0; tick <= yTicks; tick += 1) {
+        const value = (yMax * tick) / yTicks;
+        const y = margin.top + chartHeight - (value / yMax) * chartHeight;
+        const grid = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        grid.setAttribute("x1", String(margin.left));
+        grid.setAttribute("x2", String(width - margin.right));
+        grid.setAttribute("y1", String(y));
+        grid.setAttribute("y2", String(y));
+        grid.setAttribute("stroke", "#64748b66");
+        grid.setAttribute("stroke-width", "1");
+        svg.appendChild(grid);
+
+        const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        label.setAttribute("x", String(margin.left - 8));
+        label.setAttribute("y", String(y + 4));
+        label.setAttribute("text-anchor", "end");
+        label.setAttribute("fill", "currentColor");
+        label.setAttribute("font-size", "11");
+        label.textContent = value.toFixed(2);
+        svg.appendChild(label);
+      }
+
+      for (const [categoryIndex, category] of categoryOrder.entries()) {
+        const centerX = margin.left + categoryStep * categoryIndex + categoryStep / 2;
+        const groupStartX = centerX - groupPixelWidth / 2;
+
+        for (const [seriesIndex, series] of seriesOrder.entries()) {
+          const point = valueMap.get(`${category}|#|${series}`);
+          if (!point) {
+            continue;
+          }
+          const barHeight = (point.mean / yMax) * chartHeight;
+          const barY = margin.top + chartHeight - barHeight;
+          const barX = groupStartX + seriesIndex * (barWidth + barGap);
+          const color = getBarColor(seriesIndex);
+
+          const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+          rect.setAttribute("x", String(barX));
+          rect.setAttribute("y", String(barY));
+          rect.setAttribute("width", String(barWidth));
+          rect.setAttribute("height", String(Math.max(0, barHeight)));
+          rect.setAttribute("fill", color);
+          rect.style.cursor = "crosshair";
+          rect.addEventListener("mouseover", (event) => {
+            const tooltipLines = [category];
+            if (seriesOrder.length > 1) {
+              tooltipLines.push(`series: ${series}`);
+            }
+            tooltipLines.push(
+              `mean: ${Number(point.mean).toFixed(4)}`,
+              `std:  ${Number(point.std).toFixed(4)}`
+            );
+            showBarTooltip(event, tooltipLines);
+          });
+          rect.addEventListener("mousemove", positionBarTooltip);
+          rect.addEventListener("mouseout", hideBarTooltip);
+          svg.appendChild(rect);
+
+          const errTop = margin.top + chartHeight - ((point.mean + point.std) / yMax) * chartHeight;
+          const errBottom = margin.top + chartHeight - ((point.mean - point.std) / yMax) * chartHeight;
+          const centerBarX = barX + barWidth / 2;
+
+          const errorLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+          errorLine.setAttribute("x1", String(centerBarX));
+          errorLine.setAttribute("x2", String(centerBarX));
+          errorLine.setAttribute("y1", String(errTop));
+          errorLine.setAttribute("y2", String(errBottom));
+          errorLine.setAttribute("stroke", "#e5e7eb");
+          errorLine.setAttribute("stroke-width", "2");
+          svg.appendChild(errorLine);
+
+          const capTop = document.createElementNS("http://www.w3.org/2000/svg", "line");
+          capTop.setAttribute("x1", String(centerBarX - 5));
+          capTop.setAttribute("x2", String(centerBarX + 5));
+          capTop.setAttribute("y1", String(errTop));
+          capTop.setAttribute("y2", String(errTop));
+          capTop.setAttribute("stroke", "#e5e7eb");
+          capTop.setAttribute("stroke-width", "2");
+          svg.appendChild(capTop);
+
+          const capBottom = document.createElementNS("http://www.w3.org/2000/svg", "line");
+          capBottom.setAttribute("x1", String(centerBarX - 5));
+          capBottom.setAttribute("x2", String(centerBarX + 5));
+          capBottom.setAttribute("y1", String(errBottom));
+          capBottom.setAttribute("y2", String(errBottom));
+          capBottom.setAttribute("stroke", "#e5e7eb");
+          capBottom.setAttribute("stroke-width", "2");
+          svg.appendChild(capBottom);
+        }
+
+        const xLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        xLabel.setAttribute("x", String(centerX));
+        xLabel.setAttribute("y", String(height - margin.bottom + 16));
+        xLabel.setAttribute("transform", `rotate(-28 ${centerX} ${height - margin.bottom + 16})`);
+        xLabel.setAttribute("text-anchor", "end");
+        xLabel.setAttribute("fill", "currentColor");
+        xLabel.setAttribute("font-size", "11");
+        xLabel.textContent = category;
+        svg.appendChild(xLabel);
+      }
+
+      return { svg, seriesOrder };
+    }
+
+    function collectNumericMetricLeafPaths(value, parts = [], out = new Map()) {
+      if (!value || typeof value !== "object") {
+        return out;
+      }
+      for (const [key, child] of Object.entries(value)) {
+        const pathParts = [...parts, key];
+        if (typeof child === "number" && Number.isFinite(child)) {
+          out.set(pathParts.join("|#|"), pathParts);
+          continue;
+        }
+        if (child && typeof child === "object" && !Array.isArray(child)) {
+          collectNumericMetricLeafPaths(child, pathParts, out);
+        }
+      }
+      return out;
+    }
+
+    function getValueAtPath(value, pathParts) {
+      let current = value;
+      for (const part of pathParts) {
+        if (!current || typeof current !== "object" || !(part in current)) {
+          return null;
+        }
+        current = current[part];
+      }
+      return current;
+    }
+
+    function splitMetricLabelAtLastDot(label) {
+      const lastDotIndex = label.lastIndexOf(".");
+      if (lastDotIndex === -1) {
+        return { prefix: "(root)", suffix: label };
+      }
+      return {
+        prefix: label.slice(0, lastDotIndex),
+        suffix: label.slice(lastDotIndex + 1),
+      };
+    }
+
+    // In auto mode, infer the plotting branch from the experiment/evaluate name.
+    function getEffectivePlotMode(activeExperiment) {
+      if (state.plotMode !== "auto") {
+        return state.plotMode;
+      }
+      if (/confusion_matrix/i.test(activeExperiment)) {
+        return "confusion_matrix";
+      }
+      if (/error/i.test(activeExperiment)) {
+        return "errors";
+      }
+      return "f1";
+    }
+
+    function formatRounded(value, precision) {
+      return Number(value).toFixed(precision);
+    }
+
+    function getConfusionMatrixTitle(experimentRuns) {
+      const fieldValues = new Set(
+        experimentRuns
+          .map((run) => normalizeValue(run.evalOverrides["metric.field"]))
+          .filter((value) => value)
+      );
+      if (fieldValues.size === 0) {
+        return "(missing metric.field)";
+      }
+      if (fieldValues.size === 1) {
+        return Array.from(fieldValues)[0];
+      }
+      return `mixed metric.field: ${Array.from(fieldValues).sort((a, b) => a.localeCompare(b)).join(", ")}`;
+    }
+
+    // Convert per-run confusion counts into one aligned matrix with mean/std per cell.
+    // Missing cells are treated as zeros so runs with different support can still be aggregated together.
+    function getConfusionMatrixAggregation(experimentRuns) {
+      const rowLabels = new Set();
+      const colLabels = new Set();
+      const runCells = [];
+
+      for (const run of experimentRuns) {
+        const map = new Map();
+        const evalContent = run.evalContent || {};
+        for (const [actualLabel, predictedMap] of Object.entries(evalContent)) {
+          if (!predictedMap || typeof predictedMap !== "object" || Array.isArray(predictedMap)) {
+            continue;
+          }
+          for (const [predictedLabel, rawValue] of Object.entries(predictedMap)) {
+            if (!Number.isFinite(rawValue)) {
+              continue;
+            }
+            const value = Number(rawValue);
+            rowLabels.add(actualLabel);
+            colLabels.add(predictedLabel);
+            map.set(`${actualLabel}|#|${predictedLabel}`, value);
+          }
+        }
+        runCells.push(map);
+      }
+
+      const sortWithForcedLast = (values, forcedLast) =>
+        Array.from(values).sort((a, b) => {
+          if (a === forcedLast && b !== forcedLast) {
+            return 1;
+          }
+          if (b === forcedLast && a !== forcedLast) {
+            return -1;
+          }
+          return a.localeCompare(b);
+        });
+
+      const rows = sortWithForcedLast(rowLabels, "UNASSIGNABLE");
+      const cols = sortWithForcedLast(colLabels, "UNDETECTED");
+      const cells = new Map();
+      for (const row of rows) {
+        for (const col of cols) {
+          const key = `${row}|#|${col}`;
+          const values = runCells.map((cellMap) => cellMap.get(key) ?? 0);
+          const stats = meanAndStd(values) || { mean: 0, std: 0 };
+          cells.set(key, stats);
+        }
+      }
+
+      return { rows, cols, cells };
+    }
+
+    function interpolateColor(startRgb, endRgb, t) {
+      const clamp = Math.max(0, Math.min(1, t));
+      const mix = (a, b) => Math.round(a + (b - a) * clamp);
+      return `rgb(${mix(startRgb[0], endRgb[0])}, ${mix(startRgb[1], endRgb[1])}, ${mix(startRgb[2], endRgb[2])})`;
+    }
+
+    // Render an already-aggregated confusion matrix as an SVG heatmap with values and tooltips.
+    function createConfusionMatrixHeatmapSvg(aggregation, precision) {
+      const { rows, cols, cells } = aggregation;
+      const cellSize = 96;
+      const margin = { top: 130, right: 20, bottom: 20, left: 280 };
+      const width = margin.left + cols.length * cellSize + margin.right;
+      const height = margin.top + rows.length * cellSize + margin.bottom;
+      const maxMean = Math.max(0, ...Array.from(cells.values()).map((cell) => cell.mean));
+
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svg.setAttribute("width", String(width));
+      svg.setAttribute("height", String(height));
+      svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+
+      const xAxisTitle = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      xAxisTitle.setAttribute("x", String(margin.left + (cols.length * cellSize) / 2));
+      xAxisTitle.setAttribute("y", "20");
+      xAxisTitle.setAttribute("text-anchor", "middle");
+      xAxisTitle.setAttribute("fill", "currentColor");
+      xAxisTitle.setAttribute("font-size", "13");
+      xAxisTitle.textContent = "Predicted label";
+      svg.appendChild(xAxisTitle);
+
+      const yAxisTitle = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      yAxisTitle.setAttribute("x", "20");
+      yAxisTitle.setAttribute("y", String(margin.top + (rows.length * cellSize) / 2));
+      yAxisTitle.setAttribute("transform", `rotate(-90 20 ${margin.top + (rows.length * cellSize) / 2})`);
+      yAxisTitle.setAttribute("text-anchor", "middle");
+      yAxisTitle.setAttribute("fill", "currentColor");
+      yAxisTitle.setAttribute("font-size", "13");
+      yAxisTitle.textContent = "Actual label";
+      svg.appendChild(yAxisTitle);
+
+      rows.forEach((row, rowIndex) => {
+        const y = margin.top + rowIndex * cellSize + cellSize / 2;
+        const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        label.setAttribute("x", String(margin.left - 10));
+        label.setAttribute("y", String(y + 4));
+        label.setAttribute("text-anchor", "end");
+        label.setAttribute("fill", "currentColor");
+        label.setAttribute("font-size", "11");
+        label.textContent = row;
+        svg.appendChild(label);
+      });
+
+      rows.forEach((row, rowIndex) => {
+        cols.forEach((col, colIndex) => {
+          const key = `${row}|#|${col}`;
+          const stats = cells.get(key) || { mean: 0, std: 0 };
+          const x = margin.left + colIndex * cellSize;
+          const y = margin.top + rowIndex * cellSize;
+          const t = maxMean > 0 ? stats.mean / maxMean : 0;
+          const fill = interpolateColor([247, 251, 255], [8, 48, 107], t);
+
+          const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+          rect.setAttribute("x", String(x));
+          rect.setAttribute("y", String(y));
+          rect.setAttribute("width", String(cellSize));
+          rect.setAttribute("height", String(cellSize));
+          rect.setAttribute("fill", fill);
+          rect.setAttribute("stroke", "#33415555");
+          rect.setAttribute("stroke-width", "1");
+          rect.style.cursor = "crosshair";
+          rect.addEventListener("mouseover", (event) => {
+            showBarTooltip(event, [
+              `actual:    ${row}`,
+              `predicted: ${col}`,
+              `mean: ${formatRounded(stats.mean, precision)}`,
+              `std:  ${formatRounded(stats.std, precision)}`,
+            ]);
+          });
+          rect.addEventListener("mousemove", positionBarTooltip);
+          rect.addEventListener("mouseout", hideBarTooltip);
+          svg.appendChild(rect);
+
+          const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+          text.setAttribute("x", String(x + cellSize / 2));
+          text.setAttribute("y", String(y + cellSize / 2 + 4));
+          text.setAttribute("text-anchor", "middle");
+          text.setAttribute("fill", t > 0.55 ? "#f8fafc" : "#0f172a");
+          text.setAttribute("font-size", "11");
+          text.textContent = `${formatRounded(stats.mean, precision)}±${formatRounded(stats.std, precision)}`;
+          svg.appendChild(text);
+        });
+      });
+
+      // Draw predicted-label ticks last so they stay visible above heatmap cells.
+      cols.forEach((col, colIndex) => {
+        const x = margin.left + colIndex * cellSize + cellSize / 2;
+        const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        const y = margin.top - 10;
+        label.setAttribute("x", String(x + 2));
+        label.setAttribute("y", String(y));
+        label.setAttribute("transform", `rotate(-35 ${x + 2} ${y})`);
+        // Anchor from the tick position so the label text grows away from the matrix.
+        label.setAttribute("text-anchor", "start");
+        label.setAttribute("fill", "currentColor");
+        label.setAttribute("font-size", "11");
+        label.textContent = col;
+        svg.appendChild(label);
+      });
+
+      return svg;
+    }
+
+    // Depending on the current tab strategy, group confusion plots either by metric.field or by
+    // the active prediction/evaluation grouping, while keeping different metric.field values separate.
+    function buildConfusionTabMap(activeExperiment, plotGroups, experimentRuns, labelFields) {
+      const tabMap = new Map();
+      const groupEntries = plotGroups
+        .map((group, index) => ({
+          key: `group|#|${group.groupId}`,
+          label: getGroupLabelForFields(group, labelFields, `group ${index + 1}`),
+          runs: group.runs.filter((run) => run.experimentEvaluate === activeExperiment),
+        }))
+        .filter((entry) => entry.runs.length > 0);
+
+      if (state.confusionTabsBy === "metric_field") {
+        for (const run of experimentRuns) {
+          const rawField = normalizeValue(run.evalOverrides["metric.field"]);
+          const fieldLabel = rawField || "(missing metric.field)";
+          if (!tabMap.has(fieldLabel)) {
+            tabMap.set(fieldLabel, { label: fieldLabel, plots: [] });
+          }
+        }
+
+        for (const [fieldKey, tab] of tabMap.entries()) {
+          for (const groupEntry of groupEntries) {
+            const runsForFieldAndGroup = groupEntry.runs.filter((run) => {
+              const rawField = normalizeValue(run.evalOverrides["metric.field"]);
+              const fieldLabel = rawField || "(missing metric.field)";
+              return fieldLabel === fieldKey;
+            });
+            if (runsForFieldAndGroup.length === 0) {
+              continue;
+            }
+            tab.plots.push({ label: groupEntry.label, runs: runsForFieldAndGroup });
+          }
+        }
+        return tabMap;
+      }
+
+      for (const groupEntry of groupEntries) {
+        // Split runs by metric.field so different fields don't get mixed into one matrix.
+        const byField = new Map();
+        for (const run of groupEntry.runs) {
+          const rawField = normalizeValue(run.evalOverrides["metric.field"]);
+          const fieldLabel = rawField || "(missing metric.field)";
+          if (!byField.has(fieldLabel)) {
+            byField.set(fieldLabel, []);
+          }
+          byField.get(fieldLabel).push(run);
+        }
+        const plots = Array.from(byField.entries())
+          .sort(([a], [b]) => a.localeCompare(b))
+          .map(([fieldLabel, runs]) => ({
+            label: fieldLabel,
+            runs,
+          }));
+        tabMap.set(groupEntry.key, { label: groupEntry.label, plots });
+      }
+
+      return tabMap;
+    }
+
+    function renderGroupBarChips(varyingGroupByFields, activeExperiment) {
+      if (varyingGroupByFields.length === 0) {
+        const noOptions = document.createElement("span");
+        noOptions.className = "hint";
+        noOptions.textContent = "No varying group-by columns available.";
+        plotGroupBarsList.appendChild(noOptions);
+      } else {
+        for (const field of varyingGroupByFields) {
+          const chip = document.createElement("label");
+          chip.className = "truncate-item";
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.checked = state.plotGroupBarFields.has(field);
+          checkbox.addEventListener("change", () => {
+            if (checkbox.checked) {
+              state.plotGroupBarFields.add(field);
+            } else {
+              state.plotGroupBarFields.delete(field);
+            }
+            renderEvaluationPlots(activeExperiment);
+          });
+          const text = document.createElement("span");
+          text.textContent = displayGroupFieldName(field);
+          chip.appendChild(checkbox);
+          chip.appendChild(text);
+          plotGroupBarsList.appendChild(chip);
+        }
+      }
+    }
+
+    function buildPlotEntries(metricPaths, plotGroups, groupBarFields, categoryFields) {
+      const entries = [];
+      for (const metricPath of metricPaths) {
+        const points = [];
+        plotGroups.forEach((group, index) => {
+          const values = group.runs
+            .map((run) => Number(getValueAtPath(run.evalContent, metricPath.parts)))
+            .filter((value) => Number.isFinite(value));
+          const stats = meanAndStd(values);
+          if (!stats) {
+            return;
+          }
+          const categoryLabel = groupBarFields.length
+            ? getGroupLabelForFields(group, categoryFields, "all")
+            : getGroupLabelForFields(group, categoryFields, `group ${index + 1}`);
+          const seriesLabel = groupBarFields.length
+            ? getGroupLabelForFields(group, groupBarFields, "series")
+            : "__single__";
+          points.push({ label: categoryLabel, category: categoryLabel, series: seriesLabel, mean: stats.mean, std: stats.std });
+        });
+        if (!points.length) {
+          continue;
+        }
+        const split = splitMetricLabelAtLastDot(metricPath.label);
+        entries.push({ metricLabel: metricPath.label, parts: metricPath.parts, points, ...split });
+      }
+      return entries;
+    }
+
+    function buildF1TabMap(plotEntries) {
+      const tabMap = new Map();
+      for (const entry of plotEntries) {
+        const tabKey = state.plotTabsBy === "suffix" ? entry.suffix : entry.prefix;
+        if (!tabMap.has(tabKey)) {
+          tabMap.set(tabKey, []);
+        }
+        tabMap.get(tabKey).push(entry);
+      }
+      return tabMap;
+    }
+
+    function buildErrorsTabMap(plotEntries) {
+      const totalKeys = new Set(["with_error", "no_error"]);
+      const total = plotEntries.filter((entry) => totalKeys.has(entry.parts[0]));
+      const details = plotEntries.filter((entry) => !totalKeys.has(entry.parts[0]));
+      const tabMap = new Map();
+      if (total.length) {
+        tabMap.set("total", total);
+      }
+      if (details.length) {
+        tabMap.set("details", details);
+      }
+      return tabMap;
+    }
+
+    function renderPlotTabsAndGrid(tabMap, activeExperiment, groupBarFields) {
+      const tabPriority = ["total", "details"];
+      const sortedTabKeys = Array.from(tabMap.keys()).sort((a, b) => {
+        const pa = tabPriority.indexOf(a);
+        const pb = tabPriority.indexOf(b);
+        if (pa !== -1 && pb !== -1) return pa - pb;
+        if (pa !== -1) return -1;
+        if (pb !== -1) return 1;
+        return a.localeCompare(b);
+      });
+      if (!state.activeEvalPlotTab || !tabMap.has(state.activeEvalPlotTab)) {
+        state.activeEvalPlotTab = sortedTabKeys[0] || null;
+      }
+      for (const key of sortedTabKeys) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "tab-button" + (key === state.activeEvalPlotTab ? " active" : "");
+        button.textContent = `${key} (${tabMap.get(key).length})`;
+        button.title = key;
+        button.addEventListener("click", () => {
+          state.activeEvalPlotTab = key;
+          renderEvaluationPlots(activeExperiment);
+        });
+        evalPlotTabs.appendChild(button);
+      }
+      const activeEntries = tabMap.get(state.activeEvalPlotTab) || [];
+      const grid = document.createElement("div");
+      grid.className = "plot-grid";
+      for (const entry of activeEntries) {
+        const card = document.createElement("section");
+        card.className = "plot-card";
+        const title = document.createElement("p");
+        title.className = "plot-title";
+        const groupedByText = groupBarFields.length
+          ? ` | grouped by: ${groupBarFields.map((f) => displayGroupFieldName(f)).join(", ")}`
+          : "";
+        title.textContent = `${entry.metricLabel} (mean ± std)${groupedByText}`;
+        card.appendChild(title);
+        if (groupBarFields.length) {
+          const grouped = createGroupedBarPlotSvg(entry.points);
+          if (grouped.seriesOrder.length > 1) {
+            const legend = document.createElement("div");
+            legend.className = "plot-legend";
+            grouped.seriesOrder.forEach((seriesLabel, seriesIndex) => {
+              const item = document.createElement("span");
+              item.className = "plot-legend-item";
+              const swatch = document.createElement("span");
+              swatch.className = "plot-legend-swatch";
+              swatch.style.backgroundColor = getBarColor(seriesIndex);
+              const text = document.createElement("span");
+              text.textContent = seriesLabel;
+              item.appendChild(swatch);
+              item.appendChild(text);
+              legend.appendChild(item);
+            });
+            card.appendChild(legend);
+          }
+          card.appendChild(grouped.svg);
+        } else {
+          card.appendChild(createBarPlotSvg(entry.points));
+        }
+        grid.appendChild(card);
+      }
+      if (!grid.childElementCount) {
+        const msg = document.createElement("p");
+        msg.className = "plot-empty";
+        msg.textContent = "No plottable metric values found for the active tab.";
+        evalPlotContent.appendChild(msg);
+        return;
+      }
+      evalPlotContent.appendChild(grid);
+    }
+
+    // Plot rendering always starts from the currently selected prediction groups and selected eval groups,
+    // then branches into mode-specific aggregation/rendering (f1, errors, confusion matrix).
+    function renderEvaluationPlots(activeExperiment) {
+      const effectiveMode = getEffectivePlotMode(activeExperiment);
+      renderPlotTabModeControls(effectiveMode);
+      evalPlotTabs.innerHTML = "";
+      evalPlotContent.innerHTML = "";
+      plotGroupBarsList.innerHTML = "";
+
+      const selectedPredictionGroups = getSelectedPredictionGroups();
+      if (selectedPredictionGroups.length === 0) {
+        const msg = document.createElement("p");
+        msg.className = "plot-empty";
+        msg.textContent = "Select prediction groups to generate plots.";
+        evalPlotContent.appendChild(msg);
+        return;
+      }
+
+      const experimentRuns = gatherSelectedRuns().filter(
+        (run) => run.experimentEvaluate === activeExperiment
+      );
+      const evalColumns = Array.from(
+        experimentRuns.reduce((acc, run) => {
+          Object.keys(run.evalOverrides).forEach((key) => acc.add(key));
+          return acc;
+        }, new Set())
+      ).sort();
+      const evalTabState = ensureEvalTabState(activeExperiment, evalColumns);
+      const evalGroups = buildEvaluationGroups(
+        experimentRuns,
+        evalTabState.groupByFields,
+        state.groupByFields
+      );
+      const validEvalGroupIds = new Set(evalGroups.map((group) => group.groupId));
+      if (evalTabState.selectedGroupIds === null) {
+        evalTabState.selectedGroupIds = new Set(validEvalGroupIds);
+      } else {
+        evalTabState.selectedGroupIds = new Set(
+          Array.from(evalTabState.selectedGroupIds).filter((groupId) => validEvalGroupIds.has(groupId))
+        );
+      }
+
+      const selectedEvalGroups = evalGroups.filter((group) =>
+        evalTabState.selectedGroupIds.has(group.groupId)
+      );
+      if (selectedEvalGroups.length === 0) {
+        const msg = document.createElement("p");
+        msg.className = "plot-empty";
+        msg.textContent = "Select evaluation groups to generate plots.";
+        evalPlotContent.appendChild(msg);
+        return;
+      }
+
+      const combined = getCombinedPlotGroups(activeExperiment, selectedEvalGroups, evalTabState.groupByFields);
+      const plotGroups = combined.groups;
+      const plotGroupFields = combined.fields;
+      const varyingPlotGroupFields = getVaryingFields(plotGroups, plotGroupFields);
+
+      if (effectiveMode === "confusion_matrix") {
+        // Confusion plots do not reuse the generic bar-plot path below; they get their own tab map
+        // and heatmap rendering because the aggregation shape is matrix-like instead of metric-like.
+        const labelFields = varyingPlotGroupFields.length ? varyingPlotGroupFields : plotGroupFields;
+        const confusionTabMap = buildConfusionTabMap(activeExperiment, plotGroups, experimentRuns, labelFields);
+        const sortedConfusionTabKeys = Array.from(confusionTabMap.keys()).sort((a, b) =>
+          confusionTabMap.get(a).label.localeCompare(confusionTabMap.get(b).label)
+        );
+        if (sortedConfusionTabKeys.length === 0) {
+          const msg = document.createElement("p");
+          msg.className = "plot-empty";
+          msg.textContent = `No confusion matrix data found for ${activeExperiment}.`;
+          evalPlotContent.appendChild(msg);
+          return;
+        }
+
+        if (!state.activeEvalPlotTab || !confusionTabMap.has(state.activeEvalPlotTab)) {
+          state.activeEvalPlotTab = sortedConfusionTabKeys[0];
+        }
+
+        for (const key of sortedConfusionTabKeys) {
+          const entry = confusionTabMap.get(key);
+          const runCount = entry.plots.reduce((sum, plot) => sum + plot.runs.length, 0);
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "tab-button" + (key === state.activeEvalPlotTab ? " active" : "");
+          button.textContent = `${entry.label} (${runCount})`;
+          button.title = entry.label;
+          button.addEventListener("click", () => {
+            state.activeEvalPlotTab = key;
+            renderEvaluationPlots(activeExperiment);
+          });
+          evalPlotTabs.appendChild(button);
+        }
+
+        const activeConfusionEntry = confusionTabMap.get(state.activeEvalPlotTab);
+        const grid = document.createElement("div");
+        grid.className = "plot-grid";
+
+        for (const plotEntry of activeConfusionEntry.plots) {
+          const aggregation = getConfusionMatrixAggregation(plotEntry.runs);
+          if (!aggregation.rows.length || !aggregation.cols.length) {
+            continue;
+          }
+
+          const card = document.createElement("section");
+          card.className = "plot-card";
+          const title = document.createElement("p");
+          title.className = "plot-title";
+          const fieldTitle = getConfusionMatrixTitle(plotEntry.runs);
+          if (state.confusionTabsBy === "metric_field") {
+            title.textContent = `${plotEntry.label} (mean ± std)`;
+          } else {
+            title.textContent = `${fieldTitle} (mean ± std)`;
+          }
+          card.appendChild(title);
+          card.appendChild(
+            createConfusionMatrixHeatmapSvg(aggregation, state.plotRoundingPrecision)
+          );
+          grid.appendChild(card);
+        }
+
+        if (!grid.childElementCount) {
+          const msg = document.createElement("p");
+          msg.className = "plot-empty";
+          msg.textContent = `No confusion matrix values found for ${activeConfusionEntry.label}.`;
+          evalPlotContent.appendChild(msg);
+          return;
+        }
+
+        evalPlotContent.appendChild(grid);
+        return;
+      }
+
+      const metricPaths = Array.from(
+        experimentRuns.reduce(
+          (acc, run) => collectNumericMetricLeafPaths(run.evalContent, [], acc),
+          new Map()
+        )
+      )
+        .map(([, pathParts]) => ({ parts: pathParts, label: pathParts.join(".") }))
+        .sort((a, b) => a.label.localeCompare(b.label));
+
+      if (metricPaths.length === 0) {
+        const msg = document.createElement("p");
+        msg.className = "plot-empty";
+        msg.textContent = `No numeric metric data found for ${activeExperiment}.`;
+        evalPlotContent.appendChild(msg);
+        return;
+      }
+
+      const varyingGroupByFields = varyingPlotGroupFields;
+      state.plotGroupBarFields = new Set(
+        Array.from(state.plotGroupBarFields).filter((field) => new Set(varyingGroupByFields).has(field))
+      );
+      renderGroupBarChips(varyingGroupByFields, activeExperiment);
+
+      const groupBarFields = varyingGroupByFields.filter((field) => state.plotGroupBarFields.has(field));
+      const categoryFields = varyingGroupByFields.filter((field) => !groupBarFields.includes(field));
+
+      const plotEntries = buildPlotEntries(metricPaths, plotGroups, groupBarFields, categoryFields);
+      if (!plotEntries.length) {
+        const msg = document.createElement("p");
+        msg.className = "plot-empty";
+        msg.textContent = `No plottable metric values found for ${activeExperiment}.`;
+        evalPlotContent.appendChild(msg);
+        return;
+      }
+
+      const tabMap = effectiveMode === "errors"
+        ? buildErrorsTabMap(plotEntries)
+        : buildF1TabMap(plotEntries);
+
+      renderPlotTabsAndGrid(tabMap, activeExperiment, groupBarFields);
+    }
+
+    function renderEvaluations() {
+      evalTabs.innerHTML = "";
+      evaluationsTable.innerHTML = "";
+      evalLayout.classList.remove("split");
+      renderEvalJsonTabs();
+      evalJsonTitle.textContent = "";
+      evalJsonCode.innerHTML = "";
+
+      const selectedRuns = gatherSelectedRuns();
+      if (!selectedRuns.length) {
+        evalSummary.textContent = "Select one or more prediction groups to view evaluation metadata.";
+        renderEvaluationPlots(state.activeEvalTab || "");
+        return;
+      }
+
+      const byExperiment = new Map();
+      for (const run of selectedRuns) {
+        if (!byExperiment.has(run.experimentEvaluate)) {
+          byExperiment.set(run.experimentEvaluate, []);
+        }
+        byExperiment.get(run.experimentEvaluate).push(run);
+      }
+
+      const experiments = Array.from(byExperiment.keys()).sort();
+      if (!state.activeEvalTab || !byExperiment.has(state.activeEvalTab)) {
+        state.activeEvalTab = experiments[0];
+      }
+
+      for (const experiment of experiments) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "tab-button" + (experiment === state.activeEvalTab ? " active" : "");
+        button.textContent = `${experiment} (${byExperiment.get(experiment).length})`;
+        button.addEventListener("click", () => {
+          state.activeEvalTab = experiment;
+          renderEvaluations();
+        });
+        evalTabs.appendChild(button);
+      }
+
+      const tabRuns = byExperiment.get(state.activeEvalTab) || [];
+      const evalOverrideColumns = new Set();
+      for (const run of tabRuns) {
+        for (const key of Object.keys(run.evalOverrides)) {
+          evalOverrideColumns.add(key);
+        }
+      }
+
+      const orderedEvalOverrideColumns = Array.from(evalOverrideColumns).sort();
+      const evalTabState = ensureEvalTabState(state.activeEvalTab, orderedEvalOverrideColumns);
+      renderEvalOptionsTabs(state.activeEvalTab);
+      renderEvalTruncateControls(state.activeEvalTab, orderedEvalOverrideColumns);
+      const evalGroups = buildEvaluationGroups(tabRuns, evalTabState.groupByFields, state.groupByFields);
+      const validEvalGroupIds = new Set(evalGroups.map((group) => group.groupId));
+      if (evalTabState.selectedGroupIds === null) {
+        evalTabState.selectedGroupIds = new Set(validEvalGroupIds);
+      } else {
+        evalTabState.selectedGroupIds = new Set(
+          Array.from(evalTabState.selectedGroupIds).filter((groupId) => validEvalGroupIds.has(groupId))
+        );
+      }
+      evalTabState.expandedGroupIds = new Set(
+        Array.from(evalTabState.expandedGroupIds).filter((groupId) => validEvalGroupIds.has(groupId))
+      );
+      if (!validEvalGroupIds.has(evalTabState.selectedEvalGroupId)) {
+        evalTabState.selectedEvalGroupId = null;
+      }
+      const validRunDirs = new Set(tabRuns.map((run) => run.runDir));
+      if (!validRunDirs.has(evalTabState.selectedEvalRunDir)) {
+        evalTabState.selectedEvalRunDir = null;
+      }
+
+      const evalSelectionState = {
+        displayedGroupIds: evalGroups.map((group) => group.groupId),
+      };
+      evalSelectionState.selectedCount = evalSelectionState.displayedGroupIds.filter((groupId) =>
+        evalTabState.selectedGroupIds.has(groupId)
+      ).length;
+      evalSelectionState.allSelected =
+        evalSelectionState.displayedGroupIds.length > 0 &&
+        evalSelectionState.selectedCount === evalSelectionState.displayedGroupIds.length;
+      evalSelectionState.someSelected =
+        evalSelectionState.selectedCount > 0 && !evalSelectionState.allSelected;
+
+      const thead = document.createElement("thead");
+      const sectionRow = document.createElement("tr");
+      ["expand", "select", "group_size"].forEach((header) => {
+        const th = document.createElement("th");
+        if (header === "select") {
+          const selectControl = document.createElement("div");
+          selectControl.className = "header-select-control";
+          const selectCaption = document.createElement("span");
+          selectCaption.className = "header-caption";
+          selectCaption.textContent = "select";
+          const selectAllCheckbox = document.createElement("input");
+          selectAllCheckbox.type = "checkbox";
+          selectAllCheckbox.checked = evalSelectionState.allSelected;
+          selectAllCheckbox.indeterminate = evalSelectionState.someSelected;
+          selectAllCheckbox.title = "Select or deselect all displayed evaluation groups";
+          selectAllCheckbox.addEventListener("change", () => {
+            if (selectAllCheckbox.checked) {
+              evalTabState.selectedGroupIds = new Set(evalSelectionState.displayedGroupIds);
+            } else {
+              evalTabState.selectedGroupIds = new Set();
+            }
+            renderEvaluations();
+          });
+          selectControl.appendChild(selectCaption);
+          selectControl.appendChild(selectAllCheckbox);
+          th.appendChild(selectControl);
+        } else {
+          const staticControl = document.createElement("div");
+          staticControl.className = "header-static-control";
+          const caption = document.createElement("span");
+          caption.className = "header-caption";
+          caption.textContent = header === "group_size" ? "#" : header;
+          staticControl.appendChild(caption);
+          th.appendChild(staticControl);
+        }
+        th.rowSpan = 2;
+        sectionRow.appendChild(th);
+      });
+
+      const overridesSection = document.createElement("th");
+      overridesSection.className = "section-header";
+      overridesSection.colSpan = Math.max(orderedEvalOverrideColumns.length, 1);
+      overridesSection.textContent = "overrides";
+      sectionRow.appendChild(overridesSection);
+
+      const evalRunDirSection = document.createElement("th");
+      evalRunDirSection.className = "section-header";
+      evalRunDirSection.colSpan = 1;
+      evalRunDirSection.textContent = "meta";
+      sectionRow.appendChild(evalRunDirSection);
+      thead.appendChild(sectionRow);
+
+      const columnRow = document.createElement("tr");
+      if (orderedEvalOverrideColumns.length > 0) {
+        for (const column of orderedEvalOverrideColumns) {
+          const th = document.createElement("th");
+          if (evalTabState.truncateEnabledColumns.has(column)) {
+            th.classList.add("truncate-enabled");
+          }
+          const label = document.createElement("div");
+          const headerLabel = displayEvalColumnName(column);
+          label.textContent = headerLabel;
+          th.style.minWidth = `${Math.max(140, headerLabel.length * 8)}px`;
+
+          const toggle = document.createElement("label");
+          toggle.className = "group-toggle";
+          toggle.title = "Use this column for grouping";
+          const toggleCb = document.createElement("input");
+          toggleCb.type = "checkbox";
+          toggleCb.checked = evalTabState.groupByFields.includes(column);
+          toggleCb.addEventListener("change", () => {
+            const next = new Set(evalTabState.groupByFields);
+            if (toggleCb.checked) {
+              next.add(column);
+            } else {
+              next.delete(column);
+            }
+            evalTabState.groupByFields = [...next];
+            renderEvaluations();
+          });
+          toggle.appendChild(toggleCb);
+
+          th.appendChild(label);
+          th.appendChild(toggle);
+          columnRow.appendChild(th);
+        }
+      } else {
+        const th = document.createElement("th");
+        th.textContent = "(no overrides columns)";
+        columnRow.appendChild(th);
+      }
+
+      const runDirTh = document.createElement("th");
+      if (evalTabState.truncateEnabledColumns.has("eval_run_dir")) {
+        runDirTh.classList.add("truncate-enabled");
+      }
+      runDirTh.textContent = "eval_run_dir";
+      runDirTh.style.minWidth = "240px";
+      columnRow.appendChild(runDirTh);
+      thead.appendChild(columnRow);
+      evaluationsTable.appendChild(thead);
+
+      const tbody = document.createElement("tbody");
+      for (const group of evalGroups) {
+        const tr = document.createElement("tr");
+        tr.style.cursor = "pointer";
+        if (group.groupId === evalTabState.selectedEvalGroupId) {
+          tr.classList.add("eval-row-selected");
+        }
+        tr.addEventListener("click", () => {
+          if (evalTabState.selectedEvalGroupId === group.groupId) {
+            evalTabState.selectedEvalGroupId = null;
+          } else {
+            evalTabState.selectedEvalGroupId = group.groupId;
+            evalTabState.selectedEvalRunDir = null;
+            state.activeEvalJsonTab = "evaluation";
+          }
+          renderEvaluations();
+        });
+
+        const expandTd = document.createElement("td");
+        const expandButton = document.createElement("button");
+        const isExpanded = evalTabState.expandedGroupIds.has(group.groupId);
+        expandButton.type = "button";
+        expandButton.className = "expand-button";
+        expandButton.textContent = isExpanded ? "-" : "+";
+        expandButton.title = isExpanded ? "Collapse group members" : "Expand group members";
+        expandButton.addEventListener("click", (event) => {
+          event.stopPropagation();
+          if (evalTabState.expandedGroupIds.has(group.groupId)) {
+            evalTabState.expandedGroupIds.delete(group.groupId);
+          } else {
+            evalTabState.expandedGroupIds.add(group.groupId);
+          }
+          renderEvaluations();
+        });
+        expandTd.appendChild(expandButton);
+        tr.appendChild(expandTd);
+
+        const selectTd = document.createElement("td");
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = evalTabState.selectedGroupIds.has(group.groupId);
+        checkbox.addEventListener("click", (event) => event.stopPropagation());
+        checkbox.addEventListener("change", () => {
+          if (checkbox.checked) {
+            evalTabState.selectedGroupIds.add(group.groupId);
+          } else {
+            evalTabState.selectedGroupIds.delete(group.groupId);
+          }
+          renderEvaluations();
+        });
+        selectTd.appendChild(checkbox);
+        tr.appendChild(selectTd);
+
+        tr.appendChild(createCell(String(group.runs.length)));
+
+        if (orderedEvalOverrideColumns.length === 0) {
+          tr.appendChild(createCell(""));
+        }
+        for (const column of orderedEvalOverrideColumns) {
+          tr.appendChild(
+            createEvalCell(
+              getGroupValueDisplayFromRuns(group.runs, (run) => run.evalOverrides[column]),
+              column,
+              evalTabState
+            )
+          );
+        }
+        tr.appendChild(
+          createEvalCell(
+            getGroupValueDisplayFromRuns(group.runs, (run) => run.runDir),
+            "eval_run_dir",
+            evalTabState
+          )
+        );
+        tbody.appendChild(tr);
+
+        if (evalTabState.expandedGroupIds.has(group.groupId)) {
+          const sortedMembers = [...group.runs].sort((a, b) => a.runDir.localeCompare(b.runDir));
+          for (const run of sortedMembers) {
+            const memberRow = document.createElement("tr");
+            memberRow.className = "member-row";
+            memberRow.style.cursor = "pointer";
+            if (run.runDir === evalTabState.selectedEvalRunDir) {
+              memberRow.classList.add("eval-row-selected");
+            }
+            memberRow.addEventListener("click", () => {
+              if (evalTabState.selectedEvalRunDir === run.runDir) {
+                evalTabState.selectedEvalRunDir = null;
+              } else {
+                evalTabState.selectedEvalRunDir = run.runDir;
+                evalTabState.selectedEvalGroupId = null;
+                state.activeEvalJsonTab = "evaluation";
+              }
+              renderEvaluations();
+            });
+            memberRow.appendChild(createCell(""));
+            memberRow.appendChild(createCell(""));
+            memberRow.appendChild(createCell("member"));
+            if (orderedEvalOverrideColumns.length === 0) {
+              memberRow.appendChild(createCell(""));
+            }
+            for (const column of orderedEvalOverrideColumns) {
+              memberRow.appendChild(
+                createEvalCell(normalizeValue(run.evalOverrides[column]), column, evalTabState)
+              );
+            }
+            memberRow.appendChild(
+              createEvalCell(normalizeValue(run.runDir), "eval_run_dir", evalTabState)
+            );
+            tbody.appendChild(memberRow);
+          }
+        }
+      }
+      evaluationsTable.appendChild(tbody);
+
+      if (evalTabState.selectedEvalRunDir !== null || evalTabState.selectedEvalGroupId !== null) {
+        const selectedRun = tabRuns.find((run) => run.runDir === evalTabState.selectedEvalRunDir) || null;
+        const selectedGroup = evalGroups.find((group) => group.groupId === evalTabState.selectedEvalGroupId) || null;
+        if (selectedRun || selectedGroup) {
+          evalLayout.classList.add("split");
+          evalJsonTitle.textContent = "";
+          renderEvalJsonTabs();
+          const tabContent = selectedRun
+            ? (state.activeEvalJsonTab === "prediction" ? selectedRun.predictionContent : selectedRun.evalContent)
+            : (state.activeEvalJsonTab === "prediction"
+              ? selectedGroup.runs.map((run) => run.predictionContent)
+              : selectedGroup.runs.map((run) => run.evalContent));
+          evalJsonCode.innerHTML = highlightJsonContent(tabContent);
+        }
+      }
+
+      updateStickyControlColumnOffsets(evaluationsTable);
+      requestAnimationFrame(() => updateStickyControlColumnOffsets(evaluationsTable));
+
+      const selectedEvalRunsCount = evalGroups
+        .filter((group) => evalTabState.selectedGroupIds.has(group.groupId))
+        .reduce((sum, group) => sum + group.runs.length, 0);
+      const evalGroupByText = evalTabState.groupByFields.length
+        ? evalTabState.groupByFields.map((field) => displayEvalColumnName(field)).join(", ")
+        : "(none; one row per run)";
+      const predictionGroupByText = state.groupByFields.length
+        ? state.groupByFields.map((field) => displayPredictionColumnName(field)).join(", ")
+        : "(none)";
+      evalSummary.textContent =
+        `Selected evaluations: ${selectedEvalRunsCount} | Active tab: ${state.activeEvalTab} | Groups: ${evalGroups.length} | Group-by: ${evalGroupByText} (+ prediction group-by: ${predictionGroupByText})`;
+
+      renderEvaluationPlots(state.activeEvalTab);
+    }
+  </script>
+</body>
+</html>
