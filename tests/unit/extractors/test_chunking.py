@@ -3,8 +3,15 @@ from pathlib import Path
 
 import pytest
 
-from kibad_llm.extractors.chunking import _document_chunk_iterator
-from kibad_llm.extractors.chunking_utils.core import TextChunk
+from kibad_llm.extractors.chunking import (
+    _document_chunk_iterator,
+)
+from kibad_llm.extractors.chunking_utils.core import (
+    ChunkIterator,
+    TextChunk,
+    get_token_interval_text,
+)
+from kibad_llm.extractors.chunking_utils.tokenizers import RegexTokenizer, TokenInterval
 from tests import FIXTURE_DATA_ROOT
 
 FIXTURE_DATA = FIXTURE_DATA_ROOT / "chunking"
@@ -158,3 +165,217 @@ def test_chunk_case_c() -> None:
 
     chunk_texts = [chunk.chunk_text for chunk in chunks]
     assert chunk_texts == expected_chunks
+
+
+def test_multi_sentence_chunk():
+    text = "This is a sentence. This is a longer sentence. Mr. Bond\nasks\nwhy?"
+    tokenized_text = RegexTokenizer().tokenize(text)
+    chunk_iter = ChunkIterator(
+        text,
+        max_char_buffer=50,
+        tokenizer_impl=RegexTokenizer(),
+    )
+    chunk_interval = next(chunk_iter).token_interval
+    assert TokenInterval(start_index=0, end_index=11) == chunk_interval
+    assert get_token_interval_text(tokenized_text, chunk_interval) == "This is a sentence. This is a longer sentence."
+    chunk_interval = next(chunk_iter).token_interval
+    assert TokenInterval(start_index=11, end_index=17) == chunk_interval
+    assert get_token_interval_text(tokenized_text, chunk_interval) == "Mr. Bond\nasks\nwhy?"
+    # with self.assertRaises(StopIteration):
+    #     next(chunk_iter)
+
+
+def test_sentence_with_multiple_newlines_and_right_interval():
+    text = "This is a sentence\n\n" + "This is a longer sentence\n\n" + "Mr\n\nBond\n\nasks why?"
+    tokenized_text = RegexTokenizer().tokenize(text)
+    chunk_interval = TokenInterval(start_index=0, end_index=len(tokenized_text.tokens))
+    assert get_token_interval_text(tokenized_text, chunk_interval) == text
+
+
+def test_break_sentence():
+    text = "This is a sentence. This is a longer sentence. Mr. Bond\nasks\nwhy?"
+    tokenized_text = RegexTokenizer().tokenize(text)
+    chunk_iter = ChunkIterator(
+        text,
+        max_char_buffer=12,
+        tokenizer_impl=RegexTokenizer(),
+    )
+    chunk_interval = next(chunk_iter).token_interval
+    assert TokenInterval(start_index=0, end_index=3) == chunk_interval
+    assert get_token_interval_text(tokenized_text, chunk_interval) == "This is a"
+    chunk_interval = next(chunk_iter).token_interval
+    assert TokenInterval(start_index=3, end_index=5) == chunk_interval
+    assert get_token_interval_text(tokenized_text, chunk_interval) == "sentence."
+    chunk_interval = next(chunk_iter).token_interval
+    assert TokenInterval(start_index=5, end_index=8) == chunk_interval
+    assert get_token_interval_text(tokenized_text, chunk_interval) == "This is a"
+    chunk_interval = next(chunk_iter).token_interval
+    assert TokenInterval(start_index=8, end_index=9) == chunk_interval
+    assert get_token_interval_text(tokenized_text, chunk_interval) == "longer"
+    chunk_interval = next(chunk_iter).token_interval
+    assert TokenInterval(start_index=9, end_index=11) == chunk_interval
+    assert get_token_interval_text(tokenized_text, chunk_interval) == "sentence."
+    # for _ in range(2):
+    #     next(chunk_iter)
+    # with self.assertRaises(StopIteration):
+    #     next(chunk_iter)
+
+# def test_long_token_gets_own_chunk(self):
+#   text = "This is a sentence. This is a longer sentence. Mr. Bond\nasks\nwhy?"
+#   tokenized_text = tokenizer.tokenize(text)
+#   chunk_iter = chunking.ChunkIterator(
+#       tokenized_text,
+#       max_char_buffer=7,
+#       tokenizer_impl=tokenizer.RegexTokenizer(),
+#   )
+#   chunk_interval = next(chunk_iter).token_interval
+#   assert tokenizer.TokenInterval(start_index=0, end_index=2) == chunk_interval
+#   assert chunking.get_token_interval_text(tokenized_text, chunk_interval) == "This is"
+#   chunk_interval = next(chunk_iter).token_interval
+#   assert tokenizer.TokenInterval(start_index=2, end_index=3) == chunk_interval
+#   assert chunking.get_token_interval_text(tokenized_text, chunk_interval) == "a"
+#   chunk_interval = next(chunk_iter).token_interval
+#   assert tokenizer.TokenInterval(start_index=3, end_index=4) == chunk_interval
+#   assert chunking.get_token_interval_text(tokenized_text, chunk_interval) == "sentence"
+#   chunk_interval = next(chunk_iter).token_interval
+#   assert tokenizer.TokenInterval(start_index=4, end_index=5) == chunk_interval
+#   assert chunking.get_token_interval_text(tokenized_text, chunk_interval) == "."
+#   for _ in range(9):
+#     next(chunk_iter)
+#   with self.assertRaises(StopIteration):
+#     next(chunk_iter)
+#
+# def test_newline_at_chunk_boundary_does_not_create_empty_interval(self):
+#   """Test that newlines at chunk boundaries don't create empty token intervals.
+#
+#   When a newline occurs exactly at a chunk boundary, the chunking algorithm
+#   should not attempt to create an empty interval (where start_index == end_index).
+#   This was causing a ValueError in create_token_interval().
+#   """
+#   text = "First sentence.\nSecond sentence that is longer.\nThird sentence."
+#   tokenized_text = tokenizer.tokenize(text)
+#
+#   chunk_iter = chunking.ChunkIterator(
+#       tokenized_text,
+#       max_char_buffer=20,
+#       tokenizer_impl=tokenizer.RegexTokenizer(),
+#   )
+#   chunks = list(chunk_iter)
+#
+#   for chunk in chunks:
+#     self.assertLess(
+#         chunk.token_interval.start_index,
+#         chunk.token_interval.end_index,
+#         "Chunk should have non-empty interval",
+#     )
+#
+#   expected_intervals = [(0, 3), (3, 6), (6, 9), (9, 12)]
+#   actual_intervals = [
+#       (chunk.token_interval.start_index, chunk.token_interval.end_index)
+#       for chunk in chunks
+#   ]
+#   assert actual_intervals == expected_intervals
+#
+# def test_chunk_unicode_text(self):
+#   text = textwrap.dedent("""\
+#   Chief Complaint:
+#   ‘swelling of tongue and difficulty breathing and swallowing’
+#   History of Present Illness:
+#   77 y o woman in NAD with a h/o CAD, DM2, asthma and HTN on altace.""")
+#   tokenized_text = tokenizer.tokenize(text)
+#   chunk_iter = chunking.ChunkIterator(
+#       tokenized_text,
+#       max_char_buffer=200,
+#       tokenizer_impl=tokenizer.RegexTokenizer(),
+#   )
+#   chunk_interval = next(chunk_iter).token_interval
+#   self.assertEqual(
+#       tokenizer.TokenInterval(
+#           start_index=0, end_index=len(tokenized_text.tokens)
+#       ),
+#       chunk_interval,
+#   )
+#   assert chunking.get_token_interval_text(tokenized_text, chunk_interval) == text
+#
+# def test_newlines_is_secondary_sentence_break(self):
+#   text = textwrap.dedent("""\
+#   Medications:
+#   Theophyline (Uniphyl) 600 mg qhs – bronchodilator by increasing cAMP used
+#   for treating asthma
+#   Diltiazem 300 mg qhs – Ca channel blocker used to control hypertension
+#   Simvistatin (Zocor) 20 mg qhs- HMGCo Reductase inhibitor for
+#   hypercholesterolemia
+#   Ramipril (Altace) 10 mg BID – ACEI for hypertension and diabetes for
+#   renal protective effect""")
+#   tokenized_text = tokenizer.tokenize(text)
+#   chunk_iter = chunking.ChunkIterator(
+#       tokenized_text,
+#       max_char_buffer=200,
+#       tokenizer_impl=tokenizer.RegexTokenizer(),
+#   )
+#
+#   first_chunk = next(chunk_iter)
+#   expected_first_chunk_text = textwrap.dedent("""\
+#   Medications:
+#   Theophyline (Uniphyl) 600 mg qhs – bronchodilator by increasing cAMP used
+#   for treating asthma
+#   Diltiazem 300 mg qhs – Ca channel blocker used to control hypertension""")
+#   self.assertEqual(
+#       chunking.get_token_interval_text(
+#           tokenized_text, first_chunk.token_interval
+#       ),
+#       expected_first_chunk_text,
+#   )
+#
+#   self.assertGreater(
+#       first_chunk.token_interval.end_index,
+#       first_chunk.token_interval.start_index,
+#   )
+#
+#   second_chunk = next(chunk_iter)
+#   expected_second_chunk_text = textwrap.dedent("""\
+#   Simvistatin (Zocor) 20 mg qhs- HMGCo Reductase inhibitor for
+#   hypercholesterolemia
+#   Ramipril (Altace) 10 mg BID – ACEI for hypertension and diabetes for
+#   renal protective effect""")
+#   self.assertEqual(
+#       chunking.get_token_interval_text(
+#           tokenized_text, second_chunk.token_interval
+#       ),
+#       expected_second_chunk_text,
+#   )
+#
+#   with self.assertRaises(StopIteration):
+#     next(chunk_iter)
+#
+# def test_tokenizer_propagation(self):
+#   """Test that tokenizer is correctly propagated to TextChunk's Document."""
+#   text = "Some text."
+#   mock_tokenizer = mock.Mock(spec=tokenizer.Tokenizer)
+#   mock_tokens = [
+#       tokenizer.Token(
+#           index=0,
+#           token_type=tokenizer.TokenType.WORD,
+#           char_interval=data.CharInterval(start_pos=0, end_pos=4),
+#       ),
+#       tokenizer.Token(
+#           index=1,
+#           token_type=tokenizer.TokenType.WORD,
+#           char_interval=data.CharInterval(start_pos=5, end_pos=9),
+#       ),
+#       tokenizer.Token(
+#           index=2,
+#           token_type=tokenizer.TokenType.PUNCTUATION,
+#           char_interval=data.CharInterval(start_pos=9, end_pos=10),
+#       ),
+#   ]
+#   mock_tokenized_text = tokenizer.TokenizedText(text=text, tokens=mock_tokens)
+#   mock_tokenizer.tokenize.return_value = mock_tokenized_text
+#
+#   chunk_iter = chunking.ChunkIterator(
+#       text=text, max_char_buffer=100, tokenizer_impl=mock_tokenizer
+#   )
+#   text_chunk = next(chunk_iter)
+#
+#   assert text_chunk.document_text == mock_tokenized_text
+#   assert text_chunk.chunk_text == text
