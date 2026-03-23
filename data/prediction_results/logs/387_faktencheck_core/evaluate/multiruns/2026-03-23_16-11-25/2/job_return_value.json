@@ -1,0 +1,53 @@
+{
+  "Agrar- und Offenland": {
+    "Agrar- und Offenland": 29,
+    "UNDETECTED": 19
+  },
+  "Binnengewässer und Auen": {
+    "Binnengewässer und Auen": 8,
+    "UNDETECTED": 24
+  },
+  "Boden": {
+    "Boden": 1,
+    "UNDETECTED": 22
+  },
+  "Küsten und Küstengewässer": {
+    "Küsten und Küstengewässer": 18,
+    "UNDETECTED": 26
+  },
+  "UNASSIGNABLE": {
+    "Agrar- und Offenland": 3,
+    "Binnengewässer und Auen": 9,
+    "Boden": 2,
+    "Wald": 2
+  },
+  "Urbane Räume": {
+    "UNDETECTED": 14,
+    "Urbane Räume": 1
+  },
+  "Wald": {
+    "UNDETECTED": 17,
+    "Wald": 10
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/380_faktencheck_core/2026-03-11_16-30-57/2026-03-12_01-47-06_568328/predictions.jsonl",
+      "output_file_absolute": "/netscratch/binder/tmp/kiba-d_66fd30bc-c8ef-42d5-b670-0644beb7bf52/repo/predictions/380_faktencheck_core/2026-03-11_16-30-57/2026-03-12_01-47-06_568328/predictions.jsonl",
+      "time_pdf_conversion": 0.0033962081652134657,
+      "time_extraction": 5297.511355714174,
+      "time_start": 1773276426,
+      "time_end": 1773281827,
+      "commit_hash": "ba4177888275db7c8dc2ddf46678dde450aa11f4",
+      "branch": "commit/ba4177888275",
+      "is_dirty": false,
+      "slurm_job_id": "2616389"
+    },
+    "overrides": {
+      "name": "380_faktencheck_core",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "mistral_small_3_24b_in_process",
+      "seed": "1337"
+    }
+  }
+}
