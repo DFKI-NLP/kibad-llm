@@ -1,0 +1,43 @@
+# Example configuration for using NVIDIA-Nemotron-3-Nano-30B-A3B-FP8 model with LlamaIndex
+#
+# This requires a local deployment of the model compatible with the OpenAI API.
+# See models/README.md for instructions.
+#
+# To use as an argument for `predict`, use `extractor/llm=nemotron_nano_3_30b`.
+# Run VLLM with:
+#   VLLM_USE_FLASHINFER_MOE_FP8=1 \
+#   ./run_with_llm.sh -v "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8 \
+#     --trust-remote-code \
+#     --max-num-seqs 8 \
+#     --max-model-len 131072 \
+#     --kv-cache-dtype fp8 \
+#     --reasoning-parser-plugin nano_v3_reasoning_parser.py \
+#     --reasoning-parser nano_v3"
+# The reasoning parser plugin must be downloaded first:
+#   wget https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8/resolve/main/nano_v3_reasoning_parser.py
+# See https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8 for VLLM options
+
+_target_: kibad_llm.llms.OpenAILikeVllm
+
+# get the API base URL from the environment variable LLM_API_BASE, defaulting to http://127.0.0.1:5001/v1
+api_base: ${oc.env:LLM_API_BASE,http://127.0.0.1:5001/v1}
+api_key: "dummy"
+model: "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8"
+# Recommended: temperature=1.0 / top_p=1.0 for reasoning tasks per HF model card.
+# Use 0.0 for deterministic/greedy behavior (reasoning disabled via chat_template_kwargs).
+temperature: 0.0
+
+# enable to correctly handle (i.e. remove) reasoning traces in the output
+is_chat_model: true
+# Supports up to 256K tokens by default (1M with VLLM_ALLOW_LONG_MAX_MODEL_LEN=1).
+# Use lower value to save memory and improve performance.
+# See https://github.com/DFKI-NLP/kibad-llm/issues/251 for test results.
+context_window: 131072
+timeout: 360
+max_retries: 3
+
+# Specify additional parameters to the request body.
+additional_kwargs:
+  # the default is None, so we set it to 8192, to allow enough space for reasoning and output tokens
+  max_completion_tokens: 8192
+  seed: ${seed}

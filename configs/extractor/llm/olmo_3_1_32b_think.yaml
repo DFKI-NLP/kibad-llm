@@ -1,0 +1,33 @@
+# Example configuration for using allenai/OLMo-3.1-32B-Think model with LlamaIndex
+#
+# This requires a local deployment of the model compatible with the OpenAI API.
+# See models/README.md for instructions.
+#
+# To use as an argument for `predict`, use `extractor/llm=olmo_3_1_32b_think`.
+# Run VLLM with `./run_with_llm.sh -v "allenai/OLMo-3.1-32B-Think --max-model-len 65536
+#  --reasoning-parser deepseek_r1"`
+# See https://huggingface.co/allenai/OLMo-3.1-32B-Think for VLLM options
+
+_target_: kibad_llm.llms.OpenAILikeVllm
+
+# get the API base URL from the environment variable LLM_API_BASE, defaulting to http://127.0.0.1:5001/v1
+api_base: ${oc.env:LLM_API_BASE,http://127.0.0.1:5001/v1}
+api_key: "dummy"
+model: "allenai/OLMo-3.1-32B-Think"
+# try to be as deterministic as possible
+temperature: 0.0
+
+# enable to correctly handle (i.e. remove) reasoning traces in the output
+is_chat_model: true
+# Supports up to 65536 tokens (max_position_embeddings from config.json, extended from 8K via YARN RoPE).
+# See https://github.com/DFKI-NLP/kibad-llm/issues/251 for test results.
+context_window: 65536
+timeout: 360
+max_retries: 3
+
+# Specify additional parameters to the request body.
+additional_kwargs:
+  # the default is None, so we set it to 8192, to allow enough space for reasoning and output tokens
+  # see https://github.com/DFKI-NLP/kibad-llm/issues/198#issuecomment-3666155251
+  max_completion_tokens: 8192
+  seed: ${seed}

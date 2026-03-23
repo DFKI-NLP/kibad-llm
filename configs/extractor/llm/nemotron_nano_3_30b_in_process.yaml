@@ -1,0 +1,77 @@
+# Example configuration for running NVIDIA-Nemotron-3-Nano-30B-A3B-FP8 fully in-process via vLLM (Python API)
+#
+# Set the VLLM model download directory in your .env before running this config, e.g.
+# VLLM_DOWNLOAD_DIR=/path/to/download/dir
+#
+# This model requires the nano_v3 reasoning parser plugin. Download it first and ensure it is
+# importable from the current working directory or Python path:
+#   wget https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8/resolve/main/nano_v3_reasoning_parser.py
+#
+# Also set the following environment variable for optimal FP8 MoE performance:
+#   export VLLM_USE_FLASHINFER_MOE_FP8=1
+#
+# - No OpenAI-compatible HTTP server is required; inference runs inside the current Python process.
+# - Uses vllm.LLM.chat(...), which formats the prompt with the model's chat template
+#   (important for chat/instruction-tuned models).
+# - The implementation optionally enables JSON-schema guided decoding via vLLM Structured Outputs
+#   (StructuredOutputsParams(json=...) inside SamplingParams).
+#
+# Notes:
+# - `vllm_kwargs` are engine/init-time settings applied once when the vLLM engine is created.
+# - Remaining parameters are separated into different generation arguments:
+#   1) vllm.SamplingParams values (temperature, top_p, max_tokens, etc.)
+#   2) parameters for the llm.chat(...) call.
+# - Generation parameters can also be overridden via the extractor's request_parameters,
+#   see configs/extractor/request_parameters/default.yaml for examples.
+
+_target_: kibad_llm.llms.VllmInProcess
+
+# HuggingFace model id (or local path)
+model: "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8"
+
+# Initialization parameters for vLLM LLM engine.
+# See https://docs.vllm.ai/en/v0.12.0/api/vllm/entrypoints/llm/ for details.
+vllm_kwargs:
+  tensor_parallel_size: 1  # shard across N GPUs
+  # Supports up to 256K tokens by default (1M with VLLM_ALLOW_LONG_MAX_MODEL_LEN=1).
+  # Use lower value to save memory and improve performance.
+  # See https://github.com/DFKI-NLP/kibad-llm/issues/251 for test results.
+  max_model_len: 131072
+  trust_remote_code: True
+  # Hybrid Mamba-2/Transformer architecture requires this (same as Nemotron-Nano-12B).
+  mamba_ssm_cache_dtype: float32
+  # Reduced from 64 (12B default) — recommended by NVIDIA HF model card for 30B-A3B.
+  max_num_seqs: 8
+  # FP8 KV cache for memory efficiency on the FP8-quantized model.
+  kv_cache_dtype: "fp8"
+  # Custom reasoning parser plugin for nano_v3 format — plugin file must be in Python path.
+  # See https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8
+  reasoning_parser: "nano_v3"
+  gpu_memory_utilization: 0.95 # fraction of GPU memory reserved (impacts KV cache size)
+  # dtype: "auto"
+  download_dir: ${oc.env:VLLM_DOWNLOAD_DIR}
+  seed: ${seed}  # needs to be set starting with vllm 0.13.0
+  # others, e.g., swap_space / cpu_offload_gb / ...
+
+
+# Generation parameters, can be either ...
+# 1) ... vllm.SamplingParams values ...
+# See https://docs.vllm.ai/en/v0.12.0/api/vllm/sampling_params/ for details.
+# See https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8 for recommended settings:
+#   temperature=1.0 / top_p=1.0 for reasoning tasks
+# See also https://muxup.com/2025q2/recommended-llm-parameter-quick-reference for recommendations
+temperature: 1.0
+max_tokens: 8192
+top_p: 1.0
+repetition_penalty: 1.1 # suggested by ChatGPT, see #320
+
+# Other params maybe to consider
+# top_k: ...
+# frequency_penalty: ...
+# 2) ... or direct parameters for the llm.chat(...) call (should be rarely needed).
+# See https://docs.vllm.ai/en/v0.12.0/api/vllm/entrypoints/llm/#vllm.entrypoints.llm.LLM.chat
+# for details.
+
+# LlamaIndex-style request parameters (they get merged with the parameters above, but take lower precedence)
+# additional_kwargs:
+#   ...
