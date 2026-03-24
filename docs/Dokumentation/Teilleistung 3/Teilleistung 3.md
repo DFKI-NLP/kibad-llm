@@ -140,7 +140,7 @@ TODO: das sind zu viele Daten, um sie hier alle aufzuführen...
 
 Kosten für GPT5 (selbes Setup): 23,46€ / 3 = 7,82 €
 
-TODO: was kostet es, die selbe GPU (H100 oder A100) für eine Stunde zu mieten? Also was würde es kosten, 100 PDFs mit einem Open-Source-Modell zu prozessieren? Das würde einen Vergleichspunkt zu den Kosten für GPT5 liefern.
+TODO: was kostet es, die selbe GPU (H100 oder A100) für eine Stunde zu mieten (Quelle angeben!)? Also was würde es kosten, 100 PDFs mit einem Open-Source-Modell zu prozessieren? Das würde einen Vergleichspunkt zu den Kosten für GPT5 liefern.
 
 TODO: was sagt uns das alles?
 
