@@ -630,6 +630,12 @@
   </p>
   <div id="evalTabs" class="tabs"></div>
   <div id="evalSummary" class="hint">Select one or more prediction groups to view evaluation metadata.</div>
+  <div class="prediction-actions">
+    <strong>Group-by:</strong>
+    <button id="evalGroupByAllButton" class="prediction-action-button" type="button">all</button>
+    <button id="evalGroupByNoneButton" class="prediction-action-button" type="button">none</button>
+    <button id="evalGroupByToggleButton" class="prediction-action-button" type="button">toggle</button>
+  </div>
   <details class="options-panel">
     <summary class="options-summary">Table display options</summary>
     <div class="options-content">
@@ -733,6 +739,9 @@
     const predictionsTable = document.getElementById("predictionsTable");
     const evalTabs = document.getElementById("evalTabs");
     const evalSummary = document.getElementById("evalSummary");
+    const evalGroupByAllButton = document.getElementById("evalGroupByAllButton");
+    const evalGroupByNoneButton = document.getElementById("evalGroupByNoneButton");
+    const evalGroupByToggleButton = document.getElementById("evalGroupByToggleButton");
     const evalOptionsTabs = document.getElementById("evalOptionsTabs");
     const evalTruncateColumnsList = document.getElementById("evalTruncateColumnsList");
     const evalLayout = document.getElementById("evalLayout");
@@ -919,6 +928,40 @@
       renderEvaluations();
     }
 
+    function getActiveEvalOverrideColumns() {
+      if (!state.activeEvalTab) {
+        return [];
+      }
+      const evalColumns = new Set();
+      for (const run of gatherSelectedRuns()) {
+        if (run.experimentEvaluate !== state.activeEvalTab) {
+          continue;
+        }
+        for (const key of Object.keys(run.evalOverrides)) {
+          evalColumns.add(key);
+        }
+      }
+      return Array.from(evalColumns).sort();
+    }
+
+    function setActiveEvalGroupByFields(columns) {
+      if (!state.activeEvalTab) {
+        return;
+      }
+      const evalColumns = getActiveEvalOverrideColumns();
+      const evalTabState = ensureEvalTabState(state.activeEvalTab, evalColumns);
+      const validColumns = new Set(evalColumns);
+      evalTabState.groupByFields = [...new Set(columns)].filter((column) => validColumns.has(column));
+      renderEvaluations();
+    }
+
+    function renderEvalGroupByButtons(evalColumns) {
+      const hasColumns = evalColumns.length > 0;
+      evalGroupByAllButton.disabled = !hasColumns;
+      evalGroupByToggleButton.disabled = !hasColumns;
+      evalGroupByNoneButton.disabled = !hasColumns;
+    }
+
     function ensureEvalTabState(experiment, evalColumns) {
       if (!state.evalTabStates[experiment]) {
         state.evalTabStates[experiment] = {
@@ -973,6 +1016,26 @@
         (column) => !state.groupByFields.includes(column)
       );
       setGroupByFields(nextGroupByFields);
+    });
+
+    evalGroupByAllButton.addEventListener("click", () => {
+      setActiveEvalGroupByFields(getActiveEvalOverrideColumns());
+    });
+
+    evalGroupByNoneButton.addEventListener("click", () => {
+      setActiveEvalGroupByFields([]);
+    });
+
+    evalGroupByToggleButton.addEventListener("click", () => {
+      if (!state.activeEvalTab) {
+        return;
+      }
+      const evalColumns = getActiveEvalOverrideColumns();
+      const evalTabState = ensureEvalTabState(state.activeEvalTab, evalColumns);
+      const nextGroupByFields = evalColumns.filter(
+        (column) => !evalTabState.groupByFields.includes(column)
+      );
+      setActiveEvalGroupByFields(nextGroupByFields);
     });
 
     function renderTruncateControls() {
@@ -2763,6 +2826,7 @@
       evaluationsTable.innerHTML = "";
       evalLayout.classList.remove("split");
       renderEvalJsonTabs();
+      renderEvalGroupByButtons([]);
       evalJsonTitle.textContent = "";
       evalJsonCode.innerHTML = "";
 
@@ -2808,6 +2872,7 @@
 
       const orderedEvalOverrideColumns = Array.from(evalOverrideColumns).sort();
       const evalTabState = ensureEvalTabState(state.activeEvalTab, orderedEvalOverrideColumns);
+      renderEvalGroupByButtons(orderedEvalOverrideColumns);
       renderEvalOptionsTabs(state.activeEvalTab);
       renderEvalTruncateControls(state.activeEvalTab, orderedEvalOverrideColumns);
       const evalGroups = buildEvaluationGroups(tabRuns, evalTabState.groupByFields, state.groupByFields);
@@ -2919,8 +2984,7 @@
             } else {
               next.delete(column);
             }
-            evalTabState.groupByFields = [...next];
-            renderEvaluations();
+            setActiveEvalGroupByFields(next);
           });
           toggle.appendChild(toggleCb);
 
