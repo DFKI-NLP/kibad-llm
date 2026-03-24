@@ -630,6 +630,12 @@
   </p>
   <div id="evalTabs" class="tabs"></div>
   <div id="evalSummary" class="hint">Select one or more prediction groups to view evaluation metadata.</div>
+  <div class="prediction-actions">
+    <strong>Group-by:</strong>
+    <button id="evalGroupByAllButton" class="prediction-action-button" type="button">all</button>
+    <button id="evalGroupByNoneButton" class="prediction-action-button" type="button">none</button>
+    <button id="evalGroupByToggleButton" class="prediction-action-button" type="button">toggle</button>
+  </div>
   <details class="options-panel">
     <summary class="options-summary">Table display options</summary>
     <div class="options-content">
@@ -669,6 +675,10 @@
       <option value="confusion_matrix">confusion matrix</option>
     </select>
     <span id="plotModeEffective" class="plot-mode-effective"></span>
+  </div>
+  <div class="prediction-actions">
+    <label for="plotShortenLabels"><strong>Shorten labels:</strong></label>
+    <input id="plotShortenLabels" type="checkbox" checked>
   </div>
   <div class="prediction-actions">
     <label for="plotRoundingPrecision"><strong>Rounding:</strong></label>
@@ -712,6 +722,7 @@
       activeEvalPlotTab: null,
       plotGroupBarFields: new Set(),
       plotMode: "auto",
+      plotShortenLabels: true,
       plotRoundingPrecision: 2,
       confusionTabsBy: "prediction_group",
     };
@@ -728,6 +739,9 @@
     const predictionsTable = document.getElementById("predictionsTable");
     const evalTabs = document.getElementById("evalTabs");
     const evalSummary = document.getElementById("evalSummary");
+    const evalGroupByAllButton = document.getElementById("evalGroupByAllButton");
+    const evalGroupByNoneButton = document.getElementById("evalGroupByNoneButton");
+    const evalGroupByToggleButton = document.getElementById("evalGroupByToggleButton");
     const evalOptionsTabs = document.getElementById("evalOptionsTabs");
     const evalTruncateColumnsList = document.getElementById("evalTruncateColumnsList");
     const evalLayout = document.getElementById("evalLayout");
@@ -740,6 +754,7 @@
     const plotTabsByPrefixButton = document.getElementById("plotTabsByPrefixButton");
     const plotTabsBySuffixButton = document.getElementById("plotTabsBySuffixButton");
     const plotModeSelect = document.getElementById("plotModeSelect");
+    const plotShortenLabels = document.getElementById("plotShortenLabels");
     const plotRoundingPrecision = document.getElementById("plotRoundingPrecision");
     const plotModeEffective = document.getElementById("plotModeEffective");
     const plotTabsByRow = document.getElementById("plotTabsByRow");
@@ -855,6 +870,21 @@
       return displayPredictionColumnName(column);
     }
 
+    function splitLabelByLastDot(label) {
+      const text = String(label ?? "");
+      const lastDotIndex = text.lastIndexOf(".");
+      return lastDotIndex === -1 ? text : text.slice(lastDotIndex + 1);
+    }
+
+    function getPlotDisplayLabel(label) {
+      const text = String(label ?? "");
+      return state.plotShortenLabels ? splitLabelByLastDot(text) : text;
+    }
+
+    function displayPlotGroupFieldName(column) {
+      return getPlotDisplayLabel(displayGroupFieldName(column));
+    }
+
     function getDefaultTruncateColumns(predictionColumns) {
       const defaults = new Set();
       for (const column of predictionColumns) {
@@ -896,6 +926,40 @@
       state.groupByFields = [...columns];
       renderPredictions();
       renderEvaluations();
+    }
+
+    function getActiveEvalOverrideColumns() {
+      if (!state.activeEvalTab) {
+        return [];
+      }
+      const evalColumns = new Set();
+      for (const run of gatherSelectedRuns()) {
+        if (run.experimentEvaluate !== state.activeEvalTab) {
+          continue;
+        }
+        for (const key of Object.keys(run.evalOverrides)) {
+          evalColumns.add(key);
+        }
+      }
+      return Array.from(evalColumns).sort();
+    }
+
+    function setActiveEvalGroupByFields(columns) {
+      if (!state.activeEvalTab) {
+        return;
+      }
+      const evalColumns = getActiveEvalOverrideColumns();
+      const evalTabState = ensureEvalTabState(state.activeEvalTab, evalColumns);
+      const validColumns = new Set(evalColumns);
+      evalTabState.groupByFields = [...new Set(columns)].filter((column) => validColumns.has(column));
+      renderEvaluations();
+    }
+
+    function renderEvalGroupByButtons(evalColumns) {
+      const hasColumns = evalColumns.length > 0;
+      evalGroupByAllButton.disabled = !hasColumns;
+      evalGroupByToggleButton.disabled = !hasColumns;
+      evalGroupByNoneButton.disabled = !hasColumns;
     }
 
     function ensureEvalTabState(experiment, evalColumns) {
@@ -952,6 +1016,26 @@
         (column) => !state.groupByFields.includes(column)
       );
       setGroupByFields(nextGroupByFields);
+    });
+
+    evalGroupByAllButton.addEventListener("click", () => {
+      setActiveEvalGroupByFields(getActiveEvalOverrideColumns());
+    });
+
+    evalGroupByNoneButton.addEventListener("click", () => {
+      setActiveEvalGroupByFields([]);
+    });
+
+    evalGroupByToggleButton.addEventListener("click", () => {
+      if (!state.activeEvalTab) {
+        return;
+      }
+      const evalColumns = getActiveEvalOverrideColumns();
+      const evalTabState = ensureEvalTabState(state.activeEvalTab, evalColumns);
+      const nextGroupByFields = evalColumns.filter(
+        (column) => !evalTabState.groupByFields.includes(column)
+      );
+      setActiveEvalGroupByFields(nextGroupByFields);
     });
 
     function renderTruncateControls() {
@@ -1084,6 +1168,7 @@
         state.confusionTabsBy === "prediction_group"
       );
       plotModeSelect.value = state.plotMode;
+      plotShortenLabels.checked = state.plotShortenLabels;
       plotRoundingPrecision.value = String(state.plotRoundingPrecision);
       plotModeEffective.textContent = state.plotMode === "auto" ? `(→ ${effectiveMode})` : "";
       plotTabsByRow.style.display = effectiveMode === "f1" ? "" : "none";
@@ -1094,6 +1179,11 @@
     plotModeSelect.addEventListener("change", () => {
       state.plotMode = plotModeSelect.value;
       state.activeEvalPlotTab = null;
+      renderEvaluations();
+    });
+
+    plotShortenLabels.addEventListener("change", () => {
+      state.plotShortenLabels = plotShortenLabels.checked;
       renderEvaluations();
     });
 
@@ -1759,14 +1849,14 @@
         .join(" | ");
     }
 
-    function getGroupLabelForFields(group, labelFields, fallback) {
+    function getGroupLabelForFields(group, labelFields, fallback, fieldNameFormatter = displayGroupFieldName) {
       if (labelFields.length === 0) {
         return fallback;
       }
       return labelFields
         .map(
           (field) =>
-            `${displayGroupFieldName(field)}=${normalizeValue(group.values[field])}`
+            `${fieldNameFormatter(field)}=${normalizeValue(group.values[field])}`
         )
         .join(" | ");
     }
@@ -1922,7 +2012,7 @@
         xLabel.setAttribute("text-anchor", "end");
         xLabel.setAttribute("fill", "currentColor");
         xLabel.setAttribute("font-size", "11");
-        xLabel.textContent = point.label;
+        xLabel.textContent = point.displayLabel;
         svg.appendChild(xLabel);
       }
 
@@ -1932,8 +2022,10 @@
     function createGroupedBarPlotSvg(points) {
       const categoryOrder = [];
       const categorySet = new Set();
+      const categoryDisplayMap = new Map();
       const seriesOrder = [];
       const seriesSet = new Set();
+      const seriesDisplayMap = new Map();
       const valueMap = new Map();
 
       for (const point of points) {
@@ -1941,9 +2033,15 @@
           categorySet.add(point.category);
           categoryOrder.push(point.category);
         }
+        if (!categoryDisplayMap.has(point.category)) {
+          categoryDisplayMap.set(point.category, point.displayCategory);
+        }
         if (!seriesSet.has(point.series)) {
           seriesSet.add(point.series);
           seriesOrder.push(point.series);
+        }
+        if (!seriesDisplayMap.has(point.series)) {
+          seriesDisplayMap.set(point.series, point.displaySeries);
         }
         valueMap.set(`${point.category}|#|${point.series}`, point);
       }
@@ -2070,11 +2168,11 @@
         xLabel.setAttribute("text-anchor", "end");
         xLabel.setAttribute("fill", "currentColor");
         xLabel.setAttribute("font-size", "11");
-        xLabel.textContent = category;
+        xLabel.textContent = categoryDisplayMap.get(category) || category;
         svg.appendChild(xLabel);
       }
 
-      return { svg, seriesOrder };
+      return { svg, seriesOrder, seriesDisplayMap };
     }
 
     function collectNumericMetricLeafPaths(value, parts = [], out = new Map()) {
@@ -2144,9 +2242,12 @@
         return "(missing metric.field)";
       }
       if (fieldValues.size === 1) {
-        return Array.from(fieldValues)[0];
+        return getPlotDisplayLabel(Array.from(fieldValues)[0]);
       }
-      return `mixed metric.field: ${Array.from(fieldValues).sort((a, b) => a.localeCompare(b)).join(", ")}`;
+      return `mixed metric.field: ${Array.from(fieldValues)
+        .sort((a, b) => a.localeCompare(b))
+        .map((value) => getPlotDisplayLabel(value))
+        .join(", ")}`;
     }
 
     // Convert per-run confusion counts into one aligned matrix with mean/std per cell.
@@ -2249,7 +2350,7 @@
         label.setAttribute("text-anchor", "end");
         label.setAttribute("fill", "currentColor");
         label.setAttribute("font-size", "11");
-        label.textContent = row;
+        label.textContent = getPlotDisplayLabel(row);
         svg.appendChild(label);
       });
 
@@ -2306,7 +2407,7 @@
         label.setAttribute("text-anchor", "start");
         label.setAttribute("fill", "currentColor");
         label.setAttribute("font-size", "11");
-        label.textContent = col;
+        label.textContent = getPlotDisplayLabel(col);
         svg.appendChild(label);
       });
 
@@ -2320,7 +2421,7 @@
       const groupEntries = plotGroups
         .map((group, index) => ({
           key: `group|#|${group.groupId}`,
-          label: getGroupLabelForFields(group, labelFields, `group ${index + 1}`),
+          label: getGroupLabelForFields(group, labelFields, `group ${index + 1}`, displayPlotGroupFieldName),
           runs: group.runs.filter((run) => run.experimentEvaluate === activeExperiment),
         }))
         .filter((entry) => entry.runs.length > 0);
@@ -2330,7 +2431,7 @@
           const rawField = normalizeValue(run.evalOverrides["metric.field"]);
           const fieldLabel = rawField || "(missing metric.field)";
           if (!tabMap.has(fieldLabel)) {
-            tabMap.set(fieldLabel, { label: fieldLabel, plots: [] });
+            tabMap.set(fieldLabel, { label: getPlotDisplayLabel(fieldLabel), plots: [] });
           }
         }
 
@@ -2395,7 +2496,7 @@
             renderEvaluationPlots(activeExperiment);
           });
           const text = document.createElement("span");
-          text.textContent = displayGroupFieldName(field);
+          text.textContent = displayPlotGroupFieldName(field);
           chip.appendChild(checkbox);
           chip.appendChild(text);
           plotGroupBarsList.appendChild(chip);
@@ -2418,10 +2519,25 @@
           const categoryLabel = groupBarFields.length
             ? getGroupLabelForFields(group, categoryFields, "all")
             : getGroupLabelForFields(group, categoryFields, `group ${index + 1}`);
+          const displayCategoryLabel = groupBarFields.length
+            ? getGroupLabelForFields(group, categoryFields, "all", displayPlotGroupFieldName)
+            : getGroupLabelForFields(group, categoryFields, `group ${index + 1}`, displayPlotGroupFieldName);
           const seriesLabel = groupBarFields.length
             ? getGroupLabelForFields(group, groupBarFields, "series")
             : "__single__";
-          points.push({ label: categoryLabel, category: categoryLabel, series: seriesLabel, mean: stats.mean, std: stats.std });
+          const displaySeriesLabel = groupBarFields.length
+            ? getGroupLabelForFields(group, groupBarFields, "series", displayPlotGroupFieldName)
+            : "__single__";
+          points.push({
+            label: categoryLabel,
+            displayLabel: displayCategoryLabel,
+            category: categoryLabel,
+            displayCategory: displayCategoryLabel,
+            series: seriesLabel,
+            displaySeries: displaySeriesLabel,
+            mean: stats.mean,
+            std: stats.std,
+          });
         });
         if (!points.length) {
           continue;
@@ -2492,9 +2608,9 @@
         const title = document.createElement("p");
         title.className = "plot-title";
         const groupedByText = groupBarFields.length
-          ? ` | grouped by: ${groupBarFields.map((f) => displayGroupFieldName(f)).join(", ")}`
+          ? ` | grouped by: ${groupBarFields.map((f) => displayPlotGroupFieldName(f)).join(", ")}`
           : "";
-        title.textContent = `${entry.metricLabel} (mean ± std)${groupedByText}`;
+        title.textContent = `${getPlotDisplayLabel(entry.metricLabel)} (mean ± std)${groupedByText}`;
         card.appendChild(title);
         if (groupBarFields.length) {
           const grouped = createGroupedBarPlotSvg(entry.points);
@@ -2508,7 +2624,7 @@
               swatch.className = "plot-legend-swatch";
               swatch.style.backgroundColor = getBarColor(seriesIndex);
               const text = document.createElement("span");
-              text.textContent = seriesLabel;
+              text.textContent = grouped.seriesDisplayMap.get(seriesLabel) || seriesLabel;
               item.appendChild(swatch);
               item.appendChild(text);
               legend.appendChild(item);
@@ -2710,6 +2826,7 @@
       evaluationsTable.innerHTML = "";
       evalLayout.classList.remove("split");
       renderEvalJsonTabs();
+      renderEvalGroupByButtons([]);
       evalJsonTitle.textContent = "";
       evalJsonCode.innerHTML = "";
 
@@ -2755,6 +2872,7 @@
 
       const orderedEvalOverrideColumns = Array.from(evalOverrideColumns).sort();
       const evalTabState = ensureEvalTabState(state.activeEvalTab, orderedEvalOverrideColumns);
+      renderEvalGroupByButtons(orderedEvalOverrideColumns);
       renderEvalOptionsTabs(state.activeEvalTab);
       renderEvalTruncateControls(state.activeEvalTab, orderedEvalOverrideColumns);
       const evalGroups = buildEvaluationGroups(tabRuns, evalTabState.groupByFields, state.groupByFields);
@@ -2866,8 +2984,7 @@
             } else {
               next.delete(column);
             }
-            evalTabState.groupByFields = [...next];
-            renderEvaluations();
+            setActiveEvalGroupByFields(next);
           });
           toggle.appendChild(toggleCb);
 
