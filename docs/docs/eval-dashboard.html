@@ -417,6 +417,7 @@
       --sticky-col-1-left: 0px;
       --sticky-col-2-left: 0px;
       --sticky-col-3-left: 0px;
+      --sticky-header-row-1-height: 0px;
     }
     .dashboard-data-table th,
     .dashboard-data-table td {
@@ -446,6 +447,14 @@
     }
     .dashboard-data-table th {
       background: var(--surface-2);
+    }
+    .dashboard-data-table thead tr:first-child th {
+      top: 0;
+      z-index: 6;
+    }
+    .dashboard-data-table thead tr:nth-child(2) th {
+      top: var(--sticky-header-row-1-height);
+      z-index: 5;
     }
     #evaluationsTable thead tr:first-child th:nth-child(-n+2),
     #evaluationsTable tbody td:nth-child(-n+2) {
@@ -482,7 +491,7 @@
     }
     .dashboard-data-table thead tr:first-child th:nth-child(-n+3) {
       background: var(--surface-2);
-      z-index: 4;
+      z-index: 7;
     }
     .dashboard-data-table tbody td:nth-child(-n+3) {
       background: var(--surface);
@@ -968,7 +977,7 @@
     }
 
     function displayPlotGroupFieldName(column) {
-      return getPlotDisplayLabel(displayGroupFieldName(column));
+      return getPlotDisplayLabel(column);
     }
 
     function getDefaultTruncateColumns(predictionColumns) {
@@ -1844,14 +1853,17 @@
         tableElement.style.setProperty("--sticky-col-1-left", "0px");
         tableElement.style.setProperty("--sticky-col-2-left", "0px");
         tableElement.style.setProperty("--sticky-col-3-left", "0px");
+        tableElement.style.setProperty("--sticky-header-row-1-height", "0px");
         return;
       }
       const widths = Array.from(firstHeaderRow.cells)
         .slice(0, 3)
         .map((cell) => Math.ceil(cell.getBoundingClientRect().width));
+      const topHeaderCell = Array.from(firstHeaderRow.cells).find((cell) => cell.rowSpan === 1) || firstHeaderRow.cells[0];
       tableElement.style.setProperty("--sticky-col-1-left", "0px");
       tableElement.style.setProperty("--sticky-col-2-left", `${widths[0]}px`);
       tableElement.style.setProperty("--sticky-col-3-left", `${widths[0] + widths[1]}px`);
+      tableElement.style.setProperty("--sticky-header-row-1-height", `${Math.ceil(topHeaderCell.getBoundingClientRect().height)}px`);
     }
 
     window.addEventListener("resize", () => {
