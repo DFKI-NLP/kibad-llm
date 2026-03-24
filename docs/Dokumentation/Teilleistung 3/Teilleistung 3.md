@@ -24,8 +24,7 @@ ______________________________________________________________________
    1.3. Struktur des Dokuments
 1. LLM-basierte Contentextraktion
    2.1. Implementierung
-   2.2. Eingesetzte Software
-   2.3. IT Infrastruktur / Ressourcenbedarf
+   2.2. IT Infrastruktur / Ressourcenbedarf
 1. Aufbereitung von Testdatensätzen
 1. Bereitgestellte Daten für TL 4
 
@@ -123,20 +122,27 @@ Für die Durchführung größerer Versuchsreihen nutzt das Projekt zudem Hydra-C
 Abbildung "Pipeline - Teil 3 - Evaluation"
 ![Pipeline - Teil 3 - Evaluation.png](images/Pipeline%20-%20Teil%203%20-%20Evaluation.png)
 
-## 2.2. Eingesetzte Software
-
-Tabelle mit OSS + Lizenz? siehe schon TL 2 Abschnitt
-
-## 2.3. IT Infrastruktur / Ressourcenbedarf
-
-self-hosted: eine GPU pro Run (welche Modelle?), Zeit?
-
-OpenAI API: Kosten (in €) pro Run?
+## 2.2. IT Infrastruktur / Ressourcenbedarf
 
 vielleicht hier nur eine knappe Beschreibung, was bisher so verwendet wurde bzw. wie lange es dauert
 
-- GPUs: H100 / A100 GPUs
+- GPUs: H100 / A100 GPUs (wir nutzen eine GPU pro run)
 - grobe Dauer, für 100 Test-PDFs ca X Minuten für Inferenz
+
+Zeit um 100 PDFs mit dem Faktencheck-Kernschema zu prozessieren (Mittelwert ± Standardabweichung über 3 Runs):
+
+- gpt_oss_20b_in_process: 44m 09,34s ± 2m 42,77s
+- qwen3_30b_in_process: 57m 01,24s ± 5,56s
+- mistral_small_3_24b_in_process: 1h 24m 33,54s ± 4m 06,38s
+- gemma3_27b_in_process: 49m 55,29s ± 11m 08,61s
+
+TODO: das sind zu viele Daten, um sie hier alle aufzuführen...
+
+Kosten für GPT5 (selbes Setup): 23,46€ / 3 = 7,82 €
+
+TODO: was kostet es, die selbe GPU (H100 oder A100) für eine Stunde zu mieten? Also was würde es kosten, 100 PDFs mit einem Open-Source-Modell zu prozessieren? Das würde einen Vergleichspunkt zu den Kosten für GPT5 liefern.
+
+TODO: was sagt uns das alles?
 
 # 3. Aufbereitung von Testdatensätzen
 
