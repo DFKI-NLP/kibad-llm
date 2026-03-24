@@ -124,25 +124,28 @@ Abbildung "Pipeline - Teil 3 - Evaluation"
 
 ## 2.2. IT Infrastruktur / Ressourcenbedarf
 
-vielleicht hier nur eine knappe Beschreibung, was bisher so verwendet wurde bzw. wie lange es dauert
+Für die bisher durchgeführten Inferenzläufe wurde jeweils eine einzelne GPU pro Run verwendet. Zum Einsatz kamen dabei insbesondere NVIDIA-H100-Klassen, wie sie typischerweise auch für das lokale Hosting mittelgroßer Open-Source-LLMs genutzt werden. Der Ressourcenbedarf ist damit im Projektkontext grundsätzlich überschaubar: Für einen typischen Evaluationslauf mit 100 PDFs im Faktencheck-Kernschema liegt die reine Inferenzdauer je nach Modell grob zwischen rund 45 und 85 Minuten.
 
-- GPUs: H100 / A100 GPUs (wir nutzen eine GPU pro run)
-- grobe Dauer, für 100 Test-PDFs ca X Minuten für Inferenz
+Tabelle X fasst Laufzeiten und Kosten für die Verarbeitung von 100 PDFs zusammen. Für die Open-Source-Modelle sind die Kosten als grobe H100-basierte Schätzung zu verstehen; für GPT-5 handelt es sich um die im Projekt gemessenen API-Kosten.
 
-Zeit um 100 PDFs mit dem Faktencheck-Kernschema zu prozessieren (Mittelwert ± Standardabweichung über 3 Runs):
+| Modell              | Laufzeit für 100 PDFs     | Kosten für 100 PDFs |
+| :------------------ | :------------------------ | ------------------: |
+| GPT OSS 20B         | 44m 09,34s ± 2m 42,77s    |     ca. 2,73 EUR[6] |
+| Qwen3 30B           | 57m 01,24s ± 5,56s        |     ca. 3,52 EUR[6] |
+| Mistral Small 3 24B | 1h 24m 33,54s ± 4m 06,38s |     ca. 5,22 EUR[6] |
+| Gemma 3 27B         | 49m 55,29s ± 11m 08,61s   |     ca. 3,08 EUR[6] |
+| GPT-5               | –                         |         7,82 EUR[7] |
 
-- gpt_oss_20b_in_process: 44m 09,34s ± 2m 42,77s
-- qwen3_30b_in_process: 57m 01,24s ± 5,56s
-- mistral_small_3_24b_in_process: 1h 24m 33,54s ± 4m 06,38s
-- gemma3_27b_in_process: 49m 55,29s ± 11m 08,61s
+Für das 100er-Dev-Set liegen die reinen Inferenzkosten damit zwar nur im Bereich weniger Euro. Diese niedrigen Einzelkosten dürfen aber nicht darüber hinwegtäuschen, dass bei einer Skalierung auf den vollständigen Korpus oder auf zukünftige Produktionsszenarien deutlich höhere Gesamtkosten anfallen.
 
-TODO: das sind zu viele Daten, um sie hier alle aufzuführen...
+Für den in Tabelle 3 dokumentierten, annotierten Teil der Literaturdatenbank mit 2.308 PDFs lägen die reinen H100-Kosten für einen einzigen vollständigen Durchlauf – bei linearer Hochrechnung der 100er-Messungen – grob zwischen etwa 63,01 EUR und 120,48 EUR. Für den größeren PDF-Bestand der Zotero-Bibliothek mit 3.917 PDFs ergäben sich entsprechend etwa 106,93 EUR bis 204,47 EUR. Zum Vergleich würden die im Projekt gemessenen GPT-5-Kosten von durchschnittlich 7,82 EUR pro 100 PDFs auf etwa 180,49 EUR für 2.308 PDFs beziehungsweise etwa 306,31 EUR für 3.917 PDFs ansteigen.
 
-Kosten für GPT5 (selbes Setup): 23,46€ / 3 = 7,82 €
+Hinzu kommt, dass reale Entwicklungs- und Betriebsszenarien in der Regel nicht nur einen einzelnen Durchlauf umfassen. Bereits für Evaluation, Fehleranalyse und Modellvergleich werden häufig mehrere Seeds, Promptvarianten oder Modellkonfigurationen benötigt. Auch für eine spätere automatische Verarbeitung neuer, thematisch relevanter Publikationen ist eher mit mehreren Tausend Dokumenten als mit nur einigen Hundert zu rechnen, selbst nach einer vorgelagerten Relevanzfilterung. Die tatsächlichen Gesamtkosten steigen deshalb nicht nur mit der Zahl der zu verarbeitenden PDFs, sondern zusätzlich mit der Zahl der experimentellen Wiederholungen und der parallel betrachteten Modellvarianten.
 
-TODO: was kostet es, die selbe GPU (H100 oder A100) für eine Stunde zu mieten (Quelle angeben!)? Also was würde es kosten, 100 PDFs mit einem Open-Source-Modell zu prozessieren? Das würde einen Vergleichspunkt zu den Kosten für GPT5 liefern.
+Insgesamt zeigt sich damit ein zweigeteiltes Bild: Für kleinere Entwicklungs- und Evaluationssets ist der Ressourcenbedarf gut beherrschbar. Für die Rekonstruktion des gesamten Faktencheck-Korpus oder für einen späteren produktiven Betrieb mit regelmäßig neu hinzukommenden Publikationen wird die Kostendifferenz zwischen selbst gehosteten Open-Source-Modellen und API-basierten Modellen jedoch deutlich relevanter. Open-Source-Modelle können hier bei den reinen Inferenzkosten einen wirtschaftlichen Vorteil haben, während API-Modelle weiterhin den Vorteil eines geringeren Betriebs- und Administrationsaufwands bieten.
 
-TODO: was sagt uns das alles?
+[6] Grundlage der H100-Kostenschätzung ist die CoreWeave-Seite "GPU Cloud Pricing" (https://www.coreweave.com/gpu-cloud-pricing), abgerufen am 24.03.2026. Dort wird für eine NVIDIA H100 PCIe ein Preis von 4,25 USD pro Stunde angegeben. Die Umrechnung in Euro erfolgte mit dem ECB-Referenzkurs vom 13.03.2026 (1 EUR = 1,1476 USD; entsprechend 1 USD = ca. 0,8714 EUR).
+[7] Die Kosten für GPT-5 entsprechen den im Projekt gemessenen API-Kosten im selben Setup und lagen bei durchschnittlich 7,82 EUR für 100 PDFs.
 
 # 3. Aufbereitung von Testdatensätzen
 
@@ -217,3 +220,5 @@ ______________________________________________________________________
 [3] Copy of Faktencheck Artenvielfalt Literaturdatenbank-neu.xlsx
 [4] kibad-llm/notebooks/plot_multirun_evaluation.ipynb
 [5] Das Modell Ministral 3 wurde nach den ersten Tests nicht mehr verwendet, da es zu viele Fehler produzierte.
+[6] CoreWeave, GPU Cloud Pricing, NVIDIA H100 PCIe und A100 80GB PCIe, abgerufen am 24.03.2026, https://www.coreweave.com/gpu-cloud-pricing
+[7] European Central Bank (ECB), Exchange rates / ECB Data Portal, USD-Referenzkurs zum Euro, verwendet: 13.03.2026, https://data.ecb.europa.eu/main-figures/ecb-interest-rates-and-exchange-rates/exchange-rates
