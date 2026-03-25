@@ -297,10 +297,10 @@ def test_newline_at_chunk_boundary_does_not_create_empty_interval():
 def test_chunk_unicode_text():
     text = textwrap.dedent(
         """\
-    Chief Complaint:
-    ‘swelling of tongue and difficulty breathing and swallowing’
-    History of Present Illness:
-    77 y o woman in NAD with a h/o CAD, DM2, asthma and HTN on altace."""
+        Chief Complaint:
+        ‘swelling of tongue and difficulty breathing and swallowing’
+        History of Present Illness:
+        77 y o woman in NAD with a h/o CAD, DM2, asthma and HTN on altace."""
     )
     tokenized_text = RegexTokenizer().tokenize(text)
     chunk_iter = ChunkIterator(
