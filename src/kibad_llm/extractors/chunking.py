@@ -24,7 +24,7 @@ def _document_chunk_iterator(
     """Iterates over documents to return text chunks along with the document ID.
 
     Args:
-        documents: A sequence of Document objects.
+        document: A sequence of Document objects.
         max_char_buffer: The maximum character buffer size for the ChunkIterator.
         tokenizer: Optional tokenizer instance.
 
