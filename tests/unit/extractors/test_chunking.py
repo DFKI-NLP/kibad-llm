@@ -3,9 +3,11 @@ These tests take care of the chunking extractor as well as the chunking_utils
 that are used by it.
 """
 
+import json
 from multiprocessing.context import TimeoutError
 from pathlib import Path
 import textwrap
+from typing import TypedDict
 
 import pytest
 
@@ -24,6 +26,23 @@ from kibad_llm.extractors.chunking_utils.tokenizers import (
 from tests import FIXTURE_DATA_ROOT
 
 FIXTURE_DATA = FIXTURE_DATA_ROOT / "chunking"
+
+
+def test_full_document() -> None:
+    class document_dict(TypedDict):
+        text: str
+        chunk_texts: list[str]
+
+    document: document_dict = json.loads(
+        Path(FIXTURE_DATA).joinpath("25ABQZIH.pdf.json").read_text()
+    )
+    chunks: tuple[TextChunk, ...] = _document_chunk_iterator(
+        document["text"],
+        20000,
+        None,
+    )
+    chunk_texts = [chunk.chunk_text for chunk in chunks]
+    assert chunk_texts == document["chunk_texts"]
 
 
 def test_first_token_too_long() -> None:
