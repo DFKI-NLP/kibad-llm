@@ -16,7 +16,7 @@ document = json.loads(SRC_PATH.read_text())
 
 chunks: tuple[TextChunk, ...] = _document_chunk_iterator(
     document["text"],
-    200,
+    20000,
     None,
 )
 
@@ -101,25 +101,12 @@ def test_first_token_too_long() -> None:
     assert chunk_texts == input_text
 
 
-def test_chunk_case_a() -> None:
+def test_chunk_word_granularity() -> None:
     """
-    A)
     If a sentence length exceeds the max char buffer, then it needs to be broken
     into chunks that can fit within the max char buffer. We do this in a way that
     maximizes the chunk length while respecting newlines (if present) and token
     boundaries.
-    Consider this sentence from a poem by John Donne:
-    ```
-    No man is an island,
-    Entire of itself,
-    Every man is a piece of the continent,
-    A part of the main.
-    ```
-    With max_char_buffer=40, the chunks are:
-    * "No man is an island,\nEntire of itself," len=38
-    * "Every man is a piece of the continent," len=38
-    * "A part of the main." len=19
-
     """
 
     input_text = "No man is an island,\nEntire of itself,\nEvery man is a piece of the continent,\nA part of the main."
@@ -139,16 +126,9 @@ def test_chunk_case_a() -> None:
     assert chunk_texts == expected_chunks
 
 
-def test_chunk_case_b() -> None:
+def test_too_large_token() -> None:
     """
-    B)
     If a single token exceeds the max char buffer, it comprises the whole chunk.
-    Consider the sentence:
-    "This is antidisestablishmentarianism."
-    With max_char_buffer=20, the chunks are:
-    * "This is" len=7
-    * "antidisestablishmentarianism" len=28
-    * "." len(1)
     """
 
     input_text = "This is antidisestablishmentarianism."
@@ -169,16 +149,10 @@ def test_chunk_case_b() -> None:
     assert chunk_texts == expected_chunks
 
 
-def test_chunk_case_c() -> None:
+def test_chunk_with_multiple_sentences() -> None:
     """
-    C)
     If multiple *whole* sentences can fit within the max char buffer, then they
     are used to form the chunk.
-    Consider the sentences:
-    "Roses are red. Violets are blue. Flowers are nice. And so are you."
-    With max_char_buffer=60, the chunks are:
-    * "Roses are red. Violets are blue. Flowers are nice." len=50
-    * "And so are you." len=15
     """
 
     input_text = "Roses are red. Violets are blue. Flowers are nice. And so are you."
