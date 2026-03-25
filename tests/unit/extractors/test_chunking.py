@@ -66,10 +66,24 @@ def test_full_document() -> None:
     assert chunk_texts == document["chunk_texts"]
 
 
-def test_first_token_too_long() -> None:
-    """If a token is larger than max_char_buffer, it gets its own chunk."""
+def test_various_too_large_token() -> None:
+    """If a token is larger than max_char_buffer, it gets its own chunk.
+    Here we test it at the start, middle, and end of a sentence and what quirks that produces.
+    """
 
-    input_text = [
+    input_text = (
+        "TooBigTokennnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn normal tokens here. some more. "
+        + "more normal tokens tooBigTokennnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn and normal "
+        + "end. normal start here tooBigTokennnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn. "
+        + "normal sentence here. the end."
+    )
+    chunks: tuple[TextChunk, ...] = _document_chunk_iterator(
+        input_text,
+        max_char_buffer=50,
+        tokenizer=None,
+    )
+    chunk_texts = [chunk.chunk_text for chunk in chunks]
+    assert chunk_texts == [
         # token gets its own chunk as it's bigger than max_char_buffer
         "TooBigTokennnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn",  # 60 chars
         # rest of the "broken" sentence gets its own chunk
@@ -90,13 +104,6 @@ def test_first_token_too_long() -> None:
         ".",  # 1 char
         "normal sentence here. the end.",  # 30 chars
     ]
-    chunks: tuple[TextChunk, ...] = _document_chunk_iterator(
-        document=" ".join(input_text),
-        max_char_buffer=50,
-        tokenizer=None,
-    )
-    chunk_texts = [chunk.chunk_text for chunk in chunks]
-    assert chunk_texts == input_text
 
 
 def test_chunk_word_granularity() -> None:
@@ -124,7 +131,7 @@ def test_chunk_word_granularity() -> None:
     assert chunk_texts == expected_chunks
 
 
-def test_too_large_token() -> None:
+def test_simple_too_large_token() -> None:
     """
     If a single token exceeds the max char buffer, it comprises the whole chunk.
     """
@@ -147,7 +154,7 @@ def test_too_large_token() -> None:
     assert chunk_texts == expected_chunks
 
 
-def test_chunk_with_multiple_sentences() -> None:
+def test_chunk_sentence_granularity() -> None:
     """
     If multiple *whole* sentences can fit within the max char buffer, then they
     are used to form the chunk.
