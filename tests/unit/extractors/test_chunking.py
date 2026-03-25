@@ -56,9 +56,7 @@ def test_full_document() -> None:
         text: str
         chunk_texts: list[str]
 
-    document: document_dict = json.loads(
-        (FIXTURE_DATA / "25ABQZIH.pdf.json").read_text()
-    )
+    document: document_dict = json.loads((FIXTURE_DATA / "25ABQZIH.pdf.json").read_text())
     chunks: tuple[TextChunk, ...] = _document_chunk_iterator(
         document=document["text"],
         max_char_buffer=20000,
