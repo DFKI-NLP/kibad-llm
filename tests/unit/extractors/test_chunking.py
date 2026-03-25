@@ -26,22 +26,6 @@ from tests import FIXTURE_DATA_ROOT
 FIXTURE_DATA = FIXTURE_DATA_ROOT / "chunking"
 
 
-def test_chunking_timeout() -> None:
-    """BMTEN2FG.md is known to be very slow to chunk.
-    Chunking it should trigger a timeout, returning None.
-    """
-
-    document_from_md = Path("./tests/fixtures/pdfs_error/chunking_fail/BMTEN2FG.md").read_text()
-
-    with pytest.raises(TimeoutError) as e_info:
-        _document_chunk_iterator(
-            document_from_md,
-            20000,
-            None,
-            0.00001,
-        )
-
-
 def test_first_token_too_long() -> None:
     """If a token is larger than max_char_buffer, it gets its own chunk."""
 
@@ -70,7 +54,6 @@ def test_first_token_too_long() -> None:
         " ".join(input_text),
         50,
         None,
-        10,
     )
     chunk_texts = [chunk.chunk_text for chunk in chunks]
     assert chunk_texts == input_text
@@ -108,7 +91,6 @@ def test_chunk_case_a() -> None:
         input_text,
         40,
         None,
-        10,
     )
 
     chunk_texts = [chunk.chunk_text for chunk in chunks]
@@ -139,7 +121,6 @@ def test_chunk_case_b() -> None:
         input_text,
         20,
         None,
-        10,
     )
 
     chunk_texts = [chunk.chunk_text for chunk in chunks]
@@ -169,7 +150,6 @@ def test_chunk_case_c() -> None:
         input_text,
         60,
         None,
-        10,
     )
 
     chunk_texts = [chunk.chunk_text for chunk in chunks]

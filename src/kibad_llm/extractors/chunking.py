@@ -1,6 +1,5 @@
 import logging
 from multiprocessing import Pool
-from multiprocessing.context import TimeoutError
 from typing import Any
 
 from tqdm import tqdm
@@ -21,7 +20,6 @@ def _document_chunk_iterator(
     document: str,
     max_char_buffer: int,
     tokenizer: tokenizer_lib.Tokenizer | None,
-    chunking_timeout: float,
 ) -> tuple[core.TextChunk, ...]:
     """Iterates over documents to return text chunks along with the document ID.
 
@@ -29,25 +27,22 @@ def _document_chunk_iterator(
         documents: A sequence of Document objects.
         max_char_buffer: The maximum character buffer size for the ChunkIterator.
         tokenizer: Optional tokenizer instance.
-        chunking_timeout: Number of seconds after which to raise the TimeoutError.
 
     Returns:
         TextChunk containing document ID for a corresponding document.
 
     Raises:
-        TimeoutError: If the chunks cannot be returned within the timeout,
-            a TimeoutError is raised
         InvalidDocumentError: If restrict_repeats is True and the same document ID
             is visited more than once. Valid documents prior to the error will be
             returned.
     """
-    chunks = core.ChunkIterator(
-        document,
-        max_char_buffer=max_char_buffer,
-        tokenizer_impl=tokenizer or tokenizer_lib.RegexTokenizer(),
+    return tuple(
+        core.ChunkIterator(
+            document,
+            max_char_buffer=max_char_buffer,
+            tokenizer_impl=tokenizer or tokenizer_lib.RegexTokenizer(),
+        )
     )
-    with Pool(1) as p:
-        return p.apply_async(func=tuple, args=(chunks,)).get(timeout=chunking_timeout)
 
 
 class ChunkingExtractor:
@@ -64,7 +59,6 @@ class ChunkingExtractor:
         tokenizer: tokenizer to use for chunking
         max_char_buffer: Max chunk size in characters
         verbose: Adds verbose logging
-        chunking_timeout: Time after which chunking is cancelled because of gibberish input
         **kwargs: Additional keyword arguments passed to the base extraction function.
     """
 
@@ -75,7 +69,6 @@ class ChunkingExtractor:
         tokenizer: tokenizer_lib.Tokenizer | None = None,
         max_char_buffer: int = 20000,
         verbose: bool = False,
-        chunking_timeout: int = 3600,
         **kwargs,
     ):
         self.aggregator = aggregator
@@ -84,7 +77,6 @@ class ChunkingExtractor:
         self.tokenizer = tokenizer
         self.max_char_buffer = max_char_buffer
         self.verbose = verbose
-        self.chunking_timeout = chunking_timeout
 
     def __call__(self, *args, **kwargs) -> dict[str, Any]:
         text = kwargs.pop("text", None)
@@ -102,26 +94,11 @@ class ChunkingExtractor:
             "truncate_user_message_formatted": None,
         }
 
-        try:
-            chunks = _document_chunk_iterator(
-                text,
-                self.max_char_buffer,
-                self.tokenizer,
-                self.chunking_timeout,
-            )
-        except TimeoutError as e:
-            logger.error(f"document {text_id} timed out during chunking")
-            out = SingleExtractionResult()
-            error_msg_short, error_msg_long = exception2error_msg(e)
-            out["errors"].append(error_msg_short)
-            out["errors_long"].append(error_msg_long)
-
-            err_result: dict[str, Any] = {
-                "structured": out.structured,
-            }
-            for field in self.return_as_list:
-                err_result[f"{field}_list"] = [out.get(field, None)]
-            return err_result
+        chunks = _document_chunk_iterator(
+            text,
+            self.max_char_buffer,
+            self.tokenizer,
+        )
 
         if current_kwargs.get("llm", dict()) == dict():
             logging.info(f"{str(len(chunks)).rjust(4, ' ')} chunks in document {args[-1]}")
