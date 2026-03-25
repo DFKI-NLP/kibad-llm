@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 def _document_chunk_iterator(
     document: str,
     max_char_buffer: int,
-    tokenizer: tokenizer_lib.Tokenizer | None,
+    tokenizer: tokenizer_lib.Tokenizer | None = None,
 ) -> tuple[core.TextChunk, ...]:
     """Iterates over documents to return text chunks along with the document ID.
 
@@ -95,9 +95,9 @@ class ChunkingExtractor:
         }
 
         chunks = _document_chunk_iterator(
-            text,
-            self.max_char_buffer,
-            self.tokenizer,
+            document=text,
+            max_char_buffer=self.max_char_buffer,
+            tokenizer=self.tokenizer,
         )
 
         if current_kwargs.get("llm", dict()) == dict():

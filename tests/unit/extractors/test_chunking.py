@@ -60,7 +60,6 @@ def test_full_document() -> None:
     chunks: tuple[TextChunk, ...] = _document_chunk_iterator(
         document=document["text"],
         max_char_buffer=20000,
-        tokenizer=None,
     )
     chunk_texts = [chunk.chunk_text for chunk in chunks]
     assert chunk_texts == document["chunk_texts"]
@@ -80,7 +79,6 @@ def test_various_too_large_token() -> None:
     chunks: tuple[TextChunk, ...] = _document_chunk_iterator(
         input_text,
         max_char_buffer=50,
-        tokenizer=None,
     )
     chunk_texts = [chunk.chunk_text for chunk in chunks]
     assert chunk_texts == [
@@ -124,7 +122,6 @@ def test_chunk_word_granularity() -> None:
     chunks: tuple[TextChunk, ...] = _document_chunk_iterator(
         document=input_text,
         max_char_buffer=40,
-        tokenizer=None,
     )
 
     chunk_texts = [chunk.chunk_text for chunk in chunks]
@@ -147,7 +144,6 @@ def test_simple_too_large_token() -> None:
     chunks: tuple[TextChunk, ...] = _document_chunk_iterator(
         document=input_text,
         max_char_buffer=20,
-        tokenizer=None,
     )
 
     chunk_texts = [chunk.chunk_text for chunk in chunks]
@@ -170,7 +166,6 @@ def test_chunk_sentence_granularity() -> None:
     chunks: tuple[TextChunk, ...] = _document_chunk_iterator(
         document=input_text,
         max_char_buffer=60,
-        tokenizer=None,
     )
 
     chunk_texts = [chunk.chunk_text for chunk in chunks]
