@@ -24,9 +24,6 @@ _target_: kibad_llm.extractors.ChunkingExtractor
 # values are calculated with regards to gpt_oss_20b, using the heuristic of 5 characters per token
 max_char_buffer: 20000
 
-# if chunking is taking longer than an hour, something must be wrong with the text. so, we skip it
-chunking_timeout: 3600
-
 # the tokenizer ensures that any chunk produced is split at sane points.
 # whilst this tokenizer won't match the llms tokenizer, it ensures "more sensible" chunks.
 # for more details on how the tokenizer works, please refer to the docstring of ChunkIterator.

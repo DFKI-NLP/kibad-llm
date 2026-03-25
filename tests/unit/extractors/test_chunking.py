@@ -1,10 +1,33 @@
 """
 These tests take care of the chunking extractor as well as the chunking_utils
 that are used by it.
+
+To create the fixture 25ABQZIH.pdf.json for testing:
+```python
+import json
+from pathlib import Path
+from kibad_llm.extractors.chunking import _document_chunk_iterator
+from kibad_llm.extractors.chunking_utils.core import TextChunk
+from pathlib import Path
+
+SRC_PATH = Path("./tests/fixtures/markdown/25ABQZIH.pdf.json")
+DEST_PATH = Path("./tests/fixtures/chunking/25ABQZIH.pdf.json")
+document = json.loads(SRC_PATH.read_text())
+
+chunks: tuple[TextChunk, ...] = _document_chunk_iterator(
+    document["text"],
+    200,
+    None,
+)
+
+chunk_texts = [chunk.chunk_text for chunk in chunks]
+document["chunk_texts"] = chunk_texts
+
+DEST_PATH.write_text(json.dumps(document, indent=2, ensure_ascii=False))
+```
 """
 
 import json
-from multiprocessing.context import TimeoutError
 from pathlib import Path
 import textwrap
 from typing import TypedDict
@@ -37,9 +60,9 @@ def test_full_document() -> None:
         Path(FIXTURE_DATA).joinpath("25ABQZIH.pdf.json").read_text()
     )
     chunks: tuple[TextChunk, ...] = _document_chunk_iterator(
-        document["text"],
-        20000,
-        None,
+        document=document["text"],
+        max_char_buffer=20000,
+        tokenizer=None,
     )
     chunk_texts = [chunk.chunk_text for chunk in chunks]
     assert chunk_texts == document["chunk_texts"]
@@ -70,9 +93,9 @@ def test_first_token_too_long() -> None:
         "normal sentence here. the end.",  # 30 chars
     ]
     chunks: tuple[TextChunk, ...] = _document_chunk_iterator(
-        " ".join(input_text),
-        50,
-        None,
+        document=" ".join(input_text),
+        max_char_buffer=50,
+        tokenizer=None,
     )
     chunk_texts = [chunk.chunk_text for chunk in chunks]
     assert chunk_texts == input_text
@@ -107,9 +130,9 @@ def test_chunk_case_a() -> None:
     ]
 
     chunks: tuple[TextChunk, ...] = _document_chunk_iterator(
-        input_text,
-        40,
-        None,
+        document=input_text,
+        max_char_buffer=40,
+        tokenizer=None,
     )
 
     chunk_texts = [chunk.chunk_text for chunk in chunks]
@@ -137,9 +160,9 @@ def test_chunk_case_b() -> None:
     ]
 
     chunks: tuple[TextChunk, ...] = _document_chunk_iterator(
-        input_text,
-        20,
-        None,
+        document=input_text,
+        max_char_buffer=20,
+        tokenizer=None,
     )
 
     chunk_texts = [chunk.chunk_text for chunk in chunks]
@@ -166,9 +189,9 @@ def test_chunk_case_c() -> None:
     ]
 
     chunks: tuple[TextChunk, ...] = _document_chunk_iterator(
-        input_text,
-        60,
-        None,
+        document=input_text,
+        max_char_buffer=60,
+        tokenizer=None,
     )
 
     chunk_texts = [chunk.chunk_text for chunk in chunks]
@@ -204,7 +227,7 @@ def test_multi_sentence_chunk():
 
 
 def test_sentence_with_multiple_newlines_and_right_interval():
-    text = "This is a sentence\n\n" + "This is a longer sentence\n\n" + "Mr\n\nBond\n\nasks why?"
+    text = "This is a sentence\n\nThis is a longer sentence\n\nMr\n\nBond\n\nasks why?"
     tokenized_text = RegexTokenizer().tokenize(text)
     chunk_interval = TokenInterval(start_index=0, end_index=len(tokenized_text.tokens))
     assert get_token_interval_text(tokenized_text, chunk_interval) == text
@@ -319,14 +342,14 @@ def test_chunk_unicode_text():
 def test_newlines_is_secondary_sentence_break():
     text = textwrap.dedent(
         """\
-    Medications:
-    Theophyline (Uniphyl) 600 mg qhs – bronchodilator by increasing cAMP used
-    for treating asthma
-    Diltiazem 300 mg qhs – Ca channel blocker used to control hypertension
-    Simvistatin (Zocor) 20 mg qhs- HMGCo Reductase inhibitor for
-    hypercholesterolemia
-    Ramipril (Altace) 10 mg BID – ACEI for hypertension and diabetes for
-    renal protective effect"""
+        Medications:
+        Theophyline (Uniphyl) 600 mg qhs – bronchodilator by increasing cAMP used
+        for treating asthma
+        Diltiazem 300 mg qhs – Ca channel blocker used to control hypertension
+        Simvistatin (Zocor) 20 mg qhs- HMGCo Reductase inhibitor for
+        hypercholesterolemia
+        Ramipril (Altace) 10 mg BID – ACEI for hypertension and diabetes for
+        renal protective effect"""
     )
     tokenized_text = RegexTokenizer().tokenize(text)
     chunk_iter = ChunkIterator(
@@ -338,10 +361,10 @@ def test_newlines_is_secondary_sentence_break():
     first_chunk = next(chunk_iter)
     expected_first_chunk_text = textwrap.dedent(
         """\
-    Medications:
-    Theophyline (Uniphyl) 600 mg qhs – bronchodilator by increasing cAMP used
-    for treating asthma
-    Diltiazem 300 mg qhs – Ca channel blocker used to control hypertension"""
+        Medications:
+        Theophyline (Uniphyl) 600 mg qhs – bronchodilator by increasing cAMP used
+        for treating asthma
+        Diltiazem 300 mg qhs – Ca channel blocker used to control hypertension"""
     )
     assert (
         get_token_interval_text(tokenized_text, first_chunk.token_interval)
@@ -353,10 +376,10 @@ def test_newlines_is_secondary_sentence_break():
     second_chunk = next(chunk_iter)
     expected_second_chunk_text = textwrap.dedent(
         """\
-    Simvistatin (Zocor) 20 mg qhs- HMGCo Reductase inhibitor for
-    hypercholesterolemia
-    Ramipril (Altace) 10 mg BID – ACEI for hypertension and diabetes for
-    renal protective effect"""
+        Simvistatin (Zocor) 20 mg qhs- HMGCo Reductase inhibitor for
+        hypercholesterolemia
+        Ramipril (Altace) 10 mg BID – ACEI for hypertension and diabetes for
+        renal protective effect"""
     )
     assert (
         get_token_interval_text(tokenized_text, second_chunk.token_interval)
