@@ -1,15 +1,10 @@
 import logging
-from multiprocessing import Pool
 from typing import Any
 
 from tqdm import tqdm
 
 from .aggregation_utils import Aggregator
-from .base import (
-    SingleExtractionResult,
-    exception2error_msg,
-    extract_from_text_lenient,
-)
+from .base import extract_from_text_lenient
 from .chunking_utils import core
 from .chunking_utils import tokenizers as tokenizer_lib
 
