@@ -1,7 +1,0 @@
-- dataset.predictions.log=logs/380_faktencheck_core/predict/multiruns/2026-03-11_16-30-57/1
-- name=387_faktencheck_core
-- experiment/evaluate=faktencheck_confusion_matrix
-- dataset.references.file=../interim/faktencheck-db/faktenscheck_core_corrected_reference_null.jsonl
-- metric.field=ecosystem_type.term
-- +metric.flatten_dicts=True
-- prediction_logs=logs/380_faktencheck_core/predict

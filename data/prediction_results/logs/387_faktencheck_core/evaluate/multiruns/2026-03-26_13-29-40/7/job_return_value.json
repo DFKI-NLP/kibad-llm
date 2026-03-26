@@ -1,0 +1,159 @@
+{
+  "Anthropogene Rohbodenstandorte und Ruderalfluren": {
+    "UNDETECTED": 2
+  },
+  "Bauwerke": {
+    "UNDETECTED": 6
+  },
+  "Benthal der Nordsee": {
+    "Benthal der Nordsee": 1,
+    "UNDETECTED": 13
+  },
+  "Benthal der Ostsee": {
+    "UNDETECTED": 8
+  },
+  "Feldgehölze, Gebüsche, Hecken und Gehölzkulturen": {
+    "UNDETECTED": 10
+  },
+  "Fels- und Steilküsten": {
+    "UNDETECTED": 1
+  },
+  "Felsen, Block- und Schutthalden, Geröllfelder, offene Bereiche mit sandigem oder bindigem Substrat": {
+    "UNDETECTED": 4
+  },
+  "Fließende Gewässer": {
+    "Fließende Gewässer": 3,
+    "UNDETECTED": 21
+  },
+  "Gebirgsrasen (subalpin bis alpin)": {
+    "UNDETECTED": 2
+  },
+  "Gewässer (subalpin bis alpin)": {
+    "UNDETECTED": 1
+  },
+  "Grundwasser und Höhlengewässer": {
+    "UNDETECTED": 5
+  },
+  "Grün- und Freiflächen": {
+    "UNDETECTED": 3
+  },
+  "Grünland nasser bis feuchter Standorte": {
+    "UNDETECTED": 2
+  },
+  "Hoch-, Zwischen- und Übergangsmoore": {
+    "UNDETECTED": 2
+  },
+  "Höhlen (einschließlich Stollen, Brunnenschächte etc.)": {
+    "UNDETECTED": 2
+  },
+  "Kleine, unbefestigte Freiflächen des besiedelten Bereiches": {
+    "UNDETECTED": 3
+  },
+  "Küstendünen": {
+    "Küstendünen": 1,
+    "UNDETECTED": 4
+  },
+  "Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent)": {
+    "Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent)": 3,
+    "UNDETECTED": 10
+  },
+  "Nadel(Misch)Wälder und -Forste": {
+    "Nadel(Misch)Wälder und -Forste": 1,
+    "UNDETECTED": 9
+  },
+  "Pelagial der Nordsee": {
+    "Pelagial der Nordsee": 2,
+    "UNDETECTED": 7
+  },
+  "Pelagial der Ostsee": {
+    "UNDETECTED": 12
+  },
+  "Quellen (inklusive Quellabfluss (Krenal))": {
+    "UNDETECTED": 1
+  },
+  "Rohbodenstandorte und Ruderalfluren": {
+    "UNDETECTED": 1
+  },
+  "Röhrichte (ohne Brackwasserröhrichte)": {
+    "UNDETECTED": 2
+  },
+  "Salzgrünland der Nordsee": {
+    "UNDETECTED": 1
+  },
+  "Salzgrünland der Nordseeküste (Supralitoral)": {
+    "UNDETECTED": 4
+  },
+  "Salzgrünland der Ostsee": {
+    "UNDETECTED": 1
+  },
+  "Stehende Gewässer": {
+    "Stehende Gewässer": 1,
+    "UNDETECTED": 12
+  },
+  "Sände, Sand-, Geröll- und Blockstrände": {
+    "UNDETECTED": 6
+  },
+  "Trockenrasen sowie Grünland trockener bis frischer Standorte": {
+    "Trockenrasen sowie Grünland trockener bis frischer Standorte": 1,
+    "UNDETECTED": 17
+  },
+  "UNASSIGNABLE": {
+    "Bauwerke": 1,
+    "Benthal der Nordsee": 1,
+    "Feldgehölze, Gebüsche, Hecken und Gehölzkulturen": 2,
+    "Fließende Gewässer": 2,
+    "Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent)": 1,
+    "Nadel(Misch)Wälder und -Forste": 1,
+    "Pelagial der Nordsee": 1,
+    "Pelagial der Ostsee": 1,
+    "Salzgrünland der Nordseeküste (Supralitoral)": 1,
+    "Salzgrünland, Brackwasserröhrichte und -Hochstaudenfluren des Geolitorals der Ostseeküste": 3,
+    "Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte": 1,
+    "Waldmäntel und Vorwälder, spezielle Waldnutzungsformen": 11,
+    "Äcker und Ackerbrachen": 17
+  },
+  "Verkehrsanlagen und Plätze": {
+    "UNDETECTED": 4
+  },
+  "Wald- und Ufersäume, Staudenfluren": {
+    "UNDETECTED": 3
+  },
+  "Waldfreie Niedermoore und Sümpfe": {
+    "UNDETECTED": 1
+  },
+  "Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte": {
+    "UNDETECTED": 9
+  },
+  "Waldmäntel und Vorwälder, spezielle Waldnutzungsformen": {
+    "UNDETECTED": 1,
+    "Waldmäntel und Vorwälder, spezielle Waldnutzungsformen": 1
+  },
+  "Zwergstrauchheiden": {
+    "UNDETECTED": 1
+  },
+  "Äcker und Ackerbrachen": {
+    "UNDETECTED": 26,
+    "Äcker und Ackerbrachen": 9
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/380_faktencheck_core/2026-03-11_16-30-57/2026-03-11_20-43-11_237491/predictions.jsonl",
+      "output_file_absolute": "/netscratch/binder/tmp/kiba-d_66fd30bc-c8ef-42d5-b670-0644beb7bf52/repo/predictions/380_faktencheck_core/2026-03-11_16-30-57/2026-03-11_20-43-11_237491/predictions.jsonl",
+      "time_pdf_conversion": 0.003070291131734848,
+      "time_extraction": 2541.0073373159394,
+      "time_start": 1773258191,
+      "time_end": 1773260829,
+      "commit_hash": "ba4177888275db7c8dc2ddf46678dde450aa11f4",
+      "branch": "commit/ba4177888275",
+      "is_dirty": false,
+      "slurm_job_id": "2616389"
+    },
+    "overrides": {
+      "name": "380_faktencheck_core",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gemma3_27b_in_process",
+      "seed": "7331"
+    }
+  }
+}
