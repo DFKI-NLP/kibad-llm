@@ -46,7 +46,11 @@ class ChunkingExtractor:
     (for each chunk in the document) on the same input text,
     passing some previous context to each subsequent call.
 
-    Pass llm=None to get the number of chunks per document without inference.
+    Pass llm=None with verbose=True to get the number of chunks per document without inference.
+
+    WARNING:
+    If a Token that is greater than max_char_buffer is encountered, it becomes its own chunk.
+    This edge case can produce chunks that are larger than max_char_buffer would allow.
 
     Args:
         aggregator: Method to aggregate the llm output for the individual chunks before returning
