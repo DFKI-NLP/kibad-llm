@@ -1,0 +1,51 @@
+{
+  "I Biotoptypengruppen der Meere und Küsten": {
+    "I Biotoptypengruppen der Meere und Küsten": 7,
+    "UNDETECTED": 30
+  },
+  "II Biotoptypengruppen der Binnengewässer": {
+    "II Biotoptypengruppen der Binnengewässer": 9,
+    "UNDETECTED": 18
+  },
+  "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes": {
+    "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes": 26,
+    "UNDETECTED": 31
+  },
+  "IV Technische Biotoptypengruppen": {
+    "UNDETECTED": 8
+  },
+  "UNASSIGNABLE": {
+    "I Biotoptypengruppen der Meere und Küsten": 2,
+    "II Biotoptypengruppen der Binnengewässer": 23,
+    "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes": 5,
+    "VI Weitere": 3
+  },
+  "V Biotoptypengruppen mit Schwerpunkt in den Alpen": {
+    "UNDETECTED": 4
+  },
+  "VI Weitere": {
+    "UNDETECTED": 6,
+    "VI Weitere": 1
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/380_faktencheck_core/2026-03-11_16-30-57/2026-03-12_00-23-58_016877/predictions.jsonl",
+      "output_file_absolute": "/netscratch/binder/tmp/kiba-d_66fd30bc-c8ef-42d5-b670-0644beb7bf52/repo/predictions/380_faktencheck_core/2026-03-11_16-30-57/2026-03-12_00-23-58_016877/predictions.jsonl",
+      "time_pdf_conversion": 0.003658283967524767,
+      "time_extraction": 4809.623311639996,
+      "time_start": 1773271438,
+      "time_end": 1773276426,
+      "commit_hash": "ba4177888275db7c8dc2ddf46678dde450aa11f4",
+      "branch": "commit/ba4177888275",
+      "is_dirty": false,
+      "slurm_job_id": "2616389"
+    },
+    "overrides": {
+      "name": "380_faktencheck_core",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "mistral_small_3_24b_in_process",
+      "seed": "42"
+    }
+  }
+}

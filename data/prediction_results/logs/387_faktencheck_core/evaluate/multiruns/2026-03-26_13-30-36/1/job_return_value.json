@@ -1,0 +1,111 @@
+{
+  "Amphibien und Reptilien": {
+    "Amphibien und Reptilien": 3,
+    "UNDETECTED": 6
+  },
+  "Andere": {
+    "Andere": 3,
+    "UNDETECTED": 9
+  },
+  "Andere Pflanzen": {
+    "Andere Pflanzen": 3,
+    "UNDETECTED": 11
+  },
+  "Andere Wirbellose": {
+    "Andere Wirbellose": 12,
+    "UNDETECTED": 17
+  },
+  "Archaeen": {
+    "Archaeen": 2,
+    "UNDETECTED": 3
+  },
+  "Bakterien": {
+    "Bakterien": 5,
+    "UNDETECTED": 6
+  },
+  "Baktierien": {
+    "UNDETECTED": 1
+  },
+  "Fische": {
+    "Fische": 8,
+    "UNDETECTED": 13
+  },
+  "Flechten": {
+    "UNDETECTED": 2
+  },
+  "Gefäßpflanze": {
+    "UNDETECTED": 1
+  },
+  "Gefäßpflanzen": {
+    "Gefäßpflanzen": 10,
+    "UNDETECTED": 23
+  },
+  "Gefäßplanzen": {
+    "UNDETECTED": 1
+  },
+  "Insekten": {
+    "Insekten": 11,
+    "UNDETECTED": 12
+  },
+  "Moose": {
+    "UNDETECTED": 4
+  },
+  "Pilze": {
+    "Pilze": 2,
+    "UNDETECTED": 4
+  },
+  "Protisten": {
+    "Protisten": 1,
+    "UNDETECTED": 3
+  },
+  "Protozoen": {
+    "UNDETECTED": 2
+  },
+  "Säuger": {
+    "UNDETECTED": 1
+  },
+  "Säugetiere": {
+    "Säugetiere": 5,
+    "UNDETECTED": 9
+  },
+  "UNASSIGNABLE": {
+    "Andere": 11,
+    "Andere Pflanzen": 6,
+    "Andere Wirbellose": 2,
+    "Bakterien": 1,
+    "Fische": 1,
+    "Flechten": 1,
+    "Insekten": 1,
+    "Moose": 1,
+    "Pilze": 1,
+    "Protisten": 1,
+    "Protozoen": 1,
+    "Säugetiere": 5,
+    "Vögel": 3
+  },
+  "Vögel": {
+    "UNDETECTED": 13,
+    "Vögel": 7
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/380_faktencheck_core/2026-03-11_16-30-57/2026-03-11_17-23-52_338540/predictions.jsonl",
+      "output_file_absolute": "/netscratch/binder/tmp/kiba-d_66fd30bc-c8ef-42d5-b670-0644beb7bf52/repo/predictions/380_faktencheck_core/2026-03-11_16-30-57/2026-03-11_17-23-52_338540/predictions.jsonl",
+      "time_pdf_conversion": 0.0033097441773861647,
+      "time_extraction": 2535.85379507998,
+      "time_start": 1773246232,
+      "time_end": 1773248833,
+      "commit_hash": "ba4177888275db7c8dc2ddf46678dde450aa11f4",
+      "branch": "commit/ba4177888275",
+      "is_dirty": false,
+      "slurm_job_id": "2616389"
+    },
+    "overrides": {
+      "name": "380_faktencheck_core",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gpt_oss_20b_in_process",
+      "seed": "1337"
+    }
+  }
+}

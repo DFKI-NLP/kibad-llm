@@ -1,0 +1,10 @@
+|                                       |   Artenvielfalt |   Funktionelle Diversität |   Genetische Diversität |   Habitatdiversität |   UNDETECTED |   Zusammensetzung der Artengemeinschaft |
+|:--------------------------------------|----------------:|--------------------------:|------------------------:|--------------------:|-------------:|----------------------------------------:|
+| Artenvielfalt                         |              28 |                       nan |                     nan |                 nan |           15 |                                     nan |
+| Funktionelle Diversität               |             nan |                         2 |                     nan |                 nan |            5 |                                     nan |
+| Genetische Diversität                 |             nan |                       nan |                       2 |                 nan |            8 |                                     nan |
+| Habitatdiversität                     |             nan |                       nan |                     nan |                   3 |           12 |                                     nan |
+| Phylogenetische Diversität            |             nan |                       nan |                     nan |                 nan |            2 |                                     nan |
+| Strukturelle Diversität               |             nan |                       nan |                     nan |                 nan |            8 |                                     nan |
+| UNASSIGNABLE                          |              37 |                         2 |                     nan |                   2 |          nan |                                       9 |
+| Zusammensetzung der Artengemeinschaft |             nan |                       nan |                     nan |                 nan |           33 |                                      14 |
