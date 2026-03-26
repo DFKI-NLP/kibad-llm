@@ -95,14 +95,11 @@ class ChunkingExtractor:
             tokenizer=self.tokenizer,
         )
 
-        if current_kwargs.get("llm", dict()) == dict():
-            logging.info(f"{str(len(chunks)).rjust(4, ' ')} chunks in document {args[-1]}")
-            current_kwargs["llm"] = None
-
         results = []
         if self.verbose:
             logger.info(f"starting processing for text {text_id}")
             logger.info(f"{text[:100]}[...]{text[100:]}" if len(text) > 200 else text)
+            logging.info(f"{str(len(chunks)).rjust(4, ' ')} chunks in document {args[-1]}")
             # wrapping in tqdm doesn't change the functionality but upsets mypy.
             # hence we need the '# type: ignore' comment
             chunks = tqdm(chunks, desc=text_id)  # type: ignore
