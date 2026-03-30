@@ -9,6 +9,10 @@ description = "Add your description here"
 authors = [{ name = "Your name (or your organization/company/team)" }]
 requires-python = ">=3.10.0"
 readme = "README.md"
+license = "AGPL-3.0-or-later"
+license-files = [
+    "LICENSE",
+]
 classifiers = ["Programming Language :: Python :: 3"]
 dependencies = [
     "pandas>=2.3.3,<3.0.0", # for zotero_download.py
