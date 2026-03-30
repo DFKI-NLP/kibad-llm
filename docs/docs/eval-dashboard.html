@@ -250,7 +250,8 @@
       line-height: 1;
     }
     .header-static-control,
-    .header-select-control {
+    .header-select-control,
+    .header-column-control {
       display: inline-flex;
       flex-direction: column;
       align-items: center;
@@ -261,12 +262,46 @@
       color: var(--muted);
       line-height: 1;
     }
+    .header-sort-button {
+      border: 0;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      padding: 0;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .header-sort-button:hover {
+      color: var(--accent);
+    }
+    .header-sort-button.active {
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .header-sort-indicator {
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1;
+    }
+    .header-sort-button.active .header-sort-indicator {
+      color: inherit;
+    }
     .prediction-actions {
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
       align-items: center;
       margin: 8px 0;
+    }
+    .sort-status-value {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    .sort-status-hint {
+      color: var(--muted);
+      font-size: 0.82rem;
     }
     .prediction-action-button {
       border: 1px solid var(--border);
@@ -751,6 +786,12 @@
     <button id="groupByNoneButton" class="prediction-action-button" type="button">none</button>
     <button id="groupByToggleButton" class="prediction-action-button" type="button">toggle</button>
   </div>
+  <div class="prediction-actions">
+    <strong>Sorted by:</strong>
+    <span id="predictionSortedByLabel" class="sort-status-value">(none)</span>
+    <button id="predictionResetSortButton" class="prediction-action-button" type="button">reset sorting</button>
+    <span class="sort-status-hint">Shift-click column headers to add more sort columns.</span>
+  </div>
   <details class="options-panel">
     <summary class="options-summary">Table display options</summary>
     <div class="options-content">
@@ -799,6 +840,12 @@
     <button id="evalGroupByAllButton" class="prediction-action-button" type="button">all</button>
     <button id="evalGroupByNoneButton" class="prediction-action-button" type="button">none</button>
     <button id="evalGroupByToggleButton" class="prediction-action-button" type="button">toggle</button>
+  </div>
+  <div class="prediction-actions">
+    <strong>Sorted by:</strong>
+    <span id="evalSortedByLabel" class="sort-status-value">(none)</span>
+    <button id="evalResetSortButton" class="prediction-action-button" type="button">reset sorting</button>
+    <span class="sort-status-hint">Shift-click column headers to add more sort columns.</span>
   </div>
   <details class="options-panel">
     <summary class="options-summary">Table display options</summary>
@@ -872,6 +919,7 @@
       runs: [],
       predictionEntries: [],
       predictionColumns: [],
+      predictionSort: [],
       loadedFolders: new Set(),
       selectedGroupIds: new Set(),
       expandedGroupIds: new Set(),
@@ -904,6 +952,8 @@
     const groupByAllButton = document.getElementById("groupByAllButton");
     const groupByNoneButton = document.getElementById("groupByNoneButton");
     const groupByToggleButton = document.getElementById("groupByToggleButton");
+    const predictionSortedByLabel = document.getElementById("predictionSortedByLabel");
+    const predictionResetSortButton = document.getElementById("predictionResetSortButton");
     const optionsTabs = document.getElementById("optionsTabs");
     const truncateColumnsList = document.getElementById("truncateColumnsList");
     const predictionDefaultsPanel = document.getElementById("predictionDefaultsPanel");
@@ -915,6 +965,8 @@
     const evalGroupByAllButton = document.getElementById("evalGroupByAllButton");
     const evalGroupByNoneButton = document.getElementById("evalGroupByNoneButton");
     const evalGroupByToggleButton = document.getElementById("evalGroupByToggleButton");
+    const evalSortedByLabel = document.getElementById("evalSortedByLabel");
+    const evalResetSortButton = document.getElementById("evalResetSortButton");
     const evalOptionsTabs = document.getElementById("evalOptionsTabs");
     const evalTruncateColumnsList = document.getElementById("evalTruncateColumnsList");
     const evalDefaultsPanel = document.getElementById("evalDefaultsPanel");
@@ -942,6 +994,8 @@
     const evalPlotContent = document.getElementById("evalPlotContent");
     const barTooltip = document.getElementById("barTooltip");
     const GITHUB_TOKEN_STORAGE_KEY = "evalDashboard.githubToken";
+    const SORTABLE_CONTROL_COLUMNS = new Set(["expand", "select", "group_size"]);
+    const sortCollator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
 
     function showBarTooltip(event, lines) {
       barTooltip.textContent = lines.join("\n");
@@ -1299,6 +1353,7 @@
         state.evalTabStates[experiment] = {
           knownColumns: [...evalColumns],
           groupByFields: getDefaultEvalGroupByFields(evalColumns),
+          sort: [],
           truncateEnabledColumns: new Set(),
           defaultValues: {},
           activeOptionsTab: "truncate",
@@ -1333,6 +1388,8 @@
           (field) => known.has(field) || field === "eval_run_dir"
         )
       );
+      const validSortColumns = new Set([...SORTABLE_CONTROL_COLUMNS, ...known, "eval_run_dir"]);
+      tabState.sort = normalizeSortConfig(tabState.sort, validSortColumns);
       if (!tabState.activeOptionsTab) {
         tabState.activeOptionsTab = "truncate";
       }
@@ -1372,6 +1429,26 @@
         (column) => !evalTabState.groupByFields.includes(column)
       );
       setActiveEvalGroupByFields(nextGroupByFields);
+    });
+
+    predictionResetSortButton.addEventListener("click", () => {
+      if (!normalizeSortConfig(state.predictionSort).length) {
+        return;
+      }
+      state.predictionSort = [];
+      renderPredictions();
+    });
+
+    evalResetSortButton.addEventListener("click", () => {
+      if (!state.activeEvalTab) {
+        return;
+      }
+      const evalTabState = ensureEvalTabState(state.activeEvalTab, getActiveEvalOverrideColumns());
+      if (!normalizeSortConfig(evalTabState.sort).length) {
+        return;
+      }
+      evalTabState.sort = [];
+      renderEvaluations();
     });
 
     function renderTruncateControls() {
@@ -1658,6 +1735,233 @@
       return String(value);
     }
 
+    function getDefaultSortDirection(column) {
+      return SORTABLE_CONTROL_COLUMNS.has(column) ? "desc" : "asc";
+    }
+
+    function normalizeSortConfig(sortConfig, validColumns = null) {
+      const sourceClauses = Array.isArray(sortConfig)
+        ? sortConfig
+        : sortConfig?.column
+          ? [sortConfig]
+          : [];
+      const allowedColumns = validColumns ? new Set(validColumns) : null;
+      const normalizedClauses = [];
+      const seenColumns = new Set();
+      for (const clause of sourceClauses) {
+        if (!clause || typeof clause.column !== "string") {
+          continue;
+        }
+        if (clause.direction !== "asc" && clause.direction !== "desc") {
+          continue;
+        }
+        if (allowedColumns && !allowedColumns.has(clause.column)) {
+          continue;
+        }
+        if (seenColumns.has(clause.column)) {
+          continue;
+        }
+        seenColumns.add(clause.column);
+        normalizedClauses.push({ column: clause.column, direction: clause.direction });
+      }
+      return normalizedClauses;
+    }
+
+
+    function getSortColumnLabel(column, displayColumnName) {
+      if (column === "group_size") {
+        return "group size";
+      }
+      if (column === "select") {
+        return "selected";
+      }
+      if (column === "expand") {
+        return "expanded";
+      }
+      return displayColumnName(column);
+    }
+
+    function formatSortLabel(sortConfig, displayColumnName) {
+      const activeSorts = normalizeSortConfig(sortConfig);
+      if (!activeSorts.length) {
+        return "(none)";
+      }
+      return activeSorts.map((clause, index) => (
+        `${getSortColumnLabel(clause.column, displayColumnName)} ${clause.direction === "desc" ? "↓" : "↑"}` +
+        (activeSorts.length > 1 ? ` (${index + 1})` : "")
+      )).join(", ");
+    }
+
+    function getNextSortDirection(currentDirection, column) {
+      const defaultDirection = getDefaultSortDirection(column);
+      if (!currentDirection) {
+        return defaultDirection;
+      }
+      return currentDirection === defaultDirection
+        ? defaultDirection === "asc" ? "desc" : "asc"
+        : null;
+    }
+
+    function getNextSortConfig(currentSort, column, { append = false } = {}) {
+      const currentSorts = normalizeSortConfig(currentSort);
+      const currentIndex = currentSorts.findIndex((clause) => clause.column === column);
+      const currentDirection = currentIndex === -1 ? null : currentSorts[currentIndex].direction;
+      const nextDirection = getNextSortDirection(currentDirection, column);
+      if (!append) {
+        return nextDirection ? [{ column, direction: nextDirection }] : [];
+      }
+      if (currentIndex === -1) {
+        return nextDirection ? [...currentSorts, { column, direction: nextDirection }] : currentSorts;
+      }
+      if (!nextDirection) {
+        return currentSorts.filter((clause) => clause.column !== column);
+      }
+      const nextSorts = [...currentSorts];
+      nextSorts[currentIndex] = { column, direction: nextDirection };
+      return nextSorts;
+    }
+
+    function parseSortableNumber(value) {
+      const normalized = normalizeValue(value).trim();
+      if (!/^[+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?$/i.test(normalized)) {
+        return null;
+      }
+      const numericValue = Number(normalized);
+      return Number.isFinite(numericValue) ? numericValue : null;
+    }
+
+    function compareSortableValues(a, b) {
+      const normalizedA = normalizeValue(a).trim();
+      const normalizedB = normalizeValue(b).trim();
+      const isBlankA = normalizedA === "";
+      const isBlankB = normalizedB === "";
+      if (isBlankA || isBlankB) {
+        if (isBlankA && isBlankB) {
+          return 0;
+        }
+        return isBlankA ? 1 : -1;
+      }
+
+      const numericA = parseSortableNumber(normalizedA);
+      const numericB = parseSortableNumber(normalizedB);
+      if (numericA !== null && numericB !== null) {
+        return numericA - numericB;
+      }
+
+      return sortCollator.compare(normalizedA, normalizedB);
+    }
+
+    function sortItems(items, sortConfig, valueGetter) {
+      const normalizedSorts = normalizeSortConfig(sortConfig);
+      if (!normalizedSorts.length) {
+        return [...items];
+      }
+      return items
+        .map((item, index) => ({ item, index }))
+        .sort((left, right) => {
+          for (const clause of normalizedSorts) {
+            const comparison = compareSortableValues(
+              valueGetter(left.item, clause.column),
+              valueGetter(right.item, clause.column)
+            );
+            if (comparison !== 0) {
+              return comparison * (clause.direction === "desc" ? -1 : 1);
+            }
+          }
+          return left.index - right.index;
+        })
+        .map(({ item }) => item);
+    }
+
+    function getAriaSort(sortConfig, column) {
+      const primarySort = normalizeSortConfig(sortConfig)[0];
+      if (!primarySort || primarySort.column !== column) {
+        return "none";
+      }
+      return primarySort.direction === "desc" ? "descending" : "ascending";
+    }
+
+    function getSortPriority(sortConfig, column) {
+      const priority = normalizeSortConfig(sortConfig).findIndex((clause) => clause.column === column);
+      return priority === -1 ? 0 : priority + 1;
+    }
+
+    function createSortButton({ label, column, sortConfig, onToggle }) {
+      const normalizedSorts = normalizeSortConfig(sortConfig);
+      const priority = getSortPriority(normalizedSorts, column);
+      const isActive = priority > 0;
+      const activeClause = isActive ? normalizedSorts[priority - 1] : null;
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "header-sort-button" + (isActive ? " active" : "");
+      const totalActiveSorts = normalizedSorts.length;
+      const nextSingleSort = getNextSortConfig(normalizedSorts, column);
+      const singleActionText = nextSingleSort.length
+        ? `sort only by ${label} ${nextSingleSort[0].direction === "asc" ? "ascending" : "descending"}`
+        : `clear sorting for ${label}`;
+      button.title = `Click: ${singleActionText}. Shift-click: add, toggle, or remove ${label} in multi-column sorting.`;
+      button.setAttribute(
+        "aria-label",
+        isActive
+          ? `${label}, sort priority ${priority}, ${activeClause.direction === "asc" ? "ascending" : "descending"}`
+          : `${label}, not sorted`
+      );
+      button.addEventListener("click", (event) => {
+        event.stopPropagation();
+        onToggle(event);
+      });
+
+      const labelSpan = document.createElement("span");
+      labelSpan.textContent = label;
+      const indicator = document.createElement("span");
+      indicator.className = "header-sort-indicator";
+      indicator.textContent = !isActive
+        ? "↕"
+        : `${activeClause.direction === "asc" ? "▲" : "▼"}${totalActiveSorts > 1 ? priority : ""}`;
+      indicator.setAttribute("aria-hidden", "true");
+
+      button.appendChild(labelSpan);
+      button.appendChild(indicator);
+      return button;
+    }
+
+    function setPredictionSort(column, event = {}) {
+      state.predictionSort = getNextSortConfig(state.predictionSort, column, { append: event.shiftKey });
+      renderPredictions();
+    }
+
+    function setEvalSort(column, event = {}) {
+      if (!state.activeEvalTab) {
+        return;
+      }
+      const evalTabState = ensureEvalTabState(state.activeEvalTab, getActiveEvalOverrideColumns());
+      evalTabState.sort = getNextSortConfig(evalTabState.sort, column, { append: event.shiftKey });
+      renderEvaluations();
+    }
+
+    function renderPredictionSortStatus() {
+      const validSortColumns = new Set([...SORTABLE_CONTROL_COLUMNS, ...state.predictionColumns]);
+      state.predictionSort = normalizeSortConfig(state.predictionSort, validSortColumns);
+      predictionSortedByLabel.textContent = formatSortLabel(
+        state.predictionSort,
+        displayPredictionColumnName
+      );
+      predictionResetSortButton.disabled = !state.predictionSort.length;
+    }
+
+    function renderEvalSortStatus(activeExperiment = state.activeEvalTab, evalColumns = getActiveEvalOverrideColumns()) {
+      if (!activeExperiment) {
+        evalSortedByLabel.textContent = formatSortLabel([], displayEvalColumnName);
+        evalResetSortButton.disabled = true;
+        return;
+      }
+      const evalTabState = ensureEvalTabState(activeExperiment, evalColumns);
+      const validSortColumns = new Set([...SORTABLE_CONTROL_COLUMNS, ...evalColumns, "eval_run_dir"]);
+      evalTabState.sort = normalizeSortConfig(evalTabState.sort, validSortColumns);
+      evalSortedByLabel.textContent = formatSortLabel(evalTabState.sort, displayEvalColumnName);
+      evalResetSortButton.disabled = !evalTabState.sort.length;
+    }
+
     function flattenObject(obj, prefix = "", out = {}) {
       if (!obj || typeof obj !== "object") {
         return out;
@@ -1781,6 +2085,7 @@
       state.predictionColumns = Array.from(predictionColumns).sort();
       state.predictionEntries = Array.from(predictionEntriesBySignature.values());
       state.groupByFields = getDefaultGroupByFields(state.predictionColumns);
+      state.predictionSort = [];
       state.truncateEnabledColumns = getDefaultTruncateColumns(state.predictionColumns);
       state.predictionDefaultValues = {};
       state.evalTabStates = {};
@@ -2313,14 +2618,47 @@
       );
     }
 
+    function getPredictionGroupSortValue(group, column) {
+      if (column === "expand") {
+        return state.expandedGroupIds.has(group.groupId) ? 1 : 0;
+      }
+      if (column === "select") {
+        return state.selectedGroupIds.has(group.groupId) ? 1 : 0;
+      }
+      if (column === "group_size") {
+        return group.predictions.length;
+      }
+      return getGroupValueDisplay(group, column);
+    }
+
+    function getPredictionMemberSortValue(predictionEntry, column) {
+      if (column === "group_size") {
+        return predictionEntry.evalRuns.length;
+      }
+      if (SORTABLE_CONTROL_COLUMNS.has(column)) {
+        return "";
+      }
+      return getPredictionEffectiveValue(predictionEntry.predictionMeta, column);
+    }
+
+    function getSortedPredictionGroups() {
+      const validSortColumns = new Set([...SORTABLE_CONTROL_COLUMNS, ...state.predictionColumns]);
+      state.predictionSort = normalizeSortConfig(state.predictionSort, validSortColumns);
+      return sortItems(state.groups, state.predictionSort, getPredictionGroupSortValue);
+    }
+
+    function getSortedPredictionMembers(predictions) {
+      return sortItems(predictions, state.predictionSort, getPredictionMemberSortValue);
+    }
+
     function setSelectedGroupIds(groupIds) {
       state.selectedGroupIds = new Set(groupIds);
       renderPredictions();
       renderEvaluations();
     }
 
-    function getDisplayedSelectionState() {
-      const displayedGroupIds = state.groups.map((group) => group.groupId);
+    function getDisplayedSelectionState(displayedGroups = state.groups) {
+      const displayedGroupIds = displayedGroups.map((group) => group.groupId);
       const selectedCount = displayedGroupIds.filter((groupId) => state.selectedGroupIds.has(groupId)).length;
       return {
         displayedGroupIds,
@@ -2391,6 +2729,7 @@
 
       predictionsTable.innerHTML = "";
       predictionDefaultsList.innerHTML = "";
+      renderPredictionSortStatus();
       if (!state.groups.length) {
         setPanelVisibility(predictionDefaultsPanel, false);
         predictionSummary.textContent = "No predictions found. Load a folder containing evaluate run outputs.";
@@ -2408,18 +2747,23 @@
       renderOptionsTabs();
       renderTruncateControls();
       renderPredictionDefaultControls();
+      const displayedGroups = getSortedPredictionGroups();
 
       const thead = document.createElement("thead");
       const sectionRow = document.createElement("tr");
-      const selectionState = getDisplayedSelectionState();
+      const selectionState = getDisplayedSelectionState(displayedGroups);
       ["expand", "select", "group_size"].forEach((header) => {
         const th = document.createElement("th");
+        th.setAttribute("aria-sort", getAriaSort(state.predictionSort, header));
         if (header === "select") {
           const selectControl = document.createElement("div");
           selectControl.className = "header-select-control";
-          const selectCaption = document.createElement("span");
-          selectCaption.className = "header-caption";
-          selectCaption.textContent = "select";
+          const selectButton = createSortButton({
+            label: "select",
+            column: header,
+            sortConfig: state.predictionSort,
+            onToggle: (event) => setPredictionSort(header, event),
+          });
           const selectAllCheckbox = document.createElement("input");
           selectAllCheckbox.type = "checkbox";
           selectAllCheckbox.checked = selectionState.allSelected;
@@ -2433,18 +2777,20 @@
               setSelectedGroupIds([]);
             }
           });
-          selectAllCheckbox.setAttribute("aria-describedby", "predictions-select-caption");
-          selectCaption.id = "predictions-select-caption";
-          selectControl.appendChild(selectCaption);
+          selectControl.appendChild(selectButton);
           selectControl.appendChild(selectAllCheckbox);
           th.appendChild(selectControl);
         } else {
           const staticControl = document.createElement("div");
           staticControl.className = "header-static-control";
-          const caption = document.createElement("span");
-          caption.className = "header-caption";
-          caption.textContent = header === "group_size" ? "#" : header;
-          staticControl.appendChild(caption);
+          staticControl.appendChild(
+            createSortButton({
+              label: header === "group_size" ? "#" : header,
+              column: header,
+              sortConfig: state.predictionSort,
+              onToggle: (event) => setPredictionSort(header, event),
+            })
+          );
           th.appendChild(staticControl);
         }
         th.rowSpan = 2;
@@ -2462,11 +2808,18 @@
       const columnRow = document.createElement("tr");
       for (const header of orderedPredictionColumns) {
         const th = document.createElement("th");
+        th.setAttribute("aria-sort", getAriaSort(state.predictionSort, header));
         if (state.truncateEnabledColumns.has(header)) {
           th.classList.add("truncate-enabled");
         }
-        const label = document.createElement("div");
-        label.textContent = displayPredictionColumnName(header);
+        const headerControl = document.createElement("div");
+        headerControl.className = "header-column-control";
+        const label = createSortButton({
+          label: displayPredictionColumnName(header),
+          column: header,
+          sortConfig: state.predictionSort,
+          onToggle: (event) => setPredictionSort(header, event),
+        });
 
         const toggle = document.createElement("label");
         toggle.className = "group-toggle";
@@ -2486,15 +2839,16 @@
         });
         toggle.appendChild(toggleCb);
 
-        th.appendChild(label);
-        th.appendChild(toggle);
+        headerControl.appendChild(label);
+        headerControl.appendChild(toggle);
+        th.appendChild(headerControl);
         columnRow.appendChild(th);
       }
       thead.appendChild(columnRow);
       predictionsTable.appendChild(thead);
 
       const tbody = document.createElement("tbody");
-      for (const group of state.groups) {
+      for (const group of displayedGroups) {
         const tr = document.createElement("tr");
 
         const expandTd = document.createElement("td");
@@ -2539,11 +2893,7 @@
         tbody.appendChild(tr);
 
         if (isExpanded) {
-          const sortedMembers = [...group.predictions].sort((a, b) =>
-            getStableObjectSignature(a.predictionMeta).localeCompare(
-              getStableObjectSignature(b.predictionMeta)
-            )
-          );
+          const sortedMembers = getSortedPredictionMembers(group.predictions);
           for (const member of sortedMembers) {
             const memberRow = document.createElement("tr");
             memberRow.className = "member-row";
@@ -2613,6 +2963,47 @@
         map.get(groupId).runs.push(run);
       }
       return Array.from(map.values()).sort((a, b) => b.runs.length - a.runs.length);
+    }
+
+    function getEvaluationGroupSortValue(group, column, evalTabState) {
+      if (column === "expand") {
+        return evalTabState.expandedGroupIds.has(group.groupId) ? 1 : 0;
+      }
+      if (column === "select") {
+        return evalTabState.selectedGroupIds.has(group.groupId) ? 1 : 0;
+      }
+      if (column === "group_size") {
+        return group.runs.length;
+      }
+      if (column === "eval_run_dir") {
+        return getGroupValueDisplayFromRuns(group.runs, (run) => run.runDir);
+      }
+      return getGroupValueDisplayFromRuns(
+        group.runs,
+        (run) => getEvalEffectiveValue(run.evalOverrides, column, evalTabState)
+      );
+    }
+
+    function getEvaluationRunSortValue(run, column, evalTabState) {
+      if (column === "eval_run_dir") {
+        return run.runDir;
+      }
+      if (SORTABLE_CONTROL_COLUMNS.has(column)) {
+        return "";
+      }
+      return getEvalEffectiveValue(run.evalOverrides, column, evalTabState);
+    }
+
+    function getSortedEvaluationGroups(groups, evalTabState) {
+      return sortItems(groups, evalTabState.sort, (group, column) =>
+        getEvaluationGroupSortValue(group, column, evalTabState)
+      );
+    }
+
+    function getSortedEvaluationRuns(runs, evalTabState) {
+      return sortItems(runs, evalTabState.sort, (run, column) =>
+        getEvaluationRunSortValue(run, column, evalTabState)
+      );
     }
 
     function getGroupValueDisplayFromRuns(runs, getter) {
@@ -3661,6 +4052,7 @@
       evalLayout.classList.remove("split");
       renderEvalJsonTabs();
       renderEvalGroupByButtons([]);
+      renderEvalSortStatus(null, []);
       evalJsonTitle.textContent = "";
       evalJsonCode.innerHTML = "";
       evalDefaultsList.innerHTML = "";
@@ -3708,6 +4100,7 @@
 
       const orderedEvalOverrideColumns = Array.from(evalOverrideColumns).sort();
       const evalTabState = ensureEvalTabState(state.activeEvalTab, orderedEvalOverrideColumns);
+      renderEvalSortStatus(state.activeEvalTab, orderedEvalOverrideColumns);
       renderEvalGroupByButtons(orderedEvalOverrideColumns);
       renderEvalOptionsTabs(state.activeEvalTab);
       renderEvalTruncateControls(state.activeEvalTab, orderedEvalOverrideColumns);
@@ -3742,8 +4135,10 @@
         evalTabState.selectedEvalRunDir = null;
       }
 
+      const displayedEvalGroups = getSortedEvaluationGroups(evalGroups, evalTabState);
+
       const evalSelectionState = {
-        displayedGroupIds: evalGroups.map((group) => group.groupId),
+        displayedGroupIds: displayedEvalGroups.map((group) => group.groupId),
       };
       evalSelectionState.selectedCount = evalSelectionState.displayedGroupIds.filter((groupId) =>
         evalTabState.selectedGroupIds.has(groupId)
@@ -3758,12 +4153,16 @@
       const sectionRow = document.createElement("tr");
       ["expand", "select", "group_size"].forEach((header) => {
         const th = document.createElement("th");
+        th.setAttribute("aria-sort", getAriaSort(evalTabState.sort, header));
         if (header === "select") {
           const selectControl = document.createElement("div");
           selectControl.className = "header-select-control";
-          const selectCaption = document.createElement("span");
-          selectCaption.className = "header-caption";
-          selectCaption.textContent = "select";
+          const selectButton = createSortButton({
+            label: "select",
+            column: header,
+            sortConfig: evalTabState.sort,
+            onToggle: (event) => setEvalSort(header, event),
+          });
           const selectAllCheckbox = document.createElement("input");
           selectAllCheckbox.type = "checkbox";
           selectAllCheckbox.checked = evalSelectionState.allSelected;
@@ -3777,16 +4176,20 @@
             }
             renderEvaluations();
           });
-          selectControl.appendChild(selectCaption);
+          selectControl.appendChild(selectButton);
           selectControl.appendChild(selectAllCheckbox);
           th.appendChild(selectControl);
         } else {
           const staticControl = document.createElement("div");
           staticControl.className = "header-static-control";
-          const caption = document.createElement("span");
-          caption.className = "header-caption";
-          caption.textContent = header === "group_size" ? "#" : header;
-          staticControl.appendChild(caption);
+          staticControl.appendChild(
+            createSortButton({
+              label: header === "group_size" ? "#" : header,
+              column: header,
+              sortConfig: evalTabState.sort,
+              onToggle: (event) => setEvalSort(header, event),
+            })
+          );
           th.appendChild(staticControl);
         }
         th.rowSpan = 2;
@@ -3810,12 +4213,19 @@
       if (orderedEvalOverrideColumns.length > 0) {
         for (const column of orderedEvalOverrideColumns) {
           const th = document.createElement("th");
+          th.setAttribute("aria-sort", getAriaSort(evalTabState.sort, column));
           if (evalTabState.truncateEnabledColumns.has(column)) {
             th.classList.add("truncate-enabled");
           }
-          const label = document.createElement("div");
           const headerLabel = displayEvalColumnName(column);
-          label.textContent = headerLabel;
+          const headerControl = document.createElement("div");
+          headerControl.className = "header-column-control";
+          const label = createSortButton({
+            label: headerLabel,
+            column,
+            sortConfig: evalTabState.sort,
+            onToggle: (event) => setEvalSort(column, event),
+          });
           th.style.minWidth = `${Math.max(140, headerLabel.length * 8)}px`;
 
           const toggle = document.createElement("label");
@@ -3835,8 +4245,9 @@
           });
           toggle.appendChild(toggleCb);
 
-          th.appendChild(label);
-          th.appendChild(toggle);
+          headerControl.appendChild(label);
+          headerControl.appendChild(toggle);
+          th.appendChild(headerControl);
           columnRow.appendChild(th);
         }
       } else {
@@ -3846,17 +4257,25 @@
       }
 
       const runDirTh = document.createElement("th");
+      runDirTh.setAttribute("aria-sort", getAriaSort(evalTabState.sort, "eval_run_dir"));
       if (evalTabState.truncateEnabledColumns.has("eval_run_dir")) {
         runDirTh.classList.add("truncate-enabled");
       }
-      runDirTh.textContent = "eval_run_dir";
+      runDirTh.appendChild(
+        createSortButton({
+          label: "eval_run_dir",
+          column: "eval_run_dir",
+          sortConfig: evalTabState.sort,
+          onToggle: (event) => setEvalSort("eval_run_dir", event),
+        })
+      );
       runDirTh.style.minWidth = "240px";
       columnRow.appendChild(runDirTh);
       thead.appendChild(columnRow);
       evaluationsTable.appendChild(thead);
 
       const tbody = document.createElement("tbody");
-      for (const group of evalGroups) {
+      for (const group of displayedEvalGroups) {
         const tr = document.createElement("tr");
         tr.style.cursor = "pointer";
         if (group.groupId === evalTabState.selectedEvalGroupId) {
@@ -3935,7 +4354,7 @@
         tbody.appendChild(tr);
 
         if (evalTabState.expandedGroupIds.has(group.groupId)) {
-          const sortedMembers = [...group.runs].sort((a, b) => a.runDir.localeCompare(b.runDir));
+          const sortedMembers = getSortedEvaluationRuns(group.runs, evalTabState);
           for (const run of sortedMembers) {
             const memberRow = document.createElement("tr");
             memberRow.className = "member-row";
@@ -3979,7 +4398,7 @@
 
       if (evalTabState.selectedEvalRunDir !== null || evalTabState.selectedEvalGroupId !== null) {
         const selectedRun = tabRuns.find((run) => run.runDir === evalTabState.selectedEvalRunDir) || null;
-        const selectedGroup = evalGroups.find((group) => group.groupId === evalTabState.selectedEvalGroupId) || null;
+        const selectedGroup = displayedEvalGroups.find((group) => group.groupId === evalTabState.selectedEvalGroupId) || null;
         if (selectedRun || selectedGroup) {
           evalLayout.classList.add("split");
           evalJsonTitle.textContent = "";
@@ -3996,7 +4415,7 @@
       updateStickyControlColumnOffsets(evaluationsTable);
       requestAnimationFrame(() => updateStickyControlColumnOffsets(evaluationsTable));
 
-      const selectedEvalRunsCount = evalGroups
+      const selectedEvalRunsCount = displayedEvalGroups
         .filter((group) => evalTabState.selectedGroupIds.has(group.groupId))
         .reduce((sum, group) => sum + group.runs.length, 0);
       const evalGroupByText = evalTabState.groupByFields.length
@@ -4006,7 +4425,7 @@
         ? state.groupByFields.map((field) => displayPredictionColumnName(field)).join(", ")
         : "(none)";
       evalSummary.textContent =
-        `Selected evaluations: ${selectedEvalRunsCount} | Active tab: ${state.activeEvalTab} | Groups: ${evalGroups.length} | Group-by: ${evalGroupByText} (+ prediction group-by: ${predictionGroupByText})`;
+        `Selected evaluations: ${selectedEvalRunsCount} | Active tab: ${state.activeEvalTab} | Groups: ${displayedEvalGroups.length} | Group-by: ${evalGroupByText} (+ prediction group-by: ${predictionGroupByText})`;
 
       renderEvaluationPlots(state.activeEvalTab);
     }
