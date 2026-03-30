@@ -20,11 +20,13 @@
 ## IMPORTANT
 
 If you run a new model on the cluster, you need to ensure that all other users can run the model too.
-Do this by running the following command on the cluster:
+So, whenever you _have run_ a new model on the cluster, run the following command _afterwards_:
 
 ```sh
 cd /ds/models/llms && chmod -R 777 ./*
 ```
+
+This ensures that the downloaded files (or .lock files left over from crashes) can be used and or fixed by other users.
 
 ## Quickstart
 
