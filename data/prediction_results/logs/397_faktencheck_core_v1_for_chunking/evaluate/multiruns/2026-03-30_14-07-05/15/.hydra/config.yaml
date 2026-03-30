@@ -1,0 +1,31 @@
+name: 397_faktencheck_core_v1_for_chunking
+prediction_logs:
+- logs/380_faktencheck_core/predict
+- logs/397_faktencheck_core_v1_for_chunking/predict
+paths:
+  root_dir: ${oc.env:PROJECT_ROOT}
+  data_dir: ${paths.root_dir}/data
+  timestamp: ${now:%Y-%m-%d_%H-%M-%S}
+  run_subdir: ${paths.timestamp}
+  output_dir: ${hydra:runtime.output_dir}
+  save_dir: ${paths.root_dir}
+  log_dir: ${paths.save_dir}/logs/${name}/evaluate
+  work_dir: ${hydra:runtime.cwd}
+  prediction_save_dir: ${paths.save_dir}/predictions/${name}/${paths.timestamp}
+dataset:
+  predictions:
+    _target_: kibad_llm.dataset.prediction.load_with_metadata
+    log: logs/397_faktencheck_core_v1_for_chunking/predict/multiruns/2026-03-27_11-23-14/0
+    file: null
+    id_key: file_name
+    process_id:
+      _partial_: true
+      _target_: kibad_llm.utils.path.strip_filename_extension
+    preprocess: null
+  _target_: kibad_llm.dataset.utils.merge_references_into_predictions
+  references: {}
+  allow_missing_references: true
+metric:
+  _target_: kibad_llm.metrics.ErrorCollector
+  type_separator: ': '
+  show_errors: true

@@ -1,0 +1,66 @@
+{
+  "biodiversity_level": {
+    "precision": 0.6736842105263158,
+    "recall": 0.48484848484848486,
+    "f1": 0.5638766519823789,
+    "support": 132
+  },
+  "ecosystem_type.category": {
+    "precision": 0.8867924528301887,
+    "recall": 0.3357142857142857,
+    "f1": 0.4870466321243523,
+    "support": 140
+  },
+  "ecosystem_type.term": {
+    "precision": 0.7213114754098361,
+    "recall": 0.18333333333333332,
+    "f1": 0.29235880398671094,
+    "support": 240
+  },
+  "habitat": {
+    "precision": 0.8823529411764706,
+    "recall": 0.6349206349206349,
+    "f1": 0.7384615384615384,
+    "support": 189
+  },
+  "taxa.species_group": {
+    "precision": 0.6710526315789473,
+    "recall": 0.4788732394366197,
+    "f1": 0.558904109589041,
+    "support": 213
+  },
+  "AVG": {
+    "precision": 0.7670387423043517,
+    "recall": 0.42353799565067163,
+    "f1": 0.5281295472288043,
+    "support": 182.8
+  },
+  "ALL": {
+    "precision": 0.7585513078470825,
+    "recall": 0.412472647702407,
+    "f1": 0.5343727852586818,
+    "support": 914
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/397_faktencheck_core_v1_for_chunking/2026-03-27_11-22-52/2026-03-27_15-52-16_872550/predictions.jsonl",
+      "output_file_absolute": "/home/hmeinhof/programming/kiba/predictions/397_faktencheck_core_v1_for_chunking/2026-03-27_11-22-52/2026-03-27_15-52-16_872550/predictions.jsonl",
+      "time_pdf_conversion": 0.005252523347735405,
+      "time_extraction": 8178.125881422311,
+      "time_start": 1774623136,
+      "time_end": 1774631376,
+      "commit_hash": "d8d4a016e59eaed582624db297d4a38e2272094e",
+      "branch": "feat/chunking-extractor-no-stride",
+      "is_dirty": false,
+      "slurm_job_id": "2711324"
+    },
+    "overrides": {
+      "name": "397_faktencheck_core_v1_for_chunking",
+      "experiment/predict": "faktencheck_core_fields_schema_with_chunking",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gpt_oss_20b_in_process",
+      "seed": "7331",
+      "extractor.max_char_buffer": "325000"
+    }
+  }
+}
