@@ -1,6 +1,7 @@
 # How-To Run an LLM on the DFKI Cluster
 
 - [How-To Run an LLM on the DFKI Cluster](#how-to-run-an-llm-on-the-dfki-cluster)
+  - [IMPORTANT](#important)
   - [Quickstart](#quickstart)
     - [Prerequisites](#prerequisites)
     - [Run `gpt-oss-20b`](#run-gpt-oss-20b)
@@ -15,6 +16,15 @@
       - [Prerequisites](#prerequisites-2)
       - [Usage](#usage-1)
     - [Run with VLLM but on Login Node](#run-with-vllm-but-on-login-node)
+
+## IMPORTANT
+
+If you run a new model on the cluster, you need to ensure that all other users can run the model too.
+Do this by running the following command on the cluster:
+
+```sh
+cd /ds/models/llms && chmod -R 777 ./*
+```
 
 ## Quickstart
 
