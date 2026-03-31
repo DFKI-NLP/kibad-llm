@@ -378,3 +378,7 @@ These known issues have their own uv specific fixes. The relevant documentation 
 
 - [Build isolation](https://docs.astral.sh/uv/concepts/projects/config/#build-isolation) - Can lead to runtime errors
 - [Conflicting dependencies](https://docs.astral.sh/uv/concepts/projects/config/#conflicting-dependencies)
+
+## License
+
+This project is licensed under the AGPL-v3. The license text can be found at [LICENSE](/LICENSE).
