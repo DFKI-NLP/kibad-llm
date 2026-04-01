@@ -1,6 +1,7 @@
 # How-To Run an LLM on the DFKI Cluster
 
 - [How-To Run an LLM on the DFKI Cluster](#how-to-run-an-llm-on-the-dfki-cluster)
+  - [IMPORTANT](#important)
   - [Quickstart](#quickstart)
     - [Prerequisites](#prerequisites)
     - [Run `gpt-oss-20b`](#run-gpt-oss-20b)
@@ -15,6 +16,18 @@
       - [Prerequisites](#prerequisites-2)
       - [Usage](#usage-1)
     - [Run with VLLM but on Login Node](#run-with-vllm-but-on-login-node)
+
+## IMPORTANT
+
+If you run a new model on the cluster, you need to ensure that all other users can run the model too.
+Running a new model implies that VLLM downloads and caches the model on the cluster. To do that, it creates a new directory and some files underneath the VLLM_DOWNLOAD_DIR, which in our configuration usually points to /ds/models/llms/cache. The access right to this new subdirectory and any associated files are set to "rwxr-xr-x" , which doesn't allow writing for others.
+So, whenever you _have run_ a new model on the cluster, run the following command _afterwards_:
+
+```sh
+cd /ds/models/llms && chmod -R 777 ./*
+```
+
+This ensures that the downloaded files (or .lock files left over from crashes) can be used and or fixed by other users.
 
 ## Quickstart
 
