@@ -26,6 +26,12 @@ from kibad_llm.utils.log import warn_once
 logger = logging.getLogger(__name__)
 
 
+class TextOffsetValueError(ValueError):
+    """Raised when text offset is invalid."""
+
+    pass
+
+
 @dataclasses.dataclass
 class SingleExtractionResult(FieldDict):
     character_start: int
@@ -662,7 +668,16 @@ def extract_from_text(
         )
     build_messages_kwargs.update(prompt_template)
 
-    # TODO: do we need any checks regarding character_start / character_end here?
+    # do not raise an error here if text is already empty
+    if len(text) > 0 and not (0 <= character_start < len(text)):
+        raise TextOffsetValueError(
+            f"character_start must be between 0 and {len(text)}, but is {character_start}"
+        )
+    if character_end is not None and not (character_start < character_end):
+        raise TextOffsetValueError(
+            f"character_end must be greater than character_start ({character_start}), but is {character_end}"
+        )
+
     out = SingleExtractionResult(
         character_start=character_start, character_end=character_end or len(text)
     )
