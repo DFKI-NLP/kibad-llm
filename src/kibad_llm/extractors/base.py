@@ -36,6 +36,8 @@ class SingleExtractionResult(FieldDict):
     messages_formatted: dict[str, str] | None = None
     errors: list[str] = field(default_factory=list)
     errors_long: list[str] = field(default_factory=list)
+    character_start: int | None = None
+    character_end: int | None = None
 
 
 def exception2error_msg(e: BaseException) -> tuple[str, str]:
@@ -584,6 +586,8 @@ def extract_from_text(
     wrapped_content_description: str | None = None,
     response_has_metadata: bool = False,
     augment_metadata_kwargs: dict[str, Any] | None = None,
+    character_start: int = 0,
+    character_end: int | None = None,
     # deprecated arguments
     user_message: str | None = None,
     system_message: str | None = None,
@@ -749,6 +753,8 @@ def extract_from_text(
                     show_msg += f", response_content = '{out.response_content[:1500]}...'"
                 out["errors"].append(error_msg_short)
                 out["errors_long"].append(error_msg_long)
+            out["character_start"] = character_start
+            out["character_end"] = character_end
 
     else:
         warn_once("No LLM provided for extraction, skipping LLM call.")
