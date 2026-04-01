@@ -33,6 +33,7 @@ tokenizer:
 # for these fields, return a list of results from each extraction
 return_as_list:
   # - structured
+  - structured_with_metadata
   - errors
   # - response_content
   - reasoning_content
