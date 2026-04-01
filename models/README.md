@@ -19,8 +19,8 @@
 
 ## IMPORTANT
 
-If you run a new model on the cluster, you need to ensure that all other users can run the model too.  
-Running a new model implies that VLLM downloads and caches the model on the cluster. To do that, it creates a new directory and some files underneath the VLLM_DOWNLOAD_DIR, which in our configuration usually points to /ds/models/llms/cache. The access right to this new subdirectory and any associated files are set to "rwxr-xr-x" , which doesn't allow writing for others.  
+If you run a new model on the cluster, you need to ensure that all other users can run the model too.
+Running a new model implies that VLLM downloads and caches the model on the cluster. To do that, it creates a new directory and some files underneath the VLLM_DOWNLOAD_DIR, which in our configuration usually points to /ds/models/llms/cache. The access right to this new subdirectory and any associated files are set to "rwxr-xr-x" , which doesn't allow writing for others.
 So, whenever you _have run_ a new model on the cluster, run the following command _afterwards_:
 
 ```sh
