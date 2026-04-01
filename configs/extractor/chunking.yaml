@@ -38,6 +38,8 @@ return_as_list:
   - reasoning_content
   # - messages
   # - messages_formatted
+  - character_start
+  - character_end
 
 # general return options (see simple extractor for details)
 return_reasoning: True
