@@ -87,11 +87,6 @@ class ChunkingExtractor:
             text_id = args[-1]
 
         combined_kwargs = {**self.default_kwargs, **kwargs}
-        current_kwargs = {
-            **combined_kwargs,
-            "return_messages_formatted": True,
-            "truncate_user_message_formatted": None,
-        }
 
         chunks = _document_chunk_iterator(
             document=text,
@@ -111,7 +106,7 @@ class ChunkingExtractor:
             current_result = extract_from_text_lenient(
                 text=text,
                 text_id=f"{text_id}_chunk_{i}",
-                **current_kwargs,
+                **combined_kwargs,
                 # This may raise an error if character_start or character_end is already provided via kwargs,
                 # but we want to be strict about not allowing that since it would interfere with the chunking logic.
                 # TODO: Is this correct? mypy complains when removing "or 0" since start_pos can be None...
