@@ -3,10 +3,6 @@
 # Set the VLLM model download directory in your .env before running this config, e.g.
 # VLLM_DOWNLOAD_DIR=/path/to/download/dir
 #
-# This model requires the nano_v3 reasoning parser plugin. Download it first and ensure it is
-# importable from the current working directory or Python path:
-#   wget https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8/resolve/main/nano_v3_reasoning_parser.py
-#
 # Also set the following environment variable for optimal FP8 MoE performance:
 #   export VLLM_USE_FLASHINFER_MOE_FP8=1
 #
@@ -44,9 +40,9 @@ vllm_kwargs:
   max_num_seqs: 8
   # FP8 KV cache for memory efficiency on the FP8-quantized model.
   kv_cache_dtype: "fp8"
-  # Custom reasoning parser plugin for nano_v3 format — plugin file must be in Python path.
+  # nemotron_v3 reasoning parser is built into vLLM (no plugin download required).
   # See https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8
-  reasoning_parser: "nano_v3"
+  reasoning_parser: "nemotron_v3"
   gpu_memory_utilization: 0.95 # fraction of GPU memory reserved (impacts KV cache size)
   # dtype: "auto"
   download_dir: ${oc.env:VLLM_DOWNLOAD_DIR}
