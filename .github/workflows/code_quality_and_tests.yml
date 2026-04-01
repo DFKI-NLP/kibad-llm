@@ -42,7 +42,7 @@ jobs:
             ${{ steps.pre-commit-cache.outputs.result }}-
       - name: Run pre-commits
         run: |
-          uv run --group cicd pre-commit run -a
+          uv run --only-group cicd pre-commit run -a
         shell: bash
   pytest:
     name: Tests with Python ${{ matrix.python }} / ${{ matrix.os }}
