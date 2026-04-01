@@ -28,6 +28,8 @@ logger = logging.getLogger(__name__)
 
 @dataclasses.dataclass
 class SingleExtractionResult(FieldDict):
+    character_start: int
+    character_end: int
     response_content: str | None = None
     structured: dict[str, Any] | list[Any] | None = None
     structured_with_metadata: dict[str, Any] | list[Any] | None = None
@@ -36,8 +38,6 @@ class SingleExtractionResult(FieldDict):
     messages_formatted: dict[str, str] | None = None
     errors: list[str] = field(default_factory=list)
     errors_long: list[str] = field(default_factory=list)
-    character_start: int | None = None
-    character_end: int | None = None
 
 
 def exception2error_msg(e: BaseException) -> tuple[str, str]:
@@ -635,6 +635,10 @@ def extract_from_text(
             output is returned under the "structured" key, while the raw output with metadata is returned
             under the "structured_with_metadata" key.
         augment_metadata_kwargs: Additional keyword arguments for augment_metadata.
+        character_start: Optional character offsets to specify a substring of `text` to process.
+            Defaults to 0 (process from the beginning of the text).
+        character_end: Optional character offsets to specify a substring of `text` to process.
+            If None (default), processes until the end of the text.
         **build_messages_kwargs: Additional keyword arguments for build_chat_messages.
 
     Returns:
@@ -658,7 +662,10 @@ def extract_from_text(
         )
     build_messages_kwargs.update(prompt_template)
 
-    out = SingleExtractionResult()
+    # TODO: do we need any checks regarding character_start / character_end here?
+    out = SingleExtractionResult(
+        character_start=character_start, character_end=character_end or len(text)
+    )
 
     original_schema = schema
     schema_for_build_messages = schema
@@ -691,8 +698,10 @@ def extract_from_text(
         if adjust_schema_description_for_evidence_detection:
             schema_for_build_messages = schema
 
+    text_to_process = text[out.character_start : out.character_end]
+
     messages = build_chat_messages(
-        document=text,
+        document=text_to_process,
         schema=schema_for_build_messages,
         _out=out,
         **build_messages_kwargs,
@@ -723,12 +732,16 @@ def extract_from_text(
         )
         # 4) handle structured with metadata if requested
         if response_has_metadata:
+            # we need to pass the start offset to correctly calculate the evidence anchor positions
+            if augment_metadata_kwargs is None:
+                augment_metadata_kwargs = {}
+            augment_metadata_kwargs["evidence_character_offset"] = character_start
             postprocessing_callbacks.append(
                 partial(
                     augment_and_strip_metadata_from_structured_callback,
                     schema=schema,
                     original_schema=original_schema,
-                    text=text,
+                    text=text_to_process,
                     validate_with_schema=validate_with_schema,
                     augment_metadata_kwargs=augment_metadata_kwargs,
                 )
@@ -753,8 +766,6 @@ def extract_from_text(
                     show_msg += f", response_content = '{out.response_content[:1500]}...'"
                 out["errors"].append(error_msg_short)
                 out["errors_long"].append(error_msg_long)
-            out["character_start"] = character_start
-            out["character_end"] = character_end
 
     else:
         warn_once("No LLM provided for extraction, skipping LLM call.")
@@ -762,7 +773,9 @@ def extract_from_text(
     return out
 
 
-def extract_from_text_lenient(text: str, text_id: str, **kwargs) -> SingleExtractionResult:
+def extract_from_text_lenient(
+    text: str, text_id: str, character_start: int = 0, character_end: int | None = None, **kwargs
+) -> SingleExtractionResult:
     """Wrapper around extract_from_text that catches all exceptions.
 
     This is useful when processing multiple documents and we want to
@@ -771,14 +784,29 @@ def extract_from_text_lenient(text: str, text_id: str, **kwargs) -> SingleExtrac
     Args:
         text: The text to process.
         text_id: Text identifier for logging.
+        character_start: Optional character offsets to specify a substring of `text` to process.
+            Defaults to 0 (process from the beginning of the text).
+        character_end: Optional character offsets to specify a substring of `text` to process.
+            If None (default), processes until the end of the text.
         **kwargs: Keyword arguments for extract_from_text.
     Returns:
         A SingleExtractionResult object with the extraction result or error message.
     """
 
     try:
-        return extract_from_text(text=text, text_id=text_id, **kwargs)
+        return extract_from_text(
+            text=text,
+            text_id=text_id,
+            character_start=character_start,
+            character_end=character_end,
+            **kwargs,
+        )
     except Exception as e:
         error_msg_short, error_msg_long = exception2error_msg(e)
         logger.error(f"Error processing document {text_id}: {error_msg_short}")
-        return SingleExtractionResult(errors=[error_msg_short], errors_long=[error_msg_long])
+        return SingleExtractionResult(
+            character_start=character_start,
+            character_end=character_end or len(text),
+            errors=[error_msg_short],
+            errors_long=[error_msg_long],
+        )
