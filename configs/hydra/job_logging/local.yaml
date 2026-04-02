@@ -1,3 +1,8 @@
+# Based on Hydra's built-in `colorlog` job logging config, but with the file
+# handler redirected into `hydra.runtime.output_dir`. This could likely be done
+# with a smaller inline override of `hydra.job_logging.handlers.file.filename`,
+# but keeping a full local copy makes the effective logging setup explicit and
+# avoids relying on Hydra's merge behavior for nested logging config entries.
 version: 1
 
 formatters:
