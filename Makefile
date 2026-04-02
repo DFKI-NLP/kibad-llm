@@ -24,10 +24,10 @@ clean:
 	find . -type d -name "__pycache__" -delete
 
 
-## code quality checks and fixes via pre-commit
+## code quality checks and fixes via prek
 .PHONY: precommit
 precommit:
-	poetry run pre-commit run --all-files
+	poetry run prek run --all-files
 
 
 ## Lint using flake8, black, and isort (use `make format` to do formatting)
