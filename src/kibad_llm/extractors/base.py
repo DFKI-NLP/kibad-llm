@@ -402,6 +402,8 @@ def augment_metadata_node_with_evidence(
         snippet_key: The key to add for the evidence snippet text.
         snippet_margin: Number of tokens to include before and after the anchor span
             in the snippet.
+        character_offset: An optional offset to add to the start/end character positions
+            (useful if the text is a chunk of a larger document).
     Returns:
         The augmented metadata wrapper dict with evidence metadata added where applicable.
     """
