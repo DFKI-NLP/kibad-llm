@@ -5,7 +5,9 @@
 #
 # To use as an argument for `predict`, use `extractor/llm=olmo_3_1_32b_think`.
 # Run VLLM with `./run_with_llm.sh -v "allenai/OLMo-3.1-32B-Think --max-model-len 65536
-#  --reasoning-parser deepseek_r1"`
+#  --reasoning-parser olmo3"`
+# Note: OLMo-3.1-32B-Think uses <think> tags as regular vocabulary tokens (not special tokens),
+# so the olmo3 parser must be used instead of deepseek_r1.
 # See https://huggingface.co/allenai/OLMo-3.1-32B-Think for VLLM options
 
 _target_: kibad_llm.llms.OpenAILikeVllm

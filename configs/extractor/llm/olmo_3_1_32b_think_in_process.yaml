@@ -31,8 +31,9 @@ vllm_kwargs:
   # Supports up to 65536 tokens (max_position_embeddings from config.json, extended via YARN RoPE).
   # See https://github.com/DFKI-NLP/kibad-llm/issues/251 for test results.
   max_model_len: 65536
-  # OLMo-3.1-32B-Think uses <think>...</think> tags, same format as DeepSeek-R1.
-  reasoning_parser: "deepseek_r1"
+  # OLMo-3.1-32B-Think uses <think>...</think> tags, but as regular vocabulary tokens
+  # (not special tokens), so the olmo3 parser must be used instead of deepseek_r1.
+  reasoning_parser: "olmo3"
   gpu_memory_utilization: 0.95 # fraction of GPU memory reserved (impacts KV cache size)
   # dtype: "auto"
   download_dir: ${oc.env:VLLM_DOWNLOAD_DIR}
