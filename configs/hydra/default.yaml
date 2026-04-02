@@ -1,7 +1,7 @@
 # enable color logging
 defaults:
   - override hydra_logging: colorlog
-  - override job_logging: local
+  - override job_logging: file_output_dir
 
 callbacks:
   save_job_return:
