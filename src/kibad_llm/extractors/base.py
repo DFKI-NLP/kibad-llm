@@ -668,14 +668,13 @@ def extract_from_text(
         )
     build_messages_kwargs.update(prompt_template)
 
-    # do not raise an error here if text is already empty
-    if len(text) > 0 and not (0 <= character_start < len(text)):
+    if not (0 <= character_start <= len(text)):
         raise TextOffsetValueError(
-            f"character_start must be between 0 and {len(text)}, but is {character_start}"
+            f"character_start must be between 0 and {len(text)} (inclusive), but is {character_start}"
         )
-    if character_end is not None and not (character_start < character_end):
+    if character_end is not None and not (character_start <= character_end):
         raise TextOffsetValueError(
-            f"character_end must be greater than character_start ({character_start}), but is {character_end}"
+            f"character_end must be greater than or equal to character_start ({character_start}), but is {character_end}"
         )
 
     out = SingleExtractionResult(
