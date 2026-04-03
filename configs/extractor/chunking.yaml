@@ -1,0 +1,52 @@
+# This configuration file defines a ChunkingExtractor that chunks documents before
+# extracting from them. The chunks are provided by a ChunkIterator based on googles langextract:
+# https://github.com/google/langextract
+# It uses a clever Tokenizer that tries to strike a balance between chunking speed and
+# cohesive contexts, by taking sentence structures into account.
+# The llm is queried sequentially with each chunk, and an optional
+# overlap between chunks called stride. The results are then aggregated across extractions.
+
+defaults:
+  - schema: faktencheck_simple
+  - aggregator: single_majority_vote_multi_union
+  - llm: gpt_oss_20b
+  - prompt_template: default
+  - request_parameters: default
+
+_target_: kibad_llm.extractors.ChunkingExtractor
+
+# these values are based on ChatGPT suggestions as gathered by Leo in pr #282:
+# - Since PDFs can be huge, chunking is mandatory.
+# - Chunk size depends on model max context:
+#   - 12B–14B models: 2K–4K tokens per chunk
+#   - 20B–27B models: 4K–8K tokens per chunk (some models allow 16K–128K with long context tuning)
+# - Overlap chunks slightly (e.g., 100–200 tokens) to maintain context across pages.
+#
+# values are calculated with regards to gpt_oss_20b, using the heuristic of 5 characters per token
+max_char_buffer: 20000
+stride: 1000
+# if stride factor is provided, it overrides stride with int(max_char_buffer * stride_factor)
+# stride_factor: 0.1
+
+# if chunking is taking longer than an hour, something must be wrong with the text. so, we skip it
+chunking_timeout: 3600
+
+# the tokenizer ensures that any chunk produced is split at sane points.
+# whilst this tokenizer won't match the llms tokenizer, it ensures "more sensible" chunks.
+# for more details on how the tokenizer works, please refer to the docstring of ChunkIterator.
+tokenizer:
+  _target_: kibad_llm.extractors.chunking_utils.RegexTokenizer
+
+# for these fields, return a list of results from each extraction
+return_as_list:
+  # - structured
+  - errors
+  # - response_content
+  - reasoning_content
+  # - messages
+  # - messages_formatted
+
+# general return options (see simple extractor for details)
+return_reasoning: True
+return_messages: False
+return_messages_formatted: False

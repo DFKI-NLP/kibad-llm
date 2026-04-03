@@ -74,6 +74,7 @@ def build_chat_message(
         and text were inserted.
     """
     content = message
+    formatting = {}
 
     # Check if schema description is needed. If so, generate it and insert it.
     message_requires_schema_description = f"{{{schema_description_placeholder}}}" in content
@@ -86,8 +87,7 @@ def build_chat_message(
         schema_description = build_schema_description(
             schema=schema, **(schema_description_kwargs or {})
         )
-
-        content = content.format(**{schema_description_placeholder: schema_description})
+        formatting[schema_description_placeholder] = schema_description
 
     # Check if input document is needed and insert it.
     message_requires_document = "{" + document_placeholder + "}" in content
@@ -97,7 +97,9 @@ def build_chat_message(
                 f"Document text must be provided if {role.name} message template requires "
                 f"input text (it contains '{{{document_placeholder}}}')."
             )
-        content = content.format(**{document_placeholder: document})
+        formatting[document_placeholder] = document
+
+    content = content.format(**formatting)
     return SimpleChatMessage(role=role, content=content), {
         "has_schema_description": message_requires_schema_description,
         "has_document": message_requires_document,
@@ -363,6 +365,7 @@ def augment_metadata_node_with_evidence(
     end_key: str = "first_evidence_end",
     snippet_key: str = "first_evidence_snippet",
     snippet_margin: int = 10,
+    character_offset: int = 0,
 ) -> dict[str, Any]:
     """
     Augment a single metadata wrapper dict with evidence location information.
@@ -407,8 +410,8 @@ def augment_metadata_node_with_evidence(
         if len(anchor_matches) > 0:
             # just take the first match
             start, end = anchor_matches[0]
-            out[start_key] = start
-            out[end_key] = end
+            out[start_key] = start + character_offset
+            out[end_key] = end + character_offset
             out[snippet_key] = _snippet_for_span(
                 start,
                 end,
