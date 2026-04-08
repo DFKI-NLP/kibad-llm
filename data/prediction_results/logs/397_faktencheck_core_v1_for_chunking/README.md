@@ -1,13 +1,71 @@
 # 397_faktencheck_core_v1_for_chunking
 
-## inference
+The inference commands are based on #277.
 
-## inference with small chunks
-this approach hopes to find strength in avoiding the needle-in-the-haystack problem.
+All runs use [this commit](https://github.com/DFKI-NLP/kibad-llm/pull/397/changes/81d3de5422270e9a0394c3560def173b4373b2f2).
 
-the commands are based on #277.
+## Table of contents
+- [397\_faktencheck\_core\_v1\_for\_chunking](#397_faktencheck_core_v1_for_chunking)
+  - [Table of contents](#table-of-contents)
+  - [Analysis](#analysis)
+    - [f1 large chunks vs small chunks on all documents](#f1-large-chunks-vs-small-chunks-on-all-documents)
+    - [f1 large chunks on short documents - chunking extractor vs baseline](#f1-large-chunks-on-short-documents---chunking-extractor-vs-baseline)
+    - [f1 small chunks on short documents - chunking extractor vs baseline](#f1-small-chunks-on-short-documents---chunking-extractor-vs-baseline)
+    - [Errors](#errors)
+    - [Conclusion](#conclusion)
+  - [Inference with small chunks](#inference-with-small-chunks)
+    - [gpt\_oss\_20b](#gpt_oss_20b)
+    - [gemma3\_27b](#gemma3_27b)
+    - [qwen3\_30b](#qwen3_30b)
+    - [mistral\_small\_3\_24b](#mistral_small_3_24b)
+    - [gpt\_5](#gpt_5)
+  - [Evaluation using small chunks](#evaluation-using-small-chunks)
+    - [f1 - on all documents](#f1---on-all-documents)
+    - [f1 - on previously working documents](#f1---on-previously-working-documents)
+    - [errors - on all documents](#errors---on-all-documents)
+    - [errors - on previously working documents](#errors---on-previously-working-documents)
+  - [Inference with large chunks](#inference-with-large-chunks)
+    - [gpt\_oss\_20b](#gpt_oss_20b-1)
+    - [gemma3\_27b](#gemma3_27b-1)
+    - [qwen3\_30b](#qwen3_30b-1)
+    - [mistral\_small\_3\_24b](#mistral_small_3_24b-1)
+    - [gpt\_5](#gpt_5-1)
+  - [Evaluation using large chunks](#evaluation-using-large-chunks)
+    - [f1 - on all documents](#f1---on-all-documents-1)
+    - [f1 - on previously working documents](#f1---on-previously-working-documents-1)
+    - [errors - on all documents](#errors---on-all-documents-1)
+    - [errors - on previously working documents](#errors---on-previously-working-documents-1)
 
-all runs use [this commit](https://github.com/DFKI-NLP/kibad-llm/pull/397/changes/81d3de5422270e9a0394c3560def173b4373b2f2).
+## Analysis
+TODO: remove stubs and replace with real analysis.
+
+### f1 large chunks vs small chunks on all documents
+Sanity check that small chunks are actually better than large ones.
+
+Figure out which model performs best.
+
+Hopefully set a new baseline as a result of this.
+
+### f1 large chunks on short documents - chunking extractor vs baseline
+Sanity checking against regressions.
+
+This should neither be much better, nor much worse.
+
+### f1 small chunks on short documents - chunking extractor vs baseline
+Apples to apples comparison whether we actually improved.
+
+### Errors
+...
+
+### Conclusion
+GPT-5 is hella good but, also slow, expensive, and error prone.
+
+qwen3 and gpt-oss aren't as good, but much faster, cheaper, and correcter.
+
+?qwen3 kinda outperforms gpt-oss?
+
+## Inference with small chunks
+This approach hopes to find strength in avoiding the needle-in-the-haystack problem.
 
 ### gpt_oss_20b
 ```sh
@@ -171,7 +229,7 @@ Saved to `logs/397_faktencheck_core_v1_for_chunking/predict/multiruns/2026-04-02
 
 This run took too long and was terminated prematurely. Only the first two seeds have been evaluated. Due to the exorbitant money and time consumption, this will not be reevaluated and instead used as is.
 
-## evaluation using small chunks
+## Evaluation using small chunks
 
 ```
 # in this order:
@@ -260,12 +318,9 @@ logs/397_faktencheck_core_v1_for_chunking/predict/multiruns/2026-04-02_16-41-44\
 
 Saved to [2026-04-08_13-33-28](evaluate/multiruns/2026-04-08_13-33-28)
 
-# evaluation with large chunks
-this evaluation aims to create similar conditions to the other extractors for better comparability.
+## Inference with large chunks
+This evaluation aims to create similar conditions to the other extractors for better comparability.
 
-the commands are based on #277.
-
-all runs use [this commit](https://github.com/DFKI-NLP/kibad-llm/pull/397/changes/81d3de5422270e9a0394c3560def173b4373b2f2).
 ### gpt_oss_20b
 ```sh
 ./run_in_process.sh -t "2-00:00:00" -pa "H100-SLT,H100-Trails,H100,H200,B200,A100-80GB" -sr \
