@@ -1,0 +1,65 @@
+{
+  "biodiversity_level": {
+    "precision": 0.5360824742268041,
+    "recall": 0.7878787878787878,
+    "f1": 0.6380368098159509,
+    "support": 132
+  },
+  "ecosystem_type.category": {
+    "precision": 0.6182795698924731,
+    "recall": 0.8214285714285714,
+    "f1": 0.705521472392638,
+    "support": 140
+  },
+  "ecosystem_type.term": {
+    "precision": 0.33396946564885494,
+    "recall": 0.7291666666666666,
+    "f1": 0.4581151832460733,
+    "support": 240
+  },
+  "habitat": {
+    "precision": 0.774869109947644,
+    "recall": 0.783068783068783,
+    "f1": 0.7789473684210527,
+    "support": 189
+  },
+  "taxa.species_group": {
+    "precision": 0.4648648648648649,
+    "recall": 0.8075117370892019,
+    "f1": 0.5900514579759862,
+    "support": 213
+  },
+  "AVG": {
+    "precision": 0.5456130969161282,
+    "recall": 0.7858109092264021,
+    "f1": 0.6341344583703402,
+    "support": 182.8
+  },
+  "ALL": {
+    "precision": 0.48737201365187716,
+    "recall": 0.7811816192560175,
+    "f1": 0.6002522068095839,
+    "support": 914
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/397_faktencheck_core_v1_for_chunking/2026-04-02_15-51-01/2026-04-02_15-51-02_975496/predictions.jsonl",
+      "output_file_absolute": "/netscratch/hmeinhof/tmp/kiba-d_c895bb57-003b-4c08-8abb-cd061ab36af9/repo/predictions/397_faktencheck_core_v1_for_chunking/2026-04-02_15-51-01/2026-04-02_15-51-02_975496/predictions.jsonl",
+      "time_pdf_conversion": 0.013233063276857138,
+      "time_extraction": 71247.49020726187,
+      "time_start": 1775137862,
+      "time_end": 1775209503,
+      "commit_hash": "81d3de5422270e9a0394c3560def173b4373b2f2",
+      "branch": "commit/81d3de542227",
+      "is_dirty": false,
+      "slurm_job_id": "2736826"
+    },
+    "overrides": {
+      "name": "397_faktencheck_core_v1_for_chunking",
+      "experiment/predict": "faktencheck_core_fields_schema_with_chunking",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "mistral_small_3_24b_in_process",
+      "seed": "42"
+    }
+  }
+}

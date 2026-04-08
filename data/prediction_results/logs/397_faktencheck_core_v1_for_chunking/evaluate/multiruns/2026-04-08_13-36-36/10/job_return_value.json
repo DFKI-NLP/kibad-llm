@@ -1,0 +1,66 @@
+{
+  "biodiversity_level": {
+    "precision": 0.6197183098591549,
+    "recall": 0.4489795918367347,
+    "f1": 0.5207100591715976,
+    "support": 98
+  },
+  "ecosystem_type.category": {
+    "precision": 0.8620689655172413,
+    "recall": 0.4672897196261682,
+    "f1": 0.606060606060606,
+    "support": 107
+  },
+  "ecosystem_type.term": {
+    "precision": 0.6027397260273972,
+    "recall": 0.28205128205128205,
+    "f1": 0.3842794759825327,
+    "support": 156
+  },
+  "habitat": {
+    "precision": 0.8378378378378378,
+    "recall": 0.4626865671641791,
+    "f1": 0.5961538461538461,
+    "support": 134
+  },
+  "taxa.species_group": {
+    "precision": 0.6938775510204082,
+    "recall": 0.4722222222222222,
+    "f1": 0.5619834710743802,
+    "support": 144
+  },
+  "AVG": {
+    "precision": 0.7232484780524078,
+    "recall": 0.42664587658011727,
+    "f1": 0.5338374916885925,
+    "support": 127.8
+  },
+  "ALL": {
+    "precision": 0.7165775401069518,
+    "recall": 0.4194053208137715,
+    "f1": 0.5291214215202369,
+    "support": 639
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/397_faktencheck_core_v1_for_chunking/2026-04-02_16-54-29/2026-04-02_19-55-08_833089/predictions.jsonl",
+      "output_file_absolute": "/netscratch/hmeinhof/tmp/kiba-d_57defed2-37c5-4b53-ba43-232dd518697f/repo/predictions/397_faktencheck_core_v1_for_chunking/2026-04-02_16-54-29/2026-04-02_19-55-08_833089/predictions.jsonl",
+      "time_pdf_conversion": 0.0054986049653962255,
+      "time_extraction": 10681.676698156982,
+      "time_start": 1775152508,
+      "time_end": 1775163263,
+      "commit_hash": "81d3de5422270e9a0394c3560def173b4373b2f2",
+      "branch": "commit/81d3de542227",
+      "is_dirty": false,
+      "slurm_job_id": "2737887"
+    },
+    "overrides": {
+      "name": "397_faktencheck_core_v1_for_chunking",
+      "experiment/predict": "faktencheck_core_fields_schema_with_chunking",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "qwen3_30b_in_process",
+      "seed": "1337",
+      "extractor.max_char_buffer": "175000"
+    }
+  }
+}

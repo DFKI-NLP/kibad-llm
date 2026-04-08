@@ -1,0 +1,162 @@
+{
+  "extractor.max_char_buffer=325000": {
+    "output_file": "predictions/397_faktencheck_core_v1_for_chunking/2026-03-30_16-28-26/2026-03-30_16-28-27_455859/predictions.jsonl",
+    "output_file_absolute": "/home/hmeinhof/programming/kiba/predictions/397_faktencheck_core_v1_for_chunking/2026-03-30_16-28-26/2026-03-30_16-28-27_455859/predictions.jsonl",
+    "time_pdf_conversion": 0.003485616995021701,
+    "time_extraction": 3369.913947125955,
+    "time_start": 1774880907,
+    "time_end": 1774884361,
+    "commit_hash": "d8d4a016e59eaed582624db297d4a38e2272094e",
+    "branch": "feat/chunking-extractor-no-stride",
+    "is_dirty": false,
+    "slurm_job_id": "2723546",
+    "overrides": {
+      "name": "397_faktencheck_core_v1_for_chunking",
+      "experiment/predict": "faktencheck_core_fields_schema_with_chunking",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gpt_oss_20b_in_process",
+      "seed": "42",
+      "extractor.max_char_buffer": "325000"
+    }
+  },
+  "extractor.max_char_buffer=300000": {
+    "output_file": "predictions/397_faktencheck_core_v1_for_chunking/2026-03-30_16-28-26/2026-03-30_17-26-01_674773/predictions.jsonl",
+    "output_file_absolute": "/home/hmeinhof/programming/kiba/predictions/397_faktencheck_core_v1_for_chunking/2026-03-30_16-28-26/2026-03-30_17-26-01_674773/predictions.jsonl",
+    "time_pdf_conversion": 0.002996659022755921,
+    "time_extraction": 3492.2802239910234,
+    "time_start": 1774884361,
+    "time_end": 1774887900,
+    "commit_hash": "d8d4a016e59eaed582624db297d4a38e2272094e",
+    "branch": "feat/chunking-extractor-no-stride",
+    "is_dirty": false,
+    "slurm_job_id": "2723546",
+    "overrides": {
+      "name": "397_faktencheck_core_v1_for_chunking",
+      "experiment/predict": "faktencheck_core_fields_schema_with_chunking",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gpt_oss_20b_in_process",
+      "seed": "42",
+      "extractor.max_char_buffer": "300000"
+    }
+  },
+  "extractor.max_char_buffer=275000": {
+    "output_file": "predictions/397_faktencheck_core_v1_for_chunking/2026-03-30_16-28-26/2026-03-30_18-25-01_020298/predictions.jsonl",
+    "output_file_absolute": "/home/hmeinhof/programming/kiba/predictions/397_faktencheck_core_v1_for_chunking/2026-03-30_16-28-26/2026-03-30_18-25-01_020298/predictions.jsonl",
+    "time_pdf_conversion": 0.0033719619968906045,
+    "time_extraction": 3784.4896554399747,
+    "time_start": 1774887901,
+    "time_end": 1774891749,
+    "commit_hash": "d8d4a016e59eaed582624db297d4a38e2272094e",
+    "branch": "feat/chunking-extractor-no-stride",
+    "is_dirty": false,
+    "slurm_job_id": "2723546",
+    "overrides": {
+      "name": "397_faktencheck_core_v1_for_chunking",
+      "experiment/predict": "faktencheck_core_fields_schema_with_chunking",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gpt_oss_20b_in_process",
+      "seed": "42",
+      "extractor.max_char_buffer": "275000"
+    }
+  },
+  "extractor.max_char_buffer=250000": {
+    "output_file": "predictions/397_faktencheck_core_v1_for_chunking/2026-03-30_16-28-26/2026-03-30_19-29-09_388747/predictions.jsonl",
+    "output_file_absolute": "/home/hmeinhof/programming/kiba/predictions/397_faktencheck_core_v1_for_chunking/2026-03-30_16-28-26/2026-03-30_19-29-09_388747/predictions.jsonl",
+    "time_pdf_conversion": 0.003446302958764136,
+    "time_extraction": 4003.513407411985,
+    "time_start": 1774891749,
+    "time_end": 1774895809,
+    "commit_hash": "d8d4a016e59eaed582624db297d4a38e2272094e",
+    "branch": "feat/chunking-extractor-no-stride",
+    "is_dirty": false,
+    "slurm_job_id": "2723546",
+    "overrides": {
+      "name": "397_faktencheck_core_v1_for_chunking",
+      "experiment/predict": "faktencheck_core_fields_schema_with_chunking",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gpt_oss_20b_in_process",
+      "seed": "42",
+      "extractor.max_char_buffer": "250000"
+    }
+  },
+  "extractor.max_char_buffer=225000": {
+    "output_file": "predictions/397_faktencheck_core_v1_for_chunking/2026-03-30_16-28-26/2026-03-30_20-36-49_641545/predictions.jsonl",
+    "output_file_absolute": "/home/hmeinhof/programming/kiba/predictions/397_faktencheck_core_v1_for_chunking/2026-03-30_16-28-26/2026-03-30_20-36-49_641545/predictions.jsonl",
+    "time_pdf_conversion": 0.0035511570749804378,
+    "time_extraction": 4057.0682709140237,
+    "time_start": 1774895809,
+    "time_end": 1774899923,
+    "commit_hash": "d8d4a016e59eaed582624db297d4a38e2272094e",
+    "branch": "feat/chunking-extractor-no-stride",
+    "is_dirty": false,
+    "slurm_job_id": "2723546",
+    "overrides": {
+      "name": "397_faktencheck_core_v1_for_chunking",
+      "experiment/predict": "faktencheck_core_fields_schema_with_chunking",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gpt_oss_20b_in_process",
+      "seed": "42",
+      "extractor.max_char_buffer": "225000"
+    }
+  },
+  "extractor.max_char_buffer=200000": {
+    "output_file": "predictions/397_faktencheck_core_v1_for_chunking/2026-03-30_16-28-26/2026-03-30_21-45-23_472035/predictions.jsonl",
+    "output_file_absolute": "/home/hmeinhof/programming/kiba/predictions/397_faktencheck_core_v1_for_chunking/2026-03-30_16-28-26/2026-03-30_21-45-23_472035/predictions.jsonl",
+    "time_pdf_conversion": 0.004459457006305456,
+    "time_extraction": 3970.086754824966,
+    "time_start": 1774899923,
+    "time_end": 1774903953,
+    "commit_hash": "d8d4a016e59eaed582624db297d4a38e2272094e",
+    "branch": "feat/chunking-extractor-no-stride",
+    "is_dirty": false,
+    "slurm_job_id": "2723546",
+    "overrides": {
+      "name": "397_faktencheck_core_v1_for_chunking",
+      "experiment/predict": "faktencheck_core_fields_schema_with_chunking",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gpt_oss_20b_in_process",
+      "seed": "42",
+      "extractor.max_char_buffer": "200000"
+    }
+  },
+  "extractor.max_char_buffer=175000": {
+    "output_file": "predictions/397_faktencheck_core_v1_for_chunking/2026-03-30_16-28-26/2026-03-30_22-52-33_182041/predictions.jsonl",
+    "output_file_absolute": "/home/hmeinhof/programming/kiba/predictions/397_faktencheck_core_v1_for_chunking/2026-03-30_16-28-26/2026-03-30_22-52-33_182041/predictions.jsonl",
+    "time_pdf_conversion": 0.00507150893099606,
+    "time_extraction": 4516.644353948999,
+    "time_start": 1774903953,
+    "time_end": 1774908518,
+    "commit_hash": "d8d4a016e59eaed582624db297d4a38e2272094e",
+    "branch": "feat/chunking-extractor-no-stride",
+    "is_dirty": false,
+    "slurm_job_id": "2723546",
+    "overrides": {
+      "name": "397_faktencheck_core_v1_for_chunking",
+      "experiment/predict": "faktencheck_core_fields_schema_with_chunking",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gpt_oss_20b_in_process",
+      "seed": "42",
+      "extractor.max_char_buffer": "175000"
+    }
+  },
+  "extractor.max_char_buffer=150000": {
+    "output_file": "predictions/397_faktencheck_core_v1_for_chunking/2026-03-30_16-28-26/2026-03-31_00-08-38_604012/predictions.jsonl",
+    "output_file_absolute": "/home/hmeinhof/programming/kiba/predictions/397_faktencheck_core_v1_for_chunking/2026-03-30_16-28-26/2026-03-31_00-08-38_604012/predictions.jsonl",
+    "time_pdf_conversion": 0.004030713927932084,
+    "time_extraction": 4454.938893476967,
+    "time_start": 1774908518,
+    "time_end": 1774913033,
+    "commit_hash": "d8d4a016e59eaed582624db297d4a38e2272094e",
+    "branch": "feat/chunking-extractor-no-stride",
+    "is_dirty": false,
+    "slurm_job_id": "2723546",
+    "overrides": {
+      "name": "397_faktencheck_core_v1_for_chunking",
+      "experiment/predict": "faktencheck_core_fields_schema_with_chunking",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gpt_oss_20b_in_process",
+      "seed": "42",
+      "extractor.max_char_buffer": "150000"
+    }
+  }
+}

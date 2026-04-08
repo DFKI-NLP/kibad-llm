@@ -1,0 +1,7 @@
+- dataset.predictions.log=logs/397_faktencheck_core_v1_for_chunking/predict/multiruns/2026-04-02_16-54-15/2
+- name=397_faktencheck_core_v1_for_chunking
+- experiment/evaluate=faktencheck_core_f1_micro_flat
+- dataset.references.file=../interim/faktencheck-db/faktenscheck_core_corrected.jsonl
+- metric.fields=[habitat,biodiversity_level,ecosystem_type.term,ecosystem_type.category,taxa.species_group]
+- prediction_logs=[logs/397_faktencheck_core_v1_for_chunking/predict/multiruns/2026-04-02_16-54-02,logs/397_faktencheck_core_v1_for_chunking/predict/multiruns/2026-04-02_16-54-15,logs/397_faktencheck_core_v1_for_chunking/predict/multiruns/2026-04-02_16-54-29,logs/397_faktencheck_core_v1_for_chunking/predict/multiruns/2026-04-02_16-56-31,logs/397_faktencheck_core_v1_for_chunking/predict/multiruns/2026-04-02_16-50-38]
+- +dataset.predictions.skip_by_id=[2E9XWUUE,2EUNPHDZ,2P53UVJA,2RXMDX8I,3LGPK6BL,3WEEGFGW,46RX4AEN,4YXRYRJC,4Z67G9T5,5SIYLM9W,6D23L7B5,6G2THNDX,7DSY6RMR,84QQ9F5S,885FDL5Z]
