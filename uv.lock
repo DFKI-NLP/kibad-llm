@@ -773,6 +773,19 @@ wheels = [
 ]
 
 [[package]]
+name = "check-mkdocs"
+version = "1.1.6"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "mkdocs" },
+    { name = "pyyaml" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/e3/74/b2310167575e78f1c230a21b157dd5aa1af41e975a7e9ddbd2c9760e33b0/check_mkdocs-1.1.6.tar.gz", hash = "sha256:b36daf41fe01dc813dfb232d0da6961cd46b06ab2b523c58362106c03b79a482", size = 5814, upload-time = "2023-08-22T22:34:30.734Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/8e/ab/d7819b91986503b844dade1a8c3b974cbb31893c80bcd5c9888eed56d069/check_mkdocs-1.1.6-py3-none-any.whl", hash = "sha256:72f1d6017f2a4e2a58f315566025006a8a68d61899800f129c8e6a5fd09ea5db", size = 8507, upload-time = "2023-08-22T22:34:29.087Z" },
+]
+
+[[package]]
 name = "click"
 version = "8.3.1"
 source = { registry = "https://pypi.org/simple" }
@@ -2798,6 +2811,7 @@ dependencies = [
 
 [package.dev-dependencies]
 cicd = [
+    { name = "check-mkdocs" },
     { name = "mkdocs-material" },
     { name = "mkdocstrings", extra = ["python"] },
     { name = "mypy" },
@@ -2846,6 +2860,7 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 cicd = [
+    { name = "check-mkdocs", specifier = ">=1.1.6" },
     { name = "mkdocs-material", specifier = ">=9.7.1" },
     { name = "mkdocstrings", extras = ["python"], specifier = ">=1.0.3" },
     { name = "mypy", specifier = ">=1.3.0" },

@@ -60,6 +60,7 @@ cicd = [
     "mkdocs-material>=9.7.1",
     "mkdocstrings[python]>=1.0.3",
     "pymdown-extensions>=10.20.1",
+    "check-mkdocs>=1.1.6",
 ]
 
 [tool.hatch.build.targets.sdist]
