@@ -1,8 +1,14 @@
-# kibad llm documentation!
+# Welcome
 
 ## Description
 
 A short description of the project.
+
+## Table of Contents
+
+- [General project overview](root-readme)
+- [LLM usage instructions](models-readme)
+- [Faktencheck database instructions](podman-readme)
 
 ## Commands
 
@@ -19,7 +25,7 @@ mkdocs build
 Serve locally with:
 
 ```
-uv run mkdocs serve -f docs/mkdocs.yml
+uv run mkdocs serve
 ```
 
 Add any missing python files with:
