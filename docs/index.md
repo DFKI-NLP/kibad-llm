@@ -6,9 +6,9 @@ A short description of the project.
 
 ## Table of Contents
 
-- [General project overview](root-readme)
-- [LLM usage instructions](models-readme)
-- [Faktencheck database instructions](podman-readme)
+- [General project overview](root-readme.md)
+- [LLM usage instructions](models-readme.md)
+- [Faktencheck database instructions](podman-readme.md)
 
 ## Commands
 
