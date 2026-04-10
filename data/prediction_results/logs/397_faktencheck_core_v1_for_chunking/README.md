@@ -77,12 +77,16 @@ seed=42,1337,7331 \
  
 ```
 =============================================
+>>> USING PARTITION H100-SLT,H100-Trails,H100,H200,B200,A100-80GB
+>>> MAX TIME 2-00:00:00
+>>> SUBMITTED Wed Apr  8 04:33:22 PM CEST 2026
+>>> UV_ARGS --cache-dir /netscratch/hmeinhof/cache/uv -m kibad_llm.predict name=397_faktencheck_core_v1_for_chunking experiment/predict=faktencheck_core_fields_schema_with_chunking pdf_directory=/ds/text/kiba-d/dev-set-100 extractor/llm=gpt_oss_20b_in_process seed=42,1337,7331 --multirun
+>>> JOB_NAME kiba-d_c5a2bb47-5644-4b48-94b0-ee7968bab1a8
+>>> GIT_REF 81d3de5422270e9a0394c3560def173b4373b2f2
 =============================================
 ```
 
-Saved to ``
-
-This run has been saved to the same dir as gemma3_27b.
+Saved to `logs/397_faktencheck_core_v1_for_chunking/predict/multiruns/2026-04-08_19-06-32`
 
 ### gemma3_27b
 **IMPORTANT: Running this requires a huggingface token**
@@ -100,10 +104,16 @@ seed=42,1337,7331 \
  
 ```
 =============================================
+>>> USING PARTITION H100-SLT,H100-Trails,H100,H200,B200,A100-80GB
+>>> MAX TIME 2-00:00:00
+>>> SUBMITTED Wed Apr  8 04:33:13 PM CEST 2026
+>>> UV_ARGS --cache-dir /netscratch/hmeinhof/cache/uv -m kibad_llm.predict name=397_faktencheck_core_v1_for_chunking experiment/predict=faktencheck_core_fields_schema_with_chunking pdf_directory=/ds/text/kiba-d/dev-set-100 extractor/llm=gemma3_27b_in_process seed=42,1337,7331 --multirun
+>>> JOB_NAME kiba-d_c322e037-9461-422b-b59b-b0de96caee7d
+>>> GIT_REF 81d3de5422270e9a0394c3560def173b4373b2f2
 =============================================
 ```
 
-Saved to ``
+Saved to `logs/397_faktencheck_core_v1_for_chunking/predict/multiruns/2026-04-08_19-02-33`
 
 This run has been saved to the same dir as gpt-oss.
 
@@ -155,7 +165,7 @@ seed=42,1337,7331 \
 =============================================
 ```
 
-Saved to ``
+Saved to `logs/397_faktencheck_core_v1_for_chunking/predict/multiruns/2026-04-08_20-34-00`
 
 ### gpt_5
 **IMPORTANT: Running this requires an openai token**  
