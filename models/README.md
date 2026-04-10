@@ -3,18 +3,18 @@
 - [How-To Run an LLM on the DFKI Cluster](#how-to-run-an-llm-on-the-dfki-cluster)
     - [IMPORTANT](#important)
     - [Quickstart](#quickstart)
-        - [Prerequisites](#prerequisites)
+        - [Prerequisites](#prerequisites-quickstart)
         - [Run `gpt-oss-20b`](#run-gpt-oss-20b)
     - [The two ways to use uv on Pegasus](#the-two-ways-to-use-uv-on-pegasus)
         - [Single package srun](#single-package-srun)
         - [Full project srun](#full-project-srun)
     - [All-in-one in process run script](#all-in-one-run-script-for-in_process-vllm-configs)
-        - [Prerequisites](#prerequisites-1)
-        - [Usage](#usage)
+        - [Prerequisites](#prerequisites-all-in-one-in-process)
+        - [Usage](#usage-internal)
     - [The alternatives](#the-alternatives)
         - [All-in-one run script](#all-in-one-run-external-vllm-script)
-            - [Prerequisites](#prerequisites-2)
-            - [Usage](#usage-1)
+            - [Prerequisites](#prerequisites-all-in-one-external)
+            - [Usage](#usage-external)
         - [Run with VLLM but on Login Node](#run-with-vllm-but-on-login-node)
 
 ## IMPORTANT
@@ -30,6 +30,8 @@ cd /ds/models/llms && chmod -R 777 ./*
 This ensures that the downloaded files (or .lock files left over from crashes) can be used and or fixed by other users.
 
 ## Quickstart
+
+<a id="prerequisites-quickstart"></a>
 
 ### Prerequisites
 
@@ -198,6 +200,8 @@ allows to run the Open AI models via their API, e.g. GPT-5, see `configs/extract
 combination with VLLM-served models in a single experiment run, see for example the template commands in
 https://github.com/DFKI-NLP/kibad-llm/issues/32 .
 
+<a id="prerequisites-all-in-one-in-process"></a>
+
 ### Prerequisites
 
 In order to use `run_in_process.sh` you need to have followed the steps in [Full project srun](#full-project-srun)!
@@ -217,6 +221,8 @@ VLLM_DOWNLOAD_DIR=/ds/models/llms/cache
 ```
 
 You can create an Open AI key at https://platform.openai.com/api-keys and Huggingface access tokens at https://huggingface.co/settings/tokens.
+
+<a id="usage-internal"></a>
 
 ### Usage
 
@@ -238,9 +244,13 @@ The script takes care of everything start to finish and executes all code on the
 
 To host an llm on the cluster and run uv code against it as soon as the model is ready, use the all-in-one run script `run_with_llm.sh`
 
+<a id="prerequisites-all-in-one-external"></a>
+
 #### Prerequisites
 
 In order to use `run_with_llm.sh` you need to have followed the steps in [Full project srun](#full-project-srun)!
+
+<a id="usage-external"></a>
 
 #### Usage
 
