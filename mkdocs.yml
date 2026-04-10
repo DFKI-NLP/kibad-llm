@@ -5,9 +5,9 @@
 
 
 site_name: kibad llm
-site_url: https://sitename.example
+site_url: https://dfki-nlp.github.io/kibad-llm/
 #
-site_author: Your name (or your organization/company/team)
+site_author: kiba-d project team
 #
 theme:
   name: material
@@ -36,6 +36,7 @@ nav:
 - General project overview: root-readme.md
 - LLM usage instructions: models-readme.md
 - Faktencheck database instructions: podman-readme.md
+- Evaluation dashboard: eval-dashboard.html
 # defer to gen-files + literate-nav
 - KIBA-D code Reference: reference/kibad_llm/
 
@@ -43,7 +44,7 @@ plugins:
 - search
 - gen-files:
     scripts:
-    - src/kibad_llm/utils/build_docs.py
+    - scripts/build_docs.py
 - literate-nav:
     nav_file: SUMMARY.md
 - section-index
