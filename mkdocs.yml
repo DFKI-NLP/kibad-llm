@@ -1,3 +1,9 @@
+##############################################################################
+# Since mkdocs is unmaintained, we are using the drop-in replacement
+# properdocs instead.
+##############################################################################
+
+
 site_name: kibad llm
 site_url: https://sitename.example
 #

@@ -21,4 +21,4 @@ jobs:
         with:
           os: ${{ matrix.os }}
           python: ${{ matrix.python }}
-      - run: uv run --group cicd mkdocs gh-deploy --force
+      - run: uv run --group cicd properdocs gh-deploy --force

@@ -14,24 +14,20 @@ A short description of the project.
 
 ### Generating the docs
 
-Use [mkdocs](http://www.mkdocs.org/) structure to update the documentation.
+Use [properdocs](https://properdocs.org/) structure to update the documentation.
+
+> properdocs is a drop-in replacement for the unmaintained MkDocs.
 
 Build locally with:
 
 ```
-mkdocs build
+properdocs build
 ```
 
 Serve locally with:
 
 ```
-uv run mkdocs serve
-```
-
-Add any missing python files with:
-
-```
-uv run -m kibad_llm.utils.build_docs
+uv run properdocs serve
 ```
 
 ## Tools
