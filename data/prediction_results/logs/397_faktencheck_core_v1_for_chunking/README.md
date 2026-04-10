@@ -364,7 +364,7 @@ logs/380_faktencheck_core/predict/\
 --multirun
 ```
 
-Saved to [](evaluate/multiruns/)
+Saved to [2026-04-10\_16-17-05](evaluate/multiruns/)
 
 ### f1 - on previously working documents
 
@@ -383,7 +383,7 @@ logs/380_faktencheck_core/predict/\
 --multirun
 ```
 
-Saved to [](evaluate/multiruns/)
+Saved to [2026-04-10\_16-12-49](evaluate/multiruns/)
 
 ### errors - on all documents
 
@@ -399,7 +399,7 @@ logs/380_faktencheck_core/predict/\
 --multirun
 ```
 
-Saved to [](evaluate/multiruns/)
+Saved to [2026-04-10\_16-14-18](evaluate/multiruns/)
 
 ### errors - on previously working documents
 
@@ -416,4 +416,4 @@ logs/380_faktencheck_core/predict/\
 --multirun
 ```
 
-Saved to [](evaluate/multiruns/)
+Saved to [2026-04-10\_16-14-42](evaluate/multiruns/)

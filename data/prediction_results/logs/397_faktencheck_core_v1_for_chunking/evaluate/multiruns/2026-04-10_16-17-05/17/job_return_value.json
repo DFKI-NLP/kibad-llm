@@ -1,0 +1,66 @@
+{
+  "biodiversity_level": {
+    "precision": 0.7350427350427351,
+    "recall": 0.6515151515151515,
+    "f1": 0.6907630522088354,
+    "support": 132
+  },
+  "ecosystem_type.category": {
+    "precision": 0.8195488721804511,
+    "recall": 0.7785714285714286,
+    "f1": 0.7985347985347986,
+    "support": 140
+  },
+  "ecosystem_type.term": {
+    "precision": 0.681592039800995,
+    "recall": 0.5708333333333333,
+    "f1": 0.6213151927437641,
+    "support": 240
+  },
+  "habitat": {
+    "precision": 0.8611111111111112,
+    "recall": 0.8201058201058201,
+    "f1": 0.840108401084011,
+    "support": 189
+  },
+  "taxa.species_group": {
+    "precision": 0.7061611374407583,
+    "recall": 0.6995305164319249,
+    "f1": 0.7028301886792453,
+    "support": 213
+  },
+  "AVG": {
+    "precision": 0.7606911791152101,
+    "recall": 0.7041112499915317,
+    "f1": 0.7307103266501308,
+    "support": 182.8
+  },
+  "ALL": {
+    "precision": 0.7553444180522565,
+    "recall": 0.6958424507658644,
+    "f1": 0.724373576309795,
+    "support": 914
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/397_faktencheck_core_v1_for_chunking/2026-04-02_16-50-38/2026-04-02_16-50-39_703856/predictions.jsonl",
+      "output_file_absolute": "/netscratch/hmeinhof/tmp/kiba-d_04fc4171-08b5-4ee5-856e-9010c1d0f45c/repo/predictions/397_faktencheck_core_v1_for_chunking/2026-04-02_16-50-38/2026-04-02_16-50-39_703856/predictions.jsonl",
+      "time_pdf_conversion": 0.03581339819356799,
+      "time_extraction": 28560.89993120311,
+      "time_start": 1775141439,
+      "time_end": 1775170078,
+      "commit_hash": "81d3de5422270e9a0394c3560def173b4373b2f2",
+      "branch": "commit/81d3de542227",
+      "is_dirty": false,
+      "slurm_job_id": "2737891"
+    },
+    "overrides": {
+      "name": "397_faktencheck_core_v1_for_chunking",
+      "experiment/predict": "faktencheck_core_fields_schema_with_chunking",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gpt_5",
+      "seed": "42",
+      "extractor.max_char_buffer": "175000"
+    }
+  }
+}
