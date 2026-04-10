@@ -1,20 +1,42 @@
-import logging
+"""Generate the code reference pages and navigation.
+
+This file has been largely adopted from: https://mkdocstrings.github.io/recipes/#automatic-code-reference-pages
+"""
+
 from pathlib import Path
 
-logging.getLogger().setLevel(logging.INFO)
+import mkdocs_gen_files
 
-for src_path in Path("./src").rglob("*"):
-    if src_path.stem.startswith("__") and src_path.stem.endswith("__"):
-        # skip dunder files
-        continue
-    if src_path.parent == Path("./src/kibad_llm/utils"):
+nav = mkdocs_gen_files.Nav()
+
+root = Path(__file__).parent.parent.parent.parent
+src = root / "src"
+
+for path in sorted(src.rglob("*.py")):
+    if path.parent == Path("./src/kibad_llm/utils").absolute():
+        print(f"skipping util at: {path}")
         # skip specific files
         continue
-    if src_path.is_file() and src_path.suffix == ".py":
-        dest_path = Path("./docs") / src_path.relative_to("./src").with_suffix(".md")
-        if not dest_path.is_file():
-            logging.info(f"Creating basic doc file for {src_path} at {dest_path}")
-            dest_path.parent.mkdir(parents=True, exist_ok=True)
-            dest_path.write_text(
-                f":::{src_path.relative_to('./src').with_suffix('').__str__().replace('/','.')}"
-            )
+    module_path = path.relative_to(src).with_suffix("")
+    doc_path = path.relative_to(src).with_suffix(".md")
+    full_doc_path = Path("reference", doc_path)
+
+    parts = tuple(module_path.parts)
+
+    if parts[-1] == "__init__":
+        parts = parts[:-1]
+        doc_path = doc_path.with_name("index.md")
+        full_doc_path = full_doc_path.with_name("index.md")
+    elif parts[-1] == "__main__":
+        continue
+
+    nav[parts] = doc_path.as_posix()
+
+    with mkdocs_gen_files.open(full_doc_path, "w") as fd:
+        ident = ".".join(parts)
+        fd.write(f"::: {ident}")
+
+    mkdocs_gen_files.set_edit_path(full_doc_path, path.relative_to(root))
+
+with mkdocs_gen_files.open("reference/SUMMARY.md", "w") as nav_file:
+    nav_file.writelines(nav.build_literate_nav())
