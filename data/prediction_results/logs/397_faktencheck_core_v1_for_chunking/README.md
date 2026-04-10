@@ -32,32 +32,45 @@ All runs use [this commit](https://github.com/DFKI-NLP/kibad-llm/pull/397/change
     - [errors - on previously working documents](#errors---on-previously-working-documents)
 
 ## Analysis
-TODO: remove stubs and replace with real analysis.
 
-### f1 large chunks vs small chunks on all documents
-Sanity check that small chunks are actually better than large ones.
+### Comparison to baseline
+The following graphs compare the old baseine, meaning the previous best extractor (left), to the new chunking extractor without stride (right).
+![new best vs old best](./new-best-case-vs-old.png)
+Despite slightly worse precision, we observe such a stark improvement in recall that the final f1 moves from 0.41 to 0.64 for the oss models, and to 0.71 for the proprietary gpt-5.
 
-Figure out which model performs best.
+This is a considerable improvement in performance.
 
-Hopefully set a new baseline as a result of this.
+### Details
+#### Effect of smaller input sizes
+Comparing the chunking extractor on all docs, small chunks vs large.
+![chunking extractor, all docs, small vs large chunks](./chunking-extractor-all-docs-small-vs-large-chunks.png)
+These graphs paint a similar picture to the comparison of the old baseline to the new chunking extractor. 
 
-### f1 large chunks on short documents - chunking extractor vs baseline
-Sanity checking against regressions.
+Small chunks lead to a noticeable increase in performance as measured by the f1, due to a small dip in precision being balanced by a large increase in recall. At least that is the case for the oss models. GPT-5 however performs slightly better on the large documents as its recall doesn't drop as much on large contexts.
 
-This should neither be much better, nor much worse.
+#### Effect of processing all documents
+Comparing the chunking extractor using small chunks, on only short docs (left) vs all docs (right).
+![chunking extractor small chunks all docs vs short docs](chunking-extractor-small-chunks-all-docs-vs-short-docs.png)
+The similarity between the performance over all docs vs only the short docs, shows that the chunking extractor can handle documents mostly independently of their length.
 
-### f1 small chunks on short documents - chunking extractor vs baseline
-Apples to apples comparison whether we actually improved.
+#### Sanity check
+Comparing the chunking extractor with large chunks vs old extractor, both on short docs only is a very apples to apples comparison. Basically, both extractors should work with almost exactly the same chunks in this setup. The results should therefore be very similar too.
+![apples to apples, old vs new](./chunking-extractor-vs-old-extractor-apples-to-apples.png)
+Since there is no large regression or improvement here, we can conclude that it is just the size of the chunks and no other factor that leads to an improvement of the chunking extractor over the old baseline.
 
-### Errors
-...
+#### Errors
+Comparing the number of errors made on the short docs shows the effect of the number of requests on the number of errors.
+![errors on short docs](errors-on-short-docs.png)
+GPT-5, being the model with the highest f1, returns a _significantly larger_ amount of errors.
+
+gpt_oss and qwen3, being the oss models with the highest f1, perform not much worse on the larger number of chunks than on the smaller.
+
+mistral\_small\_3 and gemma3 are not the best performing models when it comes to the f1 and show a considerable increase in errors on the larger number of chunks, though not nearly as bad as GPT-5.
 
 ### Conclusion
-GPT-5 is hella good but, also slow, expensive, and error prone.
-
-qwen3 and gpt-oss aren't as good, but much faster, cheaper, and correcter.
-
-?qwen3 kinda outperforms gpt-oss?
+- The new chunking extractor (without stride) is better than the old baseline.
+- GPT-5 is the best performing model, with significant drawbacks. It is very slow, processing about 200 documents in three entire days, though that could be fixed with a concurrent approach. It also is very expensive at 0.50$ to 1.0$ per document. Additionally it makes very many mistakes, further driving up the cost.
+- qwen3, the best oss model, is not as performant as GPT-5 at an f1 of 0.64 vs 0.71. However it can be self-hosted, does not require an api key to either huggingface or openai, is faster, less error prone, and independent of openai.
 
 ## Inference with small chunks
 This approach hopes to find strength in avoiding the needle-in-the-haystack problem.
