@@ -1,0 +1,23 @@
+name: github-pages-deployment
+on:
+  push:
+    branches:
+      - master
+      - main
+permissions:
+  contents: write
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure Git Credentials
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+      - name: Set up python & uv
+        uses: ./.github/actions/init-env
+        with:
+          os: ${{ matrix.os }}
+          python: ${{ matrix.python }}
+      - run: uv run --group cicd properdocs gh-deploy --force

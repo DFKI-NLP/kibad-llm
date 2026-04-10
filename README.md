@@ -4,7 +4,9 @@
     <img src="https://img.shields.io/badge/CCDS-Project%20template-328F97?logo=cookiecutter" />
 </a>
 
-A short description of the project.
+TODO: A short description of the project.
+
+For our documentation, please refer to [github-pages](https://dfki-nlp.github.io/kibad-llm/).
 
 ## Quickstart
 

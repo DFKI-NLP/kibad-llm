@@ -1,0 +1,57 @@
+##############################################################################
+# Since mkdocs is unmaintained, we are using the drop-in replacement
+# properdocs instead.
+##############################################################################
+
+
+site_name: kibad llm
+site_url: https://dfki-nlp.github.io/kibad-llm/
+#
+site_author: kiba-d project team
+#
+theme:
+  name: material
+  font:
+    text: Merriweather Sans
+    code: Red Hat Mono
+  palette:
+    # Dark Mode
+    - scheme: slate
+      toggle:
+        icon: material/weather-sunny
+        name: Dark mode
+      primary: green
+      accent: deep purple
+
+    # Light Mode
+    - scheme: default
+      toggle:
+        icon: material/weather-night
+        name: Light mode
+      primary: blue
+      accent: deep orange
+
+nav:
+- Welcome: index.md
+- General project overview: root-readme.md
+- LLM usage instructions: models-readme.md
+- Faktencheck database instructions: podman-readme.md
+- Evaluation dashboard: eval-dashboard.html
+# defer to gen-files + literate-nav
+- KIBA-D code Reference: reference/kibad_llm/
+
+plugins:
+- search
+- gen-files:
+    scripts:
+    - scripts/build_docs.py
+- literate-nav:
+    nav_file: SUMMARY.md
+- section-index
+- mkdocstrings
+
+markdown_extensions:
+  - pymdownx.snippets:
+      check_paths: true
+  - pymdownx.highlight:
+      default_lang: python

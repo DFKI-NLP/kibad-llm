@@ -81,7 +81,7 @@ You can safely ignore these errors as long as the startup exit code is 0.
 Please make sure to wait a few seconds for all containers to start fully before trying to load the database.
 
 - Import sql file to database: `podman exec -it kibad-postgres bash -c "gzip -cd /tmp/data/2025-11-05_pg-faktencheck_dump.sql.gz | psql -U postgres -d kibad"`
-  - With Docker: `docker exec -it kibad-postgres bash -c "gzip -cd /tmp/data/2025-11-05_pg-faktencheck_dump.sql.gz | psql -U postgres -d kibad"`
+    - With Docker: `docker exec -it kibad-postgres bash -c "gzip -cd /tmp/data/2025-11-05_pg-faktencheck_dump.sql.gz | psql -U postgres -d kibad"`
 
 Note: If you have started the containers previously, they might be cached and you will get errors when re-importing the dump (or a newer dump). To fix
 this, the current solution is to delete the cached containers with
@@ -97,12 +97,12 @@ These are the steps for using pgAdmin to make the database accessible via api.
 - Go to: http://localhost:8080
 - Use login email "admin@admin.com" and pw "kibad" (see docker-compose!)
 - Click "Add new server"
-  - General -> Name: "Postgres-Local"
-  - Connection
-    - Host name/address: "kibad-postgres"
-    - Port: 5432
-    - Username: "postgres" (see docker-compose!)
-    - Password: "kibad" (see docker-compose!)
+    - General -> Name: "Postgres-Local"
+    - Connection
+        - Host name/address: "kibad-postgres"
+        - Port: 5432
+        - Username: "postgres" (see docker-compose!)
+        - Password: "kibad" (see docker-compose!)
 - Access tables: Servers -> Postgres-Local -> Databases -> kibad -> Schemas -> public -> Tables
 
 ### Stop containers
@@ -140,10 +140,10 @@ To shut down the containers, run the following command from this directory.
 - Go to: http://localhost:8080
 - Use login email "admin@admin.com" and pw "kibad"
 - Click "Add new server"
-  - General -> Name: "Postgres-Local"
-  - Connection
-    - Host name/address: "kibad-postgres"
-    - Port: 5432
-    - Username: "postgres"
-    - Password: "kibad"
+    - General -> Name: "Postgres-Local"
+    - Connection
+        - Host name/address: "kibad-postgres"
+        - Port: 5432
+        - Username: "postgres"
+        - Password: "kibad"
 - Access tables: Servers -> Postgres-Local -> Databases -> kibad -> Schemas -> public -> Tables

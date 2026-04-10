@@ -89,6 +89,7 @@ repos:
           - mdformat-tables
           - mdformat_frontmatter
           - mdformat-pyproject
+          - mdformat-mkdocs
 
   # Security linter (reads [tool.bandit] from pyproject.toml)
   - repo: https://github.com/PyCQA/bandit
@@ -116,3 +117,13 @@ repos:
         language: system
         pass_filenames: false
         priority: 80  # run when bandit runs
+
+  - repo: local
+    hooks:
+      - id: check-mkdocs
+        name: check-mkdocs (uv)
+        entry: uv run --group cicd check-mkdocs
+        args: ["--config", "mkdocs.yml"]  # Optional, mkdocs.yml is the default
+        language: system
+        pass_filenames: false
+        priority: 90
