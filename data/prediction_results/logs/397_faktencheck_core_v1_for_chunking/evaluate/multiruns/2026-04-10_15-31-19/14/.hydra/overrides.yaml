@@ -1,0 +1,6 @@
+- dataset.predictions.log=logs/397_faktencheck_core_v1_for_chunking/predict/multiruns/2026-03-30_16-28-26/2
+- name=397_faktencheck_core_v1_for_chunking
+- experiment/evaluate=faktencheck_core_f1_micro_flat
+- dataset.references.file=../interim/faktencheck-db/faktenscheck_core_corrected.jsonl
+- metric.fields=[habitat,biodiversity_level,ecosystem_type.term,ecosystem_type.category,taxa.species_group]
+- prediction_logs=[logs/397_faktencheck_core_v1_for_chunking/predict/,logs/380_faktencheck_core/predict/]

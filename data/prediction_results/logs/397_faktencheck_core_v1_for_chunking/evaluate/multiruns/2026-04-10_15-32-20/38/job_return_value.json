@@ -1,0 +1,66 @@
+{
+  "biodiversity_level": {
+    "precision": 0.43,
+    "recall": 0.4387755102040816,
+    "f1": 0.4343434343434343,
+    "support": 98
+  },
+  "ecosystem_type.category": {
+    "precision": 0.5949367088607594,
+    "recall": 0.4392523364485981,
+    "f1": 0.5053763440860214,
+    "support": 107
+  },
+  "ecosystem_type.term": {
+    "precision": 0.36496350364963503,
+    "recall": 0.32051282051282054,
+    "f1": 0.34129692832764513,
+    "support": 156
+  },
+  "habitat": {
+    "precision": 0.7865168539325843,
+    "recall": 0.5223880597014925,
+    "f1": 0.6278026905829596,
+    "support": 134
+  },
+  "taxa.species_group": {
+    "precision": 0.583941605839416,
+    "recall": 0.5555555555555556,
+    "f1": 0.5693950177935942,
+    "support": 144
+  },
+  "AVG": {
+    "precision": 0.5520717344564791,
+    "recall": 0.4552968564845097,
+    "f1": 0.495642883026731,
+    "support": 127.8
+  },
+  "ALL": {
+    "precision": 0.5350553505535055,
+    "recall": 0.4538341158059468,
+    "f1": 0.4911092294665537,
+    "support": 639
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/397_faktencheck_core_v1_for_chunking/2026-04-02_16-56-31/2026-04-02_22-35-59_166167/predictions.jsonl",
+      "output_file_absolute": "/netscratch/hmeinhof/tmp/kiba-d_f05ece31-ef79-4e3a-a7c1-d666b9b18915/repo/predictions/397_faktencheck_core_v1_for_chunking/2026-04-02_16-56-31/2026-04-02_22-35-59_166167/predictions.jsonl",
+      "time_pdf_conversion": 0.006187354680150747,
+      "time_extraction": 20796.983146004844,
+      "time_start": 1775162159,
+      "time_end": 1775183046,
+      "commit_hash": "81d3de5422270e9a0394c3560def173b4373b2f2",
+      "branch": "commit/81d3de542227",
+      "is_dirty": false,
+      "slurm_job_id": "2737889"
+    },
+    "overrides": {
+      "name": "397_faktencheck_core_v1_for_chunking",
+      "experiment/predict": "faktencheck_core_fields_schema_with_chunking",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "mistral_small_3_24b_in_process",
+      "seed": "1337",
+      "extractor.max_char_buffer": "175000"
+    }
+  }
+}

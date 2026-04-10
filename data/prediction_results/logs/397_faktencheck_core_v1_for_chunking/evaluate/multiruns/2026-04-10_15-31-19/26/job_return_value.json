@@ -1,0 +1,66 @@
+{
+  "biodiversity_level": {
+    "precision": 0.7168141592920354,
+    "recall": 0.6136363636363636,
+    "f1": 0.6612244897959183,
+    "support": 132
+  },
+  "ecosystem_type.category": {
+    "precision": 0.8076923076923077,
+    "recall": 0.75,
+    "f1": 0.7777777777777779,
+    "support": 140
+  },
+  "ecosystem_type.term": {
+    "precision": 0.6780487804878049,
+    "recall": 0.5791666666666667,
+    "f1": 0.6247191011235955,
+    "support": 240
+  },
+  "habitat": {
+    "precision": 0.8742857142857143,
+    "recall": 0.8095238095238095,
+    "f1": 0.8406593406593407,
+    "support": 189
+  },
+  "taxa.species_group": {
+    "precision": 0.7268041237113402,
+    "recall": 0.6619718309859155,
+    "f1": 0.6928746928746928,
+    "support": 213
+  },
+  "AVG": {
+    "precision": 0.7607290170938406,
+    "recall": 0.6828597341625511,
+    "f1": 0.719451080446265,
+    "support": 182.8
+  },
+  "ALL": {
+    "precision": 0.7576499388004896,
+    "recall": 0.6772428884026258,
+    "f1": 0.7151935297515887,
+    "support": 914
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/397_faktencheck_core_v1_for_chunking/2026-04-02_16-50-38/2026-04-03_00-47-58_753462/predictions.jsonl",
+      "output_file_absolute": "/netscratch/hmeinhof/tmp/kiba-d_04fc4171-08b5-4ee5-856e-9010c1d0f45c/repo/predictions/397_faktencheck_core_v1_for_chunking/2026-04-02_16-50-38/2026-04-03_00-47-58_753462/predictions.jsonl",
+      "time_pdf_conversion": 0.0063442932441830635,
+      "time_extraction": 23362.457301408052,
+      "time_start": 1775170078,
+      "time_end": 1775193443,
+      "commit_hash": "81d3de5422270e9a0394c3560def173b4373b2f2",
+      "branch": "commit/81d3de542227",
+      "is_dirty": false,
+      "slurm_job_id": "2737891"
+    },
+    "overrides": {
+      "name": "397_faktencheck_core_v1_for_chunking",
+      "experiment/predict": "faktencheck_core_fields_schema_with_chunking",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gpt_5",
+      "seed": "1337",
+      "extractor.max_char_buffer": "175000"
+    }
+  }
+}

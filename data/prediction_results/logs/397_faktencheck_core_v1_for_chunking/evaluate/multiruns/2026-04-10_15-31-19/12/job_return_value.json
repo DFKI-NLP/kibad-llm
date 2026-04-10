@@ -1,0 +1,66 @@
+{
+  "biodiversity_level": {
+    "precision": 0.7349397590361446,
+    "recall": 0.4621212121212121,
+    "f1": 0.5674418604651162,
+    "support": 132
+  },
+  "ecosystem_type.category": {
+    "precision": 0.7358490566037735,
+    "recall": 0.2785714285714286,
+    "f1": 0.40414507772020725,
+    "support": 140
+  },
+  "ecosystem_type.term": {
+    "precision": 0.5409836065573771,
+    "recall": 0.1375,
+    "f1": 0.21926910299003324,
+    "support": 240
+  },
+  "habitat": {
+    "precision": 0.8013698630136986,
+    "recall": 0.6190476190476191,
+    "f1": 0.6985074626865673,
+    "support": 189
+  },
+  "taxa.species_group": {
+    "precision": 0.6530612244897959,
+    "recall": 0.4507042253521127,
+    "f1": 0.5333333333333333,
+    "support": 213
+  },
+  "AVG": {
+    "precision": 0.6932407019401579,
+    "recall": 0.3895888970184745,
+    "f1": 0.48453936743905146,
+    "support": 182.8
+  },
+  "ALL": {
+    "precision": 0.7061224489795919,
+    "recall": 0.3785557986870897,
+    "f1": 0.49287749287749283,
+    "support": 914
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/397_faktencheck_core_v1_for_chunking/2026-03-30_16-28-26/2026-03-30_16-28-27_455859/predictions.jsonl",
+      "output_file_absolute": "/home/hmeinhof/programming/kiba/predictions/397_faktencheck_core_v1_for_chunking/2026-03-30_16-28-26/2026-03-30_16-28-27_455859/predictions.jsonl",
+      "time_pdf_conversion": 0.003485616995021701,
+      "time_extraction": 3369.913947125955,
+      "time_start": 1774880907,
+      "time_end": 1774884361,
+      "commit_hash": "d8d4a016e59eaed582624db297d4a38e2272094e",
+      "branch": "feat/chunking-extractor-no-stride",
+      "is_dirty": false,
+      "slurm_job_id": "2723546"
+    },
+    "overrides": {
+      "name": "397_faktencheck_core_v1_for_chunking",
+      "experiment/predict": "faktencheck_core_fields_schema_with_chunking",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gpt_oss_20b_in_process",
+      "seed": "42",
+      "extractor.max_char_buffer": "325000"
+    }
+  }
+}

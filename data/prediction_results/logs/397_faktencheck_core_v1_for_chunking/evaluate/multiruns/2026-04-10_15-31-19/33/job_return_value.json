@@ -1,0 +1,66 @@
+{
+  "biodiversity_level": {
+    "precision": 0.4339622641509434,
+    "recall": 0.3484848484848485,
+    "f1": 0.38655462184873957,
+    "support": 132
+  },
+  "ecosystem_type.category": {
+    "precision": 0.6547619047619048,
+    "recall": 0.39285714285714285,
+    "f1": 0.4910714285714286,
+    "support": 140
+  },
+  "ecosystem_type.term": {
+    "precision": 0.381294964028777,
+    "recall": 0.22083333333333333,
+    "f1": 0.2796833773087071,
+    "support": 240
+  },
+  "habitat": {
+    "precision": 0.6335403726708074,
+    "recall": 0.5396825396825397,
+    "f1": 0.5828571428571429,
+    "support": 189
+  },
+  "taxa.species_group": {
+    "precision": 0.575,
+    "recall": 0.431924882629108,
+    "f1": 0.4932975871313673,
+    "support": 213
+  },
+  "AVG": {
+    "precision": 0.5357119011224866,
+    "recall": 0.38675654939739446,
+    "f1": 0.4466928315434771,
+    "support": 182.8
+  },
+  "ALL": {
+    "precision": 0.5353846153846153,
+    "recall": 0.38074398249452956,
+    "f1": 0.44501278772378516,
+    "support": 914
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/397_faktencheck_core_v1_for_chunking/2026-04-02_16-54-15/2026-04-02_20-05-56_942512/predictions.jsonl",
+      "output_file_absolute": "/netscratch/hmeinhof/tmp/kiba-d_f01b5887-bcf0-4475-bbab-b1542a1e39c0/repo/predictions/397_faktencheck_core_v1_for_chunking/2026-04-02_16-54-15/2026-04-02_20-05-56_942512/predictions.jsonl",
+      "time_pdf_conversion": 0.00463049195241183,
+      "time_extraction": 5918.900561236893,
+      "time_start": 1775153156,
+      "time_end": 1775159178,
+      "commit_hash": "81d3de5422270e9a0394c3560def173b4373b2f2",
+      "branch": "commit/81d3de542227",
+      "is_dirty": false,
+      "slurm_job_id": "2737886"
+    },
+    "overrides": {
+      "name": "397_faktencheck_core_v1_for_chunking",
+      "experiment/predict": "faktencheck_core_fields_schema_with_chunking",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gemma3_27b_in_process",
+      "seed": "7331",
+      "extractor.max_char_buffer": "175000"
+    }
+  }
+}
