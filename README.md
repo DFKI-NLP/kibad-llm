@@ -4,7 +4,9 @@
     <img src="https://img.shields.io/badge/CCDS-Project%20template-328F97?logo=cookiecutter" />
 </a>
 
-A short description of the project.
+TODO: A short description of the project.
+
+For our documentation, please refer to [github-pages](https://dfki-nlp.github.io/kibad-llm/).
 
 ## Quickstart
 
@@ -318,12 +320,12 @@ uv sync --group cicd
 To run code quality checks and static type checking, call:
 
 ```bash
-uv run pre-commit run -a
+uv run prek run -a
 # if you have not run 'uv sync --group cicd' previously, use instead
-uv run --group cicd pre-commit run -a
+uv run --group cicd prek run -a
 ```
 
-This runs all configured [pre-commit](https://pre-commit.com/) hooks (see [pre-commit-config.yaml](.pre-commit-config.yaml)) on all files. Some hooks may fix issues automatically, others will report issues that need to be fixed manually.
+This runs all configured [prek](https://prek.j178.dev/) hooks (see [pre-commit-config.yaml](.pre-commit-config.yaml)) on all files. Some hooks may fix issues automatically, others will report issues that need to be fixed manually.
 
 To run all tests, call:
 
@@ -336,7 +338,7 @@ uv run --group cicd pytest
 The following commands run on GitHub CI (see [tests.yml](.github/workflows/code_quality_and_tests.yml)), but can also be run locally:
 
 ```bash
-uv run --group cicd pre-commit run -a
+uv run --group cicd prek run -a
 # run tests *not marked as slow* with coverage and typeguard checks
 uv run --group cicd pytest -m "not slow"
 ```
@@ -378,3 +380,7 @@ These known issues have their own uv specific fixes. The relevant documentation 
 
 - [Build isolation](https://docs.astral.sh/uv/concepts/projects/config/#build-isolation) - Can lead to runtime errors
 - [Conflicting dependencies](https://docs.astral.sh/uv/concepts/projects/config/#conflicting-dependencies)
+
+## License
+
+This project is licensed under the AGPL-v3. The license text can be found at [LICENSE](/LICENSE).
