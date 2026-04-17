@@ -36,7 +36,15 @@ All runs use [this commit](https://github.com/DFKI-NLP/kibad-llm/pull/397/change
 ### Comparison to baseline
 The following graphs compare the old baseline, meaning the previous best extractor (left), to the new chunking extractor without stride (right).
 
-![new best vs old best](./new-best-case-vs-old.png)
+![new best vs old best](./all_docs-baseline_vs_chunking_extractor-small_chunks.png)
+
+<details>
+    <summary>here we compare the old baseline to the new one across both all documents as well as short ones only.</summary>
+
+![detailed new best vs old best](./baseline_vs_chunking_extractor-small_chunks.png)
+
+</details>
+
 
 Despite slightly worse precision, we observe such a stark improvement in recall that the final f1 moves from 0.41 to 0.64 for the oss models, and to 0.71 for the proprietary gpt-5.
 
@@ -46,30 +54,30 @@ This is a considerable improvement in performance.
 #### Effect of smaller input sizes
 Comparing the chunking extractor on all docs, small chunks vs large.
 
-![chunking extractor, all docs, small vs large chunks](./chunking-extractor-all-docs-small-vs-large-chunks.png)
+![chunking extractor, all docs, small vs large chunks](./chunking_extractor-all_docs-small_chunks_vs_large.png)
 
 These graphs paint a similar picture to the comparison of the old baseline to the new chunking extractor. 
 
 Small chunks lead to a noticeable increase in performance as measured by the f1, due to a small dip in precision being balanced by a large increase in recall. At least that is the case for the oss models. GPT-5 however performs slightly better on the large documents as its recall doesn't drop as much on large contexts.
 
 #### Effect of processing all documents
-Comparing the chunking extractor using small chunks, on only short docs (left) vs all docs (right).
+Comparing the chunking extractor using small chunks, on only short docs vs all docs.
 
-![chunking extractor small chunks all docs vs short docs](chunking-extractor-small-chunks-all-docs-vs-short-docs.png)
+![chunking extractor small chunks all docs vs short docs](./chunking_extractor-small_chunks-all_docs_vs_short_only.png)
 
 The similarity between the performance over all docs vs only the short docs, shows that the chunking extractor can handle documents mostly independently of their length.
 
 #### Sanity check
 Comparing the chunking extractor with large chunks vs old extractor, both on short docs only is a very apples to apples comparison. Basically, both extractors should work with almost exactly the same chunks in this setup. The results should therefore be very similar too.
 
-![apples to apples, old vs new](./chunking-extractor-vs-old-extractor-apples-to-apples.png)
+![apples to apples, old vs new](./short_docs-baseline_vs_chunking_extractor-large_chunks.png)
 
 Since there is no large regression or improvement here, we can conclude that it is just the size of the chunks and no other factor that leads to an improvement of the chunking extractor over the old baseline.
 
 #### Errors
 Comparing the number of errors made on the short docs shows the effect of the number of requests on the number of errors.
 
-![errors on short docs](errors-on-short-docs.png)
+![errors on short docs](./short_docs-baseline_vs_chunking_extractor-small_chunks-errors.png)
 
 GPT-5, being the model with the highest f1, returns a _significantly larger_ amount of errors.
 
