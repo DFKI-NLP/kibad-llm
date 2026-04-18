@@ -30,7 +30,9 @@ model: "google/gemma-3-27b-it"
 # See https://docs.vllm.ai/en/v0.12.0/api/vllm/entrypoints/llm/ for details.
 vllm_kwargs:
   tensor_parallel_size: 1  # shard across N GPUs
-  hf_token: ${oc.env:HF_TOKEN}
+  # Use token set in /.env
+  # This model will not work without at least a read-only huggingface token!
+  hf_token: true
   # Supports up to 128K tokens (max size for https://huggingface.co/google/gemma-3-27b-it).
   # Use lower value to save memory and improve performance
   max_model_len: 131072
