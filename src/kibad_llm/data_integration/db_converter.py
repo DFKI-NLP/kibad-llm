@@ -54,6 +54,7 @@ def format_result(result: tuple, column_names: list[str]) -> dict[str, Any]:
     Returns:
         dict[str, Any]: the formatted result
     """
+    assert len(result) > 0
     return dict(zip(column_names, result)) if len(result) > 1 else result[0]
 
 
