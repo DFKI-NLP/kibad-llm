@@ -109,8 +109,6 @@ class ChunkingExtractor:
                 **combined_kwargs,
                 # This may raise an error if character_start or character_end is already provided via kwargs,
                 # but we want to be strict about not allowing that since it would interfere with the chunking logic.
-                # TODO: Is this correct? mypy complains when removing "or 0" since start_pos can be None...
-                #  What does it mean if start_pos (also end_pos) is None?
                 character_start=chunk.char_interval.start_pos or 0,
                 character_end=chunk.char_interval.end_pos,
             )
