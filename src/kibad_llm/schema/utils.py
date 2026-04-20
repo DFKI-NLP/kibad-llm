@@ -292,7 +292,7 @@ def build_schema_description(
     if header:
         lines.append(header)
 
-    props = schema.get("properties", {}) or {}
+    props: dict = schema.get("properties", {}) or {}
     for name, spec in props.items():
         # Single check for array vs non-array handling
         is_array = spec.get("type") == "array"
