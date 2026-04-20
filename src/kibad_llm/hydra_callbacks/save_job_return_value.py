@@ -476,8 +476,9 @@ class SaveJobReturnValueCallback(Callback):
             if not isinstance(obj_py, dict):
                 obj_py = {"value": obj_py}
 
-            assert all(isinstance(k, (str, int)) for k in obj_py), \
-                f"Unexpected key types in obj_py: {obj_py.keys()}"
+            assert all(
+                isinstance(k, (str, int)) for k in obj_py
+            ), f"Unexpected key types in obj_py: {obj_py.keys()}"
             obj_py_flat = flatten_dict(cast(dict[str | int, Any], obj_py))
 
             job_id_columns: list[Hashable | None] = []
