@@ -8,10 +8,12 @@ All runs use [this commit](https://github.com/DFKI-NLP/kibad-llm/pull/397/change
 - [397\_faktencheck\_core\_v1\_for\_chunking](#397_faktencheck_core_v1_for_chunking)
   - [Table of contents](#table-of-contents)
   - [Analysis](#analysis)
-    - [f1 large chunks vs small chunks on all documents](#f1-large-chunks-vs-small-chunks-on-all-documents)
-    - [f1 large chunks on short documents - chunking extractor vs baseline](#f1-large-chunks-on-short-documents---chunking-extractor-vs-baseline)
-    - [f1 small chunks on short documents - chunking extractor vs baseline](#f1-small-chunks-on-short-documents---chunking-extractor-vs-baseline)
-    - [Errors](#errors)
+    - [Comparison to baseline](#comparison-to-baseline)
+    - [Details](#details)
+      - [Effect of smaller input sizes](#effect-of-smaller-input-sizes)
+      - [Effect of processing all documents](#effect-of-processing-all-documents)
+      - [Sanity check](#sanity-check)
+      - [Errors](#errors)
     - [Conclusion](#conclusion)
   - [Inference with small chunks](#inference-with-small-chunks)
     - [gpt\_oss\_20b](#gpt_oss_20b)
@@ -39,12 +41,31 @@ The following graphs compare the old baseline, meaning the previous best extract
 ![new best vs old best](./all_docs-baseline_vs_chunking_extractor-small_chunks.png)
 
 <details>
-    <summary>here we compare the old baseline to the new one across both all documents as well as short ones only.</summary>
+    <summary>Here we compare the old baseline to the new one across both all documents as well as short ones only.</summary>
 
 ![detailed new best vs old best](./baseline_vs_chunking_extractor-small_chunks.png)
 
 </details>
+<details>
+    <summary>f1 per class comparison baseline and chunking extractor.</summary>
 
+![f1 per class](./f1_per_class.png)
+
+</details>
+</details>
+<details>
+    <summary>precision per class comparison baseline and chunking extractor.</summary>
+
+![precision per class](./precision_per_class.png)
+
+</details>
+</details>
+<details>
+    <summary>recall per class comparison baseline and chunking extractor.</summary>
+
+![recall per class](./recall_per_class.png)
+
+</details>
 
 Despite slightly worse precision, we observe such a stark improvement in recall that the final f1 moves from 0.41 to 0.64 for the oss models, and to 0.71 for the proprietary gpt-5.
 
@@ -52,7 +73,7 @@ This is a considerable improvement in performance.
 
 ### Details
 #### Effect of smaller input sizes
-Comparing the chunking extractor on all docs, small chunks vs large.
+Comparing the chunking extractor on all docs, small chunks (`max_char_buffer=20000`, default) vs large (`max_char_buffer=175000`).
 
 ![chunking extractor, all docs, small vs large chunks](./chunking_extractor-all_docs-small_chunks_vs_large.png)
 
@@ -78,6 +99,13 @@ Since there is no large regression or improvement here, we can conclude that it 
 Comparing the number of errors made on the short docs shows the effect of the number of requests on the number of errors.
 
 ![errors on short docs](./short_docs-baseline_vs_chunking_extractor-small_chunks-errors.png)
+
+<details>
+<summary>Detailed error comparison.</summary>
+
+![errors in detial](./detailed_errors.png)
+
+</details>
 
 GPT-5, being the model with the highest f1, returns a _significantly larger_ amount of errors.
 
