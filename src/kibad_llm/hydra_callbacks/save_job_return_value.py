@@ -4,7 +4,7 @@ import logging
 import math
 import os
 from pathlib import Path
-from typing import Any, cast
+from typing import Any
 
 from hydra.core.utils import JobReturn
 from hydra.experimental.callback import Callback
@@ -476,10 +476,11 @@ class SaveJobReturnValueCallback(Callback):
             if not isinstance(obj_py, dict):
                 obj_py = {"value": obj_py}
 
-            assert all(
-                isinstance(k, (str, int)) for k in obj_py
-            ), f"Unexpected key types in obj_py: {obj_py.keys()}"
-            obj_py_flat = flatten_dict(cast(dict[str | int, Any], obj_py))
+            if not all(isinstance(k, (str, int)) for k in obj_py):
+                raise ValueError(
+                    f"Can not flatten the dictionary, unexpected key types in obj_py: {obj_py.keys()}"
+                )
+            obj_py_flat = flatten_dict(obj_py)
 
             job_id_columns: list[Hashable | None] = []
             if is_tabular_data:
