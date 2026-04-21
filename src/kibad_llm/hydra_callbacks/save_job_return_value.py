@@ -1,7 +1,6 @@
 from collections.abc import Hashable, Iterable
 import json
 import logging
-import math
 import os
 from pathlib import Path
 from typing import Any
