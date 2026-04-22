@@ -144,9 +144,7 @@ def get_and_map_keys(
     Returns:
         A new dictionary with mapped keys.
     """
-    d_nested = d.get(key, None)
-    if d_nested is None:
-        d_nested = dict()
+    d_nested: Mapping[Any, Any] = d.get(key) or {}
     mapped = {mapping[k]: v for k, v in d_nested.items()}
     return mapped
 
@@ -184,7 +182,7 @@ class FieldDict(dict[str, Any]):
 
     def __setitem__(self, key: str, value: Any) -> None:
         # Keep attributes in sync when assigning like a dict.
-        if key not in self.__dataclass_fields__:
+        if key not in getattr(self, "__dataclass_fields__", {}):
             raise KeyError(f"Key '{key}' not found in {self.__class__.__name__}.")
         setattr(self, key, value)
 

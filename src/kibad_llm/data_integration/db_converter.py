@@ -54,6 +54,9 @@ def format_result(result: tuple, column_names: list[str]) -> dict[str, Any]:
     Returns:
         dict[str, Any]: the formatted result
     """
+    if len(result) < 1:
+        raise ValueError("Can not format the result since it is empty.")
+
     return dict(zip(column_names, result)) if len(result) > 1 else result[0]
 
 

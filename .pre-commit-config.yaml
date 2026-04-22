@@ -111,10 +111,13 @@ repos:
 
   - repo: local
     hooks:
-      - id: mypy
-        name: mypy (uv)
-        entry: uv run mypy --config=pyproject.toml
-        language: system
+      - id: zuban-mypy
+        name: zuban mypy
+        language: python
+        entry: zuban
+        args: [mypy, --config-file=pyproject.toml]
+        additional_dependencies: [zuban]
+        types: [python]
         pass_filenames: false
         priority: 80  # run when bandit runs
 
