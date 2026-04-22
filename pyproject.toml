@@ -46,6 +46,7 @@ dependencies = [
     "gitpython>=3.1.45",
     "jupyter>=1.1.1,<2.0.0", # to run jupyter notebooks
     "matplotlib>=3.10.8,<4.0.0", # to run eval notebook (create plots)
+    "types-regex>=2026.1.15.20260116",
 ]
 
 [dependency-groups]

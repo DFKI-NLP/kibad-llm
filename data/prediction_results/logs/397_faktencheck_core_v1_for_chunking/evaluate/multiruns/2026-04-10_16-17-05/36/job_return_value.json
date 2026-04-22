@@ -1,0 +1,65 @@
+{
+  "biodiversity_level": {
+    "precision": 0.5818181818181818,
+    "recall": 0.7272727272727273,
+    "f1": 0.6464646464646464,
+    "support": 132
+  },
+  "ecosystem_type.category": {
+    "precision": 0.6554621848739496,
+    "recall": 0.5571428571428572,
+    "f1": 0.6023166023166022,
+    "support": 140
+  },
+  "ecosystem_type.term": {
+    "precision": 0.44,
+    "recall": 0.36666666666666664,
+    "f1": 0.4,
+    "support": 240
+  },
+  "habitat": {
+    "precision": 0.7302325581395349,
+    "recall": 0.8306878306878307,
+    "f1": 0.7772277227722773,
+    "support": 189
+  },
+  "taxa.species_group": {
+    "precision": 0.5441696113074205,
+    "recall": 0.7230046948356808,
+    "f1": 0.6209677419354839,
+    "support": 213
+  },
+  "AVG": {
+    "precision": 0.5903365072278174,
+    "recall": 0.6409549553211524,
+    "f1": 0.609395342697802,
+    "support": 182.8
+  },
+  "ALL": {
+    "precision": 0.5835030549898167,
+    "recall": 0.6269146608315098,
+    "f1": 0.6044303797468354,
+    "support": 914
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/397_faktencheck_core_v1_for_chunking/2026-04-08_19-06-32/2026-04-09_00-58-57_929911/predictions.jsonl",
+      "output_file_absolute": "/netscratch/hmeinhof/tmp/kiba-d_c5a2bb47-5644-4b48-94b0-ee7968bab1a8/repo/predictions/397_faktencheck_core_v1_for_chunking/2026-04-08_19-06-32/2026-04-09_00-58-57_929911/predictions.jsonl",
+      "time_pdf_conversion": 0.00796354841440916,
+      "time_extraction": 21238.990171854384,
+      "time_start": 1775689137,
+      "time_end": 1775710473,
+      "commit_hash": "81d3de5422270e9a0394c3560def173b4373b2f2",
+      "branch": "commit/81d3de542227",
+      "is_dirty": false,
+      "slurm_job_id": "2765995"
+    },
+    "overrides": {
+      "name": "397_faktencheck_core_v1_for_chunking",
+      "experiment/predict": "faktencheck_core_fields_schema_with_chunking",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gpt_oss_20b_in_process",
+      "seed": "1337"
+    }
+  }
+}

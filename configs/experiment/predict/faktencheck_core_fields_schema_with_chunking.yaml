@@ -1,0 +1,19 @@
+# @package _global_
+
+# This experiment config focuses on splitting texts into smaller chunks, in hopes to improve
+# performance and to fit large documents into small contexts.
+# As it is based on faktencheck_core_fields_schema_with_evidence,
+# this experiment config uses the EcosystemStudyFeaturesCoreFields schema, which focuses on
+# a core set of highly relevant fields from the Faktencheck literature database. See
+# https://github.com/DFKI-NLP/kibad-llm/issues/158
+# Therefore, it also enables evidence detection, so that each extracted field value
+# is accompanied by a text snippet from the original document that supports the extraction.
+
+# To execute this experiment run:
+# uv run -m kibad_llm.predict experiment/predict=faktencheck_core_fields_schema_with_chunking pdf_directory=path/to/pdf/files
+
+defaults:
+  - _with_evidence
+  - override /extractor/schema: faktencheck_core
+  - override /extractor: chunking
+  - override /extractor/prompt_template: faktencheck_core_v1_with_chunking

@@ -1,0 +1,337 @@
+hydra:
+  run:
+    dir: ${paths.log_dir}/runs/${paths.run_subdir}
+  sweep:
+    dir: ${paths.log_dir}/multiruns/${paths.run_subdir}
+    subdir: ${hydra.job.num}
+  launcher:
+    _target_: hydra._internal.core_plugins.basic_launcher.BasicLauncher
+  sweeper:
+    _target_: hydra._internal.core_plugins.basic_sweeper.BasicSweeper
+    max_batch_size: null
+    params: null
+  help:
+    app_name: ${hydra.job.name}
+    header: '${hydra.help.app_name} is powered by Hydra.
+
+      '
+    footer: 'Powered by Hydra (https://hydra.cc)
+
+      Use --hydra-help to view Hydra specific help
+
+      '
+    template: '${hydra.help.header}
+
+      == Configuration groups ==
+
+      Compose your configuration from those groups (group=option)
+
+
+      $APP_CONFIG_GROUPS
+
+
+      == Config ==
+
+      Override anything in the config (foo.bar=value)
+
+
+      $CONFIG
+
+
+      ${hydra.help.footer}
+
+      '
+  hydra_help:
+    template: 'Hydra (${hydra.runtime.version})
+
+      See https://hydra.cc for more info.
+
+
+      == Flags ==
+
+      $FLAGS_HELP
+
+
+      == Configuration groups ==
+
+      Compose your configuration from those groups (For example, append hydra/job_logging=disabled
+      to command line)
+
+
+      $HYDRA_CONFIG_GROUPS
+
+
+      Use ''--cfg hydra'' to Show the Hydra config.
+
+      '
+    hydra_help: ???
+  hydra_logging:
+    version: 1
+    formatters:
+      colorlog:
+        (): colorlog.ColoredFormatter
+        format: '[%(cyan)s%(asctime)s%(reset)s][%(purple)sHYDRA%(reset)s] %(message)s'
+    handlers:
+      console:
+        class: logging.StreamHandler
+        formatter: colorlog
+        stream: ext://sys.stdout
+    root:
+      level: INFO
+      handlers:
+      - console
+    disable_existing_loggers: false
+  job_logging:
+    version: 1
+    formatters:
+      simple:
+        format: '[%(asctime)s][%(name)s][%(levelname)s] - %(message)s'
+      colorlog:
+        (): colorlog.ColoredFormatter
+        format: '[%(cyan)s%(asctime)s%(reset)s][%(blue)s%(name)s%(reset)s][%(log_color)s%(levelname)s%(reset)s]
+          - %(message)s'
+        log_colors:
+          DEBUG: purple
+          INFO: green
+          WARNING: yellow
+          ERROR: red
+          CRITICAL: red
+    handlers:
+      console:
+        class: logging.StreamHandler
+        formatter: colorlog
+        stream: ext://sys.stdout
+      file:
+        class: logging.FileHandler
+        formatter: simple
+        filename: ${hydra.job.name}.log
+    root:
+      level: INFO
+      handlers:
+      - console
+      - file
+    disable_existing_loggers: false
+  env: {}
+  mode: MULTIRUN
+  searchpath: []
+  callbacks:
+    save_job_return:
+      _target_: kibad_llm.hydra_callbacks.SaveJobReturnValueCallback
+      replace_existing_overrides: false
+      sort_markdown_columns: true
+      filenames:
+      - job_return_value.json
+      - job_return_value.md
+      integrate_multirun_result: false
+      multirun_add_overrides_as_dict: true
+      multirun_convert_job_ids: true
+      multirun_show_file_contents:
+      - job_return_value.md
+      multirun_overrides_separator: '#'
+      multirun_aggregator_blacklist:
+      - min
+      - 25%
+      - 50%
+      - 75%
+      - max
+  output_subdir: .hydra
+  overrides:
+    hydra:
+    - hydra.mode=MULTIRUN
+    task:
+    - name=397_faktencheck_core_v1_for_chunking
+    - experiment/predict=faktencheck_core_fields_schema_with_chunking
+    - pdf_directory=/ds/text/kiba-d/dev-set-100
+    - extractor/llm=gemma3_27b_in_process
+    - seed=42,1337,7331
+  job:
+    name: predict
+    chdir: null
+    override_dirname: experiment/predict=faktencheck_core_fields_schema_with_chunking,extractor/llm=gemma3_27b_in_process,name=397_faktencheck_core_v1_for_chunking,pdf_directory=/ds/text/kiba-d/dev-set-100,seed=42,1337,7331
+    id: ???
+    num: ???
+    config_name: predict.yaml
+    env_set: {}
+    env_copy: []
+    config:
+      override_dirname:
+        kv_sep: '='
+        item_sep: ','
+        exclude_keys: []
+  runtime:
+    version: 1.3.2
+    version_base: '1.3'
+    cwd: /netscratch/hmeinhof/tmp/kiba-d_c322e037-9461-422b-b59b-b0de96caee7d/repo
+    config_sources:
+    - path: hydra.conf
+      schema: pkg
+      provider: hydra
+    - path: /netscratch/hmeinhof/tmp/kiba-d_c322e037-9461-422b-b59b-b0de96caee7d/repo/configs
+      schema: file
+      provider: main
+    - path: hydra_plugins.hydra_colorlog.conf
+      schema: pkg
+      provider: hydra-colorlog
+    - path: ''
+      schema: structured
+      provider: schema
+    output_dir: ???
+    choices:
+      experiment/predict: faktencheck_core_fields_schema_with_chunking
+      extractor: chunking
+      extractor/request_parameters: default
+      extractor/prompt_template: faktencheck_core_v1_with_chunking
+      extractor/llm: gemma3_27b_in_process
+      extractor/aggregator: single_majority_vote_multi_union
+      extractor/schema: faktencheck_core
+      pdf_reader: pymupdf4llm
+      hydra: default
+      paths: predict
+      hydra/env: default
+      hydra/callbacks: null
+      hydra/job_logging: colorlog
+      hydra/hydra_logging: colorlog
+      hydra/hydra_help: default
+      hydra/help: default
+      hydra/sweeper: basic
+      hydra/launcher: basic
+      hydra/output: default
+  verbose: false
+print_config: true
+name: 397_faktencheck_core_v1_for_chunking
+seed: 1337
+pdf_directory: /ds/text/kiba-d/dev-set-100
+output_dir: ${paths.prediction_save_dir}
+output_file_name: predictions.jsonl
+fast_dev_run: false
+extraction_caching: false
+store_text_in_predictions: false
+pdf_reader_num_proc: null
+extractor_num_proc: null
+paths:
+  root_dir: ${oc.env:PROJECT_ROOT}
+  data_dir: ${paths.root_dir}/data
+  timestamp: ${now:%Y-%m-%d_%H-%M-%S}
+  run_subdir: ${paths.timestamp}
+  output_dir: ${hydra:runtime.output_dir}
+  save_dir: ${paths.root_dir}
+  log_dir: ${paths.save_dir}/logs/${name}/predict
+  work_dir: ${hydra:runtime.cwd}
+  prediction_save_dir: ${paths.save_dir}/predictions/${name}/${paths.timestamp}
+pdf_reader:
+  _target_: kibad_llm.preprocessing.read_pdf_as_markdown_via_pymupdf4llm
+  _partial_: true
+extractor:
+  schema:
+    _target_: kibad_llm.schema.types.EcosystemStudyFeaturesCoreFields.model_json_schema
+    by_alias: false
+  aggregator:
+    _target_: kibad_llm.extractors.aggregation_utils.aggregate_single_majority_vote_multi_union
+    _partial_: true
+    skip_type_mismatches: false
+  llm:
+    _target_: kibad_llm.llms.VllmInProcess
+    model: google/gemma-3-27b-it
+    vllm_kwargs:
+      tensor_parallel_size: 1
+      hf_token: ${oc.env:HF_TOKEN}
+      max_model_len: 131072
+      gpu_memory_utilization: 0.95
+      seed: ${seed}
+      download_dir: ${oc.env:VLLM_DOWNLOAD_DIR}
+    temperature: 1.0
+    max_tokens: 8192
+    top_k: 64
+    top_p: 0.96
+    repetition_penalty: 1.1
+  prompt_template:
+    system_message: 'Du bist ein Spezialist für die strukturierte Datenextraktion
+      aus wissenschaftlichen Dokumenten im Bereich
+
+      Ökosystemforschung. Bitte lies den folgenden Text vollständig.
+
+
+      Der Text ist eine Biodiversitätsstudie oder ein Bericht zum Stand der Biodiversität
+      oder ein Teil davon, und bezieht sich meist
+
+      auf eine Gegend in Deutschland oder Gesamtdeutschland. Prüfe, ob der Text biodiversitätsbezogene
+
+      wissenschaftliche Erkenntnisse enthält. Analysiere dafür zunächst den Rahmen
+      der Studie / des Berichts: Um welche
+
+      Lebensräume und Ökosystemtypen geht es? Welche Arten oder Artengruppen wurden
+      untersucht?
+
+      Enthält der Text Angaben zur betrachteten Biodiversitätsebene - z.B. Artenvielfalt,
+      genetische Diversität,
+
+      oder Habitatdiversität? Sammle diese und weitere Informationen entsprechend
+      dem nachfolgenden
+
+      Schema. Wenn die Studie zum Beispiel ein Überblicks-, Positions- oder Reviewpapier
+      ist, und daher manche der
+
+      abgefragten Informationen fehlen, lasse die entsprechenden Felder in deiner
+      Antwort leer.
+
+
+      Der Text ist als Markdown formatiert.
+
+      Gib die Antworten auf Deutsch, auch wenn der Text auf Englisch ist.
+
+      Wenn Antwortmöglichkeiten nach einer Frage gegeben sind, wähle nur aus den durch
+      Semikolon getrennten Antwortmöglichkeiten.
+
+      Extrahiere dabei nur, was auch im Text steht, konzentriere dich daher auf die
+      Informationen, die du sicher
+
+      identifizieren und auch belegen kannst. Für nicht im Text vorhandene Informationen
+      lasse die entsprechenden Antwortfelder leer.
+
+      Wenn eine Antwortmöglichkeit zutrifft, genügt es, sie einmal zu nennen, wiederhole
+      sie also nicht mehrfach.
+
+      Beachte jedoch auch die Angaben zur Kardinalität jedes Feldes.
+
+
+      Erzeuge die Antwort in validem JSON-Format (nicht embedded Markdown!). Keine
+      zusätzlichen Felder, keine Erklärungen.
+
+      Gib **ausschließlich** gültiges JSON nach dem folgendem Schema zurück. Allerdings
+      besteht jedes Feld aus einem
+
+      "content"-Unterfeld, in dem du die eigentliche Antwort einträgst und einem "evidence_anchor"-Unterfeld,
+      in dem
+
+      du die Textstelle (als exaktes Zitat) angibst, die deine Antwort am besten belegt.
+
+
+      {schema_description}
+
+      '
+    user_message: 'Dokument in Markdown Format:
+
+
+      {document}
+
+      '
+    schema_description_placeholder: schema_description
+    document_placeholder: document
+  request_parameters: {}
+  _target_: kibad_llm.extractors.ChunkingExtractor
+  max_char_buffer: 20000
+  tokenizer:
+    _target_: kibad_llm.extractors.chunking_utils.RegexTokenizer
+  return_as_list:
+  - structured_with_metadata
+  - errors
+  - reasoning_content
+  - character_start
+  - character_end
+  return_reasoning: true
+  return_messages: false
+  return_messages_formatted: false
+  adjust_schema_for_evidence_detection: true
+  adjust_schema_description_for_evidence_detection: true
+  evidence_anchor_description: Wörtliches Zitat aus dem Originaltext, das den extrahierten
+    Inhalt belegt.
