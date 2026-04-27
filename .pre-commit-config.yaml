@@ -116,7 +116,6 @@ repos:
         language: python
         entry: zuban
         args: [mypy, --config-file=pyproject.toml]
-        additional_dependencies: [zuban]
         types: [python]
         pass_filenames: false
         priority: 80  # run when bandit runs
