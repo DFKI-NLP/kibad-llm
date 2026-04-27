@@ -1,3 +1,16 @@
+"""Union extractor that runs extraction once per override set and merges results.
+
+:class:`UnionExtractor` accepts a list (or dict) of ``overrides`` — each a dict of
+keyword argument overrides for :func:`~kibad_llm.extractors.base.extract_from_text_lenient`.
+It runs one extraction per override entry on the same document and combines the
+``structured`` outputs via a configurable
+:data:`~kibad_llm.extractors.aggregation_utils.Aggregator`.
+
+A typical use-case is splitting a large schema into multiple simpler sub-schemas
+(one per override entry) and merging their outputs with
+:func:`~kibad_llm.extractors.aggregation_utils.aggregate_unanimous`.
+"""
+
 from typing import Any
 
 from .aggregation_utils import Aggregator

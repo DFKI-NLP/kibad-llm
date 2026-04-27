@@ -1,3 +1,12 @@
+"""Unit tests for :mod:`kibad_llm.extractors.aggregation_utils`.
+
+Covers ``make_hashable_simple``, ``collect_values_and_type_per_key``,
+``_majority_vote``, ``_multi_entry_majority_vote``, ``aggregate_majority_vote``,
+``_aggregate_unanimous``, ``_multi_entry_union``, ``aggregate_unanimous``, and
+``aggregate_single_majority_vote_multi_union``, including tie-breaking, None handling,
+type-mismatch behaviour, and dict hash-equivalence.
+"""
+
 import pytest
 
 from kibad_llm.extractors import aggregation_utils as au

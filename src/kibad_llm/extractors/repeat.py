@@ -1,3 +1,13 @@
+"""Repeating extractor that runs the same extraction *n* times and aggregates results.
+
+:class:`RepeatingExtractor` calls
+:func:`~kibad_llm.extractors.base.extract_from_text_lenient` repeatedly on the full
+document text and aggregates the ``structured`` outputs via a configurable
+:data:`~kibad_llm.extractors.aggregation_utils.Aggregator`.  The default aggregator is
+majority vote (:func:`~kibad_llm.extractors.aggregation_utils.aggregate_majority_vote`),
+which filters out label values that the LLM produces inconsistently across runs.
+"""
+
 from typing import Any
 
 from .aggregation_utils import Aggregator

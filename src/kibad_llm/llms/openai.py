@@ -1,3 +1,20 @@
+"""OpenAI Responses API backend with Structured Outputs support.
+
+:class:`OpenAI` wraps LlamaIndex's ``OpenAIResponses`` and patches the provided JSON
+schema so it satisfies OpenAI's strict Structured Outputs requirements
+(:func:`make_openai_strict_json_schema`):
+
+- All object schemas get ``additionalProperties: false`` and a complete ``required``
+  list.
+- ``$ref`` nodes that have sibling keywords are rewritten to use ``anyOf`` (required
+  by the OpenAI API).
+- ``default`` annotations are stripped (not allowed in strict mode).
+
+Reasoning summaries (extended thinking) are surfaced via
+:meth:`OpenAI.get_reasoning_from_chat_response` when the Responses API returns
+``ThinkingBlock`` content.
+"""
+
 import copy
 import re
 from typing import Any

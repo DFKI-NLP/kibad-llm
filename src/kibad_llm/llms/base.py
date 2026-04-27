@@ -1,3 +1,14 @@
+"""Abstract base class and shared types for LLM backends.
+
+Defines the :class:`LLM` interface that all concrete backends must implement:
+:meth:`LLM.call_llm_chat_with_guided_decoding` to send a list of
+:class:`SimpleChatMessage` objects to the model (with optional JSON schema for guided
+decoding) and return a LlamaIndex ``ChatResponse``.
+
+Also provides default implementations for extracting the response content and
+(optionally) the model's reasoning content from the raw ``ChatResponse``.
+"""
+
 from abc import ABC, abstractmethod
 import dataclasses
 from typing import Any

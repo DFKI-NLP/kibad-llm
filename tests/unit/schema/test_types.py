@@ -1,3 +1,11 @@
+"""Unit tests verifying that Pydantic model JSON schemas match stored golden files.
+
+Parametrized over all models in ``ALL_MODELS`` (standard extraction models) and
+``ALL_COMPOUNDS`` (compound feature models).  Golden files live in
+``tests/fixtures/schema/`` and ``tests/fixtures/schema_compound/``; set
+``WRITE_FIXTURE_DATA = True`` to regenerate them.
+"""
+
 import json
 
 from pydantic import BaseModel

@@ -1,3 +1,19 @@
+"""Aggregation strategies for combining structured outputs from multiple extraction runs.
+
+Defines the :data:`Aggregator` type alias (a callable mapping a list of structured
+dicts to a single merged dict) and three concrete aggregator functions:
+
+- :func:`aggregate_majority_vote` – for repeated queries on the same text: single-valued
+  fields use majority vote, list fields use per-item majority vote.
+- :func:`aggregate_unanimous` – for union queries with non-overlapping keys: each key must
+  appear in at most one extraction; conflicts raise :class:`AggregationError`.
+- :func:`aggregate_single_majority_vote_multi_union` – for chunked queries: single-valued
+  fields use majority vote across chunks, list fields take the union of all items.
+
+Helper :func:`make_hashable_simple` converts nested dicts/lists to hashable tuples so
+values can be counted in a ``Counter``.
+"""
+
 from collections import Counter, defaultdict
 from collections.abc import Callable
 from typing import Any, TypeAlias

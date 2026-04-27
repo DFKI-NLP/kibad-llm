@@ -1,0 +1,73 @@
+[2025-11-24 16:20:53,183][__main__][INFO] - Processing 100 PDF files from /ds/text/kiba-d/dev-set-100/ ...
+[2025-11-24 16:20:53,185][__main__][INFO] - Converting PDF to markdown ...
+[2025-11-24 16:20:53,187][__main__][INFO] - PDF reader config: {'_target_': 'kibad_llm.preprocessing.read_pdf_as_markdown_via_pymupdf4llm', '_partial_': True}
+[2025-11-24 16:20:55,943][__main__][INFO] - Instantiating Extractor ...
+[2025-11-24 16:20:55,945][__main__][INFO] - Extractor config: {'llm': {'_target_': 'llama_index.llms.openai_like.OpenAILike', 'api_base': '${oc.env:LLM_API_BASE,http://127.0.0.1:5001/v1}', 'api_key': 'dummy', 'model': 'openai/gpt-oss-20b', 'temperature': 0.0, 'top_p': 1.0, 'max_tokens': 4096, 'is_chat_model': True, 'is_function_calling_model': False}, '_target_': 'kibad_llm.extractors.UnionExtractor', 'overrides': [{'schema': {'_target_': 'kibad_llm.schema.types.EcosystemStudyFeaturesWithoutCompounds.model_json_schema', 'by_alias': False}}, {'schema': {'_target_': 'kibad_llm.schema.types.EcosystemStudyFeaturesCompoundsOnly.model_json_schema', 'by_alias': False}}], 'system_message': 'Du extrahierst Informationen aus einem Markdown-Dokument.\nGib **ausschließlich** gültiges JSON nach dem folgendem Schema zurück.\nKeine zusätzlichen Felder, keine Erklärungen.\n{schema_description}\n', 'system_message_requires_schema_description': True, 'user_message': 'Dokument in Markdown Format:\n\n{document}\n', 'schema': {'_target_': 'kibad_llm.schema.types.EcosystemStudyFeaturesSimple.model_json_schema', 'by_alias': False}}
+[2025-11-24 16:23:18,780][__main__][INFO] - Extract information from markdown ...
+[2025-11-24 16:24:17,212][kibad_llm.extractors.base][WARNING] - Failed to parse JSON output for document 25ABQZIH.pdf
+[2025-11-24 16:25:03,316][kibad_llm.extractors.base][WARNING] - Failed to parse JSON output for document 29Q84X7V.pdf
+[2025-11-24 16:25:27,539][kibad_llm.extractors.base][ERROR] - Error processing document 2E9XWUUE.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -319737.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-24 16:25:27,816][kibad_llm.extractors.base][ERROR] - Error processing document 2E9XWUUE.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -322631.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-24 16:25:27,967][kibad_llm.extractors.base][ERROR] - Error processing document 2EUNPHDZ.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -56610.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-24 16:25:28,099][kibad_llm.extractors.base][ERROR] - Error processing document 2EUNPHDZ.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -59504.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-24 16:26:34,746][kibad_llm.extractors.base][WARNING] - Failed to parse JSON output for document 2NJD9Y9T.pdf
+[2025-11-24 16:26:34,935][kibad_llm.extractors.base][ERROR] - Error processing document 2P53UVJA.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -71320.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-24 16:26:35,077][kibad_llm.extractors.base][ERROR] - Error processing document 2P53UVJA.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -74214.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-24 16:26:39,848][kibad_llm.extractors.base][ERROR] - Error processing document 2RXMDX8I.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -211684.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-24 16:26:40,054][kibad_llm.extractors.base][ERROR] - Error processing document 2RXMDX8I.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -214578.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-24 16:27:08,501][kibad_llm.extractors.base][WARNING] - Failed to parse JSON output for document 33MV2F7X.pdf
+[2025-11-24 16:28:52,293][openai._base_client][INFO] - Retrying request to /chat/completions in 0.443200 seconds
+[2025-11-24 16:29:12,336][kibad_llm.extractors.base][ERROR] - Error processing document 3LGPK6BL.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -87333.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-24 16:29:12,461][kibad_llm.extractors.base][ERROR] - Error processing document 3LGPK6BL.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -90227.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-24 16:30:08,193][kibad_llm.extractors.base][ERROR] - Error processing document 3WEEGFGW.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -2254132.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-24 16:30:09,428][kibad_llm.extractors.base][ERROR] - Error processing document 3WEEGFGW.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -2257026.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-24 16:32:08,652][kibad_llm.extractors.base][WARNING] - Failed to parse JSON output for document 42ELXZ2H.pdf
+[2025-11-24 16:33:05,587][kibad_llm.extractors.base][WARNING] - Failed to parse JSON output for document 42STMMQA.pdf
+[2025-11-24 16:33:05,989][kibad_llm.extractors.base][ERROR] - Error processing document 46RX4AEN.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -121693.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-24 16:33:06,140][kibad_llm.extractors.base][ERROR] - Error processing document 46RX4AEN.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -124587.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-24 16:33:34,409][kibad_llm.extractors.base][WARNING] - Failed to parse JSON output for document 49Z7RPDP.pdf
+[2025-11-24 16:34:24,972][kibad_llm.extractors.base][WARNING] - Failed to parse JSON output for document 4BAX6GKK.pdf
+[2025-11-24 16:34:57,861][kibad_llm.extractors.base][WARNING] - Failed to parse JSON output for document 4FCS62W5.pdf
+[2025-11-24 16:35:40,372][kibad_llm.extractors.base][WARNING] - Failed to parse JSON output for document 4JF8F3WL.pdf
+[2025-11-24 16:35:40,670][kibad_llm.extractors.base][ERROR] - Error processing document 4YXRYRJC.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -166811.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-24 16:35:40,873][kibad_llm.extractors.base][ERROR] - Error processing document 4YXRYRJC.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -169705.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-24 16:35:41,228][kibad_llm.extractors.base][ERROR] - Error processing document 4Z67G9T5.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -54737.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-24 16:35:41,345][kibad_llm.extractors.base][ERROR] - Error processing document 4Z67G9T5.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -57631.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-24 16:37:36,440][kibad_llm.extractors.base][WARNING] - Failed to parse JSON output for document 5I8A3W7U.pdf
+[2025-11-24 16:38:02,397][kibad_llm.extractors.base][WARNING] - Failed to parse JSON output for document 5I8A3W7U.pdf
+[2025-11-24 16:38:50,063][kibad_llm.extractors.base][ERROR] - Error processing document 5SIYLM9W.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -938680.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-24 16:38:50,677][kibad_llm.extractors.base][ERROR] - Error processing document 5SIYLM9W.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -941574.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-24 16:41:18,550][kibad_llm.extractors.base][WARNING] - Failed to parse JSON output for document 6332SBW4.pdf
+[2025-11-24 16:44:50,761][openai._base_client][INFO] - Retrying request to /chat/completions in 0.457487 seconds
+[2025-11-24 16:47:07,660][kibad_llm.extractors.base][WARNING] - Failed to parse JSON output for document 6CMGEZPD.pdf
+[2025-11-24 16:47:07,799][kibad_llm.extractors.base][ERROR] - Error processing document 6D23L7B5.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -27605.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-24 16:47:07,909][kibad_llm.extractors.base][ERROR] - Error processing document 6D23L7B5.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -30499.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-24 16:47:48,719][kibad_llm.extractors.base][ERROR] - Error processing document 6G2THNDX.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -203163.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-24 16:47:48,928][kibad_llm.extractors.base][ERROR] - Error processing document 6G2THNDX.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -206057.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-24 16:48:46,088][kibad_llm.extractors.base][WARNING] - Failed to parse JSON output for document 6RLMM8BQ.pdf
+[2025-11-24 16:49:05,223][kibad_llm.extractors.base][ERROR] - Error processing document 7DSY6RMR.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -14451.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-24 16:49:05,316][kibad_llm.extractors.base][ERROR] - Error processing document 7DSY6RMR.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -17345.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-24 16:50:42,509][openai._base_client][INFO] - Retrying request to /chat/completions in 0.398878 seconds
+[2025-11-24 16:51:42,974][openai._base_client][INFO] - Retrying request to /chat/completions in 0.978457 seconds
+[2025-11-24 16:53:19,090][kibad_llm.extractors.base][ERROR] - Error processing document 84QQ9F5S.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -1203554.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-24 16:53:19,657][kibad_llm.extractors.base][ERROR] - Error processing document 84QQ9F5S.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -1206448.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-24 16:53:19,981][kibad_llm.extractors.base][ERROR] - Error processing document 885FDL5Z.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -252133.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-24 16:53:20,248][kibad_llm.extractors.base][ERROR] - Error processing document 885FDL5Z.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -255027.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-24 16:56:09,708][openai._base_client][INFO] - Retrying request to /chat/completions in 0.441164 seconds
+[2025-11-24 16:56:52,836][kibad_llm.extractors.base][WARNING] - Failed to parse JSON output for document 8QKB2BJE.pdf
+[2025-11-24 16:58:03,496][kibad_llm.extractors.base][WARNING] - Failed to parse JSON output for document 8UVBVFHS.pdf
+[2025-11-24 16:58:59,717][kibad_llm.extractors.base][WARNING] - Failed to parse JSON output for document 8ZESW42A.pdf
+[2025-11-24 16:59:43,886][kibad_llm.extractors.base][WARNING] - Failed to parse JSON output for document ASEHVK97.pdf
+[2025-11-24 17:00:36,858][kibad_llm.extractors.base][WARNING] - Failed to parse JSON output for document BE56TLWA.pdf
+[2025-11-24 17:02:21,621][kibad_llm.extractors.base][WARNING] - Failed to parse JSON output for document F582S9H8.pdf
+[2025-11-24 17:03:58,875][kibad_llm.extractors.base][WARNING] - Failed to parse JSON output for document G7H698R6.pdf
+[2025-11-24 17:05:30,063][kibad_llm.extractors.base][WARNING] - Failed to parse JSON output for document KJ7JVAEW.pdf
+[2025-11-24 17:06:04,737][kibad_llm.extractors.base][WARNING] - Failed to parse JSON output for document KXP8FP94.pdf
+[2025-11-24 17:06:59,266][kibad_llm.extractors.base][WARNING] - Failed to parse JSON output for document LY4P94Q4.pdf
+[2025-11-24 17:07:21,138][kibad_llm.extractors.base][WARNING] - Failed to parse JSON output for document N82RZ7WL.pdf
+[2025-11-24 17:09:31,620][kibad_llm.extractors.base][WARNING] - Failed to parse JSON output for document PBV2BUX6.pdf
+[2025-11-24 17:12:19,793][openai._base_client][INFO] - Retrying request to /chat/completions in 0.452633 seconds
+[2025-11-24 17:13:06,796][kibad_llm.extractors.base][WARNING] - Failed to parse JSON output for document QR5QGMTI.pdf
+[2025-11-24 17:17:17,088][kibad_llm.extractors.base][WARNING] - Failed to parse JSON output for document XMIP837H.pdf
+[2025-11-24 17:18:29,108][kibad_llm.extractors.base][WARNING] - Failed to parse JSON output for document XU5H8QJI.pdf
+[2025-11-24 17:19:43,631][kibad_llm.extractors.base][WARNING] - Failed to parse JSON output for document ZQ329JQ6.pdf

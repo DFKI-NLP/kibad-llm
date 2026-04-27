@@ -1,3 +1,23 @@
+"""Core extraction logic shared by all extractor strategies.
+
+The central function is :func:`extract_from_text`, which:
+
+1. Builds system/user chat messages from a prompt template, optionally inserting the
+   document text and a human-readable schema description.
+2. Calls the configured :class:`~kibad_llm.llms.base.LLM` with optional JSON-schema
+   guided decoding.
+3. Parses and validates the JSON response against the provided schema.
+4. Optionally wraps terminal schema values with evidence-anchor metadata so the LLM
+   can cite verbatim text passages (``adjust_schema_for_evidence_detection=True``).
+5. Returns a :class:`SingleExtractionResult` dataclass-backed dict containing
+   ``structured``, ``reasoning_content``, ``messages``, and ``errors``.
+
+Also contains helper functions for building chat messages (:func:`build_chat_messages`),
+stripping/augmenting metadata wrappers (:func:`strip_metadata`, :func:`augment_metadata`),
+and a lenient wrapper (:func:`extract_from_text_lenient`) that catches all exceptions
+so batch processing can continue past single-document failures.
+"""
+
 from __future__ import annotations
 
 from collections import defaultdict

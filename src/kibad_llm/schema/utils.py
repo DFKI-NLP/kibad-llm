@@ -1,3 +1,23 @@
+"""JSON Schema utilities for building schema descriptions and evidence-anchor wrappers.
+
+Two main capabilities:
+
+1. **Schema description builder** (:func:`build_schema_description`) – converts a
+   JSON Schema dict to a concise human-readable summary that is injected into LLM
+   prompts via the ``{schema_description}`` placeholder.  Handles ``$ref`` resolution,
+   ``anyOf``/``oneOf``/``allOf`` compositions, enum choices, cardinality, and nested
+   object recursion.
+
+2. **Evidence-anchor wrapper** (:func:`wrap_terminals_with_metadata`) – transforms a
+   JSON Schema so that every terminal (scalar/enum) field is replaced by an object
+   containing the original value under a ``content`` key plus configurable metadata
+   fields (default: ``evidence_anchor``, a verbatim text excerpt supporting the
+   extracted value).  Used together with ``adjust_schema_for_evidence_detection=True``
+   in :func:`~kibad_llm.extractors.base.extract_from_text` to make the LLM cite its
+   sources.  :func:`~kibad_llm.extractors.base.strip_metadata` reverses the wrapping
+   on the parsed output.
+"""
+
 from __future__ import annotations
 
 from collections.abc import Mapping

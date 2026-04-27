@@ -1,3 +1,14 @@
+"""MetricCollection: a fan-out wrapper for multiple named metrics.
+
+:class:`MetricCollection` holds an ordered mapping of metric name → :class:`~kibad_llm.metric.Metric`
+instance and delegates every ``update`` / ``reset`` / ``compute`` call to each
+sub-metric.  The ``compute`` result is a dict mapping each metric name to its own
+result dict.
+
+Used internally by :class:`~kibad_llm.metrics.f1.F1MicroMultipleFieldsMetric` to
+manage per-field F1 metrics.
+"""
+
 from collections.abc import Hashable
 from typing import Any, Generic, TypeVar
 

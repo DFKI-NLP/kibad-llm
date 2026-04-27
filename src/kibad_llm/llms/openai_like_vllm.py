@@ -1,3 +1,15 @@
+"""OpenAI-compatible backend targeting a remote vLLM server.
+
+:class:`OpenAILikeVllm` wraps LlamaIndex's ``OpenAILike`` and passes the JSON schema
+for guided decoding via ``extra_body.structured_outputs`` (the vLLM server-side
+xgrammar/outlines format), rather than the OpenAI Structured Outputs ``text.format``
+field used by :class:`~kibad_llm.llms.openai.OpenAI`.
+
+Reasoning is extracted from the raw response message's ``reasoning`` or
+``reasoning_content`` attribute, which vLLM exposes for reasoning-capable models
+(e.g., DeepSeek-R1, QwQ).
+"""
+
 from typing import Any
 
 from llama_index.core.base.llms.types import ChatResponse

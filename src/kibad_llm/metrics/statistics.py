@@ -1,3 +1,12 @@
+"""Error statistics metric for monitoring extraction failures.
+
+:class:`ErrorCollector` inspects the ``errors`` / ``error`` / ``error_list`` /
+``errors_list`` fields in prediction dicts, groups errors by their exception-type
+prefix, and returns counts for each error type.  The special keys ``no_error`` and
+``with_error`` give a quick success/failure ratio.  Intended for use alongside F1
+metrics to distinguish genuine prediction errors from LLM or JSON-parsing failures.
+"""
+
 from collections import defaultdict
 from collections.abc import Hashable
 import logging

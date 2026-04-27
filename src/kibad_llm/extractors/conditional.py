@@ -1,3 +1,13 @@
+"""Conditional (multi-turn) union extractor that feeds each run's output as history.
+
+:class:`ConditionalUnionExtractor` extends :class:`~kibad_llm.extractors.union.UnionExtractor`
+by maintaining a running conversation history: each extraction run's formatted messages and
+the assistant's response are appended to the history before the next run is called, turning
+the extraction into a multi-turn dialogue.  This is useful when later schema fields benefit
+from the context already established in earlier turns (e.g., first extract coarse categories,
+then refine details).
+"""
+
 from typing import Any
 
 from llama_index.core.base.llms.types import MessageRole

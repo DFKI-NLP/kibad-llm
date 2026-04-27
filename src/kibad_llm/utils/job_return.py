@@ -1,3 +1,20 @@
+"""Utilities for loading, transforming, and aggregating Hydra job return value files.
+
+Provides tools for working with ``job_return_value.json`` files produced by
+:class:`~kibad_llm.hydra_callbacks.save_job_return_value.SaveJobReturnValueCallback`:
+
+- :func:`load` / :func:`load_run` / :func:`load_runs` – read return-value JSON files
+  from single runs or multirun sweep directories, with optional override loading and
+  dict flattening.
+- :func:`overrides_to_dict` / :func:`dict_to_overrides` – convert between Hydra
+  override strings (``"key=value"``) and plain dicts.
+- :func:`overrides_to_identifiers` / :func:`remove_common_overrides` – derive short
+  human-readable identifiers for multirun jobs by stripping shared overrides.
+- :func:`mixed_group_by` – aggregate a mixed numeric/non-numeric DataFrame by grouping
+  columns, computing mean/std for numeric columns and collecting lists for non-numeric
+  ones.  Used when saving grouped Markdown summaries of multirun results.
+"""
+
 from collections.abc import Callable, Hashable, Iterable
 import json
 import logging

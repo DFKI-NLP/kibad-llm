@@ -1,3 +1,14 @@
+"""Integration tests for all extractor configurations.
+
+Parametrized over every extractor config file in ``configs/extractor/`` (excluding
+helper configs prefixed with ``_``).  Each test instantiates the extractor via Hydra,
+runs it on a fixture markdown document, and compares the top-level result keys and
+structured-output keys against a stored golden file in ``tests/fixtures/extractor/``.
+
+Marked ``@pytest.mark.slow`` because tests call a real LLM.  Set
+``WRITE_FIXTURE_DATA = True`` in :mod:`tests.conftest` to regenerate golden files.
+"""
+
 import json
 import os
 

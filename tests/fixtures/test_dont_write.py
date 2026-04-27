@@ -1,3 +1,9 @@
+"""Guard test ensuring ``WRITE_FIXTURE_DATA`` is ``False`` before any test run.
+
+This file is collected by pytest directly inside ``tests/fixtures/`` so the guard
+runs even when only fixture-adjacent tests are executed.
+"""
+
 from tests.conftest import WRITE_FIXTURE_DATA
 
 
