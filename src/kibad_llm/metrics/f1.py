@@ -71,7 +71,7 @@ class F1MicroSingleFieldMetric(MetricWithPrepareEntryAsSet):
 
 
 def _expand_field_by_key_values(
-    entry: dict, field: str, key_entries: list
+    entry: dict, field: str, key_entries: list, value_entries: list | None = None
 ) -> tuple[dict[str, Any], set[str]]:
     """Replace one dict-like field with generated top-level fields keyed by selected values.
 
@@ -80,6 +80,8 @@ def _expand_field_by_key_values(
         field: Name of the field whose value must be either a dict or a list/set of dicts.
         key_entries: Keys whose values are removed from each nested dict and concatenated to
             form the generated field names.
+        value_entries: Optional keys to retain as the payload of each generated field after the
+            key values have been extracted. If not provided, all remaining key-value pairs are kept.
 
     Returns:
         A tuple containing:
@@ -87,8 +89,8 @@ def _expand_field_by_key_values(
           generated top-level fields such as ``f"{field}.A&B"``
         - the set of generated field names
 
-        The remaining key-value pairs of each nested dict are kept as the payload of the
-        generated field.
+        The payload of each generated field consists of either all remaining key-value pairs of
+        each nested dict, or only those listed in ``value_entries`` if it is provided.
     """
 
     entry = deepcopy(entry)
@@ -100,6 +102,12 @@ def _expand_field_by_key_values(
         for key in key_entries:
             key_values.append(str(field_value.pop(key, None)))
         new_field = f"{field}." + "&".join(key_values)
+        if value_entries is not None:
+            field_value = {
+                value_entry: field_value[value_entry]
+                for value_entry in value_entries
+                if value_entry in field_value
+            }
         entry[new_field] = field_value
         return entry, {new_field}
 
@@ -118,6 +126,12 @@ def _expand_field_by_key_values(
             new_field = f"{field}." + "&".join(key_values)
             if new_field not in entry:
                 entry[new_field] = []
+            if value_entries is not None:
+                f_value = {
+                    value_entry: f_value[value_entry]
+                    for value_entry in value_entries
+                    if value_entry in f_value
+                }
             entry[new_field].append(f_value)
             new_fields.add(new_field)
         for new_field in new_fields:
@@ -140,6 +154,7 @@ class F1MicroMultipleFieldsMetric(MetricCollection[F1MicroSingleFieldMetric]):
         fields: list[str] | None = None,
         format_as_markdown: bool = True,
         subfield_keys: dict[str, list[str]] | None = None,
+        subfield_values: dict[str, list[str]] | None = None,
         sort_fields: bool = False,
         **kwargs,
     ) -> None:
@@ -157,6 +172,11 @@ class F1MicroMultipleFieldsMetric(MetricCollection[F1MicroSingleFieldMetric]):
                 payload. This makes it possible to compute metrics separately for entries such as
                 ``field1.A&B`` and ``field1.C&D`` instead of scoring the whole original field as
                 one unit.
+            subfield_values: Optional dict mapping field names to lists of keys that should be
+                retained as the payload of generated fields after extracting ``subfield_keys``.
+                This allows restricting evaluation to selected nested values, e.g. scoring only
+                ``Antwortvariable`` or only ``Antwortvariable`` and ``Trend`` within each
+                generated field.
             sort_fields: Whether to sort the fields in the output. Defaults to False.
             **kwargs: Additional keyword arguments for F1MicroSingleFieldMetric, e.g., ignore_subfields.
         """
@@ -166,6 +186,7 @@ class F1MicroMultipleFieldsMetric(MetricCollection[F1MicroSingleFieldMetric]):
 
         self.fields = fields
         self.subfield_keys = subfield_keys
+        self.subfield_values = subfield_values
         self.metric_kwargs = kwargs
         super().__init__(sort_fields=sort_fields)
 
@@ -187,13 +208,20 @@ class F1MicroMultipleFieldsMetric(MetricCollection[F1MicroSingleFieldMetric]):
 
         if self.subfield_keys is not None:
             new_fields = []
+            subfield_values = self.subfield_values or {}
             for field in fields:
                 if field in self.subfield_keys:
                     prediction, new_prediction_fields = _expand_field_by_key_values(
-                        entry=prediction, field=field, key_entries=self.subfield_keys[field]
+                        entry=prediction,
+                        field=field,
+                        key_entries=self.subfield_keys[field],
+                        value_entries=subfield_values.get(field, None),
                     )
                     reference, new_reference_fields = _expand_field_by_key_values(
-                        entry=reference, field=field, key_entries=self.subfield_keys[field]
+                        entry=reference,
+                        field=field,
+                        key_entries=self.subfield_keys[field],
+                        value_entries=subfield_values.get(field, None),
                     )
                     new_fields.extend(new_prediction_fields | new_reference_fields)
                 else:

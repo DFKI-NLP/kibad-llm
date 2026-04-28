@@ -283,6 +283,91 @@ def test_multiple_fields_subfield_keys_expand_single_dict_entry() -> None:
     }
 
 
+def test_multiple_fields_subfield_values_keep_only_selected_payload_fields() -> None:
+    m = F1MicroMultipleFieldsMetric(
+        fields=["label"],
+        subfield_keys={"label": ["type"]},
+        subfield_values={"label": ["value"]},
+    )
+    m.update(
+        {"label": [{"type": "A", "value": "foo", "ignored": "left"}]},
+        {"label": [{"type": "A", "value": "foo", "ignored": "right"}]},
+    )
+
+    out = m.compute()
+
+    assert out == {
+        "ALL": {"f1": 1.0, "precision": 1.0, "recall": 1.0, "support": 1},
+        "AVG": {"f1": 1.0, "precision": 1.0, "recall": 1.0, "support": 1.0},
+        "label.A": {"f1": 1.0, "precision": 1.0, "recall": 1.0, "support": 1},
+    }
+
+
+def test_multiple_fields_subfield_values_keep_only_selected_payload_fields_single_dict() -> None:
+    m = F1MicroMultipleFieldsMetric(
+        fields=["label"],
+        subfield_keys={"label": ["type"]},
+        subfield_values={"label": ["value"]},
+    )
+    m.update(
+        {"label": {"type": "A", "value": "foo", "ignored": "left"}},
+        {"label": {"type": "A", "value": "foo", "ignored": "right"}},
+    )
+
+    out = m.compute()
+
+    assert out == {
+        "ALL": {"f1": 1.0, "precision": 1.0, "recall": 1.0, "support": 1},
+        "AVG": {"f1": 1.0, "precision": 1.0, "recall": 1.0, "support": 1.0},
+        "label.A": {"f1": 1.0, "precision": 1.0, "recall": 1.0, "support": 1},
+    }
+
+
+def test_multiple_fields_subfield_values_can_score_only_selected_nested_values() -> None:
+    m = F1MicroMultipleFieldsMetric(
+        fields=["organism_trends"],
+        subfield_keys={"organism_trends": ["Hauptgruppe_RoteListen", "Lebensraum"]},
+        subfield_values={"organism_trends": ["Antwortvariable"]},
+    )
+    m.update(
+        {
+            "organism_trends": [
+                {
+                    "Hauptgruppe_RoteListen": "Amphibien",
+                    "Lebensraum": "Wald",
+                    "Antwortvariable": "Abundanz",
+                    "Trend": "negative",
+                    "Untergruppe_RoteListen": "foo",
+                }
+            ]
+        },
+        {
+            "organism_trends": [
+                {
+                    "Hauptgruppe_RoteListen": "Amphibien",
+                    "Lebensraum": "Wald",
+                    "Antwortvariable": "Abundanz",
+                    "Trend": "positive",
+                    "Untergruppe_RoteListen": "bar",
+                }
+            ]
+        },
+    )
+
+    out = m.compute()
+
+    assert out == {
+        "ALL": {"f1": 1.0, "precision": 1.0, "recall": 1.0, "support": 1},
+        "AVG": {"f1": 1.0, "precision": 1.0, "recall": 1.0, "support": 1.0},
+        "organism_trends.Amphibien&Wald": {
+            "f1": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "support": 1,
+        },
+    }
+
+
 def test_multiple_fields_auto_discovers_fields_when_not_configured() -> None:
     m = F1MicroMultipleFieldsMetric(fields=None)
     m.update({"a": "foo"}, {"a": "foo", "b": "bar"})
