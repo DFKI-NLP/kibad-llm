@@ -98,7 +98,7 @@ def _expand_field_by_key_values(
     if isinstance(field_value, dict):
         key_values = []
         for key in key_entries:
-            key_values.append(field_value.pop(key, None))
+            key_values.append(str(field_value.pop(key, None)))
         new_field = f"{field}." + "&".join(key_values)
         entry[new_field] = field_value
         return entry, {new_field}
@@ -114,7 +114,7 @@ def _expand_field_by_key_values(
         for f_value in field_value:
             key_values = []
             for key in key_entries:
-                key_values.append(f_value.pop(key, None))
+                key_values.append(str(f_value.pop(key, None)))
             new_field = f"{field}." + "&".join(key_values)
             if new_field not in entry:
                 entry[new_field] = []
@@ -123,6 +123,9 @@ def _expand_field_by_key_values(
         for new_field in new_fields:
             entry[new_field] = type(field_value)(entry[new_field])
         return entry, new_fields
+
+    if field_value is None:
+        return entry, set()
 
     else:
         raise TypeError(
@@ -169,6 +172,10 @@ class F1MicroMultipleFieldsMetric(MetricCollection[F1MicroSingleFieldMetric]):
         self.format_as_markdown = format_as_markdown
 
     def _update(self, prediction: Any, reference: Any, record_id: Hashable | None = None) -> None:
+        if prediction is None:
+            prediction = dict()
+        if reference is None:
+            reference = dict()
         if not isinstance(prediction, dict) or not isinstance(reference, dict):
             raise TypeError(
                 f"Prediction and reference should be dicts, but got {type(prediction)} and {type(reference)}."
