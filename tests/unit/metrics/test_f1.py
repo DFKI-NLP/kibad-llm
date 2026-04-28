@@ -213,6 +213,30 @@ def test_multiple_fields_format_result_json() -> None:
     )
 
 
+def test_multiple_fields_subfield_keys_expand_entries() -> None:
+    m = F1MicroMultipleFieldsMetric(fields=["label"], subfield_keys={"label": ["type"]})
+    m.update(
+        {"label": [{"type": "A", "value": "foo"}, {"type": "B", "value": "bar"}]},
+        {"label": [{"type": "A", "value": "foo"}, {"type": "B", "value": "baz"}]},
+    )
+
+    out = m.compute()
+
+    assert out == {
+        "ALL": {"f1": 0.5, "precision": 0.5, "recall": 0.5, "support": 2},
+        "AVG": {"f1": 0.5, "precision": 0.5, "recall": 0.5, "support": 1.0},
+        "label.A": {"f1": 1.0, "precision": 1.0, "recall": 1.0, "support": 1},
+        "label.B": {"f1": 0.0, "precision": 0.0, "recall": 0.0, "support": 1},
+    }
+
+
+def test_multiple_fields_subfield_keys_require_dict_entries() -> None:
+    m = F1MicroMultipleFieldsMetric(fields=["label"], subfield_keys={"label": ["type"]})
+
+    with pytest.raises(TypeError, match="contains non-dict entries"):
+        m.update({"label": ["foo"]}, {"label": ["foo"]})
+
+
 @pytest.mark.parametrize(
     "format_as_markdown,sort_fields", [(True, True), (True, False), (False, True), (False, False)]
 )
