@@ -70,11 +70,10 @@ class F1MicroSingleFieldMetric(MetricWithPrepareEntryAsSet):
         return self.calculate_scores(state=self.state)
 
 
-def _convert_to_key_value(
+def _expand_field_by_key_values(
     entry: dict, field: str, key_entries: list
 ) -> tuple[dict[str, Any], set[str]]:
-    """Converts a dict entry with a dict or list of dicts as value for a given field into multiple
-    entries with key values as part of the field name.
+    """Expands a nested dict field into generated top-level fields keyed by selected values.
 
     Args:
         entry: entry with the field to be converted
@@ -84,7 +83,7 @@ def _convert_to_key_value(
             concatenated and added to the field name for the new entries.
 
     Returns:
-        A tuple of the converted entry and the set of new field names created by the conversion.
+        A tuple of the expanded entry and the set of generated field names.
     """
 
     entry = deepcopy(entry)
@@ -143,10 +142,10 @@ class F1MicroMultipleFieldsMetric(MetricCollection[F1MicroSingleFieldMetric]):
             fields: List of fields to compute F1MicroSingleFieldMetric for. If not provided,
                 the metric will be computed for all fields found in the data.
             format_as_markdown: Whether to format the result as a markdown table. Defaults to True.
-            subfield_keys: Optional dict mapping field names to lists of keys that will indicate
-                which subfields of the dict entries for these fields should be considered as key entries
-                for these elements. Instead of calculating metrics for the whole dict,
-                the metric will be calculated separately for each of the respective values. For example,
+            subfield_keys: Optional dict mapping field names to lists of keys whose values should
+                be used to expand dict-like field entries into separate generated fields. Instead of
+                calculating metrics for the whole dict, the metric will be calculated separately for
+                each generated field. For example,
                 with subfield_keys={"field1": ["key1", "key2"]}, the metric will be calculated separately
                 for field1.key1=valueA&key2=valueB, field1.key1=valueC&key2=valueD, etc. This allows
                 to calculate metrics for specific subfields of dict entries.
@@ -178,10 +177,10 @@ class F1MicroMultipleFieldsMetric(MetricCollection[F1MicroSingleFieldMetric]):
             new_fields = []
             for field in fields:
                 if field in self.subfield_keys:
-                    prediction, new_prediction_fields = _convert_to_key_value(
+                    prediction, new_prediction_fields = _expand_field_by_key_values(
                         entry=prediction, field=field, key_entries=self.subfield_keys[field]
                     )
-                    reference, new_reference_fields = _convert_to_key_value(
+                    reference, new_reference_fields = _expand_field_by_key_values(
                         entry=reference, field=field, key_entries=self.subfield_keys[field]
                     )
                     new_fields.extend(new_prediction_fields | new_reference_fields)
