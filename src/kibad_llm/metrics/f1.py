@@ -73,17 +73,22 @@ class F1MicroSingleFieldMetric(MetricWithPrepareEntryAsSet):
 def _expand_field_by_key_values(
     entry: dict, field: str, key_entries: list
 ) -> tuple[dict[str, Any], set[str]]:
-    """Expands a nested dict field into generated top-level fields keyed by selected values.
+    """Replace one dict-like field with generated top-level fields keyed by selected values.
 
     Args:
-        entry: entry with the field to be converted
-        field: field to be converted
-        key_entries: list of keys to be used as key entries for the conversion. These should
-            be keys of the dict entries in the field value. The values of these keys will be
-            concatenated and added to the field name for the new entries.
+        entry: Mapping that contains the field to expand.
+        field: Name of the field whose value must be either a dict or a list/set of dicts.
+        key_entries: Keys whose values are removed from each nested dict and concatenated to
+            form the generated field names.
 
     Returns:
-        A tuple of the expanded entry and the set of generated field names.
+        A tuple containing:
+        - a deep-copied entry in which ``field`` has been removed and replaced by one or more
+          generated top-level fields such as ``f"{field}.A&B"``
+        - the set of generated field names
+
+        The remaining key-value pairs of each nested dict are kept as the payload of the
+        generated field.
     """
 
     entry = deepcopy(entry)
@@ -142,13 +147,13 @@ class F1MicroMultipleFieldsMetric(MetricCollection[F1MicroSingleFieldMetric]):
             fields: List of fields to compute F1MicroSingleFieldMetric for. If not provided,
                 the metric will be computed for all fields found in the data.
             format_as_markdown: Whether to format the result as a markdown table. Defaults to True.
-            subfield_keys: Optional dict mapping field names to lists of keys whose values should
-                be used to expand dict-like field entries into separate generated fields. Instead of
-                calculating metrics for the whole dict, the metric will be calculated separately for
-                each generated field. For example,
-                with subfield_keys={"field1": ["key1", "key2"]}, the metric will be calculated separately
-                for field1.key1=valueA&key2=valueB, field1.key1=valueC&key2=valueD, etc. This allows
-                to calculate metrics for specific subfields of dict entries.
+            subfield_keys: Optional dict mapping field names to lists of keys used to split
+                dict-like entries into separate generated fields. For a configured field, the
+                values of these keys are removed from each nested dict and appended to the field
+                name, while the remaining key-value pairs are scored as that generated field's
+                payload. This makes it possible to compute metrics separately for entries such as
+                ``field1.A&B`` and ``field1.C&D`` instead of scoring the whole original field as
+                one unit.
             sort_fields: Whether to sort the fields in the output. Defaults to False.
             **kwargs: Additional keyword arguments for F1MicroSingleFieldMetric, e.g., ignore_subfields.
         """
