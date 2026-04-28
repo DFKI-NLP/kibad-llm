@@ -237,6 +237,94 @@ def test_multiple_fields_subfield_keys_require_dict_entries() -> None:
         m.update({"label": ["foo"]}, {"label": ["foo"]})
 
 
+def test_multiple_fields_subfield_keys_missing_field_on_one_side() -> None:
+    m = F1MicroMultipleFieldsMetric(fields=["label"], subfield_keys={"label": ["type"]})
+    m.update({}, {"label": [{"type": "A", "value": "foo"}]})
+
+    out = m.compute()
+
+    assert out == {
+        "ALL": {"f1": 0.0, "precision": 0.0, "recall": 0.0, "support": 1},
+        "AVG": {"f1": 0.0, "precision": 0.0, "recall": 0.0, "support": 1.0},
+        "label.A": {"f1": 0.0, "precision": 0.0, "recall": 0.0, "support": 1},
+    }
+
+
+def test_multiple_fields_subfield_keys_missing_subkey_uses_none_suffix() -> None:
+    m = F1MicroMultipleFieldsMetric(fields=["label"], subfield_keys={"label": ["type"]})
+    m.update(
+        {"label": [{"value": "foo"}]},
+        {"label": [{"type": "A", "value": "foo"}]},
+    )
+
+    out = m.compute()
+
+    assert out == {
+        "ALL": {"f1": 0.0, "precision": 0.0, "recall": 0.0, "support": 1},
+        "AVG": {"f1": 0.0, "precision": 0.0, "recall": 0.0, "support": 0.5},
+        "label.A": {"f1": 0.0, "precision": 0.0, "recall": 0.0, "support": 1},
+        "label.None": {"f1": 0.0, "precision": 0.0, "recall": 0.0, "support": 0},
+    }
+
+
+def test_multiple_fields_subfield_keys_expand_single_dict_entry() -> None:
+    m = F1MicroMultipleFieldsMetric(fields=["label"], subfield_keys={"label": ["type"]})
+    m.update(
+        {"label": {"type": "A", "value": "foo"}},
+        {"label": {"type": "A", "value": "foo"}},
+    )
+
+    out = m.compute()
+
+    assert out == {
+        "ALL": {"f1": 1.0, "precision": 1.0, "recall": 1.0, "support": 1},
+        "AVG": {"f1": 1.0, "precision": 1.0, "recall": 1.0, "support": 1.0},
+        "label.A": {"f1": 1.0, "precision": 1.0, "recall": 1.0, "support": 1},
+    }
+
+
+def test_multiple_fields_auto_discovers_fields_when_not_configured() -> None:
+    m = F1MicroMultipleFieldsMetric(fields=None)
+    m.update({"a": "foo"}, {"a": "foo", "b": "bar"})
+
+    out = m.compute()
+
+    assert out["a"] == {"f1": 1.0, "precision": 1.0, "recall": 1.0, "support": 1}
+    assert out["b"] == {"f1": 0.0, "precision": 0.0, "recall": 0.0, "support": 1}
+    assert out["AVG"] == {"f1": 0.5, "precision": 0.5, "recall": 0.5, "support": 1.0}
+    assert out["ALL"]["precision"] == pytest.approx(1.0)
+    assert out["ALL"]["recall"] == pytest.approx(0.5)
+    assert out["ALL"]["f1"] == pytest.approx(2 / 3)
+    assert out["ALL"]["support"] == 2
+
+
+@pytest.mark.parametrize(
+    ("prediction", "reference", "expected_support"),
+    [(None, {"label": "foo"}, 1), ({"label": "foo"}, None, 0)],
+)
+def test_multiple_fields_accepts_none_as_empty_dict(
+    prediction: dict[str, str] | None, reference: dict[str, str] | None, expected_support: int
+) -> None:
+    m = F1MicroMultipleFieldsMetric(fields=["label"])
+    m.update(prediction, reference)
+
+    out = m.compute()
+
+    assert out == {
+        "ALL": {"f1": 0.0, "precision": 0.0, "recall": 0.0, "support": expected_support},
+        "AVG": {"f1": 0.0, "precision": 0.0, "recall": 0.0, "support": float(expected_support)},
+        "label": {"f1": 0.0, "precision": 0.0, "recall": 0.0, "support": expected_support},
+    }
+
+
+@pytest.mark.parametrize("prediction", [[], ""])
+def test_multiple_fields_rejects_falsy_non_dict_predictions(prediction: object) -> None:
+    m = F1MicroMultipleFieldsMetric(fields=["label"])
+
+    with pytest.raises(TypeError, match="Prediction and reference should be dicts"):
+        m.update(prediction, {"label": "foo"})
+
+
 @pytest.mark.parametrize(
     "format_as_markdown,sort_fields", [(True, True), (True, False), (False, True), (False, False)]
 )
