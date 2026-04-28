@@ -1,0 +1,119 @@
+{
+  "organism_trends.Mikrofauna&AgrarOffen": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0,
+    "support": 0
+  },
+  "organism_trends.Mikrofauna&Boden": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0,
+    "support": 0
+  },
+  "organism_trends.Mikrofauna&Wald": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0,
+    "support": 0
+  },
+  "organism_trends.Pflanzen&AgrarOffen": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0,
+    "support": 0
+  },
+  "organism_trends.Pflanzen&Urban": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0,
+    "support": 0
+  },
+  "organism_trends.Pflanzen&Wald": {
+    "precision": 0.1210762331838565,
+    "recall": 0.4426229508196721,
+    "f1": 0.19014084507042256,
+    "support": 61
+  },
+  "organism_trends.Pilze_Flechten&Wald": {
+    "precision": 0.18518518518518517,
+    "recall": 0.5555555555555556,
+    "f1": 0.2777777777777778,
+    "support": 9
+  },
+  "organism_trends.Wirbellose&AgrarOffen": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0,
+    "support": 0
+  },
+  "organism_trends.Wirbellose&Binnengewaesser": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0,
+    "support": 0
+  },
+  "organism_trends.Wirbellose&Wald": {
+    "precision": 0.15942028985507245,
+    "recall": 0.4583333333333333,
+    "f1": 0.23655913978494622,
+    "support": 24
+  },
+  "organism_trends.Wirbeltiere&AgrarOffen": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0,
+    "support": 0
+  },
+  "organism_trends.Wirbeltiere&Binnengewaesser": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0,
+    "support": 0
+  },
+  "organism_trends.Wirbeltiere&Kueste": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0,
+    "support": 0
+  },
+  "organism_trends.Wirbeltiere&Wald": {
+    "precision": 0.23728813559322035,
+    "recall": 0.6511627906976745,
+    "f1": 0.34782608695652173,
+    "support": 43
+  },
+  "AVG": {
+    "precision": 0.05021213170123818,
+    "recall": 0.15054818788615967,
+    "f1": 0.07516456068497632,
+    "support": 9.785714285714286
+  },
+  "ALL": {
+    "precision": 0.1540130151843818,
+    "recall": 0.5182481751824818,
+    "f1": 0.23745819397993312,
+    "support": 137
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/380_organism_trends/2026-02-24_22-06-17/2026-02-25_06-06-36_898414/predictions.jsonl",
+      "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/380_organism_trends/2026-02-24_22-06-17/2026-02-25_06-06-36_898414/predictions.jsonl",
+      "time_pdf_conversion": 0.003865887993015349,
+      "time_extraction": 8092.810066389036,
+      "time_start": 1771995996,
+      "time_end": 1772004325,
+      "commit_hash": "67cce08ad646158085c4b7fc53c8fa2216227125",
+      "branch": "build_schema_description/improve-newline-handling",
+      "is_dirty": false,
+      "slurm_job_id": "2573358"
+    },
+    "overrides": {
+      "name": "380_organism_trends",
+      "experiment/predict": "organism_trends_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-Wald-WVC",
+      "extractor/llm": "gemma3_27b_in_process",
+      "seed": "42"
+    }
+  }
+}

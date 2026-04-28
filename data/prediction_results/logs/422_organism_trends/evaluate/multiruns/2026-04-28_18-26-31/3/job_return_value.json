@@ -1,0 +1,41 @@
+{
+  "organism_trends": {
+    "precision": 0.056,
+    "recall": 0.22012578616352202,
+    "f1": 0.08928571428571429,
+    "support": 159
+  },
+  "AVG": {
+    "precision": 0.056,
+    "recall": 0.22012578616352202,
+    "f1": 0.08928571428571429,
+    "support": 159.0
+  },
+  "ALL": {
+    "precision": 0.056,
+    "recall": 0.22012578616352202,
+    "f1": 0.08928571428571429,
+    "support": 159
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/380_organism_trends/2026-02-24_22-06-17/2026-02-26_08-42-07_578243/predictions.jsonl",
+      "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/380_organism_trends/2026-02-24_22-06-17/2026-02-26_08-42-07_578243/predictions.jsonl",
+      "time_pdf_conversion": 0.006409661960788071,
+      "time_extraction": 19640.526002312894,
+      "time_start": 1772091727,
+      "time_end": 1772111454,
+      "commit_hash": "67cce08ad646158085c4b7fc53c8fa2216227125",
+      "branch": "build_schema_description/improve-newline-handling",
+      "is_dirty": true,
+      "slurm_job_id": "2573358"
+    },
+    "overrides": {
+      "name": "380_organism_trends",
+      "experiment/predict": "organism_trends_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-Wald-WVC",
+      "extractor/llm": "mistral_small_3_24b_in_process",
+      "seed": "7331"
+    }
+  }
+}

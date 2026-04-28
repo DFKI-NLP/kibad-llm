@@ -1,0 +1,18 @@
+[2026-04-28 18:21:07,430][__main__][INFO] - Loading dataset with predictions and references ...
+[2026-04-28 18:21:07,431][__main__][INFO] - Dataset config: {'predictions': {'_target_': 'kibad_llm.dataset.prediction.load_with_metadata', 'log': 'logs/380_organism_trends/predict/multiruns/2026-02-24_22-06-17/4', 'file': None, 'id_key': 'file_name', 'process_id': {'_partial_': True, '_target_': 'kibad_llm.utils.path.strip_filename_extension'}, 'preprocess': {'_target_': 'kibad_llm.utils.dictionary.get', '_partial_': True, 'key': 'structured'}}, 'references': {'_target_': 'kibad_llm.dataset.csv.read_organism_trends', 'file': '/home/arbi01/projects/kibad-llm/data/external/organism_trends/Weighted Vote Count Wald Literatur - Sheet1.csv', 'columns': ['Hauptgruppe_RoteListen', 'Untergruppe_RoteListen', 'Lebensraum', 'Antwortvariable', 'Trend']}, '_target_': 'kibad_llm.dataset.utils.merge_references_into_predictions', 'allow_missing_references': True}
+[2026-04-28 18:21:07,433][kibad_llm.dataset.json][INFO] - Loading dataset from JSON file: predictions/380_organism_trends/2026-02-24_22-06-17/2026-02-25_08-25-25_533804/predictions.jsonl ...
+[2026-04-28 18:21:07,442][kibad_llm.dataset.json][INFO] - Apply preprocessing function to dataset: functools.partial(<function get at 0x765f473558a0>, key='structured') ...
+[2026-04-28 18:21:07,491][__main__][INFO] - Instantiating metric ...
+[2026-04-28 18:21:07,491][__main__][INFO] - Metric config: {'_target_': 'kibad_llm.metrics.F1MicroMultipleFieldsMetric', 'fields': ['organism_trends.Antwortvariable', 'organism_trends.Hauptgruppe_RoteListen', 'organism_trends.Lebensraum', 'organism_trends.Trend'], 'format_as_markdown': True, 'sort_fields': True, 'ignore_subfields': {'organism_trends': ['Untergruppe_RoteListen']}, 'flatten_dicts': True}
+[2026-04-28 18:21:07,492][__main__][INFO] - Computing metric ...
+[2026-04-28 18:21:07,501][kibad_llm.metric][INFO] - Evaluation results:
+| field                                  |   precision |   recall |    f1 |   support |
+|:---------------------------------------|------------:|---------:|------:|----------:|
+| organism_trends.Antwortvariable        |       0.171 |    0.515 | 0.257 |    132    |
+| organism_trends.Hauptgruppe_RoteListen |       0.203 |    0.67  | 0.311 |    115    |
+| organism_trends.Lebensraum             |       0.259 |    0.712 | 0.38  |    111    |
+| organism_trends.Trend                  |       0.136 |    0.421 | 0.206 |    133    |
+| AVG                                    |       0.192 |    0.579 | 0.288 |    122.75 |
+| ALL                                    |       0.187 |    0.57  | 0.282 |    491    |
+[2026-04-28 18:21:07,501][kibad_llm.hydra_callbacks.save_job_return_value.SaveJobReturnValueCallback][INFO] - Saving job_return in /home/arbi01/projects/kibad-llm/logs/422_organism_trends/evaluate/multiruns/2026-04-28_18-21-06/6/job_return_value.json
+[2026-04-28 18:21:07,501][kibad_llm.hydra_callbacks.save_job_return_value.SaveJobReturnValueCallback][INFO] - Saving job_return in /home/arbi01/projects/kibad-llm/logs/422_organism_trends/evaluate/multiruns/2026-04-28_18-21-06/6/job_return_value.md
