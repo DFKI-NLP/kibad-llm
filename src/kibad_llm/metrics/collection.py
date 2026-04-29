@@ -1,4 +1,4 @@
-from collections.abc import Hashable, Mapping
+from collections.abc import Hashable
 from typing import Any, Generic, TypeVar
 
 from kibad_llm.metric import Metric
