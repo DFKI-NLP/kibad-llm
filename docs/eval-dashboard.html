@@ -1135,6 +1135,11 @@
       return legend;
     }
 
+    function styleErrorBarSegment(line) {
+      line.setAttribute("stroke", "currentColor");
+      line.setAttribute("stroke-opacity", "0.78");
+    }
+
     function getSvgExportViewBox(svg, width, height) {
       const viewBox = svg.getAttribute("viewBox");
       if (!viewBox) {
@@ -3772,7 +3777,7 @@
         errorLine.setAttribute("x2", String(centerX));
         errorLine.setAttribute("y1", String(errTop));
         errorLine.setAttribute("y2", String(errBottom));
-        errorLine.setAttribute("stroke", "#e5e7eb");
+        styleErrorBarSegment(errorLine);
         errorLine.setAttribute("stroke-width", "2");
         contentGroup.appendChild(errorLine);
 
@@ -3781,7 +3786,7 @@
         capTop.setAttribute("x2", String(centerX + 6));
         capTop.setAttribute("y1", String(errTop));
         capTop.setAttribute("y2", String(errTop));
-        capTop.setAttribute("stroke", "#e5e7eb");
+        styleErrorBarSegment(capTop);
         capTop.setAttribute("stroke-width", "2");
         contentGroup.appendChild(capTop);
 
@@ -3790,7 +3795,7 @@
         capBottom.setAttribute("x2", String(centerX + 6));
         capBottom.setAttribute("y1", String(errBottom));
         capBottom.setAttribute("y2", String(errBottom));
-        capBottom.setAttribute("stroke", "#e5e7eb");
+        styleErrorBarSegment(capBottom);
         capBottom.setAttribute("stroke-width", "2");
         contentGroup.appendChild(capBottom);
 
@@ -3931,7 +3936,7 @@
           errorLine.setAttribute("x2", String(centerBarX));
           errorLine.setAttribute("y1", String(errTop));
           errorLine.setAttribute("y2", String(errBottom));
-          errorLine.setAttribute("stroke", "#e5e7eb");
+          styleErrorBarSegment(errorLine);
           errorLine.setAttribute("stroke-width", "2");
           contentGroup.appendChild(errorLine);
 
@@ -3940,7 +3945,7 @@
           capTop.setAttribute("x2", String(centerBarX + 5));
           capTop.setAttribute("y1", String(errTop));
           capTop.setAttribute("y2", String(errTop));
-          capTop.setAttribute("stroke", "#e5e7eb");
+          styleErrorBarSegment(capTop);
           capTop.setAttribute("stroke-width", "2");
           contentGroup.appendChild(capTop);
 
@@ -3949,7 +3954,7 @@
           capBottom.setAttribute("x2", String(centerBarX + 5));
           capBottom.setAttribute("y1", String(errBottom));
           capBottom.setAttribute("y2", String(errBottom));
-          capBottom.setAttribute("stroke", "#e5e7eb");
+          styleErrorBarSegment(capBottom);
           capBottom.setAttribute("stroke-width", "2");
           contentGroup.appendChild(capBottom);
         }
