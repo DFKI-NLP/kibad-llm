@@ -646,6 +646,15 @@
       border-radius: 2px;
       display: inline-block;
     }
+    .export-option-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 0.9rem;
+      user-select: none;
+      cursor: pointer;
+    }
     .plot-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(520px, 1fr));
@@ -909,8 +918,19 @@
     <strong>Group bars:</strong>
     <div id="plotGroupBarsList" class="plot-group-bars-list"></div>
   </div>
+  <div id="plotShowLegendOnceRow" class="prediction-actions" style="display:none;">
+    <label for="plotShowLegendOnce"><strong>Show legend once:</strong></label>
+    <input id="plotShowLegendOnce" type="checkbox" checked>
+  </div>
   <div id="evalPlotTabs" class="tabs"></div>
   <div id="evalPlotContent" class="plot-content"></div>
+  <div class="prediction-actions">
+    <button id="downloadFiguresButton" class="prediction-action-button" type="button" disabled>Download Figures</button>
+    <label for="exportOpaqueBackground" class="export-option-label">
+      <input id="exportOpaqueBackground" type="checkbox" checked>
+      <span>Opaque background</span>
+    </label>
+  </div>
   <div id="barTooltip" class="bar-tooltip" aria-hidden="true"></div>
 
   <script>
@@ -937,7 +957,10 @@
       plotMode: "auto",
       plotShortenLabels: true,
       plotRoundingPrecision: 0,
+      plotShowLegendOnce: true,
+      exportOpaqueBackground: true,
       confusionTabsBy: "prediction_group",
+      activePlotLegendItems: [],
     };
 
     const folderInput = document.getElementById("folderInput");
@@ -990,6 +1013,10 @@
     const confusionTabsByPredictionGroupButton = document.getElementById("confusionTabsByPredictionGroupButton");
     const plotGroupBarsRow = document.getElementById("plotGroupBarsRow");
     const plotGroupBarsList = document.getElementById("plotGroupBarsList");
+    const plotShowLegendOnceRow = document.getElementById("plotShowLegendOnceRow");
+    const plotShowLegendOnce = document.getElementById("plotShowLegendOnce");
+    const downloadFiguresButton = document.getElementById("downloadFiguresButton");
+    const exportOpaqueBackground = document.getElementById("exportOpaqueBackground");
     const evalPlotTabs = document.getElementById("evalPlotTabs");
     const evalPlotContent = document.getElementById("evalPlotContent");
     const barTooltip = document.getElementById("barTooltip");
@@ -1020,6 +1047,429 @@
     function hideBarTooltip() {
       barTooltip.style.display = "none";
     }
+
+    function getFigureTitlePrefix(title) {
+      const text = String(title ?? "").trim();
+      return text.replace(/\s*\(mean ± std\).*$/u, "").trim() || text || "figure";
+    }
+
+    function sanitizeFigureFilename(title) {
+      const normalized = String(title ?? "")
+        .normalize("NFKD")
+        .replace(/[<>:"/\\|?*\u0000-\u001f]+/g, " - ")
+        .replace(/\s+/g, " ")
+        .trim()
+        .replace(/[. ]+$/g, "");
+      return (normalized || "figure").slice(0, 180);
+    }
+
+    function getUniqueFigureFilename(title, usedNames) {
+      const baseName = sanitizeFigureFilename(getFigureTitlePrefix(title));
+      let candidate = baseName;
+      let suffix = 2;
+      while (usedNames.has(candidate.toLowerCase())) {
+        candidate = `${baseName} (${suffix})`;
+        suffix += 1;
+      }
+      usedNames.add(candidate.toLowerCase());
+      return `${candidate}.svg`;
+    }
+
+    function getActivePlotTabZipFilename() {
+      const activeButton = evalPlotTabs.querySelector(".tab-button.active");
+      const tabLabel = activeButton?.getAttribute("title") || activeButton?.textContent || "figures";
+      return `${sanitizeFigureFilename(tabLabel)}.zip`;
+    }
+
+    function buildGroupedLegendModel(entries) {
+      const seriesOrder = [];
+      const seenSeries = new Set();
+      const displayBySeries = new Map();
+
+      for (const entry of entries) {
+        for (const point of entry.points || []) {
+          if (!seenSeries.has(point.series)) {
+            seenSeries.add(point.series);
+            seriesOrder.push(point.series);
+          }
+          if (!displayBySeries.has(point.series)) {
+            displayBySeries.set(point.series, point.displaySeries || point.series);
+          }
+        }
+      }
+
+      const colorBySeries = new Map();
+      const items = seriesOrder.map((series, index) => {
+        const color = getBarColor(index);
+        const label = displayBySeries.get(series) || series;
+        colorBySeries.set(series, color);
+        return { series, label, color };
+      });
+
+      return { seriesOrder, displayBySeries, colorBySeries, items };
+    }
+
+    function getLegendItemsForPoints(points, legendModel) {
+      if (!legendModel) {
+        return [];
+      }
+      const seriesInPoints = new Set(points.map((point) => point.series));
+      return legendModel.items.filter((item) => seriesInPoints.has(item.series));
+    }
+
+    function createPlotLegendElement(legendItems) {
+      const legend = document.createElement("div");
+      legend.className = "plot-legend";
+      legendItems.forEach((item) => {
+        const legendItem = document.createElement("span");
+        legendItem.className = "plot-legend-item";
+        const swatch = document.createElement("span");
+        swatch.className = "plot-legend-swatch";
+        swatch.style.backgroundColor = item.color;
+        const text = document.createElement("span");
+        text.textContent = item.label;
+        legendItem.appendChild(swatch);
+        legendItem.appendChild(text);
+        legend.appendChild(legendItem);
+      });
+      return legend;
+    }
+
+    function styleErrorBarSegment(line) {
+      line.setAttribute("stroke", "currentColor");
+      line.setAttribute("stroke-opacity", "0.78");
+    }
+
+    function getSvgExportViewBox(svg, width, height) {
+      const viewBox = svg.getAttribute("viewBox");
+      if (!viewBox) {
+        return { minX: 0, minY: 0, width: Number(width), height: Number(height) };
+      }
+      const parts = viewBox
+        .trim()
+        .split(/\s+/)
+        .map((part) => Number(part));
+      if (parts.length !== 4 || parts.some((part) => !Number.isFinite(part))) {
+        return { minX: 0, minY: 0, width: Number(width), height: Number(height) };
+      }
+      return { minX: parts[0], minY: parts[1], width: parts[2], height: parts[3] };
+    }
+
+    function resolveOpaqueExportBackgroundColor() {
+      const candidates = [evalPlotContent, document.body, document.documentElement];
+      for (const element of candidates) {
+        if (!element) {
+          continue;
+        }
+        const backgroundColor = getComputedStyle(element).backgroundColor;
+        if (
+          backgroundColor &&
+          backgroundColor !== "transparent" &&
+          backgroundColor !== "rgba(0, 0, 0, 0)"
+        ) {
+          return backgroundColor;
+        }
+      }
+      return "#ffffff";
+    }
+
+    function prependExportBackgroundRect(svg, width, height, color = "#ffffff") {
+      const box = getSvgExportViewBox(svg, width, height);
+      const background = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      background.setAttribute("x", String(box.minX));
+      background.setAttribute("y", String(box.minY));
+      background.setAttribute("width", String(box.width));
+      background.setAttribute("height", String(box.height));
+      background.setAttribute("fill", color);
+      svg.insertBefore(background, svg.firstChild);
+    }
+
+    function serializeLegendSvg(legendItems, options = {}) {
+      if (!legendItems.length) {
+        return "";
+      }
+
+      const fontSize = 12;
+      const rowHeight = 22;
+      const padding = 10;
+      const swatchSize = 12;
+      const textX = padding + swatchSize + 8;
+      const computedStyle = getComputedStyle(evalPlotContent);
+      const fontFamily = computedStyle.fontFamily || "Inter, Arial, sans-serif";
+      const textColor = computedStyle.color || "#cbd5e1";
+
+      const canvas = document.createElement("canvas");
+      const context = canvas.getContext("2d");
+      if (context) {
+        context.font = `${fontSize}px ${fontFamily}`;
+      }
+      const textWidths = legendItems.map((item) =>
+        context ? context.measureText(item.label).width : item.label.length * (fontSize * 0.62)
+      );
+      const width = Math.ceil(
+        Math.max(120, textX + Math.max(...textWidths, 0) + padding)
+      );
+      const height = padding * 2 + legendItems.length * rowHeight;
+
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+      svg.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
+      svg.setAttribute("width", String(width));
+      svg.setAttribute("height", String(height));
+      svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+
+      if (options.opaqueBackground) {
+        prependExportBackgroundRect(svg, width, height, options.backgroundColor || resolveOpaqueExportBackgroundColor());
+      }
+
+      legendItems.forEach((item, index) => {
+        const centerY = padding + index * rowHeight + rowHeight / 2;
+
+        const swatch = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        swatch.setAttribute("x", String(padding));
+        swatch.setAttribute("y", String(centerY - swatchSize / 2));
+        swatch.setAttribute("width", String(swatchSize));
+        swatch.setAttribute("height", String(swatchSize));
+        swatch.setAttribute("rx", "2");
+        swatch.setAttribute("fill", item.color);
+        svg.appendChild(swatch);
+
+        const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        text.setAttribute("x", String(textX));
+        text.setAttribute("y", String(centerY + fontSize / 3));
+        text.setAttribute("fill", textColor);
+        text.setAttribute("font-size", String(fontSize));
+        text.setAttribute("font-family", fontFamily);
+        text.textContent = item.label;
+        svg.appendChild(text);
+      });
+
+      return `<?xml version="1.0" encoding="UTF-8"?>\n${new XMLSerializer().serializeToString(svg)}`;
+    }
+
+    function serializeSvgForDownload(sourceSvg, options = {}) {
+      const clone = sourceSvg.cloneNode(true);
+      const computedStyle = getComputedStyle(sourceSvg);
+      const width = sourceSvg.getAttribute("width") || String(Math.ceil(sourceSvg.getBoundingClientRect().width));
+      const height = sourceSvg.getAttribute("height") || String(Math.ceil(sourceSvg.getBoundingClientRect().height));
+
+      clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+      clone.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
+      clone.setAttribute("width", width);
+      clone.setAttribute("height", height);
+      if (!clone.hasAttribute("viewBox")) {
+        clone.setAttribute("viewBox", `0 0 ${width} ${height}`);
+      }
+      if (options.opaqueBackground) {
+        prependExportBackgroundRect(clone, width, height, options.backgroundColor || resolveOpaqueExportBackgroundColor());
+      }
+      clone.style.color = computedStyle.color;
+      clone.style.fontFamily = computedStyle.fontFamily;
+      clone.style.backgroundColor = computedStyle.backgroundColor;
+
+      return `<?xml version="1.0" encoding="UTF-8"?>\n${new XMLSerializer().serializeToString(clone)}`;
+    }
+
+    function triggerBlobDownload(filename, blob) {
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      link.rel = "noopener";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    function getZipDosDateTime(date = new Date()) {
+      const year = Math.max(1980, date.getFullYear());
+      return {
+        time: ((date.getHours() & 0x1f) << 11) | ((date.getMinutes() & 0x3f) << 5) | ((Math.floor(date.getSeconds() / 2)) & 0x1f),
+        date: (((year - 1980) & 0x7f) << 9) | (((date.getMonth() + 1) & 0x0f) << 5) | (date.getDate() & 0x1f),
+      };
+    }
+
+    const crc32Table = (() => {
+      const table = new Uint32Array(256);
+      for (let i = 0; i < 256; i += 1) {
+        let value = i;
+        for (let bit = 0; bit < 8; bit += 1) {
+          value = (value & 1) ? (0xedb88320 ^ (value >>> 1)) : (value >>> 1);
+        }
+        table[i] = value >>> 0;
+      }
+      return table;
+    })();
+
+    function computeCrc32(bytes) {
+      let crc = 0xffffffff;
+      for (const byte of bytes) {
+        crc = crc32Table[(crc ^ byte) & 0xff] ^ (crc >>> 8);
+      }
+      return (crc ^ 0xffffffff) >>> 0;
+    }
+
+    function concatUint8Arrays(chunks) {
+      const totalLength = chunks.reduce((sum, chunk) => sum + chunk.length, 0);
+      const result = new Uint8Array(totalLength);
+      let offset = 0;
+      for (const chunk of chunks) {
+        result.set(chunk, offset);
+        offset += chunk.length;
+      }
+      return result;
+    }
+
+    function createZipBlob(files) {
+      const encoder = new TextEncoder();
+      const fileDate = getZipDosDateTime();
+      const localChunks = [];
+      const centralChunks = [];
+      let offset = 0;
+
+      for (const file of files) {
+        const nameBytes = encoder.encode(file.name);
+        const dataBytes = encoder.encode(file.content);
+        const crc32 = computeCrc32(dataBytes);
+
+        const localHeader = new Uint8Array(30 + nameBytes.length);
+        const localView = new DataView(localHeader.buffer);
+        localView.setUint32(0, 0x04034b50, true);
+        localView.setUint16(4, 20, true);
+        localView.setUint16(6, 0x0800, true);
+        localView.setUint16(8, 0, true);
+        localView.setUint16(10, fileDate.time, true);
+        localView.setUint16(12, fileDate.date, true);
+        localView.setUint32(14, crc32, true);
+        localView.setUint32(18, dataBytes.length, true);
+        localView.setUint32(22, dataBytes.length, true);
+        localView.setUint16(26, nameBytes.length, true);
+        localView.setUint16(28, 0, true);
+        localHeader.set(nameBytes, 30);
+        localChunks.push(localHeader, dataBytes);
+
+        const centralHeader = new Uint8Array(46 + nameBytes.length);
+        const centralView = new DataView(centralHeader.buffer);
+        centralView.setUint32(0, 0x02014b50, true);
+        centralView.setUint16(4, 20, true);
+        centralView.setUint16(6, 20, true);
+        centralView.setUint16(8, 0x0800, true);
+        centralView.setUint16(10, 0, true);
+        centralView.setUint16(12, fileDate.time, true);
+        centralView.setUint16(14, fileDate.date, true);
+        centralView.setUint32(16, crc32, true);
+        centralView.setUint32(20, dataBytes.length, true);
+        centralView.setUint32(24, dataBytes.length, true);
+        centralView.setUint16(28, nameBytes.length, true);
+        centralView.setUint16(30, 0, true);
+        centralView.setUint16(32, 0, true);
+        centralView.setUint16(34, 0, true);
+        centralView.setUint16(36, 0, true);
+        centralView.setUint32(38, 0, true);
+        centralView.setUint32(42, offset, true);
+        centralHeader.set(nameBytes, 46);
+        centralChunks.push(centralHeader);
+
+        offset += localHeader.length + dataBytes.length;
+      }
+
+      const centralDirectory = concatUint8Arrays(centralChunks);
+      const endRecord = new Uint8Array(22);
+      const endView = new DataView(endRecord.buffer);
+      endView.setUint32(0, 0x06054b50, true);
+      endView.setUint16(4, 0, true);
+      endView.setUint16(6, 0, true);
+      endView.setUint16(8, files.length, true);
+      endView.setUint16(10, files.length, true);
+      endView.setUint32(12, centralDirectory.length, true);
+      endView.setUint32(16, offset, true);
+      endView.setUint16(20, 0, true);
+
+      const zipBytes = concatUint8Arrays([...localChunks, centralDirectory, endRecord]);
+      return new Blob([zipBytes], { type: "application/zip" });
+    }
+
+    async function saveBlob(blob, suggestedName, types) {
+      if (typeof window.showSaveFilePicker === "function") {
+        try {
+          const handle = await window.showSaveFilePicker({ suggestedName, types });
+          const writable = await handle.createWritable();
+          await writable.write(blob);
+          await writable.close();
+          return true;
+        } catch (error) {
+          if (error && error.name === "AbortError") {
+            return false;
+          }
+          console.warn("Save picker failed, falling back to browser download.", error);
+        }
+      }
+
+      triggerBlobDownload(suggestedName, blob);
+      return true;
+    }
+
+    function getVisiblePlotFigureCards() {
+      return Array.from(evalPlotContent.querySelectorAll(".plot-card")).filter((card) => card.querySelector("svg"));
+    }
+
+    function updateDownloadFiguresButtonState() {
+      const figureCount = getVisiblePlotFigureCards().length;
+      downloadFiguresButton.disabled = figureCount === 0;
+      downloadFiguresButton.textContent =
+        figureCount > 0 ? `Download Figures (${figureCount})` : "Download Figures";
+    }
+
+    async function downloadVisibleFigures() {
+      const figureCards = getVisiblePlotFigureCards();
+      if (!figureCards.length) {
+        return;
+      }
+
+      const exportOptions = {
+        opaqueBackground: state.exportOpaqueBackground,
+        backgroundColor: state.exportOpaqueBackground ? resolveOpaqueExportBackgroundColor() : null,
+      };
+      const includeLegend = state.activePlotLegendItems.length > 1;
+      const usedNames = new Set(includeLegend ? ["legend"] : []);
+      const files = [];
+      if (includeLegend) {
+        files.push({
+          filename: "legend.svg",
+          content: serializeLegendSvg(state.activePlotLegendItems, exportOptions),
+        });
+      }
+
+      figureCards.forEach((card, index) => {
+        const svg = card.querySelector("svg");
+        if (!svg) {
+          return;
+        }
+        const title = card.querySelector(".plot-title")?.textContent?.trim() || `figure ${index + 1}`;
+        files.push({
+          filename: getUniqueFigureFilename(title, usedNames),
+          content: serializeSvgForDownload(svg, exportOptions),
+        });
+      });
+
+      if (!files.length) {
+        return;
+      }
+
+      const zipBlob = createZipBlob(files.map((file) => ({ name: file.filename, content: file.content })));
+      await saveBlob(
+        zipBlob,
+        getActivePlotTabZipFilename(),
+        [{ description: "ZIP archive", accept: { "application/zip": [".zip"] } }]
+      );
+    }
+
+    const evalPlotContentObserver = new MutationObserver(() => {
+      updateDownloadFiguresButtonState();
+    });
+    evalPlotContentObserver.observe(evalPlotContent, { childList: true, subtree: true });
+    updateDownloadFiguresButtonState();
 
     function renderEvalJsonTabs() {
       evalJsonTabEvaluation.classList.toggle("active", state.activeEvalJsonTab === "evaluation");
@@ -1692,10 +2142,13 @@
       plotModeSelect.value = state.plotMode;
       plotShortenLabels.checked = state.plotShortenLabels;
       plotRoundingPrecision.value = String(state.plotRoundingPrecision);
+      plotShowLegendOnce.checked = state.plotShowLegendOnce;
+      exportOpaqueBackground.checked = state.exportOpaqueBackground;
       plotModeEffective.textContent = state.plotMode === "auto" ? `(→ ${effectiveMode})` : "";
       plotTabsByRow.style.display = effectiveMode === "f1" ? "" : "none";
       plotConfusionTabsByRow.style.display = effectiveMode === "confusion_matrix" ? "" : "none";
       plotGroupBarsRow.style.display = effectiveMode === "confusion_matrix" ? "none" : "";
+      plotShowLegendOnceRow.style.display = "none";
     }
 
     plotModeSelect.addEventListener("change", () => {
@@ -1715,6 +2168,29 @@
       state.plotRoundingPrecision = clamped;
       plotRoundingPrecision.value = String(clamped);
       renderEvaluations();
+    });
+
+    plotShowLegendOnce.addEventListener("change", () => {
+      state.plotShowLegendOnce = plotShowLegendOnce.checked;
+      renderEvaluations();
+    });
+
+    exportOpaqueBackground.addEventListener("change", () => {
+      state.exportOpaqueBackground = exportOpaqueBackground.checked;
+      renderPlotTabModeControls(getEffectivePlotMode(state.activeEvalTab || ""));
+    });
+
+    downloadFiguresButton.addEventListener("click", async () => {
+      if (downloadFiguresButton.disabled) {
+        return;
+      }
+      downloadFiguresButton.disabled = true;
+      downloadFiguresButton.textContent = "Preparing figures...";
+      try {
+        await downloadVisibleFigures();
+      } finally {
+        updateDownloadFiguresButtonState();
+      }
     });
 
     plotTabsByPrefixButton.addEventListener("click", () => {
@@ -3301,7 +3777,7 @@
         errorLine.setAttribute("x2", String(centerX));
         errorLine.setAttribute("y1", String(errTop));
         errorLine.setAttribute("y2", String(errBottom));
-        errorLine.setAttribute("stroke", "#e5e7eb");
+        styleErrorBarSegment(errorLine);
         errorLine.setAttribute("stroke-width", "2");
         contentGroup.appendChild(errorLine);
 
@@ -3310,7 +3786,7 @@
         capTop.setAttribute("x2", String(centerX + 6));
         capTop.setAttribute("y1", String(errTop));
         capTop.setAttribute("y2", String(errTop));
-        capTop.setAttribute("stroke", "#e5e7eb");
+        styleErrorBarSegment(capTop);
         capTop.setAttribute("stroke-width", "2");
         contentGroup.appendChild(capTop);
 
@@ -3319,7 +3795,7 @@
         capBottom.setAttribute("x2", String(centerX + 6));
         capBottom.setAttribute("y1", String(errBottom));
         capBottom.setAttribute("y2", String(errBottom));
-        capBottom.setAttribute("stroke", "#e5e7eb");
+        styleErrorBarSegment(capBottom);
         capBottom.setAttribute("stroke-width", "2");
         contentGroup.appendChild(capBottom);
 
@@ -3338,13 +3814,10 @@
       return svg;
     }
 
-    function createGroupedBarPlotSvg(points) {
+    function createGroupedBarPlotSvg(points, legendModel = null) {
       const categoryOrder = [];
       const categorySet = new Set();
       const categoryDisplayMap = new Map();
-      const seriesOrder = [];
-      const seriesSet = new Set();
-      const seriesDisplayMap = new Map();
       const valueMap = new Map();
 
       for (const point of points) {
@@ -3355,15 +3828,19 @@
         if (!categoryDisplayMap.has(point.category)) {
           categoryDisplayMap.set(point.category, point.displayCategory);
         }
-        if (!seriesSet.has(point.series)) {
-          seriesSet.add(point.series);
-          seriesOrder.push(point.series);
-        }
-        if (!seriesDisplayMap.has(point.series)) {
-          seriesDisplayMap.set(point.series, point.displaySeries);
-        }
         valueMap.set(`${point.category}|#|${point.series}`, point);
       }
+
+      const localSeriesOrder = [];
+      const localSeriesSet = new Set();
+      for (const point of points) {
+        if (!localSeriesSet.has(point.series)) {
+          localSeriesSet.add(point.series);
+          localSeriesOrder.push(point.series);
+        }
+      }
+
+      const seriesOrder = legendModel?.seriesOrder?.length ? legendModel.seriesOrder : localSeriesOrder;
 
       const seriesCount = Math.max(1, seriesOrder.length);
       const width = Math.max(760, categoryOrder.length * (120 + seriesCount * 26));
@@ -3426,7 +3903,7 @@
           const barHeight = (point.mean / yMax) * chartHeight;
           const barY = margin.top + chartHeight - barHeight;
           const barX = groupStartX + seriesIndex * (barWidth + barGap);
-          const color = getBarColor(seriesIndex);
+          const color = legendModel?.colorBySeries?.get(series) || getBarColor(seriesIndex);
 
           const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
           rect.setAttribute("x", String(barX));
@@ -3438,7 +3915,7 @@
           rect.addEventListener("mouseover", (event) => {
             const tooltipLines = [category];
             if (seriesOrder.length > 1) {
-              tooltipLines.push(`series: ${series}`);
+              tooltipLines.push(`series: ${point.displaySeries || legendModel?.displayBySeries?.get(series) || series}`);
             }
             tooltipLines.push(
               `mean: ${Number(point.mean).toFixed(4)}`,
@@ -3459,7 +3936,7 @@
           errorLine.setAttribute("x2", String(centerBarX));
           errorLine.setAttribute("y1", String(errTop));
           errorLine.setAttribute("y2", String(errBottom));
-          errorLine.setAttribute("stroke", "#e5e7eb");
+          styleErrorBarSegment(errorLine);
           errorLine.setAttribute("stroke-width", "2");
           contentGroup.appendChild(errorLine);
 
@@ -3468,7 +3945,7 @@
           capTop.setAttribute("x2", String(centerBarX + 5));
           capTop.setAttribute("y1", String(errTop));
           capTop.setAttribute("y2", String(errTop));
-          capTop.setAttribute("stroke", "#e5e7eb");
+          styleErrorBarSegment(capTop);
           capTop.setAttribute("stroke-width", "2");
           contentGroup.appendChild(capTop);
 
@@ -3477,7 +3954,7 @@
           capBottom.setAttribute("x2", String(centerBarX + 5));
           capBottom.setAttribute("y1", String(errBottom));
           capBottom.setAttribute("y2", String(errBottom));
-          capBottom.setAttribute("stroke", "#e5e7eb");
+          styleErrorBarSegment(capBottom);
           capBottom.setAttribute("stroke-width", "2");
           contentGroup.appendChild(capBottom);
         }
@@ -3494,7 +3971,7 @@
       }
 
       scheduleAdaptiveSvgFit(svg, contentGroup, width, height);
-      return { svg, seriesOrder, seriesDisplayMap };
+      return svg;
     }
 
     function collectNumericMetricLeafPaths(value, parts = [], out = new Map()) {
@@ -3922,6 +4399,17 @@
         evalPlotTabs.appendChild(button);
       }
       const activeEntries = tabMap.get(state.activeEvalPlotTab) || [];
+      const groupedLegendModel = groupBarFields.length
+        ? buildGroupedLegendModel(activeEntries)
+        : null;
+      const hasSharedLegend = Boolean(groupedLegendModel && groupedLegendModel.items.length > 1);
+      state.activePlotLegendItems = hasSharedLegend ? groupedLegendModel.items : [];
+      plotShowLegendOnceRow.style.display = hasSharedLegend ? "" : "none";
+
+      if (hasSharedLegend && state.plotShowLegendOnce) {
+        evalPlotContent.appendChild(createPlotLegendElement(groupedLegendModel.items));
+      }
+
       const grid = document.createElement("div");
       grid.className = "plot-grid";
       for (const entry of activeEntries) {
@@ -3935,25 +4423,11 @@
         title.textContent = `${getPlotTitleLabel(entry, effectiveMode)} (mean ± std)${groupedByText}`;
         card.appendChild(title);
         if (groupBarFields.length) {
-          const grouped = createGroupedBarPlotSvg(entry.points);
-          if (grouped.seriesOrder.length > 1) {
-            const legend = document.createElement("div");
-            legend.className = "plot-legend";
-            grouped.seriesOrder.forEach((seriesLabel, seriesIndex) => {
-              const item = document.createElement("span");
-              item.className = "plot-legend-item";
-              const swatch = document.createElement("span");
-              swatch.className = "plot-legend-swatch";
-              swatch.style.backgroundColor = getBarColor(seriesIndex);
-              const text = document.createElement("span");
-              text.textContent = grouped.seriesDisplayMap.get(seriesLabel) || seriesLabel;
-              item.appendChild(swatch);
-              item.appendChild(text);
-              legend.appendChild(item);
-            });
-            card.appendChild(legend);
+          const plotLegendItems = getLegendItemsForPoints(entry.points, groupedLegendModel);
+          if (plotLegendItems.length > 1 && !state.plotShowLegendOnce) {
+            card.appendChild(createPlotLegendElement(plotLegendItems));
           }
-          card.appendChild(grouped.svg);
+          card.appendChild(createGroupedBarPlotSvg(entry.points, groupedLegendModel));
         } else {
           card.appendChild(createBarPlotSvg(entry.points));
         }
@@ -3977,6 +4451,7 @@
       evalPlotTabs.innerHTML = "";
       evalPlotContent.innerHTML = "";
       plotGroupBarsList.innerHTML = "";
+      state.activePlotLegendItems = [];
 
       const selectedPredictionGroups = getSelectedPredictionGroups();
       if (selectedPredictionGroups.length === 0) {
