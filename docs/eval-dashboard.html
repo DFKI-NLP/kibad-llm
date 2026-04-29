@@ -1130,6 +1130,17 @@
       return state.plotShortenLabels ? splitLabelByLastDot(text) : text;
     }
 
+    function getPlotTitleLabel(plotEntry, effectiveMode) {
+      if (
+        effectiveMode === "f1" &&
+        state.plotShortenLabels &&
+        state.plotTabsBy === "suffix"
+      ) {
+        return plotEntry.prefix === "(root)" ? plotEntry.metricLabel : plotEntry.prefix;
+      }
+      return getPlotDisplayLabel(plotEntry.metricLabel);
+    }
+
     function displayPlotGroupFieldName(column) {
       return getPlotDisplayLabel(column);
     }
@@ -3821,7 +3832,7 @@
       return tabMap;
     }
 
-    function renderPlotTabsAndGrid(tabMap, activeExperiment, groupBarFields) {
+    function renderPlotTabsAndGrid(tabMap, activeExperiment, groupBarFields, effectiveMode) {
       const tabPriority = ["total", "details"];
       const sortedTabKeys = Array.from(tabMap.keys()).sort((a, b) => {
         const pa = tabPriority.indexOf(a);
@@ -3857,7 +3868,7 @@
         const groupedByText = groupBarFields.length
           ? ` | grouped by: ${groupBarFields.map((f) => displayPlotGroupFieldName(f)).join(", ")}`
           : "";
-        title.textContent = `${getPlotDisplayLabel(entry.metricLabel)} (mean ± std)${groupedByText}`;
+        title.textContent = `${getPlotTitleLabel(entry, effectiveMode)} (mean ± std)${groupedByText}`;
         card.appendChild(title);
         if (groupBarFields.length) {
           const grouped = createGroupedBarPlotSvg(entry.points);
@@ -4077,7 +4088,7 @@
         ? buildErrorsTabMap(plotEntries)
         : buildF1TabMap(plotEntries);
 
-      renderPlotTabsAndGrid(tabMap, activeExperiment, groupBarFields);
+      renderPlotTabsAndGrid(tabMap, activeExperiment, groupBarFields, effectiveMode);
     }
 
     function renderEvaluations() {
