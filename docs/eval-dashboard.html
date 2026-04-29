@@ -3169,6 +3169,64 @@
       return palette[index % palette.length];
     }
 
+    function fitSvgToContents(svg, contentGroup, minWidth, minHeight) {
+      if (!svg.isConnected) {
+        return false;
+      }
+      let bbox;
+      try {
+        bbox = contentGroup.getBBox();
+      } catch (error) {
+        return false;
+      }
+      if (
+        !bbox ||
+        !Number.isFinite(bbox.x) ||
+        !Number.isFinite(bbox.y) ||
+        !Number.isFinite(bbox.width) ||
+        !Number.isFinite(bbox.height)
+      ) {
+        return false;
+      }
+
+      const padding = 8;
+      const shiftX = Math.max(0, padding - bbox.x);
+      const shiftY = Math.max(0, padding - bbox.y);
+      contentGroup.setAttribute("transform", `translate(${shiftX}, ${shiftY})`);
+
+      const fittedWidth = Math.ceil(
+        Math.max(minWidth + shiftX, bbox.x + bbox.width + shiftX + padding)
+      );
+      const fittedHeight = Math.ceil(
+        Math.max(minHeight + shiftY, bbox.y + bbox.height + shiftY + padding)
+      );
+
+      svg.setAttribute("width", String(fittedWidth));
+      svg.setAttribute("height", String(fittedHeight));
+      svg.setAttribute("viewBox", `0 0 ${fittedWidth} ${fittedHeight}`);
+      return true;
+    }
+
+    function scheduleAdaptiveSvgFit(svg, contentGroup, minWidth, minHeight) {
+      let attempts = 4;
+      const runFit = () => {
+        const fitted = fitSvgToContents(svg, contentGroup, minWidth, minHeight);
+        if (!fitted && attempts > 0) {
+          attempts -= 1;
+          requestAnimationFrame(runFit);
+        }
+      };
+
+      requestAnimationFrame(runFit);
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready
+          .then(() => {
+            requestAnimationFrame(runFit);
+          })
+          .catch(() => {});
+      }
+    }
+
     function createBarPlotSvg(points) {
       const width = Math.max(720, points.length * 150);
       const height = 320;
@@ -3186,6 +3244,8 @@
       svg.setAttribute("width", String(width));
       svg.setAttribute("height", String(height));
       svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+      const contentGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      svg.appendChild(contentGroup);
 
       const yTicks = 5;
       for (let tick = 0; tick <= yTicks; tick += 1) {
@@ -3198,7 +3258,7 @@
         grid.setAttribute("y2", String(y));
         grid.setAttribute("stroke", "#64748b66");
         grid.setAttribute("stroke-width", "1");
-        svg.appendChild(grid);
+        contentGroup.appendChild(grid);
 
         const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
         label.setAttribute("x", String(margin.left - 8));
@@ -3207,7 +3267,7 @@
         label.setAttribute("fill", "currentColor");
         label.setAttribute("font-size", "11");
         label.textContent = value.toFixed(2);
-        svg.appendChild(label);
+        contentGroup.appendChild(label);
       }
 
       for (const [index, point] of points.entries()) {
@@ -3232,7 +3292,7 @@
         });
         rect.addEventListener("mousemove", positionBarTooltip);
         rect.addEventListener("mouseout", hideBarTooltip);
-        svg.appendChild(rect);
+        contentGroup.appendChild(rect);
 
         const errTop = margin.top + chartHeight - ((point.mean + point.std) / yMax) * chartHeight;
         const errBottom = margin.top + chartHeight - ((point.mean - point.std) / yMax) * chartHeight;
@@ -3243,7 +3303,7 @@
         errorLine.setAttribute("y2", String(errBottom));
         errorLine.setAttribute("stroke", "#e5e7eb");
         errorLine.setAttribute("stroke-width", "2");
-        svg.appendChild(errorLine);
+        contentGroup.appendChild(errorLine);
 
         const capTop = document.createElementNS("http://www.w3.org/2000/svg", "line");
         capTop.setAttribute("x1", String(centerX - 6));
@@ -3252,7 +3312,7 @@
         capTop.setAttribute("y2", String(errTop));
         capTop.setAttribute("stroke", "#e5e7eb");
         capTop.setAttribute("stroke-width", "2");
-        svg.appendChild(capTop);
+        contentGroup.appendChild(capTop);
 
         const capBottom = document.createElementNS("http://www.w3.org/2000/svg", "line");
         capBottom.setAttribute("x1", String(centerX - 6));
@@ -3261,7 +3321,7 @@
         capBottom.setAttribute("y2", String(errBottom));
         capBottom.setAttribute("stroke", "#e5e7eb");
         capBottom.setAttribute("stroke-width", "2");
-        svg.appendChild(capBottom);
+        contentGroup.appendChild(capBottom);
 
         const xLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
         xLabel.setAttribute("x", String(centerX));
@@ -3271,9 +3331,10 @@
         xLabel.setAttribute("fill", "currentColor");
         xLabel.setAttribute("font-size", "11");
         xLabel.textContent = point.displayLabel;
-        svg.appendChild(xLabel);
+        contentGroup.appendChild(xLabel);
       }
 
+      scheduleAdaptiveSvgFit(svg, contentGroup, width, height);
       return svg;
     }
 
@@ -3327,6 +3388,8 @@
       svg.setAttribute("width", String(width));
       svg.setAttribute("height", String(height));
       svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+      const contentGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      svg.appendChild(contentGroup);
 
       const yTicks = 5;
       for (let tick = 0; tick <= yTicks; tick += 1) {
@@ -3339,7 +3402,7 @@
         grid.setAttribute("y2", String(y));
         grid.setAttribute("stroke", "#64748b66");
         grid.setAttribute("stroke-width", "1");
-        svg.appendChild(grid);
+        contentGroup.appendChild(grid);
 
         const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
         label.setAttribute("x", String(margin.left - 8));
@@ -3348,7 +3411,7 @@
         label.setAttribute("fill", "currentColor");
         label.setAttribute("font-size", "11");
         label.textContent = value.toFixed(2);
-        svg.appendChild(label);
+        contentGroup.appendChild(label);
       }
 
       for (const [categoryIndex, category] of categoryOrder.entries()) {
@@ -3385,7 +3448,7 @@
           });
           rect.addEventListener("mousemove", positionBarTooltip);
           rect.addEventListener("mouseout", hideBarTooltip);
-          svg.appendChild(rect);
+          contentGroup.appendChild(rect);
 
           const errTop = margin.top + chartHeight - ((point.mean + point.std) / yMax) * chartHeight;
           const errBottom = margin.top + chartHeight - ((point.mean - point.std) / yMax) * chartHeight;
@@ -3398,7 +3461,7 @@
           errorLine.setAttribute("y2", String(errBottom));
           errorLine.setAttribute("stroke", "#e5e7eb");
           errorLine.setAttribute("stroke-width", "2");
-          svg.appendChild(errorLine);
+          contentGroup.appendChild(errorLine);
 
           const capTop = document.createElementNS("http://www.w3.org/2000/svg", "line");
           capTop.setAttribute("x1", String(centerBarX - 5));
@@ -3407,7 +3470,7 @@
           capTop.setAttribute("y2", String(errTop));
           capTop.setAttribute("stroke", "#e5e7eb");
           capTop.setAttribute("stroke-width", "2");
-          svg.appendChild(capTop);
+          contentGroup.appendChild(capTop);
 
           const capBottom = document.createElementNS("http://www.w3.org/2000/svg", "line");
           capBottom.setAttribute("x1", String(centerBarX - 5));
@@ -3416,7 +3479,7 @@
           capBottom.setAttribute("y2", String(errBottom));
           capBottom.setAttribute("stroke", "#e5e7eb");
           capBottom.setAttribute("stroke-width", "2");
-          svg.appendChild(capBottom);
+          contentGroup.appendChild(capBottom);
         }
 
         const xLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
@@ -3427,9 +3490,10 @@
         xLabel.setAttribute("fill", "currentColor");
         xLabel.setAttribute("font-size", "11");
         xLabel.textContent = categoryDisplayMap.get(category) || category;
-        svg.appendChild(xLabel);
+        contentGroup.appendChild(xLabel);
       }
 
+      scheduleAdaptiveSvgFit(svg, contentGroup, width, height);
       return { svg, seriesOrder, seriesDisplayMap };
     }
 
