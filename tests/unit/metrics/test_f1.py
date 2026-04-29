@@ -368,6 +368,98 @@ def test_multiple_fields_subfield_values_can_score_only_selected_nested_values()
     }
 
 
+def test_single_field_ignore_missing_entries_skips_one_sided_entries() -> None:
+    m = F1MicroSingleFieldMetric(field="label", ignore_missing_entries=True)
+    m.update({"label": "foo"}, {"label": None})
+    m.update({"label": None}, {"label": "bar"})
+    m.update({"label": "baz"}, {"label": "baz"})
+
+    out = m.compute(m)
+
+    assert out == {"f1": 1.0, "precision": 1.0, "recall": 1.0, "support": 1}
+
+
+def test_multiple_fields_ignore_missing_entries_keeps_only_matched_groups() -> None:
+    m = F1MicroMultipleFieldsMetric(
+        fields=["organism_trends"],
+        subfield_keys={"organism_trends": ["Hauptgruppe_RoteListen", "Lebensraum"]},
+        subfield_values={"organism_trends": ["Antwortvariable", "Trend"]},
+        ignore_missing_entries=True,
+    )
+    m.update(
+        {
+            "organism_trends": [
+                {
+                    "Hauptgruppe_RoteListen": "Amphibien",
+                    "Lebensraum": "Wald",
+                    "Antwortvariable": "Abundanz",
+                    "Trend": "negative",
+                },
+                {
+                    "Hauptgruppe_RoteListen": "Voegel",
+                    "Lebensraum": "Offenland",
+                    "Antwortvariable": "Dichte",
+                    "Trend": "positive",
+                },
+            ]
+        },
+        {
+            "organism_trends": [
+                {
+                    "Hauptgruppe_RoteListen": "Amphibien",
+                    "Lebensraum": "Wald",
+                    "Antwortvariable": "Abundanz",
+                    "Trend": "negative",
+                },
+                {
+                    "Hauptgruppe_RoteListen": "Saeugetiere",
+                    "Lebensraum": "Gewaesser",
+                    "Antwortvariable": "Vorkommen",
+                    "Trend": "stabil",
+                },
+            ]
+        },
+    )
+
+    out = m.compute()
+
+    assert out == {
+        "ALL": {"f1": 1.0, "precision": 1.0, "recall": 1.0, "support": 1},
+        "AVG": {"f1": 1.0, "precision": 1.0, "recall": 1.0, "support": 1.0},
+        "organism_trends.Amphibien&Wald": {
+            "f1": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "support": 1,
+        },
+    }
+
+
+def test_multiple_fields_ignore_missing_entries_filters_empty_top_level_fields() -> None:
+    m = F1MicroMultipleFieldsMetric(fields=["a", "b"], ignore_missing_entries=True)
+    m.update({"a": "foo"}, {"a": "foo", "b": "bar"})
+
+    out = m.compute()
+
+    assert out == {
+        "ALL": {"f1": 1.0, "precision": 1.0, "recall": 1.0, "support": 1},
+        "AVG": {"f1": 1.0, "precision": 1.0, "recall": 1.0, "support": 1.0},
+        "a": {"f1": 1.0, "precision": 1.0, "recall": 1.0, "support": 1},
+    }
+
+
+def test_multiple_fields_ignore_missing_entries_can_filter_all_field_results() -> None:
+    m = F1MicroMultipleFieldsMetric(fields=["label"], ignore_missing_entries=True)
+    m.update({"label": "foo"}, {"label": None})
+
+    out = m.compute()
+
+    assert out == {
+        "ALL": {"f1": 0.0, "precision": 0.0, "recall": 0.0, "support": 0},
+        "AVG": {},
+    }
+
+
 def test_multiple_fields_auto_discovers_fields_when_not_configured() -> None:
     m = F1MicroMultipleFieldsMetric(fields=None)
     m.update({"a": "foo"}, {"a": "foo", "b": "bar"})

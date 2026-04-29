@@ -1,7 +1,8 @@
 # @package _global_
 
-# F1 score metric for organism trend predictions conditioned on the base entries,
-# grouping by `Hauptgruppe_RoteListen` and `Lebensraum` and scoring only `Antwortvariable` and `Trend` per group.
+# F1 score metric for organism trend predictions conditioned on matched base entries,
+# grouping by `Hauptgruppe_RoteListen` and `Lebensraum` and scoring only `Antwortvariable` and `Trend`
+# for groups that are present in both prediction and reference.
 
 defaults:
  - override /dataset: organism_trends_forest
@@ -18,6 +19,7 @@ metric:
     organism_trends:
      - Antwortvariable
      - Trend
+  ignore_missing_entries: true
 
   format_as_markdown: true
   sort_fields: true

@@ -22,12 +22,15 @@ class F1MicroSingleFieldMetric(MetricWithPrepareEntryAsSet):
     !duplicate label "A".
 
     Args:
+        ignore_missing_entries: If True, instances where either prediction or reference is empty
+            will be ignored in the metric calculation.
         **kwargs: Keyword arguments for entry-to-set preparation. See
             `MetricWithPrepareEntryAsSet` for supported options.
     """
 
-    def __init__(self, **kwargs) -> None:
+    def __init__(self, ignore_missing_entries: bool = False, **kwargs) -> None:
         super().__init__(**kwargs)
+        self.ignore_missing_entries = ignore_missing_entries
         self.reset()
 
     def reset(self) -> None:
@@ -40,6 +43,8 @@ class F1MicroSingleFieldMetric(MetricWithPrepareEntryAsSet):
         """
         prediction_set = self._prepare_entry_as_set(prediction)
         reference_set = self._prepare_entry_as_set(reference)
+        if self.ignore_missing_entries and (len(prediction_set) == 0 or len(reference_set) == 0):
+            return
 
         self.state["tp"] += len(prediction_set & reference_set)
         self.state["fp"] += len(prediction_set - reference_set)
@@ -178,7 +183,8 @@ class F1MicroMultipleFieldsMetric(MetricCollection[F1MicroSingleFieldMetric]):
                 ``Antwortvariable`` or only ``Antwortvariable`` and ``Trend`` within each
                 generated field.
             sort_fields: Whether to sort the fields in the output. Defaults to False.
-            **kwargs: Additional keyword arguments for F1MicroSingleFieldMetric, e.g., ignore_subfields.
+            **kwargs: Additional keyword arguments for F1MicroSingleFieldMetric, e.g.,
+                ``ignore_subfields`` or ``ignore_missing_entries``.
         """
         # for now, just raise error if fields contain MICRO or MACRO
         if fields is not None and ("ALL" in fields or "AVG" in fields):
@@ -191,6 +197,10 @@ class F1MicroMultipleFieldsMetric(MetricCollection[F1MicroSingleFieldMetric]):
         super().__init__(sort_fields=sort_fields)
 
         self.format_as_markdown = format_as_markdown
+
+    @property
+    def ignore_missing_entries(self) -> bool:
+        return self.metric_kwargs.get("ignore_missing_entries", False)
 
     def _update(self, prediction: Any, reference: Any, record_id: Hashable | None = None) -> None:
         if prediction is None:
@@ -242,6 +252,13 @@ class F1MicroMultipleFieldsMetric(MetricCollection[F1MicroSingleFieldMetric]):
             A dictionary mapping field names to their computed results.
         """
         result = super()._compute(*args, **kwargs)
+        if self.ignore_missing_entries:
+            # remove results from metrics with empty states to get correct AVG values and shorten the result
+            result = {
+                name: field_result
+                for name, field_result in result.items()
+                if any(self.metrics[name].state[key] > 0 for key in ("tp", "fp", "fn"))
+            }
         # compute mean for precision, recall, f1 over all fields
         scores_list = defaultdict(list)
         for field_result in result.values():
