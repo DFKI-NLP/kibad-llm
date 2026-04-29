@@ -1145,19 +1145,45 @@
       return defaults;
     }
 
-    function getDefaultGroupByFields(predictionColumns) {
-      return predictionColumns.filter(
+    function getColumnsWithMultipleValues(items, columns, valueGetter) {
+      if (!Array.isArray(items) || items.length <= 1) {
+        return [];
+      }
+      return columns.filter((column) => {
+        const values = new Set();
+        for (const item of items) {
+          values.add(normalizeValue(valueGetter(item, column)));
+          if (values.size > 1) {
+            return true;
+          }
+        }
+        return false;
+      });
+    }
+
+    function getDefaultGroupByFields(predictionColumns, predictionEntries = state.predictionEntries) {
+      const candidateColumns = predictionColumns.filter(
         (column) =>
           column.startsWith("prediction.overrides.") &&
           displayPredictionColumnName(column).toLowerCase() !== "seed"
       );
+      return getColumnsWithMultipleValues(
+        predictionEntries,
+        candidateColumns,
+        (predictionEntry, column) => predictionEntry.predictionMeta?.[column]
+      );
     }
 
-    function getDefaultEvalGroupByFields(evalColumns) {
-      return evalColumns.filter((column) => {
+    function getDefaultEvalGroupByFields(evalColumns, runs = []) {
+      const candidateColumns = evalColumns.filter((column) => {
         const normalized = column.replace(/^overrides\./, "");
         return normalized !== "dataset.predictions.log";
       });
+      return getColumnsWithMultipleValues(
+        runs,
+        candidateColumns,
+        (run, column) => run.evalOverrides?.[column]
+      );
     }
 
     function getDefaultEvalTruncateColumns(evalColumns) {
@@ -1301,6 +1327,13 @@
       return getSelectedPredictionGroups().flatMap((group) => group.predictions);
     }
 
+    function getSelectedEvalRunsForExperiment(experiment) {
+      if (!experiment) {
+        return [];
+      }
+      return gatherSelectedRuns().filter((run) => run.experimentEvaluate === experiment);
+    }
+
     function getTruncateColumnOptions() {
       return state.predictionColumns.map((column) => ({
         value: column,
@@ -1319,10 +1352,7 @@
         return [];
       }
       const evalColumns = new Set();
-      for (const run of gatherSelectedRuns()) {
-        if (run.experimentEvaluate !== state.activeEvalTab) {
-          continue;
-        }
+      for (const run of getSelectedEvalRunsForExperiment(state.activeEvalTab)) {
         for (const key of Object.keys(run.evalOverrides)) {
           evalColumns.add(key);
         }
@@ -1348,11 +1378,15 @@
       evalGroupByNoneButton.disabled = !hasColumns;
     }
 
-    function ensureEvalTabState(experiment, evalColumns) {
+    function ensureEvalTabState(
+      experiment,
+      evalColumns,
+      runs = getSelectedEvalRunsForExperiment(experiment)
+    ) {
       if (!state.evalTabStates[experiment]) {
         state.evalTabStates[experiment] = {
           knownColumns: [...evalColumns],
-          groupByFields: getDefaultEvalGroupByFields(evalColumns),
+          groupByFields: getDefaultEvalGroupByFields(evalColumns, runs),
           sort: [],
           truncateEnabledColumns: new Set(),
           defaultValues: {},
@@ -1376,7 +1410,7 @@
       for (const column of evalColumns) {
         if (!known.has(column)) {
           known.add(column);
-          if (getDefaultEvalGroupByFields([column]).length) {
+          if (getDefaultEvalGroupByFields([column], runs).length) {
             tabState.groupByFields = [...new Set([...tabState.groupByFields, column])];
           }
         }
@@ -2084,7 +2118,7 @@
 
       state.predictionColumns = Array.from(predictionColumns).sort();
       state.predictionEntries = Array.from(predictionEntriesBySignature.values());
-      state.groupByFields = getDefaultGroupByFields(state.predictionColumns);
+      state.groupByFields = getDefaultGroupByFields(state.predictionColumns, state.predictionEntries);
       state.predictionSort = [];
       state.truncateEnabledColumns = getDefaultTruncateColumns(state.predictionColumns);
       state.predictionDefaultValues = {};
@@ -3887,7 +3921,7 @@
           return acc;
         }, new Set())
       ).sort();
-      const evalTabState = ensureEvalTabState(activeExperiment, evalColumns);
+      const evalTabState = ensureEvalTabState(activeExperiment, evalColumns, experimentRuns);
       const evalGroups = buildEvaluationGroups(
         experimentRuns,
         evalTabState.groupByFields,
@@ -4099,7 +4133,7 @@
       }
 
       const orderedEvalOverrideColumns = Array.from(evalOverrideColumns).sort();
-      const evalTabState = ensureEvalTabState(state.activeEvalTab, orderedEvalOverrideColumns);
+      const evalTabState = ensureEvalTabState(state.activeEvalTab, orderedEvalOverrideColumns, tabRuns);
       renderEvalSortStatus(state.activeEvalTab, orderedEvalOverrideColumns);
       renderEvalGroupByButtons(orderedEvalOverrideColumns);
       renderEvalOptionsTabs(state.activeEvalTab);
