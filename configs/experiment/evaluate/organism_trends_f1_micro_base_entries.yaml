@@ -1,0 +1,23 @@
+# @package _global_
+
+# F1 score metric for organism trend predictions based only on the base entries,
+# evaluating `Hauptgruppe_RoteListen` and `Lebensraum` while ignoring `Antwortvariable`, `Trend`, and `Untergruppe_RoteListen`.
+
+defaults:
+ - override /dataset: organism_trends_forest
+ - override /metric: f1_micro
+
+metric:
+  # the fields in the prediction and reference to compute the F1 score on
+  fields:
+   - organism_trends
+  # for compound entries, we may ignore certain subfields during evaluation
+  ignore_subfields:
+    organism_trends:
+     - Antwortvariable
+     - Trend
+     # ignore as in the default config (organism_trends_f1_micro)
+     - Untergruppe_RoteListen
+
+  format_as_markdown: true
+  sort_fields: true

@@ -1,6 +1,7 @@
 # @package _global_
 
-# F1 score metric for single- or multi-label classification for organism trend predictions.
+# F1 score metric for single- or multi-label classification for organism trend predictions,
+# scoring each `organism_trends` compound as one entry while ignoring `Untergruppe_RoteListen`.
 
 defaults:
  - override /dataset: organism_trends_forest
