@@ -24,7 +24,7 @@ extractor/llm=gpt_oss_20b_in_process \
 seed=42,1337,7331 \
 --multirun"
 ```
-startet at `screen -r kibad-llm-1`
+started at `screen -r kibad-llm-1`
 ```
 =============================================
 >>> USING PARTITION H100-SLT,H100-Trails,H100,A100-80GB
@@ -62,7 +62,7 @@ extractor/llm=gemma3_27b_in_process \
 seed=42,1337,7331 \
 --multirun"
 ```
-startet at `screen -r kibad-llm-2`
+started at `screen -r kibad-llm-2`
 ```
 =============================================
 >>> USING PARTITION H100-SLT,H100-Trails,H100,A100-80GB
@@ -101,7 +101,7 @@ seed=42,1337,7331 \
 --multirun"
 ```
 
-startet at `screen -r kibad-llm-3`
+started at `screen -r kibad-llm-3`
 ```
 =============================================
 >>> USING PARTITION H100-SLT,H100-Trails,H100,A100-80GB
@@ -140,7 +140,7 @@ seed=42,1337,7331 \
 --multirun"
 ```
 
-startet at `screen -r kibad-llm-4`
+started at `screen -r kibad-llm-4`
 ```
 =============================================
 >>> USING PARTITION H100-SLT,H100-Trails,H100,A100-80GB
