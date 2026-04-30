@@ -383,7 +383,9 @@ These known issues have their own uv specific fixes. The relevant documentation 
 
 ### Documentation
 
-Build and serve the documentation locally with:
+This project uses [mkdocs](https://www.mkdocs.org/) for documentation, which is hosted on GitHub Pages at https://dfki-nlp.github.io/kibad-llm/.
+
+You can build and serve the documentation locally with:
 
 ```bash
 uv run --group cicd properdocs serve
