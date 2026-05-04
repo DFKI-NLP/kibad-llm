@@ -1,8 +1,8 @@
 """Hydra entry point for the evaluation pipeline.
 
 Loads a dataset of matched prediction/reference pairs (via a configured
-:mod:`kibad_llm.dataset` loader) and computes one or more metrics from
-:mod:`kibad_llm.metrics` against the references.
+[`kibad_llm.dataset`][kibad_llm.dataset] loader) and computes one or more metrics from
+[`kibad_llm.metrics`][kibad_llm.metrics] against the references.
 
 Also registers the ``get_directories_with_file`` OmegaConf resolver used by
 ``predictions_multirun_logs`` in ``configs/evaluate.yaml`` to discover prediction

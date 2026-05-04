@@ -1,6 +1,6 @@
 """Error statistics metric for monitoring extraction failures.
 
-:class:`ErrorCollector` inspects the ``errors`` / ``error`` / ``error_list`` /
+[`ErrorCollector`][kibad_llm.metrics.statistics.ErrorCollector] inspects the ``errors`` / ``error`` / ``error_list`` /
 ``errors_list`` fields in prediction dicts, groups errors by their exception-type
 prefix, and returns counts for each error type.  The special keys ``no_error`` and
 ``with_error`` give a quick success/failure ratio.  Intended for use alongside F1

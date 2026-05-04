@@ -1,15 +1,15 @@
 """In-process vLLM backend for offline (non-server) inference.
 
-:class:`VllmInProcess` loads the model directly into the calling process using
+[`VllmInProcess`][kibad_llm.llms.vllm_in_process.VllmInProcess] loads the model directly into the calling process using
 ``vllm.LLM`` and runs inference via ``vllm.LLM.chat()``.  JSON-schema guided decoding
-is delegated to vLLM's :class:`vllm.sampling_params.StructuredOutputsParams`.
+is delegated to vLLM's `StructuredOutputsParams`.
 
-Reasoning extraction is handled by the vLLM :class:`vllm.reasoning.ReasoningParser`
+Reasoning extraction is handled by the vLLM `ReasoningParser`
 configured in the model's ``vllm_config``.  For Harmony (gpt-oss style) models the
 ``parse_chat_output`` helper splits reasoning and content from token IDs; for other
 models the parser's ``extract_reasoning`` method is used.
 
-Call :meth:`VllmInProcess.destroy` (or delete the instance) to release GPU memory
+Call [`VllmInProcess.destroy`][kibad_llm.llms.vllm_in_process.VllmInProcess.destroy] (or delete the instance) to release GPU memory
 and tear down the distributed environment after inference.
 """
 

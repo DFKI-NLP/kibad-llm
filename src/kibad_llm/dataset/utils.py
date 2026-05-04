@@ -1,10 +1,10 @@
 """Dataset merge utilities for pairing predictions with references.
 
-:func:`merge_references_into_predictions` aligns two dicts (predictions, references)
+[`merge_references_into_predictions`][kibad_llm.dataset.utils.merge_references_into_predictions] aligns two dicts (predictions, references)
 on their shared keys and produces a new dict where each entry has the shape
 ``{"prediction": ..., "reference": ...}``.  This is the format expected by all
-:class:`~kibad_llm.metric.Metric` implementations.  When ``predictions`` is a
-:class:`~kibad_llm.dataset.prediction.DictWithMetadata`, the metadata is forwarded to
+[`Metric`][kibad_llm.metric.Metric] implementations.  When ``predictions`` is a
+`DictWithMetadata`, the metadata is forwarded to
 the merged result.
 """
 

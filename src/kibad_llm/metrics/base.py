@@ -1,7 +1,7 @@
 """Base class for metrics that operate on set-valued predictions and references.
 
-:class:`MetricWithPrepareEntryAsSet` extends :class:`~kibad_llm.metric.Metric` with a
-:meth:`_prepare_entry_as_set` helper that normalises arbitrary prediction/reference
+[`MetricWithPrepareEntryAsSet`][kibad_llm.metrics.base.MetricWithPrepareEntryAsSet] extends [`Metric`][kibad_llm.metric.Metric] with a
+`_prepare_entry_as_set` helper that normalises arbitrary prediction/reference
 values into a ``set`` for comparison:
 
 - Scalars are wrapped in a single-element set.
@@ -10,8 +10,8 @@ values into a ``set`` for comparison:
   ignoring specific sub-fields (``ignore_subfields``) and optionally flattening nested
   dicts first (``flatten_dicts``).
 
-Inherited by :class:`~kibad_llm.metrics.f1.F1MicroSingleFieldMetric` and
-:class:`~kibad_llm.metrics.confusion_matrix.ConfusionMatrix`.
+Inherited by [`F1MicroSingleFieldMetric`][kibad_llm.metrics.f1.F1MicroSingleFieldMetric] and
+[`ConfusionMatrix`][kibad_llm.metrics.confusion_matrix.ConfusionMatrix].
 """
 
 from typing import Any

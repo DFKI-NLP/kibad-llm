@@ -1,6 +1,6 @@
 """Conditional (multi-turn) union extractor that feeds each run's output as history.
 
-:class:`ConditionalUnionExtractor` extends :class:`~kibad_llm.extractors.union.UnionExtractor`
+[`ConditionalUnionExtractor`][kibad_llm.extractors.conditional.ConditionalUnionExtractor] extends [`UnionExtractor`][kibad_llm.extractors.union.UnionExtractor]
 by maintaining a running conversation history: each extraction run's formatted messages and
 the assistant's response are appended to the history before the next run is called, turning
 the extraction into a multi-turn dialogue.  This is useful when later schema fields benefit

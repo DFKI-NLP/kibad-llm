@@ -1,6 +1,6 @@
 """Confusion-matrix metric for classification evaluation.
 
-:class:`ConfusionMatrix` accumulates per-(gold_label, pred_label) counts across all
+[`ConfusionMatrix`][kibad_llm.metrics.confusion_matrix.ConfusionMatrix] accumulates per-(gold_label, pred_label) counts across all
 documents and returns a nested dict representation of the matrix.  False negatives
 (gold labels not predicted) are mapped to a configurable ``undetected_label`` sentinel;
 false positives (predicted labels not in gold) are mapped to an ``unassignable_label``

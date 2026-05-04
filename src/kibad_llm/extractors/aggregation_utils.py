@@ -1,16 +1,16 @@
 """Aggregation strategies for combining structured outputs from multiple extraction runs.
 
-Defines the :data:`Aggregator` type alias (a callable mapping a list of structured
+Defines the `Aggregator` type alias (a callable mapping a list of structured
 dicts to a single merged dict) and three concrete aggregator functions:
 
-- :func:`aggregate_majority_vote` – for repeated queries on the same text: single-valued
+- [`aggregate_majority_vote`][kibad_llm.extractors.aggregation_utils.aggregate_majority_vote] – for repeated queries on the same text: single-valued
   fields use majority vote, list fields use per-item majority vote.
-- :func:`aggregate_unanimous` – for union queries with non-overlapping keys: each key must
-  appear in at most one extraction; conflicts raise :class:`AggregationError`.
-- :func:`aggregate_single_majority_vote_multi_union` – for chunked queries: single-valued
+- [`aggregate_unanimous`][kibad_llm.extractors.aggregation_utils.aggregate_unanimous] – for union queries with non-overlapping keys: each key must
+  appear in at most one extraction; conflicts raise [`AggregationError`][kibad_llm.extractors.aggregation_utils.AggregationError].
+- [`aggregate_single_majority_vote_multi_union`][kibad_llm.extractors.aggregation_utils.aggregate_single_majority_vote_multi_union] – for chunked queries: single-valued
   fields use majority vote across chunks, list fields take the union of all items.
 
-Helper :func:`make_hashable_simple` converts nested dicts/lists to hashable tuples so
+Helper `make_hashable_simple` converts nested dicts/lists to hashable tuples so
 values can be counted in a ``Counter``.
 """
 

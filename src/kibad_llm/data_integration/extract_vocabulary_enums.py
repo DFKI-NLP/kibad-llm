@@ -1,15 +1,18 @@
-"""
-extract_vocabulary_enums.py
+"""One-off script to extract all vocabulary enum values from the Faktencheck database.
 
-This script extracts all vocabulary enum values from the Faktencheck database.
-It looks for:
-1. Vocabulary tables (those starting with "vocabulary_") referenced in queries.yaml
-2. Direct columns in core_zotaddon and related tables that contain choice values
+Looks for:
 
-Inspired by: db_converter.py and database_unique_summary.py
+1. Vocabulary tables (those starting with ``vocabulary_``) referenced in ``queries.yaml``.
+2. Direct columns in ``core_zotaddon`` and related tables that contain choice values.
 
-Usage example:
-     python extract_vocabulary_enums.py --top-n 100
+Inspired by [`kibad_llm.data_integration.db_converter`][kibad_llm.data_integration.db_converter] and
+[`kibad_llm.data_integration.database_unique_summary`][kibad_llm.data_integration.database_unique_summary].
+
+Run with:
+
+```bash
+python extract_vocabulary_enums.py --top-n 100
+```
 """
 
 import argparse

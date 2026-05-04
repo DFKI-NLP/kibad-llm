@@ -1,8 +1,8 @@
 """HuggingFace ``datasets`` adapter utilities.
 
-Currently provides :func:`wrap_map_func`, which wraps an arbitrary callable so its
+Currently provides [`wrap_map_func`][kibad_llm.utils.datasets.wrap_map_func], which wraps an arbitrary callable so its
 return value is stored under a single key in the dict expected by ``Dataset.map()``.
-Used in :mod:`kibad_llm.predict` to adapt the PDF-reader callable to the datasets map
+Used in [`kibad_llm.predict`][kibad_llm.predict] to adapt the PDF-reader callable to the datasets map
 interface.
 """
 

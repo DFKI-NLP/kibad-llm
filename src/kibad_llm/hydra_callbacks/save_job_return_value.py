@@ -1,6 +1,6 @@
 """Hydra callback that persists job return values to disk after each run.
 
-:class:`SaveJobReturnValueCallback` is registered in ``configs/predict.yaml`` and
+[`SaveJobReturnValueCallback`][kibad_llm.hydra_callbacks.save_job_return_value.SaveJobReturnValueCallback] is registered in ``configs/predict.yaml`` and
 ``configs/evaluate.yaml`` via the ``hydra.callbacks`` config key.  After each job it
 saves the function's return dict to one or more files (JSON or Markdown).
 
@@ -8,7 +8,7 @@ For Hydra multirun sweeps the callback also:
 
 - Collects all per-job return dicts and aggregates them into a combined output file.
 - Optionally integrates them into a ``dict-of-lists`` structure for easy cross-job
-  analysis (:attr:`integrate_multirun_result`).
+  analysis (`integrate_multirun_result`).
 - Computes numeric aggregation statistics (mean, std, etc.) and saves them in a
   separate ``.aggregated.json`` / ``.aggregated.md`` file.
 - Creates human-readable job identifiers from differing Hydra overrides.

@@ -3,16 +3,16 @@
 Extractors are callables that receive ``(text, file_name)`` and return a dict
 containing at least a ``structured`` field with the LLM-extracted JSON output.
 They differ in *how many times* and *on what text spans* the underlying
-:func:`kibad_llm.extractors.base.extract_from_text` function is called, and how
+[`extract_from_text`][kibad_llm.extractors.base.extract_from_text] function is called, and how
 the resulting partial outputs are aggregated:
 
-- :class:`~kibad_llm.extractors.chunking.ChunkingExtractor` – slides a window over
+- [`ChunkingExtractor`][kibad_llm.extractors.chunking.ChunkingExtractor] – slides a window over
   the document and aggregates per-chunk results.
-- :class:`~kibad_llm.extractors.repeat.RepeatingExtractor` – runs extraction *n*
+- [`RepeatingExtractor`][kibad_llm.extractors.repeat.RepeatingExtractor] – runs extraction *n*
   times on the full text and aggregates via majority vote (reduces LLM variability).
-- :class:`~kibad_llm.extractors.union.UnionExtractor` – runs extraction once per
+- [`UnionExtractor`][kibad_llm.extractors.union.UnionExtractor] – runs extraction once per
   entry in ``overrides``, each with different parameters, and aggregates results.
-- :class:`~kibad_llm.extractors.conditional.ConditionalUnionExtractor` – like
+- [`ConditionalUnionExtractor`][kibad_llm.extractors.conditional.ConditionalUnionExtractor] – like
   ``UnionExtractor`` but feeds each run's output back as conversation history to the
   next run (multi-turn extraction).
 """
