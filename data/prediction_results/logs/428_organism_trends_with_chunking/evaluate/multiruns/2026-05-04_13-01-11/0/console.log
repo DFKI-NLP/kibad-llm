@@ -1,0 +1,16 @@
+[2026-05-04 13:01:11,788][__main__][INFO] - Loading dataset with predictions and references ...
+[2026-05-04 13:01:11,789][__main__][INFO] - Dataset config: {'predictions': {'_target_': 'kibad_llm.dataset.prediction.load_with_metadata', 'log': 'logs/428_organism_trends_with_chunking/predict/multiruns/2026-04-30_15-10-47/0', 'file': None, 'id_key': 'file_name', 'process_id': {'_partial_': True, '_target_': 'kibad_llm.utils.path.strip_filename_extension'}, 'preprocess': None}, '_target_': 'kibad_llm.dataset.utils.merge_references_into_predictions', 'references': {}, 'allow_missing_references': True}
+[2026-05-04 13:01:11,790][kibad_llm.dataset.json][INFO] - Loading dataset from JSON file: predictions/428_organism_trends_with_chunking/2026-04-30_15-10-47/2026-04-30_15-10-48_127341/predictions.jsonl ...
+[2026-05-04 13:01:11,885][__main__][INFO] - Instantiating metric ...
+[2026-05-04 13:01:11,885][__main__][INFO] - Metric config: {'_target_': 'kibad_llm.metrics.ErrorCollector', 'type_separator': ': ', 'show_errors': True}
+[2026-05-04 13:01:11,887][__main__][INFO] - Computing metric ...
+[2026-05-04 13:01:11,887][kibad_llm.metrics.statistics][INFO] - Collected error (id=8UC3VZW4): JSONDecodeError: Unterminated string starting at: line 43 column 287 (char 12059)
+[2026-05-04 13:01:11,887][kibad_llm.metrics.statistics][INFO] - Collected error (id=AZDPE2RS): JSONDecodeError: Unterminated string starting at: line 234 column 28 (char 10789)
+[2026-05-04 13:01:11,887][kibad_llm.metric][INFO] - Evaluation results:
+{
+  "no_error": 2435,
+  "with_error": 2,
+  "JSONDecodeError": 2
+}
+[2026-05-04 13:01:11,890][kibad_llm.hydra_callbacks.save_job_return_value.SaveJobReturnValueCallback][INFO] - Saving job_return in /home/arbi01/projects/kibad-llm/logs/428_organism_trends_with_chunking/evaluate/multiruns/2026-05-04_13-01-11/0/job_return_value.json
+[2026-05-04 13:01:11,890][kibad_llm.hydra_callbacks.save_job_return_value.SaveJobReturnValueCallback][INFO] - Saving job_return in /home/arbi01/projects/kibad-llm/logs/428_organism_trends_with_chunking/evaluate/multiruns/2026-05-04_13-01-11/0/job_return_value.md

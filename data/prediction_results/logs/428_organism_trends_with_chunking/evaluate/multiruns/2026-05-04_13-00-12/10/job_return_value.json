@@ -1,0 +1,59 @@
+{
+  "organism_trends.Pflanzen&Wald": {
+    "precision": 0.6610169491525424,
+    "recall": 0.7090909090909091,
+    "f1": 0.6842105263157895,
+    "support": 55
+  },
+  "organism_trends.Pilze_Flechten&Wald": {
+    "precision": 0.75,
+    "recall": 0.6666666666666666,
+    "f1": 0.7058823529411765,
+    "support": 9
+  },
+  "organism_trends.Wirbellose&Wald": {
+    "precision": 0.6153846153846154,
+    "recall": 0.7619047619047619,
+    "f1": 0.6808510638297872,
+    "support": 21
+  },
+  "organism_trends.Wirbeltiere&Wald": {
+    "precision": 0.32075471698113206,
+    "recall": 0.4358974358974359,
+    "f1": 0.3695652173913044,
+    "support": 39
+  },
+  "AVG": {
+    "precision": 0.5867890703795725,
+    "recall": 0.6433899433899434,
+    "f1": 0.6101272901195144,
+    "support": 31.0
+  },
+  "ALL": {
+    "precision": 0.5342465753424658,
+    "recall": 0.6290322580645161,
+    "f1": 0.5777777777777777,
+    "support": 124
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/428_organism_trends_with_chunking/2026-04-30_15-59-49/2026-05-01_08-26-53_886051/predictions.jsonl",
+      "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/428_organism_trends_with_chunking/2026-04-30_15-59-49/2026-05-01_08-26-53_886051/predictions.jsonl",
+      "time_pdf_conversion": 0.010931771015748382,
+      "time_extraction": 59304.155060219055,
+      "time_start": 1777616813,
+      "time_end": 1777676206,
+      "commit_hash": "096090bf929c361a9164f099a077d2621612fdca",
+      "branch": "prediction_results/add-organism_trends_with_chunking",
+      "is_dirty": false,
+      "slurm_job_id": "2869107"
+    },
+    "overrides": {
+      "name": "428_organism_trends_with_chunking",
+      "experiment/predict": "organism_trends_with_chunking",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-Wald-WVC",
+      "extractor/llm": "mistral_small_3_24b_in_process",
+      "seed": "1337"
+    }
+  }
+}

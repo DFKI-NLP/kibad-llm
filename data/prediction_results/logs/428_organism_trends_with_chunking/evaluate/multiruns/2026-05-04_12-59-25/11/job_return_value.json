@@ -1,0 +1,41 @@
+{
+  "organism_trends": {
+    "precision": 0.0338365434669443,
+    "recall": 0.4088050314465409,
+    "f1": 0.0625,
+    "support": 159
+  },
+  "AVG": {
+    "precision": 0.0338365434669443,
+    "recall": 0.4088050314465409,
+    "f1": 0.0625,
+    "support": 159.0
+  },
+  "ALL": {
+    "precision": 0.0338365434669443,
+    "recall": 0.4088050314465409,
+    "f1": 0.0625,
+    "support": 159
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/428_organism_trends_with_chunking/2026-04-30_15-59-49/2026-05-02_00-56-46_893538/predictions.jsonl",
+      "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/428_organism_trends_with_chunking/2026-04-30_15-59-49/2026-05-02_00-56-46_893538/predictions.jsonl",
+      "time_pdf_conversion": 0.004707259009592235,
+      "time_extraction": 59188.71735041705,
+      "time_start": 1777676206,
+      "time_end": 1777735470,
+      "commit_hash": "096090bf929c361a9164f099a077d2621612fdca",
+      "branch": "prediction_results/add-organism_trends_with_chunking",
+      "is_dirty": false,
+      "slurm_job_id": "2869107"
+    },
+    "overrides": {
+      "name": "428_organism_trends_with_chunking",
+      "experiment/predict": "organism_trends_with_chunking",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-Wald-WVC",
+      "extractor/llm": "mistral_small_3_24b_in_process",
+      "seed": "7331"
+    }
+  }
+}
