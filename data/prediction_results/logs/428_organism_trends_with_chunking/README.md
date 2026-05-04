@@ -2,6 +2,75 @@
 
 similar to [380_organism_trends](../380_organism_trends) + evaluation as in [422_organism_trends](../422_organism_trends), but with chunking as in [397_faktencheck_core_v1_for_chunking](../397_faktencheck_core_v1_for_chunking)
 
+we compare against the non-chunking results from [422_organism_trends](../422_organism_trends)
+
+## flat
+
+![legend.svg](figures/organism_trends_f1_micro_flat-ALL/legend.svg)
+### f1
+![f1.svg](figures/organism_trends_f1_micro_flat-ALL/f1.svg)
+### precision
+![precision.svg](figures/organism_trends_f1_micro_flat-ALL/precision.svg)
+### recall
+![recall.svg](figures/organism_trends_f1_micro_flat-ALL/recall.svg)
+### support
+![support.svg](figures/organism_trends_f1_micro_flat-ALL/support.svg)
+
+## full compounds
+![legend.svg](figures/organism_trends_f1_micro-ALL/legend.svg)
+### f1
+![f1.svg](figures/organism_trends_f1_micro-ALL/f1.svg)
+### precision
+![precision.svg](figures/organism_trends_f1_micro-ALL/precision.svg)
+### recall
+![recall.svg](figures/organism_trends_f1_micro-ALL/recall.svg)
+### support
+![support.svg](figures/organism_trends_f1_micro-ALL/support.svg)
+
+## base elements
+![legend.svg](figures/organism_trends_f1_micro_base_entries-ALL/legend.svg)
+### f1
+![f1.svg](figures/organism_trends_f1_micro_base_entries-ALL/f1.svg)
+### precision
+![precision.svg](figures/organism_trends_f1_micro_base_entries-ALL/precision.svg)
+### recall
+![recall.svg](figures/organism_trends_f1_micro_base_entries-ALL/recall.svg)
+### support
+![support.svg](figures/organism_trends_f1_micro_base_entries-ALL/support.svg)
+
+## conditional - variable only
+![legend.svg](figures/organism_trends_f1_micro_conditional_variable_only-ALL/legend.svg)
+### f1
+![f1.svg](figures/organism_trends_f1_micro_conditional_variable_only-ALL/f1.svg)
+### precision
+![precision.svg](figures/organism_trends_f1_micro_conditional_variable_only-ALL/precision.svg)
+### recall
+![recall.svg](figures/organism_trends_f1_micro_conditional_variable_only-ALL/recall.svg)
+### support
+![support.svg](figures/organism_trends_f1_micro_conditional_variable_only-ALL/support.svg)
+
+## conditional - variable & trend
+![legend.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-ALL/legend.svg)
+### f1
+![f1.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-ALL/f1.svg)
+### precision
+![precision.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-ALL/precision.svg)
+### recall
+![recall.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-ALL/recall.svg)
+### support
+![support.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-ALL/support.svg)
+
+## errors
+![legend.svg](figures/prediction_errors-total/legend.svg)
+### no_error
+![no_error.svg](figures/prediction_errors-total/no_error.svg)
+### with_error
+![with_error.svg](figures/prediction_errors-total/with_error.svg)
+### JSONDecoderError
+![JSONDecodeError.svg](figures/prediction_errors-details/JSONDecodeError.svg)
+### MissingResponseContentError
+![MissingResponseContentError.svg](figures/prediction_errors-details/MissingResponseContentError.svg)
+
 ## Details
 
 ### Inference
