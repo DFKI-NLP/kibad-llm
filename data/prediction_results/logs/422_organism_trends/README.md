@@ -47,6 +47,17 @@ see https://github.com/DFKI-NLP/kibad-llm/pull/422 for details
 | --- | --- |
 | ![precision.svg](figures/organism_trends_f1_micro_conditional_variable_only-ALL/precision.svg) | ![recall.svg](figures/organism_trends_f1_micro_conditional_variable_only-ALL/recall.svg) |
 
+### per base element group (f1)
+
+| Pflanzen&Wald | Pilze_Flechten&Wald |
+| --- | --- |
+| ![organism_trends.Pflanzen&Wald.svg](figures/organism_trends_f1_micro_conditional_variable_only-f1/organism_trends.Pflanzen%26Wald.svg) | ![organism_trends.Pilze_Flechten&Wald.svg](figures/organism_trends_f1_micro_conditional_variable_only-f1/organism_trends.Pilze_Flechten%26Wald.svg) |
+
+| Wirbellose&Wald | Wirbeltiere&Wald |
+| --- | --- |
+| ![organism_trends.Wirbellose&Wald.svg](figures/organism_trends_f1_micro_conditional_variable_only-f1/organism_trends.Wirbellose%26Wald.svg) | ![organism_trends.Wirbeltiere&Wald.svg](figures/organism_trends_f1_micro_conditional_variable_only-f1/organism_trends.Wirbeltiere%26Wald.svg) |
+
+
 ## conditional - variable & trend
 ![legend.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-ALL/legend.svg)
 
@@ -57,6 +68,17 @@ see https://github.com/DFKI-NLP/kibad-llm/pull/422 for details
 | precision | recall |
 | --- | --- |
 | ![precision.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-ALL/precision.svg) | ![recall.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-ALL/recall.svg) |
+
+### per base element group (f1)
+
+| Pflanzen&Wald | Pilze_Flechten&Wald |
+| --- | --- |
+| ![organism_trends.Pflanzen&Wald.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-f1/organism_trends.Pflanzen%26Wald.svg) | ![organism_trends.Pilze_Flechten&Wald.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-f1/organism_trends.Pilze_Flechten%26Wald.svg) |
+
+| Wirbellose&Wald | Wirbeltiere&Wald |
+| --- | --- |
+| ![organism_trends.Wirbellose&Wald.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-f1/organism_trends.Wirbellose%26Wald.svg) | ![organism_trends.Wirbeltiere&Wald.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-f1/organism_trends.Wirbeltiere%26Wald.svg) |
+
 
 ## details
 
