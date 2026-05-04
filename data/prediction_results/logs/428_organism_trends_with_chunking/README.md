@@ -69,6 +69,8 @@ we compare against the non-chunking results from [422_organism_trends](../422_or
 ![support.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-ALL/support.svg)
 
 ## errors
+- just for the new predictions with chunking (not for the non-chunking ones from 422_organism_trends)
+
 ![legend.svg](figures/prediction_errors-total/legend.svg)
 ### no_error
 ![no_error.svg](figures/prediction_errors-total/no_error.svg)
