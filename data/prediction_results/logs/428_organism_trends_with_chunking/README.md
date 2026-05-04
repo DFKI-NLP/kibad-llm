@@ -13,6 +13,7 @@ We compare against the non-chunking results from [422_organism_trends](../422_or
 - Qwen3 30b is still the best model in all cases (all values above are for that model)
 - However, not sure how reliable the precision values are (see missing annotations in early Faktencheck core reference data, evaluation of that can be found [here](../387_faktencheck_core)). 
 - Other models (e.g. Gemma3 27b) have the highest recall.
+- One interesting detail: The results with the chunking seem to be more stable, they have smaller standard deviations (error bars in the plots).  
 
 ## flat
 
