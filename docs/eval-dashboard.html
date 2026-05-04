@@ -1077,8 +1077,12 @@
 
     function getActivePlotTabZipFilename() {
       const activeButton = evalPlotTabs.querySelector(".tab-button.active");
-      const tabLabel = activeButton?.getAttribute("title") || activeButton?.textContent || "figures";
-      return `${sanitizeFigureFilename(tabLabel)}.zip`;
+      const plotTabLabel = activeButton?.getAttribute("title") || activeButton?.textContent || "figures";
+      const evalTabLabel = typeof state.activeEvalTab === "string" ? state.activeEvalTab.trim() : "";
+      const filenameParts = [evalTabLabel, String(plotTabLabel).trim()]
+        .filter((part) => part.length > 0)
+        .map((part) => sanitizeFigureFilename(part));
+      return `${filenameParts.join("-") || "figures"}.zip`;
     }
 
     function buildGroupedLegendModel(entries) {
