@@ -4,6 +4,14 @@ similar to [380_organism_trends](../380_organism_trends) + evaluation as in [422
 
 we compare against the non-chunking results from [422_organism_trends](../422_organism_trends)
 
+## Insights
+
+- Overall, chunking degrades performance (0.60 vs. 0.40 F1).
+- The reason is major degradation in base element precision (0.51 vs. 0.35) which is stronger than improved recall (0.72 vs. 0.82)
+- Qwen3 30b is still the best model in all cases (all values above are for that model)
+- However, not sure how reliable the precision values are (see missing annotations in early Faktencheck core reference data). 
+- Other models (e.g. Gemma3 27b) have the highest recall.
+
 ## flat
 
 ![legend.svg](figures/organism_trends_f1_micro_flat-ALL/legend.svg)
