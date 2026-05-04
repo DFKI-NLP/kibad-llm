@@ -1,8 +1,10 @@
 # 428_organism_trends_with_chunking
 
-similar to [380_organism_trends](../380_organism_trends) + evaluation as in [422_organism_trends](../422_organism_trends), but with chunking as in [397_faktencheck_core_v1_for_chunking](../397_faktencheck_core_v1_for_chunking)
+This is similar to [380_organism_trends](../380_organism_trends) + evaluation as in [422_organism_trends](../422_organism_trends), but with chunking as in [397_faktencheck_core_v1_for_chunking](../397_faktencheck_core_v1_for_chunking).
 
-we compare against the non-chunking results from [422_organism_trends](../422_organism_trends)
+See "Motivation" and details in https://github.com/DFKI-NLP/kibad-llm/pull/422 for the individual metric variants (`flat`/`full compounds`/`base elements`/`conditional - variable only`/`conditional - variable & trend`).
+
+We compare against the non-chunking results from [422_organism_trends](../422_organism_trends)
 
 ## Insights
 
