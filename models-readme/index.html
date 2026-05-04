@@ -1,0 +1,2680 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="kiba-d project team">
+      
+      
+        <link rel="canonical" href="https://dfki-nlp.github.io/kibad-llm/models-readme/">
+      
+      
+        <link rel="prev" href="../root-readme/">
+      
+      
+        <link rel="next" href="../podman-readme/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-ProperDocs 1.6.7, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>LLM usage instructions - kibad llm</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Merriweather+Sans:300,300i,400,400i,700,700i%7CRed+Hat+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Merriweather Sans";--md-code-font:"Red Hat Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="green" data-md-color-accent="deep-purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#how-to-run-an-llm-on-the-dfki-cluster" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="kibad llm" class="md-header__button md-logo" aria-label="kibad llm" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            kibad llm
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              LLM usage instructions
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="green" data-md-color-accent="deep-purple"  aria-label="Dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="deep-orange"  aria-label="Light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="kibad llm" class="md-nav__button md-logo" aria-label="kibad llm" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    kibad llm
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Welcome
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../root-readme/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    General project overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LLM usage instructions
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LLM usage instructions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#important" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IMPORTANT
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quickstart" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quickstart
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quickstart">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-gpt-oss-20b" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run gpt-oss-20b
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-two-ways-to-use-uv-on-pegasus" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The two ways to use uv on Pegasus
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The two ways to use uv on Pegasus">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#single-package-srun" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Single package srun
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#full-project-srun" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Full project srun
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#all-in-one-run-script-for-in_process-vllm-configs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        All-in-one run script for in_process VLLM configs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="All-in-one run script for in_process VLLM configs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prerequisites_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-alternatives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The alternatives
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The alternatives">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#all-in-one-run-external-vllm-script" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        All-in-one run external VLLM script
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="All-in-one run external VLLM script">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prerequisites_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usage_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-with-vllm-but-on-login-node" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run with VLLM but on Login Node
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../podman-readme/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Faktencheck database instructions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../eval-dashboard.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Evaluation dashboard
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../reference/kibad_llm/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    KIBA-D code Reference
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    KIBA-D code Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Config
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/evaluate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Evaluate
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/metric/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metric
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/predict/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Predict
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/preprocessing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Preprocessing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../reference/kibad_llm/data_integration/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data integration
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6_6" id="__nav_6_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Data integration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/data_integration/database_unique_summary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database unique summary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/data_integration/db_converter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Db converter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/data_integration/extract_vocabulary_enums/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extract vocabulary enums
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/data_integration/synch_nextcloud_with_cluster/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Synch nextcloud with cluster
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/data_integration/zotero_download/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Zotero download
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../reference/kibad_llm/dataset/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dataset
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6_7" id="__nav_6_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Dataset
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/dataset/compression/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compression
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/dataset/csv/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Csv
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/dataset/json/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Json
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/dataset/prediction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prediction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/dataset/utils/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Utils
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../reference/kibad_llm/extractors/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extractors
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6_8" id="__nav_6_8_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Extractors
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/extractors/aggregation_utils/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Aggregation utils
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/extractors/base/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Base
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/extractors/chunking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chunking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/extractors/conditional/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conditional
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/extractors/repeat/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Repeat
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/extractors/union/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Union
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_8_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../reference/kibad_llm/extractors/chunking_utils/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chunking utils
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6_8_7" id="__nav_6_8_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_6_8_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_8_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chunking utils
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/extractors/chunking_utils/core/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/extractors/chunking_utils/tokenizers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tokenizers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_9" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../reference/kibad_llm/hydra_callbacks/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hydra callbacks
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6_9" id="__nav_6_9_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Hydra callbacks
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/hydra_callbacks/save_job_return_value/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Save job return value
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../reference/kibad_llm/llms/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Llms
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6_10" id="__nav_6_10_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Llms
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/llms/base/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Base
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/llms/openai/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Openai
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/llms/openai_like_vllm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Openai like vllm
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/llms/vllm_in_process/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vllm in process
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../reference/kibad_llm/metrics/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metrics
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6_11" id="__nav_6_11_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Metrics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/metrics/base/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Base
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/metrics/collection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Collection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/metrics/confusion_matrix/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Confusion matrix
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/metrics/f1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    F1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/metrics/statistics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Statistics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_12" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../reference/kibad_llm/schema/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schema
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6_12" id="__nav_6_12_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Schema
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/schema/types/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Types
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/schema/utils/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Utils
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#important" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IMPORTANT
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quickstart" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quickstart
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quickstart">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-gpt-oss-20b" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run gpt-oss-20b
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-two-ways-to-use-uv-on-pegasus" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The two ways to use uv on Pegasus
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The two ways to use uv on Pegasus">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#single-package-srun" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Single package srun
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#full-project-srun" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Full project srun
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#all-in-one-run-script-for-in_process-vllm-configs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        All-in-one run script for in_process VLLM configs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="All-in-one run script for in_process VLLM configs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prerequisites_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-alternatives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The alternatives
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The alternatives">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#all-in-one-run-external-vllm-script" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        All-in-one run external VLLM script
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="All-in-one run external VLLM script">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prerequisites_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usage_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-with-vllm-but-on-login-node" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run with VLLM but on Login Node
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="how-to-run-an-llm-on-the-dfki-cluster">How-To Run an LLM on the DFKI Cluster</h1>
+<ul>
+<li><a href="#how-to-run-an-llm-on-the-dfki-cluster">How-To Run an LLM on the DFKI Cluster</a><ul>
+<li><a href="#important">IMPORTANT</a></li>
+<li><a href="#quickstart">Quickstart</a><ul>
+<li><a href="#prerequisites-quickstart">Prerequisites</a></li>
+<li><a href="#run-gpt-oss-20b">Run <code>gpt-oss-20b</code></a></li>
+</ul>
+</li>
+<li><a href="#the-two-ways-to-use-uv-on-pegasus">The two ways to use uv on Pegasus</a><ul>
+<li><a href="#single-package-srun">Single package srun</a></li>
+<li><a href="#full-project-srun">Full project srun</a></li>
+</ul>
+</li>
+<li><a href="#all-in-one-run-script-for-in_process-vllm-configs">All-in-one in process run script</a><ul>
+<li><a href="#prerequisites-all-in-one-in-process">Prerequisites</a></li>
+<li><a href="#usage-internal">Usage</a></li>
+</ul>
+</li>
+<li><a href="#the-alternatives">The alternatives</a><ul>
+<li><a href="#all-in-one-run-external-vllm-script">All-in-one run script</a><ul>
+<li><a href="#prerequisites-all-in-one-external">Prerequisites</a></li>
+<li><a href="#usage-external">Usage</a></li>
+</ul>
+</li>
+<li><a href="#run-with-vllm-but-on-login-node">Run with VLLM but on Login Node</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="important">IMPORTANT</h2>
+<p>If you run a new model on the cluster, you need to ensure that all other users can run the model too.
+Running a new model implies that VLLM downloads and caches the model on the cluster. To do that, it creates a new directory and some files underneath the VLLM_DOWNLOAD_DIR, which in our configuration usually points to /ds/models/llms/cache. The access right to this new subdirectory and any associated files are set to "rwxr-xr-x" , which doesn't allow writing for others.
+So, whenever you <em>have run</em> a new model on the cluster, run the following command <em>afterwards</em>:</p>
+<pre><code class="language-sh">cd /ds/models/llms &amp;&amp; chmod -R 777 ./*
+</code></pre>
+<p>This ensures that the downloaded files (or .lock files left over from crashes) can be used and or fixed by other users.</p>
+<h2 id="quickstart">Quickstart</h2>
+<p><a id="prerequisites-quickstart"></a></p>
+<h3 id="prerequisites">Prerequisites</h3>
+<p>based on: <a href="https://github.com/DFKI-NLP/vLLM-Starter/issues/2#issuecomment-3383218249">DFKI-NLP/vLLM-Starter#2 (comment)</a></p>
+<ol>
+<li>Install uv: https://docs.astral.sh/uv/getting-started/installation/</li>
+<li>open a new shell (or a create a new screen: <code>screen -S vLLM-Starter</code>)</li>
+</ol>
+<h3 id="run-gpt-oss-20b">Run <code>gpt-oss-20b</code></h3>
+<p>Based on instructions from https://github.com/DFKI-NLP/vLLM-Starter.</p>
+<p>start the service:</p>
+<pre><code class="language-bash">export HF_HOME=&quot;/netscratch/$USER/cache/hf&quot;
+export VLLM_CACHE_ROOT=&quot;/netscratch/$USER/cache/vllm&quot;
+srun --partition=RTXA6000-SLT \
+     --job-name=vllm_serve \
+     --nodes=1 \
+     --ntasks=1 \
+     --cpus-per-task=6 \
+     --gpus-per-task=1 \
+     --mem-per-cpu=4G \
+     --time=0-04:00:00 \
+     uvx --cache-dir /netscratch/$USER/cache/uv \
+         vllm@0.12.0 serve &quot;openai/gpt-oss-20b&quot; \
+             --download-dir=/ds/models/llms/cache \
+             --port=18000
+</code></pre>
+<p>If you need a different version of vLLM, change <code>@0.12.0</code> to <code>@your.version.here</code> or <code>@latest</code>. <a href="https://docs.astral.sh/uv/guides/tools/#requesting-specific-versions">docs</a></p>
+<p>Note: This may take some time, wait for <code>Application startup complete.</code></p>
+<p><strong>Important</strong>: For models other than gpt-oss-20B, please check the respective configs in configs/extractor/llm for
+additional command line arguments to vllm serve. For example, Qwen3 requires to specify the additional argument
+'--reasoning-parser deepseek_r1', Nemotron-Nano uses '--trust-remote-code' etc.</p>
+<p>query:</p>
+<pre><code class="language-bash"># Note: You may need to select a different NODE than `serv-9220`. I got it by calling `squeue -u $USER`.
+curl http://serv-9220.kl.dfki.de:18000/v1/completions \
+    -H &quot;Content-Type: application/json&quot; \
+    -d '{
+        &quot;model&quot;: &quot;openai/gpt-oss-20b&quot;,
+        &quot;prompt&quot;: &quot;San Francisco is a&quot;,
+        &quot;max_tokens&quot;: 7,
+        &quot;temperature&quot;: 0
+    }'
+</code></pre>
+<p>result:</p>
+<pre><code class="language-bash">{
+   &quot;id&quot;:&quot;cmpl-daceb4b0e6cf49338a588eff564ad85a&quot;,
+   &quot;object&quot;:&quot;text_completion&quot;,
+   &quot;created&quot;:1759957476,
+   &quot;model&quot;:&quot;openai/gpt-oss-20b&quot;,
+   &quot;choices&quot;:[
+      {
+         &quot;index&quot;:0,
+         &quot;text&quot;:&quot; city in California, USA. It&quot;,
+         &quot;logprobs&quot;:null,
+         &quot;finish_reason&quot;:&quot;length&quot;,
+         &quot;stop_reason&quot;:null,
+         &quot;token_ids&quot;:null,
+         &quot;prompt_logprobs&quot;:null,
+         &quot;prompt_token_ids&quot;:null
+      }
+   ],
+   &quot;service_tier&quot;:null,
+   &quot;system_fingerprint&quot;:null,
+   &quot;usage&quot;:{
+      &quot;prompt_tokens&quot;:4,
+      &quot;total_tokens&quot;:11,
+      &quot;completion_tokens&quot;:7,
+      &quot;prompt_tokens_details&quot;:null
+   },
+   &quot;kv_transfer_params&quot;:null
+}
+</code></pre>
+<h2 id="the-two-ways-to-use-uv-on-pegasus">The two ways to use uv on Pegasus</h2>
+<p>In General:</p>
+<ul>
+<li>In case you want to run a gated model, log into HuggingFace and make sure you have the correct access permissions.</li>
+<li>Choose model, resources and max job runtime carefully.</li>
+<li>Check for special requirements, like chat templates, tokenisers, and allowing local code execution.</li>
+</ul>
+<h3 id="single-package-srun">Single package srun</h3>
+<p>If you want to do not much setup and all you need is one package, for example when using <code>vllm serve</code>, use <code>uvx</code> with the following flag and eviroment variables:</p>
+<ul>
+<li><code>export HF_HOME="/netscratch/$USER/cache/hf"</code> this prevents the huggingface cache from filling up your home directory.</li>
+<li><code>export VLLM_CACHE_ROOT="/netscratch/$USER/cache/vllm"</code> this prevents the vLLM cache from filling up your home directory.</li>
+<li><code>--cache-dir /netscratch/$USER/cache/uv</code> this prevents uv from filling up your home directory.</li>
+</ul>
+<p>This approach is used in the <a href="#quickstart">Quickstart</a> section.</p>
+<p>If the tool you want to use is invoked with a different name than it is installed, then use <code>--from &lt;install-name&gt;</code>. <br>
+example:
+<code>uvx --from rust-just just</code> The <code>rust-just</code> package is invoked by calling <code>just</code>.</p>
+<h3 id="full-project-srun">Full project srun</h3>
+<p>To run a uv project with any number of custom python packages in your environment, you need to set up a few things.</p>
+<p>Firstly, you need to create directories on netscratch where the uv virtual environment and caches can live:</p>
+<pre><code class="language-bash">mkdir -p /netscratch/$USER/cache/uv
+mkdir -p /netscratch/$USER/cache/uv-venvs
+mkdir -p /netscratch/$USER/cache/hf
+mkdir -p /netscratch/$USER/cache/vllm
+</code></pre>
+<p>Secondly, you need to set the environment variables for the uv cache and virtual environment to the directories you just created. This will point uv there and prevent it from causing your home directory to overflow.</p>
+<pre><code class="language-bash">export UV_CACHE_DIR=&quot;/netscratch/$USER/cache/uv&quot;
+export UV_PROJECT_ENVIRONMENT=&quot;/netscratch/$USER/cache/uv-venvs/kibad-llm&quot;
+</code></pre>
+<p>Thirdly, create the virtual environment and symlink the directories so that you don't need to set the environment variables each time you open a new shell.</p>
+<pre><code class="language-bash"># create the .venv
+uv sync
+# link the .venv
+ln -s /netscratch/$USER/cache/uv-venvs/kibad-llm ./.venv
+# link the caches
+ln -s /netscratch/$USER/cache/uv ~/.cache/uv
+ln -s /netscratch/$USER/cache/hf ~/.cache/huggingface
+ln -s /netscratch/$USER/cache/vllm ~/.cache/vllm
+</code></pre>
+<p>Now you can all of your python code without worrying about the uv cache, virtual environment, or huggingface/ vllm caches.</p>
+<pre><code class="language-bash">srun --your-srun-flag \
+     uv run -m your.file.here
+</code></pre>
+<p><strong>Important</strong>: When running experiments for KIBA-D, it is highly (!) recommended to sym-link output directories
+to the folders in <code>/netscratch/hennig/kiba-d/</code>, to ensure that everyone has access to the experiment results. Consider
+executing the following on a fresh clone of the <code>kibad-llm</code> repository:</p>
+<pre><code class="language-bash">ln -s /netscratch/hennig/kiba-d/logs ./logs
+ln -s /netscratch/hennig/kiba-d/predictions ./predictions
+</code></pre>
+<p>(If these folders already exist in your kibad-llm repository because you ran inference previously, you might want to
+delete or rename them, and then execute the above commands.)</p>
+<h2 id="all-in-one-run-script-for-in_process-vllm-configs">All-in-one run script for in_process VLLM configs</h2>
+<p>To host an llm on the cluster and run uv code against it in a python-internal setup, without the use of an external
+VLLM server, use the all-in-one run script <code>run_in_process.sh</code>. Note that this requires the use of the <code>*_in_process.yaml</code> configs
+in <code>configs/extractor/llm</code> when executing <code>uv run -m kibad_llm.predict</code>. Using the <code>run_in_process.sh</code> script also
+allows to run the Open AI models via their API, e.g. GPT-5, see <code>configs/extractor/llm/gpt_5.yaml</code>. This can even be done in
+combination with VLLM-served models in a single experiment run, see for example the template commands in
+https://github.com/DFKI-NLP/kibad-llm/issues/32 .</p>
+<p><a id="prerequisites-all-in-one-in-process"></a></p>
+<h3 id="prerequisites_1">Prerequisites</h3>
+<p>In order to use <code>run_in_process.sh</code> you need to have followed the steps in <a href="#full-project-srun">Full project srun</a>!</p>
+<p>In addition, set up your <code>.env</code> file:</p>
+<pre><code class="language-bash">cp .env.example .env
+</code></pre>
+<p>Edit <code>.env</code> and fill out the following mandatory variables:</p>
+<pre><code class="language-bash">HF_TOKEN=&lt;your_hf_token&gt;
+OPENAI_API_KEY=&lt;your_openai_api_key&gt;
+VLLM_DOWNLOAD_DIR=/ds/models/llms/cache
+</code></pre>
+<p>You can create an Open AI key at https://platform.openai.com/api-keys and Huggingface access tokens at https://huggingface.co/settings/tokens.</p>
+<p><a id="usage-internal"></a></p>
+<h3 id="usage">Usage</h3>
+<p><code>run_in_process.sh</code> uses flags with command line arguments.</p>
+<ul>
+<li>
+<p><code>-h | --help</code> displays very similar help to this.</p>
+</li>
+<li>
+<p><code>pa | --partition</code> is the slurm partition to submit the job to. This is an optional flag and uses <code>"RTX6000-SLT"</code> per default.</p>
+</li>
+<li>
+<p><code>-t | --time</code> is the maximum time the slurm job is allowed to run. This is an optional flag and uses one hour per default.</p>
+</li>
+<li>
+<p><code>-u | --uv</code> is used for all <code>uv run</code> arguments. If there are multiple, make sure to wrap them in quotes like <code>"-m some.code"</code> which results in <code>uv run -m some.code</code>. This is a required flag.</p>
+</li>
+</ul>
+<p>The script takes care of everything start to finish and executes all code on the compute node. As soon as the job gets resources, the uv run command (e.g. <code>predict.py</code>) starts.</p>
+<h2 id="the-alternatives">The alternatives</h2>
+<h3 id="all-in-one-run-external-vllm-script">All-in-one run external VLLM script</h3>
+<p>To host an llm on the cluster and run uv code against it as soon as the model is ready, use the all-in-one run script <code>run_with_llm.sh</code></p>
+<p><a id="prerequisites-all-in-one-external"></a></p>
+<h4 id="prerequisites_2">Prerequisites</h4>
+<p>In order to use <code>run_with_llm.sh</code> you need to have followed the steps in <a href="#full-project-srun">Full project srun</a>!</p>
+<p><a id="usage-external"></a></p>
+<h4 id="usage_1">Usage</h4>
+<p><code>run_with_llm.sh</code> uses flags with command line arguments.</p>
+<ul>
+<li>
+<p><code>-h | --help</code> displays very similar help to this.</p>
+</li>
+<li>
+<p><code>-v | --vllm</code> is used for almost all arguments relevant to vLLM. If there are multiple, make sure to wrap them in quotes like <code>"some/mistral --trust-remote-code"</code>. This is a required flag.</p>
+</li>
+<li>
+<p><code>-vv | --vllm-version</code> is the vLLM version to run. This is an optional flag and uses version 0.12.0 per default.</p>
+</li>
+<li>
+<p><code>-po | --port</code> is the port vLLM and the uv code communicate on. This is an optional flag and uses a random port per default.</p>
+</li>
+<li>
+<p><code>pa | --partition</code> is the slurm partition to submit the job to. This is an optional flag and uses <code>"RTX6000-SLT"</code> per default.</p>
+</li>
+<li>
+<p><code>-t | --time</code> is the maximum time the slurm job is allowed to run. This is an optional flag and uses one hour per default.</p>
+</li>
+<li>
+<p><code>-u | --uv</code> is used for all <code>uv run</code> arguments. If there are multiple, make sure to wrap them in quotes like <code>"-m some.code"</code> which results in <code>uv run -m some.code</code>. This is a required flag.</p>
+</li>
+</ul>
+<p>The script takes care of everything start to finish and executes all code on the compute node. As soon as the job gets resources, vLLM starts. The script then waits till vLLm is ready and starts your code with uv right after. This allows you to run heavy jobs without straining the login node. You can cancel the job with <code>ctrl-c</code> or <code>scancel</code> any time and don't need to worry about residual processes.</p>
+<h3 id="run-with-vllm-but-on-login-node">Run with VLLM but on Login Node</h3>
+<p><code>run_with_llm_login_node_exec.sh</code> is very similar to <code>run_with_llm.sh</code>. The main difference is that this script puts vLLM on the compute node and runs your uv code locally on the login node. You need to be careful when using this script because of the strain you put on the login node.
+Depending on how your uv code fails or the script is cancelled, the slurm job may need to be cancelled separately.
+This script may make working on your code easier, depending on your needs, but you should probably have a quick look at how the script works in that case.</p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
