@@ -5,58 +5,58 @@ see https://github.com/DFKI-NLP/kibad-llm/pull/422 for details
 ## flat
 
 ![legend.svg](figures/organism_trends_f1_micro_flat-ALL/legend.svg)
-### f1
-![f1.svg](figures/organism_trends_f1_micro_flat-ALL/f1.svg)
-### precision
-![precision.svg](figures/organism_trends_f1_micro_flat-ALL/precision.svg)
-### recall
-![recall.svg](figures/organism_trends_f1_micro_flat-ALL/recall.svg)
-### support
-![support.svg](figures/organism_trends_f1_micro_flat-ALL/support.svg)
+
+| f1 | support |
+| --- | --- |
+| ![f1.svg](figures/organism_trends_f1_micro_flat-ALL/f1.svg) | ![support.svg](figures/organism_trends_f1_micro_flat-ALL/support.svg) |
+
+| precision | recall |
+| --- | --- |
+| ![precision.svg](figures/organism_trends_f1_micro_flat-ALL/precision.svg) | ![recall.svg](figures/organism_trends_f1_micro_flat-ALL/recall.svg) |
 
 ## full compounds
 ![legend.svg](figures/organism_trends_f1_micro-ALL/legend.svg)
-### f1
-![f1.svg](figures/organism_trends_f1_micro-ALL/f1.svg)
-### precision
-![precision.svg](figures/organism_trends_f1_micro-ALL/precision.svg)
-### recall
-![recall.svg](figures/organism_trends_f1_micro-ALL/recall.svg)
-### support
-![support.svg](figures/organism_trends_f1_micro-ALL/support.svg)
+
+| f1 | support |
+| --- | --- |
+| ![f1.svg](figures/organism_trends_f1_micro-ALL/f1.svg) | ![support.svg](figures/organism_trends_f1_micro-ALL/support.svg) |
+
+| precision | recall |
+| --- | --- |
+| ![precision.svg](figures/organism_trends_f1_micro-ALL/precision.svg) | ![recall.svg](figures/organism_trends_f1_micro-ALL/recall.svg) |
 
 ## base elements
 ![legend.svg](figures/organism_trends_f1_micro_base_entries-ALL/legend.svg)
-### f1
-![f1.svg](figures/organism_trends_f1_micro_base_entries-ALL/f1.svg)
-### precision
-![precision.svg](figures/organism_trends_f1_micro_base_entries-ALL/precision.svg)
-### recall
-![recall.svg](figures/organism_trends_f1_micro_base_entries-ALL/recall.svg)
-### support
-![support.svg](figures/organism_trends_f1_micro_base_entries-ALL/support.svg)
+
+| f1 | support |
+| --- | --- |
+| ![f1.svg](figures/organism_trends_f1_micro_base_entries-ALL/f1.svg) | ![support.svg](figures/organism_trends_f1_micro_base_entries-ALL/support.svg) |
+
+| precision | recall |
+| --- | --- |
+| ![precision.svg](figures/organism_trends_f1_micro_base_entries-ALL/precision.svg) | ![recall.svg](figures/organism_trends_f1_micro_base_entries-ALL/recall.svg) |
 
 ## conditional - variable only
 ![legend.svg](figures/organism_trends_f1_micro_conditional_variable_only-ALL/legend.svg)
-### f1
-![f1.svg](figures/organism_trends_f1_micro_conditional_variable_only-ALL/f1.svg)
-### precision
-![precision.svg](figures/organism_trends_f1_micro_conditional_variable_only-ALL/precision.svg)
-### recall
-![recall.svg](figures/organism_trends_f1_micro_conditional_variable_only-ALL/recall.svg)
-### support
-![support.svg](figures/organism_trends_f1_micro_conditional_variable_only-ALL/support.svg)
+
+| f1 | support |
+| --- | --- |
+| ![f1.svg](figures/organism_trends_f1_micro_conditional_variable_only-ALL/f1.svg) | ![support.svg](figures/organism_trends_f1_micro_conditional_variable_only-ALL/support.svg) |
+
+| precision | recall |
+| --- | --- |
+| ![precision.svg](figures/organism_trends_f1_micro_conditional_variable_only-ALL/precision.svg) | ![recall.svg](figures/organism_trends_f1_micro_conditional_variable_only-ALL/recall.svg) |
 
 ## conditional - variable & trend
 ![legend.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-ALL/legend.svg)
-### f1
-![f1.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-ALL/f1.svg)
-### precision
-![precision.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-ALL/precision.svg)
-### recall
-![recall.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-ALL/recall.svg)
-### support
-![support.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-ALL/support.svg)
+
+| f1 | support |
+| --- | --- |
+| ![f1.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-ALL/f1.svg) | ![support.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-ALL/support.svg) |
+
+| precision | recall |
+| --- | --- |
+| ![precision.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-ALL/precision.svg) | ![recall.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-ALL/recall.svg) |
 
 ## details
 
