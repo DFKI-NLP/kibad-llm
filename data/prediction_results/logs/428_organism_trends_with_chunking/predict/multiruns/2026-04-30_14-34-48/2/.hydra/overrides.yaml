@@ -1,0 +1,5 @@
+- name=428_organism_trends_with_chunking
+- experiment/predict=organism_trends_with_chunking
+- pdf_directory=/ds/text/kiba-d/dev-set-Wald-WVC
+- extractor/llm=qwen3_30b_in_process
+- seed=7331
