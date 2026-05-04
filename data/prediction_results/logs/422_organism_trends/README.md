@@ -2,7 +2,65 @@
 
 see https://github.com/DFKI-NLP/kibad-llm/pull/422 for details
 
-## evaluation - flat
+## flat
+
+![legend.svg](figures/organism_trends_f1_micro_flat-ALL/legend.svg)
+### f1
+![f1.svg](figures/organism_trends_f1_micro_flat-ALL/f1.svg)
+### precision
+![precision.svg](figures/organism_trends_f1_micro_flat-ALL/precision.svg)
+### recall
+![recall.svg](figures/organism_trends_f1_micro_flat-ALL/recall.svg)
+### support
+![support.svg](figures/organism_trends_f1_micro_flat-ALL/support.svg)
+
+## full compounds
+![legend.svg](figures/organism_trends_f1_micro-ALL/legend.svg)
+### f1
+![f1.svg](figures/organism_trends_f1_micro-ALL/f1.svg)
+### precision
+![precision.svg](figures/organism_trends_f1_micro-ALL/precision.svg)
+### recall
+![recall.svg](figures/organism_trends_f1_micro-ALL/recall.svg)
+### support
+![support.svg](figures/organism_trends_f1_micro-ALL/support.svg)
+
+## base elements
+![legend.svg](figures/organism_trends_f1_micro_base_entries-ALL/legend.svg)
+### f1
+![f1.svg](figures/organism_trends_f1_micro_base_entries-ALL/f1.svg)
+### precision
+![precision.svg](figures/organism_trends_f1_micro_base_entries-ALL/precision.svg)
+### recall
+![recall.svg](figures/organism_trends_f1_micro_base_entries-ALL/recall.svg)
+### support
+![support.svg](figures/organism_trends_f1_micro_base_entries-ALL/support.svg)
+
+## conditional - variable only
+![legend.svg](figures/organism_trends_f1_micro_conditional_variable_only-ALL/legend.svg)
+### f1
+![f1.svg](figures/organism_trends_f1_micro_conditional_variable_only-ALL/f1.svg)
+### precision
+![precision.svg](figures/organism_trends_f1_micro_conditional_variable_only-ALL/precision.svg)
+### recall
+![recall.svg](figures/organism_trends_f1_micro_conditional_variable_only-ALL/recall.svg)
+### support
+![support.svg](figures/organism_trends_f1_micro_conditional_variable_only-ALL/support.svg)
+
+## conditional - variable & trend
+![legend.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-ALL/legend.svg)
+### f1
+![f1.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-ALL/f1.svg)
+### precision
+![precision.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-ALL/precision.svg)
+### recall
+![recall.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-ALL/recall.svg)
+### support
+![support.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-ALL/support.svg)
+
+## details
+
+### evaluation - flat
  - without `Untergruppe_RoteListen`
  ```
  uv run -m kibad_llm.evaluate \
@@ -35,7 +93,7 @@ result location: `422_organism_trends/evaluate/multiruns/2026-04-28_18-21-06`
 
 </details>
 
-## evaluation - full compounds
+### evaluation - full compounds
  - without `Untergruppe_RoteListen`
 ```
 uv run -m kibad_llm.evaluate \
@@ -68,7 +126,7 @@ result location: `422_organism_trends/evaluate/multiruns/2026-04-28_18-26-31`
 
 </details>
 
-## evaluation - base elements
+### evaluation - base elements
  - without `Untergruppe_RoteListen`
 ```
 uv run -m kibad_llm.evaluate \
@@ -101,7 +159,7 @@ result location: `422_organism_trends/evaluate/multiruns/2026-04-28_18-27-04`
 
 </details>
 
-## evaluation - `Antwortvariable` conditioned on base elements
+### evaluation - `Antwortvariable` conditioned on base elements
  - without `Untergruppe_RoteListen`
 ```
 uv run -m kibad_llm.evaluate \
@@ -134,7 +192,7 @@ result location: `422_organism_trends/evaluate/multiruns/2026-04-29_16-47-31`
 
 </details>
 
-## evaluation - `Antwortvariable` & `Trend` conditioned on base elements
+### evaluation - `Antwortvariable` & `Trend` conditioned on base elements
  - without `Untergruppe_RoteListen`
 ```
 uv run -m kibad_llm.evaluate \
