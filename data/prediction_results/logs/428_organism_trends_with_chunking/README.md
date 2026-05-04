@@ -195,14 +195,7 @@ hydra.callbacks.save_job_return.multirun_show_file_contents=null \
 --multirun
 ```
 
-result location: TODO
-
-<details>
-<summary>click to see results</summary>
-
-TODO
-
-</details>
+result location: `logs/428_organism_trends_with_chunking/evaluate/multiruns/2026-05-04_12-58-07/job_return_value.md`
 
 ##### full compounds
 
@@ -215,14 +208,7 @@ hydra.callbacks.save_job_return.multirun_show_file_contents=null \
 --multirun
 ```
 
-result location: TODO
-
-<details>
-<summary>click to see results</summary>
-
-TODO
-
-</details>
+result location: `logs/428_organism_trends_with_chunking/evaluate/multiruns/2026-05-04_12-59-25/job_return_value.md`
 
 ##### base elements
 
@@ -235,7 +221,7 @@ hydra.callbacks.save_job_return.multirun_show_file_contents=null \
 --multirun
 ```
 
-result location: TODO
+result location: `logs/428_organism_trends_with_chunking/evaluate/multiruns/2026-05-04_12-59-50/job_return_value.md`
 
 <details>
 <summary>click to see results</summary>
@@ -255,14 +241,7 @@ hydra.callbacks.save_job_return.multirun_show_file_contents=null \
 --multirun
 ```
 
-result location: TODO
-
-<details>
-<summary>click to see results</summary>
-
-TODO
-
-</details>
+result location: `logs/428_organism_trends_with_chunking/evaluate/multiruns/2026-05-04_13-00-12/job_return_value.md`
 
 ##### `Antwortvariable` & `Trend` conditioned on base elements
 
@@ -275,14 +254,7 @@ hydra.callbacks.save_job_return.multirun_show_file_contents=null \
 --multirun
 ```
 
-result location: TODO
-
-<details>
-<summary>click to see results</summary>
-
-TODO
-
-</details>
+result location: `logs/428_organism_trends_with_chunking/evaluate/multiruns/2026-05-04_13-00-39/job_return_value.md`
 
 #### errors
 
@@ -295,11 +267,4 @@ hydra.callbacks.save_job_return.multirun_show_file_contents=null \
 --multirun
 ```
 
-result location: TODO
-
-<details>
-<summary>click to see results</summary>
-
-TODO
-
-</details>
+result location: `logs/428_organism_trends_with_chunking/evaluate/multiruns/2026-05-04_13-01-11/job_return_value.md`

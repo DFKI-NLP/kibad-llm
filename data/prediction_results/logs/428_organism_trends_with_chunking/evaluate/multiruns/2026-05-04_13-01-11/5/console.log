@@ -1,0 +1,16 @@
+[2026-05-04 13:01:12,475][__main__][INFO] - Loading dataset with predictions and references ...
+[2026-05-04 13:01:12,475][__main__][INFO] - Dataset config: {'predictions': {'_target_': 'kibad_llm.dataset.prediction.load_with_metadata', 'log': 'logs/428_organism_trends_with_chunking/predict/multiruns/2026-04-30_15-50-26/2', 'file': None, 'id_key': 'file_name', 'process_id': {'_partial_': True, '_target_': 'kibad_llm.utils.path.strip_filename_extension'}, 'preprocess': None}, '_target_': 'kibad_llm.dataset.utils.merge_references_into_predictions', 'references': {}, 'allow_missing_references': True}
+[2026-05-04 13:01:12,477][kibad_llm.dataset.json][INFO] - Loading dataset from JSON file: predictions/428_organism_trends_with_chunking/2026-04-30_15-50-26/2026-05-01_08-02-58_241590/predictions.jsonl ...
+[2026-05-04 13:01:12,538][__main__][INFO] - Instantiating metric ...
+[2026-05-04 13:01:12,538][__main__][INFO] - Metric config: {'_target_': 'kibad_llm.metrics.ErrorCollector', 'type_separator': ': ', 'show_errors': True}
+[2026-05-04 13:01:12,538][__main__][INFO] - Computing metric ...
+[2026-05-04 13:01:12,539][kibad_llm.metrics.statistics][INFO] - Collected error (id=Kudernatsch2019): JSONDecodeError: Expecting property name enclosed in double quotes: line 1136 column 3 (char 22092)
+[2026-05-04 13:01:12,539][kibad_llm.metrics.statistics][INFO] - Collected error (id=PHEVUEKM): JSONDecodeError: Expecting ',' delimiter: line 4071 column 9 (char 36772)
+[2026-05-04 13:01:12,539][kibad_llm.metric][INFO] - Evaluation results:
+{
+  "no_error": 2435,
+  "with_error": 2,
+  "JSONDecodeError": 2
+}
+[2026-05-04 13:01:12,551][kibad_llm.hydra_callbacks.save_job_return_value.SaveJobReturnValueCallback][INFO] - Saving job_return in /home/arbi01/projects/kibad-llm/logs/428_organism_trends_with_chunking/evaluate/multiruns/2026-05-04_13-01-11/5/job_return_value.json
+[2026-05-04 13:01:12,551][kibad_llm.hydra_callbacks.save_job_return_value.SaveJobReturnValueCallback][INFO] - Saving job_return in /home/arbi01/projects/kibad-llm/logs/428_organism_trends_with_chunking/evaluate/multiruns/2026-05-04_13-01-11/5/job_return_value.md

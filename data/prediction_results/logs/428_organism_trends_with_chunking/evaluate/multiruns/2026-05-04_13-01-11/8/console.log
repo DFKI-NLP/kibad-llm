@@ -1,0 +1,31 @@
+[2026-05-04 13:01:12,910][__main__][INFO] - Loading dataset with predictions and references ...
+[2026-05-04 13:01:12,910][__main__][INFO] - Dataset config: {'predictions': {'_target_': 'kibad_llm.dataset.prediction.load_with_metadata', 'log': 'logs/428_organism_trends_with_chunking/predict/multiruns/2026-04-30_15-51-30/2', 'file': None, 'id_key': 'file_name', 'process_id': {'_partial_': True, '_target_': 'kibad_llm.utils.path.strip_filename_extension'}, 'preprocess': None}, '_target_': 'kibad_llm.dataset.utils.merge_references_into_predictions', 'references': {}, 'allow_missing_references': True}
+[2026-05-04 13:01:12,912][kibad_llm.dataset.json][INFO] - Loading dataset from JSON file: predictions/428_organism_trends_with_chunking/2026-04-30_15-51-30/2026-05-01_05-21-21_301951/predictions.jsonl ...
+[2026-05-04 13:01:12,970][__main__][INFO] - Instantiating metric ...
+[2026-05-04 13:01:12,970][__main__][INFO] - Metric config: {'_target_': 'kibad_llm.metrics.ErrorCollector', 'type_separator': ': ', 'show_errors': True}
+[2026-05-04 13:01:12,971][__main__][INFO] - Computing metric ...
+[2026-05-04 13:01:12,971][kibad_llm.metrics.statistics][INFO] - Collected error (id=BF67A52Q): JSONDecodeError: Unterminated string starting at: line 26 column 26 (char 1121)
+[2026-05-04 13:01:12,971][kibad_llm.metrics.statistics][INFO] - Collected error (id=Dierschke2013): JSONDecodeError: Expecting ',' delimiter: line 165 column 1 (char 3100)
+[2026-05-04 13:01:12,971][kibad_llm.metrics.statistics][INFO] - Collected error (id=Günther2021): MissingResponseContentError: LLM response is missing content.
+[2026-05-04 13:01:12,971][kibad_llm.metrics.statistics][INFO] - Collected error (id=Heinrichs2014): JSONDecodeError: Unterminated string starting at: line 22 column 20 (char 730)
+[2026-05-04 13:01:12,971][kibad_llm.metrics.statistics][INFO] - Collected error (id=Heinrichs2014): MissingResponseContentError: LLM response is missing content.
+[2026-05-04 13:01:12,971][kibad_llm.metrics.statistics][INFO] - Collected error (id=IE8XQWZ7): JSONDecodeError: Expecting ',' delimiter: line 38 column 6 (char 1324)
+[2026-05-04 13:01:12,971][kibad_llm.metrics.statistics][INFO] - Collected error (id=IE8XQWZ7): JSONDecodeError: Expecting property name enclosed in double quotes: line 21 column 1 (char 496)
+[2026-05-04 13:01:12,972][kibad_llm.metrics.statistics][INFO] - Collected error (id=Q9YAA7WE): MissingResponseContentError: LLM response is missing content.
+[2026-05-04 13:01:12,972][kibad_llm.metrics.statistics][INFO] - Collected error (id=QFEXQ3B3): JSONDecodeError: Unterminated string starting at: line 23 column 28 (char 677)
+[2026-05-04 13:01:12,972][kibad_llm.metrics.statistics][INFO] - Collected error (id=SVXF36H4): JSONDecodeError: Unterminated string starting at: line 183 column 7 (char 2440)
+[2026-05-04 13:01:12,972][kibad_llm.metrics.statistics][INFO] - Collected error (id=Schmidt2017): JSONDecodeError: Unterminated string starting at: line 14 column 7 (char 273)
+[2026-05-04 13:01:12,972][kibad_llm.metrics.statistics][INFO] - Collected error (id=T2GFNI8R): MissingResponseContentError: LLM response is missing content.
+[2026-05-04 13:01:12,972][kibad_llm.metrics.statistics][INFO] - Collected error (id=WMZN8WDF): JSONDecodeError: Unterminated string starting at: line 82 column 9 (char 3717)
+[2026-05-04 13:01:12,972][kibad_llm.metrics.statistics][INFO] - Collected error (id=WMZN8WDF): JSONDecodeError: Unterminated string starting at: line 109 column 28 (char 3382)
+[2026-05-04 13:01:12,972][kibad_llm.metrics.statistics][INFO] - Collected error (id=Wolf2013): JSONDecodeError: Unterminated string starting at: line 10 column 9 (char 197)
+[2026-05-04 13:01:12,972][kibad_llm.metrics.statistics][INFO] - Collected error (id=Wolf2013): JSONDecodeError: Unterminated string starting at: line 19 column 9 (char 548)
+[2026-05-04 13:01:12,972][kibad_llm.metric][INFO] - Evaluation results:
+{
+  "no_error": 2421,
+  "with_error": 16,
+  "JSONDecodeError": 12,
+  "MissingResponseContentError": 4
+}
+[2026-05-04 13:01:12,975][kibad_llm.hydra_callbacks.save_job_return_value.SaveJobReturnValueCallback][INFO] - Saving job_return in /home/arbi01/projects/kibad-llm/logs/428_organism_trends_with_chunking/evaluate/multiruns/2026-05-04_13-01-11/8/job_return_value.json
+[2026-05-04 13:01:12,976][kibad_llm.hydra_callbacks.save_job_return_value.SaveJobReturnValueCallback][INFO] - Saving job_return in /home/arbi01/projects/kibad-llm/logs/428_organism_trends_with_chunking/evaluate/multiruns/2026-05-04_13-01-11/8/job_return_value.md

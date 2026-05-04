@@ -1,0 +1,782 @@
+{
+  "dataset.predictions.log=logs/428_organism_trends_with_chunking/predict/multiruns/2026-04-30_15-10-47/0": {
+    "organism_trends.Antwortvariable": {
+      "precision": 0.22062350119904076,
+      "recall": 0.696969696969697,
+      "f1": 0.3351548269581056,
+      "support": 132
+    },
+    "organism_trends.Hauptgruppe_RoteListen": {
+      "precision": 0.2289156626506024,
+      "recall": 0.8260869565217391,
+      "f1": 0.3584905660377358,
+      "support": 115
+    },
+    "organism_trends.Lebensraum": {
+      "precision": 0.2233502538071066,
+      "recall": 0.7927927927927928,
+      "f1": 0.3485148514851485,
+      "support": 111
+    },
+    "organism_trends.Trend": {
+      "precision": 0.1537037037037037,
+      "recall": 0.6240601503759399,
+      "f1": 0.24665676077265974,
+      "support": 133
+    },
+    "AVG": {
+      "precision": 0.20664828034011337,
+      "recall": 0.7349773991650422,
+      "f1": 0.3222042513134124,
+      "support": 122.75
+    },
+    "ALL": {
+      "precision": 0.20271800679501698,
+      "recall": 0.7291242362525459,
+      "f1": 0.31723526805494023,
+      "support": 491
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/428_organism_trends_with_chunking/2026-04-30_15-10-47/2026-04-30_15-10-48_127341/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/428_organism_trends_with_chunking/2026-04-30_15-10-47/2026-04-30_15-10-48_127341/predictions.jsonl",
+        "time_pdf_conversion": 0.0039325254037976265,
+        "time_extraction": 17485.94777666498,
+        "time_start": 1777554648,
+        "time_end": 1777572304,
+        "commit_hash": "096090bf929c361a9164f099a077d2621612fdca",
+        "branch": "prediction_results/add-organism_trends_with_chunking",
+        "is_dirty": false,
+        "slurm_job_id": "2869103"
+      },
+      "overrides": {
+        "name": "428_organism_trends_with_chunking",
+        "experiment/predict": "organism_trends_with_chunking",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-Wald-WVC",
+        "extractor/llm": "gpt_oss_20b_in_process",
+        "seed": "42"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/428_organism_trends_with_chunking/predict/multiruns/2026-04-30_15-10-47/0",
+      "name": "428_organism_trends_with_chunking",
+      "experiment/evaluate": "organism_trends_f1_micro_flat",
+      "prediction_logs": "logs/428_organism_trends_with_chunking/predict"
+    }
+  },
+  "dataset.predictions.log=logs/428_organism_trends_with_chunking/predict/multiruns/2026-04-30_15-10-47/1": {
+    "organism_trends.Antwortvariable": {
+      "precision": 0.23557692307692307,
+      "recall": 0.7424242424242424,
+      "f1": 0.35766423357664234,
+      "support": 132
+    },
+    "organism_trends.Hauptgruppe_RoteListen": {
+      "precision": 0.21897810218978103,
+      "recall": 0.782608695652174,
+      "f1": 0.3422053231939164,
+      "support": 115
+    },
+    "organism_trends.Lebensraum": {
+      "precision": 0.22486772486772486,
+      "recall": 0.7657657657657657,
+      "f1": 0.3476482617586912,
+      "support": 111
+    },
+    "organism_trends.Trend": {
+      "precision": 0.1619047619047619,
+      "recall": 0.6390977443609023,
+      "f1": 0.25835866261398177,
+      "support": 133
+    },
+    "AVG": {
+      "precision": 0.21033187800979772,
+      "recall": 0.7324741120507711,
+      "f1": 0.32646912028580793,
+      "support": 122.75
+    },
+    "ALL": {
+      "precision": 0.2069364161849711,
+      "recall": 0.7291242362525459,
+      "f1": 0.3223773075191355,
+      "support": 491
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/428_organism_trends_with_chunking/2026-04-30_15-10-47/2026-04-30_20-05-04_813422/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/428_organism_trends_with_chunking/2026-04-30_15-10-47/2026-04-30_20-05-04_813422/predictions.jsonl",
+        "time_pdf_conversion": 0.004867329262197018,
+        "time_extraction": 17174.679724048823,
+        "time_start": 1777572304,
+        "time_end": 1777589542,
+        "commit_hash": "096090bf929c361a9164f099a077d2621612fdca",
+        "branch": "prediction_results/add-organism_trends_with_chunking",
+        "is_dirty": false,
+        "slurm_job_id": "2869103"
+      },
+      "overrides": {
+        "name": "428_organism_trends_with_chunking",
+        "experiment/predict": "organism_trends_with_chunking",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-Wald-WVC",
+        "extractor/llm": "gpt_oss_20b_in_process",
+        "seed": "1337"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/428_organism_trends_with_chunking/predict/multiruns/2026-04-30_15-10-47/1",
+      "name": "428_organism_trends_with_chunking",
+      "experiment/evaluate": "organism_trends_f1_micro_flat",
+      "prediction_logs": "logs/428_organism_trends_with_chunking/predict"
+    }
+  },
+  "dataset.predictions.log=logs/428_organism_trends_with_chunking/predict/multiruns/2026-04-30_15-10-47/2": {
+    "organism_trends.Antwortvariable": {
+      "precision": 0.22682926829268293,
+      "recall": 0.7045454545454546,
+      "f1": 0.34317343173431736,
+      "support": 132
+    },
+    "organism_trends.Hauptgruppe_RoteListen": {
+      "precision": 0.22195704057279236,
+      "recall": 0.808695652173913,
+      "f1": 0.348314606741573,
+      "support": 115
+    },
+    "organism_trends.Lebensraum": {
+      "precision": 0.23772609819121446,
+      "recall": 0.8288288288288288,
+      "f1": 0.36947791164658633,
+      "support": 111
+    },
+    "organism_trends.Trend": {
+      "precision": 0.16443594646271512,
+      "recall": 0.6466165413533834,
+      "f1": 0.2621951219512195,
+      "support": 133
+    },
+    "AVG": {
+      "precision": 0.21273708837985122,
+      "recall": 0.747171619225395,
+      "f1": 0.33079026801842404,
+      "support": 122.75
+    },
+    "ALL": {
+      "precision": 0.2093156986774008,
+      "recall": 0.7413441955193483,
+      "f1": 0.32645739910313903,
+      "support": 491
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/428_organism_trends_with_chunking/2026-04-30_15-10-47/2026-05-01_00-52-23_188169/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/428_organism_trends_with_chunking/2026-04-30_15-10-47/2026-05-01_00-52-23_188169/predictions.jsonl",
+        "time_pdf_conversion": 0.0029465164989233017,
+        "time_extraction": 16873.283164427616,
+        "time_start": 1777589543,
+        "time_end": 1777606469,
+        "commit_hash": "096090bf929c361a9164f099a077d2621612fdca",
+        "branch": "prediction_results/add-organism_trends_with_chunking",
+        "is_dirty": false,
+        "slurm_job_id": "2869103"
+      },
+      "overrides": {
+        "name": "428_organism_trends_with_chunking",
+        "experiment/predict": "organism_trends_with_chunking",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-Wald-WVC",
+        "extractor/llm": "gpt_oss_20b_in_process",
+        "seed": "7331"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/428_organism_trends_with_chunking/predict/multiruns/2026-04-30_15-10-47/2",
+      "name": "428_organism_trends_with_chunking",
+      "experiment/evaluate": "organism_trends_f1_micro_flat",
+      "prediction_logs": "logs/428_organism_trends_with_chunking/predict"
+    }
+  },
+  "dataset.predictions.log=logs/428_organism_trends_with_chunking/predict/multiruns/2026-04-30_15-50-26/0": {
+    "organism_trends.Antwortvariable": {
+      "precision": 0.176,
+      "recall": 0.8333333333333334,
+      "f1": 0.2906208718626156,
+      "support": 132
+    },
+    "organism_trends.Hauptgruppe_RoteListen": {
+      "precision": 0.1513353115727003,
+      "recall": 0.8869565217391304,
+      "f1": 0.2585551330798479,
+      "support": 115
+    },
+    "organism_trends.Lebensraum": {
+      "precision": 0.18867924528301888,
+      "recall": 0.9009009009009009,
+      "f1": 0.31201248049922,
+      "support": 111
+    },
+    "organism_trends.Trend": {
+      "precision": 0.09268795056642637,
+      "recall": 0.6766917293233082,
+      "f1": 0.16304347826086957,
+      "support": 133
+    },
+    "AVG": {
+      "precision": 0.15217562685553637,
+      "recall": 0.8244706213241683,
+      "f1": 0.25605799092563825,
+      "support": 122.75
+    },
+    "ALL": {
+      "precision": 0.14357142857142857,
+      "recall": 0.8187372708757638,
+      "f1": 0.24430264357338194,
+      "support": 491
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/428_organism_trends_with_chunking/2026-04-30_15-50-26/2026-04-30_15-50-27_426199/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/428_organism_trends_with_chunking/2026-04-30_15-50-26/2026-04-30_15-50-27_426199/predictions.jsonl",
+        "time_pdf_conversion": 0.01602387009188533,
+        "time_extraction": 29239.744097434916,
+        "time_start": 1777557027,
+        "time_end": 1777586424,
+        "commit_hash": "096090bf929c361a9164f099a077d2621612fdca",
+        "branch": "prediction_results/add-organism_trends_with_chunking",
+        "is_dirty": false,
+        "slurm_job_id": "2869104"
+      },
+      "overrides": {
+        "name": "428_organism_trends_with_chunking",
+        "experiment/predict": "organism_trends_with_chunking",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-Wald-WVC",
+        "extractor/llm": "gemma3_27b_in_process",
+        "seed": "42"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/428_organism_trends_with_chunking/predict/multiruns/2026-04-30_15-50-26/0",
+      "name": "428_organism_trends_with_chunking",
+      "experiment/evaluate": "organism_trends_f1_micro_flat",
+      "prediction_logs": "logs/428_organism_trends_with_chunking/predict"
+    }
+  },
+  "dataset.predictions.log=logs/428_organism_trends_with_chunking/predict/multiruns/2026-04-30_15-50-26/1": {
+    "organism_trends.Antwortvariable": {
+      "precision": 0.1767515923566879,
+      "recall": 0.8409090909090909,
+      "f1": 0.29210526315789476,
+      "support": 132
+    },
+    "organism_trends.Hauptgruppe_RoteListen": {
+      "precision": 0.15327380952380953,
+      "recall": 0.8956521739130435,
+      "f1": 0.26175349428208394,
+      "support": 115
+    },
+    "organism_trends.Lebensraum": {
+      "precision": 0.18613138686131386,
+      "recall": 0.918918918918919,
+      "f1": 0.30955993930197273,
+      "support": 111
+    },
+    "organism_trends.Trend": {
+      "precision": 0.09508881922675026,
+      "recall": 0.6842105263157895,
+      "f1": 0.16697247706422016,
+      "support": 133
+    },
+    "AVG": {
+      "precision": 0.15281140199214038,
+      "recall": 0.8349226775142107,
+      "f1": 0.2575977934515429,
+      "support": 122.75
+    },
+    "ALL": {
+      "precision": 0.1450980392156863,
+      "recall": 0.8289205702647657,
+      "f1": 0.24696601941747573,
+      "support": 491
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/428_organism_trends_with_chunking/2026-04-30_15-50-26/2026-05-01_00-00-24_225439/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/428_organism_trends_with_chunking/2026-04-30_15-50-26/2026-05-01_00-00-24_225439/predictions.jsonl",
+        "time_pdf_conversion": 0.004372586961835623,
+        "time_extraction": 28875.896489636973,
+        "time_start": 1777586424,
+        "time_end": 1777615377,
+        "commit_hash": "096090bf929c361a9164f099a077d2621612fdca",
+        "branch": "prediction_results/add-organism_trends_with_chunking",
+        "is_dirty": false,
+        "slurm_job_id": "2869104"
+      },
+      "overrides": {
+        "name": "428_organism_trends_with_chunking",
+        "experiment/predict": "organism_trends_with_chunking",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-Wald-WVC",
+        "extractor/llm": "gemma3_27b_in_process",
+        "seed": "1337"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/428_organism_trends_with_chunking/predict/multiruns/2026-04-30_15-50-26/1",
+      "name": "428_organism_trends_with_chunking",
+      "experiment/evaluate": "organism_trends_f1_micro_flat",
+      "prediction_logs": "logs/428_organism_trends_with_chunking/predict"
+    }
+  },
+  "dataset.predictions.log=logs/428_organism_trends_with_chunking/predict/multiruns/2026-04-30_15-50-26/2": {
+    "organism_trends.Antwortvariable": {
+      "precision": 0.17054263565891473,
+      "recall": 0.8333333333333334,
+      "f1": 0.2831402831402831,
+      "support": 132
+    },
+    "organism_trends.Hauptgruppe_RoteListen": {
+      "precision": 0.14782608695652175,
+      "recall": 0.8869565217391304,
+      "f1": 0.253416149068323,
+      "support": 115
+    },
+    "organism_trends.Lebensraum": {
+      "precision": 0.18761726078799248,
+      "recall": 0.9009009009009009,
+      "f1": 0.31055900621118004,
+      "support": 111
+    },
+    "organism_trends.Trend": {
+      "precision": 0.09779179810725552,
+      "recall": 0.6992481203007519,
+      "f1": 0.17158671586715868,
+      "support": 133
+    },
+    "AVG": {
+      "precision": 0.15094444537767113,
+      "recall": 0.8301097190685292,
+      "f1": 0.2546755385717362,
+      "support": 122.75
+    },
+    "ALL": {
+      "precision": 0.1436679673643136,
+      "recall": 0.824847250509165,
+      "f1": 0.24471299093655588,
+      "support": 491
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/428_organism_trends_with_chunking/2026-04-30_15-50-26/2026-05-01_08-02-58_241590/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/428_organism_trends_with_chunking/2026-04-30_15-50-26/2026-05-01_08-02-58_241590/predictions.jsonl",
+        "time_pdf_conversion": 0.013232105877250433,
+        "time_extraction": 28157.367583029903,
+        "time_start": 1777615378,
+        "time_end": 1777643631,
+        "commit_hash": "096090bf929c361a9164f099a077d2621612fdca",
+        "branch": "prediction_results/add-organism_trends_with_chunking",
+        "is_dirty": false,
+        "slurm_job_id": "2869104"
+      },
+      "overrides": {
+        "name": "428_organism_trends_with_chunking",
+        "experiment/predict": "organism_trends_with_chunking",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-Wald-WVC",
+        "extractor/llm": "gemma3_27b_in_process",
+        "seed": "7331"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/428_organism_trends_with_chunking/predict/multiruns/2026-04-30_15-50-26/2",
+      "name": "428_organism_trends_with_chunking",
+      "experiment/evaluate": "organism_trends_f1_micro_flat",
+      "prediction_logs": "logs/428_organism_trends_with_chunking/predict"
+    }
+  },
+  "dataset.predictions.log=logs/428_organism_trends_with_chunking/predict/multiruns/2026-04-30_15-51-30/0": {
+    "organism_trends.Antwortvariable": {
+      "precision": 0.35684647302904565,
+      "recall": 0.6515151515151515,
+      "f1": 0.4611260053619303,
+      "support": 132
+    },
+    "organism_trends.Hauptgruppe_RoteListen": {
+      "precision": 0.4127659574468085,
+      "recall": 0.8434782608695652,
+      "f1": 0.5542857142857143,
+      "support": 115
+    },
+    "organism_trends.Lebensraum": {
+      "precision": 0.42990654205607476,
+      "recall": 0.8288288288288288,
+      "f1": 0.5661538461538461,
+      "support": 111
+    },
+    "organism_trends.Trend": {
+      "precision": 0.26480836236933797,
+      "recall": 0.5714285714285714,
+      "f1": 0.3619047619047619,
+      "support": 133
+    },
+    "AVG": {
+      "precision": 0.3660818337253167,
+      "recall": 0.7238127031605293,
+      "f1": 0.48586758192656315,
+      "support": 122.75
+    },
+    "ALL": {
+      "precision": 0.3592630501535312,
+      "recall": 0.714867617107943,
+      "f1": 0.4782016348773841,
+      "support": 491
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/428_organism_trends_with_chunking/2026-04-30_15-51-30/2026-04-30_15-51-30_470332/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/428_organism_trends_with_chunking/2026-04-30_15-51-30/2026-04-30_15-51-30_470332/predictions.jsonl",
+        "time_pdf_conversion": 0.0031838309951126575,
+        "time_extraction": 24619.361468727002,
+        "time_start": 1777557090,
+        "time_end": 1777581828,
+        "commit_hash": "096090bf929c361a9164f099a077d2621612fdca",
+        "branch": "prediction_results/add-organism_trends_with_chunking",
+        "is_dirty": false,
+        "slurm_job_id": "2869105"
+      },
+      "overrides": {
+        "name": "428_organism_trends_with_chunking",
+        "experiment/predict": "organism_trends_with_chunking",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-Wald-WVC",
+        "extractor/llm": "qwen3_30b_in_process",
+        "seed": "42"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/428_organism_trends_with_chunking/predict/multiruns/2026-04-30_15-51-30/0",
+      "name": "428_organism_trends_with_chunking",
+      "experiment/evaluate": "organism_trends_f1_micro_flat",
+      "prediction_logs": "logs/428_organism_trends_with_chunking/predict"
+    }
+  },
+  "dataset.predictions.log=logs/428_organism_trends_with_chunking/predict/multiruns/2026-04-30_15-51-30/1": {
+    "organism_trends.Antwortvariable": {
+      "precision": 0.3559322033898305,
+      "recall": 0.6363636363636364,
+      "f1": 0.45652173913043476,
+      "support": 132
+    },
+    "organism_trends.Hauptgruppe_RoteListen": {
+      "precision": 0.39915966386554624,
+      "recall": 0.8260869565217391,
+      "f1": 0.538243626062323,
+      "support": 115
+    },
+    "organism_trends.Lebensraum": {
+      "precision": 0.41363636363636364,
+      "recall": 0.8198198198198198,
+      "f1": 0.5498489425981873,
+      "support": 111
+    },
+    "organism_trends.Trend": {
+      "precision": 0.26755852842809363,
+      "recall": 0.6015037593984962,
+      "f1": 0.37037037037037035,
+      "support": 133
+    },
+    "AVG": {
+      "precision": 0.3590716898299585,
+      "recall": 0.7209435430259229,
+      "f1": 0.47874616954032884,
+      "support": 122.75
+    },
+    "ALL": {
+      "precision": 0.35246727089627394,
+      "recall": 0.7128309572301426,
+      "f1": 0.4716981132075472,
+      "support": 491
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/428_organism_trends_with_chunking/2026-04-30_15-51-30/2026-04-30_22-43-48_815233/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/428_organism_trends_with_chunking/2026-04-30_15-51-30/2026-04-30_22-43-48_815233/predictions.jsonl",
+        "time_pdf_conversion": 0.0041844407096505165,
+        "time_extraction": 23790.75919266604,
+        "time_start": 1777581828,
+        "time_end": 1777605681,
+        "commit_hash": "096090bf929c361a9164f099a077d2621612fdca",
+        "branch": "prediction_results/add-organism_trends_with_chunking",
+        "is_dirty": false,
+        "slurm_job_id": "2869105"
+      },
+      "overrides": {
+        "name": "428_organism_trends_with_chunking",
+        "experiment/predict": "organism_trends_with_chunking",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-Wald-WVC",
+        "extractor/llm": "qwen3_30b_in_process",
+        "seed": "1337"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/428_organism_trends_with_chunking/predict/multiruns/2026-04-30_15-51-30/1",
+      "name": "428_organism_trends_with_chunking",
+      "experiment/evaluate": "organism_trends_f1_micro_flat",
+      "prediction_logs": "logs/428_organism_trends_with_chunking/predict"
+    }
+  },
+  "dataset.predictions.log=logs/428_organism_trends_with_chunking/predict/multiruns/2026-04-30_15-51-30/2": {
+    "organism_trends.Antwortvariable": {
+      "precision": 0.3463203463203463,
+      "recall": 0.6060606060606061,
+      "f1": 0.44077134986225897,
+      "support": 132
+    },
+    "organism_trends.Hauptgruppe_RoteListen": {
+      "precision": 0.4043478260869565,
+      "recall": 0.808695652173913,
+      "f1": 0.5391304347826087,
+      "support": 115
+    },
+    "organism_trends.Lebensraum": {
+      "precision": 0.41784037558685444,
+      "recall": 0.8018018018018018,
+      "f1": 0.5493827160493827,
+      "support": 111
+    },
+    "organism_trends.Trend": {
+      "precision": 0.2508710801393728,
+      "recall": 0.5413533834586466,
+      "f1": 0.34285714285714286,
+      "support": 133
+    },
+    "AVG": {
+      "precision": 0.3548449070333825,
+      "recall": 0.6894778608737419,
+      "f1": 0.4680354108878483,
+      "support": 122.75
+    },
+    "ALL": {
+      "precision": 0.34755463059313213,
+      "recall": 0.6802443991853361,
+      "f1": 0.46005509641873277,
+      "support": 491
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/428_organism_trends_with_chunking/2026-04-30_15-51-30/2026-05-01_05-21-21_301951/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/428_organism_trends_with_chunking/2026-04-30_15-51-30/2026-05-01_05-21-21_301951/predictions.jsonl",
+        "time_pdf_conversion": 0.0028187441639602184,
+        "time_extraction": 24252.40291122161,
+        "time_start": 1777605681,
+        "time_end": 1777629993,
+        "commit_hash": "096090bf929c361a9164f099a077d2621612fdca",
+        "branch": "prediction_results/add-organism_trends_with_chunking",
+        "is_dirty": false,
+        "slurm_job_id": "2869105"
+      },
+      "overrides": {
+        "name": "428_organism_trends_with_chunking",
+        "experiment/predict": "organism_trends_with_chunking",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-Wald-WVC",
+        "extractor/llm": "qwen3_30b_in_process",
+        "seed": "7331"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/428_organism_trends_with_chunking/predict/multiruns/2026-04-30_15-51-30/2",
+      "name": "428_organism_trends_with_chunking",
+      "experiment/evaluate": "organism_trends_f1_micro_flat",
+      "prediction_logs": "logs/428_organism_trends_with_chunking/predict"
+    }
+  },
+  "dataset.predictions.log=logs/428_organism_trends_with_chunking/predict/multiruns/2026-04-30_15-59-49/0": {
+    "organism_trends.Antwortvariable": {
+      "precision": 0.12919463087248323,
+      "recall": 0.5833333333333334,
+      "f1": 0.21153846153846154,
+      "support": 132
+    },
+    "organism_trends.Hauptgruppe_RoteListen": {
+      "precision": 0.14513788098693758,
+      "recall": 0.8695652173913043,
+      "f1": 0.24875621890547264,
+      "support": 115
+    },
+    "organism_trends.Lebensraum": {
+      "precision": 0.2,
+      "recall": 0.8828828828828829,
+      "f1": 0.3261231281198003,
+      "support": 111
+    },
+    "organism_trends.Trend": {
+      "precision": 0.09508547008547008,
+      "recall": 0.6691729323308271,
+      "f1": 0.16651075771749296,
+      "support": 133
+    },
+    "AVG": {
+      "precision": 0.14235449548622273,
+      "recall": 0.7512385914845869,
+      "f1": 0.23823214157030687,
+      "support": 122.75
+    },
+    "ALL": {
+      "precision": 0.13426779786056806,
+      "recall": 0.7413441955193483,
+      "f1": 0.22735790131168018,
+      "support": 491
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/428_organism_trends_with_chunking/2026-04-30_15-59-49/2026-04-30_15-59-50_254622/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/428_organism_trends_with_chunking/2026-04-30_15-59-49/2026-04-30_15-59-50_254622/predictions.jsonl",
+        "time_pdf_conversion": 0.008720449986867607,
+        "time_extraction": 59030.44952960999,
+        "time_start": 1777557590,
+        "time_end": 1777616813,
+        "commit_hash": "096090bf929c361a9164f099a077d2621612fdca",
+        "branch": "prediction_results/add-organism_trends_with_chunking",
+        "is_dirty": false,
+        "slurm_job_id": "2869107"
+      },
+      "overrides": {
+        "name": "428_organism_trends_with_chunking",
+        "experiment/predict": "organism_trends_with_chunking",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-Wald-WVC",
+        "extractor/llm": "mistral_small_3_24b_in_process",
+        "seed": "42"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/428_organism_trends_with_chunking/predict/multiruns/2026-04-30_15-59-49/0",
+      "name": "428_organism_trends_with_chunking",
+      "experiment/evaluate": "organism_trends_f1_micro_flat",
+      "prediction_logs": "logs/428_organism_trends_with_chunking/predict"
+    }
+  },
+  "dataset.predictions.log=logs/428_organism_trends_with_chunking/predict/multiruns/2026-04-30_15-59-49/1": {
+    "organism_trends.Antwortvariable": {
+      "precision": 0.12666666666666668,
+      "recall": 0.5757575757575758,
+      "f1": 0.20765027322404372,
+      "support": 132
+    },
+    "organism_trends.Hauptgruppe_RoteListen": {
+      "precision": 0.14970930232558138,
+      "recall": 0.8956521739130435,
+      "f1": 0.2565379825653798,
+      "support": 115
+    },
+    "organism_trends.Lebensraum": {
+      "precision": 0.2,
+      "recall": 0.9009009009009009,
+      "f1": 0.32733224222585927,
+      "support": 111
+    },
+    "organism_trends.Trend": {
+      "precision": 0.09732620320855614,
+      "recall": 0.6842105263157895,
+      "f1": 0.1704119850187266,
+      "support": 133
+    },
+    "AVG": {
+      "precision": 0.14342554305020105,
+      "recall": 0.7641302942218274,
+      "f1": 0.24048312075850234,
+      "support": 122.75
+    },
+    "ALL": {
+      "precision": 0.1358795446199045,
+      "recall": 0.7535641547861507,
+      "f1": 0.23024268823895458,
+      "support": 491
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/428_organism_trends_with_chunking/2026-04-30_15-59-49/2026-05-01_08-26-53_886051/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/428_organism_trends_with_chunking/2026-04-30_15-59-49/2026-05-01_08-26-53_886051/predictions.jsonl",
+        "time_pdf_conversion": 0.010931771015748382,
+        "time_extraction": 59304.155060219055,
+        "time_start": 1777616813,
+        "time_end": 1777676206,
+        "commit_hash": "096090bf929c361a9164f099a077d2621612fdca",
+        "branch": "prediction_results/add-organism_trends_with_chunking",
+        "is_dirty": false,
+        "slurm_job_id": "2869107"
+      },
+      "overrides": {
+        "name": "428_organism_trends_with_chunking",
+        "experiment/predict": "organism_trends_with_chunking",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-Wald-WVC",
+        "extractor/llm": "mistral_small_3_24b_in_process",
+        "seed": "1337"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/428_organism_trends_with_chunking/predict/multiruns/2026-04-30_15-59-49/1",
+      "name": "428_organism_trends_with_chunking",
+      "experiment/evaluate": "organism_trends_f1_micro_flat",
+      "prediction_logs": "logs/428_organism_trends_with_chunking/predict"
+    }
+  },
+  "dataset.predictions.log=logs/428_organism_trends_with_chunking/predict/multiruns/2026-04-30_15-59-49/2": {
+    "organism_trends.Antwortvariable": {
+      "precision": 0.12666666666666668,
+      "recall": 0.5757575757575758,
+      "f1": 0.20765027322404372,
+      "support": 132
+    },
+    "organism_trends.Hauptgruppe_RoteListen": {
+      "precision": 0.14756446991404013,
+      "recall": 0.8956521739130435,
+      "f1": 0.25338253382533826,
+      "support": 115
+    },
+    "organism_trends.Lebensraum": {
+      "precision": 0.20242914979757085,
+      "recall": 0.9009009009009009,
+      "f1": 0.3305785123966942,
+      "support": 111
+    },
+    "organism_trends.Trend": {
+      "precision": 0.09446254071661238,
+      "recall": 0.6541353383458647,
+      "f1": 0.16508538899430739,
+      "support": 133
+    },
+    "AVG": {
+      "precision": 0.1427807067737225,
+      "recall": 0.7566114972293463,
+      "f1": 0.2391741771100959,
+      "support": 122.75
+    },
+    "ALL": {
+      "precision": 0.1349060081091043,
+      "recall": 0.745417515274949,
+      "f1": 0.2284644194756554,
+      "support": 491
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/428_organism_trends_with_chunking/2026-04-30_15-59-49/2026-05-02_00-56-46_893538/predictions.jsonl",
+        "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/428_organism_trends_with_chunking/2026-04-30_15-59-49/2026-05-02_00-56-46_893538/predictions.jsonl",
+        "time_pdf_conversion": 0.004707259009592235,
+        "time_extraction": 59188.71735041705,
+        "time_start": 1777676206,
+        "time_end": 1777735470,
+        "commit_hash": "096090bf929c361a9164f099a077d2621612fdca",
+        "branch": "prediction_results/add-organism_trends_with_chunking",
+        "is_dirty": false,
+        "slurm_job_id": "2869107"
+      },
+      "overrides": {
+        "name": "428_organism_trends_with_chunking",
+        "experiment/predict": "organism_trends_with_chunking",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-Wald-WVC",
+        "extractor/llm": "mistral_small_3_24b_in_process",
+        "seed": "7331"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/428_organism_trends_with_chunking/predict/multiruns/2026-04-30_15-59-49/2",
+      "name": "428_organism_trends_with_chunking",
+      "experiment/evaluate": "organism_trends_f1_micro_flat",
+      "prediction_logs": "logs/428_organism_trends_with_chunking/predict"
+    }
+  }
+}
