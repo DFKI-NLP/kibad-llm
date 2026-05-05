@@ -1,0 +1,65 @@
+# Example configuration for running deepseek-ai/DeepSeek-R1-Distill-Qwen-32B fully in-process via vLLM (Python API)
+#
+# Set the VLLM model download directory in your .env before running this config, e.g.
+# VLLM_DOWNLOAD_DIR=/path/to/download/dir
+#
+# - No OpenAI-compatible HTTP server is required; inference runs inside the current Python process.
+# - Uses vllm.LLM.chat(...), which formats the prompt with the model's chat template
+#   (important for chat/instruction-tuned models and for GPT-OSS' Harmony formatting).
+# - The implementation optionally enables JSON-schema guided decoding via vLLM Structured Outputs
+#   (StructuredOutputsParams(json=...) inside SamplingParams).
+# - The adapter parses GPT-OSS Harmony outputs so that `response.message.content` contains only the
+#   "final" channel (e.g., valid JSON), while any reasoning (analysis) can be exposed separately.
+#
+# Notes:
+# - `vllm_kwargs` are engine/init-time settings applied once when the vLLM engine is created.
+# - Remaining parameters are separated into different generation arguments:
+#   1) vllm.SamplingParams values (temperature, top_p, max_tokens, etc.)
+#   2) parameters for the llm.chat(...) call.
+# - Generation parameters can also be overridden via the extractor's request_parameters,
+#   see configs/extractor/request_parameters/default.yaml for examples.
+
+_target_: kibad_llm.llms.VllmInProcess
+
+# HuggingFace model id (or local path)
+model: "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B"
+
+# Initialization parameters for vLLM LLM engine.
+# See https://docs.vllm.ai/en/v0.12.0/api/vllm/entrypoints/llm/ for details.
+vllm_kwargs:
+  tensor_parallel_size: 1  # shard across N GPUs
+  # Supports up to 128K tokens (max size for https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Qwen-32B).
+  # Use lower value to save memory and improve performance (recommendation by HF model card)
+  max_model_len: 32768
+  # This model requires the deepseek_r1 reasoning parser (see HF model card).
+  reasoning_parser: "deepseek_r1"
+  gpu_memory_utilization: 0.95 # fraction of GPU memory reserved (impacts KV cache size)
+  # dtype: "auto"
+  download_dir: ${oc.env:VLLM_DOWNLOAD_DIR}
+  seed: ${seed}  # needs to be set starting with vllm 0.13.0
+  # others, e.g., quantization / trust_remote_code / swap_space / cpu_offload_gb / ...
+
+
+# Generation parameters, can be either ...
+# 1) ... vllm.SamplingParams values ...
+# See https://docs.vllm.ai/en/v0.12.0/api/vllm/sampling_params/ for details.
+# see https://huggingface.co/Qwen/Qwen3-30B-A3B-Thinking-2507#best-practices for Qwen3 recommended settings
+# See also https://muxup.com/2025q2/recommended-llm-parameter-quick-reference for recommendations
+temperature: 0.6  # however, ChatGPT suggests for long-PDF IE a small value like 0.1-0.2, see #320
+max_tokens: 8192
+top_p: 0.95
+top_k: 20
+# min_p: 0 <- 0.0 is default, so no need to set this
+repetition_penalty: 1.1 # suggested by ChatGPT, see #320
+
+# Other params maybe to consider
+# frequency_penalty: ...
+# seed?
+# stop: ["\n\n"]
+# 2) ... or direct parameters for the llm.chat(...) call (should be rarely needed).
+# See https://docs.vllm.ai/en/v0.12.0/api/vllm/entrypoints/llm/#vllm.entrypoints.llm.LLM.chat
+# for details.
+
+# LlamaIndex-style request parameters (they get merged with the parameters above, but take lower precedence)
+# additional_kwargs:
+#   ...
