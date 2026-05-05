@@ -1,0 +1,34 @@
+# extraction workflow that repeats the extraction n times for each entry in overrides
+# and aggregates the results per key by majority voting
+
+defaults:
+  - schema: faktencheck_simple
+  - aggregator: majority_vote
+  - prompt_template: default
+  - request_parameters: default
+
+_target_: kibad_llm.extractors.EnsembleExtractor
+
+# options for the ensemble extractor
+
+# overrides:
+#   setup_a:
+#     llm: ...
+#     some_other_parameter: ...
+#   setup_b:
+#     llm: ...
+#     some_other_parameter: ...
+
+# for these fields, return a list of results from each repetition
+return_as_list:
+  # - structured
+  - errors
+  # - response_content
+  - reasoning_content
+  # - messages
+  # - messages_formatted
+
+# general return options (see simple extractor for details)
+return_reasoning: True
+return_messages: False
+return_messages_formatted: False

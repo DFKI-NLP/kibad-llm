@@ -1,0 +1,55 @@
+{
+  "structured": {
+    "landuse": [
+      "Landwirtschaft",
+      "Energieproduktion"
+    ],
+    "habitat": [
+      "Boden"
+    ],
+    "natural_region": [
+      "Norddeutsches Tiefland",
+      "Alpenvorland"
+    ],
+    "climate": []
+  },
+  "errors_list": [
+    [],
+    []
+  ],
+  "structured_list": [
+    {
+      "habitat": [
+        "Boden",
+        "Agrar- und Offenland"
+      ],
+      "natural_region": [
+        "Norddeutsches Tiefland",
+        "Alpenvorland"
+      ],
+      "climate": [],
+      "landuse": [
+        "Landwirtschaft",
+        "Bau",
+        "Energieproduktion"
+      ]
+    },
+    {
+      "habitat": [
+        "Boden"
+      ],
+      "natural_region": [
+        "Norddeutsches Tiefland",
+        "Alpenvorland"
+      ],
+      "climate": [
+        "maritim",
+        "subkontinental"
+      ],
+      "landuse": [
+        "Landwirtschaft",
+        "Energieproduktion"
+      ]
+    }
+  ]
+}
