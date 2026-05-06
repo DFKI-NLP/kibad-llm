@@ -1,4 +1,4 @@
-"""Chunking extractor that processes a document in overlapping text windows.
+"""Chunking extractor that processes a document in non-overlapping text windows.
 
 [`ChunkingExtractor`][kibad_llm.extractors.chunking.ChunkingExtractor] splits long documents into character-bounded chunks via
 [`kibad_llm.extractors.chunking_utils.core`][kibad_llm.extractors.chunking_utils.core], runs
