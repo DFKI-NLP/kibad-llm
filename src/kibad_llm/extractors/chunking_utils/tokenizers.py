@@ -22,7 +22,7 @@ for tokenization within the language model during inference.
 """
 
 import abc
-from collections.abc import See, Sequence
+from collections.abc import Sequence, Set
 import dataclasses
 import enum
 import functools
