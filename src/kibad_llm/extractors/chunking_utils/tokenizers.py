@@ -17,8 +17,7 @@
 """Tokenization utilities for text.
 
 Provides methods to split text into regex-based or Unicode-aware tokens.
-Tokenization is used for alignment in `resolver.py` and for determining
-sentence boundaries for smaller context use cases. This module is not used
+Tokenization is used for alignment in `core.py`. This module is not used
 for tokenization within the language model during inference.
 """
 

@@ -1,3 +1,14 @@
+"""Abstract base class and shared types for LLM backends.
+
+Defines the [`LLM`][kibad_llm.llms.base.LLM] interface that all concrete backends must implement:
+[`LLM.call_llm_chat_with_guided_decoding`][kibad_llm.llms.base.LLM.call_llm_chat_with_guided_decoding] to send a list of
+`SimpleChatMessage` objects to the model (with optional JSON schema for guided
+decoding) and return a LlamaIndex ``ChatResponse``.
+
+Also provides default implementations for extracting the response content and
+(optionally) the model's reasoning content from the raw ``ChatResponse``.
+"""
+
 from abc import ABC, abstractmethod
 import dataclasses
 from typing import Any

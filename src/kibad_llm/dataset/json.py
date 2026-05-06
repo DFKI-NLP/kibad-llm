@@ -1,3 +1,14 @@
+"""JSON and JSONL dataset loading with optional compression and preprocessing.
+
+[`read_and_preprocess`][kibad_llm.dataset.json.read_and_preprocess] is the core loader used throughout the dataset package.
+It reads plain JSON (as a single object) or JSON Lines (one dict per line, keyed by
+``id_key``) from files that may be compressed (gz, bz2, xz, zip, tar, zst) by
+delegating decompression to [`open_text`][kibad_llm.dataset.compression.open_text].
+
+An optional ``preprocess`` callable is applied to each entry after loading, and
+``process_id`` allows transforming the ID key value before it is used as the dict key.
+"""
+
 from collections.abc import Callable, Hashable
 import json
 import logging

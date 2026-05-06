@@ -1,3 +1,12 @@
+"""Unit tests for :func:`kibad_llm.llms.openai.make_openai_strict_json_schema`.
+
+Verifies the schema-patching rules required by OpenAI's Structured Outputs strict mode:
+adding ``required`` and ``additionalProperties: false`` to every object, removing
+``default`` fields, moving ``$ref`` with sibling keywords into ``anyOf``, and
+recursively patching ``$defs``.  Also checks input immutability and golden-file
+regression tests for all Pydantic models in ``ALL_MODELS``.
+"""
+
 import copy
 import json
 

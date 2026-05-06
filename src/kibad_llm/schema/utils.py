@@ -1,3 +1,23 @@
+"""JSON Schema utilities for building schema descriptions and evidence-anchor wrappers.
+
+Two main capabilities:
+
+1. **Schema description builder** ([`build_schema_description`][kibad_llm.schema.utils.build_schema_description]) – converts a
+   JSON Schema dict to a concise human-readable summary that is injected into LLM
+   prompts via the ``{schema_description}`` placeholder.  Handles ``$ref`` resolution,
+   ``anyOf``/``oneOf``/``allOf`` compositions, enum choices, cardinality, and nested
+   object recursion.
+
+2. **Evidence-anchor wrapper** ([`wrap_terminals_with_metadata`][kibad_llm.schema.utils.wrap_terminals_with_metadata]) – transforms a
+   JSON Schema so that every terminal (scalar/enum) field is replaced by an object
+   containing the original value under a ``content`` key plus configurable metadata
+   fields (default: ``evidence_anchor``, a verbatim text excerpt supporting the
+   extracted value).  Used together with ``adjust_schema_for_evidence_detection=True``
+   in [`extract_from_text`][kibad_llm.extractors.base.extract_from_text] to make the LLM cite its
+   sources.  [`strip_metadata`][kibad_llm.extractors.base.strip_metadata] reverses the wrapping
+   on the parsed output.
+"""
+
 from __future__ import annotations
 
 from collections.abc import Mapping
@@ -233,7 +253,7 @@ def build_schema_description(
     - Optional first line: "<type_description_prefix><schema.description>" if include_type_descriptions and the description exists
     - Optional header line (only at top level if header is not None)
     - One line per property with format depending on which prefix parameters are not None:
-      "<indent>- <name>[: <description>][<separator><cardinality_prefix><cardinality>][<separator><type_prefix><type>][<separator><enum_prefix><values>]"
+      `<indent>- <name>[: <description>][<separator><cardinality_prefix><cardinality>][<separator><type_prefix><type>][<separator><enum_prefix><values>]`
     - For nested objects, recursively includes their properties with increased indentation
 
     Cardinality rules:

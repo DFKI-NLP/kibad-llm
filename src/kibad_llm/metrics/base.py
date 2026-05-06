@@ -1,3 +1,19 @@
+"""Base class for metrics that operate on set-valued predictions and references.
+
+[`MetricWithPrepareEntryAsSet`][kibad_llm.metrics.base.MetricWithPrepareEntryAsSet] extends [`Metric`][kibad_llm.metric.Metric] with a
+`_prepare_entry_as_set` helper that normalises arbitrary prediction/reference
+values into a ``set`` for comparison:
+
+- Scalars are wrapped in a single-element set.
+- Lists/sets of scalars become a set (duplicates removed).
+- Dicts (and lists of dicts) are converted to hashable sorted tuples, optionally
+  ignoring specific sub-fields (``ignore_subfields``) and optionally flattening nested
+  dicts first (``flatten_dicts``).
+
+Inherited by [`F1MicroSingleFieldMetric`][kibad_llm.metrics.f1.F1MicroSingleFieldMetric] and
+[`ConfusionMatrix`][kibad_llm.metrics.confusion_matrix.ConfusionMatrix].
+"""
+
 from typing import Any
 
 from kibad_llm.metric import Metric

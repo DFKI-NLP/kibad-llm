@@ -1,3 +1,17 @@
+"""Chunking extractor that processes a document in non-overlapping text windows.
+
+[`ChunkingExtractor`][kibad_llm.extractors.chunking.ChunkingExtractor] splits long documents into character-bounded chunks via
+[`kibad_llm.extractors.chunking_utils.core`][kibad_llm.extractors.chunking_utils.core], runs
+[`extract_from_text_lenient`][kibad_llm.extractors.base.extract_from_text_lenient] on each chunk, and then
+aggregates the partial ``structured`` outputs using a configurable
+`Aggregator` function (e.g.,
+[`aggregate_single_majority_vote_multi_union`][kibad_llm.extractors.aggregation_utils.aggregate_single_majority_vote_multi_union]).
+
+This is the primary strategy for documents that exceed a model's context window:
+single-valued fields (primitives, dicts) are resolved by majority vote across chunks,
+while multi-valued fields (lists) collect items from all chunks via union.
+"""
+
 import logging
 from typing import Any
 

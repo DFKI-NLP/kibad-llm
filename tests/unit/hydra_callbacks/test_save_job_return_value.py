@@ -1,3 +1,12 @@
+"""Unit tests for :class:`kibad_llm.hydra_callbacks.SaveJobReturnValueCallback`.
+
+Tests per-job file saving (JSON and Markdown), multi-file output, paths-file creation,
+multirun aggregation (with and without ``integrate_multirun_result``), ID generation
+from Hydra overrides (single and multiple override keys, ``multirun_convert_job_ids``),
+and the ``dict_to_overrides``, ``remove_common_overrides``, and
+``overrides_to_identifiers`` helpers.
+"""
+
 import json
 
 from hydra.core.utils import JobReturn, JobStatus

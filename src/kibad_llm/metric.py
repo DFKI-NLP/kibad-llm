@@ -1,3 +1,12 @@
+"""Abstract base class defining the ``Metric`` interface used throughout the evaluation pipeline.
+
+All concrete metrics (F1, confusion matrix, error statistics, …) inherit from
+[`Metric`][kibad_llm.metric.Metric] and implement `_update` and `_compute`.
+The public `Metric.update` / `Metric.compute` wrappers handle the
+reset-after-compute lifecycle so callers do not have to manage internal state
+manually.
+"""
+
 from collections.abc import Hashable
 import json
 import logging

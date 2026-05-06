@@ -1,3 +1,21 @@
+"""Dictionary utilities used across the codebase.
+
+Key helpers:
+
+- [`flatten_dict_simple`][kibad_llm.utils.dictionary.flatten_dict_simple] – flattens one level of nesting for lists-of-dicts
+  (e.g., compound schema fields); used when converting structured predictions to sets
+  for metric computation.
+- [`flatten_dict`][kibad_llm.utils.dictionary.flatten_dict] / [`unflatten_dict`][kibad_llm.utils.dictionary.unflatten_dict] – deep flatten/unflatten with
+  tuple keys and NaN padding; used by [`SaveJobReturnValueCallback`][kibad_llm.hydra_callbacks.save_job_return_value.SaveJobReturnValueCallback]
+  to reshape multirun result structures.
+- [`flatten_dict_s`][kibad_llm.utils.dictionary.flatten_dict_s] – like [`flatten_dict`][kibad_llm.utils.dictionary.flatten_dict] but with a string separator,
+  returning ``str`` keys directly.
+- [`FieldDict`][kibad_llm.utils.dictionary.FieldDict] – a ``dict`` subclass backed by a ``dataclass``, keeping
+  attribute assignment and dict-item assignment in sync.  Used as the base for
+  [`SingleExtractionResult`][kibad_llm.extractors.base.SingleExtractionResult] so the result is both
+  attribute-accessible and directly JSON-serialisable.
+"""
+
 from __future__ import annotations
 
 from collections.abc import Generator, Mapping

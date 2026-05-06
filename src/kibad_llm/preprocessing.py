@@ -1,3 +1,11 @@
+"""PDF-to-markdown conversion utilities.
+
+Wraps ``pymupdf4llm`` to convert PDF files into Markdown text suitable for
+passing to the extraction pipeline.  The resulting text preserves the document
+structure (headings, tables, lists) as Markdown, which LLMs handle better than
+raw PDF text.
+"""
+
 from __future__ import annotations
 
 import logging

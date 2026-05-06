@@ -1,4 +1,14 @@
 #!/usr/bin/env python3
+"""One-off script to sync a Nextcloud public share with a local cluster directory.
+
+Uses the WebDAV ``PROPFIND`` method to list files in the Nextcloud public share and
+compares them against files in ``LOCAL_DIR`` on the cluster.  Files present only on
+Nextcloud are downloaded; files present only locally are uploaded.
+
+Connection parameters (``NEXTCLOUD_BASE_URL``, ``SHARE_TOKEN``, ``LOCAL_DIR``,
+``NEXTCLOUD_BASE_FOLDER``) are hard-coded constants at the top of this file and need
+to be adjusted before use.  Run with ``python synch_nextcloud_with_cluster.py``.
+"""
 import logging
 import os
 from urllib.parse import quote, unquote, urlparse

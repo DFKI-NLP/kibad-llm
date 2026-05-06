@@ -1,3 +1,19 @@
+"""F1 metrics for single- and multi-field classification evaluation.
+
+[`F1MicroSingleFieldMetric`][kibad_llm.metrics.f1.F1MicroSingleFieldMetric] accumulates true positives, false positives and false
+negatives across all documents and computes micro-averaged precision, recall and F1.
+It handles single-label (scalar) and multi-label (list/set) fields uniformly by
+converting both prediction and reference to sets before comparison.
+
+[`F1MicroMultipleFieldsMetric`][kibad_llm.metrics.f1.F1MicroMultipleFieldsMetric] runs [`F1MicroSingleFieldMetric`][kibad_llm.metrics.f1.F1MicroSingleFieldMetric] for each
+schema field simultaneously and adds:
+
+- ``AVG`` – macro average over all per-field scores.
+- ``ALL`` – global micro average computed from the summed TP/FP/FN across all fields.
+
+Results can be formatted as a Markdown table for easy readability in the console.
+"""
+
 from collections import defaultdict
 from collections.abc import Hashable
 from copy import deepcopy

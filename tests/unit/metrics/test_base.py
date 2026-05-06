@@ -1,3 +1,9 @@
+"""Unit tests for :class:`kibad_llm.metrics.base.MetricWithPrepareEntryAsSet`.
+
+Tests the ``_prepare_entry_as_set`` normalization helper across scalars, lists, sets,
+dicts, and nested structures, as well as the ``field`` and ``ignore_subfields`` options.
+"""
+
 import pytest
 
 from kibad_llm.metrics.base import MetricWithPrepareEntryAsSet

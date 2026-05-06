@@ -1,0 +1,159 @@
+[2025-11-25 09:23:55,685][__main__][INFO] - Processing 100 PDF files from /ds/text/kiba-d/dev-set-100/ ...
+[2025-11-25 09:23:55,687][__main__][INFO] - Converting PDF to markdown ...
+[2025-11-25 09:23:55,689][__main__][INFO] - PDF reader config: {'_target_': 'kibad_llm.preprocessing.read_pdf_as_markdown_via_pymupdf4llm', '_partial_': True}
+[2025-11-25 09:23:57,190][__main__][INFO] - Instantiating Extractor ...
+[2025-11-25 09:23:57,399][__main__][INFO] - Extractor config: {'llm': {'_target_': 'llama_index.llms.openai_like.OpenAILike', 'api_base': '${oc.env:LLM_API_BASE,http://127.0.0.1:5001/v1}', 'api_key': 'dummy', 'model': 'openai/gpt-oss-20b', 'temperature': 0.0, 'top_p': 1.0, 'max_tokens': 4096, 'is_chat_model': True, 'is_function_calling_model': False}, '_target_': 'kibad_llm.extractors.UnionExtractor', 'overrides': [{'schema': {'_target_': 'kibad_llm.schema.types.EcosystemStudyFeaturesWithoutCompounds.model_json_schema', 'by_alias': False}}, {'schema': {'_target_': 'kibad_llm.schema.types.EcosystemStudyFeaturesCompoundsOnly.model_json_schema', 'by_alias': False}}], 'system_message': 'Du extrahierst Informationen aus einem Markdown-Dokument.\nGib **ausschließlich** gültiges JSON nach dem folgendem Schema zurück.\nKeine zusätzlichen Felder, keine Erklärungen.\n{schema_description}\n', 'system_message_requires_schema_description': True, 'user_message': 'Dokument in Markdown Format:\n\n{document}\n', 'schema': {'_target_': 'kibad_llm.schema.types.EcosystemStudyFeaturesSimple.model_json_schema', 'by_alias': False}}
+[2025-11-25 09:26:19,744][__main__][INFO] - Extract information from markdown ...
+[2025-11-25 09:29:43,288][kibad_llm.extractors.base][WARNING] - Failed to parse JSON output for document 29Q84X7V.pdf
+[2025-11-25 09:29:43,725][kibad_llm.extractors.base][ERROR] - Error processing document 2E9XWUUE.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -319737.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-25 09:29:44,103][kibad_llm.extractors.base][ERROR] - Error processing document 2E9XWUUE.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -322631.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-25 09:29:44,291][kibad_llm.extractors.base][ERROR] - Error processing document 2EUNPHDZ.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -56610.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-25 09:29:44,484][kibad_llm.extractors.base][ERROR] - Error processing document 2EUNPHDZ.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -59504.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-25 09:32:07,855][openai._base_client][INFO] - Retrying request to /chat/completions in 0.378741 seconds
+[2025-11-25 09:33:08,273][openai._base_client][INFO] - Retrying request to /chat/completions in 0.887776 seconds
+[2025-11-25 09:34:09,225][openai._base_client][INFO] - Retrying request to /chat/completions in 1.529594 seconds
+[2025-11-25 09:35:10,788][kibad_llm.extractors.base][ERROR] - Error processing document 2NJD9Y9T.pdf: Request timed out.
+[2025-11-25 09:35:11,007][kibad_llm.extractors.base][ERROR] - Error processing document 2P53UVJA.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -71320.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-25 09:35:11,195][kibad_llm.extractors.base][ERROR] - Error processing document 2P53UVJA.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -74214.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-25 09:35:43,646][kibad_llm.extractors.base][ERROR] - Error processing document 2RXMDX8I.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -211684.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-25 09:35:43,926][kibad_llm.extractors.base][ERROR] - Error processing document 2RXMDX8I.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -214578.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-25 09:36:51,554][kibad_llm.extractors.base][WARNING] - Failed to parse JSON output for document 33MV2F7X.pdf
+[2025-11-25 09:39:12,238][openai._base_client][INFO] - Retrying request to /chat/completions in 0.383083 seconds
+[2025-11-25 09:40:12,652][openai._base_client][INFO] - Retrying request to /chat/completions in 0.811232 seconds
+[2025-11-25 09:41:37,391][openai._base_client][INFO] - Retrying request to /chat/completions in 0.446609 seconds
+[2025-11-25 09:41:46,010][kibad_llm.extractors.base][ERROR] - Error processing document 3LGPK6BL.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -87333.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-25 09:41:46,182][kibad_llm.extractors.base][ERROR] - Error processing document 3LGPK6BL.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -90227.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-25 09:43:19,985][openai._base_client][INFO] - Retrying request to /chat/completions in 0.429489 seconds
+[2025-11-25 09:45:00,069][kibad_llm.extractors.base][ERROR] - Error processing document 3WEEGFGW.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -2254132.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-25 09:45:01,820][kibad_llm.extractors.base][ERROR] - Error processing document 3WEEGFGW.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -2257026.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-25 09:46:01,844][openai._base_client][INFO] - Retrying request to /chat/completions in 0.448005 seconds
+[2025-11-25 09:47:02,304][openai._base_client][INFO] - Retrying request to /chat/completions in 0.952205 seconds
+[2025-11-25 09:48:03,267][openai._base_client][INFO] - Retrying request to /chat/completions in 1.636264 seconds
+[2025-11-25 09:49:04,973][kibad_llm.extractors.base][ERROR] - Error processing document 3Z5BFIBL.pdf: Request timed out.
+[2025-11-25 09:50:05,043][openai._base_client][INFO] - Retrying request to /chat/completions in 0.407719 seconds
+[2025-11-25 09:51:05,492][openai._base_client][INFO] - Retrying request to /chat/completions in 0.874405 seconds
+[2025-11-25 09:52:06,432][openai._base_client][INFO] - Retrying request to /chat/completions in 1.857192 seconds
+[2025-11-25 09:53:08,308][kibad_llm.extractors.base][ERROR] - Error processing document 3Z5BFIBL.pdf: Request timed out.
+[2025-11-25 09:54:44,468][openai._base_client][INFO] - Retrying request to /chat/completions in 0.459376 seconds
+[2025-11-25 09:55:44,972][openai._base_client][INFO] - Retrying request to /chat/completions in 0.954139 seconds
+[2025-11-25 09:56:45,954][openai._base_client][INFO] - Retrying request to /chat/completions in 1.629525 seconds
+[2025-11-25 09:57:47,650][kibad_llm.extractors.base][ERROR] - Error processing document 42ELXZ2H.pdf: Request timed out.
+[2025-11-25 09:58:47,710][openai._base_client][INFO] - Retrying request to /chat/completions in 0.390054 seconds
+[2025-11-25 09:59:34,975][kibad_llm.extractors.base][ERROR] - Error processing document 46RX4AEN.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -121693.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-25 09:59:35,178][kibad_llm.extractors.base][ERROR] - Error processing document 46RX4AEN.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -124587.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-25 10:00:37,886][kibad_llm.extractors.base][WARNING] - Failed to parse JSON output for document 49Z7RPDP.pdf
+[2025-11-25 10:02:12,196][openai._base_client][INFO] - Retrying request to /chat/completions in 0.387037 seconds
+[2025-11-25 10:05:02,247][kibad_llm.extractors.base][WARNING] - Failed to parse JSON output for document 4JF8F3WL.pdf
+[2025-11-25 10:05:02,587][kibad_llm.extractors.base][ERROR] - Error processing document 4YXRYRJC.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -166811.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-25 10:05:02,862][kibad_llm.extractors.base][ERROR] - Error processing document 4YXRYRJC.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -169705.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-25 10:05:03,061][kibad_llm.extractors.base][ERROR] - Error processing document 4Z67G9T5.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -54737.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-25 10:05:03,219][kibad_llm.extractors.base][ERROR] - Error processing document 4Z67G9T5.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -57631.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-25 10:06:53,071][openai._base_client][INFO] - Retrying request to /chat/completions in 0.438585 seconds
+[2025-11-25 10:11:14,168][kibad_llm.extractors.base][WARNING] - Failed to parse JSON output for document 5I8A3W7U.pdf
+[2025-11-25 10:12:35,071][kibad_llm.extractors.base][ERROR] - Error processing document 5SIYLM9W.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -938680.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-25 10:12:35,908][kibad_llm.extractors.base][ERROR] - Error processing document 5SIYLM9W.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -941574.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-25 10:13:35,980][openai._base_client][INFO] - Retrying request to /chat/completions in 0.471084 seconds
+[2025-11-25 10:15:23,845][openai._base_client][INFO] - Retrying request to /chat/completions in 0.488257 seconds
+[2025-11-25 10:17:19,712][openai._base_client][INFO] - Retrying request to /chat/completions in 0.441123 seconds
+[2025-11-25 10:18:20,187][openai._base_client][INFO] - Retrying request to /chat/completions in 0.824803 seconds
+[2025-11-25 10:19:21,025][openai._base_client][INFO] - Retrying request to /chat/completions in 1.922112 seconds
+[2025-11-25 10:20:22,955][kibad_llm.extractors.base][ERROR] - Error processing document 5XHDHCIQ.pdf: Request timed out.
+[2025-11-25 10:22:20,283][openai._base_client][INFO] - Retrying request to /chat/completions in 0.444210 seconds
+[2025-11-25 10:23:20,794][openai._base_client][INFO] - Retrying request to /chat/completions in 0.869871 seconds
+[2025-11-25 10:24:21,675][openai._base_client][INFO] - Retrying request to /chat/completions in 1.607495 seconds
+[2025-11-25 10:25:23,340][kibad_llm.extractors.base][ERROR] - Error processing document 6332SBW4.pdf: Request timed out.
+[2025-11-25 10:27:16,163][openai._base_client][INFO] - Retrying request to /chat/completions in 0.471764 seconds
+[2025-11-25 10:29:06,173][openai._base_client][INFO] - Retrying request to /chat/completions in 0.421300 seconds
+[2025-11-25 10:31:50,181][openai._base_client][INFO] - Retrying request to /chat/completions in 0.482521 seconds
+[2025-11-25 10:33:46,768][openai._base_client][INFO] - Retrying request to /chat/completions in 0.380060 seconds
+[2025-11-25 10:34:47,178][openai._base_client][INFO] - Retrying request to /chat/completions in 0.759259 seconds
+[2025-11-25 10:35:48,003][openai._base_client][INFO] - Retrying request to /chat/completions in 1.768328 seconds
+[2025-11-25 10:36:49,840][kibad_llm.extractors.base][ERROR] - Error processing document 6BKNRKUA.pdf: Request timed out.
+[2025-11-25 10:37:49,940][openai._base_client][INFO] - Retrying request to /chat/completions in 0.499081 seconds
+[2025-11-25 10:38:50,524][openai._base_client][INFO] - Retrying request to /chat/completions in 0.965682 seconds
+[2025-11-25 10:39:51,503][openai._base_client][INFO] - Retrying request to /chat/completions in 1.555644 seconds
+[2025-11-25 10:40:53,069][kibad_llm.extractors.base][ERROR] - Error processing document 6BKNRKUA.pdf: Request timed out.
+[2025-11-25 10:41:53,139][openai._base_client][INFO] - Retrying request to /chat/completions in 0.392789 seconds
+[2025-11-25 10:43:44,363][openai._base_client][INFO] - Retrying request to /chat/completions in 0.460217 seconds
+[2025-11-25 10:44:44,890][openai._base_client][INFO] - Retrying request to /chat/completions in 0.788136 seconds
+[2025-11-25 10:45:45,745][openai._base_client][INFO] - Retrying request to /chat/completions in 1.545535 seconds
+[2025-11-25 10:46:47,358][kibad_llm.extractors.base][ERROR] - Error processing document 6CMGEZPD.pdf: Request timed out.
+[2025-11-25 10:46:47,517][kibad_llm.extractors.base][ERROR] - Error processing document 6D23L7B5.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -27605.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-25 10:46:47,660][kibad_llm.extractors.base][ERROR] - Error processing document 6D23L7B5.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -30499.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-25 10:48:16,188][openai._base_client][INFO] - Retrying request to /chat/completions in 0.441516 seconds
+[2025-11-25 10:49:16,485][kibad_llm.extractors.base][WARNING] - Failed to parse JSON output for document 6DCMK7GA.pdf
+[2025-11-25 10:49:16,791][kibad_llm.extractors.base][ERROR] - Error processing document 6G2THNDX.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -203163.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-25 10:49:17,064][kibad_llm.extractors.base][ERROR] - Error processing document 6G2THNDX.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -206057.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-25 10:50:17,128][openai._base_client][INFO] - Retrying request to /chat/completions in 0.491528 seconds
+[2025-11-25 10:51:17,685][openai._base_client][INFO] - Retrying request to /chat/completions in 0.785432 seconds
+[2025-11-25 10:52:18,477][openai._base_client][INFO] - Retrying request to /chat/completions in 1.673089 seconds
+[2025-11-25 10:53:20,187][kibad_llm.extractors.base][ERROR] - Error processing document 6JGB9KZ2.pdf: Request timed out.
+[2025-11-25 10:55:48,807][kibad_llm.extractors.base][WARNING] - Failed to parse JSON output for document 7AYVH7FI.pdf
+[2025-11-25 10:56:15,882][kibad_llm.extractors.base][ERROR] - Error processing document 7DSY6RMR.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -14451.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-25 10:56:16,010][kibad_llm.extractors.base][ERROR] - Error processing document 7DSY6RMR.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -17345.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-25 10:57:16,103][openai._base_client][INFO] - Retrying request to /chat/completions in 0.396041 seconds
+[2025-11-25 10:58:16,566][openai._base_client][INFO] - Retrying request to /chat/completions in 0.986531 seconds
+[2025-11-25 11:00:14,352][openai._base_client][INFO] - Retrying request to /chat/completions in 0.411283 seconds
+[2025-11-25 11:01:14,832][openai._base_client][INFO] - Retrying request to /chat/completions in 0.917460 seconds
+[2025-11-25 11:02:15,817][openai._base_client][INFO] - Retrying request to /chat/completions in 1.820782 seconds
+[2025-11-25 11:03:17,708][kibad_llm.extractors.base][ERROR] - Error processing document 7EUNQX3Z.pdf: Request timed out.
+[2025-11-25 11:05:07,071][openai._base_client][INFO] - Retrying request to /chat/completions in 0.385561 seconds
+[2025-11-25 11:06:13,977][kibad_llm.extractors.base][ERROR] - Error processing document 84QQ9F5S.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -1203554.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-25 11:06:14,762][kibad_llm.extractors.base][ERROR] - Error processing document 84QQ9F5S.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -1206448.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-25 11:06:15,139][kibad_llm.extractors.base][ERROR] - Error processing document 885FDL5Z.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -252133.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-25 11:06:15,491][kibad_llm.extractors.base][ERROR] - Error processing document 885FDL5Z.pdf: Error code: 400 - {'error': {'message': 'max_tokens must be at least 1, got -255027.', 'type': 'BadRequestError', 'param': None, 'code': 400}}
+[2025-11-25 11:07:15,557][openai._base_client][INFO] - Retrying request to /chat/completions in 0.484063 seconds
+[2025-11-25 11:09:30,779][kibad_llm.extractors.base][WARNING] - Failed to parse JSON output for document 8HFL2MPL.pdf
+[2025-11-25 11:11:33,236][openai._base_client][INFO] - Retrying request to /chat/completions in 0.483318 seconds
+[2025-11-25 11:13:31,394][openai._base_client][INFO] - Retrying request to /chat/completions in 0.468820 seconds
+[2025-11-25 11:14:31,928][openai._base_client][INFO] - Retrying request to /chat/completions in 0.777166 seconds
+[2025-11-25 11:15:32,929][openai._base_client][INFO] - Retrying request to /chat/completions in 1.802263 seconds
+[2025-11-25 11:16:34,800][kibad_llm.extractors.base][ERROR] - Error processing document 8Q86MQJE.pdf: Request timed out.
+[2025-11-25 11:17:37,326][kibad_llm.extractors.base][WARNING] - Failed to parse JSON output for document 8QKB2BJE.pdf
+[2025-11-25 11:19:13,361][openai._base_client][INFO] - Retrying request to /chat/completions in 0.393352 seconds
+[2025-11-25 11:21:19,163][openai._base_client][INFO] - Retrying request to /chat/completions in 0.390087 seconds
+[2025-11-25 11:27:05,550][openai._base_client][INFO] - Retrying request to /chat/completions in 0.452750 seconds
+[2025-11-25 11:33:07,653][openai._base_client][INFO] - Retrying request to /chat/completions in 0.480206 seconds
+[2025-11-25 11:34:08,198][openai._base_client][INFO] - Retrying request to /chat/completions in 0.941107 seconds
+[2025-11-25 11:35:09,154][openai._base_client][INFO] - Retrying request to /chat/completions in 1.583583 seconds
+[2025-11-25 11:36:10,749][kibad_llm.extractors.base][ERROR] - Error processing document G7H698R6.pdf: Request timed out.
+[2025-11-25 11:40:11,848][kibad_llm.extractors.base][WARNING] - Failed to parse JSON output for document KXP8FP94.pdf
+[2025-11-25 11:41:11,906][openai._base_client][INFO] - Retrying request to /chat/completions in 0.453464 seconds
+[2025-11-25 11:43:51,406][openai._base_client][INFO] - Retrying request to /chat/completions in 0.485277 seconds
+[2025-11-25 11:44:51,912][openai._base_client][INFO] - Retrying request to /chat/completions in 0.914510 seconds
+[2025-11-25 11:45:52,836][openai._base_client][INFO] - Retrying request to /chat/completions in 1.634112 seconds
+[2025-11-25 11:46:54,491][kibad_llm.extractors.base][ERROR] - Error processing document NGFBPJCG.pdf: Request timed out.
+[2025-11-25 11:47:54,510][openai._base_client][INFO] - Retrying request to /chat/completions in 0.482370 seconds
+[2025-11-25 11:48:55,057][openai._base_client][INFO] - Retrying request to /chat/completions in 0.763310 seconds
+[2025-11-25 11:49:55,885][openai._base_client][INFO] - Retrying request to /chat/completions in 1.695587 seconds
+[2025-11-25 11:50:57,595][kibad_llm.extractors.base][ERROR] - Error processing document NGFBPJCG.pdf: Request timed out.
+[2025-11-25 11:52:30,301][openai._base_client][INFO] - Retrying request to /chat/completions in 0.448886 seconds
+[2025-11-25 11:53:30,814][openai._base_client][INFO] - Retrying request to /chat/completions in 0.851956 seconds
+[2025-11-25 11:54:31,732][openai._base_client][INFO] - Retrying request to /chat/completions in 1.743250 seconds
+[2025-11-25 11:55:33,543][kibad_llm.extractors.base][ERROR] - Error processing document NZ7ETG2K.pdf: Request timed out.
+[2025-11-25 12:00:15,158][openai._base_client][INFO] - Retrying request to /chat/completions in 0.495786 seconds
+[2025-11-25 12:02:00,605][openai._base_client][INFO] - Retrying request to /chat/completions in 0.495815 seconds
+[2025-11-25 12:03:01,167][openai._base_client][INFO] - Retrying request to /chat/completions in 0.804101 seconds
+[2025-11-25 12:04:02,038][openai._base_client][INFO] - Retrying request to /chat/completions in 1.963050 seconds
+[2025-11-25 12:05:04,069][kibad_llm.extractors.base][ERROR] - Error processing document QR5QGMTI.pdf: Request timed out.
+[2025-11-25 12:11:38,100][openai._base_client][INFO] - Retrying request to /chat/completions in 0.474084 seconds
+[2025-11-25 12:14:42,535][openai._base_client][INFO] - Retrying request to /chat/completions in 0.388669 seconds
+[2025-11-25 12:15:41,658][kibad_llm.extractors.base][WARNING] - Failed to parse JSON output for document WW9EZUVE.pdf
+[2025-11-25 12:17:13,180][openai._base_client][INFO] - Retrying request to /chat/completions in 0.452901 seconds
+[2025-11-25 12:18:13,696][openai._base_client][INFO] - Retrying request to /chat/completions in 0.932178 seconds
+[2025-11-25 12:19:14,658][openai._base_client][INFO] - Retrying request to /chat/completions in 1.923884 seconds
+[2025-11-25 12:20:16,648][kibad_llm.extractors.base][ERROR] - Error processing document XG99Q5DJ.pdf: Request timed out.
+[2025-11-25 12:21:16,665][openai._base_client][INFO] - Retrying request to /chat/completions in 0.452943 seconds
+[2025-11-25 12:23:43,976][kibad_llm.extractors.base][WARNING] - Failed to parse JSON output for document XQ7DW4VS.pdf
+[2025-11-25 12:26:06,862][openai._base_client][INFO] - Retrying request to /chat/completions in 0.451115 seconds
+[2025-11-25 12:27:07,324][openai._base_client][INFO] - Retrying request to /chat/completions in 0.879343 seconds
+[2025-11-25 12:28:08,248][openai._base_client][INFO] - Retrying request to /chat/completions in 1.669272 seconds
+[2025-11-25 12:29:09,982][kibad_llm.extractors.base][ERROR] - Error processing document Z6CEAMK4.pdf: Request timed out.
+[2025-11-25 12:31:03,613][openai._base_client][INFO] - Retrying request to /chat/completions in 0.381311 seconds
+[2025-11-25 12:33:19,464][openai._base_client][INFO] - Retrying request to /chat/completions in 0.481093 seconds
+[2025-11-25 12:34:19,956][openai._base_client][INFO] - Retrying request to /chat/completions in 0.995819 seconds
+[2025-11-25 12:35:21,016][openai._base_client][INFO] - Retrying request to /chat/completions in 1.769740 seconds
+[2025-11-25 12:36:22,800][kibad_llm.extractors.base][ERROR] - Error processing document ZS59ID9J.pdf: Request timed out.
+[2025-11-25 12:36:23,015][__main__][INFO] - Writing results to /netscratch/hennig/kiba-d//predictions/default/2025-11-25_09-23-55/predictions.jsonl ...
+[2025-11-25 12:36:23,110][kibad_llm.hydra_callbacks.save_job_return_value.SaveJobReturnValueCallback][INFO] - Saving job_return in /netscratch/hennig/kiba-d/logs/runs/default/2025-11-25_09-23-55/job_return_value.json
+[2025-11-25 12:36:23,134][kibad_llm.hydra_callbacks.save_job_return_value.SaveJobReturnValueCallback][INFO] - Saving job_return in /netscratch/hennig/kiba-d/logs/runs/default/2025-11-25_09-23-55/job_return_value.md

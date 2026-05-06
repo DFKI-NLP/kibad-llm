@@ -1,3 +1,10 @@
+"""Unit tests for :func:`kibad_llm.dataset.prediction.load_with_metadata`.
+
+Verifies both loading modes: from a Hydra log directory (returns a
+:class:`~kibad_llm.dataset.prediction.DictWithMetadata` with attached job-return
+metadata) and from a direct JSONL file path (returns a plain dict without metadata).
+"""
+
 from kibad_llm.dataset.prediction import (
     DictWithMetadata,
     load_with_metadata,

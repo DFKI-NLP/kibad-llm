@@ -1,3 +1,10 @@
+"""Unit tests for :func:`kibad_llm.dataset.csv.read_organism_trends`.
+
+Tests full-column loading (output validated against a fixture JSON) and
+selected-column loading (inline expected dict), both using the Wald organism
+trends CSV from ``data/external/organism_trends/``.
+"""
+
 import json
 
 from kibad_llm.config import PROJ_ROOT
