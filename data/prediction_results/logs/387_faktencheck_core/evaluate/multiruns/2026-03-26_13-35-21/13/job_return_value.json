@@ -1,0 +1,65 @@
+{
+  "biodiversity_level": {
+    "precision": 0.4473684210526316,
+    "recall": 0.25757575757575757,
+    "f1": 0.32692307692307687,
+    "support": 132
+  },
+  "ecosystem_type.category": {
+    "precision": 0.7272727272727273,
+    "recall": 0.2857142857142857,
+    "f1": 0.4102564102564102,
+    "support": 140
+  },
+  "ecosystem_type.term": {
+    "precision": 0.35443037974683544,
+    "recall": 0.11666666666666667,
+    "f1": 0.1755485893416928,
+    "support": 240
+  },
+  "habitat": {
+    "precision": 0.5660377358490566,
+    "recall": 0.31746031746031744,
+    "f1": 0.4067796610169492,
+    "support": 189
+  },
+  "taxa.species_group": {
+    "precision": 0.5053763440860215,
+    "recall": 0.22065727699530516,
+    "f1": 0.30718954248366015,
+    "support": 213
+  },
+  "AVG": {
+    "precision": 0.5200971216014545,
+    "recall": 0.2396148608824665,
+    "f1": 0.3253394560043578,
+    "support": 182.8
+  },
+  "ALL": {
+    "precision": 0.511002444987775,
+    "recall": 0.2286652078774617,
+    "f1": 0.31594860166288735,
+    "support": 914
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/380_faktencheck_core/2026-03-11_16-30-57/2026-03-11_19-56-44_782245/predictions.jsonl",
+      "output_file_absolute": "/netscratch/binder/tmp/kiba-d_66fd30bc-c8ef-42d5-b670-0644beb7bf52/repo/predictions/380_faktencheck_core/2026-03-11_16-30-57/2026-03-11_19-56-44_782245/predictions.jsonl",
+      "time_pdf_conversion": 0.0030893669463694096,
+      "time_extraction": 2681.820885074092,
+      "time_start": 1773255404,
+      "time_end": 1773258191,
+      "commit_hash": "ba4177888275db7c8dc2ddf46678dde450aa11f4",
+      "branch": "commit/ba4177888275",
+      "is_dirty": false,
+      "slurm_job_id": "2616389"
+    },
+    "overrides": {
+      "name": "380_faktencheck_core",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gemma3_27b_in_process",
+      "seed": "1337"
+    }
+  }
+}

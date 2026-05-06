@@ -310,7 +310,7 @@ def mixed_group_by(
 
     dfs_concat = []
     # group by the specified columns ...
-    result_grouped = data.groupby(by=list(by))
+    result_grouped = data.groupby(by=by)
     if len(cols_agg_numeric) > 0:
         # ... and calculate the mean and std for numeric columns (and flatten the column MultiIndex)
         result_numeric = result_grouped[cols_agg_numeric].agg(numeric_agg_func)

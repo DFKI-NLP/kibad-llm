@@ -1,0 +1,37 @@
+# Based on Hydra's built-in `colorlog` job logging config, but with the file
+# handler redirected into `hydra.runtime.output_dir`. This could likely be done
+# with a smaller inline override of `hydra.job_logging.handlers.file.filename`,
+# but keeping a full local copy makes the effective logging setup explicit and
+# avoids relying on Hydra's merge behavior for nested logging config entries.
+version: 1
+
+formatters:
+  simple:
+    format: "[%(asctime)s][%(name)s][%(levelname)s] - %(message)s"
+  colorlog:
+    (): colorlog.ColoredFormatter
+    format: "[%(cyan)s%(asctime)s%(reset)s][%(blue)s%(name)s%(reset)s][%(log_color)s%(levelname)s%(reset)s] - %(message)s"
+    log_colors:
+      DEBUG: purple
+      INFO: green
+      WARNING: yellow
+      ERROR: red
+      CRITICAL: red
+
+handlers:
+  console:
+    class: logging.StreamHandler
+    formatter: colorlog
+    stream: ext://sys.stdout
+  file:
+    class: logging.FileHandler
+    formatter: simple
+    filename: ${hydra.runtime.output_dir}/console.log
+
+root:
+  level: INFO
+  handlers:
+    - console
+    - file
+
+disable_existing_loggers: false

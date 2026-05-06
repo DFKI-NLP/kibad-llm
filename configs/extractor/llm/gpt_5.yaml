@@ -10,7 +10,9 @@
 _target_: kibad_llm.llms.OpenAI
 
 api_base: "https://api.openai.com/v1"
-api_key: ${oc.env:OPENAI_API_KEY}
+# If the API key is not provided here, the Llama-Index OpenAI client will internally look for it in the
+# environment variable OPENAI_API_KEY. This will prevent the API key from being logged to console or files.
+# Uses the token provided in /.env
 
 model: "gpt-5"
 

@@ -1,0 +1,7 @@
+- dataset.predictions.log=logs/380_faktencheck_core/predict/multiruns/2026-03-11_16-30-57/8
+- name=387_faktencheck_core
+- experiment/evaluate=faktencheck_confusion_matrix
+- dataset.references.file=../interim/faktencheck-db/faktenscheck_core_corrected.jsonl
+- +metric.flatten_dicts=True
+- metric.field=ecosystem_type.category
+- prediction_logs=logs/380_faktencheck_core/predict

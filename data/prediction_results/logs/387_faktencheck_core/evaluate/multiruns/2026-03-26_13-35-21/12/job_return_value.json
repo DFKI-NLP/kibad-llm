@@ -1,0 +1,65 @@
+{
+  "biodiversity_level": {
+    "precision": 0.2236842105263158,
+    "recall": 0.2537313432835821,
+    "f1": 0.23776223776223776,
+    "support": 67
+  },
+  "ecosystem_type.category": {
+    "precision": 0.2545454545454545,
+    "recall": 0.30434782608695654,
+    "f1": 0.2772277227722772,
+    "support": 46
+  },
+  "ecosystem_type.term": {
+    "precision": 0.11392405063291139,
+    "recall": 0.16981132075471697,
+    "f1": 0.13636363636363633,
+    "support": 53
+  },
+  "habitat": {
+    "precision": 0.46226415094339623,
+    "recall": 0.35507246376811596,
+    "f1": 0.4016393442622951,
+    "support": 138
+  },
+  "taxa.species_group": {
+    "precision": 0.3978494623655914,
+    "recall": 0.3490566037735849,
+    "f1": 0.37185929648241206,
+    "support": 106
+  },
+  "AVG": {
+    "precision": 0.2904534658027339,
+    "recall": 0.2864039115333913,
+    "f1": 0.2849704475285717,
+    "support": 82.0
+  },
+  "ALL": {
+    "precision": 0.3080684596577017,
+    "recall": 0.3073170731707317,
+    "f1": 0.30769230769230765,
+    "support": 410
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/380_faktencheck_core/2026-03-11_16-30-57/2026-03-11_19-56-44_782245/predictions.jsonl",
+      "output_file_absolute": "/netscratch/binder/tmp/kiba-d_66fd30bc-c8ef-42d5-b670-0644beb7bf52/repo/predictions/380_faktencheck_core/2026-03-11_16-30-57/2026-03-11_19-56-44_782245/predictions.jsonl",
+      "time_pdf_conversion": 0.0030893669463694096,
+      "time_extraction": 2681.820885074092,
+      "time_start": 1773255404,
+      "time_end": 1773258191,
+      "commit_hash": "ba4177888275db7c8dc2ddf46678dde450aa11f4",
+      "branch": "commit/ba4177888275",
+      "is_dirty": false,
+      "slurm_job_id": "2616389"
+    },
+    "overrides": {
+      "name": "380_faktencheck_core",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gemma3_27b_in_process",
+      "seed": "1337"
+    }
+  }
+}

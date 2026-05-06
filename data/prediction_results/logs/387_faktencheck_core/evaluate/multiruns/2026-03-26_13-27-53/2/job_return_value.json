@@ -1,0 +1,59 @@
+{
+  "Artenvielfalt": {
+    "Artenvielfalt": 27,
+    "UNDETECTED": 16
+  },
+  "Funktionelle Diversität": {
+    "Funktionelle Diversität": 2,
+    "UNDETECTED": 5
+  },
+  "Genetische Diversität": {
+    "Genetische Diversität": 1,
+    "UNDETECTED": 9
+  },
+  "Habitatdiversität": {
+    "Habitatdiversität": 3,
+    "UNDETECTED": 12
+  },
+  "Phylogenetische Diversität": {
+    "UNDETECTED": 2
+  },
+  "Strukturelle Diversität": {
+    "Strukturelle Diversität": 1,
+    "UNDETECTED": 7
+  },
+  "UNASSIGNABLE": {
+    "Artenvielfalt": 41,
+    "Funktionelle Diversität": 3,
+    "Genetische Diversität": 1,
+    "Habitatdiversität": 2,
+    "Phylogenetische Diversität": 1,
+    "Strukturelle Diversität": 1,
+    "Zusammensetzung der Artengemeinschaft": 10
+  },
+  "Zusammensetzung der Artengemeinschaft": {
+    "UNDETECTED": 36,
+    "Zusammensetzung der Artengemeinschaft": 11
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/380_faktencheck_core/2026-03-11_16-30-57/2026-03-12_01-47-06_568328/predictions.jsonl",
+      "output_file_absolute": "/netscratch/binder/tmp/kiba-d_66fd30bc-c8ef-42d5-b670-0644beb7bf52/repo/predictions/380_faktencheck_core/2026-03-11_16-30-57/2026-03-12_01-47-06_568328/predictions.jsonl",
+      "time_pdf_conversion": 0.0033962081652134657,
+      "time_extraction": 5297.511355714174,
+      "time_start": 1773276426,
+      "time_end": 1773281827,
+      "commit_hash": "ba4177888275db7c8dc2ddf46678dde450aa11f4",
+      "branch": "commit/ba4177888275",
+      "is_dirty": false,
+      "slurm_job_id": "2616389"
+    },
+    "overrides": {
+      "name": "380_faktencheck_core",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "mistral_small_3_24b_in_process",
+      "seed": "1337"
+    }
+  }
+}

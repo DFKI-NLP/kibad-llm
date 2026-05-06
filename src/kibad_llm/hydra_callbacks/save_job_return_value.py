@@ -1,7 +1,6 @@
 from collections.abc import Hashable, Iterable
 import json
 import logging
-import math
 import os
 from pathlib import Path
 from typing import Any
@@ -21,7 +20,7 @@ from kibad_llm.utils.job_return import (
 )
 
 
-def to_py_obj(obj):
+def to_py_obj(obj: Any) -> Any:
     """Convert a PyTorch tensor, Numpy array or python list to a python list.
 
     Modified version of transformers.utils.generic.to_py_obj.
@@ -346,7 +345,7 @@ class SaveJobReturnValueCallback(Callback):
                 )
 
         if job_ids is None:
-            job_ids = list(range(len(self.job_returns)))
+            job_ids = list[int](range(len(self.job_returns)))
 
         if self.multirun_add_overrides_as_dict:
             for jr in self.job_returns:
@@ -475,6 +474,11 @@ class SaveJobReturnValueCallback(Callback):
             obj_py = to_py_obj(obj)
             if not isinstance(obj_py, dict):
                 obj_py = {"value": obj_py}
+
+            if not all(isinstance(k, (str, int)) for k in obj_py):
+                raise ValueError(
+                    f"Can not flatten the dictionary, unexpected key types in obj_py: {obj_py.keys()}"
+                )
             obj_py_flat = flatten_dict(obj_py)
 
             job_id_columns: list[Hashable | None] = []

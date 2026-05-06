@@ -26,8 +26,16 @@ from kibad_llm.utils.log import warn_once
 logger = logging.getLogger(__name__)
 
 
+class TextOffsetValueError(ValueError):
+    """Raised when text offset is invalid."""
+
+    pass
+
+
 @dataclasses.dataclass
 class SingleExtractionResult(FieldDict):
+    character_start: int
+    character_end: int
     response_content: str | None = None
     structured: dict[str, Any] | list[Any] | None = None
     structured_with_metadata: dict[str, Any] | list[Any] | None = None
@@ -74,6 +82,7 @@ def build_chat_message(
         and text were inserted.
     """
     content = message
+    formatting = {}
 
     # Check if schema description is needed. If so, generate it and insert it.
     message_requires_schema_description = f"{{{schema_description_placeholder}}}" in content
@@ -86,8 +95,7 @@ def build_chat_message(
         schema_description = build_schema_description(
             schema=schema, **(schema_description_kwargs or {})
         )
-
-        content = content.format(**{schema_description_placeholder: schema_description})
+        formatting[schema_description_placeholder] = schema_description
 
     # Check if input document is needed and insert it.
     message_requires_document = "{" + document_placeholder + "}" in content
@@ -97,7 +105,9 @@ def build_chat_message(
                 f"Document text must be provided if {role.name} message template requires "
                 f"input text (it contains '{{{document_placeholder}}}')."
             )
-        content = content.format(**{document_placeholder: document})
+        formatting[document_placeholder] = document
+
+    content = content.format(**formatting)
     return SimpleChatMessage(role=role, content=content), {
         "has_schema_description": message_requires_schema_description,
         "has_document": message_requires_document,
@@ -363,6 +373,7 @@ def augment_metadata_node_with_evidence(
     end_key: str = "first_evidence_end",
     snippet_key: str = "first_evidence_snippet",
     snippet_margin: int = 10,
+    character_offset: int = 0,
 ) -> dict[str, Any]:
     """
     Augment a single metadata wrapper dict with evidence location information.
@@ -391,6 +402,8 @@ def augment_metadata_node_with_evidence(
         snippet_key: The key to add for the evidence snippet text.
         snippet_margin: Number of tokens to include before and after the anchor span
             in the snippet.
+        character_offset: An optional offset to add to the start/end character positions
+            (useful if the text is a chunk of a larger document).
     Returns:
         The augmented metadata wrapper dict with evidence metadata added where applicable.
     """
@@ -407,8 +420,8 @@ def augment_metadata_node_with_evidence(
         if len(anchor_matches) > 0:
             # just take the first match
             start, end = anchor_matches[0]
-            out[start_key] = start
-            out[end_key] = end
+            out[start_key] = start + character_offset
+            out[end_key] = end + character_offset
             out[snippet_key] = _snippet_for_span(
                 start,
                 end,
@@ -581,6 +594,8 @@ def extract_from_text(
     wrapped_content_description: str | None = None,
     response_has_metadata: bool = False,
     augment_metadata_kwargs: dict[str, Any] | None = None,
+    character_start: int = 0,
+    character_end: int | None = None,
     # deprecated arguments
     user_message: str | None = None,
     system_message: str | None = None,
@@ -628,6 +643,10 @@ def extract_from_text(
             output is returned under the "structured" key, while the raw output with metadata is returned
             under the "structured_with_metadata" key.
         augment_metadata_kwargs: Additional keyword arguments for augment_metadata.
+        character_start: Optional character offsets to specify a substring of `text` to process.
+            Defaults to 0 (process from the beginning of the text).
+        character_end: Optional character offsets to specify a substring of `text` to process.
+            If None (default), processes until the end of the text.
         **build_messages_kwargs: Additional keyword arguments for build_chat_messages.
 
     Returns:
@@ -651,7 +670,18 @@ def extract_from_text(
         )
     build_messages_kwargs.update(prompt_template)
 
-    out = SingleExtractionResult()
+    if not (0 <= character_start <= len(text)):
+        raise TextOffsetValueError(
+            f"character_start must be between 0 and {len(text)} (inclusive), but is {character_start}"
+        )
+    if character_end is not None and not (character_start <= character_end):
+        raise TextOffsetValueError(
+            f"character_end must be greater than or equal to character_start ({character_start}), but is {character_end}"
+        )
+
+    out = SingleExtractionResult(
+        character_start=character_start, character_end=character_end or len(text)
+    )
 
     original_schema = schema
     schema_for_build_messages = schema
@@ -684,8 +714,10 @@ def extract_from_text(
         if adjust_schema_description_for_evidence_detection:
             schema_for_build_messages = schema
 
+    text_to_process = text[out.character_start : out.character_end]
+
     messages = build_chat_messages(
-        document=text,
+        document=text_to_process,
         schema=schema_for_build_messages,
         _out=out,
         **build_messages_kwargs,
@@ -716,12 +748,16 @@ def extract_from_text(
         )
         # 4) handle structured with metadata if requested
         if response_has_metadata:
+            # we need to pass the start offset to correctly calculate the evidence anchor positions
+            if augment_metadata_kwargs is None:
+                augment_metadata_kwargs = {}
+            augment_metadata_kwargs["evidence_character_offset"] = character_start
             postprocessing_callbacks.append(
                 partial(
                     augment_and_strip_metadata_from_structured_callback,
                     schema=schema,
                     original_schema=original_schema,
-                    text=text,
+                    text=text_to_process,
                     validate_with_schema=validate_with_schema,
                     augment_metadata_kwargs=augment_metadata_kwargs,
                 )
@@ -753,7 +789,9 @@ def extract_from_text(
     return out
 
 
-def extract_from_text_lenient(text: str, text_id: str, **kwargs) -> SingleExtractionResult:
+def extract_from_text_lenient(
+    text: str, text_id: str, character_start: int = 0, character_end: int | None = None, **kwargs
+) -> SingleExtractionResult:
     """Wrapper around extract_from_text that catches all exceptions.
 
     This is useful when processing multiple documents and we want to
@@ -762,14 +800,29 @@ def extract_from_text_lenient(text: str, text_id: str, **kwargs) -> SingleExtrac
     Args:
         text: The text to process.
         text_id: Text identifier for logging.
+        character_start: Optional character offsets to specify a substring of `text` to process.
+            Defaults to 0 (process from the beginning of the text).
+        character_end: Optional character offsets to specify a substring of `text` to process.
+            If None (default), processes until the end of the text.
         **kwargs: Keyword arguments for extract_from_text.
     Returns:
         A SingleExtractionResult object with the extraction result or error message.
     """
 
     try:
-        return extract_from_text(text=text, text_id=text_id, **kwargs)
+        return extract_from_text(
+            text=text,
+            text_id=text_id,
+            character_start=character_start,
+            character_end=character_end,
+            **kwargs,
+        )
     except Exception as e:
         error_msg_short, error_msg_long = exception2error_msg(e)
         logger.error(f"Error processing document {text_id}: {error_msg_short}")
-        return SingleExtractionResult(errors=[error_msg_short], errors_long=[error_msg_long])
+        return SingleExtractionResult(
+            character_start=character_start,
+            character_end=character_end or len(text),
+            errors=[error_msg_short],
+            errors_long=[error_msg_long],
+        )

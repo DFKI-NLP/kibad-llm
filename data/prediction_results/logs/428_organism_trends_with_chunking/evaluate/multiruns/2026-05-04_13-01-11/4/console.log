@@ -1,0 +1,18 @@
+[2026-05-04 13:01:12,334][__main__][INFO] - Loading dataset with predictions and references ...
+[2026-05-04 13:01:12,334][__main__][INFO] - Dataset config: {'predictions': {'_target_': 'kibad_llm.dataset.prediction.load_with_metadata', 'log': 'logs/428_organism_trends_with_chunking/predict/multiruns/2026-04-30_15-50-26/1', 'file': None, 'id_key': 'file_name', 'process_id': {'_partial_': True, '_target_': 'kibad_llm.utils.path.strip_filename_extension'}, 'preprocess': None}, '_target_': 'kibad_llm.dataset.utils.merge_references_into_predictions', 'references': {}, 'allow_missing_references': True}
+[2026-05-04 13:01:12,335][kibad_llm.dataset.json][INFO] - Loading dataset from JSON file: predictions/428_organism_trends_with_chunking/2026-04-30_15-50-26/2026-05-01_00-00-24_225439/predictions.jsonl ...
+[2026-05-04 13:01:12,401][__main__][INFO] - Instantiating metric ...
+[2026-05-04 13:01:12,401][__main__][INFO] - Metric config: {'_target_': 'kibad_llm.metrics.ErrorCollector', 'type_separator': ': ', 'show_errors': True}
+[2026-05-04 13:01:12,402][__main__][INFO] - Computing metric ...
+[2026-05-04 13:01:12,402][kibad_llm.metrics.statistics][INFO] - Collected error (id=2P53UVJA): JSONDecodeError: Expecting ',' delimiter: line 3062 column 1 (char 69320)
+[2026-05-04 13:01:12,402][kibad_llm.metrics.statistics][INFO] - Collected error (id=EB8KV3G9): JSONDecodeError: Expecting ',' delimiter: line 3057 column 1 (char 107000)
+[2026-05-04 13:01:12,402][kibad_llm.metrics.statistics][INFO] - Collected error (id=ND9HAHGU): JSONDecodeError: Expecting ',' delimiter: line 4021 column 9 (char 36552)
+[2026-05-04 13:01:12,402][kibad_llm.metrics.statistics][INFO] - Collected error (id=X2APE2SE): JSONDecodeError: Expecting ',' delimiter: line 4005 column 4 (char 16637)
+[2026-05-04 13:01:12,402][kibad_llm.metric][INFO] - Evaluation results:
+{
+  "no_error": 2433,
+  "with_error": 4,
+  "JSONDecodeError": 4
+}
+[2026-05-04 13:01:12,406][kibad_llm.hydra_callbacks.save_job_return_value.SaveJobReturnValueCallback][INFO] - Saving job_return in /home/arbi01/projects/kibad-llm/logs/428_organism_trends_with_chunking/evaluate/multiruns/2026-05-04_13-01-11/4/job_return_value.json
+[2026-05-04 13:01:12,406][kibad_llm.hydra_callbacks.save_job_return_value.SaveJobReturnValueCallback][INFO] - Saving job_return in /home/arbi01/projects/kibad-llm/logs/428_organism_trends_with_chunking/evaluate/multiruns/2026-05-04_13-01-11/4/job_return_value.md

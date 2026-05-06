@@ -1,0 +1,4 @@
+- dataset.predictions.log=logs/428_organism_trends_with_chunking/predict/multiruns/2026-04-30_15-50-26/1
+- name=428_organism_trends_with_chunking
+- experiment/evaluate=organism_trends_f1_micro_flat
+- prediction_logs=logs/428_organism_trends_with_chunking/predict
