@@ -29,12 +29,13 @@ model: "allenai/OLMo-3.1-32B-Think"
 vllm_kwargs:
   tensor_parallel_size: 2  # shard across N GPUs; 32B model requires 2x A6000 (44 GiB each)
   # Supports up to 65536 tokens (max_position_embeddings from config.json, extended via YARN RoPE).
+  # Confirmed working on 2x A6000 (44 GiB each) with gpu_memory_utilization=0.85.
   # See https://github.com/DFKI-NLP/kibad-llm/issues/251 for test results.
   max_model_len: 65536
   # OLMo-3.1-32B-Think uses <think>...</think> tags, but as regular vocabulary tokens
   # (not special tokens), so the olmo3 parser must be used instead of deepseek_r1.
   reasoning_parser: "olmo3"
-  gpu_memory_utilization: 0.95 # fraction of GPU memory reserved (impacts KV cache size)
+  gpu_memory_utilization: 0.85 # confirmed working on 2x A6000 44GiB at max_model_len=65536
   # dtype: "auto"
   download_dir: ${oc.env:VLLM_DOWNLOAD_DIR}
   seed: ${seed}  # needs to be set starting with vllm 0.13.0
