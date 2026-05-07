@@ -11,7 +11,10 @@
 #     --max-num-seqs 8 \
 #     --max-model-len 131072 \
 #     --kv-cache-dtype fp8 \
-#     --reasoning-parser nemotron_v3"
+#     --reasoning-parser-plugin nano_v3_reasoning_parser.py \
+#     --reasoning-parser nano_v3"
+# nano_v3 is a custom plugin — download first:
+#   wget https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8/resolve/main/nano_v3_reasoning_parser.py
 # See https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8 for VLLM options
 
 _target_: kibad_llm.llms.OpenAILikeVllm
