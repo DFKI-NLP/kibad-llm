@@ -1,16 +1,8 @@
 """OpenAI Responses API backend with Structured Outputs support.
 
-[`OpenAI`][kibad_llm.llms.openai.OpenAI] wraps LlamaIndex's ``OpenAIResponses`` and patches the provided JSON
-schema so it satisfies OpenAI's strict Structured Outputs requirements
-([`make_openai_strict_json_schema`][kibad_llm.llms.openai.make_openai_strict_json_schema]):
-
-- All object schemas get ``additionalProperties: false`` and a complete ``required``
-  list.
-- ``$ref`` nodes that have sibling keywords are rewritten to use ``anyOf`` (required
-  by the OpenAI API).
-- ``default`` annotations are stripped (not allowed in strict mode).
-
-Reasoning summaries (extended thinking) are surfaced via
+[`OpenAI`][kibad_llm.llms.openai.OpenAI] wraps LlamaIndex's ``OpenAIResponses`` and automatically patches the
+provided JSON schema to satisfy OpenAI's strict Structured Outputs requirements via
+[`make_openai_strict_json_schema`][kibad_llm.llms.openai.make_openai_strict_json_schema].  Extended thinking is surfaced via
 [`OpenAI.get_reasoning_from_chat_response`][kibad_llm.llms.openai.OpenAI.get_reasoning_from_chat_response] when the Responses API returns
 ``ThinkingBlock`` content.
 """
