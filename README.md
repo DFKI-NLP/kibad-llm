@@ -305,91 +305,9 @@ uv run -m kibad_llm.evaluate \
 
 ______________________________________________________________________
 
-## 🔧 Project Development
+## Contributing
 
-### Optional setup
-
-Install the project with development dependencies:
-
-```bash
-uv sync --group cicd
-```
-
-### Testing and code quality checks
-
-To run code quality checks and static type checking, call:
-
-```bash
-uv run prek run -a
-# if you have not run 'uv sync --group cicd' previously, use instead
-uv run --group cicd prek run -a
-```
-
-This runs all configured [prek](https://prek.j178.dev/) hooks (see [pre-commit-config.yaml](.pre-commit-config.yaml)) on all files. Some hooks may fix issues automatically, others will report issues that need to be fixed manually.
-
-To run all tests, call:
-
-```bash
-uv run pytest
-# if you have not run 'uv sync --group cicd' previously, use instead
-uv run --group cicd pytest
-```
-
-The following commands run on GitHub CI (see [tests.yml](.github/workflows/code_quality_and_tests.yml)), but can also be run locally:
-
-```bash
-uv run --group cicd prek run -a
-# run tests *not marked as slow* with coverage and typeguard checks
-uv run --group cicd pytest -m "not slow"
-```
-
-### Adding dependencies
-
-To [add packages as dependencies](https://docs.astral.sh/uv/concepts/projects/dependencies/), use the `uv add` command. <br>
-Please make sure to add upper bounds when you can to prevent future breakage.
-
-```bash
-uv add httpx
-# you can add a specific version
-uv add "httpx==0.20"
-# an upper or lower bound
-uv add "httpx>=0.20"
-# or a range
-uv add "httpx>=0.20,<1.0"
-```
-
-[Changing dependencies](https://docs.astral.sh/uv/concepts/projects/dependencies/#changing-dependencies) works just like adding them. <br>
-Please keep in mind that you can also add [platform-specific dependencies](https://docs.astral.sh/uv/concepts/projects/dependencies/#platform-specific-dependencies).
-
-### Updating dependencies
-
-You can update either one or all packages.
-
-```bash
-# update all packages
-uv lock --upgrade
-# update one package
-uv lock --upgrade-package <package>
-# update one package to a specific version
-uv lock --upgrade-package <package>==<version>
-```
-
-### uv known issues
-
-These known issues have their own uv specific fixes. The relevant documentation is linked.
-
-- [Build isolation](https://docs.astral.sh/uv/concepts/projects/config/#build-isolation) - Can lead to runtime errors
-- [Conflicting dependencies](https://docs.astral.sh/uv/concepts/projects/config/#conflicting-dependencies)
-
-### Documentation
-
-This project uses [mkdocs](https://www.mkdocs.org/) for documentation, which is hosted on GitHub Pages at https://dfki-nlp.github.io/kibad-llm/.
-
-You can build and serve the documentation locally with:
-
-```bash
-uv run --group cicd properdocs serve
-```
+For project development and contribution guidelines, please refer to [CONTRIBUTING.md](/CONTRIBUTING.md)
 
 ## License
 
