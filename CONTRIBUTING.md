@@ -7,6 +7,7 @@ The following guidelines ensure consistency across the project, so please read t
 ## Table of contents
 
 ## General
+
 - If you need to take notes, do so in NOTES.md. Do not ever commit that file.
 
 ## 🔧 Project Development
