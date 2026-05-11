@@ -9,7 +9,8 @@ A short description of the project.
 - [General project overview](root-readme.md)
 - [LLM usage instructions](models-readme.md)
 - [Faktencheck database instructions](podman-readme.md)
-- [Evaluation dashboard](eval-dashboard-docs.md)
+- [Evaluation dashboard](eval-dashboard.html)
+- [Contribution guidelines](contributing.md)
 
 ## Commands
 
