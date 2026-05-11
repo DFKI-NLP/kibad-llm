@@ -6,18 +6,17 @@ The following guidelines ensure consistency across the project, so please read t
 
 ## Table of contents
 
-- [Contribution guidelines](#contribution-guidelines)
-    - [Table of contents](#table-of-contents)
-    - [General](#general)
-    - [🔧 Project Development](#-project-development)
-        - [Optional setup](#optional-setup)
-        - [Testing and code quality checks](#testing-and-code-quality-checks)
-        - [Adding dependencies](#adding-dependencies)
-        - [Updating dependencies](#updating-dependencies)
-        - [uv known issues](#uv-known-issues)
-        - [Documentation](#documentation-hosting)
-    - [Documentation](#documentation-general)
-        - [Google-style docstring guidelines](#google-style-docstring-guidelines)
+- [Table of contents](#table-of-contents)
+- [General](#general)
+- [🔧 Project Development](#-project-development)
+    - [Optional setup](#optional-setup)
+    - [Testing and code quality checks](#testing-and-code-quality-checks)
+    - [Adding dependencies](#adding-dependencies)
+    - [Updating dependencies](#updating-dependencies)
+    - [uv known issues](#uv-known-issues)
+    - [Documentation](#documentation-hosting)
+- [Documentation](#documentation-general)
+    - [Google-style docstring guidelines](#google-style-docstring-guidelines)
 
 ## General
 
@@ -112,6 +111,23 @@ uv run --group cicd properdocs serve -w .
 ```
 
 <a id="documentation-general"></a>
+
+## Adding code
+
+Pushing to main is prohibited.
+
+If you want to add code, open a pull request against main.
+
+### PR Requirements
+
+A PR needs to pass CI/CD. This means that all pre-commit hooks need to pass, as well as all "not slow" tests.
+
+To test this locally, please refer to [the relevant section](#testing-and-code-quality-checks).
+
+Make sure you add tests for your code. If your tests need to call an LLM, mark them as "slow", and test them separately. "slow" tests are not run by CI.
+
+TODO: add section about pr descriptions
+TODO: add section about branch naming?
 
 ## Documentation
 
