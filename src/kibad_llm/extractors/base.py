@@ -147,6 +147,8 @@ def build_chat_messages(
         truncate_user_message_formatted: If return_messages_formatted is True, truncate the user message
             content to this many characters (to avoid huge outputs). Set to None to disable truncation.
         _out: Optional output dictionary to store messages in (used internally).
+
+    Keyword Args:
         **build_messages_kwargs: Additional keyword arguments for build_chat_message.
 
     Returns:
@@ -215,7 +217,15 @@ def build_chat_messages(
 
 
 def _is_wrapper_dict(d: Mapping[str, Any], content_key: str) -> bool:
-    """Heuristic to detect whether a dict is a metadata wrapper around content."""
+    """Heuristic to detect whether a dict is a metadata wrapper around content.
+
+    Args:
+        d: TODO
+        content_key: TODO
+
+    Returns:
+        TODO
+    """
     return content_key in d and len(d) >= 2
 
 
@@ -224,10 +234,17 @@ def strip_metadata(data: Any, *, content_key: str) -> Any:
     Strip metadata wrappers from a JSON-parsed result produced by `wrap_terminals_with_metadata`.
 
     The wrapped output encodes terminal values as objects like:
-        {"<content_key>": <value>, "evidence_anchor": "...", ...}
+        `{"<content_key>": <value>, "evidence_anchor": "...", ...}`
 
     This function walks the parsed JSON (dict/list/scalars) and removes such wrappers by
     replacing the wrapper dict with its `<content_key>` value.
+
+    Args:
+        data: TODO
+        content_key: TODO - must be passed by keyword
+
+    Returns:
+        TODO
 
     Wrapper detection (heuristic):
       - a dict is treated as a wrapper if it has `content_key` AND at least one additional key.
@@ -268,6 +285,16 @@ def _snippet_for_span(
 ) -> str:
     """Extract a text snippet from `text` that spans `start` to `end` character offsets,
     extending `token_margin` tokens before and after the span.
+
+    Args:
+        start: TODO
+        end: TODO
+        text: TODO
+        token_spans: TODO
+        token_margin: TODO
+
+    Returns:
+        TODO
     """
     if not token_spans:
         return ""
@@ -301,7 +328,14 @@ def _snippet_for_span(
 
 
 def _strip_wrapping_quotes(s: str) -> str:
-    """Strip common wrapping quotes from the beginning and end of a string."""
+    """Strip common wrapping quotes from the beginning and end of a string.
+
+    Args:
+        s: TODO
+
+    Returns:
+        TODO
+    """
     # Common quote pairs: ASCII, German/typographic, and apostrophe-like quotes
     quote_pairs = [
         ('"', '"'),
@@ -328,9 +362,11 @@ def _find_anchor_match_spans(text: str, anchor: str) -> list[tuple[int, int]]:
     Find all character spans in `text` that match the given `anchor` string.
     The matching is whitespace-insensitive, meaning that any whitespace in the anchor
     can match any whitespace in the text (including different kinds of whitespace).
+
     Args:
         text: The original text to search within.
         anchor: The anchor string to search for.
+
     Returns:
         A list of (start_offset_in_text, end_offset_in_text) tuples for each match of the anchor.
     """
@@ -448,11 +484,19 @@ def augment_metadata(
       - detects wrapper dicts via `_is_wrapper_dict(..., content_key=...)`
       - for each wrapper dict, calls `augment_metadata_node_with_evidence(...)`
 
-    Keyword arguments:
+    Args:
+        data: TODO
+        text: TODO - must be passed by keyword
+        content_key: TODO - must be passed by keyword
+
+    Keyword Args Notes:
       - kwargs are namespaced by prefix. Currently supported:
           * evidence_*  -> forwarded to `augment_metadata_node_with_evidence` (prefix stripped)
         Example: evidence_snippet_margin=10 sets `snippet_margin=10` for evidence augmentation.
       - unknown kwargs raise ValueError (fail fast).
+
+    Returns:
+        TODO
 
     The returned structure mirrors the input but includes added evidence fields where applicable.
     """
@@ -500,7 +544,15 @@ def add_response_content_callback(
     *,
     llm: LLM,
 ) -> None:
-    """Add `response_content` to output dictionary."""
+    """Add `response_content` to output dictionary.
+
+    Modifies `out` in place; does not return a value.
+
+    Args:
+        out: TODO
+        response: TODO
+        llm: TODO - must be passed by keyword
+    """
     out.response_content = llm.get_response_content_from_chat_response(response=response)
 
 
@@ -510,7 +562,15 @@ def add_reasoning_content_callback(
     *,
     llm: LLM,
 ) -> None:
-    """Add `reasoning_content` to output dictionary."""
+    """Add `reasoning_content` to output dictionary.
+
+    Modifies `out` in place; does not return a value.
+
+    Args:
+        out: TODO
+        response: TODO
+        llm: TODO - must be passed by keyword
+    """
     out.reasoning_content = llm.get_reasoning_from_chat_response(response=response)
 
 
@@ -521,7 +581,16 @@ def add_structured_callback(
     schema: dict[str, Any] | None,
     validate_with_schema: bool,
 ) -> None:
-    """Add `structured` output to output dictionary based on response content."""
+    """Add `structured` output to output dictionary based on response content.
+
+    Modifies `out` in place; does not return a value.
+
+    Args:
+        out: TODO
+        response: TODO
+        schema: TODO - must be passed by keyword
+        validate_with_schema: TODO - must be passed by keyword
+    """
     # no-op if response content is None
     if out.response_content is not None:
         parsed = json.loads(out.response_content)
@@ -546,6 +615,17 @@ def augment_and_strip_metadata_from_structured_callback(
 ) -> None:
     """Augment metadata in `structured` output and save it as `structured_with_metadata`.
     Then, strip metadata and save the cleaned version back to `structured`.
+
+    Modifies `out` in place; does not return a value.
+
+    Args:
+        out: TODO
+        response: TODO
+        schema: TODO - must be passed by keyword
+        original_schema: TODO - must be passed by keyword
+        text: TODO - must be passed by keyword
+        validate_with_schema: TODO - must be passed by keyword
+        augment_metadata_kwargs: TODO - must be passed by keyword
     """
     # no-op if structured is None
     if out.structured is not None:
@@ -647,10 +727,19 @@ def extract_from_text(
             Defaults to 0 (process from the beginning of the text).
         character_end: Optional character offsets to specify a substring of `text` to process.
             If None (default), processes until the end of the text.
+
+    Keyword Args:
         **build_messages_kwargs: Additional keyword arguments for build_chat_messages.
 
     Returns:
         A SingleExtractionResult object with the extraction result.
+
+    Warns:
+        No LLM: When there is no LLM provided, the call to it is skipped.
+
+    Raises:
+        DeprecationWarning: If deprecated args are used, the extraction exits early.
+        TextOffsetValueError: If character_start and/or character_end are set erroneously.
     """
     # setting the log level on every query is suboptimal, but the simplest solution in our current architecture
     logging.getLogger("httpx").setLevel(logging.WARNING)
@@ -804,9 +893,15 @@ def extract_from_text_lenient(
             Defaults to 0 (process from the beginning of the text).
         character_end: Optional character offsets to specify a substring of `text` to process.
             If None (default), processes until the end of the text.
+
+    Keyword Args:
         **kwargs: Keyword arguments for extract_from_text.
+
     Returns:
         A SingleExtractionResult object with the extraction result or error message.
+
+    Warns:
+        Exception: Catches any errors raised in `extract_from_text` and logs them instead.
     """
 
     try:
