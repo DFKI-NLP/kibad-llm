@@ -6,6 +6,19 @@ The following guidelines ensure consistency across the project, so please read t
 
 ## Table of contents
 
+- [Contribution guidelines](#contribution-guidelines)
+    - [Table of contents](#table-of-contents)
+    - [General](#general)
+    - [🔧 Project Development](#-project-development)
+        - [Optional setup](#optional-setup)
+        - [Testing and code quality checks](#testing-and-code-quality-checks)
+        - [Adding dependencies](#adding-dependencies)
+        - [Updating dependencies](#updating-dependencies)
+        - [uv known issues](#uv-known-issues)
+        - [Documentation](#documentation-hosting)
+    - [Documentation](#documentation-general)
+        - [Google-style docstring guidelines](#google-style-docstring-guidelines)
+
 ## General
 
 - If you need to take notes, do so in NOTES.md. Do not ever commit that file.
@@ -86,6 +99,8 @@ These known issues have their own uv specific fixes. The relevant documentation 
 - [Build isolation](https://docs.astral.sh/uv/concepts/projects/config/#build-isolation) - Can lead to runtime errors
 - [Conflicting dependencies](https://docs.astral.sh/uv/concepts/projects/config/#conflicting-dependencies)
 
+<a id="documentation-hosting"></a>
+
 ### Documentation
 
 This project uses [mkdocs](https://www.mkdocs.org/) for documentation, which is hosted on GitHub Pages at https://dfki-nlp.github.io/kibad-llm/.
@@ -95,6 +110,8 @@ You can build and serve the documentation locally with:
 ```bash
 uv run --group cicd properdocs serve -w .
 ```
+
+<a id="documentation-general"></a>
 
 ## Documentation
 
