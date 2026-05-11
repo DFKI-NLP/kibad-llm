@@ -7,7 +7,6 @@
     - Do not use Sphinx/reST syntax, but markdown only.
 - We use Google-style docstrings. Please refer to the next subsection, or [mkdocstrings Google-style](https://mkdocstrings.github.io/griffe/reference/docstrings/#google-style) to familiarize yourself with them.
 - Docstrings are generated using [mkdocstrings-python](https://mkdocstrings.github.io/python/), which uses the [griffe](https://mkdocstrings.github.io/griffe/) library. Please refer to the [Griffe parsing rules](https://mkdocstrings.github.io/griffe/reference/docstrings/) for more info on what is possible.
-- If you need to take notes, do so in NOTES.md. Do not ever commit that file.
 
 ### Google-style docstring guidelines
 
@@ -32,6 +31,10 @@ Beyond that, make sure you mention `Args:` and `Returns:`/`Yields:` before other
 
 To ensure basic quality automatically, the CI/CD pipeline with `prek` must pass without errors. You can run it locally: `uv run --group cicd prek run -a`
 
-Additionally, code should have tests. The tests must pass for a PR to be merged. Slow tests must be marked as such and be tested separately. 
+Additionally, code should have tests. The tests must pass for a PR to be merged. Slow tests must be marked as such and be tested separately.
 
 The CI/CD pipeline doesn't run slow tests, but if your PR adds slow tests, they have to pass too.
+
+## General
+
+- If you need to take notes, do so in NOTES.md. Do not ever commit that file.
