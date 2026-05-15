@@ -5,11 +5,11 @@ from typing import Any
 
 from pandas import DataFrame
 
-from kibad_llm.metrics.base import MetricWithPrepareEntryAsSet
+from kibad_llm.metrics.base import MetricWithTpFpFnEntries
 from kibad_llm.metrics.collection import MetricCollection
 
 
-class F1MicroSingleFieldMetric(MetricWithPrepareEntryAsSet):
+class F1MicroSingleFieldMetric(MetricWithTpFpFnEntries):
     """Computes micro averaged precision, recall, and F1 score for single- and multi-label
     classification tasks.
 
@@ -21,45 +21,20 @@ class F1MicroSingleFieldMetric(MetricWithPrepareEntryAsSet):
     !be treated as perfect prediction with tp=2, fp=0, fn=0 even though the prediction contains a
     !duplicate label "A".
 
-    Args:
-        ignore_missing_entries: If True, instances where either prediction or reference is empty
-            will be ignored in the metric calculation.
-        **kwargs: Keyword arguments for entry-to-set preparation. See
-            `MetricWithPrepareEntryAsSet` for supported options.
+    See `MetricWithPrepareEntryAsSet` and `MetricWithTpFpFnEntries` for keyword arguments
+    for entry-to-set preparation and tp/fp/fn collection.
     """
 
-    def __init__(self, ignore_missing_entries: bool = False, **kwargs) -> None:
-        super().__init__(**kwargs)
-        self.ignore_missing_entries = ignore_missing_entries
-        self.reset()
-
-    def reset(self) -> None:
-        """Resets all values of the internal state to zero"""
-        self.state: dict[str, int] = {"tp": 0, "fp": 0, "fn": 0}
-
-    def _update(self, prediction: Any, reference: Any, record_id: Hashable | None = None) -> None:
-        """Updates the internal state with the given prediction(s) and reference(s).
-        See `_prepare_entry_as_set` for accepted input formats.
-        """
-        prediction_set = self._prepare_entry_as_set(prediction)
-        reference_set = self._prepare_entry_as_set(reference)
-        if self.ignore_missing_entries and (len(prediction_set) == 0 or len(reference_set) == 0):
-            return
-
-        self.state["tp"] += len(prediction_set & reference_set)
-        self.state["fp"] += len(prediction_set - reference_set)
-        self.state["fn"] += len(reference_set - prediction_set)
-
     @staticmethod
-    def calculate_scores(state: dict[str, int]) -> dict[str, float]:
+    def calculate_scores(state_counts: dict[str, int]) -> dict[str, float]:
         """Calculates precision, recall and f1 from true positives, false positives and false negatives.
 
         Args:
-            state: dictionary with keys "tp", "fp", "fn"
+            state_counts: dictionary with keys "tp", "fp", "fn"
 
         returns: dictionary with precision, recall and f1
         """
-        tp, fp, fn = state["tp"], state["fp"], state["fn"]
+        tp, fp, fn = state_counts["tp"], state_counts["fp"], state_counts["fn"]
         precision = tp / (tp + fp) if (tp + fp) > 0 else 0.0
         recall = tp / (tp + fn) if (tp + fn) > 0 else 0.0
         f1 = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0.0
@@ -72,7 +47,7 @@ class F1MicroSingleFieldMetric(MetricWithPrepareEntryAsSet):
 
     def _compute(self, *args, **kwargs) -> dict[str, Any]:
         """Computes the micro average of precision, recall and f1 score."""
-        return self.calculate_scores(state=self.state)
+        return self.calculate_scores(state_counts=self.state_count)
 
 
 def _expand_field_by_key_values(
@@ -257,7 +232,7 @@ class F1MicroMultipleFieldsMetric(MetricCollection[F1MicroSingleFieldMetric]):
             result = {
                 name: field_result
                 for name, field_result in result.items()
-                if any(self.metrics[name].state[key] > 0 for key in ("tp", "fp", "fn"))
+                if any(self.metrics[name].state_count[key] > 0 for key in ("tp", "fp", "fn"))
             }
         # compute mean for precision, recall, f1 over all fields
         scores_list = defaultdict(list)
@@ -268,11 +243,11 @@ class F1MicroMultipleFieldsMetric(MetricCollection[F1MicroSingleFieldMetric]):
 
         # compute micro average over all instances based on states of all sub-metrics
         state_total = {
-            "tp": sum(metric.state["tp"] for metric in self.metrics.values()),
-            "fp": sum(metric.state["fp"] for metric in self.metrics.values()),
-            "fn": sum(metric.state["fn"] for metric in self.metrics.values()),
+            "tp": sum(metric.state_count["tp"] for metric in self.metrics.values()),
+            "fp": sum(metric.state_count["fp"] for metric in self.metrics.values()),
+            "fn": sum(metric.state_count["fn"] for metric in self.metrics.values()),
         }
-        result["ALL"] = F1MicroSingleFieldMetric.calculate_scores(state=state_total)
+        result["ALL"] = F1MicroSingleFieldMetric.calculate_scores(state_counts=state_total)
         return result
 
     def _format_result(self, result: dict[str, Any]) -> str:

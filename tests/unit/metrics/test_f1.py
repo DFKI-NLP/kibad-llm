@@ -97,22 +97,22 @@ def test_multi_value_mixed_counts() -> None:
     m = F1MicroSingleFieldMetric(field="label")
     # tp
     m.update({"label": {"foo"}}, {"label": ["foo"]})
-    assert m.state == {"tp": 1, "fp": 0, "fn": 0}
+    assert m.state_count == {"tp": 1, "fp": 0, "fn": 0}
     # fp and fn and bool
     m.update({"label": [True]}, {"label": False})
-    assert m.state == {"tp": 1, "fp": 1, "fn": 1}
+    assert m.state_count == {"tp": 1, "fp": 1, "fn": 1}
     # fn only
     m.update({"label": None}, {"label": "dar"})
-    assert m.state == {"tp": 1, "fp": 1, "fn": 2}
+    assert m.state_count == {"tp": 1, "fp": 1, "fn": 2}
     # fp only
     m.update({"label": {"eoo"}}, {"label": None})
-    assert m.state == {"tp": 1, "fp": 2, "fn": 2}
+    assert m.state_count == {"tp": 1, "fp": 2, "fn": 2}
     # fp twice
     m.update({"label": ["fuu", True]}, {"label": None})
-    assert m.state == {"tp": 1, "fp": 4, "fn": 2}
+    assert m.state_count == {"tp": 1, "fp": 4, "fn": 2}
     # tp and fp and fn
     m.update({"label": ["fuu", True]}, {"label": {"bar", True}})
-    assert m.state == {"tp": 2, "fp": 5, "fn": 3}
+    assert m.state_count == {"tp": 2, "fp": 5, "fn": 3}
 
     out = m.compute(m)
     # tp=2, fp=5, fn=3 -> precision=2/7, recall=2/5, f1=2*(((2/7)*(2/5))/((2/7)+(2/5)))
@@ -125,22 +125,22 @@ def test_multi_value_mixed_counts_no_field() -> None:
     m = F1MicroSingleFieldMetric()
     # tp
     m.update({"foo"}, ["foo"])
-    assert m.state == {"tp": 1, "fp": 0, "fn": 0}
+    assert m.state_count == {"tp": 1, "fp": 0, "fn": 0}
     # fp and fn and bool
     m.update([True], False)
-    assert m.state == {"tp": 1, "fp": 1, "fn": 1}
+    assert m.state_count == {"tp": 1, "fp": 1, "fn": 1}
     # fn only
     m.update(None, "dar")
-    assert m.state == {"tp": 1, "fp": 1, "fn": 2}
+    assert m.state_count == {"tp": 1, "fp": 1, "fn": 2}
     # fp only
     m.update({"eoo"}, None)
-    assert m.state == {"tp": 1, "fp":2, "fn": 2}
+    assert m.state_count == {"tp": 1, "fp": 2, "fn": 2}
     # fp twice
     m.update(["fuu", True], None)
-    assert m.state == {"tp": 1, "fp":4, "fn": 2}
+    assert m.state_count == {"tp": 1, "fp": 4, "fn": 2}
     # tp and fp and fn
     m.update(["fuu", True], {"bar", True})
-    assert m.state == {"tp": 2, "fp": 5, "fn": 3}
+    assert m.state_count == {"tp": 2, "fp": 5, "fn": 3}
 
     out = m.compute(m)
     # tp=2, fp=5, fn=3 -> precision=2/7, recall=2/5, f1=2*(((2/7)*(2/5))/((2/7)+(2/5)))
@@ -387,7 +387,7 @@ def test_single_field_ignore_missing_entries_skips_one_sided_entries() -> None:
     m.update({"label": "foo"}, {"label": None})
     m.update({"label": None}, {"label": "bar"})
     m.update({"label": "baz"}, {"label": "baz"})
-    assert m.state == {"tp": 1, "fp": 0, "fn": 0}
+    assert m.state_count == {"tp": 1, "fp": 0, "fn": 0}
 
     out = m.compute(m)
 
@@ -526,7 +526,8 @@ def test_multiple_fields_show(format_as_markdown: bool, sort_fields: bool, caplo
         format_as_markdown=format_as_markdown,
         sort_fields=sort_fields,
     )
-    m.update({"b_field": "foo", "a_field": "A"}, {"b_field": "foo", "a_field": "A"})
+    # pass record id to prevent warning
+    m.update({"b_field": "foo", "a_field": "A"}, {"b_field": "foo", "a_field": "A"}, record_id=0)
     with caplog.at_level("INFO"):
         m.show_result()
 
