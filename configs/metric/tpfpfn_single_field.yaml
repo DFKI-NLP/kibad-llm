@@ -1,0 +1,4 @@
+# Collect true positives, false positives, and false negatives for a single field in the prediction and reference.
+
+_target_: kibad_llm.metrics.TpFpFnCollector
+field: ???  # the field in the prediction and reference to collect true positives, false positives, and false negatives on
