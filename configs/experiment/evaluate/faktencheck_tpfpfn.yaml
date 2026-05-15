@@ -7,8 +7,6 @@ defaults:
 
 metric:
   field: ???
-  # group results per document (record)
-  per_record: true
   # for compound entries, we may ignore certain subfields during evaluation
   ignore_subfields:
     ecosystem_type: ["description"]

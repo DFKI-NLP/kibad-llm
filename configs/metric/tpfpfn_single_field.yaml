@@ -2,3 +2,5 @@
 
 _target_: kibad_llm.metrics.TpFpFnCollector
 field: ???  # the field in the prediction and reference to collect true positives, false positives, and false negatives on
+# group results per document (record)
+per_record: true
