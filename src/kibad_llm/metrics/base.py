@@ -122,3 +122,14 @@ class MetricWithTpFpFnEntries(MetricWithPrepareEntryAsSet):
         self.state["tp"].update(prediction_set_with_record_id & reference_set_with_record_id)
         self.state["fp"].update(prediction_set_with_record_id - reference_set_with_record_id)
         self.state["fn"].update(reference_set_with_record_id - prediction_set_with_record_id)
+
+    @property
+    def state_per_record(self) -> dict[Hashable, dict[str, set]]:
+        """A dict mapping record ids to dicts that map field names to sets of entries for that record."""
+        result: dict[Hashable, dict[str, set]] = {}
+        for key, values in self.state.items():
+            for record_id, value in values:
+                if record_id not in result:
+                    result[record_id] = {"tp": set(), "fp": set(), "fn": set()}
+                result[record_id][key].add(value)
+        return result
