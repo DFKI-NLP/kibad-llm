@@ -53,6 +53,8 @@ class RecordingSingleFieldMetric(SingleFieldMetric):
         }
 
 
+# MetricCollection
+
 def test_metric_collection_add_metric_rejects_duplicate_names() -> None:
     m = MetricCollection[StaticMetric]()
     m.add_metric("label", StaticMetric({"value": 1}))
@@ -83,6 +85,8 @@ def test_metric_collection_compute_respects_sort_fields() -> None:
     assert list(out) == ["a", "b"]
 
 
+# _expand_field_by_key_values
+
 def test_expand_field_by_key_values_does_not_mutate_input() -> None:
     entry = {
         "label": {"type": "A", "value": "foo", "ignored": "left"},
@@ -104,14 +108,19 @@ def test_expand_field_by_key_values_does_not_mutate_input() -> None:
     assert new_fields == {"label.A"}
 
 
-def test_grouping_metric_auto_discovers_fields_when_not_configured() -> None:
-    m = MetricCollectionWithFieldDiscoveryAndGrouping(metric_class=RecordingSingleFieldMetric)
+# MetricCollectionWithFieldDiscoveryAndGrouping
 
-    m.update({"a": "foo"}, {"a": "foo", "b": "bar"}, record_id="row-1")
 
-    assert set(m.metrics) == {"a", "b"}
-    assert m.metrics["a"].observations == [("foo", "foo", "row-1")]
-    assert m.metrics["b"].observations == [(None, "bar", "row-1")]
+def test_grouping_metric_forwards_metric_kwargs_to_created_metrics() -> None:
+    m = MetricCollectionWithFieldDiscoveryAndGrouping(
+        metric_class=RecordingSingleFieldMetric,
+        fields=["label"],
+        marker="seen",
+    )
+
+    m.update({"label": "foo"}, {"label": "foo"})
+
+    assert m.metrics["label"].init_kwargs == {"marker": "seen"}
 
 
 @pytest.mark.parametrize(
@@ -147,16 +156,14 @@ def test_grouping_metric_rejects_falsy_non_dict_predictions(prediction: object) 
         m.update(prediction, {"label": "foo"})
 
 
-def test_grouping_metric_forwards_metric_kwargs_to_created_metrics() -> None:
-    m = MetricCollectionWithFieldDiscoveryAndGrouping(
-        metric_class=RecordingSingleFieldMetric,
-        fields=["label"],
-        marker="seen",
-    )
+def test_grouping_metric_auto_discovers_fields_when_not_configured() -> None:
+    m = MetricCollectionWithFieldDiscoveryAndGrouping(metric_class=RecordingSingleFieldMetric)
 
-    m.update({"label": "foo"}, {"label": "foo"})
+    m.update({"a": "foo"}, {"a": "foo", "b": "bar"}, record_id="row-1")
 
-    assert m.metrics["label"].init_kwargs == {"marker": "seen"}
+    assert set(m.metrics) == {"a", "b"}
+    assert m.metrics["a"].observations == [("foo", "foo", "row-1")]
+    assert m.metrics["b"].observations == [(None, "bar", "row-1")]
 
 
 def test_grouping_metric_subfield_keys_expand_entries() -> None:
