@@ -12,8 +12,8 @@ class TpFpFnCollector(MetricWithTpFpFnEntries):
     entries are grouped by record via `MetricWithTpFpFnEntries.state_per_record`.
     """
 
-    def __init__(self, per_record: bool = False) -> None:
-        super().__init__()
+    def __init__(self, per_record: bool = False, **kwargs) -> None:
+        super().__init__(**kwargs)
         self.per_record = per_record
 
     def _compute(self, *args, **kwargs) -> dict:
