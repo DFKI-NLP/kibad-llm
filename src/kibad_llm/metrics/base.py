@@ -33,7 +33,19 @@ def _convert_dict_to_tuple(d: dict, ignore_keys: list | None = None) -> tuple:
     return tuple(sorted((k, v) for k, v in d.items() if v is not None and k not in _ignore_keys))
 
 
-class MetricWithPrepareEntryAsSet(Metric):
+class SingleFieldMetric(Metric):
+    """Base class for metrics that operate on a single field of the prediction and reference.
+
+    Args:
+        field: Optional; If provided, the field to extract from a dict entry.
+    """
+
+    def __init__(self, field: str | None = None, **kwargs) -> None:
+        super().__init__(**kwargs)
+        self.field = field
+
+
+class MetricWithPrepareEntryAsSet(SingleFieldMetric):
     """Base class for metrics that normalize entries into sets before comparison.
 
     Attributes:
@@ -48,9 +60,9 @@ class MetricWithPrepareEntryAsSet(Metric):
 
     def __init__(
         self,
-        field: str | None = None,
         flatten_dicts: bool = False,
         ignore_subfields: dict[str, list] | None = None,
+        **kwargs,
     ) -> None:
         """Initialize the shared entry-normalization settings.
 
@@ -60,12 +72,11 @@ class MetricWithPrepareEntryAsSet(Metric):
             ignore_subfields: Optional mapping from field names to subfield names that should be
                 ignored when converting dictionaries into tuples.
         """
-        self.field = field
+        super().__init__(**kwargs)
         self.ignore_subfields = []
         self.flatten_dicts = flatten_dicts
         if ignore_subfields is not None and self.field is not None:
             self.ignore_subfields = ignore_subfields.get(self.field, [])
-        super().__init__()
 
     def _prepare_entry_as_set(self, entry: Any) -> set:
         """Convert one prediction or reference entry into a comparable set.
