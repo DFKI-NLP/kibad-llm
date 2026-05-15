@@ -24,4 +24,3 @@ def test_compute_groups_entries_per_record() -> None:
         "record-1": {"tp": {"A"}, "fp": {"B"}, "fn": {"C"}},
         "record-2": {"tp": {"A"}, "fp": set(), "fn": {"D"}},
     }
-
