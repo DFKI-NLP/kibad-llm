@@ -5,26 +5,6 @@ import pytest
 from kibad_llm.metrics.confusion_matrix import ConfusionMatrix
 
 
-def test_calculate_counts_single_label_tp():
-    cm = ConfusionMatrix()
-    counts = cm.calculate_counts(prediction={"A"}, reference={"A"})
-    assert counts == {("A", "A"): 1}
-
-
-def test_calculate_counts_multilabel_tp_fn_fp():
-    cm = ConfusionMatrix()
-    pred = {"A", "C"}
-    ref = {"A", "B"}
-    counts = cm.calculate_counts(prediction=pred, reference=ref)
-    assert counts[("A", "A")] == 1
-    # FN: label in gold but not predicted -> (gold_label, UNDETECTED)
-    assert counts[("B", cm.undetected_label)] == 1
-    # FP: label predicted but not in gold -> (UNASSIGNABLE, pred_label)
-    assert counts[(cm.unassignable_label, "C")] == 1
-    # No other spurious counts
-    assert len(counts) == 3
-
-
 def test_update_and_compute_accumulates_and_structures_result():
     cm = ConfusionMatrix(field="labels")
 
@@ -45,36 +25,57 @@ def test_update_and_compute_accumulates_and_structures_result():
     assert res["D"]["D"] == 1
 
 
-def test_reset_clears_counts():
-    cm = ConfusionMatrix()
-    cm.update(prediction=["A"], reference=["B"])
-    assert cm.compute()  # non-empty
+def test_errors_on_reserved_labels_in_inputs_are_raised_on_compute():
+    cm = ConfusionMatrix(field="labels")
+
+    cm.update(
+        prediction={"labels": [cm.undetected_label]},
+        reference={"labels": ["X"]},
+        record_id="record-1",
+    )
+    with pytest.raises(ValueError, match="The prediction has the label"):
+        cm.compute(reset=False)
+
     cm.reset()
-    assert cm.compute() == {}
+    cm.update(
+        prediction={"labels": ["X"]},
+        reference={"labels": [cm.unassignable_label]},
+        record_id="record-2",
+    )
+    with pytest.raises(ValueError, match="The gold reference has the label"):
+        cm.compute(reset=False)
 
 
-def test_errors_on_reserved_labels_in_inputs():
-    cm = ConfusionMatrix()
-    # undetected label must not appear in prediction
-    with pytest.raises(ValueError):
-        cm.calculate_counts(prediction={cm.undetected_label}, reference={"X"})
-    # unassignable label must not appear in reference
-    with pytest.raises(ValueError):
-        cm.calculate_counts(prediction={"X"}, reference={cm.unassignable_label})
+def test_compute_uses_custom_reserved_labels_and_stringifies_labels():
+    cm = ConfusionMatrix(unassignable_label="OTHER", undetected_label="MISSING")
+
+    cm.update(prediction=[1, 3], reference=[1, 2], record_id="record-1")
+
+    assert cm.compute(reset=False) == {
+        "1": {"1": 1},
+        "2": {"MISSING": 1},
+        "OTHER": {"3": 1},
+    }
 
 
-def test_show_as_markdown_logs(caplog):
+def test_show_as_markdown_logs_with_field_header_and_reserved_labels_last(caplog):
     caplog.set_level(logging.INFO, logger="kibad_llm.metrics.confusion_matrix")
-    cm = ConfusionMatrix(show_as_markdown=True)
-    cm.update(prediction=["A"], reference=["B"])  # produces FN(B) and FP(A)
-    cm.update(prediction=["C"], reference=[])  # produces FP(C)
+    cm = ConfusionMatrix(
+        field="labels",
+        show_as_markdown=True,
+        unassignable_label="OTHER",
+        undetected_label="MISSING",
+    )
+    cm.update(prediction={"labels": ["A"]}, reference={"labels": ["B"]}, record_id=1)
+    cm.update(prediction={"labels": ["C"]}, reference={"labels": []}, record_id=2)
+
     _ = cm.compute()
-    # Ensure a markdown confusion matrix was logged
+
     lines = caplog.text.splitlines()
-    # discard first line since it contains line number info which may vary
+    assert lines[0].endswith("Confusion Matrix for field 'labels':")
     assert lines[1:] == [
-        "|              |   A |   C |   UNDETECTED |",
-        "|:-------------|----:|----:|-------------:|",
-        "| B            |   0 |   0 |            1 |",
-        "| UNASSIGNABLE |   1 |   1 |            0 |",
+        "|       |   A |   C |   MISSING |",
+        "|:------|----:|----:|----------:|",
+        "| B     |   0 |   0 |         1 |",
+        "| OTHER |   1 |   1 |         0 |",
     ]
