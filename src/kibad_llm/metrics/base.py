@@ -88,11 +88,11 @@ class MetricWithTpFpFnEntries(MetricWithPrepareEntryAsSet):
         super().__init__(**kwargs)
         self.ignore_missing_entries = ignore_missing_entries
         self.reset()
-        self._used_record_ids: set[Hashable] = set()
 
     def reset(self) -> None:
-        """Resets all values of the internal state."""
+        """Resets all values of the internal state and seen record ids."""
         self.state: dict[str, set] = {"tp": set(), "fp": set(), "fn": set()}
+        self._used_record_ids: set[Hashable] = set()
 
     @property
     def state_count(self) -> dict[str, int]:
