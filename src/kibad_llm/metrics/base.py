@@ -1,7 +1,11 @@
+from collections.abc import Hashable
+import logging
 from typing import Any
 
 from kibad_llm.metric import Metric
 from kibad_llm.utils.dictionary import flatten_dict_simple
+
+logger = logging.getLogger(__name__)
 
 
 def _convert_dict_to_tuple(d: dict, ignore_keys: list | None = None) -> tuple:
@@ -75,3 +79,46 @@ class MetricWithPrepareEntryAsSet(Metric):
             result = {entry}
 
         return result
+
+
+class MetricWithTpFpFnEntries(MetricWithPrepareEntryAsSet):
+    """Base class for metrics that hold true positive, false positive, and false negative entries (not just counts)."""
+
+    def __init__(self, ignore_missing_entries: bool = False, **kwargs) -> None:
+        super().__init__(**kwargs)
+        self.ignore_missing_entries = ignore_missing_entries
+        self.reset()
+        self._used_record_ids: set[Hashable] = set()
+
+    def reset(self) -> None:
+        """Resets all values of the internal state."""
+        self.state: dict[str, set] = {"tp": set(), "fp": set(), "fn": set()}
+
+    @property
+    def state_count(self) -> dict[str, int]:
+        """A dict mapping field names to how many times each entry was seen."""
+        return {key: len(value) for key, value in self.state.items()}
+
+    def _update(self, prediction: Any, reference: Any, record_id: Hashable | None = None) -> None:
+        """Updates the internal state with the given prediction(s) and reference(s)."""
+        prediction_set = self._prepare_entry_as_set(prediction)
+        reference_set = self._prepare_entry_as_set(reference)
+        if self.ignore_missing_entries and (len(prediction_set) == 0 or len(reference_set) == 0):
+            return
+
+        if record_id is None:
+            int_record_ids = {r_id for r_id in self._used_record_ids if isinstance(r_id, int)}
+            max_record_id = max(int_record_ids) if int_record_ids else 0
+            record_id = max_record_id + 1
+            logger.warning(
+                f"Record ID is None. Assuming the entries belong to a new record (generated record id: {record_id})."
+            )
+        self._used_record_ids.add(record_id)
+
+        # prepend the record_id to not merge entries over records
+        prediction_set_with_record_id = {(record_id, entry) for entry in prediction_set}
+        reference_set_with_record_id = {(record_id, entry) for entry in reference_set}
+
+        self.state["tp"].update(prediction_set_with_record_id & reference_set_with_record_id)
+        self.state["fp"].update(prediction_set_with_record_id - reference_set_with_record_id)
+        self.state["fn"].update(reference_set_with_record_id - prediction_set_with_record_id)
