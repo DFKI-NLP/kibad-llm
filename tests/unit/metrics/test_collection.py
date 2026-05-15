@@ -41,8 +41,12 @@ class RecordingSingleFieldMetric(SingleFieldMetric):
             prediction_value = prediction
             reference_value = reference
         else:
-            prediction_value = prediction.get(self.field) if isinstance(prediction, dict) else prediction
-            reference_value = reference.get(self.field) if isinstance(reference, dict) else reference
+            prediction_value = (
+                prediction.get(self.field) if isinstance(prediction, dict) else prediction
+            )
+            reference_value = (
+                reference.get(self.field) if isinstance(reference, dict) else reference
+            )
         self.observations.append((prediction_value, reference_value, record_id))
 
     def _compute(self, *args, **kwargs) -> dict[str, object]:
@@ -54,6 +58,7 @@ class RecordingSingleFieldMetric(SingleFieldMetric):
 
 
 # MetricCollection
+
 
 def test_metric_collection_add_metric_rejects_duplicate_names() -> None:
     m = MetricCollection[StaticMetric]()
@@ -87,6 +92,7 @@ def test_metric_collection_compute_respects_sort_fields() -> None:
 
 # _expand_field_by_key_values
 
+
 def test_expand_field_by_key_values_does_not_mutate_input() -> None:
     entry = {
         "label": {"type": "A", "value": "foo", "ignored": "left"},
@@ -111,7 +117,9 @@ def test_expand_field_by_key_values_does_not_mutate_input() -> None:
 # MetricCollectionWithFieldDiscoveryAndGrouping
 
 
-def test_grouping_metric_forwards_metric_kwargs_to_created_metrics() -> None:
+def test_metric_collection_with_field_discovery_and_grouping_forwards_metric_kwargs_to_created_metrics() -> (
+    None
+):
     m = MetricCollectionWithFieldDiscoveryAndGrouping(
         metric_class=RecordingSingleFieldMetric,
         fields=["label"],
@@ -130,7 +138,7 @@ def test_grouping_metric_forwards_metric_kwargs_to_created_metrics() -> None:
         ({"label": "foo"}, None, ("foo", None, None)),
     ],
 )
-def test_grouping_metric_accepts_none_as_empty_dict(
+def test_metric_collection_with_field_discovery_and_grouping_accepts_none_as_empty_dict(
     prediction: dict[str, str] | None,
     reference: dict[str, str] | None,
     expected_observation: tuple[object, object, object],
@@ -146,7 +154,9 @@ def test_grouping_metric_accepts_none_as_empty_dict(
 
 
 @pytest.mark.parametrize("prediction", [[], ""])
-def test_grouping_metric_rejects_falsy_non_dict_predictions(prediction: object) -> None:
+def test_metric_collection_with_field_discovery_and_grouping_rejects_falsy_non_dict_predictions(
+    prediction: object,
+) -> None:
     m = MetricCollectionWithFieldDiscoveryAndGrouping(
         metric_class=RecordingSingleFieldMetric,
         fields=["label"],
@@ -156,7 +166,9 @@ def test_grouping_metric_rejects_falsy_non_dict_predictions(prediction: object) 
         m.update(prediction, {"label": "foo"})
 
 
-def test_grouping_metric_auto_discovers_fields_when_not_configured() -> None:
+def test_metric_collection_with_field_discovery_and_grouping_auto_discovers_fields_when_not_configured() -> (
+    None
+):
     m = MetricCollectionWithFieldDiscoveryAndGrouping(metric_class=RecordingSingleFieldMetric)
 
     m.update({"a": "foo"}, {"a": "foo", "b": "bar"}, record_id="row-1")
@@ -166,7 +178,9 @@ def test_grouping_metric_auto_discovers_fields_when_not_configured() -> None:
     assert m.metrics["b"].observations == [(None, "bar", "row-1")]
 
 
-def test_grouping_metric_subfield_keys_expand_entries() -> None:
+def test_metric_collection_with_field_discovery_and_grouping_subfield_keys_expand_entries() -> (
+    None
+):
     m = MetricCollectionWithFieldDiscoveryAndGrouping(
         metric_class=RecordingSingleFieldMetric,
         fields=["label"],
@@ -183,7 +197,9 @@ def test_grouping_metric_subfield_keys_expand_entries() -> None:
     assert m.metrics["label.B"].observations == [([{"value": "bar"}], [{"value": "baz"}], None)]
 
 
-def test_grouping_metric_subfield_keys_require_dict_entries() -> None:
+def test_metric_collection_with_field_discovery_and_grouping_subfield_keys_require_dict_entries() -> (
+    None
+):
     m = MetricCollectionWithFieldDiscoveryAndGrouping(
         metric_class=RecordingSingleFieldMetric,
         fields=["label"],
@@ -194,7 +210,9 @@ def test_grouping_metric_subfield_keys_require_dict_entries() -> None:
         m.update({"label": ["foo"]}, {"label": ["foo"]})
 
 
-def test_grouping_metric_subfield_keys_missing_field_on_one_side() -> None:
+def test_metric_collection_with_field_discovery_and_grouping_subfield_keys_missing_field_on_one_side() -> (
+    None
+):
     m = MetricCollectionWithFieldDiscoveryAndGrouping(
         metric_class=RecordingSingleFieldMetric,
         fields=["label"],
@@ -207,7 +225,9 @@ def test_grouping_metric_subfield_keys_missing_field_on_one_side() -> None:
     assert m.metrics["label.A"].observations == [(None, [{"value": "foo"}], None)]
 
 
-def test_grouping_metric_subfield_keys_missing_subkey_uses_none_suffix() -> None:
+def test_metric_collection_with_field_discovery_and_grouping_subfield_keys_missing_subkey_uses_none_suffix() -> (
+    None
+):
     m = MetricCollectionWithFieldDiscoveryAndGrouping(
         metric_class=RecordingSingleFieldMetric,
         fields=["label"],
@@ -224,7 +244,9 @@ def test_grouping_metric_subfield_keys_missing_subkey_uses_none_suffix() -> None
     assert m.metrics["label.None"].observations == [([{"value": "foo"}], None, None)]
 
 
-def test_grouping_metric_subfield_keys_expand_single_dict_entry() -> None:
+def test_metric_collection_with_field_discovery_and_grouping_subfield_keys_expand_single_dict_entry() -> (
+    None
+):
     m = MetricCollectionWithFieldDiscoveryAndGrouping(
         metric_class=RecordingSingleFieldMetric,
         fields=["label"],
@@ -240,7 +262,9 @@ def test_grouping_metric_subfield_keys_expand_single_dict_entry() -> None:
     assert m.metrics["label.A"].observations == [({"value": "foo"}, {"value": "foo"}, None)]
 
 
-def test_grouping_metric_subfield_values_keep_only_selected_payload_fields() -> None:
+def test_metric_collection_with_field_discovery_and_grouping_subfield_values_keep_only_selected_payload_fields() -> (
+    None
+):
     m = MetricCollectionWithFieldDiscoveryAndGrouping(
         metric_class=RecordingSingleFieldMetric,
         fields=["label"],
@@ -256,7 +280,9 @@ def test_grouping_metric_subfield_values_keep_only_selected_payload_fields() -> 
     assert m.metrics["label.A"].observations == [([{"value": "foo"}], [{"value": "foo"}], None)]
 
 
-def test_grouping_metric_subfield_values_keep_only_selected_payload_fields_single_dict() -> None:
+def test_metric_collection_with_field_discovery_and_grouping_subfield_values_keep_only_selected_payload_fields_single_dict() -> (
+    None
+):
     m = MetricCollectionWithFieldDiscoveryAndGrouping(
         metric_class=RecordingSingleFieldMetric,
         fields=["label"],
@@ -272,7 +298,9 @@ def test_grouping_metric_subfield_values_keep_only_selected_payload_fields_singl
     assert m.metrics["label.A"].observations == [({"value": "foo"}, {"value": "foo"}, None)]
 
 
-def test_grouping_metric_subfield_values_can_score_only_selected_nested_values() -> None:
+def test_metric_collection_with_field_discovery_and_grouping_subfield_values_can_score_only_selected_nested_values() -> (
+    None
+):
     m = MetricCollectionWithFieldDiscoveryAndGrouping(
         metric_class=RecordingSingleFieldMetric,
         fields=["organism_trends"],
@@ -309,4 +337,3 @@ def test_grouping_metric_subfield_values_can_score_only_selected_nested_values()
     assert m.metrics["organism_trends.Amphibien&Wald"].observations == [
         ([{"Antwortvariable": "Abundanz"}], [{"Antwortvariable": "Abundanz"}], None)
     ]
-
