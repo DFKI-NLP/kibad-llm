@@ -1857,6 +1857,7 @@
           defaultValues: {},
           activeOptionsTab: "truncate",
           selectedGroupIds: null,
+          availableGroupIds: new Set(),
           expandedGroupIds: new Set(),
           selectedEvalGroupId: null,
           selectedEvalRunDir: null,
@@ -1871,6 +1872,9 @@
       }
       if (!tabState.defaultValues || typeof tabState.defaultValues !== "object") {
         tabState.defaultValues = {};
+      }
+      if (!(tabState.availableGroupIds instanceof Set)) {
+        tabState.availableGroupIds = new Set();
       }
       for (const column of evalColumns) {
         if (!known.has(column)) {
@@ -1893,6 +1897,23 @@
         tabState.activeOptionsTab = "truncate";
       }
       return tabState;
+    }
+
+    function syncSelectedEvalGroupIds(evalTabState, validEvalGroupIds) {
+      if (evalTabState.selectedGroupIds === null) {
+        evalTabState.selectedGroupIds = new Set(validEvalGroupIds);
+      } else {
+        const nextSelectedGroupIds = new Set(
+          Array.from(evalTabState.selectedGroupIds).filter((groupId) => validEvalGroupIds.has(groupId))
+        );
+        for (const groupId of validEvalGroupIds) {
+          if (!evalTabState.availableGroupIds.has(groupId)) {
+            nextSelectedGroupIds.add(groupId);
+          }
+        }
+        evalTabState.selectedGroupIds = nextSelectedGroupIds;
+      }
+      evalTabState.availableGroupIds = new Set(validEvalGroupIds);
     }
 
     groupByAllButton.addEventListener("click", () => {
@@ -4483,13 +4504,7 @@
         evalTabState
       );
       const validEvalGroupIds = new Set(evalGroups.map((group) => group.groupId));
-      if (evalTabState.selectedGroupIds === null) {
-        evalTabState.selectedGroupIds = new Set(validEvalGroupIds);
-      } else {
-        evalTabState.selectedGroupIds = new Set(
-          Array.from(evalTabState.selectedGroupIds).filter((groupId) => validEvalGroupIds.has(groupId))
-        );
-      }
+      syncSelectedEvalGroupIds(evalTabState, validEvalGroupIds);
 
       const selectedEvalGroups = evalGroups.filter((group) =>
         evalTabState.selectedGroupIds.has(group.groupId)
@@ -4699,13 +4714,7 @@
         evalTabState
       );
       const validEvalGroupIds = new Set(evalGroups.map((group) => group.groupId));
-      if (evalTabState.selectedGroupIds === null) {
-        evalTabState.selectedGroupIds = new Set(validEvalGroupIds);
-      } else {
-        evalTabState.selectedGroupIds = new Set(
-          Array.from(evalTabState.selectedGroupIds).filter((groupId) => validEvalGroupIds.has(groupId))
-        );
-      }
+      syncSelectedEvalGroupIds(evalTabState, validEvalGroupIds);
       renderEvalDefaultControls(
         state.activeEvalTab,
         orderedEvalOverrideColumns,
