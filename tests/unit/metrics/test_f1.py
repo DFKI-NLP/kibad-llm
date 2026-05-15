@@ -320,7 +320,6 @@ def test_multiple_fields_ignore_missing_entries_can_filter_all_field_results() -
     }
 
 
-
 @pytest.mark.parametrize(
     "format_as_markdown,sort_fields", [(True, True), (True, False), (False, True), (False, False)]
 )
