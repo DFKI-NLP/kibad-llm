@@ -1,3 +1,11 @@
+"""Unit tests for :mod:`kibad_llm.metrics.f1`.
+
+Covers :class:`~kibad_llm.metrics.f1.F1MicroSingleFieldMetric` (single- and
+multi-label precision/recall/F1, zero-division, reset) and
+:class:`~kibad_llm.metrics.f1.F1MicroMultipleFieldsMetric` (per-field + AVG/ALL
+aggregate rows, Markdown and JSON formatting, field ordering).
+"""
+
 import pytest
 
 from kibad_llm.metrics.f1 import F1MicroMultipleFieldsMetric, F1MicroSingleFieldMetric

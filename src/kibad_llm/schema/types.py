@@ -1,3 +1,25 @@
+"""Pydantic models and enumerations for ecosystem study feature schemas.
+
+Defines the domain-specific data model for the Faktencheck Artenvielfalt project.
+All enum values are in German and match the vocabulary tables in the Faktencheck
+PostgreSQL database.  The Pydantic models are used both as:
+
+1. **Extraction schemas** – ``model_json_schema()`` is called to generate the JSON
+   schema passed to the LLM for guided decoding.
+2. **Reference models** – the same field names and enums appear in the Faktencheck
+   database export so predictions can be compared against references by the
+   evaluation pipeline.
+
+Key model families:
+
+- ``EcosystemStudyFeatures*`` – flat/compound/full schema variants for general study
+  metadata (habitat, location, taxon, methods, temporal/spatial extent, …).
+- ``EcosystemStudyOrganismTrends*`` – schema for organism-level biodiversity trend
+  extraction (main/sub-group, habitat, biodiversity variable, trend direction).
+- ``EcosystemStudyFeaturesCoreFields`` – lightweight schema covering the most
+  important fields (habitat, taxa, biodiversity level, ecosystem type).
+"""
+
 from enum import Enum
 
 from pydantic import BaseModel, ConfigDict, Field

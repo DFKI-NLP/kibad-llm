@@ -1,3 +1,15 @@
+"""Shared pytest fixtures and helpers for the entire test suite.
+
+``WRITE_FIXTURE_DATA`` is a module-level toggle: set to ``True`` once to regenerate
+golden fixture files, then revert to ``False`` before committing.  The
+``test_dont_write_fixture_data`` function in this module and in
+:mod:`tests.fixtures.test_dont_write` enforce that the flag is always ``False`` in CI.
+
+``cfg_global`` composes a Hydra config from ``configs/`` using
+:func:`hydra.compose`; ``cfg_predict`` wraps it as a per-function pytest fixture with
+a temporary output directory.
+"""
+
 from pathlib import Path
 
 from hydra import compose, initialize

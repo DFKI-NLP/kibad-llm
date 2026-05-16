@@ -1,3 +1,14 @@
+"""Core extraction logic shared by all extractor strategies.
+
+[`extract_from_text`][kibad_llm.extractors.base.extract_from_text] is the central function: it takes a document and
+a schema, calls the configured [`LLM`][kibad_llm.llms.base.LLM] with optional JSON-schema guided
+decoding, and returns a [`SingleExtractionResult`][kibad_llm.extractors.base.SingleExtractionResult]
+containing the structured output, reasoning, messages, and any errors.  Also
+provides [`extract_from_text_lenient`][kibad_llm.extractors.base.extract_from_text_lenient] for fault-tolerant batch
+processing and helpers for building chat messages and stripping evidence-anchor
+metadata wrappers.
+"""
+
 from __future__ import annotations
 
 from collections import defaultdict

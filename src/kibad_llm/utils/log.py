@@ -1,3 +1,11 @@
+"""Logging helpers.
+
+Provides [`warn_once`][kibad_llm.utils.log.warn_once], which emits a `logging` warning for a given message
+only the first time it is called (subsequent calls with the same message are silently
+ignored via ``lru_cache``).  Useful for warning about deprecated arguments or
+suboptimal configuration choices inside hot-path code without flooding the logs.
+"""
+
 from functools import lru_cache
 import logging
 

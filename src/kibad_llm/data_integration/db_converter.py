@@ -1,3 +1,15 @@
+"""One-off script to export the Faktencheck PostgreSQL database to JSONL.
+
+Connects to the Faktencheck database (connection parameters from environment variables
+``DB_HOST``, ``DB_PORT``, ``DB_NAME``, ``DB_USER``, ``DB_PASSWORD``), runs the
+``CORE_QUERY`` defined in ``queries.yaml`` to retrieve all study records, then joins
+each record with its related vocabulary entries (``VOCAB_QUERIES``) and writes the
+result as one JSON object per line to the output JSONL file.
+
+Run with ``uv run -m kibad_llm.data_integration.db_converter``.  The output file is
+used as the reference dataset for evaluation runs (see ``configs/dataset/``).
+"""
+
 import argparse
 import json
 import os

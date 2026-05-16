@@ -1,3 +1,9 @@
+"""Unit test for :func:`kibad_llm.preprocessing.read_pdf_as_markdown_via_pymupdf4llm`.
+
+Converts a fixture PDF to markdown and compares the output against a stored golden file.
+Set ``WRITE_FIXTURE_DATA = True`` in :mod:`tests.conftest` to regenerate the golden file.
+"""
+
 import json
 
 from kibad_llm.config import PROJ_ROOT

@@ -1,3 +1,11 @@
+"""Error statistics metric for monitoring extraction failures.
+
+[`ErrorCollector`][kibad_llm.metrics.statistics.ErrorCollector] inspects prediction dicts for error fields, groups
+errors by their exception-type prefix, and returns counts per error type alongside
+``no_error`` / ``with_error`` summary keys.  Intended for use alongside F1 metrics
+to distinguish genuine prediction errors from LLM or JSON-parsing failures.
+"""
+
 from collections import defaultdict
 from collections.abc import Hashable
 import logging

@@ -1,3 +1,12 @@
+"""Hydra callback that persists job return values to disk after each run.
+
+[`SaveJobReturnValueCallback`][kibad_llm.hydra_callbacks.save_job_return_value.SaveJobReturnValueCallback] is registered in ``configs/predict.yaml`` and
+``configs/evaluate.yaml``.  After each job it saves the function's return dict to
+JSON or Markdown files; for multirun sweeps it additionally collects and aggregates
+per-job results into a combined summary with numeric statistics and human-readable
+job identifiers.
+"""
+
 from collections.abc import Hashable, Iterable
 import json
 import logging

@@ -1,3 +1,14 @@
+"""Path utility helpers.
+
+Provides [`get_directories_with_file`][kibad_llm.utils.path.get_directories_with_file] which, given one or more base paths,
+recursively locates all directories containing a file with a given name.  When
+``leafs_only=True`` only the deepest matching directories are returned (parent
+directories that also match are excluded).
+
+This is used as an OmegaConf resolver in [`kibad_llm.evaluate`][kibad_llm.evaluate] to discover
+Hydra prediction output directories from multirun sweeps.
+"""
+
 import os
 from pathlib import Path
 

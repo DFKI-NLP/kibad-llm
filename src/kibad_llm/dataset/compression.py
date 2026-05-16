@@ -1,3 +1,10 @@
+"""Transparent decompression context manager for reading text files.
+
+[`open_text`][kibad_llm.dataset.compression.open_text] is a ``contextmanager`` that opens a text file with automatic
+decompression inferred from the file suffix, supporting common compression and
+archive formats (gz, bz2, xz, zip, tar, zst).
+"""
+
 import bz2
 from collections.abc import Iterator
 from contextlib import ExitStack, contextmanager

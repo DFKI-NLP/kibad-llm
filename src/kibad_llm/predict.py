@@ -1,3 +1,15 @@
+"""Hydra entry point for the prediction pipeline.
+
+Reads PDF files from a configured directory, converts each to markdown via
+[`kibad_llm.preprocessing`][kibad_llm.preprocessing], and runs structured information extraction using a
+configured [`kibad_llm.extractors`][kibad_llm.extractors] extractor and LLM. Results are written to a
+timestamped JSONL output file.  Intermediate results are cached via the HuggingFace
+``datasets`` library so that re-runs with the same inputs skip redundant PDF
+conversion.
+
+Run with ``uv run -m kibad_llm.predict`` (see ``configs/predict.yaml`` for options).
+"""
+
 from __future__ import annotations
 
 from collections.abc import Callable

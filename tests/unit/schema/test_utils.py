@@ -1,3 +1,15 @@
+"""Unit tests for :mod:`kibad_llm.schema.utils`.
+
+Covers:
+- ``build_schema_description``: golden-file comparisons for all models and compound features
+  (with and without evidence-anchor wrapping).
+- ``_schema_should_be_wrapped``: policy tests for which schema nodes are considered
+  terminal and eligible for metadata wrapping.
+- ``wrap_terminals_with_metadata``: behavioral tests asserting correct wrapping of
+  scalars, nullable unions, arrays, ``$ref`` nodes, ``$defs`` roots, and custom
+  content keys; also verifies purity (no input mutation) and idempotency.
+"""
+
 import copy
 import json
 from typing import Any

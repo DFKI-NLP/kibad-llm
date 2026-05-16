@@ -1,3 +1,19 @@
+"""Utilities for loading prediction output files with optional Hydra run metadata.
+
+[`load_with_metadata`][kibad_llm.dataset.prediction.load_with_metadata] is the primary entry point used by the evaluate pipeline.
+It accepts either:
+
+- ``log=<path>`` – a Hydra run output directory; the function reads
+  ``job_return_value.json`` and ``.hydra/overrides.yaml`` to recover the prediction
+  file path and run metadata, then wraps the dataset in `DictWithMetadata`.
+- ``file=<path>`` – a direct path to a predictions JSONL file (backward-compatible).
+
+The returned dict maps record IDs to dicts with ``prediction`` and ``reference`` keys
+(after merging with references via [`merge_references_into_predictions`][kibad_llm.dataset.utils.merge_references_into_predictions]).
+`DictWithMetadata` is a thin ``dict`` subclass that carries the Hydra overrides
+and job return value as metadata, which the evaluate pipeline can attach to metric results.
+"""
+
 import json
 import logging
 import os

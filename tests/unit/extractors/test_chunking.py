@@ -1,31 +1,4 @@
-"""
-These tests take care of the chunking extractor as well as the chunking_utils
-that are used by it.
-
-To create the fixture 25ABQZIH.pdf.json for testing:
-```python
-import json
-from pathlib import Path
-from kibad_llm.extractors.chunking import _document_chunk_iterator
-from kibad_llm.extractors.chunking_utils.core import TextChunk
-from pathlib import Path
-
-SRC_PATH = Path("./tests/fixtures/markdown/25ABQZIH.pdf.json")
-DEST_PATH = Path("./tests/fixtures/chunking/25ABQZIH.pdf.json")
-document = json.loads(SRC_PATH.read_text())
-
-chunks: tuple[TextChunk, ...] = _document_chunk_iterator(
-    document["text"],
-    20000,
-    None,
-)
-
-chunk_texts = [chunk.chunk_text for chunk in chunks]
-document["chunk_texts"] = chunk_texts
-
-DEST_PATH.write_text(json.dumps(document, indent=2, ensure_ascii=False))
-```
-"""
+"""Unit tests for the chunking extractor and the chunking_utils it relies on."""
 
 import json
 from pathlib import Path

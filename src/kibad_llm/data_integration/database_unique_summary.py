@@ -1,3 +1,13 @@
+"""One-off script to inspect unique values in the Faktencheck JSONL database export.
+
+Reads a JSONL file produced by [`kibad_llm.data_integration.db_converter`][kibad_llm.data_integration.db_converter], flattens
+nested fields (e.g., ``direct_driver`` → ``direct_driver.type``, ``direct_driver.details``),
+and prints a summary of unique values per column.  Useful for verifying enum vocabularies,
+spotting data quality issues, and informing schema design.
+
+Run with ``uv run -m kibad_llm.data_integration.database_unique_summary``.
+"""
+
 import argparse
 import json
 import logging

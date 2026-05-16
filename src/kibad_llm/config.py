@@ -1,3 +1,11 @@
+"""Project-wide path constants and environment variable loading.
+
+Loads ``.env`` at import time, resolves the project root from this file's location,
+and exposes canonical directory paths (``DATA_DIR``, ``RAW_DATA_DIR``, etc.) used
+throughout the codebase. Also configures loguru to write through tqdm when tqdm is
+available, preventing log lines from breaking progress bars.
+"""
+
 from pathlib import Path
 
 from dotenv import load_dotenv

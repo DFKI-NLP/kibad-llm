@@ -1,3 +1,9 @@
+"""Unit tests for :class:`kibad_llm.metrics.confusion_matrix.ConfusionMatrix`.
+
+Covers ``calculate_counts``, ``update``/``compute`` accumulation, ``reset``,
+sentinel-label validation, and Markdown logging output.
+"""
+
 import logging
 
 import pytest

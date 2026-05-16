@@ -1,3 +1,11 @@
+"""Integration tests for the evaluate pipeline (:func:`kibad_llm.evaluate.evaluate`).
+
+Parametrized over all metric configs found in ``configs/metric/`` (excluding helper
+configs prefixed with ``_``).  For each metric the test instantiates a Hydra config,
+runs the full evaluation against a stored predictions fixture, and asserts exact
+numeric output values.
+"""
+
 import os
 
 from hydra.core.global_hydra import GlobalHydra

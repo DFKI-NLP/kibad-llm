@@ -1,3 +1,12 @@
+"""OpenAI Responses API backend with Structured Outputs support.
+
+[`OpenAI`][kibad_llm.llms.openai.OpenAI] wraps LlamaIndex's ``OpenAIResponses`` and automatically patches the
+provided JSON schema to satisfy OpenAI's strict Structured Outputs requirements via
+[`make_openai_strict_json_schema`][kibad_llm.llms.openai.make_openai_strict_json_schema].  Extended thinking is surfaced via
+[`OpenAI.get_reasoning_from_chat_response`][kibad_llm.llms.openai.OpenAI.get_reasoning_from_chat_response] when the Responses API returns
+``ThinkingBlock`` content.
+"""
+
 import copy
 import re
 from typing import Any

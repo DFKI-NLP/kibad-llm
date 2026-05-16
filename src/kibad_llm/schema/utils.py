@@ -1,3 +1,11 @@
+"""JSON Schema utilities for building schema descriptions and evidence-anchor wrappers.
+
+[`build_schema_description`][kibad_llm.schema.utils.build_schema_description] converts a JSON Schema dict to a concise
+human-readable summary for LLM prompts.  [`wrap_terminals_with_metadata`][kibad_llm.schema.utils.wrap_terminals_with_metadata]
+transforms a JSON Schema so every terminal field is paired with an evidence-anchor
+field, enabling the LLM to cite verbatim text passages for each extracted value.
+"""
+
 from __future__ import annotations
 
 from collections.abc import Mapping
@@ -233,7 +241,7 @@ def build_schema_description(
     - Optional first line: "<type_description_prefix><schema.description>" if include_type_descriptions and the description exists
     - Optional header line (only at top level if header is not None)
     - One line per property with format depending on which prefix parameters are not None:
-      "<indent>- <name>[: <description>][<separator><cardinality_prefix><cardinality>][<separator><type_prefix><type>][<separator><enum_prefix><values>]"
+      `<indent>- <name>[: <description>][<separator><cardinality_prefix><cardinality>][<separator><type_prefix><type>][<separator><enum_prefix><values>]`
     - For nested objects, recursively includes their properties with increased indentation
 
     Cardinality rules:

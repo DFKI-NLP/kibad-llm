@@ -1,3 +1,13 @@
+"""Utilities for loading, transforming, and aggregating Hydra job return value files.
+
+Provides loaders for ``job_return_value.json`` files ([`load`][kibad_llm.utils.job_return.load],
+[`load_run`][kibad_llm.utils.job_return.load_run], [`load_runs`][kibad_llm.utils.job_return.load_runs]) produced by
+[`SaveJobReturnValueCallback`][kibad_llm.hydra_callbacks.save_job_return_value.SaveJobReturnValueCallback], helpers for converting between
+Hydra override strings and plain dicts, utilities for deriving human-readable job
+identifiers from multirun sweeps, and a DataFrame aggregation helper
+([`mixed_group_by`][kibad_llm.utils.job_return.mixed_group_by]) for summarising numeric and non-numeric columns.
+"""
+
 from collections.abc import Callable, Hashable, Iterable
 import json
 import logging

@@ -1,3 +1,14 @@
+"""Integration tests for the predict pipeline (:func:`kibad_llm.predict.predict`).
+
+Marked ``@pytest.mark.slow`` because they invoke a real LLM.  Tests cover:
+- per-PDF prediction output (keys compared against golden fixture files),
+- ``fast_dev_run`` mode (only first PDF processed),
+- error handling for PDFs that are too long or trigger a missing-response-content error.
+
+Golden files live in ``tests/fixtures/results/``.  Set ``WRITE_FIXTURE_DATA = True``
+in :mod:`tests.conftest` to regenerate them.
+"""
+
 import json
 
 from hydra.core.global_hydra import GlobalHydra

@@ -1,3 +1,12 @@
+"""Shared helpers and model lists for schema unit tests.
+
+Exports ``camel_case_to_snake_case``, ``ALL_MODELS`` (all non-base Pydantic models
+from :mod:`kibad_llm.schema.types`), and ``ALL_COMPOUNDS`` (all
+:class:`~kibad_llm.schema.types.CompoundFeature` subclasses), used by
+:mod:`tests.unit.schema.test_types` and :mod:`tests.unit.schema.test_utils` to
+parametrize tests over every schema model.
+"""
+
 import re
 
 from kibad_llm.schema import types

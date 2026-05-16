@@ -1,3 +1,10 @@
+"""Unit tests for :func:`kibad_llm.extractors.base.strip_metadata`.
+
+Verifies unwrapping of simple wrappers, nested objects and lists, nullable union
+shapes, the "at-least-two-keys" heuristic that prevents plain ``{"content": …}``
+objects from being stripped, input immutability, and custom ``content_key`` support.
+"""
+
 import copy
 
 from kibad_llm.extractors.base import strip_metadata

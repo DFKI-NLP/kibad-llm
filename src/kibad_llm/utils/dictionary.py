@@ -1,3 +1,11 @@
+"""Dictionary utilities used across the codebase.
+
+Provides shallow and deep dict flattening/unflattening ([`flatten_dict_simple`][kibad_llm.utils.dictionary.flatten_dict_simple],
+[`flatten_dict`][kibad_llm.utils.dictionary.flatten_dict], [`unflatten_dict`][kibad_llm.utils.dictionary.unflatten_dict], [`flatten_dict_s`][kibad_llm.utils.dictionary.flatten_dict_s]) and
+[`FieldDict`][kibad_llm.utils.dictionary.FieldDict], a ``dict`` subclass backed by a ``dataclass`` that keeps
+attribute access and dict-item access in sync.
+"""
+
 from __future__ import annotations
 
 from collections.abc import Generator, Mapping

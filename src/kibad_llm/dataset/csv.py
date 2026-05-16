@@ -1,3 +1,12 @@
+"""CSV dataset loaders for reference data.
+
+Provides [`read_organism_trends`][kibad_llm.dataset.csv.read_organism_trends] which reads a CSV file where each PDF can have
+multiple organism trend rows (one row per organism group/habitat/variable combination)
+and groups them into a dict keyed by PDF ID, with the grouped rows stored as a list
+under the ``organism_trends`` key.  Used to load the reference data for the
+``organism_trends`` evaluation dataset.
+"""
+
 import pandas as pd
 
 

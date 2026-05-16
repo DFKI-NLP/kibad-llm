@@ -1,3 +1,16 @@
+"""One-off script to download open-access PDFs for papers listed in a Zotero CSV export.
+
+Uses the Semantic Scholar (S2) API to resolve open-access PDF URLs from DOIs, paper
+titles, or direct Zotero URLs.  Supports three download strategies (``--download-type``):
+
+- ``doi`` (default) – batch-resolves DOIs against S2, then downloads open-access PDFs.
+- ``direct`` – downloads the URL provided by Zotero for papers without a DOI.
+- ``title`` – resolves paper IDs via S2 title search and then downloads open-access PDFs.
+
+Run with ``uv run -m kibad_llm.data_integration.zotero_download``.  PDFs are saved
+using the Zotero ``Key`` field as the filename (``<Key>.pdf``).
+"""
+
 DESCRIPTION = """
 This script downloads papers using the open-access url from Semantic Scholar API
 starting from a Zotero group library exported to CSV.

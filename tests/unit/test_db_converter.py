@@ -1,3 +1,5 @@
+"""Unit tests for :func:`kibad_llm.data_integration.db_converter.format_result`."""
+
 from kibad_llm.data_integration.db_converter import format_result
 
 
