@@ -14,6 +14,7 @@ n: 3  # number of repetitions
 # for these fields, return a list of results from each repetition
 return_as_list:
   # - structured
+  - structured_with_metadata
   - errors
   # - response_content
   - reasoning_content
