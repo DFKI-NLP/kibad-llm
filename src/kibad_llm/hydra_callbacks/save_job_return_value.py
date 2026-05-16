@@ -322,7 +322,7 @@ class SaveJobReturnValueCallback(Callback):
                 file.write(f"{output_dir}\n")
 
         for filename in self.filenames:
-            # Remove previous result field and "version" (FORMAT_VERSION_KEY) from job return-value before
+            # Remove previous result field and "version" (RESULT_FORMAT_VERSION_KEY) from job return-value before
             # saving as markdown. Otherwise, this may destroy the table structure of the saved job return-value.
             obj = job_return.return_value
             if filename.lower().endswith(".md") and isinstance(obj, dict):
