@@ -1,3 +1,4 @@
+from copy import deepcopy
 import json
 
 from hydra.core.global_hydra import GlobalHydra
@@ -17,7 +18,11 @@ PREDICTION_DIR = PROJ_ROOT / "tests" / "fixtures" / "results"
 @pytest.fixture(scope="module")
 def cfg_predict_module(tmp_path_factory) -> DictConfig:  # type: ignore
     module_tmp_path = tmp_path_factory.mktemp("module")
-    cfg = cfg_global(config_name="predict.yaml", out_dir=module_tmp_path)
+
+    # use the llm defined for testing, see configs/extractor/llm/testing.yaml
+    overrides = ["extractor/llm=testing"]
+
+    cfg = cfg_global(config_name="predict.yaml", out_dir=module_tmp_path, overrides=overrides)
 
     yield cfg
 
@@ -72,7 +77,8 @@ def test_prediction(file_name, predictions_dict):
 
 
 @pytest.mark.slow
-def test_predict_fast_dev_run(tmp_path, cfg_predict):
+def test_predict_fast_dev_run(tmp_path, cfg_predict_module):
+    cfg_predict = deepcopy(cfg_predict_module)
 
     with open_dict(cfg_predict):
         cfg_predict.pdf_directory = str(PDF_DIR)
@@ -109,6 +115,9 @@ def cfg_predict_pdf_errors(tmp_path, error_type) -> DictConfig:  # type: ignore
     overrides = [
         # don't compress to be able to read error messages easily
         "output_file_name=predictions.jsonl",
+        # For now, use the testing llm (see configs/extractor/llm/testing.yaml).
+        # However, this should be a special mock llm in the future.
+        "extractor/llm=testing",
     ]
     if error_type in ["too_long"]:
         # we need the text to check for the length, so enable store_text_in_predictions

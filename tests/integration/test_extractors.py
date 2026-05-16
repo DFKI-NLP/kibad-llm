@@ -28,6 +28,9 @@ def extractor_name(request) -> str:
 def cfg_predict_extractor(tmp_path, extractor_name) -> DictConfig:  # type: ignore
     overrides = [f"extractor={extractor_name}"]
 
+    # use the llm defined for testing, see configs/extractor/llm/testing.yaml
+    overrides.append("extractor/llm=testing")
+
     if extractor_name in ["union", "conditional_union"]:
         # For union extractors, we need to define extractor overrides. Use two simple
         # setups (setup_a and setup_b) with different schemas.
