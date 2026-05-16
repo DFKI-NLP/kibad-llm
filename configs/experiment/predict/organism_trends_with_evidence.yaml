@@ -9,6 +9,5 @@
 # python -m kibad_llm.predict experiment/predict=organism_trends_with_evidence
 
 defaults:
-  - _with_evidence
   - override /extractor/prompt_template: organism_trends_v1_with_evidence_and_persona
   - override /extractor/schema: organism_trends_v1
