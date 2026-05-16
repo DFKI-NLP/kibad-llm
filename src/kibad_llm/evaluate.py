@@ -13,6 +13,10 @@ from kibad_llm.dataset.prediction import DictWithMetadata
 from kibad_llm.metric import Metric
 from kibad_llm.utils.path import get_directories_with_file
 
+# This needs to be incremented when the format of the evaluation results changes in a non-backwards-compatible
+# way, e.g. if we change the structure of the metric_dict returned by evaluate() or the expected metadata
+# format. This allows us to keep track of which version of the evaluation results we are working with and
+# handle them accordingly in downstream processing.
 EVALUATE_VERSION = 1
 
 logger = logging.getLogger(__name__)

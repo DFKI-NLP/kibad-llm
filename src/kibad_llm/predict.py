@@ -20,6 +20,10 @@ from omegaconf.errors import OmegaConfBaseException
 from kibad_llm.config import PROJ_ROOT, RESULT_FORMAT_VERSION_KEY
 from kibad_llm.utils.datasets import wrap_map_func
 
+# This needs to be incremented when the format of the prediction results changes in a non-backwards-compatible
+# way, e.g. if we change the structure of the output JSON lines or the expected metadata format. This allows
+# us to keep track of which version of the prediction results we are working with and handle them accordingly
+# in downstream processing.
 PREDICT_VERSION = 1
 
 logger = logging.getLogger(__name__)
