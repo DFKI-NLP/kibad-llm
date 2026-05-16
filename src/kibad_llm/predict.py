@@ -17,8 +17,10 @@ from llama_index.core import set_global_handler
 from omegaconf import DictConfig, OmegaConf
 from omegaconf.errors import OmegaConfBaseException
 
-from kibad_llm.config import PROJ_ROOT
+from kibad_llm.config import PROJ_ROOT, RESULT_FORMAT_VERSION_KEY
 from kibad_llm.utils.datasets import wrap_map_func
+
+PREDICT_VERSION = 1
 
 logger = logging.getLogger(__name__)
 
@@ -160,6 +162,7 @@ def predict(cfg: DictConfig) -> dict[str, Any]:
     logger.info(f"Writing results to {output_file} ...")
     dataset.to_json(output_file, force_ascii=False)
     result = {
+        RESULT_FORMAT_VERSION_KEY: PREDICT_VERSION,
         "output_file": os.path.relpath(output_file, start=os.getcwd()),
         "output_file_absolute": os.path.abspath(output_file),
         "time_pdf_conversion": t_delta_pdf_conversion,

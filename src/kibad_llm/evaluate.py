@@ -8,10 +8,12 @@ import hydra
 from hydra.utils import instantiate
 from omegaconf import DictConfig, OmegaConf
 
-from kibad_llm.config import PROJ_ROOT
+from kibad_llm.config import PROJ_ROOT, RESULT_FORMAT_VERSION_KEY
 from kibad_llm.dataset.prediction import DictWithMetadata
 from kibad_llm.metric import Metric
 from kibad_llm.utils.path import get_directories_with_file
+
+EVALUATE_VERSION = 1
 
 logger = logging.getLogger(__name__)
 
@@ -57,6 +59,14 @@ def evaluate(cfg: DictConfig) -> dict[str, Any]:
                 "exists as output from the metric computation. Please adjust the metric computation."
             )
         metric_dict["prediction"] = dataset.metadata
+
+    if RESULT_FORMAT_VERSION_KEY in metric_dict:
+        raise ValueError(
+            "Cannot attach version to metric_dict because 'version' key already exists. "
+            "Please adjust the metric computation."
+        )
+
+    metric_dict[RESULT_FORMAT_VERSION_KEY] = EVALUATE_VERSION
 
     return metric_dict
 

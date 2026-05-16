@@ -11,6 +11,7 @@ import numpy as np
 from omegaconf import DictConfig
 import pandas as pd
 
+from kibad_llm.config import RESULT_FORMAT_VERSION_KEY
 from kibad_llm.utils.dictionary import flatten_dict, unflatten_dict
 from kibad_llm.utils.job_return import (
     dict_to_overrides,
@@ -321,14 +322,15 @@ class SaveJobReturnValueCallback(Callback):
                 file.write(f"{output_dir}\n")
 
         for filename in self.filenames:
-            # Remove previous result field and "overrides" from job return-value before saving as markdown.
-            # Otherwise, this may destroy the table structure of the saved job return-value.
+            # Remove previous result field and "version" (FORMAT_VERSION_KEY) from job return-value before
+            # saving as markdown. Otherwise, this may destroy the table structure of the saved job return-value.
             obj = job_return.return_value
             if filename.lower().endswith(".md") and isinstance(obj, dict):
+                obj = dict(obj)
                 if self.handle_previous_result is not None and self.handle_previous_result in obj:
-                    if self.handle_previous_result in obj:
-                        obj = dict(obj)
-                        obj.pop(self.handle_previous_result)
+                    obj.pop(self.handle_previous_result)
+                if RESULT_FORMAT_VERSION_KEY in obj:
+                    obj.pop(RESULT_FORMAT_VERSION_KEY)
             self._save(obj=obj, filename=filename, output_dir=output_dir)
 
     def on_multirun_end(self, config: DictConfig, **kwargs: Any) -> None:
