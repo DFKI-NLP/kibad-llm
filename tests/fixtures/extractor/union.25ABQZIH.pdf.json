@@ -1,51 +1,44 @@
 {
   "structured": {
-    "ecosystem_type": [
-      {
-        "category": "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes",
-        "term": "Moore der subalpinen bis alpinen Stufe",
-        "description": "Moore sind organische Böden im Binnenland, die in der norddeutschen Tiefebene und im Alpenvorland verbreitet sind und überwiegend (ca. 70 %) landwirtschaftlich genutzt werden."
-      }
-    ],
-    "location": [
-      {
-        "country": "Deutschland",
-        "federal_state": "Bayern",
-        "name": "Greifswald"
-      },
-      {
-        "country": "Deutschland",
-        "federal_state": "Schleswig-Holstein",
-        "name": "Schleswig-Holstein"
-      },
-      {
-        "country": "Deutschland",
-        "federal_state": "Brandenburg",
-        "name": null
-      },
-      {
-        "country": "Deutschland",
-        "federal_state": "Mecklenburg-Vorpommern",
-        "name": null
-      },
-      {
-        "country": "Deutschland",
-        "federal_state": "Niedersachsen",
-        "name": null
-      }
-    ],
-    "landuse": [
-      "Landwirtschaft",
-      "Bau",
-      "Energieproduktion"
+    "habitat": [
+      "Boden"
     ],
     "natural_region": [
       "Norddeutsches Tiefland",
       "Alpenvorland"
     ],
+    "location": [
+      {
+        "country": "Deutschland",
+        "federal_state": "Mecklenburg-Vorpommern"
+      },
+      {
+        "country": "Deutschland",
+        "federal_state": "Niedersachsen"
+      },
+      {
+        "country": "Deutschland",
+        "federal_state": "Bayern"
+      },
+      {
+        "country": "Deutschland",
+        "federal_state": "Schleswig-Holstein"
+      },
+      {
+        "country": "Deutschland",
+        "federal_state": "Brandenburg"
+      }
+    ],
     "climate": [],
-    "habitat": [
-      "Boden"
+    "landuse": [
+      "Landwirtschaft",
+      "Energieproduktion"
+    ],
+    "ecosystem_type": [
+      {
+        "category": "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes",
+        "term": "Moore der subalpinen bis alpinen Stufe"
+      }
     ]
   },
   "structured_with_metadata_list": [
@@ -82,17 +75,15 @@
       "landuse": [
         {
           "content": "Landwirtschaft",
-          "evidence_anchor": "Moorböden werden überwiegend (rd. 70 %) landwirtschaftlich genutzt.",
-          "evidence_num_matches": 0
-        },
-        {
-          "content": "Bau",
-          "evidence_anchor": "Errichtung von Photovoltaik‑Anlagen (PVA) auf Moorböden.",
-          "evidence_num_matches": 0
+          "evidence_anchor": "Moorböden sind v.a. in der norddeutschen Tiefebene und im Alpenvorland verbreitet und werden überwiegend (rd. 70 %) landwirtschaftlich genutzt.",
+          "evidence_num_matches": 1,
+          "first_evidence_start": 834,
+          "first_evidence_end": 977,
+          "first_evidence_snippet": "Moorböden), die bundesweit\nnur einen Flächenanteil von 5 % einnehmen. Moorböden sind v.a. in der norddeutschen Tiefebene und\nim Alpenvorland verbreitet und werden überwiegend (rd. 70 %) landwirtschaftlich genutzt.\nMoorböden nehmen in Mecklenburg-Vorpommern 12 %, und in Niedersachsen 14"
         },
         {
           "content": "Energieproduktion",
-          "evidence_anchor": "PVA auf dafür wiedervernässten Moorböden können im Energiesektor durch die Nutzung von Sonnenenergie statt fossiler Energieträger beitragen.",
+          "evidence_anchor": "PVA auf Moorböden können sektorenübergreifend zum Klimaschutz beitragen.",
           "evidence_num_matches": 0
         }
       ]
@@ -102,27 +93,19 @@
         {
           "category": {
             "content": "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes",
-            "evidence_anchor": "In Deutschland stammen derzeit knapp 7 % der Treibhausgasemissionen (THG-Emissionen, 53 Mio. Tonnen CO2-Äq.) [3] von entwässerten organischen Böden (im Folgenden: Moorböden)",
-            "evidence_num_matches": 1,
-            "first_evidence_start": 601,
-            "first_evidence_end": 774,
-            "first_evidence_snippet": "„Osterpaket“ im\nGesetzentwurf zur Novellierung des Erneuerbare-Energien-Gesetzes aufgeführt (s. u.).\n\n\nIn Deutschland stammen derzeit knapp 7 % der Treibhausgasemissionen (THG-Emissionen, 53 Mio.\nTonnen CO2-Äq.) [3] von entwässerten organischen Böden (im Folgenden: Moorböden), die bundesweit\nnur einen Flächenanteil von 5 % einnehmen. Moorböden"
+            "evidence_anchor": "\"Moorböden\"",
+            "evidence_num_matches": 36,
+            "first_evidence_start": 77,
+            "first_evidence_end": 86,
+            "first_evidence_snippet": "# Informationspapier des Greifswald Moor Centrum zu Photovoltaik-Anlagen auf Moorböden\n\n_Stand: März 2022_\n\n\nHintergrund\n\n\nDie Nutzung erneuerbarer Energie muss zügig"
           },
           "term": {
             "content": "Moore der subalpinen bis alpinen Stufe",
-            "evidence_anchor": "In Deutschland stammen derzeit knapp 7 % der Treibhausgasemissionen (THG-Emissionen, 53 Mio. Tonnen CO2-Äq.) [3] von entwässerten organischen Böden (im Folgenden: Moorböden)",
-            "evidence_num_matches": 1,
-            "first_evidence_start": 601,
-            "first_evidence_end": 774,
-            "first_evidence_snippet": "„Osterpaket“ im\nGesetzentwurf zur Novellierung des Erneuerbare-Energien-Gesetzes aufgeführt (s. u.).\n\n\nIn Deutschland stammen derzeit knapp 7 % der Treibhausgasemissionen (THG-Emissionen, 53 Mio.\nTonnen CO2-Äq.) [3] von entwässerten organischen Böden (im Folgenden: Moorböden), die bundesweit\nnur einen Flächenanteil von 5 % einnehmen. Moorböden"
-          },
-          "description": {
-            "content": "Moore sind organische Böden im Binnenland, die in der norddeutschen Tiefebene und im Alpenvorland verbreitet sind und überwiegend (ca. 70 %) landwirtschaftlich genutzt werden.",
-            "evidence_anchor": "Moorböden sind v.a. in der norddeutschen Tiefebene und im Alpenvorland verbreitet und werden überwiegend (rd. 70 %) landwirtschaftlich genutzt.",
-            "evidence_num_matches": 1,
-            "first_evidence_start": 834,
-            "first_evidence_end": 977,
-            "first_evidence_snippet": "Moorböden), die bundesweit\nnur einen Flächenanteil von 5 % einnehmen. Moorböden sind v.a. in der norddeutschen Tiefebene und\nim Alpenvorland verbreitet und werden überwiegend (rd. 70 %) landwirtschaftlich genutzt.\nMoorböden nehmen in Mecklenburg-Vorpommern 12 %, und in Niedersachsen 14"
+            "evidence_anchor": "\"Moorböden\"",
+            "evidence_num_matches": 36,
+            "first_evidence_start": 77,
+            "first_evidence_end": 86,
+            "first_evidence_snippet": "# Informationspapier des Greifswald Moor Centrum zu Photovoltaik-Anlagen auf Moorböden\n\n_Stand: März 2022_\n\n\nHintergrund\n\n\nDie Nutzung erneuerbarer Energie muss zügig"
           }
         }
       ],
@@ -130,96 +113,86 @@
         {
           "country": {
             "content": "Deutschland",
-            "evidence_anchor": "In Deutschland stammen derzeit knapp 7 % der Treibhausgasemissionen (THG-Emissionen, 53 Mio. Tonnen CO2-Äq.) [3] von entwässerten organischen Böden (im Folgenden: Moorböden)",
+            "evidence_anchor": "\"In Deutschland stammen derzeit knapp 7 % der Treibhausgasemissionen\"",
             "evidence_num_matches": 1,
             "first_evidence_start": 601,
-            "first_evidence_end": 774,
-            "first_evidence_snippet": "„Osterpaket“ im\nGesetzentwurf zur Novellierung des Erneuerbare-Energien-Gesetzes aufgeführt (s. u.).\n\n\nIn Deutschland stammen derzeit knapp 7 % der Treibhausgasemissionen (THG-Emissionen, 53 Mio.\nTonnen CO2-Äq.) [3] von entwässerten organischen Böden (im Folgenden: Moorböden), die bundesweit\nnur einen Flächenanteil von 5 % einnehmen. Moorböden"
-          },
-          "federal_state": {
-            "content": "Bayern",
-            "evidence_anchor": "Erste Anlagen wurden in den Jahren 2020 – 2021 in Bayern und Schleswig-Holstein mit dem Ziel errichtet",
-            "evidence_num_matches": 0
-          },
-          "name": {
-            "content": "Greifswald",
-            "evidence_anchor": "Greifswald Moor Centrum, c/o Michael Succow Stiftung, Ellernholzstr. 1/3, 17489 Greifswald",
-            "evidence_num_matches": 1,
-            "first_evidence_start": 17342,
-            "first_evidence_end": 17432,
-            "first_evidence_snippet": "kann dabei ein Hebel sein um Paludikultur\nverstärkt umzusetzen.\n\n\nKontakt\n\n\nGreifswald Moor Centrum, c/o Michael Succow Stiftung, Ellernholzstr. 1/3, 17489 Greifswald\nAnsprechpartnerin: Monika Hohlbein, [monika.hohlbein@greifswaldmoor.de](mailto:monika.hohlbein@greifswaldmoor.de)\n\n\nDas Greifswald Moor Centrum ist eine"
-          }
-        },
-        {
-          "country": {
-            "content": "Deutschland",
-            "evidence_anchor": "In Deutschland stammen derzeit knapp 7 % der Treibhausgasemissionen (THG-Emissionen, 53 Mio. Tonnen CO2-Äq.) [3] von entwässerten organischen Böden (im Folgenden: Moorböden)",
-            "evidence_num_matches": 1,
-            "first_evidence_start": 601,
-            "first_evidence_end": 774,
-            "first_evidence_snippet": "„Osterpaket“ im\nGesetzentwurf zur Novellierung des Erneuerbare-Energien-Gesetzes aufgeführt (s. u.).\n\n\nIn Deutschland stammen derzeit knapp 7 % der Treibhausgasemissionen (THG-Emissionen, 53 Mio.\nTonnen CO2-Äq.) [3] von entwässerten organischen Böden (im Folgenden: Moorböden), die bundesweit\nnur einen Flächenanteil von 5 % einnehmen. Moorböden"
-          },
-          "federal_state": {
-            "content": "Schleswig-Holstein",
-            "evidence_anchor": "Erste Anlagen wurden in den Jahren 2020 – 2021 in Bayern und Schleswig-Holstein mit dem Ziel errichtet",
-            "evidence_num_matches": 0
-          },
-          "name": {
-            "content": "Schleswig-Holstein",
-            "evidence_anchor": "Erste Anlagen wurden in den Jahren 2020 – 2021 in Bayern und Schleswig-Holstein mit dem Ziel errichtet",
-            "evidence_num_matches": 0
-          }
-        },
-        {
-          "country": {
-            "content": "Deutschland",
-            "evidence_anchor": "In Deutschland stammen derzeit knapp 7 % der Treibhausgasemissionen (THG-Emissionen, 53 Mio. Tonnen CO2-Äq.) [3] von entwässerten organischen Böden (im Folgenden: Moorböden)",
-            "evidence_num_matches": 1,
-            "first_evidence_start": 601,
-            "first_evidence_end": 774,
-            "first_evidence_snippet": "„Osterpaket“ im\nGesetzentwurf zur Novellierung des Erneuerbare-Energien-Gesetzes aufgeführt (s. u.).\n\n\nIn Deutschland stammen derzeit knapp 7 % der Treibhausgasemissionen (THG-Emissionen, 53 Mio.\nTonnen CO2-Äq.) [3] von entwässerten organischen Böden (im Folgenden: Moorböden), die bundesweit\nnur einen Flächenanteil von 5 % einnehmen. Moorböden"
-          },
-          "federal_state": {
-            "content": "Brandenburg",
-            "evidence_anchor": "In Brandenburg gibt die vorläufige Handlungsempfehlung des Ministeriums für Landwirtschaft, Umwelt und Klimaschutz (MLUK) Orientierung zur Unterstützung kommunaler Entscheidungen",
-            "evidence_num_matches": 1,
-            "first_evidence_start": 3566,
-            "first_evidence_end": 3744,
-            "first_evidence_snippet": "fehlen bisher Vorgaben für die Genehmigung von PVA auf Moorböden.\nIn Brandenburg gibt die vorläufige Handlungsempfehlung des Ministeriums für Landwirtschaft,\nUmwelt und Klimaschutz (MLUK) Orientierung zur Unterstützung kommunaler Entscheidungen bzgl.\nPVA. Demnach sind „ _Moorböden_ […] _wegen ihrer besonderen"
-          },
-          "name": null
-        },
-        {
-          "country": {
-            "content": "Deutschland",
-            "evidence_anchor": "In Deutschland stammen derzeit knapp 7 % der Treibhausgasemissionen (THG-Emissionen, 53 Mio. Tonnen CO2-Äq.) [3] von entwässerten organischen Böden (im Folgenden: Moorböden)",
-            "evidence_num_matches": 1,
-            "first_evidence_start": 601,
-            "first_evidence_end": 774,
-            "first_evidence_snippet": "„Osterpaket“ im\nGesetzentwurf zur Novellierung des Erneuerbare-Energien-Gesetzes aufgeführt (s. u.).\n\n\nIn Deutschland stammen derzeit knapp 7 % der Treibhausgasemissionen (THG-Emissionen, 53 Mio.\nTonnen CO2-Äq.) [3] von entwässerten organischen Böden (im Folgenden: Moorböden), die bundesweit\nnur einen Flächenanteil von 5 % einnehmen. Moorböden"
+            "first_evidence_end": 668,
+            "first_evidence_snippet": "„Osterpaket“ im\nGesetzentwurf zur Novellierung des Erneuerbare-Energien-Gesetzes aufgeführt (s. u.).\n\n\nIn Deutschland stammen derzeit knapp 7 % der Treibhausgasemissionen (THG-Emissionen, 53 Mio.\nTonnen CO2-Äq.) [3] von entwässerten organischen Böden"
           },
           "federal_state": {
             "content": "Mecklenburg-Vorpommern",
-            "evidence_anchor": "Moorböden nehmen in Mecklenburg‑Vorpommern 12 %, und in Niedersachsen 14 % der Landesfläche ein [4]",
-            "evidence_num_matches": 0
-          },
-          "name": null
+            "evidence_anchor": "\"Moorböden nehmen in Mecklenburg-Vorpommern 12 %\"",
+            "evidence_num_matches": 1,
+            "first_evidence_start": 978,
+            "first_evidence_end": 1025,
+            "first_evidence_snippet": "Alpenvorland verbreitet und werden überwiegend (rd. 70 %) landwirtschaftlich genutzt.\nMoorböden nehmen in Mecklenburg-Vorpommern 12 %, und in Niedersachsen 14 % der Landesfläche\nein [4] ."
+          }
         },
         {
           "country": {
             "content": "Deutschland",
-            "evidence_anchor": "In Deutschland stammen derzeit knapp 7 % der Treibhausgasemissionen (THG-Emissionen, 53 Mio. Tonnen CO2-Äq.) [3] von entwässerten organischen Böden (im Folgenden: Moorböden)",
+            "evidence_anchor": "\"In Deutschland stammen derzeit knapp 7 % der Treibhausgasemissionen\"",
             "evidence_num_matches": 1,
             "first_evidence_start": 601,
-            "first_evidence_end": 774,
-            "first_evidence_snippet": "„Osterpaket“ im\nGesetzentwurf zur Novellierung des Erneuerbare-Energien-Gesetzes aufgeführt (s. u.).\n\n\nIn Deutschland stammen derzeit knapp 7 % der Treibhausgasemissionen (THG-Emissionen, 53 Mio.\nTonnen CO2-Äq.) [3] von entwässerten organischen Böden (im Folgenden: Moorböden), die bundesweit\nnur einen Flächenanteil von 5 % einnehmen. Moorböden"
+            "first_evidence_end": 668,
+            "first_evidence_snippet": "„Osterpaket“ im\nGesetzentwurf zur Novellierung des Erneuerbare-Energien-Gesetzes aufgeführt (s. u.).\n\n\nIn Deutschland stammen derzeit knapp 7 % der Treibhausgasemissionen (THG-Emissionen, 53 Mio.\nTonnen CO2-Äq.) [3] von entwässerten organischen Böden"
           },
           "federal_state": {
             "content": "Niedersachsen",
-            "evidence_anchor": "Moorböden nehmen in Niedersachsen 14 % der Landesfläche ein [4]",
+            "evidence_anchor": "\"Moorböden nehmen in Niedersachsen 14 %\"",
             "evidence_num_matches": 0
+          }
+        },
+        {
+          "country": {
+            "content": "Deutschland",
+            "evidence_anchor": "\"In Deutschland stammen derzeit knapp 7 % der Treibhausgasemissionen\"",
+            "evidence_num_matches": 1,
+            "first_evidence_start": 601,
+            "first_evidence_end": 668,
+            "first_evidence_snippet": "„Osterpaket“ im\nGesetzentwurf zur Novellierung des Erneuerbare-Energien-Gesetzes aufgeführt (s. u.).\n\n\nIn Deutschland stammen derzeit knapp 7 % der Treibhausgasemissionen (THG-Emissionen, 53 Mio.\nTonnen CO2-Äq.) [3] von entwässerten organischen Böden"
           },
-          "name": null
+          "federal_state": {
+            "content": "Bayern",
+            "evidence_anchor": "\"Erste Anlagen wurden in den Jahren 2020 - 2021 in Bayern\"",
+            "evidence_num_matches": 1,
+            "first_evidence_start": 4310,
+            "first_evidence_end": 4366,
+            "first_evidence_snippet": "und vielfältige Aktivitäten\nzur Einrichtung von PVA, auch auf Moorböden. Erste Anlagen wurden in den Jahren 2020 - 2021 in\nBayern und Schleswig-Holstein mit dem Ziel errichtet, stark degradierten, zuvor landwirtschaftlich"
+          }
+        },
+        {
+          "country": {
+            "content": "Deutschland",
+            "evidence_anchor": "\"In Deutschland stammen derzeit knapp 7 % der Treibhausgasemissionen\"",
+            "evidence_num_matches": 1,
+            "first_evidence_start": 601,
+            "first_evidence_end": 668,
+            "first_evidence_snippet": "„Osterpaket“ im\nGesetzentwurf zur Novellierung des Erneuerbare-Energien-Gesetzes aufgeführt (s. u.).\n\n\nIn Deutschland stammen derzeit knapp 7 % der Treibhausgasemissionen (THG-Emissionen, 53 Mio.\nTonnen CO2-Äq.) [3] von entwässerten organischen Böden"
+          },
+          "federal_state": {
+            "content": "Schleswig-Holstein",
+            "evidence_anchor": "\"Erste Anlagen wurden in den Jahren 2020 - 2021 in Schleswig-Holstein\"",
+            "evidence_num_matches": 0
+          }
+        },
+        {
+          "country": {
+            "content": "Deutschland",
+            "evidence_anchor": "\"In Deutschland stammen derzeit knapp 7 % der Treibhausgasemissionen\"",
+            "evidence_num_matches": 1,
+            "first_evidence_start": 601,
+            "first_evidence_end": 668,
+            "first_evidence_snippet": "„Osterpaket“ im\nGesetzentwurf zur Novellierung des Erneuerbare-Energien-Gesetzes aufgeführt (s. u.).\n\n\nIn Deutschland stammen derzeit knapp 7 % der Treibhausgasemissionen (THG-Emissionen, 53 Mio.\nTonnen CO2-Äq.) [3] von entwässerten organischen Böden"
+          },
+          "federal_state": {
+            "content": "Brandenburg",
+            "evidence_anchor": "\"In Brandenburg gibt die vorläufige Handlungsempfehlung des Ministeriums\"",
+            "evidence_num_matches": 1,
+            "first_evidence_start": 3566,
+            "first_evidence_end": 3637,
+            "first_evidence_snippet": "fehlen bisher Vorgaben für die Genehmigung von PVA auf Moorböden.\nIn Brandenburg gibt die vorläufige Handlungsempfehlung des Ministeriums für Landwirtschaft,\nUmwelt und Klimaschutz (MLUK) Orientierung zur Unterstützung kommunaler"
+          }
         }
       ]
     }
@@ -229,7 +202,7 @@
     []
   ],
   "reasoning_content_list": [
-    "We need to extract info per schema: habitat, natural_region, climate, landuse. The text describes PVA on moor beds. We need to extract habitat categories that appear: probably \"Moore\" or \"Boden\" (soil). But habitat values: Agrar- und Offenland; Binnengewässer und Auen; Boden; Küsten und Küstengewässer; Urbane Räume; Wald. Moorböden are a type of Boden (soil). So content: \"Boden\". Possibly also \"Binnengewässer und Auen\" not. Agro? mentions \"landwirtschaftlich genutzte Moorböden\". But the habitat field refers to the habitat type within that taxonomy; \"Boden\" is correct. Is there any mention of \"Boden\" explicitly? \"Moorböden\" = \"Boden\". So habitat content \"Boden\". evidence_anchor: we need a direct quote that supports. Find a line that uses \"Moorböden\". For example: \"Moorböden sind v.a. in der norddeutschen Tiefebene und im Alpenvorland verbreitet und werden überwiegend (rd. 70 %) landwirtschaftlich genutzt.\" Use that. So evidence_anchor: \"Moorböden sind v.a. in der norddeutschen Tiefebene und im Alpenvorland verbreitet ...\"\n\nNext natural_region: The text mentions \"Norddeutschen Tiefland\" and \"Alpenvorland\". Allowed values include \"Alpen\", \"Alpenvorland\", \"Mittelgebirgsschwelle\", \"Nord- und Ostsee\", \"Norddeutsches Tiefland\", \"Schichtstufenland beidseits des Oberrheingrabens\". We have Norddeutsches Tiefland and Alpenvorland. The field allows multiple. So two items. For each, need evidence_anchor.\n\nFirst: \"Moorböden sind v.a. in der norddeutschen Tiefebene und im Alpenvorland verbreitet\" => provides both region names. There might be separate occurrences; but one evidence_anchor can include both? Might need separate objects for each region. But we need evidence_anchor for each. Could reuse same sentence for both. Provide string. I'll split: evidence anchors distinct sentences: Use the same sentence for both. That is okay.\n\nClimate: The text says \"natürliche Klimasituation\" but actual climate type: \"Niederschlagsbenachteiligt, kontinent, maritim\"? Let's search: not many climate descriptions. No explicit 'Atlantisches Klima' etc. So maybe none extracted? Could be none. But better to infer: The northern Germany region has \"kontinental\" or \"maritim\"? For Norddeutsches Tiefland likely \"Maritim\"? Acceptable values: Atlantisches Klima; Gebirgsklima; kontinental; maritim; niederschlagsbenachteiligt; niederschlagsnormal; niederschlagsbegünstigt; subkontinental; submaritim. But no direct quote. Better to omit climate field altogether because zero cardinality allowed 0..? Schema says 0..* so it's okay to have empty array. We'll provide empty array.\n\nLanduse: The text lists various landuse categories. Which used? The study includes: Landwirtschaft (agricultural use). Also Bau (construction). Also Energieproduktion (renewable energy - PVA). Also Forst? Not. So from allowed values: Bau; Gelände etc. We should include \"Landwirtschaft\", \"Bau\", \"Energieproduktion\". Also \"Erholung, Freizeit, Sport\" maybe not. \"Wohngebiete\" no. So we have 3 categories. For each, need evidence_anchor quoting the usage. Let's find quotes:\n\n- Landwirtschaft: \"Moorböden werden überwiegend (rd. 70 %) landwirtschaftlich genutzt.\" -> quote.\n\n- Bau: \"Errichtung von Photovoltaik-Anlagen (PVA) auf Moorböden\" -> \"Errichtung von Photovoltaik-Anlagen (PVA) auf Moorböden\". Also maybe: \"PVA auf Moorböden\". Use that.\n\n- Energieproduktion: mention \"Erzeugung von Sonnenenergie statt fossiler Energieträger\" etc. For energy production: \"PVA auf dafür wiedervernässten Moorböden ... im Energiesektor ...\". Use that.\n\nWe also might include \"Landuse: Bau\" evidence: \"PVA auf Moorböden\" could cover both Bau and Energieproduktion.\n\nPerhaps separate entries for each.\n\nNow construct JSON:\n\n{\n \"habitat\":[{\"content\":\"Boden\",\"evidence_anchor\":\"Moorböden sind v.a. in der norddeutschen Tiefebene und im Alpenvorland verbreitet und werden überwiegend (rd. 70 %) landwirtschaftlich genutzt.\"}],\n \"natural_region\":[{\"content\":\"Norddeutsches Tiefland\",\"evidence_anchor\":\"Moorböden sind v.a. in der norddeutschen Tiefebene und im Alpenvorland verbreitet und werden überwiegend (rd. 70 %) landwirtschaftlich genutzt.\"},{\"content\":\"Alpenvorland\",\"evidence_anchor\":\"Moorböden sind v.a. in der norddeutschen Tiefebene und im Alpenvorland verbreitet und werden überwiegend (rd. 70 %) landwirtschaftlich genutzt.\"}],\n \"climate\":[],\n \"landuse\":[\n   {\"content\":\"Landwirtschaft\",\"evidence_anchor\":\"Moorböden werden überwiegend (rd. 70 %) landwirtschaftlich genutzt.\"},\n   {\"content\":\"Bau\",\"evidence_anchor\":\"Errichtung von Photovoltaik-Anlagen (PVA) auf Moorböden.\"},\n   {\"content\":\"Energieproduktion\",\"evidence_anchor\":\"PVA auf dafür wiedervernässten Moorböden können im Energiesektor durch die Nutzung von Sonnenenergie statt fossiler Energieträger beitragen.\"}\n   ]\n}\n\nCheck allowed content for landuse: Bau; Bergbau und Steinbruch; Brachliegende Flächen; Energieproduktion; Erholung, Freizeit, Sport; Fischerei und Aquakultur; Forstwirtschaft; Handels-, Finanz-, Berufs- und Informationsdienstleistungen; Industrie und Fertigung; Landwirtschaft; Naturnahe und natürliche Flächen, die nicht genutzt werden; Verkehr, Kommunikationsnetzwerke, Lagerung, Schutzwälle; Wasser- und Abfallbehandlung; Wohngebiete; andere Leistung des Primärsektors; Öffentliche Einrichtungen\n\nAll are allowed. Good.\n\nNow ensure JSON has only those keys. All arrays. Ensure each object has \"content\" and \"evidence_anchor\". Yes.\n\nReturn JSON.",
-    "We need to extract info about ecosystem-related study characteristics from the given markdown. We need to output JSON with fields according to specified schema.\n\nWe need to gather ecosystem_type objects for types studied. Examine the text: mentions \"Moorböden\", \"Moore\" etc. Terms: \"Melde Moorböden\" are a type. Also categories: \"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes\" maybe? The text refers to \"Moorböden\" specifically. Which category? According to allowed values: \"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes\" maybe?\n\nWe must provide for each ecosystem_type: category with content (one of allowed values) and evidence anchor quoting text. Term optional: name content, also with evidence anchor. Description optional with content and evidence anchor.\n\nWe need to produce location info: country: Germany; evidence anchor quoting. Federal_state: multiple states: \"Bayern\", \"Schleswig-Holstein\", \"Brandenburg\", \"Mecklenburg-Vorpommern\", \"Niedersachsen\" mentioned. They have plural but each as separate entry? The schema: location is array (*). So we need objects for each location including country, federal_state, name (some). Provide evidence anchors.\n\nThus create location objects: For each state, we can provide country Germany, state value, maybe name? name: example mention \"Greifswald\" location of contact; also the illustrative 'Grafsburg'? But we need to extract from description: There are mentions: \"Bayern\", \"Schleswig-Holstein\", \"Brandenburg\", \"Mecklenburg-Vorpommern\", \"Niedersachsen\". The contact address \"Greifswald\" is city.\n\nThus create location objects e.g.:\n\n{\n  \"country\": { \"content\": \"Deutschland\", \"evidence_anchor\": \"...\"},\n  \"federal_state\": { \"content\": \"Bayern\", \"evidence_anchor\": \"...\"},\n  \"name\": { \"content\": \"Greifswald\", \"evidence_anchor\": \"...\"}\n}\n\nBut the name of the location may be city or region. For contact address the city Greifswald is in Mecklenburg-Vorpommern. The text also mentions \"Greifswald Moor Centrum\" in Greifswald. That is a location.\n\nAlso \"Moorböden\" are distributed across Germany: \"norddeutsche Tiefebene\" and \"Alpenvorland\". Might as well include location with broad area: not necessary.\n\nSimplify: create location for each state with generic name maybe \"Bayern, State\".\n\nBut name field is optional; we can just omit if not given.\n\nThus we can produce several location objects.\n\nAlso ecosystem_type: Provide object with category and term and possibly description.\n\nCategory: \"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes\" (Moorböden is land-based). Term: \"Moorböden\". Description: maybe \"Moore\" conditions. Provide evidence anchor quoting \"Moorböden\" lines.\n\nLet's gather evidence anchors:\n\nFor category: quotes referencing \"Moorböden\" mention but need to specify. Sentence: \"In Deutschland stammen derzeit knapp 7 % der Treibhausgasemissionen... von entwässerten organischen Böden (im Folgenden: Moorböden)\". That indicates Moorböden as type. But category needs \"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes\" — we need a quote implying that Moorböden are terrestrial. Could use phrase: \"Moorböden\". But maybe we refer to \"Moorböden\" being part of Terrestrische. We'll use the same quote.\n\nTerm: \"Moorböden\" with quote: same.\n\nDescription: maybe \"organische Böden im Binnenland, die die größte Einzelquelle von THG-Emissionen in Mecklenburg-Vorpommern darstellen.\" Quote: \"Moorböden sind v.a. in der norddeutschen Tiefebene und im Alpenvorland verbreitet\". But description content is free text; but we need evidence anchor; use the same sentence.\n\nNow location evidence: Many mentions.\n\nCountry evidence: phrase \"In Deutschland\" appears multiple times. Example: \"In Deutschland stammen derzeit knapp 7 % ...\" So use that.\n\nFederal state evidence: occurrences: \"Bayern\" in \"Bayern und Schleswig-Holstein ...\", \"Schleswig-Holstein\" etc.\n\nName evidence: Greifswald for the contact address: \"Greifswald Moor Centrum, c/o Michael Succow Stiftung, Ellernholzstr. 1/3, 17489 Greifswald\". Use that.\n\nNow produce JSON array ecosystem_type: with one item.\n\nBut schema: \"ecosystem_type\" is array 0..*. So we output {\"ecosystem_type\": [ ...], \"location\": [ ...]}.\n\nNeed exactly these fields; no additional.\n\nThus final answer.\n\nCheck field types: object content strings, evidence_anchor string.\n\nWe must supply all required subfields. The \"category\" object requires content and evidence_anchor. So we must nest.\n\nDefine:\n\n{\n  \"ecosystem_type\": [\n    {\n      \"category\": {\n        \"content\": \"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes\",\n        \"evidence_anchor\": \"In Deutschland stammen derzeit knapp 7 % der Treibhausgasemissionen ... von entwässerten organischen Böden (im Folgenden: Moorböden)...\"\n      },\n      \"term\": {\n        \"content\": \"Moorböden\",\n        \"evidence_anchor\": \"In Deutschland stammen derzeit knapp 7 % der Treibhausgasemissionen ... von entwässerten organischen Böden (im Folgenden: Moorböden)...\"\n      },\n      \"description\": {\n        \"content\": \"Moore sind organische Böden im Binnenland, die in der norddeutschen Tiefebene und im Alpenvorland verbreitet sind und die größte Einzelquelle von THG-Emissionen darstellen.\",\n        \"evidence_anchor\": \"Moorböden sind v.a. in der norddeutschen Tiefebene und im Alpenvorland verbreitet und werden überwiegend (rd. 70 %) landwirtschaftlich genutzt.\"\n      }\n    }\n  ],\n  \"location\": [\n    {\n      \"country\": {\"content\":\"Deutschland\",\"evidence_anchor\":\"In Deutschland stammen derzeit knapp 7 % der Treibhausgasemissionen ...\"},\n      \"federal_state\": {\"content\":\"Bayern\",\"evidence_anchor\":\"Erste Anlagen wurden in den Jahren 2020 – 2021 in Bayern und Schleswig-Holstein ...\"},\n      \"name\": {\"content\":\"Greifswald\",\"evidence_anchor\":\"Greifswald Moor Centrum, c/o Michael Succow Stiftung, Ellernholzstr. 1/3, 17489 Greifswald\"}\n    },\n    {\n      \"country\": {\"content\":\"Deutschland\",\"evidence_anchor\":\"In Deutschland stammen derzeit knapp 7 % der Treibhausgasemissionen ...\"},\n      \"federal_state\": {\"content\":\"Schleswig-Holstein\",\"evidence_anchor\":\"Erste Anlagen wurden in den Jahren 2020 – 2021 in Bayern und Schleswig-Holstein ...\"},\n      \"name\": {\"content\":\"Schleswig-Holstein\",\"evidence_anchor\":\"Erste Anlagen wurden in den Jahren 2020 – 2021 in Bayern und Schleswig-Holstein ...\"}\n    },\n    {\n      \"country\": {\"content\":\"Deutschland\",\"evidence_anchor\":\"In Deutschland stammen derzeit knapp 7 % der Treibhausgasemissionen ...\"},\n      \"federal_state\": {\"content\":\"Brandenburg\",\"evidence_anchor\":\"In Brandenburg gibt die vorläufige Handlungsempfehlung des Ministeriums für Landwirtschaft, Umwelt und Klimaschutz (MLUK) ...\"},\n    },\n    {\n      \"country\": {\"content\":\"Deutschland\",\"evidence_anchor\":\"In Deutschland stammen derzeit knapp 7 % der Treibhausgasemissionen ...\"},\n      \"federal_state\": {\"content\":\"Mecklenburg-Vorpommern\",\"evidence_anchor\":\"Moorböden nehmen in Mecklenburg‑Vorpommern 12 % ...\"},\n    },\n    {\n      \"country\": {\"content\":\"Deutschland\",\"evidence_anchor\":\"In Deutschland stammen derzeit knapp 7 % der Treibhausgasemissionen ...\"},\n      \"federal_state\": {\"content\":\"Niedersachsen\",\"evidence_anchor\":\"Moorböden nehmen in Niedersachsen 14 % ...\"},\n    }\n  ]\n}\n\nWe must ensure the evidence_anchor are the actual quoted text from the document. Avoid ellipsis? We can shorten but keep context. Might be okay. Use quotes from the text.\n\nWe need to include all fields. The \"evidence_anchor\" expects literal text from original. We might use excerpt containing quoted phrases. That's fine.\n\nLet's craft evidence anchors exactly as appear.\n\nFor category: use sentence: \"In Deutschland stammen derzeit knapp 7 % der Treibhausgasemissionen (THG-Emissionen, 53 Mio. Tonnen CO2-Äq.) [3] von entwässerten organischen Böden (im Folgenden: Moorböden)\". That includes phrase \"Moorböden\". Good.\n\nFor term: same.\n\nFor description: sentence \"Moorböden sind v.a. in der norddeutschen Tiefebene und im Alpenvorland verbreitet und werden überwiegend (rd. 70 %) landwirtschaftlich genutzt.\"\n\nFor country evidence: same sentence, maybe reference.\n\nFor federal_state evidence: need quotes mentioning each.\n\nFor Bayern: \"Erste Anlagen wurden in den Jahren 2020 – 2021 in Bayern und Schleswig-Holstein mit dem Ziel errichtet\". Provide that.\n\nFor Schleswig-Holstein: same.\n\nFor Brandenburg: \"In Brandenburg gibt die vorläufige Handlungsempfehlung des Ministeriums für Landwirtschaft, Umwelt und Klimaschutz (MLUK) Orientierung zur Unterstützung kommunaler Entscheidungen\". So that quote.\n\nFor Mecklenburg-Vorpommern: \"Moorböden nehmen in Mecklenburg‑Vorpommern 12 %, und in Niedersachsen 14 % der Landesfläche ein [4]\". Provide that.\n\nFor Niedersachsen: same.\n\nName: Greifswald: \"Greifswald Moor Centrum, c/o Michael Succow Stiftung, Ellernholzstr. 1/3, 17489 Greifswald\".\n\nNow produce final JSON."
+    "We need to extract info about ecosystem-related study features: habitat, natural_region, climate, landuse. The document is about Photovoltaik-Anlagen on Moorböden. We need to find relevant values.\n\nHabitat: options: Agrar- und Offenland; Binnengewässer und Auen; Boden; Küsten und Küstengewässer; Urbane Räume; Wald. The text mentions \"Moorböden\" which are \"Boden\" (soil). Also \"landwirtschaftlich genutzte Moorböden\" - farmland? But habitat is about habitat type. Moorböden are a type of Boden. So habitat content: Boden. evidence_anchor: a quote that mentions Moorböden. For example: \"Moorböden sind v.a. in der norddeutschen Tiefebene und im Alpenvorland verbreitet und werden überwiegend (rd. 70 %) landwirtschaftlich genutzt.\" That includes Moorböden. So we can use that.\n\nNatural_region: options: Alpen; Alpenvorland; Mittelgebirgsschwelle; Nord- und Ostsee; Norddeutsches Tiefland; Schichtstufenland beidseits des Oberrheingrabens. The text mentions \"Norddeutschen Tiefebene\" (Norddeutsches Tiefland) and \"Alpenvorland\". So we can include both. Provide evidence anchors.\n\nClimate: options: Atlantisches Klima; Gebirgsklima; kontinental; maritim; niederschlagsbenachteiligt; niederschlagsnormal; niederschlagsbegünstigt; subkontinental; submaritim. The document doesn't explicitly mention climate. But maybe \"Norddeutsches Tiefland\" climate is \"niederschlagsbenachteiligt\" or \"niederschlagsnormal\"? Not sure. The text doesn't mention climate. So maybe no climate entries.\n\nLanduse: options: Bau; Bergbau und Steinbruch; Brachliegende Flächen; Energieproduktion; Erholung, Freizeit, Sport; Fischerei und Aquakultur; Forstwirtschaft; Handels-, Finanz-, Berufs- und Informationsdienstleistungen; Industrie und Fertigung; Landwirtschaft; Naturnahe und natürliche Flächen, die nicht genutzt werden; Verkehr, Kommunikationsnetzwerke, Lagerung, Schutzwälle; Wasser- und Abfallbehandlung; Wohngebiete; andere Leistung des Primärsektors; Öffentliche Einrichtungen. The text mentions \"landwirtschaftlich genutzte Moorböden\" -> Landwirtschaft. Also \"Photovoltaik-Anlagen\" -> Energieproduktion. Also \"Bau\" maybe for PV installation. So we can include Landwirtschaft and Energieproduktion. Provide evidence anchors.\n\nWe need to output JSON with arrays of objects for each field. Each object has content and evidence_anchor. For habitat, natural_region, landuse. Climate maybe empty array.\n\nWe must not include any other fields. So output:\n\n{\n  \"habitat\": [...],\n  \"natural_region\": [...],\n  \"climate\": [],\n  \"landuse\": [...]\n}\n\nWe need to ensure evidence_anchor is a literal quote from the text. Use short quotes.\n\nHabitat: content \"Boden\". evidence_anchor: \"Moorböden sind v.a. in der norddeutschen Tiefebene und im Alpenvorland verbreitet und werden überwiegend (rd. 70 %) landwirtschaftlich genutzt.\" That includes Moorböden. Good.\n\nNatural_region: two objects.\n\nFirst: content \"Norddeutsches Tiefland\". evidence_anchor: same sentence. \"Moorböden sind v.a. in der norddeutschen Tiefebene ...\". Use that.\n\nSecond: content \"Alpenvorland\". evidence_anchor: same sentence.\n\nClimate: empty array.\n\nLanduse: two objects.\n\nFirst: content \"Landwirtschaft\". evidence_anchor: same sentence about landwirtschaftlich genutzte Moorböden.\n\nSecond: content \"Energieproduktion\". evidence_anchor: maybe \"Photovoltaik-Anlagen (PVA) auf Moorböden\" or \"PVA auf Moorböden können ...\". Use quote: \"PVA auf Moorböden können sektorenübergreifend zum Klimaschutz beitragen\". That indicates energy production.\n\nAlso maybe \"Bau\" for PV installation. But we can include just two.\n\nWe must ensure JSON is valid. Provide only JSON.",
+    "We need to extract ecosystem_type and location. The document is about Photovoltaik-Anlagen on Moorböden. So ecosystem_type: Moorböden. Which category? The allowed categories: I Biotoptypengruppen der Meere und Küsten; II Biotoptypengruppen der Binnengewässer; III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes; IV Technische Biotoptypengruppen; V Biotoptypengruppen mit Schwerpunkt in den Alpen; VI Weitere. Moorböden are terrestrial peatlands, so category III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes. Term: \"Moorböden\" is not in the allowed term list? The term list includes many specific types, but \"Moorböden\" is not listed. But maybe \"Moorböden\" is a general term. The term list includes \"Moorböden\"? It lists \"Moorböden\" not explicitly. It lists \"Moorböden\" as \"Moorböden\" maybe not. The list includes \"Moorböden\" as \"Moorböden\"? Actually the list includes \"Moorböden\" as \"Moorböden\"? It includes \"Moorböden\" as \"Moorböden\"? Wait, the term list includes \"Moorböden\" as \"Moorböden\"? It includes \"Moorböden\" as \"Moorböden\"? The list includes \"Moorböden\" as \"Moorböden\"? Let's check: The term list includes \"Moorböden\" as \"Moorböden\"? It includes \"Moorböden\" as \"Moorböden\"? Actually the term list includes \"Moorböden\" as \"Moorböden\"? It includes \"Moorböden\" as \"Moorböden\"? Wait, the term list includes \"Moorböden\" as \"Moorböden\"? The list includes \"Moorböden\" as \"Moorböden\"? I'm repeating. Let's read the term list: \"Anthropogene Rohbodenstandorte und Ruderalfluren; Bauwerke; Benthal der Nordsee; Benthal der Ostsee; Deponien und Rieselfelder; Feldgehölze, Gebüsche, Hecken und Gehölzkulturen; Fels- und Steilküsten; Felsen, Block- und Schutthalden, Geröllfelder, offene Bereiche mit sandigem oder bindigem Substrat; Felsen der subalpinen bis nivalen Stufe; Firn, permanente Schneefelder und Gletscher; Fließende Gewässer; Gebirgsrasen (subalpine bis alpine Stufe); Gebüsche der hochmontanen bis subalpinen Stufe; Gewässer der subalpinen bis alpinen Stufe; Großseggenriede; Grundwasser und Höhlengewässer; Grün- und Freiflächen; Hoch-, Zwischen- und Übergangsmoore; Höhlen (einschließlich Stollen, Brunnenschächte etc.); Kleine, unbefestigte Freiflächen des besiedelten Bereiches; Küstendünen; Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent); Moore der subalpinen bis alpinen Stufe; Nadel(Misch)Wälder und -Forste; Pelagial der Nordsee; Pelagial der Ostsee; Quellen (inklusive Quellabfluss (Krenal)); Röhrichte (ohne Brackwasserröhrichte); Saisonales Meereis der Nordsee; Saisonales Meereis der Ostsee; Salzgrünland der Nordseeküste (Supralitoral); Salzgrünland, Brackwasserröhrichte und -Hochstaudenfluren des Geolitorals der Ostseeküste; Schneeböden, Schneetälchen; Stehende Gewässer; Steinschutthalden und Schotterflächen der subalpinen bis alpinen Stufe; Sände, Sand-, Geröll- und Blockstrände; Stauden- und Lägerfluren der hochmontanen bis alpinen Stufe; Subalpine Wälder; Trockenrasen sowie Grünland trockener bis frischer Standorte; Verkehrsanlagen und Plätze; Wald- und Ufersäume, Staudenfluren; Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte; Waldmäntel und Vorwälder, spezielle Waldnutzungsformen; Zwergstrauchheiden; Zwergstrauchheiden der subalpinen bis alpinen Stufe; Äcker und Ackerbrachen\"\n\n\"Moorböden\" is not listed. But \"Hoch-, Zwischen- und Übergangsmoore\" and \"Moore der subalpinen bis alpinen Stufe\" and \"Waldfreie Niedermoore und Sümpfe\" etc. So maybe we choose \"Hoch-, Zwischen- und Übergangsmoore\" as term? But the study is about Moorböden in general, not specific subtypes. We could choose \"Hoch-, Zwischen- und Übergangsmoore\" as term. Or \"Waldfreie Niedermoore und Sümpfe\" for low moors. But the document mentions \"Moorböden\" generically. We can choose \"Hoch-, Zwischen- und Übergangsmoore\" as term. Provide evidence anchor: a quote that mentions \"Moorböden\". For example: \"Moorböden\" appears in the text: \"Moorböden\" in the first paragraph. We can use that.\n\nLocation: The document mentions several states: Mecklenburg-Vorpommern, Niedersachsen, Bayern, Schleswig-Holstein, Brandenburg. Also mentions \"Norddeutsche Tiefebene\" and \"Alpenvorland\". But we need location objects with country, federal_state, name. We can include multiple location objects. For each state, we can provide evidence anchor. For example: \"Moorböden sind v.a. in der norddeutschen Tiefebene und im Alpenvorland verbreitet\" - but that is not a specific location. We can include states: Mecklenburg-Vorpommern, Niedersachsen, Bayern, Schleswig-Holstein, Brandenburg. Provide evidence anchor: quotes that mention each state. For Mecklenburg-Vorpommern: \"Moorböden nehmen in Mecklenburg-Vorpommern 12 %\". For Niedersachsen: \"Moorböden nehmen in Niedersachsen 14 %\". For Bayern: \"Erste Anlagen wurden in den Jahren 2020 - 2021 in Bayern und Schleswig-Holstein\". For Schleswig-Holstein: same. For Brandenburg: \"In Brandenburg gibt die vorläufige Handlungsempfehlung des Ministeriums ...\". Provide evidence anchor for each.\n\nAlso mention \"Norddeutsche Tiefebene\" and \"Alpenvorland\" but those are not states. We can skip.\n\nThus produce JSON with ecosystem_type array containing one object. location array with 5 objects.\n\nWe need to follow schema: ecosystem_type: array of objects. Each object has category (object with content and evidence_anchor), term (object with content and evidence_anchor), description optional. Provide description? Not necessary.\n\nLocation: array of objects. Each object has country (object with content and evidence_anchor), federal_state (object with content and evidence_anchor), name (object with content and evidence_anchor). For country, content: \"Deutschland\". Provide evidence anchor: quote that mentions \"Deutschland\". For each location, we can use same quote for country. For federal_state, content: state name. For name: maybe \"Norddeutsche Tiefebene\" or \"Alpenvorland\"? But we can set name as null? The schema says name optional. We can provide name as null or omit. But we need to include name object if present. We can omit name if not relevant. But we can include name as \"Norddeutsche Tiefebene\" for Mecklenburg-Vorpommern? But not necessary.\n\nBetter to include name as null? The schema says name: optional. So we can omit name field.\n\nThus produce JSON.\n\nLet's craft evidence anchors:\n\n- For category: \"Moorböden sind v.a. in der norddeutschen Tiefebene und im Alpenvorland verbreitet\" - but that is not category. Category is \"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes\". Provide evidence anchor: \"Moorböden\" appears in text. Use quote: \"Moorböden\" in the first paragraph: \"Moorböden\" appears. Provide anchor: \"Moorböden\" from the text.\n\n- For term: \"Hoch-, Zwischen- und Übergangsmoore\" maybe. Provide evidence anchor: \"Moorböden\" again. But we need a quote that includes the term. The term \"Hoch-, Zwischen- und Übergangsmoore\" appears in the term list but not in the document. So we cannot use that. We need a term that appears in the document. The document uses \"Moorböden\" only. So term content: \"Moorböden\". Provide evidence anchor: same quote.\n\nThus ecosystem_type: category content: \"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes\". evidence_anchor: \"Moorböden\" quote. term content: \"Moorböden\". evidence_anchor: same.\n\nNow location objects:\n\n1. Mecklenburg-Vorpommern: country: Deutschland. evidence_anchor: \"In Deutschland stammen derzeit knapp 7 % der Treibhausgasemissionen ...\". But we need a quote that mentions \"Deutschland\". Use \"In Deutschland stammen derzeit knapp 7 % der Treibhausgasemissionen\". Provide evidence anchor. federal_state: Mecklenburg-Vorpommern. evidence_anchor: \"Moorböden nehmen in Mecklenburg-Vorpommern 12 %\". name: maybe \"Norddeutsche Tiefebene\" but we can omit.\n\n2. Niedersachsen: same.\n\n3. Bayern: \"Erste Anlagen wurden in den Jahren 2020 - 2021 in Bayern und Schleswig-Holstein\". Provide evidence anchor.\n\n4. Schleswig-Holstein: same.\n\n5. Brandenburg: \"In Brandenburg gibt die vorläufige Handlungsempfehlung des Ministeriums ...\".\n\nThus produce JSON.\n\nLet's craft evidence anchors as short quotes.\n\nWe need to ensure JSON is valid. Provide array for ecosystem_type and location.\n\nLet's produce."
   ]
 }

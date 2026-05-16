@@ -36,6 +36,9 @@ def cfg_predict_extractor(tmp_path, extractor_name) -> DictConfig:  # type: igno
             "+extractor/schema@extractor.overrides.setup_b.schema=faktencheck_compounds_simple"
         )
 
+    # an attempt to improve stability
+    overrides.append("extractor.llm.temperature=0.0")
+
     cfg = cfg_global(
         out_dir=tmp_path,
         overrides=overrides,
