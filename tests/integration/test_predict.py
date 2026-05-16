@@ -88,11 +88,8 @@ def test_predict_fast_dev_run(tmp_path, cfg_predict):
     assert len(results) == 1
     result = results[0]
 
+    # this reuses the fixture data from test_prediction
     fixture_path = PREDICTION_DIR / f"{result['file_name']}.json"
-
-    # write fixture data
-    # with open(fixture_path, "w") as f:
-    #   json.dump(result, f, indent=4, ensure_ascii=False)
 
     # read fixture data
     with open(fixture_path) as f:
