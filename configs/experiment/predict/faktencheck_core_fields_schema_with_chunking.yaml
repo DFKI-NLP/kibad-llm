@@ -13,7 +13,6 @@
 # uv run -m kibad_llm.predict experiment/predict=faktencheck_core_fields_schema_with_chunking pdf_directory=path/to/pdf/files
 
 defaults:
-  - _with_evidence
   - override /extractor/schema: faktencheck_core
   - override /extractor: chunking
   - override /extractor/prompt_template: faktencheck_core_v1_with_chunking

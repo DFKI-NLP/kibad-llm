@@ -2,17 +2,19 @@
 # per key by majority voting
 
 defaults:
-  - schema: faktencheck_simple
+  - schema: default
   - aggregator: majority_vote
   - llm: gpt_oss_20b
   - prompt_template: default
   - request_parameters: default
+  - _with_evidence
 
 _target_: kibad_llm.extractors.RepeatingExtractor
 n: 3  # number of repetitions
 # for these fields, return a list of results from each repetition
 return_as_list:
   # - structured
+  - structured_with_metadata
   - errors
   # - response_content
   - reasoning_content

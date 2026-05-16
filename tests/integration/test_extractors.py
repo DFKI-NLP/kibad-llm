@@ -28,6 +28,9 @@ def extractor_name(request) -> str:
 def cfg_predict_extractor(tmp_path, extractor_name) -> DictConfig:  # type: ignore
     overrides = [f"extractor={extractor_name}"]
 
+    # use the llm defined for testing, see configs/extractor/llm/testing.yaml
+    overrides.append("extractor/llm=testing")
+
     if extractor_name in ["union", "conditional_union"]:
         # For union extractors, we need to define extractor overrides. Use two simple
         # setups (setup_a and setup_b) with different schemas.
@@ -35,6 +38,9 @@ def cfg_predict_extractor(tmp_path, extractor_name) -> DictConfig:  # type: igno
         overrides.append(
             "+extractor/schema@extractor.overrides.setup_b.schema=faktencheck_compounds_simple"
         )
+
+    # an attempt to improve stability
+    overrides.append("extractor.llm.temperature=0.0")
 
     cfg = cfg_global(
         out_dir=tmp_path,
@@ -71,7 +77,7 @@ def test_extractor(tmp_path, cfg_predict_extractor, extractor_name):
         expected_result_path.parent.mkdir(parents=True, exist_ok=True)
         # write fixture data
         with open(expected_result_path, "w") as f:
-            json.dump(result, f, indent=2)
+            json.dump(result, f, indent=2, ensure_ascii=False)
 
     with open(expected_result_path) as f:
         expected_result = json.load(f)
