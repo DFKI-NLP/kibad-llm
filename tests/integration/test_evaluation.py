@@ -62,7 +62,13 @@ def test_evaluate(tmp_path, cfg_evaluate, metric_name):
 
     if metric_name == "f1_micro_single_field":
         assert metric_scores == pytest.approx(
-            {"f1": 2 * ((3 / 8) / (1 + (3 / 8))), "precision": 3 / 8, "recall": 1, "support": 3}
+            {
+                "f1": 2 * ((3 / 8) / (1 + (3 / 8))),
+                "precision": 3 / 8,
+                "recall": 1,
+                "support": 3,
+                "version": 1,
+            }
         )
     elif metric_name == "confusion_matrix":
         assert metric_scores == {
@@ -74,6 +80,7 @@ def test_evaluate(tmp_path, cfg_evaluate, metric_name):
                 "Boden": 1,
                 "Wald": 1,
             },
+            "version": 1,
         }
     elif metric_name == "f1_micro":
         assert metric_scores == {
@@ -96,9 +103,10 @@ def test_evaluate(tmp_path, cfg_evaluate, metric_name):
                 "recall": 0.75,
                 "support": 4,
             },
+            "version": 1,
         }
     elif metric_name == "prediction_errors":
         # we don't have any errors in the predictions file
-        assert metric_scores == {"no_error": 4}
+        assert metric_scores == {"no_error": 4, "version": 1}
     else:
         raise ValueError(f"Unexpected metric name: {metric_name}. Please update the test case.")
