@@ -942,6 +942,7 @@
       predictionSort: [],
       loadedFolders: new Set(),
       selectedGroupIds: new Set(),
+      availableGroupIds: new Set(),
       expandedGroupIds: new Set(),
       activeEvalTab: null,
       groups: [],
@@ -1899,21 +1900,24 @@
       return tabState;
     }
 
-    function syncSelectedEvalGroupIds(evalTabState, validEvalGroupIds) {
-      if (evalTabState.selectedGroupIds === null) {
-        evalTabState.selectedGroupIds = new Set(validEvalGroupIds);
+    function syncSelectedGroupIds(selectionState, validGroupIds) {
+      if (!(selectionState.availableGroupIds instanceof Set)) {
+        selectionState.availableGroupIds = new Set();
+      }
+      if (selectionState.selectedGroupIds === null) {
+        selectionState.selectedGroupIds = new Set(validGroupIds);
       } else {
         const nextSelectedGroupIds = new Set(
-          Array.from(evalTabState.selectedGroupIds).filter((groupId) => validEvalGroupIds.has(groupId))
+          Array.from(selectionState.selectedGroupIds).filter((groupId) => validGroupIds.has(groupId))
         );
-        for (const groupId of validEvalGroupIds) {
-          if (!evalTabState.availableGroupIds.has(groupId)) {
+        for (const groupId of validGroupIds) {
+          if (!selectionState.availableGroupIds.has(groupId)) {
             nextSelectedGroupIds.add(groupId);
           }
         }
-        evalTabState.selectedGroupIds = nextSelectedGroupIds;
+        selectionState.selectedGroupIds = nextSelectedGroupIds;
       }
-      evalTabState.availableGroupIds = new Set(validEvalGroupIds);
+      selectionState.availableGroupIds = new Set(validGroupIds);
     }
 
     groupByAllButton.addEventListener("click", () => {
@@ -2634,10 +2638,11 @@
       state.predictionSort = [];
       state.truncateEnabledColumns = getDefaultTruncateColumns(state.predictionColumns);
       state.predictionDefaultValues = {};
+      state.selectedGroupIds = new Set();
+      state.availableGroupIds = new Set();
       state.evalTabStates = {};
 
       buildGroups();
-      state.selectedGroupIds = new Set(state.groups.map((group) => group.groupId));
     }
 
     function updateLoadStatusSummary({ candidateRunDirs, loadedCount, skippedDuplicate, skippedPredictRuns, skippedMissingJob, skippedInvalid }) {
@@ -3154,11 +3159,9 @@
 
       state.groups = Array.from(map.values()).sort((a, b) => b.predictions.length - a.predictions.length);
 
-      // Keep only valid selected groups after regrouping.
+      // Keep selections for unchanged groups and select newly created groups by default after regrouping.
       const validIds = new Set(state.groups.map((g) => g.groupId));
-      state.selectedGroupIds = new Set(
-        Array.from(state.selectedGroupIds).filter((groupId) => validIds.has(groupId))
-      );
+      syncSelectedGroupIds(state, validIds);
       state.expandedGroupIds = new Set(
         Array.from(state.expandedGroupIds).filter((groupId) => validIds.has(groupId))
       );
@@ -4504,7 +4507,7 @@
         evalTabState
       );
       const validEvalGroupIds = new Set(evalGroups.map((group) => group.groupId));
-      syncSelectedEvalGroupIds(evalTabState, validEvalGroupIds);
+      syncSelectedGroupIds(evalTabState, validEvalGroupIds);
 
       const selectedEvalGroups = evalGroups.filter((group) =>
         evalTabState.selectedGroupIds.has(group.groupId)
@@ -4714,7 +4717,7 @@
         evalTabState
       );
       const validEvalGroupIds = new Set(evalGroups.map((group) => group.groupId));
-      syncSelectedEvalGroupIds(evalTabState, validEvalGroupIds);
+      syncSelectedGroupIds(evalTabState, validEvalGroupIds);
       renderEvalDefaultControls(
         state.activeEvalTab,
         orderedEvalOverrideColumns,
