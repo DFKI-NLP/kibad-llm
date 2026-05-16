@@ -2562,6 +2562,48 @@
       return result;
     }
 
+    function omitTopLevelKeys(obj, excludedKeys) {
+      return Object.fromEntries(
+        Object.entries(obj).filter(([key]) => !excludedKeys.has(key))
+      );
+    }
+
+    function createUnsupportedJobReturnValueVersionError(version) {
+      const error = new Error(`Unsupported job_return_value.json version: ${version}`);
+      error.name = "UnsupportedJobReturnValueVersionError";
+      error.jobReturnValueVersion = version;
+      return error;
+    }
+
+    const JOB_RETURN_VALUE_VERSION_HANDLERS = {
+      0: (job) => ({
+        version: 0,
+        evalContent: omitTopLevelKeys(job, new Set(["prediction"])),
+      }),
+      1: (job) => ({
+        version: 1,
+        evalContent: omitTopLevelKeys(job, new Set(["prediction", "version"])),
+      }),
+    };
+
+    function normalizeImportedJobReturnValue(job) {
+      if (!job || typeof job !== "object" || Array.isArray(job)) {
+        throw new Error("job_return_value.json must contain a top-level object.");
+      }
+
+      const version = Object.prototype.hasOwnProperty.call(job, "version") ? job.version : 0;
+      const handler = JOB_RETURN_VALUE_VERSION_HANDLERS[version];
+
+      if (!handler) {
+        throw createUnsupportedJobReturnValueVersionError(version);
+      }
+
+      return {
+        predictionContent: job.prediction || {},
+        ...handler(job),
+      };
+    }
+
     async function readTextFile(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -2645,7 +2687,7 @@
       buildGroups();
     }
 
-    function updateLoadStatusSummary({ candidateRunDirs, loadedCount, skippedDuplicate, skippedPredictRuns, skippedMissingJob, skippedInvalid }) {
+    function updateLoadStatusSummary({ candidateRunDirs, loadedCount, skippedDuplicate, skippedPredictRuns, skippedMissingJob, skippedUnsupportedVersion, skippedInvalid }) {
       const loadedSources = Array.from(state.loadedFolders).sort();
       loadStatus.textContent = [
         `Loaded sources (${loadedSources.length}): ${loadedSources.join(", ")}`,
@@ -2655,6 +2697,7 @@
         `Skipped (already loaded): ${skippedDuplicate}`,
         `Evaluation runs loaded: ${state.runs.length}`,
         `Skipped (missing job_return_value.json): ${skippedMissingJob}`,
+        `Skipped (unsupported data version): ${skippedUnsupportedVersion}`,
         `Skipped (invalid JSON/YAML): ${skippedInvalid}`,
       ].join("\n");
     }
@@ -2705,6 +2748,7 @@
 
       let loadedCount = 0;
       let skippedMissingJob = 0;
+      let skippedUnsupportedVersion = 0;
       let skippedInvalid = 0;
       let skippedDuplicate = 0;
       const knownRunDirs = new Set(state.runs.map((run) => run.runDir));
@@ -2730,7 +2774,8 @@
         try {
           const job = JSON.parse(jobText);
           const evalOverrides = parseOverridesYaml(overridesText);
-          const prediction = job.prediction || {};
+          const normalizedJob = normalizeImportedJobReturnValue(job);
+          const prediction = normalizedJob.predictionContent;
 
           const predictionMeta = {
             ...flattenObject(prediction.overrides || {}, "prediction.overrides"),
@@ -2740,22 +2785,22 @@
           const experimentEvaluate =
             evalOverrides["experiment/evaluate"] || "(missing experiment/evaluate)";
 
-          const evalContent = Object.fromEntries(
-            Object.entries(job).filter(([key]) => key !== "prediction")
-          );
-
           state.runs.push({
             runDir,
             predictionMeta,
             evalOverrides,
             experimentEvaluate,
-            evalContent,
+            evalContent: normalizedJob.evalContent,
             predictionContent: prediction,
           });
           knownRunDirs.add(runDir);
           loadedCount += 1;
         } catch (error) {
-          skippedInvalid += 1;
+          if (error?.name === "UnsupportedJobReturnValueVersionError") {
+            skippedUnsupportedVersion += 1;
+          } else {
+            skippedInvalid += 1;
+          }
           console.error(`Failed to parse run at ${runDir}`, error);
         }
       }
@@ -2767,6 +2812,7 @@
         skippedDuplicate,
         skippedPredictRuns,
         skippedMissingJob,
+        skippedUnsupportedVersion,
         skippedInvalid,
       });
     }
