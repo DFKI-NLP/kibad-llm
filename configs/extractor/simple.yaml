@@ -1,7 +1,7 @@
 # simple extraction workflow based on a single LLM call using a prompt template
 
 defaults:
-  - schema: faktencheck_simple
+  - schema: default
   - llm: gpt_oss_20b
   - prompt_template: default
   - request_parameters: default

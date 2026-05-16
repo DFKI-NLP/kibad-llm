@@ -1,62 +1,81 @@
 {
   "character_start": 0,
   "character_end": 24442,
-  "response_content": "{\n  \"habitat\": [\n    {\n      \"content\": \"Boden\",\n      \"evidence_anchor\": \"Moorböden sind v.a. in der norddeutschen Tiefebene und im Alpenvorland verbreitet und werden überwiegend (rd. 70 %) landwirtschaftlich genutzt.\"\n    }\n  ],\n  \"natural_region\": [\n    {\n      \"content\": \"Alpenvorland\",\n      \"evidence_anchor\": \"Moorböden sind v.a. in der norddeutschen Tiefebene und im Alpenvorland verbreitet und werden überwiegend (rd. 70 %) landwirtschaftlich genutzt.\"\n    },\n    {\n      \"content\": \"Norddeutsches Tiefland\",\n      \"evidence_anchor\": \"Moorböden sind v.a. in der norddeutschen Tiefebene und im Alpenvorland verbreitet und werden überwiegend (rd. 70 %) landwirtschaftlich genutzt.\"\n    }\n  ],\n  \"climate\": [],\n  \"landuse\": [\n    {\n      \"content\": \"Landwirtschaft\",\n      \"evidence_anchor\": \"werden überwiegend (rd. 70 %) landwirtschaftlich genutzt.\"\n    }\n  ]\n}",
+  "response_content": "{\n  \"habitat\": [\n    {\n      \"content\": \"Boden\",\n      \"evidence_anchor\": \"auf entwässerten Moorböden\"\n    }\n  ],\n  \"taxa\": [\n    {\n      \"species_group\": {\n        \"content\": \"Insekten\",\n        \"evidence_anchor\": \"Insekten, Amphibien und Vögeln\"\n      }\n    },\n    {\n      \"species_group\": {\n        \"content\": \"Amphibien und Reptilien\",\n        \"evidence_anchor\": \"Insekten, Amphibien und Vögeln\"\n      }\n    },\n    {\n      \"species_group\": {\n        \"content\": \"Vögel\",\n        \"evidence_anchor\": \"Insekten, Amphibien und Vögeln\"\n      }\n    }\n  ],\n  \"biodiversity_level\": [\n    {\n      \"content\": \"Zusammensetzung der Artengemeinschaft\",\n      \"evidence_anchor\": \"Biodiversität insbesondere von Insekten, Amphibien und Vögeln\"\n    }\n  ]\n}",
   "structured": {
     "habitat": [
       "Boden"
     ],
-    "natural_region": [
-      "Alpenvorland",
-      "Norddeutsches Tiefland"
+    "taxa": [
+      {
+        "species_group": "Insekten"
+      },
+      {
+        "species_group": "Amphibien und Reptilien"
+      },
+      {
+        "species_group": "Vögel"
+      }
     ],
-    "climate": [],
-    "landuse": [
-      "Landwirtschaft"
+    "biodiversity_level": [
+      "Zusammensetzung der Artengemeinschaft"
     ]
   },
   "structured_with_metadata": {
     "habitat": [
       {
         "content": "Boden",
-        "evidence_anchor": "Moorböden sind v.a. in der norddeutschen Tiefebene und im Alpenvorland verbreitet und werden überwiegend (rd. 70 %) landwirtschaftlich genutzt.",
+        "evidence_anchor": "auf entwässerten Moorböden",
         "evidence_num_matches": 1,
-        "first_evidence_start": 834,
-        "first_evidence_end": 977,
-        "first_evidence_snippet": "Moorböden), die bundesweit\nnur einen Flächenanteil von 5 % einnehmen. Moorböden sind v.a. in der norddeutschen Tiefebene und\nim Alpenvorland verbreitet und werden überwiegend (rd. 70 %) landwirtschaftlich genutzt.\nMoorböden nehmen in Mecklenburg-Vorpommern 12 %, und in Niedersachsen 14"
+        "first_evidence_start": 365,
+        "first_evidence_end": 391,
+        "first_evidence_snippet": "zu verringern. Dafür wird auch die\nErrichtung von Photovoltaik-Anlagen (PVA) auf entwässerten Moorböden in den Blick genommen und\nim Eckpunktepapier der Bundesregierung [2]"
       }
     ],
-    "natural_region": [
+    "taxa": [
       {
-        "content": "Alpenvorland",
-        "evidence_anchor": "Moorböden sind v.a. in der norddeutschen Tiefebene und im Alpenvorland verbreitet und werden überwiegend (rd. 70 %) landwirtschaftlich genutzt.",
-        "evidence_num_matches": 1,
-        "first_evidence_start": 834,
-        "first_evidence_end": 977,
-        "first_evidence_snippet": "Moorböden), die bundesweit\nnur einen Flächenanteil von 5 % einnehmen. Moorböden sind v.a. in der norddeutschen Tiefebene und\nim Alpenvorland verbreitet und werden überwiegend (rd. 70 %) landwirtschaftlich genutzt.\nMoorböden nehmen in Mecklenburg-Vorpommern 12 %, und in Niedersachsen 14"
+        "species_group": {
+          "content": "Insekten",
+          "evidence_anchor": "Insekten, Amphibien und Vögeln",
+          "evidence_num_matches": 1,
+          "first_evidence_start": 12096,
+          "first_evidence_end": 12126,
+          "first_evidence_snippet": "PVA ist hinsichtlich ihrer Wirkung auf die Biodiversität insbesondere von Insekten, Amphibien\nund Vögeln zu untersuchen. Zudem gilt es, mögliche Risiken der PVA auf"
+        }
       },
       {
-        "content": "Norddeutsches Tiefland",
-        "evidence_anchor": "Moorböden sind v.a. in der norddeutschen Tiefebene und im Alpenvorland verbreitet und werden überwiegend (rd. 70 %) landwirtschaftlich genutzt.",
-        "evidence_num_matches": 1,
-        "first_evidence_start": 834,
-        "first_evidence_end": 977,
-        "first_evidence_snippet": "Moorböden), die bundesweit\nnur einen Flächenanteil von 5 % einnehmen. Moorböden sind v.a. in der norddeutschen Tiefebene und\nim Alpenvorland verbreitet und werden überwiegend (rd. 70 %) landwirtschaftlich genutzt.\nMoorböden nehmen in Mecklenburg-Vorpommern 12 %, und in Niedersachsen 14"
+        "species_group": {
+          "content": "Amphibien und Reptilien",
+          "evidence_anchor": "Insekten, Amphibien und Vögeln",
+          "evidence_num_matches": 1,
+          "first_evidence_start": 12096,
+          "first_evidence_end": 12126,
+          "first_evidence_snippet": "PVA ist hinsichtlich ihrer Wirkung auf die Biodiversität insbesondere von Insekten, Amphibien\nund Vögeln zu untersuchen. Zudem gilt es, mögliche Risiken der PVA auf"
+        }
+      },
+      {
+        "species_group": {
+          "content": "Vögel",
+          "evidence_anchor": "Insekten, Amphibien und Vögeln",
+          "evidence_num_matches": 1,
+          "first_evidence_start": 12096,
+          "first_evidence_end": 12126,
+          "first_evidence_snippet": "PVA ist hinsichtlich ihrer Wirkung auf die Biodiversität insbesondere von Insekten, Amphibien\nund Vögeln zu untersuchen. Zudem gilt es, mögliche Risiken der PVA auf"
+        }
       }
     ],
-    "climate": [],
-    "landuse": [
+    "biodiversity_level": [
       {
-        "content": "Landwirtschaft",
-        "evidence_anchor": "werden überwiegend (rd. 70 %) landwirtschaftlich genutzt.",
+        "content": "Zusammensetzung der Artengemeinschaft",
+        "evidence_anchor": "Biodiversität insbesondere von Insekten, Amphibien und Vögeln",
         "evidence_num_matches": 1,
-        "first_evidence_start": 920,
-        "first_evidence_end": 977,
-        "first_evidence_snippet": "v.a. in der norddeutschen Tiefebene und\nim Alpenvorland verbreitet und werden überwiegend (rd. 70 %) landwirtschaftlich genutzt.\nMoorböden nehmen in Mecklenburg-Vorpommern 12 %, und in Niedersachsen 14"
+        "first_evidence_start": 12065,
+        "first_evidence_end": 12126,
+        "first_evidence_snippet": "des Lebensraums\ndurch PVA ist hinsichtlich ihrer Wirkung auf die Biodiversität insbesondere von Insekten, Amphibien\nund Vögeln zu untersuchen. Zudem gilt es, mögliche Risiken der PVA auf"
       }
     ]
   },
-  "reasoning_content": "We need to extract info per schema: habitat, natural_region, climate, landuse. The text describes PVA on moor beds. We need to extract habitat categories that appear: probably \"Moore\" or \"Boden\" (soil). But habitat values: Agrar- und Offenland; Binnengewässer und Auen; Boden; Küsten und Küstengewässer; Urbane Räume; Wald. Moorböden are a type of Boden (soil). So content: \"Boden\". Possibly also \"Binnengewässer und Auen\" not. Agro? mentions \"landwirtschaftlich genutzte Moorböden\". But the habitat field refers to the habitat type within that taxonomy; \"Boden\" is correct. Is there any mention of \"Boden\" explicitly? \"Moorböden\" = \"Boden\". So habitat content \"Boden\". evidence_anchor: we need a direct quote that supports. Find a line that uses \"Moorböden\". For anchor we can use \"Moorböden\". The quote could be \"Moorböden\" or phrase containing it. Let's search: In the doc: \"Moorböden\" appears many times. For evidence we need wörtliches Zitat. Eg: \"Moorböden\" is a word. Use a longer context: \"Moorböden sind v.a. in der norddeutschen Tiefebene und im Alpenvorland verbreitet\". That includes habitat? Might use that. But habitat anchor should support that habitat is ground/boden. The quote \"Moorböden\" is fine.\n\nNatural_region: relevant natural region names: Nord- und Ostsee? The text mentions Norddeutschen Tiefebene and Alpenvorland. Allowed values: Alpen; Alpenvorland; Mittelgebirgsschwelle; Nord- und Ostsee; Norddeutsches Tiefland; Schichtstufenland beidseits des Oberrheingrabens. The document mentions \"Norddeutschen Tiefebene\" (\"Norddeutschen Tiefebene\") which is \"Norddeutsches Tiefland\". And \"Alpenvorland\". Both are relevant. So we need two items in natural_region array.\n\nClimate: Allowed values list. Which climate description? The text doesn't explicitly mention a climate type, but approximations: It's about Mecklenburg-Vorpommern, Niedersachsen, Schleswig-Holstein, Bavaria: typical German climates: \"kontinental\" or \"maritim\". The text does not have a direct quote identifying climate. But maybe mention \"kontinental\"? Not in text. But we could perhaps use \"niederschlagsnormal\" or \"subkontinental\". The document doesn't mention. So we might leave climate absent, no entries.\n\nLanduse: The landuse categories list includes \"Landwirtschaft\". The text states Moorböden are predominantly \"landwirtschaftlich genutzt\". So landuse content: \"Landwirtschaft\". evidence_anchor: a quote where that appears: e.g., \"werden überwiegend (rd. 70 %) landwirtschaftlich genutzt.\" So that quote.\n\nAlso possibly \"Brachliegende Flächen\"? but not mentioned. So just \"Landwirtschaft\".\n\nNow need JSON schema. Output must have keys: habitat, natural_region, climate, landuse. Each is an array of objects if cardinality >0; if none, empty array or not present? The schema: \"0..*\". So can be empty array.\n\nAll objects should have \"content\" and \"evidence_anchor\". No other keys. Ensure correct values allowed. Let's craft.\n\nHabitat array: one object with content \"Boden\", evidence anchor: we can use quote: \"Moorböden\" or longer. It's an excerpt of original. Eg: \"Moorböden\" -> \"Moorböden\". But I think we must provide entire quote excluding punctuation? It says \"Wörtliches Zitat aus dem Originaltext\". So maybe include exact phrase: e.g., \"Moorböden\". But that might be too short; we can use \"Moorböden sind v.a. in der norddeutschen Tiefebene und im Alpenvorland verbreitet und werden überwiegend (rd. 70 %) landwirtschaftlich genutzt.\" That includes word \"Moorböden\" and explicitly indicates habitat. That phrase includes other context. Should we include full phrase? Let's take that: \"Moorböden sind v.a. in der norddeutschen Tiefebene und im Alpenvorland verbreitet und werden überwiegend (rd. 70 %) landwirtschaftlich genutzt.\" That includes the term.\n\nFor natural_region:\n\n1. Alpenvorland: quote: \"Moorböden sind v.a. in der norddeutschen Tiefebene und im Alpenvorland verbreitet\" – includes Alpenvorland. However this was used for a sentence. Provide exact phrase. Use that same quote.\n\n2. Norddeutsches Tiefland: quote: \"Moorböden sind v.a. in der norddeutschen Tiefebene\" – phrase \"Norddeutschen Tiefebene\" maybe slightly different. But the allowed value is \"Norddeutsches Tiefland\". Quote can be \"In der norddeutschen Tiefebene\". That is fine.\n\nWhich quote to use? We can reuse the same long quote but show both values.\n\nOkay climate: none. So we leave \"climate\": [].\n\nLanduse: content \"Landwirtschaft\". evidence_anchor: the sentence \"werden überwiegend (rd. 70 %) landwirtschaftlich genutzt.\" Provide that as quote.\n\nLet's craft JSON.\n\nWe must not add extra fields or spaces incorrectly. Only required fields. The order isn't specified but we will provide all four in order. Each content: string; evidence_anchor: string. Ensure string values are properly double quoted. Escape quotes inside quotes if needed. We'll need to include backslashes? But we won't have internal quotes.\n\nLet's double-check for any other allowable category: landuse includes \"Brachliegende Flächen\", \"Landwirtschaft\". That is used.\n\nEnsure quoting: Use double quotes around keys and values. `` ` `` etc. Avoid trailing commas. Ensure JSON valid.\n\nEdge: The evidence quotes should be exact from original text: We can't add extra punctuation or modification. Use as in text. Let's copy exact sentence.\n\nThe original text: \"Moorböden sind v.a. in der norddeutschen Tiefebene und im Alpenvorland verbreitet und werden überwiegend (rd. 70 %) landwirtschaftlich genutzt.\" That's the sentence. Good.\n\nFor natural_region quotes, we need two separate quotes maybe same sentence but truncated? For Alpenvorland: \"Moorböden sind v.a. in der norddeutschen Tiefebene und im Alpenvorland verbreitet\" or entire sentence.\n\nFor Norddeutsches Tiefland: we can use \"in der norddeutschen Tiefebene\" but original: \"in der norddeutschen Tiefebene\". Sentence: \"Moorböden sind v.a. in der norddeutschen Tiefebene und im Alpenvorland verbreitet\" contains reference to both. Could use that. But we need separate evidence anchors? Could reuse same quote for both content. That might be acceptable. But the quote must include the region name exactly spelled. So for Alpenvorland: \"Alpenvorland\" appears. For Norddeutsches Tiefland: \"Norddeutschen Tiefebene\" appears; allowed value is \"Norddeutsches Tiefland\". Spelling difference: text says \"Norddeutschen Tiefebene\" (with \"en\"). The allowed value \"Norddeutsches Tiefland\" exactly; but we have to provide content equal to that value. Quote can contain \"Norddeutschen Tiefebene\". Is that allowed? The schema says evidence_anchor be literal quote. Variation on naming is okay. They likely want the same. But the value content must exactly be the allowed value. So for content we use \"Norddeutsches Tiefland\". The evidence anchor can be the quote that contains \"Norddeutschen Tiefebene\". That is okay.\n\nSo two quotes: we'll reuse the sentence. Provide as evidence.\n\nLanduse: quote: \"werden überwiegend (rd. 70 %) landwirtschaftlich genutzt.\" That's part of sentence again. Use that.\n\nThus okay.\n\nEnsure no JSON comments. Provide final JSON.",
+  "reasoning_content": "We need to extract info per schema: habitats, taxa, biodiversity_level, ecosystem_type. The text is about photovoltaic panels on peat bogs, references measurements of biodiversity? The discussion includes biodiversity impacts on insects, amphibians, birds. So biodiversity_levels include \"Zusammensetzung der Artengemeinschaft\" or \"Artiere\" etc. Also \"Funktions Diversity\" maybe? We need to provide evidence_anchor (quote) for each extracted item. Must have JSON with only allowed fields. Provide minimal.\n\nWe need to analyze habitats: The study deals with \"Moorböden\" (peat bogs) essentially. So habitat content: \"Boden\" or \"Moore\" but allowed content values: Agrar- und Offenland; Binnengewässer und Auen; Boden; Küsten und Küstengewässer; Urbane Räume; Wald. Moorböden is a type of Boden, so we can use Boden. Also mention \"Moor\" but that's not a listed content. So just \"Boden\".\n\nAlso habitat combination might be \"Urbane Räume\" because PV installation is on land? But main is peat bogs. For capturing the study's focus choose Boden.\n\nProvide evidence anchor: a quote referencing peat bogs: e.g. \"Auf entwässerten Moorböden\" or \"Moorböden\".\n\nWe need to include evidence anchor string snippet from text. Choose: \"auf entwässerten Moorböden\". Provide that.\n\nNow taxa: The text deals with impact on biodiversity: in particular insects, amphibians, birds. So taxa: Insects, Amphibians and Reptiles, Birds. Since we need full species names? The request says \"kleinste machbare Ebene\". The categories are groups. So we can create taxa entries with species_group content: Insekten, Amphibien und Reptilien, Vögel. For each include evidence anchor quoting that \"Insekten, Amphibien und Vögeln\". For each we need scientific_name maybe? But not necessary if using group. According to schema, each taxa object requires scientific_name object? Let's check: For each taxa object, we have scientific_name (object), german_name (optional), species_group (required). The requirement: \"scientific_name\" content must be 1. But if we are only providing a species group, perhaps we can omit scientific_name? The cardinality of scientific_name: 0..1. So we can leave it null as omitted. Ensure the JSON representation includes not the field? But it's optional so can omit. So each taxa entry can include only species_group. Provide evidence_anchor.\n\nNow biodiversity_level: The study mentions evaluating biodiversity \"Zusammensetzung der Artengemeinschaft\". Also mention \"Funktions Diversity\"? Not explicitly. The talk about \"Biodiversität\" \"Insekten, Amphibien und Vögel\" etc. So the level could be \"Zusammensetzung der Artengemeinschaft\". Provide evidence anchor: text mentioning \"Biodiversität insbesondere von Insekten, Amphibien und Vögeln zu untersuchen.\" So we quote that.\n\nAlso perhaps \"Funktions Diversity\" not indicated. So only that.\n\nNow ecosystem_type: classification categories: It could be Under \"Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes\" or \"Boden\" but there is a list of allowed ecosystem types. For peat bogs maybe \"Röhricht\" but it's for brackish? There is a relevant type \"Felsen\", \"Abbildung\" etc? Actually I think peat bog is \"Boden\" but ecosystem_type expects categories such as I Biotoptypengruppen der Meere und Küsten; II Biotoptypengruppen der Binnengewässer; III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes; etc. Moor fits within terrestrische? The categories maybe not specifically \"Moore\". There's not a direct mapping. Possibly \"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes\" and term \"Boden\" (ram?). But term options list includes many types names, not \"Boden\". So we may choose to leave ecosystem_type empty.\n\nBut to satisfy schema, we need to return habitat, taxa, biodiversity_level, ecosystem_type, perhaps ecosystem_type optional 0..*. We can omit if no suitable mapping.\n\nCheck schema: ecosystem_type cardinality 0..* so can be omitted entirely.\n\nThus final JSON includes habitat object array with content \"Boden\". Provide evidence_anchor.\n\nTaxa: 3 entries.\n\nBiodiversity_level: 1 entry content \"Zusammensetzung der Artengemeinschaft\" with evidence_anchor.\n\nReturn JSON.\n\nNeed to ensure proper JSON format, no extra fields.\n\nQuote access: For habitat evidence_anchor: \"auf entwässerten Moorböden\". For taxa: use \"Insekten\", \"Amphibien und Reptilien\", \"Vögel\". Quote covering those: \"Insekten, Amphibien und Vögeln\". The text: \"Insekten, Amphibien und Vögeln\" is a phrase. Use that. For evidence_anchor use that phrase.\n\nFor biodiversity_level: use quote: \"Biodiversität insbesondere von Insekten, Amphibien und Vögeln zu untersuchen.\" Might use \"Biodiversität insbesondere von Insekten, Amphibien und Vögeln\". Good.\n\nMake JSON:\n\n{\n \"habitat\":[{ \"content\":\"Boden\",\"evidence_anchor\":\"auf entwässerten Moorböden\" }],\n \"taxa\":[ \n   { \"species_group\": {\"content\":\"Insekten\",\"evidence_anchor\":\"Insekten, Amphibien und Vögeln\"} },\n   { \"species_group\": {\"content\":\"Amphibien und Reptilien\",\"evidence_anchor\":\"Insekten, Amphibien und Vögeln\"} },\n   { \"species_group\": {\"content\":\"Vögel\",\"evidence_anchor\":\"Insekten, Amphibien und Vögeln\"} }\n ],\n \"biodiversity_level\":[\n   { \"content\":\"Zusammensetzung der Artengemeinschaft\",\"evidence_anchor\":\"Biodiversität insbesondere von Insekten, Amphibien und Vögeln\" }\n ]\n}\n\nBut need: species_group object includes content and evidence_anchor. The type of content and evidence_anchor exactly.\n\nWe also need to ensure that each taxon object includes species_group object mandatory. They also may include scientific_name if desired but omitted.\n\nDouble-check language: The schema says each taxa object: \n\n- scientific_name: object (optional)\n- german_name: object (optional)\n- species_group: object (required)\n\nSo we can provide species_group with content and evidence_anchor. Good.\n\nEdge: \"Insekten\" and \"Amphibien und Reptilien\" and \"Vögel\" all categories within allowed species_group values? Allowed values: Amphibien und Reptilien; Andere; Andere Pflanzen; Andere Wirbellose; Archaeen; Bakterien; Fische; Flechten; Gefäßpflanzen; Insekten; Moose; Pilze; Protisten; Protozoen; Säugetiere; Vögel.\n\nSo yes.\n\nNow habitat object: property species_group etc? Wait habitat type structure: Each habitat object contains:\n\n- content: string\n- evidence_anchor: string\n\nSo provide that. Good.\n\nNow final JSON. Ensure no trailing commas.\n\nReturn only JSON.",
   "messages": null,
   "messages_formatted": null,
   "errors": [],
