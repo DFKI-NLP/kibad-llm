@@ -71,7 +71,7 @@ def test_extractor(tmp_path, cfg_predict_extractor, extractor_name):
         expected_result_path.parent.mkdir(parents=True, exist_ok=True)
         # write fixture data
         with open(expected_result_path, "w") as f:
-            json.dump(result, f, indent=2)
+            json.dump(result, f, indent=2, ensure_ascii=False)
 
     with open(expected_result_path) as f:
         expected_result = json.load(f)
