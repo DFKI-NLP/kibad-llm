@@ -59,7 +59,6 @@ def file_name(request) -> str:
     return request.param
 
 
-@pytest.mark.slow
 def test_prediction(file_name, predictions_dict):
     prediction = predictions_dict[file_name]
 
@@ -79,7 +78,6 @@ def test_prediction(file_name, predictions_dict):
     assert set(prediction["structured"]) == set(result_expected["structured"])
 
 
-@pytest.mark.slow
 def test_predict_fast_dev_run(tmp_path, cfg_predict_module):
     cfg_predict = deepcopy(cfg_predict_module)
 
@@ -151,7 +149,6 @@ def cfg_predict_pdf_errors(tmp_path, error_type) -> DictConfig:  # type: ignore
     GlobalHydra.instance().clear()
 
 
-@pytest.mark.slow
 def test_prediction_on_pdf_errors(cfg_predict_pdf_errors, error_type):
     job_return_value = predict(cfg_predict_pdf_errors)
 

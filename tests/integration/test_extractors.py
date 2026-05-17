@@ -55,7 +55,6 @@ def cfg_predict_extractor(tmp_path, extractor_name) -> DictConfig:  # type: igno
     GlobalHydra.instance().clear()
 
 
-@pytest.mark.slow
 def test_extractor(tmp_path, cfg_predict_extractor, extractor_name):
 
     HydraConfig().set_config(cfg_predict_extractor)
