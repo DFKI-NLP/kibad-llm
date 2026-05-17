@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 from hydra import compose, initialize
@@ -7,7 +8,7 @@ import pytest
 
 from kibad_llm.config import PROJ_ROOT
 
-WRITE_FIXTURE_DATA = False  # set to True to create or update fixture data
+WRITE_FIXTURE_DATA = bool(os.getenv("WRITE_FIXTURE_DATA", ""))  # set to True to create or update fixture data
 
 
 def test_dont_write_fixture_data():
