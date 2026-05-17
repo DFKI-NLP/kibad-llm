@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Generator, Mapping
 from enum import Enum
 import hashlib
 import importlib
@@ -8,7 +8,6 @@ import json
 from pathlib import Path
 import re
 from types import SimpleNamespace
-from collections.abc import Generator
 from typing import Any, cast
 
 from llama_index.core.base.llms.types import ChatResponse, MessageRole
@@ -103,8 +102,8 @@ def _serialize_response(response: ChatResponse) -> dict[str, Any]:
 
 
 def _deserialize_response(response_snapshot: dict[str, Any]) -> ChatResponse:
-    message_snapshot = response_snapshot.get("message") or {}
-    raw_message_snapshot = response_snapshot.get("raw_message") or {}
+    message_snapshot: dict[str, Any] = response_snapshot.get("message") or {}
+    raw_message_snapshot: dict[str, Any] = response_snapshot.get("raw_message") or {}
 
     raw_message = SimpleNamespace(
         reasoning=raw_message_snapshot.get("reasoning"),
