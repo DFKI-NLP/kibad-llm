@@ -1,0 +1,355 @@
+{
+  "fixture_format_version": 1,
+  "fixture_hash": "635d654ea8099fecccab8fe957fefa3f446320ce75c5466823d4ee523c51c2fc",
+  "request": {
+    "fixture_format_version": 1,
+    "backend_name": "gpt_oss_20b",
+    "backend_type": "llama_index.llms.openai_like.base.OpenAILike",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Du extrahierst Informationen aus einem Markdown-Dokument.\nGib **ausschließlich** gültiges JSON nach dem folgendem Schema zurück.\nKeine zusätzlichen Felder, keine Erklärungen.\nBeschreibung: Das Schema sammelt Angaben zu den wichtigsten biodiversitätsbezogenen Merkmalen der Studie: Lebensräume, Ökosystemtypen, Arten bzw. Artengruppen, sowie die untersuchte Biodiversitätsebene.\nFeldhinweise und erlaubte Werte (getrennt durch Semikolons):\n- habitat: Um welchen der folgenden Lebensräume oder um welche Kombination der folgenden Lebensräume geht es in dem Text? | Kardinalität: 0..* | Typ: object\n  - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Agrar- und Offenland; Binnengewässer und Auen; Boden; Küsten und Küstengewässer; Urbane Räume; Wald\n  - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string\n- taxa: Welche Arten bzw. Artengruppen werden in der Studie untersucht? Verwende die kleinste machbare Ebene: Wenn eine Studie nur wenige Arten behandelt, sollten diese auf Artebene mit ihrem wissenschaftlichen und deutschen Namen angegeben werden. Werden jedoch sehr viele Arten behandelt oder eine Artengruppe besprochen, wird die Artengruppe als 'Sammelbegriff' angegeben. Falls die Studie auf englisch ist, übersetze Art- bzw. Artengruppennamen ins Deutsche. Ergänze, wenn nicht angegeben, die wissenschaftlichen Artennamen, und umgekehrt die deutschen Namen, wenn nur die wissenschaftlichen Artennamen verwendet wurden. | Kardinalität: 0..* | Typ: object\n  Beschreibung: Art mit wissenschaftlichem und deutschem Namen sowie taxonomischer Gruppe.\n  - scientific_name: Wissenschaftlicher Name der Art | Kardinalität: 0..1 | Typ: object\n    - content: | Kardinalität: 1 | Typ: string\n    - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string\n  - german_name: Deutscher Name der Art | Kardinalität: 0..1 | Typ: object\n    - content: | Kardinalität: 1 | Typ: string\n    - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string\n  - species_group: Taxonomische Gruppe der Art | Kardinalität: 1 | Typ: object\n    Beschreibung: Taxonomische Gruppe der Art\n    - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Amphibien und Reptilien; Andere; Andere Pflanzen; Andere Wirbellose; Archaeen; Bakterien; Fische; Flechten; Gefäßpflanzen; Insekten; Moose; Pilze; Protisten; Protozoen; Säugetiere; Vögel\n    - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string\n- biodiversity_level: Auf welche der folgenden Ebenen wird Biodiversität in der Studie gemessen? | Kardinalität: 0..* | Typ: object\n  - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Artenvielfalt; Funktionelle Diversität; Genetische Diversität; Habitatdiversität; Phylogenetische Diversität; Strukturelle Diversität; Zusammensetzung der Artengemeinschaft\n  - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string\n- ecosystem_type: Welche Ökosystemtypen werden betrachtet? | Kardinalität: 0..* | Typ: object\n  Beschreibung: Ökosystemtyp mit Kategorie und (wenn möglich) mit Name. Wenn es im Text um die Ökosystemtyp-Kategorien Meere oder Küsten geht, sind nur die Ökosystemtypen (Namen) möglich: Benthal der Nordsee; Benthal der Ostsee; Fels- und Steilküsten; Küstendünen; Pelagial der Nordsee; Pelagial der Ostsee; Saisonales Meereis der Nordsee; Saisonales Meereis der Ostsee; Salzgrünland, Brackwasserröhrichte und -Hochstaudenfluren des Geolitorals der Ostseeküste; Salzgrünland der Nordseeküste (Supralitoral); Sände, Sand-, Geröll- und Blockstrände. Wenn es im Text um die Ökosystemtyp-Kategorien Binnengewässer geht, sind nur die folgenden Ökosystemtypen (Namen) möglich: Fließende Gewässer; Grundwasser und Höhlengewässer; Quellen (inklusive Quellabfluss (Krenal)); Stehende Gewässer. Wenn es im Text um Ökosystemtyp-Kategorien terrestrisches oder semiterrestrisches Binnenland geht, sind nur die folgenden Ökosystemtypen (Namen) möglich: Äcker und Ackerbrachen; Feldgehölze, Gebüsche, Hecken und Gehölzkulturen; Felsen, Block- und Schutthalden, Geröllfelder, offene Bereiche mit sandigem oder bindigem Substrat; Hoch-, Zwischen- und Übergangsmoore; Höhlen (einschließlich Stollen, Brunnenschächte etc.); Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent); Nadel(Misch)Wälder und -Forste; Röhrichte (ohne Brackwasserröhrichte); Trockenrasen sowie Grünland trockener bis frischer Standorte; Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte; Waldmäntel und Vorwälder, spezielle Waldnutzungsformen; Wald- und Ufersäume, Staudenfluren; Zwergstrauchheiden; Großseggenriede. Wenn es im Text um die Ökosystemtyp-Kategorie technische Biotope geht, sind nur die folgenden Ökosystemtypen (Namen) möglich: Bauwerke; Kleine, unbefestigte Freiflächen des besiedelten Bereiches; Verkehrsanlagen und Plätze; Deponien und Rieselfelder. Wenn es im Text um die Ökosystemtyp-Kategorie Biotope mit Schwerpunkt in den Alpen geht, sind nur die folgenden Ökosystemtypen (Namen) möglich: Gebirgsrasen (subalpin bis alpin); Gewässer (subalpin bis alpin); Firn, permanente Schneefelder und Gletscher; Felsen (subalpin bis nival); Steinschutthalden und Schotterflächen (subalpin bis alpin); Schneeböden, Schneetälchen; Moore (subalpin bis alpin); Stauden- und Lägerfluren (hochmontan bis alpin); Zwergstrauchheiden (subalpin bis alpin); Gebüsche (hochmontan bis subalpin); Wälder (subalpin). Passt keine der genannten Ökosystemtyp-Kategorien (d.h. Ökosystemtyp-Kategorie Weitere), sind immer die folgenden Ökosystemtypen (Namen) möglich: Rohbodenstandorte und Ruderalfluren; Grün- und Freiflächen\n  - category: Kategorie des Ökosystemtyps | Kardinalität: 1 | Typ: object\n    Beschreibung: Kategorie des Ökosystemtyps\n    - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: I Biotoptypengruppen der Meere und Küsten; II Biotoptypengruppen der Binnengewässer; III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes; IV Technische Biotoptypengruppen; V Biotoptypengruppen mit Schwerpunkt in den Alpen; VI Weitere\n    - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string\n  - term: Name des Ökosystemtyps | Kardinalität: 0..1 | Typ: object\n    - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Anthropogene Rohbodenstandorte und Ruderalfluren; Bauwerke; Benthal der Nordsee; Benthal der Ostsee; Deponien und Rieselfelder; Feldgehölze, Gebüsche, Hecken und Gehölzkulturen; Fels- und Steilküsten; Felsen, Block- und Schutthalden, Geröllfelder, offene Bereiche mit sandigem oder bindigem Substrat; Felsen der subalpinen bis nivalen Stufe; Firn, permanente Schneefelder und Gletscher; Fließende Gewässer; Gebirgsrasen (subalpine bis alpine Stufe); Gebüsche der hochmontanen bis subalpinen Stufe; Gewässer der subalpinen bis alpinen Stufe; Großseggenriede; Grundwasser und Höhlengewässer; Grün- und Freiflächen; Hoch-, Zwischen- und Übergangsmoore; Höhlen (einschließlich Stollen, Brunnenschächte etc.); Kleine, unbefestigte Freiflächen des besiedelten Bereiches; Küstendünen; Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent); Moore der subalpinen bis alpinen Stufe; Nadel(Misch)Wälder und -Forste; Pelagial der Nordsee; Pelagial der Ostsee; Quellen (inklusive Quellabfluss (Krenal)); Röhrichte (ohne Brackwasserröhrichte); Saisonales Meereis der Nordsee; Saisonales Meereis der Ostsee; Salzgrünland der Nordseeküste (Supralitoral); Salzgrünland, Brackwasserröhrichte und -Hochstaudenfluren des Geolitorals der Ostseeküste; Schneeböden, Schneetälchen; Stehende Gewässer; Steinschutthalden und Schotterflächen der subalpinen bis alpinen Stufe; Sände, Sand-, Geröll- und Blockstrände; Stauden- und Lägerfluren der hochmontanen bis alpinen Stufe; Subalpine Wälder; Trockenrasen sowie Grünland trockener bis frischer Standorte; Verkehrsanlagen und Plätze; Wald- und Ufersäume, Staudenfluren; Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte; Waldmäntel und Vorwälder, spezielle Waldnutzungsformen; Zwergstrauchheiden; Zwergstrauchheiden der subalpinen bis alpinen Stufe; Äcker und Ackerbrachen\n    - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string\n"
+      },
+      {
+        "role": "user",
+        "content": "Dokument in Markdown Format:\n\n27.08.25, 10:02 Grünes Band Deutschland: Chronik\n\n# Ost und West – im Naturschutz vereint\n\n#### 1975: Die Geschichte des Grünen Bandes beginnt schon vor dem Mauerfall.\n\n\nGroße Freude nach der Grenzöffnung 1989 in Mödlareuth. (A. Schaffner)\n\n\n» 1975-1979: Schon 10 Jahre vor dem Mauerfall kartiert der BUND Naturschutz in Bayern\n(BN) die Vogelwelt an der Grenze.\n\n\n» April 1981: Erste Flächenankäufe des BN in Oberfranken entlang der Grenze zur DDR.\n\n\n» 9. November 1989: Öffnung der innerdeutschen Grenzen\n\n\n» 14. November 1989: Hubert Weinzierl, Vorsitzender des BUND und BN, äußert, dass der\nehemalige Todesstreifen ein \"grüner Streifen des Friedens\" werden könnte.\n\n\nhttps://www.bund.net/themen/gruenes-band/chronik/ 1/7\n\n\n27.08.25, 10:02 Grünes Band Deutschland: Chronik\n\n\n\n»\n\n\n»\n\n\n\n9. Dezember 1989: Geburtsstunde des Grünen Bandes Natur- und Umweltschützer aus\nOst- und Westdeutschland verabschieden erste Resolution für die Schutzidee \"Grünes\nBand\".\n\n\nAnfang 1990er: Es findet ein mühsamer Kampf des Naturschutzes unter Federführung des\nBN für die Erhaltung des Grünen Bandes statt. Gleichzeitig entstehen Lücken durch\nintensiven Ackerbau und Straßen.\n\n\n\n» 1993-1994: Nach der Minenräumaktion gilt das Grüne Band als \"nach menschlichem\nErmessen minenfrei\".\n\n\n» April 1996: Das Bundesland Sachsen vollendet die Unterschutzstellung des sächsischen\nGrünen Bandes.\n\n\n» 1999: Das BUND-Projektbüro Grünes Band wird in Nürnberg gegründet.\n\n\n» 2000: Der BUND kauft erste Flächen (11 Hektar) im Grünen Band.\n\n\n» 24. November 2000: Der BUND startet den Anteilschein Grünes Band und gewinnt damit\nwertvolle Spendeneinnahmen.\n\n\n» 2001-2002: Erste Bestandsaufnahme Grünes Band, als Basis für ein überregionales\nKonzept zum Schutz des gesamten Grünen Bandes.\n\n\n\n»\n\n\n\n19. Juni 2002: Das WestÖstliche Tor wird eingeweiht. BN-Vorsitzender Hubert Weiger\nverkündet erstmals die Idee eines \"Grünen Bandes Europa\". Michail Gorbatschow\nübernimmt als Ehrengast die Schirmherrschaft.\n\n\n\n» 15. Oktober 2002: In den Koalitionsvereinbarungen von SPD und Bündnis90/Grüne wird der\nSchutz des Grünen Bandes festgeschrieben.\n\n\n\n»\n\n\n»\n\n\n»\n\n\n»\n\n\n\n15.-16. Juli 2003: Das Grüne Band Europa wird offiziell ins Leben gerufen. Ein Jahr später\nwird das BUND-Projektbüro Grünes Band zum Regionalkoordinator für das Grüne Band\nZentraleuropa ernannt.\n\n\n11. November 2005: Im Koalitionsvertrag zwischen CDU, CSU und SPD wird das Grüne\nBand erstmalig als Nationales Naturerbe eingestuft. Die inzwischen beschlossene\nFlächenübertragung erhält neuen Schwung.\n\n\n2005-2011: Der BUND begleitet die neu entstandenen naturtouristische Angebote\nwissenschaftlich. Auch die Spenderreisen für Unterstützer des Grünen Bands werden\nausgebaut.\n\n\n7. November 2007: Das Grüne Band wird in der \"Nationalen Meilensteine am laufenden\nBand Strategie zur Biologischen Vielfalt\" als Leuchtturmprojekt zur Erhaltung der\nbiologischen Vielfalt in Deutschland benannt.\n\n\n\n» 29. Juli 2009: Bei der Novellierung des Bundesnaturschutzgesetztes wird das Grüne Band\nnamentlich aufgenommen, als Bestandteil des nationalen Biotopverbunds.\n\n\nhttps://www.bund.net/themen/gruenes-band/chronik/ 2/7\n\n\n27.08.25, 10:02 Grünes Band Deutschland: Chronik\n\n» November 2011: Das Bundesamt für Naturschutz und der BUND verabschieden auf einer\nFachtagung einstimmig das Leitbild für die Biotoppflege im Grünen Band.\n\n\n\n»\n\n\n»\n\n\n»\n\n\n\n2012-2014: Aktualisierung der Bestandsaufnahme Grünes Band: Fast zwei Drittel der\nFlächen im Grünen Band weisen einen Gefährdungsgrad nach der Roten Liste\nDeutschlands auf, 87 Prozent der Gesamtfläche sind naturnah.\n\n\n2012-2017: Unter Trägerschaft des BUND Projektbüros Grünes Band wird das Projekt\n\"Lückenschluss Grünes Band\" im Bundesprogramm zur biologischen Vielfalt durchgeführt.\nLücken im Biotopverbund sollen geschlossen werden.\n\n\n15. Mai 2013: Die Initiative \"Grünes Band Europa\" feiert ihr zehnjähriges Bestehen in Berlin.\nDabei unterzeichnen 15 Staaten eine Absichtserklärung zur Kooperation, weitere Staaten\nsenden Unterstützerschreiben.\n\n\n\n» 2014: Das Grüne Band Deutschland feiert sein 25jähriges Jubiläum.\n\n\n» 2014: Thüringer Koalitionsvertrag. Das Grüne Band in Thüringen soll Nationales\nNaturmonument werden.\n\n\n» Februar 2016: Start Naturschutzgroßprojekt \"Rodachtal - Lange Berge - Steinachtal\"\n\n\n» 2016: Sachsen-Anhaltinischer Koalitionsvertrag: Das Grüne Band in Sachsen-Anhalt soll\nNationales Naturmonument werden.\n\n\n» 2016: Flächen mit über 750 Hektar wurden bisher im bzw. am Grünen Band gekauft.\n\n\n» 2017: Bundespräsident Frank-Walter Steinmeier überreicht den Wegbereitern des Grünen\nBandes, Hubert Weiger und Kai Frobel, den Deutschen Umweltpreis.\n\n\n» Durch weitere Flächenkäufe sind 900 Hektar Grünes Band dauerhaft für den Naturschutz\ngesichert.\n\n\n» 2018: Am 9. November weist Thüringen als erstes Bundesland das Grüne Band als\nNationales Naturmonument aus.\n\n\n» 2019: Das Grüne Band Deutschland feiert sein 30-jähriges Jubiläum.\n\n\n» Insgesamt 1.000 Hektar sind BUND-Naturschutzflächen am und im Grünen Band.\n\n\n» Start des Projektes \"Quervernetzung Grünes Band\".\n\n\n» Am 24. Oktober weist Sachsen-Anhalt das Grüne Band als Nationales Naturmonument\naus.\n\n## Grünes Band Europa\n\n\n» [Grünes Band Europa: Chronik](https://www.bund.net/themen/gruenes-band/gruenes-band-europa/chronik/)\n\n\n» [Das Grüne Band Europa: eine Vision](https://www.bund.net/themen/gruenes-band/gruenes-band-europa/)\n\n\nhttps://www.bund.net/themen/gruenes-band/chronik/ 3/7\n\n\n27.08.25, 10:02 Grünes Band Deutschland: Chronik\n\n##### **So wirkt Ihre Hilfe am Grünen Band**\n\n\nOhne Schutz verschwinden Wiesen, Moore und Wälder, verdrängt von Beton und\nMonokulturen. Ihre Spende rettet sie. Beispiele, wie Ihre Spende hilft:\n\n\nMit **30 Euro** geben Sie der Natur eine Stimme in der Politik – und unterstützen uns,\neinen verbindlichen Schutzstatus für das gesamte Grüne Band zu fordern.\nMit **50 Euro** helfen Sie, wertvolle Lebensräume am Grünen Band im Sinne des\nNaturschutzes und mit speziellem Gerät zu pflegen.\nMit **100 Euro** schenken Sie bedrohten Arten ein Zuhause **,** indem Sie den Kauf von\n100 m² Fläche und somit den Lückenschluss im Grünen Band ermöglichen.\n\n# **50 €**\n\n\nmonatlich einmalig\n\n#### **Jetzt spenden**\n\n\n\n\n## Zum Grünen Band\n\nFast 40 Jahre lang war Deutschland geteilt. Die innerdeutsche Grenze wurde mit hohen\nMauern, Stacheldraht und Wachtürmen streng bewacht. Gleichzeitig gab sie der Natur\neine Atempause: Der Grenzstreifen wurde zum Refugium für mehr als 1.200 seltene und\ngefährdete Pflanzen und Tiere. Der BUND hat seit dem Fall der Mauer hier eines der\ngrößten und bedeutendsten Naturschutzprojekte geschaffen.\n\n\n**[MEHR ERFAHREN](https://www.bund.net/gruenes-band/)**\n\n\nhttps://www.bund.net/themen/gruenes-band/chronik/ 4/7\n\n\n27.08.25, 10:02 Grünes Band Deutschland: Chronik\n\n##### Mitmachen\n\n\n[Klimademos](https://www.bund.net/mitmachen/klimademos/)\n\n[Mitglied werden](https://mitglied.bund.net/?wc=24073)\n\n[BUND-Newsletter](https://www.bund.net/service/newsletter/)\n\n[ToxFox: Schadstoffe aufdecken](https://www.bund.net/themen/chemie/toxfox/)\n\n[BUND-Akademie](https://www.bund.net/mitmachen/bund-akademie/)\n\n[Bundesfreiwilligendienst](https://www.bund.net/mitmachen/bundesfreiwilligendienst/)\n\n\nhttps://www.bund.net/themen/gruenes-band/chronik/ 5/7\n\n\n27.08.25, 10:02 Grünes Band Deutschland: Chronik\n\n\n[BUNDintern](https://www.bund.net/mitmachen/bundintern/)\n\n##### BUND-Tipps\n\n\n[Ökotipps](https://www.bund.net/bund-tipps/oekotipps/)\n\n[Natur erfahren](https://www.bund.net/bund-tipps/natur-erfahren/)\n\n[Tiere und Pflanzen schützen](https://www.bund.net/bund-tipps/tiere-und-pflanzen-schuetzen/)\n\n##### Über uns\n\n\n[50 Jahre BUND](https://bund.pageflow.io/50-Jahre-BUND)\n\n[Erfolge](https://www.bund.net/ueber-uns/transparenz/erfolge/)\n\n[Organisation](https://www.bund.net/ueber-uns/organisation/)\n\n[Mitglieder-/Spenderservice](https://www.bund.net/ueber-uns/mitgliederservice/)\n\n[BUND vor Ort](https://www.bund.net/ueber-uns/bund-vor-ort/)\n\n[Jobs](https://www.bund.net/ueber-uns/jobs/)\n\n[Transparenz](https://www.bund.net/ueber-uns/transparenz/)\n\n[Forschungspreis](https://www.bund.net/ueber-uns/forschungspreis/)\n\n[Datenschutz](https://www.bund.net/datenschutz/)\n\n##### Service\n\n\n[Presse](https://www.bund.net/service/presse/)\n\n[Impressum](https://www.bund.net/impressum/)\n\n[Termine](https://www.bund.net/service/termine/)\n\n[Publikationen](https://www.bund.net/service/publikationen/)\n\n[Newsletter](https://www.bund.net/service/newsletter/)\n\n[Shop](http://bundladen.de/)\n\n[English](https://www.bund.net/bund-in-english/)\n\n[Kontakt](https://www.bund.net/service/kontakt/)\n\n[Login](https://www.bund.net/service/login/)\n\n[(Logout)](https://www.bund.net/service/logout/)\n\n##### Folgen auf\n\n\n**[MITGLIED WERDEN](https://mitglied.bund.net/?wc=21726)**\n\n\n**[JETZT SPENDEN](https://spenden.bund.net/?wc=21765)**\n\n\nhttps://www.bund.net/themen/gruenes-band/chronik/ 6/7\n\n\n27.08.25, 10:02 Grünes Band Deutschland: Chronik\n\n\nCookie-Einstellungen ändern\n\n\nDer BUND ist als gemeinnützige Organisation unter der Steuernummer 27/026/35703 von der Körperschafts- und\n[Gewerbesteuer befreit. Mitgliedsbeiträge und Spenden an den BUND sind steuerlich absetzbar. Mehr...](https://www.bund.net/ueber-uns/transparenz/initiative-transparente-zivilgesellschaft/)\n\n\nhttps://www.bund.net/themen/gruenes-band/chronik/ 7/7\n\n\n\n"
+      }
+    ],
+    "request_kwargs": {
+      "extra_body": {
+        "structured_outputs": {
+          "json": {
+            "$defs": {
+              "BiodiversityLevelEnum": {
+                "enum": [
+                  "Artenvielfalt",
+                  "Funktionelle Diversität",
+                  "Genetische Diversität",
+                  "Habitatdiversität",
+                  "Phylogenetische Diversität",
+                  "Strukturelle Diversität",
+                  "Zusammensetzung der Artengemeinschaft"
+                ],
+                "title": "BiodiversityLevelEnum",
+                "type": "string"
+              },
+              "EcosystemTypeCategoryEnum": {
+                "enum": [
+                  "I Biotoptypengruppen der Meere und Küsten",
+                  "II Biotoptypengruppen der Binnengewässer",
+                  "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes",
+                  "IV Technische Biotoptypengruppen",
+                  "V Biotoptypengruppen mit Schwerpunkt in den Alpen",
+                  "VI Weitere"
+                ],
+                "title": "EcosystemTypeCategoryEnum",
+                "type": "string"
+              },
+              "EcosystemTypeSimple": {
+                "additionalProperties": false,
+                "description": "Ökosystemtyp mit Kategorie und (wenn möglich) mit Name.\nWenn es im Text um die Ökosystemtyp-Kategorien Meere oder Küsten geht, sind nur die Ökosystemtypen (Namen)\nmöglich: Benthal der Nordsee; Benthal der Ostsee; Fels- und Steilküsten; Küstendünen; Pelagial\nder Nordsee; Pelagial der Ostsee; Saisonales Meereis der Nordsee; Saisonales Meereis der\nOstsee; Salzgrünland, Brackwasserröhrichte und -Hochstaudenfluren des Geolitorals der\nOstseeküste; Salzgrünland der Nordseeküste (Supralitoral); Sände, Sand-, Geröll- und Blockstrände.\nWenn es im Text um die Ökosystemtyp-Kategorien Binnengewässer geht, sind nur die folgenden Ökosystemtypen\n(Namen) möglich: Fließende Gewässer; Grundwasser und Höhlengewässer; Quellen (inklusive Quellabfluss (Krenal));\nStehende Gewässer.\nWenn es im Text um Ökosystemtyp-Kategorien terrestrisches oder semiterrestrisches Binnenland\ngeht, sind nur die folgenden Ökosystemtypen (Namen) möglich: Äcker und Ackerbrachen; Feldgehölze,\nGebüsche, Hecken und Gehölzkulturen; Felsen, Block- und Schutthalden, Geröllfelder, offene Bereiche\nmit sandigem oder bindigem Substrat; Hoch-, Zwischen- und Übergangsmoore; Höhlen (einschließlich Stollen,\nBrunnenschächte etc.); Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent);\nNadel(Misch)Wälder und -Forste; Röhrichte (ohne Brackwasserröhrichte); Trockenrasen sowie\nGrünland trockener bis frischer Standorte; Waldfreie Niedermoore und Sümpfe, Grünland nasser\nbis feuchter Standorte; Waldmäntel und Vorwälder, spezielle Waldnutzungsformen; Wald- und\nUfersäume, Staudenfluren; Zwergstrauchheiden; Großseggenriede.\nWenn es im Text um die Ökosystemtyp-Kategorie technische Biotope geht, sind nur die folgenden\nÖkosystemtypen (Namen) möglich: Bauwerke; Kleine, unbefestigte Freiflächen des besiedelten Bereiches;\nVerkehrsanlagen und Plätze; Deponien und Rieselfelder.\nWenn es im Text um die Ökosystemtyp-Kategorie Biotope mit Schwerpunkt in den Alpen geht, sind nur die\nfolgenden Ökosystemtypen (Namen) möglich: Gebirgsrasen (subalpin bis alpin); Gewässer (subalpin bis alpin);\nFirn, permanente Schneefelder und Gletscher; Felsen (subalpin bis nival); Steinschutthalden und\nSchotterflächen (subalpin bis alpin); Schneeböden, Schneetälchen; Moore (subalpin bis alpin);\nStauden- und Lägerfluren (hochmontan bis alpin); Zwergstrauchheiden (subalpin bis alpin);\nGebüsche (hochmontan bis subalpin); Wälder (subalpin).\nPasst keine der genannten Ökosystemtyp-Kategorien (d.h. Ökosystemtyp-Kategorie Weitere), sind immer\ndie folgenden Ökosystemtypen (Namen) möglich: Rohbodenstandorte und Ruderalfluren; Grün- und Freiflächen",
+                "properties": {
+                  "category": {
+                    "type": "object",
+                    "properties": {
+                      "content": {
+                        "$ref": "#/$defs/EcosystemTypeCategoryEnum"
+                      },
+                      "evidence_anchor": {
+                        "type": "string",
+                        "description": "Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt."
+                      }
+                    },
+                    "required": [
+                      "content",
+                      "evidence_anchor"
+                    ],
+                    "additionalProperties": false,
+                    "description": "Kategorie des Ökosystemtyps"
+                  },
+                  "term": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "content": {
+                            "$ref": "#/$defs/EcosystemTypeTermEnum"
+                          },
+                          "evidence_anchor": {
+                            "type": "string",
+                            "description": "Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt."
+                          }
+                        },
+                        "required": [
+                          "content",
+                          "evidence_anchor"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "description": "Name des Ökosystemtyps"
+                  }
+                },
+                "required": [
+                  "category"
+                ],
+                "title": "EcosystemTypeSimple",
+                "type": "object"
+              },
+              "EcosystemTypeTermEnum": {
+                "enum": [
+                  "Anthropogene Rohbodenstandorte und Ruderalfluren",
+                  "Bauwerke",
+                  "Benthal der Nordsee",
+                  "Benthal der Ostsee",
+                  "Deponien und Rieselfelder",
+                  "Feldgehölze, Gebüsche, Hecken und Gehölzkulturen",
+                  "Fels- und Steilküsten",
+                  "Felsen, Block- und Schutthalden, Geröllfelder, offene Bereiche mit sandigem oder bindigem Substrat",
+                  "Felsen der subalpinen bis nivalen Stufe",
+                  "Firn, permanente Schneefelder und Gletscher",
+                  "Fließende Gewässer",
+                  "Gebirgsrasen (subalpine bis alpine Stufe)",
+                  "Gebüsche der hochmontanen bis subalpinen Stufe",
+                  "Gewässer der subalpinen bis alpinen Stufe",
+                  "Großseggenriede",
+                  "Grundwasser und Höhlengewässer",
+                  "Grün- und Freiflächen",
+                  "Hoch-, Zwischen- und Übergangsmoore",
+                  "Höhlen (einschließlich Stollen, Brunnenschächte etc.)",
+                  "Kleine, unbefestigte Freiflächen des besiedelten Bereiches",
+                  "Küstendünen",
+                  "Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent)",
+                  "Moore der subalpinen bis alpinen Stufe",
+                  "Nadel(Misch)Wälder und -Forste",
+                  "Pelagial der Nordsee",
+                  "Pelagial der Ostsee",
+                  "Quellen (inklusive Quellabfluss (Krenal))",
+                  "Röhrichte (ohne Brackwasserröhrichte)",
+                  "Saisonales Meereis der Nordsee",
+                  "Saisonales Meereis der Ostsee",
+                  "Salzgrünland der Nordseeküste (Supralitoral)",
+                  "Salzgrünland, Brackwasserröhrichte und -Hochstaudenfluren des Geolitorals der Ostseeküste",
+                  "Schneeböden, Schneetälchen",
+                  "Stehende Gewässer",
+                  "Steinschutthalden und Schotterflächen der subalpinen bis alpinen Stufe",
+                  "Sände, Sand-, Geröll- und Blockstrände",
+                  "Stauden- und Lägerfluren der hochmontanen bis alpinen Stufe",
+                  "Subalpine Wälder",
+                  "Trockenrasen sowie Grünland trockener bis frischer Standorte",
+                  "Verkehrsanlagen und Plätze",
+                  "Wald- und Ufersäume, Staudenfluren",
+                  "Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte",
+                  "Waldmäntel und Vorwälder, spezielle Waldnutzungsformen",
+                  "Zwergstrauchheiden",
+                  "Zwergstrauchheiden der subalpinen bis alpinen Stufe",
+                  "Äcker und Ackerbrachen"
+                ],
+                "title": "EcosystemTypeTermEnum",
+                "type": "string"
+              },
+              "HabitatEnum": {
+                "enum": [
+                  "Agrar- und Offenland",
+                  "Binnengewässer und Auen",
+                  "Boden",
+                  "Küsten und Küstengewässer",
+                  "Urbane Räume",
+                  "Wald"
+                ],
+                "title": "HabitatEnum",
+                "type": "string"
+              },
+              "SpeciesGroupEnum": {
+                "enum": [
+                  "Amphibien und Reptilien",
+                  "Andere",
+                  "Andere Pflanzen",
+                  "Andere Wirbellose",
+                  "Archaeen",
+                  "Bakterien",
+                  "Fische",
+                  "Flechten",
+                  "Gefäßpflanzen",
+                  "Insekten",
+                  "Moose",
+                  "Pilze",
+                  "Protisten",
+                  "Protozoen",
+                  "Säugetiere",
+                  "Vögel"
+                ],
+                "title": "SpeciesGroupEnum",
+                "type": "string"
+              },
+              "Taxa": {
+                "additionalProperties": false,
+                "description": "Art mit wissenschaftlichem und deutschem Namen sowie taxonomischer Gruppe.",
+                "properties": {
+                  "scientific_name": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "content": {
+                            "type": "string"
+                          },
+                          "evidence_anchor": {
+                            "type": "string",
+                            "description": "Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt."
+                          }
+                        },
+                        "required": [
+                          "content",
+                          "evidence_anchor"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "description": "Wissenschaftlicher Name der Art",
+                    "title": "Scientific Name"
+                  },
+                  "german_name": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "content": {
+                            "type": "string"
+                          },
+                          "evidence_anchor": {
+                            "type": "string",
+                            "description": "Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt."
+                          }
+                        },
+                        "required": [
+                          "content",
+                          "evidence_anchor"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "description": "Deutscher Name der Art",
+                    "title": "German Name"
+                  },
+                  "species_group": {
+                    "type": "object",
+                    "properties": {
+                      "content": {
+                        "$ref": "#/$defs/SpeciesGroupEnum"
+                      },
+                      "evidence_anchor": {
+                        "type": "string",
+                        "description": "Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt."
+                      }
+                    },
+                    "required": [
+                      "content",
+                      "evidence_anchor"
+                    ],
+                    "additionalProperties": false,
+                    "description": "Taxonomische Gruppe der Art"
+                  }
+                },
+                "required": [
+                  "species_group"
+                ],
+                "title": "Taxa",
+                "type": "object"
+              }
+            },
+            "additionalProperties": false,
+            "description": "Das Schema sammelt Angaben zu den wichtigsten biodiversitätsbezogenen Merkmalen der Studie:\nLebensräume, Ökosystemtypen, Arten bzw. Artengruppen, sowie die untersuchte Biodiversitätsebene.",
+            "properties": {
+              "habitat": {
+                "description": "Um welchen der folgenden Lebensräume oder um welche Kombination der folgenden Lebensräume geht es in dem Text?",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "content": {
+                      "$ref": "#/$defs/HabitatEnum"
+                    },
+                    "evidence_anchor": {
+                      "type": "string",
+                      "description": "Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt."
+                    }
+                  },
+                  "required": [
+                    "content",
+                    "evidence_anchor"
+                  ],
+                  "additionalProperties": false
+                },
+                "title": "Habitat",
+                "type": "array"
+              },
+              "taxa": {
+                "description": "Welche Arten bzw. Artengruppen werden in der Studie untersucht? Verwende die kleinste machbare Ebene: Wenn eine Studie nur wenige Arten behandelt, sollten diese auf Artebene mit ihrem wissenschaftlichen und deutschen Namen angegeben werden. Werden jedoch sehr viele Arten behandelt oder eine Artengruppe besprochen, wird die Artengruppe als 'Sammelbegriff' angegeben. Falls die Studie auf englisch ist, übersetze Art- bzw. Artengruppennamen ins Deutsche. Ergänze, wenn nicht angegeben, die wissenschaftlichen Artennamen, und umgekehrt die deutschen Namen, wenn nur die wissenschaftlichen Artennamen verwendet wurden. ",
+                "items": {
+                  "$ref": "#/$defs/Taxa"
+                },
+                "title": "Taxa",
+                "type": "array"
+              },
+              "biodiversity_level": {
+                "description": "Auf welche der folgenden Ebenen wird Biodiversität in der Studie gemessen? ",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "content": {
+                      "$ref": "#/$defs/BiodiversityLevelEnum"
+                    },
+                    "evidence_anchor": {
+                      "type": "string",
+                      "description": "Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt."
+                    }
+                  },
+                  "required": [
+                    "content",
+                    "evidence_anchor"
+                  ],
+                  "additionalProperties": false
+                },
+                "title": "Biodiversity Level",
+                "type": "array"
+              },
+              "ecosystem_type": {
+                "description": "Welche Ökosystemtypen werden betrachtet?",
+                "items": {
+                  "$ref": "#/$defs/EcosystemTypeSimple"
+                },
+                "title": "Ecosystem Type",
+                "type": "array"
+              }
+            },
+            "title": "EcosystemStudyFeaturesCoreFields",
+            "type": "object"
+          }
+        }
+      }
+    }
+  },
+  "response": {
+    "message": {
+      "role": "assistant",
+      "content": "{\n  \"habitat\": [\n    {\n      \"content\": \"Agrar- und Offenland\",\n      \"evidence_anchor\": \"Ohne Schutz verschwinden Wiesen, Moore und Wälder\"\n    },\n    {\n      \"content\": \"Boden\",\n      \"evidence_anchor\": \"Ohne Schutz verschwinden Wiesen, Moore und Wälder\"\n    },\n    {\n      \"content\": \"Wald\",\n      \"evidence_anchor\": \"Ohne Schutz verschwinden Wiesen, Moore und Wälder\"\n    }\n  ],\n  \"taxa\": [\n    {\n      \"species_group\": {\n        \"content\": \"Andere Pflanzen\",\n        \"evidence_anchor\": \"Grenzstreifen wurde zum Refugium für mehr als 1.200 seltene und gefährdete Pflanzen und Tiere\"\n      }\n    },\n    {\n      \"species_group\": {\n        \"content\": \"Andere\",\n        \"evidence_anchor\": \"Grenzstreifen wurde zum Refugium für mehr als 1.200 seltene und gefährdete Pflanzen und Tiere\"\n      }\n    }\n  ],\n  \"ecosystem_type\": [\n    {\n      \"category\": {\n        \"content\": \"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes\",\n        \"evidence_anchor\": \"Ohne Schutz verschwinden Wiesen, Moore und Wälder\"\n      }\n    }\n  ]\n}"
+    },
+    "raw_message": {
+      "reasoning": "We need to extract info per schema: habitats, taxa, biodiversity_level, ecosystem_type. The text describes the Grüne Band (green band) as a protected area along former inner German border. It mentions that the area hosts more than 1200 rare and endangered plants and animals. Habitats: Wiesen (meadows), Moore (moors), Wälder (forests). Also \"Flächen\" along border, but specific habitats: meadows, moors, forests, unknown other (maybe wetlands). Possibly \"Grenzstreifen\" but that's not a habitat. We can identify habitats: Wiesen, Moore, Wälder. Those correspond to allowed values: \"Kardinalität: 0..*\". Allowed values for habitat content: Agrar- und Offenland; Binnengewässer und Auen; Boden; Küsten und Küstengewässer; Urbane Räume; Wald. But we have \"Wiesen\" (probably agrar- und offenland) and \"Moore\" (not in list maybe \"Boden\" or \"Urbane Räume\"? Not, \"Moore\" is wetlands maybe \"Boden\"?). \"Wälder\" maps to \"Wald\". So we can choose \"Wald\" for forests; \"Agrar- und Offenland\" for meadows; \"Boden\" for moors? But \"Boden\" is a category. The schema allows only those values. We must pick a value from list. So choose \"Wald\" and \"Agrar- und Offenland\". For moors maybe \"Boden\". So include those three: \"Agrar- und Offenland\", \"Boden\", \"Wald\".\n\nWe need evidence_anchor: literal quote. The text: \"Fast 40 Jahre lang war Deutschland geteilt... Der Grenzstreifen wurde zum Refugium für mehr als 1.200 seltene und gefährdete Pflanzen und Tiere.\" It also says \"Ohne Schutz verschwinden Wiesen, Moore und Wälder\". So we can quote that part: \"Ohne Schutz verschwinden Wiesen, Moore und Wälder\". Use as evidence.\n\nTaxa: We have plants and animals. Specific mention: more than 1,200 rare and endangered plants and animals. No specific species names are given. So perhaps taxa: 'Andere Pflanzen', 'Andere Wirbellose', 'Säugetiere', 'Vögel', 'Reptilien', 'Amphibien', 'Fische', but only if they are mentioned. The text just says \"Pflanzen und Tiere\" generically. So we can use generic groups: \"Andere Pflanzen\" and \"Andere Tiere\"? But allowed species_group values include categories: \"Andere; Andere Pflanzen; Andere Wirbellose; Archaeen; Bakterien; Fische; Flechten; Gefäßpflanzen; Insekten; Moose; Pilze; Protisten; Protozoen; Säugetiere; Vögel; Amphibien und Reptilien.\" The text mentions \"Planten\" and \"Tiere\" generically. So \"Andere Pflanzen\" and maybe \"Andere Tiere\"? Not in given list. There's no generic \"Andere Tiere\". So we might use \"Andere Pflanzen\" for plants and \"Andere Wirbellose\" or \"Vögel\", \"Säugetiere\" etc if speculation? But we should only extract what is given. We have \"Pflanzen\" and \"Tiere\" generic. So maybe assign \"Andere Pflanzen\" and \"Andere Wirbellose\"? Not certain.\n\nThe schema for taxa: each object must contain species_group at least. I think if we don't have species names, we can put taxonomic group only. It allows scientific_name and german_name optional. So we create objects with just species_group. So for plants: species_group content: \"Andere Pflanzen\". For animals: \"Andere Wirbellose\" maybe? But maybe \"Andere\" category; but according to allowed values, \"Andere\" is a valid content. So we can use \"Andere\" for both? But \"Andere\" means other than the listed groups. It might be appropriate. But species_group must be one of allowed values. \"Andere\" is allowed. So we can set for plants: species_group \"Andere Pflanzen\". For animals: species_group \"Andere\". But \"Andere\" is a separate category that means any other. But since we have two groups distinct, perhaps set one for plants and one for animals. Plants: \"Andere Pflanzen\", animals: \"Andere\". Alternatively we could specify no taxa. But maybe better to include at least species_group for each group we mention. We need evidence_anchor for each.\n\nEvidence anchor: quote \"Ohne Schutz verschwinden Wiesen, Moore und Wälder\" might indicate habitat. For taxa, we need different quote: maybe, \"Grenzstreifen wurde zum Refugium für mehr als 1.200 seltene und gefährdete Pflanzen und Tiere.\" That covers both. So use that.\n\nBiodiversity_level: unknown? The text describes conservation, but not measurement. Might mention \"biologische Vielfalt\". They mention \"Biologischen Vielfalt\" and \"Biotopverbund\". But not specify level. Could say \"Artenvielfalt\"? But level is not measured. Could set none. But required field? Kardinalität 0..*, so can be empty. So omit biodiversity_level.\n\nEcosystem_type: Need to include categories: I Biotoptypen ... etc. The terrain includes \"Grenzstreifen\" which could be a biotope type like \"Boden\" category. Could be \"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes\". This includes meadow, moor, forest, etc. So we can include an object with category I? But must use allowed categories. The ecosystem types categories: I Biotoptypengruppen der Meere und Küsten; II Biotoptypengruppen der Binnengewässer; III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes; IV Technische Biotoptypengruppen; V Biotoptypengruppen mit Schwerpunkt in den Alpen; VI Weitere.\n\nGiven the area is contained in Germany, terrestrial and semi-terrestrial. So choose category III. Term: we can use one of allowed terms: \"Felder und Ackerland\" is not; but we have \"Wiesen\", \"Moore\", \"Wälder\". The allowed terms list includes: \"Ass\" etc. The list includes \"Felsen, Block- und Schutthalden\". None match. But maybe \"Feldgehölze, Gebüsche, Hecken und Gehölzkulturen\" etc. \"Wiesen\" maybe \"Boden\" but not in term list. We can use \"Rohbodenstandorte und Ruderalfluren\" maybe? But that seems too specific. We might choose \"Flächen, die Kategorie III, term unspecified\"? The schema says term is optional. So we can include only category.\n\nSo ecosystem_type: array with one object: category content \"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes\" and evidence_anchor: \"Ohne Schutz verschwinden Wiesen, Moore und Wälder\" etc. Provide evidence.\n\nThus JSON with fields: habitat, taxa, ecosystem_type. species_group etc.\n\nImplementation: For each habitat: content and evidence_anchor.\n\nTaxa: two objects: for plants and animals.\n\nBut each taxon object requires species_group object. So:\n\n{\n \"habitat\":[\n { \"content\":\"Agrar- und Offenland\",\"evidence_anchor\":\"Ohne Schutz verschwinden Wiesen, Moore und Wälder\"});\n etc.\n\nAlso \"Boden\" and \"Wald\".\n\nAlso \"Boden\" evidence anchor same quote.\n\nNow taxa: first object: scientific_name not provided, so omit. Provide species_group with content \"Andere Pflanzen\" evidence. second object: species_group \"Andere\" evidence.\n\nBetter to provide only one taxon: \"Andere Pflanzen und Tiere\" but must fit schema of species_group: only one content. So maybe create two: one for \"Andere Pflanzen\" and one for \"Andere\".\n\nBut \"Andere\" would be generic, maybe too vague. But allowed. Use evidence: \"Grenzstreifen wurde zum Refugium für mehr als 1.200 seltene und gefährdete Pflanzen und Tiere.\" So cover both.\n\nOk.\n\nBiodiversity_level omit.\n\necosystem_type: array with one object: category content \"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes\".\n\nNow produce JSON.",
+      "reasoning_content": "We need to extract info per schema: habitats, taxa, biodiversity_level, ecosystem_type. The text describes the Grüne Band (green band) as a protected area along former inner German border. It mentions that the area hosts more than 1200 rare and endangered plants and animals. Habitats: Wiesen (meadows), Moore (moors), Wälder (forests). Also \"Flächen\" along border, but specific habitats: meadows, moors, forests, unknown other (maybe wetlands). Possibly \"Grenzstreifen\" but that's not a habitat. We can identify habitats: Wiesen, Moore, Wälder. Those correspond to allowed values: \"Kardinalität: 0..*\". Allowed values for habitat content: Agrar- und Offenland; Binnengewässer und Auen; Boden; Küsten und Küstengewässer; Urbane Räume; Wald. But we have \"Wiesen\" (probably agrar- und offenland) and \"Moore\" (not in list maybe \"Boden\" or \"Urbane Räume\"? Not, \"Moore\" is wetlands maybe \"Boden\"?). \"Wälder\" maps to \"Wald\". So we can choose \"Wald\" for forests; \"Agrar- und Offenland\" for meadows; \"Boden\" for moors? But \"Boden\" is a category. The schema allows only those values. We must pick a value from list. So choose \"Wald\" and \"Agrar- und Offenland\". For moors maybe \"Boden\". So include those three: \"Agrar- und Offenland\", \"Boden\", \"Wald\".\n\nWe need evidence_anchor: literal quote. The text: \"Fast 40 Jahre lang war Deutschland geteilt... Der Grenzstreifen wurde zum Refugium für mehr als 1.200 seltene und gefährdete Pflanzen und Tiere.\" It also says \"Ohne Schutz verschwinden Wiesen, Moore und Wälder\". So we can quote that part: \"Ohne Schutz verschwinden Wiesen, Moore und Wälder\". Use as evidence.\n\nTaxa: We have plants and animals. Specific mention: more than 1,200 rare and endangered plants and animals. No specific species names are given. So perhaps taxa: 'Andere Pflanzen', 'Andere Wirbellose', 'Säugetiere', 'Vögel', 'Reptilien', 'Amphibien', 'Fische', but only if they are mentioned. The text just says \"Pflanzen und Tiere\" generically. So we can use generic groups: \"Andere Pflanzen\" and \"Andere Tiere\"? But allowed species_group values include categories: \"Andere; Andere Pflanzen; Andere Wirbellose; Archaeen; Bakterien; Fische; Flechten; Gefäßpflanzen; Insekten; Moose; Pilze; Protisten; Protozoen; Säugetiere; Vögel; Amphibien und Reptilien.\" The text mentions \"Planten\" and \"Tiere\" generically. So \"Andere Pflanzen\" and maybe \"Andere Tiere\"? Not in given list. There's no generic \"Andere Tiere\". So we might use \"Andere Pflanzen\" for plants and \"Andere Wirbellose\" or \"Vögel\", \"Säugetiere\" etc if speculation? But we should only extract what is given. We have \"Pflanzen\" and \"Tiere\" generic. So maybe assign \"Andere Pflanzen\" and \"Andere Wirbellose\"? Not certain.\n\nThe schema for taxa: each object must contain species_group at least. I think if we don't have species names, we can put taxonomic group only. It allows scientific_name and german_name optional. So we create objects with just species_group. So for plants: species_group content: \"Andere Pflanzen\". For animals: \"Andere Wirbellose\" maybe? But maybe \"Andere\" category; but according to allowed values, \"Andere\" is a valid content. So we can use \"Andere\" for both? But \"Andere\" means other than the listed groups. It might be appropriate. But species_group must be one of allowed values. \"Andere\" is allowed. So we can set for plants: species_group \"Andere Pflanzen\". For animals: species_group \"Andere\". But \"Andere\" is a separate category that means any other. But since we have two groups distinct, perhaps set one for plants and one for animals. Plants: \"Andere Pflanzen\", animals: \"Andere\". Alternatively we could specify no taxa. But maybe better to include at least species_group for each group we mention. We need evidence_anchor for each.\n\nEvidence anchor: quote \"Ohne Schutz verschwinden Wiesen, Moore und Wälder\" might indicate habitat. For taxa, we need different quote: maybe, \"Grenzstreifen wurde zum Refugium für mehr als 1.200 seltene und gefährdete Pflanzen und Tiere.\" That covers both. So use that.\n\nBiodiversity_level: unknown? The text describes conservation, but not measurement. Might mention \"biologische Vielfalt\". They mention \"Biologischen Vielfalt\" and \"Biotopverbund\". But not specify level. Could say \"Artenvielfalt\"? But level is not measured. Could set none. But required field? Kardinalität 0..*, so can be empty. So omit biodiversity_level.\n\nEcosystem_type: Need to include categories: I Biotoptypen ... etc. The terrain includes \"Grenzstreifen\" which could be a biotope type like \"Boden\" category. Could be \"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes\". This includes meadow, moor, forest, etc. So we can include an object with category I? But must use allowed categories. The ecosystem types categories: I Biotoptypengruppen der Meere und Küsten; II Biotoptypengruppen der Binnengewässer; III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes; IV Technische Biotoptypengruppen; V Biotoptypengruppen mit Schwerpunkt in den Alpen; VI Weitere.\n\nGiven the area is contained in Germany, terrestrial and semi-terrestrial. So choose category III. Term: we can use one of allowed terms: \"Felder und Ackerland\" is not; but we have \"Wiesen\", \"Moore\", \"Wälder\". The allowed terms list includes: \"Ass\" etc. The list includes \"Felsen, Block- und Schutthalden\". None match. But maybe \"Feldgehölze, Gebüsche, Hecken und Gehölzkulturen\" etc. \"Wiesen\" maybe \"Boden\" but not in term list. We can use \"Rohbodenstandorte und Ruderalfluren\" maybe? But that seems too specific. We might choose \"Flächen, die Kategorie III, term unspecified\"? The schema says term is optional. So we can include only category.\n\nSo ecosystem_type: array with one object: category content \"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes\" and evidence_anchor: \"Ohne Schutz verschwinden Wiesen, Moore und Wälder\" etc. Provide evidence.\n\nThus JSON with fields: habitat, taxa, ecosystem_type. species_group etc.\n\nImplementation: For each habitat: content and evidence_anchor.\n\nTaxa: two objects: for plants and animals.\n\nBut each taxon object requires species_group object. So:\n\n{\n \"habitat\":[\n { \"content\":\"Agrar- und Offenland\",\"evidence_anchor\":\"Ohne Schutz verschwinden Wiesen, Moore und Wälder\"});\n etc.\n\nAlso \"Boden\" and \"Wald\".\n\nAlso \"Boden\" evidence anchor same quote.\n\nNow taxa: first object: scientific_name not provided, so omit. Provide species_group with content \"Andere Pflanzen\" evidence. second object: species_group \"Andere\" evidence.\n\nBetter to provide only one taxon: \"Andere Pflanzen und Tiere\" but must fit schema of species_group: only one content. So maybe create two: one for \"Andere Pflanzen\" and one for \"Andere\".\n\nBut \"Andere\" would be generic, maybe too vague. But allowed. Use evidence: \"Grenzstreifen wurde zum Refugium für mehr als 1.200 seltene und gefährdete Pflanzen und Tiere.\" So cover both.\n\nOk.\n\nBiodiversity_level omit.\n\necosystem_type: array with one object: category content \"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes\".\n\nNow produce JSON."
+    }
+  },
+  "error": null
+}

@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 import re
 from types import SimpleNamespace
+from collections.abc import Generator
 from typing import Any, cast
 
 from llama_index.core.base.llms.types import ChatResponse, MessageRole
@@ -148,7 +149,10 @@ def _deserialize_exception(error_snapshot: dict[str, Any]) -> Exception:
         return ValueError(f"{qualname or 'Exception'}: {message}")
 
     exception_factory = cast(type[Exception], exc_cls)
-    return exception_factory(message)
+    try:
+        return exception_factory(message)
+    except TypeError:
+        return ValueError(f"{qualname or 'Exception'}: {message}")
 
 
 def _write_fixture(
@@ -169,9 +173,10 @@ def _write_fixture(
         json.dump(payload, f, indent=2, ensure_ascii=False)
 
 
-@pytest.fixture
-def llm_chat_replay(monkeypatch: pytest.MonkeyPatch) -> None:
+@pytest.fixture(scope="module")
+def llm_chat_replay() -> Generator[None, Any, None]:
     original_chat = cast(Any, OpenAILike.chat)
+    monkeypatch = pytest.MonkeyPatch()
 
     def replay_or_capture(
         self: OpenAILike,
@@ -216,7 +221,7 @@ def llm_chat_replay(monkeypatch: pytest.MonkeyPatch) -> None:
         if not fixture_path.exists():
             raise FileNotFoundError(
                 f"Missing LLM chat fixture: {fixture_path}. "
-                "Run the test again with WRITE_FIXTURE_DATA=1 and a reachable backend to create it."
+                "Run the test again with WRITE_LLM_CHAT_FIXTURE_DATA=1 and a reachable backend to create it."
             )
 
         with open(fixture_path) as f:
@@ -232,3 +237,5 @@ def llm_chat_replay(monkeypatch: pytest.MonkeyPatch) -> None:
         return _deserialize_response(response_snapshot)
 
     monkeypatch.setattr(OpenAILike, "chat", replay_or_capture)
+    yield
+    monkeypatch.undo()
