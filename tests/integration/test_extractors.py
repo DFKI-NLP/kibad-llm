@@ -30,8 +30,8 @@ def extractor_name(request) -> str:
 def cfg_predict_extractor(tmp_path, extractor_name) -> DictConfig:  # type: ignore
     overrides = [f"extractor={extractor_name}"]
 
-    # use the llm defined for testing, see configs/extractor/llm/testing.yaml
-    overrides.append("extractor/llm=testing")
+    # use the gpt_oss_20b for testing since we monkeypatch its self.model.chat method
+    overrides.append("extractor/llm=gpt_oss_20b")
 
     if extractor_name in ["union", "conditional_union"]:
         # For union extractors, we need to define extractor overrides. Use two simple

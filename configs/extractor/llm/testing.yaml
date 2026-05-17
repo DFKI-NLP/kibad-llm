@@ -1,4 +1,0 @@
-# define which llm to use in tests
-
-defaults:
-  - gpt_oss_20b
