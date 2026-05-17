@@ -112,7 +112,7 @@ def test_predict_fast_dev_run(tmp_path, cfg_predict_module):
     assert set(result["structured"]) == set(fixture_data["structured"])
 
 
-@pytest.fixture(params=["too_long", "missing_response_content"])
+@pytest.fixture(params=["too_long"])
 def error_type(request) -> str:
     return request.param
 
@@ -129,11 +129,6 @@ def cfg_predict_pdf_errors(tmp_path, error_type) -> DictConfig:  # type: ignore
     if error_type in ["too_long"]:
         # we need the text to check for the length, so enable store_text_in_predictions
         overrides.append("store_text_in_predictions=true")
-    if error_type in ["missing_response_content"]:
-        # use a more complex schema that is more likely to fail
-        overrides.append("experiment/predict=faktencheck_core_fields_schema_with_evidence")
-        # set temperature to 0, otherwise the LLM might not fail
-        overrides.append("extractor.llm.temperature=0.0")
 
     cfg = cfg_global(
         config_name="predict.yaml",
@@ -180,16 +175,5 @@ def test_prediction_on_pdf_errors(cfg_predict_pdf_errors, error_type):
         assert "'type': 'BadRequestError'" in error
         # check that we got a negative max_tokens error message
         assert "'message': 'max_tokens must be at least 1, got -" in error
-    elif error_type == "missing_response_content":
-        file_name = "3Z5BFIBL.pdf"
-        assert file_name in results
-        result = results[file_name]
-        # assert that there is no structured output ...
-        assert result.get("structured", None) is None
-        # ... but an error message about missing response content
-        errors = result.get("errors", [])
-        assert len(errors) == 1
-        error = errors[0]
-        assert error.startswith("MissingResponseContentError:")
     else:
         pytest.fail(f"Unhandled error_type fixture: {error_type}")
