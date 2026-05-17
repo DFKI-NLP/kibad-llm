@@ -98,7 +98,13 @@ def test_predict_fast_dev_run(tmp_path, cfg_predict_module):
     result = results[0]
 
     # this reuses the fixture data from test_prediction
-    fixture_path = PREDICTION_DIR / f"{result['file_name']}.json"
+    fixture_path = PREDICTION_DIR / f"{result['file_name']}.fast.json"
+
+    if WRITE_FIXTURE_DATA:
+        fixture_path.parent.mkdir(parents=True, exist_ok=True)
+        # write fixture data
+        with open(fixture_path, "w") as f:
+            json.dump(result, f, indent=4, ensure_ascii=False)
 
     # read fixture data
     with open(fixture_path) as f:
