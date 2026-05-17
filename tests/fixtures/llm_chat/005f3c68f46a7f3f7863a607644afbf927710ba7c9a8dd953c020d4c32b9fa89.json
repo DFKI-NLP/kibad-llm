@@ -1,0 +1,355 @@
+{
+  "fixture_format_version": 1,
+  "fixture_hash": "005f3c68f46a7f3f7863a607644afbf927710ba7c9a8dd953c020d4c32b9fa89",
+  "request": {
+    "fixture_format_version": 1,
+    "backend_name": "gpt_oss_20b",
+    "backend_type": "llama_index.llms.openai_like.base.OpenAILike",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Du extrahierst Informationen aus einem Markdown-Dokument.\nGib **ausschließlich** gültiges JSON nach dem folgendem Schema zurück.\nKeine zusätzlichen Felder, keine Erklärungen.\nBeschreibung: Das Schema sammelt Angaben zu den wichtigsten biodiversitätsbezogenen Merkmalen der Studie: Lebensräume, Ökosystemtypen, Arten bzw. Artengruppen, sowie die untersuchte Biodiversitätsebene.\nFeldhinweise und erlaubte Werte (getrennt durch Semikolons):\n- habitat: Um welchen der folgenden Lebensräume oder um welche Kombination der folgenden Lebensräume geht es in dem Text? | Kardinalität: 0..* | Typ: object\n  - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Agrar- und Offenland; Binnengewässer und Auen; Boden; Küsten und Küstengewässer; Urbane Räume; Wald\n  - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string\n- taxa: Welche Arten bzw. Artengruppen werden in der Studie untersucht? Verwende die kleinste machbare Ebene: Wenn eine Studie nur wenige Arten behandelt, sollten diese auf Artebene mit ihrem wissenschaftlichen und deutschen Namen angegeben werden. Werden jedoch sehr viele Arten behandelt oder eine Artengruppe besprochen, wird die Artengruppe als 'Sammelbegriff' angegeben. Falls die Studie auf englisch ist, übersetze Art- bzw. Artengruppennamen ins Deutsche. Ergänze, wenn nicht angegeben, die wissenschaftlichen Artennamen, und umgekehrt die deutschen Namen, wenn nur die wissenschaftlichen Artennamen verwendet wurden. | Kardinalität: 0..* | Typ: object\n  Beschreibung: Art mit wissenschaftlichem und deutschem Namen sowie taxonomischer Gruppe.\n  - scientific_name: Wissenschaftlicher Name der Art | Kardinalität: 0..1 | Typ: object\n    - content: | Kardinalität: 1 | Typ: string\n    - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string\n  - german_name: Deutscher Name der Art | Kardinalität: 0..1 | Typ: object\n    - content: | Kardinalität: 1 | Typ: string\n    - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string\n  - species_group: Taxonomische Gruppe der Art | Kardinalität: 1 | Typ: object\n    Beschreibung: Taxonomische Gruppe der Art\n    - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Amphibien und Reptilien; Andere; Andere Pflanzen; Andere Wirbellose; Archaeen; Bakterien; Fische; Flechten; Gefäßpflanzen; Insekten; Moose; Pilze; Protisten; Protozoen; Säugetiere; Vögel\n    - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string\n- biodiversity_level: Auf welche der folgenden Ebenen wird Biodiversität in der Studie gemessen? | Kardinalität: 0..* | Typ: object\n  - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Artenvielfalt; Funktionelle Diversität; Genetische Diversität; Habitatdiversität; Phylogenetische Diversität; Strukturelle Diversität; Zusammensetzung der Artengemeinschaft\n  - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string\n- ecosystem_type: Welche Ökosystemtypen werden betrachtet? | Kardinalität: 0..* | Typ: object\n  Beschreibung: Ökosystemtyp mit Kategorie und (wenn möglich) mit Name. Wenn es im Text um die Ökosystemtyp-Kategorien Meere oder Küsten geht, sind nur die Ökosystemtypen (Namen) möglich: Benthal der Nordsee; Benthal der Ostsee; Fels- und Steilküsten; Küstendünen; Pelagial der Nordsee; Pelagial der Ostsee; Saisonales Meereis der Nordsee; Saisonales Meereis der Ostsee; Salzgrünland, Brackwasserröhrichte und -Hochstaudenfluren des Geolitorals der Ostseeküste; Salzgrünland der Nordseeküste (Supralitoral); Sände, Sand-, Geröll- und Blockstrände. Wenn es im Text um die Ökosystemtyp-Kategorien Binnengewässer geht, sind nur die folgenden Ökosystemtypen (Namen) möglich: Fließende Gewässer; Grundwasser und Höhlengewässer; Quellen (inklusive Quellabfluss (Krenal)); Stehende Gewässer. Wenn es im Text um Ökosystemtyp-Kategorien terrestrisches oder semiterrestrisches Binnenland geht, sind nur die folgenden Ökosystemtypen (Namen) möglich: Äcker und Ackerbrachen; Feldgehölze, Gebüsche, Hecken und Gehölzkulturen; Felsen, Block- und Schutthalden, Geröllfelder, offene Bereiche mit sandigem oder bindigem Substrat; Hoch-, Zwischen- und Übergangsmoore; Höhlen (einschließlich Stollen, Brunnenschächte etc.); Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent); Nadel(Misch)Wälder und -Forste; Röhrichte (ohne Brackwasserröhrichte); Trockenrasen sowie Grünland trockener bis frischer Standorte; Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte; Waldmäntel und Vorwälder, spezielle Waldnutzungsformen; Wald- und Ufersäume, Staudenfluren; Zwergstrauchheiden; Großseggenriede. Wenn es im Text um die Ökosystemtyp-Kategorie technische Biotope geht, sind nur die folgenden Ökosystemtypen (Namen) möglich: Bauwerke; Kleine, unbefestigte Freiflächen des besiedelten Bereiches; Verkehrsanlagen und Plätze; Deponien und Rieselfelder. Wenn es im Text um die Ökosystemtyp-Kategorie Biotope mit Schwerpunkt in den Alpen geht, sind nur die folgenden Ökosystemtypen (Namen) möglich: Gebirgsrasen (subalpin bis alpin); Gewässer (subalpin bis alpin); Firn, permanente Schneefelder und Gletscher; Felsen (subalpin bis nival); Steinschutthalden und Schotterflächen (subalpin bis alpin); Schneeböden, Schneetälchen; Moore (subalpin bis alpin); Stauden- und Lägerfluren (hochmontan bis alpin); Zwergstrauchheiden (subalpin bis alpin); Gebüsche (hochmontan bis subalpin); Wälder (subalpin). Passt keine der genannten Ökosystemtyp-Kategorien (d.h. Ökosystemtyp-Kategorie Weitere), sind immer die folgenden Ökosystemtypen (Namen) möglich: Rohbodenstandorte und Ruderalfluren; Grün- und Freiflächen\n  - category: Kategorie des Ökosystemtyps | Kardinalität: 1 | Typ: object\n    Beschreibung: Kategorie des Ökosystemtyps\n    - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: I Biotoptypengruppen der Meere und Küsten; II Biotoptypengruppen der Binnengewässer; III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes; IV Technische Biotoptypengruppen; V Biotoptypengruppen mit Schwerpunkt in den Alpen; VI Weitere\n    - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string\n  - term: Name des Ökosystemtyps | Kardinalität: 0..1 | Typ: object\n    - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Anthropogene Rohbodenstandorte und Ruderalfluren; Bauwerke; Benthal der Nordsee; Benthal der Ostsee; Deponien und Rieselfelder; Feldgehölze, Gebüsche, Hecken und Gehölzkulturen; Fels- und Steilküsten; Felsen, Block- und Schutthalden, Geröllfelder, offene Bereiche mit sandigem oder bindigem Substrat; Felsen der subalpinen bis nivalen Stufe; Firn, permanente Schneefelder und Gletscher; Fließende Gewässer; Gebirgsrasen (subalpine bis alpine Stufe); Gebüsche der hochmontanen bis subalpinen Stufe; Gewässer der subalpinen bis alpinen Stufe; Großseggenriede; Grundwasser und Höhlengewässer; Grün- und Freiflächen; Hoch-, Zwischen- und Übergangsmoore; Höhlen (einschließlich Stollen, Brunnenschächte etc.); Kleine, unbefestigte Freiflächen des besiedelten Bereiches; Küstendünen; Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent); Moore der subalpinen bis alpinen Stufe; Nadel(Misch)Wälder und -Forste; Pelagial der Nordsee; Pelagial der Ostsee; Quellen (inklusive Quellabfluss (Krenal)); Röhrichte (ohne Brackwasserröhrichte); Saisonales Meereis der Nordsee; Saisonales Meereis der Ostsee; Salzgrünland der Nordseeküste (Supralitoral); Salzgrünland, Brackwasserröhrichte und -Hochstaudenfluren des Geolitorals der Ostseeküste; Schneeböden, Schneetälchen; Stehende Gewässer; Steinschutthalden und Schotterflächen der subalpinen bis alpinen Stufe; Sände, Sand-, Geröll- und Blockstrände; Stauden- und Lägerfluren der hochmontanen bis alpinen Stufe; Subalpine Wälder; Trockenrasen sowie Grünland trockener bis frischer Standorte; Verkehrsanlagen und Plätze; Wald- und Ufersäume, Staudenfluren; Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte; Waldmäntel und Vorwälder, spezielle Waldnutzungsformen; Zwergstrauchheiden; Zwergstrauchheiden der subalpinen bis alpinen Stufe; Äcker und Ackerbrachen\n    - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string\n"
+      },
+      {
+        "role": "user",
+        "content": "Dokument in Markdown Format:\n\n# Informationspapier des Greifswald Moor Centrum zu Photovoltaik-Anlagen auf Moorböden\n\n_Stand: März 2022_\n\n\nHintergrund\n\n\nDie Nutzung erneuerbarer Energie muss zügig ausgeweitet werden, um die nationalen Klimaschutzziele [1] zu erreichen und die Abhängigkeit von fossilen Energieträgern zu verringern. Dafür wird auch die\nErrichtung von Photovoltaik-Anlagen (PVA) auf entwässerten Moorböden in den Blick genommen und\nim Eckpunktepapier der Bundesregierung [2] sowie im Zuge des energiepolitischen „Osterpaket“ im\nGesetzentwurf zur Novellierung des Erneuerbare-Energien-Gesetzes aufgeführt (s. u.).\n\n\nIn Deutschland stammen derzeit knapp 7 % der Treibhausgasemissionen (THG-Emissionen, 53 Mio.\nTonnen CO2-Äq.) [3] von entwässerten organischen Böden (im Folgenden: Moorböden), die bundesweit\nnur einen Flächenanteil von 5 % einnehmen. Moorböden sind v.a. in der norddeutschen Tiefebene und\nim Alpenvorland verbreitet und werden überwiegend (rd. 70 %) landwirtschaftlich genutzt.\nMoorböden nehmen in Mecklenburg-Vorpommern 12 %, und in Niedersachsen 14 % der Landesfläche\nein [4] . In Mecklenburg-Vorpommern sind sie die größte Einzelquelle von THG-Emissionen und\nemittieren mehr als die Sektoren Energie und Industrie zusammen [5] . In Niedersachsen sind die THGEmissionen aus Mooren mehr als doppelt so hoch und stehen hinter dem Sektor Energie auf Platz 2,\nnoch vor den Sektoren Verkehr und Gebäude [6] . **THG-Emissionen aus Moorböden können nur durch**\n**Wiedervernässung reduziert werden.**\n\n\nFür das Erreichen der nationalen Klimaschutzziele müssen sich die Maßnahmen der unterschiedlichen\nSektoren ergänzen. **PVA auf dafür wiedervernässten Moorböden können** **sektorenübergreifend zum**\n**Klimaschutz beitragen** :\n\n\n1. im Energiesektor durch die Nutzung von Sonnenenergie statt fossiler Energieträger,\n2. im Landnutzungssektor durch die Reduktion von CO2-Emissionen durch Wiedervernässung,\n3. Ggf. in anderen Sektoren durch langfristige Speicherung von Kohlenstoff in Produkten aus\n\nPaludikultur (= torferhaltende, produktive Bewirtschaftung wiedervernässter Moore). PaludiPV-Systeme erlauben es, nachwachsende Rohstoffe als Alternative zu fossilen Roh- und\nBrennstoffen zu erzeugen und z. B. als Baumaterialien zur Dekarbonisierung im Gebäudesektor\nbeizutragen [ 7] .\n\n\nIn Deutschland wurden 2020 durch die Nutzung von PVA Emissionen von rd. 35 Mio. t CO2-Äq.\nvermieden [8] . Die vollständige Wiedervernässung der landwirtschaftlich genutzten Moore würden CO2Emissionen in gleicher Höhe einsparen [9] .\n\n\n**Die im Paris-Abkommen und Bundes-Klimaschutzgesetz bezweckte Klimaneutralität bedeutet, dass**\n**Errichtung und Betrieb von PVA auf Moorböden nur in Verbindung mit einer Wiedervernässung des**\n**Moores stattfinden darf, d. h. nur, wenn dauerhaft mittlere Wasserstände nahe der Torfoberfläche**\n**oder darüber ermöglicht werden.**\n\n\nWährend bereits erste Anlagen auf (entwässerten) Moorböden errichtet werden (und so unter\nUmständen die hohen bodenbürtigen THG-Emissionen langfristig festgeschrieben werden), gibt es\nbisher noch keine ökologisch-rechtlichen Leitplanken bzw. „guten fachlichen Standard“ für PVA auf\nMoorböden. In diesem Informationspapier benennen wir zentrale Aspekte, die berücksichtigt werden\nsollten. **Wir empfehlen vorerst eine Flächenbegrenzung der PVA bis klar ist, ob und wie PVA auf**\n**Moorböden torferhaltend umgesetzt werden können** (s. S. 5).\n\n\nwww.greifswaldmoor.de\n\n\nAktueller Stand von PVA auf Moorböden in Deutschland\n\n\nIn den meisten Bundesländern fehlen bisher Vorgaben für die Genehmigung von PVA auf Moorböden.\nIn Brandenburg gibt die vorläufige Handlungsempfehlung des Ministeriums für Landwirtschaft,\nUmwelt und Klimaschutz (MLUK) Orientierung zur Unterstützung kommunaler Entscheidungen bzgl.\nPVA. Demnach sind „ _Moorböden_ […] _wegen ihrer besonderen Klimarelevanz von einer Bebauung mit_\n_PVA auszuschließen._ “ [10] Die Möglichkeit zur Kombination von Wiedervernässung und PVA wird nicht\nerwähnt. Diese Kombination wird jedoch zunehmend als eine wirtschaftlich attraktive,\nklimafreundliche Moornutzungsalternative gesehen [11] und soll über die aktuelle Novellierung des EEG\nförderfähig werden [2] .\n\n\nAktuell gibt es ein stark steigendes Interesse von Grundeigentümer*innen und vielfältige Aktivitäten\nzur Einrichtung von PVA, auch auf Moorböden. Erste Anlagen wurden in den Jahren 2020 - 2021 in\nBayern und Schleswig-Holstein mit dem Ziel errichtet, stark degradierten, zuvor landwirtschaftlich\ngenutzten Moorböden aufzuwerten. In Bayern wurde für eine PVA (140 ha) die Kappung der\nDränsysteme im Bebauungsplan festgesetzt. Ein hydrologisches Gutachten, auf dessen Grundlage die\nWiedervernässung genehmigt und durchgeführt werden soll, ist jedoch noch in Erarbeitung. In\nSchleswig-Holstein wurden in Verbindung mit der Errichtung einer PVA (19 ha) auf einer Teilfläche\nDränrohre zerstört. Eine vollständige Wiedervernässung ist jedoch schwierig, da die angrenzenden\nGräben auch benachbartes Intensivgrünland entwässern. Die Beispiele zeigen bestehende\nHerausforderungen bei der Errichtung und dem Betrieb von PVA auf Moorflächen auf. Es besteht\ndringender Regelungsbedarf, um PVA auf Moor zwingend mit der notwendigen Reduktion von\nEmissionen aus Moorböden zu verbinden.\n\n\nHinweise zur Gestaltung von PVA auf Moorböden\n\n\nFolgende Hinweise sollten beachtet werden, die unten weiter aufgeführt werden:\n\n\n**Wiedervernässung** : Zur Herstellung torferhaltender Bedingungen muss der Wasserstand dauerhaft\nauf Flurhöhe angehoben werden (Abbildung 1).\n\n\n_Abbildung 1: Torferhaltende und torfzehrende Bewirtschaftungsbedingungen in Mooren (nach Närmann et al. 2022_ _[12]_ _)._\n\n\nwww.greifswaldmoor.de www.greifswaldmoor.de\n\n\nNach der Wiedervernässung ist die Bildung einer geschlossenen Vegetationsdecke entscheidend, um\neine weitere Torfdegradation auszuschließen. In der Planung kann auf umfangreiche Erfahrungen zur\nRestaurierung von Mooren für den Naturschutz bzgl. Hydrologie, Wasserbau, Moorökologie aufgebaut\nwerden, um die spezifischen Gegebenheiten von Mooren bei den Baumaßnahmen zu berücksichtigen.\nBisher durchgeführte Wiedervernässungsmaßnahmen weisen oft auf beträchtlichen Flächenanteilen\nkeine torferhaltenden Wasserstände auf [13] . Daher muss bei Wiedervernässungen, auch für PVA, die\nErreichung torferhaltender Wasserstände vom Anfang an besser geplant und durch ein dauerhaftes\nMonitoring und falls notwendig ein Nachjustieren gewährleistet werden.\n\n\n**Erarbeitung von Flächenkulissen** : Die Suche nach für PVA geeignete Flächen sollte sich auf\ndegradierte, landwirtschaftlich genutzte Moorböden ohne naturschutzrechtlich einschränkende\nSchutzauflagen konzentrieren. Für eine erste Eingrenzung des Suchraums schlagen wir die\nPaludikultur-Flächenkulisse 1 „Eignung ohne Prüfauflagen“ vor (Abbildung 2). Solche Flächenkulissen\nliegen für Mecklenburg-Vorpommern [14], Baden-Württemberg, Brandenburg und Schleswig-Holstein [12]\nvor und umfassen rd. 85.500 ha (MV), 5.123 ha (BW), 52.800 ha (BB) bzw. 72.300 ha (SH). Für\nNiedersachsen sind bisher nur Niedermoorböden in einer groben Kulisse betrachtet, die lediglich\n22.000 ha umfasst [15] . Hochmoore und andere organische Böden nehmen einen hohen Flächenanteil in\nNiedersachsen ein, jedoch liegen für sie bisher keine Flächenkulissen vor. Hierbei könnte der Suchraum\nebenfalls jene Hochmoore und andere organische Böden mit Feldblock ohne Schutzstatus (Acker und\nIntensivgrünland) umfassen.\n\n\n_Abbildung 2: Flächenkulissen für die Umsetzung von Paludikultur in Mecklenburg-Vorpommern. Über 50 % der_\n_landwirtschaftlich genutzten Moorböden sind in die Klasse 1 eingeordnet (LM 2017)._\n\n\nÜber die ökonomischen Rahmenbedingungen sowie die Auswirkung von PVA auf den Naturhaushalt\nvon Moorböden gibt es noch keine evidenzbasierten Erfahrungen. Sobald diese Erfahrungen vorliegen\nund ausgewertet sind, sollten die vorläufigen Flächenkulissen überprüft und ggf. angepasst werden.\n\n\n**Hebelwirkung** : Die Errichtung von PVA auf Moorflächen sollte als Hebel für eine Erhöhung des\nUmfanges der jährlich wiedervernässten Flächen dienen. Dabei sind Moorkörper als hydrologische\nEinheiten zu betrachten und möglichst vollständig zu vernässen, auch wenn die geplante PVA-Fläche\nnur ein Teil davon ausmacht. Investitionen in die Abtrennung von „vernässten Inseln in einer weiterhin\nentwässerten Landschaft“ sind zu vermeiden. So könnte Photovoltaik (PV) dazu beitragen, die\nnotwendige Wiedervernässungsrate von 5 % der landwirtschaftlich genutzten Moorböden [16]\n\n\nwww.greifswaldmoor.de www.greifswaldmoor.de\n\n\n(50.000 ha pro Jahr) zu erreichen. Auf den wiedervernässten, aber nicht mit PVA genutzten Flächen\nkönnen gezielt moorbezogene Artenschutzmaßnahmen und Paludikultur umgesetzt werden.\n\n\n**Baumaßnahmen** : Bei der Errichtung und dem laufenden Betrieb von PVA muss sichergestellt werden,\ndass die hydrologischen Eigenschaften des Torfkörpers nicht wesentlich negativ beeinflusst werden.\nMoorböden haben eine geringe Tragfähigkeit, was es beim Einsatz von Technik zu berücksichtigen gilt.\nBei der Errichtung von Verankerungselementen sowie Infrastrukturen (Kabeltrassen, Zuwegungen,\netc.) muss die Zerstörung relevanter stauender Schichten vermieden werden. Der durch Bodenaushub\nanfallende Torf darf nicht der Oxidation preisgegeben, sondern soll effektiv und konservierend\ngespeichert werden, z. B. indem er zur Verfüllung der Gräben genutzt wird.\n\n\n**Vegetation** : Damit sich torfschützende Vegetation auf den wiedervernässten Böden ausbilden kann,\nmuss ausreichend Licht auf den Boden gelangen. PVA müssen daher über der Vegetation stehen und\ndie Module versetzt, vertikal oder mit hinreichend großem Reihenabstand errichtet werden.\nIdealerweise kann sich eine Kohlenstoffsenke durch torfbildende Vegetation etablieren.\n\n\n**Wartung** und Rückbaubarkeit von Anfang an mitplanen: Nach der Wiedervernässung verringert sich\ndie Tragfähigkeit des Bodens weiter, so dass Wartung und Rückbau nur mit angepasster Technik\nmöglich sind. Die z.T. sauren Bedingungen im Moor und der ständige Kontakt mit Feuchtigkeit stellen\nhohe Anforderungen an das Material der Trägerelemente.\n\n\n**Paludi-PV** : Torfmoose sind niedrigwüchsige Pflanzen, die in **Paludikultur auf Hochmooren** angebaut\nwerden können [17], weshalb deren Kultur für Paludi-PV attraktiv scheint. Weil eine regelmäßige Pflege\nder Flächen erforderlich ist, muss – neben einer ausreichenden Lichtverfügbarkeit für die Torfmoose eine reibungslose (maschinelle) Bewirtschaftung (einschließlich Ernte) sichergestellt werden. Bei der\nTorfmooskultivierung ist ein zentimetergenaues Wassermanagement nötig, welches durch Installation\nund Wartung der Module nicht negativ beeinflusst werden soll. **Paludikultur auf Niedermooren**\numfasst v.a. die Bewirtschaftung von (hochwüchsigen) Gräsern [12] . Wiedervernässte Niedermoore sind\noft sehr nährstoffreich, so dass von hoher Produktivität und damit starkem Biomassewachstum\nauszugehen ist. Die PVA müssen daher mit Mahd oder Beweidung kompatibel sein, um ein\nÜberwachsen bzw. Verschatten der PVA zu verhindern. Hohe Aufständerungen oder vertikale PVA\nbieten hierfür Lösungsansätze. Der Übergang von Vegetationsmanagement hin zu Agri-PV mit einer\nVerwertung der Biomasseaufwüchse ist fließend, ein Optimum zwischen Biomasse- und EnergieErträgen noch nicht bestimmt. Die Paludi-PV könnte ein wirtschaftlicher Hebel sein, um durch\nWiedervernässung Nasswiesen mit eher geringen Erlösen aus der Verwertung der Aufwüchse zu\nschaffen. Ggf. können Infrastrukturen, z.B. Fahrdämme, für Paludikultur und PVA gemeinsam genutzt\nwerden. Auch die zukünftige Nutzung autonomer Erntetechnik bietet hier Entwicklungspotential.\n\n\n**Erprobungs- und Forschungsbedarf** : Der Bau von PVA in Kombination mit einer Wiedervernässung ist\nin Deutschland bisher nicht erprobt. Daher müssen sowohl die Auswirkungen der Wiedervernässung\nauf die technischen Anlagen als auch die Auswirkungen der PVA auf den Moorstandort (Gasflüsse,\nWasserhaushalt und Biodiversität) langfristig überwacht werden. Die Veränderung des Lebensraums\ndurch PVA ist hinsichtlich ihrer Wirkung auf die Biodiversität insbesondere von Insekten, Amphibien\nund Vögeln zu untersuchen. Zudem gilt es, mögliche Risiken der PVA auf die Wiedervernässung (und\numgekehrt!) aufzuzeigen. Erhöhte Emissionen können beispielsweise durch die Baumaßnahmen oder\nder infolge der Beschattung lichten Vegetationsdecke entstehen. Inwiefern Installation, Betrieb und\nRückbau der Anlagen bodenschonend zu gestalten sind, muss Ziel zukünftiger Forschung sein. Zudem\nkönnen die Auswirkungen einer PVA auf den Landschaftswasserhaushalt – zu erwarten wäre eine\nReduktion der Verdunstung – noch nicht quantifiziert werden. Die Forschungsergebnisse schaffen\nGrundlagen, um PVA-Projekte auf Moorböden zu bewerten, mögliche negative Auswirkungen der\nAnlagen zu identifizieren, diese zu vermeiden bzw. bei bestehenden Anlagen anzupassen.\n\n\nwww.greifswaldmoor.de www.greifswaldmoor.de\n\n\nZum Eckpunktepapier BMWK, BMUV und BMEL (Berlin, 10. Februar 2022)\n\n\nIm Eckpunktepapier [2] werden Flächenkategorien für die Errichtung von PVA vorgeschlagen. Dazu\ngehören:\n\n  - **Moor-PV-Maßnahmen (Punkt 3)**\n\n\nLaut Eckpunktepapier sollen landwirtschaftlich genutzte Moorböden eine neue\nFlächenkategorie für PVA darstellen, wenn sie dafür wiedervernässt werden. Die\nBerücksichtigung aller oben genannten Hinweise vorausgesetzt, begrüßt das GMC die\nSchaffung starker Anreize für die notwendige zügige Wiedervernässung von Moorböden (s.o.\nWiedervernässung, Hebelwirkung).\n\n\n**Wissenslücken** : Dennoch besteht ein hoher Erprobungs- und Forschungsbedarf (s.o.), ob und\nwie PVA torferhaltend betrieben werden kann. Um Fehlentwicklungen zu vermeiden und neue\nErkenntnisse zeitnah in die Praxis zu transferieren, wäre es denkbar die Umsetzung von PVA\nauf Moorböden für die nächsten 5 Jahre (d.h. bis ausreichend Monitoringergebnisse vorliegen)\nauf z.B. 1.000 ha je moorreiches Bundesland zu begrenzen.\n\n\nDas Eckpunktepapier sieht vor, die Wiedervernässung im Rahmen von\nMoorschutzprogrammen weiter zu fördern. Die Umsetzung von Moorschutz-Projekten wird\nderzeit aber oft durch hemmende Rahmenbedingungen und Raumkonflikte verzögert [18] . Die\nIntegration von Wiedervernässung und PVA kann diese Raumkonflikte reduzieren und die\nUmsetzung von Moorschutz beschleunigen. Es müssen aber auch weiterhin ausreichend Mittel\nfür Moorschutzprojekte außerhalb von Moor-PV-Maßnahmen zur Verfügung stehen.\n\n\n  - **Agri-PV – Gemeinsame Nutzung der Fläche für Landwirtschaft und PV-Stromerzeugung**\n**(Punkt 1)**\n\n\nLaut Eckpunktepapier soll Agri-PV auf Ackerflächen zulässig sein, Agri-PV auf Moorböden wird\njedoch ausgeschlossen. Derzeit werden rd. 334.500 ha organische Böden als Ackerland genutzt\nund dafür entwässert [3] . Wir schlagen demgegenüber die Umsetzung von Agri-PV auf\nackerbaulich genutzten Moorböden vor, wenn dies mit einer Wiedervernässung und weiteren\nBedingungen (s.o.) verbunden wird.\n\n  - **Beschleunigung von Planung (Punkt 6)**\n\n\nDie Unterstützung der Kommunen bei Genehmigungsverfahren wird begrüßt. Die Verfahren\nsind umfangreich, daher müssen Genehmigungsbehörden gestärkt und Abläufe verschlankt\nwerden. Dafür wäre es u.a. hilfreich, Moorböden in der Regionalplanung als **Vorranggebiete**\n**für** **naturbasierten** **Klimaschutz** auszuweisen. [19] Grundlage dafür wäre das\nRaumordnungsgesetz [20] .\n\n\nZum Referentenentwurf des BMWK - Entwurf eines Gesetzes zu Sofortmaßnahmen für einen\nbeschleunigten Ausbau der erneuerbaren Energien und weiteren Maßnahmen im\nStromsektor, Bearbeitungsstand 4.3.2022\n\n\nDer Referentenentwurf [21] sieht vor, dass PVA auf bisher landwirtschaftlich genutzten, entwässerten\nMoorböden errichtet werden dürfen, wenn diese im Zuge der Errichtung wiedervernässt werden (§ 37\nAbsatz 1 Nr. 2 EEG-E). Es werden dabei zu erreichende Mindestwasserstände benannt: max. 30 cm\nunter Flur im Sommer und max. 10 cm unter Flur im Winter (s. S. 179). Diese Wasserstände sind jedoch\nv.a. im Sommer weiter **torfzehrend** (vgl. Abbildung 1) und damit unzureichend. Im Rahmen der\nLänderanhörung zum Referentenentwurf schlägt daher das Land Niedersachsen [22] vor, der BundLänder-Zielvereinbarung zum Klimaschutz durch Moorbodenschutz [23] zu folgen und sommerliche\nWasserstände von 5 bis max. 15 cm unter Flur als Beurteilungsgrundlage anzulegen. Das Umsetzen\neines **torferhaltenden** Wasserstandes sollte zwingende Vorgabe sein, um PVA errichten zu dürfen.\n\n\nwww.greifswaldmoor.de www.greifswaldmoor.de\n\n\nDes Weiteren sieht der Entwurf (§ 37 Absatz 1 Nr. 3 EEG-E) vor, dass **Agri-PV-Anlagen** auf\nlandwirtschaftlich genutzten Moorböden nicht zulässig sind. Eine Ko-Nutzung von Moorböden für\nSolaranlagen und Landwirtschaft wird ausgeschlossen, um eine Wiedervernässung durch Errichtung\nvon Solaranlagen nicht zu verhindern. Hierbei wird jedoch nicht berücksichtigt, dass mittels\nPaludikultur eine **landwirtschaftliche Nutzung von wiedervernässten Moorböden** möglich bleibt.\nAgri-PV-Anlagen in Verbindung mit Paludikultur sollten daher **zulässig** sein, wie auch SchleswigHolstein in seiner Stellungnahme zum Referententwurf fordert [24] . Auf vorher als Acker genutzten\nMoorböden sollte nach Wiedervernässung die Nutzung von Paludi-Dauerkulturen und Nassgrünland\nmöglich sein. Die Verknüpfung von Agri-PV mit Paludikultur kann dabei ein Hebel sein um Paludikultur\nverstärkt umzusetzen.\n\n\nKontakt\n\n\nGreifswald Moor Centrum, c/o Michael Succow Stiftung, Ellernholzstr. 1/3, 17489 Greifswald\nAnsprechpartnerin: Monika Hohlbein, [monika.hohlbein@greifswaldmoor.de](mailto:monika.hohlbein@greifswaldmoor.de)\n\n\nDas Greifswald Moor Centrum ist eine Kooperation von Universität Greifswald, Michael Succow\nStiftung und DUENE e.V.\n\n\n1 Bundes-Klimaschutzgesetz vom 12. Dezember 2019 (BGBl. I S. 2513), das durch Artikel 1 des Gesetzes vom 18. August 2021 (BGBl. I S.\n3905) geändert worden ist\n2 BMWK, BMUV und BMEL (2022): [Ausbau der Photovoltaik auf Freiflächen im Einklang mit landwirtschaftlicher Nutzung und Naturschutz.](https://www.bmwi.de/Redaktion/DE/Downloads/E/eckpunktepapier-ausbau-photovoltaik-freiflaechenanlagen.pdf?__blob=publicationFile&v=12)\nEckpunktepapier. Berlin, 10.2.2022\n3 UBA (2021): Berichterstattung unter der Klimarahmenkonvention der Vereinten Nationen und dem Kyoto-Protokoll 20201. Nationaler\nInventarbericht zum Deutschen Treibhausinventar 1990-2019. Umweltbundesamt. Dessau-Roßlau. 995 S.\n4 Tegetmeyer, C., Barthelmes, K.-D., Busse, S., Barthelmes, A. (2021): Aggregierte Karte der organischen Böden Deutschlands. GMCSchriftenreihe 01/2021\n5 Hirschelmann, S., Tanneberger, F., Wichmann, S., Reichelt, F., Hohlbein, M., Couwenberg, J., Busse, S., Schröder, C. & Nordt, A. (2020):\nMoore in Mecklenburg-Vorpommern im Kontext nationaler und internationaler Klimaschutzziele - Zustand und Entwicklungspotenzial,\nFaktensammlung. Greifswald Moor Centrum-Schriftenreihe 03/2020, 35 S.\n6 GMC (2022): [Stellungnahme des Greifswald Moor Centrum zum Antrag „Förderung von Moorschutz in Niedersachsen“, 14.3.2022, 12 S.](https://greifswaldmoor.de/files/dokumente/Infopapiere_Briefings/202203_Stellungnahme_Moorschutz%20in%20Niedersachsen_GMC_2022.pdf)\n7 Nordt, A. & Dahms, T. (2021): [Paludi-tiny house - a demonstrator for climate friendly building materials. Poster.](https://www.moorwissen.de/doc/aktuelles/veranstaltungen/rrr2021/downloads/beitraege/RRR2021_3.1.C_Nordt_Poster.pdf)\n\n[8 Aktuelle Fakten zur Photovoltaik in Deutschland, Harry Wirth, Fraunhofer ISE, Download von www.pv-fakten.de, Fassung vom 04.02.2022](http://www.pv-fakten.de/)\n9 Tanneberger, F., Abel, A., Couwenberg, J., Dahms, T., Gaudig, G., Günther, A., Kreyling, J., Peters, J., Pongratz, J. & Joosten, H. (2021):\nTowards net zero CO2 in 2050: An emission reduction pathway for organic soils in Germany. In: Mires and Peat, 27, S. 1 – 17.\n10 MLUK (2021): [Vorläufige Handlungsempfehlung des MLUK zur Unterstützung kommunaler Entscheidungen für großflächige Photovoltaik](https://mluk.brandenburg.de/sixcms/media.php/9/MLUK-Handlungsempfehlung-PV-FFA.pdf)\n"
+      }
+    ],
+    "request_kwargs": {
+      "extra_body": {
+        "structured_outputs": {
+          "json": {
+            "$defs": {
+              "BiodiversityLevelEnum": {
+                "enum": [
+                  "Artenvielfalt",
+                  "Funktionelle Diversität",
+                  "Genetische Diversität",
+                  "Habitatdiversität",
+                  "Phylogenetische Diversität",
+                  "Strukturelle Diversität",
+                  "Zusammensetzung der Artengemeinschaft"
+                ],
+                "title": "BiodiversityLevelEnum",
+                "type": "string"
+              },
+              "EcosystemTypeCategoryEnum": {
+                "enum": [
+                  "I Biotoptypengruppen der Meere und Küsten",
+                  "II Biotoptypengruppen der Binnengewässer",
+                  "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes",
+                  "IV Technische Biotoptypengruppen",
+                  "V Biotoptypengruppen mit Schwerpunkt in den Alpen",
+                  "VI Weitere"
+                ],
+                "title": "EcosystemTypeCategoryEnum",
+                "type": "string"
+              },
+              "EcosystemTypeSimple": {
+                "additionalProperties": false,
+                "description": "Ökosystemtyp mit Kategorie und (wenn möglich) mit Name.\nWenn es im Text um die Ökosystemtyp-Kategorien Meere oder Küsten geht, sind nur die Ökosystemtypen (Namen)\nmöglich: Benthal der Nordsee; Benthal der Ostsee; Fels- und Steilküsten; Küstendünen; Pelagial\nder Nordsee; Pelagial der Ostsee; Saisonales Meereis der Nordsee; Saisonales Meereis der\nOstsee; Salzgrünland, Brackwasserröhrichte und -Hochstaudenfluren des Geolitorals der\nOstseeküste; Salzgrünland der Nordseeküste (Supralitoral); Sände, Sand-, Geröll- und Blockstrände.\nWenn es im Text um die Ökosystemtyp-Kategorien Binnengewässer geht, sind nur die folgenden Ökosystemtypen\n(Namen) möglich: Fließende Gewässer; Grundwasser und Höhlengewässer; Quellen (inklusive Quellabfluss (Krenal));\nStehende Gewässer.\nWenn es im Text um Ökosystemtyp-Kategorien terrestrisches oder semiterrestrisches Binnenland\ngeht, sind nur die folgenden Ökosystemtypen (Namen) möglich: Äcker und Ackerbrachen; Feldgehölze,\nGebüsche, Hecken und Gehölzkulturen; Felsen, Block- und Schutthalden, Geröllfelder, offene Bereiche\nmit sandigem oder bindigem Substrat; Hoch-, Zwischen- und Übergangsmoore; Höhlen (einschließlich Stollen,\nBrunnenschächte etc.); Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent);\nNadel(Misch)Wälder und -Forste; Röhrichte (ohne Brackwasserröhrichte); Trockenrasen sowie\nGrünland trockener bis frischer Standorte; Waldfreie Niedermoore und Sümpfe, Grünland nasser\nbis feuchter Standorte; Waldmäntel und Vorwälder, spezielle Waldnutzungsformen; Wald- und\nUfersäume, Staudenfluren; Zwergstrauchheiden; Großseggenriede.\nWenn es im Text um die Ökosystemtyp-Kategorie technische Biotope geht, sind nur die folgenden\nÖkosystemtypen (Namen) möglich: Bauwerke; Kleine, unbefestigte Freiflächen des besiedelten Bereiches;\nVerkehrsanlagen und Plätze; Deponien und Rieselfelder.\nWenn es im Text um die Ökosystemtyp-Kategorie Biotope mit Schwerpunkt in den Alpen geht, sind nur die\nfolgenden Ökosystemtypen (Namen) möglich: Gebirgsrasen (subalpin bis alpin); Gewässer (subalpin bis alpin);\nFirn, permanente Schneefelder und Gletscher; Felsen (subalpin bis nival); Steinschutthalden und\nSchotterflächen (subalpin bis alpin); Schneeböden, Schneetälchen; Moore (subalpin bis alpin);\nStauden- und Lägerfluren (hochmontan bis alpin); Zwergstrauchheiden (subalpin bis alpin);\nGebüsche (hochmontan bis subalpin); Wälder (subalpin).\nPasst keine der genannten Ökosystemtyp-Kategorien (d.h. Ökosystemtyp-Kategorie Weitere), sind immer\ndie folgenden Ökosystemtypen (Namen) möglich: Rohbodenstandorte und Ruderalfluren; Grün- und Freiflächen",
+                "properties": {
+                  "category": {
+                    "type": "object",
+                    "properties": {
+                      "content": {
+                        "$ref": "#/$defs/EcosystemTypeCategoryEnum"
+                      },
+                      "evidence_anchor": {
+                        "type": "string",
+                        "description": "Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt."
+                      }
+                    },
+                    "required": [
+                      "content",
+                      "evidence_anchor"
+                    ],
+                    "additionalProperties": false,
+                    "description": "Kategorie des Ökosystemtyps"
+                  },
+                  "term": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "content": {
+                            "$ref": "#/$defs/EcosystemTypeTermEnum"
+                          },
+                          "evidence_anchor": {
+                            "type": "string",
+                            "description": "Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt."
+                          }
+                        },
+                        "required": [
+                          "content",
+                          "evidence_anchor"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "description": "Name des Ökosystemtyps"
+                  }
+                },
+                "required": [
+                  "category"
+                ],
+                "title": "EcosystemTypeSimple",
+                "type": "object"
+              },
+              "EcosystemTypeTermEnum": {
+                "enum": [
+                  "Anthropogene Rohbodenstandorte und Ruderalfluren",
+                  "Bauwerke",
+                  "Benthal der Nordsee",
+                  "Benthal der Ostsee",
+                  "Deponien und Rieselfelder",
+                  "Feldgehölze, Gebüsche, Hecken und Gehölzkulturen",
+                  "Fels- und Steilküsten",
+                  "Felsen, Block- und Schutthalden, Geröllfelder, offene Bereiche mit sandigem oder bindigem Substrat",
+                  "Felsen der subalpinen bis nivalen Stufe",
+                  "Firn, permanente Schneefelder und Gletscher",
+                  "Fließende Gewässer",
+                  "Gebirgsrasen (subalpine bis alpine Stufe)",
+                  "Gebüsche der hochmontanen bis subalpinen Stufe",
+                  "Gewässer der subalpinen bis alpinen Stufe",
+                  "Großseggenriede",
+                  "Grundwasser und Höhlengewässer",
+                  "Grün- und Freiflächen",
+                  "Hoch-, Zwischen- und Übergangsmoore",
+                  "Höhlen (einschließlich Stollen, Brunnenschächte etc.)",
+                  "Kleine, unbefestigte Freiflächen des besiedelten Bereiches",
+                  "Küstendünen",
+                  "Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent)",
+                  "Moore der subalpinen bis alpinen Stufe",
+                  "Nadel(Misch)Wälder und -Forste",
+                  "Pelagial der Nordsee",
+                  "Pelagial der Ostsee",
+                  "Quellen (inklusive Quellabfluss (Krenal))",
+                  "Röhrichte (ohne Brackwasserröhrichte)",
+                  "Saisonales Meereis der Nordsee",
+                  "Saisonales Meereis der Ostsee",
+                  "Salzgrünland der Nordseeküste (Supralitoral)",
+                  "Salzgrünland, Brackwasserröhrichte und -Hochstaudenfluren des Geolitorals der Ostseeküste",
+                  "Schneeböden, Schneetälchen",
+                  "Stehende Gewässer",
+                  "Steinschutthalden und Schotterflächen der subalpinen bis alpinen Stufe",
+                  "Sände, Sand-, Geröll- und Blockstrände",
+                  "Stauden- und Lägerfluren der hochmontanen bis alpinen Stufe",
+                  "Subalpine Wälder",
+                  "Trockenrasen sowie Grünland trockener bis frischer Standorte",
+                  "Verkehrsanlagen und Plätze",
+                  "Wald- und Ufersäume, Staudenfluren",
+                  "Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte",
+                  "Waldmäntel und Vorwälder, spezielle Waldnutzungsformen",
+                  "Zwergstrauchheiden",
+                  "Zwergstrauchheiden der subalpinen bis alpinen Stufe",
+                  "Äcker und Ackerbrachen"
+                ],
+                "title": "EcosystemTypeTermEnum",
+                "type": "string"
+              },
+              "HabitatEnum": {
+                "enum": [
+                  "Agrar- und Offenland",
+                  "Binnengewässer und Auen",
+                  "Boden",
+                  "Küsten und Küstengewässer",
+                  "Urbane Räume",
+                  "Wald"
+                ],
+                "title": "HabitatEnum",
+                "type": "string"
+              },
+              "SpeciesGroupEnum": {
+                "enum": [
+                  "Amphibien und Reptilien",
+                  "Andere",
+                  "Andere Pflanzen",
+                  "Andere Wirbellose",
+                  "Archaeen",
+                  "Bakterien",
+                  "Fische",
+                  "Flechten",
+                  "Gefäßpflanzen",
+                  "Insekten",
+                  "Moose",
+                  "Pilze",
+                  "Protisten",
+                  "Protozoen",
+                  "Säugetiere",
+                  "Vögel"
+                ],
+                "title": "SpeciesGroupEnum",
+                "type": "string"
+              },
+              "Taxa": {
+                "additionalProperties": false,
+                "description": "Art mit wissenschaftlichem und deutschem Namen sowie taxonomischer Gruppe.",
+                "properties": {
+                  "scientific_name": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "content": {
+                            "type": "string"
+                          },
+                          "evidence_anchor": {
+                            "type": "string",
+                            "description": "Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt."
+                          }
+                        },
+                        "required": [
+                          "content",
+                          "evidence_anchor"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "description": "Wissenschaftlicher Name der Art",
+                    "title": "Scientific Name"
+                  },
+                  "german_name": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "content": {
+                            "type": "string"
+                          },
+                          "evidence_anchor": {
+                            "type": "string",
+                            "description": "Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt."
+                          }
+                        },
+                        "required": [
+                          "content",
+                          "evidence_anchor"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "description": "Deutscher Name der Art",
+                    "title": "German Name"
+                  },
+                  "species_group": {
+                    "type": "object",
+                    "properties": {
+                      "content": {
+                        "$ref": "#/$defs/SpeciesGroupEnum"
+                      },
+                      "evidence_anchor": {
+                        "type": "string",
+                        "description": "Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt."
+                      }
+                    },
+                    "required": [
+                      "content",
+                      "evidence_anchor"
+                    ],
+                    "additionalProperties": false,
+                    "description": "Taxonomische Gruppe der Art"
+                  }
+                },
+                "required": [
+                  "species_group"
+                ],
+                "title": "Taxa",
+                "type": "object"
+              }
+            },
+            "additionalProperties": false,
+            "description": "Das Schema sammelt Angaben zu den wichtigsten biodiversitätsbezogenen Merkmalen der Studie:\nLebensräume, Ökosystemtypen, Arten bzw. Artengruppen, sowie die untersuchte Biodiversitätsebene.",
+            "properties": {
+              "habitat": {
+                "description": "Um welchen der folgenden Lebensräume oder um welche Kombination der folgenden Lebensräume geht es in dem Text?",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "content": {
+                      "$ref": "#/$defs/HabitatEnum"
+                    },
+                    "evidence_anchor": {
+                      "type": "string",
+                      "description": "Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt."
+                    }
+                  },
+                  "required": [
+                    "content",
+                    "evidence_anchor"
+                  ],
+                  "additionalProperties": false
+                },
+                "title": "Habitat",
+                "type": "array"
+              },
+              "taxa": {
+                "description": "Welche Arten bzw. Artengruppen werden in der Studie untersucht? Verwende die kleinste machbare Ebene: Wenn eine Studie nur wenige Arten behandelt, sollten diese auf Artebene mit ihrem wissenschaftlichen und deutschen Namen angegeben werden. Werden jedoch sehr viele Arten behandelt oder eine Artengruppe besprochen, wird die Artengruppe als 'Sammelbegriff' angegeben. Falls die Studie auf englisch ist, übersetze Art- bzw. Artengruppennamen ins Deutsche. Ergänze, wenn nicht angegeben, die wissenschaftlichen Artennamen, und umgekehrt die deutschen Namen, wenn nur die wissenschaftlichen Artennamen verwendet wurden. ",
+                "items": {
+                  "$ref": "#/$defs/Taxa"
+                },
+                "title": "Taxa",
+                "type": "array"
+              },
+              "biodiversity_level": {
+                "description": "Auf welche der folgenden Ebenen wird Biodiversität in der Studie gemessen? ",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "content": {
+                      "$ref": "#/$defs/BiodiversityLevelEnum"
+                    },
+                    "evidence_anchor": {
+                      "type": "string",
+                      "description": "Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt."
+                    }
+                  },
+                  "required": [
+                    "content",
+                    "evidence_anchor"
+                  ],
+                  "additionalProperties": false
+                },
+                "title": "Biodiversity Level",
+                "type": "array"
+              },
+              "ecosystem_type": {
+                "description": "Welche Ökosystemtypen werden betrachtet?",
+                "items": {
+                  "$ref": "#/$defs/EcosystemTypeSimple"
+                },
+                "title": "Ecosystem Type",
+                "type": "array"
+              }
+            },
+            "title": "EcosystemStudyFeaturesCoreFields",
+            "type": "object"
+          }
+        }
+      }
+    }
+  },
+  "response": {
+    "message": {
+      "role": "assistant",
+      "content": "{\n  \"habitat\": [\n    {\n      \"content\": \"Boden\",\n      \"evidence_anchor\": \"Moorböden\"\n    }\n  ],\n  \"taxa\": [\n    {\n      \"scientific_name\": {\n        \"content\": \"Insecta\",\n        \"evidence_anchor\": \"Die Veränderung des Lebensraums durch PVA ist hinsichtlich ihrer Wirkung auf die Biodiversität insbesondere von Insekten, Amphibien und Vögeln zu untersuchen.\"\n      },\n      \"german_name\": {\n        \"content\": \"Insekten\",\n        \"evidence_anchor\": \"Die Veränderung des Lebensraums durch PVA ist hinsichtlich ihrer Wirkung auf die Biodiversität insbesondere von Insekten, Amphibien und Vögeln zu untersuchen.\"\n      },\n      \"species_group\": {\n        \"content\": \"Insekten\",\n        \"evidence_anchor\": \"Die Veränderung des Lebensraums durch PVA ist hinsichtlich ihrer Wirkung auf die Biodiversität insbesondere von Insekten, Amphibien und Vögeln zu untersuchen.\"\n      }\n    },\n    {\n      \"scientific_name\": {\n        \"content\": \"Amphibia\",\n        \"evidence_anchor\": \"Die Veränderung des Lebensraums durch PVA ist hinsichtlich ihrer Wirkung auf die Biodiversität insbesondere von Insekten, Amphibien und Vögeln zu untersuchen.\"\n      },\n      \"german_name\": {\n        \"content\": \"Amphibien\",\n        \"evidence_anchor\": \"Die Veränderung des Lebensraums durch PVA ist hinsichtlich ihrer Wirkung auf die Biodiversität insbesondere von Insekten, Amphibien und Vögeln zu untersuchen.\"\n      },\n      \"species_group\": {\n        \"content\": \"Amphibien und Reptilien\",\n        \"evidence_anchor\": \"Die Veränderung des Lebensraums durch PVA ist hinsichtlich ihrer Wirkung auf die Biodiversität insbesondere von Insekten, Amphibien und Vögeln zu untersuchen.\"\n      }\n    },\n    {\n      \"scientific_name\": {\n        \"content\": \"Aves\",\n        \"evidence_anchor\": \"Die Veränderung des Lebensraums durch PVA ist hinsichtlich ihrer Wirkung auf die Biodiversität insbesondere von Insekten, Amphibien und Vögeln zu untersuchen.\"\n      },\n      \"german_name\": {\n        \"content\": \"Vögel\",\n        \"evidence_anchor\": \"Die Veränderung des Lebensraums durch PVA ist hinsichtlich ihrer Wirkung auf die Biodiversität insbesondere von Insekten, Amphibien und Vögeln zu untersuchen.\"\n      },\n      \"species_group\": {\n        \"content\": \"Vögel\",\n        \"evidence_anchor\": \"Die Veränderung des Lebensraums durch PVA ist hinsichtlich ihrer Wirkung auf die Biodiversität insbesondere von Insekten, Amphibien und Vögeln zu untersuchen.\"\n      }\n    }\n  ],\n  \"biodiversity_level\": [\n    {\n      \"content\": \"Zusammensetzung der Artengemeinschaft\",\n      \"evidence_anchor\": \"Die Veränderung des Lebensraums durch PVA ist hinsichtlich ihrer Wirkung auf die Biodiversität insbesondere von Insekten, Amphibien und Vögeln zu untersuchen.\"\n    }\n  ],\n  \"ecosystem_type\": [\n    {\n      \"category\": {\n        \"content\": \"VI Weitere\",\n        \"evidence_anchor\": \"Moorböden\"\n      }\n    }\n  ]\n}"
+    },
+    "raw_message": {
+      "reasoning": "We need to extract info from the markdown document. The schema: habitat, taxa, biodiversity_level, ecosystem_type. We need to produce JSON with only those fields. The document is about Photovoltaik-Anlagen on moor soils. So habitat: Moorböden (which is a type of habitat). The allowed values for habitat content: \"Agrar- und Offenland; Binnengewässer und Auen; Boden; Küsten und Küstengewässer; Urbane Räume; Wald\". Moorböden is \"Boden\" (soil). So habitat content: \"Boden\". evidence_anchor: a quote from the text that supports that. We can use a quote like \"Moorböden\" or \"entwässerten Moorböden\". Provide the exact quote.\n\nTaxa: The document mentions biodiversity aspects: \"Insekten, Amphibien und Vögel\" as groups to be studied. Also \"Moorböden\" is habitat, not taxa. So taxa: Insekten, Amphibien, Vögel. We need to provide scientific_name and german_name. For Insekten: scientific_name: \"Insekten\" (German). But we need scientific name? Insecta is the class. So scientific_name: \"Insecta\". German_name: \"Insekten\". species_group: \"Insekten\" (allowed values: Insekten). Provide evidence_anchor: quote referencing \"Insekten, Amphibien und Vögeln\". For Amphibien: scientific_name: \"Amphibia\". German_name: \"Amphibien\". species_group: \"Amphibien und Reptilien\" (allowed). For Vögel: scientific_name: \"Aves\". German_name: \"Vögel\". species_group: \"Vögel\" (allowed). Provide evidence_anchor.\n\nBiodiversity_level: The document mentions \"Biodiversität insbesondere von Insekten, Amphibien und Vögeln\" to be studied. So biodiversity_level: \"Zusammensetzung der Artengemeinschaft\" maybe? The allowed values: Artenvielfalt; Funktionelle Diversität; Genetische Diversität; Habitatdiversität; Phylogenetische Diversität; Strukturelle Diversität; Zusammensetzung der Artengemeinschaft. The study aims to investigate the impact on biodiversity, especially composition of species communities. So we can set content: \"Zusammensetzung der Artengemeinschaft\". evidence_anchor: quote referencing \"Biodiversität insbesondere von Insekten, Amphibien und Vögeln\".\n\nEcosystem_type: The document mentions \"Moorböden\" which is a type of ecosystem. But the allowed categories: I Biotoptypengruppen der Meere und Küsten; II Biotoptypengruppen der Binnengewässer; III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes; IV Technische Biotoptypengruppen; V Biotoptypengruppen mit Schwerpunkt in den Alpen; VI Weitere. Moorböden are terrestrial wetlands. So category: \"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes\". term: \"Moorböden\" is not in the list of allowed terms. The allowed terms list includes many specific names, but not \"Moorböden\". The list includes \"Rohbodenstandorte und Ruderalfluren; Grün- und Freiflächen\" etc. Moorböden is not listed. But maybe \"Rohbodenstandorte\" could be used? But Moorböden are peat soils, not exactly \"Rohbodenstandorte\". The schema says if none of the categories match, use VI Weitere. But we have a category III. But term must be one of the allowed values. Moorböden is not in the list. So maybe we should use category VI Weitere and term \"Moorböden\" (but term must be one of allowed values). The allowed values for term include \"Rohbodenstandorte und Ruderalfluren; Grün- und Freiflächen\". Moorböden not listed. So we cannot use term. But we can set term absent? The schema says term is optional. So we can set category VI Weitere and no term. Provide evidence_anchor: quote referencing \"Moorböden\". But maybe we can use \"Rohbodenstandorte\" as term? But Moorböden are peat soils, not exactly \"Rohbodenstandorte\". But the term list includes \"Rohbodenstandorte und Ruderalfluren\". That might be a generic term for raw soil sites. Moorböden could be considered raw soil sites. But it's ambiguous. The safer approach: use category VI Weitere, no term. Provide evidence_anchor.\n\nThus JSON:\n\n{\n  \"habitat\": [\n    {\n      \"content\": \"Boden\",\n      \"evidence_anchor\": \"Moorböden\"\n    }\n  ],\n  \"taxa\": [\n    {\n      \"scientific_name\": {\n        \"content\": \"Insecta\",\n        \"evidence_anchor\": \"Insekten, Amphibien und Vögel\"\n      },\n      \"german_name\": {\n        \"content\": \"Insekten\",\n        \"evidence_anchor\": \"Insekten, Amphibien und Vögel\"\n      },\n      \"species_group\": {\n        \"content\": \"Insekten\",\n        \"evidence_anchor\": \"Insekten, Amphibien und Vögel\"\n      }\n    },\n    {\n      \"scientific_name\": {\n        \"content\": \"Amphibia\",\n        \"evidence_anchor\": \"Insekten, Amphibien und Vögel\"\n      },\n      \"german_name\": {\n        \"content\": \"Amphibien\",\n        \"evidence_anchor\": \"Insekten, Amphibien und Vögel\"\n      },\n      \"species_group\": {\n        \"content\": \"Amphibien und Reptilien\",\n        \"evidence_anchor\": \"Insekten, Amphibien und Vögel\"\n      }\n    },\n    {\n      \"scientific_name\": {\n        \"content\": \"Aves\",\n        \"evidence_anchor\": \"Insekten, Amphibien und Vögel\"\n      },\n      \"german_name\": {\n        \"content\": \"Vögel\",\n        \"evidence_anchor\": \"Insekten, Amphibien und Vögel\"\n      },\n      \"species_group\": {\n        \"content\": \"Vögel\",\n        \"evidence_anchor\": \"Insekten, Amphibien und Vögel\"\n      }\n    }\n  ],\n  \"biodiversity_level\": [\n    {\n      \"content\": \"Zusammensetzung der Artengemeinschaft\",\n      \"evidence_anchor\": \"Biodiversität insbesondere von Insekten, Amphibien und Vögeln\"\n    }\n  ],\n  \"ecosystem_type\": [\n    {\n      \"category\": {\n        \"content\": \"VI Weitere\",\n        \"evidence_anchor\": \"Moorböden\"\n      }\n    }\n  ]\n}\n\nBut we need to ensure evidence_anchor is a literal quote from the original text. For habitat, we can use \"Moorböden\" or \"entwässerten Moorböden\". For taxa, we need quotes that mention the taxa. The text says: \"Die Veränderung des Lebensraums durch PVA ist hinsichtlich ihrer Wirkung auf die Biodiversität insbesondere von Insekten, Amphibien und Vögeln zu untersuchen.\" So we can use that sentence as evidence_anchor. For each taxa, we can use that same quote. For biodiversity_level, same quote. For ecosystem_type, we can use \"Moorböden\" or \"entwässerten Moorböden\". Provide evidence_anchor accordingly.\n\nWe need to ensure JSON is valid. Provide only the fields. No extra fields. Ensure each object has required fields. For habitat, content and evidence_anchor. For taxa, each object must have scientific_name, german_name, species_group. Each of those objects must have content and evidence_anchor. For biodiversity_level, content and evidence_anchor. For ecosystem_type, category with content and evidence_anchor. term optional omitted.\n\nLet's craft final JSON.",
+      "reasoning_content": "We need to extract info from the markdown document. The schema: habitat, taxa, biodiversity_level, ecosystem_type. We need to produce JSON with only those fields. The document is about Photovoltaik-Anlagen on moor soils. So habitat: Moorböden (which is a type of habitat). The allowed values for habitat content: \"Agrar- und Offenland; Binnengewässer und Auen; Boden; Küsten und Küstengewässer; Urbane Räume; Wald\". Moorböden is \"Boden\" (soil). So habitat content: \"Boden\". evidence_anchor: a quote from the text that supports that. We can use a quote like \"Moorböden\" or \"entwässerten Moorböden\". Provide the exact quote.\n\nTaxa: The document mentions biodiversity aspects: \"Insekten, Amphibien und Vögel\" as groups to be studied. Also \"Moorböden\" is habitat, not taxa. So taxa: Insekten, Amphibien, Vögel. We need to provide scientific_name and german_name. For Insekten: scientific_name: \"Insekten\" (German). But we need scientific name? Insecta is the class. So scientific_name: \"Insecta\". German_name: \"Insekten\". species_group: \"Insekten\" (allowed values: Insekten). Provide evidence_anchor: quote referencing \"Insekten, Amphibien und Vögeln\". For Amphibien: scientific_name: \"Amphibia\". German_name: \"Amphibien\". species_group: \"Amphibien und Reptilien\" (allowed). For Vögel: scientific_name: \"Aves\". German_name: \"Vögel\". species_group: \"Vögel\" (allowed). Provide evidence_anchor.\n\nBiodiversity_level: The document mentions \"Biodiversität insbesondere von Insekten, Amphibien und Vögeln\" to be studied. So biodiversity_level: \"Zusammensetzung der Artengemeinschaft\" maybe? The allowed values: Artenvielfalt; Funktionelle Diversität; Genetische Diversität; Habitatdiversität; Phylogenetische Diversität; Strukturelle Diversität; Zusammensetzung der Artengemeinschaft. The study aims to investigate the impact on biodiversity, especially composition of species communities. So we can set content: \"Zusammensetzung der Artengemeinschaft\". evidence_anchor: quote referencing \"Biodiversität insbesondere von Insekten, Amphibien und Vögeln\".\n\nEcosystem_type: The document mentions \"Moorböden\" which is a type of ecosystem. But the allowed categories: I Biotoptypengruppen der Meere und Küsten; II Biotoptypengruppen der Binnengewässer; III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes; IV Technische Biotoptypengruppen; V Biotoptypengruppen mit Schwerpunkt in den Alpen; VI Weitere. Moorböden are terrestrial wetlands. So category: \"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes\". term: \"Moorböden\" is not in the list of allowed terms. The allowed terms list includes many specific names, but not \"Moorböden\". The list includes \"Rohbodenstandorte und Ruderalfluren; Grün- und Freiflächen\" etc. Moorböden is not listed. But maybe \"Rohbodenstandorte\" could be used? But Moorböden are peat soils, not exactly \"Rohbodenstandorte\". The schema says if none of the categories match, use VI Weitere. But we have a category III. But term must be one of the allowed values. Moorböden is not in the list. So maybe we should use category VI Weitere and term \"Moorböden\" (but term must be one of allowed values). The allowed values for term include \"Rohbodenstandorte und Ruderalfluren; Grün- und Freiflächen\". Moorböden not listed. So we cannot use term. But we can set term absent? The schema says term is optional. So we can set category VI Weitere and no term. Provide evidence_anchor: quote referencing \"Moorböden\". But maybe we can use \"Rohbodenstandorte\" as term? But Moorböden are peat soils, not exactly \"Rohbodenstandorte\". But the term list includes \"Rohbodenstandorte und Ruderalfluren\". That might be a generic term for raw soil sites. Moorböden could be considered raw soil sites. But it's ambiguous. The safer approach: use category VI Weitere, no term. Provide evidence_anchor.\n\nThus JSON:\n\n{\n  \"habitat\": [\n    {\n      \"content\": \"Boden\",\n      \"evidence_anchor\": \"Moorböden\"\n    }\n  ],\n  \"taxa\": [\n    {\n      \"scientific_name\": {\n        \"content\": \"Insecta\",\n        \"evidence_anchor\": \"Insekten, Amphibien und Vögel\"\n      },\n      \"german_name\": {\n        \"content\": \"Insekten\",\n        \"evidence_anchor\": \"Insekten, Amphibien und Vögel\"\n      },\n      \"species_group\": {\n        \"content\": \"Insekten\",\n        \"evidence_anchor\": \"Insekten, Amphibien und Vögel\"\n      }\n    },\n    {\n      \"scientific_name\": {\n        \"content\": \"Amphibia\",\n        \"evidence_anchor\": \"Insekten, Amphibien und Vögel\"\n      },\n      \"german_name\": {\n        \"content\": \"Amphibien\",\n        \"evidence_anchor\": \"Insekten, Amphibien und Vögel\"\n      },\n      \"species_group\": {\n        \"content\": \"Amphibien und Reptilien\",\n        \"evidence_anchor\": \"Insekten, Amphibien und Vögel\"\n      }\n    },\n    {\n      \"scientific_name\": {\n        \"content\": \"Aves\",\n        \"evidence_anchor\": \"Insekten, Amphibien und Vögel\"\n      },\n      \"german_name\": {\n        \"content\": \"Vögel\",\n        \"evidence_anchor\": \"Insekten, Amphibien und Vögel\"\n      },\n      \"species_group\": {\n        \"content\": \"Vögel\",\n        \"evidence_anchor\": \"Insekten, Amphibien und Vögel\"\n      }\n    }\n  ],\n  \"biodiversity_level\": [\n    {\n      \"content\": \"Zusammensetzung der Artengemeinschaft\",\n      \"evidence_anchor\": \"Biodiversität insbesondere von Insekten, Amphibien und Vögeln\"\n    }\n  ],\n  \"ecosystem_type\": [\n    {\n      \"category\": {\n        \"content\": \"VI Weitere\",\n        \"evidence_anchor\": \"Moorböden\"\n      }\n    }\n  ]\n}\n\nBut we need to ensure evidence_anchor is a literal quote from the original text. For habitat, we can use \"Moorböden\" or \"entwässerten Moorböden\". For taxa, we need quotes that mention the taxa. The text says: \"Die Veränderung des Lebensraums durch PVA ist hinsichtlich ihrer Wirkung auf die Biodiversität insbesondere von Insekten, Amphibien und Vögeln zu untersuchen.\" So we can use that sentence as evidence_anchor. For each taxa, we can use that same quote. For biodiversity_level, same quote. For ecosystem_type, we can use \"Moorböden\" or \"entwässerten Moorböden\". Provide evidence_anchor accordingly.\n\nWe need to ensure JSON is valid. Provide only the fields. No extra fields. Ensure each object has required fields. For habitat, content and evidence_anchor. For taxa, each object must have scientific_name, german_name, species_group. Each of those objects must have content and evidence_anchor. For biodiversity_level, content and evidence_anchor. For ecosystem_type, category with content and evidence_anchor. term optional omitted.\n\nLet's craft final JSON."
+    }
+  },
+  "error": null
+}

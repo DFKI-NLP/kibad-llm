@@ -1,10 +1,10 @@
 {
   "fixture_format_version": 1,
-  "fixture_hash": "7ec3d8eefb6e1ca9d891792a559572bacfcf73be5f57d6fc55defb685211b283",
+  "fixture_hash": "5b7681b00a31d2fe9936b8f6f67e0df71aa9f63675fadf0fc283d2072634c137",
   "request": {
     "fixture_format_version": 1,
     "backend_name": "gpt_oss_20b",
-    "backend_type": "kibad_llm.llms.openai_like_vllm.OpenAILikeVllm",
+    "backend_type": "llama_index.llms.openai_like.base.OpenAILike",
     "messages": [
       {
         "role": "system",
@@ -13,47 +13,85 @@
       {
         "role": "user",
         "content": "Extrahiere die folgenden Informationen aus dem gegebenen Markdown-Dokument.\nWenn bereits Informationen extrahiert wurden, kannst du diese als Kontext für die aktuelle Extraktion nutzen.\nGib **ausschließlich** gültiges JSON nach dem folgendem Schema zurück.\nKeine zusätzlichen Felder, keine Erklärungen.\n\nBeschreibung: Angaben zu den ökosystembezogenen Studienmerkmalen.\nFeldhinweise und erlaubte Werte (getrennt durch Semikolons):\n- habitat: Um welchen der folgenden Lebensräume oder in welcher Kombination der folgenden Lebensräume geht es in dem Text? | Kardinalität: 0..* | Typ: object\n  - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Agrar- und Offenland; Binnengewässer und Auen; Boden; Küsten und Küstengewässer; Urbane Räume; Wald\n  - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string\n- natural_region: Um welchen der folgenden Naturgroßräume geht es in dem Text? | Kardinalität: 0..* | Typ: object\n  - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Alpen; Alpenvorland; Mittelgebirgsschwelle; Nord- und Ostsee; Norddeutsches Tiefland; Schichtstufenland beidseits des Oberrheingrabens\n  - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string\n- climate: Welche Umschreibung trifft auf das Klima des Untersuchungsgebiets zu? | Kardinalität: 0..* | Typ: object\n  - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Atlantisches Klima; Gebirgsklima; kontinental; maritim; niederschlagsbenachteiligt; niederschlagsnormal; niederschlagsbegünstigt; subkontinental; submaritim\n  - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string\n- landuse: Welche Landnutzung wird im oder nahe des Untersuchungsgebietes betrieben? In welche der folgenden Kategorien fällt die Nutzung? | Kardinalität: 0..* | Typ: object\n  - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Bau; Bergbau und Steinbruch; Brachliegende Flächen; Energieproduktion; Erholung, Freizeit, Sport; Fischerei und Aquakultur; Forstwirtschaft; Handels-, Finanz-, Berufs- und Informationsdienstleistungen; Industrie und Fertigung; Landwirtschaft; Naturnahe und natürliche Flächen, die nicht genutzt werden; Verkehr, Kommunikationsnetzwerke, Lagerung, Schutzwälle; Wasser- und Abfallbehandlung; Wohngebiete; andere Leistung des Primärsektors; Öffentliche Einrichtungen\n  - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string\n"
-      },
-      {
-        "role": "assistant",
-        "content": "{\"habitat\": [{\"content\": \"Agrar- und Offenland\", \"evidence_anchor\": \"mock_habitat_0_evidence_anchor\"}], \"natural_region\": [{\"content\": \"Alpen\", \"evidence_anchor\": \"mock_natural_region_0_evidence_anchor\"}], \"climate\": [{\"content\": \"Atlantisches Klima\", \"evidence_anchor\": \"mock_climate_0_evidence_anchor\"}], \"landuse\": [{\"content\": \"Bau\", \"evidence_anchor\": \"mock_landuse_0_evidence_anchor\"}]}"
-      },
-      {
-        "role": "user",
-        "content": "Extrahiere die folgenden Informationen aus dem gegebenen Markdown-Dokument.\nWenn bereits Informationen extrahiert wurden, kannst du diese als Kontext für die aktuelle Extraktion nutzen.\nGib **ausschließlich** gültiges JSON nach dem folgendem Schema zurück.\nKeine zusätzlichen Felder, keine Erklärungen.\n\nBeschreibung: Angaben zu den ökosystembezogenen Studienmerkmalen.\nFeldhinweise und erlaubte Werte (getrennt durch Semikolons):\n- ecosystem_type: Welche Ökosystemtypen werden in der Studie untersucht? | Kardinalität: 0..* | Typ: object\n  Beschreibung: Ökosystemtyp mit Kategorie, Name und Beschreibung.\n  - category: Kategorie des Ökosystemtyps | Kardinalität: 1 | Typ: object\n    Beschreibung: Kategorie des Ökosystemtyps\n    - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: I Biotoptypengruppen der Meere und Küsten; II Biotoptypengruppen der Binnengewässer; III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes; IV Technische Biotoptypengruppen; V Biotoptypengruppen mit Schwerpunkt in den Alpen; VI Weitere\n    - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string\n  - term: Name des Ökosystemtyps | Kardinalität: 0..1 | Typ: object\n    - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Anthropogene Rohbodenstandorte und Ruderalfluren; Bauwerke; Benthal der Nordsee; Benthal der Ostsee; Deponien und Rieselfelder; Feldgehölze, Gebüsche, Hecken und Gehölzkulturen; Fels- und Steilküsten; Felsen, Block- und Schutthalden, Geröllfelder, offene Bereiche mit sandigem oder bindigem Substrat; Felsen der subalpinen bis nivalen Stufe; Firn, permanente Schneefelder und Gletscher; Fließende Gewässer; Gebirgsrasen (subalpine bis alpine Stufe); Gebüsche der hochmontanen bis subalpinen Stufe; Gewässer der subalpinen bis alpinen Stufe; Großseggenriede; Grundwasser und Höhlengewässer; Grün- und Freiflächen; Hoch-, Zwischen- und Übergangsmoore; Höhlen (einschließlich Stollen, Brunnenschächte etc.); Kleine, unbefestigte Freiflächen des besiedelten Bereiches; Küstendünen; Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent); Moore der subalpinen bis alpinen Stufe; Nadel(Misch)Wälder und -Forste; Pelagial der Nordsee; Pelagial der Ostsee; Quellen (inklusive Quellabfluss (Krenal)); Röhrichte (ohne Brackwasserröhrichte); Saisonales Meereis der Nordsee; Saisonales Meereis der Ostsee; Salzgrünland der Nordseeküste (Supralitoral); Salzgrünland, Brackwasserröhrichte und -Hochstaudenfluren des Geolitorals der Ostseeküste; Schneeböden, Schneetälchen; Stehende Gewässer; Steinschutthalden und Schotterflächen der subalpinen bis alpinen Stufe; Sände, Sand-, Geröll- und Blockstrände; Stauden- und Lägerfluren der hochmontanen bis alpinen Stufe; Subalpine Wälder; Trockenrasen sowie Grünland trockener bis frischer Standorte; Verkehrsanlagen und Plätze; Wald- und Ufersäume, Staudenfluren; Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte; Waldmäntel und Vorwälder, spezielle Waldnutzungsformen; Zwergstrauchheiden; Zwergstrauchheiden der subalpinen bis alpinen Stufe; Äcker und Ackerbrachen\n    - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string\n  - description: Beschreibung des Ökosystemtyps | Kardinalität: 0..1 | Typ: object\n    - content: | Kardinalität: 1 | Typ: string\n    - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string\n- location: Welche Standorte werden in der Studie untersucht? | Kardinalität: 0..* | Typ: object\n  Beschreibung: Untersuchungsgebiet mit Land, Bundesland und Ort.\n  - country: Land des Untersuchungsgebietes | Kardinalität: 0..1 | Typ: object\n    - content: | Kardinalität: 1 | Typ: string\n    - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string\n  - federal_state: Bundesland des Untersuchungsgebietes | Kardinalität: 0..1 | Typ: object\n    - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Baden-Württemberg; Bayern; Berlin; Brandenburg; Bremen; Hamburg; Hessen; Mecklenburg-Vorpommern; Niedersachsen; Nordrhein-Westfalen; Rheinland-Pfalz; Saarland; Sachsen; Sachsen-Anhalt; Schleswig-Holstein; Thüringen\n    - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string\n  - name: Ort (z.B. Stadt, Gemeinde, Region) des Untersuchungsgebietes | Kardinalität: 0..1 | Typ: object\n    - content: | Kardinalität: 1 | Typ: string\n    - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string\n"
       }
     ],
-    "json_schema": {
-      "$defs": {
-        "EcosystemType": {
-          "additionalProperties": false,
-          "description": "Ökosystemtyp mit Kategorie, Name und Beschreibung.",
-          "properties": {
-            "category": {
-              "type": "object",
-              "properties": {
-                "content": {
-                  "$ref": "#/$defs/EcosystemTypeCategoryEnum"
-                },
-                "evidence_anchor": {
-                  "type": "string",
-                  "description": "Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt."
-                }
+    "request_kwargs": {
+      "extra_body": {
+        "structured_outputs": {
+          "json": {
+            "$defs": {
+              "ClimateEnum": {
+                "enum": [
+                  "Atlantisches Klima",
+                  "Gebirgsklima",
+                  "kontinental",
+                  "maritim",
+                  "niederschlagsbenachteiligt",
+                  "niederschlagsnormal",
+                  "niederschlagsbegünstigt",
+                  "subkontinental",
+                  "submaritim"
+                ],
+                "title": "ClimateEnum",
+                "type": "string"
               },
-              "required": [
-                "content",
-                "evidence_anchor"
-              ],
-              "additionalProperties": false,
-              "description": "Kategorie des Ökosystemtyps"
+              "HabitatEnum": {
+                "enum": [
+                  "Agrar- und Offenland",
+                  "Binnengewässer und Auen",
+                  "Boden",
+                  "Küsten und Küstengewässer",
+                  "Urbane Räume",
+                  "Wald"
+                ],
+                "title": "HabitatEnum",
+                "type": "string"
+              },
+              "LanduseEnum": {
+                "enum": [
+                  "Bau",
+                  "Bergbau und Steinbruch",
+                  "Brachliegende Flächen",
+                  "Energieproduktion",
+                  "Erholung, Freizeit, Sport",
+                  "Fischerei und Aquakultur",
+                  "Forstwirtschaft",
+                  "Handels-, Finanz-, Berufs- und Informationsdienstleistungen",
+                  "Industrie und Fertigung",
+                  "Landwirtschaft",
+                  "Naturnahe und natürliche Flächen, die nicht genutzt werden",
+                  "Verkehr, Kommunikationsnetzwerke, Lagerung, Schutzwälle",
+                  "Wasser- und Abfallbehandlung",
+                  "Wohngebiete",
+                  "andere Leistung des Primärsektors",
+                  "Öffentliche Einrichtungen"
+                ],
+                "title": "LanduseEnum",
+                "type": "string"
+              },
+              "NaturalRegionEnum": {
+                "enum": [
+                  "Alpen",
+                  "Alpenvorland",
+                  "Mittelgebirgsschwelle",
+                  "Nord- und Ostsee",
+                  "Norddeutsches Tiefland",
+                  "Schichtstufenland beidseits des Oberrheingrabens"
+                ],
+                "title": "NaturalRegionEnum",
+                "type": "string"
+              }
             },
-            "term": {
-              "anyOf": [
-                {
+            "additionalProperties": false,
+            "description": "Angaben zu den ökosystembezogenen Studienmerkmalen.",
+            "properties": {
+              "habitat": {
+                "description": "Um welchen der folgenden Lebensräume oder in welcher Kombination der folgenden Lebensräume geht es in dem Text?",
+                "items": {
                   "type": "object",
                   "properties": {
                     "content": {
-                      "$ref": "#/$defs/EcosystemTypeTermEnum"
+                      "$ref": "#/$defs/HabitatEnum"
                     },
                     "evidence_anchor": {
                       "type": "string",
@@ -66,255 +104,91 @@
                   ],
                   "additionalProperties": false
                 },
-                {
-                  "type": "null"
-                }
-              ],
-              "default": null,
-              "description": "Name des Ökosystemtyps"
+                "title": "Habitat",
+                "type": "array"
+              },
+              "natural_region": {
+                "description": "Um welchen der folgenden Naturgroßräume geht es in dem Text?",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "content": {
+                      "$ref": "#/$defs/NaturalRegionEnum"
+                    },
+                    "evidence_anchor": {
+                      "type": "string",
+                      "description": "Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt."
+                    }
+                  },
+                  "required": [
+                    "content",
+                    "evidence_anchor"
+                  ],
+                  "additionalProperties": false
+                },
+                "title": "Natural Region",
+                "type": "array"
+              },
+              "climate": {
+                "description": "Welche Umschreibung trifft auf das Klima des Untersuchungsgebiets zu?",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "content": {
+                      "$ref": "#/$defs/ClimateEnum"
+                    },
+                    "evidence_anchor": {
+                      "type": "string",
+                      "description": "Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt."
+                    }
+                  },
+                  "required": [
+                    "content",
+                    "evidence_anchor"
+                  ],
+                  "additionalProperties": false
+                },
+                "title": "Climate",
+                "type": "array"
+              },
+              "landuse": {
+                "description": "Welche Landnutzung wird im oder nahe des Untersuchungsgebietes betrieben? In welche der folgenden Kategorien fällt die Nutzung?",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "content": {
+                      "$ref": "#/$defs/LanduseEnum"
+                    },
+                    "evidence_anchor": {
+                      "type": "string",
+                      "description": "Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt."
+                    }
+                  },
+                  "required": [
+                    "content",
+                    "evidence_anchor"
+                  ],
+                  "additionalProperties": false
+                },
+                "title": "Landuse",
+                "type": "array"
+              }
             },
-            "description": {
-              "anyOf": [
-                {
-                  "type": "object",
-                  "properties": {
-                    "content": {
-                      "type": "string"
-                    },
-                    "evidence_anchor": {
-                      "type": "string",
-                      "description": "Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt."
-                    }
-                  },
-                  "required": [
-                    "content",
-                    "evidence_anchor"
-                  ],
-                  "additionalProperties": false
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "default": null,
-              "description": "Beschreibung des Ökosystemtyps",
-              "title": "Description"
-            }
-          },
-          "required": [
-            "category"
-          ],
-          "title": "EcosystemType",
-          "type": "object"
-        },
-        "EcosystemTypeCategoryEnum": {
-          "enum": [
-            "I Biotoptypengruppen der Meere und Küsten",
-            "II Biotoptypengruppen der Binnengewässer",
-            "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes",
-            "IV Technische Biotoptypengruppen",
-            "V Biotoptypengruppen mit Schwerpunkt in den Alpen",
-            "VI Weitere"
-          ],
-          "title": "EcosystemTypeCategoryEnum",
-          "type": "string"
-        },
-        "EcosystemTypeTermEnum": {
-          "enum": [
-            "Anthropogene Rohbodenstandorte und Ruderalfluren",
-            "Bauwerke",
-            "Benthal der Nordsee",
-            "Benthal der Ostsee",
-            "Deponien und Rieselfelder",
-            "Feldgehölze, Gebüsche, Hecken und Gehölzkulturen",
-            "Fels- und Steilküsten",
-            "Felsen, Block- und Schutthalden, Geröllfelder, offene Bereiche mit sandigem oder bindigem Substrat",
-            "Felsen der subalpinen bis nivalen Stufe",
-            "Firn, permanente Schneefelder und Gletscher",
-            "Fließende Gewässer",
-            "Gebirgsrasen (subalpine bis alpine Stufe)",
-            "Gebüsche der hochmontanen bis subalpinen Stufe",
-            "Gewässer der subalpinen bis alpinen Stufe",
-            "Großseggenriede",
-            "Grundwasser und Höhlengewässer",
-            "Grün- und Freiflächen",
-            "Hoch-, Zwischen- und Übergangsmoore",
-            "Höhlen (einschließlich Stollen, Brunnenschächte etc.)",
-            "Kleine, unbefestigte Freiflächen des besiedelten Bereiches",
-            "Küstendünen",
-            "Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent)",
-            "Moore der subalpinen bis alpinen Stufe",
-            "Nadel(Misch)Wälder und -Forste",
-            "Pelagial der Nordsee",
-            "Pelagial der Ostsee",
-            "Quellen (inklusive Quellabfluss (Krenal))",
-            "Röhrichte (ohne Brackwasserröhrichte)",
-            "Saisonales Meereis der Nordsee",
-            "Saisonales Meereis der Ostsee",
-            "Salzgrünland der Nordseeküste (Supralitoral)",
-            "Salzgrünland, Brackwasserröhrichte und -Hochstaudenfluren des Geolitorals der Ostseeküste",
-            "Schneeböden, Schneetälchen",
-            "Stehende Gewässer",
-            "Steinschutthalden und Schotterflächen der subalpinen bis alpinen Stufe",
-            "Sände, Sand-, Geröll- und Blockstrände",
-            "Stauden- und Lägerfluren der hochmontanen bis alpinen Stufe",
-            "Subalpine Wälder",
-            "Trockenrasen sowie Grünland trockener bis frischer Standorte",
-            "Verkehrsanlagen und Plätze",
-            "Wald- und Ufersäume, Staudenfluren",
-            "Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte",
-            "Waldmäntel und Vorwälder, spezielle Waldnutzungsformen",
-            "Zwergstrauchheiden",
-            "Zwergstrauchheiden der subalpinen bis alpinen Stufe",
-            "Äcker und Ackerbrachen"
-          ],
-          "title": "EcosystemTypeTermEnum",
-          "type": "string"
-        },
-        "Location": {
-          "additionalProperties": false,
-          "description": "Untersuchungsgebiet mit Land, Bundesland und Ort.",
-          "properties": {
-            "country": {
-              "anyOf": [
-                {
-                  "type": "object",
-                  "properties": {
-                    "content": {
-                      "type": "string"
-                    },
-                    "evidence_anchor": {
-                      "type": "string",
-                      "description": "Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt."
-                    }
-                  },
-                  "required": [
-                    "content",
-                    "evidence_anchor"
-                  ],
-                  "additionalProperties": false
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "default": null,
-              "description": "Land des Untersuchungsgebietes",
-              "title": "Country"
-            },
-            "federal_state": {
-              "anyOf": [
-                {
-                  "type": "object",
-                  "properties": {
-                    "content": {
-                      "$ref": "#/$defs/LocationFederalStateEnum"
-                    },
-                    "evidence_anchor": {
-                      "type": "string",
-                      "description": "Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt."
-                    }
-                  },
-                  "required": [
-                    "content",
-                    "evidence_anchor"
-                  ],
-                  "additionalProperties": false
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "default": null,
-              "description": "Bundesland des Untersuchungsgebietes"
-            },
-            "name": {
-              "anyOf": [
-                {
-                  "type": "object",
-                  "properties": {
-                    "content": {
-                      "type": "string"
-                    },
-                    "evidence_anchor": {
-                      "type": "string",
-                      "description": "Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt."
-                    }
-                  },
-                  "required": [
-                    "content",
-                    "evidence_anchor"
-                  ],
-                  "additionalProperties": false
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "default": null,
-              "description": "Ort (z.B. Stadt, Gemeinde, Region) des Untersuchungsgebietes",
-              "title": "Name"
-            }
-          },
-          "title": "Location",
-          "type": "object"
-        },
-        "LocationFederalStateEnum": {
-          "enum": [
-            "Baden-Württemberg",
-            "Bayern",
-            "Berlin",
-            "Brandenburg",
-            "Bremen",
-            "Hamburg",
-            "Hessen",
-            "Mecklenburg-Vorpommern",
-            "Niedersachsen",
-            "Nordrhein-Westfalen",
-            "Rheinland-Pfalz",
-            "Saarland",
-            "Sachsen",
-            "Sachsen-Anhalt",
-            "Schleswig-Holstein",
-            "Thüringen"
-          ],
-          "title": "LocationFederalStateEnum",
-          "type": "string"
+            "title": "EcosystemStudyFeaturesSimple",
+            "type": "object"
+          }
         }
-      },
-      "additionalProperties": false,
-      "description": "Angaben zu den ökosystembezogenen Studienmerkmalen.",
-      "properties": {
-        "ecosystem_type": {
-          "description": "Welche Ökosystemtypen werden in der Studie untersucht?",
-          "items": {
-            "$ref": "#/$defs/EcosystemType"
-          },
-          "title": "Ecosystem Type",
-          "type": "array"
-        },
-        "location": {
-          "description": "Welche Standorte werden in der Studie untersucht?",
-          "items": {
-            "$ref": "#/$defs/Location"
-          },
-          "title": "Location",
-          "type": "array"
-        }
-      },
-      "title": "EcosystemStudyFeaturesCompoundsSimple",
-      "type": "object"
-    },
-    "request_kwargs": {}
+      }
+    }
   },
   "response": {
     "message": {
       "role": "assistant",
-      "content": "{\"ecosystem_type\": [{\"category\": {\"content\": \"I Biotoptypengruppen der Meere und Küsten\", \"evidence_anchor\": \"mock_ecosystem_type_0_category_evidence_anchor\"}, \"term\": {\"content\": \"Anthropogene Rohbodenstandorte und Ruderalfluren\", \"evidence_anchor\": \"mock_ecosystem_type_0_term_evidence_anchor\"}, \"description\": {\"content\": \"mock_ecosystem_type_0_description_content\", \"evidence_anchor\": \"mock_ecosystem_type_0_description_evidence_anchor\"}}], \"location\": [{\"country\": {\"content\": \"mock_location_0_country_content\", \"evidence_anchor\": \"mock_location_0_country_evidence_anchor\"}, \"federal_state\": {\"content\": \"Baden-Württemberg\", \"evidence_anchor\": \"mock_location_0_federal_state_evidence_anchor\"}, \"name\": {\"content\": \"mock_location_0_name_content\", \"evidence_anchor\": \"mock_location_0_name_evidence_anchor\"}}]}"
+      "content": "{\n  \"habitat\": [\n    {\n      \"content\": \"Boden\",\n      \"evidence_anchor\": \"von entwässerten organischen Böden (im Folgenden: Moorböden)\"\n    }\n  ],\n  \"natural_region\": [\n    {\n      \"content\": \"Norddeutsches Tiefland\",\n      \"evidence_anchor\": \"Moorböden sind v.a. in der norddeutschen Tiefebene und im Alpenvorland verbreitet\"\n    },\n    {\n      \"content\": \"Alpenvorland\",\n      \"evidence_anchor\": \"Moorböden sind v.a. in der norddeutschen Tiefebene und im Alpenvorland verbreitet\"\n    }\n  ],\n  \"climate\": [],\n  \"landuse\": [\n    {\n      \"content\": \"Landwirtschaft\",\n      \"evidence_anchor\": \"werden überwiegend (rd. 70 %) landwirtschaftlich genutzt\"\n    }\n  ]\n}"
     },
     "raw_message": {
-      "reasoning": "mock_reasoning",
-      "reasoning_content": "mock_reasoning"
+      "reasoning": "We need to extract ecosystem-related study features: habitat, natural_region, climate, landuse. We need to parse the document for mentions of habitats, natural regions, climate, landuse. Provide JSON with arrays of objects for each field. Each object must have content and evidence_anchor. Use quotes from original text.\n\nWe need to find relevant parts.\n\nHabitat: The document mentions \"Moorböden\" (peatlands). Habitat options: Agrar- und Offenland; Binnengewässer und Auen; Boden; Küsten und Küstengewässer; Urbane Räume; Wald. Moorböden are \"Boden\" (soil). Also \"Boden\" is a habitat type. So we can include \"Boden\". Also maybe \"Boden\" is the only relevant. Also \"Boden\" is a habitat. So habitat array with one object: content \"Boden\". evidence_anchor: a quote that mentions \"Moorböden\" or \"Boden\". For example: \"In Deutschland stammen derzeit knapp 7 % der Treibhausgasemissionen (THG-Emissionen, 53 Mio. Tonnen CO2‑Äq.) [3] von entwässerten organischen Böden (im Folgenden: Moorböden)\". That quote includes \"organischen Böden\". So evidence_anchor: \"von entwässerten organischen Böden (im Folgenden: Moorböden)\". That is a quote.\n\nNatural_region: The document mentions \"Norddeutschen Tiefebene\" and \"Alpenvorland\". Also \"Mecklenburg-Vorpommern\" and \"Niedersachsen\" but those are states. Natural region options: Alpen; Alpenvorland; Mittelgebirgsschwelle; Nord- und Ostsee; Norddeutsches Tiefland; Schichtstufenland beidseits des Oberrheingrabens. The text says \"Moorböden sind v.a. in der norddeutschen Tiefebene und im Alpenvorland verbreitet\". So we have two natural regions: Norddeutsches Tiefland and Alpenvorland. Provide two objects.\n\nClimate: The document does not explicitly mention climate type. But we can infer from region: Norddeutsches Tiefland has a \"maritim\" climate? Actually Norddeutsches Tiefland is in northern Germany, likely \"maritim\" or \"kontinental\"? The options: Atlantisches Klima; Gebirgsklima; kontinental; maritim; niederschlagsbenachteiligt; niederschlagsnormal; niederschlagsbegünstigt; subkontinental; submaritim. For Norddeutsches Tiefland, climate is \"maritim\" (North German Lowland has a maritime climate). For Alpenvorland, climate is \"subkontinental\" or \"kontinental\"? Alpenvorland is the foothills of the Alps, likely \"subkontinental\" or \"kontinental\". But we need to base on text. The text does not mention climate. We might not include climate if no explicit mention. But we can still infer? The instruction: \"Welche Umschreibung trifft auf das Klima des Untersuchungsgebiets zu?\" We need to provide evidence anchor. If no explicit mention, we cannot provide. So we should not include climate field? But the schema says cardinality 0..* so we can omit if none. So we leave climate empty array.\n\nLanduse: The document mentions land use: \"Moorböden werden überwiegend (rd. 70 %) landwirtschaftlich genutzt.\" So landuse: Landwirtschaft. Also \"Boden\" is used for agriculture. Also \"Boden\" is used for \"Boden\" but landuse category \"Landwirtschaft\". Also \"Boden\" is not a landuse category. So we include Landwirtschaft. Provide evidence anchor: \"werden überwiegend (rd. 70 %) landwirtschaftlich genutzt.\" Also mention \"Boden\" used for agriculture. Also \"Boden\" is not a landuse category. So we include Landwirtschaft.\n\nAlso mention \"Boden\" as \"Boden\" is a habitat, not landuse.\n\nAlso mention \"Boden\" as \"Boden\" is a habitat.\n\nAlso mention \"Boden\" as \"Boden\" is a habitat.\n\nAlso mention \"Boden\" as \"Boden\" is a habitat.\n\nAlso mention \"Boden\" as \"Boden\" is a habitat.\n\nAlso mention \"Boden\" as \"Boden\" is a habitat.\n\nAlso mention \"Boden\" as \"Boden\" is a habitat.\n\nAlso mention \"Boden\" as \"Boden\" is a habitat.\n\nAlso mention \"Boden\" as \"Boden\" is a habitat.\n\nOk.\n\nAlso mention \"Boden\" as \"Boden\" is a habitat.\n\nOk.\n\nAlso mention \"Boden\" as \"Boden\" is a habitat.\n\nOk.\n\nAlso mention \"Boden\" as \"Boden\" is a habitat.\n\nOk.\n\nAlso mention \"Boden\" as \"Boden\" is a habitat.\n\nOk.\n\nAlso mention \"Boden\" as \"Boden\" is a habitat.\n\nOk.\n\nAlso mention \"Boden\" as \"Boden\" is a habitat.\n\nOk.\n\nStop.\n\nAlso mention \"Boden\" as \"Boden\" is a habitat.\n\nOk.\n\nNow we need to produce JSON with fields: habitat, natural_region, climate, landuse. Each is array of objects.\n\nWe need to include evidence_anchor as literal quotes from original text. Must be exact.\n\nLet's find quotes:\n\nHabitat: \"von entwässerten organischen Böden (im Folgenden: Moorböden)\". That is a quote. We can use that.\n\nNatural_region: \"Moorböden sind v.a. in der norddeutschen Tiefebene und im Alpenvorland verbreitet\". That is a quote. Use that.\n\nLanduse: \"werden überwiegend (rd. 70 %) landwirtschaftlich genutzt\". That is a quote.\n\nAlso maybe mention \"Boden\" as \"Boden\" is a habitat. But we already have.\n\nNow produce JSON.\n\nWe need to ensure no extra fields. Provide arrays.\n\nLet's craft:\n\n{\n  \"habitat\": [\n    {\n      \"content\": \"Boden\",\n      \"evidence_anchor\": \"von entwässerten organischen Böden (im Folgenden: Moorböden)\"\n    }\n  ],\n  \"natural_region\": [\n    {\n      \"content\": \"Norddeutsches Tiefland\",\n      \"evidence_anchor\": \"Moorböden sind v.a. in der norddeutschen Tiefebene und im Alpenvorland verbreitet\"\n    },\n    {\n      \"content\": \"Alpenvorland\",\n      \"evidence_anchor\": \"Moorböden sind v.a. in der norddeutschen Tiefebene und im Alpenvorland verbreitet\"\n    }\n  ],\n  \"climate\": [],\n  \"landuse\": [\n    {\n      \"content\": \"Landwirtschaft\",\n      \"evidence_anchor\": \"werden überwiegend (rd. 70 %) landwirtschaftlich genutzt\"\n    }\n  ]\n}\n\nCheck that evidence_anchor quotes are exactly from text. The text uses \"Moorböden sind v.a. in der norddeutschen Tiefebene und im Alpenvorland verbreitet\". That is correct. The quote for landuse: \"werden überwiegend (rd. 70 %) landwirtschaftlich genutzt\". That is correct. The quote for habitat: \"von entwässerten organischen Böden (im Folgenden: Moorböden)\". That is correct.\n\nWe need to ensure no extra spaces or special characters. Use the same characters.\n\nAlso note that the text uses \"Moorböden\" with umlaut. We need to preserve. The evidence_anchor should be exactly as in text. The text: \"von entwässerten organischen Böden (im Folgenden: Moorböden)\". Yes.\n\nNow produce JSON.",
+      "reasoning_content": "We need to extract ecosystem-related study features: habitat, natural_region, climate, landuse. We need to parse the document for mentions of habitats, natural regions, climate, landuse. Provide JSON with arrays of objects for each field. Each object must have content and evidence_anchor. Use quotes from original text.\n\nWe need to find relevant parts.\n\nHabitat: The document mentions \"Moorböden\" (peatlands). Habitat options: Agrar- und Offenland; Binnengewässer und Auen; Boden; Küsten und Küstengewässer; Urbane Räume; Wald. Moorböden are \"Boden\" (soil). Also \"Boden\" is a habitat type. So we can include \"Boden\". Also maybe \"Boden\" is the only relevant. Also \"Boden\" is a habitat. So habitat array with one object: content \"Boden\". evidence_anchor: a quote that mentions \"Moorböden\" or \"Boden\". For example: \"In Deutschland stammen derzeit knapp 7 % der Treibhausgasemissionen (THG-Emissionen, 53 Mio. Tonnen CO2‑Äq.) [3] von entwässerten organischen Böden (im Folgenden: Moorböden)\". That quote includes \"organischen Böden\". So evidence_anchor: \"von entwässerten organischen Böden (im Folgenden: Moorböden)\". That is a quote.\n\nNatural_region: The document mentions \"Norddeutschen Tiefebene\" and \"Alpenvorland\". Also \"Mecklenburg-Vorpommern\" and \"Niedersachsen\" but those are states. Natural region options: Alpen; Alpenvorland; Mittelgebirgsschwelle; Nord- und Ostsee; Norddeutsches Tiefland; Schichtstufenland beidseits des Oberrheingrabens. The text says \"Moorböden sind v.a. in der norddeutschen Tiefebene und im Alpenvorland verbreitet\". So we have two natural regions: Norddeutsches Tiefland and Alpenvorland. Provide two objects.\n\nClimate: The document does not explicitly mention climate type. But we can infer from region: Norddeutsches Tiefland has a \"maritim\" climate? Actually Norddeutsches Tiefland is in northern Germany, likely \"maritim\" or \"kontinental\"? The options: Atlantisches Klima; Gebirgsklima; kontinental; maritim; niederschlagsbenachteiligt; niederschlagsnormal; niederschlagsbegünstigt; subkontinental; submaritim. For Norddeutsches Tiefland, climate is \"maritim\" (North German Lowland has a maritime climate). For Alpenvorland, climate is \"subkontinental\" or \"kontinental\"? Alpenvorland is the foothills of the Alps, likely \"subkontinental\" or \"kontinental\". But we need to base on text. The text does not mention climate. We might not include climate if no explicit mention. But we can still infer? The instruction: \"Welche Umschreibung trifft auf das Klima des Untersuchungsgebiets zu?\" We need to provide evidence anchor. If no explicit mention, we cannot provide. So we should not include climate field? But the schema says cardinality 0..* so we can omit if none. So we leave climate empty array.\n\nLanduse: The document mentions land use: \"Moorböden werden überwiegend (rd. 70 %) landwirtschaftlich genutzt.\" So landuse: Landwirtschaft. Also \"Boden\" is used for agriculture. Also \"Boden\" is used for \"Boden\" but landuse category \"Landwirtschaft\". Also \"Boden\" is not a landuse category. So we include Landwirtschaft. Provide evidence anchor: \"werden überwiegend (rd. 70 %) landwirtschaftlich genutzt.\" Also mention \"Boden\" used for agriculture. Also \"Boden\" is not a landuse category. So we include Landwirtschaft.\n\nAlso mention \"Boden\" as \"Boden\" is a habitat, not landuse.\n\nAlso mention \"Boden\" as \"Boden\" is a habitat.\n\nAlso mention \"Boden\" as \"Boden\" is a habitat.\n\nAlso mention \"Boden\" as \"Boden\" is a habitat.\n\nAlso mention \"Boden\" as \"Boden\" is a habitat.\n\nAlso mention \"Boden\" as \"Boden\" is a habitat.\n\nAlso mention \"Boden\" as \"Boden\" is a habitat.\n\nAlso mention \"Boden\" as \"Boden\" is a habitat.\n\nAlso mention \"Boden\" as \"Boden\" is a habitat.\n\nOk.\n\nAlso mention \"Boden\" as \"Boden\" is a habitat.\n\nOk.\n\nAlso mention \"Boden\" as \"Boden\" is a habitat.\n\nOk.\n\nAlso mention \"Boden\" as \"Boden\" is a habitat.\n\nOk.\n\nAlso mention \"Boden\" as \"Boden\" is a habitat.\n\nOk.\n\nAlso mention \"Boden\" as \"Boden\" is a habitat.\n\nOk.\n\nAlso mention \"Boden\" as \"Boden\" is a habitat.\n\nOk.\n\nStop.\n\nAlso mention \"Boden\" as \"Boden\" is a habitat.\n\nOk.\n\nNow we need to produce JSON with fields: habitat, natural_region, climate, landuse. Each is array of objects.\n\nWe need to include evidence_anchor as literal quotes from original text. Must be exact.\n\nLet's find quotes:\n\nHabitat: \"von entwässerten organischen Böden (im Folgenden: Moorböden)\". That is a quote. We can use that.\n\nNatural_region: \"Moorböden sind v.a. in der norddeutschen Tiefebene und im Alpenvorland verbreitet\". That is a quote. Use that.\n\nLanduse: \"werden überwiegend (rd. 70 %) landwirtschaftlich genutzt\". That is a quote.\n\nAlso maybe mention \"Boden\" as \"Boden\" is a habitat. But we already have.\n\nNow produce JSON.\n\nWe need to ensure no extra fields. Provide arrays.\n\nLet's craft:\n\n{\n  \"habitat\": [\n    {\n      \"content\": \"Boden\",\n      \"evidence_anchor\": \"von entwässerten organischen Böden (im Folgenden: Moorböden)\"\n    }\n  ],\n  \"natural_region\": [\n    {\n      \"content\": \"Norddeutsches Tiefland\",\n      \"evidence_anchor\": \"Moorböden sind v.a. in der norddeutschen Tiefebene und im Alpenvorland verbreitet\"\n    },\n    {\n      \"content\": \"Alpenvorland\",\n      \"evidence_anchor\": \"Moorböden sind v.a. in der norddeutschen Tiefebene und im Alpenvorland verbreitet\"\n    }\n  ],\n  \"climate\": [],\n  \"landuse\": [\n    {\n      \"content\": \"Landwirtschaft\",\n      \"evidence_anchor\": \"werden überwiegend (rd. 70 %) landwirtschaftlich genutzt\"\n    }\n  ]\n}\n\nCheck that evidence_anchor quotes are exactly from text. The text uses \"Moorböden sind v.a. in der norddeutschen Tiefebene und im Alpenvorland verbreitet\". That is correct. The quote for landuse: \"werden überwiegend (rd. 70 %) landwirtschaftlich genutzt\". That is correct. The quote for habitat: \"von entwässerten organischen Böden (im Folgenden: Moorböden)\". That is correct.\n\nWe need to ensure no extra spaces or special characters. Use the same characters.\n\nAlso note that the text uses \"Moorböden\" with umlaut. We need to preserve. The evidence_anchor should be exactly as in text. The text: \"von entwässerten organischen Böden (im Folgenden: Moorböden)\". Yes.\n\nNow produce JSON."
     }
   },
   "error": null

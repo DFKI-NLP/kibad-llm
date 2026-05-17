@@ -16,13 +16,13 @@ from llama_index.llms.openai_like import OpenAILike
 import pytest
 
 from kibad_llm.config import PROJ_ROOT
-from tests.conftest import WRITE_FIXTURE_DATA
+from tests.conftest import _env_flag
+
+# dedicated flag to just generate the LLM chat fixture data
+WRITE_LLM_CHAT_FIXTURE_DATA = _env_flag("WRITE_LLM_CHAT_FIXTURE_DATA")  # set to True to create or update LLM chat fixture data
 
 FIXTURE_DIR = PROJ_ROOT / "tests" / "fixtures" / "llm_chat"
 FIXTURE_FORMAT_VERSION = 1
-
-
-LEGACY_BACKEND_TYPE = "kibad_llm.llms.openai_like_vllm.OpenAILikeVllm"
 
 
 def _backend_name_from_model(model: OpenAILike) -> str:
@@ -49,7 +49,6 @@ def _build_request_snapshot(
     backend_name: str,
     backend_type: str,
     messages: list[Any],
-    json_schema: dict[str, Any] | None,
     request_kwargs: dict[str, Any],
 ) -> dict[str, Any]:
     return {
@@ -63,41 +62,8 @@ def _build_request_snapshot(
             }
             for message in messages
         ],
-        "json_schema": _normalize_jsonable(json_schema),
         "request_kwargs": _normalize_jsonable(request_kwargs),
     }
-
-
-def _extract_legacy_wrapper_inputs(
-    model: OpenAILike,
-    messages: list[Any],
-    request_kwargs: dict[str, Any],
-) -> tuple[str, str, list[Any], dict[str, Any] | None, dict[str, Any]]:
-    normalized_request_kwargs = dict(request_kwargs)
-    json_schema = None
-
-    extra_body = normalized_request_kwargs.get("extra_body")
-    if isinstance(extra_body, Mapping):
-        extra_body = dict(extra_body)
-        structured_outputs = extra_body.get("structured_outputs")
-        if isinstance(structured_outputs, Mapping):
-            json_candidate = structured_outputs.get("json")
-            if isinstance(json_candidate, dict):
-                json_schema = json_candidate
-            extra_body.pop("structured_outputs", None)
-
-        if len(extra_body) == 0:
-            normalized_request_kwargs.pop("extra_body", None)
-        else:
-            normalized_request_kwargs["extra_body"] = extra_body
-
-    return (
-        _backend_name_from_model(model),
-        LEGACY_BACKEND_TYPE,
-        messages,
-        json_schema,
-        normalized_request_kwargs,
-    )
 
 
 def _hash_request_snapshot(request_snapshot: dict[str, Any]) -> str:
@@ -208,24 +174,16 @@ def llm_chat_replay(monkeypatch: pytest.MonkeyPatch) -> None:
         messages,
         **request_kwargs,
     ) -> ChatResponse:
-        backend_name, backend_type, legacy_messages, json_schema, normalized_request_kwargs = (
-            _extract_legacy_wrapper_inputs(
-                model=self,
-                messages=messages,
-                request_kwargs=request_kwargs,
-            )
-        )
         request_snapshot = _build_request_snapshot(
-            backend_name=backend_name,
-            backend_type=backend_type,
-            messages=legacy_messages,
-            json_schema=json_schema,
-            request_kwargs=normalized_request_kwargs,
+            backend_name=_backend_name_from_model(self),
+            backend_type=f"{type(self).__module__}.{type(self).__qualname__}",
+            messages=messages,
+            request_kwargs=request_kwargs,
         )
         fixture_hash = _hash_request_snapshot(request_snapshot)
         fixture_path = FIXTURE_DIR / f"{fixture_hash}.json"
 
-        if WRITE_FIXTURE_DATA:
+        if WRITE_LLM_CHAT_FIXTURE_DATA:
             FIXTURE_DIR.mkdir(parents=True, exist_ok=True)
             try:
                 response = original_chat.__get__(self, OpenAILike)(
