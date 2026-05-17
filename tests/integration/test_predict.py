@@ -75,9 +75,8 @@ def test_prediction(file_name, predictions_dict):
     with open(prediction_path) as f:
         result_expected = json.load(f)
 
-    # The mocked LLM backend keeps these tests focused on the prediction pipeline rather than
-    # on model-specific choices about omitting optional fields.
-    assert set(result_expected["structured"]).issubset(prediction["structured"])
+    # just check keys since the actual values are not deterministic
+    assert set(prediction["structured"]) == set(result_expected["structured"])
 
 
 @pytest.mark.slow
@@ -105,7 +104,8 @@ def test_predict_fast_dev_run(tmp_path, cfg_predict_module):
     with open(fixture_path) as f:
         fixture_data = json.load(f)
 
-    assert set(fixture_data["structured"]).issubset(result["structured"])
+    # just check keys since the actual values are not deterministic
+    assert set(result["structured"]) == set(fixture_data["structured"])
 
 
 @pytest.fixture(params=["too_long", "missing_response_content"])

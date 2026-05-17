@@ -94,6 +94,5 @@ def test_extractor(tmp_path, cfg_predict_extractor, extractor_name):
     # check top-level keys
     assert set(result) == set(expected_result)
 
-    # With the mocked LLM backend we still validate the output contract, but we do not require
-    # the exact same optional-field omission behavior as a real model.
-    assert set(expected_result["structured"]).issubset(result["structured"])
+    # just check keys since the actual values are not deterministic
+    assert set(result["structured"]) == set(expected_result["structured"])
