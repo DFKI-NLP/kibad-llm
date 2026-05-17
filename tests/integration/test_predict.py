@@ -10,6 +10,8 @@ from kibad_llm.config import PROJ_ROOT
 from kibad_llm.predict import predict
 from tests.conftest import WRITE_FIXTURE_DATA, cfg_global
 
+pytestmark = pytest.mark.usefixtures("llm_chat_replay")
+
 PDF_DIR = PROJ_ROOT / "tests" / "fixtures" / "pdfs"
 FILE_NAMES = sorted([f.name for f in PDF_DIR.glob("*.pdf")])
 PREDICTION_DIR = PROJ_ROOT / "tests" / "fixtures" / "results"
@@ -126,7 +128,7 @@ def cfg_predict_pdf_errors(tmp_path, error_type) -> DictConfig:  # type: ignore
         # use a more complex schema that is more likely to fail
         overrides.append("experiment/predict=faktencheck_core_fields_schema_with_evidence")
         # set temperature to 0, otherwise the LLM might not fail
-        overrides.append("extractor.llm.backend.temperature=0.0")
+        overrides.append("extractor.llm.temperature=0.0")
 
     cfg = cfg_global(
         config_name="predict.yaml",

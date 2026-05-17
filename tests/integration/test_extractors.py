@@ -10,6 +10,8 @@ import pytest
 from kibad_llm.config import PROJ_ROOT
 from tests.conftest import WRITE_FIXTURE_DATA, cfg_global
 
+pytestmark = pytest.mark.usefixtures("llm_chat_replay")
+
 # strip extension to have nicer logging output, e.g. tests/test_extractors.py::test_extractor[simple]
 # and exclude folders (without extension) and helper configs starting with "_"
 AVAILABLE_EXTRACTORS = [
@@ -40,7 +42,7 @@ def cfg_predict_extractor(tmp_path, extractor_name) -> DictConfig:  # type: igno
         )
 
     # an attempt to improve stability
-    overrides.append("extractor.llm.backend.temperature=0.0")
+    overrides.append("extractor.llm.temperature=0.0")
 
     cfg = cfg_global(
         out_dir=tmp_path,
