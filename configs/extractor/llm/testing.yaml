@@ -1,4 +1,15 @@
 # define which llm to use in tests
 
 defaults:
-  - gpt_oss_20b
+  - gpt_oss_20b@backend
+
+_target_: kibad_llm.llms.MockLLM
+
+# informational metadata included in the request hash / fixture file
+backend_name: gpt_oss_20b
+
+# request/response snapshots for deterministic integration tests
+fixture_dir: ${paths.root_dir}/tests/fixtures/llm_chat
+
+# set from tests/conftest.py via WRITE_FIXTURE_DATA
+write_fixture_data: false

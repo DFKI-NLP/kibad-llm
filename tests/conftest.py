@@ -23,6 +23,12 @@ def cfg_global(
         # set defaults for all tests
         with open_dict(cfg):
             cfg.paths.root_dir = str(PROJ_ROOT)
+            if (
+                cfg.get("extractor") is not None
+                and cfg.extractor.get("llm") is not None
+                and cfg.extractor.llm.get("_target_") == "kibad_llm.llms.MockLLM"
+            ):
+                cfg.extractor.llm.write_fixture_data = WRITE_FIXTURE_DATA
             # cfg.extras.print_config = False
             # cfg.extras.enforce_tags = False
             # cfg.logger = None
