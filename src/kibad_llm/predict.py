@@ -28,6 +28,17 @@ def _file_name_generator(file_names: list[str]):
         yield {"file_name": file_name}
 
 
+def _get_git_branch_name(repo: git.Repo) -> str:
+    """Return the current branch name without crashing on detached HEAD checkouts."""
+    if repo.head.is_detached:
+        return os.getenv("GITHUB_HEAD_REF") or os.getenv("GITHUB_REF_NAME") or "detached"
+
+    try:
+        return repo.active_branch.name
+    except TypeError:
+        return os.getenv("GITHUB_HEAD_REF") or os.getenv("GITHUB_REF_NAME") or "detached"
+
+
 def get_git_info() -> dict[str, str | bool]:
     """Get current git commit hash, branch name, and dirty status.
 
@@ -38,7 +49,7 @@ def get_git_info() -> dict[str, str | bool]:
         repo = git.Repo(search_parent_directories=True)
         return {
             "commit_hash": repo.head.object.hexsha,
-            "branch": repo.active_branch.name,
+            "branch": _get_git_branch_name(repo),
             "is_dirty": repo.is_dirty(),
         }
     except (git.InvalidGitRepositoryError, git.GitCommandError) as e:
