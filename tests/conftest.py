@@ -8,11 +8,12 @@ import pytest
 
 from kibad_llm.config import PROJ_ROOT
 
-WRITE_FIXTURE_DATA = bool(os.getenv("WRITE_FIXTURE_DATA", ""))  # set to True to create or update fixture data
+
+def _env_flag(name: str) -> bool:
+    return os.getenv(name, "").strip().lower() in {"1", "true", "yes", "on"}
 
 
-def test_dont_write_fixture_data():
-    assert not WRITE_FIXTURE_DATA, "WRITE_FIXTURE_DATA is set to True, please set it to False!"
+WRITE_FIXTURE_DATA = _env_flag("WRITE_FIXTURE_DATA")  # set to True to create or update fixture data
 
 
 def cfg_global(
@@ -24,12 +25,6 @@ def cfg_global(
         # set defaults for all tests
         with open_dict(cfg):
             cfg.paths.root_dir = str(PROJ_ROOT)
-            if (
-                cfg.get("extractor") is not None
-                and cfg.extractor.get("llm") is not None
-                and cfg.extractor.llm.get("_target_") == "kibad_llm.llms.MockLLM"
-            ):
-                cfg.extractor.llm.write_fixture_data = WRITE_FIXTURE_DATA
             # cfg.extras.print_config = False
             # cfg.extras.enforce_tags = False
             # cfg.logger = None
