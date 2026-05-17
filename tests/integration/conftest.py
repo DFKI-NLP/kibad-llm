@@ -19,7 +19,9 @@ from kibad_llm.config import PROJ_ROOT
 from tests.conftest import _env_flag
 
 # dedicated flag to just generate the LLM chat fixture data
-WRITE_LLM_CHAT_FIXTURE_DATA = _env_flag("WRITE_LLM_CHAT_FIXTURE_DATA")  # set to True to create or update LLM chat fixture data
+WRITE_LLM_CHAT_FIXTURE_DATA = _env_flag(
+    "WRITE_LLM_CHAT_FIXTURE_DATA"
+)  # set to True to create or update LLM chat fixture data
 
 FIXTURE_DIR = PROJ_ROOT / "tests" / "fixtures" / "llm_chat"
 FIXTURE_FORMAT_VERSION = 1
@@ -57,7 +59,9 @@ def _build_request_snapshot(
         "backend_type": backend_type,
         "messages": [
             {
-                "role": message.role.value if isinstance(message.role, Enum) else str(message.role),
+                "role": (
+                    message.role.value if isinstance(message.role, Enum) else str(message.role)
+                ),
                 "content": message.content,
             }
             for message in messages
@@ -228,4 +232,3 @@ def llm_chat_replay(monkeypatch: pytest.MonkeyPatch) -> None:
         return _deserialize_response(response_snapshot)
 
     monkeypatch.setattr(OpenAILike, "chat", replay_or_capture)
-

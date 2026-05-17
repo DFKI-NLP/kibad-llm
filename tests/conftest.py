@@ -13,7 +13,9 @@ def _env_flag(name: str) -> bool:
     return os.getenv(name, "").strip().lower() in {"1", "true", "yes", "on"}
 
 
-WRITE_FIXTURE_DATA = _env_flag("WRITE_FIXTURE_DATA")  # set to True to create or update fixture data
+WRITE_FIXTURE_DATA = _env_flag(
+    "WRITE_FIXTURE_DATA"
+)  # set to True to create or update fixture data
 
 
 def cfg_global(
