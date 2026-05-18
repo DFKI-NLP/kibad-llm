@@ -826,7 +826,7 @@
 
   <h2>Evaluations</h2>
   <p class="hint">
-    Shows only eval metadata from <code>.hydra/overrides.yaml</code> for runs connected to selected prediction groups.
+    Shows only eval metadata from <code>.hydra/overrides.yaml</code> for evaluations connected to selected prediction groups.
     Tabs are split by <code>experiment/evaluate</code>.
   </p>
   <div id="evalTabs" class="tabs"></div>
@@ -1109,7 +1109,7 @@
       for (const group of state.groups) {
         if (state.selectedGroupIds.has(group.groupId)) {
           for (const prediction of group.predictions) {
-            selected.push(...prediction.evalRuns);
+            selected.push(...prediction.evaluations);
           }
         }
       }
@@ -1761,13 +1761,13 @@
       );
     }
 
-    function getDefaultEvalGroupByFields(evalColumns, runs = []) {
+    function getDefaultEvalGroupByFields(evalColumns, evaluations = []) {
       const candidateColumns = evalColumns.filter((column) => {
         const normalized = displayEvalColumnName(column);
         return normalized !== "dataset.predictions.log";
       });
       return getColumnsWithMultipleValues(
-        runs,
+        evaluations,
         candidateColumns,
         (evaluation, column) => getEvaluationColumnRawValue(evaluation, column)
       );
@@ -1843,16 +1843,16 @@
       return predictionEntries.filter((entry) => isMissingValue(entry.predictionFlat?.[column])).length;
     }
 
-    function getEvalColumnsWithMissingValues(runs, evalColumns) {
-      return evalColumns.filter((column) => runs.some((evaluation) => isMissingValue(getEvaluationColumnRawValue(evaluation, column))));
+    function getEvalColumnsWithMissingValues(evaluations, evalColumns) {
+      return evalColumns.filter((column) => evaluations.some((evaluation) => isMissingValue(getEvaluationColumnRawValue(evaluation, column))));
     }
 
-    function getEvalDefaultSuggestions(runs, column) {
-      return collectSuggestionValues(runs.map((evaluation) => getEvaluationColumnRawValue(evaluation, column)));
+    function getEvalDefaultSuggestions(evaluations, column) {
+      return collectSuggestionValues(evaluations.map((evaluation) => getEvaluationColumnRawValue(evaluation, column)));
     }
 
-    function getEvalMissingValueCount(runs, column) {
-      return runs.filter((evaluation) => isMissingValue(getEvaluationColumnRawValue(evaluation, column))).length;
+    function getEvalMissingValueCount(evaluations, column) {
+      return evaluations.filter((evaluation) => isMissingValue(getEvaluationColumnRawValue(evaluation, column))).length;
     }
 
     function createMissingDefaultControl({ listElement, column, label, value, suggestions, missingCount, onCommit, inputIdPrefix }) {
@@ -2212,7 +2212,7 @@
       );
       const selectedEvaluations = evalGroups
         .filter((group) => selectedGroupIds.has(group.groupId))
-        .flatMap((group) => group.runs);
+        .flatMap((group) => group.evaluations);
       const columns = getEvalColumnsWithMissingValues(selectedEvaluations, evalColumns);
       setPanelVisibility(evalDefaultsPanel, columns.length > 0);
       if (!columns.length) {
@@ -2859,10 +2859,10 @@
           predictionEntriesById.set(evaluation.predictionId, {
             predictionId: evaluation.predictionId,
             predictionFlat,
-            evalRuns: [],
+            evaluations: [],
           });
         }
-        predictionEntriesById.get(evaluation.predictionId).evalRuns.push(evaluation);
+        predictionEntriesById.get(evaluation.predictionId).evaluations.push(evaluation);
       }
 
       state.predictionColumns = Array.from(predictionColumns).sort();
@@ -3374,7 +3374,7 @@
 
     void initializeGitUrlFromQueryParam();
 
-    // First grouping step: collapse multiple evaluation runs that belong to the same prediction config.
+    // First grouping step: collapse multiple evaluations that belong to the same prediction config.
     function buildGroups() {
       const map = new Map();
       const groupBy = state.groupByFields;
@@ -3426,7 +3426,7 @@
 
     function getPredictionMemberSortValue(predictionEntry, column) {
       if (column === "group_size") {
-        return predictionEntry.evalRuns.length;
+        return predictionEntry.evaluations.length;
       }
       if (SORTABLE_CONTROL_COLUMNS.has(column)) {
         return "";
@@ -3711,7 +3711,7 @@
       return state.groups.filter((group) => state.selectedGroupIds.has(group.groupId));
     }
 
-    // Second grouping step: within the selected predictions, group evaluation runs by eval metadata
+    // Second grouping step: within the selected predictions, group evaluations by eval metadata
     // while still respecting the active prediction grouping from the upper table.
     function buildEvaluationGroups(
       evaluations,
@@ -3732,15 +3732,15 @@
         if (!map.has(groupId)) {
           map.set(groupId, {
             groupId,
-            runs: [],
+            evaluations: [],
             values: Object.fromEntries(
               groupByFields.map((field) => [field, getEvaluationEffectiveValue(evaluation, field, evalTabState)])
             ),
           });
         }
-        map.get(groupId).runs.push(evaluation);
+        map.get(groupId).evaluations.push(evaluation);
       }
-      return Array.from(map.values()).sort((a, b) => b.runs.length - a.runs.length);
+      return Array.from(map.values()).sort((a, b) => b.evaluations.length - a.evaluations.length);
     }
 
     function getEvaluationGroupSortValue(group, column, evalTabState) {
@@ -3751,13 +3751,13 @@
         return evalTabState.selectedGroupIds.has(group.groupId) ? 1 : 0;
       }
       if (column === "group_size") {
-        return group.runs.length;
+        return group.evaluations.length;
       }
       if (column === "eval_run_dir") {
-        return getGroupValueDisplayFromRuns(group.runs, (evaluation) => evaluation.runDir);
+        return getGroupValueDisplayFromEvaluations(group.evaluations, (evaluation) => evaluation.runDir);
       }
-      return getGroupValueDisplayFromRuns(
-        group.runs,
+      return getGroupValueDisplayFromEvaluations(
+        group.evaluations,
         (evaluation) => getEvaluationEffectiveValue(evaluation, column, evalTabState)
       );
     }
@@ -3784,8 +3784,8 @@
       );
     }
 
-    function getGroupValueDisplayFromRuns(runs, getter) {
-      const values = new Set(runs.map((evaluation) => normalizeValue(getter(evaluation))));
+    function getGroupValueDisplayFromEvaluations(evaluations, getter) {
+      const values = new Set(evaluations.map((evaluation) => normalizeValue(getter(evaluation))));
       if (values.size <= 1) {
         return values.values().next().value || "";
       }
@@ -3856,7 +3856,7 @@
 
       const map = new Map();
       for (const evalGroup of selectedEvalGroups) {
-        for (const evaluation of evalGroup.runs) {
+        for (const evaluation of evalGroup.evaluations) {
           if (getEvaluationExperiment(evaluation) !== activeExperiment) {
             continue;
           }
@@ -3876,13 +3876,13 @@
             ? allFields.map((field) => `${field}=${normalizeValue(values[field])}`).join(" | ")
             : evaluation.runDir;
           if (!map.has(groupId)) {
-            map.set(groupId, { groupId, values, runs: [] });
+            map.set(groupId, { groupId, values, evaluations: [] });
           }
-          map.get(groupId).runs.push(evaluation);
+          map.get(groupId).evaluations.push(evaluation);
         }
       }
 
-      const groups = Array.from(map.values()).sort((a, b) => b.runs.length - a.runs.length);
+      const groups = Array.from(map.values()).sort((a, b) => b.evaluations.length - a.evaluations.length);
       return { groups, fields: allFields };
     }
 
@@ -4306,8 +4306,8 @@
         .join(", ")}`;
     }
 
-    // Convert per-run confusion counts into one aligned matrix with mean/std per cell.
-    // Missing cells are treated as zeros so runs with different support can still be aggregated together.
+    // Convert per-evaluation confusion counts into one aligned matrix with mean/std per cell.
+    // Missing cells are treated as zeros so evaluations with different support can still be aggregated together.
     function getConfusionMatrixAggregation(experimentEvaluations) {
       const rowLabels = new Set();
       const colLabels = new Set();
@@ -4478,9 +4478,9 @@
         .map((group, index) => ({
           key: `group|#|${group.groupId}`,
           label: getGroupLabelForFields(group, labelFields, `group ${index + 1}`, displayPlotGroupFieldName),
-          runs: group.runs.filter((evaluation) => getEvaluationExperiment(evaluation) === activeExperiment),
+          evaluations: group.evaluations.filter((evaluation) => getEvaluationExperiment(evaluation) === activeExperiment),
         }))
-        .filter((entry) => entry.runs.length > 0);
+        .filter((entry) => entry.evaluations.length > 0);
 
       if (state.confusionTabsBy === "metric_field") {
         for (const evaluation of experimentEvaluations) {
@@ -4493,7 +4493,7 @@
 
         for (const [fieldKey, tab] of tabMap.entries()) {
           for (const groupEntry of groupEntries) {
-            const evaluationsForFieldAndGroup = groupEntry.runs.filter((evaluation) => {
+            const evaluationsForFieldAndGroup = groupEntry.evaluations.filter((evaluation) => {
               const rawField = getEvaluationEffectiveValue(evaluation, "metric.field", evalTabState);
               const fieldLabel = rawField || "(missing metric.field)";
               return fieldLabel === fieldKey;
@@ -4501,16 +4501,16 @@
             if (evaluationsForFieldAndGroup.length === 0) {
               continue;
             }
-            tab.plots.push({ label: groupEntry.label, runs: evaluationsForFieldAndGroup });
+            tab.plots.push({ label: groupEntry.label, evaluations: evaluationsForFieldAndGroup });
           }
         }
         return tabMap;
       }
 
       for (const groupEntry of groupEntries) {
-        // Split runs by metric.field so different fields don't get mixed into one matrix.
+        // Split evaluations by metric.field so different fields don't get mixed into one matrix.
         const byField = new Map();
-        for (const evaluation of groupEntry.runs) {
+        for (const evaluation of groupEntry.evaluations) {
           const rawField = getEvaluationEffectiveValue(evaluation, "metric.field", evalTabState);
           const fieldLabel = rawField || "(missing metric.field)";
           if (!byField.has(fieldLabel)) {
@@ -4522,7 +4522,7 @@
           .sort(([a], [b]) => a.localeCompare(b))
           .map(([fieldLabel, evaluations]) => ({
             label: fieldLabel,
-            runs: evaluations,
+            evaluations,
           }));
         tabMap.set(groupEntry.key, { label: groupEntry.label, plots });
       }
@@ -4565,7 +4565,7 @@
       for (const metricPath of metricPaths) {
         const points = [];
         plotGroups.forEach((group, index) => {
-          const values = group.runs
+          const values = group.evaluations
                 .map((evaluation) => Number(getValueAtPath(evaluation.data, metricPath.parts)))
             .filter((value) => Number.isFinite(value));
           const stats = meanAndStd(values);
@@ -4782,11 +4782,11 @@
 
         for (const key of sortedConfusionTabKeys) {
           const entry = confusionTabMap.get(key);
-          const runCount = entry.plots.reduce((sum, plot) => sum + plot.runs.length, 0);
+          const evaluationCount = entry.plots.reduce((sum, plot) => sum + plot.evaluations.length, 0);
           const button = document.createElement("button");
           button.type = "button";
           button.className = "tab-button" + (key === state.activeEvalPlotTab ? " active" : "");
-          button.textContent = `${entry.label} (${runCount})`;
+          button.textContent = `${entry.label} (${evaluationCount})`;
           button.title = entry.label;
           button.addEventListener("click", () => {
             state.activeEvalPlotTab = key;
@@ -4800,7 +4800,7 @@
         grid.className = "plot-grid";
 
         for (const plotEntry of activeConfusionEntry.plots) {
-          const aggregation = getConfusionMatrixAggregation(plotEntry.runs);
+          const aggregation = getConfusionMatrixAggregation(plotEntry.evaluations);
           if (!aggregation.rows.length || !aggregation.cols.length) {
             continue;
           }
@@ -4809,7 +4809,7 @@
           card.className = "plot-card";
           const title = document.createElement("p");
           title.className = "plot-title";
-          const fieldTitle = getConfusionMatrixTitle(plotEntry.runs, evalTabState);
+          const fieldTitle = getConfusionMatrixTitle(plotEntry.evaluations, evalTabState);
           if (state.confusionTabsBy === "metric_field") {
             title.textContent = `${plotEntry.label} (mean ± std)`;
           } else {
@@ -5156,7 +5156,7 @@
         selectTd.appendChild(checkbox);
         tr.appendChild(selectTd);
 
-        tr.appendChild(createCell(String(group.runs.length)));
+        tr.appendChild(createCell(String(group.evaluations.length)));
 
         if (orderedEvalColumns.length === 0) {
           tr.appendChild(createCell(""));
@@ -5164,8 +5164,8 @@
         for (const column of orderedEvalColumns) {
           tr.appendChild(
             createEvalCell(
-              getGroupValueDisplayFromRuns(
-                group.runs,
+              getGroupValueDisplayFromEvaluations(
+                group.evaluations,
                 (evaluation) => getEvaluationEffectiveValue(evaluation, column, evalTabState)
               ),
               column,
@@ -5175,7 +5175,7 @@
         }
         tr.appendChild(
           createEvalCell(
-            getGroupValueDisplayFromRuns(group.runs, (evaluation) => evaluation.runDir),
+            getGroupValueDisplayFromEvaluations(group.evaluations, (evaluation) => evaluation.runDir),
             "eval_run_dir",
             evalTabState
           )
@@ -5183,7 +5183,7 @@
         tbody.appendChild(tr);
 
         if (evalTabState.expandedGroupIds.has(group.groupId)) {
-          const sortedMembers = getSortedEvaluationRuns(group.runs, evalTabState);
+          const sortedMembers = getSortedEvaluationRuns(group.evaluations, evalTabState);
           for (const evaluation of sortedMembers) {
             const memberRow = document.createElement("tr");
             memberRow.className = "member-row";
@@ -5239,8 +5239,8 @@
                 : (selectedEvaluation.data || {})
             )
             : (state.activeEvalJsonTab === "prediction"
-              ? selectedGroup.runs.map((evaluation) => reconstructPredictionContentForEvaluation(evaluation))
-              : selectedGroup.runs.map((evaluation) => evaluation.data || {}));
+              ? selectedGroup.evaluations.map((evaluation) => reconstructPredictionContentForEvaluation(evaluation))
+              : selectedGroup.evaluations.map((evaluation) => evaluation.data || {}));
           evalJsonCode.innerHTML = highlightJsonContent(tabContent);
         }
       }
@@ -5248,17 +5248,17 @@
       updateStickyControlColumnOffsets(evaluationsTable);
       requestAnimationFrame(() => updateStickyControlColumnOffsets(evaluationsTable));
 
-      const selectedEvalRunsCount = displayedEvalGroups
+      const selectedEvaluationsCount = displayedEvalGroups
         .filter((group) => evalTabState.selectedGroupIds.has(group.groupId))
-        .reduce((sum, group) => sum + group.runs.length, 0);
+        .reduce((sum, group) => sum + group.evaluations.length, 0);
       const evalGroupByText = evalTabState.groupByFields.length
         ? evalTabState.groupByFields.map((field) => displayEvalColumnName(field)).join(", ")
-        : "(none; one row per run)";
+        : "(none; one row per evaluation)";
       const predictionGroupByText = state.groupByFields.length
         ? state.groupByFields.map((field) => displayPredictionColumnName(field)).join(", ")
         : "(none)";
       evalSummary.textContent =
-        `Selected evaluations: ${selectedEvalRunsCount} | Active tab: ${state.activeEvalTab} | Groups: ${displayedEvalGroups.length} | Group-by: ${evalGroupByText} (+ prediction group-by: ${predictionGroupByText})`;
+        `Selected evaluations: ${selectedEvaluationsCount} | Active tab: ${state.activeEvalTab} | Groups: ${displayedEvalGroups.length} | Group-by: ${evalGroupByText} (+ prediction group-by: ${predictionGroupByText})`;
 
       renderEvaluationPlots(state.activeEvalTab);
     }
