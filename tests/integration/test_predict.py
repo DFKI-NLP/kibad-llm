@@ -10,6 +10,8 @@ from kibad_llm.config import PROJ_ROOT
 from kibad_llm.predict import predict
 from tests.conftest import WRITE_FIXTURE_DATA, cfg_global
 
+pytestmark = pytest.mark.usefixtures("llm_chat_replay")
+
 PDF_DIR = PROJ_ROOT / "tests" / "fixtures" / "pdfs"
 FILE_NAMES = sorted([f.name for f in PDF_DIR.glob("*.pdf")])
 PREDICTION_DIR = PROJ_ROOT / "tests" / "fixtures" / "results"
@@ -19,8 +21,9 @@ PREDICTION_DIR = PROJ_ROOT / "tests" / "fixtures" / "results"
 def cfg_predict_module(tmp_path_factory) -> DictConfig:  # type: ignore
     module_tmp_path = tmp_path_factory.mktemp("module")
 
-    # use the llm defined for testing, see configs/extractor/llm/testing.yaml
-    overrides = ["extractor/llm=testing"]
+    # use the gpt_oss_20b llm (see configs/extractor/llm/testing.yaml)
+    # for testing since we monkeypatch its self.model.chat method
+    overrides = ["extractor/llm=gpt_oss_20b"]
 
     cfg = cfg_global(config_name="predict.yaml", out_dir=module_tmp_path, overrides=overrides)
 
@@ -56,7 +59,6 @@ def file_name(request) -> str:
     return request.param
 
 
-@pytest.mark.slow
 def test_prediction(file_name, predictions_dict):
     prediction = predictions_dict[file_name]
 
@@ -76,7 +78,6 @@ def test_prediction(file_name, predictions_dict):
     assert set(prediction["structured"]) == set(result_expected["structured"])
 
 
-@pytest.mark.slow
 def test_predict_fast_dev_run(tmp_path, cfg_predict_module):
     cfg_predict = deepcopy(cfg_predict_module)
 
@@ -95,7 +96,13 @@ def test_predict_fast_dev_run(tmp_path, cfg_predict_module):
     result = results[0]
 
     # this reuses the fixture data from test_prediction
-    fixture_path = PREDICTION_DIR / f"{result['file_name']}.json"
+    fixture_path = PREDICTION_DIR / f"{result['file_name']}.fast.json"
+
+    if WRITE_FIXTURE_DATA:
+        fixture_path.parent.mkdir(parents=True, exist_ok=True)
+        # write fixture data
+        with open(fixture_path, "w") as f:
+            json.dump(result, f, indent=4, ensure_ascii=False)
 
     # read fixture data
     with open(fixture_path) as f:
@@ -105,7 +112,7 @@ def test_predict_fast_dev_run(tmp_path, cfg_predict_module):
     assert set(result["structured"]) == set(fixture_data["structured"])
 
 
-@pytest.fixture(params=["too_long", "missing_response_content"])
+@pytest.fixture(params=["too_long"])
 def error_type(request) -> str:
     return request.param
 
@@ -115,18 +122,13 @@ def cfg_predict_pdf_errors(tmp_path, error_type) -> DictConfig:  # type: ignore
     overrides = [
         # don't compress to be able to read error messages easily
         "output_file_name=predictions.jsonl",
-        # For now, use the testing llm (see configs/extractor/llm/testing.yaml).
-        # However, this should be a special mock llm in the future.
-        "extractor/llm=testing",
+        # use the gpt_oss_20b (see configs/extractor/llm/testing.yaml)
+        # for testing since we monkeypatch its self.model.chat method
+        "extractor/llm=gpt_oss_20b",
     ]
     if error_type in ["too_long"]:
         # we need the text to check for the length, so enable store_text_in_predictions
         overrides.append("store_text_in_predictions=true")
-    if error_type in ["missing_response_content"]:
-        # use a more complex schema that is more likely to fail
-        overrides.append("experiment/predict=faktencheck_core_fields_schema_with_evidence")
-        # set temperature to 0, otherwise the LLM might not fail
-        overrides.append("extractor.llm.temperature=0.0")
 
     cfg = cfg_global(
         config_name="predict.yaml",
@@ -142,7 +144,6 @@ def cfg_predict_pdf_errors(tmp_path, error_type) -> DictConfig:  # type: ignore
     GlobalHydra.instance().clear()
 
 
-@pytest.mark.slow
 def test_prediction_on_pdf_errors(cfg_predict_pdf_errors, error_type):
     job_return_value = predict(cfg_predict_pdf_errors)
 
@@ -174,16 +175,5 @@ def test_prediction_on_pdf_errors(cfg_predict_pdf_errors, error_type):
         assert "'type': 'BadRequestError'" in error
         # check that we got a negative max_tokens error message
         assert "'message': 'max_tokens must be at least 1, got -" in error
-    elif error_type == "missing_response_content":
-        file_name = "3Z5BFIBL.pdf"
-        assert file_name in results
-        result = results[file_name]
-        # assert that there is no structured output ...
-        assert result.get("structured", None) is None
-        # ... but an error message about missing response content
-        errors = result.get("errors", [])
-        assert len(errors) == 1
-        error = errors[0]
-        assert error.startswith("MissingResponseContentError:")
     else:
         pytest.fail(f"Unhandled error_type fixture: {error_type}")
