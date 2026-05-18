@@ -287,14 +287,14 @@ def _snippet_for_span(
     extending `token_margin` tokens before and after the span.
 
     Args:
-        start: TODO
-        end: TODO
-        text: TODO
-        token_spans: TODO
-        token_margin: TODO
+        start: Character index to get first token whose end is after the `start`.
+        end: Character index to get last token whose start is before the `end`.
+        text: Full text, from which the snippet is to be extracted.
+        token_spans: Maps from tuple index to character boundaries of tokens.
+        token_margin: Number of tokens of context to pad the snippet with.
 
     Returns:
-        TODO
+        Text snippet with context padding.
     """
     if not token_spans:
         return ""
@@ -331,10 +331,10 @@ def _strip_wrapping_quotes(s: str) -> str:
     """Strip common wrapping quotes from the beginning and end of a string.
 
     Args:
-        s: TODO
+        s: Text to strip wrapping quotes of.
 
     Returns:
-        TODO
+        Text with the quotes stripped.
     """
     # Common quote pairs: ASCII, German/typographic, and apostrophe-like quotes
     quote_pairs = [
@@ -358,8 +358,7 @@ def _strip_wrapping_quotes(s: str) -> str:
 
 
 def _find_anchor_match_spans(text: str, anchor: str) -> list[tuple[int, int]]:
-    """
-    Find all character spans in `text` that match the given `anchor` string.
+    """Find all character spans in `text` that match the given `anchor` string.
     The matching is whitespace-insensitive, meaning that any whitespace in the anchor
     can match any whitespace in the text (including different kinds of whitespace).
 
@@ -411,8 +410,7 @@ def augment_metadata_node_with_evidence(
     snippet_margin: int = 10,
     character_offset: int = 0,
 ) -> dict[str, Any]:
-    """
-    Augment a single metadata wrapper dict with evidence location information.
+    """Augment a single metadata wrapper dict with evidence location information.
 
     Given a wrapper object like:
         {"content": ..., "evidence_anchor": "...", ...}
@@ -476,8 +474,7 @@ def augment_metadata(
     content_key: str,
     **kwargs: Any,
 ) -> Any:
-    """
-    Recursively augment all metadata wrapper dicts in a JSON-parsed result with evidence info.
+    """Recursively augment all metadata wrapper dicts in a JSON-parsed result with evidence info.
 
     Traversal:
       - walks `data` through nested dicts/lists
@@ -485,18 +482,22 @@ def augment_metadata(
       - for each wrapper dict, calls `augment_metadata_node_with_evidence(...)`
 
     Args:
-        data: TODO
+        data: JSON-parsed result with evidence
         text: TODO - must be passed by keyword
-        content_key: TODO - must be passed by keyword
+        content_key: Key that must be in a mapping for it to be a wrapper_dict - must be passed by keyword
+
+    Keyword Args:
+        evidence_: `* evidence_*` -> forwarded to `augment_metadata_node_with_evidence` (prefix stripped)
 
     Keyword Args Notes:
-      - kwargs are namespaced by prefix. Currently supported:
-          * evidence_*  -> forwarded to `augment_metadata_node_with_evidence` (prefix stripped)
+      - kwargs are namespaced by prefix.
         Example: evidence_snippet_margin=10 sets `snippet_margin=10` for evidence augmentation.
-      - unknown kwargs raise ValueError (fail fast).
 
     Returns:
         TODO
+
+    Raises:
+      ValueError: unknown kwargs raise ValueError (fail fast).
 
     The returned structure mirrors the input but includes added evidence fields where applicable.
     """
