@@ -938,7 +938,6 @@
     const state = {
       predictions: {},
       evaluations: [],
-      predictionEntries: [],
       predictionColumns: [],
       predictionSort: [],
       loadedFolders: new Set(),
@@ -1192,7 +1191,10 @@
       );
     }
 
-    function getSelectedPredictionEntries() {
+    /**
+     * Flatten the currently selected prediction groups into their member prediction views.
+     */
+    function getSelectedPredictionViews() {
       return getSelectedPredictionGroups().flatMap((group) => group.predictions);
     }
 
@@ -1835,16 +1837,19 @@
       });
     }
 
-    function getDefaultGroupByFields(predictionColumns, predictionEntries = state.predictionEntries) {
+    /**
+     * Choose default prediction group-by fields from varying non-seed override columns.
+     */
+    function getDefaultGroupByFields(predictionColumns, predictionViews = getPredictionViews()) {
       const candidateColumns = predictionColumns.filter(
         (column) =>
           column.startsWith("prediction.overrides.") &&
           displayPredictionColumnName(column).toLowerCase() !== "seed"
       );
       return getColumnsWithMultipleValues(
-        predictionEntries,
+        predictionViews,
         candidateColumns,
-        (predictionEntry, column) => predictionEntry.predictionFlat?.[column]
+        (predictionView, column) => predictionView.predictionFlat?.[column]
       );
     }
 
@@ -1914,20 +1919,29 @@
       )).sort((a, b) => a.localeCompare(b));
     }
 
-    function getPredictionColumnsWithMissingValues(predictionEntries) {
+    /**
+     * Return prediction columns whose selected prediction views still contain missing values.
+     */
+    function getPredictionColumnsWithMissingValues(predictionViews) {
       return state.predictionColumns.filter((column) =>
-        predictionEntries.some((entry) => isMissingValue(entry.predictionFlat?.[column]))
+        predictionViews.some((predictionView) => isMissingValue(predictionView.predictionFlat?.[column]))
       );
     }
 
-    function getPredictionDefaultSuggestions(predictionEntries, column) {
+    /**
+     * Collect non-empty suggestion values for a prediction column from the current prediction views.
+     */
+    function getPredictionDefaultSuggestions(predictionViews, column) {
       return collectSuggestionValues(
-        predictionEntries.map((entry) => entry.predictionFlat?.[column])
+        predictionViews.map((predictionView) => predictionView.predictionFlat?.[column])
       );
     }
 
-    function getPredictionMissingValueCount(predictionEntries, column) {
-      return predictionEntries.filter((entry) => isMissingValue(entry.predictionFlat?.[column])).length;
+    /**
+     * Count how many prediction views are missing a value for the given prediction column.
+     */
+    function getPredictionMissingValueCount(predictionViews, column) {
+      return predictionViews.filter((predictionView) => isMissingValue(predictionView.predictionFlat?.[column])).length;
     }
 
     function getEvalColumnsWithMissingValues(evaluations, evalColumns) {
@@ -2197,10 +2211,14 @@
       }
     }
 
+    /**
+     * Render default-value controls for prediction columns that are missing values
+     * within the currently selected prediction views.
+     */
     function renderPredictionDefaultControls() {
       predictionDefaultsList.innerHTML = "";
-      const selectedPredictionEntries = getSelectedPredictionEntries();
-      const columns = getPredictionColumnsWithMissingValues(selectedPredictionEntries);
+      const selectedPredictionViews = getSelectedPredictionViews();
+      const columns = getPredictionColumnsWithMissingValues(selectedPredictionViews);
       setPanelVisibility(predictionDefaultsPanel, columns.length > 0);
       if (!columns.length) {
         return;
@@ -2211,8 +2229,8 @@
           column,
           label: displayPredictionColumnName(column),
           value: getPredictionDefaultValue(column),
-          suggestions: getPredictionDefaultSuggestions(selectedPredictionEntries, column),
-          missingCount: getPredictionMissingValueCount(selectedPredictionEntries, column),
+          suggestions: getPredictionDefaultSuggestions(selectedPredictionViews, column),
+          missingCount: getPredictionMissingValueCount(selectedPredictionViews, column),
           inputIdPrefix: "prediction-default",
           onCommit: (nextValue) => {
             setConfiguredDefault(state.predictionDefaultValues, column, nextValue);
@@ -2930,10 +2948,13 @@
       return /(^|\/)\.hydra\/overrides\.yaml$/.test(path) || /(^|\/)job_return_value\.json$/.test(path);
     }
 
+    /**
+     * Recompute prediction-derived UI defaults from the canonical predictions/evaluations state.
+     */
     function rebuildPredictionState() {
-      state.predictionEntries = getPredictionViews();
-      state.predictionColumns = getPredictionColumns(state.predictionEntries);
-      state.groupByFields = getDefaultGroupByFields(state.predictionColumns, state.predictionEntries);
+      const predictionViews = getPredictionViews();
+      state.predictionColumns = getPredictionColumns(predictionViews);
+      state.groupByFields = getDefaultGroupByFields(state.predictionColumns, predictionViews);
       state.predictionSort = [];
       state.truncateEnabledColumns = getDefaultTruncateColumns(state.predictionColumns);
       state.predictionDefaultValues = {};
@@ -3440,9 +3461,11 @@
 
     void initializeGitUrlFromQueryParam();
 
-    // First grouping step: collapse multiple evaluations that belong to the same prediction config.
+    /**
+     * Build and persist the current prediction groups from derived prediction views.
+     */
     function buildGroups() {
-      state.groups = getPredictionGroups(state.predictionEntries, state.groupByFields, state.predictionColumns);
+      state.groups = getPredictionGroups(getPredictionViews(), state.groupByFields, state.predictionColumns);
 
       // Keep selections for unchanged groups and select newly created groups by default after regrouping.
       const validIds = new Set(state.groups.map((g) => g.groupId));
@@ -3475,10 +3498,13 @@
       return getPredictionEffectiveValue(predictionEntry.predictionFlat, column);
     }
 
+    /**
+     * Return prediction groups sorted according to the active prediction sort config.
+     */
     function getSortedPredictionGroups() {
       const validSortColumns = new Set([...SORTABLE_CONTROL_COLUMNS, ...state.predictionColumns]);
       state.predictionSort = normalizeSortConfig(state.predictionSort, validSortColumns);
-      return sortItems(getPredictionGroups(state.predictionEntries, state.groupByFields, state.predictionColumns), state.predictionSort, getPredictionGroupSortValue);
+      return sortItems(getPredictionGroups(getPredictionViews(), state.groupByFields, state.predictionColumns), state.predictionSort, getPredictionGroupSortValue);
     }
 
     function getSortedPredictionMembers(predictions) {
@@ -3558,8 +3584,12 @@
       return `(mixed: ${values.size} values)`;
     }
 
+    /**
+     * Render the Predictions table from derived prediction views and prediction groups.
+     */
     function renderPredictions() {
       buildGroups();
+      const predictionViews = getPredictionViews();
 
       predictionsTable.innerHTML = "";
       predictionDefaultsList.innerHTML = "";
@@ -3571,7 +3601,7 @@
       }
 
       predictionSummary.textContent =
-        `Predictions: ${state.predictionEntries.length} | Groups: ${state.groups.length} | Group-by: ` +
+        `Predictions: ${predictionViews.length} | Groups: ${state.groups.length} | Group-by: ` +
         (state.groupByFields.length
           ? state.groupByFields.map((field) => displayPredictionColumnName(field)).join(", ")
           : "(none; one row per unique prediction)");

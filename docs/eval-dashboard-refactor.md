@@ -5,8 +5,8 @@
 - [x] Canonical dashboard state uses `predictions` + `evaluations`
 - [x] Prediction/evaluation terminology cleanup is in place
 - [x] Refactor plan documented in this file
-- [x] Phase 1 started: selector bridge introduced for prediction views/groups/selection
-- [ ] Phase 2: remove stored `state.predictionEntries`
+- [x] Phase 1: selector bridge introduced for prediction views/groups/selection
+- [x] Phase 2: remove stored `state.predictionEntries`
 - [ ] Phase 3: remove stored `state.groups`
 - [ ] Phase 4: make evaluation grouping selector-driven
 - [ ] Phase 5: simplify or remove `rebuildPredictionState()`
