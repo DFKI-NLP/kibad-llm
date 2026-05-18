@@ -17,7 +17,7 @@ from kibad_llm.utils.path import get_directories_with_file
 # way, e.g. if we change the structure of the metric_dict returned by evaluate() or the expected metadata
 # format. This allows us to keep track of which version of the evaluation results we are working with and
 # handle them accordingly in downstream processing.
-EVALUATE_VERSION = 1
+EVALUATE_VERSION = 2
 
 logger = logging.getLogger(__name__)
 
@@ -56,23 +56,16 @@ def evaluate(cfg: DictConfig) -> dict[str, Any]:
 
     metric.show_result(metric_dict)
 
+    result = {
+        RESULT_FORMAT_VERSION_KEY: EVALUATE_VERSION,
+        "type": metric.__class__.__name__,
+        "data": metric_dict,
+    }
+
     if isinstance(dataset, DictWithMetadata):
-        if "prediction" in metric_dict:
-            raise ValueError(
-                "Cannot attach metadata to 'prediction' key in metric_dict because it already "
-                "exists as output from the metric computation. Please adjust the metric computation."
-            )
-        metric_dict["prediction"] = dataset.metadata
+        result["prediction"] = dataset.metadata
 
-    if RESULT_FORMAT_VERSION_KEY in metric_dict:
-        raise ValueError(
-            "Cannot attach version to metric_dict because 'version' key already exists. "
-            "Please adjust the metric computation."
-        )
-
-    metric_dict[RESULT_FORMAT_VERSION_KEY] = EVALUATE_VERSION
-
-    return metric_dict
+    return result
 
 
 @hydra.main(
