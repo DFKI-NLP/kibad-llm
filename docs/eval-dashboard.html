@@ -994,7 +994,6 @@
     const evalDefaultsPanel = document.getElementById("evalDefaultsPanel");
     const evalDefaultsList = document.getElementById("evalDefaultsList");
     const evalLayout = document.getElementById("evalLayout");
-    const evalJsonPane = document.getElementById("evalJsonPane");
     const evalJsonTabEvaluation = document.getElementById("evalJsonTabEvaluation");
     const evalJsonTabPrediction = document.getElementById("evalJsonTabPrediction");
     const evalJsonTitle = document.getElementById("evalJsonTitle");
@@ -1904,7 +1903,7 @@
       );
     }
 
-    function getDefaultEvalTruncateColumns(evalColumns) {
+    function getDefaultEvalTruncateColumns() {
       return new Set();
     }
 
@@ -2134,7 +2133,7 @@
       const tabState = state.evalTabStates[experiment];
       const known = new Set(tabState.knownColumns || []);
       if (!(tabState.truncateEnabledColumns instanceof Set)) {
-        tabState.truncateEnabledColumns = getDefaultEvalTruncateColumns(tabState.knownColumns || []);
+        tabState.truncateEnabledColumns = getDefaultEvalTruncateColumns();
       }
       if (!tabState.defaultValues || typeof tabState.defaultValues !== "object") {
         tabState.defaultValues = {};
@@ -2165,6 +2164,10 @@
       return tabState;
     }
 
+    /**
+     * Synchronize selected group ids with the current valid group-id set while preserving
+     * still-valid selections and auto-selecting newly introduced groups.
+     */
     function syncSelectedGroupIds(selectionState, validGroupIds) {
       if (!(selectionState.availableGroupIds instanceof Set)) {
         selectionState.availableGroupIds = new Set();
@@ -3541,14 +3544,14 @@
       return getGroupValueDisplay(group, column);
     }
 
-    function getPredictionMemberSortValue(predictionEntry, column) {
+    function getPredictionMemberSortValue(predictionView, column) {
       if (column === "group_size") {
-        return predictionEntry.evaluations.length;
+        return predictionView.evaluations.length;
       }
       if (SORTABLE_CONTROL_COLUMNS.has(column)) {
         return "";
       }
-      return getPredictionEffectiveValue(predictionEntry.predictionFlat, column);
+      return getPredictionEffectiveValue(predictionView.predictionFlat, column);
     }
 
     /**
@@ -3989,18 +3992,6 @@
       return { mean, std: Math.sqrt(variance) };
     }
 
-    function getVaryingGroupByFields(groups) {
-      if (!state.groupByFields.length || groups.length <= 1) {
-        return [];
-      }
-      return state.groupByFields.filter((field) => {
-        const values = new Set(
-          groups.map((group) => normalizeValue(group.values?.[field]))
-        );
-        return values.size > 1;
-      });
-    }
-
     function getVaryingFields(groups, fields) {
       if (!fields.length || groups.length <= 1) {
         return [];
@@ -4011,17 +4002,6 @@
       });
     }
 
-    function getPredictionGroupDisplayLabel(group, index, labelFields = state.groupByFields) {
-      if (labelFields.length === 0) {
-        return `group ${index + 1}`;
-      }
-      return labelFields
-        .map(
-          (field) =>
-            `${displayPredictionColumnName(field)}=${normalizeValue(group.values[field])}`
-        )
-        .join(" | ");
-    }
 
     function getGroupLabelForFields(group, labelFields, fallback, fieldNameFormatter = displayGroupFieldName) {
       if (labelFields.length === 0) {

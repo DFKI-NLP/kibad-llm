@@ -127,6 +127,10 @@ Similarly for override fields:
 
 This should be split into two parts.
 
+- [x] Cleanup A completed
+- [ ] Field-descriptor refactor not started
+- [ ] Cleanup B pending
+
 ### Cleanup A — do before the field-descriptor refactor
 
 These are very low-risk and reduce noise without causing churn in the upcoming field-model refactor.
@@ -196,6 +200,5 @@ These are still good cleanups, but they touch code that the descriptor refactor 
 
 ## Suggested order
 
-1. Cleanup A (dead helpers, trivial unused leftovers, tiny naming/doc cleanup)
-2. Field-descriptor refactor for evaluation-side fields
-3. Cleanup B (dedupe helpers after the new render/field layer settles)
+1. Field-descriptor refactor for evaluation-side fields
+2. Cleanup B (dedupe helpers after the new render/field layer settles)
