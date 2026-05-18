@@ -1,6 +1,6 @@
 # Contribution guidelines
 
-Thank you for showing interest, and contributing to the kibad-llm project.
+Thank you for your interest in contributing to kibad-llm.
 
 The following guidelines ensure consistency across the project, so please read them thoroughly.
 
@@ -111,7 +111,7 @@ uv run --group cicd pytest -m "not slow"
 Some tests require fixtures, which may need to be refreshed if anything about them changed.
 Beyond that, tests that require LLM interaction can opt into `llm_chat_replay`, which uses a fixture to simulate the LLM.
 
-To refresh the refresh normal expected test fixtures:
+To refresh the normal expected test fixtures:
 
 ```sh
 WRITE_FIXTURE_DATA=1 pytest tests/integration/test_extractors.py tests/integration/test_predict.py
@@ -210,4 +210,4 @@ These known issues have their own uv specific fixes. The relevant documentation 
 
 ## Misc
 
-If you need to take notes, do so in NOTES.md. Do not ever commit that file.
+If you need to take notes, do so in NOTES.md.
