@@ -1066,6 +1066,101 @@
       return getFlattenedPrediction(getPredictionForEvaluation(evaluation));
     }
 
+    /**
+     * Derive one prediction view per canonical prediction id.
+     * Each view joins the flattened prediction fields with all linked evaluations.
+     */
+    function getPredictionViews() {
+      const predictionViewsById = new Map();
+      for (const evaluation of state.evaluations) {
+        const prediction = getPredictionById(evaluation.predictionId);
+        if (!prediction) {
+          continue;
+        }
+        if (!predictionViewsById.has(evaluation.predictionId)) {
+          predictionViewsById.set(evaluation.predictionId, {
+            predictionId: evaluation.predictionId,
+            predictionFlat: getFlattenedPrediction(prediction),
+            evaluations: [],
+          });
+        }
+        predictionViewsById.get(evaluation.predictionId).evaluations.push(evaluation);
+      }
+      return Array.from(predictionViewsById.values());
+    }
+
+    /**
+     * Collect all flattened prediction columns currently present across the given prediction views.
+     */
+    function getPredictionColumns(predictionViews = getPredictionViews()) {
+      const predictionColumns = new Set();
+      for (const predictionView of predictionViews) {
+        for (const key of Object.keys(predictionView.predictionFlat || {})) {
+          predictionColumns.add(key);
+        }
+      }
+      return Array.from(predictionColumns).sort();
+    }
+
+    /**
+     * Group prediction views according to the active prediction group-by fields.
+     * The returned group shape matches the current prediction table/rendering expectations.
+     */
+    function getPredictionGroups(
+      predictionViews = getPredictionViews(),
+      groupByFields = state.groupByFields,
+      predictionColumns = state.predictionColumns
+    ) {
+      const map = new Map();
+
+      for (const predictionView of predictionViews) {
+        const groupId = !groupByFields.length
+          ? (
+            predictionColumns === state.predictionColumns
+              ? getPredictionEffectiveSignature(predictionView.predictionFlat)
+              : JSON.stringify(
+                Object.fromEntries(
+                  predictionColumns
+                    .map((column) => [column, getPredictionEffectiveValue(predictionView.predictionFlat, column)])
+                    .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
+                )
+              )
+          )
+          : groupByFields
+            .map((field) => `${field}=${getPredictionEffectiveValue(predictionView.predictionFlat, field)}`)
+            .join(" | ");
+
+        if (!map.has(groupId)) {
+          map.set(groupId, {
+            groupId,
+            predictions: [],
+            values: Object.fromEntries(
+              groupByFields.map((field) => [field, getPredictionEffectiveValue(predictionView.predictionFlat, field)])
+            ),
+          });
+        }
+        map.get(groupId).predictions.push(predictionView);
+      }
+
+      return Array.from(map.values()).sort((a, b) => b.predictions.length - a.predictions.length);
+    }
+
+    /**
+     * Filter prediction groups down to the currently selected prediction group ids.
+     */
+    function getSelectedPredictionGroups(groups = getPredictionGroups()) {
+      return groups.filter((group) => state.selectedGroupIds.has(group.groupId));
+    }
+
+    /**
+     * Flatten the evaluations reachable from the selected prediction groups.
+     */
+    function getSelectedEvaluations(selectedPredictionGroups = getSelectedPredictionGroups()) {
+      return selectedPredictionGroups.flatMap((group) =>
+        group.predictions.flatMap((prediction) => prediction.evaluations)
+      );
+    }
+
     function getFlattenedEvaluationJobReturnValue(evaluation) {
       return flattenObject(evaluation?.jobReturnValue || {});
     }
@@ -1105,15 +1200,7 @@
       if (!state.selectedGroupIds.size) {
         return [];
       }
-      const selected = [];
-      for (const group of state.groups) {
-        if (state.selectedGroupIds.has(group.groupId)) {
-          for (const prediction of group.predictions) {
-            selected.push(...prediction.evaluations);
-          }
-        }
-      }
-      return selected;
+      return getSelectedEvaluations();
     }
 
     function getSelectedEvaluationsForExperiment(experiment) {
@@ -2844,29 +2931,8 @@
     }
 
     function rebuildPredictionState() {
-      const predictionColumns = new Set();
-      const predictionEntriesById = new Map();
-      for (const evaluation of state.evaluations) {
-        const prediction = getPredictionById(evaluation.predictionId);
-        if (!prediction) {
-          continue;
-        }
-        const predictionFlat = getFlattenedPrediction(prediction);
-        for (const key of Object.keys(predictionFlat)) {
-          predictionColumns.add(key);
-        }
-        if (!predictionEntriesById.has(evaluation.predictionId)) {
-          predictionEntriesById.set(evaluation.predictionId, {
-            predictionId: evaluation.predictionId,
-            predictionFlat,
-            evaluations: [],
-          });
-        }
-        predictionEntriesById.get(evaluation.predictionId).evaluations.push(evaluation);
-      }
-
-      state.predictionColumns = Array.from(predictionColumns).sort();
-      state.predictionEntries = Array.from(predictionEntriesById.values());
+      state.predictionEntries = getPredictionViews();
+      state.predictionColumns = getPredictionColumns(state.predictionEntries);
       state.groupByFields = getDefaultGroupByFields(state.predictionColumns, state.predictionEntries);
       state.predictionSort = [];
       state.truncateEnabledColumns = getDefaultTruncateColumns(state.predictionColumns);
@@ -3376,32 +3442,7 @@
 
     // First grouping step: collapse multiple evaluations that belong to the same prediction config.
     function buildGroups() {
-      const map = new Map();
-      const groupBy = state.groupByFields;
-
-      for (const predictionEntry of state.predictionEntries) {
-        let key;
-        if (!groupBy.length) {
-          key = getPredictionEffectiveSignature(predictionEntry.predictionFlat);
-        } else {
-          key = groupBy
-            .map((field) => `${field}=${getPredictionEffectiveValue(predictionEntry.predictionFlat, field)}`)
-            .join(" | ");
-        }
-
-        if (!map.has(key)) {
-          map.set(key, {
-            groupId: key,
-            predictions: [],
-            values: Object.fromEntries(
-              groupBy.map((field) => [field, getPredictionEffectiveValue(predictionEntry.predictionFlat, field)])
-            ),
-          });
-        }
-        map.get(key).predictions.push(predictionEntry);
-      }
-
-      state.groups = Array.from(map.values()).sort((a, b) => b.predictions.length - a.predictions.length);
+      state.groups = getPredictionGroups(state.predictionEntries, state.groupByFields, state.predictionColumns);
 
       // Keep selections for unchanged groups and select newly created groups by default after regrouping.
       const validIds = new Set(state.groups.map((g) => g.groupId));
@@ -3437,7 +3478,7 @@
     function getSortedPredictionGroups() {
       const validSortColumns = new Set([...SORTABLE_CONTROL_COLUMNS, ...state.predictionColumns]);
       state.predictionSort = normalizeSortConfig(state.predictionSort, validSortColumns);
-      return sortItems(state.groups, state.predictionSort, getPredictionGroupSortValue);
+      return sortItems(getPredictionGroups(state.predictionEntries, state.groupByFields, state.predictionColumns), state.predictionSort, getPredictionGroupSortValue);
     }
 
     function getSortedPredictionMembers(predictions) {
@@ -3707,9 +3748,6 @@
       updateStickyControlColumnOffsets(predictionsTable);
     }
 
-    function getSelectedPredictionGroups() {
-      return state.groups.filter((group) => state.selectedGroupIds.has(group.groupId));
-    }
 
     // Second grouping step: within the selected predictions, group evaluations by eval metadata
     // while still respecting the active prediction grouping from the upper table.
