@@ -92,7 +92,7 @@ uv run --group cicd prek run -a
 
 This runs all configured [prek](https://prek.j178.dev/) hooks (see [pre-commit-config.yaml](.pre-commit-config.yaml)) on all files. Some hooks may fix issues automatically, others will report issues that need to be fixed manually.
 
-To run all tests, set up an LLM backend for the ones tagged as `"slow"`. Then run `pytest` like so:
+To run all tests with `pytest`:
 
 ```bash
 uv run pytest
@@ -104,9 +104,26 @@ The following commands run on GitHub CI (see [code_quality_and_tests.yml](.githu
 
 ```bash
 uv run --group cicd prek run -a
-# run tests *not marked as slow* with coverage and typeguard checks
+# the '-m "not slow"' bit is residue, to be cleaned up by a future polishing pr
 uv run --group cicd pytest -m "not slow"
 ```
+
+Some tests require fixtures, which may need to be refreshed if anything about them changed.
+Beyond that, tests that require LLM interaction can opt into `llm_chat_replay`, which uses a fixture to simulate the LLM.
+
+To refresh the refresh normal expected test fixtures:
+
+```sh
+WRITE_FIXTURE_DATA=1 pytest tests/integration/test_extractors.py tests/integration/test_predict.py
+```
+
+Alternatively, refresh only LLM chat replay fixtures:
+
+```sh
+WRITE_LLM_CHAT_FIXTURE_DATA=1 pytest tests/integration/test_extractors.py tests/integration/test_predict.py
+```
+
+If you add a new test that requires LLM interaction, you can require the test to have a working deployment, but it is encouraged to use `llm_chat_replay` instead.
 
 ## Documentation
 
