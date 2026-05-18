@@ -938,7 +938,6 @@
     const state = {
       predictions: {},
       evaluations: [],
-      predictionColumns: [],
       predictionSort: [],
       loadedFolders: new Set(),
       selectedGroupIds: new Set(),
@@ -1101,29 +1100,26 @@
     }
 
     /**
+     * Return the current prediction columns derived from canonical prediction state.
+     */
+    function getCurrentPredictionColumns(predictionViews = getPredictionViews()) {
+      return getPredictionColumns(predictionViews);
+    }
+
+    /**
      * Group prediction views according to the active prediction group-by fields.
      * The returned group shape matches the current prediction table/rendering expectations.
      */
     function getPredictionGroups(
       predictionViews = getPredictionViews(),
       groupByFields = state.groupByFields,
-      predictionColumns = state.predictionColumns
+      predictionColumns = getCurrentPredictionColumns(predictionViews)
     ) {
       const map = new Map();
 
       for (const predictionView of predictionViews) {
         const groupId = !groupByFields.length
-          ? (
-            predictionColumns === state.predictionColumns
-              ? getPredictionEffectiveSignature(predictionView.predictionFlat)
-              : JSON.stringify(
-                Object.fromEntries(
-                  predictionColumns
-                    .map((column) => [column, getPredictionEffectiveValue(predictionView.predictionFlat, column)])
-                    .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
-                )
-              )
-          )
+          ? getPredictionEffectiveSignature(predictionView.predictionFlat, predictionColumns)
           : groupByFields
             .map((field) => `${field}=${getPredictionEffectiveValue(predictionView.predictionFlat, field)}`)
             .join(" | ");
@@ -1166,7 +1162,9 @@
      * Return the current prediction groups derived from canonical state and current prediction UI settings.
      */
     function getCurrentPredictionGroups() {
-      const predictionGroups = getPredictionGroups(getPredictionViews(), state.groupByFields, state.predictionColumns);
+      const predictionViews = getPredictionViews();
+      const predictionColumns = getCurrentPredictionColumns(predictionViews);
+      const predictionGroups = getPredictionGroups(predictionViews, state.groupByFields, predictionColumns);
       syncPredictionGroupUiState(predictionGroups);
       return predictionGroups;
     }
@@ -1938,10 +1936,16 @@
       return getEffectiveValue(predictionFlat?.[column], getPredictionDefaultValue(column));
     }
 
-    function getPredictionEffectiveSignature(predictionFlat) {
+    /**
+     * Build a stable signature from the effective prediction values for the provided columns.
+     */
+    function getPredictionEffectiveSignature(
+      predictionFlat,
+      predictionColumns = getCurrentPredictionColumns()
+    ) {
       return JSON.stringify(
         Object.fromEntries(
-          state.predictionColumns
+          predictionColumns
             .map((column) => [column, getPredictionEffectiveValue(predictionFlat, column)])
             .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
         )
@@ -1963,8 +1967,11 @@
     /**
      * Return prediction columns whose selected prediction views still contain missing values.
      */
-    function getPredictionColumnsWithMissingValues(predictionViews) {
-      return state.predictionColumns.filter((column) =>
+    function getPredictionColumnsWithMissingValues(
+      predictionViews,
+      predictionColumns = getCurrentPredictionColumns(predictionViews)
+    ) {
+      return predictionColumns.filter((column) =>
         predictionViews.some((predictionView) => isMissingValue(predictionView.predictionFlat?.[column]))
       );
     }
@@ -2048,8 +2055,11 @@
       panelElement.style.display = shouldShow ? "" : "none";
     }
 
-    function getTruncateColumnOptions() {
-      return state.predictionColumns.map((column) => ({
+    /**
+     * Return the current truncate-toggle options for prediction columns.
+     */
+    function getTruncateColumnOptions(predictionColumns = getCurrentPredictionColumns()) {
+      return predictionColumns.map((column) => ({
         value: column,
         label: displayPredictionColumnName(column),
       }));
@@ -2176,7 +2186,7 @@
     }
 
     groupByAllButton.addEventListener("click", () => {
-      setGroupByFields(state.predictionColumns);
+      setGroupByFields(getCurrentPredictionColumns());
     });
 
     groupByNoneButton.addEventListener("click", () => {
@@ -2184,7 +2194,8 @@
     });
 
     groupByToggleButton.addEventListener("click", () => {
-      const nextGroupByFields = state.predictionColumns.filter(
+      const predictionColumns = getCurrentPredictionColumns();
+      const nextGroupByFields = predictionColumns.filter(
         (column) => !state.groupByFields.includes(column)
       );
       setGroupByFields(nextGroupByFields);
@@ -2412,7 +2423,7 @@
     });
 
     truncateDefaultsButton.addEventListener("click", () => {
-      state.truncateEnabledColumns = getDefaultTruncateColumns(state.predictionColumns);
+      state.truncateEnabledColumns = getDefaultTruncateColumns(getCurrentPredictionColumns());
       renderPredictions();
     });
 
@@ -2518,14 +2529,17 @@
       renderEvaluations();
     });
 
-    function getPredictionColumnSections() {
-      const jobReturnValue = state.predictionColumns
+    /**
+     * Split current prediction columns into UI sections for rendering the prediction table header.
+     */
+    function getPredictionColumnSections(predictionColumns = getCurrentPredictionColumns()) {
+      const jobReturnValue = predictionColumns
         .filter((column) => column.startsWith("prediction.job_return_value."))
         .sort();
-      const overrides = state.predictionColumns
+      const overrides = predictionColumns
         .filter((column) => column.startsWith("prediction.overrides."))
         .sort();
-      const other = state.predictionColumns
+      const other = predictionColumns
         .filter(
           (column) =>
             !column.startsWith("prediction.job_return_value.") &&
@@ -2750,7 +2764,7 @@
     }
 
     function renderPredictionSortStatus() {
-      const validSortColumns = new Set([...SORTABLE_CONTROL_COLUMNS, ...state.predictionColumns]);
+      const validSortColumns = new Set([...SORTABLE_CONTROL_COLUMNS, ...getCurrentPredictionColumns()]);
       state.predictionSort = normalizeSortConfig(state.predictionSort, validSortColumns);
       predictionSortedByLabel.textContent = formatSortLabel(
         state.predictionSort,
@@ -2994,20 +3008,27 @@
     }
 
     /**
-     * Recompute prediction-derived UI defaults from the canonical predictions/evaluations state.
+     * Reset load-dependent UI state after new canonical prediction/evaluation data is imported.
+     * All prediction/evaluation structures remain selector-derived and are not stored here.
      */
-    function rebuildPredictionState() {
+    function resetDerivedUiStateAfterLoad() {
       const predictionViews = getPredictionViews();
-      state.predictionColumns = getPredictionColumns(predictionViews);
-      state.groupByFields = getDefaultGroupByFields(state.predictionColumns, predictionViews);
+      const predictionColumns = getCurrentPredictionColumns(predictionViews);
+      state.groupByFields = getDefaultGroupByFields(predictionColumns, predictionViews);
       state.predictionSort = [];
-      state.truncateEnabledColumns = getDefaultTruncateColumns(state.predictionColumns);
+      state.truncateEnabledColumns = getDefaultTruncateColumns(predictionColumns);
       state.predictionDefaultValues = {};
       state.selectedGroupIds = new Set();
       state.availableGroupIds = new Set();
+      state.expandedGroupIds = new Set();
+      state.activeEvalTab = null;
       state.evalTabStates = {};
+      state.activeEvalJsonTab = "evaluation";
+      state.activeEvalPlotTab = null;
+      state.plotGroupBarFields = new Set();
+      state.activePlotLegendItems = [];
       syncPredictionGroupUiState(
-        getPredictionGroups(predictionViews, state.groupByFields, state.predictionColumns)
+        getPredictionGroups(predictionViews, state.groupByFields, predictionColumns)
       );
     }
 
@@ -3134,7 +3155,7 @@
         }
       }
 
-      rebuildPredictionState();
+      resetDerivedUiStateAfterLoad();
       updateLoadStatusSummary({
         candidateRunDirs: candidateRunDirs.length,
         loadedCount,
@@ -3534,7 +3555,7 @@
      * Return prediction groups sorted according to the active prediction sort config.
      */
     function getSortedPredictionGroups(predictionGroups = getCurrentPredictionGroups()) {
-      const validSortColumns = new Set([...SORTABLE_CONTROL_COLUMNS, ...state.predictionColumns]);
+      const validSortColumns = new Set([...SORTABLE_CONTROL_COLUMNS, ...getCurrentPredictionColumns()]);
       state.predictionSort = normalizeSortConfig(state.predictionSort, validSortColumns);
       return sortItems(predictionGroups, state.predictionSort, getPredictionGroupSortValue);
     }
