@@ -934,9 +934,10 @@
   <div id="barTooltip" class="bar-tooltip" aria-hidden="true"></div>
 
   <script>
-    // Central UI state: loaded runs, current grouping/selection, and per-eval-tab view state.
+    // Central UI state: loaded prediction/evaluation data, current grouping/selection, and per-eval-tab view state.
     const state = {
-      runs: [],
+      predictions: {},
+      evaluations: [],
       predictionEntries: [],
       predictionColumns: [],
       predictionSort: [],
@@ -1623,6 +1624,28 @@
       };
     }
 
+    function getPredictionById(predictionId) {
+      if (!predictionId) {
+        return null;
+      }
+      return state.predictions?.[predictionId] || null;
+    }
+
+    function getPredictionForEvaluation(evaluation) {
+      return getPredictionById(evaluation?.predictionId);
+    }
+
+    function reconstructPredictionContentForEvaluation(evaluation) {
+      return reconstructPredictionContent(getPredictionForEvaluation(evaluation));
+    }
+
+    function getFlattenedPrediction(prediction) {
+      return {
+        ...flattenObject(prediction?.overrides || {}, "prediction.overrides"),
+        ...flattenObject(prediction?.jobReturnValue || {}, "prediction.job_return_value"),
+      };
+    }
+
     function getDefaultTruncateColumns(predictionColumns) {
       const defaults = new Set();
       for (const column of predictionColumns) {
@@ -1659,7 +1682,7 @@
       return getColumnsWithMultipleValues(
         predictionEntries,
         candidateColumns,
-        (predictionEntry, column) => predictionEntry.predictionMeta?.[column]
+        (predictionEntry, column) => predictionEntry.predictionFlat?.[column]
       );
     }
 
@@ -1703,15 +1726,15 @@
       return state.predictionDefaultValues[column] ?? "";
     }
 
-    function getPredictionEffectiveValue(predictionMeta, column) {
-      return getEffectiveValue(predictionMeta?.[column], getPredictionDefaultValue(column));
+    function getPredictionEffectiveValue(predictionFlat, column) {
+      return getEffectiveValue(predictionFlat?.[column], getPredictionDefaultValue(column));
     }
 
-    function getPredictionEffectiveSignature(predictionMeta) {
+    function getPredictionEffectiveSignature(predictionFlat) {
       return JSON.stringify(
         Object.fromEntries(
           state.predictionColumns
-            .map((column) => [column, getPredictionEffectiveValue(predictionMeta, column)])
+            .map((column) => [column, getPredictionEffectiveValue(predictionFlat, column)])
             .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
         )
       );
@@ -1721,8 +1744,12 @@
       return evalTabState?.defaultValues?.[column] ?? "";
     }
 
+    function getFlattenedPredictionForEvaluation(run) {
+      return getFlattenedPrediction(getPredictionForEvaluation(run));
+    }
+
     function getFlattenedEvaluationJobReturnValue(run) {
-      return flattenObject(run?.evaluation?.jobReturnValue || {});
+      return flattenObject(run?.jobReturnValue || {});
     }
 
     function getEvalColumnRawValue(run, column) {
@@ -1738,7 +1765,7 @@
       if (isEvalMetadataColumn(column)) {
         return getFlattenedEvaluationJobReturnValue(run)[column.slice(EVAL_METADATA_COLUMN_PREFIX.length)];
       }
-      return run.evaluation?.overrides?.[column];
+      return run?.overrides?.[column];
     }
 
     function getEvalEffectiveValue(run, column, evalTabState) {
@@ -1747,7 +1774,7 @@
 
     function getRunEvalExperiment(run) {
       return getEffectiveValue(
-        run?.evaluation?.overrides?.["experiment/evaluate"],
+        run?.overrides?.["experiment/evaluate"],
         "(missing experiment/evaluate)"
       );
     }
@@ -1762,18 +1789,18 @@
 
     function getPredictionColumnsWithMissingValues(predictionEntries) {
       return state.predictionColumns.filter((column) =>
-        predictionEntries.some((entry) => isMissingValue(entry.predictionMeta?.[column]))
+        predictionEntries.some((entry) => isMissingValue(entry.predictionFlat?.[column]))
       );
     }
 
     function getPredictionDefaultSuggestions(predictionEntries, column) {
       return collectSuggestionValues(
-        predictionEntries.map((entry) => entry.predictionMeta?.[column])
+        predictionEntries.map((entry) => entry.predictionFlat?.[column])
       );
     }
 
     function getPredictionMissingValueCount(predictionEntries, column) {
-      return predictionEntries.filter((entry) => isMissingValue(entry.predictionMeta?.[column])).length;
+      return predictionEntries.filter((entry) => isMissingValue(entry.predictionFlat?.[column])).length;
     }
 
     function getEvalColumnsWithMissingValues(runs, evalColumns) {
@@ -1866,7 +1893,7 @@
     function getEvalColumnsForRuns(runs) {
       const evalColumns = new Set();
       for (const run of runs) {
-        for (const key of Object.keys(run.evaluation?.overrides || {})) {
+        for (const key of Object.keys(run.overrides || {})) {
           evalColumns.add(key);
         }
         for (const key of Object.keys(getFlattenedEvaluationJobReturnValue(run))) {
@@ -2664,6 +2691,31 @@
       };
     }
 
+    function createMissingPredictionIdError() {
+      const error = new Error('job_return_value.json prediction.job_return_value.output_file must be present.');
+      error.name = 'MissingPredictionIdError';
+      return error;
+    }
+
+    function createConflictingPredictionIdError(predictionId) {
+      const error = new Error(`Conflicting prediction payloads for prediction id: ${predictionId}`);
+      error.name = 'ConflictingPredictionIdError';
+      error.predictionId = predictionId;
+      return error;
+    }
+
+    function getPredictionIdFromNormalizedPrediction(prediction) {
+      const predictionId = normalizeValue(prediction?.jobReturnValue?.output_file).trim();
+      if (!predictionId) {
+        throw createMissingPredictionIdError();
+      }
+      return predictionId;
+    }
+
+    function getPredictionContentSignature(prediction) {
+      return getStableObjectSignature(getFlattenedPrediction(prediction));
+    }
+
     const JOB_RETURN_VALUE_VERSION_HANDLERS = {
       0: (job_return_value, overrides) => ({
         prediction: getNormalizedPredictionFromJobReturnValue(job_return_value),
@@ -2776,27 +2828,28 @@
 
     function rebuildPredictionState() {
       const predictionColumns = new Set();
-      for (const run of state.runs) {
-        for (const key of Object.keys(run.predictionMeta)) {
+      const predictionEntriesById = new Map();
+      for (const evaluation of state.evaluations) {
+        const prediction = getPredictionById(evaluation.predictionId);
+        if (!prediction) {
+          continue;
+        }
+        const predictionFlat = getFlattenedPrediction(prediction);
+        for (const key of Object.keys(predictionFlat)) {
           predictionColumns.add(key);
         }
-      }
-
-      const predictionEntriesBySignature = new Map();
-      for (const run of state.runs) {
-        const signature = getStableObjectSignature(run.predictionMeta);
-        if (!predictionEntriesBySignature.has(signature)) {
-          predictionEntriesBySignature.set(signature, {
-            predictionId: signature,
-            predictionMeta: run.predictionMeta,
+        if (!predictionEntriesById.has(evaluation.predictionId)) {
+          predictionEntriesById.set(evaluation.predictionId, {
+            predictionId: evaluation.predictionId,
+            predictionFlat,
             evalRuns: [],
           });
         }
-        predictionEntriesBySignature.get(signature).evalRuns.push(run);
+        predictionEntriesById.get(evaluation.predictionId).evalRuns.push(evaluation);
       }
 
       state.predictionColumns = Array.from(predictionColumns).sort();
-      state.predictionEntries = Array.from(predictionEntriesBySignature.values());
+      state.predictionEntries = Array.from(predictionEntriesById.values());
       state.groupByFields = getDefaultGroupByFields(state.predictionColumns, state.predictionEntries);
       state.predictionSort = [];
       state.truncateEnabledColumns = getDefaultTruncateColumns(state.predictionColumns);
@@ -2808,7 +2861,7 @@
       buildGroups();
     }
 
-    function updateLoadStatusSummary({ candidateRunDirs, loadedCount, skippedDuplicate, skippedPredictRuns, skippedMissingJob, skippedUnsupportedVersion, skippedInvalid }) {
+    function updateLoadStatusSummary({ candidateRunDirs, loadedCount, skippedDuplicate, skippedPredictRuns, skippedMissingJob, skippedUnsupportedVersion, skippedInvalid, skippedMissingPredictionId, skippedConflictingPredictionId }) {
       const loadedSources = Array.from(state.loadedFolders).sort();
       loadStatus.textContent = [
         `Loaded sources (${loadedSources.length}): ${loadedSources.join(", ")}`,
@@ -2816,16 +2869,18 @@
         `Candidate evaluation runs: ${candidateRunDirs}`,
         `New evaluation runs loaded: ${loadedCount}`,
         `Skipped (already loaded): ${skippedDuplicate}`,
-        `Evaluation runs loaded: ${state.runs.length}`,
+        `Evaluation runs loaded: ${state.evaluations.length}`,
         `Skipped (missing job_return_value.json): ${skippedMissingJob}`,
+        `Skipped (missing prediction.job_return_value.output_file): ${skippedMissingPredictionId}`,
+        `Skipped (conflicting prediction ids): ${skippedConflictingPredictionId}`,
         `Skipped (unsupported data version): ${skippedUnsupportedVersion}`,
         `Skipped (invalid JSON/YAML): ${skippedInvalid}`,
       ].join("\n");
     }
 
-    // Load only single evaluation runs: any selected folder tree can contribute runs as long as a run
+    // Load only single evaluation runs: any selected folder tree can contribute evaluations as long as a run
     // directory contains both job_return_value.json and .hydra/overrides.yaml. predict runs are excluded,
-    // and the prediction part is kept as metadata so prediction/evaluation views stay linked later on.
+    // while prediction payloads are canonicalized separately and linked via predictionId.
     async function loadRunsFromEntries(entries, rootLabel) {
       if (!entries.length) {
         loadStatus.textContent = `No relevant run files found in ${rootLabel}.`;
@@ -2871,8 +2926,10 @@
       let skippedMissingJob = 0;
       let skippedUnsupportedVersion = 0;
       let skippedInvalid = 0;
+      let skippedMissingPredictionId = 0;
+      let skippedConflictingPredictionId = 0;
       let skippedDuplicate = 0;
-      const knownRunDirs = new Set(state.runs.map((run) => run.runDir));
+      const knownRunDirs = new Set(state.evaluations.map((run) => run.runDir));
 
       for (const runDir of hydraRunDirs) {
         if (!jobRunDirs.has(runDir) && !isPredictRunDir(runDir)) {
@@ -2897,22 +2954,29 @@
           const evaluationOverrides = parseOverridesYaml(overridesText);
           const normalizedRun = normalizeImportedJobReturnValue(job_return_value, evaluationOverrides);
 
-          const predictionMeta = {
-            ...flattenObject(normalizedRun.prediction.overrides || {}, "prediction.overrides"),
-            ...flattenObject(normalizedRun.prediction.jobReturnValue || {}, "prediction.job_return_value"),
-          };
+          const predictionId = getPredictionIdFromNormalizedPrediction(normalizedRun.prediction);
+          const existingPrediction = getPredictionById(predictionId);
+          if (existingPrediction && getPredictionContentSignature(existingPrediction) !== getPredictionContentSignature(normalizedRun.prediction)) {
+            throw createConflictingPredictionIdError(predictionId);
+          }
+          state.predictions[predictionId] = existingPrediction || normalizedRun.prediction;
 
-          state.runs.push({
+          state.evaluations.push({
             runDir,
-            prediction: normalizedRun.prediction,
-            evaluation: normalizedRun.evaluation,
-            predictionMeta,
+            predictionId,
+            jobReturnValue: normalizedRun.evaluation.jobReturnValue,
+            overrides: normalizedRun.evaluation.overrides,
+            data: normalizedRun.evaluation.data,
           });
           knownRunDirs.add(runDir);
           loadedCount += 1;
         } catch (error) {
           if (error?.name === "UnsupportedJobReturnValueVersionError") {
             skippedUnsupportedVersion += 1;
+          } else if (error?.name === 'MissingPredictionIdError') {
+            skippedMissingPredictionId += 1;
+          } else if (error?.name === 'ConflictingPredictionIdError') {
+            skippedConflictingPredictionId += 1;
           } else {
             skippedInvalid += 1;
           }
@@ -2927,6 +2991,8 @@
         skippedDuplicate,
         skippedPredictRuns,
         skippedMissingJob,
+        skippedMissingPredictionId,
+        skippedConflictingPredictionId,
         skippedUnsupportedVersion,
         skippedInvalid,
       });
@@ -3299,10 +3365,10 @@
       for (const predictionEntry of state.predictionEntries) {
         let key;
         if (!groupBy.length) {
-          key = getPredictionEffectiveSignature(predictionEntry.predictionMeta);
+          key = getPredictionEffectiveSignature(predictionEntry.predictionFlat);
         } else {
           key = groupBy
-            .map((field) => `${field}=${getPredictionEffectiveValue(predictionEntry.predictionMeta, field)}`)
+            .map((field) => `${field}=${getPredictionEffectiveValue(predictionEntry.predictionFlat, field)}`)
             .join(" | ");
         }
 
@@ -3311,7 +3377,7 @@
             groupId: key,
             predictions: [],
             values: Object.fromEntries(
-              groupBy.map((field) => [field, getPredictionEffectiveValue(predictionEntry.predictionMeta, field)])
+              groupBy.map((field) => [field, getPredictionEffectiveValue(predictionEntry.predictionFlat, field)])
             ),
           });
         }
@@ -3348,7 +3414,7 @@
       if (SORTABLE_CONTROL_COLUMNS.has(column)) {
         return "";
       }
-      return getPredictionEffectiveValue(predictionEntry.predictionMeta, column);
+      return getPredictionEffectiveValue(predictionEntry.predictionFlat, column);
     }
 
     function getSortedPredictionGroups() {
@@ -3426,7 +3492,7 @@
 
     function getGroupValueDisplay(group, column) {
       const values = new Set(
-        group.predictions.map((prediction) => getPredictionEffectiveValue(prediction.predictionMeta, column))
+        group.predictions.map((prediction) => getPredictionEffectiveValue(prediction.predictionFlat, column))
       );
       if (values.size <= 1) {
         return values.values().next().value || "";
@@ -3612,7 +3678,7 @@
             memberRow.appendChild(createCell("member"));
             for (const field of orderedPredictionColumns) {
               memberRow.appendChild(
-                createCell(getPredictionEffectiveValue(member.predictionMeta, field), field)
+                createCell(getPredictionEffectiveValue(member.predictionFlat, field), field)
               );
             }
             tbody.appendChild(memberRow);
@@ -3655,7 +3721,7 @@
       for (const run of runs) {
         const keyParts = [];
         for (const field of predictionGroupByFields) {
-          keyParts.push(`prediction.${field}=${getPredictionEffectiveValue(run.predictionMeta, field)}`);
+          keyParts.push(`prediction.${field}=${getPredictionEffectiveValue(getFlattenedPredictionForEvaluation(run), field)}`);
         }
         for (const field of groupByFields) {
           keyParts.push(`eval.${field}=${getEvalEffectiveValue(run, field, evalTabState)}`);
@@ -3801,7 +3867,7 @@
                 evalTabState
               );
             } else {
-              values[field] = getPredictionEffectiveValue(run.predictionMeta, field);
+              values[field] = getPredictionEffectiveValue(getFlattenedPredictionForEvaluation(run), field);
             }
           }
           const groupId = allFields.length
@@ -4247,7 +4313,7 @@
 
       for (const run of experimentRuns) {
         const map = new Map();
-        const evalData = run.evaluation?.data || {};
+            const evalData = run.data || {};
         for (const [actualLabel, predictedMap] of Object.entries(evalData)) {
           if (!predictedMap || typeof predictedMap !== "object" || Array.isArray(predictedMap)) {
             continue;
@@ -4498,7 +4564,7 @@
         const points = [];
         plotGroups.forEach((group, index) => {
           const values = group.runs
-            .map((run) => Number(getValueAtPath(run.evaluation?.data, metricPath.parts)))
+                .map((run) => Number(getValueAtPath(run.data, metricPath.parts)))
             .filter((value) => Number.isFinite(value));
           const stats = meanAndStd(values);
           if (!stats) {
@@ -4768,7 +4834,7 @@
 
       const metricPaths = Array.from(
         experimentRuns.reduce(
-          (acc, run) => collectNumericMetricLeafPaths(run.evaluation?.data, [], acc),
+          (acc, run) => collectNumericMetricLeafPaths(run.data, [], acc),
           new Map()
         )
       )
@@ -5167,12 +5233,12 @@
           const tabContent = selectedRun
             ? (
               state.activeEvalJsonTab === "prediction"
-                ? reconstructPredictionContent(selectedRun.prediction)
-                : (selectedRun.evaluation?.data || {})
+                ? reconstructPredictionContentForEvaluation(selectedRun)
+                : (selectedRun.data || {})
             )
             : (state.activeEvalJsonTab === "prediction"
-              ? selectedGroup.runs.map((run) => reconstructPredictionContent(run.prediction))
-              : selectedGroup.runs.map((run) => run.evaluation?.data || {}));
+              ? selectedGroup.runs.map((run) => reconstructPredictionContentForEvaluation(run))
+              : selectedGroup.runs.map((run) => run.data || {}));
           evalJsonCode.innerHTML = highlightJsonContent(tabContent);
         }
       }
