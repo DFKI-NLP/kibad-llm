@@ -127,6 +127,7 @@ def test_evaluate(tmp_path, cfg_evaluate, metric_name):
                 "fp": ["Binnengewässer und Auen"],
                 "tp": ["Küsten und Küstengewässer"],
             },
+            "version": 1,
         }
     else:
         raise ValueError(f"Unexpected metric name: {metric_name}. Please update the test case.")
