@@ -1,10 +1,32 @@
 {
   "fixture_format_version": 1,
-  "fixture_hash": "3c9dd51f758dcc585149f1907a186fe58a31e031e5286d6aeb343d21c4fb58e9",
+  "fixture_hash": "d1edf595a993eb0be87ec5dc0f000f7d69a12fdc0f879463787e0ef0be9532c2",
   "request": {
-    "fixture_format_version": 1,
-    "backend_name": "gpt_oss_20b",
     "backend_type": "llama_index.llms.openai_like.base.OpenAILike",
+    "backend_config": {
+      "system_prompt": null,
+      "pydantic_program_mode": "default",
+      "model": "openai/gpt-oss-20b",
+      "temperature": 1.0,
+      "max_tokens": null,
+      "logprobs": null,
+      "top_logprobs": 0,
+      "additional_kwargs": {
+        "max_completion_tokens": 8192,
+        "seed": 1337,
+        "top_p": 1.0
+      },
+      "api_base": "http://127.0.0.1:5001/v1",
+      "api_version": "",
+      "strict": false,
+      "reasoning_effort": null,
+      "modalities": null,
+      "audio_config": null,
+      "context_window": 131072,
+      "is_chat_model": true,
+      "is_function_calling_model": false,
+      "should_use_structured_outputs": false
+    },
     "messages": [
       {
         "role": "system",

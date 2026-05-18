@@ -1,10 +1,32 @@
 {
   "fixture_format_version": 1,
-  "fixture_hash": "73305709e3bb0d5607a060374110a35ffbec66fe8d2b70f876c2d7662d6c46ea",
+  "fixture_hash": "927a65b972576d09553aa3eacd966b2dce6c95e0695bbfa19bf85cfdf8c9d98c",
   "request": {
-    "fixture_format_version": 1,
-    "backend_name": "gpt_oss_20b",
     "backend_type": "llama_index.llms.openai_like.base.OpenAILike",
+    "backend_config": {
+      "system_prompt": null,
+      "pydantic_program_mode": "default",
+      "model": "openai/gpt-oss-20b",
+      "temperature": 1.0,
+      "max_tokens": null,
+      "logprobs": null,
+      "top_logprobs": 0,
+      "additional_kwargs": {
+        "max_completion_tokens": 8192,
+        "seed": 1337,
+        "top_p": 1.0
+      },
+      "api_base": "http://127.0.0.1:5001/v1",
+      "api_version": "",
+      "strict": false,
+      "reasoning_effort": null,
+      "modalities": null,
+      "audio_config": null,
+      "context_window": 131072,
+      "is_chat_model": true,
+      "is_function_calling_model": false,
+      "should_use_structured_outputs": false
+    },
     "messages": [
       {
         "role": "system",
@@ -344,11 +366,11 @@
   "response": {
     "message": {
       "role": "assistant",
-      "content": "{\n  \"habitat\": [\n    {\n      \"content\": \"Küsten und Küstengewässer\",\n      \"evidence_anchor\": \"\\\"in countries around the Baltic Sea\\\"\"\n    }\n  ],\n  \"taxa\": [],\n  \"biodiversity_level\": [],\n  \"ecosystem_type\": []\n}"
+      "content": "{\"habitat\":[],\"taxa\":[],\"biodiversity_level\":[],\"ecosystem_type\":[] }"
     },
     "raw_message": {
-      "reasoning": "We need to extract info per schema: habitats, taxa, biodiversity_level, ecosystem_type. The article is about shipping emissions and their health impacts, not biodiversity. Likely no habitat/ taxon/ ecosystem_type or biodiversity level. But maybe habitats \"Küste\" (coastal areas). The study area is Baltic Sea, could be 'Binnengewässer und Auen'? Actually Baltic Sea is sea, so aquatic environment. Allowed content values: Agrar- und Offenland; Binnengewässer und Auen; Boden; Küsten und Küstengewässer; Urbane Räume; Wald. Relevant is Küsten und Küstengewässer (coastline). So habitat: Küsten und Küstengewässer. Provide evidence anchor: quote. Use phrase: \"Baltic Sea\" etc. Quote \"impact of shipping emissions in the Baltic Sea\" maybe. So habitat content \"Küsten und Küstengewässer\" with evidence anchor from abstract or methods. For example: \"in countries around the Baltic Sea\". Could use that. Then taxa: none. biodiversity_level: none. ecosystem_type: none. We must output JSON only with fields, but if no others, we can omit. But schema expects keys habitat, taxa etc. Could have empty arrays? It says cardinality 0..* so we can have empty array. But must match object structure. So output:\n\n{\n  \"habitat\": [...],\n  \"taxa\": [],\n  \"biodiversity_level\": [],\n  \"ecosystem_type\": []\n}\n\nBut need to include evidence_anchor for habitat. So:\n\n\"habitat\":[{\"content\":\"Küsten und Küstengewässer\",\"evidence_anchor\":\"...\"}]\n\nWe need a literal quote from original. The phrase \"in countries around the Baltic Sea\" appears in abstract line. Could use that. Quote: \"in countries around the Baltic Sea\" is from abstract.\n\nNow produce JSON. Ensure no extra fields.",
-      "reasoning_content": "We need to extract info per schema: habitats, taxa, biodiversity_level, ecosystem_type. The article is about shipping emissions and their health impacts, not biodiversity. Likely no habitat/ taxon/ ecosystem_type or biodiversity level. But maybe habitats \"Küste\" (coastal areas). The study area is Baltic Sea, could be 'Binnengewässer und Auen'? Actually Baltic Sea is sea, so aquatic environment. Allowed content values: Agrar- und Offenland; Binnengewässer und Auen; Boden; Küsten und Küstengewässer; Urbane Räume; Wald. Relevant is Küsten und Küstengewässer (coastline). So habitat: Küsten und Küstengewässer. Provide evidence anchor: quote. Use phrase: \"Baltic Sea\" etc. Quote \"impact of shipping emissions in the Baltic Sea\" maybe. So habitat content \"Küsten und Küstengewässer\" with evidence anchor from abstract or methods. For example: \"in countries around the Baltic Sea\". Could use that. Then taxa: none. biodiversity_level: none. ecosystem_type: none. We must output JSON only with fields, but if no others, we can omit. But schema expects keys habitat, taxa etc. Could have empty arrays? It says cardinality 0..* so we can have empty array. But must match object structure. So output:\n\n{\n  \"habitat\": [...],\n  \"taxa\": [],\n  \"biodiversity_level\": [],\n  \"ecosystem_type\": []\n}\n\nBut need to include evidence_anchor for habitat. So:\n\n\"habitat\":[{\"content\":\"Küsten und Küstengewässer\",\"evidence_anchor\":\"...\"}]\n\nWe need a literal quote from original. The phrase \"in countries around the Baltic Sea\" appears in abstract line. Could use that. Quote: \"in countries around the Baltic Sea\" is from abstract.\n\nNow produce JSON. Ensure no extra fields."
+      "reasoning": "We need to extract info per schema: habitats, taxa, biodiversity_level, ecosystem_type. The article is about shipping emissions and their health impacts, not a biodiversity study. The schema is about biodiversity. Likely none of these categories apply. Must output JSON with only allowed fields and no extra. As per schema: habitat, taxa, biodiversity_level, ecosystem_type. If none, leave empty arrays. Must follow structure: each field optional but should be present? The schema says field can be 0..* so may omit? safer to include empty lists. Provide JSON. No explanations.",
+      "reasoning_content": "We need to extract info per schema: habitats, taxa, biodiversity_level, ecosystem_type. The article is about shipping emissions and their health impacts, not a biodiversity study. The schema is about biodiversity. Likely none of these categories apply. Must output JSON with only allowed fields and no extra. As per schema: habitat, taxa, biodiversity_level, ecosystem_type. If none, leave empty arrays. Must follow structure: each field optional but should be present? The schema says field can be 0..* so may omit? safer to include empty lists. Provide JSON. No explanations."
     }
   },
   "error": null

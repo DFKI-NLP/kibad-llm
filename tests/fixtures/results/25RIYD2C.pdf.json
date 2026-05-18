@@ -2,44 +2,31 @@
     "file_name": "25RIYD2C.pdf",
     "character_start": 0,
     "character_end": 9270,
-    "response_content": "{\n  \"habitat\": [\n    {\n      \"content\": \"Agrar- und Offenland\",\n      \"evidence_anchor\": \"Ohne Schutz verschwinden Wiesen, Moore und Wälder\"\n    },\n    {\n      \"content\": \"Boden\",\n      \"evidence_anchor\": \"Ohne Schutz verschwinden Wiesen, Moore und Wälder\"\n    },\n    {\n      \"content\": \"Wald\",\n      \"evidence_anchor\": \"Ohne Schutz verschwinden Wiesen, Moore und Wälder\"\n    }\n  ],\n  \"taxa\": [\n    {\n      \"species_group\": {\n        \"content\": \"Andere Pflanzen\",\n        \"evidence_anchor\": \"Grenzstreifen wurde zum Refugium für mehr als 1.200 seltene und gefährdete Pflanzen und Tiere\"\n      }\n    },\n    {\n      \"species_group\": {\n        \"content\": \"Andere\",\n        \"evidence_anchor\": \"Grenzstreifen wurde zum Refugium für mehr als 1.200 seltene und gefährdete Pflanzen und Tiere\"\n      }\n    }\n  ],\n  \"ecosystem_type\": [\n    {\n      \"category\": {\n        \"content\": \"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes\",\n        \"evidence_anchor\": \"Ohne Schutz verschwinden Wiesen, Moore und Wälder\"\n      }\n    }\n  ]\n}",
+    "response_content": "{\n  \"habitat\": [\n    {\n      \"content\": \"Agrar- und Offenland\",\n      \"evidence_anchor\": \"Ohne Schutz verschwinden Wiesen, Moore und Wälder\"\n    },\n    {\n      \"content\": \"Boden\",\n      \"evidence_anchor\": \"Ohne Schutz verschwinden Wiesen, Moore und Wälder\"\n    },\n    {\n      \"content\": \"Wald\",\n      \"evidence_anchor\": \"Ohne Schutz verschwinden Wiesen, Moore und Wälder\"\n    }\n  ],\n  \"taxa\": [],\n  \"biodiversity_level\": [\n    {\n      \"content\": \"Artenvielfalt\",\n      \"evidence_anchor\": \"biologischen Vielfalt\"\n    }\n  ],\n  \"ecosystem_type\": []\n}",
     "structured": {
-        "biodiversity_level": null,
-        "ecosystem_type": [
-            {
-                "category": "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
-            }
+        "biodiversity_level": [
+            "Artenvielfalt"
         ],
+        "ecosystem_type": [],
         "habitat": [
             "Agrar- und Offenland",
             "Boden",
             "Wald"
         ],
-        "taxa": [
-            {
-                "scientific_name": null,
-                "species_group": "Andere Pflanzen"
-            },
-            {
-                "scientific_name": null,
-                "species_group": "Andere"
-            }
-        ]
+        "taxa": []
     },
     "structured_with_metadata": {
-        "biodiversity_level": null,
-        "ecosystem_type": [
+        "biodiversity_level": [
             {
-                "category": {
-                    "content": "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes",
-                    "evidence_anchor": "Ohne Schutz verschwinden Wiesen, Moore und Wälder",
-                    "evidence_num_matches": 1,
-                    "first_evidence_end": 5563,
-                    "first_evidence_snippet": "Deutschland: Chronik\n\n##### **So wirkt Ihre Hilfe am Grünen Band**\n\n\nOhne Schutz verschwinden Wiesen, Moore und Wälder, verdrängt von Beton und\nMonokulturen. Ihre Spende rettet sie. Beispiele,",
-                    "first_evidence_start": 5514
-                }
+                "content": "Artenvielfalt",
+                "evidence_anchor": "biologischen Vielfalt",
+                "evidence_num_matches": 2,
+                "first_evidence_end": 2881,
+                "first_evidence_snippet": "Band Strategie zur Biologischen Vielfalt\" als Leuchtturmprojekt zur Erhaltung der\nbiologischen Vielfalt in Deutschland benannt.\n\n\n\n» 29. Juli 2009: Bei der Novellierung",
+                "first_evidence_start": 2860
             }
         ],
+        "ecosystem_type": [],
         "habitat": [
             {
                 "content": "Agrar- und Offenland",
@@ -66,32 +53,9 @@
                 "first_evidence_start": 5514
             }
         ],
-        "taxa": [
-            {
-                "scientific_name": null,
-                "species_group": {
-                    "content": "Andere Pflanzen",
-                    "evidence_anchor": "Grenzstreifen wurde zum Refugium für mehr als 1.200 seltene und gefährdete Pflanzen und Tiere",
-                    "evidence_num_matches": 1,
-                    "first_evidence_end": 6470,
-                    "first_evidence_snippet": "streng bewacht. Gleichzeitig gab sie der Natur\neine Atempause: Der Grenzstreifen wurde zum Refugium für mehr als 1.200 seltene und\ngefährdete Pflanzen und Tiere. Der BUND hat seit dem Fall der Mauer hier eines",
-                    "first_evidence_start": 6377
-                }
-            },
-            {
-                "scientific_name": null,
-                "species_group": {
-                    "content": "Andere",
-                    "evidence_anchor": "Grenzstreifen wurde zum Refugium für mehr als 1.200 seltene und gefährdete Pflanzen und Tiere",
-                    "evidence_num_matches": 1,
-                    "first_evidence_end": 6470,
-                    "first_evidence_snippet": "streng bewacht. Gleichzeitig gab sie der Natur\neine Atempause: Der Grenzstreifen wurde zum Refugium für mehr als 1.200 seltene und\ngefährdete Pflanzen und Tiere. Der BUND hat seit dem Fall der Mauer hier eines",
-                    "first_evidence_start": 6377
-                }
-            }
-        ]
+        "taxa": []
     },
-    "reasoning_content": "We need to extract info per schema: habitats, taxa, biodiversity_level, ecosystem_type. The text describes the Grüne Band (green band) as a protected area along former inner German border. It mentions that the area hosts more than 1200 rare and endangered plants and animals. Habitats: Wiesen (meadows), Moore (moors), Wälder (forests). Also \"Flächen\" along border, but specific habitats: meadows, moors, forests, unknown other (maybe wetlands). Possibly \"Grenzstreifen\" but that's not a habitat. We can identify habitats: Wiesen, Moore, Wälder. Those correspond to allowed values: \"Kardinalität: 0..*\". Allowed values for habitat content: Agrar- und Offenland; Binnengewässer und Auen; Boden; Küsten und Küstengewässer; Urbane Räume; Wald. But we have \"Wiesen\" (probably agrar- und offenland) and \"Moore\" (not in list maybe \"Boden\" or \"Urbane Räume\"? Not, \"Moore\" is wetlands maybe \"Boden\"?). \"Wälder\" maps to \"Wald\". So we can choose \"Wald\" for forests; \"Agrar- und Offenland\" for meadows; \"Boden\" for moors? But \"Boden\" is a category. The schema allows only those values. We must pick a value from list. So choose \"Wald\" and \"Agrar- und Offenland\". For moors maybe \"Boden\". So include those three: \"Agrar- und Offenland\", \"Boden\", \"Wald\".\n\nWe need evidence_anchor: literal quote. The text: \"Fast 40 Jahre lang war Deutschland geteilt... Der Grenzstreifen wurde zum Refugium für mehr als 1.200 seltene und gefährdete Pflanzen und Tiere.\" It also says \"Ohne Schutz verschwinden Wiesen, Moore und Wälder\". So we can quote that part: \"Ohne Schutz verschwinden Wiesen, Moore und Wälder\". Use as evidence.\n\nTaxa: We have plants and animals. Specific mention: more than 1,200 rare and endangered plants and animals. No specific species names are given. So perhaps taxa: 'Andere Pflanzen', 'Andere Wirbellose', 'Säugetiere', 'Vögel', 'Reptilien', 'Amphibien', 'Fische', but only if they are mentioned. The text just says \"Pflanzen und Tiere\" generically. So we can use generic groups: \"Andere Pflanzen\" and \"Andere Tiere\"? But allowed species_group values include categories: \"Andere; Andere Pflanzen; Andere Wirbellose; Archaeen; Bakterien; Fische; Flechten; Gefäßpflanzen; Insekten; Moose; Pilze; Protisten; Protozoen; Säugetiere; Vögel; Amphibien und Reptilien.\" The text mentions \"Planten\" and \"Tiere\" generically. So \"Andere Pflanzen\" and maybe \"Andere Tiere\"? Not in given list. There's no generic \"Andere Tiere\". So we might use \"Andere Pflanzen\" for plants and \"Andere Wirbellose\" or \"Vögel\", \"Säugetiere\" etc if speculation? But we should only extract what is given. We have \"Pflanzen\" and \"Tiere\" generic. So maybe assign \"Andere Pflanzen\" and \"Andere Wirbellose\"? Not certain.\n\nThe schema for taxa: each object must contain species_group at least. I think if we don't have species names, we can put taxonomic group only. It allows scientific_name and german_name optional. So we create objects with just species_group. So for plants: species_group content: \"Andere Pflanzen\". For animals: \"Andere Wirbellose\" maybe? But maybe \"Andere\" category; but according to allowed values, \"Andere\" is a valid content. So we can use \"Andere\" for both? But \"Andere\" means other than the listed groups. It might be appropriate. But species_group must be one of allowed values. \"Andere\" is allowed. So we can set for plants: species_group \"Andere Pflanzen\". For animals: species_group \"Andere\". But \"Andere\" is a separate category that means any other. But since we have two groups distinct, perhaps set one for plants and one for animals. Plants: \"Andere Pflanzen\", animals: \"Andere\". Alternatively we could specify no taxa. But maybe better to include at least species_group for each group we mention. We need evidence_anchor for each.\n\nEvidence anchor: quote \"Ohne Schutz verschwinden Wiesen, Moore und Wälder\" might indicate habitat. For taxa, we need different quote: maybe, \"Grenzstreifen wurde zum Refugium für mehr als 1.200 seltene und gefährdete Pflanzen und Tiere.\" That covers both. So use that.\n\nBiodiversity_level: unknown? The text describes conservation, but not measurement. Might mention \"biologische Vielfalt\". They mention \"Biologischen Vielfalt\" and \"Biotopverbund\". But not specify level. Could say \"Artenvielfalt\"? But level is not measured. Could set none. But required field? Kardinalität 0..*, so can be empty. So omit biodiversity_level.\n\nEcosystem_type: Need to include categories: I Biotoptypen ... etc. The terrain includes \"Grenzstreifen\" which could be a biotope type like \"Boden\" category. Could be \"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes\". This includes meadow, moor, forest, etc. So we can include an object with category I? But must use allowed categories. The ecosystem types categories: I Biotoptypengruppen der Meere und Küsten; II Biotoptypengruppen der Binnengewässer; III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes; IV Technische Biotoptypengruppen; V Biotoptypengruppen mit Schwerpunkt in den Alpen; VI Weitere.\n\nGiven the area is contained in Germany, terrestrial and semi-terrestrial. So choose category III. Term: we can use one of allowed terms: \"Felder und Ackerland\" is not; but we have \"Wiesen\", \"Moore\", \"Wälder\". The allowed terms list includes: \"Ass\" etc. The list includes \"Felsen, Block- und Schutthalden\". None match. But maybe \"Feldgehölze, Gebüsche, Hecken und Gehölzkulturen\" etc. \"Wiesen\" maybe \"Boden\" but not in term list. We can use \"Rohbodenstandorte und Ruderalfluren\" maybe? But that seems too specific. We might choose \"Flächen, die Kategorie III, term unspecified\"? The schema says term is optional. So we can include only category.\n\nSo ecosystem_type: array with one object: category content \"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes\" and evidence_anchor: \"Ohne Schutz verschwinden Wiesen, Moore und Wälder\" etc. Provide evidence.\n\nThus JSON with fields: habitat, taxa, ecosystem_type. species_group etc.\n\nImplementation: For each habitat: content and evidence_anchor.\n\nTaxa: two objects: for plants and animals.\n\nBut each taxon object requires species_group object. So:\n\n{\n \"habitat\":[\n { \"content\":\"Agrar- und Offenland\",\"evidence_anchor\":\"Ohne Schutz verschwinden Wiesen, Moore und Wälder\"});\n etc.\n\nAlso \"Boden\" and \"Wald\".\n\nAlso \"Boden\" evidence anchor same quote.\n\nNow taxa: first object: scientific_name not provided, so omit. Provide species_group with content \"Andere Pflanzen\" evidence. second object: species_group \"Andere\" evidence.\n\nBetter to provide only one taxon: \"Andere Pflanzen und Tiere\" but must fit schema of species_group: only one content. So maybe create two: one for \"Andere Pflanzen\" and one for \"Andere\".\n\nBut \"Andere\" would be generic, maybe too vague. But allowed. Use evidence: \"Grenzstreifen wurde zum Refugium für mehr als 1.200 seltene und gefährdete Pflanzen und Tiere.\" So cover both.\n\nOk.\n\nBiodiversity_level omit.\n\necosystem_type: array with one object: category content \"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes\".\n\nNow produce JSON.",
+    "reasoning_content": "We need to extract info per schema: habitats, taxa, biodiversity_level, ecosystem_type. The text describes the Green Strip (Grünes Band) conservation along former inner German border, covering habitats like grasslands, moors, forests (Wiesen, Moore, Wälder). It mentions \"Refugium für mehr als 1.200 seltene und gefährdete Pflanzen und Tiere\". What taxa? Not specified species names. Could add \"Pflanzen und Tiere\" but we need taxa objects with scientific_name etc. But no specific species names; we might leave empty. habitat mentions \"Wiesen, Moore und Wälder\". Allowed values: Agrar- und Offenland; Binnengewässer und Auen; Boden; Küsten und Küstengewässer; Urbane Räume; Wald. But \"Wiesen\" not in list. \"Moore\" maybe \"Boden\"? There's \"Boden\" possible. \"Wälder\" matches Wald. But we can list habitat: Wald. And also \"Boden\" maybe. But not exactly. The rule: content values must be among allowed. \"Wiesen\" not allowed. So we can only use \"Boden\" or \"Wald\". Might use \"Boden\". Could also include \"Agrar- und Offenland\"? Wiesen are grassland, open land. But allowed \"Agrar- und Offenland\" includes farmland and open land. Could use that. Let's list: Agrar- und Offenland; Wald; Boden? Wait \"Boden\" maybe refers to soil? The description \"Wiesen, Moore und Wälder\" implies habitats: grassland, moor, forest. \"Moore\" might be \"Boden\"? Might be \"Boden\". But \"Moore\" likely considered \"Boden\".\n\nGiven allowed habitat categories: let's choose: \"Agrar- und Offenland\"; \"Boden\"; \"Wald\". Provide evidence anchor: quote: \"Wiesen, Moore und Wälder\". Use that.\n\nTaxa: not mentioned. Could set empty array.\n\nBiodiversity_level: There is mention of \"biologische Vielfalt\", \"Erhaltung der biologischen Vielfalt\". So pick \"Artenvielfalt\" and \"Funktionelle Diversität\"? Not explicit. Use \"Artenvielfalt\". evidence anchor: \"biologische Vielfalt\". Use \"biologische Vielfalt\" quote.\n\nEcosystem_type: Not many. Could include categories I- VI; But no specific type names; we might leave empty. Or maybe use category \"VI Weitere\" and term \"Direkt\" but not present. Maybe leave empty.\n\nGiven requirement of no additional fields, we must provide structure even if empty but must have object? Each field cardinality 0..*. So we can provide empty array. JSON must have fields with arrays maybe.\n\nThus:\n\n{\n \"habitat\": [],\n \"taxa\": [],\n \"biodiversity_level\": [],\n \"ecosystem_type\": []\n}\n\nBut requirement evidence anchors: each object must have evidence_anchor for values. For empty arrays no need.\n\nBut perhaps we should provide at least one habitat to reflect the info: \"Wiesen, Moore und Wälder\". Allowed values: \"Agrar- und Offenland\" (\"Wiesen\"), \"Boden\" (\"Moore\"?), \"Wald\" (\"Wälder\"). Provide objects per habitat with content and evidence_anchor.\n\nThus habitat array of three objects:\n\n- content \"Agrar- und Offenland\", evidence_anchor \"... Wiesen, Moore und Wälder ...\"\n\n- content \"Boden\", evidence_anchor same\n\n- content \"Wald\", evidence_anchor same\n\nWe must quote exactly from text: \"Wiesen, Moore und Wälder\" with maybe preceding \"Ohne Schutz verschwinden Wiesen, Moore und Wälder\". Use that quote.\n\nNow biodiversity_level array: one object: content \"Artenvielfalt\", evidence_anchor: \"biologische Vielfalt\" appears in text: \"ingen la ...\" Quote: \"in der 'Nationalen Meilensteine am laufenden Band Strategie zur Biologischen Vielfalt' ... Als Leuchtturmprojekt zur Erhaltung der biologischen Vielfalt\". Capture \"biologischen Vielfalt\".\n\nTaxa: [].\n\nEcosystem_type: [].\n\nThus final JSON. Ensure syntactically correct.",
     "messages": null,
     "messages_formatted": null,
     "errors": [],

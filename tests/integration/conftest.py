@@ -6,7 +6,6 @@ import hashlib
 import importlib
 import json
 from pathlib import Path
-import re
 from types import SimpleNamespace
 from typing import Any, cast
 
@@ -26,13 +25,23 @@ WRITE_LLM_CHAT_FIXTURE_DATA = _env_flag(
 FIXTURE_DIR = PROJ_ROOT / "tests" / "fixtures" / "llm_chat"
 FIXTURE_FORMAT_VERSION = 1
 
-
-def _backend_name_from_model(model: OpenAILike) -> str:
-    model_name = getattr(model, "model", None)
-    if isinstance(model_name, str) and model_name:
-        short_name = model_name.split("/")[-1]
-        return re.sub(r"[^a-zA-Z0-9]+", "_", short_name).strip("_") or short_name
-    return type(model).__name__
+_BACKEND_CONFIG_EXCLUDED_KEYS = {
+    "api_key",
+    "timeout",
+    "max_retries",
+    "reuse_client",
+    "default_headers",
+    "http_client",
+    "async_http_client",
+    "openai_client",
+    "async_openai_client",
+    "callback_manager",
+    "messages_to_prompt",
+    "completion_to_prompt",
+    "output_parser",
+    "tokenizer",
+    "class_name",
+}
 
 
 def _normalize_jsonable(value: Any) -> Any:
@@ -47,27 +56,47 @@ def _normalize_jsonable(value: Any) -> Any:
     return value
 
 
+def _get_backend_config(model: OpenAILike) -> dict[str, Any]:
+    model_dump = getattr(model, "model_dump", None)
+    if not callable(model_dump):
+        raise ValueError(
+            "Model does not have a callable model_dump method for extracting backend config."
+        )
+
+    backend_config = model_dump(mode="python", exclude_none=False)
+    if not isinstance(backend_config, Mapping):
+        raise ValueError("Model's model_dump method did not return a mapping for backend config.")
+
+    return _normalize_jsonable(
+        {
+            key: value
+            for key, value in backend_config.items()
+            if key not in _BACKEND_CONFIG_EXCLUDED_KEYS
+        }
+    )
+
+
 def _build_request_snapshot(
-    backend_name: str,
     backend_type: str,
     messages: list[Any],
     request_kwargs: dict[str, Any],
+    backend_config: dict[str, Any],
 ) -> dict[str, Any]:
-    return {
-        "fixture_format_version": FIXTURE_FORMAT_VERSION,
-        "backend_name": backend_name,
+    request_snapshot: dict[str, Any] = {
         "backend_type": backend_type,
-        "messages": [
-            {
-                "role": (
-                    message.role.value if isinstance(message.role, Enum) else str(message.role)
-                ),
-                "content": message.content,
-            }
-            for message in messages
-        ],
-        "request_kwargs": _normalize_jsonable(request_kwargs),
     }
+    if backend_config:
+        request_snapshot["backend_config"] = backend_config
+    request_snapshot["messages"] = [
+        {
+            "role": (message.role.value if isinstance(message.role, Enum) else str(message.role)),
+            "content": message.content,
+        }
+        for message in messages
+    ]
+    request_snapshot["request_kwargs"] = _normalize_jsonable(request_kwargs)
+
+    return request_snapshot
 
 
 def _hash_request_snapshot(request_snapshot: dict[str, Any]) -> str:
@@ -182,11 +211,12 @@ def llm_chat_replay() -> Generator[None, Any, None]:
         messages,
         **request_kwargs,
     ) -> ChatResponse:
+        backend_type = f"{type(self).__module__}.{type(self).__qualname__}"
         request_snapshot = _build_request_snapshot(
-            backend_name=_backend_name_from_model(self),
-            backend_type=f"{type(self).__module__}.{type(self).__qualname__}",
+            backend_type=backend_type,
             messages=messages,
             request_kwargs=request_kwargs,
+            backend_config=_get_backend_config(self),
         )
         fixture_hash = _hash_request_snapshot(request_snapshot)
         fixture_path = FIXTURE_DIR / f"{fixture_hash}.json"
