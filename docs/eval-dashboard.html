@@ -2584,6 +2584,16 @@
         version: 1,
         evalContent: omitTopLevelKeys(job, new Set(["prediction", "version"])),
       }),
+      2: (job) => {
+        if (!Object.prototype.hasOwnProperty.call(job, "data")) {
+          throw new Error('job_return_value.json version 2 must contain a top-level "data" field.');
+        }
+
+        return {
+          version: 2,
+          evalContent: job.data,
+        };
+      },
     };
 
     function normalizeImportedJobReturnValue(job) {
