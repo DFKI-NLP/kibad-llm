@@ -8,8 +8,15 @@
 - [x] Phase 1: selector bridge introduced for prediction views/groups/selection
 - [x] Phase 2: remove stored `state.predictionEntries`
 - [x] Phase 3: remove stored `state.groups`
-- [ ] Phase 4: make evaluation grouping selector-driven
+- [x] Phase 4: make evaluation grouping selector-driven
 - [ ] Phase 5: simplify or remove `rebuildPredictionState()`
+
+### Current architecture snapshot
+
+- Canonical imported data lives in `state.predictions` and `state.evaluations`.
+- Prediction-side grouping and selection are derived through selector helpers.
+- Evaluation-side tabs, columns, groups, selected groups, and plot-group inputs are now derived through selector helpers.
+- Remaining imperative cleanup is concentrated in `rebuildPredictionState()` and related load/reset paths.
 
 ## General
 

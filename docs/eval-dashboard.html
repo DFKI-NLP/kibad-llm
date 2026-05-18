@@ -1225,14 +1225,35 @@
       return getSelectedEvaluations();
     }
 
-    function getSelectedEvaluationsForExperiment(experiment) {
+    /**
+     * Group the currently selected evaluations by evaluation experiment.
+     */
+    function getEvaluationsByExperiment(selectedEvaluations = gatherSelectedEvaluations()) {
+      const byExperiment = new Map();
+      for (const evaluation of selectedEvaluations) {
+        const experiment = getEvaluationExperiment(evaluation);
+        if (!byExperiment.has(experiment)) {
+          byExperiment.set(experiment, []);
+        }
+        byExperiment.get(experiment).push(evaluation);
+      }
+      return byExperiment;
+    }
+
+    /**
+     * Return the selected evaluations that belong to one evaluation experiment.
+     */
+    function getSelectedEvaluationsForExperiment(experiment, selectedEvaluations = gatherSelectedEvaluations()) {
       if (!experiment) {
         return [];
       }
-      return gatherSelectedEvaluations().filter((evaluation) => getEvaluationExperiment(evaluation) === experiment);
+      return selectedEvaluations.filter((evaluation) => getEvaluationExperiment(evaluation) === experiment);
     }
 
-    function getEvaluationColumns(evaluations) {
+    /**
+     * Collect all evaluation columns currently present across the given evaluations.
+     */
+    function getEvaluationColumns(evaluations = []) {
       const evalColumns = new Set();
       for (const evaluation of evaluations) {
         for (const key of Object.keys(evaluation.overrides || {})) {
@@ -2050,11 +2071,14 @@
       ].filter((section) => section.columns.length > 0);
     }
 
+    /**
+     * Return the evaluation columns for the currently active evaluation experiment.
+     */
     function getActiveEvalColumns() {
       if (!state.activeEvalTab) {
         return [];
       }
-      return getEvaluationColumns(getSelectedEvaluationsForExperiment(state.activeEvalTab));
+      return getEvaluationContext(state.activeEvalTab)?.evalColumns || [];
     }
 
     function setActiveEvalGroupByFields(columns) {
@@ -2322,22 +2346,23 @@
       }
     }
 
-    function renderEvalDefaultControls(activeExperiment, evalColumns, evaluations, selectedGroupIds) {
+    /**
+     * Render default-value controls for evaluation columns that are missing values
+     * within the currently selected evaluation groups of the active experiment.
+     */
+    function renderEvalDefaultControls(
+      activeExperiment,
+      evaluationContext = getEvaluationContext(activeExperiment)
+    ) {
       evalDefaultsList.innerHTML = "";
-      if (!activeExperiment || !state.evalTabStates[activeExperiment]) {
+      if (!activeExperiment || !evaluationContext) {
         setPanelVisibility(evalDefaultsPanel, false);
         return;
       }
-      const evalTabState = state.evalTabStates[activeExperiment];
-      const evalGroups = buildEvaluationGroups(
-        evaluations,
-        evalTabState.groupByFields,
-        state.groupByFields,
-        evalTabState
+      const { evalColumns, evalTabState } = evaluationContext;
+      const selectedEvaluations = getSelectedEvaluationGroups(evaluationContext).flatMap(
+        (group) => group.evaluations
       );
-      const selectedEvaluations = evalGroups
-        .filter((group) => selectedGroupIds.has(group.groupId))
-        .flatMap((group) => group.evaluations);
       const columns = getEvalColumnsWithMissingValues(selectedEvaluations, evalColumns);
       setPanelVisibility(evalDefaultsPanel, columns.length > 0);
       if (!columns.length) {
@@ -3791,7 +3816,11 @@
 
     // Second grouping step: within the selected predictions, group evaluations by eval metadata
     // while still respecting the active prediction grouping from the upper table.
-    function buildEvaluationGroups(
+    /**
+     * Group evaluations by the active prediction and evaluation grouping fields.
+     * The returned group shape matches the current evaluation table/rendering expectations.
+     */
+    function getEvaluationGroups(
       evaluations,
       groupByFields,
       predictionGroupByFields = state.groupByFields,
@@ -3862,6 +3891,65 @@
       );
     }
 
+    /**
+     * Synchronize evaluation-group UI state with the currently derived evaluation groups
+     * and experiment evaluations.
+     */
+    function syncEvaluationGroupUiState(evalTabState, evaluationGroups, experimentEvaluations) {
+      const validEvalGroupIds = new Set(evaluationGroups.map((group) => group.groupId));
+      syncSelectedGroupIds(evalTabState, validEvalGroupIds);
+      evalTabState.expandedGroupIds = new Set(
+        Array.from(evalTabState.expandedGroupIds).filter((groupId) => validEvalGroupIds.has(groupId))
+      );
+      if (!validEvalGroupIds.has(evalTabState.selectedEvalGroupId)) {
+        evalTabState.selectedEvalGroupId = null;
+      }
+      const validRunDirs = new Set(experimentEvaluations.map((evaluation) => evaluation.runDir));
+      if (!validRunDirs.has(evalTabState.selectedEvalRunDir)) {
+        evalTabState.selectedEvalRunDir = null;
+      }
+    }
+
+    /**
+     * Return the current evaluation context derived from canonical state and current evaluation UI settings.
+     */
+    function getEvaluationContext(
+      activeExperiment = state.activeEvalTab,
+      selectedEvaluations = gatherSelectedEvaluations()
+    ) {
+      if (!activeExperiment) {
+        return null;
+      }
+      const experimentEvaluations = getSelectedEvaluationsForExperiment(activeExperiment, selectedEvaluations);
+      const evalColumns = getEvaluationColumns(experimentEvaluations);
+      const evalTabState = ensureEvalTabState(activeExperiment, evalColumns, experimentEvaluations);
+      const evaluationGroups = getEvaluationGroups(
+        experimentEvaluations,
+        evalTabState.groupByFields,
+        state.groupByFields,
+        evalTabState
+      );
+      syncEvaluationGroupUiState(evalTabState, evaluationGroups, experimentEvaluations);
+      return {
+        activeExperiment,
+        experimentEvaluations,
+        evalColumns,
+        evalTabState,
+        evaluationGroups,
+      };
+    }
+
+    /**
+     * Filter evaluation groups down to the currently selected evaluation group ids.
+     */
+    function getSelectedEvaluationGroups(evaluationContext = getEvaluationContext()) {
+      if (!evaluationContext) {
+        return [];
+      }
+      const { evaluationGroups, evalTabState } = evaluationContext;
+      return evaluationGroups.filter((group) => evalTabState.selectedGroupIds.has(group.groupId));
+    }
+
     function getGroupValueDisplayFromEvaluations(evaluations, getter) {
       const values = new Set(evaluations.map((evaluation) => normalizeValue(getter(evaluation))));
       if (values.size <= 1) {
@@ -3926,7 +4014,11 @@
         .join(" | ");
     }
 
-    function getCombinedPlotGroups(activeExperiment, selectedEvalGroups, evalGroupByFields, evalTabState) {
+    /**
+     * Combine prediction grouping and evaluation grouping into the plot-group shape
+     * consumed by plot and confusion-matrix rendering.
+     */
+    function getPlotGroups(activeExperiment, selectedEvalGroups, evalGroupByFields, evalTabState) {
       const allFields = [...new Set([
         ...state.groupByFields,
         ...evalGroupByFields.map((field) => `${EVAL_FIELD_GROUP_PREFIX}${field}`),
@@ -4780,7 +4872,13 @@
 
     // Plot rendering always starts from the currently selected prediction groups and selected eval groups,
     // then branches into mode-specific aggregation/rendering (f1, errors, confusion matrix).
-    function renderEvaluationPlots(activeExperiment) {
+    /**
+     * Render evaluation plots from the current selector-derived evaluation context.
+     */
+    function renderEvaluationPlots(
+      activeExperiment,
+      evaluationContext = getEvaluationContext(activeExperiment)
+    ) {
       const effectiveMode = getEffectivePlotMode(activeExperiment);
       renderPlotTabModeControls(effectiveMode);
       evalPlotTabs.innerHTML = "";
@@ -4797,23 +4895,16 @@
         return;
       }
 
-      const experimentEvaluations = gatherSelectedEvaluations().filter(
-        (evaluation) => getEvaluationExperiment(evaluation) === activeExperiment
-      );
-      const evalColumns = getEvaluationColumns(experimentEvaluations);
-      const evalTabState = ensureEvalTabState(activeExperiment, evalColumns, experimentEvaluations);
-      const evalGroups = buildEvaluationGroups(
-        experimentEvaluations,
-        evalTabState.groupByFields,
-        state.groupByFields,
-        evalTabState
-      );
-      const validEvalGroupIds = new Set(evalGroups.map((group) => group.groupId));
-      syncSelectedGroupIds(evalTabState, validEvalGroupIds);
+      if (!evaluationContext) {
+        const msg = document.createElement("p");
+        msg.className = "plot-empty";
+        msg.textContent = "Select one or more prediction groups to generate plots.";
+        evalPlotContent.appendChild(msg);
+        return;
+      }
 
-      const selectedEvalGroups = evalGroups.filter((group) =>
-        evalTabState.selectedGroupIds.has(group.groupId)
-      );
+      const { experimentEvaluations, evalTabState } = evaluationContext;
+      const selectedEvalGroups = getSelectedEvaluationGroups(evaluationContext);
       if (selectedEvalGroups.length === 0) {
         const msg = document.createElement("p");
         msg.className = "plot-empty";
@@ -4822,7 +4913,7 @@
         return;
       }
 
-      const combined = getCombinedPlotGroups(
+      const combined = getPlotGroups(
         activeExperiment,
         selectedEvalGroups,
         evalTabState.groupByFields,
@@ -4954,6 +5045,9 @@
       renderPlotTabsAndGrid(tabMap, activeExperiment, groupBarFields, effectiveMode);
     }
 
+    /**
+     * Render the evaluation table, JSON pane, and plots from selector-derived evaluation state.
+     */
     function renderEvaluations() {
       evalTabs.innerHTML = "";
       evaluationsTable.innerHTML = "";
@@ -4973,14 +5067,7 @@
         return;
       }
 
-      const byExperiment = new Map();
-      for (const evaluation of selectedEvaluations) {
-        const experiment = getEvaluationExperiment(evaluation);
-        if (!byExperiment.has(experiment)) {
-          byExperiment.set(experiment, []);
-        }
-        byExperiment.get(experiment).push(evaluation);
-      }
+      const byExperiment = getEvaluationsByExperiment(selectedEvaluations);
 
       const experiments = Array.from(byExperiment.keys()).sort();
       if (!state.activeEvalTab || !byExperiment.has(state.activeEvalTab)) {
@@ -4999,40 +5086,22 @@
         evalTabs.appendChild(button);
       }
 
-      const tabEvaluations = byExperiment.get(state.activeEvalTab) || [];
-      const evalColumnSections = getEvalColumnSections(getEvaluationColumns(tabEvaluations));
+      const evaluationContext = getEvaluationContext(state.activeEvalTab, selectedEvaluations);
+      const {
+        experimentEvaluations,
+        evalColumns,
+        evalTabState,
+        evaluationGroups,
+      } = evaluationContext;
+      const evalColumnSections = getEvalColumnSections(evalColumns);
       const orderedEvalColumns = evalColumnSections.flatMap((section) => section.columns);
-      const evalTabState = ensureEvalTabState(state.activeEvalTab, orderedEvalColumns, tabEvaluations);
       renderEvalSortStatus(state.activeEvalTab, orderedEvalColumns);
       renderEvalGroupByButtons(orderedEvalColumns);
       renderEvalOptionsTabs(state.activeEvalTab);
       renderEvalTruncateControls(state.activeEvalTab, orderedEvalColumns);
-      const evalGroups = buildEvaluationGroups(
-        tabEvaluations,
-        evalTabState.groupByFields,
-        state.groupByFields,
-        evalTabState
-      );
-      const validEvalGroupIds = new Set(evalGroups.map((group) => group.groupId));
-      syncSelectedGroupIds(evalTabState, validEvalGroupIds);
-      renderEvalDefaultControls(
-        state.activeEvalTab,
-        orderedEvalColumns,
-        tabEvaluations,
-        evalTabState.selectedGroupIds
-      );
-      evalTabState.expandedGroupIds = new Set(
-        Array.from(evalTabState.expandedGroupIds).filter((groupId) => validEvalGroupIds.has(groupId))
-      );
-      if (!validEvalGroupIds.has(evalTabState.selectedEvalGroupId)) {
-        evalTabState.selectedEvalGroupId = null;
-      }
-      const validRunDirs = new Set(tabEvaluations.map((evaluation) => evaluation.runDir));
-      if (!validRunDirs.has(evalTabState.selectedEvalRunDir)) {
-        evalTabState.selectedEvalRunDir = null;
-      }
+      renderEvalDefaultControls(state.activeEvalTab, evaluationContext);
 
-      const displayedEvalGroups = getSortedEvaluationGroups(evalGroups, evalTabState);
+      const displayedEvalGroups = getSortedEvaluationGroups(evaluationGroups, evalTabState);
 
       const evalSelectionState = {
         displayedGroupIds: displayedEvalGroups.map((group) => group.groupId),
@@ -5304,7 +5373,7 @@
       evaluationsTable.appendChild(tbody);
 
       if (evalTabState.selectedEvalRunDir !== null || evalTabState.selectedEvalGroupId !== null) {
-        const selectedEvaluation = tabEvaluations.find((evaluation) => evaluation.runDir === evalTabState.selectedEvalRunDir) || null;
+        const selectedEvaluation = experimentEvaluations.find((evaluation) => evaluation.runDir === evalTabState.selectedEvalRunDir) || null;
         const selectedGroup = displayedEvalGroups.find((group) => group.groupId === evalTabState.selectedEvalGroupId) || null;
         if (selectedEvaluation || selectedGroup) {
           evalLayout.classList.add("split");
@@ -5338,7 +5407,7 @@
       evalSummary.textContent =
         `Selected evaluations: ${selectedEvaluationsCount} | Active tab: ${state.activeEvalTab} | Groups: ${displayedEvalGroups.length} | Group-by: ${evalGroupByText} (+ prediction group-by: ${predictionGroupByText})`;
 
-      renderEvaluationPlots(state.activeEvalTab);
+      renderEvaluationPlots(state.activeEvalTab, evaluationContext);
     }
   </script>
 </body>
