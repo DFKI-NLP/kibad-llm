@@ -21,7 +21,7 @@ PREDICTION_DIR = PROJ_ROOT / "tests" / "fixtures" / "results"
 def cfg_predict_module(tmp_path_factory) -> DictConfig:  # type: ignore
     module_tmp_path = tmp_path_factory.mktemp("module")
 
-    # use the gpt_oss_20b (see configs/extractor/llm/testing.yaml)
+    # use the gpt_oss_20b llm (see configs/extractor/llm/testing.yaml)
     # for testing since we monkeypatch its self.model.chat method
     overrides = ["extractor/llm=gpt_oss_20b"]
 
