@@ -2577,13 +2577,26 @@
 
     const JOB_RETURN_VALUE_VERSION_HANDLERS = {
       0: (job) => ({
-        version: 0,
-        evalContent: omitTopLevelKeys(job, new Set(["prediction"])),
+        evalData: omitTopLevelKeys(job, new Set(["prediction"])),
+        predictionContent: job.prediction || {},
+        evalContent: { version: 0 },
       }),
       1: (job) => ({
-        version: 1,
-        evalContent: omitTopLevelKeys(job, new Set(["prediction", "version"])),
+        evalData: omitTopLevelKeys(job, new Set(["prediction", "version"])),
+        predictionContent: job.prediction || {},
+        evalContent: { version: 1 },
       }),
+      2: (job) => {
+        if (!Object.prototype.hasOwnProperty.call(job, "data")) {
+          throw new Error('job_return_value.json version 2 must contain a top-level "data" field.');
+        }
+
+        return {
+          evalData: job.data,
+          predictionContent: job.prediction || {},
+          evalContent: omitTopLevelKeys(job, new Set(["data", "prediction"])),
+        };
+      },
     };
 
     function normalizeImportedJobReturnValue(job) {
@@ -2598,10 +2611,7 @@
         throw createUnsupportedJobReturnValueVersionError(version);
       }
 
-      return {
-        predictionContent: job.prediction || {},
-        ...handler(job),
-      };
+      return handler(job);
     }
 
     async function readTextFile(file) {
@@ -2775,11 +2785,11 @@
           const job = JSON.parse(jobText);
           const evalOverrides = parseOverridesYaml(overridesText);
           const normalizedJob = normalizeImportedJobReturnValue(job);
-          const prediction = normalizedJob.predictionContent;
+          const predictionContent = normalizedJob.predictionContent;
 
           const predictionMeta = {
-            ...flattenObject(prediction.overrides || {}, "prediction.overrides"),
-            ...flattenObject(prediction.job_return_value || {}, "prediction.job_return_value"),
+            ...flattenObject(predictionContent.overrides || {}, "prediction.overrides"),
+            ...flattenObject(predictionContent.job_return_value || {}, "prediction.job_return_value"),
           };
 
           const experimentEvaluate =
@@ -2790,8 +2800,8 @@
             predictionMeta,
             evalOverrides,
             experimentEvaluate,
-            evalContent: normalizedJob.evalContent,
-            predictionContent: prediction,
+            evalContent: normalizedJob.evalData,
+            predictionContent,
           });
           knownRunDirs.add(runDir);
           loadedCount += 1;

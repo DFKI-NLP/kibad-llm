@@ -58,19 +58,24 @@ def test_evaluate(tmp_path, cfg_evaluate, metric_name):
     """For now, this is primarily to test that the evaluation runs end-to-end without errors."""
 
     HydraConfig().set_config(cfg_evaluate)
-    metric_scores = evaluate(cfg_evaluate)
+    job_result = evaluate(cfg_evaluate)
+    assert set(job_result) == {"version", "type", "data"}
+    metric_type = job_result["type"]
+    assert job_result["version"] == 2
+    metric_scores = job_result["data"]
 
     if metric_name == "f1_micro_single_field":
+        assert metric_type == "F1MicroSingleFieldMetric"
         assert metric_scores == pytest.approx(
             {
                 "f1": 2 * ((3 / 8) / (1 + (3 / 8))),
                 "precision": 3 / 8,
                 "recall": 1,
                 "support": 3,
-                "version": 1,
             }
         )
     elif metric_name == "confusion_matrix":
+        assert metric_type == "ConfusionMatrix"
         assert metric_scores == {
             "Agrar- und Offenland": {"Agrar- und Offenland": 1},
             "Küsten und Küstengewässer": {"Küsten und Küstengewässer": 2},
@@ -80,9 +85,9 @@ def test_evaluate(tmp_path, cfg_evaluate, metric_name):
                 "Boden": 1,
                 "Wald": 1,
             },
-            "version": 1,
         }
     elif metric_name == "f1_micro":
+        assert metric_type == "F1MicroMultipleFieldsMetric"
         assert metric_scores == {
             "habitat": {
                 "f1": pytest.approx(0.545454545),
@@ -103,10 +108,10 @@ def test_evaluate(tmp_path, cfg_evaluate, metric_name):
                 "recall": 0.75,
                 "support": 4,
             },
-            "version": 1,
         }
     elif metric_name == "prediction_errors":
+        assert metric_type == "ErrorCollector"
         # we don't have any errors in the predictions file
-        assert metric_scores == {"no_error": 4, "version": 1}
+        assert metric_scores == {"no_error": 4}
     else:
         raise ValueError(f"Unexpected metric name: {metric_name}. Please update the test case.")

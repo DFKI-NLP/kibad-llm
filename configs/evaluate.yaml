@@ -54,3 +54,7 @@ hydra:
       #  - its overrides get converted to dicts to access them easily later at `prediction.overrides.` on, and
       #  - it is removed when writing single job results to *markdown* to not destroy the table structure.
       handle_previous_result: "prediction"
+      # The actual evaluation data (metric result) lives in the "data" field of the job result. When writing
+      # to Markdown, we want to only write this data to allow for nice table formatting, so we need to specify
+      # the key here.
+      markdown_data_key: "data"

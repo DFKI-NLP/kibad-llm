@@ -222,6 +222,10 @@ class SaveJobReturnValueCallback(Callback):
         If True, the columns of the markdown table are sorted alphabetically.
     markdown_round_digits: int (default: 3)
         The number of digits to round the values in the markdown file. If None, no rounding is applied.
+    markdown_data_key: str (default: None)
+        If povided, use only the value at this key when saving single job results to markdown. This is useful
+        to strip metadata from the job result and, thus, allowing for correct table formatting of metric results,
+        for instance.
     multirun_create_ids_from_overrides: bool (default: False)
         Create job identifiers from the overrides of the jobs in a multi-run. If False, the job index is used as
         identifier.
@@ -268,6 +272,7 @@ class SaveJobReturnValueCallback(Callback):
         multirun_aggregator_blacklist: list[str] | None = None,
         sort_markdown_columns: bool = True,
         markdown_round_digits: int | None = 3,
+        markdown_data_key: str | None = None,
         multirun_create_ids_from_overrides: bool = True,
         multirun_job_id_key: str = "job_id",
         multirun_convert_job_ids: bool = False,
@@ -302,6 +307,7 @@ class SaveJobReturnValueCallback(Callback):
         self.multirun_markdown_group_by = multirun_markdown_group_by
         self.multirun_markdown_transpose = multirun_markdown_transpose
         self.markdown_round_digits = markdown_round_digits
+        self.markdown_data_key = markdown_data_key
         self.multirun_paths_file = multirun_paths_file
         self.multirun_path_id = multirun_path_id
         self.paths_file = paths_file
@@ -327,10 +333,18 @@ class SaveJobReturnValueCallback(Callback):
             obj = job_return.return_value
             if filename.lower().endswith(".md") and isinstance(obj, dict):
                 obj = dict(obj)
-                if self.handle_previous_result is not None and self.handle_previous_result in obj:
-                    obj.pop(self.handle_previous_result)
-                if RESULT_FORMAT_VERSION_KEY in obj:
-                    obj.pop(RESULT_FORMAT_VERSION_KEY)
+                if self.markdown_data_key in obj:
+                    obj = obj[self.markdown_data_key]
+                else:  # legacy code path for compatibility
+                    if (
+                        self.handle_previous_result is not None
+                        and self.handle_previous_result in obj
+                    ):
+                        obj.pop(self.handle_previous_result)
+                    if RESULT_FORMAT_VERSION_KEY in obj:
+                        obj.pop(RESULT_FORMAT_VERSION_KEY)
+                    if self.markdown_data_key in obj:
+                        obj = obj[self.markdown_data_key]
             self._save(obj=obj, filename=filename, output_dir=output_dir)
 
     def on_multirun_end(self, config: DictConfig, **kwargs: Any) -> None:
