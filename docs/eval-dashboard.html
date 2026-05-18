@@ -945,7 +945,6 @@
       availableGroupIds: new Set(),
       expandedGroupIds: new Set(),
       activeEvalTab: null,
-      groups: [],
       groupByFields: [],
       truncateEnabledColumns: new Set(),
       predictionDefaultValues: {},
@@ -1147,8 +1146,29 @@
     /**
      * Filter prediction groups down to the currently selected prediction group ids.
      */
-    function getSelectedPredictionGroups(groups = getPredictionGroups()) {
+    function getSelectedPredictionGroups(groups = getCurrentPredictionGroups()) {
       return groups.filter((group) => state.selectedGroupIds.has(group.groupId));
+    }
+
+    /**
+     * Synchronize prediction-group UI state with the currently derived prediction groups.
+     * This preserves selections for stable ids, auto-selects newly created groups, and drops stale expanded ids.
+     */
+    function syncPredictionGroupUiState(predictionGroups) {
+      const validIds = new Set(predictionGroups.map((group) => group.groupId));
+      syncSelectedGroupIds(state, validIds);
+      state.expandedGroupIds = new Set(
+        Array.from(state.expandedGroupIds).filter((groupId) => validIds.has(groupId))
+      );
+    }
+
+    /**
+     * Return the current prediction groups derived from canonical state and current prediction UI settings.
+     */
+    function getCurrentPredictionGroups() {
+      const predictionGroups = getPredictionGroups(getPredictionViews(), state.groupByFields, state.predictionColumns);
+      syncPredictionGroupUiState(predictionGroups);
+      return predictionGroups;
     }
 
     /**
@@ -2961,8 +2981,9 @@
       state.selectedGroupIds = new Set();
       state.availableGroupIds = new Set();
       state.evalTabStates = {};
-
-      buildGroups();
+      syncPredictionGroupUiState(
+        getPredictionGroups(predictionViews, state.groupByFields, state.predictionColumns)
+      );
     }
 
     function updateLoadStatusSummary({ candidateRunDirs, loadedCount, skippedDuplicate, skippedPredictRuns, skippedMissingJob, skippedUnsupportedVersion, skippedInvalid, skippedMissingPredictionId, skippedConflictingPredictionId }) {
@@ -3461,20 +3482,6 @@
 
     void initializeGitUrlFromQueryParam();
 
-    /**
-     * Build and persist the current prediction groups from derived prediction views.
-     */
-    function buildGroups() {
-      state.groups = getPredictionGroups(getPredictionViews(), state.groupByFields, state.predictionColumns);
-
-      // Keep selections for unchanged groups and select newly created groups by default after regrouping.
-      const validIds = new Set(state.groups.map((g) => g.groupId));
-      syncSelectedGroupIds(state, validIds);
-      state.expandedGroupIds = new Set(
-        Array.from(state.expandedGroupIds).filter((groupId) => validIds.has(groupId))
-      );
-    }
-
     function getPredictionGroupSortValue(group, column) {
       if (column === "expand") {
         return state.expandedGroupIds.has(group.groupId) ? 1 : 0;
@@ -3501,10 +3508,10 @@
     /**
      * Return prediction groups sorted according to the active prediction sort config.
      */
-    function getSortedPredictionGroups() {
+    function getSortedPredictionGroups(predictionGroups = getCurrentPredictionGroups()) {
       const validSortColumns = new Set([...SORTABLE_CONTROL_COLUMNS, ...state.predictionColumns]);
       state.predictionSort = normalizeSortConfig(state.predictionSort, validSortColumns);
-      return sortItems(getPredictionGroups(getPredictionViews(), state.groupByFields, state.predictionColumns), state.predictionSort, getPredictionGroupSortValue);
+      return sortItems(predictionGroups, state.predictionSort, getPredictionGroupSortValue);
     }
 
     function getSortedPredictionMembers(predictions) {
@@ -3517,7 +3524,10 @@
       renderEvaluations();
     }
 
-    function getDisplayedSelectionState(displayedGroups = state.groups) {
+    /**
+     * Summarize selection state for the currently displayed prediction groups.
+     */
+    function getDisplayedSelectionState(displayedGroups = []) {
       const displayedGroupIds = displayedGroups.map((group) => group.groupId);
       const selectedCount = displayedGroupIds.filter((groupId) => state.selectedGroupIds.has(groupId)).length;
       return {
@@ -3588,20 +3598,20 @@
      * Render the Predictions table from derived prediction views and prediction groups.
      */
     function renderPredictions() {
-      buildGroups();
       const predictionViews = getPredictionViews();
+      const predictionGroups = getCurrentPredictionGroups();
 
       predictionsTable.innerHTML = "";
       predictionDefaultsList.innerHTML = "";
       renderPredictionSortStatus();
-      if (!state.groups.length) {
+      if (!predictionGroups.length) {
         setPanelVisibility(predictionDefaultsPanel, false);
         predictionSummary.textContent = "No predictions found. Load a folder containing evaluate run outputs.";
         return;
       }
 
       predictionSummary.textContent =
-        `Predictions: ${predictionViews.length} | Groups: ${state.groups.length} | Group-by: ` +
+        `Predictions: ${predictionViews.length} | Groups: ${predictionGroups.length} | Group-by: ` +
         (state.groupByFields.length
           ? state.groupByFields.map((field) => displayPredictionColumnName(field)).join(", ")
           : "(none; one row per unique prediction)");
@@ -3611,7 +3621,7 @@
       renderOptionsTabs();
       renderTruncateControls();
       renderPredictionDefaultControls();
-      const displayedGroups = getSortedPredictionGroups();
+      const displayedGroups = getSortedPredictionGroups(predictionGroups);
 
       const thead = document.createElement("thead");
       const sectionRow = document.createElement("tr");
