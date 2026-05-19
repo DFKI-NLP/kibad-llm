@@ -1020,6 +1020,8 @@
     const barTooltip = document.getElementById("barTooltip");
     const GITHUB_TOKEN_STORAGE_KEY = "evalDashboard.githubToken";
     const SORTABLE_CONTROL_COLUMNS = new Set(["expand", "select", "group_size"]);
+    const PREDICTION_JOB_RETURN_VALUE_PREFIX = "prediction.job_return_value.";
+    const PREDICTION_OVERRIDES_PREFIX = "prediction.overrides.";
     // Prefix used by evaluation column identifiers that point into flattened jobReturnValue keys.
     const JOB_RETURN_VALUE_PREFIX = "job_return_value.";
     // Synthetic namespace for evaluation fields when prediction and evaluation group-by fields are mixed together.
@@ -1035,6 +1037,16 @@
       return column.startsWith(EVALUATION_PREFIX)
         ? column.slice(EVALUATION_PREFIX.length)
         : column;
+    }
+
+    function stripPredictionFieldPrefix(column) {
+      if (column.startsWith(PREDICTION_JOB_RETURN_VALUE_PREFIX)) {
+        return column.slice(PREDICTION_JOB_RETURN_VALUE_PREFIX.length);
+      }
+      if (column.startsWith(PREDICTION_OVERRIDES_PREFIX)) {
+        return column.slice(PREDICTION_OVERRIDES_PREFIX.length);
+      }
+      return column.replace(/^predictions?\./, "");
     }
 
     function reconstructPredictionContent(prediction) {
@@ -1798,13 +1810,7 @@
     });
 
     function displayPredictionColumnName(column) {
-      if (column.startsWith("prediction.job_return_value.")) {
-        return column.replace("prediction.job_return_value.", "");
-      }
-      if (column.startsWith("prediction.overrides.")) {
-        return column.replace("prediction.overrides.", "");
-      }
-      return column.replace(/^predictions?\./, "");
+      return stripPredictionFieldPrefix(column);
     }
 
     function displayEvalColumnName(column) {
@@ -1885,7 +1891,7 @@
     function getDefaultGroupByFields(predictionColumns, predictionViews = getPredictionViews()) {
       const candidateColumns = predictionColumns.filter(
         (column) =>
-          column.startsWith("prediction.overrides.") &&
+          column.startsWith(PREDICTION_OVERRIDES_PREFIX) &&
           displayPredictionColumnName(column).toLowerCase() !== "seed"
       );
       return getColumnsWithMultipleValues(
@@ -2540,23 +2546,23 @@
      * Split current prediction columns into UI sections for rendering the prediction table header.
      */
     function getPredictionColumnSections(predictionColumns = getCurrentPredictionColumns()) {
-      const jobReturnValue = predictionColumns
-        .filter((column) => column.startsWith("prediction.job_return_value."))
+      const jobReturnValueColumns = predictionColumns
+        .filter((column) => column.startsWith(PREDICTION_JOB_RETURN_VALUE_PREFIX))
         .sort();
-      const overrides = predictionColumns
-        .filter((column) => column.startsWith("prediction.overrides."))
+      const overrideColumns = predictionColumns
+        .filter((column) => column.startsWith(PREDICTION_OVERRIDES_PREFIX))
         .sort();
-      const other = predictionColumns
+      const otherColumns = predictionColumns
         .filter(
           (column) =>
-            !column.startsWith("prediction.job_return_value.") &&
-            !column.startsWith("prediction.overrides.")
+            !column.startsWith(PREDICTION_JOB_RETURN_VALUE_PREFIX) &&
+            !column.startsWith(PREDICTION_OVERRIDES_PREFIX)
         )
         .sort();
       return [
-        { label: "overrides", columns: overrides },
-        { label: "job_return_value", columns: jobReturnValue },
-        { label: "other", columns: other },
+        { label: "overrides", columns: overrideColumns },
+        { label: "job_return_value", columns: jobReturnValueColumns },
+        { label: "other", columns: otherColumns },
       ].filter((section) => section.columns.length > 0);
     }
 
@@ -2564,6 +2570,13 @@
       if (value === null || value === undefined) return "";
       if (typeof value === "object") return JSON.stringify(value);
       return String(value);
+    }
+
+    function formatDistinctValueDisplay(values) {
+      if (values.size <= 1) {
+        return values.values().next().value || "";
+      }
+      return `(mixed: ${values.size} values)`;
     }
 
     function getDefaultSortDirection(column) {
@@ -3591,22 +3604,21 @@
       };
     }
 
-    function createCell(content, columnKey = "") {
+    function createTruncatingCell(content, columnKey = "", truncateEnabledColumns = null) {
       const td = document.createElement("td");
       td.textContent = content;
-      if (columnKey && state.truncateEnabledColumns.has(columnKey)) {
+      if (columnKey && truncateEnabledColumns?.has(columnKey)) {
         td.classList.add("truncate-enabled");
       }
       return td;
     }
 
+    function createCell(content, columnKey = "") {
+      return createTruncatingCell(content, columnKey, state.truncateEnabledColumns);
+    }
+
     function createEvalCell(content, columnKey, evalTabState) {
-      const td = document.createElement("td");
-      td.textContent = content;
-      if (columnKey && evalTabState?.truncateEnabledColumns?.has(columnKey)) {
-        td.classList.add("truncate-enabled");
-      }
-      return td;
+      return createTruncatingCell(content, columnKey, evalTabState?.truncateEnabledColumns);
     }
 
     // Sticky left offsets depend on rendered widths, so measure them after each table render.
@@ -3641,10 +3653,7 @@
       const values = new Set(
         group.predictions.map((prediction) => getPredictionEffectiveValue(prediction.predictionFlat, column))
       );
-      if (values.size <= 1) {
-        return values.values().next().value || "";
-      }
-      return `(mixed: ${values.size} values)`;
+      return formatDistinctValueDisplay(values);
     }
 
     /**
@@ -3841,9 +3850,6 @@
       updateStickyControlColumnOffsets(predictionsTable);
     }
 
-
-    // Second grouping step: within the selected predictions, group evaluations by evaluation columns
-    // while still respecting the active prediction grouping from the upper table.
     /**
      * Group evaluations by the active prediction and evaluation grouping fields.
      * The returned group shape matches the current evaluation table/rendering expectations.
@@ -3913,7 +3919,7 @@
       );
     }
 
-    function getSortedEvaluationRuns(evaluations, evalTabState) {
+    function getSortedEvaluations(evaluations, evalTabState) {
       return sortItems(evaluations, evalTabState.sort, (evaluation, column) =>
         getEvaluationRunSortValue(evaluation, column, evalTabState)
       );
@@ -3980,10 +3986,7 @@
 
     function getGroupValueDisplayFromEvaluations(evaluations, getter) {
       const values = new Set(evaluations.map((evaluation) => normalizeValue(getter(evaluation))));
-      if (values.size <= 1) {
-        return values.values().next().value || "";
-      }
-      return `(mixed: ${values.size} values)`;
+      return formatDistinctValueDisplay(values);
     }
 
     function meanAndStd(values) {
@@ -5336,7 +5339,7 @@
         tbody.appendChild(tr);
 
         if (evalTabState.expandedGroupIds.has(group.groupId)) {
-          const sortedMembers = getSortedEvaluationRuns(group.evaluations, evalTabState);
+          const sortedMembers = getSortedEvaluations(group.evaluations, evalTabState);
           for (const evaluation of sortedMembers) {
             const memberRow = document.createElement("tr");
             memberRow.className = "member-row";
