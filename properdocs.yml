@@ -37,18 +37,34 @@ nav:
 - LLM usage instructions: models-readme.md
 - Faktencheck database instructions: podman-readme.md
 - Evaluation dashboard: eval-dashboard.html
+- Contribution guidelines: contributing.md
 # defer to gen-files + literate-nav
 - KIBA-D code Reference: reference/kibad_llm/
 
+hooks:
+- scripts/docs_hooks.py
+
 plugins:
 - search
+- redirects:
+    redirect_maps:
+      'README.md': 'root-readme.md'
+      'models/README.md': 'models-readme.md'
+      'podman/faktencheck-db/README.md': 'podman-readme.md'
+      'CONTRIBUTING.md': 'contributing.md'
 - gen-files:
     scripts:
     - scripts/build_docs.py
 - literate-nav:
     nav_file: SUMMARY.md
 - section-index
-- mkdocstrings
+- mkdocstrings:
+    handlers:
+      python:
+        options:
+          show_symbol_type_heading: true
+          show_symbol_type_toc: true
+          members_order: source
 
 markdown_extensions:
   - pymdownx.snippets:
