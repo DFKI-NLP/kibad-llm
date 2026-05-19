@@ -3680,11 +3680,11 @@
     }
 
     /**
-     * Summarize selection state for the currently displayed prediction groups.
+     * Summarize selection state for the currently displayed groups against one selected-id set.
      */
-    function getDisplayedSelectionState(displayedGroups = []) {
+    function getDisplayedSelectionState(displayedGroups = [], selectedGroupIds = state.selectedGroupIds) {
       const displayedGroupIds = displayedGroups.map((group) => group.groupId);
-      const selectedCount = displayedGroupIds.filter((groupId) => state.selectedGroupIds.has(groupId)).length;
+      const selectedCount = displayedGroupIds.filter((groupId) => selectedGroupIds.has(groupId)).length;
       return {
         displayedGroupIds,
         selectedCount,
@@ -3693,19 +3693,10 @@
       };
     }
 
-    function createCell(content, columnKey = "") {
+    function createCell(content, columnKey = "", truncateEnabledColumns = state.truncateEnabledColumns) {
       const td = document.createElement("td");
       td.textContent = content;
-      if (columnKey && state.truncateEnabledColumns.has(columnKey)) {
-        td.classList.add("truncate-enabled");
-      }
-      return td;
-    }
-
-    function createEvalCell(content, columnKey, evalTabState) {
-      const td = document.createElement("td");
-      td.textContent = content;
-      if (columnKey && evalTabState?.truncateEnabledColumns?.has(columnKey)) {
+      if (columnKey && truncateEnabledColumns?.has(columnKey)) {
         td.classList.add("truncate-enabled");
       }
       return td;
@@ -3739,14 +3730,23 @@
       updateStickyControlColumnOffsets(evaluationsTable);
     });
 
-    function getGroupValueDisplay(group, column) {
-      const values = new Set(
-        group.predictions.map((prediction) => getPredictionEffectiveValue(prediction.predictionFlat, column))
-      );
-      if (values.size <= 1) {
-        return values.values().next().value || "";
+    /**
+     * Summarize one collection of effective values as either a single display value or a mixed-value marker.
+     */
+    function getMixedValueDisplay(items, getter, normalizer = (value) => value) {
+      const normalizedValues = items.map((item) => normalizer(getter(item)));
+      const distinctValues = new Set(normalizedValues);
+      if (distinctValues.size <= 1) {
+        return normalizedValues[0] || "";
       }
-      return `(mixed: ${values.size} values)`;
+      return `(mixed: ${distinctValues.size} values)`;
+    }
+
+    function getGroupValueDisplay(group, column) {
+      return getMixedValueDisplay(
+        group.predictions,
+        (prediction) => getPredictionEffectiveValue(prediction.predictionFlat, column)
+      );
     }
 
     /**
@@ -3991,9 +3991,10 @@
       if (column === "group_size") {
         return group.evaluations.length;
       }
-      return getGroupValueDisplayFromEvaluations(
+      return getMixedValueDisplay(
         group.evaluations,
-        (evaluation) => getEvaluationEffectiveValue(evaluation, column, evalTabState, evalFields)
+        (evaluation) => getEvaluationEffectiveValue(evaluation, column, evalTabState, evalFields),
+        normalizeValue
       );
     }
 
@@ -4074,14 +4075,6 @@
       }
       const { evaluationGroups, evalTabState } = evaluationContext;
       return evaluationGroups.filter((group) => evalTabState.selectedGroupIds.has(group.groupId));
-    }
-
-    function getGroupValueDisplayFromEvaluations(evaluations, getter) {
-      const values = new Set(evaluations.map((evaluation) => normalizeValue(getter(evaluation))));
-      if (values.size <= 1) {
-        return values.values().next().value || "";
-      }
-      return `(mixed: ${values.size} values)`;
     }
 
     function meanAndStd(values) {
@@ -5233,17 +5226,7 @@
 
       const displayedEvalGroups = getSortedEvaluationGroups(evaluationGroups, evalTabState, orderedEvalFields);
 
-      const evalSelectionState = {
-        displayedGroupIds: displayedEvalGroups.map((group) => group.groupId),
-      };
-      evalSelectionState.selectedCount = evalSelectionState.displayedGroupIds.filter((groupId) =>
-        evalTabState.selectedGroupIds.has(groupId)
-      ).length;
-      evalSelectionState.allSelected =
-        evalSelectionState.displayedGroupIds.length > 0 &&
-        evalSelectionState.selectedCount === evalSelectionState.displayedGroupIds.length;
-      evalSelectionState.someSelected =
-        evalSelectionState.selectedCount > 0 && !evalSelectionState.allSelected;
+      const evalSelectionState = getDisplayedSelectionState(displayedEvalGroups, evalTabState.selectedGroupIds);
 
       const thead = document.createElement("thead");
       const sectionRow = document.createElement("tr");
@@ -5421,13 +5404,14 @@
         }
         for (const field of orderedEvalFields) {
           tr.appendChild(
-            createEvalCell(
-              getGroupValueDisplayFromEvaluations(
+            createCell(
+              getMixedValueDisplay(
                 group.evaluations,
-                (evaluation) => getEvaluationEffectiveValue(evaluation, field.id, evalTabState, orderedEvalFields)
+                (evaluation) => getEvaluationEffectiveValue(evaluation, field.id, evalTabState, orderedEvalFields),
+                normalizeValue
               ),
               field.id,
-              evalTabState
+              evalTabState.truncateEnabledColumns
             )
           );
         }
@@ -5460,10 +5444,10 @@
             }
             for (const field of orderedEvalFields) {
               memberRow.appendChild(
-                createEvalCell(
+                createCell(
                   getEvaluationEffectiveValue(evaluation, field.id, evalTabState, orderedEvalFields),
                   field.id,
-                  evalTabState
+                  evalTabState.truncateEnabledColumns
                 )
               );
             }

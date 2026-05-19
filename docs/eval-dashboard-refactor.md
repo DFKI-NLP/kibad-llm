@@ -130,7 +130,7 @@ This should be split into two parts.
 
 - [x] Cleanup A completed
 - [x] Field-descriptor refactor completed
-- [ ] Cleanup B pending
+- [x] Cleanup B completed
 
 ### Cleanup A — do before the field-descriptor refactor
 
@@ -201,4 +201,4 @@ These are still good cleanups, but they touch code that the descriptor refactor 
 
 ## Suggested order
 
-1. Cleanup B (dedupe helpers after the new render/field layer settles)
+1. Optional later follow-up: extend the field-descriptor model to prediction-side columns for symmetry.
