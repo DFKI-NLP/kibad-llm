@@ -1020,13 +1020,15 @@
     const barTooltip = document.getElementById("barTooltip");
     const GITHUB_TOKEN_STORAGE_KEY = "evalDashboard.githubToken";
     const SORTABLE_CONTROL_COLUMNS = new Set(["expand", "select", "group_size"]);
-    const EVAL_METADATA_COLUMN_PREFIX = "job_return_value.";
-    const EVAL_FIELD_GROUP_PREFIX = "evaluation.";
+    // Prefix used by evaluation column identifiers that point into flattened jobReturnValue keys.
+    const JOB_RETURN_VALUE_PREFIX = "job_return_value.";
+    // Synthetic namespace for evaluation fields when prediction and evaluation group-by fields are mixed together.
+    const EVAL_GROUP_BY_FIELD_PREFIX = "evaluation.";
     const sortCollator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
 
     // Selectors and accessors for the canonical predictions/evaluations state shape.
-    function isEvalMetadataColumn(column) {
-      return column.startsWith(EVAL_METADATA_COLUMN_PREFIX);
+    function isJobReturnValueColumn(column) {
+      return column.startsWith(JOB_RETURN_VALUE_PREFIX);
     }
 
     function reconstructPredictionContent(prediction) {
@@ -1188,11 +1190,11 @@
       if (column === "eval_run_dir") {
         return evaluation.runDir;
       }
-      if (column.startsWith(EVAL_FIELD_GROUP_PREFIX)) {
-        return getEvaluationColumnRawValue(evaluation, column.slice(EVAL_FIELD_GROUP_PREFIX.length));
+      if (column.startsWith(EVAL_GROUP_BY_FIELD_PREFIX)) {
+        return getEvaluationColumnRawValue(evaluation, column.slice(EVAL_GROUP_BY_FIELD_PREFIX.length));
       }
-      if (isEvalMetadataColumn(column)) {
-        return getFlattenedEvaluationJobReturnValue(evaluation)[column.slice(EVAL_METADATA_COLUMN_PREFIX.length)];
+      if (isJobReturnValueColumn(column)) {
+        return getFlattenedEvaluationJobReturnValue(evaluation)[column.slice(JOB_RETURN_VALUE_PREFIX.length)];
       }
       return evaluation?.overrides?.[column];
     }
@@ -1257,7 +1259,7 @@
           evalColumns.add(key);
         }
         for (const key of Object.keys(getFlattenedEvaluationJobReturnValue(evaluation))) {
-          evalColumns.add(`${EVAL_METADATA_COLUMN_PREFIX}${key}`);
+          evalColumns.add(`${JOB_RETURN_VALUE_PREFIX}${key}`);
         }
       }
       return Array.from(evalColumns).sort();
@@ -1802,19 +1804,19 @@
     }
 
     function displayEvalColumnName(column) {
-      if (column.startsWith(EVAL_FIELD_GROUP_PREFIX)) {
-        return displayEvalColumnName(column.slice(EVAL_FIELD_GROUP_PREFIX.length));
+      if (column.startsWith(EVAL_GROUP_BY_FIELD_PREFIX)) {
+        return displayEvalColumnName(column.slice(EVAL_GROUP_BY_FIELD_PREFIX.length));
       }
-      if (column.startsWith(EVAL_METADATA_COLUMN_PREFIX)) {
-        return column.slice(EVAL_METADATA_COLUMN_PREFIX.length);
+      if (column.startsWith(JOB_RETURN_VALUE_PREFIX)) {
+        return column.slice(JOB_RETURN_VALUE_PREFIX.length);
       }
       return column.replace(/^overrides\./, "");
     }
 
     function displayGroupFieldName(column) {
       if (
-        column.startsWith(EVAL_FIELD_GROUP_PREFIX) ||
-        column.startsWith(EVAL_METADATA_COLUMN_PREFIX) ||
+        column.startsWith(EVAL_GROUP_BY_FIELD_PREFIX) ||
+        column.startsWith(JOB_RETURN_VALUE_PREFIX) ||
         column.startsWith("overrides.")
       ) {
         return displayEvalColumnName(column);
@@ -2072,11 +2074,11 @@
 
 
     function getEvalColumnSections(evalColumns) {
-      const overrides = evalColumns.filter((column) => !isEvalMetadataColumn(column)).sort();
-      const metadata = evalColumns.filter((column) => isEvalMetadataColumn(column)).sort();
+      const overrides = evalColumns.filter((column) => !isJobReturnValueColumn(column)).sort();
+      const job_return_value = evalColumns.filter((column) => isJobReturnValueColumn(column)).sort();
       return [
         { label: "overrides", columns: overrides },
-        { label: "job_return_value", columns: metadata },
+        { label: "job_return_value", columns: job_return_value },
       ].filter((section) => section.columns.length > 0);
     }
 
@@ -4022,7 +4024,7 @@
     function getPlotGroups(activeExperiment, selectedEvalGroups, evalGroupByFields, evalTabState) {
       const allFields = [...new Set([
         ...state.groupByFields,
-        ...evalGroupByFields.map((field) => `${EVAL_FIELD_GROUP_PREFIX}${field}`),
+        ...evalGroupByFields.map((field) => `${EVAL_GROUP_BY_FIELD_PREFIX}${field}`),
       ])];
 
       const map = new Map();
@@ -4033,10 +4035,10 @@
           }
           const values = {};
           for (const field of allFields) {
-            if (field.startsWith(EVAL_FIELD_GROUP_PREFIX)) {
+            if (field.startsWith(EVAL_GROUP_BY_FIELD_PREFIX)) {
               values[field] = getEvaluationEffectiveValue(
                 evaluation,
-                field.slice(EVAL_FIELD_GROUP_PREFIX.length),
+                field.slice(EVAL_GROUP_BY_FIELD_PREFIX.length),
                 evalTabState
               );
             } else {
