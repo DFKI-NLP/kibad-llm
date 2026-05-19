@@ -891,7 +891,7 @@
     <label for="plotModeSelect" class="sr-only">Plot mode</label>
     <select id="plotModeSelect" class="plot-mode-select">
       <option value="auto">auto</option>
-      <option value="f1">f1</option>
+      <option value="bars">bars</option>
       <option value="errors">errors</option>
       <option value="confusion_matrix">confusion matrix</option>
     </select>
@@ -1846,7 +1846,7 @@
 
     function getPlotTitleLabel(plotEntry, effectiveMode) {
       if (
-        effectiveMode === "f1" &&
+        effectiveMode === "bars" &&
         state.plotShortenLabels &&
         state.plotTabsBy === "suffix"
       ) {
@@ -2459,7 +2459,7 @@
       plotShowLegendOnce.checked = state.plotShowLegendOnce;
       exportOpaqueBackground.checked = state.exportOpaqueBackground;
       plotModeEffective.textContent = state.plotMode === "auto" ? `(→ ${effectiveMode})` : "";
-      plotTabsByRow.style.display = effectiveMode === "f1" ? "" : "none";
+      plotTabsByRow.style.display = effectiveMode === "bars" ? "" : "none";
       plotConfusionTabsByRow.style.display = effectiveMode === "confusion_matrix" ? "" : "none";
       plotGroupBarsRow.style.display = effectiveMode === "confusion_matrix" ? "none" : "";
       plotShowLegendOnceRow.style.display = "none";
@@ -4496,7 +4496,7 @@
       if (metricType === "ErrorCollector") {
         return "errors";
       }
-      return "f1";
+      return "bars";
     }
 
     function formatRounded(value, precision) {
@@ -4819,7 +4819,7 @@
       return entries;
     }
 
-    function buildF1TabMap(plotEntries) {
+    function buildBarsTabMap(plotEntries) {
       const tabMap = new Map();
       for (const entry of plotEntries) {
         const tabKey = state.plotTabsBy === "suffix" ? entry.suffix : entry.prefix;
@@ -4916,7 +4916,7 @@
     }
 
     // Plot rendering always starts from the currently selected prediction groups and selected eval groups,
-    // then branches into mode-specific aggregation/rendering (f1, errors, confusion matrix).
+    // then branches into mode-specific aggregation/rendering (bars, errors, confusion matrix).
     /**
      * Render evaluation plots from the current selector-derived evaluation context.
      */
@@ -5085,7 +5085,7 @@
 
       const tabMap = effectiveMode === "errors"
         ? buildErrorsTabMap(plotEntries)
-        : buildF1TabMap(plotEntries);
+        : buildBarsTabMap(plotEntries);
 
       renderPlotTabsAndGrid(tabMap, activeExperiment, groupBarFields, effectiveMode);
     }
