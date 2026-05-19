@@ -117,11 +117,12 @@ To refresh the normal expected test fixtures:
 WRITE_FIXTURE_DATA=1 pytest tests/integration/test_extractors.py tests/integration/test_predict.py
 ```
 
-Alternatively, refresh only LLM chat replay fixtures:
+Alternatively, also refresh LLM chat replay fixtures:
 
 ```sh
-WRITE_LLM_CHAT_FIXTURE_DATA=1 pytest tests/integration/test_extractors.py tests/integration/test_predict.py
+WRITE_LLM_CHAT_FIXTURE_DATA=1 WRITE_FIXTURE_DATA=1 pytest tests/integration/test_extractors.py tests/integration/test_predict.py
 ```
+Note: Adjusting the LLM replay fixtures usually results in different output and, thus, requires to regenerate the normal fixture data via `WRITE_FIXTURE_DATA=1`.
 
 If you add a new test that requires LLM interaction, you can require the test to have a working deployment, but it is encouraged to use `llm_chat_replay` instead.
 
