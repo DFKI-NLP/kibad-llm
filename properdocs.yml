@@ -41,8 +41,17 @@ nav:
 # defer to gen-files + literate-nav
 - KIBA-D code Reference: reference/kibad_llm/
 
+hooks:
+- scripts/docs_hooks.py
+
 plugins:
 - search
+- redirects:
+    redirect_maps:
+      'README.md': 'root-readme.md'
+      'models/README.md': 'models-readme.md'
+      'podman/faktencheck-db/README.md': 'podman-readme.md'
+      'CONTRIBUTING.md': 'contributing.md'
 - gen-files:
     scripts:
     - scripts/build_docs.py

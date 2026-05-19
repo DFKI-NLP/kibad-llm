@@ -125,7 +125,7 @@ repos:
       - id: check-mkdocs
         name: check-mkdocs (uv)
         entry: uv run --group cicd check-mkdocs
-        args: ["--config", "mkdocs.yml"]  # Optional, mkdocs.yml is the default
+        args: ["--config", "properdocs.yml"]  # Optional, mkdocs.yml is the default
         language: system
         pass_filenames: false
         priority: 90
