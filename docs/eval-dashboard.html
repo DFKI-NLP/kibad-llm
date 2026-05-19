@@ -1020,13 +1020,56 @@
     const barTooltip = document.getElementById("barTooltip");
     const GITHUB_TOKEN_STORAGE_KEY = "evalDashboard.githubToken";
     const SORTABLE_CONTROL_COLUMNS = new Set(["expand", "select", "group_size"]);
-    const EVAL_METADATA_COLUMN_PREFIX = "job_return_value.";
-    const EVAL_FIELD_GROUP_PREFIX = "eval.";
+    const EVALUATION_FIELD_SECTION_ORDER = ["overrides", "job_return_value", "meta"];
     const sortCollator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
 
     // Selectors and accessors for the canonical predictions/evaluations state shape.
-    function isEvalMetadataColumn(column) {
-      return column.startsWith(EVAL_METADATA_COLUMN_PREFIX);
+    /**
+     * Create one typed evaluation field descriptor.
+     */
+    function createEvaluationFieldDescriptor({ id, source, section, label, key = null, path = null, supportsGrouping = true, supportsDefaults = true, supportsTruncation = true }) {
+      return { id, scope: "evaluation", source, section, label, key, path, supportsGrouping, supportsDefaults, supportsTruncation };
+    }
+
+    /**
+     * Create the synthetic evaluation meta field for the evaluation run directory.
+     */
+    function createEvaluationRunDirFieldDescriptor() {
+      return createEvaluationFieldDescriptor({
+        id: "eval_run_dir",
+        source: "meta",
+        section: "meta",
+        label: "eval_run_dir",
+        supportsGrouping: false,
+        supportsDefaults: false,
+      });
+    }
+
+    function createEvaluationOverrideFieldDescriptor(key) {
+      return createEvaluationFieldDescriptor({
+        id: key,
+        source: "overrides",
+        section: "overrides",
+        label: key,
+        key,
+      });
+    }
+
+    function createEvaluationJobReturnValueFieldDescriptor(flattenedKey) {
+      return createEvaluationFieldDescriptor({
+        id: `job_return_value.${flattenedKey}`,
+        source: "jobReturnValue",
+        section: "job_return_value",
+        label: flattenedKey,
+        key: flattenedKey,
+      });
+    }
+
+    /**
+     * Return the stable id of either a field descriptor or a raw field id.
+     */
+    function getFieldId(field) {
+      return field && typeof field === "object" ? field.id : field;
     }
 
     function reconstructPredictionContent(prediction) {
@@ -1181,24 +1224,80 @@
       return flattenObject(evaluation?.jobReturnValue || {});
     }
 
-    function getEvaluationColumnRawValue(evaluation, column) {
+    /**
+     * Derive typed evaluation field descriptors for the currently loaded evaluations.
+     */
+    function getEvaluationFields(evaluations = []) {
+      const fieldsById = new Map();
+      const runDirField = createEvaluationRunDirFieldDescriptor();
+      fieldsById.set(runDirField.id, runDirField);
+
+      for (const evaluation of evaluations) {
+        for (const key of Object.keys(evaluation.overrides || {})) {
+          if (!fieldsById.has(key)) {
+            fieldsById.set(key, createEvaluationOverrideFieldDescriptor(key));
+          }
+        }
+        for (const key of Object.keys(getFlattenedEvaluationJobReturnValue(evaluation))) {
+          const fieldId = `job_return_value.${key}`;
+          if (!fieldsById.has(fieldId)) {
+            fieldsById.set(fieldId, createEvaluationJobReturnValueFieldDescriptor(key));
+          }
+        }
+      }
+
+      const sectionOrder = new Map(EVALUATION_FIELD_SECTION_ORDER.map((section, index) => [section, index]));
+      return Array.from(fieldsById.values()).sort((left, right) => {
+        const sectionComparison = (sectionOrder.get(left.section) ?? 99) - (sectionOrder.get(right.section) ?? 99);
+        if (sectionComparison !== 0) {
+          return sectionComparison;
+        }
+        return left.label.localeCompare(right.label);
+      });
+    }
+
+    /**
+     * Resolve an evaluation field descriptor from either a descriptor object or a field id.
+     */
+    function getEvaluationFieldDescriptor(field, evalFields = getActiveEvalFields()) {
+      if (field && typeof field === "object" && typeof field.id === "string") {
+        return field;
+      }
+      if (typeof field !== "string") {
+        return null;
+      }
+      return evalFields.find((candidate) => candidate.id === field) || null;
+    }
+
+    /**
+     * Read the raw value of one evaluation field from the canonical evaluation object.
+     */
+    function getEvaluationColumnRawValue(evaluation, field, evalFields = getActiveEvalFields()) {
       if (!evaluation || typeof evaluation !== "object") {
         return undefined;
       }
-      if (column === "eval_run_dir") {
+      const descriptor = getEvaluationFieldDescriptor(field, evalFields);
+      if (!descriptor) {
+        return undefined;
+      }
+      if (descriptor.source === "meta") {
         return evaluation.runDir;
       }
-      if (column.startsWith(EVAL_FIELD_GROUP_PREFIX)) {
-        return getEvaluationColumnRawValue(evaluation, column.slice(EVAL_FIELD_GROUP_PREFIX.length));
+      if (descriptor.source === "jobReturnValue") {
+        return getFlattenedEvaluationJobReturnValue(evaluation)[descriptor.key];
       }
-      if (isEvalMetadataColumn(column)) {
-        return getFlattenedEvaluationJobReturnValue(evaluation)[column.slice(EVAL_METADATA_COLUMN_PREFIX.length)];
-      }
-      return evaluation?.overrides?.[column];
+      return evaluation?.overrides?.[descriptor.key];
     }
 
-    function getEvaluationEffectiveValue(evaluation, column, evalTabState) {
-      return getEffectiveValue(getEvaluationColumnRawValue(evaluation, column), getEvalDefaultValue(evalTabState, column));
+    /**
+     * Read the effective evaluation field value after applying configured defaults.
+     */
+    function getEvaluationEffectiveValue(evaluation, field, evalTabState, evalFields = getActiveEvalFields()) {
+      const fieldId = getFieldId(field);
+      return getEffectiveValue(
+        getEvaluationColumnRawValue(evaluation, fieldId, evalFields),
+        getEvalDefaultValue(evalTabState, fieldId)
+      );
     }
 
     function getEvaluationExperiment(evaluation) {
@@ -1245,22 +1344,6 @@
         return [];
       }
       return selectedEvaluations.filter((evaluation) => getEvaluationExperiment(evaluation) === experiment);
-    }
-
-    /**
-     * Collect all evaluation columns currently present across the given evaluations.
-     */
-    function getEvaluationColumns(evaluations = []) {
-      const evalColumns = new Set();
-      for (const evaluation of evaluations) {
-        for (const key of Object.keys(evaluation.overrides || {})) {
-          evalColumns.add(key);
-        }
-        for (const key of Object.keys(getFlattenedEvaluationJobReturnValue(evaluation))) {
-          evalColumns.add(`${EVAL_METADATA_COLUMN_PREFIX}${key}`);
-        }
-      }
-      return Array.from(evalColumns).sort();
     }
 
     function showBarTooltip(event, lines) {
@@ -1801,25 +1884,26 @@
       return column.replace(/^predictions?\./, "");
     }
 
-    function displayEvalColumnName(column) {
-      if (column.startsWith(EVAL_FIELD_GROUP_PREFIX)) {
-        return displayEvalColumnName(column.slice(EVAL_FIELD_GROUP_PREFIX.length));
-      }
-      if (column.startsWith(EVAL_METADATA_COLUMN_PREFIX)) {
-        return column.slice(EVAL_METADATA_COLUMN_PREFIX.length);
-      }
-      return column.replace(/^overrides\./, "");
+    /**
+     * Return the display label for one evaluation field descriptor or field id.
+     */
+    function displayEvalColumnName(field, evalFields = getActiveEvalFields()) {
+      const descriptor = getEvaluationFieldDescriptor(field, evalFields);
+      return descriptor?.label || normalizeValue(getFieldId(field));
     }
 
-    function displayGroupFieldName(column) {
-      if (
-        column.startsWith(EVAL_FIELD_GROUP_PREFIX) ||
-        column.startsWith(EVAL_METADATA_COLUMN_PREFIX) ||
-        column.startsWith("overrides.")
-      ) {
-        return displayEvalColumnName(column);
+    /**
+     * Return a display label for either an evaluation field, a plot-group field, or a prediction field id.
+     */
+    function displayGroupFieldName(field, evalFields = getActiveEvalFields()) {
+      if (field && typeof field === "object" && typeof field.label === "string") {
+        return field.label;
       }
-      return displayPredictionColumnName(column);
+      const evaluationField = getEvaluationFieldDescriptor(field, evalFields);
+      if (evaluationField) {
+        return evaluationField.label;
+      }
+      return displayPredictionColumnName(getFieldId(field));
     }
 
     function splitLabelByLastDot(label) {
@@ -1844,8 +1928,8 @@
       return getPlotDisplayLabel(plotEntry.metricLabel);
     }
 
-    function displayPlotGroupFieldName(column) {
-      return getPlotDisplayLabel(displayGroupFieldName(column));
+    function displayPlotGroupFieldName(field, evalFields = getActiveEvalFields()) {
+      return getPlotDisplayLabel(displayGroupFieldName(field, evalFields));
     }
 
     function getDefaultTruncateColumns(predictionColumns) {
@@ -1891,16 +1975,19 @@
       );
     }
 
-    function getDefaultEvalGroupByFields(evalColumns, evaluations = []) {
-      const candidateColumns = evalColumns.filter((column) => {
-        const normalized = displayEvalColumnName(column);
+    function getDefaultEvalGroupByFields(evalFields, evaluations = []) {
+      const candidateFields = evalFields.filter((field) => {
+        if (!field.supportsGrouping) {
+          return false;
+        }
+        const normalized = displayEvalColumnName(field, evalFields);
         return normalized !== "dataset.predictions.log";
       });
       return getColumnsWithMultipleValues(
         evaluations,
-        candidateColumns,
-        (evaluation, column) => getEvaluationColumnRawValue(evaluation, column)
-      );
+        candidateFields,
+        (evaluation, field) => getEvaluationColumnRawValue(evaluation, field, evalFields)
+      ).map((field) => field.id);
     }
 
     function getDefaultEvalTruncateColumns() {
@@ -1991,16 +2078,16 @@
       return predictionViews.filter((predictionView) => isMissingValue(predictionView.predictionFlat?.[column])).length;
     }
 
-    function getEvalColumnsWithMissingValues(evaluations, evalColumns) {
-      return evalColumns.filter((column) => evaluations.some((evaluation) => isMissingValue(getEvaluationColumnRawValue(evaluation, column))));
+    function getEvalFieldsWithMissingValues(evaluations, evalFields) {
+      return evalFields.filter((field) => evaluations.some((evaluation) => isMissingValue(getEvaluationColumnRawValue(evaluation, field, evalFields))));
     }
 
-    function getEvalDefaultSuggestions(evaluations, column) {
-      return collectSuggestionValues(evaluations.map((evaluation) => getEvaluationColumnRawValue(evaluation, column)));
+    function getEvalDefaultSuggestions(evaluations, field, evalFields = getActiveEvalFields()) {
+      return collectSuggestionValues(evaluations.map((evaluation) => getEvaluationColumnRawValue(evaluation, field, evalFields)));
     }
 
-    function getEvalMissingValueCount(evaluations, column) {
-      return evaluations.filter((evaluation) => isMissingValue(getEvaluationColumnRawValue(evaluation, column))).length;
+    function getEvalMissingValueCount(evaluations, field, evalFields = getActiveEvalFields()) {
+      return evaluations.filter((evaluation) => isMissingValue(getEvaluationColumnRawValue(evaluation, field, evalFields))).length;
     }
 
     function createMissingDefaultControl({ listElement, column, label, value, suggestions, missingCount, onCommit, inputIdPrefix }) {
@@ -2071,52 +2158,55 @@
     }
 
 
-    function getEvalColumnSections(evalColumns) {
-      const overrides = evalColumns.filter((column) => !isEvalMetadataColumn(column)).sort();
-      const metadata = evalColumns.filter((column) => isEvalMetadataColumn(column)).sort();
-      return [
-        { label: "overrides", columns: overrides },
-        { label: "job_return_value", columns: metadata },
-      ].filter((section) => section.columns.length > 0);
+    /**
+     * Split evaluation field descriptors into renderable header sections.
+     */
+    function getEvaluationFieldSections(evalFields) {
+      return EVALUATION_FIELD_SECTION_ORDER
+        .map((section) => ({
+          label: section,
+          fields: evalFields.filter((field) => field.section === section),
+        }))
+        .filter((section) => section.fields.length > 0);
     }
 
     /**
-     * Return the evaluation columns for the currently active evaluation experiment.
+     * Return the evaluation fields for the currently active evaluation experiment.
      */
-    function getActiveEvalColumns() {
+    function getActiveEvalFields() {
       if (!state.activeEvalTab) {
         return [];
       }
-      return getEvaluationContext(state.activeEvalTab)?.evalColumns || [];
+      return getEvaluationContext(state.activeEvalTab)?.evalFields || [];
     }
 
-    function setActiveEvalGroupByFields(columns) {
+    function setActiveEvalGroupByFields(fieldIds) {
       if (!state.activeEvalTab) {
         return;
       }
-      const evalColumns = getActiveEvalColumns();
-      const evalTabState = ensureEvalTabState(state.activeEvalTab, evalColumns);
-      const validColumns = new Set(evalColumns);
-      evalTabState.groupByFields = [...new Set(columns)].filter((column) => validColumns.has(column));
+      const evalFields = getActiveEvalFields();
+      const evalTabState = ensureEvalTabState(state.activeEvalTab, evalFields);
+      const validFieldIds = new Set(evalFields.filter((field) => field.supportsGrouping).map((field) => field.id));
+      evalTabState.groupByFields = [...new Set(fieldIds)].filter((fieldId) => validFieldIds.has(fieldId));
       renderEvaluations();
     }
 
-    function renderEvalGroupByButtons(evalColumns) {
-      const hasColumns = evalColumns.length > 0;
-      evalGroupByAllButton.disabled = !hasColumns;
-      evalGroupByToggleButton.disabled = !hasColumns;
-      evalGroupByNoneButton.disabled = !hasColumns;
+    function renderEvalGroupByButtons(evalFields) {
+      const groupableCount = evalFields.filter((field) => field.supportsGrouping).length;
+      evalGroupByAllButton.disabled = groupableCount === 0;
+      evalGroupByToggleButton.disabled = groupableCount === 0;
+      evalGroupByNoneButton.disabled = groupableCount === 0;
     }
 
     function ensureEvalTabState(
       experiment,
-      evalColumns,
+      evalFields,
       evaluations = getSelectedEvaluationsForExperiment(experiment)
     ) {
       if (!state.evalTabStates[experiment]) {
         state.evalTabStates[experiment] = {
-          knownColumns: [...evalColumns],
-          groupByFields: getDefaultEvalGroupByFields(evalColumns, evaluations),
+          knownColumns: evalFields.map((field) => field.id),
+          groupByFields: getDefaultEvalGroupByFields(evalFields, evaluations),
           sort: [],
           truncateEnabledColumns: new Set(),
           defaultValues: {},
@@ -2132,31 +2222,37 @@
 
       const tabState = state.evalTabStates[experiment];
       const known = new Set(tabState.knownColumns || []);
+      const validFieldIds = new Set(evalFields.map((field) => field.id));
+      const groupableFieldIds = new Set(evalFields.filter((field) => field.supportsGrouping).map((field) => field.id));
+      const defaultableFieldIds = new Set(evalFields.filter((field) => field.supportsDefaults).map((field) => field.id));
+      const truncatableFieldIds = new Set(evalFields.filter((field) => field.supportsTruncation).map((field) => field.id));
       if (!(tabState.truncateEnabledColumns instanceof Set)) {
         tabState.truncateEnabledColumns = getDefaultEvalTruncateColumns();
       }
       if (!tabState.defaultValues || typeof tabState.defaultValues !== "object") {
         tabState.defaultValues = {};
+      } else {
+        tabState.defaultValues = Object.fromEntries(
+          Object.entries(tabState.defaultValues).filter(([fieldId]) => defaultableFieldIds.has(fieldId))
+        );
       }
       if (!(tabState.availableGroupIds instanceof Set)) {
         tabState.availableGroupIds = new Set();
       }
-      for (const column of evalColumns) {
-        if (!known.has(column)) {
-          known.add(column);
-          if (getDefaultEvalGroupByFields([column], evaluations).length) {
-            tabState.groupByFields = [...new Set([...tabState.groupByFields, column])];
+      for (const field of evalFields) {
+        if (!known.has(field.id)) {
+          known.add(field.id);
+          if (field.supportsGrouping && getDefaultEvalGroupByFields([field], evaluations).length) {
+            tabState.groupByFields = [...new Set([...tabState.groupByFields, field.id])];
           }
         }
       }
       tabState.knownColumns = [...known];
-      tabState.groupByFields = tabState.groupByFields.filter((field) => known.has(field));
+      tabState.groupByFields = tabState.groupByFields.filter((fieldId) => groupableFieldIds.has(fieldId));
       tabState.truncateEnabledColumns = new Set(
-        Array.from(tabState.truncateEnabledColumns).filter(
-          (field) => known.has(field) || field === "eval_run_dir"
-        )
+        Array.from(tabState.truncateEnabledColumns).filter((fieldId) => truncatableFieldIds.has(fieldId))
       );
-      const validSortColumns = new Set([...SORTABLE_CONTROL_COLUMNS, ...known, "eval_run_dir"]);
+      const validSortColumns = new Set([...SORTABLE_CONTROL_COLUMNS, ...validFieldIds]);
       tabState.sort = normalizeSortConfig(tabState.sort, validSortColumns);
       if (!tabState.activeOptionsTab) {
         tabState.activeOptionsTab = "truncate";
@@ -2205,7 +2301,11 @@
     });
 
     evalGroupByAllButton.addEventListener("click", () => {
-      setActiveEvalGroupByFields(getActiveEvalColumns());
+      setActiveEvalGroupByFields(
+        getActiveEvalFields()
+          .filter((field) => field.supportsGrouping)
+          .map((field) => field.id)
+      );
     });
 
     evalGroupByNoneButton.addEventListener("click", () => {
@@ -2216,10 +2316,11 @@
       if (!state.activeEvalTab) {
         return;
       }
-      const evalColumns = getActiveEvalColumns();
-      const evalTabState = ensureEvalTabState(state.activeEvalTab, evalColumns);
-      const nextGroupByFields = evalColumns.filter(
-        (column) => !evalTabState.groupByFields.includes(column)
+      const evalFields = getActiveEvalFields();
+      const groupableFieldIds = evalFields.filter((field) => field.supportsGrouping).map((field) => field.id);
+      const evalTabState = ensureEvalTabState(state.activeEvalTab, evalFields);
+      const nextGroupByFields = groupableFieldIds.filter(
+        (fieldId) => !evalTabState.groupByFields.includes(fieldId)
       );
       setActiveEvalGroupByFields(nextGroupByFields);
     });
@@ -2236,7 +2337,7 @@
       if (!state.activeEvalTab) {
         return;
       }
-      const evalTabState = ensureEvalTabState(state.activeEvalTab, getActiveEvalColumns());
+      const evalTabState = ensureEvalTabState(state.activeEvalTab, getActiveEvalFields());
       if (!normalizeSortConfig(evalTabState.sort).length) {
         return;
       }
@@ -2330,30 +2431,29 @@
       }
     }
 
-    function renderEvalTruncateControls(activeExperiment, evalColumns) {
+    function renderEvalTruncateControls(activeExperiment, evalFields) {
       if (!activeExperiment || !state.evalTabStates[activeExperiment]) {
         evalTruncateColumnsList.innerHTML = "";
         return;
       }
       const tabState = state.evalTabStates[activeExperiment];
-      const optionColumns = [...new Set([...evalColumns, "eval_run_dir"])];
       evalTruncateColumnsList.innerHTML = "";
-      for (const column of optionColumns) {
+      for (const field of evalFields.filter((candidate) => candidate.supportsTruncation)) {
         const wrapper = document.createElement("label");
         wrapper.className = "truncate-item";
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
-        checkbox.checked = tabState.truncateEnabledColumns.has(column);
+        checkbox.checked = tabState.truncateEnabledColumns.has(field.id);
         checkbox.addEventListener("change", () => {
           if (checkbox.checked) {
-            tabState.truncateEnabledColumns.add(column);
+            tabState.truncateEnabledColumns.add(field.id);
           } else {
-            tabState.truncateEnabledColumns.delete(column);
+            tabState.truncateEnabledColumns.delete(field.id);
           }
           renderEvaluations();
         });
         const text = document.createElement("span");
-        text.textContent = displayEvalColumnName(column);
+        text.textContent = displayEvalColumnName(field, evalFields);
         wrapper.appendChild(checkbox);
         wrapper.appendChild(text);
         evalTruncateColumnsList.appendChild(wrapper);
@@ -2373,26 +2473,29 @@
         setPanelVisibility(evalDefaultsPanel, false);
         return;
       }
-      const { evalColumns, evalTabState } = evaluationContext;
+      const { evalFields, evalTabState } = evaluationContext;
       const selectedEvaluations = getSelectedEvaluationGroups(evaluationContext).flatMap(
         (group) => group.evaluations
       );
-      const columns = getEvalColumnsWithMissingValues(selectedEvaluations, evalColumns);
-      setPanelVisibility(evalDefaultsPanel, columns.length > 0);
-      if (!columns.length) {
+      const fields = getEvalFieldsWithMissingValues(
+        selectedEvaluations,
+        evalFields.filter((field) => field.supportsDefaults)
+      );
+      setPanelVisibility(evalDefaultsPanel, fields.length > 0);
+      if (!fields.length) {
         return;
       }
-      for (const column of columns) {
+      for (const field of fields) {
         createMissingDefaultControl({
           listElement: evalDefaultsList,
-          column,
-          label: displayEvalColumnName(column),
-          value: getEvalDefaultValue(evalTabState, column),
-          suggestions: getEvalDefaultSuggestions(selectedEvaluations, column),
-          missingCount: getEvalMissingValueCount(selectedEvaluations, column),
+          column: field.id,
+          label: displayEvalColumnName(field, evalFields),
+          value: getEvalDefaultValue(evalTabState, field.id),
+          suggestions: getEvalDefaultSuggestions(selectedEvaluations, field, evalFields),
+          missingCount: getEvalMissingValueCount(selectedEvaluations, field, evalFields),
           inputIdPrefix: `eval-default-${activeExperiment.replace(/[^a-zA-Z0-9_-]+/g, "-")}`,
           onCommit: (nextValue) => {
-            setConfiguredDefault(evalTabState.defaultValues, column, nextValue);
+            setConfiguredDefault(evalTabState.defaultValues, field.id, nextValue);
             renderEvaluations();
           },
         });
@@ -2761,7 +2864,7 @@
       if (!state.activeEvalTab) {
         return;
       }
-      const evalTabState = ensureEvalTabState(state.activeEvalTab, getActiveEvalColumns());
+      const evalTabState = ensureEvalTabState(state.activeEvalTab, getActiveEvalFields());
       evalTabState.sort = getNextSortConfig(evalTabState.sort, column, { append: event.shiftKey });
       renderEvaluations();
     }
@@ -2776,16 +2879,19 @@
       predictionResetSortButton.disabled = !state.predictionSort.length;
     }
 
-    function renderEvalSortStatus(activeExperiment = state.activeEvalTab, evalColumns = getActiveEvalColumns()) {
+    function renderEvalSortStatus(activeExperiment = state.activeEvalTab, evalFields = getActiveEvalFields()) {
       if (!activeExperiment) {
-        evalSortedByLabel.textContent = formatSortLabel([], displayEvalColumnName);
+        evalSortedByLabel.textContent = formatSortLabel([], (fieldId) => displayEvalColumnName(fieldId, []));
         evalResetSortButton.disabled = true;
         return;
       }
-      const evalTabState = ensureEvalTabState(activeExperiment, evalColumns);
-      const validSortColumns = new Set([...SORTABLE_CONTROL_COLUMNS, ...evalColumns, "eval_run_dir"]);
+      const evalTabState = ensureEvalTabState(activeExperiment, evalFields);
+      const validSortColumns = new Set([...SORTABLE_CONTROL_COLUMNS, ...evalFields.map((field) => field.id)]);
       evalTabState.sort = normalizeSortConfig(evalTabState.sort, validSortColumns);
-      evalSortedByLabel.textContent = formatSortLabel(evalTabState.sort, displayEvalColumnName);
+      evalSortedByLabel.textContent = formatSortLabel(
+        evalTabState.sort,
+        (fieldId) => displayEvalColumnName(fieldId, evalFields)
+      );
       evalResetSortButton.disabled = !evalTabState.sort.length;
     }
 
@@ -3848,7 +3954,8 @@
       evaluations,
       groupByFields,
       predictionGroupByFields = state.groupByFields,
-      evalTabState = state.activeEvalTab ? state.evalTabStates[state.activeEvalTab] : null
+      evalTabState = state.activeEvalTab ? state.evalTabStates[state.activeEvalTab] : null,
+      evalFields = getActiveEvalFields()
     ) {
       const map = new Map();
       for (const evaluation of evaluations) {
@@ -3857,7 +3964,7 @@
           keyParts.push(`prediction.${field}=${getPredictionEffectiveValue(getFlattenedPredictionForEvaluation(evaluation), field)}`);
         }
         for (const field of groupByFields) {
-          keyParts.push(`eval.${field}=${getEvaluationEffectiveValue(evaluation, field, evalTabState)}`);
+          keyParts.push(`eval.${field}=${getEvaluationEffectiveValue(evaluation, field, evalTabState, evalFields)}`);
         }
         const groupId = keyParts.length ? keyParts.join(" | ") : evaluation.runDir;
         if (!map.has(groupId)) {
@@ -3865,7 +3972,7 @@
             groupId,
             evaluations: [],
             values: Object.fromEntries(
-              groupByFields.map((field) => [field, getEvaluationEffectiveValue(evaluation, field, evalTabState)])
+              groupByFields.map((field) => [field, getEvaluationEffectiveValue(evaluation, field, evalTabState, evalFields)])
             ),
           });
         }
@@ -3874,7 +3981,7 @@
       return Array.from(map.values()).sort((a, b) => b.evaluations.length - a.evaluations.length);
     }
 
-    function getEvaluationGroupSortValue(group, column, evalTabState) {
+    function getEvaluationGroupSortValue(group, column, evalTabState, evalFields = getActiveEvalFields()) {
       if (column === "expand") {
         return evalTabState.expandedGroupIds.has(group.groupId) ? 1 : 0;
       }
@@ -3884,34 +3991,28 @@
       if (column === "group_size") {
         return group.evaluations.length;
       }
-      if (column === "eval_run_dir") {
-        return getGroupValueDisplayFromEvaluations(group.evaluations, (evaluation) => evaluation.runDir);
-      }
       return getGroupValueDisplayFromEvaluations(
         group.evaluations,
-        (evaluation) => getEvaluationEffectiveValue(evaluation, column, evalTabState)
+        (evaluation) => getEvaluationEffectiveValue(evaluation, column, evalTabState, evalFields)
       );
     }
 
-    function getEvaluationRunSortValue(evaluation, column, evalTabState) {
-      if (column === "eval_run_dir") {
-        return evaluation.runDir;
-      }
+    function getEvaluationRunSortValue(evaluation, column, evalTabState, evalFields = getActiveEvalFields()) {
       if (SORTABLE_CONTROL_COLUMNS.has(column)) {
         return "";
       }
-      return getEvaluationEffectiveValue(evaluation, column, evalTabState);
+      return getEvaluationEffectiveValue(evaluation, column, evalTabState, evalFields);
     }
 
-    function getSortedEvaluationGroups(groups, evalTabState) {
+    function getSortedEvaluationGroups(groups, evalTabState, evalFields = getActiveEvalFields()) {
       return sortItems(groups, evalTabState.sort, (group, column) =>
-        getEvaluationGroupSortValue(group, column, evalTabState)
+        getEvaluationGroupSortValue(group, column, evalTabState, evalFields)
       );
     }
 
-    function getSortedEvaluationRuns(evaluations, evalTabState) {
+    function getSortedEvaluationRuns(evaluations, evalTabState, evalFields = getActiveEvalFields()) {
       return sortItems(evaluations, evalTabState.sort, (evaluation, column) =>
-        getEvaluationRunSortValue(evaluation, column, evalTabState)
+        getEvaluationRunSortValue(evaluation, column, evalTabState, evalFields)
       );
     }
 
@@ -3945,19 +4046,20 @@
         return null;
       }
       const experimentEvaluations = getSelectedEvaluationsForExperiment(activeExperiment, selectedEvaluations);
-      const evalColumns = getEvaluationColumns(experimentEvaluations);
-      const evalTabState = ensureEvalTabState(activeExperiment, evalColumns, experimentEvaluations);
+      const evalFields = getEvaluationFields(experimentEvaluations);
+      const evalTabState = ensureEvalTabState(activeExperiment, evalFields, experimentEvaluations);
       const evaluationGroups = getEvaluationGroups(
         experimentEvaluations,
         evalTabState.groupByFields,
         state.groupByFields,
-        evalTabState
+        evalTabState,
+        evalFields
       );
       syncEvaluationGroupUiState(evalTabState, evaluationGroups, experimentEvaluations);
       return {
         activeExperiment,
         experimentEvaluations,
-        evalColumns,
+        evalFields,
         evalTabState,
         evaluationGroups,
       };
@@ -3997,7 +4099,8 @@
         return [];
       }
       return fields.filter((field) => {
-        const values = new Set(groups.map((group) => normalizeValue(group.values?.[field])));
+        const fieldId = getFieldId(field);
+        const values = new Set(groups.map((group) => normalizeValue(group.values?.[fieldId])));
         return values.size > 1;
       });
     }
@@ -4010,7 +4113,7 @@
       return labelFields
         .map(
           (field) =>
-            `${fieldNameFormatter(field)}=${normalizeValue(group.values[field])}`
+            `${fieldNameFormatter(field)}=${normalizeValue(group.values[getFieldId(field)])}`
         )
         .join(" | ");
     }
@@ -4019,11 +4122,43 @@
      * Combine prediction grouping and evaluation grouping into the plot-group shape
      * consumed by plot and confusion-matrix rendering.
      */
-    function getPlotGroups(activeExperiment, selectedEvalGroups, evalGroupByFields, evalTabState) {
-      const allFields = [...new Set([
-        ...state.groupByFields,
-        ...evalGroupByFields.map((field) => `${EVAL_FIELD_GROUP_PREFIX}${field}`),
-      ])];
+    /**
+     * Wrap one prediction grouping field as a plot-field descriptor.
+     */
+    function getPredictionPlotFieldDescriptor(fieldId) {
+      return {
+        id: `prediction:${fieldId}`,
+        scope: "prediction",
+        label: displayPredictionColumnName(fieldId),
+        getEffectiveValue: (evaluation) =>
+          getPredictionEffectiveValue(getFlattenedPredictionForEvaluation(evaluation), fieldId),
+      };
+    }
+
+    /**
+     * Wrap one evaluation grouping field as a plot-field descriptor.
+     */
+    function getEvaluationPlotFieldDescriptor(fieldId, evalFields = getActiveEvalFields()) {
+      const evaluationField = getEvaluationFieldDescriptor(fieldId, evalFields);
+      if (!evaluationField) {
+        return null;
+      }
+      return {
+        id: `evaluation:${evaluationField.id}`,
+        scope: "evaluation",
+        label: evaluationField.label,
+        getEffectiveValue: (evaluation, evalTabState) =>
+          getEvaluationEffectiveValue(evaluation, evaluationField.id, evalTabState, evalFields),
+      };
+    }
+
+    function getPlotGroups(activeExperiment, selectedEvalGroups, evalGroupByFields, evalTabState, evalFields = getActiveEvalFields()) {
+      const allFields = [
+        ...state.groupByFields.map((fieldId) => getPredictionPlotFieldDescriptor(fieldId)),
+        ...evalGroupByFields
+          .map((fieldId) => getEvaluationPlotFieldDescriptor(fieldId, evalFields))
+          .filter(Boolean),
+      ];
 
       const map = new Map();
       for (const evalGroup of selectedEvalGroups) {
@@ -4033,18 +4168,10 @@
           }
           const values = {};
           for (const field of allFields) {
-            if (field.startsWith(EVAL_FIELD_GROUP_PREFIX)) {
-              values[field] = getEvaluationEffectiveValue(
-                evaluation,
-                field.slice(EVAL_FIELD_GROUP_PREFIX.length),
-                evalTabState
-              );
-            } else {
-              values[field] = getPredictionEffectiveValue(getFlattenedPredictionForEvaluation(evaluation), field);
-            }
+            values[field.id] = field.getEffectiveValue(evaluation, evalTabState);
           }
           const groupId = allFields.length
-            ? allFields.map((field) => `${field}=${normalizeValue(values[field])}`).join(" | ")
+            ? allFields.map((field) => `${field.id}=${normalizeValue(values[field.id])}`).join(" | ")
             : evaluation.runDir;
           if (!map.has(groupId)) {
             map.set(groupId, { groupId, values, evaluations: [] });
@@ -4713,12 +4840,12 @@
           chip.className = "truncate-item";
           const checkbox = document.createElement("input");
           checkbox.type = "checkbox";
-          checkbox.checked = state.plotGroupBarFields.has(field);
+          checkbox.checked = state.plotGroupBarFields.has(field.id);
           checkbox.addEventListener("change", () => {
             if (checkbox.checked) {
-              state.plotGroupBarFields.add(field);
+              state.plotGroupBarFields.add(field.id);
             } else {
-              state.plotGroupBarFields.delete(field);
+              state.plotGroupBarFields.delete(field.id);
             }
             renderEvaluationPlots(activeExperiment);
           });
@@ -4904,7 +5031,7 @@
         return;
       }
 
-      const { experimentEvaluations, evalTabState } = evaluationContext;
+      const { experimentEvaluations, evalFields, evalTabState } = evaluationContext;
       const selectedEvalGroups = getSelectedEvaluationGroups(evaluationContext);
       if (selectedEvalGroups.length === 0) {
         const msg = document.createElement("p");
@@ -4918,7 +5045,8 @@
         activeExperiment,
         selectedEvalGroups,
         evalTabState.groupByFields,
-        evalTabState
+        evalTabState,
+        evalFields
       );
       const plotGroups = combined.groups;
       const plotGroupFields = combined.fields;
@@ -5022,12 +5150,13 @@
       }
 
       const varyingGroupByFields = varyingPlotGroupFields;
+      const validPlotGroupFieldIds = new Set(varyingGroupByFields.map((field) => field.id));
       state.plotGroupBarFields = new Set(
-        Array.from(state.plotGroupBarFields).filter((field) => new Set(varyingGroupByFields).has(field))
+        Array.from(state.plotGroupBarFields).filter((fieldId) => validPlotGroupFieldIds.has(fieldId))
       );
       renderGroupBarChips(varyingGroupByFields, activeExperiment);
 
-      const groupBarFields = varyingGroupByFields.filter((field) => state.plotGroupBarFields.has(field));
+      const groupBarFields = varyingGroupByFields.filter((field) => state.plotGroupBarFields.has(field.id));
       const categoryFields = varyingGroupByFields.filter((field) => !groupBarFields.includes(field));
 
       const plotEntries = buildPlotEntries(metricPaths, plotGroups, groupBarFields, categoryFields);
@@ -5090,19 +5219,19 @@
       const evaluationContext = getEvaluationContext(state.activeEvalTab, selectedEvaluations);
       const {
         experimentEvaluations,
-        evalColumns,
+        evalFields,
         evalTabState,
         evaluationGroups,
       } = evaluationContext;
-      const evalColumnSections = getEvalColumnSections(evalColumns);
-      const orderedEvalColumns = evalColumnSections.flatMap((section) => section.columns);
-      renderEvalSortStatus(state.activeEvalTab, orderedEvalColumns);
-      renderEvalGroupByButtons(orderedEvalColumns);
+      const evalFieldSections = getEvaluationFieldSections(evalFields);
+      const orderedEvalFields = evalFieldSections.flatMap((section) => section.fields);
+      renderEvalSortStatus(state.activeEvalTab, orderedEvalFields);
+      renderEvalGroupByButtons(orderedEvalFields);
       renderEvalOptionsTabs(state.activeEvalTab);
-      renderEvalTruncateControls(state.activeEvalTab, orderedEvalColumns);
+      renderEvalTruncateControls(state.activeEvalTab, orderedEvalFields);
       renderEvalDefaultControls(state.activeEvalTab, evaluationContext);
 
-      const displayedEvalGroups = getSortedEvaluationGroups(evaluationGroups, evalTabState);
+      const displayedEvalGroups = getSortedEvaluationGroups(evaluationGroups, evalTabState, orderedEvalFields);
 
       const evalSelectionState = {
         displayedGroupIds: displayedEvalGroups.map((group) => group.groupId),
@@ -5163,11 +5292,11 @@
         sectionRow.appendChild(th);
       });
 
-      if (evalColumnSections.length > 0) {
-        for (const section of evalColumnSections) {
+      if (evalFieldSections.length > 0) {
+        for (const section of evalFieldSections) {
           const th = document.createElement("th");
           th.className = "section-header";
-          th.colSpan = section.columns.length;
+          th.colSpan = section.fields.length;
           th.textContent = section.label;
           sectionRow.appendChild(th);
         }
@@ -5179,51 +5308,47 @@
         sectionRow.appendChild(th);
       }
 
-      const evalRunDirSection = document.createElement("th");
-      evalRunDirSection.className = "section-header";
-      evalRunDirSection.colSpan = 1;
-      evalRunDirSection.textContent = "meta";
-      sectionRow.appendChild(evalRunDirSection);
       thead.appendChild(sectionRow);
 
       const columnRow = document.createElement("tr");
-      if (orderedEvalColumns.length > 0) {
-        for (const column of orderedEvalColumns) {
+      if (orderedEvalFields.length > 0) {
+        for (const field of orderedEvalFields) {
           const th = document.createElement("th");
-          th.setAttribute("aria-sort", getAriaSort(evalTabState.sort, column));
-          if (evalTabState.truncateEnabledColumns.has(column)) {
+          th.setAttribute("aria-sort", getAriaSort(evalTabState.sort, field.id));
+          if (evalTabState.truncateEnabledColumns.has(field.id)) {
             th.classList.add("truncate-enabled");
           }
-          const headerLabel = displayEvalColumnName(column);
+          const headerLabel = displayEvalColumnName(field, orderedEvalFields);
           const headerControl = document.createElement("div");
           headerControl.className = "header-column-control";
           const label = createSortButton({
             label: headerLabel,
-            column,
+            column: field.id,
             sortConfig: evalTabState.sort,
-            onToggle: (event) => setEvalSort(column, event),
+            onToggle: (event) => setEvalSort(field.id, event),
           });
           th.style.minWidth = `${Math.max(140, headerLabel.length * 8)}px`;
 
-          const toggle = document.createElement("label");
-          toggle.className = "group-toggle";
-          toggle.title = "Use this column for grouping";
-          const toggleCb = document.createElement("input");
-          toggleCb.type = "checkbox";
-          toggleCb.checked = evalTabState.groupByFields.includes(column);
-          toggleCb.addEventListener("change", () => {
-            const next = new Set(evalTabState.groupByFields);
-            if (toggleCb.checked) {
-              next.add(column);
-            } else {
-              next.delete(column);
-            }
-            setActiveEvalGroupByFields(next);
-          });
-          toggle.appendChild(toggleCb);
-
           headerControl.appendChild(label);
-          headerControl.appendChild(toggle);
+          if (field.supportsGrouping) {
+            const toggle = document.createElement("label");
+            toggle.className = "group-toggle";
+            toggle.title = "Use this column for grouping";
+            const toggleCb = document.createElement("input");
+            toggleCb.type = "checkbox";
+            toggleCb.checked = evalTabState.groupByFields.includes(field.id);
+            toggleCb.addEventListener("change", () => {
+              const next = new Set(evalTabState.groupByFields);
+              if (toggleCb.checked) {
+                next.add(field.id);
+              } else {
+                next.delete(field.id);
+              }
+              setActiveEvalGroupByFields(next);
+            });
+            toggle.appendChild(toggleCb);
+            headerControl.appendChild(toggle);
+          }
           th.appendChild(headerControl);
           columnRow.appendChild(th);
         }
@@ -5233,21 +5358,6 @@
         columnRow.appendChild(th);
       }
 
-      const runDirTh = document.createElement("th");
-      runDirTh.setAttribute("aria-sort", getAriaSort(evalTabState.sort, "eval_run_dir"));
-      if (evalTabState.truncateEnabledColumns.has("eval_run_dir")) {
-        runDirTh.classList.add("truncate-enabled");
-      }
-      runDirTh.appendChild(
-        createSortButton({
-          label: "eval_run_dir",
-          column: "eval_run_dir",
-          sortConfig: evalTabState.sort,
-          onToggle: (event) => setEvalSort("eval_run_dir", event),
-        })
-      );
-      runDirTh.style.minWidth = "240px";
-      columnRow.appendChild(runDirTh);
       thead.appendChild(columnRow);
       evaluationsTable.appendChild(thead);
 
@@ -5306,32 +5416,25 @@
 
         tr.appendChild(createCell(String(group.evaluations.length)));
 
-        if (orderedEvalColumns.length === 0) {
+        if (orderedEvalFields.length === 0) {
           tr.appendChild(createCell(""));
         }
-        for (const column of orderedEvalColumns) {
+        for (const field of orderedEvalFields) {
           tr.appendChild(
             createEvalCell(
               getGroupValueDisplayFromEvaluations(
                 group.evaluations,
-                (evaluation) => getEvaluationEffectiveValue(evaluation, column, evalTabState)
+                (evaluation) => getEvaluationEffectiveValue(evaluation, field.id, evalTabState, orderedEvalFields)
               ),
-              column,
+              field.id,
               evalTabState
             )
           );
         }
-        tr.appendChild(
-          createEvalCell(
-            getGroupValueDisplayFromEvaluations(group.evaluations, (evaluation) => evaluation.runDir),
-            "eval_run_dir",
-            evalTabState
-          )
-        );
         tbody.appendChild(tr);
 
         if (evalTabState.expandedGroupIds.has(group.groupId)) {
-          const sortedMembers = getSortedEvaluationRuns(group.evaluations, evalTabState);
+          const sortedMembers = getSortedEvaluationRuns(group.evaluations, evalTabState, orderedEvalFields);
           for (const evaluation of sortedMembers) {
             const memberRow = document.createElement("tr");
             memberRow.className = "member-row";
@@ -5352,21 +5455,18 @@
             memberRow.appendChild(createCell(""));
             memberRow.appendChild(createCell(""));
             memberRow.appendChild(createCell("member"));
-            if (orderedEvalColumns.length === 0) {
+            if (orderedEvalFields.length === 0) {
               memberRow.appendChild(createCell(""));
             }
-            for (const column of orderedEvalColumns) {
+            for (const field of orderedEvalFields) {
               memberRow.appendChild(
                 createEvalCell(
-                  getEvaluationEffectiveValue(evaluation, column, evalTabState),
-                  column,
+                  getEvaluationEffectiveValue(evaluation, field.id, evalTabState, orderedEvalFields),
+                  field.id,
                   evalTabState
                 )
               );
             }
-            memberRow.appendChild(
-              createEvalCell(normalizeValue(evaluation.runDir), "eval_run_dir", evalTabState)
-            );
             tbody.appendChild(memberRow);
           }
         }
@@ -5400,7 +5500,7 @@
         .filter((group) => evalTabState.selectedGroupIds.has(group.groupId))
         .reduce((sum, group) => sum + group.evaluations.length, 0);
       const evalGroupByText = evalTabState.groupByFields.length
-        ? evalTabState.groupByFields.map((field) => displayEvalColumnName(field)).join(", ")
+        ? evalTabState.groupByFields.map((field) => displayEvalColumnName(field, orderedEvalFields)).join(", ")
         : "(none; one row per evaluation)";
       const predictionGroupByText = state.groupByFields.length
         ? state.groupByFields.map((field) => displayPredictionColumnName(field)).join(", ")

@@ -22,6 +22,7 @@
   - `getEvaluationContext()`
   - `getSelectedEvaluationGroups()`
   - `getPlotGroups()`
+- Evaluation fields are now represented as typed descriptors rather than prefix-parsed strings.
 
 ### Rendering flow
 
@@ -41,11 +42,11 @@
 - Add docstrings to all new or adjusted methods.
 - At the end of each cleanup/refactor phase, provide a concise commit message that clearly describes the changes and architecture impact.
 
-## Next planned refactor
+## Completed refactor
 
 ### Goal
 
-Replace the current string/prefix-based evaluation field model with a typed field-descriptor layer.
+Replace the old string/prefix-based evaluation field model with a typed field-descriptor layer.
 
 ### Why this is needed
 
@@ -98,17 +99,17 @@ Similarly for override fields:
 - Sectioning, labeling, sorting, grouping, and default handling should rely on field metadata.
 - Mixed prediction/evaluation plot grouping should work on field descriptors, not prefixed strings.
 
-### Migration steps
+### Implemented migration
 
-1. Introduce evaluation field descriptors derived from:
+1. Added evaluation field descriptors derived from:
    - `evaluation.runDir`
    - `evaluation.overrides`
    - scalar leaves in `evaluation.jobReturnValue`
-2. Switch evaluation rendering to consume descriptor arrays instead of string columns.
-3. Switch evaluation grouping/sorting/default handling to descriptor ids.
-4. Switch plot grouping to mixed descriptor lists instead of `eval.`-prefixed fields.
-5. Remove `EVAL_METADATA_COLUMN_PREFIX` / `EVAL_FIELD_GROUP_PREFIX` once no callers depend on them.
-6. Optionally extend the same field-descriptor model to prediction-side columns for symmetry.
+2. Switched evaluation rendering to consume descriptor arrays instead of string columns.
+3. Switched evaluation grouping/sorting/default handling to descriptor ids.
+4. Switched plot grouping to mixed descriptor lists instead of `eval.`-prefixed fields.
+5. Removed `EVAL_METADATA_COLUMN_PREFIX` / `EVAL_FIELD_GROUP_PREFIX` from active code.
+6. Left prediction-side field descriptors as an optional later symmetry step.
 
 ### Benefits
 
@@ -128,7 +129,7 @@ Similarly for override fields:
 This should be split into two parts.
 
 - [x] Cleanup A completed
-- [ ] Field-descriptor refactor not started
+- [x] Field-descriptor refactor completed
 - [ ] Cleanup B pending
 
 ### Cleanup A — do before the field-descriptor refactor
@@ -200,5 +201,4 @@ These are still good cleanups, but they touch code that the descriptor refactor 
 
 ## Suggested order
 
-1. Field-descriptor refactor for evaluation-side fields
-2. Cleanup B (dedupe helpers after the new render/field layer settles)
+1. Cleanup B (dedupe helpers after the new render/field layer settles)
