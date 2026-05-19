@@ -2917,11 +2917,24 @@
       return getStableObjectSignature(getFlattenedPrediction(prediction));
     }
 
+    function getMetricTypeForExperiment(activeExperiment) {
+      if (/confusion_matrix/i.test(activeExperiment || "")) {
+        return "ConfusionMatrix";
+      }
+      if (/error/i.test(activeExperiment || "")) {
+        return "ErrorCollector";
+      }
+      return "F1MicroMultipleFieldsMetric";
+    }
+
     const JOB_RETURN_VALUE_VERSION_HANDLERS = {
       0: (job_return_value, overrides) => ({
         prediction: getNormalizedPredictionFromJobReturnValue(job_return_value),
         evaluation: {
-          jobReturnValue: { version: 0 },
+          jobReturnValue: {
+            version: 0,
+            type: getMetricTypeForExperiment(overrides?.["experiment/evaluate"]),
+          },
           overrides: overrides || {},
           data: omitTopLevelKeys(job_return_value, new Set(["prediction"])),
         },
@@ -2929,7 +2942,10 @@
       1: (job_return_value, overrides) => ({
         prediction: getNormalizedPredictionFromJobReturnValue(job_return_value),
         evaluation: {
-          jobReturnValue: { version: 1 },
+          jobReturnValue: {
+            version: 1,
+            type: getMetricTypeForExperiment(overrides?.["experiment/evaluate"]),
+          },
           overrides: overrides || {},
           data: omitTopLevelKeys(job_return_value, new Set(["prediction", "version"])),
         },
@@ -4449,15 +4465,35 @@
       };
     }
 
-    // In auto mode, infer the plotting branch from the experiment/evaluate name.
-    function getEffectivePlotMode(activeExperiment) {
+    // In auto mode, infer the plotting branch from the unique metric type.
+    function getEffectivePlotMode(
+      activeExperiment,
+      evaluationContext = getEvaluationContext(activeExperiment)
+    ) {
       if (state.plotMode !== "auto") {
         return state.plotMode;
       }
-      if (/confusion_matrix/i.test(activeExperiment)) {
+      const metricTypes = new Set(
+        (evaluationContext?.experimentEvaluations || [])
+          .map((evaluation) => normalizeValue(evaluation?.jobReturnValue?.type).trim())
+          .filter(Boolean)
+      );
+      if (metricTypes.size > 1) {
+        throw new Error(
+          `Multiple evaluation metric types found for ${JSON.stringify(activeExperiment)}: ${Array.from(metricTypes)
+            .sort((a, b) => a.localeCompare(b))
+            .join(", ")}`
+        );
+      }
+      const metricType = Array.from(metricTypes)[0];
+      return getPlotModeForMetricType(metricType);
+    }
+
+    function getPlotModeForMetricType(metricType) {
+      if (metricType === "ConfusionMatrix") {
         return "confusion_matrix";
       }
-      if (/error/i.test(activeExperiment)) {
+      if (metricType === "ErrorCollector") {
         return "errors";
       }
       return "f1";
