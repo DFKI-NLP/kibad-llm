@@ -1020,6 +1020,7 @@
     const barTooltip = document.getElementById("barTooltip");
     const GITHUB_TOKEN_STORAGE_KEY = "evalDashboard.githubToken";
     const SORTABLE_CONTROL_COLUMNS = new Set(["expand", "select", "group_size"]);
+    const PREDICTION_FIELD_SECTION_ORDER = ["overrides", "job_return_value", "other"];
     const EVALUATION_FIELD_SECTION_ORDER = ["overrides", "job_return_value", "meta"];
     const sortCollator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
 
@@ -1070,6 +1071,65 @@
      */
     function getFieldId(field) {
       return field && typeof field === "object" ? field.id : field;
+    }
+
+    /**
+     * Create one typed prediction field descriptor.
+     */
+    function createPredictionFieldDescriptor({ id, source, section, label, key = null, supportsGrouping = true, supportsDefaults = true, supportsTruncation = true }) {
+      return { id, scope: "prediction", source, section, label, key, supportsGrouping, supportsDefaults, supportsTruncation };
+    }
+
+    /**
+     * Create one prediction override-field descriptor.
+     */
+    function createPredictionOverrideFieldDescriptor(flattenedKey) {
+      return createPredictionFieldDescriptor({
+        id: `prediction.overrides.${flattenedKey}`,
+        source: "overrides",
+        section: "overrides",
+        label: flattenedKey,
+        key: flattenedKey,
+      });
+    }
+
+    /**
+     * Create one prediction job-return-value field descriptor.
+     */
+    function createPredictionJobReturnValueFieldDescriptor(flattenedKey) {
+      return createPredictionFieldDescriptor({
+        id: `prediction.job_return_value.${flattenedKey}`,
+        source: "jobReturnValue",
+        section: "job_return_value",
+        label: flattenedKey,
+        key: flattenedKey,
+      });
+    }
+
+    /**
+     * Create one fallback prediction field descriptor for non-standard flattened ids.
+     */
+    function createPredictionOtherFieldDescriptor(fieldId) {
+      return createPredictionFieldDescriptor({
+        id: fieldId,
+        source: "other",
+        section: "other",
+        label: fieldId.replace(/^predictions?\./, ""),
+        key: fieldId,
+      });
+    }
+
+    /**
+     * Create one prediction field descriptor from the current flattened prediction field id.
+     */
+    function createPredictionFieldDescriptorFromId(fieldId) {
+      if (fieldId.startsWith("prediction.overrides.")) {
+        return createPredictionOverrideFieldDescriptor(fieldId.slice("prediction.overrides.".length));
+      }
+      if (fieldId.startsWith("prediction.job_return_value.")) {
+        return createPredictionJobReturnValueFieldDescriptor(fieldId.slice("prediction.job_return_value.".length));
+      }
+      return createPredictionOtherFieldDescriptor(fieldId);
     }
 
     function reconstructPredictionContent(prediction) {
@@ -1129,23 +1189,45 @@
     }
 
     /**
-     * Collect all flattened prediction columns currently present across the given prediction views.
+     * Derive typed prediction field descriptors for the currently loaded prediction views.
      */
-    function getPredictionColumns(predictionViews = getPredictionViews()) {
-      const predictionColumns = new Set();
+    function getPredictionFields(predictionViews = getPredictionViews()) {
+      const predictionFieldsById = new Map();
       for (const predictionView of predictionViews) {
         for (const key of Object.keys(predictionView.predictionFlat || {})) {
-          predictionColumns.add(key);
+          if (!predictionFieldsById.has(key)) {
+            predictionFieldsById.set(key, createPredictionFieldDescriptorFromId(key));
+          }
         }
       }
-      return Array.from(predictionColumns).sort();
+      const sectionOrder = new Map(PREDICTION_FIELD_SECTION_ORDER.map((section, index) => [section, index]));
+      return Array.from(predictionFieldsById.values()).sort((left, right) => {
+        const sectionComparison = (sectionOrder.get(left.section) ?? 99) - (sectionOrder.get(right.section) ?? 99);
+        if (sectionComparison !== 0) {
+          return sectionComparison;
+        }
+        return left.label.localeCompare(right.label);
+      });
     }
 
     /**
-     * Return the current prediction columns derived from canonical prediction state.
+     * Return the current prediction fields derived from canonical prediction state.
      */
-    function getCurrentPredictionColumns(predictionViews = getPredictionViews()) {
-      return getPredictionColumns(predictionViews);
+    function getCurrentPredictionFields(predictionViews = getPredictionViews()) {
+      return getPredictionFields(predictionViews);
+    }
+
+    /**
+     * Resolve a prediction field descriptor from either a descriptor object or a field id.
+     */
+    function getPredictionFieldDescriptor(field, predictionFields = getCurrentPredictionFields()) {
+      if (field && typeof field === "object" && typeof field.id === "string") {
+        return field;
+      }
+      if (typeof field !== "string") {
+        return null;
+      }
+      return predictionFields.find((candidate) => candidate.id === field) || createPredictionFieldDescriptorFromId(field);
     }
 
     /**
@@ -1155,15 +1237,16 @@
     function getPredictionGroups(
       predictionViews = getPredictionViews(),
       groupByFields = state.groupByFields,
-      predictionColumns = getCurrentPredictionColumns(predictionViews)
+      predictionFields = getCurrentPredictionFields(predictionViews)
     ) {
       const map = new Map();
+      const predictionFieldIds = predictionFields.map((field) => field.id);
 
       for (const predictionView of predictionViews) {
         const groupId = !groupByFields.length
-          ? getPredictionEffectiveSignature(predictionView.predictionFlat, predictionColumns)
+          ? getPredictionEffectiveSignature(predictionView.predictionFlat, predictionFieldIds)
           : groupByFields
-            .map((field) => `${field}=${getPredictionEffectiveValue(predictionView.predictionFlat, field)}`)
+            .map((field) => `${field}=${getPredictionEffectiveValue(predictionView.predictionFlat, field, predictionFields)}`)
             .join(" | ");
 
         if (!map.has(groupId)) {
@@ -1171,7 +1254,7 @@
             groupId,
             predictions: [],
             values: Object.fromEntries(
-              groupByFields.map((field) => [field, getPredictionEffectiveValue(predictionView.predictionFlat, field)])
+              groupByFields.map((field) => [field, getPredictionEffectiveValue(predictionView.predictionFlat, field, predictionFields)])
             ),
           });
         }
@@ -1205,8 +1288,8 @@
      */
     function getCurrentPredictionGroups() {
       const predictionViews = getPredictionViews();
-      const predictionColumns = getCurrentPredictionColumns(predictionViews);
-      const predictionGroups = getPredictionGroups(predictionViews, state.groupByFields, predictionColumns);
+      const predictionFields = getCurrentPredictionFields(predictionViews);
+      const predictionGroups = getPredictionGroups(predictionViews, state.groupByFields, predictionFields);
       syncPredictionGroupUiState(predictionGroups);
       return predictionGroups;
     }
@@ -1874,14 +1957,12 @@
       await handleGitLoadRequest();
     });
 
-    function displayPredictionColumnName(column) {
-      if (column.startsWith("prediction.job_return_value.")) {
-        return column.replace("prediction.job_return_value.", "");
-      }
-      if (column.startsWith("prediction.overrides.")) {
-        return column.replace("prediction.overrides.", "");
-      }
-      return column.replace(/^predictions?\./, "");
+    /**
+     * Return the display label for one prediction field descriptor or field id.
+     */
+    function displayPredictionColumnName(field, predictionFields = getCurrentPredictionFields()) {
+      const descriptor = getPredictionFieldDescriptor(field, predictionFields);
+      return descriptor?.label || normalizeValue(getFieldId(field));
     }
 
     /**
@@ -1932,12 +2013,16 @@
       return getPlotDisplayLabel(displayGroupFieldName(field, evalFields));
     }
 
-    function getDefaultTruncateColumns(predictionColumns) {
+    /**
+     * Choose default truncate-enabled prediction fields from labels/ids that look file- or run-like.
+     */
+    function getDefaultTruncateColumns(predictionFields) {
       const defaults = new Set();
-      for (const column of predictionColumns) {
-        const name = displayPredictionColumnName(column);
-        if (/file|run/i.test(name) || /file|run/i.test(column)) {
-          defaults.add(column);
+      for (const field of predictionFields) {
+        const fieldId = getFieldId(field);
+        const name = displayPredictionColumnName(field, predictionFields);
+        if (/file|run/i.test(name) || /file|run/i.test(fieldId)) {
+          defaults.add(fieldId);
         }
       }
       return defaults;
@@ -1962,17 +2047,18 @@
     /**
      * Choose default prediction group-by fields from varying non-seed override columns.
      */
-    function getDefaultGroupByFields(predictionColumns, predictionViews = getPredictionViews()) {
-      const candidateColumns = predictionColumns.filter(
-        (column) =>
-          column.startsWith("prediction.overrides.") &&
-          displayPredictionColumnName(column).toLowerCase() !== "seed"
+    function getDefaultGroupByFields(predictionFields, predictionViews = getPredictionViews()) {
+      const candidateFields = predictionFields.filter(
+        (field) =>
+          field.source === "overrides" &&
+          field.supportsGrouping &&
+          displayPredictionColumnName(field, predictionFields).toLowerCase() !== "seed"
       );
       return getColumnsWithMultipleValues(
         predictionViews,
-        candidateColumns,
-        (predictionView, column) => predictionView.predictionFlat?.[column]
-      );
+        candidateFields,
+        (predictionView, field) => getPredictionColumnRawValue(predictionView.predictionFlat, field, predictionFields)
+      ).map((field) => field.id);
     }
 
     function getDefaultEvalGroupByFields(evalFields, evaluations = []) {
@@ -2018,8 +2104,23 @@
       return state.predictionDefaultValues[column] ?? "";
     }
 
-    function getPredictionEffectiveValue(predictionFlat, column) {
-      return getEffectiveValue(predictionFlat?.[column], getPredictionDefaultValue(column));
+    /**
+     * Read the raw value of one prediction field from the flattened prediction object.
+     */
+    function getPredictionColumnRawValue(predictionFlat, field, predictionFields = getCurrentPredictionFields()) {
+      const descriptor = getPredictionFieldDescriptor(field, predictionFields);
+      return predictionFlat?.[descriptor?.id ?? getFieldId(field)];
+    }
+
+    /**
+     * Read the effective prediction field value after applying configured defaults.
+     */
+    function getPredictionEffectiveValue(predictionFlat, field, predictionFields = getCurrentPredictionFields()) {
+      const fieldId = getFieldId(field);
+      return getEffectiveValue(
+        getPredictionColumnRawValue(predictionFlat, fieldId, predictionFields),
+        getPredictionDefaultValue(fieldId)
+      );
     }
 
     /**
@@ -2027,12 +2128,13 @@
      */
     function getPredictionEffectiveSignature(
       predictionFlat,
-      predictionColumns = getCurrentPredictionColumns()
+      predictionColumns = getCurrentPredictionFields().map((field) => field.id),
+      predictionFields = predictionColumns.map((column) => createPredictionFieldDescriptorFromId(column))
     ) {
       return JSON.stringify(
         Object.fromEntries(
           predictionColumns
-            .map((column) => [column, getPredictionEffectiveValue(predictionFlat, column)])
+            .map((column) => [column, getPredictionEffectiveValue(predictionFlat, column, predictionFields)])
             .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
         )
       );
@@ -2051,31 +2153,33 @@
     }
 
     /**
-     * Return prediction columns whose selected prediction views still contain missing values.
+     * Return prediction fields whose selected prediction views still contain missing values.
      */
-    function getPredictionColumnsWithMissingValues(
+    function getPredictionFieldsWithMissingValues(
       predictionViews,
-      predictionColumns = getCurrentPredictionColumns(predictionViews)
+      predictionFields = getCurrentPredictionFields(predictionViews)
     ) {
-      return predictionColumns.filter((column) =>
-        predictionViews.some((predictionView) => isMissingValue(predictionView.predictionFlat?.[column]))
+      return predictionFields.filter((field) =>
+        predictionViews.some((predictionView) => isMissingValue(getPredictionColumnRawValue(predictionView.predictionFlat, field, predictionFields)))
       );
     }
 
     /**
-     * Collect non-empty suggestion values for a prediction column from the current prediction views.
+     * Collect non-empty suggestion values for a prediction field from the current prediction views.
      */
-    function getPredictionDefaultSuggestions(predictionViews, column) {
+    function getPredictionDefaultSuggestions(predictionViews, field, predictionFields = getCurrentPredictionFields(predictionViews)) {
+      const fieldId = getFieldId(field);
       return collectSuggestionValues(
-        predictionViews.map((predictionView) => predictionView.predictionFlat?.[column])
+        predictionViews.map((predictionView) => getPredictionColumnRawValue(predictionView.predictionFlat, fieldId, predictionFields))
       );
     }
 
     /**
-     * Count how many prediction views are missing a value for the given prediction column.
+     * Count how many prediction views are missing a value for the given prediction field.
      */
-    function getPredictionMissingValueCount(predictionViews, column) {
-      return predictionViews.filter((predictionView) => isMissingValue(predictionView.predictionFlat?.[column])).length;
+    function getPredictionMissingValueCount(predictionViews, field, predictionFields = getCurrentPredictionFields(predictionViews)) {
+      const fieldId = getFieldId(field);
+      return predictionViews.filter((predictionView) => isMissingValue(getPredictionColumnRawValue(predictionView.predictionFlat, fieldId, predictionFields))).length;
     }
 
     function getEvalFieldsWithMissingValues(evaluations, evalFields) {
@@ -2142,13 +2246,12 @@
     }
 
     /**
-     * Return the current truncate-toggle options for prediction columns.
+     * Return the current truncate-toggle options for prediction fields.
      */
-    function getTruncateColumnOptions(predictionColumns = getCurrentPredictionColumns()) {
-      return predictionColumns.map((column) => ({
-        value: column,
-        label: displayPredictionColumnName(column),
-      }));
+    function getPredictionTruncateFieldOptions(predictionFields = getCurrentPredictionFields()) {
+      return predictionFields
+        .filter((field) => field.supportsTruncation)
+        .map((field) => ({ value: field.id, label: field.label }));
     }
 
     function setGroupByFields(columns) {
@@ -2285,7 +2388,11 @@
     }
 
     groupByAllButton.addEventListener("click", () => {
-      setGroupByFields(getCurrentPredictionColumns());
+      setGroupByFields(
+        getCurrentPredictionFields()
+          .filter((field) => field.supportsGrouping)
+          .map((field) => field.id)
+      );
     });
 
     groupByNoneButton.addEventListener("click", () => {
@@ -2293,8 +2400,10 @@
     });
 
     groupByToggleButton.addEventListener("click", () => {
-      const predictionColumns = getCurrentPredictionColumns();
-      const nextGroupByFields = predictionColumns.filter(
+      const predictionFieldIds = getCurrentPredictionFields()
+        .filter((field) => field.supportsGrouping)
+        .map((field) => field.id);
+      const nextGroupByFields = predictionFieldIds.filter(
         (column) => !state.groupByFields.includes(column)
       );
       setGroupByFields(nextGroupByFields);
@@ -2346,7 +2455,7 @@
     });
 
     function renderTruncateControls() {
-      const options = getTruncateColumnOptions();
+      const options = getPredictionTruncateFieldOptions();
       truncateColumnsList.innerHTML = "";
       for (const option of options) {
         const wrapper = document.createElement("label");
@@ -2374,25 +2483,24 @@
      * Render default-value controls for prediction columns that are missing values
      * within the currently selected prediction views.
      */
-    function renderPredictionDefaultControls() {
+    function renderPredictionDefaultControls(predictionViews = getSelectedPredictionViews(), predictionFields = getCurrentPredictionFields(predictionViews)) {
       predictionDefaultsList.innerHTML = "";
-      const selectedPredictionViews = getSelectedPredictionViews();
-      const columns = getPredictionColumnsWithMissingValues(selectedPredictionViews);
-      setPanelVisibility(predictionDefaultsPanel, columns.length > 0);
-      if (!columns.length) {
+      const fields = getPredictionFieldsWithMissingValues(predictionViews, predictionFields);
+      setPanelVisibility(predictionDefaultsPanel, fields.length > 0);
+      if (!fields.length) {
         return;
       }
-      for (const column of columns) {
+      for (const field of fields) {
         createMissingDefaultControl({
           listElement: predictionDefaultsList,
-          column,
-          label: displayPredictionColumnName(column),
-          value: getPredictionDefaultValue(column),
-          suggestions: getPredictionDefaultSuggestions(selectedPredictionViews, column),
-          missingCount: getPredictionMissingValueCount(selectedPredictionViews, column),
+          column: field.id,
+          label: displayPredictionColumnName(field, predictionFields),
+          value: getPredictionDefaultValue(field.id),
+          suggestions: getPredictionDefaultSuggestions(predictionViews, field, predictionFields),
+          missingCount: getPredictionMissingValueCount(predictionViews, field, predictionFields),
           inputIdPrefix: "prediction-default",
           onCommit: (nextValue) => {
-            setConfiguredDefault(state.predictionDefaultValues, column, nextValue);
+            setConfiguredDefault(state.predictionDefaultValues, field.id, nextValue);
             renderPredictions();
             renderEvaluations();
           },
@@ -2529,7 +2637,7 @@
     });
 
     truncateDefaultsButton.addEventListener("click", () => {
-      state.truncateEnabledColumns = getDefaultTruncateColumns(getCurrentPredictionColumns());
+      state.truncateEnabledColumns = getDefaultTruncateColumns(getCurrentPredictionFields());
       renderPredictions();
     });
 
@@ -2636,28 +2744,17 @@
     });
 
     /**
-     * Split current prediction columns into UI sections for rendering the prediction table header.
+     * Split prediction field descriptors into renderable header sections.
      */
-    function getPredictionColumnSections(predictionColumns = getCurrentPredictionColumns()) {
-      const jobReturnValue = predictionColumns
-        .filter((column) => column.startsWith("prediction.job_return_value."))
-        .sort();
-      const overrides = predictionColumns
-        .filter((column) => column.startsWith("prediction.overrides."))
-        .sort();
-      const other = predictionColumns
-        .filter(
-          (column) =>
-            !column.startsWith("prediction.job_return_value.") &&
-            !column.startsWith("prediction.overrides.")
-        )
-        .sort();
-      return [
-        { label: "overrides", columns: overrides },
-        { label: "job_return_value", columns: jobReturnValue },
-        { label: "other", columns: other },
-      ].filter((section) => section.columns.length > 0);
+    function getPredictionFieldSections(predictionFields = getCurrentPredictionFields()) {
+      return PREDICTION_FIELD_SECTION_ORDER
+        .map((section) => ({
+          label: section,
+          fields: predictionFields.filter((field) => field.section === section),
+        }))
+        .filter((section) => section.fields.length > 0);
     }
+
 
     function normalizeValue(value) {
       if (value === null || value === undefined) return "";
@@ -2870,7 +2967,7 @@
     }
 
     function renderPredictionSortStatus() {
-      const validSortColumns = new Set([...SORTABLE_CONTROL_COLUMNS, ...getCurrentPredictionColumns()]);
+      const validSortColumns = new Set([...SORTABLE_CONTROL_COLUMNS, ...getCurrentPredictionFields().map((field) => field.id)]);
       state.predictionSort = normalizeSortConfig(state.predictionSort, validSortColumns);
       predictionSortedByLabel.textContent = formatSortLabel(
         state.predictionSort,
@@ -3122,10 +3219,10 @@
      */
     function resetDerivedUiStateAfterLoad() {
       const predictionViews = getPredictionViews();
-      const predictionColumns = getCurrentPredictionColumns(predictionViews);
-      state.groupByFields = getDefaultGroupByFields(predictionColumns, predictionViews);
+      const predictionFields = getCurrentPredictionFields(predictionViews);
+      state.groupByFields = getDefaultGroupByFields(predictionFields, predictionViews);
       state.predictionSort = [];
-      state.truncateEnabledColumns = getDefaultTruncateColumns(predictionColumns);
+      state.truncateEnabledColumns = getDefaultTruncateColumns(predictionFields);
       state.predictionDefaultValues = {};
       state.selectedGroupIds = new Set();
       state.availableGroupIds = new Set();
@@ -3137,7 +3234,7 @@
       state.plotGroupBarFields = new Set();
       state.activePlotLegendItems = [];
       syncPredictionGroupUiState(
-        getPredictionGroups(predictionViews, state.groupByFields, predictionColumns)
+        getPredictionGroups(predictionViews, state.groupByFields, predictionFields)
       );
     }
 
@@ -3637,7 +3734,7 @@
 
     void initializeGitUrlFromQueryParam();
 
-    function getPredictionGroupSortValue(group, column) {
+    function getPredictionGroupSortValue(group, column, predictionFields = getCurrentPredictionFields()) {
       if (column === "expand") {
         return state.expandedGroupIds.has(group.groupId) ? 1 : 0;
       }
@@ -3647,30 +3744,34 @@
       if (column === "group_size") {
         return group.predictions.length;
       }
-      return getGroupValueDisplay(group, column);
+      return getGroupValueDisplay(group, column, predictionFields);
     }
 
-    function getPredictionMemberSortValue(predictionView, column) {
+    function getPredictionMemberSortValue(predictionView, column, predictionFields = getCurrentPredictionFields()) {
       if (column === "group_size") {
         return predictionView.evaluations.length;
       }
       if (SORTABLE_CONTROL_COLUMNS.has(column)) {
         return "";
       }
-      return getPredictionEffectiveValue(predictionView.predictionFlat, column);
+      return getPredictionEffectiveValue(predictionView.predictionFlat, column, predictionFields);
     }
 
     /**
      * Return prediction groups sorted according to the active prediction sort config.
      */
-    function getSortedPredictionGroups(predictionGroups = getCurrentPredictionGroups()) {
-      const validSortColumns = new Set([...SORTABLE_CONTROL_COLUMNS, ...getCurrentPredictionColumns()]);
+    function getSortedPredictionGroups(predictionGroups = getCurrentPredictionGroups(), predictionFields = getCurrentPredictionFields()) {
+      const validSortColumns = new Set([...SORTABLE_CONTROL_COLUMNS, ...predictionFields.map((field) => field.id)]);
       state.predictionSort = normalizeSortConfig(state.predictionSort, validSortColumns);
-      return sortItems(predictionGroups, state.predictionSort, getPredictionGroupSortValue);
+      return sortItems(predictionGroups, state.predictionSort, (group, column) =>
+        getPredictionGroupSortValue(group, column, predictionFields)
+      );
     }
 
-    function getSortedPredictionMembers(predictions) {
-      return sortItems(predictions, state.predictionSort, getPredictionMemberSortValue);
+    function getSortedPredictionMembers(predictions, predictionFields = getCurrentPredictionFields()) {
+      return sortItems(predictions, state.predictionSort, (predictionView, column) =>
+        getPredictionMemberSortValue(predictionView, column, predictionFields)
+      );
     }
 
     function setSelectedGroupIds(groupIds) {
@@ -3742,10 +3843,10 @@
       return `(mixed: ${distinctValues.size} values)`;
     }
 
-    function getGroupValueDisplay(group, column) {
+    function getGroupValueDisplay(group, column, predictionFields = getCurrentPredictionFields()) {
       return getMixedValueDisplay(
         group.predictions,
-        (prediction) => getPredictionEffectiveValue(prediction.predictionFlat, column)
+        (prediction) => getPredictionEffectiveValue(prediction.predictionFlat, column, predictionFields)
       );
     }
 
@@ -3754,7 +3855,9 @@
      */
     function renderPredictions() {
       const predictionViews = getPredictionViews();
-      const predictionGroups = getCurrentPredictionGroups();
+      const predictionFields = getCurrentPredictionFields(predictionViews);
+      const predictionGroups = getPredictionGroups(predictionViews, state.groupByFields, predictionFields);
+      syncPredictionGroupUiState(predictionGroups);
 
       predictionsTable.innerHTML = "";
       predictionDefaultsList.innerHTML = "";
@@ -3768,15 +3871,15 @@
       predictionSummary.textContent =
         `Predictions: ${predictionViews.length} | Groups: ${predictionGroups.length} | Group-by: ` +
         (state.groupByFields.length
-          ? state.groupByFields.map((field) => displayPredictionColumnName(field)).join(", ")
+          ? state.groupByFields.map((field) => displayPredictionColumnName(field, predictionFields)).join(", ")
           : "(none; one row per unique prediction)");
 
-      const predictionSections = getPredictionColumnSections();
-      const orderedPredictionColumns = predictionSections.flatMap((section) => section.columns);
+      const predictionSections = getPredictionFieldSections(predictionFields);
+      const orderedPredictionFields = predictionSections.flatMap((section) => section.fields);
       renderOptionsTabs();
       renderTruncateControls();
-      renderPredictionDefaultControls();
-      const displayedGroups = getSortedPredictionGroups(predictionGroups);
+      renderPredictionDefaultControls(getSelectedPredictionViews(), predictionFields);
+      const displayedGroups = getSortedPredictionGroups(predictionGroups, predictionFields);
 
       const thead = document.createElement("thead");
       const sectionRow = document.createElement("tr");
@@ -3828,26 +3931,26 @@
       for (const section of predictionSections) {
         const th = document.createElement("th");
         th.className = "section-header";
-        th.colSpan = section.columns.length;
+        th.colSpan = section.fields.length;
         th.textContent = section.label;
         sectionRow.appendChild(th);
       }
       thead.appendChild(sectionRow);
 
       const columnRow = document.createElement("tr");
-      for (const header of orderedPredictionColumns) {
+      for (const field of orderedPredictionFields) {
         const th = document.createElement("th");
-        th.setAttribute("aria-sort", getAriaSort(state.predictionSort, header));
-        if (state.truncateEnabledColumns.has(header)) {
+        th.setAttribute("aria-sort", getAriaSort(state.predictionSort, field.id));
+        if (state.truncateEnabledColumns.has(field.id)) {
           th.classList.add("truncate-enabled");
         }
         const headerControl = document.createElement("div");
         headerControl.className = "header-column-control";
         const label = createSortButton({
-          label: displayPredictionColumnName(header),
-          column: header,
+          label: displayPredictionColumnName(field, orderedPredictionFields),
+          column: field.id,
           sortConfig: state.predictionSort,
-          onToggle: (event) => setPredictionSort(header, event),
+          onToggle: (event) => setPredictionSort(field.id, event),
         });
 
         const toggle = document.createElement("label");
@@ -3855,14 +3958,14 @@
         toggle.title = "Use this column for grouping";
         const toggleCb = document.createElement("input");
         toggleCb.type = "checkbox";
-        toggleCb.setAttribute("aria-label", `Group by ${displayPredictionColumnName(header)}`);
-        toggleCb.checked = state.groupByFields.includes(header);
+        toggleCb.setAttribute("aria-label", `Group by ${displayPredictionColumnName(field, orderedPredictionFields)}`);
+        toggleCb.checked = state.groupByFields.includes(field.id);
         toggleCb.addEventListener("change", () => {
           const nextGroupByFields = new Set(state.groupByFields);
           if (toggleCb.checked) {
-            nextGroupByFields.add(header);
+            nextGroupByFields.add(field.id);
           } else {
-            nextGroupByFields.delete(header);
+            nextGroupByFields.delete(field.id);
           }
           setGroupByFields(nextGroupByFields);
         });
@@ -3916,22 +4019,22 @@
 
         tr.appendChild(createCell(String(group.predictions.length)));
 
-        for (const field of orderedPredictionColumns) {
-          tr.appendChild(createCell(getGroupValueDisplay(group, field), field));
+        for (const field of orderedPredictionFields) {
+          tr.appendChild(createCell(getGroupValueDisplay(group, field, orderedPredictionFields), field.id));
         }
         tbody.appendChild(tr);
 
         if (isExpanded) {
-          const sortedMembers = getSortedPredictionMembers(group.predictions);
+          const sortedMembers = getSortedPredictionMembers(group.predictions, orderedPredictionFields);
           for (const member of sortedMembers) {
             const memberRow = document.createElement("tr");
             memberRow.className = "member-row";
             memberRow.appendChild(createCell(""));
             memberRow.appendChild(createCell(""));
             memberRow.appendChild(createCell("member"));
-            for (const field of orderedPredictionColumns) {
+            for (const field of orderedPredictionFields) {
               memberRow.appendChild(
-                createCell(getPredictionEffectiveValue(member.predictionFlat, field), field)
+                createCell(getPredictionEffectiveValue(member.predictionFlat, field, orderedPredictionFields), field.id)
               );
             }
             tbody.appendChild(memberRow);
@@ -3955,13 +4058,14 @@
       groupByFields,
       predictionGroupByFields = state.groupByFields,
       evalTabState = state.activeEvalTab ? state.evalTabStates[state.activeEvalTab] : null,
-      evalFields = getActiveEvalFields()
+      evalFields = getActiveEvalFields(),
+      predictionFields = getCurrentPredictionFields()
     ) {
       const map = new Map();
       for (const evaluation of evaluations) {
         const keyParts = [];
         for (const field of predictionGroupByFields) {
-          keyParts.push(`prediction.${field}=${getPredictionEffectiveValue(getFlattenedPredictionForEvaluation(evaluation), field)}`);
+          keyParts.push(`prediction.${field}=${getPredictionEffectiveValue(getFlattenedPredictionForEvaluation(evaluation), field, predictionFields)}`);
         }
         for (const field of groupByFields) {
           keyParts.push(`evaluation.${field}=${getEvaluationEffectiveValue(evaluation, field, evalTabState, evalFields)}`);
@@ -4048,13 +4152,15 @@
       }
       const experimentEvaluations = getSelectedEvaluationsForExperiment(activeExperiment, selectedEvaluations);
       const evalFields = getEvaluationFields(experimentEvaluations);
+      const predictionFields = getCurrentPredictionFields();
       const evalTabState = ensureEvalTabState(activeExperiment, evalFields, experimentEvaluations);
       const evaluationGroups = getEvaluationGroups(
         experimentEvaluations,
         evalTabState.groupByFields,
         state.groupByFields,
         evalTabState,
-        evalFields
+        evalFields,
+        predictionFields
       );
       syncEvaluationGroupUiState(evalTabState, evaluationGroups, experimentEvaluations);
       return {
@@ -4118,13 +4224,15 @@
     /**
      * Wrap one prediction grouping field as a plot-field descriptor.
      */
-    function getPredictionPlotFieldDescriptor(fieldId) {
+    function getPredictionPlotFieldDescriptor(field, predictionFields = getCurrentPredictionFields()) {
+      const predictionField = getPredictionFieldDescriptor(field, predictionFields);
+      const fieldId = predictionField?.id ?? getFieldId(field);
       return {
         id: `prediction:${fieldId}`,
         scope: "prediction",
-        label: displayPredictionColumnName(fieldId),
+        label: predictionField?.label || displayPredictionColumnName(fieldId, predictionFields),
         getEffectiveValue: (evaluation) =>
-          getPredictionEffectiveValue(getFlattenedPredictionForEvaluation(evaluation), fieldId),
+          getPredictionEffectiveValue(getFlattenedPredictionForEvaluation(evaluation), fieldId, predictionFields),
       };
     }
 
@@ -4146,8 +4254,9 @@
     }
 
     function getPlotGroups(activeExperiment, selectedEvalGroups, evalGroupByFields, evalTabState, evalFields = getActiveEvalFields()) {
+      const predictionFields = getCurrentPredictionFields();
       const allFields = [
-        ...state.groupByFields.map((fieldId) => getPredictionPlotFieldDescriptor(fieldId)),
+        ...state.groupByFields.map((fieldId) => getPredictionPlotFieldDescriptor(fieldId, predictionFields)),
         ...evalGroupByFields
           .map((fieldId) => getEvaluationPlotFieldDescriptor(fieldId, evalFields))
           .filter(Boolean),
@@ -5486,8 +5595,9 @@
       const evalGroupByText = evalTabState.groupByFields.length
         ? evalTabState.groupByFields.map((field) => displayEvalColumnName(field, orderedEvalFields)).join(", ")
         : "(none; one row per evaluation)";
+      const predictionFields = getCurrentPredictionFields();
       const predictionGroupByText = state.groupByFields.length
-        ? state.groupByFields.map((field) => displayPredictionColumnName(field)).join(", ")
+        ? state.groupByFields.map((field) => displayPredictionColumnName(field, predictionFields)).join(", ")
         : "(none)";
       evalSummary.textContent =
         `Selected evaluations: ${selectedEvaluationsCount} | Active tab: ${state.activeEvalTab} | Groups: ${displayedEvalGroups.length} | Group-by: ${evalGroupByText} (+ prediction group-by: ${predictionGroupByText})`;

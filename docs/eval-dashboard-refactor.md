@@ -16,19 +16,20 @@
 
 - Prediction-side derived structures are built through selectors such as:
   - `getPredictionViews()`
-  - `getCurrentPredictionColumns()`
+  - `getCurrentPredictionFields()`
   - `getCurrentPredictionGroups()`
 - Evaluation-side derived structures are built through selectors such as:
   - `getEvaluationContext()`
   - `getSelectedEvaluationGroups()`
   - `getPlotGroups()`
-- Evaluation fields are now represented as typed descriptors rather than prefix-parsed strings.
+- Prediction and evaluation fields are now represented as typed descriptors rather than prefix-parsed strings.
 
 ### Rendering flow
 
 - `renderPredictions()` consumes selector-derived prediction views/groups.
 - `renderEvaluations()` consumes selector-derived evaluation context/groups.
 - `renderEvaluationPlots()` consumes selector-derived evaluation context/plot groups.
+- Prediction render / grouping / plot paths now reuse shared derived `predictionFields` instead of repeatedly re-deriving them in hot loops.
 - Post-load imperative work is limited to resetting load-dependent UI state in `resetDerivedUiStateAfterLoad()`.
 
 ### Why this is better
@@ -109,7 +110,7 @@ Similarly for override fields:
 3. Switched evaluation grouping/sorting/default handling to descriptor ids.
 4. Switched plot grouping to mixed descriptor lists instead of `eval.`-prefixed fields.
 5. Removed `EVAL_METADATA_COLUMN_PREFIX` / `EVAL_FIELD_GROUP_PREFIX` from active code.
-6. Left prediction-side field descriptors as an optional later symmetry step.
+6. Later completed the matching prediction-side descriptor layer while preserving current prediction field ids in UI state.
 
 ### Benefits
 
@@ -199,6 +200,19 @@ These are still good cleanups, but they touch code that the descriptor refactor 
   - but likely easier after field access becomes descriptor-based
 - Risk: low
 
+## Optional symmetry follow-up completed
+
+- Prediction-side field discovery, labeling, grouping defaults, truncation defaults, missing-value/default controls, header sectioning, and plot-field wrapping now use typed prediction field descriptors.
+- Existing prediction UI state remains keyed by the same flattened prediction field ids, so grouping/sorting/default/truncation behavior stays compatible while the internal model becomes symmetric with the evaluation side.
+
+### Post-symmetry follow-up work
+
+- Fixed one prediction-table render regression introduced during the symmetry refactor: prediction header sections now consistently use the new `{ label, fields }` shape in `renderPredictions()` instead of the removed legacy `section.columns` shape.
+- Added a small performance pass after the prediction descriptor migration:
+  - precompute `predictionFields` once per render / grouping context
+  - thread those fields through prediction grouping, sorting, defaults, rendering, evaluation grouping, and plot grouping
+  - avoid repeated full prediction-field derivation from default-parameter fallbacks inside hot loops
+
 ## Suggested order
 
-1. Optional later follow-up: extend the field-descriptor model to prediction-side columns for symmetry.
+1. Optional later follow-up: modularize the dashboard now that both prediction and evaluation selector/field layers are explicit.
