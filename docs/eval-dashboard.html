@@ -891,7 +891,7 @@
     <label for="plotModeSelect" class="sr-only">Plot mode</label>
     <select id="plotModeSelect" class="plot-mode-select">
       <option value="auto">auto</option>
-      <option value="f1">f1</option>
+      <option value="bars">bars</option>
       <option value="errors">errors</option>
       <option value="confusion_matrix">confusion matrix</option>
     </select>
@@ -1846,7 +1846,7 @@
 
     function getPlotTitleLabel(plotEntry, effectiveMode) {
       if (
-        effectiveMode === "f1" &&
+        effectiveMode === "bars" &&
         state.plotShortenLabels &&
         state.plotTabsBy === "suffix"
       ) {
@@ -2459,7 +2459,7 @@
       plotShowLegendOnce.checked = state.plotShowLegendOnce;
       exportOpaqueBackground.checked = state.exportOpaqueBackground;
       plotModeEffective.textContent = state.plotMode === "auto" ? `(→ ${effectiveMode})` : "";
-      plotTabsByRow.style.display = effectiveMode === "f1" ? "" : "none";
+      plotTabsByRow.style.display = effectiveMode === "bars" ? "" : "none";
       plotConfusionTabsByRow.style.display = effectiveMode === "confusion_matrix" ? "" : "none";
       plotGroupBarsRow.style.display = effectiveMode === "confusion_matrix" ? "none" : "";
       plotShowLegendOnceRow.style.display = "none";
@@ -2917,11 +2917,24 @@
       return getStableObjectSignature(getFlattenedPrediction(prediction));
     }
 
+    function getMetricTypeForExperiment(activeExperiment) {
+      if (/confusion_matrix/i.test(activeExperiment || "")) {
+        return "ConfusionMatrix";
+      }
+      if (/error/i.test(activeExperiment || "")) {
+        return "ErrorCollector";
+      }
+      return "F1MicroMultipleFieldsMetric";
+    }
+
     const JOB_RETURN_VALUE_VERSION_HANDLERS = {
       0: (job_return_value, overrides) => ({
         prediction: getNormalizedPredictionFromJobReturnValue(job_return_value),
         evaluation: {
-          jobReturnValue: { version: 0 },
+          jobReturnValue: {
+            version: 0,
+            type: getMetricTypeForExperiment(overrides?.["experiment/evaluate"]),
+          },
           overrides: overrides || {},
           data: omitTopLevelKeys(job_return_value, new Set(["prediction"])),
         },
@@ -2929,7 +2942,10 @@
       1: (job_return_value, overrides) => ({
         prediction: getNormalizedPredictionFromJobReturnValue(job_return_value),
         evaluation: {
-          jobReturnValue: { version: 1 },
+          jobReturnValue: {
+            version: 1,
+            type: getMetricTypeForExperiment(overrides?.["experiment/evaluate"]),
+          },
           overrides: overrides || {},
           data: omitTopLevelKeys(job_return_value, new Set(["prediction", "version"])),
         },
@@ -4449,18 +4465,38 @@
       };
     }
 
-    // In auto mode, infer the plotting branch from the experiment/evaluate name.
-    function getEffectivePlotMode(activeExperiment) {
+    // In auto mode, infer the plotting branch from the unique metric type.
+    function getEffectivePlotMode(
+      activeExperiment,
+      evaluationContext = getEvaluationContext(activeExperiment)
+    ) {
       if (state.plotMode !== "auto") {
         return state.plotMode;
       }
-      if (/confusion_matrix/i.test(activeExperiment)) {
+      const metricTypes = new Set(
+        (evaluationContext?.experimentEvaluations || [])
+          .map((evaluation) => normalizeValue(evaluation?.jobReturnValue?.type).trim())
+          .filter(Boolean)
+      );
+      if (metricTypes.size > 1) {
+        throw new Error(
+          `Multiple evaluation metric types found for ${JSON.stringify(activeExperiment)}: ${Array.from(metricTypes)
+            .sort((a, b) => a.localeCompare(b))
+            .join(", ")}`
+        );
+      }
+      const metricType = Array.from(metricTypes)[0];
+      return getPlotModeForMetricType(metricType);
+    }
+
+    function getPlotModeForMetricType(metricType) {
+      if (metricType === "ConfusionMatrix") {
         return "confusion_matrix";
       }
-      if (/error/i.test(activeExperiment)) {
+      if (metricType === "ErrorCollector") {
         return "errors";
       }
-      return "f1";
+      return "bars";
     }
 
     function formatRounded(value, precision) {
@@ -4783,7 +4819,7 @@
       return entries;
     }
 
-    function buildF1TabMap(plotEntries) {
+    function buildBarsTabMap(plotEntries) {
       const tabMap = new Map();
       for (const entry of plotEntries) {
         const tabKey = state.plotTabsBy === "suffix" ? entry.suffix : entry.prefix;
@@ -4880,7 +4916,7 @@
     }
 
     // Plot rendering always starts from the currently selected prediction groups and selected eval groups,
-    // then branches into mode-specific aggregation/rendering (f1, errors, confusion matrix).
+    // then branches into mode-specific aggregation/rendering (bars, errors, confusion matrix).
     /**
      * Render evaluation plots from the current selector-derived evaluation context.
      */
@@ -5049,7 +5085,7 @@
 
       const tabMap = effectiveMode === "errors"
         ? buildErrorsTabMap(plotEntries)
-        : buildF1TabMap(plotEntries);
+        : buildBarsTabMap(plotEntries);
 
       renderPlotTabsAndGrid(tabMap, activeExperiment, groupBarFields, effectiveMode);
     }
