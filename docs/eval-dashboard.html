@@ -825,12 +825,12 @@
   </div>
 
   <h2>Evaluations</h2>
-  <p class="hint">
-    Shows only eval metadata from <code>.hydra/overrides.yaml</code> for evaluations connected to selected prediction groups.
-    Tabs are split by <code>experiment/evaluate</code>.
-  </p>
+    <p class="hint">
+      Shows evaluation overrides and <code>job_return_value</code> fields for evaluations connected to selected prediction groups.
+      Tabs are split by <code>experiment/evaluate</code>.
+    </p>
   <div id="evalTabs" class="tabs"></div>
-  <div id="evalSummary" class="hint">Select one or more prediction groups to view evaluation metadata.</div>
+  <div id="evalSummary" class="hint">Select one or more prediction groups to view evaluation overrides and job_return_value fields.</div>
   <section id="evalDefaultsPanel" class="options-panel" style="display: none;">
     <div class="options-heading">Missing value defaults</div>
     <div class="options-content">
@@ -1023,12 +1023,18 @@
     // Prefix used by evaluation column identifiers that point into flattened jobReturnValue keys.
     const JOB_RETURN_VALUE_PREFIX = "job_return_value.";
     // Synthetic namespace for evaluation fields when prediction and evaluation group-by fields are mixed together.
-    const EVAL_GROUP_BY_FIELD_PREFIX = "evaluation.";
+    const EVALUATION_PREFIX = "evaluation.";
     const sortCollator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
 
     // Selectors and accessors for the canonical predictions/evaluations state shape.
     function isJobReturnValueColumn(column) {
       return column.startsWith(JOB_RETURN_VALUE_PREFIX);
+    }
+
+    function stripEvaluationFieldPrefix(column) {
+      return column.startsWith(EVALUATION_PREFIX)
+        ? column.slice(EVALUATION_PREFIX.length)
+        : column;
     }
 
     function reconstructPredictionContent(prediction) {
@@ -1187,16 +1193,14 @@
       if (!evaluation || typeof evaluation !== "object") {
         return undefined;
       }
-      if (column === "eval_run_dir") {
+      const normalizedColumn = stripEvaluationFieldPrefix(column);
+      if (normalizedColumn === "eval_run_dir") {
         return evaluation.runDir;
       }
-      if (column.startsWith(EVAL_GROUP_BY_FIELD_PREFIX)) {
-        return getEvaluationColumnRawValue(evaluation, column.slice(EVAL_GROUP_BY_FIELD_PREFIX.length));
+      if (isJobReturnValueColumn(normalizedColumn)) {
+        return getFlattenedEvaluationJobReturnValue(evaluation)[normalizedColumn.slice(JOB_RETURN_VALUE_PREFIX.length)];
       }
-      if (isJobReturnValueColumn(column)) {
-        return getFlattenedEvaluationJobReturnValue(evaluation)[column.slice(JOB_RETURN_VALUE_PREFIX.length)];
-      }
-      return evaluation?.overrides?.[column];
+      return evaluation?.overrides?.[normalizedColumn];
     }
 
     function getEvaluationEffectiveValue(evaluation, column, evalTabState) {
@@ -1804,18 +1808,16 @@
     }
 
     function displayEvalColumnName(column) {
-      if (column.startsWith(EVAL_GROUP_BY_FIELD_PREFIX)) {
-        return displayEvalColumnName(column.slice(EVAL_GROUP_BY_FIELD_PREFIX.length));
+      const normalizedColumn = stripEvaluationFieldPrefix(column);
+      if (normalizedColumn.startsWith(JOB_RETURN_VALUE_PREFIX)) {
+        return normalizedColumn.slice(JOB_RETURN_VALUE_PREFIX.length);
       }
-      if (column.startsWith(JOB_RETURN_VALUE_PREFIX)) {
-        return column.slice(JOB_RETURN_VALUE_PREFIX.length);
-      }
-      return column.replace(/^overrides\./, "");
+      return normalizedColumn.replace(/^overrides\./, "");
     }
 
     function displayGroupFieldName(column) {
       if (
-        column.startsWith(EVAL_GROUP_BY_FIELD_PREFIX) ||
+        column.startsWith(EVALUATION_PREFIX) ||
         column.startsWith(JOB_RETURN_VALUE_PREFIX) ||
         column.startsWith("overrides.")
       ) {
@@ -2075,10 +2077,10 @@
 
     function getEvalColumnSections(evalColumns) {
       const overrides = evalColumns.filter((column) => !isJobReturnValueColumn(column)).sort();
-      const job_return_value = evalColumns.filter((column) => isJobReturnValueColumn(column)).sort();
+      const jobReturnValueColumns = evalColumns.filter((column) => isJobReturnValueColumn(column)).sort();
       return [
         { label: "overrides", columns: overrides },
-        { label: "job_return_value", columns: job_return_value },
+        { label: "job_return_value", columns: jobReturnValueColumns },
       ].filter((section) => section.columns.length > 0);
     }
 
@@ -3840,7 +3842,7 @@
     }
 
 
-    // Second grouping step: within the selected predictions, group evaluations by eval metadata
+    // Second grouping step: within the selected predictions, group evaluations by evaluation columns
     // while still respecting the active prediction grouping from the upper table.
     /**
      * Group evaluations by the active prediction and evaluation grouping fields.
@@ -4024,7 +4026,7 @@
     function getPlotGroups(activeExperiment, selectedEvalGroups, evalGroupByFields, evalTabState) {
       const allFields = [...new Set([
         ...state.groupByFields,
-        ...evalGroupByFields.map((field) => `${EVAL_GROUP_BY_FIELD_PREFIX}${field}`),
+        ...evalGroupByFields.map((field) => `${EVALUATION_PREFIX}${field}`),
       ])];
 
       const map = new Map();
@@ -4035,10 +4037,11 @@
           }
           const values = {};
           for (const field of allFields) {
-            if (field.startsWith(EVAL_GROUP_BY_FIELD_PREFIX)) {
+            const evaluationField = stripEvaluationFieldPrefix(field);
+            if (evaluationField !== field) {
               values[field] = getEvaluationEffectiveValue(
                 evaluation,
-                field.slice(EVAL_GROUP_BY_FIELD_PREFIX.length),
+                evaluationField,
                 evalTabState
               );
             } else {
@@ -5065,7 +5068,7 @@
       const selectedEvaluations = gatherSelectedEvaluations();
       if (!selectedEvaluations.length) {
         setPanelVisibility(evalDefaultsPanel, false);
-        evalSummary.textContent = "Select one or more prediction groups to view evaluation metadata.";
+        evalSummary.textContent = "Select one or more prediction groups to view evaluation overrides and job_return_value fields.";
         renderEvaluationPlots(state.activeEvalTab || "");
         return;
       }
