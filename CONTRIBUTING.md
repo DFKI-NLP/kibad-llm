@@ -33,7 +33,7 @@ uv sync --group cicd
 
 Pushing to main is prohibited. If you want to contribute code, open a pull request against main.
 
-All contributions need to be documented, both in the [PR description](#pr-description), as well as in the repo's [Documentation](#documentation).
+All contributions need to be documented, both in the [PR description](#pr-description), and in the repo's [Documentation](#documentation).
 
 PRs must be reviewed.
 
@@ -117,14 +117,21 @@ To refresh the normal expected test fixtures:
 WRITE_FIXTURE_DATA=1 pytest tests/integration/test_extractors.py tests/integration/test_predict.py
 ```
 
-Alternatively, also refresh LLM chat replay fixtures:
+Alternatively, also refresh LLM chat replay fixtures, **which requires a running vLLM backend** ([vLLM instructions](./models/README.md)):
 
 ```sh
+# it is recommended to refresh just the fixtures for the modified test. e.g. the chunking extractor:
+WRITE_LLM_CHAT_FIXTURE_DATA=1 WRITE_FIXTURE_DATA=1 pytest tests/integrations/test_extractors.py::test_extractor[chunking]
+# it is discuraged to refresh all fixtures:
 WRITE_LLM_CHAT_FIXTURE_DATA=1 WRITE_FIXTURE_DATA=1 pytest tests/integration/test_extractors.py tests/integration/test_predict.py
-```
-Note: Adjusting the LLM replay fixtures usually results in different output and, thus, requires to regenerate the normal fixture data via `WRITE_FIXTURE_DATA=1`.
 
-If you add a new test that requires LLM interaction, you can require the test to have a working deployment, but it is encouraged to use `llm_chat_replay` instead.
+# it is mandatory to check for unused fixtures in "tests/fixtures/llm_chat" after regeneration:
+uv run tests/fixtures/map_llm_chat_usage.py
+```
+
+Note: Adjusting the LLM replay fixtures usually results in different output and, thus, requires regenerating the normal fixture data via `WRITE_FIXTURE_DATA=1`.</br>
+
+If you add a new test that requires LLM interaction, you can require the test to have a working vLLM backend, but it is encouraged to use `llm_chat_replay` instead.
 
 ## Documentation
 
