@@ -4163,12 +4163,17 @@
         predictionFields
       );
       syncEvaluationGroupUiState(evalTabState, evaluationGroups, experimentEvaluations);
+      const selectedEvaluationGroups = evaluationGroups.filter((group) =>
+        evalTabState.selectedGroupIds.has(group.groupId)
+      );
       return {
         activeExperiment,
         experimentEvaluations,
         evalFields,
+        predictionFields,
         evalTabState,
         evaluationGroups,
+        selectedEvaluationGroups,
       };
     }
 
@@ -4179,8 +4184,7 @@
       if (!evaluationContext) {
         return [];
       }
-      const { evaluationGroups, evalTabState } = evaluationContext;
-      return evaluationGroups.filter((group) => evalTabState.selectedGroupIds.has(group.groupId));
+      return evaluationContext.selectedEvaluationGroups || [];
     }
 
     function meanAndStd(values) {
@@ -4253,8 +4257,7 @@
       };
     }
 
-    function getPlotGroups(activeExperiment, selectedEvalGroups, evalGroupByFields, evalTabState, evalFields = getActiveEvalFields()) {
-      const predictionFields = getCurrentPredictionFields();
+    function getPlotGroups(activeExperiment, selectedEvalGroups, evalGroupByFields, evalTabState, evalFields = getActiveEvalFields(), predictionFields = getCurrentPredictionFields()) {
       const allFields = [
         ...state.groupByFields.map((fieldId) => getPredictionPlotFieldDescriptor(fieldId, predictionFields)),
         ...evalGroupByFields
@@ -4688,10 +4691,14 @@
       return Number(value).toFixed(precision);
     }
 
-    function getConfusionMatrixTitle(experimentEvaluations, evalTabState) {
+    function getMetricFieldLabel(evaluation, evalTabState, evalFields = getActiveEvalFields()) {
+      return getEvaluationEffectiveValue(evaluation, "metric.field", evalTabState, evalFields) || "(missing metric.field)";
+    }
+
+    function getConfusionMatrixTitle(experimentEvaluations, evalTabState, evalFields = getActiveEvalFields()) {
       const fieldValues = new Set(
         experimentEvaluations
-          .map((evaluation) => getEvaluationEffectiveValue(evaluation, "metric.field", evalTabState))
+          .map((evaluation) => getMetricFieldLabel(evaluation, evalTabState, evalFields))
           .filter((value) => value)
       );
       if (fieldValues.size === 0) {
@@ -4872,7 +4879,7 @@
 
     // Depending on the current tab strategy, group confusion plots either by metric.field or by
     // the active prediction/evaluation grouping, while keeping different metric.field values separate.
-    function buildConfusionTabMap(activeExperiment, plotGroups, experimentEvaluations, labelFields, evalTabState) {
+    function buildConfusionTabMap(activeExperiment, plotGroups, experimentEvaluations, labelFields, evalTabState, evalFields = getActiveEvalFields()) {
       const tabMap = new Map();
       const groupEntries = plotGroups
         .map((group, index) => ({
@@ -4884,8 +4891,7 @@
 
       if (state.confusionTabsBy === "metric_field") {
         for (const evaluation of experimentEvaluations) {
-          const rawField = getEvaluationEffectiveValue(evaluation, "metric.field", evalTabState);
-          const fieldLabel = rawField || "(missing metric.field)";
+          const fieldLabel = getMetricFieldLabel(evaluation, evalTabState, evalFields);
           if (!tabMap.has(fieldLabel)) {
             tabMap.set(fieldLabel, { label: getPlotDisplayLabel(fieldLabel), plots: [] });
           }
@@ -4894,9 +4900,7 @@
         for (const [fieldKey, tab] of tabMap.entries()) {
           for (const groupEntry of groupEntries) {
             const evaluationsForFieldAndGroup = groupEntry.evaluations.filter((evaluation) => {
-              const rawField = getEvaluationEffectiveValue(evaluation, "metric.field", evalTabState);
-              const fieldLabel = rawField || "(missing metric.field)";
-              return fieldLabel === fieldKey;
+              return getMetricFieldLabel(evaluation, evalTabState, evalFields) === fieldKey;
             });
             if (evaluationsForFieldAndGroup.length === 0) {
               continue;
@@ -4911,8 +4915,7 @@
         // Split evaluations by metric.field so different fields don't get mixed into one matrix.
         const byField = new Map();
         for (const evaluation of groupEntry.evaluations) {
-          const rawField = getEvaluationEffectiveValue(evaluation, "metric.field", evalTabState);
-          const fieldLabel = rawField || "(missing metric.field)";
+          const fieldLabel = getMetricFieldLabel(evaluation, evalTabState, evalFields);
           if (!byField.has(fieldLabel)) {
             byField.set(fieldLabel, []);
           }
@@ -5133,7 +5136,7 @@
         return;
       }
 
-      const { experimentEvaluations, evalFields, evalTabState } = evaluationContext;
+      const { experimentEvaluations, evalFields, predictionFields, evalTabState } = evaluationContext;
       const selectedEvalGroups = getSelectedEvaluationGroups(evaluationContext);
       if (selectedEvalGroups.length === 0) {
         const msg = document.createElement("p");
@@ -5148,7 +5151,8 @@
         selectedEvalGroups,
         evalTabState.groupByFields,
         evalTabState,
-        evalFields
+        evalFields,
+        predictionFields
       );
       const plotGroups = combined.groups;
       const plotGroupFields = combined.fields;
@@ -5163,7 +5167,8 @@
           plotGroups,
           experimentEvaluations,
           labelFields,
-          evalTabState
+          evalTabState,
+          evalFields
         );
         const sortedConfusionTabKeys = Array.from(confusionTabMap.keys()).sort((a, b) =>
           confusionTabMap.get(a).label.localeCompare(confusionTabMap.get(b).label)
@@ -5209,7 +5214,7 @@
           card.className = "plot-card";
           const title = document.createElement("p");
           title.className = "plot-title";
-          const fieldTitle = getConfusionMatrixTitle(plotEntry.evaluations, evalTabState);
+          const fieldTitle = getConfusionMatrixTitle(plotEntry.evaluations, evalTabState, evalFields);
           if (state.confusionTabsBy === "metric_field") {
             title.textContent = `${plotEntry.label} (mean ± std)`;
           } else {
@@ -5322,6 +5327,7 @@
       const {
         experimentEvaluations,
         evalFields,
+        predictionFields,
         evalTabState,
         evaluationGroups,
       } = evaluationContext;
@@ -5595,7 +5601,6 @@
       const evalGroupByText = evalTabState.groupByFields.length
         ? evalTabState.groupByFields.map((field) => displayEvalColumnName(field, orderedEvalFields)).join(", ")
         : "(none; one row per evaluation)";
-      const predictionFields = getCurrentPredictionFields();
       const predictionGroupByText = state.groupByFields.length
         ? state.groupByFields.map((field) => displayPredictionColumnName(field, predictionFields)).join(", ")
         : "(none)";
