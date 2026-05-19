@@ -3964,7 +3964,7 @@
           keyParts.push(`prediction.${field}=${getPredictionEffectiveValue(getFlattenedPredictionForEvaluation(evaluation), field)}`);
         }
         for (const field of groupByFields) {
-          keyParts.push(`eval.${field}=${getEvaluationEffectiveValue(evaluation, field, evalTabState, evalFields)}`);
+          keyParts.push(`evaluation.${field}=${getEvaluationEffectiveValue(evaluation, field, evalTabState, evalFields)}`);
         }
         const groupId = keyParts.length ? keyParts.join(" | ") : evaluation.runDir;
         if (!map.has(groupId)) {
