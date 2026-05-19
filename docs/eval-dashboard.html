@@ -755,6 +755,7 @@
         placeholder="https://github.com/OWNER/REPO/tree/main/path/to/folder"
       >
       <div class="control-row">
+        <label for="githubTokenInput" class="sr-only">GitHub token</label>
         <input
           id="githubTokenInput"
           class="text-control"
@@ -1748,7 +1749,7 @@
       const json = JSON.stringify(value ?? {}, null, 2);
       const escaped = escapeHtml(json);
       return escaped.replace(
-        /(\"(?:\\u[0-9a-fA-F]{4}|\\[^u]|[^\\\"])*\"(?:\s*:)?|\btrue\b|\bfalse\b|\bnull\b|-?\d+(?:\.\d+)?(?:[eE][+\-]?\d+)?)/g,
+        /("(?:\\u[0-9a-fA-F]{4}|\\[^u]|[^\\"])*"(?:\s*:)?|\btrue\b|\bfalse\b|\bnull\b|-?\d+(?:\.\d+)?(?:[eE][+\-]?\d+)?)/g,
         (match) => {
           if (match.endsWith(":")) {
             return `<span class="json-key">${match}</span>`;
@@ -2850,8 +2851,7 @@
           continue;
         }
         const key = item.slice(0, separatorIndex).replace(/^\+/, "").trim();
-        const value = item.slice(separatorIndex + 1).trim();
-        result[key] = value;
+        result[key] = item.slice(separatorIndex + 1).trim();
       }
       return result;
     }
@@ -3148,7 +3148,9 @@
           const predictionId = getPredictionIdFromNormalizedPrediction(normalizedRun.prediction);
           const existingPrediction = getPredictionById(predictionId);
           if (existingPrediction && getPredictionContentSignature(existingPrediction) !== getPredictionContentSignature(normalizedRun.prediction)) {
-            throw createConflictingPredictionIdError(predictionId);
+            skippedConflictingPredictionId += 1;
+            console.error(`Failed to parse run at ${runDir}`, createConflictingPredictionIdError(predictionId));
+            continue;
           }
           state.predictions[predictionId] = existingPrediction || normalizedRun.prediction;
 
@@ -3166,8 +3168,6 @@
             skippedUnsupportedVersion += 1;
           } else if (error?.name === 'MissingPredictionIdError') {
             skippedMissingPredictionId += 1;
-          } else if (error?.name === 'ConflictingPredictionIdError') {
-            skippedConflictingPredictionId += 1;
           } else {
             skippedInvalid += 1;
           }
