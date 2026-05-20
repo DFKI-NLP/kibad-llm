@@ -19,8 +19,8 @@ logger = logging.getLogger(__name__)
 class ConfusionMatrix(MetricWithTpFpFnEntries):
     """Build a confusion matrix from inherited tp/fp/fn entry state for one field.
 
-    Predictions that have no matching gold label are counted under ``unassignable_label``.
-    Gold labels with no matching prediction are counted under ``undetected_label``.
+    Predictions that have no matching gold label are counted under `unassignable_label`.
+    Gold labels with no matching prediction are counted under `undetected_label`.
 
     Warning:
         Because the metric operates on sets, duplicate predicted labels are collapsed in
@@ -59,10 +59,10 @@ class ConfusionMatrix(MetricWithTpFpFnEntries):
         """Convert shared tp/fp/fn entry state into confusion-matrix cell counts.
 
         Args:
-            state: Mapping of ``tp``, ``fp``, and ``fn`` to tracked ``(record_id, label)`` pairs.
+            state: Mapping of `tp`, `fp`, and `fn` to tracked `(record_id, label)` pairs.
 
         Returns:
-            A mapping from ``(gold_label, predicted_label)`` cells to their counts.
+            A mapping from `(gold_label, predicted_label)` cells to their counts.
 
         Raises:
             ValueError: If predictions or references already use one of the reserved placeholder

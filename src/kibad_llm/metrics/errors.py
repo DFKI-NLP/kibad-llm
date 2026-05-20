@@ -1,3 +1,9 @@
+"""Metrics for collecting and summarizing prediction error messages.
+
+Classes:
+    ErrorCollector: Collect error messages from predictions and summarize their frequencies.
+"""
+
 from collections import defaultdict
 from collections.abc import Hashable
 import logging
@@ -9,22 +15,40 @@ logger = logging.getLogger(__name__)
 
 
 class ErrorCollector(Metric):
-    """Collects error messages from model predictions and provides statistics on their occurrences.
+    """Collect error messages from model predictions and summarize their occurrences.
 
     Args:
-        show_errors (bool): If True, logs each collected error message.
-        type_separator (str): Separator used to split error messages into type and details.
+        show_errors: If `True`, log each collected error message.
+        type_separator: Separator used to split error messages into type and details.
     """
 
     def __init__(self, show_errors: bool = False, type_separator: str = ": ") -> None:
+        """Initialize the error collector.
+
+        Args:
+            show_errors: If `True`, log each collected error message as it is collected.
+            type_separator: Separator used to split error messages into type and details.
+        """
         self.show_errors = show_errors
         self.type_separator = type_separator
         self.reset()
 
     def reset(self) -> None:
+        """Reset the collected error state."""
         self.state: list[list[str]] = []
 
     def _update(self, prediction: Any, reference: Any, record_id: Hashable | None = None) -> None:
+        """Collect errors from one prediction record.
+
+        Args:
+            prediction: Prediction dictionary that may contain one supported error field.
+            reference: Unused reference value accepted for metric interface compatibility.
+            record_id: Optional record identifier used in log and error messages.
+
+        Raises:
+            ValueError: If the prediction contains none or more than one of the supported error
+                keys.
+        """
         errors: list[list[str]] = []
         found_error_keys = []
         if "error" in prediction:
@@ -65,6 +89,11 @@ class ErrorCollector(Metric):
         self.state.extend(errors)
 
     def _compute(self) -> dict[str, Any]:
+        """Count collected errors per coarse bucket and per error type.
+
+        Returns:
+            A mapping from error bucket or error type to the number of collected occurrences.
+        """
 
         # group errors by message type and count occurrences
         errors_grouped = defaultdict(list)
