@@ -2436,7 +2436,8 @@
       renderPredictions();
     });
     function renderPlotControls(metricType) {
-      const isConfusionMatrix = metricType === "ConfusionMatrix";
+      const supportsConfusionStyleTabs =
+        metricType === "ConfusionMatrix" || metricType === "TpFpFnCollector";
       const isF1MicroMultipleFieldsMetric = metricType === "F1MicroMultipleFieldsMetric";
       const supportsGroupedBars =
         metricType === "ErrorCollector" || isF1MicroMultipleFieldsMetric;
@@ -2455,7 +2456,7 @@
       plotShowLegendOnce.checked = state.plotShowLegendOnce;
       exportOpaqueBackground.checked = state.exportOpaqueBackground;
       plotTabsByRow.style.display = isF1MicroMultipleFieldsMetric ? "" : "none";
-      plotConfusionTabsByRow.style.display = isConfusionMatrix ? "" : "none";
+      plotConfusionTabsByRow.style.display = supportsConfusionStyleTabs ? "" : "none";
       plotGroupBarsRow.style.display = supportsGroupedBars ? "" : "none";
       plotShowLegendOnceRow.style.display = "none";
     }
@@ -4884,27 +4885,45 @@
       };
     }
 
-    function buildTpFpFnTabMap(plotGroups, plotGroupFields, evalTabState) {
-      const varyingPlotGroupFields = getVaryingFields(plotGroups, plotGroupFields);
-      const labelFields = varyingPlotGroupFields.length ? varyingPlotGroupFields : plotGroupFields;
-      const metricFieldValues = new Set();
+    function buildTpFpFnTabMap(plotGroups, experimentEvaluations, labelFields, evalTabState) {
       const tabMap = new Map();
 
-      for (const group of plotGroups) {
-        for (const evaluation of group.evaluations) {
+      const groupEntries = plotGroups
+        .map((group, index) => ({
+          key: `group|#|${group.groupId}`,
+          label: getGroupLabelForFields(group, labelFields, `group ${index + 1}`, displayPlotGroupFieldName),
+          evaluations: group.evaluations,
+        }))
+        .filter((entry) => entry.evaluations.length > 0);
+
+      if (state.confusionTabsBy === "metric_field") {
+        for (const evaluation of experimentEvaluations) {
           const rawField = getEvaluationEffectiveValue(evaluation, "metric.field", evalTabState);
-          metricFieldValues.add(rawField || "(missing metric.field)");
+          const fieldLabel = rawField || "(missing metric.field)";
+          if (!tabMap.has(fieldLabel)) {
+            tabMap.set(fieldLabel, { label: getPlotDisplayLabel(fieldLabel), plots: [] });
+          }
         }
+
+        for (const [fieldKey, tab] of tabMap.entries()) {
+          for (const groupEntry of groupEntries) {
+            const evaluationsForFieldAndGroup = groupEntry.evaluations.filter((evaluation) => {
+              const rawField = getEvaluationEffectiveValue(evaluation, "metric.field", evalTabState);
+              const fieldLabel = rawField || "(missing metric.field)";
+              return fieldLabel === fieldKey;
+            });
+            if (evaluationsForFieldAndGroup.length === 0) {
+              continue;
+            }
+            tab.plots.push({ label: groupEntry.label, fieldLabel: fieldKey, evaluations: evaluationsForFieldAndGroup });
+          }
+        }
+        return tabMap;
       }
 
-      const showMetricFieldInCardTitle = metricFieldValues.size > 1;
-
-      plotGroups.forEach((group, index) => {
-        const fallbackLabel = plotGroups.length === 1 ? "all selected evaluations" : `group ${index + 1}`;
-        const baseLabel = getGroupLabelForFields(group, labelFields, fallbackLabel, displayPlotGroupFieldName);
+      for (const groupEntry of groupEntries) {
         const byField = new Map();
-
-        for (const evaluation of group.evaluations) {
+        for (const evaluation of groupEntry.evaluations) {
           const rawField = getEvaluationEffectiveValue(evaluation, "metric.field", evalTabState);
           const fieldLabel = rawField || "(missing metric.field)";
           if (!byField.has(fieldLabel)) {
@@ -4912,24 +4931,15 @@
           }
           byField.get(fieldLabel).push(evaluation);
         }
-
-        const plotEntries = showMetricFieldInCardTitle
-          ? Array.from(byField.entries())
-              .sort(([a], [b]) => sortCollator.compare(a, b))
-              .map(([fieldLabel, evaluations]) => ({
-                label: labelFields.length
-                  ? `${baseLabel} | ${getPlotDisplayLabel(fieldLabel)}`
-                  : getPlotDisplayLabel(fieldLabel),
-                fieldLabel,
-                evaluations,
-              }))
-          : [{ label: baseLabel, fieldLabel: null, evaluations: group.evaluations }];
-
-        tabMap.set(group.groupId, {
-          label: baseLabel,
-          plots: plotEntries,
-        });
-      });
+        const plots = Array.from(byField.entries())
+          .sort(([a], [b]) => sortCollator.compare(a, b))
+          .map(([fieldLabel, evaluations]) => ({
+            label: fieldLabel,
+            fieldLabel,
+            evaluations,
+          }));
+        tabMap.set(groupEntry.key, { label: groupEntry.label, plots });
+      }
 
       return tabMap;
     }
@@ -5451,7 +5461,13 @@
       }
 
       if (metricType === "TpFpFnCollector") {
-        const tpfpfnTabMap = buildTpFpFnTabMap(plotGroups, plotGroupFields, evalTabState);
+        const labelFields = varyingPlotGroupFields.length ? varyingPlotGroupFields : plotGroupFields;
+        const tpfpfnTabMap = buildTpFpFnTabMap(
+          plotGroups,
+          experimentEvaluations,
+          labelFields,
+          evalTabState
+        );
         const sortedTabKeys = Array.from(tpfpfnTabMap.keys()).sort((a, b) =>
           tpfpfnTabMap.get(a).label.localeCompare(tpfpfnTabMap.get(b).label)
         );
@@ -5496,7 +5512,12 @@
           card.className = "plot-card";
           const title = document.createElement("p");
           title.className = "plot-title";
-          title.textContent = `${plotEntry.label} (${aggregation.totalEvaluations} grouped evals; each cell shows TP / FP / FN shares)`;
+          const fieldTitle = getConfusionMatrixTitle(plotEntry.evaluations, evalTabState);
+          if (state.confusionTabsBy === "metric_field") {
+            title.textContent = `${plotEntry.label} (${aggregation.totalEvaluations} grouped evals; each cell shows TP / FP / FN shares)`;
+          } else {
+            title.textContent = `${fieldTitle} (${aggregation.totalEvaluations} grouped evals; each cell shows TP / FP / FN shares)`;
+          }
           card.appendChild(title);
           card.appendChild(createTpFpFnCombinedMatrixSvg(aggregation, state.plotRoundingPrecision));
           grid.appendChild(card);
