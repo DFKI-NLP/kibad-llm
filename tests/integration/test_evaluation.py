@@ -38,7 +38,7 @@ def cfg_evaluate(tmp_path, metric_name) -> DictConfig:  # type: ignore
     with open_dict(cfg):
         cfg.dataset.predictions.file = str(PREDICTIONS_FILE)
         # this produces non-zero results
-        if metric_name in ["confusion_matrix", "f1_micro_single_field"]:
+        if metric_name in ["confusion_matrix", "f1_micro_single_field", "tpfpfn_single_field"]:
             cfg.metric.field = "habitat"
         elif metric_name == "f1_micro":
             cfg.metric.fields = ["habitat", "landuse"]
@@ -113,5 +113,21 @@ def test_evaluate(tmp_path, cfg_evaluate, metric_name):
         assert metric_type == "ErrorCollector"
         # we don't have any errors in the predictions file
         assert metric_scores == {"no_error": 4}
+    elif metric_name == "tpfpfn_single_field":
+        assert metric_type == "TpFpFnCollector"
+        assert metric_scores == {
+            "25ABQZIH": {"fn": [], "fp": ["Agrar- und Offenland", "Boden"], "tp": []},
+            "25RIYD2C": {"fn": [], "fp": ["Wald"], "tp": ["Agrar- und Offenland"]},
+            "7T8NZA5Q": {
+                "fn": [],
+                "fp": ["Binnengewässer und Auen"],
+                "tp": ["Küsten und Küstengewässer"],
+            },
+            "BBDCY7DW": {
+                "fn": [],
+                "fp": ["Binnengewässer und Auen"],
+                "tp": ["Küsten und Küstengewässer"],
+            },
+        }
     else:
         raise ValueError(f"Unexpected metric name: {metric_name}. Please update the test case.")
