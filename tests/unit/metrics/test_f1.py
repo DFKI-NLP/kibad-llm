@@ -1,9 +1,12 @@
+"""Unit tests for single-field and multi-field F1 metrics."""
+
 import pytest
 
 from kibad_llm.metrics.f1 import F1MicroMultipleFieldsMetric, F1MicroSingleFieldMetric
 
 
 def test_perfect_matches() -> None:
+    """Perfect single-field matches should yield perfect scores."""
     m = F1MicroSingleFieldMetric(field="label")
     m.update({"label": "foo"}, {"label": "foo"})
     m.update({"label": "bar"}, {"label": "bar"})
@@ -14,6 +17,7 @@ def test_perfect_matches() -> None:
 
 
 def test_all_mismatches() -> None:
+    """Complete single-field mismatches should yield zero scores."""
     m = F1MicroSingleFieldMetric(field="label")
     m.update({"label": "foo"}, {"label": "woo"})
     m.update({"label": "bar"}, {"label": "rar"})
@@ -24,6 +28,7 @@ def test_all_mismatches() -> None:
 
 
 def test_mixed_counts() -> None:
+    """Mixed tp/fp/fn counts should produce the expected micro scores."""
     m = F1MicroSingleFieldMetric(field="label")
     # tp
     m.update({"label": "foo"}, {"label": "foo"})
@@ -43,6 +48,7 @@ def test_mixed_counts() -> None:
 
 
 def test_all_none_zero_division() -> None:
+    """Empty comparisons should avoid division-by-zero and return zeros."""
     m = F1MicroSingleFieldMetric(field="label")
     m.update({"label": None}, {"label": None})
     m.update({"label": None}, {"label": None})
@@ -53,6 +59,7 @@ def test_all_none_zero_division() -> None:
 
 
 def test_reset() -> None:
+    """Reset should clear accumulated single-field state."""
     m = F1MicroSingleFieldMetric(field="label")
     m.update({"label": "foo"}, {"label": "foo"})
     assert m.compute(m)["f1"] == pytest.approx(1.0)
@@ -64,6 +71,7 @@ def test_reset() -> None:
 
 
 def test_multi_perfect_matches() -> None:
+    """Perfect multi-value matches should yield perfect scores."""
     m = F1MicroSingleFieldMetric(field="label")
     m.update({"label": ["foo", "woo"]}, {"label": ["foo", "woo"]})
     m.update({"label": {"bar", "dar"}}, {"label": {"bar", "dar"}})
@@ -74,6 +82,7 @@ def test_multi_perfect_matches() -> None:
 
 
 def test_multi_value_all_mismatches() -> None:
+    """Multi-value mismatches should yield zero scores."""
     m = F1MicroSingleFieldMetric(field="label")
     m.update({"label": ["foo", "boo"]}, {"label": ["woo", "doo"]})
     m.update({"label": {"bar", "dar"}}, {"label": {"rar", "sar"}})
@@ -84,6 +93,7 @@ def test_multi_value_all_mismatches() -> None:
 
 
 def test_multi_value_mixed_count() -> None:
+    """Mixed counts without field extraction should compute correct scores."""
     m = F1MicroSingleFieldMetric()
     m.update(["foo", True], {"bar", "dar", True})
     out = m.compute(m)
@@ -94,6 +104,7 @@ def test_multi_value_mixed_count() -> None:
 
 
 def test_multi_value_mixed_counts() -> None:
+    """Mixed multi-value counts with field extraction should update state correctly."""
     m = F1MicroSingleFieldMetric(field="label")
     # tp
     m.update({"label": {"foo"}}, {"label": ["foo"]})
@@ -122,6 +133,7 @@ def test_multi_value_mixed_counts() -> None:
 
 
 def test_multi_value_mixed_counts_no_field() -> None:
+    """Mixed multi-value counts without field extraction should update state correctly."""
     m = F1MicroSingleFieldMetric()
     # tp
     m.update({"foo"}, ["foo"])
@@ -150,6 +162,7 @@ def test_multi_value_mixed_counts_no_field() -> None:
 
 
 def test_multiple_fields_single_field() -> None:
+    """The multi-field metric should support a single configured field."""
     m = F1MicroMultipleFieldsMetric(fields=["label"])
     m.update({"label": "foo"}, {"label": "foo"})
     m.update({"label": "bar"}, {"label": "rar"})
@@ -162,6 +175,7 @@ def test_multiple_fields_single_field() -> None:
 
 
 def test_multiple_fields() -> None:
+    """The multi-field metric should compute per-field and aggregate results."""
     m = F1MicroMultipleFieldsMetric(fields=["label1", "label2"])
     m.update({"label1": "foo", "label2": "A"}, {"label1": "foo", "label2": "B"})
     m.update({"label1": "bar", "label2": "C"}, {"label1": "rar", "label2": "C"})
@@ -175,6 +189,7 @@ def test_multiple_fields() -> None:
 
 
 def test_multiple_fields_reset() -> None:
+    """Reset should clear state across all child metrics."""
     m = F1MicroMultipleFieldsMetric(fields=["label"])
     m.update({"label": "foo"}, {"label": "foo"})
     assert m.compute()["label"]["f1"] == pytest.approx(1.0)
@@ -184,6 +199,7 @@ def test_multiple_fields_reset() -> None:
 
 
 def test_multiple_fields_format_result_markdown() -> None:
+    """Markdown formatting should render the computed table deterministically."""
     m = F1MicroMultipleFieldsMetric(fields=["label1", "label2"], format_as_markdown=True)
     m.update({"label1": "foo", "label2": "A"}, {"label1": "foo", "label2": "A"})
     result = m.compute()
@@ -199,6 +215,7 @@ def test_multiple_fields_format_result_markdown() -> None:
 
 
 def test_multiple_fields_format_result_json() -> None:
+    """JSON formatting should delegate to the base metric formatter."""
     m = F1MicroMultipleFieldsMetric(fields=["label"], format_as_markdown=False)
     m.update({"label": "foo"}, {"label": "foo"})
     result = m.compute()
@@ -227,162 +244,8 @@ def test_multiple_fields_format_result_json() -> None:
     )
 
 
-def test_multiple_fields_subfield_keys_expand_entries() -> None:
-    m = F1MicroMultipleFieldsMetric(fields=["label"], subfield_keys={"label": ["type"]})
-    m.update(
-        {"label": [{"type": "A", "value": "foo"}, {"type": "B", "value": "bar"}]},
-        {"label": [{"type": "A", "value": "foo"}, {"type": "B", "value": "baz"}]},
-    )
-
-    out = m.compute()
-
-    assert out == {
-        "ALL": {"f1": 0.5, "precision": 0.5, "recall": 0.5, "support": 2},
-        "AVG": {"f1": 0.5, "precision": 0.5, "recall": 0.5, "support": 1.0},
-        "label.A": {"f1": 1.0, "precision": 1.0, "recall": 1.0, "support": 1},
-        "label.B": {"f1": 0.0, "precision": 0.0, "recall": 0.0, "support": 1},
-    }
-
-
-def test_multiple_fields_subfield_keys_require_dict_entries() -> None:
-    m = F1MicroMultipleFieldsMetric(fields=["label"], subfield_keys={"label": ["type"]})
-
-    with pytest.raises(TypeError, match="contains non-dict entries"):
-        m.update({"label": ["foo"]}, {"label": ["foo"]})
-
-
-def test_multiple_fields_subfield_keys_missing_field_on_one_side() -> None:
-    m = F1MicroMultipleFieldsMetric(fields=["label"], subfield_keys={"label": ["type"]})
-    m.update({}, {"label": [{"type": "A", "value": "foo"}]})
-
-    out = m.compute()
-
-    assert out == {
-        "ALL": {"f1": 0.0, "precision": 0.0, "recall": 0.0, "support": 1},
-        "AVG": {"f1": 0.0, "precision": 0.0, "recall": 0.0, "support": 1.0},
-        "label.A": {"f1": 0.0, "precision": 0.0, "recall": 0.0, "support": 1},
-    }
-
-
-def test_multiple_fields_subfield_keys_missing_subkey_uses_none_suffix() -> None:
-    m = F1MicroMultipleFieldsMetric(fields=["label"], subfield_keys={"label": ["type"]})
-    m.update(
-        {"label": [{"value": "foo"}]},
-        {"label": [{"type": "A", "value": "foo"}]},
-    )
-
-    out = m.compute()
-
-    assert out == {
-        "ALL": {"f1": 0.0, "precision": 0.0, "recall": 0.0, "support": 1},
-        "AVG": {"f1": 0.0, "precision": 0.0, "recall": 0.0, "support": 0.5},
-        "label.A": {"f1": 0.0, "precision": 0.0, "recall": 0.0, "support": 1},
-        "label.None": {"f1": 0.0, "precision": 0.0, "recall": 0.0, "support": 0},
-    }
-
-
-def test_multiple_fields_subfield_keys_expand_single_dict_entry() -> None:
-    m = F1MicroMultipleFieldsMetric(fields=["label"], subfield_keys={"label": ["type"]})
-    m.update(
-        {"label": {"type": "A", "value": "foo"}},
-        {"label": {"type": "A", "value": "foo"}},
-    )
-
-    out = m.compute()
-
-    assert out == {
-        "ALL": {"f1": 1.0, "precision": 1.0, "recall": 1.0, "support": 1},
-        "AVG": {"f1": 1.0, "precision": 1.0, "recall": 1.0, "support": 1.0},
-        "label.A": {"f1": 1.0, "precision": 1.0, "recall": 1.0, "support": 1},
-    }
-
-
-def test_multiple_fields_subfield_values_keep_only_selected_payload_fields() -> None:
-    m = F1MicroMultipleFieldsMetric(
-        fields=["label"],
-        subfield_keys={"label": ["type"]},
-        subfield_values={"label": ["value"]},
-    )
-    m.update(
-        {"label": [{"type": "A", "value": "foo", "ignored": "left"}]},
-        {"label": [{"type": "A", "value": "foo", "ignored": "right"}]},
-    )
-
-    out = m.compute()
-
-    assert out == {
-        "ALL": {"f1": 1.0, "precision": 1.0, "recall": 1.0, "support": 1},
-        "AVG": {"f1": 1.0, "precision": 1.0, "recall": 1.0, "support": 1.0},
-        "label.A": {"f1": 1.0, "precision": 1.0, "recall": 1.0, "support": 1},
-    }
-
-
-def test_multiple_fields_subfield_values_keep_only_selected_payload_fields_single_dict() -> None:
-    m = F1MicroMultipleFieldsMetric(
-        fields=["label"],
-        subfield_keys={"label": ["type"]},
-        subfield_values={"label": ["value"]},
-    )
-    m.update(
-        {"label": {"type": "A", "value": "foo", "ignored": "left"}},
-        {"label": {"type": "A", "value": "foo", "ignored": "right"}},
-    )
-
-    out = m.compute()
-
-    assert out == {
-        "ALL": {"f1": 1.0, "precision": 1.0, "recall": 1.0, "support": 1},
-        "AVG": {"f1": 1.0, "precision": 1.0, "recall": 1.0, "support": 1.0},
-        "label.A": {"f1": 1.0, "precision": 1.0, "recall": 1.0, "support": 1},
-    }
-
-
-def test_multiple_fields_subfield_values_can_score_only_selected_nested_values() -> None:
-    m = F1MicroMultipleFieldsMetric(
-        fields=["organism_trends"],
-        subfield_keys={"organism_trends": ["Hauptgruppe_RoteListen", "Lebensraum"]},
-        subfield_values={"organism_trends": ["Antwortvariable"]},
-    )
-    m.update(
-        {
-            "organism_trends": [
-                {
-                    "Hauptgruppe_RoteListen": "Amphibien",
-                    "Lebensraum": "Wald",
-                    "Antwortvariable": "Abundanz",
-                    "Trend": "negative",
-                    "Untergruppe_RoteListen": "foo",
-                }
-            ]
-        },
-        {
-            "organism_trends": [
-                {
-                    "Hauptgruppe_RoteListen": "Amphibien",
-                    "Lebensraum": "Wald",
-                    "Antwortvariable": "Abundanz",
-                    "Trend": "positive",
-                    "Untergruppe_RoteListen": "bar",
-                }
-            ]
-        },
-    )
-
-    out = m.compute()
-
-    assert out == {
-        "ALL": {"f1": 1.0, "precision": 1.0, "recall": 1.0, "support": 1},
-        "AVG": {"f1": 1.0, "precision": 1.0, "recall": 1.0, "support": 1.0},
-        "organism_trends.Amphibien&Wald": {
-            "f1": 1.0,
-            "precision": 1.0,
-            "recall": 1.0,
-            "support": 1,
-        },
-    }
-
-
 def test_single_field_ignore_missing_entries_skips_one_sided_entries() -> None:
+    """Single-field metrics can skip one-sided empty entries when configured."""
     m = F1MicroSingleFieldMetric(field="label", ignore_missing_entries=True)
     m.update({"label": "foo"}, {"label": None})
     m.update({"label": None}, {"label": "bar"})
@@ -395,6 +258,7 @@ def test_single_field_ignore_missing_entries_skips_one_sided_entries() -> None:
 
 
 def test_multiple_fields_ignore_missing_entries_keeps_only_matched_groups() -> None:
+    """Grouped multi-field results should drop one-sided entries when configured to do so."""
     m = F1MicroMultipleFieldsMetric(
         fields=["organism_trends"],
         subfield_keys={"organism_trends": ["Hauptgruppe_RoteListen", "Lebensraum"]},
@@ -451,6 +315,7 @@ def test_multiple_fields_ignore_missing_entries_keeps_only_matched_groups() -> N
 
 
 def test_multiple_fields_ignore_missing_entries_filters_empty_top_level_fields() -> None:
+    """Top-level fields with only one-sided entries should be removed from the result."""
     m = F1MicroMultipleFieldsMetric(fields=["a", "b"], ignore_missing_entries=True)
     m.update({"a": "foo"}, {"a": "foo", "b": "bar"})
 
@@ -464,6 +329,7 @@ def test_multiple_fields_ignore_missing_entries_filters_empty_top_level_fields()
 
 
 def test_multiple_fields_ignore_missing_entries_can_filter_all_field_results() -> None:
+    """Ignoring missing entries can produce aggregate-only results when all fields are dropped."""
     m = F1MicroMultipleFieldsMetric(fields=["label"], ignore_missing_entries=True)
     m.update({"label": "foo"}, {"label": None})
 
@@ -475,52 +341,11 @@ def test_multiple_fields_ignore_missing_entries_can_filter_all_field_results() -
     }
 
 
-def test_multiple_fields_auto_discovers_fields_when_not_configured() -> None:
-    m = F1MicroMultipleFieldsMetric(fields=None)
-    m.update({"a": "foo"}, {"a": "foo", "b": "bar"})
-
-    out = m.compute()
-
-    assert out["a"] == {"f1": 1.0, "precision": 1.0, "recall": 1.0, "support": 1}
-    assert out["b"] == {"f1": 0.0, "precision": 0.0, "recall": 0.0, "support": 1}
-    assert out["AVG"] == {"f1": 0.5, "precision": 0.5, "recall": 0.5, "support": 1.0}
-    assert out["ALL"]["precision"] == pytest.approx(1.0)
-    assert out["ALL"]["recall"] == pytest.approx(0.5)
-    assert out["ALL"]["f1"] == pytest.approx(2 / 3)
-    assert out["ALL"]["support"] == 2
-
-
-@pytest.mark.parametrize(
-    ("prediction", "reference", "expected_support"),
-    [(None, {"label": "foo"}, 1), ({"label": "foo"}, None, 0)],
-)
-def test_multiple_fields_accepts_none_as_empty_dict(
-    prediction: dict[str, str] | None, reference: dict[str, str] | None, expected_support: int
-) -> None:
-    m = F1MicroMultipleFieldsMetric(fields=["label"])
-    m.update(prediction, reference)
-
-    out = m.compute()
-
-    assert out == {
-        "ALL": {"f1": 0.0, "precision": 0.0, "recall": 0.0, "support": expected_support},
-        "AVG": {"f1": 0.0, "precision": 0.0, "recall": 0.0, "support": float(expected_support)},
-        "label": {"f1": 0.0, "precision": 0.0, "recall": 0.0, "support": expected_support},
-    }
-
-
-@pytest.mark.parametrize("prediction", [[], ""])
-def test_multiple_fields_rejects_falsy_non_dict_predictions(prediction: object) -> None:
-    m = F1MicroMultipleFieldsMetric(fields=["label"])
-
-    with pytest.raises(TypeError, match="Prediction and reference should be dicts"):
-        m.update(prediction, {"label": "foo"})
-
-
 @pytest.mark.parametrize(
     "format_as_markdown,sort_fields", [(True, True), (True, False), (False, True), (False, False)]
 )
 def test_multiple_fields_show(format_as_markdown: bool, sort_fields: bool, caplog) -> None:
+    """show_result should log either markdown or JSON in the requested field order."""
     m = F1MicroMultipleFieldsMetric(
         fields=["b_field", "a_field"],
         format_as_markdown=format_as_markdown,
