@@ -999,6 +999,7 @@
     const JOB_RETURN_VALUE_PREFIX = "job_return_value.";
     // Synthetic namespace for evaluation fields when prediction and evaluation group-by fields are mixed together.
     const EVALUATION_PREFIX = "evaluation.";
+    const TP_FP_FN_KEYS = ["tp", "fp", "fn"];
     const sortCollator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
 
     // Selectors and accessors for the canonical predictions/evaluations state shape.
@@ -4702,6 +4703,294 @@
       return tabMap;
     }
 
+    function getTpFpFnOutcomeLabel(outcomeKey) {
+      if (outcomeKey === "tp") {
+        return "TP";
+      }
+      if (outcomeKey === "fp") {
+        return "FP";
+      }
+      if (outcomeKey === "fn") {
+        return "FN";
+      }
+      return String(outcomeKey ?? "").toUpperCase();
+    }
+
+    function getTpFpFnPalette(outcomeKey) {
+      if (outcomeKey === "tp") {
+        return { start: [240, 253, 244], end: [22, 163, 74] };
+      }
+      if (outcomeKey === "fp") {
+        return { start: [255, 247, 237], end: [234, 88, 12] };
+      }
+      if (outcomeKey === "fn") {
+        return { start: [250, 245, 255], end: [126, 34, 206] };
+      }
+      return { start: [247, 251, 255], end: [8, 48, 107] };
+    }
+
+    function normalizeTpFpFnCollectorData(rawData) {
+      const result = {};
+
+      const getRecordEntry = (recordId) => {
+        const key = normalizeValue(recordId) || "(missing record_id)";
+        if (!result[key]) {
+          result[key] = { tp: [], fp: [], fn: [] };
+        }
+        return result[key];
+      };
+
+      const appendUniqueValues = (target, bucket, values) => {
+        if (!Array.isArray(values)) {
+          return;
+        }
+        const seen = new Set(target[bucket]);
+        for (const value of values) {
+          const normalized = normalizeValue(value);
+          if (seen.has(normalized)) {
+            continue;
+          }
+          seen.add(normalized);
+          target[bucket].push(normalized);
+        }
+        target[bucket].sort((a, b) => sortCollator.compare(a, b));
+      };
+
+      if (!rawData || typeof rawData !== "object" || Array.isArray(rawData)) {
+        return result;
+      }
+
+      const looksLikeGlobalOutput = TP_FP_FN_KEYS.some((bucket) => Array.isArray(rawData?.[bucket]));
+      if (looksLikeGlobalOutput) {
+        for (const bucket of TP_FP_FN_KEYS) {
+          const entries = Array.isArray(rawData[bucket]) ? rawData[bucket] : [];
+          for (const entry of entries) {
+            if (!Array.isArray(entry) || entry.length < 2) {
+              continue;
+            }
+            appendUniqueValues(getRecordEntry(entry[0]), bucket, [entry[1]]);
+          }
+        }
+        return result;
+      }
+
+      for (const [recordId, entry] of Object.entries(rawData)) {
+        const normalizedEntry = entry && typeof entry === "object" && !Array.isArray(entry) ? entry : {};
+        const target = getRecordEntry(recordId);
+        for (const bucket of TP_FP_FN_KEYS) {
+          appendUniqueValues(target, bucket, normalizedEntry[bucket]);
+        }
+      }
+
+      return result;
+    }
+
+    function getTpFpFnAggregation(experimentEvaluations, outcomeKey) {
+      const rowLabels = new Set();
+      const colLabels = new Set();
+      const evaluationCells = [];
+
+      for (const evaluation of experimentEvaluations) {
+        const map = new Map();
+        const normalizedData = normalizeTpFpFnCollectorData(evaluation.data);
+        for (const [recordId, recordEntry] of Object.entries(normalizedData)) {
+          const labels = Array.isArray(recordEntry?.[outcomeKey]) ? recordEntry[outcomeKey] : [];
+          if (!labels.length) {
+            continue;
+          }
+          rowLabels.add(recordId);
+          for (const label of labels) {
+            colLabels.add(label);
+            map.set(`${recordId}|#|${label}`, 1);
+          }
+        }
+        evaluationCells.push(map);
+      }
+
+      const rows = Array.from(rowLabels).sort((a, b) => sortCollator.compare(a, b));
+      const cols = Array.from(colLabels).sort((a, b) => sortCollator.compare(a, b));
+      const cells = new Map();
+
+      for (const row of rows) {
+        for (const col of cols) {
+          const key = `${row}|#|${col}`;
+          const values = evaluationCells.map((cellMap) => cellMap.get(key) ?? 0);
+          const count = values.reduce((sum, value) => sum + value, 0);
+          const stats = meanAndStd(values) || { mean: 0, std: 0 };
+          cells.set(key, {
+            count,
+            total: evaluationCells.length,
+            share: evaluationCells.length ? count / evaluationCells.length : 0,
+            std: stats.std,
+          });
+        }
+      }
+
+      return {
+        rows,
+        cols,
+        cells,
+        totalEvaluations: evaluationCells.length,
+        outcomeKey,
+      };
+    }
+
+    function buildTpFpFnTabMap(plotGroups, plotGroupFields, evalTabState) {
+      const varyingPlotGroupFields = getVaryingFields(plotGroups, plotGroupFields);
+      const labelFields = varyingPlotGroupFields.length ? varyingPlotGroupFields : plotGroupFields;
+      const metricFieldValues = new Set();
+      const tabMap = new Map();
+
+      for (const group of plotGroups) {
+        for (const evaluation of group.evaluations) {
+          const rawField = getEvaluationEffectiveValue(evaluation, "metric.field", evalTabState);
+          metricFieldValues.add(rawField || "(missing metric.field)");
+        }
+      }
+
+      const showMetricFieldInCardTitle = metricFieldValues.size > 1;
+
+      plotGroups.forEach((group, index) => {
+        const fallbackLabel = plotGroups.length === 1 ? "all selected evaluations" : `group ${index + 1}`;
+        const baseLabel = getGroupLabelForFields(group, labelFields, fallbackLabel, displayPlotGroupFieldName);
+        const byField = new Map();
+
+        for (const evaluation of group.evaluations) {
+          const rawField = getEvaluationEffectiveValue(evaluation, "metric.field", evalTabState);
+          const fieldLabel = rawField || "(missing metric.field)";
+          if (!byField.has(fieldLabel)) {
+            byField.set(fieldLabel, []);
+          }
+          byField.get(fieldLabel).push(evaluation);
+        }
+
+        const plotEntries = showMetricFieldInCardTitle
+          ? Array.from(byField.entries())
+              .sort(([a], [b]) => sortCollator.compare(a, b))
+              .map(([fieldLabel, evaluations]) => ({
+                label: labelFields.length
+                  ? `${baseLabel} | ${getPlotDisplayLabel(fieldLabel)}`
+                  : getPlotDisplayLabel(fieldLabel),
+                fieldLabel,
+                evaluations,
+              }))
+          : [{ label: baseLabel, fieldLabel: null, evaluations: group.evaluations }];
+
+        tabMap.set(group.groupId, {
+          label: baseLabel,
+          plots: plotEntries,
+        });
+      });
+
+      return tabMap;
+    }
+
+    function createTpFpFnHeatmapSvg(aggregation, precision) {
+      const { rows, cols, cells, totalEvaluations, outcomeKey } = aggregation;
+      const cellSize = 82;
+      const margin = { top: 140, right: 20, bottom: 20, left: 120 };
+      const width = margin.left + cols.length * cellSize + margin.right;
+      const height = margin.top + rows.length * cellSize + margin.bottom;
+      const palette = getTpFpFnPalette(outcomeKey);
+
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svg.setAttribute("width", String(width));
+      svg.setAttribute("height", String(height));
+      svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+      const contentGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      svg.appendChild(contentGroup);
+
+      const xAxisTitle = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      xAxisTitle.setAttribute("x", String(margin.left + (cols.length * cellSize) / 2));
+      xAxisTitle.setAttribute("y", "20");
+      xAxisTitle.setAttribute("text-anchor", "middle");
+      xAxisTitle.setAttribute("fill", "currentColor");
+      xAxisTitle.setAttribute("font-size", "13");
+      xAxisTitle.textContent = "Label";
+      contentGroup.appendChild(xAxisTitle);
+
+      const yAxisTitle = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      yAxisTitle.setAttribute("x", "18");
+      yAxisTitle.setAttribute("y", String(margin.top + (rows.length * cellSize) / 2));
+      yAxisTitle.setAttribute("transform", `rotate(-90 18 ${margin.top + (rows.length * cellSize) / 2})`);
+      yAxisTitle.setAttribute("text-anchor", "middle");
+      yAxisTitle.setAttribute("fill", "currentColor");
+      yAxisTitle.setAttribute("font-size", "13");
+      yAxisTitle.textContent = "Document id";
+      contentGroup.appendChild(yAxisTitle);
+
+      rows.forEach((row, rowIndex) => {
+        const y = margin.top + rowIndex * cellSize + cellSize / 2;
+        const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        label.setAttribute("x", String(margin.left - 10));
+        label.setAttribute("y", String(y + 4));
+        label.setAttribute("text-anchor", "end");
+        label.setAttribute("fill", "currentColor");
+        label.setAttribute("font-size", "11");
+        label.textContent = row;
+        contentGroup.appendChild(label);
+      });
+
+      rows.forEach((row, rowIndex) => {
+        cols.forEach((col, colIndex) => {
+          const key = `${row}|#|${col}`;
+          const stats = cells.get(key) || { count: 0, total: totalEvaluations, share: 0, std: 0 };
+          const x = margin.left + colIndex * cellSize;
+          const y = margin.top + rowIndex * cellSize;
+          const fill = interpolateColor(palette.start, palette.end, stats.share);
+
+          const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+          rect.setAttribute("x", String(x));
+          rect.setAttribute("y", String(y));
+          rect.setAttribute("width", String(cellSize));
+          rect.setAttribute("height", String(cellSize));
+          rect.setAttribute("fill", fill);
+          rect.setAttribute("stroke", "#33415555");
+          rect.setAttribute("stroke-width", "1");
+          rect.style.cursor = "crosshair";
+          rect.addEventListener("mouseover", (event) => {
+            showBarTooltip(event, [
+              `${getTpFpFnOutcomeLabel(outcomeKey)} share`,
+              `document: ${row}`,
+              `label:    ${col}`,
+              `count:    ${stats.count}/${stats.total}`,
+              `share:    ${formatRounded(stats.share * 100, precision)}%`,
+              `std:      ${formatRounded(stats.std * 100, precision)}%`,
+            ]);
+          });
+          rect.addEventListener("mousemove", positionBarTooltip);
+          rect.addEventListener("mouseout", hideBarTooltip);
+          contentGroup.appendChild(rect);
+
+          const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+          text.setAttribute("x", String(x + cellSize / 2));
+          text.setAttribute("y", String(y + cellSize / 2 + 4));
+          text.setAttribute("text-anchor", "middle");
+          text.setAttribute("fill", stats.share > 0.55 ? "#f8fafc" : "#0f172a");
+          text.setAttribute("font-size", "11");
+          text.textContent = `${stats.count}/${stats.total}`;
+          contentGroup.appendChild(text);
+        });
+      });
+
+      cols.forEach((col, colIndex) => {
+        const x = margin.left + colIndex * cellSize + cellSize / 2;
+        const y = margin.top - 12;
+        const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        label.setAttribute("x", String(x + 2));
+        label.setAttribute("y", String(y));
+        label.setAttribute("transform", `rotate(-35 ${x + 2} ${y})`);
+        label.setAttribute("text-anchor", "start");
+        label.setAttribute("fill", "currentColor");
+        label.setAttribute("font-size", "11");
+        label.textContent = getPlotDisplayLabel(col);
+        contentGroup.appendChild(label);
+      });
+
+      scheduleAdaptiveSvgFit(svg, contentGroup, width, height);
+      return svg;
+    }
+
     function renderGroupBarChips(varyingGroupByFields, activeExperiment) {
       if (varyingGroupByFields.length === 0) {
         const noOptions = document.createElement("span");
@@ -4919,7 +5208,8 @@
       if (
         metricType !== "ConfusionMatrix" &&
         metricType !== "ErrorCollector" &&
-        metricType !== "F1MicroMultipleFieldsMetric"
+        metricType !== "F1MicroMultipleFieldsMetric" &&
+        metricType !== "TpFpFnCollector"
       ) {
         const msg = document.createElement("p");
         msg.className = "plot-empty";
@@ -5010,6 +5300,73 @@
           const msg = document.createElement("p");
           msg.className = "plot-empty";
           msg.textContent = `No confusion matrix values found for ${activeConfusionEntry.label}.`;
+          evalPlotContent.appendChild(msg);
+          return;
+        }
+
+        evalPlotContent.appendChild(grid);
+        return;
+      }
+
+      if (metricType === "TpFpFnCollector") {
+        const tpfpfnTabMap = buildTpFpFnTabMap(plotGroups, plotGroupFields, evalTabState);
+        const sortedTabKeys = Array.from(tpfpfnTabMap.keys()).sort((a, b) =>
+          tpfpfnTabMap.get(a).label.localeCompare(tpfpfnTabMap.get(b).label)
+        );
+        if (!sortedTabKeys.length) {
+          const msg = document.createElement("p");
+          msg.className = "plot-empty";
+          msg.textContent = `No ${metricType} data found for ${activeExperiment}.`;
+          evalPlotContent.appendChild(msg);
+          return;
+        }
+
+        if (!state.activeEvalPlotTab || !tpfpfnTabMap.has(state.activeEvalPlotTab)) {
+          state.activeEvalPlotTab = sortedTabKeys[0];
+        }
+
+        for (const key of sortedTabKeys) {
+          const entry = tpfpfnTabMap.get(key);
+          const evaluationCount = entry.plots.reduce((sum, plot) => sum + plot.evaluations.length, 0);
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "tab-button" + (key === state.activeEvalPlotTab ? " active" : "");
+          button.textContent = `${entry.label} (${evaluationCount})`;
+          button.title = `${entry.label} (${evaluationCount} grouped evaluations)`;
+          button.addEventListener("click", () => {
+            state.activeEvalPlotTab = key;
+            renderEvaluationPlots(activeExperiment);
+          });
+          evalPlotTabs.appendChild(button);
+        }
+
+        const activeEntry = tpfpfnTabMap.get(state.activeEvalPlotTab);
+        const grid = document.createElement("div");
+        grid.className = "plot-grid";
+
+        for (const plotEntry of activeEntry.plots) {
+          for (const outcomeKey of TP_FP_FN_KEYS) {
+            const aggregation = getTpFpFnAggregation(plotEntry.evaluations, outcomeKey);
+            if (!aggregation.rows.length || !aggregation.cols.length) {
+              continue;
+            }
+
+            const card = document.createElement("section");
+            card.className = "plot-card";
+            const title = document.createElement("p");
+            title.className = "plot-title";
+            const baseTitle = activeEntry.plots.length > 1 ? `${plotEntry.label} | ${getTpFpFnOutcomeLabel(outcomeKey)}` : getTpFpFnOutcomeLabel(outcomeKey);
+            title.textContent = `${baseTitle} (${aggregation.totalEvaluations} grouped evals; cell = count / grouped evals)`;
+            card.appendChild(title);
+            card.appendChild(createTpFpFnHeatmapSvg(aggregation, state.plotRoundingPrecision));
+            grid.appendChild(card);
+          }
+        }
+
+        if (!grid.childElementCount) {
+          const msg = document.createElement("p");
+          msg.className = "plot-empty";
+          msg.textContent = `No TP/FP/FN values found for ${activeEntry.label}.`;
           evalPlotContent.appendChild(msg);
           return;
         }
