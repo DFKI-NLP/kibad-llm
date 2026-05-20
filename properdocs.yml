@@ -65,6 +65,7 @@ plugins:
           show_symbol_type_heading: true
           show_symbol_type_toc: true
           members_order: source
+          relative_crossrefs: true
 
 markdown_extensions:
   - pymdownx.snippets:
