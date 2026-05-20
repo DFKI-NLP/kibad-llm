@@ -4939,7 +4939,6 @@
         { label: "TP", color: getTpFpFnOutcomeColor("tp") },
         { label: "FP", color: getTpFpFnOutcomeColor("fp") },
         { label: "FN", color: getTpFpFnOutcomeColor("fn") },
-        { label: "empty", color: getTpFpFnOutcomeColor(null) },
       ]);
     }
 
@@ -4984,18 +4983,16 @@
 
     function createTpFpFnCombinedMatrixSvg(aggregation, precision) {
       const { rows, cols, cells, totalEvaluations, evaluationLabels } = aggregation;
-      const miniCellSize = totalEvaluations <= 4 ? 14 : totalEvaluations <= 9 ? 11 : 9;
-      const miniGap = totalEvaluations <= 4 ? 2 : 1;
+      const miniCellWidth = 18;
+      const miniCellHeight = 18;
+      const miniGap = 2;
       const cellPadding = 4;
       const outcomeCols = TP_FP_FN_KEYS.length;
       const cellWidth = Math.max(
         52,
-        outcomeCols * miniCellSize + Math.max(0, outcomeCols - 1) * miniGap + cellPadding * 2
+        outcomeCols * miniCellWidth + Math.max(0, outcomeCols - 1) * miniGap + cellPadding * 2
       );
-      const cellHeight = Math.max(
-        28,
-        Math.max(totalEvaluations, 1) * miniCellSize + Math.max(0, totalEvaluations - 1) * miniGap + cellPadding * 2
-      );
+      const cellHeight = Math.max(28, miniCellHeight + cellPadding * 2);
       const margin = { top: 140, right: 20, bottom: 20, left: 120 };
       const width = margin.left + cols.length * cellWidth + margin.right;
       const height = margin.top + rows.length * cellHeight + margin.bottom;
@@ -5023,7 +5020,7 @@
       yAxisTitle.setAttribute("text-anchor", "middle");
       yAxisTitle.setAttribute("fill", "currentColor");
       yAxisTitle.setAttribute("font-size", "13");
-      yAxisTitle.textContent = "Document id (rows inside each cell = grouped evals)";
+      yAxisTitle.textContent = "Document id";
       contentGroup.appendChild(yAxisTitle);
 
       rows.forEach((row, rowIndex) => {
@@ -5074,26 +5071,21 @@
           cellBorder.setAttribute("stroke-width", "1");
           contentGroup.appendChild(cellBorder);
 
-          const rowStates = stats.rowStates.length
-            ? stats.rowStates
-            : [{ tp: false, fp: false, fn: false }];
-
-          rowStates.forEach((rowState, evalIndex) => {
-            TP_FP_FN_KEYS.forEach((outcomeKey, outcomeIndex) => {
-              const subX = x + cellPadding + outcomeIndex * (miniCellSize + miniGap);
-              const subY = y + cellPadding + evalIndex * (miniCellSize + miniGap);
-              const isActive = Boolean(rowState[outcomeKey]);
-              const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-              rect.setAttribute("x", String(subX));
-              rect.setAttribute("y", String(subY));
-              rect.setAttribute("width", String(miniCellSize));
-              rect.setAttribute("height", String(miniCellSize));
-              rect.setAttribute("rx", miniCellSize <= 10 ? "1" : "2");
-              rect.setAttribute("fill", getTpFpFnOutcomeColor(isActive ? outcomeKey : null));
-              rect.setAttribute("stroke", isActive ? "#ffffffcc" : "#cbd5e1");
-              rect.setAttribute("stroke-width", "1");
-              contentGroup.appendChild(rect);
-            });
+          TP_FP_FN_KEYS.forEach((outcomeKey, outcomeIndex) => {
+            const subX = x + cellPadding + outcomeIndex * (miniCellWidth + miniGap);
+            const subY = y + cellPadding;
+            const share = totalEvaluations ? stats.counts[outcomeKey] / totalEvaluations : 0;
+            const palette = getTpFpFnPalette(outcomeKey);
+            const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+            rect.setAttribute("x", String(subX));
+            rect.setAttribute("y", String(subY));
+            rect.setAttribute("width", String(miniCellWidth));
+            rect.setAttribute("height", String(miniCellHeight));
+            rect.setAttribute("rx", "2");
+            rect.setAttribute("fill", interpolateColor(palette.start, palette.end, share));
+            rect.setAttribute("stroke", "#ffffffcc");
+            rect.setAttribute("stroke-width", "1");
+            contentGroup.appendChild(rect);
           });
 
           const overlay = document.createElementNS("http://www.w3.org/2000/svg", "rect");
@@ -5102,7 +5094,7 @@
           overlay.setAttribute("width", String(cellWidth));
           overlay.setAttribute("height", String(cellHeight));
           overlay.setAttribute("fill", "transparent");
-          overlay.style.cursor = "crosshair";
+          overlay.style.cursor = "pointer";
           overlay.addEventListener("mouseover", (event) => {
             const summary = buildTpFpFnCellSummary(
               row,
@@ -5504,7 +5496,7 @@
           card.className = "plot-card";
           const title = document.createElement("p");
           title.className = "plot-title";
-          title.textContent = `${plotEntry.label} (${aggregation.totalEvaluations} grouped evals per cell)`;
+          title.textContent = `${plotEntry.label} (${aggregation.totalEvaluations} grouped evals; each cell shows TP / FP / FN shares)`;
           card.appendChild(title);
           card.appendChild(createTpFpFnCombinedMatrixSvg(aggregation, state.plotRoundingPrecision));
           grid.appendChild(card);
