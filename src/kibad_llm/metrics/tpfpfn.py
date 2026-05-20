@@ -12,8 +12,8 @@ from kibad_llm.metrics.base import MetricWithTpFpFnEntries
 class TpFpFnCollector(MetricWithTpFpFnEntries):
     """Collect tp/fp/fn entries instead of reducing them to scores.
 
-    By default, results are returned as JSON-safe ``[record_id, entry]`` pairs. With
-    ``per_record=True``, entries are grouped by record via
+    By default, results are returned as JSON-safe `[record_id, entry]` pairs. With
+    `per_record=True`, entries are grouped by record via
     `MetricWithTpFpFnEntries.state_per_record`.
 
     Attributes:
@@ -43,7 +43,7 @@ class TpFpFnCollector(MetricWithTpFpFnEntries):
             value: Arbitrary nested collector state.
 
         Returns:
-            ``value`` converted into dictionaries, lists, and scalar values that can be serialized
+            `value` converted into dictionaries, lists, and scalar values that can be serialized
             to JSON.
         """
         if isinstance(value, dict):
