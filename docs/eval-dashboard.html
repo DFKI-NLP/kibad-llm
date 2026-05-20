@@ -696,15 +696,6 @@
       box-shadow: 0 2px 10px rgba(0,0,0,0.35);
       line-height: 1.5;
     }
-    .plot-mode-select {
-      border: 1px solid var(--border);
-      background: var(--surface-2);
-      color: var(--text);
-      border-radius: 6px;
-      padding: 4px 8px;
-      font-size: 0.9rem;
-      cursor: pointer;
-    }
     .plot-number-input {
       width: 70px;
       border: 1px solid var(--border);
@@ -713,11 +704,6 @@
       border-radius: 6px;
       padding: 4px 6px;
       font-size: 0.9rem;
-    }
-    .plot-mode-effective {
-      font-size: 0.82rem;
-      color: var(--muted);
-      font-style: italic;
     }
     .sr-only {
       position: absolute;
@@ -887,17 +873,6 @@
   </div>
   <h3>Evaluation plots</h3>
   <div class="prediction-actions">
-    <strong>Plot mode:</strong>
-    <label for="plotModeSelect" class="sr-only">Plot mode</label>
-    <select id="plotModeSelect" class="plot-mode-select">
-      <option value="auto">auto</option>
-      <option value="bars">bars</option>
-      <option value="errors">errors</option>
-      <option value="confusion_matrix">confusion matrix</option>
-    </select>
-    <span id="plotModeEffective" class="plot-mode-effective"></span>
-  </div>
-  <div class="prediction-actions">
     <label for="plotShortenLabels"><strong>Shorten labels:</strong></label>
     <input id="plotShortenLabels" type="checkbox" checked>
   </div>
@@ -954,7 +929,6 @@
       plotTabsBy: "prefix",
       activeEvalPlotTab: null,
       plotGroupBarFields: new Set(),
-      plotMode: "auto",
       plotShortenLabels: true,
       plotRoundingPrecision: 0,
       plotShowLegendOnce: true,
@@ -1002,10 +976,8 @@
     const evaluationsTable = document.getElementById("evaluationsTable");
     const plotTabsByPrefixButton = document.getElementById("plotTabsByPrefixButton");
     const plotTabsBySuffixButton = document.getElementById("plotTabsBySuffixButton");
-    const plotModeSelect = document.getElementById("plotModeSelect");
     const plotShortenLabels = document.getElementById("plotShortenLabels");
     const plotRoundingPrecision = document.getElementById("plotRoundingPrecision");
-    const plotModeEffective = document.getElementById("plotModeEffective");
     const plotTabsByRow = document.getElementById("plotTabsByRow");
     const plotConfusionTabsByRow = document.getElementById("plotConfusionTabsByRow");
     const confusionTabsByMetricFieldButton = document.getElementById("confusionTabsByMetricFieldButton");
@@ -1844,9 +1816,9 @@
       return state.plotShortenLabels ? splitLabelByLastDot(text) : text;
     }
 
-    function getPlotTitleLabel(plotEntry, effectiveMode) {
+    function getPlotTitleLabel(plotEntry, metricType) {
       if (
-        effectiveMode === "bars" &&
+        metricType === "F1MicroMultipleFieldsMetric" &&
         state.plotShortenLabels &&
         state.plotTabsBy === "suffix"
       ) {
@@ -2440,9 +2412,11 @@
       state.truncateEnabledColumns = getDefaultTruncateColumns(getCurrentPredictionColumns());
       renderPredictions();
     });
-
-
-    function renderPlotTabModeControls(effectiveMode) {
+    function renderPlotControls(metricType) {
+      const isConfusionMatrix = metricType === "ConfusionMatrix";
+      const isF1MicroMultipleFieldsMetric = metricType === "F1MicroMultipleFieldsMetric";
+      const supportsGroupedBars =
+        metricType === "ErrorCollector" || isF1MicroMultipleFieldsMetric;
       plotTabsByPrefixButton.classList.toggle("active", state.plotTabsBy === "prefix");
       plotTabsBySuffixButton.classList.toggle("active", state.plotTabsBy === "suffix");
       confusionTabsByMetricFieldButton.classList.toggle(
@@ -2453,23 +2427,15 @@
         "active",
         state.confusionTabsBy === "prediction_group"
       );
-      plotModeSelect.value = state.plotMode;
       plotShortenLabels.checked = state.plotShortenLabels;
       plotRoundingPrecision.value = String(state.plotRoundingPrecision);
       plotShowLegendOnce.checked = state.plotShowLegendOnce;
       exportOpaqueBackground.checked = state.exportOpaqueBackground;
-      plotModeEffective.textContent = state.plotMode === "auto" ? `(→ ${effectiveMode})` : "";
-      plotTabsByRow.style.display = effectiveMode === "bars" ? "" : "none";
-      plotConfusionTabsByRow.style.display = effectiveMode === "confusion_matrix" ? "" : "none";
-      plotGroupBarsRow.style.display = effectiveMode === "confusion_matrix" ? "none" : "";
+      plotTabsByRow.style.display = isF1MicroMultipleFieldsMetric ? "" : "none";
+      plotConfusionTabsByRow.style.display = isConfusionMatrix ? "" : "none";
+      plotGroupBarsRow.style.display = supportsGroupedBars ? "" : "none";
       plotShowLegendOnceRow.style.display = "none";
     }
-
-    plotModeSelect.addEventListener("change", () => {
-      state.plotMode = plotModeSelect.value;
-      state.activeEvalPlotTab = null;
-      renderEvaluations();
-    });
 
     plotShortenLabels.addEventListener("change", () => {
       state.plotShortenLabels = plotShortenLabels.checked;
@@ -2491,7 +2457,7 @@
 
     exportOpaqueBackground.addEventListener("change", () => {
       state.exportOpaqueBackground = exportOpaqueBackground.checked;
-      renderPlotTabModeControls(getEffectivePlotMode(state.activeEvalTab || ""));
+      renderPlotControls(getMetricTypeForEvaluationContext(state.activeEvalTab || ""));
     });
 
     downloadFiguresButton.addEventListener("click", async () => {
@@ -2924,7 +2890,13 @@
       if (/error/i.test(activeExperiment || "")) {
         return "ErrorCollector";
       }
-      return "F1MicroMultipleFieldsMetric";
+      if (/tpfpfn/i.test(activeExperiment || "")) {
+        return "TpFpFnCollector";
+      }
+      if (/f1_micro/i.test(activeExperiment || "")) {
+        return "F1MicroMultipleFieldsMetric";
+      }
+      return "unknown";
     }
 
     const JOB_RETURN_VALUE_VERSION_HANDLERS = {
@@ -4465,14 +4437,10 @@
       };
     }
 
-    // In auto mode, infer the plotting branch from the unique metric type.
-    function getEffectivePlotMode(
+    function getMetricTypeForEvaluationContext(
       activeExperiment,
       evaluationContext = getEvaluationContext(activeExperiment)
     ) {
-      if (state.plotMode !== "auto") {
-        return state.plotMode;
-      }
       const metricTypes = new Set(
         (evaluationContext?.experimentEvaluations || [])
           .map((evaluation) => normalizeValue(evaluation?.jobReturnValue?.type).trim())
@@ -4485,18 +4453,7 @@
             .join(", ")}`
         );
       }
-      const metricType = Array.from(metricTypes)[0];
-      return getPlotModeForMetricType(metricType);
-    }
-
-    function getPlotModeForMetricType(metricType) {
-      if (metricType === "ConfusionMatrix") {
-        return "confusion_matrix";
-      }
-      if (metricType === "ErrorCollector") {
-        return "errors";
-      }
-      return "bars";
+      return Array.from(metricTypes)[0] || "";
     }
 
     function formatRounded(value, precision) {
@@ -4845,7 +4802,7 @@
       return tabMap;
     }
 
-    function renderPlotTabsAndGrid(tabMap, activeExperiment, groupBarFields, effectiveMode) {
+    function renderPlotTabsAndGrid(tabMap, activeExperiment, groupBarFields, metricType) {
       const tabPriority = ["total", "details"];
       const sortedTabKeys = Array.from(tabMap.keys()).sort((a, b) => {
         const pa = tabPriority.indexOf(a);
@@ -4892,7 +4849,7 @@
         const groupedByText = groupBarFields.length
           ? ` | grouped by: ${groupBarFields.map((f) => displayPlotGroupFieldName(f)).join(", ")}`
           : "";
-        title.textContent = `${getPlotTitleLabel(entry, effectiveMode)} (mean ± std)${groupedByText}`;
+        title.textContent = `${getPlotTitleLabel(entry, metricType)} (mean ± std)${groupedByText}`;
         card.appendChild(title);
         if (groupBarFields.length) {
           const plotLegendItems = getLegendItemsForPoints(entry.points, groupedLegendModel);
@@ -4916,7 +4873,7 @@
     }
 
     // Plot rendering always starts from the currently selected prediction groups and selected eval groups,
-    // then branches into mode-specific aggregation/rendering (bars, errors, confusion matrix).
+    // then branches into metric-specific aggregation/rendering.
     /**
      * Render evaluation plots from the current selector-derived evaluation context.
      */
@@ -4924,8 +4881,7 @@
       activeExperiment,
       evaluationContext = getEvaluationContext(activeExperiment)
     ) {
-      const effectiveMode = getEffectivePlotMode(activeExperiment);
-      renderPlotTabModeControls(effectiveMode);
+      renderPlotControls(null);
       evalPlotTabs.innerHTML = "";
       evalPlotContent.innerHTML = "";
       plotGroupBarsList.innerHTML = "";
@@ -4949,11 +4905,25 @@
       }
 
       const { experimentEvaluations, evalTabState } = evaluationContext;
+      const metricType = getMetricTypeForEvaluationContext(activeExperiment, evaluationContext);
+      renderPlotControls(metricType);
       const selectedEvalGroups = getSelectedEvaluationGroups(evaluationContext);
       if (selectedEvalGroups.length === 0) {
         const msg = document.createElement("p");
         msg.className = "plot-empty";
         msg.textContent = "Select evaluation groups to generate plots.";
+        evalPlotContent.appendChild(msg);
+        return;
+      }
+
+      if (
+        metricType !== "ConfusionMatrix" &&
+        metricType !== "ErrorCollector" &&
+        metricType !== "F1MicroMultipleFieldsMetric"
+      ) {
+        const msg = document.createElement("p");
+        msg.className = "plot-empty";
+        msg.textContent = `(unknown metric type: ${metricType || "(missing)"}, data visualization not yet implemented)`;
         evalPlotContent.appendChild(msg);
         return;
       }
@@ -4968,8 +4938,8 @@
       const plotGroupFields = combined.fields;
       const varyingPlotGroupFields = getVaryingFields(plotGroups, plotGroupFields);
 
-      if (effectiveMode === "confusion_matrix") {
-        // Confusion plots do not reuse the generic bar-plot path below; they get their own tab map
+      if (metricType === "ConfusionMatrix") {
+        // Confusion plots do not reuse the generic metric plot path below; they get their own tab map
         // and heatmap rendering because the aggregation shape is matrix-like instead of metric-like.
         const labelFields = varyingPlotGroupFields.length ? varyingPlotGroupFields : plotGroupFields;
         const confusionTabMap = buildConfusionTabMap(
@@ -5083,11 +5053,11 @@
         return;
       }
 
-      const tabMap = effectiveMode === "errors"
+      const tabMap = metricType === "ErrorCollector"
         ? buildErrorsTabMap(plotEntries)
         : buildBarsTabMap(plotEntries);
 
-      renderPlotTabsAndGrid(tabMap, activeExperiment, groupBarFields, effectiveMode);
+      renderPlotTabsAndGrid(tabMap, activeExperiment, groupBarFields, metricType);
     }
 
     /**
