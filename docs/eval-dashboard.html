@@ -1301,9 +1301,15 @@
       }
     }
 
+    // Export filenames should keep the stable plot name while dropping display-only suffixes
+    // that appear in chart titles/tab labels, e.g. "(mean ± std)" and grouped-eval counts.
     function getFigureTitlePrefix(title) {
       const text = String(title ?? "").trim();
-      return text.replace(/\s*\(mean ± std\).*$/u, "").trim() || text || "figure";
+      return text
+        .replace(/\s*\(mean ± std\).*$/u, "")
+        .replace(/\s*\(\d+\s+grouped\s+evals?(?:\s+per\s+cell)?\)$/iu, "")
+        .replace(/\s*\(\d+\s+grouped\s+evaluations\)$/iu, "")
+        .trim() || text || "figure";
     }
 
     function sanitizeFigureFilename(title) {
@@ -1332,7 +1338,7 @@
       const activeButton = evalPlotTabs.querySelector(".tab-button.active");
       const plotTabLabel = activeButton?.getAttribute("title") || activeButton?.textContent || "figures";
       const evalTabLabel = typeof state.activeEvalTab === "string" ? state.activeEvalTab.trim() : "";
-      const filenameParts = [evalTabLabel, String(plotTabLabel).trim()]
+      const filenameParts = [evalTabLabel, getFigureTitlePrefix(String(plotTabLabel).trim())]
         .filter((part) => part.length > 0)
         .map((part) => sanitizeFigureFilename(part));
       return `${filenameParts.join("-") || "figures"}.zip`;
@@ -5514,9 +5520,9 @@
           title.className = "plot-title";
           const fieldTitle = getConfusionMatrixTitle(plotEntry.evaluations, evalTabState);
           if (state.confusionTabsBy === "metric_field") {
-            title.textContent = `${plotEntry.label} (${aggregation.totalEvaluations} grouped evals; each cell shows TP / FP / FN shares)`;
+            title.textContent = `${plotEntry.label} (${aggregation.totalEvaluations} grouped evals)`;
           } else {
-            title.textContent = `${fieldTitle} (${aggregation.totalEvaluations} grouped evals; each cell shows TP / FP / FN shares)`;
+            title.textContent = `${fieldTitle} (${aggregation.totalEvaluations} grouped evals)`;
           }
           card.appendChild(title);
           card.appendChild(createTpFpFnCombinedMatrixSvg(aggregation, state.plotRoundingPrecision));
