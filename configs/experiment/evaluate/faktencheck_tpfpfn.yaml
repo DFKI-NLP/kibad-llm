@@ -1,13 +1,17 @@
 # @package _global_
 
-# Confusion matrix for single- or multi-label classification.
+# Collect true-positive, false-positive, and false-negative entries for a single field.
+#
+# This experiment is intended for qualitative error analysis. It keeps the matching and missed
+# entries instead of reducing them to aggregate scores.
 
 defaults:
  - override /metric: tpfpfn_single_field
 
 metric:
   field: ???
-  # for compound entries, we may ignore certain subfields during evaluation
+  # For compound entries, selected nested keys can be ignored before comparing prediction and
+  # reference items.
   ignore_subfields:
     ecosystem_type: ["description"]
     taxa: ["collective_term"]
