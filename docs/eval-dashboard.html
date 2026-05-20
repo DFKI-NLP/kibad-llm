@@ -2890,7 +2890,13 @@
       if (/error/i.test(activeExperiment || "")) {
         return "ErrorCollector";
       }
-      return "F1MicroMultipleFieldsMetric";
+      if (/tpfpfn/i.test(activeExperiment || "")) {
+        return "TpFpFnCollector";
+      }
+      if (/f1_micro/i.test(activeExperiment || "")) {
+        return "F1MicroMultipleFieldsMetric";
+      }
+      return "unknown";
     }
 
     const JOB_RETURN_VALUE_VERSION_HANDLERS = {
