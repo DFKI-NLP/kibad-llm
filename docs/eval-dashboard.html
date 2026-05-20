@@ -4729,6 +4729,13 @@
       return { start: [247, 251, 255], end: [8, 48, 107] };
     }
 
+    function getTpFpFnOutcomeColor(outcomeKey) {
+      if (!outcomeKey) {
+        return "#e2e8f0";
+      }
+      return interpolateColor(getTpFpFnPalette(outcomeKey).start, getTpFpFnPalette(outcomeKey).end, 1);
+    }
+
     function normalizeTpFpFnCollectorData(rawData) {
       const result = {};
 
@@ -4785,23 +4792,31 @@
       return result;
     }
 
-    function getTpFpFnAggregation(experimentEvaluations, outcomeKey) {
+    function getTpFpFnCombinedAggregation(experimentEvaluations) {
       const rowLabels = new Set();
       const colLabels = new Set();
       const evaluationCells = [];
+      const evaluationLabels = [];
 
-      for (const evaluation of experimentEvaluations) {
+      for (const [evaluationIndex, evaluation] of experimentEvaluations.entries()) {
         const map = new Map();
+        evaluationLabels.push(normalizeValue(evaluation?.runDir) || `evaluation ${evaluationIndex + 1}`);
         const normalizedData = normalizeTpFpFnCollectorData(evaluation.data);
         for (const [recordId, recordEntry] of Object.entries(normalizedData)) {
-          const labels = Array.isArray(recordEntry?.[outcomeKey]) ? recordEntry[outcomeKey] : [];
-          if (!labels.length) {
-            continue;
-          }
           rowLabels.add(recordId);
-          for (const label of labels) {
-            colLabels.add(label);
-            map.set(`${recordId}|#|${label}`, 1);
+          const entriesByLabel = new Map();
+          for (const outcomeKey of TP_FP_FN_KEYS) {
+            const labels = Array.isArray(recordEntry?.[outcomeKey]) ? recordEntry[outcomeKey] : [];
+            for (const label of labels) {
+              colLabels.add(label);
+              if (!entriesByLabel.has(label)) {
+                entriesByLabel.set(label, { tp: false, fp: false, fn: false });
+              }
+              entriesByLabel.get(label)[outcomeKey] = true;
+            }
+          }
+          for (const [label, rowState] of entriesByLabel.entries()) {
+            map.set(`${recordId}|#|${label}`, rowState);
           }
         }
         evaluationCells.push(map);
@@ -4814,14 +4829,26 @@
       for (const row of rows) {
         for (const col of cols) {
           const key = `${row}|#|${col}`;
-          const values = evaluationCells.map((cellMap) => cellMap.get(key) ?? 0);
-          const count = values.reduce((sum, value) => sum + value, 0);
-          const stats = meanAndStd(values) || { mean: 0, std: 0 };
+          const rowStates = evaluationCells.map(
+            (cellMap) => cellMap.get(key) || { tp: false, fp: false, fn: false }
+          );
+          const counts = { tp: 0, fp: 0, fn: 0, empty_rows: 0 };
+          for (const rowState of rowStates) {
+            let rowHasAny = false;
+            for (const outcomeKey of TP_FP_FN_KEYS) {
+              if (rowState[outcomeKey]) {
+                counts[outcomeKey] += 1;
+                rowHasAny = true;
+              }
+            }
+            if (!rowHasAny) {
+              counts.empty_rows += 1;
+            }
+          }
           cells.set(key, {
-            count,
-            total: evaluationCells.length,
-            share: evaluationCells.length ? count / evaluationCells.length : 0,
-            std: stats.std,
+            rowStates,
+            counts,
+            presentCount: counts.tp + counts.fp + counts.fn,
           });
         }
       }
@@ -4831,7 +4858,7 @@
         cols,
         cells,
         totalEvaluations: evaluationCells.length,
-        outcomeKey,
+        evaluationLabels,
       };
     }
 
@@ -4885,13 +4912,32 @@
       return tabMap;
     }
 
-    function createTpFpFnHeatmapSvg(aggregation, precision) {
-      const { rows, cols, cells, totalEvaluations, outcomeKey } = aggregation;
-      const cellSize = 82;
+    function createTpFpFnLegendElement() {
+      return createPlotLegendElement([
+        { label: "TP", color: getTpFpFnOutcomeColor("tp") },
+        { label: "FP", color: getTpFpFnOutcomeColor("fp") },
+        { label: "FN", color: getTpFpFnOutcomeColor("fn") },
+        { label: "empty", color: getTpFpFnOutcomeColor(null) },
+      ]);
+    }
+
+    function createTpFpFnCombinedMatrixSvg(aggregation, precision) {
+      const { rows, cols, cells, totalEvaluations, evaluationLabels } = aggregation;
+      const miniCellSize = totalEvaluations <= 4 ? 14 : totalEvaluations <= 9 ? 11 : 9;
+      const miniGap = totalEvaluations <= 4 ? 2 : 1;
+      const cellPadding = 4;
+      const outcomeCols = TP_FP_FN_KEYS.length;
+      const cellWidth = Math.max(
+        52,
+        outcomeCols * miniCellSize + Math.max(0, outcomeCols - 1) * miniGap + cellPadding * 2
+      );
+      const cellHeight = Math.max(
+        28,
+        Math.max(totalEvaluations, 1) * miniCellSize + Math.max(0, totalEvaluations - 1) * miniGap + cellPadding * 2
+      );
       const margin = { top: 140, right: 20, bottom: 20, left: 120 };
-      const width = margin.left + cols.length * cellSize + margin.right;
-      const height = margin.top + rows.length * cellSize + margin.bottom;
-      const palette = getTpFpFnPalette(outcomeKey);
+      const width = margin.left + cols.length * cellWidth + margin.right;
+      const height = margin.top + rows.length * cellHeight + margin.bottom;
 
       const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
       svg.setAttribute("width", String(width));
@@ -4901,7 +4947,7 @@
       svg.appendChild(contentGroup);
 
       const xAxisTitle = document.createElementNS("http://www.w3.org/2000/svg", "text");
-      xAxisTitle.setAttribute("x", String(margin.left + (cols.length * cellSize) / 2));
+      xAxisTitle.setAttribute("x", String(margin.left + (cols.length * cellWidth) / 2));
       xAxisTitle.setAttribute("y", "20");
       xAxisTitle.setAttribute("text-anchor", "middle");
       xAxisTitle.setAttribute("fill", "currentColor");
@@ -4911,16 +4957,16 @@
 
       const yAxisTitle = document.createElementNS("http://www.w3.org/2000/svg", "text");
       yAxisTitle.setAttribute("x", "18");
-      yAxisTitle.setAttribute("y", String(margin.top + (rows.length * cellSize) / 2));
-      yAxisTitle.setAttribute("transform", `rotate(-90 18 ${margin.top + (rows.length * cellSize) / 2})`);
+      yAxisTitle.setAttribute("y", String(margin.top + (rows.length * cellHeight) / 2));
+      yAxisTitle.setAttribute("transform", `rotate(-90 18 ${margin.top + (rows.length * cellHeight) / 2})`);
       yAxisTitle.setAttribute("text-anchor", "middle");
       yAxisTitle.setAttribute("fill", "currentColor");
       yAxisTitle.setAttribute("font-size", "13");
-      yAxisTitle.textContent = "Document id";
+      yAxisTitle.textContent = "Document id (rows inside each cell = grouped evals)";
       contentGroup.appendChild(yAxisTitle);
 
       rows.forEach((row, rowIndex) => {
-        const y = margin.top + rowIndex * cellSize + cellSize / 2;
+        const y = margin.top + rowIndex * cellHeight + cellHeight / 2;
         const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
         label.setAttribute("x", String(margin.left - 10));
         label.setAttribute("y", String(y + 4));
@@ -4931,50 +4977,9 @@
         contentGroup.appendChild(label);
       });
 
-      rows.forEach((row, rowIndex) => {
-        cols.forEach((col, colIndex) => {
-          const key = `${row}|#|${col}`;
-          const stats = cells.get(key) || { count: 0, total: totalEvaluations, share: 0, std: 0 };
-          const x = margin.left + colIndex * cellSize;
-          const y = margin.top + rowIndex * cellSize;
-          const fill = interpolateColor(palette.start, palette.end, stats.share);
-
-          const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-          rect.setAttribute("x", String(x));
-          rect.setAttribute("y", String(y));
-          rect.setAttribute("width", String(cellSize));
-          rect.setAttribute("height", String(cellSize));
-          rect.setAttribute("fill", fill);
-          rect.setAttribute("stroke", "#33415555");
-          rect.setAttribute("stroke-width", "1");
-          rect.style.cursor = "crosshair";
-          rect.addEventListener("mouseover", (event) => {
-            showBarTooltip(event, [
-              `${getTpFpFnOutcomeLabel(outcomeKey)} share`,
-              `document: ${row}`,
-              `label:    ${col}`,
-              `count:    ${stats.count}/${stats.total}`,
-              `share:    ${formatRounded(stats.share * 100, precision)}%`,
-              `std:      ${formatRounded(stats.std * 100, precision)}%`,
-            ]);
-          });
-          rect.addEventListener("mousemove", positionBarTooltip);
-          rect.addEventListener("mouseout", hideBarTooltip);
-          contentGroup.appendChild(rect);
-
-          const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-          text.setAttribute("x", String(x + cellSize / 2));
-          text.setAttribute("y", String(y + cellSize / 2 + 4));
-          text.setAttribute("text-anchor", "middle");
-          text.setAttribute("fill", stats.share > 0.55 ? "#f8fafc" : "#0f172a");
-          text.setAttribute("font-size", "11");
-          text.textContent = `${stats.count}/${stats.total}`;
-          contentGroup.appendChild(text);
-        });
-      });
-
       cols.forEach((col, colIndex) => {
-        const x = margin.left + colIndex * cellSize + cellSize / 2;
+        const labelStartX = margin.left + colIndex * cellWidth;
+        const x = labelStartX + cellWidth / 2;
         const y = margin.top - 12;
         const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
         label.setAttribute("x", String(x + 2));
@@ -4985,6 +4990,83 @@
         label.setAttribute("font-size", "11");
         label.textContent = getPlotDisplayLabel(col);
         contentGroup.appendChild(label);
+      });
+
+      rows.forEach((row, rowIndex) => {
+        cols.forEach((col, colIndex) => {
+          const key = `${row}|#|${col}`;
+          const stats = cells.get(key) || {
+            rowStates: Array.from({ length: totalEvaluations }, () => ({ tp: false, fp: false, fn: false })),
+            counts: { tp: 0, fp: 0, fn: 0, empty_rows: totalEvaluations },
+            presentCount: 0,
+          };
+          const x = margin.left + colIndex * cellWidth;
+          const y = margin.top + rowIndex * cellHeight;
+
+          const cellBorder = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+          cellBorder.setAttribute("x", String(x));
+          cellBorder.setAttribute("y", String(y));
+          cellBorder.setAttribute("width", String(cellWidth));
+          cellBorder.setAttribute("height", String(cellHeight));
+          cellBorder.setAttribute("fill", "#ffffff");
+          cellBorder.setAttribute("stroke", "#33415555");
+          cellBorder.setAttribute("stroke-width", "1");
+          contentGroup.appendChild(cellBorder);
+
+          const rowStates = stats.rowStates.length
+            ? stats.rowStates
+            : [{ tp: false, fp: false, fn: false }];
+
+          rowStates.forEach((rowState, evalIndex) => {
+            TP_FP_FN_KEYS.forEach((outcomeKey, outcomeIndex) => {
+              const subX = x + cellPadding + outcomeIndex * (miniCellSize + miniGap);
+              const subY = y + cellPadding + evalIndex * (miniCellSize + miniGap);
+              const isActive = Boolean(rowState[outcomeKey]);
+              const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+              rect.setAttribute("x", String(subX));
+              rect.setAttribute("y", String(subY));
+              rect.setAttribute("width", String(miniCellSize));
+              rect.setAttribute("height", String(miniCellSize));
+              rect.setAttribute("rx", miniCellSize <= 10 ? "1" : "2");
+              rect.setAttribute("fill", getTpFpFnOutcomeColor(isActive ? outcomeKey : null));
+              rect.setAttribute("stroke", isActive ? "#ffffffcc" : "#cbd5e1");
+              rect.setAttribute("stroke-width", "1");
+              contentGroup.appendChild(rect);
+            });
+          });
+
+          const overlay = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+          overlay.setAttribute("x", String(x));
+          overlay.setAttribute("y", String(y));
+          overlay.setAttribute("width", String(cellWidth));
+          overlay.setAttribute("height", String(cellHeight));
+          overlay.setAttribute("fill", "transparent");
+          overlay.style.cursor = "crosshair";
+          overlay.addEventListener("mouseover", (event) => {
+            const tpShare = totalEvaluations ? (stats.counts.tp / totalEvaluations) * 100 : 0;
+            const fpShare = totalEvaluations ? (stats.counts.fp / totalEvaluations) * 100 : 0;
+            const fnShare = totalEvaluations ? (stats.counts.fn / totalEvaluations) * 100 : 0;
+            const tooltipLines = [
+              `document: ${row}`,
+              `label:    ${col}`,
+              `TP/FP/FN counts: ${stats.counts.tp}/${stats.counts.fp}/${stats.counts.fn}`,
+              `TP/FP/FN %: ${formatRounded(tpShare, precision)} / ${formatRounded(fpShare, precision)} / ${formatRounded(fnShare, precision)}`,
+            ];
+            rowStates.forEach((rowState, evalIndex) => {
+              const rowSummary = TP_FP_FN_KEYS
+                .filter((bucket) => rowState[bucket])
+                .map((bucket) => getTpFpFnOutcomeLabel(bucket))
+                .join(", ") || "empty";
+              tooltipLines.push(
+                `${evalIndex + 1}. ${evaluationLabels[evalIndex] || `evaluation ${evalIndex + 1}`}: ${rowSummary}`
+              );
+            });
+            showBarTooltip(event, tooltipLines);
+          });
+          overlay.addEventListener("mousemove", positionBarTooltip);
+          overlay.addEventListener("mouseout", hideBarTooltip);
+          contentGroup.appendChild(overlay);
+        });
       });
 
       scheduleAdaptiveSvgFit(svg, contentGroup, width, height);
@@ -5345,22 +5427,19 @@
         grid.className = "plot-grid";
 
         for (const plotEntry of activeEntry.plots) {
-          for (const outcomeKey of TP_FP_FN_KEYS) {
-            const aggregation = getTpFpFnAggregation(plotEntry.evaluations, outcomeKey);
-            if (!aggregation.rows.length || !aggregation.cols.length) {
-              continue;
-            }
-
-            const card = document.createElement("section");
-            card.className = "plot-card";
-            const title = document.createElement("p");
-            title.className = "plot-title";
-            const baseTitle = activeEntry.plots.length > 1 ? `${plotEntry.label} | ${getTpFpFnOutcomeLabel(outcomeKey)}` : getTpFpFnOutcomeLabel(outcomeKey);
-            title.textContent = `${baseTitle} (${aggregation.totalEvaluations} grouped evals; cell = count / grouped evals)`;
-            card.appendChild(title);
-            card.appendChild(createTpFpFnHeatmapSvg(aggregation, state.plotRoundingPrecision));
-            grid.appendChild(card);
+          const aggregation = getTpFpFnCombinedAggregation(plotEntry.evaluations);
+          if (!aggregation.rows.length || !aggregation.cols.length) {
+            continue;
           }
+
+          const card = document.createElement("section");
+          card.className = "plot-card";
+          const title = document.createElement("p");
+          title.className = "plot-title";
+          title.textContent = `${plotEntry.label} (${aggregation.totalEvaluations} grouped evals per cell)`;
+          card.appendChild(title);
+          card.appendChild(createTpFpFnCombinedMatrixSvg(aggregation, state.plotRoundingPrecision));
+          grid.appendChild(card);
         }
 
         if (!grid.childElementCount) {
@@ -5371,6 +5450,7 @@
           return;
         }
 
+        evalPlotContent.appendChild(createTpFpFnLegendElement());
         evalPlotContent.appendChild(grid);
         return;
       }
