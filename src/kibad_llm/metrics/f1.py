@@ -193,7 +193,6 @@ class F1MicroMultipleFieldsMetric(MetricCollection[F1MicroSingleFieldMetric]):
             sort_fields: Whether to sort the fields in the output. Defaults to False.
 
         Keyword Args:
-            field: Optional field name forwarded to `F1MicroSingleFieldMetric` instances.
             flatten_dicts: Whether nested dictionaries should be flattened before comparison.
             ignore_subfields: Optional subfields to ignore when hashing dictionary payloads.
             ignore_missing_entries: Whether one-sided empty entries should be skipped.
