@@ -167,8 +167,9 @@ class MetricWithTpFpFnEntries(MetricWithPrepareEntryAsSet):
         Args:
             prediction: Prediction value to normalize and compare.
             reference: Reference value to normalize and compare.
-            record_id: Optional record identifier used to keep entries from different records
-                separate.
+            record_id: Optional record identifier that allows to merge records by providing the
+                same id multiple times. Per default, it is assumed that new calls of _update provide
+                completely new records (i.e., a new id is generated with each call).
 
         Warns:
             A warning is logged when ``record_id`` is `None` and an integer id is generated.
