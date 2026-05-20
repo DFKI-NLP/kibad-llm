@@ -1,4 +1,8 @@
-"""Confusion-matrix metric built on shared tp/fp/fn state."""
+"""Confusion-matrix metric built on shared tp/fp/fn state.
+
+Classes:
+    ConfusionMatrix: Build a confusion matrix from the shared tp/fp/fn entry state for one field.
+"""
 
 from collections import defaultdict
 from collections.abc import Hashable
@@ -13,14 +17,14 @@ logger = logging.getLogger(__name__)
 
 
 class ConfusionMatrix(MetricWithTpFpFnEntries):
-    """Build a confusion matrix from inherited tp/fp/fn entry state.
+    """Build a confusion matrix from inherited tp/fp/fn entry state for one field.
 
     Predictions that have no matching gold label are counted under ``unassignable_label``.
     Gold labels with no matching prediction are counted under ``undetected_label``.
 
-    WARNING:
-    !Since the metric operates on sets, this can obfuscate if the LLM produces duplicate labels
-    !in multi-label settings.
+    Warning:
+        Because the metric operates on sets, duplicate predicted labels are collapsed in
+        multi-label settings (per record).
 
     Args:
         unassignable_label: Label used on the gold side to encode spurious predicted labels
@@ -29,8 +33,12 @@ class ConfusionMatrix(MetricWithTpFpFnEntries):
             (false negatives). Defaults to "UNDETECTED".
         show_as_markdown: If True, logs the confusion matrix as markdown on the console when
             calling compute().
-        **kwargs: Additional keyword arguments for entry-to-set preparation and tp/fp/fn
-            collection. See `MetricWithTpFpFnEntries` for supported options.
+
+    Keyword Args:
+        field: Optional field to extract from dictionary inputs.
+        flatten_dicts: Whether nested dictionaries should be flattened before comparison.
+        ignore_subfields: Optional subfields to ignore when hashing dictionary values.
+        ignore_missing_entries: Whether one-sided empty entries should be skipped.
     """
 
     def __init__(
@@ -40,6 +48,20 @@ class ConfusionMatrix(MetricWithTpFpFnEntries):
         undetected_label: str = "UNDETECTED",
         **kwargs: Any,
     ):
+        """Initialize the confusion-matrix metric.
+
+        Args:
+            show_as_markdown: Whether `compute()` should log the resulting confusion matrix as a
+                markdown table.
+            unassignable_label: Label used on the gold axis for false positives.
+            undetected_label: Label used on the prediction axis for false negatives.
+
+        Keyword Args:
+            field: Optional field to extract from dictionary inputs.
+            flatten_dicts: Whether nested dictionaries should be flattened before comparison.
+            ignore_subfields: Optional subfields to ignore when hashing dictionary values.
+            ignore_missing_entries: Whether one-sided empty entries should be skipped.
+        """
         super().__init__(**kwargs)
         self.unassignable_label = unassignable_label
         self.undetected_label = undetected_label
@@ -48,7 +70,18 @@ class ConfusionMatrix(MetricWithTpFpFnEntries):
     def _build_counts(
         self, state: dict[str, set[tuple[Hashable, Any]]]
     ) -> dict[tuple[str, str], int]:
-        """Convert shared tp/fp/fn state into confusion-matrix cell counts."""
+        """Convert shared tp/fp/fn entry state into confusion-matrix cell counts.
+
+        Args:
+            state: Mapping of ``tp``, ``fp``, and ``fn`` to tracked ``(record_id, label)`` pairs.
+
+        Returns:
+            A mapping from ``(gold_label, predicted_label)`` cells to their counts.
+
+        Raises:
+            ValueError: If predictions or references already use one of the reserved placeholder
+                labels.
+        """
         counts: dict[tuple[str, str], int] = defaultdict(int)
 
         if any(label == self.unassignable_label for _, label in state["tp"] | state["fn"]):
@@ -72,6 +105,15 @@ class ConfusionMatrix(MetricWithTpFpFnEntries):
         return counts
 
     def _compute(self) -> dict[str, dict[str, int]]:
+        """Compute the confusion matrix from the accumulated tp/fp/fn entry state.
+
+        Returns:
+            A nested dictionary mapping gold labels to prediction-label counts.
+
+        Raises:
+            ValueError: If predictions or references already use one of the reserved placeholder
+                labels.
+        """
         counts = self._build_counts(self.state)
 
         res: dict[str, dict[str, int]] = {}

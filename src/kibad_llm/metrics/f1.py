@@ -1,3 +1,14 @@
+"""F1-based metrics for single fields and collections of fields.
+
+Functions:
+    _expand_field_by_key_values: Expand one nested field into generated top-level fields keyed by
+        selected nested values.
+
+Classes:
+    F1MicroSingleFieldMetric: Compute micro-averaged precision, recall, and F1 for one field.
+    F1MicroMultipleFieldsMetric: Aggregate single-field F1 metrics across multiple fields.
+"""
+
 from collections import defaultdict
 from collections.abc import Hashable
 from copy import deepcopy
@@ -10,16 +21,14 @@ from kibad_llm.metrics.collection import MetricCollection
 
 
 class F1MicroSingleFieldMetric(MetricWithTpFpFnEntries):
-    """Computes micro averaged precision, recall, and F1 score for single- and multi-label
-    classification tasks.
+    """Compute micro-averaged precision, recall, and F1 for one label field.
 
-    The metric operates on sets and allows for simple preprocessing, see _prepare_entry for details.
+    The metric operates on sets and supports optional field extraction, dictionary flattening, and
+    ignored subfields via the inherited entry-normalization helpers.
 
-    WARNING:
-    !Since the metric operates on sets, this can obfuscate if the LLM produces duplicate labels
-    !in multi-label settings. E.g., prediction = ["A", "A", "B"] and reference = ["A", "B"] will
-    !be treated as perfect prediction with tp=2, fp=0, fn=0 even though the prediction contains a
-    !duplicate label "A".
+    Warning:
+        Because the metric compares sets, duplicate predicted labels are collapsed (per record).
+        For example, ``["A", "A", "B"]`` and ``["A", "B"]`` are treated as a perfect match.
 
     See `MetricWithPrepareEntryAsSet` and `MetricWithTpFpFnEntries` for keyword arguments
     for entry-to-set preparation and tp/fp/fn collection.
@@ -27,12 +36,13 @@ class F1MicroSingleFieldMetric(MetricWithTpFpFnEntries):
 
     @staticmethod
     def calculate_scores(state_counts: dict[str, int]) -> dict[str, float]:
-        """Calculates precision, recall and f1 from true positives, false positives and false negatives.
+        """Calculate precision, recall, F1, and support from tp/fp/fn counts.
 
         Args:
-            state_counts: dictionary with keys "tp", "fp", "fn"
+            state_counts: Mapping with the keys ``tp``, ``fp``, and ``fn``.
 
-        returns: dictionary with precision, recall and f1
+        Returns:
+            A dictionary containing ``precision``, ``recall``, ``f1``, and ``support``.
         """
         tp, fp, fn = state_counts["tp"], state_counts["fp"], state_counts["fn"]
         precision = tp / (tp + fp) if (tp + fp) > 0 else 0.0
@@ -46,7 +56,11 @@ class F1MicroSingleFieldMetric(MetricWithTpFpFnEntries):
         }
 
     def _compute(self, *args, **kwargs) -> dict[str, Any]:
-        """Computes the micro average of precision, recall and f1 score."""
+        """Compute the metric result from the accumulated tp/fp/fn entry state.
+
+        Returns:
+            A dictionary containing ``precision``, ``recall``, ``f1``, and ``support``.
+        """
         return self.calculate_scores(state_counts=self.state_count)
 
 
@@ -71,6 +85,10 @@ def _expand_field_by_key_values(
 
         The payload of each generated field consists of either all remaining key-value pairs of
         each nested dict, or only those listed in ``value_entries`` if it is provided.
+
+    Raises:
+        TypeError: If ``field`` contains values that are neither a dictionary nor a list/set of
+            dictionaries while ``key_entries`` are configured.
     """
 
     entry = deepcopy(entry)
@@ -128,6 +146,22 @@ def _expand_field_by_key_values(
 
 
 class F1MicroMultipleFieldsMetric(MetricCollection[F1MicroSingleFieldMetric]):
+    """Compute single-field F1 scores for multiple fields plus aggregate views.
+
+    The metric instantiates one `F1MicroSingleFieldMetric` per field, optionally expanding nested
+    list/dict fields into generated field names such as ``organism_trends.Amphibien&Wald``.
+
+    Attributes:
+        fields: Explicit field names to evaluate, or `None` to discover them dynamically.
+        format_as_markdown: Whether `_format_result` should render markdown tables.
+        subfield_keys: Optional rules for expanding nested dict-like fields into generated fields.
+        subfield_values: Optional rules restricting which nested values are compared after
+            expansion.
+        metric_kwargs: Keyword arguments forwarded to the per-field metrics.
+
+    Methods:
+        ignore_missing_entries: Expose whether one-sided empty entries are ignored.
+    """
 
     def __init__(
         self,
@@ -138,11 +172,10 @@ class F1MicroMultipleFieldsMetric(MetricCollection[F1MicroSingleFieldMetric]):
         sort_fields: bool = False,
         **kwargs,
     ) -> None:
-        """Computes F1MicroSingleFieldMetric for multiple fields at once as well as micro (ALL)
-        and macro (AVG) over all fields.
+        """Initialize a multi-field F1 metric collection.
 
         Args:
-            fields: List of fields to compute F1MicroSingleFieldMetric for. If not provided,
+            fields: List of fields to compute `F1MicroSingleFieldMetric` for. If not provided,
                 the metric will be computed for all fields found in the data.
             format_as_markdown: Whether to format the result as a markdown table. Defaults to True.
             subfield_keys: Optional dict mapping field names to lists of keys used to split
@@ -158,8 +191,15 @@ class F1MicroMultipleFieldsMetric(MetricCollection[F1MicroSingleFieldMetric]):
                 ``Antwortvariable`` or only ``Antwortvariable`` and ``Trend`` within each
                 generated field.
             sort_fields: Whether to sort the fields in the output. Defaults to False.
-            **kwargs: Additional keyword arguments for F1MicroSingleFieldMetric, e.g.,
-                ``ignore_subfields`` or ``ignore_missing_entries``.
+
+        Keyword Args:
+            field: Optional field name forwarded to `F1MicroSingleFieldMetric` instances.
+            flatten_dicts: Whether nested dictionaries should be flattened before comparison.
+            ignore_subfields: Optional subfields to ignore when hashing dictionary payloads.
+            ignore_missing_entries: Whether one-sided empty entries should be skipped.
+
+        Raises:
+            ValueError: If ``fields`` contains the reserved aggregate labels ``ALL`` or ``AVG``.
         """
         # for now, just raise error if fields contain MICRO or MACRO
         if fields is not None and ("ALL" in fields or "AVG" in fields):
@@ -175,9 +215,24 @@ class F1MicroMultipleFieldsMetric(MetricCollection[F1MicroSingleFieldMetric]):
 
     @property
     def ignore_missing_entries(self) -> bool:
+        """Return whether one-sided empty entries should be ignored.
+
+        Returns:
+            `True` if per-field metrics skip updates where one side normalizes to an empty set.
+        """
         return self.metric_kwargs.get("ignore_missing_entries", False)
 
     def _update(self, prediction: Any, reference: Any, record_id: Hashable | None = None) -> None:
+        """Update all relevant per-field metrics with one prediction-reference pair.
+
+        Args:
+            prediction: Prediction dictionary, or `None` to treat it as an empty dictionary.
+            reference: Reference dictionary, or `None` to treat it as an empty dictionary.
+            record_id: Optional record identifier forwarded to the per-field metrics.
+
+        Raises:
+            TypeError: If ``prediction`` or ``reference`` is neither a dictionary nor `None`.
+        """
         if prediction is None:
             prediction = dict()
         if reference is None:
@@ -221,10 +276,12 @@ class F1MicroMultipleFieldsMetric(MetricCollection[F1MicroSingleFieldMetric]):
         super()._update(prediction=prediction, reference=reference, record_id=record_id)
 
     def _compute(self, *args, **kwargs) -> dict[str, Any]:
-        """Computes the results for all sub-metrics and micro average over all instances.
+        """Compute per-field scores plus macro and micro aggregates.
 
         Returns:
-            A dictionary mapping field names to their computed results.
+            A dictionary containing one result per field plus ``AVG`` and ``ALL`` aggregate rows.
+            When ``ignore_missing_entries`` removes every field result, ``AVG`` is an empty
+            dictionary.
         """
         result = super()._compute(*args, **kwargs)
         if self.ignore_missing_entries:
@@ -251,11 +308,13 @@ class F1MicroMultipleFieldsMetric(MetricCollection[F1MicroSingleFieldMetric]):
         return result
 
     def _format_result(self, result: dict[str, Any]) -> str:
-        """Formats the result as a markdown table if specified, otherwise as pretty-printed JSON.
+        """Format computed results as markdown or pretty-printed JSON.
 
         Args:
             result: The result dictionary to format.
-        Returns: A string representation of the result.
+
+        Returns:
+            A human-readable string representation of ``result``.
         """
         if self.format_as_markdown:
             # create pandas DataFrame and convert to markdown table
