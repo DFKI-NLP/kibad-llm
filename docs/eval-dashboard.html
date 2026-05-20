@@ -1279,6 +1279,28 @@
       barTooltip.style.display = "none";
     }
 
+    async function writeTextToClipboard(text) {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+        return;
+      }
+
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.setAttribute("readonly", "readonly");
+      textarea.style.position = "fixed";
+      textarea.style.top = "-9999px";
+      textarea.style.left = "-9999px";
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      const copied = document.execCommand("copy");
+      document.body.removeChild(textarea);
+      if (!copied) {
+        throw new Error("Clipboard copy command was not successful.");
+      }
+    }
+
     function getFigureTitlePrefix(title) {
       const text = String(title ?? "").trim();
       return text.replace(/\s*\(mean ± std\).*$/u, "").trim() || text || "figure";
@@ -4832,7 +4854,7 @@
           const rowStates = evaluationCells.map(
             (cellMap) => cellMap.get(key) || { tp: false, fp: false, fn: false }
           );
-          const counts = { tp: 0, fp: 0, fn: 0, empty_rows: 0 };
+          const counts = { tp: 0, fp: 0, fn: 0, empty: 0 };
           for (const rowState of rowStates) {
             let rowHasAny = false;
             for (const outcomeKey of TP_FP_FN_KEYS) {
@@ -4842,7 +4864,7 @@
               }
             }
             if (!rowHasAny) {
-              counts.empty_rows += 1;
+              counts.empty += 1;
             }
           }
           cells.set(key, {
@@ -4921,6 +4943,45 @@
       ]);
     }
 
+    function buildTpFpFnCellSummary(row, col, stats, totalEvaluations, evaluationLabels, precision) {
+      const tpShare = totalEvaluations ? (stats.counts.tp / totalEvaluations) * 100 : 0;
+      const fpShare = totalEvaluations ? (stats.counts.fp / totalEvaluations) * 100 : 0;
+      const fnShare = totalEvaluations ? (stats.counts.fn / totalEvaluations) * 100 : 0;
+      const evaluations = stats.rowStates.map((rowState, evalIndex) => {
+        const outcomes = TP_FP_FN_KEYS.filter((bucket) => rowState[bucket]);
+        return {
+          run_dir: evaluationLabels[evalIndex] || `evaluation ${evalIndex + 1}`,
+          value: outcomes.map((bucket) => getTpFpFnOutcomeLabel(bucket)).join(", ") || "empty",
+        };
+      });
+
+      const lines = [
+        `document: ${row}`,
+        `label:    ${col}`,
+        `TP/FP/FN %: ${formatRounded(tpShare, precision)} / ${formatRounded(fpShare, precision)} / ${formatRounded(fnShare, precision)}`,
+      ];
+
+      return {
+        lines,
+        payload: {
+          document_id: row,
+          label: col,
+          counts: {
+            tp: stats.counts.tp,
+            fp: stats.counts.fp,
+            fn: stats.counts.fn,
+            empty: stats.counts.empty,
+          },
+          percentages: {
+            tp: tpShare,
+            fp: fpShare,
+            fn: fnShare,
+          },
+          evaluations,
+        },
+      };
+    }
+
     function createTpFpFnCombinedMatrixSvg(aggregation, precision) {
       const { rows, cols, cells, totalEvaluations, evaluationLabels } = aggregation;
       const miniCellSize = totalEvaluations <= 4 ? 14 : totalEvaluations <= 9 ? 11 : 9;
@@ -4997,7 +5058,7 @@
           const key = `${row}|#|${col}`;
           const stats = cells.get(key) || {
             rowStates: Array.from({ length: totalEvaluations }, () => ({ tp: false, fp: false, fn: false })),
-            counts: { tp: 0, fp: 0, fn: 0, empty_rows: totalEvaluations },
+            counts: { tp: 0, fp: 0, fn: 0, empty: totalEvaluations },
             presentCount: 0,
           };
           const x = margin.left + colIndex * cellWidth;
@@ -5043,28 +5104,35 @@
           overlay.setAttribute("fill", "transparent");
           overlay.style.cursor = "crosshair";
           overlay.addEventListener("mouseover", (event) => {
-            const tpShare = totalEvaluations ? (stats.counts.tp / totalEvaluations) * 100 : 0;
-            const fpShare = totalEvaluations ? (stats.counts.fp / totalEvaluations) * 100 : 0;
-            const fnShare = totalEvaluations ? (stats.counts.fn / totalEvaluations) * 100 : 0;
-            const tooltipLines = [
-              `document: ${row}`,
-              `label:    ${col}`,
-              `TP/FP/FN counts: ${stats.counts.tp}/${stats.counts.fp}/${stats.counts.fn}`,
-              `TP/FP/FN %: ${formatRounded(tpShare, precision)} / ${formatRounded(fpShare, precision)} / ${formatRounded(fnShare, precision)}`,
-            ];
-            rowStates.forEach((rowState, evalIndex) => {
-              const rowSummary = TP_FP_FN_KEYS
-                .filter((bucket) => rowState[bucket])
-                .map((bucket) => getTpFpFnOutcomeLabel(bucket))
-                .join(", ") || "empty";
-              tooltipLines.push(
-                `${evalIndex + 1}. ${evaluationLabels[evalIndex] || `evaluation ${evalIndex + 1}`}: ${rowSummary}`
-              );
-            });
-            showBarTooltip(event, tooltipLines);
+            const summary = buildTpFpFnCellSummary(
+              row,
+              col,
+              stats,
+              totalEvaluations,
+              evaluationLabels,
+              precision
+            );
+            showBarTooltip(event, summary.lines);
           });
           overlay.addEventListener("mousemove", positionBarTooltip);
           overlay.addEventListener("mouseout", hideBarTooltip);
+          overlay.addEventListener("click", async (event) => {
+            const summary = buildTpFpFnCellSummary(
+              row,
+              col,
+              stats,
+              totalEvaluations,
+              evaluationLabels,
+              precision
+            );
+            try {
+              await writeTextToClipboard(JSON.stringify(summary.payload, null, 2));
+              showBarTooltip(event, [...summary.lines, "", "Copied JSON to clipboard."]);
+            } catch (error) {
+              console.warn("Failed to copy TpFpFn cell summary to clipboard.", error);
+              showBarTooltip(event, [...summary.lines, "", "Copy to clipboard failed."]);
+            }
+          });
           contentGroup.appendChild(overlay);
         });
       });
