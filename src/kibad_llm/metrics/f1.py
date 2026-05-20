@@ -22,7 +22,7 @@ class F1MicroSingleFieldMetric(MetricWithTpFpFnEntries):
 
     Warning:
         Because the metric compares sets, duplicate predicted labels are collapsed (per record).
-        For example, ``["A", "A", "B"]`` and ``["A", "B"]`` are treated as a perfect match.
+        For example, `["A", "A", "B"]` and `["A", "B"]` are treated as a perfect match.
 
     See `MetricWithPrepareEntryAsSet` and `MetricWithTpFpFnEntries` for keyword arguments
     for entry-to-set preparation and tp/fp/fn collection.
@@ -33,10 +33,10 @@ class F1MicroSingleFieldMetric(MetricWithTpFpFnEntries):
         """Calculate precision, recall, F1, and support from tp/fp/fn counts.
 
         Args:
-            state_counts: Mapping with the keys ``tp``, ``fp``, and ``fn``.
+            state_counts: Mapping with the keys `tp`, `fp`, and `fn`.
 
         Returns:
-            A dictionary containing ``precision``, ``recall``, ``f1``, and ``support``.
+            A dictionary containing `precision`, `recall`, `f1`, and `support`.
         """
         tp, fp, fn = state_counts["tp"], state_counts["fp"], state_counts["fn"]
         precision = tp / (tp + fp) if (tp + fp) > 0 else 0.0
@@ -53,7 +53,7 @@ class F1MicroSingleFieldMetric(MetricWithTpFpFnEntries):
         """Compute the metric result from the accumulated tp/fp/fn entry state.
 
         Returns:
-            A dictionary containing ``precision``, ``recall``, ``f1``, and ``support``.
+            A dictionary containing `precision`, `recall`, `f1`, and `support`.
         """
         return self.calculate_scores(state_counts=self.state_count)
 
@@ -64,9 +64,9 @@ class F1MicroMultipleFieldsMetric(
     """Compute single-field F1 scores for multiple fields plus aggregate views.
 
     The metric instantiates one `F1MicroSingleFieldMetric` per field, optionally expanding nested
-    list/dict fields into generated field names such as ``organism_trends.Amphibien&Wald``. It
+    list/dict fields into generated field names such as `organism_trends.Amphibien&Wald`. It
     inherits dynamic field discovery and grouped-field expansion from
-    `MetricCollectionWithFieldDiscoveryAndGrouping`, and computes additional ``AVG`` and ``ALL``
+    `MetricCollectionWithFieldDiscoveryAndGrouping`, and computes additional `AVG` and `ALL`
     aggregate rows on top of the per-field scores.
 
     Attributes:
@@ -104,7 +104,7 @@ class F1MicroMultipleFieldsMetric(
             ignore_missing_entries: Whether one-sided empty entries should be skipped.
 
         Raises:
-            ValueError: If ``fields`` contains the reserved aggregate labels ``ALL`` or ``AVG``.
+            ValueError: If `fields` contains the reserved aggregate labels `ALL` or `AVG`.
         """
         super().__init__(metric_class=F1MicroSingleFieldMetric, **kwargs)
 
@@ -127,8 +127,8 @@ class F1MicroMultipleFieldsMetric(
         """Compute per-field scores plus macro and micro aggregates.
 
         Returns:
-            A dictionary containing one result per field plus ``AVG`` and ``ALL`` aggregate rows.
-            When ``ignore_missing_entries`` removes every field result, ``AVG`` is an empty
+            A dictionary containing one result per field plus `AVG` and `ALL` aggregate rows.
+            When `ignore_missing_entries` removes every field result, `AVG` is an empty
             dictionary.
         """
         result = super()._compute(*args, **kwargs)
@@ -162,7 +162,7 @@ class F1MicroMultipleFieldsMetric(
             result: The result dictionary to format.
 
         Returns:
-            A human-readable string representation of ``result``.
+            A human-readable string representation of `result`.
         """
         if self.format_as_markdown:
             # create pandas DataFrame and convert to markdown table

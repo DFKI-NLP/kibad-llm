@@ -79,12 +79,12 @@ def _expand_field_by_key_values(
 
     Returns:
         A tuple containing:
-        - a deep-copied entry in which ``field`` has been removed and replaced by one or more
-          generated top-level fields such as ``f"{field}.A&B"``
+        - a deep-copied entry in which `field` has been removed and replaced by one or more
+          generated top-level fields such as `f"{field}.A&B"`
         - the set of generated field names
 
         The payload of each generated field consists of either all remaining key-value pairs of
-        each nested dict, or only those listed in ``value_entries`` if it is provided.
+        each nested dict, or only those listed in `value_entries` if it is provided.
     """
 
     entry = deepcopy(entry)
@@ -147,14 +147,14 @@ T2 = TypeVar("T2", bound=SingleFieldMetric)
 class MetricCollectionWithFieldDiscoveryAndGrouping(MetricCollection[T2], Generic[T2]):
     """A metric collection that discovers fields dynamically and can group nested entries.
 
-    This collection creates per-field metrics lazily during :meth:`_update`. Fields can either
+    This collection creates per-field metrics lazily during `_update`. Fields can either
     be taken from an explicit allowlist or, on each update, discovered from the union of
     prediction and reference keys. Additionally, configured dict-like fields can be expanded
-    into generated top-level fields such as ``field.A&B`` before the underlying single-field
+    into generated top-level fields such as `field.A&B` before the underlying single-field
     metrics are updated. During that expansion, the configured grouping keys are used to derive
-    the generated field names and are removed from the scored payload, while ``subfield_values``
+    the generated field names and are removed from the scored payload, while `subfield_values`
     can optionally restrict which of the remaining nested values are compared. Additional keyword
-    arguments passed to :meth:`__init__` are forwarded to each lazily created per-field metric.
+    arguments passed to `__init__` are forwarded to each lazily created per-field metric.
     """
 
     def __init__(
@@ -187,28 +187,28 @@ class MetricCollectionWithFieldDiscoveryAndGrouping(MetricCollection[T2], Generi
         super().__init__(sort_fields=sort_fields)
 
     def _make_metric(self, field: str) -> T2:
-        """Create a new per-field metric instance for ``field``."""
+        """Create a new per-field metric instance for `field`."""
         return self.metric_class(field=field, **self.metric_kwargs)
 
     def _update(self, prediction: Any, reference: Any, record_id: Hashable | None = None) -> None:
         """Normalize entries, discover or expand fields, and update all per-field metrics.
 
-        ``None`` predictions or references are treated as empty dictionaries. Each update expects
-        both inputs to be dict-like so fields can be selected either from ``self.fields`` or from
+        `None` predictions or references are treated as empty dictionaries. Each update expects
+        both inputs to be dict-like so fields can be selected either from `self.fields` or from
         the union of keys present in the current pair of entries.
 
-        If ``subfield_keys`` is configured for a field, that field is expanded into one or more
-        generated top-level fields via :func:`_expand_field_by_key_values` before metrics are
+        If `subfield_keys` is configured for a field, that field is expanded into one or more
+        generated top-level fields via `_expand_field_by_key_values` before metrics are
         looked up or created. Any missing per-field metric is instantiated lazily using
-        ``self.metric_class`` and then updated through :class:`MetricCollection`.
+        `self.metric_class` and then updated through `MetricCollection`.
 
         Args:
-            prediction: Prediction entry for a single record. Must be a dict or ``None``.
-            reference: Reference entry for a single record. Must be a dict or ``None``.
+            prediction: Prediction entry for a single record. Must be a dict or `None`.
+            reference: Reference entry for a single record. Must be a dict or `None`.
             record_id: Optional record identifier forwarded to all child metrics.
 
         Raises:
-            TypeError: If ``prediction`` or ``reference`` is not a dict after ``None`` values are
+            TypeError: If `prediction` or `reference` is not a dict after `None` values are
                 normalized.
         """
         if prediction is None:
