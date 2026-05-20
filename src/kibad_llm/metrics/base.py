@@ -5,6 +5,7 @@ Functions:
         and `None` values.
 
 Classes:
+    SingleFieldMetric: Store the optional field name used by single-field metrics.
     MetricWithPrepareEntryAsSet: Normalize metric inputs into comparable sets.
     MetricWithTpFpFnEntries: Track tp/fp/fn entries per record for downstream metrics.
 """
@@ -34,13 +35,15 @@ def _convert_dict_to_tuple(d: dict, ignore_keys: list | None = None) -> tuple:
 
 
 class SingleFieldMetric(Metric):
-    """Base class for metrics that operate on a single field of the prediction and reference.
-
-    Args:
-        field: Optional; If provided, the field to extract from a dict entry.
-    """
+    """Base class for metrics that operate on a single field of the prediction and reference."""
 
     def __init__(self, field: str | None = None, **kwargs) -> None:
+        """Store the optional field name used by the metric.
+
+        Args:
+            field: Optional field name extracted from dictionary-like inputs.
+            **kwargs: Additional keyword arguments forwarded to :class:`Metric`.
+        """
         super().__init__(**kwargs)
         self.field = field
 
@@ -67,10 +70,12 @@ class MetricWithPrepareEntryAsSet(SingleFieldMetric):
         """Initialize the shared entry-normalization settings.
 
         Args:
-            field: Optional field to extract from dictionary inputs.
             flatten_dicts: Whether to flatten nested dictionaries before further processing.
             ignore_subfields: Optional mapping from field names to subfield names that should be
                 ignored when converting dictionaries into tuples.
+
+        Keyword Args:
+            field: Optional field to extract from dictionary inputs.
         """
         super().__init__(**kwargs)
         self.ignore_subfields = []

@@ -1,3 +1,14 @@
+"""Metric collections and helpers for dynamic per-field evaluation.
+
+Functions:
+    _expand_field_by_key_values: Expand nested dict-like fields into generated top-level fields.
+
+Classes:
+    MetricCollection: Aggregate multiple child metrics behind one metric interface.
+    MetricCollectionWithFieldDiscoveryAndGrouping: Lazily create per-field metrics while
+        discovering or expanding fields.
+"""
+
 from collections.abc import Hashable
 from copy import deepcopy
 from typing import Any, Generic, TypeVar
@@ -9,13 +20,15 @@ T = TypeVar("T", bound=Metric)
 
 
 class MetricCollection(Metric, Generic[T]):
-    """A metric that aggregates multiple sub-metrics.
-
-    Args:
-        metrics: A dictionary mapping metric names to Metric instances.
-    """
+    """A metric that aggregates multiple sub-metrics."""
 
     def __init__(self, metrics: dict[str, T] | None = None, sort_fields: bool = False) -> None:
+        """Initialize the metric collection.
+
+        Args:
+            metrics: Optional mapping of metric names to metric instances.
+            sort_fields: Whether computed results should be emitted in sorted field order.
+        """
         super().__init__()
         self.metrics: dict[str, T] = metrics or dict()
         self.sort_fields = sort_fields
@@ -138,29 +151,10 @@ class MetricCollectionWithFieldDiscoveryAndGrouping(MetricCollection[T2], Generi
     be taken from an explicit allowlist or, on each update, discovered from the union of
     prediction and reference keys. Additionally, configured dict-like fields can be expanded
     into generated top-level fields such as ``field.A&B`` before the underlying single-field
-    metrics are updated.
-
-    Args:
-        metric_class: Metric class used to create field-level metrics for newly discovered
-            fields.
-        fields: Optional list of fields to evaluate. If omitted, fields are discovered from
-            the union of keys present in each prediction/reference pair passed to
-            :meth:`_update`.
-        subfield_keys: Optional dict mapping field names to lists of keys used to split
-            dict-like entries into separate generated fields. For a configured field, the
-            values of these keys are removed from each nested dict and appended to the field
-            name, while the remaining key-value pairs are scored as that generated field's
-            payload. This makes it possible to compute metrics separately for entries such as
-            ``field1.A&B`` and ``field1.C&D`` instead of scoring the whole original field as
-            one unit.
-        subfield_values: Optional dict mapping field names to lists of keys that should be
-            retained as the payload of generated fields after extracting ``subfield_keys``.
-            This allows restricting evaluation to selected nested values, e.g. scoring only
-            ``Antwortvariable`` or only ``Antwortvariable`` and ``Trend`` within each
-            generated field.
-        sort_fields: Whether to sort the fields in the output. Defaults to False.
-        **kwargs: Additional keyword arguments forwarded to each instance of
-            ``metric_class``.
+    metrics are updated. During that expansion, the configured grouping keys are used to derive
+    the generated field names and are removed from the scored payload, while ``subfield_values``
+    can optionally restrict which of the remaining nested values are compared. Additional keyword
+    arguments passed to :meth:`__init__` are forwarded to each lazily created per-field metric.
     """
 
     def __init__(
@@ -172,6 +166,19 @@ class MetricCollectionWithFieldDiscoveryAndGrouping(MetricCollection[T2], Generi
         sort_fields: bool = False,
         **kwargs,
     ) -> None:
+        """Initialize the field-discovering metric collection.
+
+        Args:
+            metric_class: Metric class used to instantiate field-specific metrics.
+            fields: Optional allowlist of fields to evaluate. If omitted, fields are discovered
+                from the union of keys present in each prediction/reference pair.
+            subfield_keys: Optional mapping describing how nested entries are split into generated
+                fields.
+            subfield_values: Optional mapping restricting which nested values are kept after field
+                expansion.
+            sort_fields: Whether computed results should be emitted in sorted field order.
+            **kwargs: Additional keyword arguments forwarded to each created metric instance.
+        """
         self.metric_class = metric_class
         self.fields = fields
         self.subfield_keys = subfield_keys

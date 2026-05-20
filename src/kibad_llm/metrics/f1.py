@@ -1,9 +1,5 @@
 """F1-based metrics for single fields and collections of fields.
 
-Functions:
-    _expand_field_by_key_values: Expand one nested field into generated top-level fields keyed by
-        selected nested values.
-
 Classes:
     F1MicroSingleFieldMetric: Compute micro-averaged precision, recall, and F1 for one field.
     F1MicroMultipleFieldsMetric: Aggregate single-field F1 metrics across multiple fields.
@@ -68,7 +64,10 @@ class F1MicroMultipleFieldsMetric(
     """Compute single-field F1 scores for multiple fields plus aggregate views.
 
     The metric instantiates one `F1MicroSingleFieldMetric` per field, optionally expanding nested
-    list/dict fields into generated field names such as ``organism_trends.Amphibien&Wald``.
+    list/dict fields into generated field names such as ``organism_trends.Amphibien&Wald``. It
+    inherits dynamic field discovery and grouped-field expansion from
+    `MetricCollectionWithFieldDiscoveryAndGrouping`, and computes additional ``AVG`` and ``ALL``
+    aggregate rows on top of the per-field scores.
 
     Attributes:
         fields: Explicit field names to evaluate, or `None` to discover them dynamically.
@@ -90,24 +89,16 @@ class F1MicroMultipleFieldsMetric(
         """Initialize a multi-field F1 metric collection.
 
         Args:
-            fields: List of fields to compute `F1MicroSingleFieldMetric` for. If not provided,
-                the metric will be computed for all fields found in the data.
             format_as_markdown: Whether to format the result as a markdown table. Defaults to True.
-            subfield_keys: Optional dict mapping field names to lists of keys used to split
-                dict-like entries into separate generated fields. For a configured field, the
-                values of these keys are removed from each nested dict and appended to the field
-                name, while the remaining key-value pairs are scored as that generated field's
-                payload. This makes it possible to compute metrics separately for entries such as
-                ``field1.A&B`` and ``field1.C&D`` instead of scoring the whole original field as
-                one unit.
-            subfield_values: Optional dict mapping field names to lists of keys that should be
-                retained as the payload of generated fields after extracting ``subfield_keys``.
-                This allows restricting evaluation to selected nested values, e.g. scoring only
-                ``Antwortvariable`` or only ``Antwortvariable`` and ``Trend`` within each
-                generated field.
-            sort_fields: Whether to sort the fields in the output. Defaults to False.
 
         Keyword Args:
+            fields: Optional allowlist of fields to evaluate. If omitted, fields are discovered
+                from the union of keys present in each prediction/reference pair.
+            subfield_keys: Optional mapping describing how nested entries are split into generated
+                fields.
+            subfield_values: Optional mapping restricting which nested values are kept after field
+                expansion.
+            sort_fields: Whether to sort the fields in the output. Defaults to False.
             flatten_dicts: Whether nested dictionaries should be flattened before comparison.
             ignore_subfields: Optional subfields to ignore when hashing dictionary payloads.
             ignore_missing_entries: Whether one-sided empty entries should be skipped.
