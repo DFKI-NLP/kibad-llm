@@ -114,6 +114,7 @@ def test_evaluate(tmp_path, cfg_evaluate, metric_name):
         # we don't have any errors in the predictions file
         assert metric_scores == {"no_error": 4}
     elif metric_name == "tpfpfn_single_field":
+        assert metric_type == "TpFpFnCollector"
         assert metric_scores == {
             "25ABQZIH": {"fn": [], "fp": ["Agrar- und Offenland", "Boden"], "tp": []},
             "25RIYD2C": {"fn": [], "fp": ["Wald"], "tp": ["Agrar- und Offenland"]},
@@ -127,7 +128,6 @@ def test_evaluate(tmp_path, cfg_evaluate, metric_name):
                 "fp": ["Binnengewässer und Auen"],
                 "tp": ["Küsten und Küstengewässer"],
             },
-            "version": 1,
         }
     else:
         raise ValueError(f"Unexpected metric name: {metric_name}. Please update the test case.")
