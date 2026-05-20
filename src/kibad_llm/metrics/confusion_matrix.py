@@ -25,20 +25,6 @@ class ConfusionMatrix(MetricWithTpFpFnEntries):
     Warning:
         Because the metric operates on sets, duplicate predicted labels are collapsed in
         multi-label settings (per record).
-
-    Args:
-        unassignable_label: Label used on the gold side to encode spurious predicted labels
-            (false positives). Defaults to "UNASSIGNABLE".
-        undetected_label: Label used on the prediction side to encode missed gold labels
-            (false negatives). Defaults to "UNDETECTED".
-        show_as_markdown: If True, logs the confusion matrix as markdown on the console when
-            calling compute().
-
-    Keyword Args:
-        field: Optional field to extract from dictionary inputs.
-        flatten_dicts: Whether nested dictionaries should be flattened before comparison.
-        ignore_subfields: Optional subfields to ignore when hashing dictionary values.
-        ignore_missing_entries: Whether one-sided empty entries should be skipped.
     """
 
     def __init__(
