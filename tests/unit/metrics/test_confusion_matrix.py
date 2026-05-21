@@ -1,11 +1,14 @@
+"""Unit tests for single-field and multi-field confusion-matrix metrics."""
+
 import logging
 
 import pytest
 
-from kibad_llm.metrics.confusion_matrix import ConfusionMatrix
+from kibad_llm.metrics import ConfusionMatrix, ConfusionMatrixCollection
 
 
-def test_update_and_compute_accumulates_and_structures_result():
+def test_update_and_compute_accumulates_and_structures_result() -> None:
+    """ConfusionMatrix should aggregate tp, fp, and fn counts into the expected cells."""
     cm = ConfusionMatrix(field="labels")
 
     # First sample: TP(A), FN(B), FP(C)
@@ -25,7 +28,8 @@ def test_update_and_compute_accumulates_and_structures_result():
     assert res["D"]["D"] == 1
 
 
-def test_errors_on_reserved_labels_in_inputs_are_raised_on_compute():
+def test_errors_on_reserved_labels_in_inputs_are_raised_on_compute() -> None:
+    """Reserved placeholder labels should be rejected when present in the tracked data."""
     cm = ConfusionMatrix(field="labels")
 
     cm.update(
@@ -46,7 +50,8 @@ def test_errors_on_reserved_labels_in_inputs_are_raised_on_compute():
         cm.compute(reset=False)
 
 
-def test_compute_uses_custom_reserved_labels_and_stringifies_labels():
+def test_compute_uses_custom_reserved_labels_and_stringifies_labels() -> None:
+    """Custom placeholders and non-string labels should be preserved in the computed output."""
     cm = ConfusionMatrix(unassignable_label="OTHER", undetected_label="MISSING")
 
     cm.update(prediction=[1, 3], reference=[1, 2], record_id="record-1")
@@ -58,7 +63,10 @@ def test_compute_uses_custom_reserved_labels_and_stringifies_labels():
     }
 
 
-def test_show_as_markdown_logs_with_field_header_and_reserved_labels_last(caplog):
+def test_show_as_markdown_logs_with_field_header_and_reserved_labels_last(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Markdown logging should label the field and place reserved placeholder labels last."""
     caplog.set_level(logging.INFO, logger="kibad_llm.metrics.confusion_matrix")
     cm = ConfusionMatrix(
         field="labels",
@@ -79,3 +87,66 @@ def test_show_as_markdown_logs_with_field_header_and_reserved_labels_last(caplog
         "| B     |   0 |   0 |         1 |",
         "| OTHER |   1 |   1 |         0 |",
     ]
+
+
+def test_confusion_matrix_collection_computes_one_matrix_per_explicit_field() -> None:
+    """The collection should return one independent confusion matrix per configured field."""
+    cm = ConfusionMatrixCollection(fields=["labels", "status"], sort_fields=True)
+
+    cm.update(
+        prediction={"labels": ["A", "C"], "status": "predicted"},
+        reference={"labels": ["A", "B"], "status": "gold"},
+        record_id="row-1",
+    )
+
+    assert cm.compute(reset=False) == {
+        "labels": {
+            "A": {"A": 1},
+            "B": {"UNDETECTED": 1},
+            "UNASSIGNABLE": {"C": 1},
+        },
+        "status": {
+            "UNASSIGNABLE": {"predicted": 1},
+            "gold": {"UNDETECTED": 1},
+        },
+    }
+
+
+def test_confusion_matrix_collection_auto_discovers_fields() -> None:
+    """The collection should lazily create confusion matrices for discovered fields."""
+    cm = ConfusionMatrixCollection()
+
+    cm.update(
+        prediction={"matching": "A"},
+        reference={"matching": "A", "missing": "B"},
+        record_id="row-1",
+    )
+
+    assert cm.compute(reset=False) == {
+        "matching": {"A": {"A": 1}},
+        "missing": {"B": {"UNDETECTED": 1}},
+    }
+
+
+def test_confusion_matrix_collection_supports_grouped_subfields() -> None:
+    """Grouped-field expansion should create one confusion matrix per generated subfield."""
+    cm = ConfusionMatrixCollection(
+        fields=["label"],
+        subfield_keys={"label": ["type"]},
+        subfield_values={"label": ["value"]},
+        sort_fields=True,
+    )
+
+    cm.update(
+        prediction={"label": [{"type": "A", "value": "foo"}, {"type": "B", "value": "bar"}]},
+        reference={"label": [{"type": "A", "value": "foo"}, {"type": "B", "value": "baz"}]},
+        record_id="row-1",
+    )
+
+    assert cm.compute(reset=False) == {
+        "label.A": {"(('value', 'foo'),)": {"(('value', 'foo'),)": 1}},
+        "label.B": {
+            "(('value', 'baz'),)": {"UNDETECTED": 1},
+            "UNASSIGNABLE": {"(('value', 'bar'),)": 1},
+        },
+    }
