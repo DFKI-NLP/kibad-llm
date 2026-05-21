@@ -63,7 +63,7 @@ class F1MicroMultipleFieldsMetric(
 ):
     """Compute single-field F1 scores for multiple fields plus aggregate views.
 
-    The metric instantiates one `F1MicroSingleFieldMetric` per field, optionally expanding nested
+    The metric instantiates one [`F1MicroSingleFieldMetric`][..F1MicroSingleFieldMetric] per field, optionally expanding nested
     list/dict fields into generated field names such as `organism_trends.Amphibien&Wald`. It
     inherits dynamic field discovery and grouped-field expansion from
     `MetricCollectionWithFieldDiscoveryAndGrouping`, and computes additional `AVG` and `ALL`
