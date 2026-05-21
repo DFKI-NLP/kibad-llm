@@ -2441,9 +2441,17 @@
       state.truncateEnabledColumns = getDefaultTruncateColumns(getCurrentPredictionColumns());
       renderPredictions();
     });
+    function isConfusionMatrixLikeMetricType(metricType) {
+      return metricType === "ConfusionMatrix" || metricType === "ConfusionMatrixCollection";
+    }
+
+    function getVisualizationMetricType(metricType) {
+      return isConfusionMatrixLikeMetricType(metricType) ? "ConfusionMatrix" : metricType;
+    }
+
     function renderPlotControls(metricType) {
       const supportsConfusionStyleTabs =
-        metricType === "ConfusionMatrix" || metricType === "TpFpFnCollector";
+        getVisualizationMetricType(metricType) === "ConfusionMatrix" || metricType === "TpFpFnCollector";
       const isF1MicroMultipleFieldsMetric = metricType === "F1MicroMultipleFieldsMetric";
       const supportsGroupedBars =
         metricType === "ErrorCollector" || isF1MicroMultipleFieldsMetric;
@@ -4473,7 +4481,7 @@
     ) {
       const metricTypes = new Set(
         (evaluationContext?.experimentEvaluations || [])
-          .map((evaluation) => normalizeValue(evaluation?.jobReturnValue?.type).trim())
+          .map((evaluation) => getVisualizationMetricType(normalizeValue(evaluation?.jobReturnValue?.type).trim()))
           .filter(Boolean)
       );
       if (metricTypes.size > 1) {
@@ -4488,6 +4496,66 @@
 
     function formatRounded(value, precision) {
       return Number(value).toFixed(precision);
+    }
+
+    function getConfusionMatrixSourceRunDir(evaluation) {
+      return normalizeValue(evaluation?.sourceRunDir ?? evaluation?.runDir).trim();
+    }
+
+    function expandConfusionMatrixLikeEvaluation(evaluation) {
+      if (!evaluation || typeof evaluation !== "object") {
+        return [];
+      }
+
+      const metricType = normalizeValue(evaluation?.jobReturnValue?.type).trim();
+      if (metricType === "ConfusionMatrixCollection") {
+        const fieldMatrices = evaluation.data;
+        if (!fieldMatrices || typeof fieldMatrices !== "object" || Array.isArray(fieldMatrices)) {
+          return [];
+        }
+
+        const sourceRunDir = getConfusionMatrixSourceRunDir(evaluation);
+        const baseOverrides =
+          evaluation.overrides && typeof evaluation.overrides === "object" && !Array.isArray(evaluation.overrides)
+            ? evaluation.overrides
+            : {};
+
+        return Object.entries(fieldMatrices)
+          .filter(([, fieldMatrix]) => fieldMatrix && typeof fieldMatrix === "object" && !Array.isArray(fieldMatrix))
+          .map(([field, fieldMatrix]) => ({
+            ...evaluation,
+            runDir: sourceRunDir ? `${sourceRunDir}#${field}` : `confusion-field#${field}`,
+            sourceRunDir,
+            jobReturnValue: {
+              ...(evaluation.jobReturnValue || {}),
+              type: "ConfusionMatrix",
+            },
+            overrides: {
+              ...baseOverrides,
+              "metric.field": field,
+            },
+            data: fieldMatrix,
+          }));
+      }
+
+      return [
+        {
+          ...evaluation,
+          sourceRunDir: getConfusionMatrixSourceRunDir(evaluation),
+        },
+      ];
+    }
+
+    function normalizeConfusionMatrixLikeEvaluations(evaluations) {
+      return (evaluations || []).flatMap((evaluation) => expandConfusionMatrixLikeEvaluation(evaluation));
+    }
+
+    function countDistinctConfusionMatrixRuns(evaluations) {
+      return new Set(
+        (evaluations || [])
+          .map((evaluation) => getConfusionMatrixSourceRunDir(evaluation))
+          .filter(Boolean)
+      ).size;
     }
 
     function getConfusionMatrixTitle(experimentEvaluations, evalTabState) {
@@ -4676,16 +4744,19 @@
     // the active prediction/evaluation grouping, while keeping different metric.field values separate.
     function buildConfusionTabMap(activeExperiment, plotGroups, experimentEvaluations, labelFields, evalTabState) {
       const tabMap = new Map();
+      const normalizedExperimentEvaluations = normalizeConfusionMatrixLikeEvaluations(experimentEvaluations);
       const groupEntries = plotGroups
         .map((group, index) => ({
           key: `group|#|${group.groupId}`,
           label: getGroupLabelForFields(group, labelFields, `group ${index + 1}`, displayPlotGroupFieldName),
-          evaluations: group.evaluations.filter((evaluation) => getEvaluationExperiment(evaluation) === activeExperiment),
+          evaluations: normalizeConfusionMatrixLikeEvaluations(
+            group.evaluations.filter((evaluation) => getEvaluationExperiment(evaluation) === activeExperiment)
+          ),
         }))
         .filter((entry) => entry.evaluations.length > 0);
 
       if (state.confusionTabsBy === "metric_field") {
-        for (const evaluation of experimentEvaluations) {
+        for (const evaluation of normalizedExperimentEvaluations) {
           const rawField = getEvaluationEffectiveValue(evaluation, "metric.field", evalTabState);
           const fieldLabel = rawField || "(missing metric.field)";
           if (!tabMap.has(fieldLabel)) {
@@ -5414,7 +5485,9 @@
 
         for (const key of sortedConfusionTabKeys) {
           const entry = confusionTabMap.get(key);
-          const evaluationCount = entry.plots.reduce((sum, plot) => sum + plot.evaluations.length, 0);
+          const evaluationCount = countDistinctConfusionMatrixRuns(
+            entry.plots.flatMap((plot) => plot.evaluations)
+          );
           const button = document.createElement("button");
           button.type = "button";
           button.className = "tab-button" + (key === state.activeEvalPlotTab ? " active" : "");
