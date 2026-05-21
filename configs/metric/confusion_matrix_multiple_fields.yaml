@@ -1,0 +1,4 @@
+# Confusion matrix for single- or multi-label classification.
+
+_target_: kibad_llm.metrics.ConfusionMatrixCollection
+# fields: ???  # the fields in the prediction and reference to compute the confusion matrix on

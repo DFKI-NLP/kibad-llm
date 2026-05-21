@@ -1,3 +1,6 @@
+"""Integration tests for the evaluation entry point and metric configurations."""
+
+from collections.abc import Iterator
 import os
 
 from hydra.core.global_hydra import GlobalHydra
@@ -5,7 +8,7 @@ from hydra.core.hydra_config import HydraConfig
 from omegaconf import DictConfig, open_dict
 import pytest
 
-from kibad_llm.config import INTERIM_DATA_DIR, PROJ_ROOT
+from kibad_llm.config import PROJ_ROOT
 from kibad_llm.evaluate import evaluate
 from tests.conftest import cfg_global
 
@@ -23,12 +26,14 @@ PREDICTIONS_FILE = PROJ_ROOT / "tests" / "fixtures" / "evaluation" / "prediction
 
 
 @pytest.fixture(scope="function", params=AVAILABLE_METRICS)
-def metric_name(request) -> str:
+def metric_name(request: pytest.FixtureRequest) -> str:
+    """Return one metric config name for the parametrized evaluation tests."""
     return request.param
 
 
 @pytest.fixture(scope="function")
-def cfg_evaluate(tmp_path, metric_name) -> DictConfig:  # type: ignore
+def cfg_evaluate(tmp_path, metric_name) -> Iterator[DictConfig]:
+    """Build an evaluation config tailored to the parametrized metric under test."""
     overrides = [f"metric={metric_name}"]
     if metric_name == "prediction_errors":
         # for this metric, we need to set a specific dataset that does not strip errors
@@ -40,7 +45,7 @@ def cfg_evaluate(tmp_path, metric_name) -> DictConfig:  # type: ignore
         # this produces non-zero results
         if metric_name in ["confusion_matrix", "f1_micro_single_field", "tpfpfn_single_field"]:
             cfg.metric.field = "habitat"
-        elif metric_name == "f1_micro":
+        elif metric_name in ["confusion_matrix_multiple_fields", "f1_micro"]:
             cfg.metric.fields = ["habitat", "landuse"]
         elif metric_name == "prediction_errors":
             pass  # no extra config needed
@@ -54,7 +59,7 @@ def cfg_evaluate(tmp_path, metric_name) -> DictConfig:  # type: ignore
     GlobalHydra.instance().clear()
 
 
-def test_evaluate(tmp_path, cfg_evaluate, metric_name):
+def test_evaluate(tmp_path, cfg_evaluate: DictConfig, metric_name: str) -> None:
     """For now, this is primarily to test that the evaluation runs end-to-end without errors."""
 
     HydraConfig().set_config(cfg_evaluate)
@@ -84,6 +89,33 @@ def test_evaluate(tmp_path, cfg_evaluate, metric_name):
                 "Binnengewässer und Auen": 2,
                 "Boden": 1,
                 "Wald": 1,
+            },
+        }
+    elif metric_name == "confusion_matrix_multiple_fields":
+        assert metric_type == "ConfusionMatrixCollection"
+        assert metric_scores == {
+            "habitat": {
+                "Agrar- und Offenland": {"Agrar- und Offenland": 1},
+                "Küsten und Küstengewässer": {"Küsten und Küstengewässer": 2},
+                "UNASSIGNABLE": {
+                    "Agrar- und Offenland": 1,
+                    "Binnengewässer und Auen": 2,
+                    "Boden": 1,
+                    "Wald": 1,
+                },
+            },
+            "landuse": {
+                "Naturnahe und natürliche Flächen, die nicht genutzt werden": {"UNDETECTED": 1},
+                "UNASSIGNABLE": {
+                    "Bau": 1,
+                    "Energieproduktion": 1,
+                    "Erholung, Freizeit, Sport": 1,
+                    "Fischerei und Aquakultur": 1,
+                    "Industrie und Fertigung": 1,
+                    "Landwirtschaft": 2,
+                    "Verkehr, Kommunikationsnetzwerke, Lagerung, Schutzwälle": 1,
+                    "Wohngebiete": 1,
+                },
             },
         }
     elif metric_name == "f1_micro":
