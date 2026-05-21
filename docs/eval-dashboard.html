@@ -999,6 +999,7 @@
     const JOB_RETURN_VALUE_PREFIX = "job_return_value.";
     // Synthetic namespace for evaluation fields when prediction and evaluation group-by fields are mixed together.
     const EVALUATION_PREFIX = "evaluation.";
+    const TP_FP_FN_KEYS = ["tp", "fp", "fn"];
     const sortCollator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
 
     // Selectors and accessors for the canonical predictions/evaluations state shape.
@@ -1278,9 +1279,37 @@
       barTooltip.style.display = "none";
     }
 
+    async function writeTextToClipboard(text) {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+        return;
+      }
+
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.setAttribute("readonly", "readonly");
+      textarea.style.position = "fixed";
+      textarea.style.top = "-9999px";
+      textarea.style.left = "-9999px";
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      const copied = document.execCommand("copy");
+      document.body.removeChild(textarea);
+      if (!copied) {
+        throw new Error("Clipboard copy command was not successful.");
+      }
+    }
+
+    // Export filenames should keep the stable plot name while dropping display-only suffixes
+    // that appear in chart titles/tab labels, e.g. "(mean ± std)" and grouped-eval counts.
     function getFigureTitlePrefix(title) {
       const text = String(title ?? "").trim();
-      return text.replace(/\s*\(mean ± std\).*$/u, "").trim() || text || "figure";
+      return text
+        .replace(/\s*\(mean ± std\).*$/u, "")
+        .replace(/\s*\(\d+\s+grouped\s+evals?(?:\s+per\s+cell)?\)$/iu, "")
+        .replace(/\s*\(\d+\s+grouped\s+evaluations\)$/iu, "")
+        .trim() || text || "figure";
     }
 
     function sanitizeFigureFilename(title) {
@@ -1309,7 +1338,7 @@
       const activeButton = evalPlotTabs.querySelector(".tab-button.active");
       const plotTabLabel = activeButton?.getAttribute("title") || activeButton?.textContent || "figures";
       const evalTabLabel = typeof state.activeEvalTab === "string" ? state.activeEvalTab.trim() : "";
-      const filenameParts = [evalTabLabel, String(plotTabLabel).trim()]
+      const filenameParts = [evalTabLabel, getFigureTitlePrefix(String(plotTabLabel).trim())]
         .filter((part) => part.length > 0)
         .map((part) => sanitizeFigureFilename(part));
       return `${filenameParts.join("-") || "figures"}.zip`;
@@ -2413,7 +2442,8 @@
       renderPredictions();
     });
     function renderPlotControls(metricType) {
-      const isConfusionMatrix = metricType === "ConfusionMatrix";
+      const supportsConfusionStyleTabs =
+        metricType === "ConfusionMatrix" || metricType === "TpFpFnCollector";
       const isF1MicroMultipleFieldsMetric = metricType === "F1MicroMultipleFieldsMetric";
       const supportsGroupedBars =
         metricType === "ErrorCollector" || isF1MicroMultipleFieldsMetric;
@@ -2432,7 +2462,7 @@
       plotShowLegendOnce.checked = state.plotShowLegendOnce;
       exportOpaqueBackground.checked = state.exportOpaqueBackground;
       plotTabsByRow.style.display = isF1MicroMultipleFieldsMetric ? "" : "none";
-      plotConfusionTabsByRow.style.display = isConfusionMatrix ? "" : "none";
+      plotConfusionTabsByRow.style.display = supportsConfusionStyleTabs ? "" : "none";
       plotGroupBarsRow.style.display = supportsGroupedBars ? "" : "none";
       plotShowLegendOnceRow.style.display = "none";
     }
@@ -4702,6 +4732,423 @@
       return tabMap;
     }
 
+    function getTpFpFnOutcomeLabel(outcomeKey) {
+      if (outcomeKey === "tp") {
+        return "TP";
+      }
+      if (outcomeKey === "fp") {
+        return "FP";
+      }
+      if (outcomeKey === "fn") {
+        return "FN";
+      }
+      return String(outcomeKey ?? "").toUpperCase();
+    }
+
+    function getTpFpFnPalette(outcomeKey) {
+      if (outcomeKey === "tp") {
+        return { start: [240, 253, 244], end: [22, 163, 74] };
+      }
+      if (outcomeKey === "fp") {
+        return { start: [255, 247, 237], end: [234, 88, 12] };
+      }
+      if (outcomeKey === "fn") {
+        return { start: [250, 245, 255], end: [126, 34, 206] };
+      }
+      return { start: [247, 251, 255], end: [8, 48, 107] };
+    }
+
+    function getTpFpFnOutcomeColor(outcomeKey) {
+      if (!outcomeKey) {
+        return "#e2e8f0";
+      }
+      return interpolateColor(getTpFpFnPalette(outcomeKey).start, getTpFpFnPalette(outcomeKey).end, 1);
+    }
+
+    function normalizeTpFpFnCollectorData(rawData) {
+      const result = {};
+
+      const getRecordEntry = (recordId) => {
+        const key = normalizeValue(recordId) || "(missing record_id)";
+        if (!result[key]) {
+          result[key] = { tp: [], fp: [], fn: [] };
+        }
+        return result[key];
+      };
+
+      const appendUniqueValues = (target, bucket, values) => {
+        if (!Array.isArray(values)) {
+          return;
+        }
+        const seen = new Set(target[bucket]);
+        for (const value of values) {
+          const normalized = normalizeValue(value);
+          if (seen.has(normalized)) {
+            continue;
+          }
+          seen.add(normalized);
+          target[bucket].push(normalized);
+        }
+        target[bucket].sort((a, b) => sortCollator.compare(a, b));
+      };
+
+      if (!rawData || typeof rawData !== "object" || Array.isArray(rawData)) {
+        return result;
+      }
+
+      const looksLikeGlobalOutput = TP_FP_FN_KEYS.some((bucket) => Array.isArray(rawData?.[bucket]));
+      if (looksLikeGlobalOutput) {
+        for (const bucket of TP_FP_FN_KEYS) {
+          const entries = Array.isArray(rawData[bucket]) ? rawData[bucket] : [];
+          for (const entry of entries) {
+            if (!Array.isArray(entry) || entry.length < 2) {
+              continue;
+            }
+            appendUniqueValues(getRecordEntry(entry[0]), bucket, [entry[1]]);
+          }
+        }
+        return result;
+      }
+
+      for (const [recordId, entry] of Object.entries(rawData)) {
+        const normalizedEntry = entry && typeof entry === "object" && !Array.isArray(entry) ? entry : {};
+        const target = getRecordEntry(recordId);
+        for (const bucket of TP_FP_FN_KEYS) {
+          appendUniqueValues(target, bucket, normalizedEntry[bucket]);
+        }
+      }
+
+      return result;
+    }
+
+    function getTpFpFnCombinedAggregation(experimentEvaluations) {
+      const rowLabels = new Set();
+      const colLabels = new Set();
+      const evaluationCells = [];
+      const evaluationLabels = [];
+
+      for (const [evaluationIndex, evaluation] of experimentEvaluations.entries()) {
+        const map = new Map();
+        evaluationLabels.push(normalizeValue(evaluation?.runDir) || `evaluation ${evaluationIndex + 1}`);
+        const normalizedData = normalizeTpFpFnCollectorData(evaluation.data);
+        for (const [recordId, recordEntry] of Object.entries(normalizedData)) {
+          rowLabels.add(recordId);
+          const entriesByLabel = new Map();
+          for (const outcomeKey of TP_FP_FN_KEYS) {
+            const labels = Array.isArray(recordEntry?.[outcomeKey]) ? recordEntry[outcomeKey] : [];
+            for (const label of labels) {
+              colLabels.add(label);
+              if (!entriesByLabel.has(label)) {
+                entriesByLabel.set(label, { tp: false, fp: false, fn: false });
+              }
+              entriesByLabel.get(label)[outcomeKey] = true;
+            }
+          }
+          for (const [label, rowState] of entriesByLabel.entries()) {
+            map.set(`${recordId}|#|${label}`, rowState);
+          }
+        }
+        evaluationCells.push(map);
+      }
+
+      const rows = Array.from(rowLabels).sort((a, b) => sortCollator.compare(a, b));
+      const cols = Array.from(colLabels).sort((a, b) => sortCollator.compare(a, b));
+      const cells = new Map();
+
+      for (const row of rows) {
+        for (const col of cols) {
+          const key = `${row}|#|${col}`;
+          const rowStates = evaluationCells.map(
+            (cellMap) => cellMap.get(key) || { tp: false, fp: false, fn: false }
+          );
+          const counts = { tp: 0, fp: 0, fn: 0, empty: 0 };
+          for (const rowState of rowStates) {
+            let rowHasAny = false;
+            for (const outcomeKey of TP_FP_FN_KEYS) {
+              if (rowState[outcomeKey]) {
+                counts[outcomeKey] += 1;
+                rowHasAny = true;
+              }
+            }
+            if (!rowHasAny) {
+              counts.empty += 1;
+            }
+          }
+          cells.set(key, {
+            rowStates,
+            counts,
+            presentCount: counts.tp + counts.fp + counts.fn,
+          });
+        }
+      }
+
+      return {
+        rows,
+        cols,
+        cells,
+        totalEvaluations: evaluationCells.length,
+        evaluationLabels,
+      };
+    }
+
+    function buildTpFpFnTabMap(plotGroups, experimentEvaluations, labelFields, evalTabState) {
+      const tabMap = new Map();
+
+      const groupEntries = plotGroups
+        .map((group, index) => ({
+          key: `group|#|${group.groupId}`,
+          label: getGroupLabelForFields(group, labelFields, `group ${index + 1}`, displayPlotGroupFieldName),
+          evaluations: group.evaluations,
+        }))
+        .filter((entry) => entry.evaluations.length > 0);
+
+      if (state.confusionTabsBy === "metric_field") {
+        for (const evaluation of experimentEvaluations) {
+          const rawField = getEvaluationEffectiveValue(evaluation, "metric.field", evalTabState);
+          const fieldLabel = rawField || "(missing metric.field)";
+          if (!tabMap.has(fieldLabel)) {
+            tabMap.set(fieldLabel, { label: getPlotDisplayLabel(fieldLabel), plots: [] });
+          }
+        }
+
+        for (const [fieldKey, tab] of tabMap.entries()) {
+          for (const groupEntry of groupEntries) {
+            const evaluationsForFieldAndGroup = groupEntry.evaluations.filter((evaluation) => {
+              const rawField = getEvaluationEffectiveValue(evaluation, "metric.field", evalTabState);
+              const fieldLabel = rawField || "(missing metric.field)";
+              return fieldLabel === fieldKey;
+            });
+            if (evaluationsForFieldAndGroup.length === 0) {
+              continue;
+            }
+            tab.plots.push({ label: groupEntry.label, fieldLabel: fieldKey, evaluations: evaluationsForFieldAndGroup });
+          }
+        }
+        return tabMap;
+      }
+
+      for (const groupEntry of groupEntries) {
+        const byField = new Map();
+        for (const evaluation of groupEntry.evaluations) {
+          const rawField = getEvaluationEffectiveValue(evaluation, "metric.field", evalTabState);
+          const fieldLabel = rawField || "(missing metric.field)";
+          if (!byField.has(fieldLabel)) {
+            byField.set(fieldLabel, []);
+          }
+          byField.get(fieldLabel).push(evaluation);
+        }
+        const plots = Array.from(byField.entries())
+          .sort(([a], [b]) => sortCollator.compare(a, b))
+          .map(([fieldLabel, evaluations]) => ({
+            label: fieldLabel,
+            fieldLabel,
+            evaluations,
+          }));
+        tabMap.set(groupEntry.key, { label: groupEntry.label, plots });
+      }
+
+      return tabMap;
+    }
+
+    function createTpFpFnLegendElement() {
+      return createPlotLegendElement([
+        { label: "TP", color: getTpFpFnOutcomeColor("tp") },
+        { label: "FP", color: getTpFpFnOutcomeColor("fp") },
+        { label: "FN", color: getTpFpFnOutcomeColor("fn") },
+      ]);
+    }
+
+    function buildTpFpFnCellSummary(row, col, stats, totalEvaluations, evaluationLabels, precision) {
+      const tpShare = totalEvaluations ? (stats.counts.tp / totalEvaluations) * 100 : 0;
+      const fpShare = totalEvaluations ? (stats.counts.fp / totalEvaluations) * 100 : 0;
+      const fnShare = totalEvaluations ? (stats.counts.fn / totalEvaluations) * 100 : 0;
+      const evaluations = stats.rowStates.map((rowState, evalIndex) => {
+        const outcomes = TP_FP_FN_KEYS.filter((bucket) => rowState[bucket]);
+        return {
+          run_dir: evaluationLabels[evalIndex] || `evaluation ${evalIndex + 1}`,
+          value: outcomes.map((bucket) => getTpFpFnOutcomeLabel(bucket)).join(", ") || "empty",
+        };
+      });
+
+      const lines = [
+        `document: ${row}`,
+        `label:    ${col}`,
+        `TP/FP/FN %: ${formatRounded(tpShare, precision)} / ${formatRounded(fpShare, precision)} / ${formatRounded(fnShare, precision)}`,
+      ];
+
+      return {
+        lines,
+        payload: {
+          document_id: row,
+          label: col,
+          counts: {
+            tp: stats.counts.tp,
+            fp: stats.counts.fp,
+            fn: stats.counts.fn,
+            empty: stats.counts.empty,
+          },
+          percentages: {
+            tp: tpShare,
+            fp: fpShare,
+            fn: fnShare,
+          },
+          evaluations,
+        },
+      };
+    }
+
+    function createTpFpFnCombinedMatrixSvg(aggregation, precision) {
+      const { rows, cols, cells, totalEvaluations, evaluationLabels } = aggregation;
+      const miniCellWidth = 18;
+      const miniCellHeight = 18;
+      const miniGap = 2;
+      const cellPadding = 4;
+      const outcomeCols = TP_FP_FN_KEYS.length;
+      const cellWidth = Math.max(
+        52,
+        outcomeCols * miniCellWidth + Math.max(0, outcomeCols - 1) * miniGap + cellPadding * 2
+      );
+      const cellHeight = Math.max(28, miniCellHeight + cellPadding * 2);
+      const margin = { top: 140, right: 20, bottom: 20, left: 120 };
+      const width = margin.left + cols.length * cellWidth + margin.right;
+      const height = margin.top + rows.length * cellHeight + margin.bottom;
+
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svg.setAttribute("width", String(width));
+      svg.setAttribute("height", String(height));
+      svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+      const contentGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      svg.appendChild(contentGroup);
+
+      const xAxisTitle = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      xAxisTitle.setAttribute("x", String(margin.left + (cols.length * cellWidth) / 2));
+      xAxisTitle.setAttribute("y", "20");
+      xAxisTitle.setAttribute("text-anchor", "middle");
+      xAxisTitle.setAttribute("fill", "currentColor");
+      xAxisTitle.setAttribute("font-size", "13");
+      xAxisTitle.textContent = "Label";
+      contentGroup.appendChild(xAxisTitle);
+
+      const yAxisTitle = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      yAxisTitle.setAttribute("x", "18");
+      yAxisTitle.setAttribute("y", String(margin.top + (rows.length * cellHeight) / 2));
+      yAxisTitle.setAttribute("transform", `rotate(-90 18 ${margin.top + (rows.length * cellHeight) / 2})`);
+      yAxisTitle.setAttribute("text-anchor", "middle");
+      yAxisTitle.setAttribute("fill", "currentColor");
+      yAxisTitle.setAttribute("font-size", "13");
+      yAxisTitle.textContent = "Document id";
+      contentGroup.appendChild(yAxisTitle);
+
+      rows.forEach((row, rowIndex) => {
+        const y = margin.top + rowIndex * cellHeight + cellHeight / 2;
+        const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        label.setAttribute("x", String(margin.left - 10));
+        label.setAttribute("y", String(y + 4));
+        label.setAttribute("text-anchor", "end");
+        label.setAttribute("fill", "currentColor");
+        label.setAttribute("font-size", "11");
+        label.textContent = row;
+        contentGroup.appendChild(label);
+      });
+
+      cols.forEach((col, colIndex) => {
+        const labelStartX = margin.left + colIndex * cellWidth;
+        const x = labelStartX + cellWidth / 2;
+        const y = margin.top - 12;
+        const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        label.setAttribute("x", String(x + 2));
+        label.setAttribute("y", String(y));
+        label.setAttribute("transform", `rotate(-35 ${x + 2} ${y})`);
+        label.setAttribute("text-anchor", "start");
+        label.setAttribute("fill", "currentColor");
+        label.setAttribute("font-size", "11");
+        label.textContent = getPlotDisplayLabel(col);
+        contentGroup.appendChild(label);
+      });
+
+      rows.forEach((row, rowIndex) => {
+        cols.forEach((col, colIndex) => {
+          const key = `${row}|#|${col}`;
+          const stats = cells.get(key) || {
+            rowStates: Array.from({ length: totalEvaluations }, () => ({ tp: false, fp: false, fn: false })),
+            counts: { tp: 0, fp: 0, fn: 0, empty: totalEvaluations },
+            presentCount: 0,
+          };
+          const x = margin.left + colIndex * cellWidth;
+          const y = margin.top + rowIndex * cellHeight;
+
+          const cellBorder = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+          cellBorder.setAttribute("x", String(x));
+          cellBorder.setAttribute("y", String(y));
+          cellBorder.setAttribute("width", String(cellWidth));
+          cellBorder.setAttribute("height", String(cellHeight));
+          cellBorder.setAttribute("fill", "#ffffff");
+          cellBorder.setAttribute("stroke", "#33415555");
+          cellBorder.setAttribute("stroke-width", "1");
+          contentGroup.appendChild(cellBorder);
+
+          TP_FP_FN_KEYS.forEach((outcomeKey, outcomeIndex) => {
+            const subX = x + cellPadding + outcomeIndex * (miniCellWidth + miniGap);
+            const subY = y + cellPadding;
+            const share = totalEvaluations ? stats.counts[outcomeKey] / totalEvaluations : 0;
+            const palette = getTpFpFnPalette(outcomeKey);
+            const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+            rect.setAttribute("x", String(subX));
+            rect.setAttribute("y", String(subY));
+            rect.setAttribute("width", String(miniCellWidth));
+            rect.setAttribute("height", String(miniCellHeight));
+            rect.setAttribute("rx", "2");
+            rect.setAttribute("fill", interpolateColor(palette.start, palette.end, share));
+            rect.setAttribute("stroke", "#ffffffcc");
+            rect.setAttribute("stroke-width", "1");
+            contentGroup.appendChild(rect);
+          });
+
+          const overlay = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+          overlay.setAttribute("x", String(x));
+          overlay.setAttribute("y", String(y));
+          overlay.setAttribute("width", String(cellWidth));
+          overlay.setAttribute("height", String(cellHeight));
+          overlay.setAttribute("fill", "transparent");
+          overlay.style.cursor = "pointer";
+          overlay.addEventListener("mouseover", (event) => {
+            const summary = buildTpFpFnCellSummary(
+              row,
+              col,
+              stats,
+              totalEvaluations,
+              evaluationLabels,
+              precision
+            );
+            showBarTooltip(event, summary.lines);
+          });
+          overlay.addEventListener("mousemove", positionBarTooltip);
+          overlay.addEventListener("mouseout", hideBarTooltip);
+          overlay.addEventListener("click", async (event) => {
+            const summary = buildTpFpFnCellSummary(
+              row,
+              col,
+              stats,
+              totalEvaluations,
+              evaluationLabels,
+              precision
+            );
+            try {
+              await writeTextToClipboard(JSON.stringify(summary.payload, null, 2));
+              showBarTooltip(event, [...summary.lines, "", "Copied JSON to clipboard."]);
+            } catch (error) {
+              console.warn("Failed to copy TpFpFn cell summary to clipboard.", error);
+              showBarTooltip(event, [...summary.lines, "", "Copy to clipboard failed."]);
+            }
+          });
+          contentGroup.appendChild(overlay);
+        });
+      });
+
+      scheduleAdaptiveSvgFit(svg, contentGroup, width, height);
+      return svg;
+    }
+
     function renderGroupBarChips(varyingGroupByFields, activeExperiment) {
       if (varyingGroupByFields.length === 0) {
         const noOptions = document.createElement("span");
@@ -4919,7 +5366,8 @@
       if (
         metricType !== "ConfusionMatrix" &&
         metricType !== "ErrorCollector" &&
-        metricType !== "F1MicroMultipleFieldsMetric"
+        metricType !== "F1MicroMultipleFieldsMetric" &&
+        metricType !== "TpFpFnCollector"
       ) {
         const msg = document.createElement("p");
         msg.className = "plot-empty";
@@ -5014,6 +5462,82 @@
           return;
         }
 
+        evalPlotContent.appendChild(grid);
+        return;
+      }
+
+      if (metricType === "TpFpFnCollector") {
+        const labelFields = varyingPlotGroupFields.length ? varyingPlotGroupFields : plotGroupFields;
+        const tpfpfnTabMap = buildTpFpFnTabMap(
+          plotGroups,
+          experimentEvaluations,
+          labelFields,
+          evalTabState
+        );
+        const sortedTabKeys = Array.from(tpfpfnTabMap.keys()).sort((a, b) =>
+          tpfpfnTabMap.get(a).label.localeCompare(tpfpfnTabMap.get(b).label)
+        );
+        if (!sortedTabKeys.length) {
+          const msg = document.createElement("p");
+          msg.className = "plot-empty";
+          msg.textContent = `No ${metricType} data found for ${activeExperiment}.`;
+          evalPlotContent.appendChild(msg);
+          return;
+        }
+
+        if (!state.activeEvalPlotTab || !tpfpfnTabMap.has(state.activeEvalPlotTab)) {
+          state.activeEvalPlotTab = sortedTabKeys[0];
+        }
+
+        for (const key of sortedTabKeys) {
+          const entry = tpfpfnTabMap.get(key);
+          const evaluationCount = entry.plots.reduce((sum, plot) => sum + plot.evaluations.length, 0);
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "tab-button" + (key === state.activeEvalPlotTab ? " active" : "");
+          button.textContent = `${entry.label} (${evaluationCount})`;
+          button.title = `${entry.label} (${evaluationCount} grouped evaluations)`;
+          button.addEventListener("click", () => {
+            state.activeEvalPlotTab = key;
+            renderEvaluationPlots(activeExperiment);
+          });
+          evalPlotTabs.appendChild(button);
+        }
+
+        const activeEntry = tpfpfnTabMap.get(state.activeEvalPlotTab);
+        const grid = document.createElement("div");
+        grid.className = "plot-grid";
+
+        for (const plotEntry of activeEntry.plots) {
+          const aggregation = getTpFpFnCombinedAggregation(plotEntry.evaluations);
+          if (!aggregation.rows.length || !aggregation.cols.length) {
+            continue;
+          }
+
+          const card = document.createElement("section");
+          card.className = "plot-card";
+          const title = document.createElement("p");
+          title.className = "plot-title";
+          const fieldTitle = getConfusionMatrixTitle(plotEntry.evaluations, evalTabState);
+          if (state.confusionTabsBy === "metric_field") {
+            title.textContent = `${plotEntry.label} (${aggregation.totalEvaluations} grouped evals)`;
+          } else {
+            title.textContent = `${fieldTitle} (${aggregation.totalEvaluations} grouped evals)`;
+          }
+          card.appendChild(title);
+          card.appendChild(createTpFpFnCombinedMatrixSvg(aggregation, state.plotRoundingPrecision));
+          grid.appendChild(card);
+        }
+
+        if (!grid.childElementCount) {
+          const msg = document.createElement("p");
+          msg.className = "plot-empty";
+          msg.textContent = `No TP/FP/FN values found for ${activeEntry.label}.`;
+          evalPlotContent.appendChild(msg);
+          return;
+        }
+
+        evalPlotContent.appendChild(createTpFpFnLegendElement());
         evalPlotContent.appendChild(grid);
         return;
       }
