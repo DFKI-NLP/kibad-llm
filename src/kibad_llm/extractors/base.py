@@ -39,8 +39,8 @@ class SingleExtractionResult(FieldDict):
     Attributes:
         character_start: Start index of the chunk of text that has been processed
         character_end: Start index of the chunk of text that has been processed (exclusive)
-        response_content: Response as text
-        structured:
+        response_content: Response formatted as json
+        structured: Parsed version of response_content. Possibly validated against a schema.
         structured_with_metadata:
         reasoning_content: Reasoning as text
         messages:
@@ -510,7 +510,7 @@ def augment_metadata(
 
     Args:
         data: JSON-parsed result with evidence
-        text: TODO - must be passed by keyword
+        text: Original input text to extract evidence snippets from - must be passed by keyword
         content_key: Key that must be in a mapping for it to be a wrapper_dict - must be passed by keyword
 
     Keyword Args:
@@ -521,7 +521,7 @@ def augment_metadata(
         Example: evidence_snippet_margin=10 sets `snippet_margin=10` for evidence augmentation.
 
     Returns:
-        TODO
+        The data, augmented with the metadata. Currently only evidence.
 
     Raises:
       ValueError: unknown kwargs raise ValueError (fail fast).
@@ -647,13 +647,16 @@ def augment_and_strip_metadata_from_structured_callback(
     Modifies `out` in place; does not return a value.
 
     Args:
-        out: TODO
-        response: TODO
-        schema: TODO - must be passed by keyword
-        original_schema: TODO - must be passed by keyword
-        text: TODO - must be passed by keyword
-        validate_with_schema: TODO - must be passed by keyword
-        augment_metadata_kwargs: TODO - must be passed by keyword
+        out: An extraction result with `out.structured`
+        response: FIXME Currently unused
+        schema: schema used in [`..extract_from_text`][] - may be modified for metadata - used to check against original_schema - must be passed by keyword
+        original_schema: original schema that was passed to [`..extract_from_text`][] - must be passed by keyword
+        text: Original input text for evidence extraction - must be passed by keyword
+        validate_with_schema: Whether to validate `out.structured` against the `original_schema` - must be passed by keyword
+        augment_metadata_kwargs: Refer to [`..augment_metadata`][] - must be passed by keyword
+
+    Warning:
+        requires `out` to have `structured`, so run [`..add_structured_callback`][] first
     """
     # no-op if structured is None
     if out.structured is not None:
@@ -675,6 +678,8 @@ def augment_and_strip_metadata_from_structured_callback(
         structured = strip_metadata(out.structured_with_metadata, content_key=WRAPPED_CONTENT_KEY)
 
         # validate stripped version against original schema (if schema is not the original one)
+        # NOTE: as of right now, the original our.structure is checked against schema upon creation.
+        #   This is the first time that it would be checked against the original_schema.
         if validate_with_schema and original_schema is not None and schema != original_schema:
             validator_cls = validator_for(original_schema)
             validator_cls.check_schema(original_schema)
