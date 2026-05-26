@@ -171,56 +171,89 @@ Beyond that, make sure you mention `Args:` and `Returns:`/`Yields:` before other
 
 You can link python objects that are in the documentation. Those links are clickable on the generated static site.
 
-Syntax for absolute links:
+______________________________________________________________________
+
+**Syntax for absolute links:**
+
+example:
 
 ```
-example:
 [`ChunkingExtractor`][kibad_llm.extractors.chunking.ChunkingExtractor]
+```
+
 explanation:
+
+```
 [`display text of link - monospace formatting`][module.dir.file.py_obj]
 ```
 
-Syntax for relative links:
+______________________________________________________________________
 
-```
+**Syntax for relative links:**
+
 close relation example:
-[`F1MicroSingleFieldMetric`][..F1MicroSingleFieldMetric]
-explanation:
-[`display text of link - monospace formatting`][..py_obj]
-This link is in a class docstring and references a class in the same file.
-In ..F1MicroSingleFieldMetric the first dot refers to the class in which the docstring is written.
-The second dot refers to the parent, here being the file.
-Then from within this file, refer to F1MicroSingleFieldMetric.
-```
 
 ```
-short close relation example:
-[`..reset`][]
+[`F1MicroSingleFieldMetric`][..F1MicroSingleFieldMetric]
+```
+
 explanation:
+
+```
+[`display text of link - monospace formatting`][..py_obj]
+```
+
+This link is in a class docstring and references a class in the same file.
+In `..F1MicroSingleFieldMetric` the first dot refers to the class in which the docstring is written.
+The second dot refers to the parent, here being the file.
+Then from within this file, refer to `F1MicroSingleFieldMetric`.
+
+______________________________________________________________________
+
+short close relation example:
+
+```
+[`..reset`][]
+```
+
+explanation:
+
+```
 [`display text of link and path of link - monospace formatting`][]
+```
+
 This link is in a method docstring and references a different method of the same class.
-In ..reset the first dot refers to the method in which the docstring is written.
+In `..reset` the first dot refers to the method in which the docstring is written.
 The second dot refers to the parent, here being the class to which the method belongs.
 Then from within this class, refer to the reset method.
-What's special here is that the ..reset is the display text and link path simultaneously.
+What's special here is that the `..reset` is the display text and link path simultaneously.
 This can reduce the amount of writing that's needed, but may be worse for reading.
-```
+
+______________________________________________________________________
+
+broken example:
 
 ```
-complex relation negative example:
 [`MetricWithPrepareEntryAsSet`][...base.MetricWithPrepareEntryAsSet]
+```
+
 explanation:
+
+```
 [`display text of link - monospace formatting`][...file.py_obj]
+```
+
 This link is in a class docstring and references a class in a different file.
-In ...base.MetricWithPrepareEntryAsSet the first dot refers to the class in which the docstring is written.
+In `...base.MetricWithPrepareEntryAsSet` the first dot refers to the class in which the docstring is written.
 The second dot refers to the parent, here being the file.
 The third refers to the parent, now being the directory.
-Then from within this dir, base refers to a file and MetricWithPrepareEntryAsSet to a class within it.
+Then from within this directory, base refers to a file and `MetricWithPrepareEntryAsSet` to a class within it.
 
-This does work in theory, but the class to which this docstring belongs is automatically imported in the __init__.py file.
-This means that the docstring is also displayed in __init__.py, which changes the path resolution.
-From there, the first dot refers to the class, the second to the dir, and the third to the parent dir, which is the wrong location.
-```
+This does work in theory, but the class to which this docstring belongs is automatically imported in the `__init__.py` file.
+This means that the docstring is also displayed in `__init__.py`, which changes the path resolution.
+From there, the first dot refers to the class, the second to the directory, and the third to the parent directory, which is the wrong location.
+
+______________________________________________________________________
 
 Relative links can help with readability/ saving space, but can also be a lot more complex to get perfectly functional.
 
