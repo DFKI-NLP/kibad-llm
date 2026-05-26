@@ -1,0 +1,18 @@
+# @package _global_
+
+# Confusion matrix for single- or multi-label classification for all flattened core fields at once.
+
+defaults:
+ - override /metric: confusion_matrix_multiple_fields
+
+metric:
+  # compute metrics on flattened fields, i.e. split compounds
+  flatten_dicts: true
+  fields:
+    - habitat
+    - biodiversity_level
+    - ecosystem_type.term
+    - ecosystem_type.category
+    - taxa.german_name
+    - taxa.scientific_name
+    - taxa.species_group

@@ -1,0 +1,152 @@
+[2026-05-26 10:58:27,790][__main__][INFO] - Loading dataset with predictions and references ...
+[2026-05-26 10:58:27,791][__main__][INFO] - Dataset config: {'predictions': {'_target_': 'kibad_llm.dataset.prediction.load_with_metadata', 'log': 'logs/380_organism_trends/predict/multiruns/2026-02-24_22-06-17/5', 'file': None, 'id_key': 'file_name', 'process_id': {'_partial_': True, '_target_': 'kibad_llm.utils.path.strip_filename_extension'}, 'preprocess': {'_target_': 'kibad_llm.utils.dictionary.get', '_partial_': True, 'key': 'structured'}}, 'references': {'_target_': 'kibad_llm.dataset.csv.read_organism_trends', 'file': '/home/arbi01/projects/kibad-llm/data/external/organism_trends/Weighted Vote Count Wald Literatur - Sheet1.csv', 'columns': ['Hauptgruppe_RoteListen', 'Untergruppe_RoteListen', 'Lebensraum', 'Antwortvariable', 'Trend']}, '_target_': 'kibad_llm.dataset.utils.merge_references_into_predictions', 'allow_missing_references': True}
+[2026-05-26 10:58:27,793][kibad_llm.dataset.json][INFO] - Loading dataset from JSON file: predictions/380_organism_trends/2026-02-24_22-06-17/2026-02-25_10-50-12_127897/predictions.jsonl ...
+[2026-05-26 10:58:27,802][kibad_llm.dataset.json][INFO] - Apply preprocessing function to dataset: functools.partial(<function get at 0x78995f8972e0>, key='structured') ...
+[2026-05-26 10:58:27,858][__main__][INFO] - Instantiating metric ...
+[2026-05-26 10:58:27,858][__main__][INFO] - Metric config: {'_target_': 'kibad_llm.metrics.ConfusionMatrixCollection', 'fields': ['organism_trends'], 'subfield_keys': {'organism_trends': ['Hauptgruppe_RoteListen', 'Lebensraum', 'Antwortvariable']}, 'subfield_values': {'organism_trends': ['Trend']}, 'ignore_missing_entries': True, 'sort_fields': True}
+[2026-05-26 10:58:27,860][__main__][INFO] - Computing metric ...
+[2026-05-26 10:58:27,868][kibad_llm.metric][INFO] - Evaluation results:
+{
+  "organism_trends.Mesofauna&Wald&Abundanz": {},
+  "organism_trends.Mikrofauna&Boden&Abundanz": {},
+  "organism_trends.Mikrofauna&Boden&Artenzahl": {},
+  "organism_trends.Mikrofauna&Wald&Abundanz": {},
+  "organism_trends.Mikrofauna&Wald&Artenzahl": {},
+  "organism_trends.Pflanzen&AgrarOffen&Abundanz": {},
+  "organism_trends.Pflanzen&Boden&Abundanz": {},
+  "organism_trends.Pflanzen&Urban&Artenzahl": {},
+  "organism_trends.Pflanzen&Wald&Abundanz": {
+    "(('Trend', 'negative'),)": {
+      "(('Trend', 'negative'),)": 5,
+      "UNDETECTED": 1
+    },
+    "(('Trend', 'no'),)": {
+      "(('Trend', 'no'),)": 3,
+      "UNDETECTED": 1
+    },
+    "(('Trend', 'positive to negative'),)": {
+      "UNDETECTED": 1
+    },
+    "(('Trend', 'positive'),)": {
+      "(('Trend', 'positive'),)": 4,
+      "UNDETECTED": 7
+    },
+    "UNASSIGNABLE": {
+      "(('Trend', 'negative to positive'),)": 2,
+      "(('Trend', 'negative'),)": 7,
+      "(('Trend', 'no'),)": 2,
+      "(('Trend', 'positive'),)": 3
+    }
+  },
+  "organism_trends.Pflanzen&Wald&Artenzahl": {
+    "(('Trend', 'negative'),)": {
+      "(('Trend', 'negative'),)": 7
+    },
+    "(('Trend', 'no'),)": {
+      "UNDETECTED": 6
+    },
+    "(('Trend', 'positive to negative'),)": {
+      "UNDETECTED": 1
+    },
+    "(('Trend', 'positive'),)": {
+      "(('Trend', 'positive'),)": 8,
+      "UNDETECTED": 2
+    },
+    "UNASSIGNABLE": {
+      "(('Trend', 'negative'),)": 2,
+      "(('Trend', 'positive'),)": 2
+    }
+  },
+  "organism_trends.Pflanzen&Wald&ENS": {},
+  "organism_trends.Pilze_Flechten&Wald&Abundanz": {
+    "(('Trend', 'positive'),)": {
+      "(('Trend', 'positive'),)": 1
+    }
+  },
+  "organism_trends.Pilze_Flechten&Wald&Artenzahl": {
+    "(('Trend', 'no'),)": {
+      "UNDETECTED": 1
+    },
+    "(('Trend', 'positive to negative'),)": {
+      "UNDETECTED": 1
+    },
+    "UNASSIGNABLE": {
+      "(('Trend', 'positive'),)": 1
+    }
+  },
+  "organism_trends.Pilze_Flechten&Wald&ENS": {},
+  "organism_trends.Wirbellose&Binnengewaesser&Abundanz": {},
+  "organism_trends.Wirbellose&Urban&Artenzahl": {},
+  "organism_trends.Wirbellose&Wald&Abundanz": {
+    "(('Trend', 'negative'),)": {
+      "(('Trend', 'negative'),)": 1
+    },
+    "(('Trend', 'no'),)": {
+      "(('Trend', 'no'),)": 1,
+      "UNDETECTED": 5
+    },
+    "(('Trend', 'positive'),)": {
+      "(('Trend', 'positive'),)": 1,
+      "UNDETECTED": 2
+    },
+    "UNASSIGNABLE": {
+      "(('Trend', 'negative'),)": 4,
+      "(('Trend', 'positive to negative'),)": 1,
+      "(('Trend', 'positive'),)": 2
+    }
+  },
+  "organism_trends.Wirbellose&Wald&Artenzahl": {
+    "(('Trend', 'negative'),)": {
+      "(('Trend', 'negative'),)": 1
+    },
+    "(('Trend', 'no'),)": {
+      "(('Trend', 'no'),)": 1,
+      "UNDETECTED": 1
+    },
+    "(('Trend', 'positive to negative'),)": {
+      "UNDETECTED": 1
+    },
+    "UNASSIGNABLE": {
+      "(('Trend', 'negative'),)": 1
+    }
+  },
+  "organism_trends.Wirbellose&Wald&ENS": {},
+  "organism_trends.Wirbeltiere&AgrarOffen&Abundanz": {},
+  "organism_trends.Wirbeltiere&Kueste&Abundanz": {},
+  "organism_trends.Wirbeltiere&Wald&Abundanz": {
+    "(('Trend', 'negative to positive'),)": {
+      "(('Trend', 'negative to positive'),)": 1,
+      "UNDETECTED": 8
+    },
+    "(('Trend', 'negative'),)": {
+      "(('Trend', 'negative'),)": 1
+    },
+    "(('Trend', 'no'),)": {
+      "(('Trend', 'no'),)": 1,
+      "UNDETECTED": 5
+    },
+    "(('Trend', 'positive to negative'),)": {
+      "UNDETECTED": 1
+    },
+    "(('Trend', 'positive'),)": {
+      "(('Trend', 'positive'),)": 7,
+      "UNDETECTED": 2
+    },
+    "UNASSIGNABLE": {
+      "(('Trend', 'negative to positive'),)": 1,
+      "(('Trend', 'negative'),)": 8,
+      "(('Trend', 'positive to negative'),)": 2,
+      "(('Trend', 'positive'),)": 9
+    }
+  },
+  "organism_trends.Wirbeltiere&Wald&Artenzahl": {
+    "(('Trend', 'negative to positive'),)": {
+      "UNDETECTED": 1
+    },
+    "UNASSIGNABLE": {
+      "(('Trend', 'negative'),)": 1
+    }
+  }
+}
+[2026-05-26 10:58:27,869][kibad_llm.hydra_callbacks.save_job_return_value.SaveJobReturnValueCallback][INFO] - Saving job_return in /home/arbi01/projects/kibad-llm/logs/477_organism_trends/evaluate/multiruns/2026-05-26_10-58-25/7/job_return_value.json
+[2026-05-26 10:58:27,869][kibad_llm.hydra_callbacks.save_job_return_value.SaveJobReturnValueCallback][INFO] - Saving job_return in /home/arbi01/projects/kibad-llm/logs/477_organism_trends/evaluate/multiruns/2026-05-26_10-58-25/7/job_return_value.md

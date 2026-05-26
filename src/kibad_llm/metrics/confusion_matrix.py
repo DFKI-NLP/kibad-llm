@@ -1,7 +1,9 @@
-"""Confusion-matrix metric built on shared tp/fp/fn state.
+"""Confusion-matrix metrics built on shared tp/fp/fn state.
 
 Classes:
     ConfusionMatrix: Build a confusion matrix from the shared tp/fp/fn entry state for one field.
+    ConfusionMatrixCollection: Build confusion matrices for multiple fields with optional field
+        discovery and grouped-field expansion.
 """
 
 from collections import defaultdict
@@ -12,6 +14,7 @@ from typing import Any
 import pandas as pd
 
 from kibad_llm.metrics.base import MetricWithTpFpFnEntries
+from kibad_llm.metrics.collection import MetricCollectionWithFieldDiscoveryAndGrouping
 
 logger = logging.getLogger(__name__)
 
@@ -133,3 +136,45 @@ class ConfusionMatrix(MetricWithTpFpFnEntries):
                 msg += f" for field '{self.field}'"
             logger.info(f"{msg}:\n{res_df_sorted.T.to_markdown()}")
         return res
+
+
+class ConfusionMatrixCollection(MetricCollectionWithFieldDiscoveryAndGrouping[ConfusionMatrix]):
+    """Build confusion matrices for multiple fields at once.
+
+    The collection lazily creates one `ConfusionMatrix` per field and inherits optional dynamic
+    field discovery plus grouped-field expansion from
+    `MetricCollectionWithFieldDiscoveryAndGrouping`. Nested dict-like fields can therefore be
+    expanded into generated field names such as `organism_trends.Amphibien&Wald` before each
+    per-field confusion matrix is updated.
+
+    Attributes:
+        fields: Explicit field names to evaluate, or `None` to discover them dynamically.
+        subfield_keys: Optional rules for expanding nested dict-like fields into generated fields.
+        subfield_values: Optional rules restricting which nested values are compared after
+            expansion.
+        metric_kwargs: Keyword arguments forwarded to the per-field `ConfusionMatrix` instances.
+    """
+
+    def __init__(
+        self,
+        **kwargs,
+    ) -> None:
+        """Initialize a multi-field confusion-matrix collection.
+
+        Keyword Args:
+            fields: Optional allowlist of fields to evaluate. If omitted, fields are discovered
+                from the union of keys present in each prediction/reference pair.
+            subfield_keys: Optional mapping describing how nested entries are split into generated
+                fields.
+            subfield_values: Optional mapping restricting which nested values are kept after field
+                expansion.
+            sort_fields: Whether to sort the fields in the output. Defaults to False.
+            show_as_markdown: Whether each per-field confusion matrix should be logged as a markdown
+                table when computed.
+            unassignable_label: Label used on the gold axis for false positives.
+            undetected_label: Label used on the prediction axis for false negatives.
+            flatten_dicts: Whether nested dictionaries should be flattened before comparison.
+            ignore_subfields: Optional subfields to ignore when hashing dictionary payloads.
+            ignore_missing_entries: Whether one-sided empty entries should be skipped.
+        """
+        super().__init__(metric_class=ConfusionMatrix, **kwargs)

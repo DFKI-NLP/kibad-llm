@@ -880,6 +880,11 @@
     <label for="plotRoundingPrecision"><strong>Rounding:</strong></label>
     <input id="plotRoundingPrecision" class="plot-number-input" type="number" min="0" max="6" step="1" value="2">
   </div>
+  <div id="plotConfusionMinLabelTotalRow" class="prediction-actions">
+    <label for="plotConfusionMinLabelTotal"><strong>Minimum label total:</strong></label>
+    <input id="plotConfusionMinLabelTotal" class="plot-number-input" type="number" min="0" step="1" value="3">
+    <span class="sort-status-hint">Hide labels whose displayed row or column total falls below this threshold.</span>
+  </div>
   <div id="plotTabsByRow" class="prediction-actions">
     <strong>Create tabs by:</strong>
     <button id="plotTabsByPrefixButton" class="prediction-action-button" type="button">prefix</button>
@@ -931,6 +936,7 @@
       plotGroupBarFields: new Set(),
       plotShortenLabels: true,
       plotRoundingPrecision: 0,
+      plotConfusionMinLabelTotal: 3,
       plotShowLegendOnce: true,
       exportOpaqueBackground: true,
       confusionTabsBy: "prediction_group",
@@ -978,6 +984,8 @@
     const plotTabsBySuffixButton = document.getElementById("plotTabsBySuffixButton");
     const plotShortenLabels = document.getElementById("plotShortenLabels");
     const plotRoundingPrecision = document.getElementById("plotRoundingPrecision");
+    const plotConfusionMinLabelTotalRow = document.getElementById("plotConfusionMinLabelTotalRow");
+    const plotConfusionMinLabelTotal = document.getElementById("plotConfusionMinLabelTotal");
     const plotTabsByRow = document.getElementById("plotTabsByRow");
     const plotConfusionTabsByRow = document.getElementById("plotConfusionTabsByRow");
     const confusionTabsByMetricFieldButton = document.getElementById("confusionTabsByMetricFieldButton");
@@ -2441,9 +2449,17 @@
       state.truncateEnabledColumns = getDefaultTruncateColumns(getCurrentPredictionColumns());
       renderPredictions();
     });
+    function isConfusionMatrixLikeMetricType(metricType) {
+      return metricType === "ConfusionMatrix" || metricType === "ConfusionMatrixCollection";
+    }
+
+    function getVisualizationMetricType(metricType) {
+      return isConfusionMatrixLikeMetricType(metricType) ? "ConfusionMatrix" : metricType;
+    }
+
     function renderPlotControls(metricType) {
-      const supportsConfusionStyleTabs =
-        metricType === "ConfusionMatrix" || metricType === "TpFpFnCollector";
+      const isConfusionMatrixLike = getVisualizationMetricType(metricType) === "ConfusionMatrix";
+      const supportsConfusionStyleTabs = isConfusionMatrixLike || metricType === "TpFpFnCollector";
       const isF1MicroMultipleFieldsMetric = metricType === "F1MicroMultipleFieldsMetric";
       const supportsGroupedBars =
         metricType === "ErrorCollector" || isF1MicroMultipleFieldsMetric;
@@ -2459,9 +2475,11 @@
       );
       plotShortenLabels.checked = state.plotShortenLabels;
       plotRoundingPrecision.value = String(state.plotRoundingPrecision);
+      plotConfusionMinLabelTotal.value = String(state.plotConfusionMinLabelTotal);
       plotShowLegendOnce.checked = state.plotShowLegendOnce;
       exportOpaqueBackground.checked = state.exportOpaqueBackground;
       plotTabsByRow.style.display = isF1MicroMultipleFieldsMetric ? "" : "none";
+      plotConfusionMinLabelTotalRow.style.display = isConfusionMatrixLike ? "" : "none";
       plotConfusionTabsByRow.style.display = supportsConfusionStyleTabs ? "" : "none";
       plotGroupBarsRow.style.display = supportsGroupedBars ? "" : "none";
       plotShowLegendOnceRow.style.display = "none";
@@ -2477,6 +2495,14 @@
       const clamped = Number.isFinite(parsed) ? Math.max(0, Math.min(6, parsed)) : 2;
       state.plotRoundingPrecision = clamped;
       plotRoundingPrecision.value = String(clamped);
+      renderEvaluations();
+    });
+
+    plotConfusionMinLabelTotal.addEventListener("change", () => {
+      const parsed = Number.parseInt(plotConfusionMinLabelTotal.value, 10);
+      const clamped = Number.isFinite(parsed) ? Math.max(0, parsed) : 3;
+      state.plotConfusionMinLabelTotal = clamped;
+      plotConfusionMinLabelTotal.value = String(clamped);
       renderEvaluations();
     });
 
@@ -4473,7 +4499,7 @@
     ) {
       const metricTypes = new Set(
         (evaluationContext?.experimentEvaluations || [])
-          .map((evaluation) => normalizeValue(evaluation?.jobReturnValue?.type).trim())
+          .map((evaluation) => getVisualizationMetricType(normalizeValue(evaluation?.jobReturnValue?.type).trim()))
           .filter(Boolean)
       );
       if (metricTypes.size > 1) {
@@ -4488,6 +4514,66 @@
 
     function formatRounded(value, precision) {
       return Number(value).toFixed(precision);
+    }
+
+    function getConfusionMatrixSourceRunDir(evaluation) {
+      return normalizeValue(evaluation?.sourceRunDir ?? evaluation?.runDir).trim();
+    }
+
+    function expandConfusionMatrixLikeEvaluation(evaluation) {
+      if (!evaluation || typeof evaluation !== "object") {
+        return [];
+      }
+
+      const metricType = normalizeValue(evaluation?.jobReturnValue?.type).trim();
+      if (metricType === "ConfusionMatrixCollection") {
+        const fieldMatrices = evaluation.data;
+        if (!fieldMatrices || typeof fieldMatrices !== "object" || Array.isArray(fieldMatrices)) {
+          return [];
+        }
+
+        const sourceRunDir = getConfusionMatrixSourceRunDir(evaluation);
+        const baseOverrides =
+          evaluation.overrides && typeof evaluation.overrides === "object" && !Array.isArray(evaluation.overrides)
+            ? evaluation.overrides
+            : {};
+
+        return Object.entries(fieldMatrices)
+          .filter(([, fieldMatrix]) => fieldMatrix && typeof fieldMatrix === "object" && !Array.isArray(fieldMatrix))
+          .map(([field, fieldMatrix]) => ({
+            ...evaluation,
+            runDir: sourceRunDir ? `${sourceRunDir}#${field}` : `confusion-field#${field}`,
+            sourceRunDir,
+            jobReturnValue: {
+              ...(evaluation.jobReturnValue || {}),
+              type: "ConfusionMatrix",
+            },
+            overrides: {
+              ...baseOverrides,
+              "metric.field": field,
+            },
+            data: fieldMatrix,
+          }));
+      }
+
+      return [
+        {
+          ...evaluation,
+          sourceRunDir: getConfusionMatrixSourceRunDir(evaluation),
+        },
+      ];
+    }
+
+    function normalizeConfusionMatrixLikeEvaluations(evaluations) {
+      return (evaluations || []).flatMap((evaluation) => expandConfusionMatrixLikeEvaluation(evaluation));
+    }
+
+    function countDistinctConfusionMatrixRuns(evaluations) {
+      return new Set(
+        (evaluations || [])
+          .map((evaluation) => getConfusionMatrixSourceRunDir(evaluation))
+          .filter(Boolean)
+      ).size;
     }
 
     function getConfusionMatrixTitle(experimentEvaluations, evalTabState) {
@@ -4559,6 +4645,75 @@
       }
 
       return { rows, cols, cells };
+    }
+
+    function filterConfusionMatrixAggregationByLabelTotal(aggregation, minLabelTotal) {
+      const threshold = Number.isFinite(minLabelTotal) ? Math.max(0, Number(minLabelTotal)) : 0;
+      if (!aggregation || threshold <= 0) {
+        return aggregation;
+      }
+
+      const { rows = [], cols = [], cells = new Map() } = aggregation;
+      let filteredRows = [...rows];
+      let filteredCols = [...cols];
+      let rowTotals = new Map();
+      let colTotals = new Map();
+
+      while (true) {
+        rowTotals = new Map(
+          filteredRows.map((row) => [
+            row,
+            filteredCols.reduce((sum, col) => sum + (cells.get(`${row}|#|${col}`)?.mean ?? 0), 0),
+          ])
+        );
+        colTotals = new Map(
+          filteredCols.map((col) => [
+            col,
+            filteredRows.reduce((sum, row) => sum + (cells.get(`${row}|#|${col}`)?.mean ?? 0), 0),
+          ])
+        );
+
+        const nextRows = filteredRows.filter((row) => (rowTotals.get(row) ?? 0) >= threshold);
+        const nextCols = filteredCols.filter((col) => (colTotals.get(col) ?? 0) >= threshold);
+        if (nextRows.length === filteredRows.length && nextCols.length === filteredCols.length) {
+          filteredRows = nextRows;
+          filteredCols = nextCols;
+          break;
+        }
+        filteredRows = nextRows;
+        filteredCols = nextCols;
+        if (!filteredRows.length || !filteredCols.length) {
+          break;
+        }
+      }
+
+      rowTotals = new Map(
+        filteredRows.map((row) => [
+          row,
+          filteredCols.reduce((sum, col) => sum + (cells.get(`${row}|#|${col}`)?.mean ?? 0), 0),
+        ])
+      );
+      colTotals = new Map(
+        filteredCols.map((col) => [
+          col,
+          filteredRows.reduce((sum, row) => sum + (cells.get(`${row}|#|${col}`)?.mean ?? 0), 0),
+        ])
+      );
+
+      const filteredCells = new Map();
+      for (const row of filteredRows) {
+        for (const col of filteredCols) {
+          const key = `${row}|#|${col}`;
+          filteredCells.set(key, cells.get(key) || { mean: 0, std: 0 });
+        }
+      }
+      return {
+        rows: filteredRows,
+        cols: filteredCols,
+        cells: filteredCells,
+        rowTotals,
+        colTotals,
+      };
     }
 
     function interpolateColor(startRgb, endRgb, t) {
@@ -4676,16 +4831,19 @@
     // the active prediction/evaluation grouping, while keeping different metric.field values separate.
     function buildConfusionTabMap(activeExperiment, plotGroups, experimentEvaluations, labelFields, evalTabState) {
       const tabMap = new Map();
+      const normalizedExperimentEvaluations = normalizeConfusionMatrixLikeEvaluations(experimentEvaluations);
       const groupEntries = plotGroups
         .map((group, index) => ({
           key: `group|#|${group.groupId}`,
           label: getGroupLabelForFields(group, labelFields, `group ${index + 1}`, displayPlotGroupFieldName),
-          evaluations: group.evaluations.filter((evaluation) => getEvaluationExperiment(evaluation) === activeExperiment),
+          evaluations: normalizeConfusionMatrixLikeEvaluations(
+            group.evaluations.filter((evaluation) => getEvaluationExperiment(evaluation) === activeExperiment)
+          ),
         }))
         .filter((entry) => entry.evaluations.length > 0);
 
       if (state.confusionTabsBy === "metric_field") {
-        for (const evaluation of experimentEvaluations) {
+        for (const evaluation of normalizedExperimentEvaluations) {
           const rawField = getEvaluationEffectiveValue(evaluation, "metric.field", evalTabState);
           const fieldLabel = rawField || "(missing metric.field)";
           if (!tabMap.has(fieldLabel)) {
@@ -5414,7 +5572,9 @@
 
         for (const key of sortedConfusionTabKeys) {
           const entry = confusionTabMap.get(key);
-          const evaluationCount = entry.plots.reduce((sum, plot) => sum + plot.evaluations.length, 0);
+          const evaluationCount = countDistinctConfusionMatrixRuns(
+            entry.plots.flatMap((plot) => plot.evaluations)
+          );
           const button = document.createElement("button");
           button.type = "button";
           button.className = "tab-button" + (key === state.activeEvalPlotTab ? " active" : "");
@@ -5432,7 +5592,10 @@
         grid.className = "plot-grid";
 
         for (const plotEntry of activeConfusionEntry.plots) {
-          const aggregation = getConfusionMatrixAggregation(plotEntry.evaluations);
+          const aggregation = filterConfusionMatrixAggregationByLabelTotal(
+            getConfusionMatrixAggregation(plotEntry.evaluations),
+            state.plotConfusionMinLabelTotal
+          );
           if (!aggregation.rows.length || !aggregation.cols.length) {
             continue;
           }
@@ -5457,7 +5620,7 @@
         if (!grid.childElementCount) {
           const msg = document.createElement("p");
           msg.className = "plot-empty";
-          msg.textContent = `No confusion matrix values found for ${activeConfusionEntry.label}.`;
+          msg.textContent = `No confusion matrix values found for ${activeConfusionEntry.label} with minimum label total ${state.plotConfusionMinLabelTotal}.`;
           evalPlotContent.appendChild(msg);
           return;
         }

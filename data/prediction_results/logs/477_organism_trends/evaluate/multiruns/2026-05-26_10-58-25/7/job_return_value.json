@@ -1,0 +1,152 @@
+{
+  "version": 2,
+  "type": "ConfusionMatrixCollection",
+  "data": {
+    "organism_trends.Pflanzen&Wald&Abundanz": {
+      "(('Trend', 'negative'),)": {
+        "(('Trend', 'negative'),)": 5,
+        "UNDETECTED": 1
+      },
+      "(('Trend', 'no'),)": {
+        "(('Trend', 'no'),)": 3,
+        "UNDETECTED": 1
+      },
+      "(('Trend', 'positive to negative'),)": {
+        "UNDETECTED": 1
+      },
+      "(('Trend', 'positive'),)": {
+        "(('Trend', 'positive'),)": 4,
+        "UNDETECTED": 7
+      },
+      "UNASSIGNABLE": {
+        "(('Trend', 'negative to positive'),)": 2,
+        "(('Trend', 'negative'),)": 7,
+        "(('Trend', 'no'),)": 2,
+        "(('Trend', 'positive'),)": 3
+      }
+    },
+    "organism_trends.Pflanzen&Wald&Artenzahl": {
+      "(('Trend', 'negative'),)": {
+        "(('Trend', 'negative'),)": 7
+      },
+      "(('Trend', 'no'),)": {
+        "UNDETECTED": 6
+      },
+      "(('Trend', 'positive to negative'),)": {
+        "UNDETECTED": 1
+      },
+      "(('Trend', 'positive'),)": {
+        "(('Trend', 'positive'),)": 8,
+        "UNDETECTED": 2
+      },
+      "UNASSIGNABLE": {
+        "(('Trend', 'negative'),)": 2,
+        "(('Trend', 'positive'),)": 2
+      }
+    },
+    "organism_trends.Pilze_Flechten&Wald&Abundanz": {
+      "(('Trend', 'positive'),)": {
+        "(('Trend', 'positive'),)": 1
+      }
+    },
+    "organism_trends.Pilze_Flechten&Wald&Artenzahl": {
+      "(('Trend', 'no'),)": {
+        "UNDETECTED": 1
+      },
+      "(('Trend', 'positive to negative'),)": {
+        "UNDETECTED": 1
+      },
+      "UNASSIGNABLE": {
+        "(('Trend', 'positive'),)": 1
+      }
+    },
+    "organism_trends.Wirbellose&Wald&Abundanz": {
+      "(('Trend', 'negative'),)": {
+        "(('Trend', 'negative'),)": 1
+      },
+      "(('Trend', 'no'),)": {
+        "(('Trend', 'no'),)": 1,
+        "UNDETECTED": 5
+      },
+      "(('Trend', 'positive'),)": {
+        "(('Trend', 'positive'),)": 1,
+        "UNDETECTED": 2
+      },
+      "UNASSIGNABLE": {
+        "(('Trend', 'negative'),)": 4,
+        "(('Trend', 'positive to negative'),)": 1,
+        "(('Trend', 'positive'),)": 2
+      }
+    },
+    "organism_trends.Wirbellose&Wald&Artenzahl": {
+      "(('Trend', 'negative'),)": {
+        "(('Trend', 'negative'),)": 1
+      },
+      "(('Trend', 'no'),)": {
+        "(('Trend', 'no'),)": 1,
+        "UNDETECTED": 1
+      },
+      "(('Trend', 'positive to negative'),)": {
+        "UNDETECTED": 1
+      },
+      "UNASSIGNABLE": {
+        "(('Trend', 'negative'),)": 1
+      }
+    },
+    "organism_trends.Wirbeltiere&Wald&Abundanz": {
+      "(('Trend', 'negative to positive'),)": {
+        "(('Trend', 'negative to positive'),)": 1,
+        "UNDETECTED": 8
+      },
+      "(('Trend', 'negative'),)": {
+        "(('Trend', 'negative'),)": 1
+      },
+      "(('Trend', 'no'),)": {
+        "(('Trend', 'no'),)": 1,
+        "UNDETECTED": 5
+      },
+      "(('Trend', 'positive to negative'),)": {
+        "UNDETECTED": 1
+      },
+      "(('Trend', 'positive'),)": {
+        "(('Trend', 'positive'),)": 7,
+        "UNDETECTED": 2
+      },
+      "UNASSIGNABLE": {
+        "(('Trend', 'negative to positive'),)": 1,
+        "(('Trend', 'negative'),)": 8,
+        "(('Trend', 'positive to negative'),)": 2,
+        "(('Trend', 'positive'),)": 9
+      }
+    },
+    "organism_trends.Wirbeltiere&Wald&Artenzahl": {
+      "(('Trend', 'negative to positive'),)": {
+        "UNDETECTED": 1
+      },
+      "UNASSIGNABLE": {
+        "(('Trend', 'negative'),)": 1
+      }
+    }
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/380_organism_trends/2026-02-24_22-06-17/2026-02-25_10-50-12_127897/predictions.jsonl",
+      "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/380_organism_trends/2026-02-24_22-06-17/2026-02-25_10-50-12_127897/predictions.jsonl",
+      "time_pdf_conversion": 0.0029483099933713675,
+      "time_extraction": 7839.246186970966,
+      "time_start": 1772013012,
+      "time_end": 1772020961,
+      "commit_hash": "67cce08ad646158085c4b7fc53c8fa2216227125",
+      "branch": "build_schema_description/improve-newline-handling",
+      "is_dirty": false,
+      "slurm_job_id": "2573358"
+    },
+    "overrides": {
+      "name": "380_organism_trends",
+      "experiment/predict": "organism_trends_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-Wald-WVC",
+      "extractor/llm": "gemma3_27b_in_process",
+      "seed": "7331"
+    }
+  }
+}
