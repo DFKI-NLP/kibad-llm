@@ -5,7 +5,7 @@ Modules:
     confusion_matrix: Confusion-matrix metric based on tp/fp/fn entry tracking for single- and multi-field.
     f1: Single-field and multi-field micro-F1 metrics.
     errors: Error-collection metrics.
-    tpfpfn: Raw tp/fp/fn entry collector.
+    tpfpfn: Raw tp/fp/fn entry collector for single- and multi-field.
 
 Classes:
     MetricCollection: Aggregate multiple sub-metrics.
@@ -15,13 +15,14 @@ Classes:
     F1MicroMultipleFieldsMetric: Compute micro-F1 for multiple fields plus aggregates.
     ErrorCollector: Collect and count prediction errors.
     TpFpFnCollector: Return raw tp/fp/fn entries for inspection.
+    TpFpFnCollectorCollection: Return raw tp/fp/fn entries for multiple fields at once.
 """
 
 from .collection import MetricCollection
 from .confusion_matrix import ConfusionMatrix, ConfusionMatrixCollection
 from .errors import ErrorCollector
 from .f1 import F1MicroMultipleFieldsMetric, F1MicroSingleFieldMetric
-from .tpfpfn import TpFpFnCollector
+from .tpfpfn import TpFpFnCollector, TpFpFnCollectorCollection
 
 __all__ = [
     "MetricCollection",
@@ -31,4 +32,5 @@ __all__ = [
     "F1MicroSingleFieldMetric",
     "ErrorCollector",
     "TpFpFnCollector",
+    "TpFpFnCollectorCollection",
 ]

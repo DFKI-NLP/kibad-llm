@@ -45,7 +45,11 @@ def cfg_evaluate(tmp_path, metric_name) -> Iterator[DictConfig]:
         # this produces non-zero results
         if metric_name in ["confusion_matrix", "f1_micro_single_field", "tpfpfn_single_field"]:
             cfg.metric.field = "habitat"
-        elif metric_name in ["confusion_matrix_multiple_fields", "f1_micro"]:
+        elif metric_name in [
+            "confusion_matrix_multiple_fields",
+            "f1_micro",
+            "tpfpfn_multiple_fields",
+        ]:
             cfg.metric.fields = ["habitat", "landuse"]
         elif metric_name == "prediction_errors":
             pass  # no extra config needed
@@ -159,6 +163,57 @@ def test_evaluate(tmp_path, cfg_evaluate: DictConfig, metric_name: str) -> None:
                 "fn": [],
                 "fp": ["Binnengewässer und Auen"],
                 "tp": ["Küsten und Küstengewässer"],
+            },
+        }
+    elif metric_name == "tpfpfn_multiple_fields":
+        assert metric_type == "TpFpFnCollectorCollection"
+        assert metric_scores == {
+            "habitat": {
+                "25ABQZIH": {
+                    "fn": [],
+                    "fp": ["Agrar- und Offenland", "Boden"],
+                    "tp": [],
+                },
+                "25RIYD2C": {
+                    "fn": [],
+                    "fp": ["Wald"],
+                    "tp": ["Agrar- und Offenland"],
+                },
+                "7T8NZA5Q": {
+                    "fn": [],
+                    "fp": ["Binnengewässer und Auen"],
+                    "tp": ["Küsten und Küstengewässer"],
+                },
+                "BBDCY7DW": {
+                    "fn": [],
+                    "fp": ["Binnengewässer und Auen"],
+                    "tp": ["Küsten und Küstengewässer"],
+                },
+            },
+            "landuse": {
+                "25ABQZIH": {
+                    "fn": [],
+                    "fp": ["Bau", "Energieproduktion", "Landwirtschaft"],
+                    "tp": [],
+                },
+                "25RIYD2C": {
+                    "fn": ["Naturnahe und natürliche Flächen, die nicht genutzt werden"],
+                    "fp": [
+                        "Landwirtschaft",
+                        "Verkehr, Kommunikationsnetzwerke, Lagerung, Schutzwälle",
+                    ],
+                    "tp": [],
+                },
+                "7T8NZA5Q": {
+                    "fn": [],
+                    "fp": ["Erholung, Freizeit, Sport", "Fischerei und Aquakultur"],
+                    "tp": [],
+                },
+                "BBDCY7DW": {
+                    "fn": [],
+                    "fp": ["Industrie und Fertigung", "Wohngebiete"],
+                    "tp": [],
+                },
             },
         }
     else:

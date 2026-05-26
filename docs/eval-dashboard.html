@@ -885,6 +885,16 @@
     <input id="plotConfusionMinLabelTotal" class="plot-number-input" type="number" min="0" step="1" value="3">
     <span class="sort-status-hint">Hide labels whose displayed row or column total falls below this threshold.</span>
   </div>
+  <div id="plotTpFpFnMinLabelTotalRow" class="prediction-actions">
+    <label for="plotTpFpFnMinLabelTotal"><strong>Minimum label total:</strong></label>
+    <input id="plotTpFpFnMinLabelTotal" class="plot-number-input" type="number" min="0" step="1" value="3">
+    <span class="sort-status-hint">Hide label columns whose total TP/FP/FN count across the displayed evaluations falls below this threshold.</span>
+  </div>
+  <div id="plotTpFpFnMinDocumentTotalRow" class="prediction-actions">
+    <label for="plotTpFpFnMinDocumentTotal"><strong>Minimum document total:</strong></label>
+    <input id="plotTpFpFnMinDocumentTotal" class="plot-number-input" type="number" min="0" step="1" value="0">
+    <span class="sort-status-hint">Hide document rows whose total TP/FP/FN count across the displayed evaluations falls below this threshold.</span>
+  </div>
   <div id="plotTabsByRow" class="prediction-actions">
     <strong>Create tabs by:</strong>
     <button id="plotTabsByPrefixButton" class="prediction-action-button" type="button">prefix</button>
@@ -937,6 +947,8 @@
       plotShortenLabels: true,
       plotRoundingPrecision: 0,
       plotConfusionMinLabelTotal: 3,
+      plotTpFpFnMinLabelTotal: 10,
+      plotTpFpFnMinDocumentTotal: 3,
       plotShowLegendOnce: true,
       exportOpaqueBackground: true,
       confusionTabsBy: "prediction_group",
@@ -986,6 +998,10 @@
     const plotRoundingPrecision = document.getElementById("plotRoundingPrecision");
     const plotConfusionMinLabelTotalRow = document.getElementById("plotConfusionMinLabelTotalRow");
     const plotConfusionMinLabelTotal = document.getElementById("plotConfusionMinLabelTotal");
+    const plotTpFpFnMinLabelTotalRow = document.getElementById("plotTpFpFnMinLabelTotalRow");
+    const plotTpFpFnMinLabelTotal = document.getElementById("plotTpFpFnMinLabelTotal");
+    const plotTpFpFnMinDocumentTotalRow = document.getElementById("plotTpFpFnMinDocumentTotalRow");
+    const plotTpFpFnMinDocumentTotal = document.getElementById("plotTpFpFnMinDocumentTotal");
     const plotTabsByRow = document.getElementById("plotTabsByRow");
     const plotConfusionTabsByRow = document.getElementById("plotConfusionTabsByRow");
     const confusionTabsByMetricFieldButton = document.getElementById("confusionTabsByMetricFieldButton");
@@ -2448,18 +2464,22 @@
     truncateDefaultsButton.addEventListener("click", () => {
       state.truncateEnabledColumns = getDefaultTruncateColumns(getCurrentPredictionColumns());
       renderPredictions();
-    });
-    function isConfusionMatrixLikeMetricType(metricType) {
-      return metricType === "ConfusionMatrix" || metricType === "ConfusionMatrixCollection";
-    }
+    })
 
     function getVisualizationMetricType(metricType) {
-      return isConfusionMatrixLikeMetricType(metricType) ? "ConfusionMatrix" : metricType;
+      if (metricType === "ConfusionMatrixCollection") {
+        return "ConfusionMatrix";
+      }
+      if (metricType === "TpFpFnCollectorCollection") {
+        return "TpFpFnCollector";
+      }
+      return metricType;
     }
 
     function renderPlotControls(metricType) {
       const isConfusionMatrixLike = getVisualizationMetricType(metricType) === "ConfusionMatrix";
       const supportsConfusionStyleTabs = isConfusionMatrixLike || metricType === "TpFpFnCollector";
+      const isTpFpFnCollector = metricType === "TpFpFnCollector";
       const isF1MicroMultipleFieldsMetric = metricType === "F1MicroMultipleFieldsMetric";
       const supportsGroupedBars =
         metricType === "ErrorCollector" || isF1MicroMultipleFieldsMetric;
@@ -2476,10 +2496,14 @@
       plotShortenLabels.checked = state.plotShortenLabels;
       plotRoundingPrecision.value = String(state.plotRoundingPrecision);
       plotConfusionMinLabelTotal.value = String(state.plotConfusionMinLabelTotal);
+      plotTpFpFnMinLabelTotal.value = String(state.plotTpFpFnMinLabelTotal);
+      plotTpFpFnMinDocumentTotal.value = String(state.plotTpFpFnMinDocumentTotal);
       plotShowLegendOnce.checked = state.plotShowLegendOnce;
       exportOpaqueBackground.checked = state.exportOpaqueBackground;
       plotTabsByRow.style.display = isF1MicroMultipleFieldsMetric ? "" : "none";
       plotConfusionMinLabelTotalRow.style.display = isConfusionMatrixLike ? "" : "none";
+      plotTpFpFnMinLabelTotalRow.style.display = isTpFpFnCollector ? "" : "none";
+      plotTpFpFnMinDocumentTotalRow.style.display = isTpFpFnCollector ? "" : "none";
       plotConfusionTabsByRow.style.display = supportsConfusionStyleTabs ? "" : "none";
       plotGroupBarsRow.style.display = supportsGroupedBars ? "" : "none";
       plotShowLegendOnceRow.style.display = "none";
@@ -2503,6 +2527,22 @@
       const clamped = Number.isFinite(parsed) ? Math.max(0, parsed) : 3;
       state.plotConfusionMinLabelTotal = clamped;
       plotConfusionMinLabelTotal.value = String(clamped);
+      renderEvaluations();
+    });
+
+    plotTpFpFnMinLabelTotal.addEventListener("change", () => {
+      const parsed = Number.parseInt(plotTpFpFnMinLabelTotal.value, 10);
+      const clamped = Number.isFinite(parsed) ? Math.max(0, parsed) : 3;
+      state.plotTpFpFnMinLabelTotal = clamped;
+      plotTpFpFnMinLabelTotal.value = String(clamped);
+      renderEvaluations();
+    });
+
+    plotTpFpFnMinDocumentTotal.addEventListener("change", () => {
+      const parsed = Number.parseInt(plotTpFpFnMinDocumentTotal.value, 10);
+      const clamped = Number.isFinite(parsed) ? Math.max(0, parsed) : 0;
+      state.plotTpFpFnMinDocumentTotal = clamped;
+      plotTpFpFnMinDocumentTotal.value = String(clamped);
       renderEvaluations();
     });
 
@@ -4516,62 +4556,85 @@
       return Number(value).toFixed(precision);
     }
 
-    function getConfusionMatrixSourceRunDir(evaluation) {
+    function getMetricCollectionSourceRunDir(evaluation) {
       return normalizeValue(evaluation?.sourceRunDir ?? evaluation?.runDir).trim();
     }
 
-    function expandConfusionMatrixLikeEvaluation(evaluation) {
+    function expandMetricFieldCollectionEvaluation(
+      evaluation,
+      { collectionType, singularType, fallbackRunDirPrefix }
+    ) {
       if (!evaluation || typeof evaluation !== "object") {
         return [];
       }
 
       const metricType = normalizeValue(evaluation?.jobReturnValue?.type).trim();
-      if (metricType === "ConfusionMatrixCollection") {
-        const fieldMatrices = evaluation.data;
-        if (!fieldMatrices || typeof fieldMatrices !== "object" || Array.isArray(fieldMatrices)) {
+      const sourceRunDir = getMetricCollectionSourceRunDir(evaluation);
+      if (metricType === collectionType) {
+        const fieldEntries = evaluation.data;
+        if (!fieldEntries || typeof fieldEntries !== "object" || Array.isArray(fieldEntries)) {
           return [];
         }
 
-        const sourceRunDir = getConfusionMatrixSourceRunDir(evaluation);
         const baseOverrides =
           evaluation.overrides && typeof evaluation.overrides === "object" && !Array.isArray(evaluation.overrides)
             ? evaluation.overrides
             : {};
 
-        return Object.entries(fieldMatrices)
-          .filter(([, fieldMatrix]) => fieldMatrix && typeof fieldMatrix === "object" && !Array.isArray(fieldMatrix))
-          .map(([field, fieldMatrix]) => ({
+        return Object.entries(fieldEntries)
+          .filter(([, fieldEntry]) => fieldEntry && typeof fieldEntry === "object" && !Array.isArray(fieldEntry))
+          .map(([field, fieldEntry]) => ({
             ...evaluation,
-            runDir: sourceRunDir ? `${sourceRunDir}#${field}` : `confusion-field#${field}`,
+            runDir: sourceRunDir ? `${sourceRunDir}#${field}` : `${fallbackRunDirPrefix}#${field}`,
             sourceRunDir,
             jobReturnValue: {
               ...(evaluation.jobReturnValue || {}),
-              type: "ConfusionMatrix",
+              type: singularType,
             },
             overrides: {
               ...baseOverrides,
               "metric.field": field,
             },
-            data: fieldMatrix,
+            data: fieldEntry,
           }));
       }
 
       return [
         {
           ...evaluation,
-          sourceRunDir: getConfusionMatrixSourceRunDir(evaluation),
+          sourceRunDir,
         },
       ];
+    }
+
+    function expandConfusionMatrixLikeEvaluation(evaluation) {
+      return expandMetricFieldCollectionEvaluation(evaluation, {
+        collectionType: "ConfusionMatrixCollection",
+        singularType: "ConfusionMatrix",
+        fallbackRunDirPrefix: "confusion-field",
+      });
     }
 
     function normalizeConfusionMatrixLikeEvaluations(evaluations) {
       return (evaluations || []).flatMap((evaluation) => expandConfusionMatrixLikeEvaluation(evaluation));
     }
 
+    function expandTpFpFnLikeEvaluation(evaluation) {
+      return expandMetricFieldCollectionEvaluation(evaluation, {
+        collectionType: "TpFpFnCollectorCollection",
+        singularType: "TpFpFnCollector",
+        fallbackRunDirPrefix: "tpfpfn-field",
+      });
+    }
+
+    function normalizeTpFpFnLikeEvaluations(evaluations) {
+      return (evaluations || []).flatMap((evaluation) => expandTpFpFnLikeEvaluation(evaluation));
+    }
+
     function countDistinctConfusionMatrixRuns(evaluations) {
       return new Set(
         (evaluations || [])
-          .map((evaluation) => getConfusionMatrixSourceRunDir(evaluation))
+          .map((evaluation) => getMetricCollectionSourceRunDir(evaluation))
           .filter(Boolean)
       ).size;
     }
@@ -4708,6 +4771,85 @@
         }
       }
       return {
+        rows: filteredRows,
+        cols: filteredCols,
+        cells: filteredCells,
+        rowTotals,
+        colTotals,
+      };
+    }
+
+    function filterTpFpFnAggregationByTotals(aggregation, minLabelTotal, minDocumentTotal) {
+      const labelThreshold = Number.isFinite(minLabelTotal) ? Math.max(0, Number(minLabelTotal)) : 0;
+      const documentThreshold = Number.isFinite(minDocumentTotal) ? Math.max(0, Number(minDocumentTotal)) : 0;
+      if (!aggregation || (labelThreshold <= 0 && documentThreshold <= 0)) {
+        return aggregation;
+      }
+
+      const { rows = [], cols = [], cells = new Map() } = aggregation;
+      let filteredRows = [...rows];
+      let filteredCols = [...cols];
+      let rowTotals = new Map();
+      let colTotals = new Map();
+
+      while (true) {
+        rowTotals = new Map(
+          filteredRows.map((row) => [
+            row,
+            filteredCols.reduce((sum, col) => sum + (cells.get(`${row}|#|${col}`)?.presentCount ?? 0), 0),
+          ])
+        );
+        colTotals = new Map(
+          filteredCols.map((col) => [
+            col,
+            filteredRows.reduce((sum, row) => sum + (cells.get(`${row}|#|${col}`)?.presentCount ?? 0), 0),
+          ])
+        );
+
+        const nextRows = filteredRows.filter((row) => (rowTotals.get(row) ?? 0) >= documentThreshold);
+        const nextCols = filteredCols.filter((col) => (colTotals.get(col) ?? 0) >= labelThreshold);
+        if (nextRows.length === filteredRows.length && nextCols.length === filteredCols.length) {
+          filteredRows = nextRows;
+          filteredCols = nextCols;
+          break;
+        }
+        filteredRows = nextRows;
+        filteredCols = nextCols;
+        if (!filteredRows.length || !filteredCols.length) {
+          break;
+        }
+      }
+
+      rowTotals = new Map(
+        filteredRows.map((row) => [
+          row,
+          filteredCols.reduce((sum, col) => sum + (cells.get(`${row}|#|${col}`)?.presentCount ?? 0), 0),
+        ])
+      );
+      colTotals = new Map(
+        filteredCols.map((col) => [
+          col,
+          filteredRows.reduce((sum, row) => sum + (cells.get(`${row}|#|${col}`)?.presentCount ?? 0), 0),
+        ])
+      );
+
+      const filteredCells = new Map();
+      for (const row of filteredRows) {
+        for (const col of filteredCols) {
+          const key = `${row}|#|${col}`;
+          filteredCells.set(
+            key,
+            cells.get(key) || {
+              rowStates: [],
+              counts: { tp: 0, fp: 0, fn: 0, empty: 0 },
+              presentCount: 0,
+            }
+          );
+        }
+      }
+
+      return {
+        ...aggregation,
         rows: filteredRows,
         cols: filteredCols,
         cells: filteredCells,
@@ -5051,17 +5193,18 @@
 
     function buildTpFpFnTabMap(plotGroups, experimentEvaluations, labelFields, evalTabState) {
       const tabMap = new Map();
+      const normalizedExperimentEvaluations = normalizeTpFpFnLikeEvaluations(experimentEvaluations);
 
       const groupEntries = plotGroups
         .map((group, index) => ({
           key: `group|#|${group.groupId}`,
           label: getGroupLabelForFields(group, labelFields, `group ${index + 1}`, displayPlotGroupFieldName),
-          evaluations: group.evaluations,
+          evaluations: normalizeTpFpFnLikeEvaluations(group.evaluations),
         }))
         .filter((entry) => entry.evaluations.length > 0);
 
       if (state.confusionTabsBy === "metric_field") {
-        for (const evaluation of experimentEvaluations) {
+        for (const evaluation of normalizedExperimentEvaluations) {
           const rawField = getEvaluationEffectiveValue(evaluation, "metric.field", evalTabState);
           const fieldLabel = rawField || "(missing metric.field)";
           if (!tabMap.has(fieldLabel)) {
@@ -5672,7 +5815,11 @@
         grid.className = "plot-grid";
 
         for (const plotEntry of activeEntry.plots) {
-          const aggregation = getTpFpFnCombinedAggregation(plotEntry.evaluations);
+          const aggregation = filterTpFpFnAggregationByTotals(
+            getTpFpFnCombinedAggregation(plotEntry.evaluations),
+            state.plotTpFpFnMinLabelTotal,
+            state.plotTpFpFnMinDocumentTotal
+          );
           if (!aggregation.rows.length || !aggregation.cols.length) {
             continue;
           }
@@ -5695,7 +5842,7 @@
         if (!grid.childElementCount) {
           const msg = document.createElement("p");
           msg.className = "plot-empty";
-          msg.textContent = `No TP/FP/FN values found for ${activeEntry.label}.`;
+          msg.textContent = `No TP/FP/FN values found for ${activeEntry.label} with minimum label total ${state.plotTpFpFnMinLabelTotal} and minimum document total ${state.plotTpFpFnMinDocumentTotal}.`;
           evalPlotContent.appendChild(msg);
           return;
         }

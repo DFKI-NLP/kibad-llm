@@ -1,0 +1,7772 @@
+{
+  "version": 2,
+  "type": "TpFpFnCollectorCollection",
+  "data": {
+    "habitat": {
+      "QGF2WV3C": {
+        "tp": [
+          "Agrar- und Offenland"
+        ],
+        "fp": [
+          "Wald"
+        ],
+        "fn": []
+      },
+      "4YXRYRJC": {
+        "tp": [
+          "Agrar- und Offenland",
+          "Binnengewässer und Auen",
+          "Boden",
+          "Küsten und Küstengewässer",
+          "Urbane Räume",
+          "Wald"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "2P53UVJA": {
+        "tp": [
+          "Agrar- und Offenland",
+          "Binnengewässer und Auen",
+          "Boden",
+          "Küsten und Küstengewässer",
+          "Urbane Räume",
+          "Wald"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "4JF8F3WL": {
+        "tp": [
+          "Agrar- und Offenland",
+          "Binnengewässer und Auen",
+          "Wald"
+        ],
+        "fp": [],
+        "fn": [
+          "Boden",
+          "Urbane Räume"
+        ]
+      },
+      "UGNPXL8B": {
+        "tp": [
+          "Agrar- und Offenland"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "HNT6RCEA": {
+        "tp": [
+          "Agrar- und Offenland"
+        ],
+        "fp": [],
+        "fn": [
+          "Boden"
+        ]
+      },
+      "VQT78VA5": {
+        "tp": [
+          "Wald"
+        ],
+        "fp": [],
+        "fn": [
+          "Binnengewässer und Auen"
+        ]
+      },
+      "7DSY6RMR": {
+        "tp": [
+          "Küsten und Küstengewässer"
+        ],
+        "fp": [
+          "Binnengewässer und Auen"
+        ],
+        "fn": []
+      },
+      "8UVBVFHS": {
+        "tp": [
+          "Agrar- und Offenland",
+          "Binnengewässer und Auen",
+          "Boden",
+          "Wald"
+        ],
+        "fp": [
+          "Küsten und Küstengewässer",
+          "Urbane Räume"
+        ],
+        "fn": []
+      },
+      "6CMGEZPD": {
+        "tp": [
+          "Binnengewässer und Auen",
+          "Küsten und Küstengewässer"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "3E8X2AK3": {
+        "tp": [
+          "Agrar- und Offenland",
+          "Binnengewässer und Auen",
+          "Boden",
+          "Küsten und Küstengewässer",
+          "Wald"
+        ],
+        "fp": [],
+        "fn": [
+          "Urbane Räume"
+        ]
+      },
+      "7T8NZA5Q": {
+        "tp": [
+          "Küsten und Küstengewässer"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "WW9EZUVE": {
+        "tp": [
+          "Agrar- und Offenland"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "885FDL5Z": {
+        "tp": [
+          "Agrar- und Offenland",
+          "Boden"
+        ],
+        "fp": [
+          "Binnengewässer und Auen",
+          "Urbane Räume",
+          "Wald"
+        ],
+        "fn": []
+      },
+      "3Z5BFIBL": {
+        "tp": [
+          "Küsten und Küstengewässer"
+        ],
+        "fp": [
+          "Boden"
+        ],
+        "fn": []
+      },
+      "57CBE476": {
+        "tp": [
+          "Binnengewässer und Auen"
+        ],
+        "fp": [
+          "Agrar- und Offenland"
+        ],
+        "fn": []
+      },
+      "8QKB2BJE": {
+        "tp": [
+          "Agrar- und Offenland",
+          "Binnengewässer und Auen"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "6DCMK7GA": {
+        "tp": [
+          "Agrar- und Offenland"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "Z6CEAMK4": {
+        "tp": [
+          "Binnengewässer und Auen"
+        ],
+        "fp": [
+          "Agrar- und Offenland"
+        ],
+        "fn": []
+      },
+      "ZS59ID9J": {
+        "tp": [
+          "Binnengewässer und Auen"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "BMTEN2FG": {
+        "tp": [
+          "Agrar- und Offenland"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "46RX4AEN": {
+        "tp": [
+          "Agrar- und Offenland",
+          "Binnengewässer und Auen",
+          "Küsten und Küstengewässer",
+          "Urbane Räume",
+          "Wald"
+        ],
+        "fp": [],
+        "fn": [
+          "Boden"
+        ]
+      },
+      "3RSTTAEZ": {
+        "tp": [
+          "Küsten und Küstengewässer"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "8GEYSUXR": {
+        "tp": [
+          "Küsten und Küstengewässer"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "FG3YVDCZ": {
+        "tp": [
+          "Küsten und Küstengewässer"
+        ],
+        "fp": [
+          "Binnengewässer und Auen"
+        ],
+        "fn": []
+      },
+      "ZQ329JQ6": {
+        "tp": [
+          "Küsten und Küstengewässer"
+        ],
+        "fp": [
+          "Binnengewässer und Auen"
+        ],
+        "fn": []
+      },
+      "LY4P94Q4": {
+        "tp": [
+          "Küsten und Küstengewässer"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "2E9XWUUE": {
+        "tp": [
+          "Küsten und Küstengewässer"
+        ],
+        "fp": [
+          "Binnengewässer und Auen"
+        ],
+        "fn": []
+      },
+      "QR5QGMTI": {
+        "tp": [
+          "Binnengewässer und Auen"
+        ],
+        "fp": [
+          "Agrar- und Offenland"
+        ],
+        "fn": []
+      },
+      "XU5H8QJI": {
+        "tp": [
+          "Binnengewässer und Auen"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "8Q86MQJE": {
+        "tp": [
+          "Agrar- und Offenland"
+        ],
+        "fp": [
+          "Binnengewässer und Auen"
+        ],
+        "fn": []
+      },
+      "8ZESW42A": {
+        "tp": [
+          "Küsten und Küstengewässer"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "4Z67G9T5": {
+        "tp": [
+          "Küsten und Küstengewässer"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "N82RZ7WL": {
+        "tp": [
+          "Küsten und Küstengewässer"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "2RXMDX8I": {
+        "tp": [
+          "Agrar- und Offenland"
+        ],
+        "fp": [
+          "Binnengewässer und Auen",
+          "Urbane Räume",
+          "Wald"
+        ],
+        "fn": []
+      },
+      "84QQ9F5S": {
+        "tp": [
+          "Binnengewässer und Auen",
+          "Küsten und Küstengewässer"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "6D23L7B5": {
+        "tp": [
+          "Agrar- und Offenland",
+          "Boden"
+        ],
+        "fp": [
+          "Binnengewässer und Auen",
+          "Küsten und Küstengewässer",
+          "Urbane Räume"
+        ],
+        "fn": []
+      },
+      "TAXBZ8G5": {
+        "tp": [
+          "Wald"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "6BKNRKUA": {
+        "tp": [
+          "Binnengewässer und Auen"
+        ],
+        "fp": [
+          "Wald"
+        ],
+        "fn": []
+      },
+      "3LGPK6BL": {
+        "tp": [
+          "Binnengewässer und Auen"
+        ],
+        "fp": [
+          "Wald"
+        ],
+        "fn": [
+          "Boden"
+        ]
+      },
+      "57ZZ3GDF": {
+        "tp": [
+          "Küsten und Küstengewässer"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "6792YBL7": {
+        "tp": [
+          "Agrar- und Offenland"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "3TWLQG7F": {
+        "tp": [
+          "Küsten und Küstengewässer"
+        ],
+        "fp": [
+          "Binnengewässer und Auen"
+        ],
+        "fn": []
+      },
+      "8HFL2MPL": {
+        "tp": [
+          "Küsten und Küstengewässer"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "5SIYLM9W": {
+        "tp": [
+          "Agrar- und Offenland"
+        ],
+        "fp": [
+          "Binnengewässer und Auen",
+          "Boden",
+          "Küsten und Küstengewässer",
+          "Urbane Räume",
+          "Wald"
+        ],
+        "fn": []
+      },
+      "6G2THNDX": {
+        "tp": [
+          "Binnengewässer und Auen"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "NGFBPJCG": {
+        "tp": [
+          "Küsten und Küstengewässer"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "XMIP837H": {
+        "tp": [
+          "Küsten und Küstengewässer"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "42ELXZ2H": {
+        "tp": [
+          "Agrar- und Offenland"
+        ],
+        "fp": [
+          "Wald"
+        ],
+        "fn": []
+      },
+      "XG99Q5DJ": {
+        "tp": [
+          "Binnengewässer und Auen"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "XQ7DW4VS": {
+        "tp": [
+          "Wald"
+        ],
+        "fp": [
+          "Agrar- und Offenland",
+          "Binnengewässer und Auen"
+        ],
+        "fn": []
+      },
+      "29Q84X7V": {
+        "tp": [
+          "Agrar- und Offenland"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "NZ7ETG2K": {
+        "tp": [
+          "Küsten und Küstengewässer"
+        ],
+        "fp": [
+          "Binnengewässer und Auen"
+        ],
+        "fn": []
+      },
+      "4FCS62W5": {
+        "tp": [
+          "Küsten und Küstengewässer"
+        ],
+        "fp": [
+          "Binnengewässer und Auen"
+        ],
+        "fn": []
+      },
+      "G7H698R6": {
+        "tp": [
+          "Wald"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "V477VCE6": {
+        "tp": [
+          "Küsten und Küstengewässer"
+        ],
+        "fp": [
+          "Binnengewässer und Auen"
+        ],
+        "fn": []
+      },
+      "5TMUACTH": {
+        "tp": [
+          "Agrar- und Offenland"
+        ],
+        "fp": [
+          "Binnengewässer und Auen",
+          "Boden",
+          "Wald"
+        ],
+        "fn": []
+      },
+      "2FDHAHAR": {
+        "tp": [
+          "Küsten und Küstengewässer"
+        ],
+        "fp": [
+          "Binnengewässer und Auen"
+        ],
+        "fn": []
+      },
+      "KJ7JVAEW": {
+        "tp": [
+          "Küsten und Küstengewässer"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "ASEHVK97": {
+        "tp": [
+          "Küsten und Küstengewässer"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "4BAX6GKK": {
+        "tp": [
+          "Agrar- und Offenland"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "25RIYD2C": {
+        "tp": [
+          "Agrar- und Offenland"
+        ],
+        "fp": [
+          "Wald"
+        ],
+        "fn": []
+      },
+      "6332SBW4": {
+        "tp": [
+          "Binnengewässer und Auen"
+        ],
+        "fp": [
+          "Agrar- und Offenland",
+          "Wald"
+        ],
+        "fn": []
+      },
+      "64C65W5I": {
+        "tp": [
+          "Küsten und Küstengewässer"
+        ],
+        "fp": [
+          "Binnengewässer und Auen"
+        ],
+        "fn": []
+      },
+      "49Z7RPDP": {
+        "tp": [
+          "Agrar- und Offenland"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "SVXF36H4": {
+        "tp": [
+          "Wald"
+        ],
+        "fp": [
+          "Agrar- und Offenland"
+        ],
+        "fn": []
+      },
+      "3WEEGFGW": {
+        "tp": [
+          "Agrar- und Offenland"
+        ],
+        "fp": [
+          "Binnengewässer und Auen",
+          "Boden",
+          "Küsten und Küstengewässer",
+          "Wald"
+        ],
+        "fn": []
+      },
+      "84P9CN4J": {
+        "tp": [
+          "Agrar- und Offenland"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "4ZGN9AHA": {
+        "tp": [
+          "Agrar- und Offenland"
+        ],
+        "fp": [
+          "Binnengewässer und Auen",
+          "Boden",
+          "Wald"
+        ],
+        "fn": []
+      },
+      "5CZNRP7X": {
+        "tp": [
+          "Küsten und Küstengewässer"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "F582S9H8": {
+        "tp": [
+          "Agrar- und Offenland"
+        ],
+        "fp": [
+          "Wald"
+        ],
+        "fn": []
+      },
+      "2EUNPHDZ": {
+        "tp": [
+          "Küsten und Küstengewässer"
+        ],
+        "fp": [
+          "Agrar- und Offenland",
+          "Binnengewässer und Auen",
+          "Wald"
+        ],
+        "fn": []
+      },
+      "64BS3HZ3": {
+        "tp": [
+          "Binnengewässer und Auen"
+        ],
+        "fp": [
+          "Wald"
+        ],
+        "fn": []
+      },
+      "42STMMQA": {
+        "tp": [
+          "Agrar- und Offenland"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "7AYVH7FI": {
+        "tp": [
+          "Küsten und Küstengewässer"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "6RLMM8BQ": {
+        "tp": [
+          "Agrar- und Offenland"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "TTJ3S6P9": {
+        "tp": [
+          "Agrar- und Offenland"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "5LC5W7KF": {
+        "tp": [
+          "Wald"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "KXP8FP94": {
+        "tp": [
+          "Küsten und Küstengewässer"
+        ],
+        "fp": [
+          "Binnengewässer und Auen"
+        ],
+        "fn": []
+      },
+      "PBV2BUX6": {
+        "tp": [],
+        "fp": [
+          "Agrar- und Offenland",
+          "Boden",
+          "Wald"
+        ],
+        "fn": []
+      },
+      "38EBGVBF": {
+        "tp": [],
+        "fp": [
+          "Boden"
+        ],
+        "fn": [
+          "Agrar- und Offenland"
+        ]
+      },
+      "25ABQZIH": {
+        "tp": [],
+        "fp": [
+          "Boden"
+        ],
+        "fn": []
+      },
+      "5I8A3W7U": {
+        "tp": [],
+        "fp": [
+          "Binnengewässer und Auen",
+          "Wald"
+        ],
+        "fn": [
+          "Agrar- und Offenland"
+        ]
+      },
+      "PMJGMLUG": {
+        "tp": [],
+        "fp": [
+          "Boden"
+        ],
+        "fn": [
+          "Agrar- und Offenland",
+          "Wald"
+        ]
+      },
+      "DFWI5DCP": {
+        "tp": [],
+        "fp": [
+          "Binnengewässer und Auen",
+          "Wald"
+        ],
+        "fn": [
+          "Agrar- und Offenland"
+        ]
+      },
+      "7EUNQX3Z": {
+        "tp": [],
+        "fp": [
+          "Urbane Räume",
+          "Wald"
+        ],
+        "fn": [
+          "Binnengewässer und Auen"
+        ]
+      },
+      "3439JHQD": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Agrar- und Offenland",
+          "Binnengewässer und Auen",
+          "Boden",
+          "Urbane Räume",
+          "Wald"
+        ]
+      },
+      "8PFJ2KHU": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Boden"
+        ]
+      },
+      "PW2PNF55": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Küsten und Küstengewässer"
+        ]
+      },
+      "BE56TLWA": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Urbane Räume"
+        ]
+      },
+      "BBDCY7DW": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Küsten und Küstengewässer"
+        ]
+      },
+      "G4VAFJZH": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Agrar- und Offenland"
+        ]
+      },
+      "6JGB9KZ2": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Agrar- und Offenland"
+        ]
+      },
+      "33MV2F7X": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Boden"
+        ]
+      },
+      "DAI3VR9M": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Küsten und Küstengewässer"
+        ]
+      },
+      "2RGQT8TU": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Agrar- und Offenland"
+        ]
+      },
+      "V6SVVBUH": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Binnengewässer und Auen"
+        ]
+      },
+      "2NJD9Y9T": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Küsten und Küstengewässer"
+        ]
+      },
+      "V2BVMBPF": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Binnengewässer und Auen"
+        ]
+      },
+      "5XHDHCIQ": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Agrar- und Offenland"
+        ]
+      }
+    },
+    "biodiversity_level": {
+      "5LC5W7KF": {
+        "tp": [
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fp": [
+          "Artenvielfalt",
+          "Strukturelle Diversität"
+        ],
+        "fn": []
+      },
+      "2P53UVJA": {
+        "tp": [
+          "Artenvielfalt",
+          "Genetische Diversität",
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fp": [],
+        "fn": [
+          "Funktionelle Diversität",
+          "Habitatdiversität",
+          "Strukturelle Diversität"
+        ]
+      },
+      "6332SBW4": {
+        "tp": [
+          "Habitatdiversität"
+        ],
+        "fp": [
+          "Artenvielfalt",
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fn": []
+      },
+      "Z6CEAMK4": {
+        "tp": [
+          "Artenvielfalt",
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fp": [
+          "Strukturelle Diversität"
+        ],
+        "fn": []
+      },
+      "46RX4AEN": {
+        "tp": [
+          "Artenvielfalt",
+          "Habitatdiversität",
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fp": [],
+        "fn": [
+          "Funktionelle Diversität",
+          "Genetische Diversität",
+          "Phylogenetische Diversität",
+          "Strukturelle Diversität"
+        ]
+      },
+      "VQT78VA5": {
+        "tp": [
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "F582S9H8": {
+        "tp": [
+          "Artenvielfalt",
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "2NJD9Y9T": {
+        "tp": [
+          "Artenvielfalt",
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fp": [
+          "Funktionelle Diversität"
+        ],
+        "fn": []
+      },
+      "SVXF36H4": {
+        "tp": [
+          "Artenvielfalt"
+        ],
+        "fp": [
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fn": []
+      },
+      "NZ7ETG2K": {
+        "tp": [
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "57CBE476": {
+        "tp": [
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fp": [
+          "Artenvielfalt"
+        ],
+        "fn": [
+          "Habitatdiversität"
+        ]
+      },
+      "3Z5BFIBL": {
+        "tp": [
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fp": [
+          "Artenvielfalt"
+        ],
+        "fn": []
+      },
+      "QR5QGMTI": {
+        "tp": [
+          "Artenvielfalt",
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "6RLMM8BQ": {
+        "tp": [
+          "Artenvielfalt"
+        ],
+        "fp": [
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fn": []
+      },
+      "4Z67G9T5": {
+        "tp": [
+          "Artenvielfalt"
+        ],
+        "fp": [
+          "Funktionelle Diversität",
+          "Habitatdiversität",
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fn": []
+      },
+      "8ZESW42A": {
+        "tp": [
+          "Artenvielfalt",
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "2FDHAHAR": {
+        "tp": [
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fp": [],
+        "fn": [
+          "Artenvielfalt"
+        ]
+      },
+      "N82RZ7WL": {
+        "tp": [
+          "Artenvielfalt"
+        ],
+        "fp": [
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fn": []
+      },
+      "6BKNRKUA": {
+        "tp": [
+          "Artenvielfalt"
+        ],
+        "fp": [
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fn": []
+      },
+      "8UVBVFHS": {
+        "tp": [
+          "Artenvielfalt"
+        ],
+        "fp": [
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fn": [
+          "Habitatdiversität"
+        ]
+      },
+      "8GEYSUXR": {
+        "tp": [
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fp": [
+          "Artenvielfalt"
+        ],
+        "fn": []
+      },
+      "DFWI5DCP": {
+        "tp": [
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fp": [
+          "Funktionelle Diversität"
+        ],
+        "fn": [
+          "Habitatdiversität"
+        ]
+      },
+      "3TWLQG7F": {
+        "tp": [
+          "Artenvielfalt"
+        ],
+        "fp": [
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fn": []
+      },
+      "6G2THNDX": {
+        "tp": [
+          "Artenvielfalt",
+          "Habitatdiversität"
+        ],
+        "fp": [
+          "Strukturelle Diversität",
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fn": []
+      },
+      "885FDL5Z": {
+        "tp": [
+          "Artenvielfalt",
+          "Genetische Diversität"
+        ],
+        "fp": [
+          "Funktionelle Diversität",
+          "Habitatdiversität",
+          "Strukturelle Diversität",
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fn": []
+      },
+      "WW9EZUVE": {
+        "tp": [
+          "Artenvielfalt"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "3LGPK6BL": {
+        "tp": [
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fp": [
+          "Artenvielfalt",
+          "Funktionelle Diversität"
+        ],
+        "fn": [
+          "Habitatdiversität"
+        ]
+      },
+      "4BAX6GKK": {
+        "tp": [
+          "Artenvielfalt"
+        ],
+        "fp": [
+          "Genetische Diversität",
+          "Habitatdiversität"
+        ],
+        "fn": []
+      },
+      "HNT6RCEA": {
+        "tp": [],
+        "fp": [
+          "Funktionelle Diversität",
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fn": [
+          "Artenvielfalt"
+        ]
+      },
+      "5TMUACTH": {
+        "tp": [],
+        "fp": [
+          "Artenvielfalt",
+          "Genetische Diversität",
+          "Habitatdiversität",
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fn": []
+      },
+      "84P9CN4J": {
+        "tp": [],
+        "fp": [
+          "Artenvielfalt",
+          "Habitatdiversität"
+        ],
+        "fn": []
+      },
+      "KXP8FP94": {
+        "tp": [],
+        "fp": [
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fn": []
+      },
+      "42STMMQA": {
+        "tp": [],
+        "fp": [
+          "Artenvielfalt",
+          "Habitatdiversität"
+        ],
+        "fn": []
+      },
+      "PBV2BUX6": {
+        "tp": [],
+        "fp": [
+          "Artenvielfalt",
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fn": []
+      },
+      "ZS59ID9J": {
+        "tp": [],
+        "fp": [
+          "Artenvielfalt",
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fn": []
+      },
+      "4ZGN9AHA": {
+        "tp": [],
+        "fp": [
+          "Artenvielfalt"
+        ],
+        "fn": []
+      },
+      "6D23L7B5": {
+        "tp": [],
+        "fp": [
+          "Artenvielfalt",
+          "Habitatdiversität",
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fn": []
+      },
+      "8HFL2MPL": {
+        "tp": [],
+        "fp": [
+          "Funktionelle Diversität"
+        ],
+        "fn": []
+      },
+      "7DSY6RMR": {
+        "tp": [],
+        "fp": [
+          "Artenvielfalt",
+          "Funktionelle Diversität",
+          "Habitatdiversität",
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fn": []
+      },
+      "2RXMDX8I": {
+        "tp": [],
+        "fp": [
+          "Artenvielfalt",
+          "Habitatdiversität",
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fn": []
+      },
+      "FG3YVDCZ": {
+        "tp": [],
+        "fp": [
+          "Artenvielfalt",
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fn": []
+      },
+      "2E9XWUUE": {
+        "tp": [],
+        "fp": [
+          "Artenvielfalt",
+          "Genetische Diversität",
+          "Habitatdiversität",
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fn": []
+      },
+      "LY4P94Q4": {
+        "tp": [],
+        "fp": [
+          "Artenvielfalt",
+          "Habitatdiversität",
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fn": [
+          "Strukturelle Diversität"
+        ]
+      },
+      "ZQ329JQ6": {
+        "tp": [],
+        "fp": [
+          "Artenvielfalt",
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fn": []
+      },
+      "84QQ9F5S": {
+        "tp": [],
+        "fp": [
+          "Artenvielfalt",
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fn": []
+      },
+      "3439JHQD": {
+        "tp": [],
+        "fp": [
+          "Artenvielfalt"
+        ],
+        "fn": []
+      },
+      "64BS3HZ3": {
+        "tp": [],
+        "fp": [
+          "Artenvielfalt",
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fn": []
+      },
+      "6792YBL7": {
+        "tp": [],
+        "fp": [
+          "Artenvielfalt",
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fn": []
+      },
+      "4JF8F3WL": {
+        "tp": [],
+        "fp": [
+          "Artenvielfalt"
+        ],
+        "fn": []
+      },
+      "UGNPXL8B": {
+        "tp": [],
+        "fp": [
+          "Artenvielfalt"
+        ],
+        "fn": [
+          "Zusammensetzung der Artengemeinschaft"
+        ]
+      },
+      "3RSTTAEZ": {
+        "tp": [],
+        "fp": [
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fn": []
+      },
+      "3WEEGFGW": {
+        "tp": [],
+        "fp": [
+          "Artenvielfalt",
+          "Genetische Diversität",
+          "Habitatdiversität",
+          "Strukturelle Diversität",
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fn": []
+      },
+      "7EUNQX3Z": {
+        "tp": [],
+        "fp": [
+          "Genetische Diversität",
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fn": []
+      },
+      "KJ7JVAEW": {
+        "tp": [],
+        "fp": [
+          "Artenvielfalt",
+          "Phylogenetische Diversität"
+        ],
+        "fn": [
+          "Genetische Diversität",
+          "Zusammensetzung der Artengemeinschaft"
+        ]
+      },
+      "3E8X2AK3": {
+        "tp": [],
+        "fp": [
+          "Artenvielfalt",
+          "Genetische Diversität",
+          "Habitatdiversität",
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fn": []
+      },
+      "ASEHVK97": {
+        "tp": [],
+        "fp": [
+          "Artenvielfalt",
+          "Strukturelle Diversität"
+        ],
+        "fn": [
+          "Genetische Diversität",
+          "Phylogenetische Diversität"
+        ]
+      },
+      "XG99Q5DJ": {
+        "tp": [],
+        "fp": [
+          "Artenvielfalt"
+        ],
+        "fn": []
+      },
+      "6DCMK7GA": {
+        "tp": [],
+        "fp": [
+          "Artenvielfalt",
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fn": []
+      },
+      "NGFBPJCG": {
+        "tp": [],
+        "fp": [
+          "Artenvielfalt"
+        ],
+        "fn": [
+          "Zusammensetzung der Artengemeinschaft"
+        ]
+      },
+      "XQ7DW4VS": {
+        "tp": [],
+        "fp": [
+          "Artenvielfalt"
+        ],
+        "fn": [
+          "Zusammensetzung der Artengemeinschaft"
+        ]
+      },
+      "G7H698R6": {
+        "tp": [],
+        "fp": [
+          "Artenvielfalt",
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fn": []
+      },
+      "25ABQZIH": {
+        "tp": [],
+        "fp": [
+          "Artenvielfalt",
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fn": []
+      },
+      "PMJGMLUG": {
+        "tp": [],
+        "fp": [
+          "Artenvielfalt",
+          "Funktionelle Diversität",
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fn": []
+      },
+      "V477VCE6": {
+        "tp": [],
+        "fp": [
+          "Artenvielfalt"
+        ],
+        "fn": [
+          "Zusammensetzung der Artengemeinschaft"
+        ]
+      },
+      "5I8A3W7U": {
+        "tp": [],
+        "fp": [
+          "Artenvielfalt",
+          "Habitatdiversität"
+        ],
+        "fn": []
+      },
+      "6CMGEZPD": {
+        "tp": [],
+        "fp": [
+          "Habitatdiversität",
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fn": []
+      },
+      "XMIP837H": {
+        "tp": [],
+        "fp": [
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fn": []
+      },
+      "5XHDHCIQ": {
+        "tp": [],
+        "fp": [
+          "Artenvielfalt",
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fn": []
+      },
+      "QGF2WV3C": {
+        "tp": [],
+        "fp": [
+          "Artenvielfalt",
+          "Habitatdiversität"
+        ],
+        "fn": []
+      },
+      "2EUNPHDZ": {
+        "tp": [],
+        "fp": [
+          "Artenvielfalt",
+          "Habitatdiversität",
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fn": []
+      },
+      "4YXRYRJC": {
+        "tp": [],
+        "fp": [
+          "Artenvielfalt",
+          "Habitatdiversität"
+        ],
+        "fn": []
+      },
+      "5SIYLM9W": {
+        "tp": [],
+        "fp": [
+          "Artenvielfalt",
+          "Funktionelle Diversität",
+          "Genetische Diversität",
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fn": []
+      },
+      "29Q84X7V": {
+        "tp": [],
+        "fp": [
+          "Artenvielfalt"
+        ],
+        "fn": []
+      },
+      "XU5H8QJI": {
+        "tp": [],
+        "fp": [
+          "Zusammensetzung der Artengemeinschaft"
+        ],
+        "fn": []
+      },
+      "6JGB9KZ2": {
+        "tp": [],
+        "fp": [
+          "Artenvielfalt"
+        ],
+        "fn": []
+      },
+      "25RIYD2C": {
+        "tp": [],
+        "fp": [
+          "Artenvielfalt"
+        ],
+        "fn": []
+      },
+      "49Z7RPDP": {
+        "tp": [],
+        "fp": [
+          "Artenvielfalt"
+        ],
+        "fn": []
+      },
+      "V2BVMBPF": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Artenvielfalt",
+          "Habitatdiversität"
+        ]
+      },
+      "BMTEN2FG": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Genetische Diversität"
+        ]
+      },
+      "8QKB2BJE": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Habitatdiversität"
+        ]
+      },
+      "V6SVVBUH": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Zusammensetzung der Artengemeinschaft"
+        ]
+      },
+      "TAXBZ8G5": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Zusammensetzung der Artengemeinschaft"
+        ]
+      }
+    },
+    "ecosystem_type.term": {
+      "25ABQZIH": {
+        "tp": [
+          "Hoch-, Zwischen- und Übergangsmoore",
+          "Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "N82RZ7WL": {
+        "tp": [
+          "Benthal der Ostsee"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "ZS59ID9J": {
+        "tp": [
+          "Stehende Gewässer"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "49Z7RPDP": {
+        "tp": [
+          "Äcker und Ackerbrachen"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "6G2THNDX": {
+        "tp": [
+          "Fließende Gewässer"
+        ],
+        "fp": [
+          "Bauwerke",
+          "Großseggenriede",
+          "Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent)",
+          "Röhrichte (ohne Brackwasserröhrichte)",
+          "Stehende Gewässer",
+          "Trockenrasen sowie Grünland trockener bis frischer Standorte",
+          "Wald- und Ufersäume, Staudenfluren"
+        ],
+        "fn": []
+      },
+      "6CMGEZPD": {
+        "tp": [
+          "Fließende Gewässer",
+          "Grundwasser und Höhlengewässer",
+          "Stehende Gewässer"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "8GEYSUXR": {
+        "tp": [
+          "Benthal der Nordsee"
+        ],
+        "fp": [
+          "Fels- und Steilküsten",
+          "Küstendünen"
+        ],
+        "fn": []
+      },
+      "TAXBZ8G5": {
+        "tp": [
+          "Nadel(Misch)Wälder und -Forste"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "XU5H8QJI": {
+        "tp": [
+          "Fließende Gewässer"
+        ],
+        "fp": [
+          "Stehende Gewässer"
+        ],
+        "fn": []
+      },
+      "VQT78VA5": {
+        "tp": [
+          "Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent)"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "QR5QGMTI": {
+        "tp": [
+          "Stehende Gewässer"
+        ],
+        "fp": [
+          "Fließende Gewässer",
+          "Äcker und Ackerbrachen"
+        ],
+        "fn": []
+      },
+      "XG99Q5DJ": {
+        "tp": [
+          "Stehende Gewässer"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "57CBE476": {
+        "tp": [
+          "Fließende Gewässer"
+        ],
+        "fp": [
+          "Wald- und Ufersäume, Staudenfluren"
+        ],
+        "fn": []
+      },
+      "64BS3HZ3": {
+        "tp": [
+          "Fließende Gewässer"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "DFWI5DCP": {
+        "tp": [
+          "Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "6BKNRKUA": {
+        "tp": [
+          "Fließende Gewässer"
+        ],
+        "fp": [
+          "Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent)",
+          "Wald- und Ufersäume, Staudenfluren"
+        ],
+        "fn": []
+      },
+      "6332SBW4": {
+        "tp": [
+          "Quellen (inklusive Quellabfluss (Krenal))"
+        ],
+        "fp": [
+          "Fließende Gewässer",
+          "Hoch-, Zwischen- und Übergangsmoore",
+          "Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent)",
+          "Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte"
+        ],
+        "fn": []
+      },
+      "2RXMDX8I": {
+        "tp": [
+          "Äcker und Ackerbrachen"
+        ],
+        "fp": [
+          "Fließende Gewässer",
+          "Großseggenriede",
+          "Röhrichte (ohne Brackwasserröhrichte)",
+          "Stehende Gewässer",
+          "Trockenrasen sowie Grünland trockener bis frischer Standorte",
+          "Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte"
+        ],
+        "fn": []
+      },
+      "LY4P94Q4": {
+        "tp": [
+          "Salzgrünland der Nordseeküste (Supralitoral)"
+        ],
+        "fp": [
+          "Sände, Sand-, Geröll- und Blockstrände"
+        ],
+        "fn": [
+          "Benthal der Nordsee",
+          "Küstendünen"
+        ]
+      },
+      "XQ7DW4VS": {
+        "tp": [
+          "Höhlen (einschließlich Stollen, Brunnenschächte etc.)"
+        ],
+        "fp": [
+          "Felsen, Block- und Schutthalden, Geröllfelder, offene Bereiche mit sandigem oder bindigem Substrat",
+          "Fließende Gewässer",
+          "Stehende Gewässer",
+          "Äcker und Ackerbrachen"
+        ],
+        "fn": [
+          "Bauwerke"
+        ]
+      },
+      "FG3YVDCZ": {
+        "tp": [
+          "Pelagial der Nordsee"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "7DSY6RMR": {
+        "tp": [
+          "Pelagial der Ostsee"
+        ],
+        "fp": [
+          "Benthal der Ostsee"
+        ],
+        "fn": []
+      },
+      "3RSTTAEZ": {
+        "tp": [
+          "Pelagial der Nordsee"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "G7H698R6": {
+        "tp": [
+          "Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent)"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "4JF8F3WL": {
+        "tp": [],
+        "fp": [
+          "Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent)",
+          "Wald- und Ufersäume, Staudenfluren",
+          "Äcker und Ackerbrachen"
+        ],
+        "fn": []
+      },
+      "38EBGVBF": {
+        "tp": [],
+        "fp": [
+          "Hoch-, Zwischen- und Übergangsmoore"
+        ],
+        "fn": [
+          "Trockenrasen sowie Grünland trockener bis frischer Standorte"
+        ]
+      },
+      "57ZZ3GDF": {
+        "tp": [],
+        "fp": [
+          "Benthal der Nordsee",
+          "Benthal der Ostsee"
+        ],
+        "fn": [
+          "Pelagial der Nordsee",
+          "Pelagial der Ostsee"
+        ]
+      },
+      "84QQ9F5S": {
+        "tp": [],
+        "fp": [
+          "Benthal der Nordsee",
+          "Fließende Gewässer",
+          "Küstendünen",
+          "Pelagial der Nordsee",
+          "Salzgrünland der Nordseeküste (Supralitoral)",
+          "Stehende Gewässer",
+          "Sände, Sand-, Geröll- und Blockstrände"
+        ],
+        "fn": []
+      },
+      "8UVBVFHS": {
+        "tp": [],
+        "fp": [
+          "Fließende Gewässer",
+          "Grün- und Freiflächen",
+          "Hoch-, Zwischen- und Übergangsmoore",
+          "Küstendünen",
+          "Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent)",
+          "Quellen (inklusive Quellabfluss (Krenal))",
+          "Röhrichte (ohne Brackwasserröhrichte)",
+          "Salzgrünland der Nordseeküste (Supralitoral)",
+          "Salzgrünland, Brackwasserröhrichte und -Hochstaudenfluren des Geolitorals der Ostseeküste",
+          "Stehende Gewässer",
+          "Trockenrasen sowie Grünland trockener bis frischer Standorte",
+          "Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte",
+          "Zwergstrauchheiden",
+          "Äcker und Ackerbrachen"
+        ],
+        "fn": []
+      },
+      "885FDL5Z": {
+        "tp": [],
+        "fp": [
+          "Feldgehölze, Gebüsche, Hecken und Gehölzkulturen",
+          "Grün- und Freiflächen",
+          "Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent)",
+          "Röhrichte (ohne Brackwasserröhrichte)",
+          "Trockenrasen sowie Grünland trockener bis frischer Standorte",
+          "Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte",
+          "Waldmäntel und Vorwälder, spezielle Waldnutzungsformen",
+          "Zwergstrauchheiden",
+          "Äcker und Ackerbrachen"
+        ],
+        "fn": []
+      },
+      "6792YBL7": {
+        "tp": [],
+        "fp": [
+          "Äcker und Ackerbrachen"
+        ],
+        "fn": []
+      },
+      "2E9XWUUE": {
+        "tp": [],
+        "fp": [
+          "Benthal der Nordsee",
+          "Benthal der Ostsee",
+          "Fels- und Steilküsten",
+          "Fließende Gewässer",
+          "Küstendünen",
+          "Pelagial der Nordsee",
+          "Pelagial der Ostsee",
+          "Salzgrünland der Nordseeküste (Supralitoral)",
+          "Salzgrünland, Brackwasserröhrichte und -Hochstaudenfluren des Geolitorals der Ostseeküste",
+          "Stehende Gewässer",
+          "Sände, Sand-, Geröll- und Blockstrände",
+          "Verkehrsanlagen und Plätze"
+        ],
+        "fn": []
+      },
+      "46RX4AEN": {
+        "tp": [],
+        "fp": [
+          "Benthal der Nordsee",
+          "Fließende Gewässer",
+          "Küstendünen",
+          "Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent)",
+          "Nadel(Misch)Wälder und -Forste",
+          "Wald- und Ufersäume, Staudenfluren",
+          "Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte"
+        ],
+        "fn": []
+      },
+      "2FDHAHAR": {
+        "tp": [],
+        "fp": [
+          "Stehende Gewässer"
+        ],
+        "fn": [
+          "Pelagial der Ostsee"
+        ]
+      },
+      "42ELXZ2H": {
+        "tp": [],
+        "fp": [
+          "Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent)",
+          "Trockenrasen sowie Grünland trockener bis frischer Standorte",
+          "Äcker und Ackerbrachen"
+        ],
+        "fn": []
+      },
+      "6D23L7B5": {
+        "tp": [],
+        "fp": [
+          "Fließende Gewässer",
+          "Grün- und Freiflächen",
+          "Küstendünen",
+          "Stehende Gewässer",
+          "Äcker und Ackerbrachen"
+        ],
+        "fn": []
+      },
+      "5SIYLM9W": {
+        "tp": [],
+        "fp": [
+          "Anthropogene Rohbodenstandorte und Ruderalfluren",
+          "Bauwerke",
+          "Benthal der Nordsee",
+          "Deponien und Rieselfelder",
+          "Feldgehölze, Gebüsche, Hecken und Gehölzkulturen",
+          "Felsen der subalpinen bis nivalen Stufe",
+          "Felsen, Block- und Schutthalden, Geröllfelder, offene Bereiche mit sandigem oder bindigem Substrat",
+          "Fließende Gewässer",
+          "Gebirgsrasen (subalpine bis alpine Stufe)",
+          "Grün- und Freiflächen",
+          "Hoch-, Zwischen- und Übergangsmoore",
+          "Kleine, unbefestigte Freiflächen des besiedelten Bereiches",
+          "Küstendünen",
+          "Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent)",
+          "Nadel(Misch)Wälder und -Forste",
+          "Röhrichte (ohne Brackwasserröhrichte)",
+          "Salzgrünland, Brackwasserröhrichte und -Hochstaudenfluren des Geolitorals der Ostseeküste",
+          "Stehende Gewässer",
+          "Sände, Sand-, Geröll- und Blockstrände",
+          "Trockenrasen sowie Grünland trockener bis frischer Standorte",
+          "Verkehrsanlagen und Plätze",
+          "Wald- und Ufersäume, Staudenfluren",
+          "Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte",
+          "Waldmäntel und Vorwälder, spezielle Waldnutzungsformen",
+          "Zwergstrauchheiden",
+          "Äcker und Ackerbrachen"
+        ],
+        "fn": []
+      },
+      "3WEEGFGW": {
+        "tp": [],
+        "fp": [
+          "Feldgehölze, Gebüsche, Hecken und Gehölzkulturen",
+          "Fließende Gewässer",
+          "Gebirgsrasen (subalpine bis alpine Stufe)",
+          "Grundwasser und Höhlengewässer",
+          "Grün- und Freiflächen",
+          "Hoch-, Zwischen- und Übergangsmoore",
+          "Kleine, unbefestigte Freiflächen des besiedelten Bereiches",
+          "Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent)",
+          "Nadel(Misch)Wälder und -Forste",
+          "Salzgrünland der Nordseeküste (Supralitoral)",
+          "Stehende Gewässer",
+          "Steinschutthalden und Schotterflächen der subalpinen bis alpinen Stufe",
+          "Subalpine Wälder",
+          "Trockenrasen sowie Grünland trockener bis frischer Standorte",
+          "Wald- und Ufersäume, Staudenfluren",
+          "Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte",
+          "Waldmäntel und Vorwälder, spezielle Waldnutzungsformen",
+          "Zwergstrauchheiden",
+          "Äcker und Ackerbrachen"
+        ],
+        "fn": []
+      },
+      "5TMUACTH": {
+        "tp": [],
+        "fp": [
+          "Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent)",
+          "Stehende Gewässer",
+          "Trockenrasen sowie Grünland trockener bis frischer Standorte",
+          "Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte",
+          "Äcker und Ackerbrachen"
+        ],
+        "fn": []
+      },
+      "8HFL2MPL": {
+        "tp": [],
+        "fp": [
+          "Küstendünen",
+          "Salzgrünland der Nordseeküste (Supralitoral)",
+          "Sände, Sand-, Geröll- und Blockstrände"
+        ],
+        "fn": [
+          "Benthal der Nordsee"
+        ]
+      },
+      "29Q84X7V": {
+        "tp": [],
+        "fp": [
+          "Äcker und Ackerbrachen"
+        ],
+        "fn": []
+      },
+      "2NJD9Y9T": {
+        "tp": [],
+        "fp": [
+          "Grün- und Freiflächen"
+        ],
+        "fn": []
+      },
+      "4FCS62W5": {
+        "tp": [],
+        "fp": [
+          "Röhrichte (ohne Brackwasserröhrichte)",
+          "Schneeböden, Schneetälchen"
+        ],
+        "fn": []
+      },
+      "4Z67G9T5": {
+        "tp": [],
+        "fp": [
+          "Benthal der Ostsee",
+          "Pelagial der Ostsee",
+          "Salzgrünland, Brackwasserröhrichte und -Hochstaudenfluren des Geolitorals der Ostseeküste",
+          "Sände, Sand-, Geröll- und Blockstrände"
+        ],
+        "fn": []
+      },
+      "4BAX6GKK": {
+        "tp": [],
+        "fp": [
+          "Äcker und Ackerbrachen"
+        ],
+        "fn": []
+      },
+      "5XHDHCIQ": {
+        "tp": [],
+        "fp": [
+          "Fließende Gewässer",
+          "Grün- und Freiflächen",
+          "Äcker und Ackerbrachen"
+        ],
+        "fn": []
+      },
+      "3Z5BFIBL": {
+        "tp": [],
+        "fp": [
+          "Benthal der Nordsee",
+          "Fels- und Steilküsten",
+          "Salzgrünland der Nordseeküste (Supralitoral)",
+          "Sände, Sand-, Geröll- und Blockstrände"
+        ],
+        "fn": []
+      },
+      "3TWLQG7F": {
+        "tp": [],
+        "fp": [
+          "Benthal der Nordsee",
+          "Stehende Gewässer"
+        ],
+        "fn": [
+          "Benthal der Ostsee"
+        ]
+      },
+      "8QKB2BJE": {
+        "tp": [],
+        "fp": [
+          "Fließende Gewässer"
+        ],
+        "fn": []
+      },
+      "F582S9H8": {
+        "tp": [],
+        "fp": [
+          "Anthropogene Rohbodenstandorte und Ruderalfluren",
+          "Nadel(Misch)Wälder und -Forste",
+          "Trockenrasen sowie Grünland trockener bis frischer Standorte",
+          "Äcker und Ackerbrachen"
+        ],
+        "fn": []
+      },
+      "2EUNPHDZ": {
+        "tp": [],
+        "fp": [
+          "Benthal der Nordsee",
+          "Benthal der Ostsee",
+          "Grün- und Freiflächen",
+          "Küstendünen",
+          "Pelagial der Nordsee",
+          "Stehende Gewässer"
+        ],
+        "fn": []
+      },
+      "42STMMQA": {
+        "tp": [],
+        "fp": [
+          "Feldgehölze, Gebüsche, Hecken und Gehölzkulturen",
+          "Trockenrasen sowie Grünland trockener bis frischer Standorte",
+          "Äcker und Ackerbrachen"
+        ],
+        "fn": []
+      },
+      "SVXF36H4": {
+        "tp": [],
+        "fp": [
+          "Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent)",
+          "Nadel(Misch)Wälder und -Forste",
+          "Äcker und Ackerbrachen"
+        ],
+        "fn": []
+      },
+      "Z6CEAMK4": {
+        "tp": [],
+        "fp": [
+          "Grün- und Freiflächen",
+          "Röhrichte (ohne Brackwasserröhrichte)",
+          "Äcker und Ackerbrachen"
+        ],
+        "fn": [
+          "Fließende Gewässer"
+        ]
+      },
+      "4ZGN9AHA": {
+        "tp": [],
+        "fp": [
+          "Grundwasser und Höhlengewässer",
+          "Äcker und Ackerbrachen"
+        ],
+        "fn": []
+      },
+      "5CZNRP7X": {
+        "tp": [],
+        "fp": [
+          "Benthal der Nordsee",
+          "Grün- und Freiflächen"
+        ],
+        "fn": [
+          "Pelagial der Nordsee",
+          "Pelagial der Ostsee"
+        ]
+      },
+      "QGF2WV3C": {
+        "tp": [],
+        "fp": [
+          "Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent)",
+          "Zwergstrauchheiden"
+        ],
+        "fn": []
+      },
+      "6RLMM8BQ": {
+        "tp": [],
+        "fp": [
+          "Trockenrasen sowie Grünland trockener bis frischer Standorte",
+          "Äcker und Ackerbrachen"
+        ],
+        "fn": []
+      },
+      "8ZESW42A": {
+        "tp": [],
+        "fp": [
+          "Küstendünen",
+          "Salzgrünland der Nordseeküste (Supralitoral)",
+          "Sände, Sand-, Geröll- und Blockstrände"
+        ],
+        "fn": [
+          "Benthal der Nordsee"
+        ]
+      },
+      "PW2PNF55": {
+        "tp": [],
+        "fp": [
+          "Benthal der Ostsee"
+        ],
+        "fn": [
+          "Pelagial der Ostsee"
+        ]
+      },
+      "V477VCE6": {
+        "tp": [],
+        "fp": [
+          "Stehende Gewässer"
+        ],
+        "fn": [
+          "Pelagial der Ostsee"
+        ]
+      },
+      "5I8A3W7U": {
+        "tp": [],
+        "fp": [
+          "Fließende Gewässer",
+          "Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent)"
+        ],
+        "fn": []
+      },
+      "25RIYD2C": {
+        "tp": [],
+        "fp": [
+          "Grün- und Freiflächen",
+          "Hoch-, Zwischen- und Übergangsmoore",
+          "Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent)"
+        ],
+        "fn": []
+      },
+      "4YXRYRJC": {
+        "tp": [],
+        "fp": [
+          "Fließende Gewässer",
+          "Grundwasser und Höhlengewässer",
+          "Grün- und Freiflächen",
+          "Küstendünen",
+          "Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent)",
+          "Stehende Gewässer",
+          "Trockenrasen sowie Grünland trockener bis frischer Standorte",
+          "Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte",
+          "Äcker und Ackerbrachen"
+        ],
+        "fn": []
+      },
+      "ASEHVK97": {
+        "tp": [],
+        "fp": [
+          "Grün- und Freiflächen",
+          "Sände, Sand-, Geröll- und Blockstrände"
+        ],
+        "fn": [
+          "Benthal der Nordsee"
+        ]
+      },
+      "WW9EZUVE": {
+        "tp": [],
+        "fp": [
+          "Äcker und Ackerbrachen"
+        ],
+        "fn": []
+      },
+      "XMIP837H": {
+        "tp": [],
+        "fp": [
+          "Röhrichte (ohne Brackwasserröhrichte)",
+          "Salzgrünland der Nordseeküste (Supralitoral)",
+          "Sände, Sand-, Geröll- und Blockstrände"
+        ],
+        "fn": [
+          "Benthal der Nordsee"
+        ]
+      },
+      "3E8X2AK3": {
+        "tp": [],
+        "fp": [
+          "Fließende Gewässer",
+          "Grün- und Freiflächen",
+          "Salzgrünland der Nordseeküste (Supralitoral)",
+          "Stehende Gewässer",
+          "Sände, Sand-, Geröll- und Blockstrände"
+        ],
+        "fn": []
+      },
+      "2P53UVJA": {
+        "tp": [],
+        "fp": [
+          "Stehende Gewässer",
+          "Äcker und Ackerbrachen"
+        ],
+        "fn": []
+      },
+      "NGFBPJCG": {
+        "tp": [],
+        "fp": [
+          "Sände, Sand-, Geröll- und Blockstrände"
+        ],
+        "fn": [
+          "Benthal der Nordsee"
+        ]
+      },
+      "PBV2BUX6": {
+        "tp": [],
+        "fp": [
+          "Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent)",
+          "Trockenrasen sowie Grünland trockener bis frischer Standorte"
+        ],
+        "fn": []
+      },
+      "BMTEN2FG": {
+        "tp": [],
+        "fp": [
+          "Äcker und Ackerbrachen"
+        ],
+        "fn": []
+      },
+      "7T8NZA5Q": {
+        "tp": [],
+        "fp": [
+          "Sände, Sand-, Geröll- und Blockstrände"
+        ],
+        "fn": [
+          "Pelagial der Ostsee"
+        ]
+      },
+      "KXP8FP94": {
+        "tp": [],
+        "fp": [
+          "Benthal der Ostsee",
+          "Stehende Gewässer"
+        ],
+        "fn": [
+          "Pelagial der Ostsee"
+        ]
+      },
+      "3LGPK6BL": {
+        "tp": [],
+        "fp": [
+          "Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent)",
+          "Wald- und Ufersäume, Staudenfluren"
+        ],
+        "fn": [
+          "Fließende Gewässer"
+        ]
+      },
+      "5LC5W7KF": {
+        "tp": [],
+        "fp": [
+          "Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent)",
+          "Nadel(Misch)Wälder und -Forste"
+        ],
+        "fn": []
+      },
+      "84P9CN4J": {
+        "tp": [],
+        "fp": [
+          "Trockenrasen sowie Grünland trockener bis frischer Standorte",
+          "Äcker und Ackerbrachen"
+        ],
+        "fn": []
+      },
+      "HNT6RCEA": {
+        "tp": [],
+        "fp": [
+          "Trockenrasen sowie Grünland trockener bis frischer Standorte"
+        ],
+        "fn": []
+      },
+      "64C65W5I": {
+        "tp": [],
+        "fp": [
+          "Fließende Gewässer",
+          "Salzgrünland der Nordseeküste (Supralitoral)"
+        ],
+        "fn": [
+          "Benthal der Nordsee"
+        ]
+      },
+      "UGNPXL8B": {
+        "tp": [],
+        "fp": [
+          "Äcker und Ackerbrachen"
+        ],
+        "fn": []
+      },
+      "NZ7ETG2K": {
+        "tp": [],
+        "fp": [
+          "Salzgrünland der Nordseeküste (Supralitoral)"
+        ],
+        "fn": [
+          "Benthal der Nordsee"
+        ]
+      },
+      "6DCMK7GA": {
+        "tp": [],
+        "fp": [
+          "Äcker und Ackerbrachen"
+        ],
+        "fn": []
+      },
+      "ZQ329JQ6": {
+        "tp": [],
+        "fp": [
+          "Benthal der Nordsee",
+          "Pelagial der Nordsee"
+        ],
+        "fn": []
+      },
+      "KJ7JVAEW": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Sände, Sand-, Geröll- und Blockstrände"
+        ]
+      },
+      "V6SVVBUH": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte"
+        ]
+      },
+      "V2BVMBPF": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Fließende Gewässer"
+        ]
+      }
+    },
+    "ecosystem_type.category": {
+      "25ABQZIH": {
+        "tp": [
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "38EBGVBF": {
+        "tp": [
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "57CBE476": {
+        "tp": [
+          "II Biotoptypengruppen der Binnengewässer"
+        ],
+        "fp": [
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
+        ],
+        "fn": []
+      },
+      "LY4P94Q4": {
+        "tp": [
+          "I Biotoptypengruppen der Meere und Küsten"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "8ZESW42A": {
+        "tp": [
+          "I Biotoptypengruppen der Meere und Küsten"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "5CZNRP7X": {
+        "tp": [
+          "I Biotoptypengruppen der Meere und Küsten"
+        ],
+        "fp": [
+          "VI Weitere"
+        ],
+        "fn": []
+      },
+      "ZS59ID9J": {
+        "tp": [
+          "II Biotoptypengruppen der Binnengewässer"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "N82RZ7WL": {
+        "tp": [
+          "I Biotoptypengruppen der Meere und Küsten"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "VQT78VA5": {
+        "tp": [
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "XQ7DW4VS": {
+        "tp": [
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
+        ],
+        "fp": [
+          "II Biotoptypengruppen der Binnengewässer"
+        ],
+        "fn": [
+          "IV Technische Biotoptypengruppen"
+        ]
+      },
+      "6332SBW4": {
+        "tp": [
+          "II Biotoptypengruppen der Binnengewässer"
+        ],
+        "fp": [
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
+        ],
+        "fn": []
+      },
+      "57ZZ3GDF": {
+        "tp": [
+          "I Biotoptypengruppen der Meere und Küsten"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "49Z7RPDP": {
+        "tp": [
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "G7H698R6": {
+        "tp": [
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "3TWLQG7F": {
+        "tp": [
+          "I Biotoptypengruppen der Meere und Küsten"
+        ],
+        "fp": [
+          "II Biotoptypengruppen der Binnengewässer"
+        ],
+        "fn": []
+      },
+      "8HFL2MPL": {
+        "tp": [
+          "I Biotoptypengruppen der Meere und Küsten"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "KXP8FP94": {
+        "tp": [
+          "I Biotoptypengruppen der Meere und Küsten"
+        ],
+        "fp": [
+          "II Biotoptypengruppen der Binnengewässer"
+        ],
+        "fn": []
+      },
+      "QR5QGMTI": {
+        "tp": [
+          "II Biotoptypengruppen der Binnengewässer"
+        ],
+        "fp": [
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
+        ],
+        "fn": []
+      },
+      "XU5H8QJI": {
+        "tp": [
+          "II Biotoptypengruppen der Binnengewässer"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "64BS3HZ3": {
+        "tp": [
+          "II Biotoptypengruppen der Binnengewässer"
+        ],
+        "fp": [
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
+        ],
+        "fn": []
+      },
+      "XMIP837H": {
+        "tp": [
+          "I Biotoptypengruppen der Meere und Küsten"
+        ],
+        "fp": [
+          "VI Weitere"
+        ],
+        "fn": []
+      },
+      "NGFBPJCG": {
+        "tp": [
+          "I Biotoptypengruppen der Meere und Küsten"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "7DSY6RMR": {
+        "tp": [
+          "I Biotoptypengruppen der Meere und Küsten"
+        ],
+        "fp": [
+          "II Biotoptypengruppen der Binnengewässer"
+        ],
+        "fn": []
+      },
+      "PW2PNF55": {
+        "tp": [
+          "I Biotoptypengruppen der Meere und Küsten"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "6BKNRKUA": {
+        "tp": [
+          "II Biotoptypengruppen der Binnengewässer"
+        ],
+        "fp": [
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
+        ],
+        "fn": []
+      },
+      "2RXMDX8I": {
+        "tp": [
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
+        ],
+        "fp": [
+          "II Biotoptypengruppen der Binnengewässer"
+        ],
+        "fn": []
+      },
+      "7T8NZA5Q": {
+        "tp": [
+          "I Biotoptypengruppen der Meere und Küsten"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "NZ7ETG2K": {
+        "tp": [
+          "I Biotoptypengruppen der Meere und Küsten"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "64C65W5I": {
+        "tp": [
+          "I Biotoptypengruppen der Meere und Küsten"
+        ],
+        "fp": [
+          "II Biotoptypengruppen der Binnengewässer"
+        ],
+        "fn": []
+      },
+      "DFWI5DCP": {
+        "tp": [
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "2FDHAHAR": {
+        "tp": [
+          "I Biotoptypengruppen der Meere und Küsten"
+        ],
+        "fp": [
+          "II Biotoptypengruppen der Binnengewässer"
+        ],
+        "fn": []
+      },
+      "KJ7JVAEW": {
+        "tp": [
+          "I Biotoptypengruppen der Meere und Küsten"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "6G2THNDX": {
+        "tp": [
+          "II Biotoptypengruppen der Binnengewässer"
+        ],
+        "fp": [
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
+        ],
+        "fn": []
+      },
+      "ASEHVK97": {
+        "tp": [
+          "I Biotoptypengruppen der Meere und Küsten"
+        ],
+        "fp": [
+          "VI Weitere"
+        ],
+        "fn": []
+      },
+      "6CMGEZPD": {
+        "tp": [
+          "II Biotoptypengruppen der Binnengewässer"
+        ],
+        "fp": [
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
+        ],
+        "fn": []
+      },
+      "XG99Q5DJ": {
+        "tp": [
+          "II Biotoptypengruppen der Binnengewässer"
+        ],
+        "fp": [
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
+        ],
+        "fn": []
+      },
+      "3RSTTAEZ": {
+        "tp": [
+          "I Biotoptypengruppen der Meere und Küsten"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "TAXBZ8G5": {
+        "tp": [
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "8GEYSUXR": {
+        "tp": [
+          "I Biotoptypengruppen der Meere und Küsten"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "FG3YVDCZ": {
+        "tp": [
+          "I Biotoptypengruppen der Meere und Küsten"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "42ELXZ2H": {
+        "tp": [],
+        "fp": [
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
+        ],
+        "fn": []
+      },
+      "29Q84X7V": {
+        "tp": [],
+        "fp": [
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
+        ],
+        "fn": []
+      },
+      "2E9XWUUE": {
+        "tp": [],
+        "fp": [
+          "I Biotoptypengruppen der Meere und Küsten",
+          "II Biotoptypengruppen der Binnengewässer",
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes",
+          "IV Technische Biotoptypengruppen"
+        ],
+        "fn": []
+      },
+      "4FCS62W5": {
+        "tp": [],
+        "fp": [
+          "I Biotoptypengruppen der Meere und Küsten",
+          "II Biotoptypengruppen der Binnengewässer"
+        ],
+        "fn": []
+      },
+      "3WEEGFGW": {
+        "tp": [],
+        "fp": [
+          "I Biotoptypengruppen der Meere und Küsten",
+          "II Biotoptypengruppen der Binnengewässer",
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes",
+          "V Biotoptypengruppen mit Schwerpunkt in den Alpen",
+          "VI Weitere"
+        ],
+        "fn": []
+      },
+      "V477VCE6": {
+        "tp": [],
+        "fp": [
+          "II Biotoptypengruppen der Binnengewässer"
+        ],
+        "fn": [
+          "I Biotoptypengruppen der Meere und Küsten"
+        ]
+      },
+      "6DCMK7GA": {
+        "tp": [],
+        "fp": [
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
+        ],
+        "fn": []
+      },
+      "3E8X2AK3": {
+        "tp": [],
+        "fp": [
+          "I Biotoptypengruppen der Meere und Küsten",
+          "II Biotoptypengruppen der Binnengewässer",
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes",
+          "VI Weitere"
+        ],
+        "fn": []
+      },
+      "8UVBVFHS": {
+        "tp": [],
+        "fp": [
+          "I Biotoptypengruppen der Meere und Küsten",
+          "II Biotoptypengruppen der Binnengewässer",
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes",
+          "VI Weitere"
+        ],
+        "fn": []
+      },
+      "5I8A3W7U": {
+        "tp": [],
+        "fp": [
+          "II Biotoptypengruppen der Binnengewässer",
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
+        ],
+        "fn": []
+      },
+      "4YXRYRJC": {
+        "tp": [],
+        "fp": [
+          "I Biotoptypengruppen der Meere und Küsten",
+          "II Biotoptypengruppen der Binnengewässer",
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes",
+          "VI Weitere"
+        ],
+        "fn": []
+      },
+      "Z6CEAMK4": {
+        "tp": [],
+        "fp": [
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
+        ],
+        "fn": [
+          "II Biotoptypengruppen der Binnengewässer"
+        ]
+      },
+      "5SIYLM9W": {
+        "tp": [],
+        "fp": [
+          "I Biotoptypengruppen der Meere und Küsten",
+          "II Biotoptypengruppen der Binnengewässer",
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes",
+          "IV Technische Biotoptypengruppen",
+          "V Biotoptypengruppen mit Schwerpunkt in den Alpen",
+          "VI Weitere"
+        ],
+        "fn": []
+      },
+      "84P9CN4J": {
+        "tp": [],
+        "fp": [
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
+        ],
+        "fn": []
+      },
+      "4Z67G9T5": {
+        "tp": [],
+        "fp": [
+          "I Biotoptypengruppen der Meere und Küsten",
+          "II Biotoptypengruppen der Binnengewässer"
+        ],
+        "fn": []
+      },
+      "4ZGN9AHA": {
+        "tp": [],
+        "fp": [
+          "II Biotoptypengruppen der Binnengewässer",
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
+        ],
+        "fn": []
+      },
+      "84QQ9F5S": {
+        "tp": [],
+        "fp": [
+          "I Biotoptypengruppen der Meere und Küsten",
+          "II Biotoptypengruppen der Binnengewässer"
+        ],
+        "fn": []
+      },
+      "F582S9H8": {
+        "tp": [],
+        "fp": [
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
+        ],
+        "fn": []
+      },
+      "2EUNPHDZ": {
+        "tp": [],
+        "fp": [
+          "I Biotoptypengruppen der Meere und Küsten",
+          "II Biotoptypengruppen der Binnengewässer",
+          "VI Weitere"
+        ],
+        "fn": []
+      },
+      "SVXF36H4": {
+        "tp": [],
+        "fp": [
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
+        ],
+        "fn": []
+      },
+      "885FDL5Z": {
+        "tp": [],
+        "fp": [
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes",
+          "VI Weitere"
+        ],
+        "fn": []
+      },
+      "6RLMM8BQ": {
+        "tp": [],
+        "fp": [
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
+        ],
+        "fn": []
+      },
+      "QGF2WV3C": {
+        "tp": [],
+        "fp": [
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
+        ],
+        "fn": []
+      },
+      "5TMUACTH": {
+        "tp": [],
+        "fp": [
+          "II Biotoptypengruppen der Binnengewässer",
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
+        ],
+        "fn": []
+      },
+      "4JF8F3WL": {
+        "tp": [],
+        "fp": [
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
+        ],
+        "fn": []
+      },
+      "3LGPK6BL": {
+        "tp": [],
+        "fp": [
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
+        ],
+        "fn": [
+          "II Biotoptypengruppen der Binnengewässer"
+        ]
+      },
+      "8QKB2BJE": {
+        "tp": [],
+        "fp": [
+          "II Biotoptypengruppen der Binnengewässer"
+        ],
+        "fn": []
+      },
+      "HNT6RCEA": {
+        "tp": [],
+        "fp": [
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
+        ],
+        "fn": []
+      },
+      "5XHDHCIQ": {
+        "tp": [],
+        "fp": [
+          "II Biotoptypengruppen der Binnengewässer",
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
+        ],
+        "fn": []
+      },
+      "5LC5W7KF": {
+        "tp": [],
+        "fp": [
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
+        ],
+        "fn": []
+      },
+      "WW9EZUVE": {
+        "tp": [],
+        "fp": [
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
+        ],
+        "fn": []
+      },
+      "46RX4AEN": {
+        "tp": [],
+        "fp": [
+          "I Biotoptypengruppen der Meere und Küsten",
+          "II Biotoptypengruppen der Binnengewässer",
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes",
+          "VI Weitere"
+        ],
+        "fn": []
+      },
+      "2NJD9Y9T": {
+        "tp": [],
+        "fp": [
+          "VI Weitere"
+        ],
+        "fn": []
+      },
+      "6D23L7B5": {
+        "tp": [],
+        "fp": [
+          "I Biotoptypengruppen der Meere und Küsten",
+          "II Biotoptypengruppen der Binnengewässer",
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes",
+          "VI Weitere"
+        ],
+        "fn": []
+      },
+      "2P53UVJA": {
+        "tp": [],
+        "fp": [
+          "II Biotoptypengruppen der Binnengewässer",
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes",
+          "IV Technische Biotoptypengruppen"
+        ],
+        "fn": []
+      },
+      "8Q86MQJE": {
+        "tp": [],
+        "fp": [
+          "II Biotoptypengruppen der Binnengewässer"
+        ],
+        "fn": []
+      },
+      "4BAX6GKK": {
+        "tp": [],
+        "fp": [
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
+        ],
+        "fn": []
+      },
+      "25RIYD2C": {
+        "tp": [],
+        "fp": [
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
+        ],
+        "fn": []
+      },
+      "7AYVH7FI": {
+        "tp": [],
+        "fp": [
+          "I Biotoptypengruppen der Meere und Küsten"
+        ],
+        "fn": []
+      },
+      "BMTEN2FG": {
+        "tp": [],
+        "fp": [
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
+        ],
+        "fn": []
+      },
+      "PBV2BUX6": {
+        "tp": [],
+        "fp": [
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
+        ],
+        "fn": []
+      },
+      "42STMMQA": {
+        "tp": [],
+        "fp": [
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
+        ],
+        "fn": []
+      },
+      "3Z5BFIBL": {
+        "tp": [],
+        "fp": [
+          "I Biotoptypengruppen der Meere und Küsten"
+        ],
+        "fn": []
+      },
+      "6792YBL7": {
+        "tp": [],
+        "fp": [
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
+        ],
+        "fn": []
+      },
+      "UGNPXL8B": {
+        "tp": [],
+        "fp": [
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
+        ],
+        "fn": []
+      },
+      "ZQ329JQ6": {
+        "tp": [],
+        "fp": [
+          "I Biotoptypengruppen der Meere und Küsten"
+        ],
+        "fn": []
+      },
+      "V6SVVBUH": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
+        ]
+      },
+      "V2BVMBPF": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "II Biotoptypengruppen der Binnengewässer"
+        ]
+      }
+    },
+    "taxa.german_name": {
+      "DFWI5DCP": {
+        "tp": [
+          "Schwarzerle"
+        ],
+        "fp": [
+          "Esche"
+        ],
+        "fn": [
+          "Sauergrasgewächse",
+          "Süßgrässer"
+        ]
+      },
+      "6RLMM8BQ": {
+        "tp": [
+          "Heuschrecken"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "XQ7DW4VS": {
+        "tp": [
+          "Großes Mausohr"
+        ],
+        "fp": [
+          "Mausohr"
+        ],
+        "fn": []
+      },
+      "3RSTTAEZ": {
+        "tp": [
+          "Phytoplankton"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "6792YBL7": {
+        "tp": [
+          "Acker-Kleinling",
+          "Acker-Leinkraut",
+          "Dreihörniges Labkraut",
+          "Einjähriger Ziest",
+          "Finkensame",
+          "Gewöhnlicher Frauenspiegel",
+          "Kahles Ferkelkraut",
+          "Kleinblütiger Erdrauch",
+          "Kleiner Frauenspiegel",
+          "Möhren-Haftdolde",
+          "Sichel-Wolfsmilch",
+          "Sommer-Adonisröschen",
+          "Spelz-Trespe",
+          "Stinkende Hundskamille",
+          "Venuskamm"
+        ],
+        "fp": [
+          "Acker-Hasenohr",
+          "Acker-Ziest",
+          "Dolden-Milchstern",
+          "Fadenenzian",
+          "Rittersporn",
+          "SommerAdonisröschen",
+          "Tännelkraut",
+          "Weinbergs-Tulpe"
+        ],
+        "fn": [
+          "Acker-Hasenohr, Rundblättriges Hasenohr"
+        ]
+      },
+      "ZS59ID9J": {
+        "tp": [
+          "Barsch",
+          "Blaufelchen",
+          "Brachse",
+          "Gangfisch",
+          "Hecht",
+          "Kilch",
+          "Rotauge",
+          "Sandfelchen",
+          "Seeforelle",
+          "Seesaibling"
+        ],
+        "fp": [
+          "Dreistachligen Stichling",
+          "Felchen",
+          "Kormoran",
+          "Quagga-Muschel",
+          "Stichling"
+        ],
+        "fn": []
+      },
+      "6CMGEZPD": {
+        "tp": [
+          "Makrozoobenthos",
+          "Phytoplankton"
+        ],
+        "fp": [
+          "Aal",
+          "Barbe",
+          "Fischfauna",
+          "Lachs",
+          "Nase"
+        ],
+        "fn": [
+          "Aquatische Makrophyten",
+          "Fische"
+        ]
+      },
+      "V477VCE6": {
+        "tp": [
+          "Zander"
+        ],
+        "fp": [
+          "Hechtbarsch"
+        ],
+        "fn": []
+      },
+      "4Z67G9T5": {
+        "tp": [
+          "Fische",
+          "Marine Säugetiere",
+          "Phytoplankton"
+        ],
+        "fp": [
+          "Atlantischer Stör",
+          "Benthosarten",
+          "Brachse",
+          "Cephalopoden",
+          "Cyanobakterien",
+          "Dorsch",
+          "Dorsch-West",
+          "Dreizack-Rotalge",
+          "Europäischer Aal",
+          "Flussneunauge",
+          "Glattbutt",
+          "Großes Petermännchen",
+          "Hecht",
+          "Hering",
+          "Kegelrobbe",
+          "Kliesche",
+          "Langschwanzente",
+          "Meeressäugetiere",
+          "Meerneunauge",
+          "Miesmuschel",
+          "Nicht-einheimische Arten",
+          "Pinsel-Felsenkrabbe",
+          "Quagga-Muschel",
+          "Rapfen",
+          "Schnäpel",
+          "Scholle",
+          "Schweinswal",
+          "See- und Küstenvögel",
+          "Seeadler",
+          "Seehund",
+          "Spitzschwanz-Schlangenstachelrücken",
+          "Steinbutt",
+          "Strandrose",
+          "Säugetiere",
+          "Vierbärtelige Seequappe",
+          "Vögel",
+          "Zander",
+          "Zährte"
+        ],
+        "fn": [
+          "Kopffüßer",
+          "Makrozoobenthos",
+          "Seevögel",
+          "Zooplankton"
+        ]
+      },
+      "FG3YVDCZ": {
+        "tp": [
+          "Dinoflagellaten",
+          "Nanoflagellaten",
+          "Phaeocystis spp."
+        ],
+        "fp": [
+          "Diatomeen"
+        ],
+        "fn": [
+          "Bakterien",
+          "Cyanobakterien",
+          "Kieselalgen",
+          "Phytoplankton"
+        ]
+      },
+      "ASEHVK97": {
+        "tp": [
+          "Archaeen",
+          "Bakterien"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "TAXBZ8G5": {
+        "tp": [
+          "Buche",
+          "Fichte",
+          "Kiefer"
+        ],
+        "fp": [
+          "Eiche"
+        ],
+        "fn": [
+          "Eichen"
+        ]
+      },
+      "84QQ9F5S": {
+        "tp": [
+          "Vögel"
+        ],
+        "fp": [
+          "Andere Wirbellose",
+          "Austernfischer",
+          "Blau-Muschel",
+          "Blau-Muscheln",
+          "Blaue Muschel",
+          "Blaumuschel",
+          "Blaumuscheln",
+          "Braunkehl-Gimpel",
+          "Darmblattalge",
+          "Eider",
+          "Eiderente",
+          "Fische",
+          "Flunder",
+          "Gemeine Eider",
+          "Gemeiner Schreiadler",
+          "Gemeiner Seeschwalb",
+          "Gemeiner Seeschwalbe",
+          "Gewöhnlicher Eider",
+          "Graue Seeschwalbe",
+          "Graugans",
+          "Grauschwalbe",
+          "Grauseeschwalbe",
+          "Heringsmöwe",
+          "Kreuzschnabel",
+          "Miesmuschel",
+          "Moorhäher",
+          "Muschel",
+          "Muschelhäher",
+          "Muschelkippervogel",
+          "Muscheln",
+          "Muschelräuber",
+          "Mönchsstrandläufer",
+          "Schellente",
+          "Schellgans",
+          "Schnecken",
+          "Schreiadler",
+          "Schwarzer Strandläufer",
+          "Schwarzmantel",
+          "Schwarzmöwe",
+          "See-Schwalbe",
+          "Seehund",
+          "Seehunde",
+          "Seeschwalbe",
+          "Silbermöwe",
+          "Trottellumme",
+          "blaue Muschel"
+        ],
+        "fn": []
+      },
+      "Z6CEAMK4": {
+        "tp": [
+          "Laufkäfer"
+        ],
+        "fp": [
+          "Springflöhe"
+        ],
+        "fn": [
+          "Springschwänze"
+        ]
+      },
+      "6G2THNDX": {
+        "tp": [
+          "Fische",
+          "Vögel"
+        ],
+        "fp": [
+          "Aal",
+          "Aale",
+          "Algenflora, Makrophyten",
+          "Amphibien und Reptilien",
+          "Andere Wirbellose",
+          "Asche",
+          "Bar",
+          "Barben",
+          "Barsch",
+          "Biber",
+          "Bisam",
+          "Blaufelchen",
+          "Borstige Armleuchteralge",
+          "Brachsen",
+          "Brassen",
+          "Buche",
+          "Burgunderblutalge",
+          "Edelhirsch",
+          "Eintagsfliege",
+          "Elch",
+          "Erlen",
+          "Feldulme",
+          "Fischfauna",
+          "Flußmuscheln",
+          "Fphilikahnschnecke",
+          "Froschlurchen",
+          "Große Libelle",
+          "Hainbuche",
+          "Hasel",
+          "Hecht",
+          "Hechte",
+          "Insekten",
+          "Kocherfliegenlarve",
+          "Kreuzotter",
+          "Lachs",
+          "Libellen",
+          "Lurche und Kriechtiere",
+          "Mink",
+          "Muskrat",
+          "Nutria",
+          "Orchideen",
+          "Otter",
+          "Pappeln",
+          "Pfaffenhütchen",
+          "Plotze",
+          "Rotalge",
+          "Rotauge",
+          "Rotaugen",
+          "Schlangen",
+          "Schwarzerle",
+          "Stieleiche",
+          "Säugetiere",
+          "Tannenwedel",
+          "Trichopteren",
+          "Ukelei",
+          "Ur",
+          "Vogel",
+          "Waschbär",
+          "Wasser- und Teichfledermäuse",
+          "Weiden",
+          "Weillwurm oder Uferaas",
+          "Wildschwein",
+          "Winterlinde",
+          "Wirbellose (Invertebrata)",
+          "Würfelnatter",
+          "Zander",
+          "Zwergbinse"
+        ],
+        "fn": [
+          "Algen",
+          "Aquatische Makrophyten",
+          "Kriechtiere",
+          "Lurche",
+          "Makrozoobenthos",
+          "Wirbellose"
+        ]
+      },
+      "2EUNPHDZ": {
+        "tp": [
+          "Seegras"
+        ],
+        "fp": [
+          "Blau-Muschel",
+          "Blaue Muschel",
+          "Blaumuschel",
+          "Edelmuschel",
+          "Kleines Meergras",
+          "Kurzblättriger Seegras",
+          "Meergras",
+          "Miesmuschel",
+          "Schwert-Seegras"
+        ],
+        "fn": [
+          "Gemeine Miesmuschel"
+        ]
+      },
+      "5CZNRP7X": {
+        "tp": [
+          "Flunder"
+        ],
+        "fp": [
+          "Dabbe",
+          "Groppe",
+          "Hering",
+          "Langnasenlanzenfisch",
+          "Makrele",
+          "Scholle"
+        ],
+        "fn": [
+          "Atlantische Makrele",
+          "Atlantischer Hering",
+          "Atlantischer Kabeljau",
+          "Kliesche"
+        ]
+      },
+      "3Z5BFIBL": {
+        "tp": [
+          "Chordata",
+          "Fische"
+        ],
+        "fp": [
+          "Bryozoa",
+          "Cnidaria",
+          "Crustacea",
+          "Echinodermata",
+          "Krustazien",
+          "Mollusca",
+          "Polychaeta",
+          "Polychaeten",
+          "Sandgrundel",
+          "Scholle",
+          "Schweinswalen",
+          "Zwergzunge",
+          "gestreifter Leierfisch"
+        ],
+        "fn": [
+          "Endofauna",
+          "Epifauna",
+          "Krebstiere",
+          "Makrozoobenthos",
+          "Moostierchen",
+          "Nesseltiere",
+          "Stachelhäuter",
+          "Vielborster",
+          "Weichtiere"
+        ]
+      },
+      "XU5H8QJI": {
+        "tp": [
+          "Kalikokrebs"
+        ],
+        "fp": [
+          "Kamberkrebs"
+        ],
+        "fn": []
+      },
+      "57CBE476": {
+        "tp": [],
+        "fp": [
+          "Bestäuber",
+          "Eintagsfliegen",
+          "Köcherfliegen",
+          "Laufkäfer",
+          "Schmetterlinge",
+          "Schnaken",
+          "Stechmücken",
+          "Steinfliegen",
+          "Zuckmücken"
+        ],
+        "fn": [
+          "Insekten"
+        ]
+      },
+      "46RX4AEN": {
+        "tp": [],
+        "fp": [
+          "Afrikanische Riesen-Schnecke",
+          "Amphibien",
+          "Brown Tree Snake",
+          "Fische",
+          "Geruchskampfer",
+          "Gigantische Sensitivpflanze",
+          "Große Affen",
+          "Japanische Sprödelrose",
+          "Kaktusmotte",
+          "Kanadischer Grauschwanz",
+          "Kaulerpenalge",
+          "Kuypu",
+          "Minks",
+          "Pflanzenpathogen",
+          "Riesen-Götzlein",
+          "Rotes Entenkuckuck",
+          "Schwarzer Akazienbaum",
+          "Vögel",
+          "Wasserknopf",
+          "Weiße Weidegras",
+          "Wildkaninchen",
+          "Wildschwein",
+          "Zebraschnecke"
+        ],
+        "fn": []
+      },
+      "885FDL5Z": {
+        "tp": [],
+        "fp": [
+          "Bacillus-Arten",
+          "Bakterien",
+          "Enchytraeid",
+          "Enchytraeiden",
+          "Erdwürmer",
+          "Holzlaus",
+          "Milben",
+          "Nematoden",
+          "Orbibatiden",
+          "Pilze",
+          "Protozoen",
+          "Regenwürmer",
+          "Rhizobien",
+          "Springflöhe",
+          "Springmaschen",
+          "Springschwänze",
+          "Springtails",
+          "Springtiere",
+          "Termiten",
+          "Trichoderma-Arten"
+        ],
+        "fn": []
+      },
+      "2RXMDX8I": {
+        "tp": [],
+        "fp": [
+          "Ackerviolette",
+          "Behaarter Löwenzahn",
+          "Beweidungs- und Trittzeiger",
+          "Blaubeere",
+          "Blauer Moorgras",
+          "Blutwurz",
+          "Borsten-Segge",
+          "Borstgras",
+          "Breitblättriger Löwenzahn",
+          "Bürstensegge",
+          "Doppelblättrige Sumpfdotterblume",
+          "Dreizahnorchis",
+          "Echte Roggen",
+          "Essigkraut",
+          "Europäischer Eisenhut",
+          "Frischezeiger",
+          "Gelber Dreizahn",
+          "Gelbfärbiges Seggenhirse",
+          "Gemeiner Mährens",
+          "Getrennte Segge",
+          "Gewöhnliche Gelbschopf",
+          "Glanz-Hafer",
+          "Glatthafer",
+          "Glatthaferwiesenarten",
+          "Große Hornkraut",
+          "Große Raute",
+          "Haar-Rispengras",
+          "Haariges Hafergras",
+          "Haferblüte",
+          "Heidekraut",
+          "Jungfernkraut",
+          "Kleine Taubnessel",
+          "Knollen-Hahnenfuß",
+          "Kohldistel",
+          "Krone-Segge",
+          "Linsenklee",
+          "Molinio-Arrhenatheretea-KC",
+          "Perenniergras",
+          "Rasen-Grashalm",
+          "Roggenhirse",
+          "Rotgras",
+          "Rotschwingel",
+          "Saumarten",
+          "Scharfe Segge",
+          "Spitz-Arrhenatherum",
+          "Spitzblütiger Seggen",
+          "Spitzgras",
+          "Steinraute",
+          "Stumpfschafgarbe",
+          "Sumpfdotterblume",
+          "Typisches Hafergras",
+          "Wasserschafgarbe",
+          "Weißklee",
+          "Wiesenfuchsschwanz",
+          "Wiesenhaferschwert",
+          "Zeiger für Intensivnutzung"
+        ],
+        "fn": []
+      },
+      "5SIYLM9W": {
+        "tp": [],
+        "fp": [
+          "Ackerhummel",
+          "Alfalfa-Biene",
+          "Alkalibiene",
+          "Alpenhummel",
+          "Ameisenwespe",
+          "Aschgraue Sandbiene",
+          "Asiatische Mörtelbiene",
+          "Auen-Wollbiene",
+          "Baumhummel",
+          "Berg-Wollbiene",
+          "Berg-Zottelbiene",
+          "Bienenwolf",
+          "Bienenwölfe",
+          "Blattschneiderbiene",
+          "Blattschneiderbienen",
+          "Blauschwarze Holzbiene",
+          "Blutweiderich-Langhornbiene",
+          "Blutweiderich-Sägehornbiene",
+          "Breitblättrige Platterbse",
+          "Buntbiene",
+          "Bärenklau-Sandbiene",
+          "Bärtige Kuckucks-Hummel",
+          "Böhmische Kuckucks-Hummel",
+          "Deichhummel",
+          "Dickkopf-Furchenbiene",
+          "Dickkopffliegen",
+          "Diebskäfer",
+          "Distel-Wollbiene",
+          "Dunkle Zweizahnbiene",
+          "Düsterbiene",
+          "Efeu-Seidenbiene",
+          "Ehrenpreis-Sandbiene",
+          "Erdhummel",
+          "Esparsetten-Sägehornbiene",
+          "Faltenerzwespen",
+          "Feld-Kuckuckshummel",
+          "Filz-Furchenbiene",
+          "Fingerkraut-Sandbiene",
+          "Flockenblumen-Langhornbiene",
+          "Flohkraut-Langhornbiene",
+          "Frühe Schlürfbiene",
+          "Frühlings-Platterbse",
+          "Frühlings-Trauerbiene",
+          "Fuchsrote Sandbiene",
+          "Furchenbiene",
+          "Fächerflügler",
+          "Garten-Wollbiene",
+          "Gehörnte Mauerbiene",
+          "Gekerbte Löcherbiene",
+          "Gemeine Hummel",
+          "Gewöhnliche Filzbiene",
+          "Gewöhnliche Keulhornbiene",
+          "Gewöhnliche Löcherbiene",
+          "Gewöhnliche Maskenbiene",
+          "Glanzbiene",
+          "Glockenblumen-Schmalbiene",
+          "Glockenblumen-Sägehornbiene",
+          "Goldwespen",
+          "Graubiene",
+          "Grauschuppige Sandbiene",
+          "Große Harzbiene",
+          "Große Keulhornbiene",
+          "Große Wachsmotte",
+          "Harzbien",
+          "Harzbienen",
+          "Heide-Filzbiene",
+          "Heidehummel",
+          "Heidekraut-Sandbiene",
+          "Holzbiene",
+          "Holzbienen",
+          "Honigbiene",
+          "Hummeln",
+          "Hummelwachsmotte",
+          "Juni-Langhornbiene",
+          "Kegelbiene",
+          "Keulenwespe",
+          "Keulenwespen",
+          "Keulhornbiene",
+          "Kleine Fleckenbiene",
+          "Kleine Harzbiene",
+          "Kleine Holzbiene",
+          "Knautien-Hosenbiene",
+          "Knollen-Platterbse",
+          "Langhornbiene",
+          "Langhornbienen",
+          "Luzerne",
+          "Luzerne-Graubiene",
+          "Luzerne-Schwebebiene",
+          "Luzerne-Sägehornbiene",
+          "Löcherbiene",
+          "Mai-Langhornbiene",
+          "Malven-Langhornbiene",
+          "Marschhummel",
+          "Maskenbiene",
+          "Mauerbiene",
+          "Mauerbienen",
+          "Milchstern-Sandbiene",
+          "Mohn-Mauerbiene",
+          "Mohnbiene",
+          "Mooshummel",
+          "Mörtelbiene",
+          "Natterkopf-Mauerbiene",
+          "Pelzbienen",
+          "Pförtner-Schmalbiene",
+          "Platterbsen-Mörtelbiene",
+          "Pracht-Trauerbiene",
+          "Rainfarn-Maskenbiene",
+          "Rostrote Mauerbiene",
+          "Rot-Klee",
+          "Rotbeinige Furchenbiene",
+          "Rote Sandbiene",
+          "Rotfransige Steinbiene",
+          "Samthummel",
+          "Sandbiene",
+          "Sandbienen",
+          "Sandgängerbiene",
+          "Sandrasen-Furchenbiene",
+          "Scheinlappenbiene",
+          "Scherenbiene",
+          "Schimmelkäfer",
+          "Schlürfbiene",
+          "Schmalbiene",
+          "Schmalflügeliger Pelzbienenölkäfer",
+          "Schmuckbiene",
+          "Schwarzbeinige Filzbiene",
+          "Schwarzglänzende Keulhornbiene",
+          "Schwebebiene",
+          "Schöterich-Mauerbiene",
+          "Sechsjahres-Schmalbiene",
+          "Seidenbiene",
+          "Seidenbienen-Ölkäfer",
+          "Skabiosen-Sandbiene",
+          "Spalten-Wollbiene",
+          "Spanische Fliege",
+          "Sparrel-Sandbiene",
+          "Spitzzähnige Zottelbiene",
+          "Späte Schlürfbiene",
+          "Stahlblaue Mauerbiene",
+          "Steinbiene",
+          "Steinhummel",
+          "Steppen-Buntbiene",
+          "Steppen-Filzbiene",
+          "Steppenglanzbiene",
+          "Stumpfzähnige Zottelbiene",
+          "Sägehornbienen",
+          "Südliche Holzbiene",
+          "Varroa-Milbe",
+          "Veilchenfarbener Ölkäfer",
+          "Veränderliche Hummel",
+          "Vierbindige Furchenbiene",
+          "Wachsblumen-Mauerbiene",
+          "Weidenröschen-Blattschneiderbiene",
+          "Weißgefleckte Wollbiene",
+          "Wespenbiene",
+          "Westliche Honigbiene",
+          "Wicken-Langhornbiene",
+          "Wiesen-Platterbse",
+          "Wilde Platterbse",
+          "Wollbiene",
+          "Wollbienen",
+          "Wollschweber",
+          "Zahntrost-Sägehornbiene",
+          "Zaun-Wicke",
+          "Zaun-Wicken-Sandbiene",
+          "Zweizahnbiene",
+          "Zwergwespen"
+        ],
+        "fn": [
+          "Wildbienen"
+        ]
+      },
+      "2E9XWUUE": {
+        "tp": [],
+        "fp": [
+          "Amerikanische Auster",
+          "Amerikanische Bohrmuschel",
+          "Amerikanische Schwertmuschel",
+          "Amerikanische Trogmuschel",
+          "Amerikanischer Einsiedlerkrebs",
+          "Amerikanischer Flusskrebs, Kamberkrebs",
+          "Amerikanischer Hummer",
+          "Assel",
+          "Austerndieb",
+          "Australische Seepocke",
+          "Becher-/Stielqualle",
+          "Blasenschnecke",
+          "Blaukrabbe",
+          "Brackwasser Dreiecksmuschel",
+          "Brackwasser Seepocke, Ostsee-Seepocke",
+          "Brackwasserkrabbe",
+          "Chinesische Wollhandkrabbe",
+          "Diademanemone, Zwergseerosen, Gürtelanemone",
+          "Donau-Schwebegarnele",
+          "Englisches Schlickgras",
+          "Europäischer Stör",
+          "Feingestreifte/-gerippte Körbchenmuschel",
+          "Gebogene Armleuchteralge",
+          "Gefleckter Flussflohkrebs, Getigerter Bachflohkrebs",
+          "Glänzende Seescheide",
+          "Großer Höckerflohkrebs",
+          "Grüne Gabelalge",
+          "Haarige Schlauchalge",
+          "Hafenrose, Strandrose",
+          "Irisierender Seeringelwurm",
+          "Japanische Felsenkrabbe",
+          "Japanische Teppichmuschel",
+          "Japanischer Beerentang",
+          "Kaspischer Wasserfloh",
+          "Keulenascidie, Faltenascidie, Warzige Seescheide",
+          "Keulenpolyp, Affenhaar",
+          "Klauentang",
+          "Kleine Felsengarnele",
+          "Kleiner Höckerflohkrebs",
+          "Krähenfußblättrige Laugenblume",
+          "Langstängelige Schlauchalge",
+          "Marmorkrebs",
+          "Matschblasenwurm",
+          "Meertraube",
+          "Meerwalnuss",
+          "Nadeltang",
+          "Neuseeländische (Zwerg-) Deckelschnecke",
+          "Ostseestör",
+          "Pantoffelschnecke",
+          "Pazifische Auster",
+          "Pfeilschwanzkrebs",
+          "Pinsel-Scherenkrabbe/-Felsenkrabbe",
+          "Pontokaspischer Amphipode",
+          "Portugiesische Auster",
+          "Quagga-Muschel, Quagga Dreikantmuschel",
+          "Rotflecken-Schwebegarnele",
+          "Sandklaffmuschel",
+          "Schiffsbohrwurm",
+          "Schlammröhrenwurm",
+          "Schwarzmaulgrundel",
+          "Schwebegarnele",
+          "Schwimmblasenwurm",
+          "Seepocke",
+          "Sibirischer Stör",
+          "Signalkrebs",
+          "Sonnenrose, Seemaßliebchen",
+          "Stern-Seescheide",
+          "Süßwasser-Röhren-/Schlickkrebs",
+          "Süßwasser-Strandfloh",
+          "Wakame",
+          "Wander-Felsengarnele",
+          "Zebramuschel",
+          "Zebramuschel, Dreikant/Dreiecks-Muschel, Wandermuschel",
+          "Zitternde Seerinde"
+        ],
+        "fn": [
+          "Gefäßpflanzen",
+          "Makroalgen",
+          "Mikrofauna",
+          "Wirbellose",
+          "Wirbeltiere"
+        ]
+      },
+      "3E8X2AK3": {
+        "tp": [],
+        "fp": [
+          "Afrikanisches Lampenputzergras",
+          "Amurgrundel",
+          "Asiatische Hornisse",
+          "Beifußblättrige Ambrosie",
+          "Bisam",
+          "Blaubandbärbling",
+          "Brasilianisches Tausendblatt",
+          "Buchstaben-Schmuckschildkröte",
+          "Chinesische Wollhandkrabbe",
+          "Chinesischer Muntjak",
+          "Drüsiges Springkraut",
+          "Durchwachsener Knöterich",
+          "Falscher Wasserfreund",
+          "Flutendes Heusenkraut",
+          "Fuchshörnchen",
+          "Gelbe Scheincalla",
+          "Gestreifter Korallenwels",
+          "Gewöhnliche Seidenpflanze",
+          "Glanzkrähe",
+          "Grauhörnchen",
+          "Großblütiges Heusenkraut",
+          "Großer Wassernabel",
+          "Heiliger Ibis",
+          "Hirtenmaina",
+          "Japanischer Kletterfarn",
+          "Japanischer Staudenknöterich",
+          "Japanisches Stelzengras",
+          "Kamberkrebs",
+          "Karottenkraut",
+          "Kleiner Mungo",
+          "Kudzu",
+          "Lästiger Schwimmfarn",
+          "Marderhund",
+          "Marmorkrebs",
+          "Nilgans",
+          "Nordamerikanischer Ochsenfrosch",
+          "Nutria",
+          "Pallas-Schönhörnchen",
+          "Persischer Bärenklau",
+          "Riesen-Bärenklaus",
+          "Riesenbärenklau",
+          "Roter Amerikanischer Sumpfkrebs",
+          "Roter Nasenbär",
+          "Schmalblättrige Wasserpest",
+          "Schwarzkopf-Ruderente",
+          "Sibirisches Streifenhörnchen",
+          "Sibirisches Streifenhörnichen",
+          "Signalkrebs",
+          "Sonnenbarsch",
+          "Sosnowskyi Bärenklau",
+          "Sosnowskyi-Bärenklau",
+          "Teichfrosch",
+          "Verschiedenblättriges Tausendblatt",
+          "Viril-Flusskrebs",
+          "Waschbär",
+          "Wasserhyazinthe",
+          "Wechselblatt-Wasserpest"
+        ],
+        "fn": []
+      },
+      "2NJD9Y9T": {
+        "tp": [],
+        "fp": [
+          "Amphipoden",
+          "Cyanobakterien",
+          "Diatomeen",
+          "Foraminiferen",
+          "Phytoplankton"
+        ],
+        "fn": [
+          "Makroalgen",
+          "Nesseltiere",
+          "Phytobenthos",
+          "Seegras",
+          "Zoobenthos"
+        ]
+      },
+      "QR5QGMTI": {
+        "tp": [],
+        "fp": [
+          "Alpenstrandläufer",
+          "Austernfischer",
+          "Bekassine",
+          "Bergente",
+          "Bleßgans",
+          "Bleßhuhn",
+          "Brandente",
+          "Bruchwasserläufer",
+          "Dreizehenmöwe",
+          "Dunkler Wasserläufer",
+          "Eiderente",
+          "Eisente",
+          "Fischadler",
+          "Flußregenpfeifer",
+          "Flußseeschwalbe",
+          "Goldregenpfeifer",
+          "Graugans",
+          "Graureiher",
+          "Großer Brachvogel",
+          "Gänsesäger",
+          "Haubentaucher",
+          "Heller Wasserläufer",
+          "Heringsmöwe",
+          "Höckerschwan",
+          "Kampfläufer",
+          "Kiebitz",
+          "Kiebitzregenpfeifer",
+          "Kleine Ralle",
+          "Knutt",
+          "Knäkente",
+          "Kolbenente",
+          "Kranich",
+          "Lachmöwe",
+          "Löffelente",
+          "Mittelsäger",
+          "Moorente",
+          "Odinswassertreter",
+          "Ohrentaucher",
+          "Pfeifente",
+          "Prachttaucher",
+          "Raubseeschwalbe",
+          "Reiherente",
+          "Rothalstaucher",
+          "Rotschenkel",
+          "Saatgans",
+          "Samtente",
+          "Sandeding",
+          "Sandregenpfeifer",
+          "Schellente",
+          "Schmarotzerraubmöwe",
+          "Schnatterente",
+          "Schwarzhalstaucher",
+          "Schwarzkopfmöwe",
+          "Seeadler",
+          "Sichelstrandläufer",
+          "Silbermöwe",
+          "Singschwan",
+          "Spießente",
+          "Stelzenläufer",
+          "Sterntaucher",
+          "Stockente",
+          "Sturmmöve",
+          "Säbelschnäbler",
+          "Tafelente",
+          "Teichhuhn",
+          "Teichwasserläufer",
+          "Temminckstrandläufer",
+          "Trauerente",
+          "Trauerseeschwalbe",
+          "Tüpfelralle",
+          "Uferläufer",
+          "Uferschnepfe",
+          "Waldwasserläufer",
+          "Wasserralle",
+          "Weißbartseeschwalbe",
+          "Weißflügelseeschwalbe",
+          "Weißwangengans",
+          "Zwerggans",
+          "Zwergmöwe",
+          "Zwergschnepfe",
+          "Zwergschwan",
+          "Zwergstrandläufer",
+          "Zwergsäger"
+        ],
+        "fn": [
+          "Wasservögel"
+        ]
+      },
+      "3WEEGFGW": {
+        "tp": [],
+        "fp": [
+          "Auerhuhn",
+          "Bergulme",
+          "Bienen",
+          "Eibe",
+          "Elsbeere",
+          "Feldhamster",
+          "Feldulme",
+          "Flatterulme",
+          "Fledermäuse",
+          "Gefäßpflanzen",
+          "Insekten",
+          "Kiebitz",
+          "Kulturpflanzen",
+          "Leguminosen",
+          "Nutztierrassen",
+          "Ortolan",
+          "Rotmilan",
+          "Schmetterlingsstrauch",
+          "Speierling",
+          "Späte Traubenkirsche",
+          "Stieleiche",
+          "Traubeneiche",
+          "Vogelkirsche",
+          "Vögel",
+          "Wild-Apfel",
+          "Wild-Birne",
+          "Wildschwein"
+        ],
+        "fn": []
+      },
+      "7DSY6RMR": {
+        "tp": [],
+        "fp": [
+          "Amphipode",
+          "Baltische Muschel",
+          "Blasealge",
+          "Seegras",
+          "Seehecht",
+          "Sprotte"
+        ],
+        "fn": [
+          "Baltische Plattmuschel",
+          "Benthische Invertebraten",
+          "Blasentang",
+          "Echtes Seegras",
+          "Gemeiner Blasentang",
+          "Monoporeia affinis",
+          "Phytoplankton"
+        ]
+      },
+      "6D23L7B5": {
+        "tp": [],
+        "fp": [
+          "Erdwurm",
+          "Erdwürmer",
+          "Hühner",
+          "Kompostwurm",
+          "Muscheln",
+          "Pflanzen"
+        ],
+        "fn": []
+      },
+      "7EUNQX3Z": {
+        "tp": [],
+        "fp": [
+          "Elmholzborkenkäfer",
+          "Englischer Elm",
+          "Europäische Feld-Erle",
+          "Europäische Weiße Erle",
+          "Großer Elmholzborkenkäfer",
+          "Kleiner Elmholzborkenkäfer",
+          "Wacholder-Erle",
+          "Wheatley-Elm",
+          "Wych Elm"
+        ],
+        "fn": [
+          "Ulmenwelkpilz"
+        ]
+      },
+      "3LGPK6BL": {
+        "tp": [],
+        "fp": [
+          "Bergahorn",
+          "Buche",
+          "Bär-Lauch",
+          "Bärlauch",
+          "Eiche",
+          "Erlen",
+          "Esche",
+          "Feld-Ahorn",
+          "Feuersalamander",
+          "Flatter-Ulme",
+          "Hainbuche",
+          "Hasel",
+          "Kanadische Pappel",
+          "Knoblauchsrauke",
+          "Rotklee",
+          "Schwarzer Holunder",
+          "Spitzahorn",
+          "Stieleiche",
+          "Ulme",
+          "Ulmen",
+          "Wasserschwertlilie",
+          "krautige Waldarten"
+        ],
+        "fn": [
+          "Auenvegetation"
+        ]
+      },
+      "6332SBW4": {
+        "tp": [],
+        "fp": [
+          "Algen",
+          "Bayerisches Löffelkraut",
+          "Makrozoobenthos",
+          "Moose",
+          "Starknervmoos-Gesellschaften"
+        ],
+        "fn": []
+      },
+      "5LC5W7KF": {
+        "tp": [],
+        "fp": [
+          "Alle Laubbäume",
+          "Alle Nadelbäume",
+          "Andere Laubbäume mit hoher Lebensdauer",
+          "Andere Laubbäume mit niedriger Lebensdauer",
+          "Buche",
+          "Douglasie",
+          "Eiche",
+          "Fichte",
+          "Kiefer",
+          "Kleinblütige Springkraut",
+          "Lärche",
+          "Spätblühende Traubenkirsche",
+          "Tanne",
+          "andere Laubbäume mit hoher Lebensdauer",
+          "andere Laubbäume mit niedriger Lebensdauer"
+        ],
+        "fn": [
+          "Bäume"
+        ]
+      },
+      "8ZESW42A": {
+        "tp": [],
+        "fp": [
+          "Alpenstrandläufer",
+          "Austernfischer",
+          "Brandgans",
+          "Brandseeschwalbe",
+          "Eiderente",
+          "Goldregenpfeifer",
+          "Heringsmöwe",
+          "Kampfläufer",
+          "Kiebitzregenpfeifer",
+          "Knutt",
+          "Kormoran",
+          "Kornweihe",
+          "Lachmöwe",
+          "Lachseeschwalbe",
+          "Löffler",
+          "Mantelmöwe",
+          "Mittelmeer-Möwe",
+          "Nilgans",
+          "Ohrenlerche",
+          "Pfeifente",
+          "Pfuhlschnepfe",
+          "Raubseeschwalbe",
+          "Ringelgans",
+          "Sanderling",
+          "Sandregenpfeifer",
+          "Schneeammer",
+          "Schwarzkopf-Möwe",
+          "Seeregenpfeifer",
+          "Silbermöwe",
+          "Silberreiher",
+          "Strandpieper",
+          "Sturmmöwe",
+          "Sumpfohreule",
+          "Säbelschnäbler",
+          "Uferschnepfe",
+          "Wanderfalke",
+          "Weißwangengans",
+          "Zwergmöwe"
+        ],
+        "fn": [
+          "Vögel"
+        ]
+      },
+      "5I8A3W7U": {
+        "tp": [],
+        "fp": [
+          "Kranich",
+          "Libellen",
+          "Wildkatze"
+        ],
+        "fn": []
+      },
+      "4BAX6GKK": {
+        "tp": [],
+        "fp": [
+          "Insekten",
+          "Vögel"
+        ],
+        "fn": []
+      },
+      "5TMUACTH": {
+        "tp": [],
+        "fp": [
+          "Durchwachsene Silphie",
+          "Halophyten",
+          "Mais"
+        ],
+        "fn": []
+      },
+      "SVXF36H4": {
+        "tp": [],
+        "fp": [
+          "Amsel",
+          "Bachstelze",
+          "Baumpieper",
+          "Buchfink",
+          "Erlenzeisig",
+          "Feldsperling",
+          "Gimpel",
+          "Goldammer",
+          "Grauschnäpper",
+          "Grünfink",
+          "Heckenbraunelle",
+          "Kernbeißer",
+          "Misteldrossel",
+          "Rotkehlchen",
+          "Singdrossel",
+          "Star",
+          "Zaunkönig"
+        ],
+        "fn": [
+          "Brutvögel"
+        ]
+      },
+      "6DCMK7GA": {
+        "tp": [],
+        "fp": [
+          "Acker-Hahnenfuß",
+          "Acker-Krummhals",
+          "Acker-Lichtnelke",
+          "Acker-Löwenmaul",
+          "Acker-Steinsame",
+          "Ackerröte",
+          "Breitblättriger Wolfsmilch",
+          "Breitblättriges Hasenohr",
+          "Echter Frauenspiegel",
+          "Eiblättriges Tännelkraut",
+          "Feld-Rittersporn",
+          "Klatschmohn",
+          "Kleiner Orant",
+          "Kornblume",
+          "Sandmohn",
+          "Spieß-Tännelkraut"
+        ],
+        "fn": [
+          "Ackerunkraut"
+        ]
+      },
+      "3TWLQG7F": {
+        "tp": [],
+        "fp": [
+          "Blau-Muschel",
+          "Dornschleier",
+          "Gewöhnlicher Bachgoby",
+          "Goldschupfer",
+          "Scholle",
+          "Schwarzer Barsch",
+          "Schwarzer Seegurke",
+          "Seekresse",
+          "Seesterne",
+          "Steinbarsch"
+        ],
+        "fn": [
+          "Atlantischer Hering",
+          "Atlantischer Kabeljau",
+          "Dreistachliger Stichling",
+          "Echtes Seegras",
+          "Gemeine Miesmuschel",
+          "Gemeiner Seestern",
+          "Gliederwürmer",
+          "Grundeln",
+          "Krebstiere",
+          "Schwarzgrundel",
+          "Seeforelle"
+        ]
+      },
+      "UGNPXL8B": {
+        "tp": [],
+        "fp": [
+          "Colorado-Kartoffelkäfer"
+        ],
+        "fn": [
+          "Gliederfüßer",
+          "Pflanzen"
+        ]
+      },
+      "WW9EZUVE": {
+        "tp": [],
+        "fp": [
+          "Graue Feldmaus",
+          "Graupelzmäuse",
+          "Waldfeldmaus"
+        ],
+        "fn": [
+          "Brandmaus",
+          "Feldmaus"
+        ]
+      },
+      "64C65W5I": {
+        "tp": [],
+        "fp": [
+          "Grauseehund",
+          "Rösel-Amphipode",
+          "Seehund"
+        ],
+        "fn": [
+          "Seehunde"
+        ]
+      },
+      "PMJGMLUG": {
+        "tp": [],
+        "fp": [
+          "Bienen"
+        ],
+        "fn": [
+          "Pflanzen",
+          "Wildbestäuber"
+        ]
+      },
+      "57ZZ3GDF": {
+        "tp": [],
+        "fp": [
+          "Küstenseehund"
+        ],
+        "fn": [
+          "Gewöhnlicher Schweinswal"
+        ]
+      },
+      "4JF8F3WL": {
+        "tp": [],
+        "fp": [
+          "Bechsteinfledermaus",
+          "Biber",
+          "Hausspitzmaus",
+          "Wildkatze",
+          "Wolf"
+        ],
+        "fn": [
+          "Säugetiere"
+        ]
+      },
+      "N82RZ7WL": {
+        "tp": [],
+        "fp": [
+          "Blasenalge",
+          "Sägealge"
+        ],
+        "fn": [
+          "Blasentang"
+        ]
+      },
+      "G7H698R6": {
+        "tp": [],
+        "fp": [
+          "Gefäßpflanzen"
+        ],
+        "fn": [
+          "Pflanzen"
+        ]
+      },
+      "64BS3HZ3": {
+        "tp": [],
+        "fp": [
+          "Bachflohkrebs",
+          "Bachflohkrebse",
+          "Eintagsfliegen",
+          "Eintagsfliegenlarven",
+          "Krebstiere",
+          "Köcherfliegen",
+          "Schnecken",
+          "Süßwasserschnecken",
+          "Turbellar"
+        ],
+        "fn": [
+          "Makrozoobenthos"
+        ]
+      },
+      "PW2PNF55": {
+        "tp": [],
+        "fp": [
+          "Hering",
+          "Sprotte"
+        ],
+        "fn": [
+          "Atlantischer Hering",
+          "Europäische Sprotte",
+          "Phytoplankton"
+        ]
+      },
+      "5XHDHCIQ": {
+        "tp": [],
+        "fp": [
+          "Insekten",
+          "Vögel"
+        ],
+        "fn": []
+      },
+      "PBV2BUX6": {
+        "tp": [],
+        "fp": [
+          "Oribatiden"
+        ],
+        "fn": []
+      },
+      "KXP8FP94": {
+        "tp": [],
+        "fp": [
+          "Blau-Muschel",
+          "Hering",
+          "Kabeljau"
+        ],
+        "fn": [
+          "Atlantischer Hering",
+          "Atlantischer Kabeljau",
+          "Baltische Plattmuschel",
+          "Blasentang",
+          "Brackwasser-Seepocke",
+          "Calanus finmarchicus",
+          "Cyanobakterien",
+          "Echtes Seegras",
+          "Europäische Sprotte",
+          "Fische",
+          "Gemeine Miesmuschel",
+          "Makroalgen",
+          "Makrozoobenthos",
+          "Phytoplankton",
+          "Pseudocalanus spp.",
+          "Zooplankton"
+        ]
+      },
+      "2P53UVJA": {
+        "tp": [],
+        "fp": [
+          "Andere Wirbellose",
+          "Argentinische Ameise",
+          "Vögel"
+        ],
+        "fn": []
+      },
+      "8HFL2MPL": {
+        "tp": [],
+        "fp": [
+          "Seegras"
+        ],
+        "fn": []
+      },
+      "XMIP837H": {
+        "tp": [],
+        "fp": [
+          "Pazifik-Austern"
+        ],
+        "fn": [
+          "Gemeine Miesmuschel",
+          "Pazifische Auster"
+        ]
+      },
+      "49Z7RPDP": {
+        "tp": [],
+        "fp": [
+          "Tauwurm"
+        ],
+        "fn": [
+          "Regenwürmer"
+        ]
+      },
+      "V6SVVBUH": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Amphibien",
+          "Europäische Sumpfschildkröte",
+          "Fadenwürmer",
+          "Fische",
+          "Gürtelwürmer",
+          "Heuschrecken",
+          "Käfer",
+          "Libellen",
+          "Muscheln",
+          "Ringelnatter",
+          "Schmetterlinge",
+          "Schnecken",
+          "Säugetiere",
+          "Vögel",
+          "Wanzen",
+          "Zikaden",
+          "Zweiflügler"
+        ]
+      },
+      "NZ7ETG2K": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Ameronothrus schneideri",
+          "Gliederfüßer",
+          "Hermannia pulchella",
+          "Multioppia neglecta",
+          "Scheloribates laevigatus",
+          "Zachvatkinibates quadrivertex"
+        ]
+      },
+      "NGFBPJCG": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Archaeen",
+          "Bakterien"
+        ]
+      },
+      "8GEYSUXR": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Braunalgen",
+          "Grünalgen",
+          "Makroalgen",
+          "Rotalgen"
+        ]
+      },
+      "2FDHAHAR": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Coccolithophyceae",
+          "Cryptophyceae",
+          "Cyanophyceae",
+          "Dinophyceae",
+          "Goldalgen",
+          "Phytoplankton",
+          "Ruderfußkrebse",
+          "Rädertierchen",
+          "Wasserflöhe",
+          "Zooplankton"
+        ]
+      },
+      "KJ7JVAEW": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Archaeen",
+          "Bakterien",
+          "Betaproteobakterien",
+          "Mikroben",
+          "Mikrophytobenthos"
+        ]
+      },
+      "G4VAFJZH": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Kuh"
+        ]
+      },
+      "VQT78VA5": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Asseln",
+          "Doppelfüßer",
+          "Hundertfüßer",
+          "Makrofauna",
+          "Regenwürmer"
+        ]
+      },
+      "HNT6RCEA": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Doppelfüßer",
+          "Hornmilben",
+          "Hundertfüßer",
+          "Raubmilben",
+          "Springschwänze"
+        ]
+      },
+      "7AYVH7FI": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Mangroven",
+          "Salzwiesen",
+          "Seegras"
+        ]
+      },
+      "4FCS62W5": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Amerikanische Teichsimse",
+          "Küsten-Salzgras",
+          "Salzwiesen-Kordelgras"
+        ]
+      },
+      "7T8NZA5Q": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Vibrio alginolyticus",
+          "Vibrio parahaemolyticus",
+          "Vibrio spp.",
+          "Vibrio vulnificus"
+        ]
+      },
+      "8PFJ2KHU": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Hackenwürmer",
+          "Peitschenwurm",
+          "Spulwurm"
+        ]
+      },
+      "F582S9H8": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Flechten, Moose und Gefäßpflanzen"
+        ]
+      },
+      "6BKNRKUA": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "xylobionte Käfer"
+        ]
+      },
+      "BBDCY7DW": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Mensch"
+        ]
+      },
+      "V2BVMBPF": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Gefäßpflanzen"
+        ]
+      },
+      "BMTEN2FG": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Reis"
+        ]
+      }
+    },
+    "taxa.scientific_name": {
+      "ZS59ID9J": {
+        "tp": [
+          "Abramis brama",
+          "Coregonus arenicolus",
+          "Coregonus gutturosus",
+          "Coregonus macrophthalmus",
+          "Coregonus wartmanni",
+          "Esox lucius",
+          "Perca fluviatilis",
+          "Rutilus rutilus",
+          "Salmo trutta",
+          "Salvelinus alpinus"
+        ],
+        "fp": [
+          "Dreissena rostriformis bugensis",
+          "Gasterosteus aculeatus",
+          "Phalacrocorax carbo sinensis"
+        ],
+        "fn": []
+      },
+      "6RLMM8BQ": {
+        "tp": [
+          "Orthoptera"
+        ],
+        "fp": [
+          "Euthystira brachyptera",
+          "Leptophyes punctatissima",
+          "Phaneroptera falcata",
+          "Platycleis albopunctata"
+        ],
+        "fn": []
+      },
+      "4FCS62W5": {
+        "tp": [
+          "Distichlis spicata",
+          "Schoenoplectus americanus",
+          "Spartina patens"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "V477VCE6": {
+        "tp": [
+          "Sander lucioperca"
+        ],
+        "fp": [
+          "Stizostedion lucioperca"
+        ],
+        "fn": []
+      },
+      "PW2PNF55": {
+        "tp": [
+          "Clupea harengus",
+          "Sprattus sprattus"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "3Z5BFIBL": {
+        "tp": [
+          "Crustacea",
+          "Echinodermata",
+          "Pisces",
+          "Polychaeta"
+        ],
+        "fp": [
+          "Amphiura filiformis",
+          "Bathyporeia",
+          "Buglossidium luteum",
+          "Callionymus lyra",
+          "Echinocardium cordatum",
+          "Goniadella bobretzkii",
+          "Goniadella",
+          "Macoma balthica",
+          "Nucula nitidosa",
+          "Phocoena phocoena",
+          "Pleuronectes platessa",
+          "Pomatoschistus minutus",
+          "Spisula",
+          "Tellina fabula"
+        ],
+        "fn": [
+          "Bryozoa",
+          "Chordata",
+          "Cnidaria",
+          "Mollusca"
+        ]
+      },
+      "NZ7ETG2K": {
+        "tp": [
+          "Ameronothrus schneideri",
+          "Hermannia pulchella",
+          "Multioppia neglecta",
+          "Zachvatkinibates quadrivertex"
+        ],
+        "fp": [],
+        "fn": [
+          "Arthropoda",
+          "Scheloribates laevigatus"
+        ]
+      },
+      "64C65W5I": {
+        "tp": [
+          "Phoca vitulina"
+        ],
+        "fp": [
+          "Gammarus roeseli",
+          "Halichoerus grypus"
+        ],
+        "fn": []
+      },
+      "3TWLQG7F": {
+        "tp": [
+          "Asterias rubens",
+          "Gadus morhua",
+          "Gasterosteus aculeatus",
+          "Gobius niger",
+          "Mytilus edulis",
+          "Zostera marina"
+        ],
+        "fp": [
+          "Ctenolabrus rupestris",
+          "Gobius paganellus",
+          "Pholis gunnellus",
+          "Pomatoschistus microps"
+        ],
+        "fn": [
+          "Annelida",
+          "Clupea harengus",
+          "Crustacea",
+          "Pomatoschistus sp.",
+          "Salmo trutta"
+        ]
+      },
+      "Z6CEAMK4": {
+        "tp": [
+          "Collembola"
+        ],
+        "fp": [
+          "Agonum marginatum",
+          "Amara bifrons",
+          "Bembidion lampros",
+          "Bembidion quadrimaculatum",
+          "Carabus purpurascens",
+          "Coleoptera, Carabidae",
+          "Harpalus rufipes",
+          "Harpalus smaragdinus",
+          "Isotoma viridis",
+          "Isotomurus palustris",
+          "Nebria brevicollis",
+          "Ophonus ardosiacus",
+          "Orchesella villosa",
+          "Podura aquatica",
+          "Poecilus cupreus",
+          "Pterostichus anthracinus",
+          "Pterostichus melanarius",
+          "Pterostichus nigrita",
+          "Sminthurides aquaticus"
+        ],
+        "fn": [
+          "Carabidae"
+        ]
+      },
+      "KXP8FP94": {
+        "tp": [
+          "Clupea harengus",
+          "Gadus morhua",
+          "Mytilus edulis"
+        ],
+        "fp": [],
+        "fn": [
+          "-",
+          "Amphibalanus improvisus",
+          "Calanus finmarchicus",
+          "Cyanobacteria",
+          "Fucus spp",
+          "Macoma baltica",
+          "Pisces",
+          "Pseudocalanus  spp.",
+          "Sprattus sprattus",
+          "Zostera marina"
+        ]
+      },
+      "ASEHVK97": {
+        "tp": [
+          "Archaea",
+          "Bacteria"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "2FDHAHAR": {
+        "tp": [
+          "Chrysophyceae",
+          "Cryptophyceae",
+          "Cyanophyceae",
+          "Dinophyceae"
+        ],
+        "fp": [
+          "Acartia",
+          "Bacillariophyceae",
+          "Chrysochromulina spp.",
+          "Eubosmina",
+          "Eurytemora spp.",
+          "Eurytemora",
+          "Evadne",
+          "Keratella",
+          "Podon",
+          "Prasinophyceae",
+          "Prymnesiophyceae",
+          "Pseudopedinella spp.",
+          "Synchaeta"
+        ],
+        "fn": [
+          "-",
+          "Cladocera",
+          "Coccolithophyceae",
+          "Copepoda",
+          "Rotifera"
+        ]
+      },
+      "7DSY6RMR": {
+        "tp": [
+          "Fucus vesiculosus",
+          "Monoporeia affinis",
+          "Zostera marina"
+        ],
+        "fp": [
+          "Bylgides (Harmothoe) sarsi",
+          "Gadus morhua",
+          "Halicryptus spinulosus",
+          "Macoma balthica",
+          "Marenzelleria sp.",
+          "Pontoporeia femorata",
+          "Saduria entomon",
+          "Scoloplos armiger",
+          "Sprattus sprattus"
+        ],
+        "fn": [
+          "Fucus spp",
+          "Macoma baltica"
+        ]
+      },
+      "WW9EZUVE": {
+        "tp": [
+          "Apodemus agrarius",
+          "Microtus arvalis"
+        ],
+        "fp": [
+          "Apodemus sylvaticus"
+        ],
+        "fn": []
+      },
+      "5CZNRP7X": {
+        "tp": [
+          "Clupea harengus",
+          "Gadus morhua",
+          "Limanda limanda",
+          "Platichthys flesus",
+          "Scomber scombrus"
+        ],
+        "fp": [
+          "Alepisaurus ferox",
+          "Gobio gobio"
+        ],
+        "fn": []
+      },
+      "57ZZ3GDF": {
+        "tp": [
+          "Phocoena phocoena"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "XQ7DW4VS": {
+        "tp": [
+          "Myotis myotis"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "2EUNPHDZ": {
+        "tp": [
+          "Mytilus edulis"
+        ],
+        "fp": [
+          "Mytilus edulus",
+          "Mytilus galloprovincialis",
+          "Mytilus trossulus",
+          "Zostera marina",
+          "Zostera noltii"
+        ],
+        "fn": [
+          "Zostera spp."
+        ]
+      },
+      "DFWI5DCP": {
+        "tp": [
+          "Alnus glutinosa"
+        ],
+        "fp": [
+          "Fraxinus excelsior"
+        ],
+        "fn": [
+          "Cyperaceae",
+          "Poaceae"
+        ]
+      },
+      "5SIYLM9W": {
+        "tp": [],
+        "fp": [
+          "Ammobates punctatus",
+          "Ammobatoides abdominalis",
+          "Andrena agilissima",
+          "Andrena apicata",
+          "Andrena argentata",
+          "Andrena barbareae",
+          "Andrena barbilabris",
+          "Andrena batava",
+          "Andrena bicolor",
+          "Andrena bimaculata",
+          "Andrena bremensis",
+          "Andrena bucephala",
+          "Andrena chrysopus",
+          "Andrena chrysopyga",
+          "Andrena chrysosceles",
+          "Andrena cineraria",
+          "Andrena clarkella",
+          "Andrena coitana",
+          "Andrena combinata",
+          "Andrena congruens",
+          "Andrena curvungula",
+          "Andrena decipiens",
+          "Andrena denticulata",
+          "Andrena distinguenda",
+          "Andrena dorsata",
+          "Andrena enslinella",
+          "Andrena falsifica",
+          "Andrena ferox",
+          "Andrena flavilabris",
+          "Andrena flavipes",
+          "Andrena florea",
+          "Andrena florivaga",
+          "Andrena fucata",
+          "Andrena fulva",
+          "Andrena fulvago",
+          "Andrena fulvata",
+          "Andrena fuscipes",
+          "Andrena gallica",
+          "Andrena gelriae",
+          "Andrena granulosa",
+          "Andrena gravida",
+          "Andrena haemorrhoa",
+          "Andrena hattorfiana",
+          "Andrena intermedia",
+          "Andrena labialis",
+          "Andrena lapponica",
+          "Andrena lathyri",
+          "Andrena marginata",
+          "Andrena minutula",
+          "Andrena minutuloides",
+          "Andrena mitis",
+          "Andrena nana",
+          "Andrena nasuta",
+          "Andrena nigriceps",
+          "Andrena nigroaenea",
+          "Andrena nigroolivacea",
+          "Andrena nitida",
+          "Andrena nitidiuscula",
+          "Andrena niveata",
+          "Andrena nuptialis",
+          "Andrena nycthemera",
+          "Andrena ovatula",
+          "Andrena pallitarsis",
+          "Andrena pandellei",
+          "Andrena paucisquama",
+          "Andrena pilipes",
+          "Andrena polita",
+          "Andrena pontica",
+          "Andrena potentillae",
+          "Andrena praecox",
+          "Andrena probata",
+          "Andrena propinqua",
+          "Andrena proxima",
+          "Andrena ranunculorum",
+          "Andrena rhenana",
+          "Andrena rogenhoferi",
+          "Andrena rosae",
+          "Andrena ruficrus",
+          "Andrena rufizona",
+          "Andrena rugulosa",
+          "Andrena sardoa",
+          "Andrena saxonica",
+          "Andrena schencki",
+          "Andrena scotica",
+          "Andrena semilaevis",
+          "Andrena sericata",
+          "Andrena similis",
+          "Andrena simillima",
+          "Andrena spinigera",
+          "Andrena stragulata",
+          "Andrena strohmella",
+          "Andrena subopaca",
+          "Andrena suerinensis",
+          "Andrena symphyti",
+          "Andrena vaga",
+          "Andrena ventralis",
+          "Andrena viridescens",
+          "Andrena wilkella",
+          "Andrena",
+          "Antherophagus nigricornis",
+          "Anthidium byssinum",
+          "Anthidium florentinum",
+          "Anthidium manicatum",
+          "Anthidium melanurum",
+          "Anthidium montanum",
+          "Anthidium nanum",
+          "Anthidium oblongatum",
+          "Anthidium punctatum",
+          "Anthidium septemspinosum",
+          "Anthidium strigatum",
+          "Anthidium",
+          "Anthophora aestivalis",
+          "Anthophora bimaculata",
+          "Anthophora borealis",
+          "Anthophora crassipes",
+          "Anthophora crinipes",
+          "Anthophora fulvitarsis",
+          "Anthophora furcata",
+          "Anthophora plagiata",
+          "Anthophora plumipes",
+          "Anthophora pubescens",
+          "Anthophora quadrimaculata",
+          "Anthophora",
+          "Aphomia sociella",
+          "Apis mellifera",
+          "Biastes brevicornis",
+          "Biastes emarginatus",
+          "Biastes truncatus",
+          "Bombus alpinus",
+          "Bombus barbutellus",
+          "Bombus bohemicus",
+          "Bombus campestris",
+          "Bombus confusus",
+          "Bombus cryptarum",
+          "Bombus cullumanus",
+          "Bombus distinguendus",
+          "Bombus gerstaeckeri",
+          "Bombus hortorum",
+          "Bombus humilis",
+          "Bombus hypnorum",
+          "Bombus jonellus",
+          "Bombus lapidarius",
+          "Bombus magnus",
+          "Bombus muscorum",
+          "Bombus pascuorum",
+          "Bombus sylvestris",
+          "Bombus terrestris",
+          "Bombus wurflenii",
+          "Bombus",
+          "Camptopoeum friesei",
+          "Camptopoeum frontale",
+          "Ceratina chalybea",
+          "Ceratina cucurbitina",
+          "Ceratina cyanea",
+          "Chelostoma campanularum",
+          "Chelostoma distinctum",
+          "Chelostoma florisomne",
+          "Chelostoma foveolatum",
+          "Chelostoma rapunculi",
+          "Chrysididae",
+          "Chrysura austriaca",
+          "Chrysura cuprea",
+          "Chrysura hirsuta",
+          "Chrysura hybrida",
+          "Chrysura radians",
+          "Chrysura sexdentata",
+          "Chrysura simplex",
+          "Chrysura trimaculata",
+          "Coelioxys aurolimbata",
+          "Coelioxys echinata",
+          "Coelioxys elongata",
+          "Coelioxys inermis",
+          "Coelioxys lanceolata",
+          "Coelioxys mandibularis",
+          "Coelioxys polycentris",
+          "Coelioxys rufescens",
+          "Colletes caspicus",
+          "Colletes collaris",
+          "Colletes cunicularius",
+          "Colletes daviesanus",
+          "Colletes floralis",
+          "Colletes graeffei",
+          "Colletes halophilus",
+          "Colletes hederae",
+          "Colletes nasutus",
+          "Colletes sierrensis",
+          "Colletes succinctus",
+          "Colletes validus",
+          "Dasypoda argentata",
+          "Dasypoda hirtipes",
+          "Dasypoda suripes",
+          "Dioxys tridentata",
+          "Dufourea alpina",
+          "Dufourea dentiventris",
+          "Dufourea halictula",
+          "Dufourea inermis",
+          "Dufourea minuta",
+          "Dufourea novaeangliae",
+          "Dufourea paradoxa",
+          "Dufourea",
+          "Encyrtidae",
+          "Epeoloides coecutiens",
+          "Epeolus alpinus",
+          "Epeolus cruciger",
+          "Epeolus fallax",
+          "Epeolus schummeli",
+          "Epeolus variegatus",
+          "Eucera alticincta",
+          "Eucera dentata",
+          "Eucera interrupta",
+          "Eucera longicornis",
+          "Eucera macroglossa",
+          "Eucera nigrescens",
+          "Eucera salicariae",
+          "Eucera",
+          "Eulophidae",
+          "Eurytomidae",
+          "Galleria mellonella",
+          "Halictus calceatus",
+          "Halictus leucaheneus",
+          "Halictus maculatus",
+          "Halictus pollinosus",
+          "Halictus quadriceps",
+          "Halictus quadricinctus",
+          "Halictus rubicundus",
+          "Halictus scabiosae",
+          "Halictus sexcinctus",
+          "Halictus tumulorum",
+          "Heriades crenulatus",
+          "Heriades rubicola",
+          "Heriades truncorum",
+          "Hylaeus communis",
+          "Hylaeus confusus",
+          "Hylaeus cornutus",
+          "Hylaeus difformis",
+          "Hylaeus dilatatus",
+          "Hylaeus duckei",
+          "Hylaeus gibbus",
+          "Hylaeus gracilicornis",
+          "Hylaeus gredleri",
+          "Hylaeus hyalinatus",
+          "Hylaeus incongruus",
+          "Hylaeus kahri",
+          "Hylaeus leptocephalus",
+          "Hylaeus lineolatus",
+          "Hylaeus nigritus",
+          "Hylaeus pectoralis",
+          "Hylaeus punctulatissimus",
+          "Hylaeus signatus",
+          "Hylaeus taeniolatus",
+          "Hylaeus trinotatus",
+          "Hylaeus tyrolensis",
+          "Hylaeus variegatus",
+          "Lasioglossum calceatum",
+          "Lasioglossum clypeare",
+          "Lasioglossum convexiusculum",
+          "Lasioglossum corvinum",
+          "Lasioglossum costulatum",
+          "Lasioglossum cupromicans",
+          "Lasioglossum euboeense",
+          "Lasioglossum fratellum",
+          "Lasioglossum fulvicorne",
+          "Lasioglossum glabriusculum",
+          "Lasioglossum griseolum",
+          "Lasioglossum intermedium",
+          "Lasioglossum interruptum",
+          "Lasioglossum laeve",
+          "Lasioglossum laevigatum",
+          "Lasioglossum lativentre",
+          "Lasioglossum leucozonium",
+          "Lasioglossum limbellum",
+          "Lasioglossum lineare",
+          "Lasioglossum malachurum",
+          "Lasioglossum marginatum",
+          "Lasioglossum marginellum",
+          "Lasioglossum minutissimum",
+          "Lasioglossum minutulum",
+          "Lasioglossum monstrificum",
+          "Lasioglossum morio",
+          "Lasioglossum nigripes",
+          "Lasioglossum nitidiusculum",
+          "Lasioglossum nitidulum",
+          "Lasioglossum pallens",
+          "Lasioglossum parvulum",
+          "Lasioglossum pauperatum",
+          "Lasioglossum pauxillu",
+          "Lasioglossum pauxillum",
+          "Lasioglossum pleurospectrum",
+          "Lasioglossum pleurospeculum",
+          "Lasioglossum politum",
+          "Lasioglossum prasinum",
+          "Lasioglossum punctatissimum",
+          "Lasioglossum puncticolle",
+          "Lasioglossum puncticollum",
+          "Lasioglossum pygmaeum",
+          "Lasioglossum quadrinotatulum",
+          "Lasioglossum quadrinotatum",
+          "Lasioglossum quadrisignatum",
+          "Lasioglossum rufitarse",
+          "Lasioglossum sabulosum",
+          "Lasioglossum semilucens",
+          "Lasioglossum setulosum",
+          "Lasioglossum sexnotatum",
+          "Lasioglossum sexstrigatum",
+          "Lasioglossum smeathmanellum",
+          "Lasioglossum subauratus",
+          "Lasioglossum subfasciatum",
+          "Lasioglossum subfulvicorne",
+          "Lasioglossum tumulorum",
+          "Lasioglossum villosulum",
+          "Lasioglossum xanthopus",
+          "Lasioglossum zonulum",
+          "Lasioglossum",
+          "Lathyrus latifolius",
+          "Lathyrus pratensis",
+          "Lathyrus sylvestris",
+          "Lathyrus tuberosus",
+          "Lathyrus vernus",
+          "Leucospididae",
+          "Lithurgus chrysurus",
+          "Lytta vesicatoria",
+          "Macropis europaea",
+          "Macropis fulvipes",
+          "Medicago sativa",
+          "Megachile alpicola",
+          "Megachile analis",
+          "Megachile apicalis",
+          "Megachile centuncularis",
+          "Megachile circumcincta",
+          "Megachile ericetorum",
+          "Megachile lapponica",
+          "Megachile ligniseca",
+          "Megachile nigriventris",
+          "Megachile parietina",
+          "Megachile rotundata",
+          "Megachile sculpturalis",
+          "Megachile",
+          "Melecta albifrons",
+          "Melecta luctuosa",
+          "Melitta dimidiata",
+          "Melitta haemorrhoidalis",
+          "Melitta haeorrhoidalis",
+          "Melitta leporina",
+          "Melitta melanura",
+          "Melitta nigricans",
+          "Melitta tricincta",
+          "Melitta",
+          "Melittobia acasta",
+          "Melittosphex burmensis",
+          "Melitturga clavicornis",
+          "Meloe violaceus",
+          "Monodontomerus obscurus",
+          "Monodontomerus obsoletus",
+          "Monodontomerus rugulosus",
+          "Mutilla europaea",
+          "Mymaridae",
+          "Nomada alboguttata",
+          "Nomada armata",
+          "Nomada baccata",
+          "Nomada braunsiana",
+          "Nomada castellana",
+          "Nomada discedens",
+          "Nomada distinguenda",
+          "Nomada emarginata",
+          "Nomada errans",
+          "Nomada fabriciana",
+          "Nomada facilis",
+          "Nomada femoralis",
+          "Nomada ferruginata",
+          "Nomada flava",
+          "Nomada flavoguttata",
+          "Nomada flavopicta",
+          "Nomada fucata",
+          "Nomada fulvicornis",
+          "Nomada furva",
+          "Nomada fuscicornis",
+          "Nomada goodeniana",
+          "Nomada integra",
+          "Nomada sexfasciata",
+          "Nomia diversipes",
+          "Nomia femoralis",
+          "Nomia melanderi",
+          "Nomioides minutissimus",
+          "Osmia acuticornis",
+          "Osmia adunca",
+          "Osmia alticola",
+          "Osmia andrenoides",
+          "Osmia anthocopoides",
+          "Osmia aurulenta",
+          "Osmia bicolor",
+          "Osmia bicornis",
+          "Osmia biicornis",
+          "Osmia brevicornis",
+          "Osmia caerulescens",
+          "Osmia cerinthidis",
+          "Osmia claviventris",
+          "Osmia cornuta",
+          "Osmia gallarum",
+          "Osmia hyperborea",
+          "Osmia inermis",
+          "Osmia latreillei",
+          "Osmia leaiana",
+          "Osmia lepeletieri",
+          "Osmia leucomelana",
+          "Osmia loti",
+          "Osmia maritima",
+          "Osmia mitis",
+          "Osmia mustelina",
+          "Osmia nigriventris",
+          "Osmia niveata",
+          "Osmia papaveris",
+          "Osmia parietina",
+          "Osmia pilicornis",
+          "Osmia ravouxi",
+          "Osmia rufa",
+          "Osmia rufohirta",
+          "Osmia spinulosa",
+          "Osmia submicans",
+          "Osmia tridentata",
+          "Osmia tuberculata",
+          "Osmia uncinata",
+          "Osmia versicolor",
+          "Osmia villosa",
+          "Osmia viridana",
+          "Osmia xanthomelana",
+          "Osmia",
+          "Panurginus herzi",
+          "Panurginus labiatus",
+          "Panurginus montanus",
+          "Panurgus banksianus",
+          "Panurgus calcaratus",
+          "Panurgus dentipes",
+          "Philanthus triangulum",
+          "Psithyrus norvegicus",
+          "Ptinus sexpunctatus",
+          "Rhophitoides canus",
+          "Rophites algirus",
+          "Rophites quinquespinosus",
+          "Sapyga clavicornis",
+          "Sapyga quinquepunctata",
+          "Sapyga similis",
+          "Sapygidae",
+          "Sapygina decemguttata",
+          "Sitaris muralis",
+          "Sphecodes albilabris",
+          "Sphecodes monilicornis",
+          "Sphecodes puncticeps",
+          "Sphecodes reticulatus",
+          "Sphecodes rubicundus",
+          "Sphecodes ruficrus",
+          "Sphecodes rufiventris",
+          "Sphecodes scabricollis",
+          "Sphecodes schenckii",
+          "Sphecodes spinulosus",
+          "Stelis breviuscula",
+          "Stenoria analis",
+          "Systropha curvicornis",
+          "Systropha planidens",
+          "Thyreus orbatus",
+          "Torymidae",
+          "Trichodes alvearius",
+          "Trichodes apiarius",
+          "Trifolium pratense",
+          "Varroa destructor",
+          "Vicia sepium",
+          "Xylocopa iris",
+          "Xylocopa valga",
+          "Xylocopa violacea",
+          "Xylocopa"
+        ],
+        "fn": [
+          "-"
+        ]
+      },
+      "PBV2BUX6": {
+        "tp": [],
+        "fp": [
+          "Oribatida"
+        ],
+        "fn": []
+      },
+      "QR5QGMTI": {
+        "tp": [],
+        "fp": [
+          "Actitis hypoleucos",
+          "Anas acuta",
+          "Anas penelope",
+          "Anas strepera",
+          "Ardea cinerea",
+          "Aythya ferina",
+          "Aythya fuligula",
+          "Aythya marila",
+          "Aythya nyroca",
+          "Bucephala clangula",
+          "Calidris alpina",
+          "Calidris canutus",
+          "Calidris ferruginea",
+          "Calidris minuta",
+          "Calidris temminckii",
+          "Capella gallinago",
+          "Charadrius dubius",
+          "Charadrius hiaticula",
+          "Chlidonias hybrida (Pallas)",
+          "Chlidonias leucopterus Temm.",
+          "Chlidonias niger (L.)",
+          "Clangula hyemalis",
+          "Crocethia alba",
+          "Dafila acuta",
+          "Fulica atra",
+          "Gallinula chloropus",
+          "Gavia aTctica",
+          "Gavia stellata",
+          "Grus grus",
+          "Haematopus ostralegus",
+          "Himantopus himantopus (L.)",
+          "Hydroprogne caspia (Pallas)",
+          "Larus argentatus Pont.",
+          "Larus canus L.",
+          "Larus fuscus L.",
+          "Larus melanocephalus Temm.",
+          "Larus minutus Pallas",
+          "Larus ridibundus L.",
+          "Limosa limosa",
+          "Lymnocryptes minimus",
+          "Melanitta fusca",
+          "Melanitta nigra",
+          "Mergus albellus",
+          "Mergus merganser",
+          "Mergus serrator",
+          "Netta rufina",
+          "Numenius arquata",
+          "Numenius phaeopus",
+          "Phaleropus lobatus (L.)",
+          "Philomachus pugnax",
+          "Pluvialis apricaria",
+          "Pluvialis squatarola",
+          "Podiceps auritus",
+          "Podiceps cristatus",
+          "Podiceps griseigena",
+          "Podiceps nigricollis",
+          "Porzana parva",
+          "Porzana porzana",
+          "Rallus aquaticus",
+          "Recurvirostra avosetta L.",
+          "Rissa tridactyla (L.)",
+          "Somateria mollissima",
+          "Spatula clypeata",
+          "Stercorarius parasiticus (L.)",
+          "Sterna hirundo L.",
+          "Tringa erythropus",
+          "Tringa glareola",
+          "Tringa nebularia",
+          "Tringa ochropus",
+          "Tringa stagnatilis",
+          "Tringa totanus",
+          "Vanellus vanellus",
+          "_Anser albifrons_",
+          "_Anser anser_",
+          "_Anser erythropus_",
+          "_Anser fabalis_",
+          "_Branta leucopsis_",
+          "_Cygnus bewickii_",
+          "_Cygnus cygnus_",
+          "_Cygnus olor_",
+          "_Haliaetus albicilla_",
+          "_Pandion haliaetus_",
+          "_Tadorna tadorna_"
+        ],
+        "fn": [
+          "-"
+        ]
+      },
+      "885FDL5Z": {
+        "tp": [],
+        "fp": [
+          "Acetobacter",
+          "Acidobacteria",
+          "Armadillidium vulgare",
+          "Athene cunicularia",
+          "Azospirillum",
+          "Bacillus cereus",
+          "Bacillus subtilis",
+          "Bacillus",
+          "Betaproteobacteria",
+          "Candidatus Accumulibacter phosphatis",
+          "Chloroflexi",
+          "Collembola",
+          "Cynomys ludovicianus",
+          "Eisenia fetida",
+          "Glomus",
+          "Linepithema humile",
+          "Lumbricus",
+          "Phytophthora cinnamomi",
+          "Pontoscolex corethrurus",
+          "Porcellio scaber",
+          "Pseudomonas putida",
+          "Rhizobium",
+          "Talpa europaea",
+          "Thomomys bottae",
+          "Trichoderma spp.",
+          "Trichoderma"
+        ],
+        "fn": []
+      },
+      "SVXF36H4": {
+        "tp": [],
+        "fp": [
+          "Anthus trivialis",
+          "Carduelis chloris",
+          "Carduelis spinus",
+          "Coccothraustes coccothraustes",
+          "Emberiza citrinella",
+          "Erithacus rubecula",
+          "Fringilla coelebs",
+          "Motacilla alba",
+          "Muscicapa striata",
+          "Passer montanus",
+          "Prunella modularis",
+          "Pyrrhula pyrrhula",
+          "Sturnus vulgaris",
+          "Troglodytes troglodytes",
+          "Turdus merula",
+          "Turdus philomelos",
+          "Turdus viscivorus"
+        ],
+        "fn": []
+      },
+      "2RXMDX8I": {
+        "tp": [],
+        "fp": [
+          "Agrostis canina",
+          "Agrostis capillaris",
+          "Alchemilla vulgaris",
+          "Alopecurus pratensis",
+          "Antennaria dioica",
+          "Arabidopsis thaliana",
+          "Arrhenatherum elatius",
+          "Briza media",
+          "Bromus hordeaceus",
+          "Calluna vulgaris",
+          "Caltha palustris",
+          "Cardamine amara",
+          "Cardamine pratensis",
+          "Carex acuta",
+          "Carex canescens",
+          "Carex disticha",
+          "Cirsium acaule",
+          "Cirsium oleraceum",
+          "Climacium dendroides",
+          "Crepis mollis",
+          "Cynosurus cristatus",
+          "Dactylis glomerata",
+          "Daucus carota",
+          "Deschampsia flexuosa",
+          "Elymus repens",
+          "Festuca rubra agg.",
+          "Festuca rubra",
+          "Galium album",
+          "Galium pumilum",
+          "Galium saxatile",
+          "Geranium pratense",
+          "Geranium sylvaticum",
+          "Glyceria fluitans",
+          "Helictotrichon pubescens",
+          "Hieracium lactucella",
+          "Hieracium pilosella",
+          "Hypericum maculatum",
+          "Juncus acutiflorus",
+          "Juncus effusus",
+          "Juncus filiformis",
+          "Lolium perenne",
+          "Luzula campestris",
+          "Molinia caerulea",
+          "Myosotis scorpioides",
+          "Nardus stricta",
+          "Onobrychis viciifolia",
+          "Orchis tridentata",
+          "Phyteuma nigrum",
+          "Phyteuma spicatum",
+          "Plantago major",
+          "Poa annua",
+          "Poa pratensis",
+          "Poa trivialis",
+          "Polygala vulgaris",
+          "Polygonum bistorta",
+          "Ranunculus bulbosus",
+          "Ranunculus repens",
+          "Rhytidiadelphus squarrosus",
+          "Rumex acetosa",
+          "Rumex obtusifolius",
+          "Salvia pratensis",
+          "Sanguisorba officinalis",
+          "Senecio aquaticus",
+          "Silaum silaus",
+          "Stellaria graminea",
+          "Succisa pratensis",
+          "Taraxacum sectio Ruderalia",
+          "Thesium pyrenaicum",
+          "Thymus cf. pulegioides",
+          "Trifolium repens",
+          "Trifolium spadiceum",
+          "Trisetum flavescens",
+          "Trollius europaeus",
+          "Vaccinium myrtillus",
+          "Vaccinium vitis-idaea",
+          "Veronica arvensis",
+          "Veronica chamaedrys"
+        ],
+        "fn": []
+      },
+      "6G2THNDX": {
+        "tp": [],
+        "fp": [
+          "Alnus glutinosa",
+          "Ancylus fluviatilis",
+          "Anguilla anguilla",
+          "Baetis fuscatus",
+          "Beggiatoa alba",
+          "Bithynia tentaculata",
+          "Brachycentrus subnubilis",
+          "Brachyptera trifasciata",
+          "Caenis horaria",
+          "Carpinus betulus",
+          "Castor fiber",
+          "Chaetopteryx villosa",
+          "Chara hispida",
+          "Cheumatopsyche lepida",
+          "Chimarra marginata",
+          "Coregonus wartmanni",
+          "Corylus avellana",
+          "Craspedacusta sowerbyi",
+          "Cyclotella bodanica",
+          "Dreissena polymorpha",
+          "Ephemera vulgata",
+          "Ephoron virgo",
+          "Euleuctra geniculata",
+          "Euonymus europaea",
+          "Fagus sylvatica",
+          "Fragilaria crotonensis",
+          "Gammarus tigrinus",
+          "Glossosoma boltoni",
+          "Gomphus vulgatissimus",
+          "Hildenbrandia rivularis",
+          "Hippuris vulgaris",
+          "Hydropsyche angustipennis",
+          "Hydropsyche contubemalis",
+          "Hydropsyche pellucidula",
+          "Isogenus nubecula",
+          "Isogenus nubeluca",
+          "Isoperla grammatica",
+          "Isoperla obscura",
+          "Ithytrichia lamellaris",
+          "Leuctra jusca",
+          "Lithoglyphus naticoides",
+          "Lutra lutra",
+          "Micrasema setiferum",
+          "Molanna angustata",
+          "Mustela vison",
+          "Myocastor coypus",
+          "Myotis dasycneme",
+          "Myotis daubentoni",
+          "Natrix tessellata",
+          "Oligoplectrum maculatum",
+          "Ondatra zibethicus",
+          "Orchidaceae",
+          "Orconectes limosus",
+          "Oscillatoria rubescens",
+          "Palingenia longicauda",
+          "Pisidium casertanum",
+          "Populus nigra",
+          "Potamanthus luteus",
+          "Procyon lotor",
+          "Quercus robur",
+          "Rhyacophila nubila",
+          "Rhyacophila pascoei",
+          "Rhyacophila tristis",
+          "Rutilus rutilus",
+          "Salix alba",
+          "Salmo salar",
+          "Silobia pallipes",
+          "Silobia piceus",
+          "Sphaerium solidum",
+          "Sphaerotilus",
+          "Tabellaria fenestrata",
+          "Theodoxus fluviatilis",
+          "Thymallus thymallus",
+          "Tilia cordata",
+          "Ulmus minor",
+          "Vipera berus",
+          "Viviparus viviparus"
+        ],
+        "fn": [
+          "Amphibia",
+          "Aves",
+          "Invertebraten",
+          "Pisces",
+          "Reptilia"
+        ]
+      },
+      "2P53UVJA": {
+        "tp": [],
+        "fp": [
+          "Acridotheres tristis",
+          "Bufo marinus",
+          "Carduelis chloris",
+          "Carpodacus mexicanus",
+          "Dreissena polymorpha",
+          "Drosophila subobscura",
+          "Euglandina rosea",
+          "Fringilla coelebs",
+          "Gambusia affinis",
+          "Herpestes auropunctatus",
+          "Herpestes edwardsii",
+          "Herpestes javanicus",
+          "Herpestes smithii",
+          "Icerya purchasi",
+          "Linepithema humile",
+          "Melaleuca quinquenerva",
+          "Mimosa pigra",
+          "Oncorhynchus nerka",
+          "Passer domesticus",
+          "Passer montanus",
+          "Rodolia cardinalis",
+          "Schinus terebinthifolius",
+          "Sturnus vulgaris"
+        ],
+        "fn": []
+      },
+      "VQT78VA5": {
+        "tp": [],
+        "fp": [
+          "Aporrectodea caliginosa",
+          "Aporrectodea rosea",
+          "Brachygeophilus truncorum",
+          "Cylindroiulus nitidus",
+          "Dendrodrilus rubidus",
+          "Geophilus insculptus",
+          "Glomeris marginata",
+          "Haplophthalmus mengii",
+          "Ligidium hypnorum",
+          "Lithobius crassipes",
+          "Lithobius curtipes",
+          "Lithobius dentatus",
+          "Lithobius macilentus",
+          "Lithobius mutabilis",
+          "Lithobius nodulipes",
+          "Lithobius piceus",
+          "Lumbricus castaneus",
+          "Lumbricus terrestris",
+          "Mycogona germanicum",
+          "Octolasion cavenum",
+          "Octolasion octaedrum",
+          "Oniscus asellus",
+          "Porcellium conspersum",
+          "Strigamia acuminata",
+          "Stygloglomeris crinata",
+          "Trichoniscus pusillus",
+          "Unciger foetidus"
+        ],
+        "fn": [
+          "-",
+          "Chilopoda",
+          "Diplopoda",
+          "Isopoda",
+          "Lumbricidae"
+        ]
+      },
+      "2E9XWUUE": {
+        "tp": [],
+        "fp": [
+          "Acartia tonsa",
+          "Acipenser baerii",
+          "Acipenser oxyrinchus",
+          "Acipenser sturio",
+          "Agarophyton vermiculophyllum",
+          "Aglaothamnion halliae",
+          "Alitta succinea",
+          "Alitta virens",
+          "Alkmaria romijni",
+          "Amathia gracilis",
+          "Amathia imbricata",
+          "Ameira divagans ssp. divagans",
+          "Amphibalanus improvisus",
+          "Anguillicoloides crassus",
+          "Antithamnion hubbsii",
+          "Antithamnionella spirographidis",
+          "Antithamnionella ternifolia",
+          "Aphelochaeta marioni",
+          "Aplidium glabrum",
+          "Arachnidium lacourti",
+          "Austrominius modestus",
+          "Blackfordia virginica",
+          "Boccardia proboscidea",
+          "Boccardiella ligerica",
+          "Bonnemaisonia hamifera",
+          "Bougainvillia macloviana",
+          "Branchiura sowerbyi",
+          "Bugula neritina",
+          "Bugulina stolonifera",
+          "Callinectes sapidus",
+          "Callithamnion tetragonum",
+          "Calyptospadix cerulea",
+          "Ceramium cimbricum",
+          "Ceramium sungminbooi",
+          "Cercopagis pengoi",
+          "Cereus pedunculatus",
+          "Chalinula loosanoffi",
+          "Chara connivens",
+          "Chelicorophium curvispinum",
+          "Claviceps purpurea",
+          "Codium fragile ssp. fragile",
+          "Colpomenia peregrina",
+          "Corambe obscura",
+          "Corbicula fluminalis",
+          "Cordylophora caspia",
+          "Corella eumyota",
+          "Cotula coronopifolia",
+          "Crassostrea virginica",
+          "Crepidula fornicata",
+          "Cryptorchestia cavimana",
+          "Dasya baillouviana",
+          "Dasysiphonia japonica",
+          "Diadumene cincta",
+          "Diadumene lineata",
+          "Didemnum vexillum",
+          "Dikerogammarus haemobaphes",
+          "Dikerogammarus villosus",
+          "Diplosoma listerianum",
+          "Dreissena bugensis",
+          "Dreissena polymorpha",
+          "Echinogammarus ischnus",
+          "Echinogammarus trichiatus",
+          "Ensis leei",
+          "Eriocheir sinensis",
+          "Faxonius limosus",
+          "Fenestrulina delicia",
+          "Ficopomatus enigmaticus",
+          "Fucus distichus subsp. edentatus",
+          "Gammarus tigrinus",
+          "Gobiosoma bosc",
+          "Gonionemus vertens",
+          "Gracilaria vermiculophylla",
+          "Grandidierella japonica",
+          "Grateloupia turuturu",
+          "Haliclona xena",
+          "Haliclystus tenuis",
+          "Haminella solitaria",
+          "Hemigrapsus sanguineus",
+          "Hemigrapsus takanoi",
+          "Homarus americanus",
+          "Hypania invalida",
+          "Hypereteone heteropoda",
+          "Incisocalliope aestuarius",
+          "Jassa marmorata",
+          "Laonome xeprovala",
+          "Leucosolenia somesii",
+          "Limnomysis benedeni",
+          "Limulus polyphemus",
+          "Loimia ramzega",
+          "Magallana (Crassostrea) angulata",
+          "Magallana gigas",
+          "Marenzelleria neglecta",
+          "Marenzelleria viridis",
+          "Mastocarpus stellatus",
+          "Melanothamnus harveyi",
+          "Melita nitida",
+          "Microphthalmus similis",
+          "Mnemiopsis leidyi",
+          "Moerisia inkermanica",
+          "Molgula manhattensis",
+          "Monocorophium sextonae",
+          "Monocorophium uenoi",
+          "Mulinia lateralis",
+          "Mya arenaria",
+          "Mytilicola intestinalis",
+          "Mytilicola orientalis",
+          "Mytilopsis leucophaeata",
+          "Nemopsis bachei",
+          "Neodexiospira brasiliensis",
+          "Neogobius melanostomus",
+          "Nippoleucon hinumensis",
+          "Obesogammarus crassus",
+          "Oithona davisae",
+          "Pachycordyle michaeli",
+          "Pacifastacus leniusculus",
+          "Pagurus longicarpus",
+          "Palaemon elegans",
+          "Palaemon macrodactylus",
+          "Paramysis lacustris",
+          "Perophora japonica",
+          "Petricolaria pholadiformis",
+          "Pileolaria berkeleyana",
+          "Platorchestia platensis",
+          "Polydora websteri",
+          "Pontogammarus robustoides",
+          "Potamopyrgus antipodarum",
+          "Potamothrix",
+          "Primavelans glabricollaris",
+          "Proasellus coxalis",
+          "Pseudodiaptomus marinus",
+          "Rangia cuneata",
+          "Rhithropanopeus harrisii",
+          "Ruditapes philippinarum",
+          "Sargassum muticum",
+          "Schizobrachiella verrilli",
+          "Schizoporella japonica",
+          "Smittoidea prolifica",
+          "Spartina anglica",
+          "Streblospio benedicti",
+          "Styela clava",
+          "Synidotea laticauda",
+          "Telmatogeton japonicus",
+          "Teredo navalis",
+          "Tharyx killariensis",
+          "Tharyx maryae",
+          "Tricellaria inopinata",
+          "Tubificoides heterochaetus",
+          "Ulva australis",
+          "Ulva californica",
+          "Undaria pinnatifida",
+          "Vaucheria cf. velutina",
+          "Vaucheria longicaulis",
+          "Victorella pavida",
+          "Watersipora subatra",
+          "_Aplidium glabrum",
+          "_Botrylloides violaceus",
+          "_Botryllus schlosseri",
+          "_Corella eumyota",
+          "_Hemimysis anomala_",
+          "_Limnomysis benedeni_",
+          "_Nippoleucon hinumensis_",
+          "_Sinelobus vanhaareni_"
+        ],
+        "fn": [
+          "-",
+          "Invertebraten",
+          "Tracheophyta",
+          "Vertebrata"
+        ]
+      },
+      "49Z7RPDP": {
+        "tp": [],
+        "fp": [
+          "Aporrectodea caliginosa",
+          "Lumbricus castaneus",
+          "Lumbricus terrestris"
+        ],
+        "fn": [
+          "Lumbricidae"
+        ]
+      },
+      "6792YBL7": {
+        "tp": [],
+        "fp": [
+          "Adonis aestivalis",
+          "Anagallis minima",
+          "Anthemis cotula",
+          "Bromus grossus",
+          "Bromus sterilis",
+          "Bupleurum rotundifolium",
+          "Caucalis platycarpos",
+          "Centunculus minimus",
+          "Cicendia filiformis",
+          "Consolida regalis",
+          "Eu phorbia falcata",
+          "Euphorbia falcata",
+          "Fumaria parviflora",
+          "Galium tricornutum",
+          "Hypochaeris glabra",
+          "Kickxia elatine",
+          "Kickxia spuria",
+          "Legousia hybrida",
+          "Legousia speculum-veneris",
+          "Linaria arvensis",
+          "Neslia paniculata",
+          "Ornithogalum umbellatum",
+          "Scandix pecten-veneris",
+          "Stachys annua",
+          "Stachys arvensis",
+          "Tulipa sylvestris"
+        ],
+        "fn": [
+          "Adonis aestivalis L.",
+          "Anagallis minima (L.) E. H. L. Krause",
+          "Anthemis cotula L.",
+          "Bromus grossus A. P. de Candolle 1805",
+          "Bupleurum rotundifolium L.",
+          "Caucalis platycarpos L.",
+          "Euphorbia falcata L.",
+          "Fumaria parviflora Lam.",
+          "Galium tricornutum Dandy",
+          "Hypochaeris glabra L.",
+          "Legousia hybrida (L.) Delarbre",
+          "Legousia speculum-veneris (L.) Chaix",
+          "Linaria arvensis (L.) Desf.",
+          "Neslia paniculata (L.) Desv. s.l.",
+          "Scandix pecten-veneris L.",
+          "Stachys annua (L.) L."
+        ]
+      },
+      "ZQ329JQ6": {
+        "tp": [],
+        "fp": [
+          "Gadus morhua",
+          "Goneplax rhomboides",
+          "Mullus surmuletus"
+        ],
+        "fn": []
+      },
+      "3E8X2AK3": {
+        "tp": [],
+        "fp": [
+          "Acridotheres tristis",
+          "Alopochen aegyptiaca",
+          "Ambrosia artemisiifolia",
+          "Arthurdendyus triangulatus",
+          "Callosciurus erythraeus",
+          "Corvus splendens",
+          "Eichhornia crassipes",
+          "Eriocheir sinensis",
+          "Fallopia japonica",
+          "Gymnocoronis spilanthoides",
+          "Heracleum mantegazzianum",
+          "Heracleum persicum",
+          "Heracleum sosnowskyi",
+          "Herpestes javanicus",
+          "Lagarosiphon major",
+          "Lepomis gibbosus",
+          "Lespedeza juncea",
+          "Lithobates catesbeianus",
+          "Ludwigia grandiflora",
+          "Ludwigia peploides",
+          "Lygodium japonicum",
+          "Lysichiton americanus",
+          "Microstegium vimineum",
+          "Muntiacus reevesi",
+          "Myocastor coypus",
+          "Myriophyllum aquaticum",
+          "Myriophyllum heterophyllum",
+          "Nasua nasua",
+          "Nyctereutes procyonoides",
+          "Ondatra zibethicus",
+          "Orconectes limosus",
+          "Orconectes virilis",
+          "Oxyura jamaicensis",
+          "Pacifastacus leniusculus",
+          "Parthenium hysterophorus",
+          "Pennisetum setaceum",
+          "Perccottus glenii",
+          "Persicaria perfoliata",
+          "Plotosus lineatus",
+          "Procambarus clarkii",
+          "Procambarus fallax f. virginalis",
+          "Procyon lotor",
+          "Pseudorasbora parva",
+          "Pueraria montana var. lobata",
+          "Rana esculenta",
+          "Salvinia molesta",
+          "Sapium sebiferum",
+          "Sciurus carolinensis",
+          "Sciurus niger",
+          "Tamias sibiricus",
+          "Threskiornis aethiopicus",
+          "Trachemys scripta",
+          "Vespa velutina nigrithorax",
+          "Vespa velutina",
+          "_Alopochen aegyptiaca_",
+          "_Asclepias syriaca_",
+          "_Elodea nuttallii_",
+          "_Eriocheir sinensis_",
+          "_Heracleum mantegazzianum_",
+          "_Hydrocotyle ranunculoides_",
+          "_Impatiens glandulifera_",
+          "_Lagarosiphon major_",
+          "_Lepomis gibbosus_",
+          "_Lithobates catesbeianus_",
+          "_Ludwigia grandiflora_",
+          "_Lysichiton americanus_",
+          "_Myocastor coypus_",
+          "_Myriophyllum aquaticum_",
+          "_Myriophyllum heterophyllum_",
+          "_Nyctereutes procyonoides_",
+          "_Ondatra zibethicus_",
+          "_Orconectes limosus_",
+          "_Pacifastacus leniusculus_",
+          "_Procambarus clarkii_",
+          "_Procambarus fallax f. virginalis_",
+          "_Procyon lotor_",
+          "_Pseudorasbora parva_",
+          "_Tamias sibiricus_"
+        ],
+        "fn": []
+      },
+      "4Z67G9T5": {
+        "tp": [],
+        "fp": [
+          "Abramis brama",
+          "Acipenser oxyrinchus",
+          "Anguilla anguilla",
+          "Antithamnionella ternifolia",
+          "Arctica islandica",
+          "Clangula hyemalis",
+          "Clupea harengus",
+          "Coregonus maraena",
+          "Diadumenelineata",
+          "Dreissena (Pontodreissena) bugensis",
+          "Dreissena bugensis",
+          "Echinogammarus trichiatus",
+          "Encheliopus cimbrius",
+          "Esox lucius",
+          "Ficopomatus enigmaticus",
+          "Gadus morhua",
+          "Grandidierella japonica",
+          "Hemigrapsus takanoi",
+          "Hypania invalida",
+          "Lampetra fluviatilis",
+          "Leuciscus aspius",
+          "Limanda limanda",
+          "Lumpenus lampretaeformis",
+          "Mytilus edulis",
+          "Paramysis lacustris",
+          "Petromyzon marinus",
+          "Phoca vitulina",
+          "Phocoena phocoena",
+          "Pleuronectes platessa",
+          "Proasellus coxalis",
+          "Sander lucioperca",
+          "Scophthalmus maximus",
+          "Scophthalmus rhombus",
+          "Sinelobus vanhaareni",
+          "Trachinus draco",
+          "Vimba vimba"
+        ],
+        "fn": [
+          "-",
+          "Cephalopoda",
+          "Pisces"
+        ]
+      },
+      "7EUNQX3Z": {
+        "tp": [],
+        "fp": [
+          "Ceratocystis ulmi",
+          "Pteleobius vittatus",
+          "Scolytus laevis",
+          "Scolytus multistriatus",
+          "Scolytus scolytus",
+          "Ulmus carpinifolia var sarniensis",
+          "Ulmus carpinifolia",
+          "Ulmus carpinifolia, U. glabra, U. laevis",
+          "Ulmus glabra",
+          "Ulmus japonica",
+          "Ulmus laevis",
+          "Ulmus parvifolia",
+          "Ulmus procera",
+          "Ulmus pumila",
+          "Ulmus wilsoniana"
+        ],
+        "fn": [
+          "Ophiostoma ulmi (Syn. Ceratocystis ulmi)"
+        ]
+      },
+      "6332SBW4": {
+        "tp": [],
+        "fp": [
+          "Cochlearia bavarica"
+        ],
+        "fn": []
+      },
+      "N82RZ7WL": {
+        "tp": [],
+        "fp": [
+          "F. serratus",
+          "Fucus spp.",
+          "Fucus vesiculosus"
+        ],
+        "fn": [
+          "Fucus spp"
+        ]
+      },
+      "84QQ9F5S": {
+        "tp": [],
+        "fp": [
+          "Brachionus plicatilis",
+          "Corohium volutator",
+          "Corophium sp.",
+          "Corophium volutator",
+          "Corophium",
+          "Crassostrea gigas",
+          "Crassostrea",
+          "Echinocardium cordatum",
+          "Echinocardium",
+          "Enteromorpha intestinalis",
+          "Gastropoda",
+          "Haematopus ostralegus",
+          "Larus ar-",
+          "Larus argentatus",
+          "Lepidocheirus plumulosus",
+          "Lepidochirus plumulosus",
+          "Leptocheirus plumulosus",
+          "Mytilus edulis",
+          "Neomysis reis virens",
+          "Neomysis viridis",
+          "Nereis virens",
+          "Phoca vitulina",
+          "Platichthys flesus",
+          "Skeletonema costatum",
+          "Somateria mollissima",
+          "Somateria spp.",
+          "Sterna hirundo",
+          "Tadorna tadorna",
+          "Uria aalge",
+          "tadorna"
+        ],
+        "fn": [
+          "Aves"
+        ]
+      },
+      "6DCMK7GA": {
+        "tp": [],
+        "fp": [
+          "Anchusa arvensis",
+          "Bupleurum rotundifolium",
+          "Centaurea cyanus",
+          "Chaenorhinum minus",
+          "Consolida regalis",
+          "Euphorbia platyphyllos",
+          "Legousia speculum-veneris",
+          "Lithospermum arvense",
+          "Papaver argemone",
+          "Papaver rhoeas",
+          "Ranunculus arvensis",
+          "Sherardia arvensis",
+          "Silene noctiflora"
+        ],
+        "fn": []
+      },
+      "3LGPK6BL": {
+        "tp": [],
+        "fp": [
+          "Acer campestre",
+          "Acer platanoides",
+          "Acer pseudoplatanus",
+          "Alliaria petiolata",
+          "Allium ursinum",
+          "Alnus glutinosa",
+          "Anemone ranunculoides",
+          "Anemone x seemenii",
+          "Brachypodium sylvaticum",
+          "Carabus glabratus",
+          "Carpinus betulus",
+          "Corydalis cava",
+          "Corylus avellana",
+          "Fagus sylvatica",
+          "Fraxinus excelsior",
+          "Geranium robertianum",
+          "Geum urbanum",
+          "Iris pseudacorus",
+          "Leucojum vernum",
+          "Lilium martagon",
+          "Milium effusum",
+          "Phalaris arundinacea",
+          "Populus x canadensis",
+          "Pulmonaria obscura",
+          "Quercus robur",
+          "Salamandra salamandra terrestris",
+          "Sambucus nigra",
+          "Sorbus aucuparia",
+          "Stachys sylvatica",
+          "Stellaria holostea",
+          "Tilia cordata",
+          "Ulmus glabra",
+          "Ulmus laevis",
+          "Ulmus spec."
+        ],
+        "fn": []
+      },
+      "46RX4AEN": {
+        "tp": [],
+        "fp": [
+          "Acacia mearnsii",
+          "Achatina fulica",
+          "Boiga irregularis",
+          "Cactoblastis cactorum",
+          "Caulerpa taxifolia",
+          "Chromolaena odorata",
+          "Dreissena polymorpha",
+          "Eichhornia crassipes",
+          "Epinepephelus fuscoguttatus",
+          "Eragrostis plana",
+          "Fallopia japonica",
+          "Heracleum mantegazzianum",
+          "Mimosa pigra",
+          "Mustela vison",
+          "Myocastor coypus",
+          "Oryctolagus cuniculus",
+          "Oxyura jamaicensis",
+          "Phytophthora",
+          "Sciurus carolinensis",
+          "Sus scrofa"
+        ],
+        "fn": []
+      },
+      "5XHDHCIQ": {
+        "tp": [],
+        "fp": [
+          "Apis dorsata",
+          "Apis mellifera",
+          "Branta bernicla",
+          "Cynoscion guatucupa",
+          "Poecilia reticulata",
+          "Speotyto cunicularia"
+        ],
+        "fn": []
+      },
+      "XMIP837H": {
+        "tp": [],
+        "fp": [
+          "Crassostrea gigas",
+          "Ostrea edulis"
+        ],
+        "fn": [
+          "Magallana (Crassostrea) gigas",
+          "Mytilus edulis"
+        ]
+      },
+      "8GEYSUXR": {
+        "tp": [],
+        "fp": [
+          "Bonnemaisonia hamifera",
+          "Callithamnion corymbosum",
+          "Dictyota dichotoma",
+          "Fucus ceranoides",
+          "Mastocarpus stellatus",
+          "Nemalion helminthoides",
+          "Sargassum muticum"
+        ],
+        "fn": [
+          "-",
+          "Chlorophyceae",
+          "Phaeophyceae",
+          "Rhodophyceae"
+        ]
+      },
+      "8ZESW42A": {
+        "tp": [],
+        "fp": [
+          "Anthus petrosus",
+          "Asio flammeus",
+          "Branta bernicla",
+          "Calcarius nivalis",
+          "Charadrius hiaticula",
+          "Circus cyaneus",
+          "Eremophila alpestris",
+          "Falco peregrinus",
+          "Hydrocoloeus minutus",
+          "Larus argentatus",
+          "Larus canus",
+          "Larus fuscus",
+          "Larus marinus",
+          "Larus ridibundus",
+          "Recurvirostra avosetta",
+          "Somateria mollissima",
+          "Sterna sandvicensis"
+        ],
+        "fn": [
+          "Aves"
+        ]
+      },
+      "6D23L7B5": {
+        "tp": [],
+        "fp": [
+          "Aporrectodea rosea",
+          "Eisenia fetida",
+          "Lumbricus terrestris"
+        ],
+        "fn": []
+      },
+      "5LC5W7KF": {
+        "tp": [],
+        "fp": [
+          "Impatiens parviflora",
+          "Prunus serotina"
+        ],
+        "fn": [
+          "Bäume"
+        ]
+      },
+      "64BS3HZ3": {
+        "tp": [],
+        "fp": [
+          "Ancylus fluviatilis",
+          "Crustacea",
+          "Dugesia gonocephala",
+          "Ephemeroptera",
+          "Gammarus fossarum",
+          "Gastropoda",
+          "Trichoptera"
+        ],
+        "fn": []
+      },
+      "HNT6RCEA": {
+        "tp": [],
+        "fp": [
+          "Cylindroiulus caeruleocinctus",
+          "Eupelops occultus",
+          "Geophilus flavus",
+          "Isotoma viridis",
+          "Parasitidae",
+          "Schendyla nemorensis",
+          "Tectocepheus velatus",
+          "Trichoribates trimaculatus",
+          "Tricoribates trimaculatus"
+        ],
+        "fn": [
+          "Chilopoda",
+          "Collembola",
+          "Diplopoda",
+          "Mesostigmata",
+          "Oribatida"
+        ]
+      },
+      "3WEEGFGW": {
+        "tp": [],
+        "fp": [
+          "Apis mellifera",
+          "Bacillus thuringiensis",
+          "Buddleja davidii",
+          "Cricetus cricetus",
+          "Emberiza hortulana",
+          "Falco columbarius",
+          "Milvus milvus",
+          "Prunus serotina",
+          "Sus scrofa",
+          "Tagetes",
+          "Tetrao urogallus",
+          "Trichogramma",
+          "Vanellus vanellus"
+        ],
+        "fn": []
+      },
+      "TAXBZ8G5": {
+        "tp": [],
+        "fp": [
+          "Fagus sylvatica",
+          "Picea abies",
+          "Pinus sylvestris",
+          "Quercus robur"
+        ],
+        "fn": [
+          "Fagus",
+          "Picea",
+          "Pinus",
+          "Quercus spp"
+        ]
+      },
+      "F582S9H8": {
+        "tp": [],
+        "fp": [
+          "Agrostis capillaris",
+          "Artemisia spp.",
+          "Artemisia vulgaris",
+          "Brachythecium albicans",
+          "Calamagrostis epigejos",
+          "Cervus elaphus",
+          "Cladonia rei",
+          "Corynephorus canescens",
+          "Dama dama",
+          "Echium vulgare",
+          "Tanacetum vulgare"
+        ],
+        "fn": []
+      },
+      "XU5H8QJI": {
+        "tp": [],
+        "fp": [
+          "Orconectes immunis",
+          "Orconectes limosus"
+        ],
+        "fn": [
+          "Faxonius immunis (Syn. Orconectes immunis)"
+        ]
+      },
+      "4JF8F3WL": {
+        "tp": [],
+        "fp": [
+          "Canis lupus",
+          "Castor fiber",
+          "Crocidura russula",
+          "Felis silvestris",
+          "Myotis bechsteinii"
+        ],
+        "fn": [
+          "Mammalia"
+        ]
+      },
+      "UGNPXL8B": {
+        "tp": [],
+        "fp": [
+          "Leptinotarsa decemlineata"
+        ],
+        "fn": [
+          "Arthropoda",
+          "Plantae"
+        ]
+      },
+      "5I8A3W7U": {
+        "tp": [],
+        "fp": [
+          "Felis silvestris",
+          "Grus grus"
+        ],
+        "fn": []
+      },
+      "G7H698R6": {
+        "tp": [],
+        "fp": [
+          "Deschampsia cespitosa",
+          "Poa trivialis"
+        ],
+        "fn": [
+          "Plantae"
+        ]
+      },
+      "5TMUACTH": {
+        "tp": [],
+        "fp": [
+          "Zea mays"
+        ],
+        "fn": []
+      },
+      "NGFBPJCG": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Archaea",
+          "Bacteria"
+        ]
+      },
+      "2NJD9Y9T": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "-",
+          "Cnidaria",
+          "Zostera spp."
+        ]
+      },
+      "V6SVVBUH": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Amphibia",
+          "Auchenorrhyncha",
+          "Aves",
+          "Bivalvia",
+          "Clitellata",
+          "Coleoptera",
+          "Diptera",
+          "Emys orbicularis",
+          "Gastropoda",
+          "Heteroptera",
+          "Lepidoptera",
+          "Mammalia",
+          "Natrix natrix",
+          "Nematoda",
+          "Odonata",
+          "Orthoptera",
+          "Pisces"
+        ]
+      },
+      "FG3YVDCZ": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "-",
+          "Bacteria",
+          "Cyanobacteria",
+          "Diatomeen",
+          "Dinophyta",
+          "Phaeocystis spp."
+        ]
+      },
+      "KJ7JVAEW": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Archaea",
+          "Bacteria",
+          "Betaproteobacteria",
+          "Mikroben"
+        ]
+      },
+      "6CMGEZPD": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Pisces"
+        ]
+      },
+      "7T8NZA5Q": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Vibrio alginolyticus",
+          "Vibrio parahaemolyticus",
+          "Vibrio spp.",
+          "Vibrio vulnificus"
+        ]
+      },
+      "7AYVH7FI": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Zostera spp."
+        ]
+      },
+      "PMJGMLUG": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Plantae"
+        ]
+      },
+      "57CBE476": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Insecta"
+        ]
+      },
+      "8PFJ2KHU": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Ancylostomatidae",
+          "Ascaris lumbricoides",
+          "Trichuris trichiura"
+        ]
+      },
+      "V2BVMBPF": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Tracheophyta"
+        ]
+      },
+      "BBDCY7DW": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Homo sapiens"
+        ]
+      },
+      "G4VAFJZH": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Bos taurus"
+        ]
+      },
+      "6BKNRKUA": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "-"
+        ]
+      },
+      "BMTEN2FG": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Oryza"
+        ]
+      }
+    },
+    "taxa.species_group": {
+      "ZS59ID9J": {
+        "tp": [
+          "Fische"
+        ],
+        "fp": [
+          "Andere Wirbellose",
+          "Vögel"
+        ],
+        "fn": []
+      },
+      "WW9EZUVE": {
+        "tp": [
+          "Säugetiere"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "XU5H8QJI": {
+        "tp": [
+          "Andere Wirbellose"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "2EUNPHDZ": {
+        "tp": [
+          "Andere Pflanzen",
+          "Andere Wirbellose"
+        ],
+        "fp": [
+          "Amphibien und Reptilien",
+          "Fische",
+          "Gefäßpflanzen",
+          "Protisten"
+        ],
+        "fn": []
+      },
+      "2E9XWUUE": {
+        "tp": [
+          "Andere",
+          "Gefäßpflanzen"
+        ],
+        "fp": [
+          "Andere Pflanzen",
+          "Andere Wirbellose",
+          "Fische",
+          "Insekten",
+          "Pilze",
+          "Protisten"
+        ],
+        "fn": []
+      },
+      "F582S9H8": {
+        "tp": [
+          "Gefäßpflanzen"
+        ],
+        "fp": [
+          "Andere Pflanzen",
+          "Flechten",
+          "Moose",
+          "Säugetiere"
+        ],
+        "fn": []
+      },
+      "N82RZ7WL": {
+        "tp": [
+          "Andere Pflanzen"
+        ],
+        "fp": [
+          "Protisten"
+        ],
+        "fn": []
+      },
+      "PMJGMLUG": {
+        "tp": [
+          "Insekten"
+        ],
+        "fp": [],
+        "fn": [
+          "Gefäßpflanzen"
+        ]
+      },
+      "NGFBPJCG": {
+        "tp": [
+          "Archaeen",
+          "Bakterien"
+        ],
+        "fp": [
+          "Andere"
+        ],
+        "fn": []
+      },
+      "4Z67G9T5": {
+        "tp": [
+          "Andere Wirbellose",
+          "Andere",
+          "Fische",
+          "Säugetiere",
+          "Vögel"
+        ],
+        "fp": [
+          "Amphibien und Reptilien",
+          "Andere Pflanzen",
+          "Bakterien",
+          "Gefäßpflanzen",
+          "Pilze",
+          "Protisten"
+        ],
+        "fn": []
+      },
+      "XQ7DW4VS": {
+        "tp": [
+          "Säugetiere"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "7T8NZA5Q": {
+        "tp": [
+          "Bakterien"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "DFWI5DCP": {
+        "tp": [
+          "Gefäßpflanzen"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "5CZNRP7X": {
+        "tp": [
+          "Fische"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "SVXF36H4": {
+        "tp": [
+          "Vögel"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "HNT6RCEA": {
+        "tp": [
+          "Andere Wirbellose"
+        ],
+        "fp": [],
+        "fn": [
+          "Insekten"
+        ]
+      },
+      "UGNPXL8B": {
+        "tp": [
+          "Andere Wirbellose"
+        ],
+        "fp": [
+          "Andere Pflanzen",
+          "Insekten"
+        ],
+        "fn": [
+          "Gefäßpflanzen"
+        ]
+      },
+      "2FDHAHAR": {
+        "tp": [
+          "Andere Wirbellose"
+        ],
+        "fp": [
+          "Andere Pflanzen"
+        ],
+        "fn": [
+          "Andere"
+        ]
+      },
+      "57CBE476": {
+        "tp": [
+          "Insekten"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "6792YBL7": {
+        "tp": [
+          "Gefäßpflanzen"
+        ],
+        "fp": [
+          "Andere Pflanzen"
+        ],
+        "fn": []
+      },
+      "KXP8FP94": {
+        "tp": [
+          "Andere Pflanzen",
+          "Andere Wirbellose",
+          "Fische"
+        ],
+        "fp": [],
+        "fn": [
+          "Andere",
+          "Bakterien"
+        ]
+      },
+      "QR5QGMTI": {
+        "tp": [
+          "Vögel"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "6G2THNDX": {
+        "tp": [
+          "Amphibien und Reptilien",
+          "Andere Pflanzen",
+          "Andere",
+          "Fische",
+          "Vögel"
+        ],
+        "fp": [
+          "Andere Wirbellose",
+          "Bakterien",
+          "Flechten",
+          "Gefäßpflanzen",
+          "Insekten",
+          "Protisten",
+          "Protozoen",
+          "Säugetiere"
+        ],
+        "fn": []
+      },
+      "3TWLQG7F": {
+        "tp": [
+          "Andere Wirbellose",
+          "Fische"
+        ],
+        "fp": [
+          "Gefäßpflanzen"
+        ],
+        "fn": [
+          "Andere Pflanzen"
+        ]
+      },
+      "FG3YVDCZ": {
+        "tp": [
+          "Protisten"
+        ],
+        "fp": [
+          "Andere Pflanzen"
+        ],
+        "fn": [
+          "Andere",
+          "Bakterien"
+        ]
+      },
+      "ASEHVK97": {
+        "tp": [
+          "Archaeen",
+          "Bakterien"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "Z6CEAMK4": {
+        "tp": [
+          "Andere Wirbellose",
+          "Insekten"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "6CMGEZPD": {
+        "tp": [
+          "Andere Pflanzen",
+          "Fische"
+        ],
+        "fp": [
+          "Andere Wirbellose",
+          "Gefäßpflanzen",
+          "Protisten"
+        ],
+        "fn": [
+          "Andere"
+        ]
+      },
+      "8ZESW42A": {
+        "tp": [
+          "Vögel"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "7EUNQX3Z": {
+        "tp": [
+          "Pilze"
+        ],
+        "fp": [
+          "Andere Wirbellose",
+          "Gefäßpflanzen",
+          "Insekten"
+        ],
+        "fn": []
+      },
+      "84QQ9F5S": {
+        "tp": [
+          "Vögel"
+        ],
+        "fp": [
+          "Andere Pflanzen",
+          "Andere Wirbellose",
+          "Fische",
+          "Säugetiere"
+        ],
+        "fn": []
+      },
+      "7DSY6RMR": {
+        "tp": [
+          "Andere Pflanzen",
+          "Andere Wirbellose"
+        ],
+        "fp": [
+          "Bakterien",
+          "Fische",
+          "Gefäßpflanzen",
+          "Protisten"
+        ],
+        "fn": [
+          "Andere"
+        ]
+      },
+      "VQT78VA5": {
+        "tp": [
+          "Andere Wirbellose"
+        ],
+        "fp": [],
+        "fn": [
+          "Andere"
+        ]
+      },
+      "64C65W5I": {
+        "tp": [
+          "Säugetiere"
+        ],
+        "fp": [
+          "Andere Wirbellose"
+        ],
+        "fn": []
+      },
+      "TAXBZ8G5": {
+        "tp": [
+          "Gefäßpflanzen"
+        ],
+        "fp": [
+          "Fische"
+        ],
+        "fn": []
+      },
+      "XMIP837H": {
+        "tp": [
+          "Andere Wirbellose"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "5LC5W7KF": {
+        "tp": [
+          "Gefäßpflanzen"
+        ],
+        "fp": [
+          "Flechten",
+          "Insekten",
+          "Pilze",
+          "Vögel"
+        ],
+        "fn": []
+      },
+      "NZ7ETG2K": {
+        "tp": [
+          "Andere Wirbellose"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "49Z7RPDP": {
+        "tp": [
+          "Andere Wirbellose"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "3Z5BFIBL": {
+        "tp": [
+          "Andere Wirbellose",
+          "Fische"
+        ],
+        "fp": [
+          "Säugetiere"
+        ],
+        "fn": [
+          "Andere"
+        ]
+      },
+      "6DCMK7GA": {
+        "tp": [
+          "Gefäßpflanzen"
+        ],
+        "fp": [
+          "Andere Pflanzen"
+        ],
+        "fn": []
+      },
+      "6RLMM8BQ": {
+        "tp": [
+          "Insekten"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "PW2PNF55": {
+        "tp": [
+          "Fische"
+        ],
+        "fp": [],
+        "fn": [
+          "Andere"
+        ]
+      },
+      "4JF8F3WL": {
+        "tp": [
+          "Säugetiere"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "5SIYLM9W": {
+        "tp": [
+          "Insekten"
+        ],
+        "fp": [
+          "Andere Pflanzen",
+          "Andere Wirbellose",
+          "Gefäßpflanzen",
+          "Pilze",
+          "Säugetiere"
+        ],
+        "fn": []
+      },
+      "2NJD9Y9T": {
+        "tp": [
+          "Andere Pflanzen",
+          "Andere Wirbellose"
+        ],
+        "fp": [
+          "Bakterien",
+          "Protisten"
+        ],
+        "fn": [
+          "Andere"
+        ]
+      },
+      "6BKNRKUA": {
+        "tp": [
+          "Insekten"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "G7H698R6": {
+        "tp": [
+          "Gefäßpflanzen"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "57ZZ3GDF": {
+        "tp": [
+          "Säugetiere"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "4FCS62W5": {
+        "tp": [
+          "Gefäßpflanzen"
+        ],
+        "fp": [
+          "Andere Pflanzen"
+        ],
+        "fn": []
+      },
+      "V477VCE6": {
+        "tp": [
+          "Fische"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "885FDL5Z": {
+        "tp": [],
+        "fp": [
+          "Andere Pflanzen",
+          "Andere Wirbellose",
+          "Andere",
+          "Archaeen",
+          "Bakterien",
+          "Fische",
+          "Flechten",
+          "Insekten",
+          "Pilze",
+          "Protisten",
+          "Protozoen",
+          "Säugetiere",
+          "Vögel"
+        ],
+        "fn": []
+      },
+      "ZQ329JQ6": {
+        "tp": [],
+        "fp": [
+          "Andere Wirbellose",
+          "Andere",
+          "Fische"
+        ],
+        "fn": []
+      },
+      "2P53UVJA": {
+        "tp": [],
+        "fp": [
+          "Amphibien und Reptilien",
+          "Andere Pflanzen",
+          "Andere Wirbellose",
+          "Fische",
+          "Gefäßpflanzen",
+          "Insekten",
+          "Säugetiere",
+          "Vögel"
+        ],
+        "fn": []
+      },
+      "LY4P94Q4": {
+        "tp": [],
+        "fp": [
+          "Andere Pflanzen",
+          "Andere Wirbellose"
+        ],
+        "fn": []
+      },
+      "46RX4AEN": {
+        "tp": [],
+        "fp": [
+          "Amphibien und Reptilien",
+          "Andere Wirbellose",
+          "Fische",
+          "Gefäßpflanzen",
+          "Insekten",
+          "Pilze",
+          "Protisten",
+          "Säugetiere",
+          "Vögel"
+        ],
+        "fn": []
+      },
+      "3E8X2AK3": {
+        "tp": [],
+        "fp": [
+          "Amphibien und Reptilien",
+          "Andere Pflanzen",
+          "Andere Wirbellose",
+          "Andere",
+          "Fische",
+          "Gefäßpflanzen",
+          "Insekten",
+          "Säugetiere",
+          "Vögel"
+        ],
+        "fn": []
+      },
+      "3WEEGFGW": {
+        "tp": [],
+        "fp": [
+          "Amphibien und Reptilien",
+          "Andere Pflanzen",
+          "Andere Wirbellose",
+          "Andere",
+          "Bakterien",
+          "Gefäßpflanzen",
+          "Insekten",
+          "Säugetiere",
+          "Vögel"
+        ],
+        "fn": []
+      },
+      "6D23L7B5": {
+        "tp": [],
+        "fp": [
+          "Andere Pflanzen",
+          "Andere Wirbellose",
+          "Bakterien",
+          "Gefäßpflanzen",
+          "Insekten",
+          "Pilze",
+          "Vögel"
+        ],
+        "fn": []
+      },
+      "8UVBVFHS": {
+        "tp": [],
+        "fp": [
+          "Andere Pflanzen",
+          "Flechten",
+          "Gefäßpflanzen",
+          "Moose",
+          "Pilze",
+          "Protisten"
+        ],
+        "fn": []
+      },
+      "5TMUACTH": {
+        "tp": [],
+        "fp": [
+          "Andere Pflanzen",
+          "Andere Wirbellose",
+          "Andere",
+          "Gefäßpflanzen",
+          "Pilze",
+          "Protisten"
+        ],
+        "fn": []
+      },
+      "84P9CN4J": {
+        "tp": [],
+        "fp": [
+          "Andere Pflanzen"
+        ],
+        "fn": []
+      },
+      "DAI3VR9M": {
+        "tp": [],
+        "fp": [
+          "Andere Pflanzen",
+          "Andere Wirbellose",
+          "Fische"
+        ],
+        "fn": []
+      },
+      "4YXRYRJC": {
+        "tp": [],
+        "fp": [
+          "Fische",
+          "Insekten",
+          "Vögel"
+        ],
+        "fn": []
+      },
+      "3LGPK6BL": {
+        "tp": [],
+        "fp": [
+          "Amphibien und Reptilien",
+          "Gefäßpflanzen",
+          "Insekten"
+        ],
+        "fn": [
+          "Andere"
+        ]
+      },
+      "6332SBW4": {
+        "tp": [],
+        "fp": [
+          "Andere Pflanzen",
+          "Andere Wirbellose",
+          "Andere",
+          "Gefäßpflanzen",
+          "Insekten",
+          "Moose"
+        ],
+        "fn": []
+      },
+      "8GEYSUXR": {
+        "tp": [],
+        "fp": [
+          "Andere Pflanzen",
+          "Protisten"
+        ],
+        "fn": [
+          "Andere"
+        ]
+      },
+      "4BAX6GKK": {
+        "tp": [],
+        "fp": [
+          "Andere Wirbellose",
+          "Gefäßpflanzen",
+          "Insekten",
+          "Vögel"
+        ],
+        "fn": []
+      },
+      "5XHDHCIQ": {
+        "tp": [],
+        "fp": [
+          "Fische",
+          "Insekten",
+          "Vögel"
+        ],
+        "fn": []
+      },
+      "25RIYD2C": {
+        "tp": [],
+        "fp": [
+          "Andere Pflanzen",
+          "Andere"
+        ],
+        "fn": []
+      },
+      "2RXMDX8I": {
+        "tp": [],
+        "fp": [
+          "Andere Pflanzen",
+          "Gefäßpflanzen",
+          "Moose"
+        ],
+        "fn": []
+      },
+      "QGF2WV3C": {
+        "tp": [],
+        "fp": [
+          "Vögel"
+        ],
+        "fn": []
+      },
+      "25ABQZIH": {
+        "tp": [],
+        "fp": [
+          "Amphibien und Reptilien",
+          "Insekten",
+          "Vögel"
+        ],
+        "fn": []
+      },
+      "PBV2BUX6": {
+        "tp": [],
+        "fp": [
+          "Andere Wirbellose"
+        ],
+        "fn": []
+      },
+      "3RSTTAEZ": {
+        "tp": [],
+        "fp": [
+          "Andere Pflanzen"
+        ],
+        "fn": [
+          "Andere"
+        ]
+      },
+      "64BS3HZ3": {
+        "tp": [],
+        "fp": [
+          "Andere Wirbellose",
+          "Insekten"
+        ],
+        "fn": [
+          "Andere"
+        ]
+      },
+      "5I8A3W7U": {
+        "tp": [],
+        "fp": [
+          "Insekten",
+          "Säugetiere",
+          "Vögel"
+        ],
+        "fn": []
+      },
+      "4ZGN9AHA": {
+        "tp": [],
+        "fp": [
+          "Andere"
+        ],
+        "fn": []
+      },
+      "42ELXZ2H": {
+        "tp": [],
+        "fp": [
+          "Säugetiere"
+        ],
+        "fn": []
+      },
+      "BMTEN2FG": {
+        "tp": [],
+        "fp": [
+          "Andere Pflanzen"
+        ],
+        "fn": [
+          "Gefäßpflanzen"
+        ]
+      },
+      "8HFL2MPL": {
+        "tp": [],
+        "fp": [
+          "Gefäßpflanzen"
+        ],
+        "fn": []
+      },
+      "KJ7JVAEW": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Andere",
+          "Archaeen",
+          "Bakterien"
+        ]
+      },
+      "V6SVVBUH": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Amphibien und Reptilien",
+          "Andere Wirbellose",
+          "Fische",
+          "Insekten",
+          "Säugetiere",
+          "Vögel"
+        ]
+      },
+      "7AYVH7FI": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Andere Pflanzen",
+          "Gefäßpflanzen"
+        ]
+      },
+      "8PFJ2KHU": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Andere Wirbellose"
+        ]
+      },
+      "V2BVMBPF": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Gefäßpflanzen"
+        ]
+      },
+      "G4VAFJZH": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Säugetiere"
+        ]
+      },
+      "BBDCY7DW": {
+        "tp": [],
+        "fp": [],
+        "fn": [
+          "Säugetiere"
+        ]
+      }
+    }
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/397_faktencheck_core_v1_for_chunking/2026-04-02_15-50-22/2026-04-03_23-28-03_493676/predictions.jsonl",
+      "output_file_absolute": "/netscratch/hmeinhof/tmp/kiba-d_d4a27f3a-153c-48da-9ccb-ac9aeed76b0a/repo/predictions/397_faktencheck_core_v1_for_chunking/2026-04-02_15-50-22/2026-04-03_23-28-03_493676/predictions.jsonl",
+      "time_pdf_conversion": 0.010519240982830524,
+      "time_extraction": 56708.64081652183,
+      "time_start": 1775251683,
+      "time_end": 1775308509,
+      "commit_hash": "81d3de5422270e9a0394c3560def173b4373b2f2",
+      "branch": "commit/81d3de542227",
+      "is_dirty": false,
+      "slurm_job_id": "2736825"
+    },
+    "overrides": {
+      "name": "397_faktencheck_core_v1_for_chunking",
+      "experiment/predict": "faktencheck_core_fields_schema_with_chunking",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "qwen3_30b_in_process",
+      "seed": "7331"
+    }
+  }
+}

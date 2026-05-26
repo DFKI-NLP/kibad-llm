@@ -2,11 +2,13 @@
 
 Classes:
     TpFpFnCollector: Return tracked tp/fp/fn entries in JSON-serializable form.
+    TpFpFnCollectorCollection: Return raw tp/fp/fn entries for multiple fields at once.
 """
 
 from typing import Any
 
 from kibad_llm.metrics.base import MetricWithTpFpFnEntries
+from kibad_llm.metrics.collection import MetricCollectionWithFieldDiscoveryAndGrouping
 
 
 class TpFpFnCollector(MetricWithTpFpFnEntries):
@@ -66,3 +68,42 @@ class TpFpFnCollector(MetricWithTpFpFnEntries):
             return self._to_jsonable(self.state_per_record)
         else:
             return self._to_jsonable(self.state)
+
+
+class TpFpFnCollectorCollection(MetricCollectionWithFieldDiscoveryAndGrouping[TpFpFnCollector]):
+    """Collect raw tp/fp/fn entries for multiple fields at once.
+
+    The collection lazily creates one `TpFpFnCollector` per field and inherits optional dynamic
+    field discovery plus grouped-field expansion from
+    `MetricCollectionWithFieldDiscoveryAndGrouping`. Nested dict-like fields can therefore be
+    expanded into generated field names such as `organism_trends.Amphibien&Wald` before each
+    per-field collector is updated.
+
+    Attributes:
+        fields: Explicit field names to evaluate, or `None` to discover them dynamically.
+        subfield_keys: Optional rules for expanding nested dict-like fields into generated fields.
+        subfield_values: Optional rules restricting which nested values are compared after
+            expansion.
+        metric_kwargs: Keyword arguments forwarded to the per-field `TpFpFnCollector` instances.
+    """
+
+    def __init__(
+        self,
+        **kwargs,
+    ) -> None:
+        """Initialize a multi-field tp/fp/fn entry collection.
+
+        Keyword Args:
+            fields: Optional allowlist of fields to evaluate. If omitted, fields are discovered
+                from the union of keys present in each prediction/reference pair.
+            subfield_keys: Optional mapping describing how nested entries are split into generated
+                fields.
+            subfield_values: Optional mapping restricting which nested values are kept after field
+                expansion.
+            sort_fields: Whether to sort the fields in the output. Defaults to False.
+            per_record: Whether each per-field collector should group entries by record id.
+            flatten_dicts: Whether nested dictionaries should be flattened before comparison.
+            ignore_subfields: Optional subfields to ignore when hashing dictionary payloads.
+            ignore_missing_entries: Whether one-sided empty entries should be skipped.
+        """
+        super().__init__(metric_class=TpFpFnCollector, **kwargs)
