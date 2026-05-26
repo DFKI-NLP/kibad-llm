@@ -1,11 +1,12 @@
 # 477_organism_trends
 
-This adds confusion matrizes for the predictions from [397_faktencheck_core_v1_for_chunking](../397_faktencheck_core_v1_for_chunking).
+This adds confusion matrizes for the predictions from [397_faktencheck_core_v1_for_chunking](../397_faktencheck_core_v1_for_chunking) with compound based evaluation (similar to [422_organism_trends](logs/422_organism_trends)).
 
 ## Evaluation
 
 ### Conditional variable and trend
 - base elements: Hauptgruppe_RoteListen, Lebensraum
+- config file: [configs/experiment/evaluate/organism_trends_confusion_matrix_conditional_variable_and_trend.yaml](../../../../configs/experiment/evaluate/organism_trends_confusion_matrix_conditional_variable_and_trend.yaml)
 
 ```Bash
 uv run -m kibad_llm.evaluate \
@@ -20,6 +21,7 @@ result location: `logs/477_organism_trends/evaluate/multiruns/2026-05-26_10-52-2
 
 ### Conditional variable only
 - base elements: Hauptgruppe_RoteListen, Lebensraum
+- config file: [configs/experiment/evaluate/organism_trends_confusion_matrix_conditional_variable_only.yaml](../../../../configs/experiment/evaluate/organism_trends_confusion_matrix_conditional_variable_only.yaml)
 
 ```Bash
 uv run -m kibad_llm.evaluate \
@@ -34,6 +36,7 @@ result location: `logs/477_organism_trends/evaluate/multiruns/2026-05-26_10-57-2
 
 ### Conditional trend only
 - base elements: Hauptgruppe_RoteListen, Lebensraum, Variable
+- config file: [configs/experiment/evaluate/organism_trends_confusion_matrix_conditional_trend_only.yaml](../../../../configs/experiment/evaluate/organism_trends_confusion_matrix_conditional_trend_only.yaml)
 
 ```Bash
 uv run -m kibad_llm.evaluate \
