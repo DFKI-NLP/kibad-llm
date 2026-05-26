@@ -14,6 +14,7 @@ The following guidelines ensure consistency across the project, so please read t
 - [Documentation](#documentation)
     - [Guidelines](#guidelines)
     - [Google-style docstring guidelines](#google-style-docstring-guidelines)
+    - [Linking](#linking)
     - [Hosting locally](#hosting-locally)
 - [Changing dependencies](#changing-dependencies)
     - [Adding dependencies](#adding-dependencies)
