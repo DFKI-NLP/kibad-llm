@@ -14,3 +14,5 @@ prediction_logs=logs/397_faktencheck_core_v1_for_chunking/predict \
 hydra.callbacks.save_job_return.multirun_show_file_contents=null \
 --multirun
 ```
+
+result location: [logs/481_faktencheck_core/evaluate/multiruns/2026-05-26_14-21-18](evaluate/multiruns/2026-05-26_14-21-18)
