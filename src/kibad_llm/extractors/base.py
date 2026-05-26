@@ -34,6 +34,21 @@ class TextOffsetValueError(ValueError):
 
 @dataclasses.dataclass
 class SingleExtractionResult(FieldDict):
+    """Stores one extraction result
+
+    Attributes:
+        character_start: Start index of the chunk of text that has been processed
+        character_end: Start index of the chunk of text that has been processed (exclusive)
+        response_content: Response as text
+        structured:
+        structured_with_metadata:
+        reasoning_content: Reasoning as text
+        messages:
+        messages_formatted:
+        errors: list of strings "error_name: error_message"
+        errors_long: list of strings "error_name: error_message_and_traceback"
+    """
+
     character_start: int
     character_end: int
     response_content: str | None = None
@@ -47,9 +62,22 @@ class SingleExtractionResult(FieldDict):
 
 
 def exception2error_msg(e: BaseException) -> tuple[str, str]:
-    """Return short and long (including traceback) error messages for an exception."""
+    """Return short and long (including traceback) error messages for an exception.
+
+    Args:
+        e: Python exception object
+
+    Returns:
+        Tuple containing a short and a long version of the exception.
+        The short version has the exception name and message,
+        whilst the long version also comes with the entire traceback.
+
+    """
     e_with_traceback = "".join(traceback.format_exception(type(e), e, e.__traceback__))
-    return f"{type(e).__name__}: {str(e)}", f"{type(e).__name__}: {e_with_traceback}"
+    return (
+        f"{type(e).__name__}: {str(e)}",
+        f"{type(e).__name__}: {e_with_traceback}",
+    )
 
 
 def build_chat_message(
@@ -230,8 +258,7 @@ def _is_wrapper_dict(d: Mapping[str, Any], content_key: str) -> bool:
 
 
 def strip_metadata(data: Any, *, content_key: str) -> Any:
-    """
-    Strip metadata wrappers from a JSON-parsed result produced by `wrap_terminals_with_metadata`.
+    """Strip metadata wrappers from a JSON-parsed result produced by `wrap_terminals_with_metadata`.
 
     The wrapped output encodes terminal values as objects like:
         `{"<content_key>": <value>, "evidence_anchor": "...", ...}`
@@ -770,7 +797,8 @@ def extract_from_text(
         )
 
     out = SingleExtractionResult(
-        character_start=character_start, character_end=character_end or len(text)
+        character_start=character_start,
+        character_end=character_end or len(text),
     )
 
     original_schema = schema
@@ -833,7 +861,9 @@ def extract_from_text(
         # 3) get structured output
         postprocessing_callbacks.append(
             partial(
-                add_structured_callback, schema=schema, validate_with_schema=validate_with_schema
+                add_structured_callback,
+                schema=schema,
+                validate_with_schema=validate_with_schema,
             )
         )
         # 4) handle structured with metadata if requested
@@ -880,7 +910,11 @@ def extract_from_text(
 
 
 def extract_from_text_lenient(
-    text: str, text_id: str, character_start: int = 0, character_end: int | None = None, **kwargs
+    text: str,
+    text_id: str,
+    character_start: int = 0,
+    character_end: int | None = None,
+    **kwargs,
 ) -> SingleExtractionResult:
     """Wrapper around extract_from_text that catches all exceptions.
 
