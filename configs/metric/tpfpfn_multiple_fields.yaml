@@ -1,0 +1,7 @@
+# Collect true positives, false positives, and false negatives for multiple fields at once.
+#
+# By default, the collector groups entries by record id to make qualitative inspection easier.
+
+_target_: kibad_llm.metrics.TpFpFnCollectorCollection
+# fields: ???  # the fields in the prediction and reference to compute the tp/fp/fn lists on
+per_record: true

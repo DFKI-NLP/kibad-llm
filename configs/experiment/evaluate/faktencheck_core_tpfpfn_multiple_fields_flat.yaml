@@ -1,0 +1,21 @@
+# @package _global_
+
+# Collect true-positive, false-positive, and false-negative entries for all *flattened*
+# Faktencheck core fields.
+#
+# This experiment is intended for qualitative error analysis. It keeps the matching
+# and missed entries instead of reducing them to aggregate scores.
+
+defaults:
+ - override /metric: tpfpfn_multiple_fields
+
+metric:
+  flatten_dicts: true
+  fields:
+    - habitat
+    - biodiversity_level
+    - ecosystem_type.term
+    - ecosystem_type.category
+    - taxa.german_name
+    - taxa.scientific_name
+    - taxa.species_group
