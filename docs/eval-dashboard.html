@@ -2448,13 +2448,16 @@
     truncateDefaultsButton.addEventListener("click", () => {
       state.truncateEnabledColumns = getDefaultTruncateColumns(getCurrentPredictionColumns());
       renderPredictions();
-    });
-    function isConfusionMatrixLikeMetricType(metricType) {
-      return metricType === "ConfusionMatrix" || metricType === "ConfusionMatrixCollection";
-    }
+    })
 
     function getVisualizationMetricType(metricType) {
-      return isConfusionMatrixLikeMetricType(metricType) ? "ConfusionMatrix" : metricType;
+      if (metricType === "ConfusionMatrixCollection") {
+        return "ConfusionMatrix";
+      }
+      if (metricType === "TpFpFnCollectorCollection") {
+        return "TpFpFnCollector";
+      }
+      return metricType;
     }
 
     function renderPlotControls(metricType) {
@@ -4516,62 +4519,85 @@
       return Number(value).toFixed(precision);
     }
 
-    function getConfusionMatrixSourceRunDir(evaluation) {
+    function getMetricCollectionSourceRunDir(evaluation) {
       return normalizeValue(evaluation?.sourceRunDir ?? evaluation?.runDir).trim();
     }
 
-    function expandConfusionMatrixLikeEvaluation(evaluation) {
+    function expandMetricFieldCollectionEvaluation(
+      evaluation,
+      { collectionType, singularType, fallbackRunDirPrefix }
+    ) {
       if (!evaluation || typeof evaluation !== "object") {
         return [];
       }
 
       const metricType = normalizeValue(evaluation?.jobReturnValue?.type).trim();
-      if (metricType === "ConfusionMatrixCollection") {
-        const fieldMatrices = evaluation.data;
-        if (!fieldMatrices || typeof fieldMatrices !== "object" || Array.isArray(fieldMatrices)) {
+      const sourceRunDir = getMetricCollectionSourceRunDir(evaluation);
+      if (metricType === collectionType) {
+        const fieldEntries = evaluation.data;
+        if (!fieldEntries || typeof fieldEntries !== "object" || Array.isArray(fieldEntries)) {
           return [];
         }
 
-        const sourceRunDir = getConfusionMatrixSourceRunDir(evaluation);
         const baseOverrides =
           evaluation.overrides && typeof evaluation.overrides === "object" && !Array.isArray(evaluation.overrides)
             ? evaluation.overrides
             : {};
 
-        return Object.entries(fieldMatrices)
-          .filter(([, fieldMatrix]) => fieldMatrix && typeof fieldMatrix === "object" && !Array.isArray(fieldMatrix))
-          .map(([field, fieldMatrix]) => ({
+        return Object.entries(fieldEntries)
+          .filter(([, fieldEntry]) => fieldEntry && typeof fieldEntry === "object" && !Array.isArray(fieldEntry))
+          .map(([field, fieldEntry]) => ({
             ...evaluation,
-            runDir: sourceRunDir ? `${sourceRunDir}#${field}` : `confusion-field#${field}`,
+            runDir: sourceRunDir ? `${sourceRunDir}#${field}` : `${fallbackRunDirPrefix}#${field}`,
             sourceRunDir,
             jobReturnValue: {
               ...(evaluation.jobReturnValue || {}),
-              type: "ConfusionMatrix",
+              type: singularType,
             },
             overrides: {
               ...baseOverrides,
               "metric.field": field,
             },
-            data: fieldMatrix,
+            data: fieldEntry,
           }));
       }
 
       return [
         {
           ...evaluation,
-          sourceRunDir: getConfusionMatrixSourceRunDir(evaluation),
+          sourceRunDir,
         },
       ];
+    }
+
+    function expandConfusionMatrixLikeEvaluation(evaluation) {
+      return expandMetricFieldCollectionEvaluation(evaluation, {
+        collectionType: "ConfusionMatrixCollection",
+        singularType: "ConfusionMatrix",
+        fallbackRunDirPrefix: "confusion-field",
+      });
     }
 
     function normalizeConfusionMatrixLikeEvaluations(evaluations) {
       return (evaluations || []).flatMap((evaluation) => expandConfusionMatrixLikeEvaluation(evaluation));
     }
 
+    function expandTpFpFnLikeEvaluation(evaluation) {
+      return expandMetricFieldCollectionEvaluation(evaluation, {
+        collectionType: "TpFpFnCollectorCollection",
+        singularType: "TpFpFnCollector",
+        fallbackRunDirPrefix: "tpfpfn-field",
+      });
+    }
+
+    function normalizeTpFpFnLikeEvaluations(evaluations) {
+      return (evaluations || []).flatMap((evaluation) => expandTpFpFnLikeEvaluation(evaluation));
+    }
+
     function countDistinctConfusionMatrixRuns(evaluations) {
       return new Set(
         (evaluations || [])
-          .map((evaluation) => getConfusionMatrixSourceRunDir(evaluation))
+          .map((evaluation) => getMetricCollectionSourceRunDir(evaluation))
           .filter(Boolean)
       ).size;
     }
@@ -5051,17 +5077,18 @@
 
     function buildTpFpFnTabMap(plotGroups, experimentEvaluations, labelFields, evalTabState) {
       const tabMap = new Map();
+      const normalizedExperimentEvaluations = normalizeTpFpFnLikeEvaluations(experimentEvaluations);
 
       const groupEntries = plotGroups
         .map((group, index) => ({
           key: `group|#|${group.groupId}`,
           label: getGroupLabelForFields(group, labelFields, `group ${index + 1}`, displayPlotGroupFieldName),
-          evaluations: group.evaluations,
+          evaluations: normalizeTpFpFnLikeEvaluations(group.evaluations),
         }))
         .filter((entry) => entry.evaluations.length > 0);
 
       if (state.confusionTabsBy === "metric_field") {
-        for (const evaluation of experimentEvaluations) {
+        for (const evaluation of normalizedExperimentEvaluations) {
           const rawField = getEvaluationEffectiveValue(evaluation, "metric.field", evalTabState);
           const fieldLabel = rawField || "(missing metric.field)";
           if (!tabMap.has(fieldLabel)) {
