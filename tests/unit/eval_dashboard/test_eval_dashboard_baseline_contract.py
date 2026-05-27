@@ -6,6 +6,9 @@ from kibad_llm.config import PROJ_ROOT
 from tests import FIXTURE_DATA_ROOT
 
 DASHBOARD_ENTRY = PROJ_ROOT / "docs" / "eval-dashboard" / "index.html"
+CSS_ROOT = PROJ_ROOT / "docs" / "eval-dashboard" / "assets" / "css"
+CSS_ENTRY = CSS_ROOT / "index.css"
+TOKENS_CSS = CSS_ROOT / "tokens.css"
 BASELINE_SUMMARY = FIXTURE_DATA_ROOT / "eval_dashboard" / "baseline" / "baseline-summary.json"
 FIXTURE_ROOT = FIXTURE_DATA_ROOT / "eval_dashboard"
 
@@ -36,8 +39,20 @@ def _dashboard_html() -> str:
     return DASHBOARD_ENTRY.read_text(encoding="utf-8")
 
 
-def test_baseline_summary_describes_pre_phase_three_monolith() -> None:
-    """Ensure the baseline still matches the current pre-extraction implementation shape."""
+def _css_entry() -> str:
+    """Load the Phase 3 CSS entry file."""
+
+    return CSS_ENTRY.read_text(encoding="utf-8")
+
+
+def _tokens_css() -> str:
+    """Load the dashboard theme tokens stylesheet."""
+
+    return TOKENS_CSS.read_text(encoding="utf-8")
+
+
+def test_baseline_summary_describes_phase_zero_reference_state() -> None:
+    """Ensure the checked-in baseline remains the original pre-Phase-3 reference artifact."""
 
     summary = _baseline_summary()
     implementation_shape = summary["implementation_shape"]
@@ -50,6 +65,17 @@ def test_baseline_summary_describes_pre_phase_three_monolith() -> None:
     assert "inline JavaScript" in implementation_shape["page_style"]
 
 
+def test_baseline_summary_includes_phase_three_inline_script_contract() -> None:
+    """Ensure the baseline artifact exposes the Phase 3 JS freeze contract."""
+
+    summary = _baseline_summary()
+    phase_three_contract = summary["phase_three_contract"]
+
+    assert phase_three_contract["inline_script_normalization"]
+    assert phase_three_contract["inline_script_line_count"] > 0
+    assert len(phase_three_contract["inline_script_sha256"]) == 64
+
+
 def test_baseline_feature_expectation_keys_match_current_contract() -> None:
     """Ensure the baseline summary keeps the expected feature-expectation schema."""
 
@@ -58,11 +84,13 @@ def test_baseline_feature_expectation_keys_match_current_contract() -> None:
     assert set(summary["feature_expectations"]) == EXPECTED_FEATURE_KEYS
 
 
-def test_baseline_feature_expectations_are_backed_by_html_or_fixture_contracts() -> None:
-    """Ensure each baseline feature claim is grounded in fixture coverage or durable HTML structure."""
+def test_current_runtime_preserves_baseline_feature_expectations() -> None:
+    """Ensure each baseline feature claim is still grounded in current HTML, CSS, or fixture contracts."""
 
     summary = _baseline_summary()
     html = _dashboard_html()
+    css_entry = _css_entry()
+    tokens_css = _tokens_css()
 
     contract_checks = {
         "supports_local_load": lambda: 'id="folderInput"' in html,
@@ -91,8 +119,10 @@ def test_baseline_feature_expectations_are_backed_by_html_or_fixture_contracts()
             FIXTURE_ROOT / "tpfpfn" / "job_return_value.json"
         ).is_file(),
         "supports_figure_export": lambda: 'id="downloadFiguresButton"' in html,
-        "supports_light_dark_styling": lambda: "prefers-color-scheme" in html
-        and "color-scheme:" in html,
+        "supports_light_dark_styling": lambda: 'href="assets/css/index.css"' in html
+        and "tokens.css" in css_entry
+        and "prefers-color-scheme" in tokens_css
+        and "color-scheme:" in tokens_css,
     }
 
     for feature_name, expected in summary["feature_expectations"].items():

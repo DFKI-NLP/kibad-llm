@@ -67,3 +67,10 @@ Manual validation target for this baseline:
 - `baseline-summary.json`: machine-checkable summary of the baseline
 - `optional-screenshots/`: optional visual references if later needed
 
+## Phase 3 guardrail
+
+Phase 3 is intentionally limited to CSS extraction.
+While `docs/eval-dashboard/index.html` is switched from inline CSS to `assets/css/index.css`, the lone inline `<script>` block is expected to remain behavior-equivalent until Phase 4 moves it to an external JS file.
+
+To make that constraint reviewable, `baseline-summary.json` includes a normalized inline-script fingerprint that Phase 3 tests compare against.
+

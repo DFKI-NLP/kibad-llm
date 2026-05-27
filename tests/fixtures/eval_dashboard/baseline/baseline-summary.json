@@ -8,6 +8,11 @@
     "css_extraction_started": false,
     "js_extraction_started": false
   },
+  "phase_three_contract": {
+    "inline_script_normalization": "extract the lone inline <script> block, normalize CRLF to LF, then strip outer whitespace",
+    "inline_script_line_count": 5333,
+    "inline_script_sha256": "620f3059deb6c8d5a61544cf9ded22c04edae09bf02c84c31b7daed7461f989a"
+  },
   "feature_expectations": {
     "supports_local_load": true,
     "supports_github_url_load": true,
