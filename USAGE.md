@@ -3,10 +3,10 @@
 ## Table of Contents
 
 - [PDF Download Based on Zotero Groups](#pdf-download-based-on-zotero-groups)
-    - [Prerequisites](#prerequisites)
+    - [Prerequisites](#prerequisites-pdf-download)
     - [Downloading Papers](#downloading-papers)
 - [Faktencheck Postgres to Json Conversion](#faktencheck-postgres-to-json-conversion)
-    - [Prerequisites](#prerequisites-1)
+    - [Prerequisites](#prerequisites-json-conversion)
     - [DB conversion](#db-conversion)
     - [Syncing Nextcloud PDFs with the cluster storage](#syncing-nextcloud-pdfs-with-the-cluster-storage)
 - [Information Extraction from PDFs](#information-extraction-from-pdfs)
@@ -27,6 +27,8 @@
 ### PDF Download Based on Zotero Groups
 
 It is possible to download papers using the open access url from Semantic Scholar.
+
+<a id="prerequisites-pdf-download"></a>
 
 #### Prerequisites
 
@@ -52,6 +54,8 @@ uv run -m kibad_llm.data_integration.zotero_download
 ```
 
 ### Faktencheck Postgres to Json Conversion
+
+<a id="prerequisites-json-conversion"></a>
 
 #### Prerequisites
 
