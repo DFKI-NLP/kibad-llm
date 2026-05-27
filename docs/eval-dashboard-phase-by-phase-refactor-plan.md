@@ -3,7 +3,7 @@
 ## Checklist
 
 - [x] Define safe, incremental refactor phases
-- [x] Keep `docs/eval-dashboard.html` as the stable public entry point
+- [x] Establish a future-proof `docs/eval-dashboard/index.html` entry point early
 - [x] Specify concrete file extractions per phase
 - [x] Add validation steps after each phase
 - [x] Suggest sensible commit boundaries
@@ -11,19 +11,19 @@
 
 ## Goal
 
-Refactor `docs/eval-dashboard.html` in small, behavior-preserving steps.
+Refactor the eval dashboard in small, behavior-preserving steps.
 
 The guiding idea is:
 
 - keep the dashboard working at every step
 - avoid introducing a new frontend toolchain in the first pass
 - make the dashboard progressively easier to test
-- preserve the current ProperDocs page entry while modularizing CSS and JavaScript underneath it
+- establish the dashboard's long-term folder structure early, then modularize CSS and JavaScript underneath it
 
 This plan assumes:
 
-- `docs/eval-dashboard.html` stays the public dashboard page for now
-- dashboard runtime assets live under `docs/assets/eval-dashboard/`
+- `docs/eval-dashboard/index.html` becomes the public dashboard page early in the refactor
+- dashboard runtime assets live under `docs/eval-dashboard/assets/`
 - tests live under `tests/`
 - the repo remains Python-first unless a later follow-up explicitly adds frontend tooling
 
@@ -41,7 +41,7 @@ The current dashboard is large and tightly coupled. Before moving code around, i
 
 ### Tasks
 
-- Keep `docs/eval-dashboard.html` unchanged.
+- Keep the current dashboard behavior unchanged while recording a baseline before the folder move.
 - Create a short baseline checklist of current dashboard behavior.
 - Identify a minimal set of representative evaluation inputs for future fixture creation.
 - Note important features that must remain stable during refactoring.
@@ -77,7 +77,47 @@ uv run --group cicd properdocs serve -w .
 
 ______________________________________________________________________
 
-## Phase 1. Add dashboard fixtures and refactor notes
+## Phase 1. Move to a future-proof dashboard folder structure
+
+### Goal
+
+Settle the long-term dashboard namespace immediately so later diffs focus on behavior and module extraction rather than file relocation.
+
+### Tasks
+
+- Move `docs/eval-dashboard.html` to `docs/eval-dashboard/index.html`.
+- Update `properdocs.yml` so the navigation points to the new dashboard entry page.
+- Create the dashboard asset namespace at:
+
+```text
+docs/
+  eval-dashboard/
+    index.html
+    assets/
+      css/
+      js/
+```
+
+- Keep the HTML body and behavior unchanged in this phase apart from path updates.
+- Update relative references only as needed for the new page location.
+
+### Why this phase comes first
+
+If the dashboard is expected to grow soon, doing the folder move first avoids a second structural migration later and gives cleaner git history for subsequent CSS/JS extraction work.
+
+### Suggested validation
+
+- verify ProperDocs navigation still resolves to the dashboard page
+- verify the dashboard page loads after the path move
+- verify no behavior changes apart from the file location
+
+### Suggested commit boundary
+
+`docs(eval-dashboard): move dashboard entry to folder-based structure`
+
+______________________________________________________________________
+
+## Phase 2. Add dashboard fixtures and refactor notes
 
 ### Goal
 
@@ -90,7 +130,7 @@ Add a dedicated fixture area:
 ```text
 tests/
   fixtures/
-    dashboard/
+    eval-dashboard/
       run_v0/
       run_v1/
       run_v2/
@@ -132,22 +172,22 @@ Fixtures make later module extraction safer and give a stable basis for tests.
 
 ### Suggested commit boundary
 
-`test(fixtures): add eval dashboard fixture set`
+`test(fixtures): add eval-dashboard fixture set`
 
 ______________________________________________________________________
 
-## Phase 2. Extract CSS only
+## Phase 3. Extract CSS only
 
 ### Goal
 
-Move all styling out of `docs/eval-dashboard.html` without changing dashboard behavior.
+Move all styling out of `docs/eval-dashboard/index.html` without changing dashboard behavior.
 
 ### Tasks
 
 Create:
 
 ```text
-docs/assets/eval-dashboard/css/
+docs/eval-dashboard/assets/css/
   index.css
   tokens.css
   layout.css
@@ -158,9 +198,9 @@ docs/assets/eval-dashboard/css/
 
 Then:
 
-- move the inline `<style>` block from `docs/eval-dashboard.html` into the CSS files
+- move the inline `<style>` block from `docs/eval-dashboard/index.html` into the CSS files
 - keep the HTML structure unchanged
-- have `docs/eval-dashboard.html` load only the external stylesheet
+- have `docs/eval-dashboard/index.html` load only the external stylesheet
 
 ### Suggested CSS split
 
@@ -200,7 +240,7 @@ uv run --group cicd properdocs serve -w .
 
 ______________________________________________________________________
 
-## Phase 3. Move the inline script into one external module
+## Phase 4. Move the inline script into one external module
 
 ### Goal
 
@@ -211,13 +251,13 @@ Reduce HTML complexity first, before splitting JavaScript into many files.
 Create:
 
 ```text
-docs/assets/eval-dashboard/js/
+docs/eval-dashboard/assets/js/
   main.js
 ```
 
 Then:
 
-- move the full inline `<script>` body from `docs/eval-dashboard.html` into `docs/assets/eval-dashboard/js/main.js`
+- move the full inline `<script>` body from `docs/eval-dashboard/index.html` into `docs/eval-dashboard/assets/js/main.js`
 - replace the inline block with a single external script reference
 - use module loading if appropriate for later splitting
 
@@ -254,7 +294,7 @@ Verify that all existing interactions still work:
 
 ______________________________________________________________________
 
-## Phase 4. Extract pure utilities
+## Phase 5. Extract pure utilities
 
 ### Goal
 
@@ -265,7 +305,7 @@ Separate small, reusable, DOM-independent helpers from the main module.
 Create:
 
 ```text
-docs/assets/eval-dashboard/js/utils/
+docs/eval-dashboard/assets/js/utils/
   flatten.js
   sort.js
   values.js
@@ -325,7 +365,7 @@ It creates reusable building blocks without forcing large architectural decision
 
 ______________________________________________________________________
 
-## Phase 5. Extract state and selectors
+## Phase 6. Extract state and selectors
 
 ### Goal
 
@@ -336,7 +376,7 @@ Separate canonical state from derived data access.
 Create:
 
 ```text
-docs/assets/eval-dashboard/js/state/
+docs/eval-dashboard/assets/js/state/
   store.js
   selectors.js
 ```
@@ -391,14 +431,14 @@ Verify no regression in:
 Add lightweight smoke checks under:
 
 ```text
-tests/unit/dashboard/
+tests/unit/eval-dashboard/
   test_eval_dashboard_assets.py
 ```
 
 Potential initial checks:
 
 - required dashboard asset files exist
-- `docs/eval-dashboard.html` references expected external files
+- `docs/eval-dashboard/index.html` references expected external files
 - fixture directories exist and have expected required files
 
 ### Suggested commit boundaries
@@ -408,7 +448,7 @@ Potential initial checks:
 
 ______________________________________________________________________
 
-## Phase 6. Extract parsing and normalization
+## Phase 7. Extract parsing and normalization
 
 ### Goal
 
@@ -419,7 +459,7 @@ Make imported dashboard data handling testable and clearly separated from render
 Create:
 
 ```text
-docs/assets/eval-dashboard/js/data/
+docs/eval-dashboard/assets/js/data/
   parse-overrides.js
   normalize.js
 ```
@@ -466,7 +506,7 @@ Verify that:
 
 ______________________________________________________________________
 
-## Phase 7. Extract local file loading and GitHub loading
+## Phase 8. Extract local file loading and GitHub loading
 
 ### Goal
 
@@ -477,7 +517,7 @@ Separate all ingestion flows from normalization and rendering.
 Create:
 
 ```text
-docs/assets/eval-dashboard/js/data/
+docs/eval-dashboard/assets/js/data/
   file-loader.js
   git-loader.js
 ```
@@ -526,7 +566,7 @@ Verify:
 
 ______________________________________________________________________
 
-## Phase 8. Extract UI modules
+## Phase 9. Extract UI modules
 
 ### Goal
 
@@ -537,7 +577,7 @@ Separate rendering concerns from state/data logic.
 Create:
 
 ```text
-docs/assets/eval-dashboard/js/ui/
+docs/eval-dashboard/assets/js/ui/
   dom.js
   controls.js
   tabs.js
@@ -620,7 +660,7 @@ Verify that:
 
 ______________________________________________________________________
 
-## Phase 9. Extract plotting and export modules
+## Phase 10. Extract plotting and export modules
 
 ### Goal
 
@@ -631,7 +671,7 @@ Move plotting logic into dedicated modules and leave `main.js` as orchestration 
 Create:
 
 ```text
-docs/assets/eval-dashboard/js/plots/
+docs/eval-dashboard/assets/js/plots/
   shared.js
   bars.js
   confusion.js
@@ -701,7 +741,7 @@ Verify:
 
 ______________________________________________________________________
 
-## Phase 10. Reduce `main.js` to orchestration only
+## Phase 11. Reduce `main.js` to orchestration only
 
 ### Goal
 
@@ -733,7 +773,7 @@ This phase confirms that the modularization is complete rather than partial.
 - `main.js` is readable as high-level orchestration
 - module boundaries feel natural
 - no large “temporary dumping ground” functions remain
-- dashboard behavior still matches the Phase 0 baseline
+- dashboard behavior still matches the Phase 0 baseline after the Phase 1 folder move
 
 ### Suggested commit boundary
 
@@ -741,7 +781,7 @@ This phase confirms that the modularization is complete rather than partial.
 
 ______________________________________________________________________
 
-## Phase 11. Add repo-native smoke tests
+## Phase 12. Add repo-native smoke tests
 
 ### Goal
 
@@ -752,31 +792,31 @@ Add modest but useful test coverage without introducing a full browser test stac
 ```text
 tests/
   fixtures/
-    dashboard/
+    eval-dashboard/
       ...
   unit/
-    dashboard/
+    eval-dashboard/
       test_eval_dashboard_assets.py
       test_dashboard_fixtures.py
   integration/
-    dashboard/
+    eval-dashboard/
       test_eval_dashboard_docs_build.py
 ```
 
 ### Early test ideas
 
-#### `tests/unit/dashboard/test_eval_dashboard_assets.py`
+#### `tests/unit/eval-dashboard/test_eval_dashboard_assets.py`
 
 - verify expected CSS/JS files exist
-- verify `docs/eval-dashboard.html` references expected external assets
+- verify `docs/eval-dashboard/index.html` references expected external assets
 - verify no giant inline `<style>` or `<script>` remains after extraction phases
 
-#### `tests/unit/dashboard/test_dashboard_fixtures.py`
+#### `tests/unit/eval-dashboard/test_dashboard_fixtures.py`
 
 - verify valid fixture folders contain required files
 - verify malformed/unsupported fixtures are intentionally structured as expected
 
-#### `tests/integration/dashboard/test_eval_dashboard_docs_build.py`
+#### `tests/integration/eval-dashboard/test_eval_dashboard_docs_build.py`
 
 - verify docs build succeeds with the dashboard present
 - optionally assert built output contains expected asset references
@@ -789,7 +829,7 @@ This repo is currently Python-first and already uses `pytest`. Smoke tests give 
 
 ```bash
 cd /home/arbi01/projects/kibad-llm
-uv run --group cicd pytest tests/unit/dashboard tests/integration/dashboard
+uv run --group cicd pytest tests/unit/eval-dashboard tests/integration/eval-dashboard
 uv run --group cicd properdocs build
 ```
 
@@ -799,7 +839,7 @@ uv run --group cicd properdocs build
 
 ______________________________________________________________________
 
-## Phase 12. Optional follow-up: browser-level UI testing
+## Phase 13. Optional follow-up: browser-level UI testing
 
 ### Goal
 
@@ -832,6 +872,7 @@ ______________________________________________________________________
 A sensible sequence would be:
 
 1. baseline notes + fixture addition
+1. move to `docs/eval-dashboard/index.html`
 1. CSS extraction
 1. external `main.js`
 1. utility extraction
@@ -847,7 +888,7 @@ A sensible sequence would be:
 
 If needed, these can be grouped into fewer PRs:
 
-- PR 1: fixtures + CSS + external `main.js`
+- PR 1: folder move + fixtures + CSS + external `main.js`
 - PR 2: utilities + state + selectors + normalization
 - PR 3: loaders + UI modules
 - PR 4: plot/export modules + smoke tests + final cleanup
@@ -858,8 +899,8 @@ ______________________________________________________________________
 
 The refactor is complete when:
 
-- `docs/eval-dashboard.html` is a thin entry page
-- CSS lives under `docs/assets/eval-dashboard/css/`
+- `docs/eval-dashboard/index.html` is a thin entry page
+- CSS lives under `docs/eval-dashboard/assets/css/`
 - JS is split into state, data, UI, plot, and utility modules
 - `main.js` is only orchestration/bootstrap
 - dashboard runtime code remains under `docs/`
@@ -873,8 +914,9 @@ ______________________________________________________________________
 
 If starting now, the safest first implementation step is:
 
-1. add `tests/fixtures/dashboard/`
+1. move to `docs/eval-dashboard/index.html`
+1. add `tests/fixtures/eval-dashboard/`
 1. extract CSS only
-1. move the inline script into `docs/assets/eval-dashboard/js/main.js`
+1. move the inline script into `docs/eval-dashboard/assets/js/main.js`
 
 That gives a cleaner base for all later extraction work while minimizing the risk of functional regressions.

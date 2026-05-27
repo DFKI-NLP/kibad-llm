@@ -11,11 +11,11 @@
 A few repo-specific observations first:
 
 - `docs/eval-dashboard.html` is currently a **single huge static page** with inline CSS and a very large inline `<script>`.
-- `properdocs.yml` already exposes that file directly in navigation.
+- `properdocs.yml` currently exposes that file directly in navigation, so a future-proof folder move should be done deliberately and early.
 - `scripts/build_docs.py` only generates **Python API reference** pages from `src/`, so it is **not** a frontend asset pipeline.
 - `pyproject.toml` has **pytest**, but there is **no existing Node/package.json frontend test setup**.
 
-Given that, the recommendation is to keep the dashboard as a docs asset, but organize it in a way that is testable and easy to evolve.
+Given that, the recommendation is to keep the dashboard as a docs asset, but organize it as a small self-contained docs section that is testable and easy to evolve.
 
 ## 1. Keep the dashboard as a docs asset, not package code
 
@@ -35,9 +35,9 @@ A good target structure would be:
 
 ```text
 docs/
-  eval-dashboard.html              # thin entry page, kept stable at first
-  assets/
-    eval-dashboard/
+  eval-dashboard/
+    index.html                     # thin entry page for the dashboard section
+    assets/
       css/
         index.css
         tokens.css
@@ -81,6 +81,7 @@ docs/
 This gives:
 
 - a **thin HTML shell**
+- a dedicated folder/namespace for the dashboard from the beginning
 - external CSS
 - external JS in modules
 - clear separation between:
@@ -103,16 +104,16 @@ ______________________________________________________________________
 ```text
 tests/
   fixtures/
-    dashboard/
+    eval-dashboard/
       runs/
       predictions/
       evaluations/
       overrides/
   unit/
-    dashboard/
+    eval-dashboard/
       ...
   integration/
-    dashboard/
+    eval-dashboard/
       ...
 ```
 
@@ -172,7 +173,7 @@ That usually means:
 
 #### Unit tests
 
-`tests/unit/dashboard/`
+`tests/unit/eval-dashboard/`
 
 - normalization of imported job return values
 - grouping/selectors
@@ -184,7 +185,7 @@ That usually means:
 
 #### Integration tests
 
-`tests/integration/dashboard/`
+`tests/integration/eval-dashboard/`
 
 - load sample run folders
 - render dashboard shell
@@ -195,7 +196,7 @@ That usually means:
 
 #### Fixtures
 
-`tests/fixtures/dashboard/`
+`tests/fixtures/eval-dashboard/`
 
 - minimal valid run dirs
 - malformed data
@@ -208,13 +209,13 @@ ______________________________________________________________________
 
 ## 5. What HTML files should exist?
 
-For now, there should be **exactly one runtime HTML entry file**.
+For now, there should be **exactly one runtime HTML entry file**, but it should live inside a dedicated dashboard folder.
 
 ### Recommended
 
-- `docs/eval-dashboard.html`
+- `docs/eval-dashboard/index.html`
 
-Keep it as the public/stable entry point first. Make it small and let it load external CSS/JS.
+Make it the public/stable entry point now. Keep it small and let it load external CSS/JS.
 
 ### Why only one HTML file?
 
@@ -237,17 +238,24 @@ Instead:
 - build repeated UI pieces in JS
 - optionally use `<template>` tags later if repeated markup becomes annoying
 
-### Possible future alternative
+### Why use `index.html` early?
 
-A future alternative could be:
+- It gives the dashboard its own namespace immediately.
+- It keeps page and assets colocated, which helps future maintenance and git diffs.
+- It avoids doing one structure migration now and another one later.
+
+### Avoid this mixed structure
+
+Avoid combining:
 
 ```text
 docs/
+  eval-dashboard.html
   eval-dashboard/
-    index.html
+    ...
 ```
 
-That is cleaner structurally, but since `properdocs.yml` currently points to `eval-dashboard.html`, it is probably better not to combine that URL/path change with the first modularization step.
+It works technically, but it is easy to confuse and creates an awkward split between the page file and its future folder namespace.
 
 ______________________________________________________________________
 
@@ -258,7 +266,7 @@ Do not over-split CSS. A small number of concern-based files is enough.
 ### Good starting set
 
 ```text
-docs/assets/eval-dashboard/css/
+docs/eval-dashboard/assets/css/
   index.css       # imports the others or serves as main bundle
   tokens.css      # colors, spacing, typography, CSS variables
   layout.css      # page layout, panels, grids
@@ -302,7 +310,7 @@ So the JS should be split by responsibility, not by arbitrary size.
 ### Suggested JS layout
 
 ```text
-docs/assets/eval-dashboard/js/
+docs/eval-dashboard/assets/js/
   main.js
   state/
     store.js
@@ -408,7 +416,7 @@ A practical target structure would be:
 ```text
 tests/
   fixtures/
-    dashboard/
+    eval-dashboard/
       run_v0/
         .hydra/overrides.yaml
         job_return_value.json
@@ -425,7 +433,7 @@ tests/
       malformed/
         ...
   unit/
-    dashboard/
+    eval-dashboard/
       test_normalize_imported_job_return_value.*
       test_selectors_and_grouping.*
       test_sorting_helpers.*
@@ -433,7 +441,7 @@ tests/
       test_export_filename_helpers.*
       test_parse_overrides.*
   integration/
-    dashboard/
+    eval-dashboard/
       test_load_local_runs.*
       test_load_git_runs.*
       test_prediction_selection_to_eval_view.*
@@ -451,7 +459,7 @@ Because the repo currently does **not** have a JS toolchain, there are two reali
 
 ### Path 1: stay minimal for now
 
-- Modularize into JS files under `docs/assets/eval-dashboard/js`
+- Modularize into JS files under `docs/eval-dashboard/assets/js`
 - Keep tests limited initially
 - Maybe add only lightweight smoke/integration checks later
 
@@ -460,8 +468,8 @@ Good if the main goal is reducing dashboard complexity with low tooling overhead
 ### Path 2: treat the dashboard as a tested frontend subproject
 
 - add a minimal frontend test setup later
-- keep runtime assets in `docs/assets/eval-dashboard/`
-- keep tests under `tests/unit/dashboard/` and `tests/integration/dashboard/`
+- keep runtime assets in `docs/eval-dashboard/assets/`
+- keep tests under `tests/unit/eval-dashboard/` and `tests/integration/eval-dashboard/`
 
 Good if the dashboard matters enough that UI regressions would be costly.
 
@@ -471,9 +479,9 @@ If tests are explicitly a goal, it makes sense to design the file structure **as
 
 That means:
 
-- keep runtime code in `docs/assets/eval-dashboard/`
+- keep runtime code in `docs/eval-dashboard/assets/`
 - keep tests in `tests/...`
-- keep fixtures in `tests/fixtures/dashboard/`
+- keep fixtures in `tests/fixtures/eval-dashboard/`
 - split logic into pure modules so it becomes testable
 
 ______________________________________________________________________
@@ -510,9 +518,9 @@ If a single target structure is needed, it should be this:
 
 ```text
 docs/
-  eval-dashboard.html
-  assets/
-    eval-dashboard/
+  eval-dashboard/
+    index.html
+    assets/
       css/
         index.css
         tokens.css
@@ -554,13 +562,13 @@ docs/
 
 tests/
   fixtures/
-    dashboard/
+    eval-dashboard/
       ...
   unit/
-    dashboard/
+    eval-dashboard/
       ...
   integration/
-    dashboard/
+    eval-dashboard/
       ...
 ```
 
@@ -568,7 +576,7 @@ tests/
 
 - `docs/` = shipped static dashboard assets
 - `tests/` = all tests, never mixed into docs
-- one HTML shell
+- one HTML shell inside a dedicated dashboard folder
 - modular JS by responsibility
 - CSS split by concern
 - fixtures mirror real dashboard inputs
@@ -577,7 +585,7 @@ ______________________________________________________________________
 
 ## 12. Suggested next step
 
-Before editing `docs/eval-dashboard.html`, the cleanest next step would be to turn this structure into a **phase-by-phase refactor plan**, for example:
+Before editing the dashboard implementation, the cleanest next step would be to turn this structure into a **phase-by-phase refactor plan**, starting with the folder move to `docs/eval-dashboard/index.html`, for example:
 
 1. extract CSS first
 1. extract state/selectors next
