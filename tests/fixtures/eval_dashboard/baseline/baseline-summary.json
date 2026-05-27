@@ -1,0 +1,42 @@
+{
+  "baseline_version": 1,
+  "captured_at": "2026-05-27",
+  "implementation_shape": {
+    "runtime_entrypoint": "docs/eval-dashboard/index.html",
+    "compatibility_entrypoint": "docs/eval-dashboard.html",
+    "page_style": "single static HTML page with inline CSS and inline JavaScript",
+    "css_extraction_started": false,
+    "js_extraction_started": false
+  },
+  "feature_expectations": {
+    "supports_local_load": true,
+    "supports_github_url_load": true,
+    "supports_prediction_grouping": true,
+    "supports_experiment_tabs": true,
+    "supports_json_side_pane": true,
+    "supports_grouped_bar_plots": true,
+    "supports_confusion_matrix_plots": true,
+    "supports_tpfpfn_plots": true,
+    "supports_figure_export": true,
+    "supports_light_dark_styling": true
+  },
+  "fixture_source_candidates": [
+    "311_better_default_temperature",
+    "327_faktencheck_core_with_persona",
+    "333_organism_trends_with_persona",
+    "380_faktencheck_core",
+    "380_organism_trends",
+    "397_faktencheck_core_v1_for_chunking",
+    "422_organism_trends",
+    "428_organism_trends_with_chunking",
+    "454_faktencheck_core",
+    "477_faktencheck_core",
+    "477_organism_trends",
+    "481_faktencheck_core"
+  ],
+  "notes": [
+    "Prefer curated snapshots over direct runtime access to data/prediction_results/logs.",
+    "Use older runs only when needed to preserve compatibility with an earlier input shape."
+  ]
+}
+
