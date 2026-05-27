@@ -11,6 +11,7 @@
 - [x] Start smoke tests and logic tests as early as practical
 - [x] Make the `eval-dashboard.html` migration safe for links and bookmarks
 - [x] Add a concrete baseline artifact and curated fixture strategy
+- [x] Require post-phase planning-doc updates and compliance with `CONTRIBUTING.md`
 
 ## Goal
 
@@ -31,6 +32,7 @@ This plan assumes:
 - tests and fixtures live under `tests/`
 - runtime docs paths stay hyphenated (`eval-dashboard`), while test directories use Python-friendly underscores (`eval_dashboard`)
 - the repo remains Python-first unless a later follow-up explicitly adds browser-level frontend tooling
+- all work in this refactor complies with `CONTRIBUTING.md`
 
 ## Current implementation state
 
@@ -106,6 +108,23 @@ This keeps selectors/data modules DOM-free and prevents repeated global lookups 
 ### Baseline artifact rule
 
 “Behavior-preserving” should mean “preserves a checked-in baseline artifact and curated fixtures”, not only “still seems okay manually”.
+
+### Contribution and planning-maintenance rule
+
+- Every change made as part of this refactor must comply with `CONTRIBUTING.md`, including its requirements around documentation, testing, and review readiness.
+- After each completed phase, update the planning docs under `docs/eval-dashboard/` so they accurately reflect:
+    - the current implementation state
+    - which phases are complete/in progress/next
+    - any scope, sequencing, or validation changes discovered during the phase
+- At minimum, keep `eval-dashboard-phase-by-phase-refactor-plan.md` and `eval-dashboard-modularization-plan.md` synchronized after each phase boundary.
+
+### Phase completion checklist
+
+Before considering any phase complete:
+
+- finish the phase-specific validation listed below
+- update the planning docs in `docs/eval-dashboard/` to record the new status and next step
+- confirm the resulting changes still comply with `CONTRIBUTING.md`
 
 ______________________________________________________________________
 
@@ -191,6 +210,8 @@ A good split is:
 
 Build and serve the docs site and manually verify the dashboard once before starting the refactor.
 
+Before closing Phase 0, update the planning docs under `docs/eval-dashboard/` with the recorded baseline status and confirm the baseline/documentation changes comply with `CONTRIBUTING.md`.
+
 ```bash
 cd /home/arbi01/projects/kibad-llm
 uv run --group cicd properdocs build
@@ -257,6 +278,7 @@ Initial checks can include:
 - verify the compatibility strategy chosen for the old URL/path actually works in the built site
 - verify the dashboard page loads after the path move
 - verify no behavior changes apart from the file location
+- update the planning docs in `docs/eval-dashboard/` to record the completed entrypoint migration and confirm the phase changes comply with `CONTRIBUTING.md`
 
 ### Suggested commit boundary
 
@@ -414,6 +436,8 @@ uv run --group cicd pytest tests/unit/eval_dashboard
 uv run --group cicd check-mkdocs --config properdocs.yml
 ```
 
+Before closing Phase 2, update the planning docs in `docs/eval-dashboard/` with the landed fixture/smoke-test status and confirm the added tests/docs comply with `CONTRIBUTING.md`.
+
 ### Suggested commit boundary
 
 `test(eval-dashboard): add curated fixtures and initial smoke coverage`
@@ -503,6 +527,8 @@ uv run --group cicd properdocs build
 uv run --group cicd properdocs serve -w .
 ```
 
+Keep the planning docs in `docs/eval-dashboard/` updated with the completed CSS-extraction status, and ensure any follow-up changes for this phase comply with `CONTRIBUTING.md`.
+
 ### Suggested commit boundary
 
 `docs(eval-dashboard): externalize dashboard CSS`
@@ -564,6 +590,7 @@ Verify that all existing interactions still work:
 - evaluation table rendering
 - plot rendering
 - figure download button state
+- update the planning docs in `docs/eval-dashboard/` after the phase lands and confirm the extracted-script changes comply with `CONTRIBUTING.md`
 
 ### Suggested commit boundary
 
@@ -646,6 +673,7 @@ It creates reusable building blocks and proves the dashboard can gain real logic
 - filename generation remains unchanged
 - flattening/grouping-dependent helpers still behave the same
 - new JS logic tests pass
+- update the planning docs in `docs/eval-dashboard/` after the phase lands and confirm the utility/test changes comply with `CONTRIBUTING.md`
 
 ### Suggested commit boundary
 
@@ -730,6 +758,7 @@ Verify no regression in:
 - sorting state
 - plot-group selection inputs
 - selector tests pass
+- update the planning docs in `docs/eval-dashboard/` after the phase lands and confirm the state/selector changes comply with `CONTRIBUTING.md`
 
 ### Suggested commit boundaries
 
@@ -800,6 +829,7 @@ Verify that:
 - missing prediction ids are still handled correctly
 - conflicting prediction ids are still handled correctly
 - normalization tests pass
+- update the planning docs in `docs/eval-dashboard/` after the phase lands and confirm the parsing/normalization changes comply with `CONTRIBUTING.md`
 
 ### Suggested commit boundaries
 
@@ -871,6 +901,7 @@ Verify:
 - progress/status text still updates
 - duplicate-run handling still works
 - unsupported-version/malformed-run handling still works
+- update the planning docs in `docs/eval-dashboard/` after the phase lands and confirm the loader changes comply with `CONTRIBUTING.md`
 
 ### Suggested commit boundaries
 
@@ -966,6 +997,7 @@ Verify that:
 - options tabs still work
 - default/truncate controls still work
 - sort buttons still work
+- update the planning docs in `docs/eval-dashboard/` after the phase lands and confirm the UI-module changes comply with `CONTRIBUTING.md`
 
 ### Suggested commit boundaries
 
@@ -1047,6 +1079,7 @@ Verify:
 - tooltips still work
 - legend behavior still works
 - figure download/export still works
+- update the planning docs in `docs/eval-dashboard/` after the phase lands and confirm the plotting/export changes comply with `CONTRIBUTING.md`
 
 ### Suggested commit boundaries
 
@@ -1090,6 +1123,7 @@ This phase confirms that the modularization is complete rather than partial.
 - module boundaries follow the stated dependency rules
 - no large “temporary dumping ground” functions remain
 - dashboard behavior still matches the Phase 0 baseline after the Phase 1 folder move
+- update the planning docs in `docs/eval-dashboard/` after the phase lands and confirm the cleanup changes comply with `CONTRIBUTING.md`
 
 ### Suggested commit boundary
 
@@ -1154,6 +1188,8 @@ uv run --group cicd check-mkdocs --config properdocs.yml
 
 Also run the chosen lightweight JS logic-test command if one was introduced during Phases 5 to 8.
 
+Before closing Phase 12, update the planning docs in `docs/eval-dashboard/` with the final coverage status and confirm the testing/documentation updates comply with `CONTRIBUTING.md`.
+
 ### Suggested commit boundary
 
 `test(eval-dashboard): broaden smoke and logic coverage`
@@ -1186,6 +1222,8 @@ This should be a follow-up, not part of the first modularization pass.
 - verify plot containers render expected content
 - verify figure export button enables/disables appropriately
 
+If this optional phase is taken on, update the planning docs in `docs/eval-dashboard/` after the phase decision or implementation lands, and keep the work compliant with `CONTRIBUTING.md`.
+
 ______________________________________________________________________
 
 ## Recommended PR / commit breakdown
@@ -1217,6 +1255,8 @@ If needed, these can be grouped into fewer PRs:
 
 From the current repository state, work would resume at the `external main.js` step because the earlier baseline, migration, fixture, smoke-test, and CSS-extraction work is already in place.
 
+After each completed PR or phase in that sequence, refresh the planning docs under `docs/eval-dashboard/` before moving on so the written plan keeps matching the repository state and `CONTRIBUTING.md` expectations.
+
 ______________________________________________________________________
 
 ## Definition of done
@@ -1236,6 +1276,8 @@ The refactor is complete when:
 - ProperDocs still serves the dashboard correctly
 - the refactored dashboard still matches the checked-in baseline artifact
 - smoke tests and extracted-logic tests both exist and pass
+- the planning docs under `docs/eval-dashboard/` have been updated after each completed phase
+- the full refactor history and resulting state comply with `CONTRIBUTING.md`
 
 ______________________________________________________________________
 
@@ -1246,5 +1288,6 @@ Given the current repository state, the safest next implementation step is:
 1. move the remaining inline dashboard script into `docs/eval-dashboard/assets/js/main.js`
 1. keep `docs/eval-dashboard/index.html` behavior-equivalent while replacing the inline block with a single external script reference
 1. extend the structural smoke tests to assert that the expected JS entry file exists, the external script reference is present, and the giant inline `<script>` block is gone
+1. update the planning docs in `docs/eval-dashboard/` after Phase 4 lands and confirm the change set complies with `CONTRIBUTING.md`
 
 That continues the refactor with the next smallest behavior-preserving boundary now that the entrypoint migration, curated fixtures, first smoke coverage, and CSS extraction are already in place.

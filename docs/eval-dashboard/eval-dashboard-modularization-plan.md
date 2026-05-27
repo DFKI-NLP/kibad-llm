@@ -10,6 +10,7 @@
 - [x] Front-load a testability-first strategy
 - [x] Make the entry-page migration and link/redirect work explicit
 - [x] Add a concrete baseline artifact and fixture-curation recommendation
+- [x] Require post-phase planning-doc updates and compliance with `CONTRIBUTING.md`
 
 A few repo-specific observations first:
 
@@ -26,6 +27,16 @@ A few repo-specific observations first:
 Given that, the recommendation is to keep the dashboard as a docs asset, but organize it as a small self-contained docs section that is testable and easy to evolve.
 
 In other words, the repository is now effectively **through Phase 3** of the refactor: entrypoint migration, compatibility coverage, curated fixtures, baseline artifacts, structural smoke tests, and CSS extraction have landed; the next smallest behavior-preserving step is to externalize the remaining inline script.
+
+All work performed from this plan should comply with `CONTRIBUTING.md`, and after each completed refactor phase the planning docs under `docs/eval-dashboard/` should be updated so the recorded status, sequencing, and next steps stay accurate.
+
+______________________________________________________________________
+
+## Process guardrails
+
+- Treat `CONTRIBUTING.md` as a standing requirement for every eval-dashboard refactor change, including expectations around documentation, testing, and review readiness.
+- After each completed phase, update both `docs/eval-dashboard/eval-dashboard-modularization-plan.md` and `docs/eval-dashboard/eval-dashboard-phase-by-phase-refactor-plan.md` before starting the next phase.
+- Those updates should record the current implementation state, what phase is next, and any scope or validation adjustments discovered during the completed phase.
 
 ______________________________________________________________________
 
@@ -193,6 +204,7 @@ Take a **testability-first pass**:
 - curate representative dashboard fixtures early
 - extract pure JS modules early enough that logic tests can begin during modularization
 - still avoid a full frontend bundling/transpilation pipeline in the first pass
+- after each completed phase, refresh the planning docs in `docs/eval-dashboard/` so the test strategy notes remain current
 
 Just as important: **do not try to build a full-fledged dashboard test suite against the current monolithic page before extraction starts**.
 
@@ -704,6 +716,8 @@ tests/
 - CSS split by concern
 - curated fixtures mirror real dashboard inputs without depending on mutable live data
 - tests start early and expand as pure modules are extracted
+- every phase updates the planning docs in `docs/eval-dashboard/`
+- every phase remains compliant with `CONTRIBUTING.md`
 
 ______________________________________________________________________
 
@@ -718,5 +732,6 @@ From the current repository state, the cleanest next sequence would be:
 1. extract normalization/parsing and add normalization tests
 1. extract loaders, UI modules, and plot/export modules
 1. reduce `main.js` to orchestration only
+1. after each completed phase above, update the planning docs under `docs/eval-dashboard/` and confirm the landed changes comply with `CONTRIBUTING.md`
 
 That keeps the refactor incremental, builds directly on the already-landed migration, fixture, smoke-test, and CSS-extraction groundwork, and preserves the test-first direction of the overall plan.
