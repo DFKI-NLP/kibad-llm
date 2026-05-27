@@ -97,4 +97,3 @@ def test_dashboard_html_contains_plot_and_export_anchors() -> None:
         'id="barTooltip"',
     ):
         assert snippet in html
-

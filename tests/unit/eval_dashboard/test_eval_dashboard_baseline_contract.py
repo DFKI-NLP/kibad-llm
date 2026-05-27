@@ -105,7 +105,10 @@ def test_current_runtime_main_js_matches_phase_four_contract() -> None:
     phase_four_contract = summary["phase_four_contract"]
 
     assert len(main_js.splitlines()) == phase_four_contract["main_js_line_count"]
-    assert hashlib.sha256(main_js.encode("utf-8")).hexdigest() == phase_four_contract["main_js_sha256"]
+    assert (
+        hashlib.sha256(main_js.encode("utf-8")).hexdigest()
+        == phase_four_contract["main_js_sha256"]
+    )
 
 
 def test_baseline_feature_expectation_keys_match_current_contract() -> None:
