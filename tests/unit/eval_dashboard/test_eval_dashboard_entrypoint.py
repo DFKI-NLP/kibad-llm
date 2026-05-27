@@ -1,18 +1,15 @@
-from pathlib import Path
-
 import yaml
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-DOCS_INDEX = REPO_ROOT / "docs" / "index.md"
-DASHBOARD_ENTRY = REPO_ROOT / "docs" / "eval-dashboard" / "index.html"
-DASHBOARD_COMPAT = REPO_ROOT / "docs" / "eval-dashboard.html"
-PROPERDOCS_CONFIG = REPO_ROOT / "properdocs.yml"
-BASELINE_MANIFEST = (
-    REPO_ROOT / "tests" / "fixtures" / "eval_dashboard" / "baseline" / "baseline-manifest.md"
-)
-BASELINE_SUMMARY = (
-    REPO_ROOT / "tests" / "fixtures" / "eval_dashboard" / "baseline" / "baseline-summary.json"
-)
+from kibad_llm.config import PROJ_ROOT
+from tests import FIXTURE_DATA_ROOT
+
+DOCS_ROOT = PROJ_ROOT / "docs"
+DOCS_INDEX = DOCS_ROOT / "index.md"
+DASHBOARD_ENTRY = DOCS_ROOT / "eval-dashboard" / "index.html"
+DASHBOARD_COMPAT = DOCS_ROOT / "eval-dashboard.html"
+PROPERDOCS_CONFIG = PROJ_ROOT / "properdocs.yml"
+BASELINE_MANIFEST = FIXTURE_DATA_ROOT / "eval_dashboard" / "baseline" / "baseline-manifest.md"
+BASELINE_SUMMARY = FIXTURE_DATA_ROOT / "eval_dashboard" / "baseline" / "baseline-summary.json"
 
 
 def _load_properdocs() -> dict:
