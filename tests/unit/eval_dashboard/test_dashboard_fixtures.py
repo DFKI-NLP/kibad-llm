@@ -1,11 +1,14 @@
 import json
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-FIXTURE_ROOT = REPO_ROOT / "tests" / "fixtures" / "eval_dashboard"
+from tests import FIXTURE_DATA_ROOT
+
+FIXTURE_ROOT = FIXTURE_DATA_ROOT / "eval_dashboard"
 FIXTURE_README = FIXTURE_ROOT / "README.md"
 
 VALID_FIXTURE_DIRS = {
+    "bars": 0,
+    "errors": 0,
     "run_v0": 0,
     "run_v1": 1,
     "run_v2": 2,
@@ -58,11 +61,25 @@ def test_valid_fixture_versions_cover_supported_dashboard_versions() -> None:
 
 
 def test_metric_specific_fixtures_have_expected_version_two_types() -> None:
+    bars_payload = _read_json(_job_return_value_path("bars"))
+    errors_payload = _read_json(_job_return_value_path("errors"))
     confusion_payload = _read_json(_job_return_value_path("confusion_matrix"))
     tpfpfn_payload = _read_json(_job_return_value_path("tpfpfn"))
 
+    assert "with_error" in errors_payload
+    assert "no_error" in errors_payload
+    assert any(key.endswith(".f1") or key == "ALL" for key in bars_payload)
     assert confusion_payload["type"] == "ConfusionMatrixCollection"
     assert tpfpfn_payload["type"] == "TpFpFnCollectorCollection"
+
+
+def test_explicit_plot_family_fixtures_cover_all_live_dashboard_plot_modes() -> None:
+    readme_text = FIXTURE_README.read_text(encoding="utf-8")
+
+    for fixture_name in ("bars", "errors", "confusion_matrix", "tpfpfn"):
+        assert _job_return_value_path(fixture_name).is_file()
+        assert _overrides_path(fixture_name).is_file()
+        assert f"`{fixture_name}`" in readme_text
 
 
 def test_invalid_fixture_directories_have_expected_files() -> None:

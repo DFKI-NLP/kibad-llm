@@ -43,7 +43,7 @@ As of the current repository state:
 - `docs/index.md` links point to `eval-dashboard/index.html`
 - placeholder asset directories exist at `docs/eval-dashboard/assets/css/` and `docs/eval-dashboard/assets/js/`
 - a first structural smoke test exists at `tests/unit/eval_dashboard/test_eval_dashboard_entrypoint.py`
-- curated Phase 2 fixtures now exist under `tests/fixtures/eval_dashboard/`, including valid version-0/1/2 examples and invalid edge-case fixtures
+- curated Phase 2 fixtures now exist under `tests/fixtures/eval_dashboard/`, including valid version-0/1/2 examples, invalid edge-case fixtures, and explicit fixtures for all currently supported plot families (`bars`, `errors`, `confusion_matrix`, `tpfpfn`)
 - fixture provenance is documented in `tests/fixtures/eval_dashboard/README.md`
 - fixture integrity smoke coverage exists at `tests/unit/eval_dashboard/test_dashboard_fixtures.py`
 - docs-build smoke coverage exists at `tests/integration/eval_dashboard/test_eval_dashboard_docs_build.py`

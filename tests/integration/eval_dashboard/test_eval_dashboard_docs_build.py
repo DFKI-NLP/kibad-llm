@@ -2,14 +2,15 @@ from pathlib import Path
 import subprocess  # nosec B404
 import sys
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-SITE_ROOT = REPO_ROOT / "site"
+from kibad_llm.config import PROJ_ROOT
+
+SITE_ROOT = PROJ_ROOT / "site"
 
 
 def test_eval_dashboard_docs_build_succeeds() -> None:
     result = subprocess.run(  # nosec B603
         [sys.executable, "-m", "properdocs", "build"],
-        cwd=REPO_ROOT,
+        cwd=PROJ_ROOT,
         capture_output=True,
         text=True,
         check=False,

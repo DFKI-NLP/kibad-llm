@@ -11,6 +11,27 @@ These fixtures support the early smoke and regression checks for the eval-dashbo
 
 ## Fixtures
 
+The live dashboard currently supports four plot families:
+
+- grouped/standard bars for `F1MicroMultipleFieldsMetric`
+- error plots for `ErrorCollector`
+- confusion-matrix plots for `ConfusionMatrix` / `ConfusionMatrixCollection`
+- TP/FP/FN plots for `TpFpFnCollector` / `TpFpFnCollectorCollection`
+
+The fixtures below provide explicit examples for each of those plot families.
+
+### `bars`
+
+- purpose: explicit grouped/standard bar-plot example for future dashboard tests
+- source basis: `data/prediction_results/logs/422_organism_trends/evaluate/multiruns/2026-04-28_18-21-06/0`
+- notes: version-0 style F1-micro snapshot that exercises the generic bar-plot path
+
+### `errors`
+
+- purpose: explicit error-plot example for future dashboard tests
+- source basis: `data/prediction_results/logs/428_organism_trends_with_chunking/evaluate/multiruns/2026-05-04_13-01-11/8`
+- notes: version-0 style error collector snapshot with both `total` and `details` tabs
+
 ### `run_v0`
 
 - purpose: valid version-0 style evaluation fixture

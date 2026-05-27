@@ -20,7 +20,7 @@ A few repo-specific observations first:
 - `scripts/build_docs.py` only generates **Python API reference** pages from `src/`, so it is **not** a frontend asset pipeline.
 - `pyproject.toml` has **pytest**, and the repo now has early dashboard smoke coverage under `tests/unit/eval_dashboard/` and `tests/integration/eval_dashboard/`, but there is still **no dashboard-specific JS logic-test setup** yet.
 - `data/prediction_results/readme.md` documents real experiment folders under `data/prediction_results/logs/`; those runs are useful fixture sources, but tests should use curated snapshots rather than reach into mutable live data folders.
-- curated dashboard fixtures now exist under `tests/fixtures/eval_dashboard/`, including valid version coverage and invalid edge-case fixtures.
+- curated dashboard fixtures now exist under `tests/fixtures/eval_dashboard/`, including valid version coverage, invalid edge-case fixtures, and explicit examples for all current plot families (`bars`, `errors`, `confusion_matrix`, `tpfpfn`).
 
 Given that, the recommendation is to keep the dashboard as a docs asset, but organize it as a small self-contained docs section that is testable and easy to evolve.
 
