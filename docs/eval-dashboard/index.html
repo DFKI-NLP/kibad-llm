@@ -3078,6 +3078,13 @@
           selectAllCheckbox.indeterminate = selectionState.someSelected;
           selectAllCheckbox.title = "Select or deselect all displayed groups";
           selectAllCheckbox.setAttribute("aria-label", "Select or deselect all displayed prediction groups");
+          selectAllCheckbox.addEventListener("change", () => {
+            if (selectAllCheckbox.checked) {
+              setSelectedGroupIds(selectionState.displayedGroupIds);
+            } else {
+              setSelectedGroupIds([]);
+            }
+          });
           selectControl.appendChild(selectButton);
           selectControl.appendChild(selectAllCheckbox);
           th.appendChild(selectControl);
@@ -3127,6 +3134,7 @@
         toggle.title = "Use this column for grouping";
         const toggleCb = document.createElement("input");
         toggleCb.type = "checkbox";
+        toggleCb.setAttribute("aria-label", `Group by ${displayPredictionColumnName(header)}`);
         toggleCb.checked = state.groupByFields.includes(header);
         toggleCb.addEventListener("change", () => {
           const nextGroupByFields = new Set(state.groupByFields);
