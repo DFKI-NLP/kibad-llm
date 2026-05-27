@@ -33,7 +33,7 @@ High-level overview of contributor-relevant paths (local caches and other genera
 ├── .pre-commit-config.yaml     <- `prek`/pre-commit hook configuration used locally and in CI.
 ├── CONTRIBUTING.md             <- Contribution workflow, testing, and documentation guidelines.
 ├── LICENSE                     <- AGPL-v3 license text for the project.
-├── Makefile                    <- Legacy helper targets. TODO: clarify with human which targets are still maintained now that the project uses `uv` instead of `poetry` in most docs.
+├── Makefile                    <- Legacy helper targets. TODO: clarify which targets are still maintained now that the project uses `uv` instead of `poetry` in most docs.
 ├── README.md                   <- Short project entry point and quickstart.
 ├── USAGE.md                    <- Detailed usage instructions for data integration, prediction, and evaluation.
 ├── configs/                    <- Hydra configuration tree for prediction, evaluation, datasets, metrics, paths, PDF reading, and experiments.
@@ -49,7 +49,7 @@ High-level overview of contributor-relevant paths (local caches and other genera
 │   ├── interim/                <- Intermediate converted data such as DB-to-JSON exports used for evaluation.
 │   ├── prediction_results/     <- Checked-in experiment artefacts and derived result bundles that are meant to live in Git.
 │   ├── processed/              <- Versioned processed datasets kept in Git when useful for reproducibility.
-│   └── raw/                    <- TODO: clarify with human whether this folder is intended for immutable source dumps, purely local scratch inputs, or both.
+│   └── raw/                    <- Immutable source data dumps (not yet used).
 ├── docs/                       <- ProperDocs source files for the published documentation site.
 ├── logs/                       <- Local/generated Hydra run logs and experiment metadata; this top-level directory should never contain committed data and may be symlinked to shared storage on the cluster.
 ├── models/                     <- LLM runtime documentation and config files (for example `vllm.env` and logging config), not model weights themselves.
