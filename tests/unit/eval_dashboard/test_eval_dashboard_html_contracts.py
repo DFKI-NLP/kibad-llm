@@ -1,16 +1,35 @@
 """Durable HTML contract smoke tests for the pre-refactor eval dashboard page."""
 
+import hashlib
+import json
 import re
 
 from kibad_llm.config import PROJ_ROOT
+from tests import FIXTURE_DATA_ROOT
 
 DASHBOARD_ENTRY = PROJ_ROOT / "docs" / "eval-dashboard" / "index.html"
+BASELINE_SUMMARY = FIXTURE_DATA_ROOT / "eval_dashboard" / "baseline" / "baseline-summary.json"
 
 
 def _dashboard_html() -> str:
     """Return the current dashboard HTML source as text."""
 
     return DASHBOARD_ENTRY.read_text(encoding="utf-8")
+
+
+def _baseline_summary() -> dict:
+    """Return the checked-in baseline summary artifact."""
+
+    return json.loads(BASELINE_SUMMARY.read_text(encoding="utf-8"))
+
+
+def _inline_script() -> str:
+    """Return the normalized inline dashboard script text."""
+
+    html = _dashboard_html()
+    match = re.search(r"<script>(.*?)</script>", html, re.DOTALL)
+    assert match is not None
+    return match.group(1).replace("\r\n", "\n").strip()
 
 
 def test_dashboard_html_uses_external_css_and_keeps_single_inline_script_block() -> None:
@@ -95,3 +114,17 @@ def test_dashboard_html_contains_plot_and_export_anchors() -> None:
         'id="barTooltip"',
     ):
         assert snippet in html
+
+
+def test_dashboard_html_keeps_phase_three_inline_script_fingerprint() -> None:
+    """Ensure the CSS-only Phase 3 keeps the pre-Phase-4 inline script unchanged."""
+
+    summary = _baseline_summary()
+    script = _inline_script()
+    phase_three_contract = summary["phase_three_contract"]
+
+    assert len(script.splitlines()) == phase_three_contract["inline_script_line_count"]
+    assert (
+        hashlib.sha256(script.encode("utf-8")).hexdigest()
+        == phase_three_contract["inline_script_sha256"]
+    )

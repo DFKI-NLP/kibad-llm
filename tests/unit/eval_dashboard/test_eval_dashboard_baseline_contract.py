@@ -65,6 +65,17 @@ def test_baseline_summary_describes_phase_zero_reference_state() -> None:
     assert "inline JavaScript" in implementation_shape["page_style"]
 
 
+def test_baseline_summary_includes_phase_three_inline_script_contract() -> None:
+    """Ensure the baseline artifact exposes the Phase 3 JS freeze contract."""
+
+    summary = _baseline_summary()
+    phase_three_contract = summary["phase_three_contract"]
+
+    assert phase_three_contract["inline_script_normalization"]
+    assert phase_three_contract["inline_script_line_count"] > 0
+    assert len(phase_three_contract["inline_script_sha256"]) == 64
+
+
 def test_baseline_feature_expectation_keys_match_current_contract() -> None:
     """Ensure the baseline summary keeps the expected feature-expectation schema."""
 
