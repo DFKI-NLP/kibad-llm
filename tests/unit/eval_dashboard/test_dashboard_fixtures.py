@@ -238,10 +238,21 @@ def test_invalid_fixture_readme_sections_document_intended_failure_mode() -> Non
     readme_text = FIXTURE_README.read_text(encoding="utf-8")
 
     expected_snippets = {
-        "malformed": ("- purpose:", "- notes:", "malformed JSON"),
-        "unsupported_version": ("- purpose:", "- notes:", '"version": 99'),
+        "malformed": (
+            "- purpose:",
+            "- source basis:",
+            "- notes:",
+            "malformed JSON",
+        ),
+        "unsupported_version": (
+            "- purpose:",
+            "- source basis:",
+            "- notes:",
+            '"version": 99',
+        ),
         "conflicting_prediction_ids": (
             "- purpose:",
+            "- source basis:",
             "- notes:",
             "share the same prediction id",
         ),

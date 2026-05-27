@@ -15,6 +15,7 @@
     "supports_experiment_tabs": true,
     "supports_json_side_pane": true,
     "supports_grouped_bar_plots": true,
+    "supports_error_plots": true,
     "supports_confusion_matrix_plots": true,
     "supports_tpfpfn_plots": true,
     "supports_figure_export": true,

@@ -16,6 +16,7 @@ EXPECTED_FEATURE_KEYS = {
     "supports_experiment_tabs",
     "supports_json_side_pane",
     "supports_grouped_bar_plots",
+    "supports_error_plots",
     "supports_confusion_matrix_plots",
     "supports_tpfpfn_plots",
     "supports_figure_export",
@@ -79,6 +80,9 @@ def test_baseline_feature_expectations_are_backed_by_html_or_fixture_contracts()
         "supports_json_side_pane": lambda: 'id="evalJsonPane"' in html,
         "supports_grouped_bar_plots": lambda: (
             FIXTURE_ROOT / "bars" / "job_return_value.json"
+        ).is_file(),
+        "supports_error_plots": lambda: (
+            FIXTURE_ROOT / "errors" / "job_return_value.json"
         ).is_file(),
         "supports_confusion_matrix_plots": lambda: (
             FIXTURE_ROOT / "confusion_matrix" / "job_return_value.json"

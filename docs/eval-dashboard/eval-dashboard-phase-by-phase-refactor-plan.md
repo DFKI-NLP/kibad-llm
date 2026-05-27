@@ -154,6 +154,7 @@ At minimum, record whether the current dashboard correctly supports:
 - prediction grouping
 - evaluation experiment tabs
 - JSON side pane behavior
+- error plots
 - confusion matrix plots
 - TP/FP/FN plots
 - grouped bar plots

@@ -65,15 +65,18 @@ The fixtures below provide explicit examples for each of those plot families.
 ### `malformed`
 
 - purpose: intentionally invalid input example
+- source basis: synthetic fixture derived from the `confusion_matrix` version-2 sample by truncating the JSON payload
 - notes: contains malformed JSON so loader-side parsing should fail
 
 ### `unsupported_version`
 
 - purpose: intentionally unsupported `job_return_value.json` version example
+- source basis: synthetic fixture derived from the `confusion_matrix` version-2 sample by changing the top-level `"version"` field to `99`
 - notes: contains a valid object with `"version": 99`
 
 ### `conflicting_prediction_ids`
 
 - purpose: intentionally conflicting prediction-id example
+- source basis: synthetic paired fixtures derived from a valid version-2-style run and edited so both runs reuse the same prediction id while differing in prediction metadata
 - notes: contains two valid run directories that share the same prediction id but differ in prediction payload content
 
