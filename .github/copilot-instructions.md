@@ -1,1 +1,1 @@
-All changes need to comply with CONTRIBUTIONS.md.
+All changes need to comply with CONTRIBUTING.md.
