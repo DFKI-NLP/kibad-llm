@@ -17,7 +17,7 @@
     - [A/B Testing with Multiple Seeds](#ab-testing-with-multiple-seeds)
 
 > [!WARNING]
-> All commands below assume that you are in the root directory of this project (where this `README.md` is located).
+> All commands below assume that you are in the root directory of this project (where this `USAGE.md` is located).
 
 > [!TIP]
 > If you're new to `uv`:
