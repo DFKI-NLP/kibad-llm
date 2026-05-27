@@ -59,7 +59,7 @@ High-level overview of contributor-relevant paths (local caches and other genera
 ├── predictions/                <- Local/generated prediction JSONL outputs grouped by experiment/run; this top-level directory should never contain committed data and may be symlinked to shared storage on the cluster.
 ├── properdocs.yml              <- ProperDocs site configuration and navigation.
 ├── pyproject.toml              <- Python package metadata, dependencies, and tool configuration.
-├── references/                 <- TODO: clarify with human what reference material is expected here; the directory currently appears to be a placeholder.
+├── references/                 <- Data dictionaries, manuals, and all other explanatory materials (not yet used).
 ├── reports/
 │   └── figures/                <- Legacy/outdated location for generated figures; current checked-in result artefacts are kept under `data/prediction_results/` instead.
 ├── run_in_process.sh           <- Cluster helper script for running inference/evaluation with in-process vLLM or API-based models.
