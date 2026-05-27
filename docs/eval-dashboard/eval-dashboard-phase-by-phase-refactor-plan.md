@@ -43,6 +43,10 @@ As of the current repository state:
 - `docs/index.md` links point to `eval-dashboard/index.html`
 - placeholder asset directories exist at `docs/eval-dashboard/assets/css/` and `docs/eval-dashboard/assets/js/`
 - a first structural smoke test exists at `tests/unit/eval_dashboard/test_eval_dashboard_entrypoint.py`
+- curated Phase 2 fixtures now exist under `tests/fixtures/eval_dashboard/`, including valid version-0/1/2 examples, invalid edge-case fixtures, and explicit fixtures for all currently supported plot families (`bars`, `errors`, `confusion_matrix`, `tpfpfn`)
+- fixture provenance is documented in `tests/fixtures/eval_dashboard/README.md`
+- fixture integrity smoke coverage exists at `tests/unit/eval_dashboard/test_dashboard_fixtures.py`
+- docs-build validation relies on the repo-level `check-mkdocs (uv)` hook against `properdocs.yml`, rather than a dashboard-specific subprocess test
 - old-path coverage currently relies on the compatibility shim; the ProperDocs redirects plugin is **not** being used for this raw HTML page
 - CSS and JavaScript extraction have **not** started yet; `docs/eval-dashboard/index.html` is still the original monolithic implementation moved into the new folder namespace
 
@@ -150,6 +154,7 @@ At minimum, record whether the current dashboard correctly supports:
 - prediction grouping
 - evaluation experiment tabs
 - JSON side pane behavior
+- error plots
 - confusion matrix plots
 - TP/FP/FN plots
 - grouped bar plots
@@ -253,6 +258,17 @@ ______________________________________________________________________
 
 Create stable, reviewable dashboard fixtures early and immediately use them for smoke coverage.
 
+This phase should establish a **thin but durable pre-refactor safety net**.
+
+It should **not** try to build a full-fledged dashboard interaction test suite against the current monolithic HTML page. At this point in the refactor, that would likely overfit unstable implementation details, add tooling overhead too early, and create test churn once CSS/JS extraction begins.
+
+Instead, Phase 2 should focus on:
+
+- stable fixture curation
+- structural docs/runtime contracts
+- lightweight validation of baseline assumptions
+- test coverage that is expected to survive the first extraction phases largely unchanged
+
 ### Tasks
 
 Add a dedicated fixture area:
@@ -262,6 +278,8 @@ tests/
   fixtures/
     eval_dashboard/
       baseline/
+      bars/
+      errors/
       run_v0/
       run_v1/
       run_v2/
@@ -295,10 +313,30 @@ At minimum:
 - one unsupported version example
 - one malformed JSON/YAML example
 - one conflicting prediction-id example
+- one explicit grouped-bar-plot example
+- one explicit error-plot example
 - one example that produces confusion-matrix output
 - one example that produces TP/FP/FN output
 - one example that exercises a newer post-`2026-01-16` organism-trends-style run
 - one example that exercises a newer post-`2026-01-16` faktencheck-style run
+
+### Pre-refactor testing stance
+
+Before CSS/JS extraction starts, prefer **contract-style smoke tests** over a broad browser-style test suite.
+
+Good Phase 2 tests should mostly verify things that are expected to remain stable during Phases 3 to 5, such as:
+
+- public entrypoint paths
+- compatibility/redirect behavior
+- presence of key dashboard DOM anchors and controls
+- fixture integrity and provenance
+- baseline feature expectations being backed by either curated fixtures or durable page structure
+
+Avoid making Phase 2 depend on:
+
+- a new frontend build pipeline
+- broad browser automation against the current monolith
+- brittle assertions over incidental markup/layout details that are likely to change during extraction
 
 ### Smoke tests to add now
 
@@ -308,28 +346,59 @@ Add:
 tests/unit/eval_dashboard/
   test_eval_dashboard_entrypoint.py
   test_dashboard_fixtures.py
-
-tests/integration/eval_dashboard/
-  test_eval_dashboard_docs_build.py
 ```
 
 Potential initial checks:
 
 - fixture directories exist and contain the expected required files
 - intentionally invalid fixtures are documented as invalid
-- docs build succeeds with the migrated dashboard entry page present
-- built output contains the expected dashboard entry page
+- the repo-level docs check still succeeds with the migrated dashboard entry page present
+
+Add the following as open TODOs/goals of this phase before moving deeper into modularization:
+
+- assert that valid fixture `job_return_value.json` files parse successfully
+- assert that valid fixture `.hydra/overrides.yaml` files parse successfully
+- assert that intentionally malformed fixtures fail in the intended way, and document whether the failure is malformed JSON, malformed YAML, or both
+- assert that every currently supported plot family has an explicit curated fixture: `bars`, `errors`, `confusion_matrix`, and `tpfpfn`
+- add a small HTML contract smoke layer for `docs/eval-dashboard/index.html` that checks durable anchors such as:
+    - dashboard title/heading
+    - local file/folder load controls
+    - GitHub URL load control
+    - prediction/evaluation containers
+    - JSON pane container
+    - export/download control
+    - tooltip/plot container hooks
+- assert that the current monolithic page still contains the expected inline `<style>` and inline `<script>` blocks before Phases 3 and 4 intentionally extract them
+- add a baseline-to-coverage smoke check so key entries in `baseline-summary.json` are backed by either:
+    - an explicit fixture family, or
+    - a durable structural assertion in `docs/eval-dashboard/index.html`
+- add fixture-provenance assertions so the curated fixture README continues to document purpose, source basis, and notes for each fixture directory
+- if practical, add a built-site compatibility smoke check that verifies the old dashboard path remains intentionally covered after docs build output is generated
+
+### Tests that should intentionally wait until later phases
+
+Do **not** force the following into Phase 2 unless stable JS modules already exist:
+
+- detailed normalization logic tests
+- selector/grouping/sorting logic tests
+- rendering tests for isolated UI modules
+- plot data-shaping tests
+- browser-driven interaction tests for file loading, GitHub loading, tab switching, JSON pane sync, or export behavior
+
+Those tests become much more valuable once the code has been extracted into importable JS modules with clearer seams.
 
 ### Why this phase comes early
 
 Fixtures and smoke tests make later module extraction safer and prevent the refactor from becoming a long sequence of untested file moves.
 
+Just as importantly, keeping Phase 2 intentionally lightweight avoids over-investing in brittle tests for the pre-modular monolith while still putting a meaningful safety net in place.
+
 ### Suggested validation
 
 ```bash
 cd /home/arbi01/projects/kibad-llm
-uv run --group cicd pytest tests/unit/eval_dashboard tests/integration/eval_dashboard
-uv run --group cicd properdocs build
+uv run --group cicd pytest tests/unit/eval_dashboard
+uv run --group cicd check-mkdocs --config properdocs.yml
 ```
 
 ### Suggested commit boundary
@@ -400,7 +469,7 @@ After extraction, verify:
 
 ```bash
 cd /home/arbi01/projects/kibad-llm
-uv run --group cicd pytest tests/unit/eval_dashboard tests/integration/eval_dashboard
+uv run --group cicd pytest tests/unit/eval_dashboard
 uv run --group cicd properdocs build
 uv run --group cicd properdocs serve -w .
 ```
@@ -1021,7 +1090,6 @@ tests/
         ...
   integration/
     eval_dashboard/
-      test_eval_dashboard_docs_build.py
       test_eval_dashboard_redirects.py
 ```
 
@@ -1034,7 +1102,7 @@ tests/
 - old-path redirect/shim coverage is still intentional and documented
 - no giant inline `<style>` or `<script>` remains after extraction phases
 - curated fixtures remain well-formed
-- docs build succeeds
+- the repo-level docs check still succeeds
 
 #### JS logic coverage
 
@@ -1051,8 +1119,8 @@ Testing started earlier, but this phase is where the project confirms the final 
 
 ```bash
 cd /home/arbi01/projects/kibad-llm
-uv run --group cicd pytest tests/unit/eval_dashboard tests/integration/eval_dashboard
-uv run --group cicd properdocs build
+uv run --group cicd pytest tests/unit/eval_dashboard
+uv run --group cicd check-mkdocs --config properdocs.yml
 ```
 
 Also run the chosen lightweight JS logic-test command if one was introduced during Phases 5 to 8.
@@ -1144,11 +1212,8 @@ ______________________________________________________________________
 
 If starting now, the safest first implementation step is:
 
-1. create `tests/fixtures/eval_dashboard/baseline/`
-1. record `baseline-manifest.md` and `baseline-summary.json`
-1. move to `docs/eval-dashboard/index.html`
-1. update `properdocs.yml`, `docs/index.md`, and redirect/compatibility handling for the old path
-1. curate the first representative fixtures from post-`2026-01-16` experiment data
-1. add the first smoke tests for entrypoint, fixtures, and docs build
+1. extract the inline dashboard CSS into `docs/eval-dashboard/assets/css/`
+1. keep `docs/eval-dashboard/index.html` behavior-equivalent while switching it to external stylesheet loading
+1. extend the structural smoke tests to assert that the expected CSS files exist and the giant inline `<style>` block is gone or intentionally reduced
 
-That gives a cleaner and safer base for all later extraction work while ensuring the refactor is immediately anchored in repeatable expectations and newer real-world dashboard inputs.
+That continues the refactor with the next smallest behavior-preserving boundary now that the entrypoint migration, curated fixtures, and first smoke coverage are already in place.

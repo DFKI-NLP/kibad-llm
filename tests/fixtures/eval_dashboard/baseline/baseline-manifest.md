@@ -25,6 +25,7 @@ The dashboard should continue to support these feature families during refactori
 - experiment/evaluation tabs
 - JSON side pane synchronization
 - grouped bar plots
+- error plots
 - confusion matrix plots
 - TP/FP/FN plots
 - figure download/export state

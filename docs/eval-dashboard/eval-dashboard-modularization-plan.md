@@ -13,12 +13,14 @@
 
 A few repo-specific observations first:
 
-- `docs/eval-dashboard.html` is currently a **single huge static page** with inline CSS and a very large inline `<script>`.
-- `properdocs.yml` currently exposes that file directly in navigation.
-- `docs/index.md` also links directly to `eval-dashboard.html`, so a future folder move must update more than one docs entry point.
+- the canonical runtime page now lives at `docs/eval-dashboard/index.html`.
+- `docs/eval-dashboard.html` is currently a temporary compatibility shim for the old path.
+- `docs/eval-dashboard/index.html` is still a **single huge static page** with inline CSS and a very large inline `<script>`.
+- `properdocs.yml` and `docs/index.md` already point to the new folder-based entrypoint.
 - `scripts/build_docs.py` only generates **Python API reference** pages from `src/`, so it is **not** a frontend asset pipeline.
-- `pyproject.toml` has **pytest**, but there is **no existing dashboard-specific frontend test setup** yet.
+- `pyproject.toml` has **pytest**, and the repo now has early dashboard smoke coverage under `tests/unit/eval_dashboard/`, while docs-build validation is covered by the repo-level `check-mkdocs (uv)` hook; there is still **no dashboard-specific JS logic-test setup** yet.
 - `data/prediction_results/readme.md` documents real experiment folders under `data/prediction_results/logs/`; those runs are useful fixture sources, but tests should use curated snapshots rather than reach into mutable live data folders.
+- curated dashboard fixtures now exist under `tests/fixtures/eval_dashboard/`, including valid version coverage, invalid edge-case fixtures, and explicit examples for all current plot families (`bars`, `errors`, `confusion_matrix`, `tpfpfn`).
 
 Given that, the recommendation is to keep the dashboard as a docs asset, but organize it as a small self-contained docs section that is testable and easy to evolve.
 
@@ -189,17 +191,26 @@ Take a **testability-first pass**:
 - extract pure JS modules early enough that logic tests can begin during modularization
 - still avoid a full frontend bundling/transpilation pipeline in the first pass
 
+Just as important: **do not try to build a full-fledged dashboard test suite against the current monolithic page before extraction starts**.
+
+At the current repository state, that would likely create brittle tests tied to unstable DOM/layout details, require premature browser/tooling decisions, and duplicate work once the dashboard is split into CSS/JS modules.
+
 ### What “testability-first” means here
 
 #### Early Python-native smoke checks
 
 These should arrive near the beginning of the refactor and cover things like:
 
-- docs build succeeds
+- the repo-level docs check still succeeds
 - the dashboard entry point is referenced correctly
 - redirects/compatibility links exist
 - expected asset references are present
 - fixture folders contain required files
+- valid curated JSON/YAML fixtures parse successfully
+- intentionally invalid fixtures fail in the intended way
+- key durable HTML anchors/controls exist in `docs/eval-dashboard/index.html`
+- baseline feature expectations are backed by curated fixtures or structural page contracts
+- fixture provenance remains documented in a checked-in README
 
 #### Lightweight JS logic tests once pure modules exist
 
@@ -216,12 +227,11 @@ The important point is architectural, not tool-specific:
 
 #### Smoke / structural tests
 
-`tests/unit/eval_dashboard/` and `tests/integration/eval_dashboard/`
+`tests/unit/eval_dashboard/` plus the repo-level docs hook
 
 Examples:
 
 - entry-page references and redirects
-- docs build success
 - no giant inline `<style>` or `<script>` after the relevant phases
 - fixture integrity checks
 
@@ -241,6 +251,8 @@ Examples:
 #### Browser-level tests later only if needed
 
 Those are valuable if the dashboard becomes important enough that interaction regressions are costly, but they should be a follow-up decision, not a prerequisite for the first modularization pass.
+
+In other words, pre-refactor tests should primarily protect **stable contracts**; deeper behavior tests should follow the creation of stable module boundaries.
 
 ______________________________________________________________________
 
@@ -304,6 +316,16 @@ Instead:
 - keep the fixture set intentionally small, stable, and reviewable
 
 That gives the refactor coverage against newer data shapes without coupling tests to mutable repo data.
+
+### Pre-refactor fixture/testing nuance
+
+Before modular extraction, treat these curated fixtures mainly as:
+
+- a stable regression corpus for later normalization/selector tests
+- a source of lightweight smoke assertions for currently supported plot families
+- a way to ensure baseline feature claims stay grounded in checked-in data
+
+They should not tempt the project into premature end-to-end browser coverage of the current monolith.
 
 ______________________________________________________________________
 
@@ -568,7 +590,6 @@ tests/
         test_parse_overrides.*
   integration/
     eval_dashboard/
-      test_eval_dashboard_docs_build.py
       test_eval_dashboard_redirects.py
 ```
 
@@ -683,14 +704,10 @@ ______________________________________________________________________
 
 ## 13. Suggested next step sequence
 
-Before editing the dashboard implementation, the cleanest next sequence would be:
+From the current repository state, the cleanest next sequence would be:
 
-1. record a concrete baseline artifact under `tests/fixtures/eval_dashboard/baseline/`
-1. move to `docs/eval-dashboard/index.html`
-1. update `properdocs.yml`, `docs/index.md`, and add redirect/compatibility handling for `docs/eval-dashboard.html`
-1. compile curated fixtures from representative post-`2026-01-16` experiment data
-1. add early smoke tests for entrypoint, links, redirects, docs build, and fixture integrity
-1. extract CSS
+1. extract CSS from `docs/eval-dashboard/index.html` into `docs/eval-dashboard/assets/css/`
+1. extend the structural smoke tests to check for external stylesheet references and removal of the giant inline `<style>` block
 1. move the inline script into external `main.js`
 1. extract pure utilities and begin logic tests for them
 1. extract state/selectors and add selector tests
@@ -698,4 +715,4 @@ Before editing the dashboard implementation, the cleanest next sequence would be
 1. extract loaders, UI modules, and plot/export modules
 1. reduce `main.js` to orchestration only
 
-That keeps the refactor incremental, gives tests value early, and ensures the migration is verified against newer real-world experiment shapes rather than only the oldest dashboard inputs.
+That keeps the refactor incremental, builds directly on the already-landed migration and fixture groundwork, and preserves the test-first direction of the overall plan.

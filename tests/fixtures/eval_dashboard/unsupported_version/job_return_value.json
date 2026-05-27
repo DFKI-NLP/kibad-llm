@@ -1,0 +1,19 @@
+{
+  "version": 99,
+  "type": "UnknownFixtureType",
+  "data": {
+    "summary": {
+      "value": 1
+    }
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/unsupported-version/predictions.jsonl"
+    },
+    "overrides": {
+      "name": "unsupported_version_fixture",
+      "seed": "42"
+    }
+  }
+}
+
