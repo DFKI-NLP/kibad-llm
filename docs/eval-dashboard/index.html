@@ -3196,9 +3196,7 @@
         tr.appendChild(createCell(String(group.predictions.length)));
 
         for (const field of orderedPredictionColumns) {
-          tr.appendChild(
-            createCell(getGroupValueDisplay(group, field), field)
-          );
+          tr.appendChild(createCell(getGroupValueDisplay(group, field), field));
         }
         tbody.appendChild(tr);
 
@@ -3524,10 +3522,7 @@
         ...points.map((point) => point.mean + point.std)
       );
       const step = chartWidth / Math.max(points.length, 1);
-      const barWidth = Math.max(
-        20,
-        Math.min(60, step * 0.55)
-      );
+      const barWidth = Math.max(20, Math.min(60, step * 0.55));
 
       const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
       svg.setAttribute("width", String(width));
@@ -3732,7 +3727,7 @@
             }
             tooltipLines.push(
               `mean: ${Number(point.mean).toFixed(4)}`,
-              `std:  ${Number(point.std).toFixed(4)}`,
+              `std:  ${Number(point.std).toFixed(4)}`
             );
             showBarTooltip(event, tooltipLines);
           });
@@ -4653,7 +4648,6 @@
         label.setAttribute("x", String(x + 2));
         label.setAttribute("y", String(y));
         label.setAttribute("transform", `rotate(-35 ${x + 2} ${y})`);
-        // Anchor from the tick position so the label text grows away from the matrix.
         label.setAttribute("text-anchor", "start");
         label.setAttribute("fill", "currentColor");
         label.setAttribute("font-size", "11");
