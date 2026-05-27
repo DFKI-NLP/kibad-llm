@@ -46,7 +46,7 @@ As of the current repository state:
 - curated Phase 2 fixtures now exist under `tests/fixtures/eval_dashboard/`, including valid version-0/1/2 examples, invalid edge-case fixtures, and explicit fixtures for all currently supported plot families (`bars`, `errors`, `confusion_matrix`, `tpfpfn`)
 - fixture provenance is documented in `tests/fixtures/eval_dashboard/README.md`
 - fixture integrity smoke coverage exists at `tests/unit/eval_dashboard/test_dashboard_fixtures.py`
-- docs-build smoke coverage exists at `tests/integration/eval_dashboard/test_eval_dashboard_docs_build.py`
+- docs-build validation relies on the repo-level `check-mkdocs (uv)` hook against `properdocs.yml`, rather than a dashboard-specific subprocess test
 - old-path coverage currently relies on the compatibility shim; the ProperDocs redirects plugin is **not** being used for this raw HTML page
 - CSS and JavaScript extraction have **not** started yet; `docs/eval-dashboard/index.html` is still the original monolithic implementation moved into the new folder namespace
 
@@ -312,17 +312,13 @@ Add:
 tests/unit/eval_dashboard/
   test_eval_dashboard_entrypoint.py
   test_dashboard_fixtures.py
-
-tests/integration/eval_dashboard/
-  test_eval_dashboard_docs_build.py
 ```
 
 Potential initial checks:
 
 - fixture directories exist and contain the expected required files
 - intentionally invalid fixtures are documented as invalid
-- docs build succeeds with the migrated dashboard entry page present
-- built output contains the expected dashboard entry page
+- the repo-level docs check still succeeds with the migrated dashboard entry page present
 
 ### Why this phase comes early
 
@@ -332,8 +328,8 @@ Fixtures and smoke tests make later module extraction safer and prevent the refa
 
 ```bash
 cd /home/arbi01/projects/kibad-llm
-uv run --group cicd pytest tests/unit/eval_dashboard tests/integration/eval_dashboard
-uv run --group cicd properdocs build
+uv run --group cicd pytest tests/unit/eval_dashboard
+uv run --group cicd check-mkdocs --config properdocs.yml
 ```
 
 ### Suggested commit boundary
@@ -404,7 +400,7 @@ After extraction, verify:
 
 ```bash
 cd /home/arbi01/projects/kibad-llm
-uv run --group cicd pytest tests/unit/eval_dashboard tests/integration/eval_dashboard
+uv run --group cicd pytest tests/unit/eval_dashboard
 uv run --group cicd properdocs build
 uv run --group cicd properdocs serve -w .
 ```
@@ -1025,7 +1021,6 @@ tests/
         ...
   integration/
     eval_dashboard/
-      test_eval_dashboard_docs_build.py
       test_eval_dashboard_redirects.py
 ```
 
@@ -1038,7 +1033,7 @@ tests/
 - old-path redirect/shim coverage is still intentional and documented
 - no giant inline `<style>` or `<script>` remains after extraction phases
 - curated fixtures remain well-formed
-- docs build succeeds
+- the repo-level docs check still succeeds
 
 #### JS logic coverage
 
@@ -1055,8 +1050,8 @@ Testing started earlier, but this phase is where the project confirms the final 
 
 ```bash
 cd /home/arbi01/projects/kibad-llm
-uv run --group cicd pytest tests/unit/eval_dashboard tests/integration/eval_dashboard
-uv run --group cicd properdocs build
+uv run --group cicd pytest tests/unit/eval_dashboard
+uv run --group cicd check-mkdocs --config properdocs.yml
 ```
 
 Also run the chosen lightweight JS logic-test command if one was introduced during Phases 5 to 8.

@@ -18,7 +18,7 @@ A few repo-specific observations first:
 - `docs/eval-dashboard/index.html` is still a **single huge static page** with inline CSS and a very large inline `<script>`.
 - `properdocs.yml` and `docs/index.md` already point to the new folder-based entrypoint.
 - `scripts/build_docs.py` only generates **Python API reference** pages from `src/`, so it is **not** a frontend asset pipeline.
-- `pyproject.toml` has **pytest**, and the repo now has early dashboard smoke coverage under `tests/unit/eval_dashboard/` and `tests/integration/eval_dashboard/`, but there is still **no dashboard-specific JS logic-test setup** yet.
+- `pyproject.toml` has **pytest**, and the repo now has early dashboard smoke coverage under `tests/unit/eval_dashboard/`, while docs-build validation is covered by the repo-level `check-mkdocs (uv)` hook; there is still **no dashboard-specific JS logic-test setup** yet.
 - `data/prediction_results/readme.md` documents real experiment folders under `data/prediction_results/logs/`; those runs are useful fixture sources, but tests should use curated snapshots rather than reach into mutable live data folders.
 - curated dashboard fixtures now exist under `tests/fixtures/eval_dashboard/`, including valid version coverage, invalid edge-case fixtures, and explicit examples for all current plot families (`bars`, `errors`, `confusion_matrix`, `tpfpfn`).
 
@@ -197,7 +197,7 @@ Take a **testability-first pass**:
 
 These should arrive near the beginning of the refactor and cover things like:
 
-- docs build succeeds
+- the repo-level docs check still succeeds
 - the dashboard entry point is referenced correctly
 - redirects/compatibility links exist
 - expected asset references are present
@@ -218,12 +218,11 @@ The important point is architectural, not tool-specific:
 
 #### Smoke / structural tests
 
-`tests/unit/eval_dashboard/` and `tests/integration/eval_dashboard/`
+`tests/unit/eval_dashboard/` plus the repo-level docs hook
 
 Examples:
 
 - entry-page references and redirects
-- docs build success
 - no giant inline `<style>` or `<script>` after the relevant phases
 - fixture integrity checks
 
@@ -570,7 +569,6 @@ tests/
         test_parse_overrides.*
   integration/
     eval_dashboard/
-      test_eval_dashboard_docs_build.py
       test_eval_dashboard_redirects.py
 ```
 
