@@ -222,7 +222,9 @@ def test_valid_fixture_readme_sections_document_purpose_source_basis_and_notes()
     readme_text = FIXTURE_README.read_text(encoding="utf-8")
 
     for fixture_name in VALID_FIXTURE_DIRS:
-        section = readme_text.split(f"### `{fixture_name}`", maxsplit=1)[1]
+        section_heading = f"### `{fixture_name}`"
+        assert section_heading in readme_text, f"Fixture README is missing section heading {section_heading!r}."
+        section = readme_text.split(section_heading, maxsplit=1)[1]
         next_heading = section.find("\n### `")
         if next_heading != -1:
             section = section[:next_heading]
@@ -259,7 +261,9 @@ def test_invalid_fixture_readme_sections_document_intended_failure_mode() -> Non
     }
 
     for fixture_name, snippets in expected_snippets.items():
-        section = readme_text.split(f"### `{fixture_name}`", maxsplit=1)[1]
+        section_heading = f"### `{fixture_name}`"
+        assert section_heading in readme_text, f"Fixture README is missing section heading {section_heading!r}."
+        section = readme_text.split(section_heading, maxsplit=1)[1]
         next_heading = section.find("\n### `")
         if next_heading != -1:
             section = section[:next_heading]
