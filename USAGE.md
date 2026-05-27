@@ -3,10 +3,10 @@
 > [!WARNING]
 > All commands below assume that you are in the root directory of this project (where this `README.md` is located).
 
-Also, if you're new to `uv`:
-
-In places where you used to use `python`, with `uv` you tend to write `uv run` instead. <br>
-What used to be `source .venv/bin/activate` and then `python your-script.py first-arg second-arg` now is reduced to `uv run your-script.py first-arg second-arg`.
+> [!TIP]
+> If you're new to `uv`:
+> In places where you used to use `python`, with `uv` you tend to write `uv run` instead.
+> What used to be `source .venv/bin/activate` and then `python your-script.py first-arg second-arg` now is reduced to `uv run your-script.py first-arg second-arg`.
 
 ### PDF Download Based on Zotero Groups
 
