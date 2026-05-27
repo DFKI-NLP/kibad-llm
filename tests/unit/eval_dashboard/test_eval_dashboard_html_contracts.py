@@ -1,5 +1,7 @@
 """Durable HTML contract smoke tests for the pre-refactor eval dashboard page."""
 
+import re
+
 from kibad_llm.config import PROJ_ROOT
 
 DASHBOARD_ENTRY = PROJ_ROOT / "docs" / "eval-dashboard" / "index.html"
@@ -12,14 +14,14 @@ def _dashboard_html() -> str:
 
 
 def test_dashboard_html_contains_single_inline_style_and_script_blocks() -> None:
-    """Ensure the pre-Phase-3 monolith still contains inline CSS and JavaScript."""
+    """Ensure the pre-Phase-3 monolith still uses exactly one inline style and script block."""
 
     html = _dashboard_html()
 
-    assert "<style>" in html
-    assert "</style>" in html
-    assert "<script>" in html
-    assert "</script>" in html
+    assert len(re.findall(r"<style\b", html)) == 1
+    assert html.count("</style>") == 1
+    assert len(re.findall(r"<script\b", html)) == 1
+    assert html.count("</script>") == 1
 
 
 def test_dashboard_html_contains_load_control_anchors() -> None:
