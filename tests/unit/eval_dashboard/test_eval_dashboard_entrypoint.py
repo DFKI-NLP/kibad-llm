@@ -9,9 +9,18 @@ DOCS_ROOT = PROJ_ROOT / "docs"
 DOCS_INDEX = DOCS_ROOT / "index.md"
 DASHBOARD_ENTRY = DOCS_ROOT / "eval-dashboard" / "index.html"
 DASHBOARD_COMPAT = DOCS_ROOT / "eval-dashboard.html"
+DASHBOARD_CSS_ROOT = DOCS_ROOT / "eval-dashboard" / "assets" / "css"
 PROPERDOCS_CONFIG = PROJ_ROOT / "properdocs.yml"
 BASELINE_MANIFEST = FIXTURE_DATA_ROOT / "eval_dashboard" / "baseline" / "baseline-manifest.md"
 BASELINE_SUMMARY = FIXTURE_DATA_ROOT / "eval_dashboard" / "baseline" / "baseline-summary.json"
+EXPECTED_CSS_FILES = (
+    "index.css",
+    "tokens.css",
+    "layout.css",
+    "controls.css",
+    "tables.css",
+    "plots.css",
+)
 
 
 def _load_properdocs() -> dict:
@@ -32,6 +41,13 @@ def test_phase_zero_baseline_artifacts_exist() -> None:
 
     assert BASELINE_MANIFEST.is_file()
     assert BASELINE_SUMMARY.is_file()
+
+
+def test_phase_three_dashboard_css_assets_exist() -> None:
+    """Ensure the Phase 3 external stylesheet files exist under the dashboard asset path."""
+
+    for file_name in EXPECTED_CSS_FILES:
+        assert (DASHBOARD_CSS_ROOT / file_name).is_file()
 
 
 def test_properdocs_nav_points_to_new_dashboard_entry() -> None:

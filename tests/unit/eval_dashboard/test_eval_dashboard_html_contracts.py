@@ -13,15 +13,18 @@ def _dashboard_html() -> str:
     return DASHBOARD_ENTRY.read_text(encoding="utf-8")
 
 
-def test_dashboard_html_contains_single_inline_style_and_script_blocks() -> None:
-    """Ensure the pre-Phase-3 monolith still uses exactly one inline style and script block."""
+def test_dashboard_html_uses_external_css_and_keeps_single_inline_script_block() -> None:
+    """Ensure Phase 3 moved CSS out while keeping the single inline script until Phase 4."""
 
     html = _dashboard_html()
 
-    assert len(re.findall(r"<style\b", html)) == 1
-    assert html.count("</style>") == 1
+    assert 'rel="stylesheet"' in html
+    assert 'href="assets/css/index.css"' in html
+    assert len(re.findall(r"<style\b", html)) == 0
+    assert html.count("</style>") == 0
     assert len(re.findall(r"<script\b", html)) == 1
     assert html.count("</script>") == 1
+    assert re.search(r"<script\b[^>]*src=", html) is None
 
 
 def test_dashboard_html_contains_load_control_anchors() -> None:
