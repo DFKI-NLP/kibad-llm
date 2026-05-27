@@ -10,6 +10,8 @@ DOCS_INDEX = DOCS_ROOT / "index.md"
 DASHBOARD_ENTRY = DOCS_ROOT / "eval-dashboard" / "index.html"
 DASHBOARD_COMPAT = DOCS_ROOT / "eval-dashboard.html"
 DASHBOARD_CSS_ROOT = DOCS_ROOT / "eval-dashboard" / "assets" / "css"
+DASHBOARD_JS_ROOT = DOCS_ROOT / "eval-dashboard" / "assets" / "js"
+DASHBOARD_JS_ENTRY = DASHBOARD_JS_ROOT / "main.js"
 PROPERDOCS_CONFIG = PROJ_ROOT / "properdocs.yml"
 BASELINE_MANIFEST = FIXTURE_DATA_ROOT / "eval_dashboard" / "baseline" / "baseline-manifest.md"
 BASELINE_SUMMARY = FIXTURE_DATA_ROOT / "eval_dashboard" / "baseline" / "baseline-summary.json"
@@ -48,6 +50,12 @@ def test_phase_three_dashboard_css_assets_exist() -> None:
 
     for file_name in EXPECTED_CSS_FILES:
         assert (DASHBOARD_CSS_ROOT / file_name).is_file()
+
+
+def test_phase_four_dashboard_js_entry_exists() -> None:
+    """Ensure the Phase 4 external JavaScript module exists under the dashboard asset path."""
+
+    assert DASHBOARD_JS_ENTRY.is_file()
 
 
 def test_properdocs_nav_points_to_new_dashboard_entry() -> None:

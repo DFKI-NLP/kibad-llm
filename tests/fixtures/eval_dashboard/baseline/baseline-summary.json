@@ -13,6 +13,12 @@
     "inline_script_line_count": 5333,
     "inline_script_sha256": "620f3059deb6c8d5a61544cf9ded22c04edae09bf02c84c31b7daed7461f989a"
   },
+  "phase_four_contract": {
+    "main_js_path": "docs/eval-dashboard/assets/js/main.js",
+    "main_js_normalization": "read the external main.js file, normalize CRLF to LF, then strip outer whitespace",
+    "main_js_line_count": 5333,
+    "main_js_sha256": "620f3059deb6c8d5a61544cf9ded22c04edae09bf02c84c31b7daed7461f989a"
+  },
   "feature_expectations": {
     "supports_local_load": true,
     "supports_github_url_load": true,
