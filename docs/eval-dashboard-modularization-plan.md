@@ -91,11 +91,11 @@ This gives:
 - external CSS
 - external JS in modules
 - clear separation between:
-  - state/selectors
-  - data import/normalization
-  - UI rendering
-  - plotting/export
-  - generic utilities
+    - state/selectors
+    - data import/normalization
+    - UI rendering
+    - plotting/export
+    - generic utilities
 
 ______________________________________________________________________
 
@@ -113,10 +113,12 @@ At minimum, update:
 
 ### Redirect/compatibility strategy
 
-To reduce the risk of broken bookmarks and stale links, plan for both of these during the migration:
+To reduce the risk of broken bookmarks and stale links, prefer the safest option that the docs host actually supports.
 
-1. add a redirect entry in `properdocs.yml`
-2. keep a temporary compatibility shim at `docs/eval-dashboard.html` if needed by the docs host or raw-file paths
+For this repository, the most reliable baseline is usually:
+
+1. keep a temporary compatibility shim at `docs/eval-dashboard.html`
+1. only add a redirect entry in `properdocs.yml` if the docs host cleanly supports redirects for this raw HTML path
 
 ### Important nuance
 
@@ -161,8 +163,8 @@ tests/
 - It matches the repo’s broader Python-oriented naming conventions better than `eval-dashboard`.
 - It avoids awkward path naming if future helper code, scripts, or imports reference these locations.
 - It keeps a clean separation between:
-  - docs URL/file naming (`eval-dashboard`)
-  - test directory naming (`eval_dashboard`)
+    - docs URL/file naming (`eval-dashboard`)
+    - test directory naming (`eval_dashboard`)
 
 ### Why not put tests next to the docs files?
 
@@ -379,14 +381,14 @@ This is where the biggest win will be.
 The current script appears to contain at least these concerns:
 
 1. global state
-2. data import and normalization
-3. selectors/grouping logic
-4. prediction table rendering
-5. evaluation table rendering
-6. eval JSON pane rendering
-7. plot generation
-8. figure export
-9. low-level utilities
+1. data import and normalization
+1. selectors/grouping logic
+1. prediction table rendering
+1. evaluation table rendering
+1. eval JSON pane rendering
+1. plot generation
+1. figure export
+1. low-level utilities
 
 So the JS should be split by responsibility, not by arbitrary size.
 
@@ -684,16 +686,16 @@ ______________________________________________________________________
 Before editing the dashboard implementation, the cleanest next sequence would be:
 
 1. record a concrete baseline artifact under `tests/fixtures/eval_dashboard/baseline/`
-2. move to `docs/eval-dashboard/index.html`
-3. update `properdocs.yml`, `docs/index.md`, and add redirect/compatibility handling for `docs/eval-dashboard.html`
-4. compile curated fixtures from representative post-`2026-01-16` experiment data
-5. add early smoke tests for entrypoint, links, redirects, docs build, and fixture integrity
-6. extract CSS
-7. move the inline script into external `main.js`
-8. extract pure utilities and begin logic tests for them
-9. extract state/selectors and add selector tests
-10. extract normalization/parsing and add normalization tests
-11. extract loaders, UI modules, and plot/export modules
-12. reduce `main.js` to orchestration only
+1. move to `docs/eval-dashboard/index.html`
+1. update `properdocs.yml`, `docs/index.md`, and add redirect/compatibility handling for `docs/eval-dashboard.html`
+1. compile curated fixtures from representative post-`2026-01-16` experiment data
+1. add early smoke tests for entrypoint, links, redirects, docs build, and fixture integrity
+1. extract CSS
+1. move the inline script into external `main.js`
+1. extract pure utilities and begin logic tests for them
+1. extract state/selectors and add selector tests
+1. extract normalization/parsing and add normalization tests
+1. extract loaders, UI modules, and plot/export modules
+1. reduce `main.js` to orchestration only
 
 That keeps the refactor incremental, gives tests value early, and ensures the migration is verified against newer real-world experiment shapes rather than only the oldest dashboard inputs.

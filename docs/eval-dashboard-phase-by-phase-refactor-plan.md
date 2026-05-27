@@ -32,6 +32,20 @@ This plan assumes:
 - runtime docs paths stay hyphenated (`eval-dashboard`), while test directories use Python-friendly underscores (`eval_dashboard`)
 - the repo remains Python-first unless a later follow-up explicitly adds browser-level frontend tooling
 
+## Current implementation state
+
+As of the current repository state:
+
+- Phase 0 baseline artifacts exist under `tests/fixtures/eval_dashboard/baseline/`
+- the dashboard runtime page now lives at `docs/eval-dashboard/index.html`
+- `docs/eval-dashboard.html` is currently a temporary compatibility shim
+- `properdocs.yml` navigation points to `eval-dashboard/index.html`
+- `docs/index.md` links point to `eval-dashboard/index.html`
+- placeholder asset directories exist at `docs/eval-dashboard/assets/css/` and `docs/eval-dashboard/assets/js/`
+- a first structural smoke test exists at `tests/unit/eval_dashboard/test_eval_dashboard_entrypoint.py`
+- old-path coverage currently relies on the compatibility shim; the ProperDocs redirects plugin is **not** being used for this raw HTML page
+- CSS and JavaScript extraction have **not** started yet; `docs/eval-dashboard/index.html` is still the original monolithic implementation moved into the new folder namespace
+
 ______________________________________________________________________
 
 ## Conventions and design rules
@@ -183,8 +197,8 @@ Settle the long-term dashboard namespace immediately so later diffs focus on beh
 - Move `docs/eval-dashboard.html` to `docs/eval-dashboard/index.html`.
 - Update `properdocs.yml` so the navigation points to the new dashboard entry page.
 - Update in-repo links that currently point at `eval-dashboard.html`, including `docs/index.md`.
-- Add a redirect entry in `properdocs.yml` from `eval-dashboard.html` to `eval-dashboard/` or `eval-dashboard/index.html`, whichever is correct for the built site.
-- If needed for compatibility during the transition, keep a temporary shim at `docs/eval-dashboard.html`.
+- If the docs host cleanly supports raw HTML redirects, add a redirect entry for `eval-dashboard.html`.
+- Otherwise, keep a temporary shim at `docs/eval-dashboard.html`.
 - Create the dashboard asset namespace at:
 
 ```text
@@ -223,7 +237,7 @@ Initial checks can include:
 
 - verify ProperDocs navigation still resolves to the dashboard page
 - verify old in-repo links were updated
-- verify redirect or compatibility shim covers the old URL/path
+- verify the compatibility strategy chosen for the old URL/path actually works in the built site
 - verify the dashboard page loads after the path move
 - verify no behavior changes apart from the file location
 
@@ -1082,20 +1096,20 @@ ______________________________________________________________________
 A sensible sequence would be:
 
 1. baseline artifact + source-fixture audit
-2. move to `docs/eval-dashboard/index.html` + update links/redirects
-3. curated fixtures + initial smoke tests
-4. CSS extraction + structural asset checks
-5. external `main.js`
-6. utility extraction + first JS logic tests
-7. state/store extraction
-8. selector extraction + selector tests
-9. parse/normalize extraction + normalization tests
-10. local file loader extraction
-11. GitHub loader extraction
-12. UI module extraction + DOM refs centralization
-13. plot/export extraction
-14. `main.js` cleanup
-15. final smoke/regression coverage pass
+1. move to `docs/eval-dashboard/index.html` + update links/redirects
+1. curated fixtures + initial smoke tests
+1. CSS extraction + structural asset checks
+1. external `main.js`
+1. utility extraction + first JS logic tests
+1. state/store extraction
+1. selector extraction + selector tests
+1. parse/normalize extraction + normalization tests
+1. local file loader extraction
+1. GitHub loader extraction
+1. UI module extraction + DOM refs centralization
+1. plot/export extraction
+1. `main.js` cleanup
+1. final smoke/regression coverage pass
 
 If needed, these can be grouped into fewer PRs:
 
@@ -1112,7 +1126,7 @@ The refactor is complete when:
 
 - `docs/eval-dashboard/index.html` is the thin long-term entry page
 - `properdocs.yml` and in-repo docs links point at the new entry page
-- old-path handling for `docs/eval-dashboard.html` is intentional, documented, and removable when safe
+- old-path handling for `docs/eval-dashboard.html` is intentional, documented, and removable when safe, whether via a shim or a host-supported redirect
 - CSS lives under `docs/eval-dashboard/assets/css/`
 - JS is split into state, data, UI, plot, and utility modules
 - `ui/dom.js` owns shared DOM lookup helpers and `main.js` captures refs once during bootstrap
@@ -1131,10 +1145,10 @@ ______________________________________________________________________
 If starting now, the safest first implementation step is:
 
 1. create `tests/fixtures/eval_dashboard/baseline/`
-2. record `baseline-manifest.md` and `baseline-summary.json`
-3. move to `docs/eval-dashboard/index.html`
-4. update `properdocs.yml`, `docs/index.md`, and redirect/compatibility handling for the old path
-5. curate the first representative fixtures from post-`2026-01-16` experiment data
-6. add the first smoke tests for entrypoint, fixtures, and docs build
+1. record `baseline-manifest.md` and `baseline-summary.json`
+1. move to `docs/eval-dashboard/index.html`
+1. update `properdocs.yml`, `docs/index.md`, and redirect/compatibility handling for the old path
+1. curate the first representative fixtures from post-`2026-01-16` experiment data
+1. add the first smoke tests for entrypoint, fixtures, and docs build
 
 That gives a cleaner and safer base for all later extraction work while ensuring the refactor is immediately anchored in repeatable expectations and newer real-world dashboard inputs.
