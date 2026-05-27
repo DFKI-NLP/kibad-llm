@@ -1,5 +1,21 @@
 # Usage Instructions
 
+## Table of Contents
+
+- [PDF Download Based on Zotero Groups](#pdf-download-based-on-zotero-groups)
+    - [Prerequisites](#prerequisites)
+    - [Downloading Papers](#downloading-papers)
+- [Faktencheck Postgres to Json Conversion](#faktencheck-postgres-to-json-conversion)
+    - [Prerequisites](#prerequisites-1)
+    - [DB conversion](#db-conversion)
+    - [Syncing Nextcloud PDFs with the cluster storage](#syncing-nextcloud-pdfs-with-the-cluster-storage)
+- [Information Extraction from PDFs](#information-extraction-from-pdfs)
+    - [Prerequisite: LLM Hosting](#prerequisite-llm-hosting)
+    - [Inference](#inference)
+    - [Evaluation](#evaluation)
+    - [Multirun](#multirun)
+    - [A/B Testing with Multiple Seeds](#ab-testing-with-multiple-seeds)
+
 > [!WARNING]
 > All commands below assume that you are in the root directory of this project (where this `README.md` is located).
 
