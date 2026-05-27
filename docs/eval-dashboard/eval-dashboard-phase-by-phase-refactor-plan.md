@@ -257,6 +257,17 @@ ______________________________________________________________________
 
 Create stable, reviewable dashboard fixtures early and immediately use them for smoke coverage.
 
+This phase should establish a **thin but durable pre-refactor safety net**.
+
+It should **not** try to build a full-fledged dashboard interaction test suite against the current monolithic HTML page. At this point in the refactor, that would likely overfit unstable implementation details, add tooling overhead too early, and create test churn once CSS/JS extraction begins.
+
+Instead, Phase 2 should focus on:
+
+- stable fixture curation
+- structural docs/runtime contracts
+- lightweight validation of baseline assumptions
+- test coverage that is expected to survive the first extraction phases largely unchanged
+
 ### Tasks
 
 Add a dedicated fixture area:
@@ -266,6 +277,8 @@ tests/
   fixtures/
     eval_dashboard/
       baseline/
+      bars/
+      errors/
       run_v0/
       run_v1/
       run_v2/
@@ -299,10 +312,30 @@ At minimum:
 - one unsupported version example
 - one malformed JSON/YAML example
 - one conflicting prediction-id example
+- one explicit grouped-bar-plot example
+- one explicit error-plot example
 - one example that produces confusion-matrix output
 - one example that produces TP/FP/FN output
 - one example that exercises a newer post-`2026-01-16` organism-trends-style run
 - one example that exercises a newer post-`2026-01-16` faktencheck-style run
+
+### Pre-refactor testing stance
+
+Before CSS/JS extraction starts, prefer **contract-style smoke tests** over a broad browser-style test suite.
+
+Good Phase 2 tests should mostly verify things that are expected to remain stable during Phases 3 to 5, such as:
+
+- public entrypoint paths
+- compatibility/redirect behavior
+- presence of key dashboard DOM anchors and controls
+- fixture integrity and provenance
+- baseline feature expectations being backed by either curated fixtures or durable page structure
+
+Avoid making Phase 2 depend on:
+
+- a new frontend build pipeline
+- broad browser automation against the current monolith
+- brittle assertions over incidental markup/layout details that are likely to change during extraction
 
 ### Smoke tests to add now
 
@@ -320,9 +353,44 @@ Potential initial checks:
 - intentionally invalid fixtures are documented as invalid
 - the repo-level docs check still succeeds with the migrated dashboard entry page present
 
+Add the following as open TODOs/goals of this phase before moving deeper into modularization:
+
+- assert that valid fixture `job_return_value.json` files parse successfully
+- assert that valid fixture `.hydra/overrides.yaml` files parse successfully
+- assert that intentionally malformed fixtures fail in the intended way, and document whether the failure is malformed JSON, malformed YAML, or both
+- assert that every currently supported plot family has an explicit curated fixture: `bars`, `errors`, `confusion_matrix`, and `tpfpfn`
+- add a small HTML contract smoke layer for `docs/eval-dashboard/index.html` that checks durable anchors such as:
+    - dashboard title/heading
+    - local file/folder load controls
+    - GitHub URL load control
+    - prediction/evaluation containers
+    - JSON pane container
+    - export/download control
+    - tooltip/plot container hooks
+- assert that the current monolithic page still contains the expected inline `<style>` and inline `<script>` blocks before Phases 3 and 4 intentionally extract them
+- add a baseline-to-coverage smoke check so key entries in `baseline-summary.json` are backed by either:
+    - an explicit fixture family, or
+    - a durable structural assertion in `docs/eval-dashboard/index.html`
+- add fixture-provenance assertions so the curated fixture README continues to document purpose, source basis, and notes for each fixture directory
+- if practical, add a built-site compatibility smoke check that verifies the old dashboard path remains intentionally covered after docs build output is generated
+
+### Tests that should intentionally wait until later phases
+
+Do **not** force the following into Phase 2 unless stable JS modules already exist:
+
+- detailed normalization logic tests
+- selector/grouping/sorting logic tests
+- rendering tests for isolated UI modules
+- plot data-shaping tests
+- browser-driven interaction tests for file loading, GitHub loading, tab switching, JSON pane sync, or export behavior
+
+Those tests become much more valuable once the code has been extracted into importable JS modules with clearer seams.
+
 ### Why this phase comes early
 
 Fixtures and smoke tests make later module extraction safer and prevent the refactor from becoming a long sequence of untested file moves.
+
+Just as importantly, keeping Phase 2 intentionally lightweight avoids over-investing in brittle tests for the pre-modular monolith while still putting a meaningful safety net in place.
 
 ### Suggested validation
 

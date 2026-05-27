@@ -191,6 +191,10 @@ Take a **testability-first pass**:
 - extract pure JS modules early enough that logic tests can begin during modularization
 - still avoid a full frontend bundling/transpilation pipeline in the first pass
 
+Just as important: **do not try to build a full-fledged dashboard test suite against the current monolithic page before extraction starts**.
+
+At the current repository state, that would likely create brittle tests tied to unstable DOM/layout details, require premature browser/tooling decisions, and duplicate work once the dashboard is split into CSS/JS modules.
+
 ### What “testability-first” means here
 
 #### Early Python-native smoke checks
@@ -202,6 +206,11 @@ These should arrive near the beginning of the refactor and cover things like:
 - redirects/compatibility links exist
 - expected asset references are present
 - fixture folders contain required files
+- valid curated JSON/YAML fixtures parse successfully
+- intentionally invalid fixtures fail in the intended way
+- key durable HTML anchors/controls exist in `docs/eval-dashboard/index.html`
+- baseline feature expectations are backed by curated fixtures or structural page contracts
+- fixture provenance remains documented in a checked-in README
 
 #### Lightweight JS logic tests once pure modules exist
 
@@ -242,6 +251,8 @@ Examples:
 #### Browser-level tests later only if needed
 
 Those are valuable if the dashboard becomes important enough that interaction regressions are costly, but they should be a follow-up decision, not a prerequisite for the first modularization pass.
+
+In other words, pre-refactor tests should primarily protect **stable contracts**; deeper behavior tests should follow the creation of stable module boundaries.
 
 ______________________________________________________________________
 
@@ -305,6 +316,16 @@ Instead:
 - keep the fixture set intentionally small, stable, and reviewable
 
 That gives the refactor coverage against newer data shapes without coupling tests to mutable repo data.
+
+### Pre-refactor fixture/testing nuance
+
+Before modular extraction, treat these curated fixtures mainly as:
+
+- a stable regression corpus for later normalization/selector tests
+- a source of lightweight smoke assertions for currently supported plot families
+- a way to ensure baseline feature claims stay grounded in checked-in data
+
+They should not tempt the project into premature end-to-end browser coverage of the current monolith.
 
 ______________________________________________________________________
 
