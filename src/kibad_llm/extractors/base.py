@@ -40,10 +40,10 @@ class SingleExtractionResult(FieldDict):
         character_start: Start index of the chunk of text that has been processed
         character_end: Start index of the chunk of text that has been processed (exclusive)
         response_content: Response formatted as json
-        structured: Parsed version of response_content. Possibly validated against a schema.
-        structured_with_metadata:
+        structured: Parsed version of response_content. Possibly validated against a schema. Possibly with metadata.
+        structured_with_metadata: Parsed version of response_content, enriched with metadata.
         reasoning_content: Reasoning as text
-        messages:
+        messages: { "system": system_message, "user": user_message }
         messages_formatted:
         errors: list of strings "error_name: error_message"
         errors_long: list of strings "error_name: error_message_and_traceback"
@@ -174,7 +174,7 @@ def build_chat_messages(
             input text and schema description.
         truncate_user_message_formatted: If return_messages_formatted is True, truncate the user message
             content to this many characters (to avoid huge outputs). Set to None to disable truncation.
-        _out: Optional output dictionary to store messages in (used internally).
+        _out: Optional output [`..SingleExtractionResult`][] to store messages in (used internally).
 
     Keyword Args:
         **build_messages_kwargs: Additional keyword arguments for build_chat_message.
@@ -514,7 +514,7 @@ def augment_metadata(
         content_key: Key that must be in a mapping for it to be a wrapper_dict - must be passed by keyword
 
     Keyword Args:
-        evidence_: `* evidence_*` -> forwarded to `augment_metadata_node_with_evidence` (prefix stripped)
+        evidence_ (Any): `* evidence_*` -> forwarded to `augment_metadata_node_with_evidence` (prefix stripped)
 
     Keyword Args Notes:
       - kwargs are namespaced by prefix.
@@ -650,10 +650,10 @@ def augment_and_strip_metadata_from_structured_callback(
     Modifies `out` in place; does not return a value.
 
     Args:
-        out: An extraction result with `out.structured`
-        response: FIXME Currently unused
+        out: An extraction result with `out.structured` populated with metadata
+        response: Placeholder, because it gets passed to all functions in `postprocessing_callbacks`, but this one doesn't use it.
         schema: schema used in [`..extract_from_text`][] - may be modified for metadata - used to check against original_schema - must be passed by keyword
-        original_schema: original schema that was passed to [`..extract_from_text`][] - must be passed by keyword
+        original_schema: original schema that was passed to [`..extract_from_text`][] - without metadata - must be passed by keyword
         text: Original input text for evidence extraction - must be passed by keyword
         validate_with_schema: Whether to validate `out.structured` against the `original_schema` - must be passed by keyword
         augment_metadata_kwargs: Refer to [`..augment_metadata`][] - must be passed by keyword
@@ -681,8 +681,6 @@ def augment_and_strip_metadata_from_structured_callback(
         structured = strip_metadata(out.structured_with_metadata, content_key=WRAPPED_CONTENT_KEY)
 
         # validate stripped version against original schema (if schema is not the original one)
-        # NOTE: as of right now, the original our.structure is checked against schema upon creation.
-        #   This is the first time that it would be checked against the original_schema.
         if validate_with_schema and original_schema is not None and schema != original_schema:
             validator_cls = validator_for(original_schema)
             validator_cls.check_schema(original_schema)
@@ -938,7 +936,7 @@ def extract_from_text_lenient(
             If None (default), processes until the end of the text.
 
     Keyword Args:
-        **kwargs: Keyword arguments for extract_from_text.
+        **kwargs (Any): Keyword arguments for [`extract_from_text`][..extract_from_text].
 
     Returns:
         A SingleExtractionResult object with the extraction result or error message.
