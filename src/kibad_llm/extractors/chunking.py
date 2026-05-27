@@ -39,7 +39,7 @@ class ChunkingExtractor:
     """Extractor that chunks extraction and aggregates results per key.
     This extractor calls the base extraction function multiple times
     (for each chunk in the document) on the same input text,
-    passing some previous context to each subsequent call.
+    passing no previous context to each subsequent call.
 
     Pass llm=None with verbose=True to get the number of chunks per document without inference.
 
@@ -52,8 +52,8 @@ class ChunkingExtractor:
         default_kwargs: Additional keyword arguments passed to the base extraction function.
 
     Warning:
-    If a Token that is greater than max_char_buffer is encountered, it becomes its own chunk.
-    This edge case can produce chunks that are larger than max_char_buffer would allow.
+        If a Token that is greater than max_char_buffer is encountered, it becomes its own chunk.
+        This edge case can produce chunks that are larger than max_char_buffer would allow.
     """
 
     def __init__(
@@ -73,21 +73,23 @@ class ChunkingExtractor:
         self.verbose = verbose
 
     def __call__(self, *args, **kwargs) -> dict[str, Any]:
-        """
+        """Processes a text in chunks and returns aggregated structured outputs,
+        as well as lists of field values, if specified.
+
         Args:
             *args: 
-                text (str): Input document to process. 
+                text (str): Input document to process.\n
                 text_id (str): Id of input document.
 
         Keyword Args:
             text (str): Input document to process. 
             text_id (str): Id of input document.
-            *: Refer to [`extract_from_text`][kibad_llm.extractors.base.extract_from_text]
+            *: Refer to [`extract_from_text_lenient`][kibad_llm.extractors.base.extract_from_text_lenient]
 
         Returns:
-            
+            Dict with the key `structured` that holds the aggregated structured outputs.
+            Additionally there can be lists for fields at the keys `"{field}_list"`.
         """
-        breakpoint()
         text = kwargs.pop("text", None)
         if text is None:
             text = args[0]
