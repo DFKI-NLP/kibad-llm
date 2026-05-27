@@ -77,14 +77,14 @@ class ChunkingExtractor:
         as well as lists of field values, if specified.
 
         Args:
-            *args: 
+            *args (Any):
                 text (str): Input document to process.\n
                 text_id (str): Id of input document.
 
         Keyword Args:
-            text (str): Input document to process. 
+            text (str): Input document to process.
             text_id (str): Id of input document.
-            *: Refer to [`extract_from_text_lenient`][kibad_llm.extractors.base.extract_from_text_lenient]
+            * (Any): Refer to [`extract_from_text_lenient`][kibad_llm.extractors.base.extract_from_text_lenient]
 
         Returns:
             Dict with the key `structured` that holds the aggregated structured outputs.
