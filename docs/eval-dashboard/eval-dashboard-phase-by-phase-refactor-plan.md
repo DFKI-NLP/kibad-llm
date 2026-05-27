@@ -43,6 +43,10 @@ As of the current repository state:
 - `docs/index.md` links point to `eval-dashboard/index.html`
 - placeholder asset directories exist at `docs/eval-dashboard/assets/css/` and `docs/eval-dashboard/assets/js/`
 - a first structural smoke test exists at `tests/unit/eval_dashboard/test_eval_dashboard_entrypoint.py`
+- curated Phase 2 fixtures now exist under `tests/fixtures/eval_dashboard/`, including valid version-0/1/2 examples and invalid edge-case fixtures
+- fixture provenance is documented in `tests/fixtures/eval_dashboard/README.md`
+- fixture integrity smoke coverage exists at `tests/unit/eval_dashboard/test_dashboard_fixtures.py`
+- docs-build smoke coverage exists at `tests/integration/eval_dashboard/test_eval_dashboard_docs_build.py`
 - old-path coverage currently relies on the compatibility shim; the ProperDocs redirects plugin is **not** being used for this raw HTML page
 - CSS and JavaScript extraction have **not** started yet; `docs/eval-dashboard/index.html` is still the original monolithic implementation moved into the new folder namespace
 
@@ -1144,11 +1148,8 @@ ______________________________________________________________________
 
 If starting now, the safest first implementation step is:
 
-1. create `tests/fixtures/eval_dashboard/baseline/`
-1. record `baseline-manifest.md` and `baseline-summary.json`
-1. move to `docs/eval-dashboard/index.html`
-1. update `properdocs.yml`, `docs/index.md`, and redirect/compatibility handling for the old path
-1. curate the first representative fixtures from post-`2026-01-16` experiment data
-1. add the first smoke tests for entrypoint, fixtures, and docs build
+1. extract the inline dashboard CSS into `docs/eval-dashboard/assets/css/`
+1. keep `docs/eval-dashboard/index.html` behavior-equivalent while switching it to external stylesheet loading
+1. extend the structural smoke tests to assert that the expected CSS files exist and the giant inline `<style>` block is gone or intentionally reduced
 
-That gives a cleaner and safer base for all later extraction work while ensuring the refactor is immediately anchored in repeatable expectations and newer real-world dashboard inputs.
+That continues the refactor with the next smallest behavior-preserving boundary now that the entrypoint migration, curated fixtures, and first smoke coverage are already in place.
