@@ -10,22 +10,33 @@
 - [x] Front-load a testability-first strategy
 - [x] Make the entry-page migration and link/redirect work explicit
 - [x] Add a concrete baseline artifact and fixture-curation recommendation
+- [x] Require post-phase planning-doc updates and compliance with `CONTRIBUTING.md`
 
 A few repo-specific observations first:
 
 - the canonical runtime page now lives at `docs/eval-dashboard/index.html`.
 - `docs/eval-dashboard.html` is currently a temporary compatibility shim for the old path.
-- `docs/eval-dashboard/index.html` is still a **single huge static page**, but Phase 3 has already moved styling into external CSS; the page now loads `assets/css/index.css` and keeps one very large inline `<script>` block as the remaining monolith.
+- `docs/eval-dashboard/index.html` is still a **single huge static page**, but Phases 3 and 4 have now moved styling and the monolithic script into external assets; the page loads `assets/css/index.css` and `assets/js/main.js` while keeping the JavaScript logic together in one file for now.
 - `properdocs.yml` and `docs/index.md` already point to the new folder-based entrypoint.
 - `scripts/build_docs.py` only generates **Python API reference** pages from `src/`, so it is **not** a frontend asset pipeline.
-- `docs/eval-dashboard/assets/css/` now contains `index.css`, `tokens.css`, `layout.css`, `controls.css`, `tables.css`, and `plots.css`; `docs/eval-dashboard/assets/js/` is still only a placeholder namespace for later phases.
-- `pyproject.toml` has **pytest**, and the repo now has dashboard smoke coverage under `tests/unit/eval_dashboard/`, including entrypoint checks plus HTML-contract checks that enforce external CSS and a single unchanged inline `<script>` until Phase 4; there is still **no dashboard-specific JS logic-test setup** yet.
+- `docs/eval-dashboard/assets/css/` now contains `index.css`, `tokens.css`, `layout.css`, `controls.css`, `tables.css`, and `plots.css`; `docs/eval-dashboard/assets/js/` now contains `main.js` as the externalized monolith reserved for later splitting.
+- `pyproject.toml` has **pytest**, and the repo now has dashboard smoke coverage under `tests/unit/eval_dashboard/`, including entrypoint checks plus HTML-contract checks that enforce external CSS, the external `assets/js/main.js` module reference, and the absence of inline runtime CSS/JS; there is still **no dashboard-specific JS logic-test setup** yet.
 - `data/prediction_results/readme.md` documents real experiment folders under `data/prediction_results/logs/`; those runs are useful fixture sources, but tests should use curated snapshots rather than reach into mutable live data folders.
 - curated dashboard fixtures now exist under `tests/fixtures/eval_dashboard/`, including valid version coverage, invalid edge-case fixtures, and explicit examples for all current plot families (`bars`, `errors`, `confusion_matrix`, `tpfpfn`).
 
 Given that, the recommendation is to keep the dashboard as a docs asset, but organize it as a small self-contained docs section that is testable and easy to evolve.
 
-In other words, the repository is now effectively **through Phase 3** of the refactor: entrypoint migration, compatibility coverage, curated fixtures, baseline artifacts, structural smoke tests, and CSS extraction have landed; the next smallest behavior-preserving step is to externalize the remaining inline script.
+In other words, the repository is now effectively **through Phase 4** of the refactor: entrypoint migration, compatibility coverage, curated fixtures, baseline artifacts, structural smoke tests, CSS extraction, and the external-`main.js` step have landed; the next smallest behavior-preserving step is to begin utility extraction and lightweight JS logic tests.
+
+All work performed from this plan should comply with `CONTRIBUTING.md`, and after each completed refactor phase the planning docs under `docs/eval-dashboard/` should be updated so the recorded status, sequencing, and next steps stay accurate.
+
+______________________________________________________________________
+
+## Process guardrails
+
+- Treat `CONTRIBUTING.md` as a standing requirement for every eval-dashboard refactor change, including expectations around documentation, testing, and review readiness.
+- After each completed phase, update both `docs/eval-dashboard/eval-dashboard-modularization-plan.md` and `docs/eval-dashboard/eval-dashboard-phase-by-phase-refactor-plan.md` before starting the next phase.
+- Those updates should record the current implementation state, what phase is next, and any scope or validation adjustments discovered during the completed phase.
 
 ______________________________________________________________________
 
@@ -193,6 +204,7 @@ Take a **testability-first pass**:
 - curate representative dashboard fixtures early
 - extract pure JS modules early enough that logic tests can begin during modularization
 - still avoid a full frontend bundling/transpilation pipeline in the first pass
+- after each completed phase, refresh the planning docs in `docs/eval-dashboard/` so the test strategy notes remain current
 
 Just as important: **do not try to build a full-fledged dashboard test suite against the current monolithic page before extraction starts**.
 
@@ -235,7 +247,7 @@ The important point is architectural, not tool-specific:
 Examples:
 
 - entry-page references and redirects
-- no inline `<style>` after Phase 3, and exactly one inline `<script>` until Phase 4
+- no inline `<style>` after Phase 3, and no inline runtime `<script>` after Phase 4
 - fixture integrity checks
 
 #### Logic tests for extracted JS modules
@@ -340,7 +352,7 @@ For runtime, there should be **exactly one long-term HTML entry file**, and it s
 
 - `docs/eval-dashboard/index.html`
 
-Make it the public/stable entry point now. Keep it small over time; in the current Phase 3 baseline it already loads external CSS and still carries one large inline script pending Phase 4.
+Make it the public/stable entry point now. Keep it small over time; in the current Phase 4 state it already loads external CSS and the external `assets/js/main.js` entry module.
 
 ### Why only one long-term runtime HTML file?
 
@@ -704,6 +716,8 @@ tests/
 - CSS split by concern
 - curated fixtures mirror real dashboard inputs without depending on mutable live data
 - tests start early and expand as pure modules are extracted
+- every phase updates the planning docs in `docs/eval-dashboard/`
+- every phase remains compliant with `CONTRIBUTING.md`
 
 ______________________________________________________________________
 
@@ -711,12 +725,12 @@ ______________________________________________________________________
 
 From the current repository state, the cleanest next sequence would be:
 
-1. move the remaining inline script into external `docs/eval-dashboard/assets/js/main.js`
-1. extend the structural smoke tests to check for the external script reference and removal of the giant inline `<script>` block
-1. extract pure utilities and begin logic tests for them
+1. extract pure utilities from `docs/eval-dashboard/assets/js/main.js`
+1. begin lightweight browser-free logic tests for those extracted helpers under `tests/unit/eval_dashboard/js/`
 1. extract state/selectors and add selector tests
 1. extract normalization/parsing and add normalization tests
 1. extract loaders, UI modules, and plot/export modules
 1. reduce `main.js` to orchestration only
+1. after each completed phase above, update the planning docs under `docs/eval-dashboard/` and confirm the landed changes comply with `CONTRIBUTING.md`
 
 That keeps the refactor incremental, builds directly on the already-landed migration, fixture, smoke-test, and CSS-extraction groundwork, and preserves the test-first direction of the overall plan.

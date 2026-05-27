@@ -11,6 +11,7 @@
 - [x] Start smoke tests and logic tests as early as practical
 - [x] Make the `eval-dashboard.html` migration safe for links and bookmarks
 - [x] Add a concrete baseline artifact and curated fixture strategy
+- [x] Require post-phase planning-doc updates and compliance with `CONTRIBUTING.md`
 
 ## Goal
 
@@ -31,6 +32,7 @@ This plan assumes:
 - tests and fixtures live under `tests/`
 - runtime docs paths stay hyphenated (`eval-dashboard`), while test directories use Python-friendly underscores (`eval_dashboard`)
 - the repo remains Python-first unless a later follow-up explicitly adds browser-level frontend tooling
+- all work in this refactor complies with `CONTRIBUTING.md`
 
 ## Current implementation state
 
@@ -41,26 +43,28 @@ As of the current repository state:
 - `docs/eval-dashboard.html` is currently a temporary compatibility shim
 - `properdocs.yml` navigation points to `eval-dashboard/index.html`
 - `docs/index.md` links point to `eval-dashboard/index.html`
-- populated Phase 3 CSS assets now exist under `docs/eval-dashboard/assets/css/`, while `docs/eval-dashboard/assets/js/` is still a placeholder namespace for later phases
+- populated Phase 4 runtime assets now exist under `docs/eval-dashboard/assets/`: CSS lives under `assets/css/`, and `assets/js/main.js` now contains the previously inline dashboard script as one external module
 - structural smoke coverage now includes `tests/unit/eval_dashboard/test_eval_dashboard_entrypoint.py` and `tests/unit/eval_dashboard/test_eval_dashboard_html_contracts.py`
 - curated Phase 2 fixtures now exist under `tests/fixtures/eval_dashboard/`, including valid version-0/1/2 examples, invalid edge-case fixtures, and explicit fixtures for all currently supported plot families (`bars`, `errors`, `confusion_matrix`, `tpfpfn`)
 - fixture provenance is documented in `tests/fixtures/eval_dashboard/README.md`
 - fixture integrity smoke coverage exists at `tests/unit/eval_dashboard/test_dashboard_fixtures.py`
 - docs-build validation relies on the repo-level `check-mkdocs (uv)` hook against `properdocs.yml`, rather than a dashboard-specific subprocess test
 - old-path coverage currently relies on the compatibility shim; the ProperDocs redirects plugin is **not** being used for this raw HTML page
-- Phase 3 CSS extraction is complete: `docs/eval-dashboard/index.html` now loads `assets/css/index.css`, contains no inline `<style>` block, and keeps one large inline `<script>` block as the remaining monolith until Phase 4
-- the Phase 3 smoke tests also pin that inline script via the normalized fingerprint stored in `tests/fixtures/eval_dashboard/baseline/baseline-summary.json`
+- Phase 3 CSS extraction remains complete: `docs/eval-dashboard/index.html` still loads `assets/css/index.css` and contains no inline `<style>` block
+- Phase 4 JS externalization is complete: `docs/eval-dashboard/index.html` now loads `assets/js/main.js` as a single external `type="module"` script and contains no inline `<script>` block
+- the structural smoke tests now assert the external CSS and external module-script contract rather than a Phase 3 inline-script freeze
 
 ### Status checkpoint
 
-The repository is currently **through Phase 3** of this plan:
+The repository is currently **through Phase 4** of this plan:
 
 - Phase 0 baseline artifacts landed
 - Phase 1 folder migration and compatibility shim landed
 - Phase 2 curated fixtures and structural smoke coverage landed
 - Phase 3 CSS extraction and HTML contract guardrails landed
+- Phase 4 JS externalization landed
 
-That means **Phase 4** is now the next implementation step.
+That means **Phase 5** is now the next implementation step.
 
 ______________________________________________________________________
 
@@ -106,6 +110,23 @@ This keeps selectors/data modules DOM-free and prevents repeated global lookups 
 ### Baseline artifact rule
 
 “Behavior-preserving” should mean “preserves a checked-in baseline artifact and curated fixtures”, not only “still seems okay manually”.
+
+### Contribution and planning-maintenance rule
+
+- Every change made as part of this refactor must comply with `CONTRIBUTING.md`, including its requirements around documentation, testing, and review readiness.
+- After each completed phase, update the planning docs under `docs/eval-dashboard/` so they accurately reflect:
+    - the current implementation state
+    - which phases are complete/in progress/next
+    - any scope, sequencing, or validation changes discovered during the phase
+- At minimum, keep `eval-dashboard-phase-by-phase-refactor-plan.md` and `eval-dashboard-modularization-plan.md` synchronized after each phase boundary.
+
+### Phase completion checklist
+
+Before considering any phase complete:
+
+- finish the phase-specific validation listed below
+- update the planning docs in `docs/eval-dashboard/` to record the new status and next step
+- confirm the resulting changes still comply with `CONTRIBUTING.md`
 
 ______________________________________________________________________
 
@@ -191,6 +212,8 @@ A good split is:
 
 Build and serve the docs site and manually verify the dashboard once before starting the refactor.
 
+Before closing Phase 0, update the planning docs under `docs/eval-dashboard/` with the recorded baseline status and confirm the baseline/documentation changes comply with `CONTRIBUTING.md`.
+
 ```bash
 cd /home/arbi01/projects/kibad-llm
 uv run --group cicd properdocs build
@@ -257,6 +280,7 @@ Initial checks can include:
 - verify the compatibility strategy chosen for the old URL/path actually works in the built site
 - verify the dashboard page loads after the path move
 - verify no behavior changes apart from the file location
+- update the planning docs in `docs/eval-dashboard/` to record the completed entrypoint migration and confirm the phase changes comply with `CONTRIBUTING.md`
 
 ### Suggested commit boundary
 
@@ -414,6 +438,8 @@ uv run --group cicd pytest tests/unit/eval_dashboard
 uv run --group cicd check-mkdocs --config properdocs.yml
 ```
 
+Before closing Phase 2, update the planning docs in `docs/eval-dashboard/` with the landed fixture/smoke-test status and confirm the added tests/docs comply with `CONTRIBUTING.md`.
+
 ### Suggested commit boundary
 
 `test(eval-dashboard): add curated fixtures and initial smoke coverage`
@@ -503,6 +529,8 @@ uv run --group cicd properdocs build
 uv run --group cicd properdocs serve -w .
 ```
 
+Keep the planning docs in `docs/eval-dashboard/` updated with the completed CSS-extraction status, and ensure any follow-up changes for this phase comply with `CONTRIBUTING.md`.
+
 ### Suggested commit boundary
 
 `docs(eval-dashboard): externalize dashboard CSS`
@@ -510,6 +538,8 @@ uv run --group cicd properdocs serve -w .
 ______________________________________________________________________
 
 ## Phase 4. Move the inline script into one external module
+
+**Status in current repository:** completed.
 
 ### Goal
 
@@ -542,6 +572,16 @@ Do not split logic yet. Keep:
 
 all together in `main.js`.
 
+### Landed Phase 4 outcome
+
+The current branch already matches this phase:
+
+- `docs/eval-dashboard/assets/js/main.js` exists and contains the previously inline dashboard script body in one file
+- `docs/eval-dashboard/index.html` references `assets/js/main.js` via a single `type="module"` script tag
+- the inline `<script>` block is gone
+- `tests/unit/eval_dashboard/test_eval_dashboard_entrypoint.py` asserts that the expected JS entry file exists
+- `tests/unit/eval_dashboard/test_eval_dashboard_html_contracts.py` asserts the external stylesheet reference, the external module-script reference, and the removal of inline CSS/JS from the runtime entry page
+
 ### Why this phase matters
 
 Once the script is externalized, future refactors stop rewriting a huge HTML file and start operating on normal JS modules.
@@ -564,6 +604,7 @@ Verify that all existing interactions still work:
 - evaluation table rendering
 - plot rendering
 - figure download button state
+- update the planning docs in `docs/eval-dashboard/` after the phase lands and confirm the extracted-script changes comply with `CONTRIBUTING.md`
 
 ### Suggested commit boundary
 
@@ -646,6 +687,7 @@ It creates reusable building blocks and proves the dashboard can gain real logic
 - filename generation remains unchanged
 - flattening/grouping-dependent helpers still behave the same
 - new JS logic tests pass
+- update the planning docs in `docs/eval-dashboard/` after the phase lands and confirm the utility/test changes comply with `CONTRIBUTING.md`
 
 ### Suggested commit boundary
 
@@ -730,6 +772,7 @@ Verify no regression in:
 - sorting state
 - plot-group selection inputs
 - selector tests pass
+- update the planning docs in `docs/eval-dashboard/` after the phase lands and confirm the state/selector changes comply with `CONTRIBUTING.md`
 
 ### Suggested commit boundaries
 
@@ -800,6 +843,7 @@ Verify that:
 - missing prediction ids are still handled correctly
 - conflicting prediction ids are still handled correctly
 - normalization tests pass
+- update the planning docs in `docs/eval-dashboard/` after the phase lands and confirm the parsing/normalization changes comply with `CONTRIBUTING.md`
 
 ### Suggested commit boundaries
 
@@ -871,6 +915,7 @@ Verify:
 - progress/status text still updates
 - duplicate-run handling still works
 - unsupported-version/malformed-run handling still works
+- update the planning docs in `docs/eval-dashboard/` after the phase lands and confirm the loader changes comply with `CONTRIBUTING.md`
 
 ### Suggested commit boundaries
 
@@ -966,6 +1011,7 @@ Verify that:
 - options tabs still work
 - default/truncate controls still work
 - sort buttons still work
+- update the planning docs in `docs/eval-dashboard/` after the phase lands and confirm the UI-module changes comply with `CONTRIBUTING.md`
 
 ### Suggested commit boundaries
 
@@ -1047,6 +1093,7 @@ Verify:
 - tooltips still work
 - legend behavior still works
 - figure download/export still works
+- update the planning docs in `docs/eval-dashboard/` after the phase lands and confirm the plotting/export changes comply with `CONTRIBUTING.md`
 
 ### Suggested commit boundaries
 
@@ -1090,6 +1137,7 @@ This phase confirms that the modularization is complete rather than partial.
 - module boundaries follow the stated dependency rules
 - no large “temporary dumping ground” functions remain
 - dashboard behavior still matches the Phase 0 baseline after the Phase 1 folder move
+- update the planning docs in `docs/eval-dashboard/` after the phase lands and confirm the cleanup changes comply with `CONTRIBUTING.md`
 
 ### Suggested commit boundary
 
@@ -1154,6 +1202,8 @@ uv run --group cicd check-mkdocs --config properdocs.yml
 
 Also run the chosen lightweight JS logic-test command if one was introduced during Phases 5 to 8.
 
+Before closing Phase 12, update the planning docs in `docs/eval-dashboard/` with the final coverage status and confirm the testing/documentation updates comply with `CONTRIBUTING.md`.
+
 ### Suggested commit boundary
 
 `test(eval-dashboard): broaden smoke and logic coverage`
@@ -1186,6 +1236,8 @@ This should be a follow-up, not part of the first modularization pass.
 - verify plot containers render expected content
 - verify figure export button enables/disables appropriately
 
+If this optional phase is taken on, update the planning docs in `docs/eval-dashboard/` after the phase decision or implementation lands, and keep the work compliant with `CONTRIBUTING.md`.
+
 ______________________________________________________________________
 
 ## Recommended PR / commit breakdown
@@ -1215,7 +1267,9 @@ If needed, these can be grouped into fewer PRs:
 - PR 3: utilities + state + selectors + parsing + normalization + logic tests
 - PR 4: loaders + UI modules + plot/export modules + final cleanup + coverage pass
 
-From the current repository state, work would resume at the `external main.js` step because the earlier baseline, migration, fixture, smoke-test, and CSS-extraction work is already in place.
+From the current repository state, work would resume at the `utility extraction + first JS logic tests` step because the earlier baseline, migration, fixture, smoke-test, CSS-extraction, and external-`main.js` work is already in place.
+
+After each completed PR or phase in that sequence, refresh the planning docs under `docs/eval-dashboard/` before moving on so the written plan keeps matching the repository state and `CONTRIBUTING.md` expectations.
 
 ______________________________________________________________________
 
@@ -1236,6 +1290,8 @@ The refactor is complete when:
 - ProperDocs still serves the dashboard correctly
 - the refactored dashboard still matches the checked-in baseline artifact
 - smoke tests and extracted-logic tests both exist and pass
+- the planning docs under `docs/eval-dashboard/` have been updated after each completed phase
+- the full refactor history and resulting state comply with `CONTRIBUTING.md`
 
 ______________________________________________________________________
 
@@ -1243,8 +1299,9 @@ ______________________________________________________________________
 
 Given the current repository state, the safest next implementation step is:
 
-1. move the remaining inline dashboard script into `docs/eval-dashboard/assets/js/main.js`
-1. keep `docs/eval-dashboard/index.html` behavior-equivalent while replacing the inline block with a single external script reference
-1. extend the structural smoke tests to assert that the expected JS entry file exists, the external script reference is present, and the giant inline `<script>` block is gone
+1. extract the first low-coupling helpers from `docs/eval-dashboard/assets/js/main.js` into `docs/eval-dashboard/assets/js/utils/`
+1. reserve `tests/unit/eval_dashboard/js/` for lightweight browser-free logic tests and add first coverage for the extracted pure helpers
+1. keep `main.js` behavior-equivalent while beginning the utility split described in Phase 5
+1. update the planning docs in `docs/eval-dashboard/` after Phase 5 lands and confirm the change set complies with `CONTRIBUTING.md`
 
-That continues the refactor with the next smallest behavior-preserving boundary now that the entrypoint migration, curated fixtures, first smoke coverage, and CSS extraction are already in place.
+That continues the refactor with the next smallest behavior-preserving boundary now that the entrypoint migration, curated fixtures, first smoke coverage, CSS extraction, and external `main.js` step are already in place.
