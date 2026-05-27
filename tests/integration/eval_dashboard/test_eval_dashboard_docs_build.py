@@ -1,4 +1,5 @@
-from pathlib import Path
+"""Integration smoke tests for eval dashboard docs builds."""
+
 import subprocess  # nosec B404
 import sys
 
@@ -8,6 +9,8 @@ SITE_ROOT = PROJ_ROOT / "site"
 
 
 def test_eval_dashboard_docs_build_succeeds() -> None:
+    """Verify that ProperDocs builds the dashboard entry page and shim."""
+
     result = subprocess.run(  # nosec B603
         [sys.executable, "-m", "properdocs", "build"],
         cwd=PROJ_ROOT,
