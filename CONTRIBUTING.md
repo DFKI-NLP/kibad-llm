@@ -98,7 +98,7 @@ High-level overview of contributor-relevant paths (local caches and other genera
 │   ├── fixtures/               <- Static test data, replay fixtures, PDFs, schemas, and expected outputs.
 │   ├── integration/            <- End-to-end style tests for extractors, prediction, and evaluation flows.
 │   └── unit/                   <- Focused tests for individual modules and utilities.
-└── uv.lock                     <- Locked dependency set managed by `uv`.
+└── uv.lock                     <- Locked dependency set managed by `uv`. Do not touch!
 ```
 
 ## Setup
