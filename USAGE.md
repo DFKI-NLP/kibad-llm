@@ -1,8 +1,7 @@
 # Usage Instructions
 
-IMPORTANT:
-
-All commands below assume that you are in the root directory of this project (where this `README.md` is located).
+> [!WARNING]
+> All commands below assume that you are in the root directory of this project (where this `README.md` is located).
 
 Also, if you're new to `uv`:
 
