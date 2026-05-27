@@ -19,17 +19,12 @@ def _document_chunk_iterator(
     """Iterates over documents to return text chunks along with the document ID.
 
     Args:
-        document: A sequence of Document objects.
+        document: An input text as str.
         max_char_buffer: The maximum character buffer size for the ChunkIterator.
         tokenizer: Optional tokenizer instance.
 
     Returns:
         TextChunk containing document ID for a corresponding document.
-
-    Raises:
-        InvalidDocumentError: If restrict_repeats is True and the same document ID
-            is visited more than once. Valid documents prior to the error will be
-            returned.
     """
     return tuple(
         core.ChunkIterator(
@@ -48,17 +43,17 @@ class ChunkingExtractor:
 
     Pass llm=None with verbose=True to get the number of chunks per document without inference.
 
-    WARNING:
-    If a Token that is greater than max_char_buffer is encountered, it becomes its own chunk.
-    This edge case can produce chunks that are larger than max_char_buffer would allow.
-
-    Args:
+    Attributes:
         aggregator: Method to aggregate the llm output for the individual chunks before returning
         return_as_list: List of field names to return as lists of all extracted values
         tokenizer: tokenizer to use for chunking
         max_char_buffer: Max chunk size in characters
         verbose: Adds verbose logging
-        **kwargs: Additional keyword arguments passed to the base extraction function.
+        default_kwargs: Additional keyword arguments passed to the base extraction function.
+
+    Warning:
+    If a Token that is greater than max_char_buffer is encountered, it becomes its own chunk.
+    This edge case can produce chunks that are larger than max_char_buffer would allow.
     """
 
     def __init__(
@@ -78,6 +73,21 @@ class ChunkingExtractor:
         self.verbose = verbose
 
     def __call__(self, *args, **kwargs) -> dict[str, Any]:
+        """
+        Args:
+            *args: 
+                text (str): Input document to process. 
+                text_id (str): Id of input document.
+
+        Keyword Args:
+            text (str): Input document to process. 
+            text_id (str): Id of input document.
+            *: Refer to [`extract_from_text`][kibad_llm.extractors.base.extract_from_text]
+
+        Returns:
+            
+        """
+        breakpoint()
         text = kwargs.pop("text", None)
         if text is None:
             text = args[0]

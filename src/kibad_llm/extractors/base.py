@@ -641,7 +641,10 @@ def augment_and_strip_metadata_from_structured_callback(
     validate_with_schema: bool,
     augment_metadata_kwargs: dict[str, Any] | None = None,
 ) -> None:
-    """Augment metadata in `structured` output and save it as `structured_with_metadata`.
+    """
+    TODO recheck!
+
+    Augment metadata in `structured` output and save it as `structured_with_metadata`.
     Then, strip metadata and save the cleaned version back to `structured`.
 
     Modifies `out` in place; does not return a value.
