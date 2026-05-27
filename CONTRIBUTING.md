@@ -33,10 +33,12 @@ High-level overview of contributor-relevant paths (local caches and other genera
 ├── .pre-commit-config.yaml     <- `prek`/pre-commit hook configuration used locally and in CI.
 ├── CONTRIBUTING.md             <- Contribution workflow, testing, and documentation guidelines.
 ├── LICENSE                     <- AGPL-v3 license text for the project.
-├── Makefile                    <- Legacy helper targets. TODO: clarify which targets are still maintained now that the project uses `uv` instead of `poetry` in most docs.
+├── Makefile                    <- Legacy helper targets. TODO: clarify which targets are still maintained now that 
+│                                  the project uses `uv` instead of `poetry` in most docs.
 ├── README.md                   <- Short project entry point and quickstart.
 ├── USAGE.md                    <- Detailed usage instructions for data integration, prediction, and evaluation.
-├── configs/                    <- Hydra configuration tree for prediction, evaluation, datasets, metrics, paths, PDF reading, and experiments.
+├── configs/                    <- Hydra configuration tree for prediction, evaluation, datasets, metrics, paths, 
+│   │                              PDF reading, and experiments.
 │   ├── dataset/                <- Dataset configs for references and prediction inputs.
 │   ├── experiment/             <- Reproducible experiment presets for `predict` and `evaluate`.
 │   ├── extractor/              <- Extractor composition, prompt, schema, LLM, and request-parameter configs.
@@ -47,23 +49,33 @@ High-level overview of contributor-relevant paths (local caches and other genera
 ├── data/                       <- Local data area for source inputs and derived datasets.
 │   ├── external/               <- Third-party inputs such as exported Zotero data.
 │   ├── interim/                <- Intermediate converted data such as DB-to-JSON exports used for evaluation.
-│   ├── prediction_results/     <- Checked-in experiment artefacts and derived result bundles that are meant to live in Git.
+│   ├── prediction_results/     <- Checked-in experiment artefacts and derived result bundles that are meant to live 
+│   │                              in Git.
 │   ├── processed/              <- Versioned processed datasets kept in Git when useful for reproducibility.
 │   └── raw/                    <- Immutable source data dumps (not yet used).
 ├── docs/                       <- ProperDocs source files for the published documentation site.
-├── logs/                       <- Local/generated Hydra run logs and experiment metadata; this top-level directory should never contain committed data and may be symlinked to shared storage on the cluster.
-├── models/                     <- LLM runtime documentation and config files (for example `vllm.env` and logging config), not model weights themselves.
+├── logs/                       <- Local/generated Hydra run logs and experiment metadata; this top-level directory 
+│                                  should never contain committed data and may be symlinked to shared storage on the 
+│                                  cluster.
+├── models/                     <- LLM runtime documentation and config files (for example `vllm.env` and logging 
+│                                  config), not model weights themselves.
 ├── notebooks/                  <- Analysis notebooks such as multirun evaluation plotting.
 ├── podman/
-│   └── faktencheck-db/         <- Podman/Docker Compose setup and instructions for running the local Faktencheck PostgreSQL database dump.
-├── predictions/                <- Local/generated prediction JSONL outputs grouped by experiment/run; this top-level directory should never contain committed data and may be symlinked to shared storage on the cluster.
+│   └── faktencheck-db/         <- Podman/Docker Compose setup and instructions for running the local Faktencheck 
+│                                  PostgreSQL database dump.
+├── predictions/                <- Local/generated prediction JSONL outputs grouped by experiment/run; this top-level 
+│                                  directory should never contain committed data and may be symlinked to shared 
+│                                  storage on the cluster.
 ├── properdocs.yml              <- ProperDocs site configuration and navigation.
 ├── pyproject.toml              <- Python package metadata, dependencies, and tool configuration.
 ├── references/                 <- Data dictionaries, manuals, and all other explanatory materials (not yet used).
 ├── reports/
-│   └── figures/                <- Legacy/outdated location for generated figures; current checked-in result artefacts are kept under `data/prediction_results/` instead.
-├── run_in_process.sh           <- Cluster helper script for running inference/evaluation with in-process vLLM or API-based models.
-├── run_with_llm.sh             <- Cluster helper script that starts an external vLLM server and then runs `uv` code against it.
+│   └── figures/                <- Legacy/outdated location for generated figures; current checked-in result artefacts 
+│                                  are kept under `data/prediction_results/` instead.
+├── run_in_process.sh           <- Cluster helper script for running inference/evaluation with in-process vLLM or 
+│                                  API-based models.
+├── run_with_llm.sh             <- Cluster helper script that starts an external vLLM server and then runs `uv` code 
+│                                  against it.
 ├── run_with_llm_login_node_exec.sh <- Variant of the previous helper that keeps the `uv` side on the login node.
 ├── scripts/                    <- Repository maintenance scripts, currently focused on building documentation.
 ├── src/
@@ -72,7 +84,8 @@ High-level overview of contributor-relevant paths (local caches and other genera
 │       ├── data_integration/   <- Scripts for Zotero download, DB conversion, vocabulary extraction, and file syncing.
 │       ├── dataset/            <- Dataset loaders/utilities for CSV, JSON, compressed data, and predictions.
 │       ├── evaluate.py         <- Hydra entry point for metric computation against references.
-│       ├── extractors/         <- Core extraction pipeline components, including chunking, repetition, unions, and aggregation helpers.
+│       ├── extractors/         <- Core extraction pipeline components, including chunking, repetition, unions, and 
+│       │                          aggregation helpers.
 │       ├── hydra_callbacks/    <- Custom Hydra callbacks such as saving combined job return values.
 │       ├── llms/               <- LLM backend abstractions for OpenAI, OpenAI-compatible vLLM, and in-process vLLM.
 │       ├── metric.py           <- Shared metric interface/types used by evaluators.
