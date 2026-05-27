@@ -27,7 +27,7 @@ def _inline_script() -> str:
     """Return the normalized inline dashboard script text."""
 
     html = _dashboard_html()
-    match = re.search(r"<script>(.*?)</script>", html, re.DOTALL)
+    match = re.search(r"<script\b[^>]*>(.*?)</script>", html, re.DOTALL)
     assert match is not None
     return match.group(1).replace("\r\n", "\n").strip()
 
