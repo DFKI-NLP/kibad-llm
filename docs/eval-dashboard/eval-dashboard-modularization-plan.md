@@ -15,14 +15,17 @@ A few repo-specific observations first:
 
 - the canonical runtime page now lives at `docs/eval-dashboard/index.html`.
 - `docs/eval-dashboard.html` is currently a temporary compatibility shim for the old path.
-- `docs/eval-dashboard/index.html` is still a **single huge static page** with inline CSS and a very large inline `<script>`.
+- `docs/eval-dashboard/index.html` is still a **single huge static page**, but Phase 3 has already moved styling into external CSS; the page now loads `assets/css/index.css` and keeps one very large inline `<script>` block as the remaining monolith.
 - `properdocs.yml` and `docs/index.md` already point to the new folder-based entrypoint.
 - `scripts/build_docs.py` only generates **Python API reference** pages from `src/`, so it is **not** a frontend asset pipeline.
-- `pyproject.toml` has **pytest**, and the repo now has early dashboard smoke coverage under `tests/unit/eval_dashboard/`, while docs-build validation is covered by the repo-level `check-mkdocs (uv)` hook; there is still **no dashboard-specific JS logic-test setup** yet.
+- `docs/eval-dashboard/assets/css/` now contains `index.css`, `tokens.css`, `layout.css`, `controls.css`, `tables.css`, and `plots.css`; `docs/eval-dashboard/assets/js/` is still only a placeholder namespace for later phases.
+- `pyproject.toml` has **pytest**, and the repo now has dashboard smoke coverage under `tests/unit/eval_dashboard/`, including entrypoint checks plus HTML-contract checks that enforce external CSS and a single unchanged inline `<script>` until Phase 4; there is still **no dashboard-specific JS logic-test setup** yet.
 - `data/prediction_results/readme.md` documents real experiment folders under `data/prediction_results/logs/`; those runs are useful fixture sources, but tests should use curated snapshots rather than reach into mutable live data folders.
 - curated dashboard fixtures now exist under `tests/fixtures/eval_dashboard/`, including valid version coverage, invalid edge-case fixtures, and explicit examples for all current plot families (`bars`, `errors`, `confusion_matrix`, `tpfpfn`).
 
 Given that, the recommendation is to keep the dashboard as a docs asset, but organize it as a small self-contained docs section that is testable and easy to evolve.
+
+In other words, the repository is now effectively **through Phase 3** of the refactor: entrypoint migration, compatibility coverage, curated fixtures, baseline artifacts, structural smoke tests, and CSS extraction have landed; the next smallest behavior-preserving step is to externalize the remaining inline script.
 
 ______________________________________________________________________
 
@@ -232,7 +235,7 @@ The important point is architectural, not tool-specific:
 Examples:
 
 - entry-page references and redirects
-- no giant inline `<style>` or `<script>` after the relevant phases
+- no inline `<style>` after Phase 3, and exactly one inline `<script>` until Phase 4
 - fixture integrity checks
 
 #### Logic tests for extracted JS modules
@@ -337,7 +340,7 @@ For runtime, there should be **exactly one long-term HTML entry file**, and it s
 
 - `docs/eval-dashboard/index.html`
 
-Make it the public/stable entry point now. Keep it small and let it load external CSS/JS.
+Make it the public/stable entry point now. Keep it small over time; in the current Phase 3 baseline it already loads external CSS and still carries one large inline script pending Phase 4.
 
 ### Why only one long-term runtime HTML file?
 
@@ -372,6 +375,8 @@ Do not over-split CSS. A small number of concern-based files is enough.
 
 ### Good starting set
 
+This starting set now exists in the repository and is a good long-lived baseline for further cleanup:
+
 ```text
 docs/eval-dashboard/assets/css/
   index.css       # imports the others or serves as main bundle
@@ -384,7 +389,7 @@ docs/eval-dashboard/assets/css/
 
 ### Why this split?
 
-The current inline CSS naturally falls into a few groups:
+The extracted CSS naturally falls into a few groups:
 
 - theme tokens
 - layout wrappers
@@ -706,13 +711,12 @@ ______________________________________________________________________
 
 From the current repository state, the cleanest next sequence would be:
 
-1. extract CSS from `docs/eval-dashboard/index.html` into `docs/eval-dashboard/assets/css/`
-1. extend the structural smoke tests to check for external stylesheet references and removal of the giant inline `<style>` block
-1. move the inline script into external `main.js`
+1. move the remaining inline script into external `docs/eval-dashboard/assets/js/main.js`
+1. extend the structural smoke tests to check for the external script reference and removal of the giant inline `<script>` block
 1. extract pure utilities and begin logic tests for them
 1. extract state/selectors and add selector tests
 1. extract normalization/parsing and add normalization tests
 1. extract loaders, UI modules, and plot/export modules
 1. reduce `main.js` to orchestration only
 
-That keeps the refactor incremental, builds directly on the already-landed migration and fixture groundwork, and preserves the test-first direction of the overall plan.
+That keeps the refactor incremental, builds directly on the already-landed migration, fixture, smoke-test, and CSS-extraction groundwork, and preserves the test-first direction of the overall plan.

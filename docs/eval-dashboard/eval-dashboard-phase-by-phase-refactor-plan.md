@@ -41,14 +41,26 @@ As of the current repository state:
 - `docs/eval-dashboard.html` is currently a temporary compatibility shim
 - `properdocs.yml` navigation points to `eval-dashboard/index.html`
 - `docs/index.md` links point to `eval-dashboard/index.html`
-- placeholder asset directories exist at `docs/eval-dashboard/assets/css/` and `docs/eval-dashboard/assets/js/`
-- a first structural smoke test exists at `tests/unit/eval_dashboard/test_eval_dashboard_entrypoint.py`
+- populated Phase 3 CSS assets now exist under `docs/eval-dashboard/assets/css/`, while `docs/eval-dashboard/assets/js/` is still a placeholder namespace for later phases
+- structural smoke coverage now includes `tests/unit/eval_dashboard/test_eval_dashboard_entrypoint.py` and `tests/unit/eval_dashboard/test_eval_dashboard_html_contracts.py`
 - curated Phase 2 fixtures now exist under `tests/fixtures/eval_dashboard/`, including valid version-0/1/2 examples, invalid edge-case fixtures, and explicit fixtures for all currently supported plot families (`bars`, `errors`, `confusion_matrix`, `tpfpfn`)
 - fixture provenance is documented in `tests/fixtures/eval_dashboard/README.md`
 - fixture integrity smoke coverage exists at `tests/unit/eval_dashboard/test_dashboard_fixtures.py`
 - docs-build validation relies on the repo-level `check-mkdocs (uv)` hook against `properdocs.yml`, rather than a dashboard-specific subprocess test
 - old-path coverage currently relies on the compatibility shim; the ProperDocs redirects plugin is **not** being used for this raw HTML page
-- CSS and JavaScript extraction have **not** started yet; `docs/eval-dashboard/index.html` is still the original monolithic implementation moved into the new folder namespace
+- Phase 3 CSS extraction is complete: `docs/eval-dashboard/index.html` now loads `assets/css/index.css`, contains no inline `<style>` block, and keeps one large inline `<script>` block as the remaining monolith until Phase 4
+- the Phase 3 smoke tests also pin that inline script via the normalized fingerprint stored in `tests/fixtures/eval_dashboard/baseline/baseline-summary.json`
+
+### Status checkpoint
+
+The repository is currently **through Phase 3** of this plan:
+
+- Phase 0 baseline artifacts landed
+- Phase 1 folder migration and compatibility shim landed
+- Phase 2 curated fixtures and structural smoke coverage landed
+- Phase 3 CSS extraction and HTML contract guardrails landed
+
+That means **Phase 4** is now the next implementation step.
 
 ______________________________________________________________________
 
@@ -346,6 +358,7 @@ Add:
 tests/unit/eval_dashboard/
   test_eval_dashboard_entrypoint.py
   test_dashboard_fixtures.py
+  test_eval_dashboard_html_contracts.py
 ```
 
 Potential initial checks:
@@ -354,7 +367,7 @@ Potential initial checks:
 - intentionally invalid fixtures are documented as invalid
 - the repo-level docs check still succeeds with the migrated dashboard entry page present
 
-Add the following as open TODOs/goals of this phase before moving deeper into modularization:
+Add the following as open TODOs/goals of this phase before moving deeper into modularization. Several of these have now landed and should remain as guardrails for later phases:
 
 - assert that valid fixture `job_return_value.json` files parse successfully
 - assert that valid fixture `.hydra/overrides.yaml` files parse successfully
@@ -368,7 +381,7 @@ Add the following as open TODOs/goals of this phase before moving deeper into mo
     - JSON pane container
     - export/download control
     - tooltip/plot container hooks
-- assert that the current monolithic page still contains the expected inline `<style>` and inline `<script>` blocks before Phases 3 and 4 intentionally extract them
+- after Phase 3, tighten that HTML contract layer to assert that the external stylesheet is present, the inline `<style>` block is gone, and the single inline `<script>` remains unchanged until Phase 4
 - add a baseline-to-coverage smoke check so key entries in `baseline-summary.json` are backed by either:
     - an explicit fixture family, or
     - a durable structural assertion in `docs/eval-dashboard/index.html`
@@ -409,6 +422,8 @@ ______________________________________________________________________
 
 ## Phase 3. Extract CSS only and tighten structural tests
 
+**Status in current repository:** completed.
+
 ### Goal
 
 Move all styling out of `docs/eval-dashboard/index.html` without changing dashboard behavior.
@@ -433,6 +448,18 @@ Then:
 - keep the HTML structure unchanged
 - have `docs/eval-dashboard/index.html` load only the external stylesheet
 
+### Landed Phase 3 outcome
+
+The current branch already matches this phase:
+
+- `docs/eval-dashboard/assets/css/` contains `index.css`, `tokens.css`, `layout.css`, `controls.css`, `tables.css`, and `plots.css`
+- `docs/eval-dashboard/index.html` references `assets/css/index.css`
+- the inline `<style>` block is gone
+- the lone inline `<script>` block is intentionally still present pending Phase 4
+- `tests/unit/eval_dashboard/test_eval_dashboard_entrypoint.py` asserts that the expected CSS files exist
+- `tests/unit/eval_dashboard/test_eval_dashboard_html_contracts.py` asserts the external stylesheet reference, the removal of inline CSS, and the single-inline-script Phase 3 contract
+- the Phase 3 inline-script fingerprint is checked against `tests/fixtures/eval_dashboard/baseline/baseline-summary.json`
+
 ### Suggested CSS split
 
 - `tokens.css`: root variables, theme colors, typography
@@ -453,6 +480,8 @@ Extend `tests/unit/eval_dashboard/test_eval_dashboard_entrypoint.py` or add `tes
 - expected CSS files exist
 - `docs/eval-dashboard/index.html` references the external stylesheet
 - the giant inline `<style>` block is gone or greatly reduced as intended
+
+That coverage is now effectively present via the existing entrypoint and HTML-contract smoke tests.
 
 ### Validation checklist
 
@@ -1161,7 +1190,7 @@ ______________________________________________________________________
 
 ## Recommended PR / commit breakdown
 
-A sensible sequence would be:
+A sensible sequence from scratch would be:
 
 1. baseline artifact + source-fixture audit
 1. move to `docs/eval-dashboard/index.html` + update links/redirects
@@ -1185,6 +1214,8 @@ If needed, these can be grouped into fewer PRs:
 - PR 2: CSS + external `main.js`
 - PR 3: utilities + state + selectors + parsing + normalization + logic tests
 - PR 4: loaders + UI modules + plot/export modules + final cleanup + coverage pass
+
+From the current repository state, work would resume at the `external main.js` step because the earlier baseline, migration, fixture, smoke-test, and CSS-extraction work is already in place.
 
 ______________________________________________________________________
 
@@ -1210,10 +1241,10 @@ ______________________________________________________________________
 
 ## Immediate next implementation step
 
-If starting now, the safest first implementation step is:
+Given the current repository state, the safest next implementation step is:
 
-1. extract the inline dashboard CSS into `docs/eval-dashboard/assets/css/`
-1. keep `docs/eval-dashboard/index.html` behavior-equivalent while switching it to external stylesheet loading
-1. extend the structural smoke tests to assert that the expected CSS files exist and the giant inline `<style>` block is gone or intentionally reduced
+1. move the remaining inline dashboard script into `docs/eval-dashboard/assets/js/main.js`
+1. keep `docs/eval-dashboard/index.html` behavior-equivalent while replacing the inline block with a single external script reference
+1. extend the structural smoke tests to assert that the expected JS entry file exists, the external script reference is present, and the giant inline `<script>` block is gone
 
-That continues the refactor with the next smallest behavior-preserving boundary now that the entrypoint migration, curated fixtures, and first smoke coverage are already in place.
+That continues the refactor with the next smallest behavior-preserving boundary now that the entrypoint migration, curated fixtures, first smoke coverage, and CSS extraction are already in place.
