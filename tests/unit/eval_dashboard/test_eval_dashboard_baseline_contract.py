@@ -97,8 +97,8 @@ def test_baseline_summary_includes_phase_four_external_main_js_contract() -> Non
     assert len(phase_four_contract["main_js_sha256"]) == 64
 
 
-def test_current_runtime_main_js_matches_phase_four_contract() -> None:
-    """Ensure the externalized dashboard main.js stays content-equivalent to the frozen Phase 4 contract."""
+def test_current_runtime_keeps_phase_four_main_js_fingerprint() -> None:
+    """Ensure the externalized dashboard main.js keeps the frozen Phase 4 fingerprint."""
 
     summary = _baseline_summary()
     main_js = _normalized_main_js()
