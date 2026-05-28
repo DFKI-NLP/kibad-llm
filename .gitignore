@@ -10,6 +10,8 @@
 
 # Run logs
 /logs/
+
+# Prediction outputs
 /predictions/
 
 # Mac OS-specific storage files
