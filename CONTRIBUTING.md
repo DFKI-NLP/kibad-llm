@@ -92,8 +92,8 @@ High-level overview of contributor-relevant paths (local caches and other genera
 │   └── unit/                   <- Focused tests for individual modules and utilities.
 │
 ├── .env.example                <- Example environment variables for local setup. Copy to `.env` and fill in the
-├── .gitignore                  <- TODO
 │                                  values to run locally.
+├── .gitignore                  <- TODO
 ├── .pre-commit-config.yaml     <- `prek`/pre-commit hook configuration used locally and in CI.
 ├── CONTRIBUTING.md             <- Contribution workflow, testing, and documentation guidelines.
 ├── LICENSE                     <- AGPL-v3 license text for the project.
