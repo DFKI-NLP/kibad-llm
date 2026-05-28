@@ -189,6 +189,7 @@ The name should be descriptive and concise, ideally reflecting the work done on 
 
 - Do not hide unexpected behaviour or data mismatches. Handle the cases covered by the relevant code contract, but if inputs or state violate that contract, fail early and communicate that clearly, for example by raising an appropriate exception.
 - Do not hesitate to refactor code that is related to the feature or fix you are working on. Reducing duplication and clarifying responsibilities is encouraged, but every refactor should provide a concrete benefit and stay scoped to the current change.
+- Tests and code quality checks must pass before committing code or merging PRs. To ensure this, you can run them locally before pushing your code. For more info, check section [Testing and code quality checks](#testing-and-code-quality-checks).
 
 ### Tests
 
