@@ -1,4 +1,4 @@
-import { flattenObject } from "./utils/flatten.js";
+import { flattenObject, getValueAtPath, omitTopLevelKeys } from "./utils/flatten.js";
 import { normalizeSortConfig, sortItems } from "./utils/sort.js";
 import {
   getFigureTitlePrefix,
@@ -7,8 +7,13 @@ import {
 } from "./utils/text.js";
 import {
   collectSuggestionValues,
+  formatRounded,
   getEffectiveValue,
+  getColumnsWithMultipleValues,
+  getStableObjectSignature,
+  interpolateColor,
   isMissingValue,
+  meanAndStd,
   normalizeValue,
 } from "./utils/values.js";
 
@@ -955,22 +960,6 @@ function getDefaultTruncateColumns(predictionColumns) {
   return defaults;
 }
 
-function getColumnsWithMultipleValues(items, columns, valueGetter) {
-  if (!Array.isArray(items) || items.length <= 1) {
-    return [];
-  }
-  return columns.filter((column) => {
-    const values = new Set();
-    for (const item of items) {
-      values.add(normalizeValue(valueGetter(item, column)));
-      if (values.size > 1) {
-        return true;
-      }
-    }
-    return false;
-  });
-}
-
 /**
  * Choose default prediction group-by fields from varying non-seed override columns.
  */
@@ -1822,18 +1811,6 @@ function renderEvalSortStatus(activeExperiment = state.activeEvalTab, evalColumn
   evalSortedByLabel.textContent = formatSortLabel(evalTabState.sort, displayEvalColumnName);
   evalResetSortButton.disabled = !evalTabState.sort.length;
 }
-
-
-function getStableObjectSignature(obj) {
-  return JSON.stringify(
-    Object.fromEntries(
-      Object.entries(obj)
-        .map(([key, value]) => [key, normalizeValue(value)])
-        .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
-    )
-  );
-}
-
 function parseOverridesYaml(text) {
   const result = {};
   const lines = text.split(/\r?\n/);
@@ -1854,12 +1831,6 @@ function parseOverridesYaml(text) {
     result[key] = item.slice(separatorIndex + 1).trim();
   }
   return result;
-}
-
-function omitTopLevelKeys(obj, excludedKeys) {
-  return Object.fromEntries(
-    Object.entries(obj).filter(([key]) => !excludedKeys.has(key))
-  );
 }
 
 function createUnsupportedJobReturnValueVersionError(version) {
@@ -3011,16 +2982,6 @@ function getGroupValueDisplayFromEvaluations(evaluations, getter) {
   return formatDistinctValueDisplay(values);
 }
 
-function meanAndStd(values) {
-  if (values.length === 0) {
-    return null;
-  }
-  const mean = values.reduce((sum, value) => sum + value, 0) / values.length;
-  const variance =
-    values.reduce((sum, value) => sum + (value - mean) ** 2, 0) / values.length;
-  return { mean, std: Math.sqrt(variance) };
-}
-
 function getVaryingFields(groups, fields) {
   if (!fields.length || groups.length <= 1) {
     return [];
@@ -3449,17 +3410,6 @@ function collectNumericMetricLeafPaths(value, parts = [], out = new Map()) {
   return out;
 }
 
-function getValueAtPath(value, pathParts) {
-  let current = value;
-  for (const part of pathParts) {
-    if (!current || typeof current !== "object" || !(part in current)) {
-      return null;
-    }
-    current = current[part];
-  }
-  return current;
-}
-
 function splitMetricLabelAtLastDot(label) {
   const lastDotIndex = label.lastIndexOf(".");
   if (lastDotIndex === -1) {
@@ -3488,10 +3438,6 @@ function getMetricTypeForEvaluationContext(
     );
   }
   return Array.from(metricTypes)[0] || "";
-}
-
-function formatRounded(value, precision) {
-  return Number(value).toFixed(precision);
 }
 
 function getMetricCollectionSourceRunDir(evaluation) {
@@ -3796,11 +3742,6 @@ function filterTpFpFnAggregationByTotals(aggregation, minLabelTotal, minDocument
   };
 }
 
-function interpolateColor(startRgb, endRgb, t) {
-  const clamp = Math.max(0, Math.min(1, t));
-  const mix = (a, b) => Math.round(a + (b - a) * clamp);
-  return `rgb(${mix(startRgb[0], endRgb[0])}, ${mix(startRgb[1], endRgb[1])}, ${mix(startRgb[2], endRgb[2])})`;
-}
 
 // Render an already-aggregated confusion matrix as an SVG heatmap with values and tooltips.
 function createConfusionMatrixHeatmapSvg(aggregation, precision) {

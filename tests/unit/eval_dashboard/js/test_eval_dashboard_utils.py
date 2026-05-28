@@ -38,10 +38,10 @@ def _run_js_expression(tmp_path: Path, expression: str):
     script_path.write_text(
         textwrap.dedent(
             f"""
-            import {{ flattenObject }} from {json.dumps((UTILS_ROOT / 'flatten.js').as_uri())};
+            import {{ flattenObject, getValueAtPath, omitTopLevelKeys }} from {json.dumps((UTILS_ROOT / 'flatten.js').as_uri())};
             import {{ compareSortableValues, normalizeSortConfig, sortItems }} from {json.dumps((UTILS_ROOT / 'sort.js').as_uri())};
             import {{ getFigureTitlePrefix, sanitizeFigureFilename, splitLabelByLastDot }} from {json.dumps((UTILS_ROOT / 'text.js').as_uri())};
-            import {{ collectSuggestionValues, getEffectiveValue, isMissingValue, normalizeValue }} from {json.dumps((UTILS_ROOT / 'values.js').as_uri())};
+            import {{ collectSuggestionValues, formatRounded, getColumnsWithMultipleValues, getEffectiveValue, getStableObjectSignature, interpolateColor, isMissingValue, meanAndStd, normalizeValue }} from {json.dumps((UTILS_ROOT / 'values.js').as_uri())};
 
             const result = {expression};
             console.log(JSON.stringify(result));
@@ -71,6 +71,29 @@ def test_flatten_object_flattens_nested_objects_and_serializes_arrays(tmp_path: 
         "root.alpha.beta": 3,
         "root.gamma": "[1,2]",
         "root.delta": None,
+    }
+
+
+def test_flatten_helpers_support_shallow_omit_and_path_lookup(tmp_path: Path) -> None:
+    """Ensure the extracted object traversal helpers preserve current omission and path lookup behavior."""
+
+    result = _run_js_expression(
+        tmp_path,
+        textwrap.dedent(
+            """
+            ({
+              omitted: omitTopLevelKeys({ keep: 1, drop: 2, nested: { x: 3 } }, new Set(['drop'])),
+              nested_value: getValueAtPath({ alpha: { beta: { gamma: 7 } } }, ['alpha', 'beta', 'gamma']),
+              missing_value: getValueAtPath({ alpha: {} }, ['alpha', 'beta']),
+            })
+            """
+        ).strip(),
+    )
+
+    assert result == {
+        "omitted": {"keep": 1, "nested": {"x": 3}},
+        "nested_value": 7,
+        "missing_value": None,
     }
 
 
@@ -141,6 +164,41 @@ def test_value_helpers_keep_normalization_and_defaulting_behavior(
     result = _run_js_expression(tmp_path, expression)
 
     assert result == expected
+
+
+def test_value_helpers_cover_signature_variation_and_numeric_helpers(tmp_path: Path) -> None:
+    """Ensure the additional extracted pure helpers preserve their current semantics."""
+
+    result = _run_js_expression(
+        tmp_path,
+        textwrap.dedent(
+            """
+            (() => ({
+              varying_columns: getColumnsWithMultipleValues(
+                [
+                  { values: { a: 'same', b: 1 } },
+                  { values: { a: 'same', b: 2 } },
+                  { values: { a: 'same', b: 2 } },
+                ],
+                ['a', 'b'],
+                (item, column) => item.values[column]
+              ),
+              stable_signature: getStableObjectSignature({ b: 2, a: null, c: { nested: true } }),
+              stats: meanAndStd([2, 4, 4, 4, 5, 5, 7, 9]),
+              rounded: formatRounded(3.14159, 2),
+              interpolated: interpolateColor([0, 0, 0], [255, 255, 255], 0.5),
+            }))()
+            """
+        ).strip(),
+    )
+
+    assert result == {
+        "varying_columns": ["b"],
+        "stable_signature": '{"a":"","b":"2","c":"{\\"nested\\":true}"}',
+        "stats": {"mean": 5.0, "std": 2.0},
+        "rounded": "3.14",
+        "interpolated": "rgb(128, 128, 128)",
+    }
 
 
 def test_text_helpers_keep_plot_title_and_filename_behavior(tmp_path: Path) -> None:
