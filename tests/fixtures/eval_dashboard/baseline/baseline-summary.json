@@ -1,6 +1,6 @@
 {
-  "baseline_version": 1,
-  "captured_at": "2026-05-27",
+  "baseline_version": 2,
+  "captured_at": "2026-05-28",
   "implementation_shape": {
     "runtime_entrypoint": "docs/eval-dashboard/index.html",
     "compatibility_entrypoint": "docs/eval-dashboard.html",
@@ -15,9 +15,18 @@
   },
   "phase_four_contract": {
     "main_js_path": "docs/eval-dashboard/assets/js/main.js",
-    "main_js_normalization": "read the external main.js file, normalize CRLF to LF, then strip outer whitespace",
-    "main_js_line_count": 5333,
-    "main_js_sha256": "7bdc8450c73a711a64eae1e47c7ec1b5b8e809d1ef3a3d29b88bca0f541a8685"
+    "entrypoint_contract": "docs/eval-dashboard/index.html loads assets/js/main.js as one external type=module runtime entry file"
+  },
+  "phase_five_contract": {
+    "utility_module_root": "docs/eval-dashboard/assets/js/utils",
+    "utility_modules": [
+      "flatten.js",
+      "sort.js",
+      "text.js",
+      "values.js"
+    ],
+    "js_test_root": "tests/unit/eval_dashboard/js",
+    "js_test_strategy": "browser-free utility logic tests executed via pytest-driven Node.js module invocations"
   },
   "feature_expectations": {
     "supports_local_load": true,

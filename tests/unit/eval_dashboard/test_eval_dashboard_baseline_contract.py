@@ -1,6 +1,5 @@
-"""Baseline artifact contract tests for the eval dashboard refactor baseline and freeze contracts."""
+"""Baseline artifact contract tests for the eval dashboard refactor baseline and utility-phase contracts."""
 
-import hashlib
 import json
 
 from kibad_llm.config import PROJ_ROOT
@@ -11,6 +10,7 @@ CSS_ROOT = PROJ_ROOT / "docs" / "eval-dashboard" / "assets" / "css"
 JS_ROOT = PROJ_ROOT / "docs" / "eval-dashboard" / "assets" / "js"
 CSS_ENTRY = CSS_ROOT / "index.css"
 MAIN_JS_ENTRY = JS_ROOT / "main.js"
+UTILS_JS_ROOT = JS_ROOT / "utils"
 TOKENS_CSS = CSS_ROOT / "tokens.css"
 BASELINE_SUMMARY = FIXTURE_DATA_ROOT / "eval_dashboard" / "baseline" / "baseline-summary.json"
 FIXTURE_ROOT = FIXTURE_DATA_ROOT / "eval_dashboard"
@@ -54,12 +54,6 @@ def _tokens_css() -> str:
     return TOKENS_CSS.read_text(encoding="utf-8")
 
 
-def _normalized_main_js() -> str:
-    """Load the Phase 4 external main.js file using the frozen normalization contract."""
-
-    return MAIN_JS_ENTRY.read_text(encoding="utf-8").replace("\r\n", "\n").strip()
-
-
 def test_baseline_summary_describes_phase_zero_reference_state() -> None:
     """Ensure the checked-in baseline remains the original pre-Phase-3 reference artifact."""
 
@@ -86,29 +80,42 @@ def test_baseline_summary_includes_phase_three_inline_script_contract() -> None:
 
 
 def test_baseline_summary_includes_phase_four_external_main_js_contract() -> None:
-    """Ensure the baseline artifact exposes the Phase 4 external-main.js freeze contract."""
+    """Ensure the baseline artifact still records the Phase 4 external-main.js milestone."""
 
     summary = _baseline_summary()
     phase_four_contract = summary["phase_four_contract"]
 
     assert phase_four_contract["main_js_path"] == "docs/eval-dashboard/assets/js/main.js"
-    assert phase_four_contract["main_js_normalization"]
-    assert phase_four_contract["main_js_line_count"] > 0
-    assert len(phase_four_contract["main_js_sha256"]) == 64
+    assert phase_four_contract["entrypoint_contract"]
 
 
-def test_current_runtime_keeps_phase_four_main_js_fingerprint() -> None:
-    """Ensure the externalized dashboard main.js keeps the frozen Phase 4 fingerprint."""
+def test_baseline_summary_includes_phase_five_utility_contract() -> None:
+    """Ensure the baseline artifact exposes the Phase 5 utility-extraction contract."""
 
     summary = _baseline_summary()
-    main_js = _normalized_main_js()
-    phase_four_contract = summary["phase_four_contract"]
+    phase_five_contract = summary["phase_five_contract"]
 
-    assert len(main_js.splitlines()) == phase_four_contract["main_js_line_count"]
-    assert (
-        hashlib.sha256(main_js.encode("utf-8")).hexdigest()
-        == phase_four_contract["main_js_sha256"]
-    )
+    assert phase_five_contract["utility_module_root"] == "docs/eval-dashboard/assets/js/utils"
+    assert phase_five_contract["js_test_root"] == "tests/unit/eval_dashboard/js"
+    assert phase_five_contract["js_test_strategy"]
+    assert set(phase_five_contract["utility_modules"]) == {
+        "flatten.js",
+        "sort.js",
+        "text.js",
+        "values.js",
+    }
+
+
+def test_current_runtime_matches_phase_five_utility_contract() -> None:
+    """Ensure the extracted Phase 5 utility modules and JS-test directory exist."""
+
+    summary = _baseline_summary()
+    phase_five_contract = summary["phase_five_contract"]
+
+    assert MAIN_JS_ENTRY.is_file()
+    for file_name in phase_five_contract["utility_modules"]:
+        assert (UTILS_JS_ROOT / file_name).is_file()
+    assert (PROJ_ROOT / phase_five_contract["js_test_root"]).is_dir()
 
 
 def test_baseline_feature_expectation_keys_match_current_contract() -> None:
