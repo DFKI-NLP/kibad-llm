@@ -37,7 +37,9 @@ High-level overview of contributor-relevant paths (local caches and other genera
 │   ├── hydra/                  <- Hydra defaults and logging/callback configuration.
 │   ├── metric/                 <- Evaluation metric configs.
 │   ├── paths/                  <- Centralized input/output path defaults for runs.
-│   └── pdf_reader/             <- PDF-to-markdown reader configs.
+│   ├── pdf_reader/             <- PDF-to-markdown reader configs.
+│   ├── evaluate.py             <- TODO
+│   └── predict.py              <- TODO
 │
 ├── data/                       <- Local data area for source inputs and derived datasets.
 │   ├── external/               <- Third-party inputs such as exported Zotero data.
@@ -82,12 +84,15 @@ High-level overview of contributor-relevant paths (local caches and other genera
 │       ├── predict.py          <- Hydra entry point for PDF-to-structured-prediction runs.
 │       └── preprocessing.py    <- PDF/content preprocessing helpers used before extraction.
 │
+├── scripts/                    <- Repository maintenance scripts, currently focused on building documentation.
+│
 ├── tests/                      <- Unit, integration, and fixture-based tests.
 │   ├── fixtures/               <- Static test data, replay fixtures, PDFs, schemas, and expected outputs.
 │   ├── integration/            <- End-to-end style tests for extractors, prediction, and evaluation flows.
 │   └── unit/                   <- Focused tests for individual modules and utilities.
 │
 ├── .env.example                <- Example environment variables for local setup. Copy to `.env` and fill in the
+├── .gitignore                  <- TODO
 │                                  values to run locally.
 ├── .pre-commit-config.yaml     <- `prek`/pre-commit hook configuration used locally and in CI.
 ├── CONTRIBUTING.md             <- Contribution workflow, testing, and documentation guidelines.
@@ -102,7 +107,6 @@ High-level overview of contributor-relevant paths (local caches and other genera
 ├── run_with_llm.sh             <- Cluster helper script that starts an external vLLM server and then runs `uv` code
 │                                  against it.
 ├── run_with_llm_login_node_exec.sh <- Variant of the previous helper that keeps the `uv` side on the login node.
-├── scripts/                    <- Repository maintenance scripts, currently focused on building documentation.
 ├── USAGE.md                    <- Detailed usage instructions for data integration, prediction, and evaluation.
 └── uv.lock                     <- Locked dependency set managed by `uv`. Do not touch!
 ```
