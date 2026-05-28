@@ -43,8 +43,7 @@ vllm_kwargs:
   # nano_v3 is a custom plugin from NVIDIA, must be present in the working directory.
   # Download: wget https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8/resolve/main/nano_v3_reasoning_parser.py
   # See https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8
-  reasoning_parser_plugin: "nano_v3_reasoning_parser.py"
-  reasoning_parser: "nano_v3"
+  reasoning_parser: "deepseek_r1"
   gpu_memory_utilization: 0.95 # fraction of GPU memory reserved (impacts KV cache size)
   # dtype: "auto"
   download_dir: ${oc.env:VLLM_DOWNLOAD_DIR}
