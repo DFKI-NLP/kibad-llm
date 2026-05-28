@@ -22,11 +22,11 @@ The following guidelines ensure consistency across the project, so please read t
         - [Google-style docstring guidelines](#google-style-docstring-guidelines)
         - [Linking](#linking)
         - [Hosting locally](#hosting-locally)
-- [Testing and code quality checks](#testing-and-code-quality-checks)
 - [Changing dependencies](#changing-dependencies)
     - [Adding dependencies](#adding-dependencies)
     - [Updating dependencies](#updating-dependencies)
     - [uv known issues](#uv-known-issues)
+- [Testing and code quality checks](#testing-and-code-quality-checks)
 - [Misc](#misc)
 
 ## Project Organization
@@ -235,36 +235,6 @@ Note: Adjusting the LLM replay fixtures usually results in different output and,
 
 If you add a new test that requires LLM interaction, you can require the test to have a working vLLM backend, but it is encouraged to use `llm_chat_replay` instead.
 
-## Testing and code quality checks
-
-To run code quality checks and static type checking, call:
-
-```bash
-uv run prek run -a
-# if you have not run 'uv sync --group cicd' previously, use instead
-uv run --group cicd prek run -a
-```
-
-This runs all configured [prek](https://prek.j178.dev/) hooks (see [pre-commit-config.yaml](.pre-commit-config.yaml)) on all files. Some hooks may fix issues automatically, others will report issues that need to be fixed manually.
-
-To run all tests with `pytest`:
-
-```bash
-uv run pytest
-# if you have not run 'uv sync --group cicd' previously, use instead
-uv run --group cicd pytest
-```
-
-The following commands run on GitHub CI (see [code_quality_and_tests.yml](.github/workflows/code_quality_and_tests.yml)), but can also be run locally:
-
-```bash
-uv run --group cicd prek run -a
-# the '-m "not slow"' bit is residue, to be cleaned up by a future polishing pr
-uv run --group cicd pytest -m "not slow"
-```
-
-For test design, layout, and fixture regeneration guidance, see [Coding guidelines](#coding-guidelines).
-
 ### Documentation
 
 This project uses [ProperDocs](https://properdocs.org/) for documentation, which is hosted on [GitHub Pages](https://dfki-nlp.github.io/kibad-llm/).
@@ -437,6 +407,36 @@ These known issues have their own uv specific fixes. The relevant documentation 
 
 - [Build isolation](https://docs.astral.sh/uv/concepts/projects/config/#build-isolation) - Can lead to runtime errors
 - [Conflicting dependencies](https://docs.astral.sh/uv/concepts/projects/config/#conflicting-dependencies)
+
+## Testing and code quality checks
+
+To run code quality checks and static type checking, call:
+
+```bash
+uv run prek run -a
+# if you have not run 'uv sync --group cicd' previously, use instead
+uv run --group cicd prek run -a
+```
+
+This runs all configured [prek](https://prek.j178.dev/) hooks (see [pre-commit-config.yaml](.pre-commit-config.yaml)) on all files. Some hooks may fix issues automatically, others will report issues that need to be fixed manually.
+
+To run all tests with `pytest`:
+
+```bash
+uv run pytest
+# if you have not run 'uv sync --group cicd' previously, use instead
+uv run --group cicd pytest
+```
+
+The following commands run on GitHub CI (see [code_quality_and_tests.yml](.github/workflows/code_quality_and_tests.yml)), but can also be run locally:
+
+```bash
+uv run --group cicd prek run -a
+# the '-m "not slow"' bit is residue, to be cleaned up by a future polishing pr
+uv run --group cicd pytest -m "not slow"
+```
+
+For test design, layout, and fixture regeneration guidance, see [Coding guidelines](#coding-guidelines).
 
 ## Misc
 
