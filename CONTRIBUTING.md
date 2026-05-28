@@ -38,8 +38,12 @@ High-level overview of contributor-relevant paths (local caches and other genera
 │   ├── metric/                 <- Evaluation metric configs.
 │   ├── paths/                  <- Centralized input/output path defaults for runs.
 │   ├── pdf_reader/             <- PDF-to-markdown reader configs.
-│   ├── evaluate.py             <- TODO
-│   └── predict.py              <- TODO
+│   ├── evaluate.yaml           <- Top-level Hydra config for evaluation runs: selects paths, datasets, metrics,
+│   │                              optional experiment presets, and multi-run settings for evaluating prediction
+│   │                              outputs against references.
+│   └── predict.yaml            <- Top-level Hydra config for prediction runs: selects paths, PDF reader,
+│                                  extractor, optional experiment presets, and runtime/output settings for batch
+│                                  PDF-to-JSONL extraction.
 │
 ├── data/                       <- Local data area for source inputs and derived datasets.
 │   ├── external/               <- Third-party inputs such as exported Zotero data.
@@ -93,7 +97,9 @@ High-level overview of contributor-relevant paths (local caches and other genera
 │
 ├── .env.example                <- Example environment variables for local setup. Copy to `.env` and fill in the
 │                                  values to run locally.
-├── .gitignore                  <- TODO
+├── .gitignore                  <- Git ignore rules for local/generated data, logs, virtual environments, caches,
+│                                  editor settings, and other machine-specific artefacts, while explicitly keeping
+│                                  versioned directories such as `data/prediction_results/` and `data/processed/`.
 ├── .pre-commit-config.yaml     <- `prek`/pre-commit hook configuration used locally and in CI.
 ├── CONTRIBUTING.md             <- Contribution workflow, testing, and documentation guidelines.
 ├── LICENSE                     <- AGPL-v3 license text for the project.
@@ -107,6 +113,7 @@ High-level overview of contributor-relevant paths (local caches and other genera
 ├── run_with_llm.sh             <- Cluster helper script that starts an external vLLM server and then runs `uv` code
 │                                  against it.
 ├── run_with_llm_login_node_exec.sh <- Variant of the previous helper that keeps the `uv` side on the login node.
+│                                  TODO: Since this is not used so far, should we remove it?
 ├── USAGE.md                    <- Detailed usage instructions for data integration, prediction, and evaluation.
 └── uv.lock                     <- Locked dependency set managed by `uv`. Do not touch!
 ```
