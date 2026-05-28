@@ -34,6 +34,7 @@ theme:
 nav:
 - Welcome: index.md
 - General project overview: root-readme.md
+- Usage instructions: usage.md
 - LLM usage instructions: models-readme.md
 - Faktencheck database instructions: podman-readme.md
 - Evaluation dashboard: eval-dashboard/index.html
@@ -49,6 +50,7 @@ plugins:
 - redirects:
     redirect_maps:
       'README.md': 'root-readme.md'
+      'USAGE.md': 'usage.md'
       'models/README.md': 'models-readme.md'
       'podman/faktencheck-db/README.md': 'podman-readme.md'
       'CONTRIBUTING.md': 'contributing.md'
