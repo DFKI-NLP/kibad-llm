@@ -17,12 +17,12 @@ The following guidelines ensure consistency across the project, so please read t
         - [Unit tests](#unit-tests)
         - [Integration tests](#integration-tests)
         - [Fixture regeneration](#fixture-regeneration)
+    - [Documentation](#documentation)
+        - [Guidelines](#guidelines)
+        - [Google-style docstring guidelines](#google-style-docstring-guidelines)
+        - [Linking](#linking)
+        - [Hosting locally](#hosting-locally)
 - [Testing and code quality checks](#testing-and-code-quality-checks)
-- [Documentation](#documentation)
-    - [Guidelines](#guidelines)
-    - [Google-style docstring guidelines](#google-style-docstring-guidelines)
-    - [Linking](#linking)
-    - [Hosting locally](#hosting-locally)
 - [Changing dependencies](#changing-dependencies)
     - [Adding dependencies](#adding-dependencies)
     - [Updating dependencies](#updating-dependencies)
@@ -265,11 +265,11 @@ uv run --group cicd pytest -m "not slow"
 
 For test design, layout, and fixture regeneration guidance, see [Coding guidelines](#coding-guidelines).
 
-## Documentation
+### Documentation
 
 This project uses [ProperDocs](https://properdocs.org/) for documentation, which is hosted on [GitHub Pages](https://dfki-nlp.github.io/kibad-llm/).
 
-### Guidelines
+#### Guidelines
 
 - All python files need to be documented at the file level.
 - All python classes, functions, and methods are required to carry a docstring.
@@ -278,7 +278,7 @@ This project uses [ProperDocs](https://properdocs.org/) for documentation, which
 - We use Google-style docstrings. Please refer to the next subsection, or [mkdocstrings Google-style](https://mkdocstrings.github.io/griffe/reference/docstrings/#google-style) to familiarize yourself with them.
 - Docstrings are generated using [mkdocstrings-python](https://mkdocstrings.github.io/python/), which uses the [griffe](https://mkdocstrings.github.io/griffe/) library. Please refer to the [Griffe parsing rules](https://mkdocstrings.github.io/griffe/reference/docstrings/) for more info on what is possible.
 
-### Google-style docstring guidelines
+#### Google-style docstring guidelines
 
 Consistency is key. So, whilst the Google-style allows for multiple technically equivalent terms, we want to use one of them exclusively. <br>
 Therefore, please:
@@ -298,7 +298,7 @@ Therefore, please:
 
 Beyond that, make sure you mention `Args:` and `Returns:`/`Yields:` before other keywords like `Warns:` or `Examples`.
 
-### Linking
+#### Linking
 
 You can link python objects that are in the documentation. Those links are clickable on the generated static site.
 
@@ -388,7 +388,7 @@ ______________________________________________________________________
 
 Relative links can help with readability/ saving space, but can also be a lot more complex to get perfectly functional.
 
-### Hosting locally
+#### Hosting locally
 
 You can build and serve the documentation locally with:
 
