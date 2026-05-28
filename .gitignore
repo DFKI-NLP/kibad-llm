@@ -11,6 +11,9 @@
 # Run logs
 /logs/
 
+# Prediction outputs
+/predictions/
+
 # Mac OS-specific storage files
 .DS_Store
 
@@ -229,3 +232,6 @@ __marimo__/
 
 # Personal notes
 NOTES.md
+
+# Codex
+/.codex
