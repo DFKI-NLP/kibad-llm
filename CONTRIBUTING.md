@@ -28,15 +28,7 @@ The following guidelines ensure consistency across the project, so please read t
 High-level overview of contributor-relevant paths (local caches and other generated dot-directories are omitted):
 
 ```text
-├── .env.example                <- Example environment variables for local setup.
 ├── .github/                    <- GitHub workflows and repository automation.
-├── .pre-commit-config.yaml     <- `prek`/pre-commit hook configuration used locally and in CI.
-├── CONTRIBUTING.md             <- Contribution workflow, testing, and documentation guidelines.
-├── LICENSE                     <- AGPL-v3 license text for the project.
-├── Makefile                    <- Legacy helper targets. TODO: clarify which targets are still maintained now that
-│                                  the project uses `uv` instead of `poetry` in most docs.
-├── README.md                   <- Short project entry point and quickstart.
-├── USAGE.md                    <- Detailed usage instructions for data integration, prediction, and evaluation.
 ├── configs/                    <- Hydra configuration tree for prediction, evaluation, datasets, metrics, paths,
 │   │                              PDF reading, and experiments.
 │   ├── dataset/                <- Dataset configs for references and prediction inputs.
@@ -46,6 +38,7 @@ High-level overview of contributor-relevant paths (local caches and other genera
 │   ├── metric/                 <- Evaluation metric configs.
 │   ├── paths/                  <- Centralized input/output path defaults for runs.
 │   └── pdf_reader/             <- PDF-to-markdown reader configs.
+│
 ├── data/                       <- Local data area for source inputs and derived datasets.
 │   ├── external/               <- Third-party inputs such as exported Zotero data.
 │   ├── interim/                <- Intermediate converted data such as DB-to-JSON exports used for evaluation.
@@ -53,51 +46,64 @@ High-level overview of contributor-relevant paths (local caches and other genera
 │   │                              in Git.
 │   ├── processed/              <- Versioned processed datasets kept in Git when useful for reproducibility.
 │   └── raw/                    <- Immutable source data dumps (not yet used).
+│
 ├── docs/                       <- ProperDocs source files for the published documentation site.
-├── logs/                       <- Local/generated Hydra run logs and experiment metadata; this top-level directory
-│                                  should never contain committed data and may be symlinked to shared storage on the
-│                                  cluster.
+├── logs/                       <- Local/generated Hydra run logs and experiment metadata; created when executing
+│                                  prediction or evaluation pipelines. This top-level directory should never contain
+│                                  committed data and may be symlinked to shared storage on the cluster.
 ├── models/                     <- LLM runtime documentation and config files (for example `vllm.env` and logging
 │                                  config), not model weights themselves.
 ├── notebooks/                  <- Analysis notebooks such as multirun evaluation plotting.
 ├── podman/
 │   └── faktencheck-db/         <- Podman/Docker Compose setup and instructions for running the local Faktencheck
 │                                  PostgreSQL database dump.
-├── predictions/                <- Local/generated prediction JSONL outputs grouped by experiment/run; this top-level
-│                                  directory should never contain committed data and may be symlinked to shared
-│                                  storage on the cluster.
-├── properdocs.yml              <- ProperDocs site configuration and navigation.
-├── pyproject.toml              <- Python package metadata, dependencies, and tool configuration.
+├── predictions/                <- Local/generated prediction JSONL outputs grouped by experiment/run; created when
+│                                  executing prediction pipelines. This top-level directory should never contain
+│                                  committed data and may be symlinked to shared storage on the cluster.
 ├── references/                 <- Data dictionaries, manuals, and all other explanatory materials (not yet used).
 ├── reports/
 │   └── figures/                <- Legacy/outdated location for generated figures; current checked-in result artefacts
 │                                  are kept under `data/prediction_results/` instead.
+│
+├── src/
+│   └── kibad_llm/              <- Main Python package.
+│       ├── data_integration/   <- Scripts for Zotero download, DB conversion, vocabulary extraction, and file syncing.
+│       ├── dataset/            <- Dataset loaders/utilities for CSV, JSON, compressed data, and predictions.
+│       ├── extractors/         <- Core extraction pipeline components, including chunking, repetition, unions, and
+│       │                          aggregation helpers.
+│       ├── hydra_callbacks/    <- Custom Hydra callbacks such as saving combined job return values.
+│       ├── llms/               <- LLM backend abstractions for OpenAI, OpenAI-compatible vLLM, and in-process vLLM.
+│       ├── metrics/            <- Metric implementations such as F1, TP/FP/FN, and confusion matrices.
+│       ├── schema/             <- Schema types and helpers for structured outputs.
+│       ├── utils/              <- General helper modules for datasets, logging, job returns, dictionaries, and paths.
+│       ├── config.py           <- Shared project paths/constants and `.env` loading.
+│       ├── evaluate.py         <- Hydra entry point for metric computation against references.
+│       ├── metric.py           <- Shared metric interface/types used by evaluators.
+│       ├── predict.py          <- Hydra entry point for PDF-to-structured-prediction runs.
+│       └── preprocessing.py    <- PDF/content preprocessing helpers used before extraction.
+│
+├── tests/                      <- Unit, integration, and fixture-based tests.
+│   ├── fixtures/               <- Static test data, replay fixtures, PDFs, schemas, and expected outputs.
+│   ├── integration/            <- End-to-end style tests for extractors, prediction, and evaluation flows.
+│   └── unit/                   <- Focused tests for individual modules and utilities.
+│
+├── .env.example                <- Example environment variables for local setup. Copy to `.env` and fill in the
+│                                  values to run locally.
+├── .pre-commit-config.yaml     <- `prek`/pre-commit hook configuration used locally and in CI.
+├── CONTRIBUTING.md             <- Contribution workflow, testing, and documentation guidelines.
+├── LICENSE                     <- AGPL-v3 license text for the project.
+├── Makefile                    <- Legacy helper targets. TODO: clarify which targets are still maintained now that
+│                                  the project uses `uv` instead of `poetry` in most docs.
+├── properdocs.yml              <- ProperDocs site configuration and navigation.
+├── pyproject.toml              <- Python package metadata, dependencies, and tool configuration.
+├── README.md                   <- Short project entry point and quickstart.
 ├── run_in_process.sh           <- Cluster helper script for running inference/evaluation with in-process vLLM or
 │                                  API-based models.
 ├── run_with_llm.sh             <- Cluster helper script that starts an external vLLM server and then runs `uv` code
 │                                  against it.
 ├── run_with_llm_login_node_exec.sh <- Variant of the previous helper that keeps the `uv` side on the login node.
 ├── scripts/                    <- Repository maintenance scripts, currently focused on building documentation.
-├── src/
-│   └── kibad_llm/              <- Main Python package.
-│       ├── config.py           <- Shared project paths/constants and `.env` loading.
-│       ├── data_integration/   <- Scripts for Zotero download, DB conversion, vocabulary extraction, and file syncing.
-│       ├── dataset/            <- Dataset loaders/utilities for CSV, JSON, compressed data, and predictions.
-│       ├── evaluate.py         <- Hydra entry point for metric computation against references.
-│       ├── extractors/         <- Core extraction pipeline components, including chunking, repetition, unions, and
-│       │                          aggregation helpers.
-│       ├── hydra_callbacks/    <- Custom Hydra callbacks such as saving combined job return values.
-│       ├── llms/               <- LLM backend abstractions for OpenAI, OpenAI-compatible vLLM, and in-process vLLM.
-│       ├── metric.py           <- Shared metric interface/types used by evaluators.
-│       ├── metrics/            <- Metric implementations such as F1, TP/FP/FN, and confusion matrices.
-│       ├── predict.py          <- Hydra entry point for PDF-to-structured-prediction runs.
-│       ├── preprocessing.py    <- PDF/content preprocessing helpers used before extraction.
-│       ├── schema/             <- Schema types and helpers for structured outputs.
-│       └── utils/              <- General helper modules for datasets, logging, job returns, dictionaries, and paths.
-├── tests/                      <- Unit, integration, and fixture-based tests.
-│   ├── fixtures/               <- Static test data, replay fixtures, PDFs, schemas, and expected outputs.
-│   ├── integration/            <- End-to-end style tests for extractors, prediction, and evaluation flows.
-│   └── unit/                   <- Focused tests for individual modules and utilities.
+├── USAGE.md                    <- Detailed usage instructions for data integration, prediction, and evaluation.
 └── uv.lock                     <- Locked dependency set managed by `uv`. Do not touch!
 ```
 
