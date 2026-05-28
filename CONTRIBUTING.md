@@ -11,6 +11,12 @@ The following guidelines ensure consistency across the project, so please read t
 - [Contribution requirements](#contribution-requirements)
     - [PR description](#pr-description)
     - [CI/CD](#cicd)
+- [Coding guidelines](#coding-guidelines)
+    - [General principles](#general-principles)
+    - [Tests](#tests)
+        - [Unit tests](#unit-tests)
+        - [Integration tests](#integration-tests)
+        - [Fixture regeneration](#fixture-regeneration)
 - [Testing and code quality checks](#testing-and-code-quality-checks)
 - [Documentation](#documentation)
     - [Guidelines](#guidelines)
@@ -177,6 +183,58 @@ Do not end your branch name with a hyphen. For example, `feature-new-login-` is 
 **Descriptive** <br>
 The name should be descriptive and concise, ideally reflecting the work done on the branch.
 
+## Coding guidelines
+
+### General principles
+
+- Do not hide unexpected behaviour or data mismatches. Handle the cases covered by the relevant code contract, but if inputs or state violate that contract, fail early and communicate that clearly, for example by raising an appropriate exception.
+- Do not hesitate to refactor code that is related to the feature or fix you are working on. Reducing duplication and clarifying responsibilities is encouraged, but every refactor should provide a concrete benefit and stay scoped to the current change.
+
+### Tests
+
+Every code change should come with tests that match its scope.
+
+#### Unit tests
+
+- Put unit tests under `tests/unit/`.
+- Mirror the file and folder structure from `src/` as closely as possible.
+- Use unit tests for the usual focused checks of individual modules, functions, classes, and helpers.
+
+#### Integration tests
+
+- Put integration tests under `tests/integration/`.
+- Mirror the relevant file and folder structure from `configs/` as closely as practical.
+- Prefer config-file-based tests that exercise the actual Hydra configuration used by the project.
+
+#### Fixture regeneration
+
+Some tests require fixtures, which may need to be refreshed if anything about them changed. Beyond that, tests that require LLM interaction can opt into `llm_chat_replay`, which uses a fixture to simulate the LLM.
+
+To refresh the normal expected test fixtures:
+
+```sh
+WRITE_FIXTURE_DATA=1 uv run --group cicd pytest tests/integration/test_extractors.py tests/integration/test_predict.py
+```
+
+To also refresh LLM chat replay fixtures, **which requires a running vLLM backend** ([vLLM instructions](./models/README.md)):
+
+```sh
+# Regenerate only the fixture for the test you changed. Example: the chunking extractor:
+WRITE_LLM_CHAT_FIXTURE_DATA=1 WRITE_FIXTURE_DATA=1 uv run --group cicd pytest tests/integration/test_extractors.py::test_extractor[chunking]
+
+# Never regenerate all fixtures with these flags enabled:
+# WRITE_LLM_CHAT_FIXTURE_DATA=1 WRITE_FIXTURE_DATA=1 uv run --group cicd pytest
+
+# It is mandatory to check for unused fixtures in "tests/fixtures/llm_chat" after regeneration:
+uv run --group cicd python tests/fixtures/map_llm_chat_usage.py
+```
+
+Never run the full test suite with `WRITE_FIXTURE_DATA=1` or `WRITE_LLM_CHAT_FIXTURE_DATA=1`. Regenerate only the fixtures for the tests you intentionally changed.
+
+Note: Adjusting the LLM replay fixtures usually results in different output and, thus, requires regenerating the normal fixture data via `WRITE_FIXTURE_DATA=1`.</br>
+
+If you add a new test that requires LLM interaction, you can require the test to have a working vLLM backend, but it is encouraged to use `llm_chat_replay` instead.
+
 ## Testing and code quality checks
 
 To run code quality checks and static type checking, call:
@@ -205,30 +263,7 @@ uv run --group cicd prek run -a
 uv run --group cicd pytest -m "not slow"
 ```
 
-Some tests require fixtures, which may need to be refreshed if anything about them changed.
-Beyond that, tests that require LLM interaction can opt into `llm_chat_replay`, which uses a fixture to simulate the LLM.
-
-To refresh the normal expected test fixtures:
-
-```sh
-WRITE_FIXTURE_DATA=1 pytest tests/integration/test_extractors.py tests/integration/test_predict.py
-```
-
-Alternatively, also refresh LLM chat replay fixtures, **which requires a running vLLM backend** ([vLLM instructions](./models/README.md)):
-
-```sh
-# it is recommended to refresh just the fixtures for the modified test. e.g. the chunking extractor:
-WRITE_LLM_CHAT_FIXTURE_DATA=1 WRITE_FIXTURE_DATA=1 pytest tests/integrations/test_extractors.py::test_extractor[chunking]
-# it is discuraged to refresh all fixtures:
-WRITE_LLM_CHAT_FIXTURE_DATA=1 WRITE_FIXTURE_DATA=1 pytest tests/integration/test_extractors.py tests/integration/test_predict.py
-
-# it is mandatory to check for unused fixtures in "tests/fixtures/llm_chat" after regeneration:
-uv run tests/fixtures/map_llm_chat_usage.py
-```
-
-Note: Adjusting the LLM replay fixtures usually results in different output and, thus, requires regenerating the normal fixture data via `WRITE_FIXTURE_DATA=1`.</br>
-
-If you add a new test that requires LLM interaction, you can require the test to have a working vLLM backend, but it is encouraged to use `llm_chat_replay` instead.
+For test design, layout, and fixture regeneration guidance, see [Coding guidelines](#coding-guidelines).
 
 ## Documentation
 
