@@ -10,12 +10,12 @@ class RepeatingExtractor:
     This extractor calls the base extraction function multiple times (n times) on the same
     input text and aggregates the structured outputs.
 
-    Args:
+    Attributes:
         aggregator: Aggregator function to use for aggregating results
         n: Number of repetitions (default: 3)
         return_as_list: List of field names to return as lists of all extracted values
             (default: None)
-        **kwargs: Additional keyword arguments passed to the base extraction function.
+        default_kwargs: Additional keyword arguments passed to the base extraction function.
     """
 
     def __init__(
@@ -33,6 +33,18 @@ class RepeatingExtractor:
         self.default_kwargs = kwargs
 
     def __call__(self, *args, **kwargs) -> dict[str, Any]:
+        """Process singular text in multiple passes without chat history.
+
+        Args:
+            *args (Any): Are forwarded unchanged: [`extract_from_text_lenient`][kibad_llm.extractors.base.extract_from_text_lenient]
+
+        Keyword Args:
+            * (Any): Refer to [`extract_from_text_lenient`][kibad_llm.extractors.base.extract_from_text_lenient]
+
+        Returns:
+            Dict with the key `structured` that holds the aggregated structured outputs.
+            Additionally there can be lists for fields at the keys `"{field}_list"`.
+        """
         combined_kwargs = {**self.default_kwargs, **kwargs}
         results = []
         for i in range(self.n):

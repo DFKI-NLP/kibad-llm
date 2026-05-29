@@ -15,7 +15,7 @@ class UnionExtractor:
         overrides: A list of dictionaries containing parameter overrides for each extraction.
         return_as_list: List of field names to return as lists of all extracted values
             (default: None)
-        **kwargs: Additional keyword arguments passed to the base extraction function.
+        default_kwargs: Additional keyword arguments passed to the base extraction function.
     """
 
     def __init__(
@@ -35,6 +35,18 @@ class UnionExtractor:
         self.default_kwargs = kwargs
 
     def __call__(self, *args, **kwargs) -> dict[str, Any]:
+        """Process singular text in multiple passes with different overrides.
+
+        Args:
+            *args (Any): Are forwarded unchanged: [`extract_from_text_lenient`][kibad_llm.extractors.base.extract_from_text_lenient]
+
+        Keyword Args:
+            * (Any): Refer to [`extract_from_text_lenient`][kibad_llm.extractors.base.extract_from_text_lenient]
+
+        Returns:
+            Dict with the key `structured` that holds the aggregated structured outputs.
+            Additionally there can be lists for fields at the keys `"{field}_list"`.
+        """
         combined_kwargs = {**self.default_kwargs, **kwargs}
         results = []
         for override_name, override_params in self.overrides.items():
