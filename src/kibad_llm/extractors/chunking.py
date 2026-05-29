@@ -73,8 +73,7 @@ class ChunkingExtractor:
         self.verbose = verbose
 
     def __call__(self, *args, **kwargs) -> dict[str, Any]:
-        """Processes a text in chunks and returns aggregated structured outputs,
-        as well as lists of field values, if specified.
+        """Processes a text in chunks.
 
         Args:
             *args (Any):

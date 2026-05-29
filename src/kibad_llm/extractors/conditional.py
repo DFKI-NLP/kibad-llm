@@ -17,6 +17,18 @@ class ConditionalUnionExtractor(UnionExtractor):
     """
 
     def __call__(self, *args, **kwargs) -> dict[str, Any]:
+        """Process singular text in multiple passes.
+
+        Args:
+            *args (Any): Are forwarded unchanged: [`extract_from_text_lenient`][kibad_llm.extractors.base.extract_from_text_lenient]
+
+        Keyword Args:
+            * (Any): Refer to [`extract_from_text_lenient`][kibad_llm.extractors.base.extract_from_text_lenient]
+
+        Returns:
+            Dict with the key `structured` that holds the aggregated structured outputs.
+            Additionally there can be lists for fields at the keys `"{field}_list"`.
+        """
         combined_kwargs = {**self.default_kwargs, **kwargs}
         results = []
         history: list[SimpleChatMessage] = []
