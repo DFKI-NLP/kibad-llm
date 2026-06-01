@@ -1,5 +1,29 @@
 # Eval dashboard phase-by-phase refactor plan
 
+## Table of contents
+
+- [Checklist](#checklist)
+- [Goal](#goal)
+- [Current implementation state](#current-implementation-state)
+- [Conventions and design rules](#conventions-and-design-rules)
+- [Phase 0. Record a concrete baseline and source-fixture audit](#phase-0-record-a-concrete-baseline-and-source-fixture-audit)
+- [Phase 1. Move to a future-proof dashboard folder structure without breaking links](#phase-1-move-to-a-future-proof-dashboard-folder-structure-without-breaking-links)
+- [Phase 2. Compile curated fixtures from newer experiment data and add first smoke tests](#phase-2-compile-curated-fixtures-from-newer-experiment-data-and-add-first-smoke-tests)
+- [Phase 3. Extract CSS only and tighten structural tests](#phase-3-extract-css-only-and-tighten-structural-tests)
+- [Phase 4. Move the inline script into one external module](#phase-4-move-the-inline-script-into-one-external-module)
+- [Phase 5. Add lightweight JS logic tests and extract pure utilities](#phase-5-add-lightweight-js-logic-tests-and-extract-pure-utilities)
+- [Phase 6. Extract state and selectors, then add selector tests](#phase-6-extract-state-and-selectors-then-add-selector-tests)
+- [Phase 7. Extract parsing and normalization, then add normalization tests](#phase-7-extract-parsing-and-normalization-then-add-normalization-tests)
+- [Phase 8. Extract local file loading and GitHub loading](#phase-8-extract-local-file-loading-and-github-loading)
+- [Phase 9. Extract UI modules and centralize DOM refs](#phase-9-extract-ui-modules-and-centralize-dom-refs)
+- [Phase 10. Extract plotting and export modules](#phase-10-extract-plotting-and-export-modules)
+- [Phase 11. Reduce `main.js` to orchestration only](#phase-11-reduce-mainjs-to-orchestration-only)
+- [Phase 12. Broaden smoke and regression coverage](#phase-12-broaden-smoke-and-regression-coverage)
+- [Phase 13. Optional follow-up: browser-level UI testing](#phase-13-optional-follow-up-browser-level-ui-testing)
+- [Recommended PR / commit breakdown](#recommended-pr-commit-breakdown)
+- [Definition of done](#definition-of-done)
+- [Immediate next implementation step](#immediate-next-implementation-step)
+
 ## Checklist
 
 - [x] Define safe, incremental refactor phases

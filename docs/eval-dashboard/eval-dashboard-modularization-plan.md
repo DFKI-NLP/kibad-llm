@@ -1,5 +1,23 @@
 # Eval dashboard modularization plan
 
+## Table of contents
+
+- [Checklist](#checklist)
+- [Process guardrails](#process-guardrails)
+- [1. Keep the dashboard as a docs asset, not package code](#1-keep-the-dashboard-as-a-docs-asset-not-package-code)
+- [2. Recommended top-level structure](#2-recommended-top-level-structure)
+- [3. Migration strategy for the dashboard entry page](#3-migration-strategy-for-the-dashboard-entry-page)
+- [4. Where tests should live](#4-where-tests-should-live)
+- [5. Testing strategy: testability-first, without a full frontend build pipeline](#5-testing-strategy-testability-first-without-a-full-frontend-build-pipeline)
+- [6. Baseline artifact and fixture curation](#6-baseline-artifact-and-fixture-curation)
+- [7. What HTML files should exist?](#7-what-html-files-should-exist)
+- [8. What CSS files should exist?](#8-what-css-files-should-exist)
+- [9. What JS files should exist?](#9-what-js-files-should-exist)
+- [10. Concrete test layout recommendation](#10-concrete-test-layout-recommendation)
+- [11. What to avoid](#11-what-to-avoid)
+- [12. Practical recommendation for this repository](#12-practical-recommendation-for-this-repository)
+- [13. Suggested next step sequence](#13-suggested-next-step-sequence)
+
 ## Checklist
 
 - [x] Ground the recommendation in the current repository layout
