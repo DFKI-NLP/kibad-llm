@@ -242,8 +242,8 @@ This project uses [ProperDocs](https://properdocs.org/) for documentation, which
 
 #### Guidelines
 
-- All python files need to be documented at the file level.
-- All python classes, functions, and methods are required to carry a docstring.
+- All source code files need to be documented at the file level.
+- All classes, functions, and methods are required to carry a docstring.
 - All docstrings must be fully markdown compatible in the dialect [CommonMark](https://commonmark.org/). (CommonMark is required for use with the static docs provided by ProperDocs) [CommonMark spec](https://spec.commonmark.org/)
     - Do not use Sphinx/reST syntax, but markdown only.
 - We use Google-style docstrings. Please refer to the next subsection, or [mkdocstrings Google-style](https://mkdocstrings.github.io/griffe/reference/docstrings/#google-style) to familiarize yourself with them.
