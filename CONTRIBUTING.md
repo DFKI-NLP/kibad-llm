@@ -13,9 +13,10 @@ The following guidelines ensure consistency across the project, so please read t
     - [CI/CD](#cicd)
 - [Coding guidelines](#coding-guidelines)
     - [General principles](#general-principles)
-    - [Tests](#tests)
+    - [Test design and layout](#test-design-and-layout)
         - [Unit tests](#unit-tests)
         - [Integration tests](#integration-tests)
+        - [JavaScript logic tests](#javascript-logic-tests)
         - [Fixture regeneration](#fixture-regeneration)
     - [Documentation](#documentation)
         - [Guidelines](#guidelines)
@@ -26,7 +27,7 @@ The following guidelines ensure consistency across the project, so please read t
         - [Adding dependencies](#adding-dependencies)
         - [Updating dependencies](#updating-dependencies)
         - [uv known issues](#uv-known-issues)
-- [Testing and code quality checks](#testing-and-code-quality-checks)
+- [Local checks and CI commands](#local-checks-and-ci-commands)
 - [Misc](#misc)
 
 ## Project Organization
@@ -155,7 +156,13 @@ A PR description needs to document:
 
 ### CI/CD
 
-PRs need to pass CI/CD. This means that all pre-commit hooks need to pass, as well as all `"not slow"` tests. For more info, check section [Testing and code quality checks](#testing-and-code-quality-checks).
+PRs need to pass CI/CD. This currently includes:
+
+- all pre-commit hooks,
+- all `"not slow"` Python tests, and
+- the browser-free eval-dashboard JavaScript logic tests run with Node.js.
+
+For more info, check section [Local checks and CI commands](#local-checks-and-ci-commands).
 
 ### Branch naming
 
@@ -187,11 +194,13 @@ The name should be descriptive and concise, ideally reflecting the work done on 
 
 - Do not hide unexpected behaviour or data mismatches. Handle the cases covered by the relevant code contract, but if inputs or state violate that contract, fail early and communicate that clearly, for example by raising an appropriate exception.
 - Do not hesitate to refactor code that is related to the feature or fix you are working on. Reducing duplication and clarifying responsibilities is encouraged, but every refactor should provide a concrete benefit and stay scoped to the current change.
-- Tests and code quality checks must pass before committing code or merging PRs. To ensure this, you can run them locally before pushing your code. For more info, check section [Testing and code quality checks](#testing-and-code-quality-checks).
+- Tests and code quality checks must pass before committing code or merging PRs. To ensure this, you can run them locally before pushing your code. For more info, check section [Local checks and CI commands](#local-checks-and-ci-commands).
 
-### Tests
+### Test design and layout
 
 Every code change should come with tests that match its scope.
+
+Use the commands in [Local checks and CI commands](#local-checks-and-ci-commands) to run the relevant unit, integration, and JavaScript logic tests locally.
 
 #### Unit tests
 
@@ -204,6 +213,11 @@ Every code change should come with tests that match its scope.
 - Put integration tests under `tests/integration/`.
 - Mirror the relevant file and folder structure from `configs/` as closely as practical.
 - Prefer config-file-based tests that exercise the actual Hydra configuration used by the project.
+
+#### JavaScript logic tests
+
+- Put browser-free eval-dashboard JavaScript logic tests under `tests/unit/eval_dashboard/js/`.
+- If you change files under `docs/eval-dashboard/assets/js/` or `tests/unit/eval_dashboard/js/`, run the relevant eval-dashboard JavaScript logic tests locally.
 
 #### Fixture regeneration
 
@@ -409,7 +423,7 @@ These known issues have their own uv specific fixes. The relevant documentation 
 - [Build isolation](https://docs.astral.sh/uv/concepts/projects/config/#build-isolation) - Can lead to runtime errors
 - [Conflicting dependencies](https://docs.astral.sh/uv/concepts/projects/config/#conflicting-dependencies)
 
-## Testing and code quality checks
+## Local checks and CI commands
 
 To run code quality checks and static type checking, call:
 
@@ -421,7 +435,7 @@ uv run --group cicd prek run -a
 
 This runs all configured [prek](https://prek.j178.dev/) hooks (see [pre-commit-config.yaml](.pre-commit-config.yaml)) on all files. Some hooks may fix issues automatically, others will report issues that need to be fixed manually.
 
-To run all tests with `pytest`:
+To run all Python tests with `pytest`:
 
 ```bash
 uv run pytest
@@ -429,12 +443,21 @@ uv run pytest
 uv run --group cicd pytest
 ```
 
+To run the eval-dashboard JavaScript logic tests:
+
+```bash
+node --test tests/unit/eval_dashboard/js/*.test.mjs
+```
+
+This requires a working Node.js installation. The dashboard runtime modules in `docs/eval-dashboard/assets/js/` are treated as ES modules via the colocated `package.json` file.
+
 The following commands run on GitHub CI (see [code_quality_and_tests.yml](.github/workflows/code_quality_and_tests.yml)), but can also be run locally:
 
 ```bash
 uv run --group cicd prek run -a
 # the '-m "not slow"' bit is residue, to be cleaned up by a future polishing pr
 uv run --group cicd pytest -m "not slow"
+node --test tests/unit/eval_dashboard/js/*.test.mjs
 ```
 
 For test design, layout, and fixture regeneration guidance, see [Coding guidelines](#coding-guidelines).
