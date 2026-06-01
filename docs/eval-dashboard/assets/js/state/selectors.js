@@ -50,6 +50,21 @@ export function stripEvaluationFieldPrefix(column) {
 }
 
 /**
+ * Normalize an evaluation column to the same display-oriented name used by the
+ * pre-Phase-6 default-group-by filtering logic.
+ *
+ * @param {string} column - Evaluation column identifier.
+ * @returns {string} The display-oriented column name.
+ */
+export function getDisplayEvalColumnName(column) {
+  const normalizedColumn = stripEvaluationFieldPrefix(column);
+  if (normalizedColumn.startsWith(JOB_RETURN_VALUE_PREFIX)) {
+    return normalizedColumn.slice(JOB_RETURN_VALUE_PREFIX.length);
+  }
+  return normalizedColumn.replace(/^overrides\./, "");
+}
+
+/**
  * Remove prediction namespace prefixes used in the flattened prediction table.
  *
  * @param {string} column - Column identifier.
@@ -469,7 +484,9 @@ export function getDefaultGroupByFields(predictionColumns, predictionViews = [])
  * @returns {string[]} Default evaluation group-by fields.
  */
 export function getDefaultEvalGroupByFields(evalColumns, evaluations = []) {
-  const candidateColumns = evalColumns.filter((column) => stripEvaluationFieldPrefix(column) !== "dataset.predictions.log");
+  const candidateColumns = evalColumns.filter(
+    (column) => getDisplayEvalColumnName(column) !== "dataset.predictions.log"
+  );
   return getColumnsWithMultipleValues(
     evaluations,
     candidateColumns,
