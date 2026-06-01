@@ -162,6 +162,8 @@ PRs need to pass CI/CD. This currently includes:
 - all `"not slow"` Python tests, and
 - the browser-free eval-dashboard JavaScript logic tests run with Node.js.
 
+If you state in a PR, review, or commit message that a branch is "CI-ready", "passes local CI", or complies with this document's testing expectations, run the full local CI-equivalent command set from [Local checks and CI commands](#local-checks-and-ci-commands). Running only a changed-area subset of checks is useful for iteration, but is not enough for such a claim.
+
 For more info, check section [Local checks and CI commands](#local-checks-and-ci-commands).
 
 ### Branch naming
@@ -452,6 +454,8 @@ node --test tests/unit/eval_dashboard/js/*.test.mjs
 This requires a working Node.js installation. The dashboard runtime modules in `docs/eval-dashboard/assets/js/` are treated as ES modules via the colocated `package.json` file.
 
 The following commands run on GitHub CI (see [code_quality_and_tests.yml](.github/workflows/code_quality_and_tests.yml)), but can also be run locally:
+
+Use this exact command set before claiming local CI readiness or `CONTRIBUTING.md` test compliance. Running only the checks for the files you touched is often fine while iterating, but do not present that as a full CI-equivalent run.
 
 ```bash
 uv run --group cicd prek run -a
