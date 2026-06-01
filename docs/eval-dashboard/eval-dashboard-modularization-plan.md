@@ -20,13 +20,13 @@ A few repo-specific observations first:
 - `properdocs.yml` and `docs/index.md` already point to the new folder-based entrypoint.
 - `scripts/build_docs.py` only generates **Python API reference** pages from `src/`, so it is **not** a frontend asset pipeline.
 - `docs/eval-dashboard/assets/css/` now contains `index.css`, `tokens.css`, `layout.css`, `controls.css`, `tables.css`, and `plots.css`; `docs/eval-dashboard/assets/js/` now contains `main.js` as the externalized monolith reserved for later splitting.
-- `pyproject.toml` has **pytest**, and the repo now has dashboard smoke coverage under `tests/unit/eval_dashboard/`, including entrypoint checks plus HTML-contract checks that enforce external CSS, the external `assets/js/main.js` module reference, and the absence of inline runtime CSS/JS; Phase 5 has now also added a lightweight browser-free JS utility test harness under `tests/unit/eval_dashboard/js/`.
+- `pyproject.toml` has **pytest**, and the repo now has dashboard smoke coverage under `tests/unit/eval_dashboard/`, including entrypoint checks plus HTML-contract checks that enforce external CSS, the external `assets/js/main.js` module reference, and the absence of inline runtime CSS/JS; `tests/unit/eval_dashboard/js/` is now the reserved location for extracted dashboard logic tests, but the long-term harness there should be a minimal JS-native runner rather than an expanding pytest wrapper around Node execution.
 - `data/prediction_results/readme.md` documents real experiment folders under `data/prediction_results/logs/`; those runs are useful fixture sources, but tests should use curated snapshots rather than reach into mutable live data folders.
 - curated dashboard fixtures now exist under `tests/fixtures/eval_dashboard/`, including valid version coverage, invalid edge-case fixtures, and explicit examples for all current plot families (`bars`, `errors`, `confusion_matrix`, `tpfpfn`).
 
 Given that, the recommendation is to keep the dashboard as a docs asset, but organize it as a small self-contained docs section that is testable and easy to evolve.
 
-In other words, the repository is now effectively **through Phase 5** of the refactor: entrypoint migration, compatibility coverage, curated fixtures, baseline artifacts, structural smoke tests, CSS extraction, the external-`main.js` step, and the first utility extraction plus lightweight JS logic tests have landed; the next smallest behavior-preserving step is to begin state/store and selector extraction.
+In other words, the repository is now effectively **through Phase 4, with Phase 5 in progress**: entrypoint migration, compatibility coverage, curated fixtures, baseline artifacts, structural smoke tests, CSS extraction, and the external-`main.js` step have landed, while the Phase 5 utility extraction is largely in place but the permanent JS-native logic-test runner and CI wiring still need to be finalized before Phase 6 selector/state work begins.
 
 All work performed from this plan should comply with `CONTRIBUTING.md`, and after each completed refactor phase the planning docs under `docs/eval-dashboard/` should be updated so the recorded status, sequencing, and next steps stay accurate.
 
@@ -236,7 +236,15 @@ The important point is architectural, not tool-specific:
 - test **pure extracted logic** early
 - do **not** wait until the entire modularization is finished
 - keep the first test harness lightweight and browser-free if possible
+- make that harness the long-term home for dashboard JS logic tests, not a temporary dead end
 - defer browser-level UI automation until a later follow-up if it becomes necessary
+
+For this repository, the recommended default is:
+
+- keep **Python/pytest** for docs/build/fixture/HTML-contract smoke tests
+- run extracted dashboard logic tests with a **minimal JS-native runner**
+- prefer the **Node.js built-in test runner** over a larger frontend stack in the first pass
+- do **not** grow a pytest-driven Node subprocess bridge into the permanent JS test architecture
 
 ### Recommended test split
 
@@ -253,6 +261,8 @@ Examples:
 #### Logic tests for extracted JS modules
 
 `tests/unit/eval_dashboard/js/`
+
+Treat this directory as the long-term location for JS-native logic tests, even though the surrounding repository remains Python-first.
 
 Examples:
 
