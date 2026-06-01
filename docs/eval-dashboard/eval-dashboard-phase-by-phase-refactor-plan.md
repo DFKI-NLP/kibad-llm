@@ -31,7 +31,7 @@ This plan assumes:
 - dashboard runtime assets live under `docs/eval-dashboard/assets/`
 - tests and fixtures live under `tests/`
 - runtime docs paths stay hyphenated (`eval-dashboard`), while test directories use Python-friendly underscores (`eval_dashboard`)
-- the repo remains Python-first unless a later follow-up explicitly adds browser-level frontend tooling
+- the repo remains Python-first for docs/fixture/smoke coverage, while extracted dashboard logic should move to a minimal JS-native test runner once pure modules exist
 - all work in this refactor complies with `CONTRIBUTING.md`
 
 ## Current implementation state
@@ -43,8 +43,9 @@ As of the current repository state:
 - `docs/eval-dashboard.html` is currently a temporary compatibility shim
 - `properdocs.yml` navigation points to `eval-dashboard/index.html`
 - `docs/index.md` links point to `eval-dashboard/index.html`
-- populated Phase 4 runtime assets now exist under `docs/eval-dashboard/assets/`: CSS lives under `assets/css/`, and `assets/js/main.js` now contains the previously inline dashboard script as one external module
+- populated Phase 5 runtime assets now exist under `docs/eval-dashboard/assets/`: CSS lives under `assets/css/`, `assets/js/main.js` remains the external entry module, and first pure helpers now live under `assets/js/utils/`
 - structural smoke coverage now includes `tests/unit/eval_dashboard/test_eval_dashboard_entrypoint.py` and `tests/unit/eval_dashboard/test_eval_dashboard_html_contracts.py`
+- first browser-free JS utility logic coverage now exists under `tests/unit/eval_dashboard/js/` via the Node.js built-in test runner, which is now the long-term home for extracted dashboard logic tests in later phases
 - curated Phase 2 fixtures now exist under `tests/fixtures/eval_dashboard/`, including valid version-0/1/2 examples, invalid edge-case fixtures, and explicit fixtures for all currently supported plot families (`bars`, `errors`, `confusion_matrix`, `tpfpfn`)
 - fixture provenance is documented in `tests/fixtures/eval_dashboard/README.md`
 - fixture integrity smoke coverage exists at `tests/unit/eval_dashboard/test_dashboard_fixtures.py`
@@ -53,18 +54,20 @@ As of the current repository state:
 - Phase 3 CSS extraction remains complete: `docs/eval-dashboard/index.html` still loads `assets/css/index.css` and contains no inline `<style>` block
 - Phase 4 JS externalization is complete: `docs/eval-dashboard/index.html` now loads `assets/js/main.js` as a single external `type="module"` script and contains no inline `<script>` block
 - the structural smoke tests now assert the external CSS and external module-script contract rather than a Phase 3 inline-script freeze
+- the baseline contract now records the Phase 5 utility-module and JS-test harness contract instead of freezing the full `main.js` file contents
 
 ### Status checkpoint
 
-The repository is currently **through Phase 4** of this plan:
+The repository is currently **through Phase 5 and ready for Phase 6**:
 
 - Phase 0 baseline artifacts landed
 - Phase 1 folder migration and compatibility shim landed
 - Phase 2 curated fixtures and structural smoke coverage landed
 - Phase 3 CSS extraction and HTML contract guardrails landed
 - Phase 4 JS externalization landed
+- Phase 5 utility extraction, the permanent JS-native logic-test runner, and explicit CI wiring landed
 
-That means **Phase 5** is now the next implementation step.
+That means the next implementation step is to **start Phase 6** by extracting state and selector logic while extending the same JS-native test harness.
 
 ______________________________________________________________________
 
@@ -614,6 +617,8 @@ ______________________________________________________________________
 
 ## Phase 5. Add lightweight JS logic tests and extract pure utilities
 
+**Status in current repository:** complete.
+
 ### Goal
 
 Start testing extracted pure JS logic as soon as it exists, while separating small reusable helpers from `main.js`.
@@ -637,6 +642,8 @@ tests/unit/eval_dashboard/js/
 ```
 
 If a lightweight JS runner must be introduced, keep it minimal and browser-free. This is acceptable in the first pass because it is a test harness, not a frontend build pipeline.
+
+Prefer a **JS-native** runner for extracted dashboard logic tests. In this repository, the default first choice should be the **Node.js built-in test runner** rather than a larger frontend stack. Do not treat a pytest-driven Node subprocess harness as the long-term testing architecture for `tests/unit/eval_dashboard/js/`.
 
 ### Candidate extractions
 
@@ -676,6 +683,8 @@ Add first logic tests for extracted pure helpers, for example:
 - flattening/path traversal helpers
 - value formatting/defaulting behavior
 
+Use the same JS-native runner that later selector/normalization/loader logic tests will use. Phase 5 should establish that permanent logic-test layer early so Phases 6 to 8 can extend it without another testing-strategy migration.
+
 ### Why this phase is early
 
 It creates reusable building blocks and proves the dashboard can gain real logic coverage during the refactor rather than after it.
@@ -686,8 +695,44 @@ It creates reusable building blocks and proves the dashboard can gain real logic
 - sorting behavior remains unchanged
 - filename generation remains unchanged
 - flattening/grouping-dependent helpers still behave the same
-- new JS logic tests pass
+- new JS logic tests pass under the chosen minimal JS-native runner
 - update the planning docs in `docs/eval-dashboard/` after the phase lands and confirm the utility/test changes comply with `CONTRIBUTING.md`
+
+### Phase 5 deliverables checklist
+
+Phase 5 is complete only when all of the following are true:
+
+- `docs/eval-dashboard/assets/js/utils/` contains the intended low-coupling utility modules extracted from `main.js`
+- `docs/eval-dashboard/assets/js/main.js` imports those utility modules without changing runtime behavior
+- `tests/unit/eval_dashboard/js/` is established as the long-term location for extracted dashboard JS logic tests
+- extracted dashboard JS logic tests run through the permanent minimal JS-native runner rather than a pytest-driven Node subprocess bridge
+- the JS-native dashboard logic-test command is wired into CI as an explicit check
+- the extracted Phase 5 utility coverage has been re-validated under that permanent harness
+
+### Current Phase 5 state
+
+The current branch now covers the full scope of this phase:
+
+- `docs/eval-dashboard/assets/js/utils/` contains `flatten.js`, `sort.js`, `values.js`, and `text.js`
+- `docs/eval-dashboard/assets/js/main.js` imports those Phase 5 utility modules while preserving the existing runtime entrypoint contract
+- `tests/unit/eval_dashboard/js/` is the long-term location for extracted dashboard JS logic tests
+- `tests/unit/eval_dashboard/js/utils.flatten.test.mjs`, `utils.sort.test.mjs`, `utils.text.test.mjs`, and `utils.values.test.mjs` run the extracted pure-helper coverage through the Node.js built-in test runner
+- `tests/unit/eval_dashboard/js/README.md` documents `node --test tests/unit/eval_dashboard/js/*.test.mjs` as the default local command for later phases
+- the JS-native harness now uses a flat `*.test.mjs` namespace such as `utils.flatten.test.mjs` and `state.selectors.test.mjs`, so later phases can add files without changing the command or introducing recursive globbing
+- `docs/eval-dashboard/assets/js/package.json` pins the dashboard runtime modules to ESM semantics for the permanent JS-native harness
+- `tests/unit/eval_dashboard/test_eval_dashboard_entrypoint.py` asserts that the expected utility modules exist
+- `tests/unit/eval_dashboard/test_eval_dashboard_baseline_contract.py` and `tests/fixtures/eval_dashboard/baseline/baseline-summary.json` now record the permanent Node.js-native Phase 5 utility/test contract rather than freezing the full `main.js` file contents
+- `.github/workflows/code_quality_and_tests.yml` runs the dashboard JS logic tests as their own explicit CI job
+
+### Phase 5 completion notes
+
+Phase 5 is now complete because:
+
+- the temporary pytest-driven Node subprocess bridge has been removed
+- the permanent minimal JS-native runner is `node --test tests/unit/eval_dashboard/js/*.test.mjs`
+- the permanent harness keeps test files flat under `tests/unit/eval_dashboard/js/`, using module-scoped names such as `utils.sort.test.mjs` and `state.selectors.test.mjs`
+- later phases should extend that same `tests/unit/eval_dashboard/js/` harness rather than reintroducing Python-driven bridging
+- the extracted Phase 5 utility coverage has been re-validated under the permanent harness and under the updated Python-side contract checks
 
 ### Suggested commit boundary
 
@@ -749,6 +794,19 @@ Add selector/state logic tests under:
 ```text
 tests/unit/eval_dashboard/js/
 ```
+
+Run those tests with the same minimal JS-native runner established at the Phase 5/6 boundary rather than by expanding a Python subprocess wrapper.
+
+Keep those JS-native test files flat under `tests/unit/eval_dashboard/js/` so the established command remains:
+
+```bash
+node --test tests/unit/eval_dashboard/js/*.test.mjs
+```
+
+Recommended naming examples for this phase:
+
+- `state.store.test.mjs`
+- `state.selectors.test.mjs`
 
 Focus on:
 
@@ -822,12 +880,23 @@ This layer should convert raw input into the dashboard’s canonical internal sh
 
 Use curated fixtures to add logic tests for:
 
+- `data.parse-overrides.test.mjs`
+
+- `data.normalize.test.mjs`
+
 - supported version handling
+
 - unsupported version rejection
+
 - malformed files failing cleanly
+
 - missing prediction-id handling
+
 - conflicting prediction-id handling
+
 - normalization of newer post-`2026-01-16` experiment-derived fixtures
+
+Keep these as JS-native logic tests under `tests/unit/eval_dashboard/js/`; Python should continue to own fixture/docs/smoke checks around them.
 
 ### Why this phase matters
 
@@ -903,6 +972,8 @@ Prefer tests for pure loader-adjacent logic first, such as:
 - local entry filtering/relevance checks
 - duplicate-run detection helpers
 - progress-state derivation helpers if they are extractable
+
+Keep these loader-adjacent logic tests in the same JS-native test layer established earlier, and avoid growing a second ad hoc harness for them.
 
 Keep end-to-end loader interaction checks in the smoke/manual validation loop unless they can be made deterministic.
 
@@ -1188,6 +1259,8 @@ tests/
 - normalization/parsing
 - any other pure loader-adjacent helpers that were extracted cleanly
 
+That logic coverage should run through the repository's minimal JS-native dashboard test command, while Python continues to run structural/docs/fixture smoke coverage.
+
 ### Why this phase still exists
 
 Testing started earlier, but this phase is where the project confirms the final coverage shape and closes remaining gaps.
@@ -1200,7 +1273,7 @@ uv run --group cicd pytest tests/unit/eval_dashboard
 uv run --group cicd check-mkdocs --config properdocs.yml
 ```
 
-Also run the chosen lightweight JS logic-test command if one was introduced during Phases 5 to 8.
+Also run the repository's minimal JS-native dashboard logic-test command introduced during Phases 5 to 8 (preferably the Node.js built-in test runner).
 
 Before closing Phase 12, update the planning docs in `docs/eval-dashboard/` with the final coverage status and confirm the testing/documentation updates comply with `CONTRIBUTING.md`.
 
@@ -1249,7 +1322,7 @@ A sensible sequence from scratch would be:
 1. curated fixtures + initial smoke tests
 1. CSS extraction + structural asset checks
 1. external `main.js`
-1. utility extraction + first JS logic tests
+1. utility extraction + first JS logic tests + permanent minimal JS-native runner
 1. state/store extraction
 1. selector extraction + selector tests
 1. parse/normalize extraction + normalization tests
@@ -1264,10 +1337,10 @@ If needed, these can be grouped into fewer PRs:
 
 - PR 1: baseline artifact + folder move + links/redirects + curated fixtures + initial smoke tests
 - PR 2: CSS + external `main.js`
-- PR 3: utilities + state + selectors + parsing + normalization + logic tests
+- PR 3: utilities + permanent JS-native runner + state + selectors + parsing + normalization + logic tests
 - PR 4: loaders + UI modules + plot/export modules + final cleanup + coverage pass
 
-From the current repository state, work would resume at the `utility extraction + first JS logic tests` step because the earlier baseline, migration, fixture, smoke-test, CSS-extraction, and external-`main.js` work is already in place.
+From the current repository state, work should first finish the remaining Phase 5 testing-seam work — permanent minimal JS-native runner plus explicit CI wiring — before resuming at the `state/store extraction` step.
 
 After each completed PR or phase in that sequence, refresh the planning docs under `docs/eval-dashboard/` before moving on so the written plan keeps matching the repository state and `CONTRIBUTING.md` expectations.
 
@@ -1299,9 +1372,13 @@ ______________________________________________________________________
 
 Given the current repository state, the safest next implementation step is:
 
-1. extract the first low-coupling helpers from `docs/eval-dashboard/assets/js/main.js` into `docs/eval-dashboard/assets/js/utils/`
-1. reserve `tests/unit/eval_dashboard/js/` for lightweight browser-free logic tests and add first coverage for the extracted pure helpers
-1. keep `main.js` behavior-equivalent while beginning the utility split described in Phase 5
-1. update the planning docs in `docs/eval-dashboard/` after Phase 5 lands and confirm the change set complies with `CONTRIBUTING.md`
+1. if `tests/unit/eval_dashboard/js/` still relies on a temporary pytest-driven Node bridge, replace it with the permanent minimal JS-native logic-test runner first
+1. add the JS-native dashboard logic-test command to CI as an explicit check
+1. re-validate the already extracted Phase 5 utility coverage under that permanent harness
+1. then extract the canonical mutable dashboard state from `docs/eval-dashboard/assets/js/main.js` into `docs/eval-dashboard/assets/js/state/store.js`
+1. begin moving derived-read helpers into `docs/eval-dashboard/assets/js/state/selectors.js`
+1. add selector/state logic coverage under `tests/unit/eval_dashboard/js/` as those seams become importable
+1. keep `main.js` behavior-equivalent while beginning the Phase 6 state/selector split
+1. update the planning docs in `docs/eval-dashboard/` after Phase 6 lands and confirm the change set complies with `CONTRIBUTING.md`
 
-That continues the refactor with the next smallest behavior-preserving boundary now that the entrypoint migration, curated fixtures, first smoke coverage, CSS extraction, and external `main.js` step are already in place.
+That finishes the remaining Phase 5 testing-seam work before continuing with the next smallest behavior-preserving extraction boundary: Python for structural/docs/fixture smoke coverage, and a minimal JS-native runner for extracted dashboard logic.

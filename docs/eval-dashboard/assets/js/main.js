@@ -1,3 +1,22 @@
+import { flattenObject, getValueAtPath, omitTopLevelKeys } from "./utils/flatten.js";
+import { normalizeSortConfig, sortItems } from "./utils/sort.js";
+import {
+  getFigureTitlePrefix,
+  sanitizeFigureFilename,
+  splitLabelByLastDot,
+} from "./utils/text.js";
+import {
+  collectSuggestionValues,
+  formatRounded,
+  getEffectiveValue,
+  getColumnsWithMultipleValues,
+  getStableObjectSignature,
+  interpolateColor,
+  isMissingValue,
+  meanAndStd,
+  normalizeValue,
+} from "./utils/values.js";
+
 // Central UI state: loaded prediction/evaluation data, current grouping/selection, and per-eval-tab view state.
 const state = {
   predictions: {},
@@ -396,27 +415,6 @@ async function writeTextToClipboard(text) {
   if (!copied) {
     throw new Error("Clipboard copy command was not successful.");
   }
-}
-
-// Export filenames should keep the stable plot name while dropping display-only suffixes
-// that appear in chart titles/tab labels, e.g. "(mean ± std)" and grouped-eval counts.
-function getFigureTitlePrefix(title) {
-  const text = String(title ?? "").trim();
-  return text
-    .replace(/\s*\(mean ± std\).*$/u, "")
-    .replace(/\s*\(\d+\s+grouped\s+evals?(?:\s+per\s+cell)?\)$/iu, "")
-    .replace(/\s*\(\d+\s+grouped\s+evaluations\)$/iu, "")
-    .trim() || text || "figure";
-}
-
-function sanitizeFigureFilename(title) {
-  const normalized = String(title ?? "")
-    .normalize("NFKD")
-    .replace(/[<>:"/\\|?*\u0000-\u001f]+/g, " - ")
-    .replace(/\s+/g, " ")
-    .trim()
-    .replace(/[. ]+$/g, "");
-  return (normalized || "figure").slice(0, 180);
 }
 
 function getUniqueFigureFilename(title, usedNames) {
@@ -931,12 +929,6 @@ function displayGroupFieldName(column) {
   return displayPredictionColumnName(column);
 }
 
-function splitLabelByLastDot(label) {
-  const text = String(label ?? "");
-  const lastDotIndex = text.lastIndexOf(".");
-  return lastDotIndex === -1 ? text : text.slice(lastDotIndex + 1);
-}
-
 function getPlotDisplayLabel(label) {
   const text = String(label ?? "");
   return state.plotShortenLabels ? splitLabelByLastDot(text) : text;
@@ -966,22 +958,6 @@ function getDefaultTruncateColumns(predictionColumns) {
     }
   }
   return defaults;
-}
-
-function getColumnsWithMultipleValues(items, columns, valueGetter) {
-  if (!Array.isArray(items) || items.length <= 1) {
-    return [];
-  }
-  return columns.filter((column) => {
-    const values = new Set();
-    for (const item of items) {
-      values.add(normalizeValue(valueGetter(item, column)));
-      if (values.size > 1) {
-        return true;
-      }
-    }
-    return false;
-  });
 }
 
 /**
@@ -1014,17 +990,6 @@ function getDefaultEvalGroupByFields(evalColumns, evaluations = []) {
 
 function getDefaultEvalTruncateColumns() {
   return new Set();
-}
-
-function isMissingValue(value) {
-  return normalizeValue(value).trim() === "";
-}
-
-function getEffectiveValue(rawValue, defaultValue) {
-  if (isMissingValue(rawValue) && !isMissingValue(defaultValue)) {
-    return normalizeValue(defaultValue);
-  }
-  return normalizeValue(rawValue);
 }
 
 function setConfiguredDefault(defaults, column, value) {
@@ -1062,14 +1027,6 @@ function getPredictionEffectiveSignature(
 
 function getEvalDefaultValue(evalTabState, column) {
   return evalTabState?.defaultValues?.[column] ?? "";
-}
-
-function collectSuggestionValues(values) {
-  return Array.from(new Set(
-    values
-      .map((value) => normalizeValue(value))
-      .filter((value) => value.trim() !== "")
-  )).sort((a, b) => a.localeCompare(b));
 }
 
 /**
@@ -1702,12 +1659,6 @@ function getPredictionColumnSections(predictionColumns = getCurrentPredictionCol
   ].filter((section) => section.columns.length > 0);
 }
 
-function normalizeValue(value) {
-  if (value === null || value === undefined) return "";
-  if (typeof value === "object") return JSON.stringify(value);
-  return String(value);
-}
-
 function formatDistinctValueDisplay(values) {
   if (values.size <= 1) {
     return values.values().next().value || "";
@@ -1718,35 +1669,6 @@ function formatDistinctValueDisplay(values) {
 function getDefaultSortDirection(column) {
   return SORTABLE_CONTROL_COLUMNS.has(column) ? "desc" : "asc";
 }
-
-function normalizeSortConfig(sortConfig, validColumns = null) {
-  const sourceClauses = Array.isArray(sortConfig)
-    ? sortConfig
-    : sortConfig?.column
-      ? [sortConfig]
-      : [];
-  const allowedColumns = validColumns ? new Set(validColumns) : null;
-  const normalizedClauses = [];
-  const seenColumns = new Set();
-  for (const clause of sourceClauses) {
-    if (!clause || typeof clause.column !== "string") {
-      continue;
-    }
-    if (clause.direction !== "asc" && clause.direction !== "desc") {
-      continue;
-    }
-    if (allowedColumns && !allowedColumns.has(clause.column)) {
-      continue;
-    }
-    if (seenColumns.has(clause.column)) {
-      continue;
-    }
-    seenColumns.add(clause.column);
-    normalizedClauses.push({ column: clause.column, direction: clause.direction });
-  }
-  return normalizedClauses;
-}
-
 
 function getSortColumnLabel(column, displayColumnName) {
   if (column === "group_size") {
@@ -1799,58 +1721,6 @@ function getNextSortConfig(currentSort, column, { append = false } = {}) {
   const nextSorts = [...currentSorts];
   nextSorts[currentIndex] = { column, direction: nextDirection };
   return nextSorts;
-}
-
-function parseSortableNumber(value) {
-  const normalized = normalizeValue(value).trim();
-  if (!/^[+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?$/i.test(normalized)) {
-    return null;
-  }
-  const numericValue = Number(normalized);
-  return Number.isFinite(numericValue) ? numericValue : null;
-}
-
-function compareSortableValues(a, b) {
-  const normalizedA = normalizeValue(a).trim();
-  const normalizedB = normalizeValue(b).trim();
-  const isBlankA = normalizedA === "";
-  const isBlankB = normalizedB === "";
-  if (isBlankA || isBlankB) {
-    if (isBlankA && isBlankB) {
-      return 0;
-    }
-    return isBlankA ? 1 : -1;
-  }
-
-  const numericA = parseSortableNumber(normalizedA);
-  const numericB = parseSortableNumber(normalizedB);
-  if (numericA !== null && numericB !== null) {
-    return numericA - numericB;
-  }
-
-  return sortCollator.compare(normalizedA, normalizedB);
-}
-
-function sortItems(items, sortConfig, valueGetter) {
-  const normalizedSorts = normalizeSortConfig(sortConfig);
-  if (!normalizedSorts.length) {
-    return [...items];
-  }
-  return items
-    .map((item, index) => ({ item, index }))
-    .sort((left, right) => {
-      for (const clause of normalizedSorts) {
-        const comparison = compareSortableValues(
-          valueGetter(left.item, clause.column),
-          valueGetter(right.item, clause.column)
-        );
-        if (comparison !== 0) {
-          return comparison * (clause.direction === "desc" ? -1 : 1);
-        }
-      }
-      return left.index - right.index;
-    })
-    .map(({ item }) => item);
 }
 
 function getAriaSort(sortConfig, column) {
@@ -1941,34 +1811,6 @@ function renderEvalSortStatus(activeExperiment = state.activeEvalTab, evalColumn
   evalSortedByLabel.textContent = formatSortLabel(evalTabState.sort, displayEvalColumnName);
   evalResetSortButton.disabled = !evalTabState.sort.length;
 }
-
-function flattenObject(obj, prefix = "", out = {}) {
-  if (!obj || typeof obj !== "object") {
-    return out;
-  }
-  for (const [key, value] of Object.entries(obj)) {
-    const fullKey = prefix ? `${prefix}.${key}` : key;
-    if (Array.isArray(value)) {
-      out[fullKey] = JSON.stringify(value);
-    } else if (value && typeof value === "object") {
-      flattenObject(value, fullKey, out);
-    } else {
-      out[fullKey] = value;
-    }
-  }
-  return out;
-}
-
-function getStableObjectSignature(obj) {
-  return JSON.stringify(
-    Object.fromEntries(
-      Object.entries(obj)
-        .map(([key, value]) => [key, normalizeValue(value)])
-        .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
-    )
-  );
-}
-
 function parseOverridesYaml(text) {
   const result = {};
   const lines = text.split(/\r?\n/);
@@ -1989,12 +1831,6 @@ function parseOverridesYaml(text) {
     result[key] = item.slice(separatorIndex + 1).trim();
   }
   return result;
-}
-
-function omitTopLevelKeys(obj, excludedKeys) {
-  return Object.fromEntries(
-    Object.entries(obj).filter(([key]) => !excludedKeys.has(key))
-  );
 }
 
 function createUnsupportedJobReturnValueVersionError(version) {
@@ -3146,16 +2982,6 @@ function getGroupValueDisplayFromEvaluations(evaluations, getter) {
   return formatDistinctValueDisplay(values);
 }
 
-function meanAndStd(values) {
-  if (values.length === 0) {
-    return null;
-  }
-  const mean = values.reduce((sum, value) => sum + value, 0) / values.length;
-  const variance =
-    values.reduce((sum, value) => sum + (value - mean) ** 2, 0) / values.length;
-  return { mean, std: Math.sqrt(variance) };
-}
-
 function getVaryingFields(groups, fields) {
   if (!fields.length || groups.length <= 1) {
     return [];
@@ -3584,17 +3410,6 @@ function collectNumericMetricLeafPaths(value, parts = [], out = new Map()) {
   return out;
 }
 
-function getValueAtPath(value, pathParts) {
-  let current = value;
-  for (const part of pathParts) {
-    if (!current || typeof current !== "object" || !(part in current)) {
-      return null;
-    }
-    current = current[part];
-  }
-  return current;
-}
-
 function splitMetricLabelAtLastDot(label) {
   const lastDotIndex = label.lastIndexOf(".");
   if (lastDotIndex === -1) {
@@ -3623,10 +3438,6 @@ function getMetricTypeForEvaluationContext(
     );
   }
   return Array.from(metricTypes)[0] || "";
-}
-
-function formatRounded(value, precision) {
-  return Number(value).toFixed(precision);
 }
 
 function getMetricCollectionSourceRunDir(evaluation) {
@@ -3931,11 +3742,6 @@ function filterTpFpFnAggregationByTotals(aggregation, minLabelTotal, minDocument
   };
 }
 
-function interpolateColor(startRgb, endRgb, t) {
-  const clamp = Math.max(0, Math.min(1, t));
-  const mix = (a, b) => Math.round(a + (b - a) * clamp);
-  return `rgb(${mix(startRgb[0], endRgb[0])}, ${mix(startRgb[1], endRgb[1])}, ${mix(startRgb[2], endRgb[2])})`;
-}
 
 // Render an already-aggregated confusion matrix as an SVG heatmap with values and tooltips.
 function createConfusionMatrixHeatmapSvg(aggregation, precision) {
