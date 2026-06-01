@@ -122,4 +122,3 @@ test("store resets derived ui state after loading data", () => {
   assert.deepEqual([...state.availableGroupIds].sort(), ["group-a", "group-b"]);
   assert.deepEqual([...state.expandedGroupIds], []);
 });
-

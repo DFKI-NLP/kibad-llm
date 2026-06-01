@@ -229,4 +229,3 @@ export function resetDerivedUiStateAfterLoad(
   state.activePlotLegendItems = [];
   syncPredictionGroupUiState(state, predictionGroups);
 }
-

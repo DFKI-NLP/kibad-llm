@@ -985,4 +985,3 @@ function formatDistinctValueDisplay(values) {
   }
   return `(mixed: ${values.size} values)`;
 }
-
