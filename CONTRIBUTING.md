@@ -157,8 +157,6 @@ A PR description needs to document:
 
 PRs need to pass CI/CD. This means that all pre-commit hooks need to pass, as well as all `"not slow"` tests. For more info, check section [Testing and code quality checks](#testing-and-code-quality-checks).
 
-Make sure you add tests for your code. If your tests need to call an LLM, mark them as `"slow"`, and test them separately. `"slow"` tests are not run by CI.
-
 ### Branch naming
 
 **Prefixing** <br>
@@ -232,9 +230,11 @@ uv run --group cicd python tests/fixtures/map_llm_chat_usage.py
 
 Never run the full test suite with `WRITE_FIXTURE_DATA=1` or `WRITE_LLM_CHAT_FIXTURE_DATA=1`. Regenerate only the fixtures for the tests you intentionally changed.
 
-Note: Adjusting the LLM replay fixtures usually results in different output and, thus, requires regenerating the normal fixture data via `WRITE_FIXTURE_DATA=1`.</br>
+> [!NOTE]
+> Adjusting the LLM replay fixtures usually results in different output and, thus, requires regenerating the normal fixture data via `WRITE_FIXTURE_DATA=1`.
 
-If you add a new test that requires LLM interaction, you can require the test to have a working vLLM backend, but it is encouraged to use `llm_chat_replay` instead.
+> [!NOTE]
+> If your tests need to call an LLM, mark them as `"slow"`, and test them separately. `"slow"` tests are not run by CI. However, it is encouraged to use `llm_chat_replay` instead.
 
 ### Documentation
 
