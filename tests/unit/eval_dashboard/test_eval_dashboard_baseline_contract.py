@@ -142,6 +142,12 @@ def test_baseline_summary_includes_phase_five_utility_contract() -> None:
         "text.js",
         "values.js",
     }
+    assert set(phase_five_contract["js_test_files"]) == {
+        "utils.flatten.test.mjs",
+        "utils.sort.test.mjs",
+        "utils.text.test.mjs",
+        "utils.values.test.mjs",
+    }
 
 
 def test_current_runtime_matches_phase_five_utility_contract() -> None:
@@ -158,12 +164,17 @@ def test_current_runtime_matches_phase_five_utility_contract() -> None:
         assert (UTILS_JS_ROOT / file_name).is_file()
         assert f"./utils/{file_name}" in main_js
     assert (PROJ_ROOT / phase_five_contract["js_test_root"]).is_dir()
-    assert any(JS_TEST_ROOT.glob("*.test.mjs"))
+    for file_name in phase_five_contract["js_test_files"]:
+        assert (JS_TEST_ROOT / file_name).is_file()
+    assert {path.name for path in JS_TEST_ROOT.glob("*.test.mjs")} == set(
+        phase_five_contract["js_test_files"]
+    )
     assert JS_PACKAGE_JSON.is_file()
     assert js_package == {"type": "module"}
     assert JS_TEST_README.is_file()
     assert phase_five_contract["js_test_command"] in js_test_readme
     assert "Node's built-in test runner" in js_test_readme
+    assert "Keep test files flat in this directory" in js_test_readme
     assert not LEGACY_JS_PYTEST_BRIDGE.exists()
     assert not any(JS_TEST_ROOT.glob("*.py"))
 

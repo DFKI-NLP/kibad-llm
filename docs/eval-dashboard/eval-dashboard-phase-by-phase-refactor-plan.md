@@ -716,8 +716,9 @@ The current branch now covers the full scope of this phase:
 - `docs/eval-dashboard/assets/js/utils/` contains `flatten.js`, `sort.js`, `values.js`, and `text.js`
 - `docs/eval-dashboard/assets/js/main.js` imports those Phase 5 utility modules while preserving the existing runtime entrypoint contract
 - `tests/unit/eval_dashboard/js/` is the long-term location for extracted dashboard JS logic tests
-- `tests/unit/eval_dashboard/js/eval_dashboard_utils.test.mjs` runs the extracted pure-helper coverage through the Node.js built-in test runner
+- `tests/unit/eval_dashboard/js/utils.flatten.test.mjs`, `utils.sort.test.mjs`, `utils.text.test.mjs`, and `utils.values.test.mjs` run the extracted pure-helper coverage through the Node.js built-in test runner
 - `tests/unit/eval_dashboard/js/README.md` documents `node --test tests/unit/eval_dashboard/js/*.test.mjs` as the default local command for later phases
+- the JS-native harness now uses a flat `*.test.mjs` namespace such as `utils.flatten.test.mjs` and `state.selectors.test.mjs`, so later phases can add files without changing the command or introducing recursive globbing
 - `docs/eval-dashboard/assets/js/package.json` pins the dashboard runtime modules to ESM semantics for the permanent JS-native harness
 - `tests/unit/eval_dashboard/test_eval_dashboard_entrypoint.py` asserts that the expected utility modules exist
 - `tests/unit/eval_dashboard/test_eval_dashboard_baseline_contract.py` and `tests/fixtures/eval_dashboard/baseline/baseline-summary.json` now record the permanent Node.js-native Phase 5 utility/test contract rather than freezing the full `main.js` file contents
@@ -729,6 +730,7 @@ Phase 5 is now complete because:
 
 - the temporary pytest-driven Node subprocess bridge has been removed
 - the permanent minimal JS-native runner is `node --test tests/unit/eval_dashboard/js/*.test.mjs`
+- the permanent harness keeps test files flat under `tests/unit/eval_dashboard/js/`, using module-scoped names such as `utils.sort.test.mjs` and `state.selectors.test.mjs`
 - later phases should extend that same `tests/unit/eval_dashboard/js/` harness rather than reintroducing Python-driven bridging
 - the extracted Phase 5 utility coverage has been re-validated under the permanent harness and under the updated Python-side contract checks
 
@@ -794,6 +796,17 @@ tests/unit/eval_dashboard/js/
 ```
 
 Run those tests with the same minimal JS-native runner established at the Phase 5/6 boundary rather than by expanding a Python subprocess wrapper.
+
+Keep those JS-native test files flat under `tests/unit/eval_dashboard/js/` so the established command remains:
+
+```bash
+node --test tests/unit/eval_dashboard/js/*.test.mjs
+```
+
+Recommended naming examples for this phase:
+
+- `state.store.test.mjs`
+- `state.selectors.test.mjs`
 
 Focus on:
 
@@ -867,11 +880,20 @@ This layer should convert raw input into the dashboard’s canonical internal sh
 
 Use curated fixtures to add logic tests for:
 
+- `data.parse-overrides.test.mjs`
+
+- `data.normalize.test.mjs`
+
 - supported version handling
+
 - unsupported version rejection
+
 - malformed files failing cleanly
+
 - missing prediction-id handling
+
 - conflicting prediction-id handling
+
 - normalization of newer post-`2026-01-16` experiment-derived fixtures
 
 Keep these as JS-native logic tests under `tests/unit/eval_dashboard/js/`; Python should continue to own fixture/docs/smoke checks around them.

@@ -25,6 +25,12 @@
       "text.js",
       "values.js"
     ],
+    "js_test_files": [
+      "utils.flatten.test.mjs",
+      "utils.sort.test.mjs",
+      "utils.text.test.mjs",
+      "utils.values.test.mjs"
+    ],
     "js_test_root": "tests/unit/eval_dashboard/js",
     "js_test_strategy": "browser-free utility logic tests executed via the Node.js built-in test runner",
     "js_test_command": "node --test tests/unit/eval_dashboard/js/*.test.mjs"

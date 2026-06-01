@@ -610,17 +610,19 @@ tests/
       test_eval_dashboard_assets.py
       test_dashboard_fixtures.py
       js/
-        test_normalize_imported_job_return_value.*
-        test_selectors_and_grouping.*
-        test_sorting_helpers.*
-        test_export_filename_helpers.*
-        test_parse_overrides.*
+        utils.flatten.test.mjs
+        utils.sort.test.mjs
+        utils.text.test.mjs
+        utils.values.test.mjs
+        state.selectors.test.mjs
+        data.normalize.test.mjs
+        data.parse-overrides.test.mjs
   integration/
     eval_dashboard/
       test_eval_dashboard_redirects.py
 ```
 
-The `*` here is intentional: the exact JS test extension and runner can be chosen later, but the plan should reserve a place for logic tests from the start.
+The repository has now standardized on flat `*.test.mjs` files under `tests/unit/eval_dashboard/js/`, so `node --test tests/unit/eval_dashboard/js/*.test.mjs` remains stable without recursive globbing or another harness migration.
 
 ______________________________________________________________________
 
