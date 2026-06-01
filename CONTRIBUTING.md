@@ -22,10 +22,10 @@ The following guidelines ensure consistency across the project, so please read t
         - [Google-style docstring guidelines](#google-style-docstring-guidelines)
         - [Linking](#linking)
         - [Hosting locally](#hosting-locally)
-- [Changing dependencies](#changing-dependencies)
-    - [Adding dependencies](#adding-dependencies)
-    - [Updating dependencies](#updating-dependencies)
-    - [uv known issues](#uv-known-issues)
+    - [Changing dependencies](#changing-dependencies)
+        - [Adding dependencies](#adding-dependencies)
+        - [Updating dependencies](#updating-dependencies)
+        - [uv known issues](#uv-known-issues)
 - [Testing and code quality checks](#testing-and-code-quality-checks)
 - [Misc](#misc)
 
@@ -367,11 +367,11 @@ You can build and serve the documentation locally with:
 uv run --group cicd properdocs serve -w .
 ```
 
-## Changing dependencies
+### Changing dependencies
 
 Any and all dependency change must be explained in the respective PR.
 
-### Adding dependencies
+#### Adding dependencies
 
 To [add packages as dependencies](https://docs.astral.sh/uv/concepts/projects/dependencies/), use the `uv add` command. <br>
 Please make sure to add upper bounds when you can to prevent future breakage.
@@ -389,7 +389,7 @@ uv add "httpx>=0.20,<1.0"
 [Changing dependencies](https://docs.astral.sh/uv/concepts/projects/dependencies/#changing-dependencies) works just like adding them. <br>
 Please keep in mind that you can also add [platform-specific dependencies](https://docs.astral.sh/uv/concepts/projects/dependencies/#platform-specific-dependencies).
 
-### Updating dependencies
+#### Updating dependencies
 
 You can update either one or all packages.
 
@@ -402,7 +402,7 @@ uv lock --upgrade-package <package>
 uv lock --upgrade-package <package>==<version>
 ```
 
-### uv known issues
+#### uv known issues
 
 These known issues have their own uv specific fixes. The relevant documentation is linked.
 
