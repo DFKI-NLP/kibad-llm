@@ -156,7 +156,7 @@ def test_current_runtime_matches_phase_five_utility_contract() -> None:
     assert MAIN_JS_ENTRY.is_file()
     for file_name in phase_five_contract["utility_modules"]:
         assert (UTILS_JS_ROOT / file_name).is_file()
-        assert f'./utils/{file_name}' in main_js
+        assert f"./utils/{file_name}" in main_js
     assert (PROJ_ROOT / phase_five_contract["js_test_root"]).is_dir()
     assert any(JS_TEST_ROOT.glob("*.test.mjs"))
     assert JS_PACKAGE_JSON.is_file()
