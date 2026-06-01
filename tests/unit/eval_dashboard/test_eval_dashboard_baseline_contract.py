@@ -18,6 +18,9 @@ BASELINE_SUMMARY = FIXTURE_DATA_ROOT / "eval_dashboard" / "baseline" / "baseline
 FIXTURE_ROOT = FIXTURE_DATA_ROOT / "eval_dashboard"
 WORKFLOW_PATH = PROJ_ROOT / ".github" / "workflows" / "code_quality_and_tests.yml"
 JS_TEST_ROOT = PROJ_ROOT / "tests" / "unit" / "eval_dashboard" / "js"
+JS_PACKAGE_JSON = JS_ROOT / "package.json"
+JS_TEST_README = JS_TEST_ROOT / "README.md"
+LEGACY_JS_PYTEST_BRIDGE = JS_TEST_ROOT / "test_eval_dashboard_utils.py"
 
 EXPECTED_FEATURE_KEYS = {
     "supports_local_load",
@@ -50,6 +53,24 @@ def _workflow_definition() -> dict:
     """Load the CI workflow that should run the dashboard JS logic tests explicitly."""
 
     return yaml.safe_load(WORKFLOW_PATH.read_text(encoding="utf-8"))
+
+
+def _main_js_entry() -> str:
+    """Load the external dashboard JavaScript entry module."""
+
+    return MAIN_JS_ENTRY.read_text(encoding="utf-8")
+
+
+def _js_package_definition() -> dict:
+    """Load the dashboard JS package manifest that pins ESM semantics for Node tests."""
+
+    return json.loads(JS_PACKAGE_JSON.read_text(encoding="utf-8"))
+
+
+def _js_test_readme() -> str:
+    """Load the README that documents the long-term dashboard JS test harness."""
+
+    return JS_TEST_README.read_text(encoding="utf-8")
 
 
 def _css_entry() -> str:
@@ -128,14 +149,23 @@ def test_current_runtime_matches_phase_five_utility_contract() -> None:
 
     summary = _baseline_summary()
     phase_five_contract = summary["phase_five_contract"]
+    main_js = _main_js_entry()
+    js_package = _js_package_definition()
+    js_test_readme = _js_test_readme()
 
     assert MAIN_JS_ENTRY.is_file()
     for file_name in phase_five_contract["utility_modules"]:
         assert (UTILS_JS_ROOT / file_name).is_file()
+        assert f'./utils/{file_name}' in main_js
     assert (PROJ_ROOT / phase_five_contract["js_test_root"]).is_dir()
     assert any(JS_TEST_ROOT.glob("*.test.mjs"))
-    assert (JS_ROOT / "package.json").is_file()
-    assert (JS_TEST_ROOT / "README.md").is_file()
+    assert JS_PACKAGE_JSON.is_file()
+    assert js_package == {"type": "module"}
+    assert JS_TEST_README.is_file()
+    assert phase_five_contract["js_test_command"] in js_test_readme
+    assert "Node's built-in test runner" in js_test_readme
+    assert not LEGACY_JS_PYTEST_BRIDGE.exists()
+    assert not any(JS_TEST_ROOT.glob("*.py"))
 
 
 def test_ci_workflow_runs_eval_dashboard_js_tests_explicitly() -> None:
