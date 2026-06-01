@@ -1,6 +1,8 @@
-"""Baseline artifact contract tests for the eval dashboard refactor baseline and utility-phase contracts."""
+"""Baseline artifact contract tests for the eval-dashboard baseline and Phase 5 JS-test contract."""
 
 import json
+
+import yaml
 
 from kibad_llm.config import PROJ_ROOT
 from tests import FIXTURE_DATA_ROOT
@@ -14,6 +16,8 @@ UTILS_JS_ROOT = JS_ROOT / "utils"
 TOKENS_CSS = CSS_ROOT / "tokens.css"
 BASELINE_SUMMARY = FIXTURE_DATA_ROOT / "eval_dashboard" / "baseline" / "baseline-summary.json"
 FIXTURE_ROOT = FIXTURE_DATA_ROOT / "eval_dashboard"
+WORKFLOW_PATH = PROJ_ROOT / ".github" / "workflows" / "code_quality_and_tests.yml"
+JS_TEST_ROOT = PROJ_ROOT / "tests" / "unit" / "eval_dashboard" / "js"
 
 EXPECTED_FEATURE_KEYS = {
     "supports_local_load",
@@ -40,6 +44,12 @@ def _dashboard_html() -> str:
     """Load the current dashboard entry HTML."""
 
     return DASHBOARD_ENTRY.read_text(encoding="utf-8")
+
+
+def _workflow_definition() -> dict:
+    """Load the CI workflow that should run the dashboard JS logic tests explicitly."""
+
+    return yaml.safe_load(WORKFLOW_PATH.read_text(encoding="utf-8"))
 
 
 def _css_entry() -> str:
@@ -97,7 +107,14 @@ def test_baseline_summary_includes_phase_five_utility_contract() -> None:
 
     assert phase_five_contract["utility_module_root"] == "docs/eval-dashboard/assets/js/utils"
     assert phase_five_contract["js_test_root"] == "tests/unit/eval_dashboard/js"
-    assert phase_five_contract["js_test_strategy"]
+    assert (
+        phase_five_contract["js_test_strategy"]
+        == "browser-free utility logic tests executed via the Node.js built-in test runner"
+    )
+    assert (
+        phase_five_contract["js_test_command"]
+        == "node --test tests/unit/eval_dashboard/js/*.test.mjs"
+    )
     assert set(phase_five_contract["utility_modules"]) == {
         "flatten.js",
         "sort.js",
@@ -107,7 +124,7 @@ def test_baseline_summary_includes_phase_five_utility_contract() -> None:
 
 
 def test_current_runtime_matches_phase_five_utility_contract() -> None:
-    """Ensure the extracted Phase 5 utility modules and JS-test directory exist."""
+    """Ensure the extracted Phase 5 utility modules and JS-native test assets exist."""
 
     summary = _baseline_summary()
     phase_five_contract = summary["phase_five_contract"]
@@ -116,6 +133,24 @@ def test_current_runtime_matches_phase_five_utility_contract() -> None:
     for file_name in phase_five_contract["utility_modules"]:
         assert (UTILS_JS_ROOT / file_name).is_file()
     assert (PROJ_ROOT / phase_five_contract["js_test_root"]).is_dir()
+    assert any(JS_TEST_ROOT.glob("*.test.mjs"))
+    assert (JS_ROOT / "package.json").is_file()
+    assert (JS_TEST_ROOT / "README.md").is_file()
+
+
+def test_ci_workflow_runs_eval_dashboard_js_tests_explicitly() -> None:
+    """Ensure CI exposes the dashboard JS logic tests as their own explicit Node-based check."""
+
+    workflow = _workflow_definition()
+    js_job = workflow["jobs"]["eval-dashboard-js"]
+    steps = js_job["steps"]
+
+    assert js_job["runs-on"] == "ubuntu-latest"
+    assert any(step.get("uses") == "actions/setup-node@v4" for step in steps)
+    assert any(
+        "node --test tests/unit/eval_dashboard/js/*.test.mjs" in step.get("run", "")
+        for step in steps
+    )
 
 
 def test_baseline_feature_expectation_keys_match_current_contract() -> None:

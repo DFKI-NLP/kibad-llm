@@ -45,7 +45,7 @@ As of the current repository state:
 - `docs/index.md` links point to `eval-dashboard/index.html`
 - populated Phase 5 runtime assets now exist under `docs/eval-dashboard/assets/`: CSS lives under `assets/css/`, `assets/js/main.js` remains the external entry module, and first pure helpers now live under `assets/js/utils/`
 - structural smoke coverage now includes `tests/unit/eval_dashboard/test_eval_dashboard_entrypoint.py` and `tests/unit/eval_dashboard/test_eval_dashboard_html_contracts.py`
-- first browser-free JS utility logic coverage now exists under `tests/unit/eval_dashboard/js/`, but any initial pytest-driven Node bridge should be treated as temporary rather than the long-term home for dashboard JS logic tests
+- first browser-free JS utility logic coverage now exists under `tests/unit/eval_dashboard/js/` via the Node.js built-in test runner, which is now the long-term home for extracted dashboard logic tests in later phases
 - curated Phase 2 fixtures now exist under `tests/fixtures/eval_dashboard/`, including valid version-0/1/2 examples, invalid edge-case fixtures, and explicit fixtures for all currently supported plot families (`bars`, `errors`, `confusion_matrix`, `tpfpfn`)
 - fixture provenance is documented in `tests/fixtures/eval_dashboard/README.md`
 - fixture integrity smoke coverage exists at `tests/unit/eval_dashboard/test_dashboard_fixtures.py`
@@ -58,16 +58,16 @@ As of the current repository state:
 
 ### Status checkpoint
 
-The repository is currently **through Phase 4, with Phase 5 in progress**:
+The repository is currently **through Phase 5 and ready for Phase 6**:
 
 - Phase 0 baseline artifacts landed
 - Phase 1 folder migration and compatibility shim landed
 - Phase 2 curated fixtures and structural smoke coverage landed
 - Phase 3 CSS extraction and HTML contract guardrails landed
 - Phase 4 JS externalization landed
-- Phase 5 utility extraction largely landed, but the long-term JS-native logic-test runner has not been finalized yet
+- Phase 5 utility extraction, the permanent JS-native logic-test runner, and explicit CI wiring landed
 
-That means the next implementation step is to **finish Phase 5** before starting Phase 6.
+That means the next implementation step is to **start Phase 6** by extracting state and selector logic while extending the same JS-native test harness.
 
 ______________________________________________________________________
 
@@ -617,7 +617,7 @@ ______________________________________________________________________
 
 ## Phase 5. Add lightweight JS logic tests and extract pure utilities
 
-**Status in current repository:** in progress.
+**Status in current repository:** complete.
 
 ### Goal
 
@@ -711,22 +711,26 @@ Phase 5 is complete only when all of the following are true:
 
 ### Current Phase 5 state
 
-The current branch already covers much of the extraction part of this phase:
+The current branch now covers the full scope of this phase:
 
 - `docs/eval-dashboard/assets/js/utils/` contains `flatten.js`, `sort.js`, `values.js`, and `text.js`
 - `docs/eval-dashboard/assets/js/main.js` imports those Phase 5 utility modules while preserving the existing runtime entrypoint contract
 - `tests/unit/eval_dashboard/js/` is the long-term location for extracted dashboard JS logic tests
+- `tests/unit/eval_dashboard/js/eval_dashboard_utils.test.mjs` runs the extracted pure-helper coverage through the Node.js built-in test runner
+- `tests/unit/eval_dashboard/js/README.md` documents `node --test tests/unit/eval_dashboard/js/*.test.mjs` as the default local command for later phases
+- `docs/eval-dashboard/assets/js/package.json` pins the dashboard runtime modules to ESM semantics for the permanent JS-native harness
 - `tests/unit/eval_dashboard/test_eval_dashboard_entrypoint.py` asserts that the expected utility modules exist
-- `tests/unit/eval_dashboard/test_eval_dashboard_baseline_contract.py` and `tests/fixtures/eval_dashboard/baseline/baseline-summary.json` now record the Phase 5 utility/test contract rather than freezing the full `main.js` file contents
+- `tests/unit/eval_dashboard/test_eval_dashboard_baseline_contract.py` and `tests/fixtures/eval_dashboard/baseline/baseline-summary.json` now record the permanent Node.js-native Phase 5 utility/test contract rather than freezing the full `main.js` file contents
+- `.github/workflows/code_quality_and_tests.yml` runs the dashboard JS logic tests as their own explicit CI job
 
-### Phase 5 open TODOs
+### Phase 5 completion notes
 
-Before Phase 5 is considered complete:
+Phase 5 is now complete because:
 
-- replace any temporary pytest-driven Node subprocess bridge in `tests/unit/eval_dashboard/js/` with the permanent minimal JS-native runner
-- make that runner the documented default for extracted dashboard logic tests in later phases
-- integrate the JS-native dashboard logic-test command into CI as its own explicit step/job rather than hiding it behind Python-only test execution
-- re-run the Phase 5 validation with that permanent test harness in place
+- the temporary pytest-driven Node subprocess bridge has been removed
+- the permanent minimal JS-native runner is `node --test tests/unit/eval_dashboard/js/*.test.mjs`
+- later phases should extend that same `tests/unit/eval_dashboard/js/` harness rather than reintroducing Python-driven bridging
+- the extracted Phase 5 utility coverage has been re-validated under the permanent harness and under the updated Python-side contract checks
 
 ### Suggested commit boundary
 

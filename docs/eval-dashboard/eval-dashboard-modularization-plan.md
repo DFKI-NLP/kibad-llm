@@ -20,13 +20,13 @@ A few repo-specific observations first:
 - `properdocs.yml` and `docs/index.md` already point to the new folder-based entrypoint.
 - `scripts/build_docs.py` only generates **Python API reference** pages from `src/`, so it is **not** a frontend asset pipeline.
 - `docs/eval-dashboard/assets/css/` now contains `index.css`, `tokens.css`, `layout.css`, `controls.css`, `tables.css`, and `plots.css`; `docs/eval-dashboard/assets/js/` now contains `main.js` as the externalized monolith reserved for later splitting.
-- `pyproject.toml` has **pytest**, and the repo now has dashboard smoke coverage under `tests/unit/eval_dashboard/`, including entrypoint checks plus HTML-contract checks that enforce external CSS, the external `assets/js/main.js` module reference, and the absence of inline runtime CSS/JS; `tests/unit/eval_dashboard/js/` is now the reserved location for extracted dashboard logic tests, but the long-term harness there should be a minimal JS-native runner rather than an expanding pytest wrapper around Node execution.
+- `pyproject.toml` has **pytest**, and the repo now has dashboard smoke coverage under `tests/unit/eval_dashboard/`, including entrypoint checks plus HTML-contract checks that enforce external CSS, the external `assets/js/main.js` module reference, and the absence of inline runtime CSS/JS; `tests/unit/eval_dashboard/js/` is now the reserved location for extracted dashboard logic tests, and the long-term harness there is the minimal Node.js built-in test runner (`node --test tests/unit/eval_dashboard/js/*.test.mjs`).
 - `data/prediction_results/readme.md` documents real experiment folders under `data/prediction_results/logs/`; those runs are useful fixture sources, but tests should use curated snapshots rather than reach into mutable live data folders.
 - curated dashboard fixtures now exist under `tests/fixtures/eval_dashboard/`, including valid version coverage, invalid edge-case fixtures, and explicit examples for all current plot families (`bars`, `errors`, `confusion_matrix`, `tpfpfn`).
 
 Given that, the recommendation is to keep the dashboard as a docs asset, but organize it as a small self-contained docs section that is testable and easy to evolve.
 
-In other words, the repository is now effectively **through Phase 4, with Phase 5 in progress**: entrypoint migration, compatibility coverage, curated fixtures, baseline artifacts, structural smoke tests, CSS extraction, and the external-`main.js` step have landed, while the Phase 5 utility extraction is largely in place but the permanent JS-native logic-test runner and CI wiring still need to be finalized before Phase 6 selector/state work begins.
+In other words, the repository is now effectively **through Phase 5 and ready for Phase 6**: entrypoint migration, compatibility coverage, curated fixtures, baseline artifacts, structural smoke tests, CSS extraction, the external-`main.js` step, the first utility extractions, the permanent JS-native logic-test runner, and explicit CI wiring have all landed.
 
 All work performed from this plan should comply with `CONTRIBUTING.md`, and after each completed refactor phase the planning docs under `docs/eval-dashboard/` should be updated so the recorded status, sequencing, and next steps stay accurate.
 
@@ -735,14 +735,11 @@ ______________________________________________________________________
 
 From the current repository state, the cleanest next sequence would be:
 
-1. finish Phase 5 by replacing any temporary pytest-driven Node bridge under `tests/unit/eval_dashboard/js/` with the permanent minimal JS-native runner
-1. add the JS-native dashboard logic-test command to CI as an explicit check
-1. re-validate the already extracted Phase 5 utility coverage under that permanent harness
 1. extract state/store helpers from `docs/eval-dashboard/assets/js/main.js`
-1. extract selectors and add selector tests under `tests/unit/eval_dashboard/js/`
-1. extract normalization/parsing and add normalization tests
+1. extract selectors and add selector tests under `tests/unit/eval_dashboard/js/` using `node --test tests/unit/eval_dashboard/js/*.test.mjs`
+1. extract normalization/parsing and add normalization tests under the same JS-native harness
 1. extract loaders, UI modules, and plot/export modules
 1. reduce `main.js` to orchestration only
 1. after each completed phase above, update the planning docs under `docs/eval-dashboard/` and confirm the landed changes comply with `CONTRIBUTING.md`
 
-That keeps the refactor incremental, builds directly on the already-landed migration, fixture, smoke-test, and CSS-extraction groundwork, finishes the remaining Phase 5 testing-seam work before deeper JS extraction, and preserves the test-first direction of the overall plan.
+That keeps the refactor incremental, builds directly on the already-landed migration, fixture, smoke-test, CSS-extraction, and Phase 5 JS-harness groundwork, and preserves the test-first direction of the overall plan while deeper JS extraction begins.

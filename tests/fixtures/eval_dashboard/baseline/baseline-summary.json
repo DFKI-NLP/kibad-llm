@@ -1,6 +1,6 @@
 {
-  "baseline_version": 2,
-  "captured_at": "2026-05-28",
+  "baseline_version": 3,
+  "captured_at": "2026-06-01",
   "implementation_shape": {
     "runtime_entrypoint": "docs/eval-dashboard/index.html",
     "compatibility_entrypoint": "docs/eval-dashboard.html",
@@ -26,7 +26,8 @@
       "values.js"
     ],
     "js_test_root": "tests/unit/eval_dashboard/js",
-    "js_test_strategy": "browser-free utility logic tests executed via pytest-driven Node.js module invocations"
+    "js_test_strategy": "browser-free utility logic tests executed via the Node.js built-in test runner",
+    "js_test_command": "node --test tests/unit/eval_dashboard/js/*.test.mjs"
   },
   "feature_expectations": {
     "supports_local_load": true,
