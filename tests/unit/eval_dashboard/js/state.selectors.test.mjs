@@ -152,6 +152,28 @@ test("selectors derive evaluation context and plot groups", () => {
 });
 
 /**
+ * Ensure default eval group-by selection still excludes dataset.predictions.log even
+ * when it is sourced from flattened job_return_value content.
+ */
+test("selectors exclude job_return_value.dataset.predictions.log from default eval group-by fields", () => {
+  const evalColumns = [`${JOB_RETURN_VALUE_PREFIX}dataset.predictions.log`, "split"];
+  const evaluations = [
+    {
+      runDir: "runs/eval-a1",
+      overrides: { split: "dev" },
+      jobReturnValue: { dataset: { predictions: { log: "very-large-log-a" } } },
+    },
+    {
+      runDir: "runs/eval-a2",
+      overrides: { split: "test" },
+      jobReturnValue: { dataset: { predictions: { log: "very-large-log-b" } } },
+    },
+  ];
+
+  assert.deepEqual(getDefaultEvalGroupByFields(evalColumns, evaluations), ["split"]);
+});
+
+/**
  * Ensure mixed metric types still fail early when deriving the active evaluation metric type.
  */
 test("selectors reject evaluation contexts with mixed metric types", () => {
