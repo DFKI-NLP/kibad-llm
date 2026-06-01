@@ -735,6 +735,9 @@ ______________________________________________________________________
 
 From the current repository state, the cleanest next sequence would be:
 
+1. finish Phase 5 by replacing any temporary pytest-driven Node bridge under `tests/unit/eval_dashboard/js/` with the permanent minimal JS-native runner
+1. add the JS-native dashboard logic-test command to CI as an explicit check
+1. re-validate the already extracted Phase 5 utility coverage under that permanent harness
 1. extract state/store helpers from `docs/eval-dashboard/assets/js/main.js`
 1. extract selectors and add selector tests under `tests/unit/eval_dashboard/js/`
 1. extract normalization/parsing and add normalization tests
@@ -742,4 +745,4 @@ From the current repository state, the cleanest next sequence would be:
 1. reduce `main.js` to orchestration only
 1. after each completed phase above, update the planning docs under `docs/eval-dashboard/` and confirm the landed changes comply with `CONTRIBUTING.md`
 
-That keeps the refactor incremental, builds directly on the already-landed migration, fixture, smoke-test, and CSS-extraction groundwork, and preserves the test-first direction of the overall plan.
+That keeps the refactor incremental, builds directly on the already-landed migration, fixture, smoke-test, and CSS-extraction groundwork, finishes the remaining Phase 5 testing-seam work before deeper JS extraction, and preserves the test-first direction of the overall plan.
