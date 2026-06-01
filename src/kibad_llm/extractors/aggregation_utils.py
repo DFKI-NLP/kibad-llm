@@ -16,6 +16,18 @@ class AggregationError(ValueError):
 
 
 def make_hashable_simple(value: Any) -> Any:
+    """Takes any pyObj and recursively makes it hashable.
+
+    list/ set: Are converted to sorted tuples, with their elements processed recursively.
+    tuples: Stay tuples, with their elements processed recursively.
+    dicts: Are converted to sorted tuples of (key, value) tuples, with the values processed recursively. The keys stay unchanged.
+
+    Args:
+        value: Obj to make hashable.
+
+    Returns:
+        Hashable version of the input value.
+    """
     if isinstance(value, (list, set)):
         # sort and remove None values
         return tuple(sorted(make_hashable_simple(v) for v in value if v is not None))
@@ -31,8 +43,8 @@ def make_hashable_simple(value: Any) -> Any:
 
 
 def collect_values_and_type_per_key(
-    structured_outputs: list[dict | None], skip_type_mismatches: bool = False
-) -> tuple[dict[str, list], dict[str, type | None]]:
+    structured_outputs: list[dict[str, Any] | None], skip_type_mismatches: bool = False
+) -> tuple[dict[str, list[Any]], dict[str, type | None]]:
     """Collect values and types per key from structured outputs.
 
     Args:
@@ -43,6 +55,8 @@ def collect_values_and_type_per_key(
         tuple of:
             - dict mapping keys to list of values
             - dict mapping keys to their consistent type (or None if all values are None)
+    Raises:
+        AggregationError: If a key has inconsistent types and skip_type_mismatches is False.
     """
     # collect all keys to correctly handle missing entries
     all_keys: set[str] = set()
@@ -73,8 +87,19 @@ def collect_values_and_type_per_key(
     return values_per_key, type_per_key
 
 
-def _majority_vote(values: list, exclude_none: bool = False) -> Any:
-    """Return the majority value from a list of values. Returns None on ties."""
+def _majority_vote(values: list[Any], exclude_none: bool = False) -> Any:
+    """Return the majority value from a list of values. Returns None on ties.
+
+    Args:
+        values: List of values from which to return the most common one. None on a tie.
+        exclude_none: Whether to exclude None values before voting.
+
+    Returns:
+        The most common value found in list or None on a tie.
+
+    Raises:
+        AggregationError: If values is an empty list.
+    """
     if len(values) == 0:
         raise AggregationError("Cannot perform majority vote on empty list")
     if exclude_none:
@@ -90,7 +115,7 @@ def _majority_vote(values: list, exclude_none: bool = False) -> Any:
     return top_value
 
 
-def _multi_entry_majority_vote(values: list[list | None]) -> list:
+def _multi_entry_majority_vote(values: list[list[Any] | None]) -> list[Any]:
     """Return the majority items from a list of lists.
 
     An item is included in the result if it appears in more than half of the lists.
@@ -98,9 +123,9 @@ def _multi_entry_majority_vote(values: list[list | None]) -> list:
     Works with lists of primitive types, and lists of dicts. Items that are None are ignored.
 
     Args:
-        values: list of lists (or None)
+        values: List of lists (or None).
     Returns:
-        list of majority items
+        List of majority items.
     """
     n = len(values)
     item_counts: Counter = Counter()
