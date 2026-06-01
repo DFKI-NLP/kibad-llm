@@ -1,3 +1,7 @@
+/**
+ * Browser-free logic tests for the eval-dashboard sorting utilities.
+ */
+
 import assert from "node:assert/strict";
 import test from "node:test";
 
@@ -7,6 +11,9 @@ import {
   sortItems,
 } from "../../../../docs/eval-dashboard/assets/js/utils/sort.js";
 
+/**
+ * Ensure sort normalization and stable ordering remain behavior-equivalent after extraction.
+ */
 test("sort helpers preserve normalization, blank-last ordering, and stable sorting", () => {
   const items = [
     { name: "item-1", value: "10" },

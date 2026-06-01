@@ -1,3 +1,7 @@
+/**
+ * Browser-free logic tests for the eval-dashboard text-formatting utilities.
+ */
+
 import assert from "node:assert/strict";
 import test from "node:test";
 
@@ -7,6 +11,9 @@ import {
   splitLabelByLastDot,
 } from "../../../../docs/eval-dashboard/assets/js/utils/text.js";
 
+/**
+ * Ensure plot-title shortening and export-filename sanitization stay unchanged.
+ */
 test("text helpers preserve plot-title and filename sanitization behavior", () => {
   assert.deepEqual(
     {

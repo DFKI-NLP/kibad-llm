@@ -1,3 +1,7 @@
+/**
+ * Browser-free logic tests for the eval-dashboard value utilities.
+ */
+
 import assert from "node:assert/strict";
 import test from "node:test";
 
@@ -13,6 +17,9 @@ import {
   normalizeValue,
 } from "../../../../docs/eval-dashboard/assets/js/utils/values.js";
 
+/**
+ * Ensure value normalization, missing-value handling, and defaulting stay unchanged.
+ */
 test("value helpers preserve normalization and defaulting behavior", () => {
   assert.equal(normalizeValue({ foo: "bar" }), '{"foo":"bar"}');
   assert.equal(isMissingValue("   "), true);
@@ -20,6 +27,9 @@ test("value helpers preserve normalization and defaulting behavior", () => {
   assert.deepEqual(collectSuggestionValues(["beta", "", "Alpha", "beta", null]), ["Alpha", "beta"]);
 });
 
+/**
+ * Ensure signature-building and numeric display helpers keep their current semantics.
+ */
 test("value helpers preserve signatures and numeric helper semantics", () => {
   assert.deepEqual(
     {
