@@ -698,6 +698,17 @@ It creates reusable building blocks and proves the dashboard can gain real logic
 - new JS logic tests pass under the chosen minimal JS-native runner
 - update the planning docs in `docs/eval-dashboard/` after the phase lands and confirm the utility/test changes comply with `CONTRIBUTING.md`
 
+### Phase 5 deliverables checklist
+
+Phase 5 is complete only when all of the following are true:
+
+- `docs/eval-dashboard/assets/js/utils/` contains the intended low-coupling utility modules extracted from `main.js`
+- `docs/eval-dashboard/assets/js/main.js` imports those utility modules without changing runtime behavior
+- `tests/unit/eval_dashboard/js/` is established as the long-term location for extracted dashboard JS logic tests
+- extracted dashboard JS logic tests run through the permanent minimal JS-native runner rather than a pytest-driven Node subprocess bridge
+- the JS-native dashboard logic-test command is wired into CI as an explicit check
+- the extracted Phase 5 utility coverage has been re-validated under that permanent harness
+
 ### Current Phase 5 state
 
 The current branch already covers much of the extraction part of this phase:
@@ -1285,7 +1296,7 @@ A sensible sequence from scratch would be:
 1. curated fixtures + initial smoke tests
 1. CSS extraction + structural asset checks
 1. external `main.js`
-1. utility extraction + first JS logic tests
+1. utility extraction + first JS logic tests + permanent minimal JS-native runner
 1. state/store extraction
 1. selector extraction + selector tests
 1. parse/normalize extraction + normalization tests
@@ -1300,10 +1311,10 @@ If needed, these can be grouped into fewer PRs:
 
 - PR 1: baseline artifact + folder move + links/redirects + curated fixtures + initial smoke tests
 - PR 2: CSS + external `main.js`
-- PR 3: utilities + state + selectors + parsing + normalization + logic tests
+- PR 3: utilities + permanent JS-native runner + state + selectors + parsing + normalization + logic tests
 - PR 4: loaders + UI modules + plot/export modules + final cleanup + coverage pass
 
-From the current repository state, work would resume at the `state/store extraction` step because the earlier baseline, migration, fixture, smoke-test, CSS-extraction, external-`main.js`, and first utility/logic-test work are already in place.
+From the current repository state, work should first finish the remaining Phase 5 testing-seam work — permanent minimal JS-native runner plus explicit CI wiring — before resuming at the `state/store extraction` step.
 
 After each completed PR or phase in that sequence, refresh the planning docs under `docs/eval-dashboard/` before moving on so the written plan keeps matching the repository state and `CONTRIBUTING.md` expectations.
 
