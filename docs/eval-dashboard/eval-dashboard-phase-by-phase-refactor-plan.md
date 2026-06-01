@@ -43,9 +43,9 @@ As of the current repository state:
 - `docs/eval-dashboard.html` is currently a temporary compatibility shim
 - `properdocs.yml` navigation points to `eval-dashboard/index.html`
 - `docs/index.md` links point to `eval-dashboard/index.html`
-- populated Phase 5 runtime assets now exist under `docs/eval-dashboard/assets/`: CSS lives under `assets/css/`, `assets/js/main.js` remains the external entry module, and first pure helpers now live under `assets/js/utils/`
+- populated Phase 6 runtime assets now exist under `docs/eval-dashboard/assets/`: CSS lives under `assets/css/`, `assets/js/main.js` remains the external entry module, pure helpers live under `assets/js/utils/`, and extracted canonical state/selector modules now live under `assets/js/state/`
 - structural smoke coverage now includes `tests/unit/eval_dashboard/test_eval_dashboard_entrypoint.py` and `tests/unit/eval_dashboard/test_eval_dashboard_html_contracts.py`
-- first browser-free JS utility logic coverage now exists under `tests/unit/eval_dashboard/js/` via the Node.js built-in test runner, which is now the long-term home for extracted dashboard logic tests in later phases
+- browser-free JS utility, store, and selector logic coverage now exists under `tests/unit/eval_dashboard/js/` via the Node.js built-in test runner, which remains the long-term home for extracted dashboard logic tests in later phases
 - curated Phase 2 fixtures now exist under `tests/fixtures/eval_dashboard/`, including valid version-0/1/2 examples, invalid edge-case fixtures, and explicit fixtures for all currently supported plot families (`bars`, `errors`, `confusion_matrix`, `tpfpfn`)
 - fixture provenance is documented in `tests/fixtures/eval_dashboard/README.md`
 - fixture integrity smoke coverage exists at `tests/unit/eval_dashboard/test_dashboard_fixtures.py`
@@ -54,11 +54,11 @@ As of the current repository state:
 - Phase 3 CSS extraction remains complete: `docs/eval-dashboard/index.html` still loads `assets/css/index.css` and contains no inline `<style>` block
 - Phase 4 JS externalization is complete: `docs/eval-dashboard/index.html` now loads `assets/js/main.js` as a single external `type="module"` script and contains no inline `<script>` block
 - the structural smoke tests now assert the external CSS and external module-script contract rather than a Phase 3 inline-script freeze
-- the baseline contract now records the Phase 5 utility-module and JS-test harness contract instead of freezing the full `main.js` file contents
+- the baseline contract now records both the Phase 5 utility-module contract and the Phase 6 state/store + selector-module contract instead of freezing the full `main.js` file contents
 
 ### Status checkpoint
 
-The repository is currently **through Phase 5 and ready for Phase 6**:
+The repository is currently **through Phase 6 and ready for Phase 7**:
 
 - Phase 0 baseline artifacts landed
 - Phase 1 folder migration and compatibility shim landed
@@ -66,8 +66,9 @@ The repository is currently **through Phase 5 and ready for Phase 6**:
 - Phase 3 CSS extraction and HTML contract guardrails landed
 - Phase 4 JS externalization landed
 - Phase 5 utility extraction, the permanent JS-native logic-test runner, and explicit CI wiring landed
+- Phase 6 state/store extraction, selector extraction, and selector/store logic tests landed
 
-That means the next implementation step is to **start Phase 6** by extracting state and selector logic while extending the same JS-native test harness.
+That means the next implementation step is to **start Phase 7** by extracting parsing and normalization logic while extending the same JS-native test harness.
 
 ______________________________________________________________________
 
@@ -742,6 +743,8 @@ ______________________________________________________________________
 
 ## Phase 6. Extract state and selectors, then add selector tests
 
+**Status in current repository:** completed.
+
 ### Goal
 
 Separate canonical state from derived data access and test the derived logic early.
@@ -819,6 +822,16 @@ Focus on:
 ### Why this phase matters
 
 This is the major step that makes the dashboard testable at the logic layer.
+
+### Landed Phase 6 outcome
+
+The current branch now matches this phase:
+
+- `docs/eval-dashboard/assets/js/state/` contains `store.js` and `selectors.js`
+- `docs/eval-dashboard/assets/js/main.js` now bootstraps the canonical dashboard state via `store.js` and delegates the extracted derived-read helpers to `selectors.js` while keeping runtime behavior equivalent
+- `tests/unit/eval_dashboard/js/state.store.test.mjs` covers state initialization, selection synchronization, eval-tab-state normalization, and post-load reset behavior
+- `tests/unit/eval_dashboard/js/state.selectors.test.mjs` covers prediction grouping, evaluation-context derivation, plot-group derivation, and mixed-metric error handling under the same Node.js-native harness established in Phase 5
+- `tests/unit/eval_dashboard/test_eval_dashboard_entrypoint.py`, `tests/unit/eval_dashboard/test_eval_dashboard_baseline_contract.py`, and `tests/fixtures/eval_dashboard/baseline/baseline-summary.json` now record the Phase 6 state-module contract
 
 ### Validation checklist
 
@@ -1372,13 +1385,10 @@ ______________________________________________________________________
 
 Given the current repository state, the safest next implementation step is:
 
-1. if `tests/unit/eval_dashboard/js/` still relies on a temporary pytest-driven Node bridge, replace it with the permanent minimal JS-native logic-test runner first
-1. add the JS-native dashboard logic-test command to CI as an explicit check
-1. re-validate the already extracted Phase 5 utility coverage under that permanent harness
-1. then extract the canonical mutable dashboard state from `docs/eval-dashboard/assets/js/main.js` into `docs/eval-dashboard/assets/js/state/store.js`
-1. begin moving derived-read helpers into `docs/eval-dashboard/assets/js/state/selectors.js`
-1. add selector/state logic coverage under `tests/unit/eval_dashboard/js/` as those seams become importable
-1. keep `main.js` behavior-equivalent while beginning the Phase 6 state/selector split
-1. update the planning docs in `docs/eval-dashboard/` after Phase 6 lands and confirm the change set complies with `CONTRIBUTING.md`
+1. extract `.hydra/overrides.yaml` parsing helpers into `docs/eval-dashboard/assets/js/data/parse-overrides.js`
+1. extract `job_return_value.json` version handling and canonical normalization into `docs/eval-dashboard/assets/js/data/normalize.js`
+1. add `data.parse-overrides.test.mjs` and `data.normalize.test.mjs` coverage under `tests/unit/eval_dashboard/js/`
+1. keep `main.js` behavior-equivalent while beginning the Phase 7 parse/normalize split
+1. update the planning docs in `docs/eval-dashboard/` after Phase 7 lands and confirm the change set complies with `CONTRIBUTING.md`
 
-That finishes the remaining Phase 5 testing-seam work before continuing with the next smallest behavior-preserving extraction boundary: Python for structural/docs/fixture smoke coverage, and a minimal JS-native runner for extracted dashboard logic.
+That continues the next smallest behavior-preserving extraction boundary after Phase 6: keep Python for structural/docs/fixture smoke coverage, and keep the minimal JS-native runner for extracted dashboard logic.

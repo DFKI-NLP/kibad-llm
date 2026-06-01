@@ -1,4 +1,4 @@
-"""Baseline artifact contract tests for the eval-dashboard baseline and Phase 5 JS-test contract."""
+"""Baseline artifact contract tests for the eval-dashboard baseline plus Phase 5 and Phase 6 JS contracts."""
 
 import json
 
@@ -12,6 +12,7 @@ CSS_ROOT = PROJ_ROOT / "docs" / "eval-dashboard" / "assets" / "css"
 JS_ROOT = PROJ_ROOT / "docs" / "eval-dashboard" / "assets" / "js"
 CSS_ENTRY = CSS_ROOT / "index.css"
 MAIN_JS_ENTRY = JS_ROOT / "main.js"
+STATE_JS_ROOT = JS_ROOT / "state"
 UTILS_JS_ROOT = JS_ROOT / "utils"
 TOKENS_CSS = CSS_ROOT / "tokens.css"
 BASELINE_SUMMARY = FIXTURE_DATA_ROOT / "eval_dashboard" / "baseline" / "baseline-summary.json"
@@ -150,6 +151,41 @@ def test_baseline_summary_includes_phase_five_utility_contract() -> None:
     }
 
 
+def test_baseline_summary_includes_phase_six_state_contract() -> None:
+    """Ensure the baseline artifact exposes the Phase 6 state/store extraction contract."""
+
+    summary = _baseline_summary()
+    phase_six_contract = summary["phase_six_contract"]
+
+    assert phase_six_contract["state_module_root"] == "docs/eval-dashboard/assets/js/state"
+    assert set(phase_six_contract["state_modules"]) == {"selectors.js", "store.js"}
+    assert set(phase_six_contract["js_test_files"]) == {
+        "state.selectors.test.mjs",
+        "state.store.test.mjs",
+    }
+
+
+def test_current_runtime_matches_phase_six_state_contract() -> None:
+    """Ensure the extracted Phase 6 state modules and selector/store tests exist and are wired into main.js."""
+
+    summary = _baseline_summary()
+    phase_six_contract = summary["phase_six_contract"]
+    main_js = _main_js_entry()
+
+    for file_name in phase_six_contract["state_modules"]:
+        assert (STATE_JS_ROOT / file_name).is_file()
+    for import_path in ("./state/store.js", "./state/selectors.js"):
+        assert import_path in main_js
+    for file_name in phase_six_contract["js_test_files"]:
+        assert (JS_TEST_ROOT / file_name).is_file()
+    assert set(phase_six_contract["selector_focus"]) == {
+        "prediction grouping",
+        "evaluation context derivation",
+        "plot-group derivation",
+        "selection-state synchronization",
+    }
+
+
 def test_current_runtime_matches_phase_five_utility_contract() -> None:
     """Ensure the extracted Phase 5 utility modules and JS-native test assets exist."""
 
@@ -166,8 +202,8 @@ def test_current_runtime_matches_phase_five_utility_contract() -> None:
     assert (PROJ_ROOT / phase_five_contract["js_test_root"]).is_dir()
     for file_name in phase_five_contract["js_test_files"]:
         assert (JS_TEST_ROOT / file_name).is_file()
-    assert {path.name for path in JS_TEST_ROOT.glob("*.test.mjs")} == set(
-        phase_five_contract["js_test_files"]
+    assert set(phase_five_contract["js_test_files"]).issubset(
+        {path.name for path in JS_TEST_ROOT.glob("*.test.mjs")}
     )
     assert JS_PACKAGE_JSON.is_file()
     assert js_package == {"type": "module"}
