@@ -10,6 +10,8 @@ import {
   EVALUATION_PREFIX,
   JOB_RETURN_VALUE_PREFIX,
   getCurrentPredictionColumns,
+  getEvaluationColumnRawValue,
+  getEvaluationGroups,
   getDefaultEvalGroupByFields,
   getDefaultGroupByFields,
   getDisplayedSelectionState,
@@ -171,6 +173,197 @@ test("selectors exclude job_return_value.dataset.predictions.log from default ev
   ];
 
   assert.deepEqual(getDefaultEvalGroupByFields(evalColumns, evaluations), ["split"]);
+});
+
+/**
+ * Ensure all equivalent dataset.predictions.log-style eval columns stay excluded from
+ * default eval group-by selection after the Phase 6 extraction.
+ */
+test("selectors exclude dataset.predictions.log across equivalent eval column shapes", () => {
+  const evalColumns = [
+    "dataset.predictions.log",
+    "overrides.dataset.predictions.log",
+    `${JOB_RETURN_VALUE_PREFIX}dataset.predictions.log`,
+    `${EVALUATION_PREFIX}dataset.predictions.log`,
+    `${EVALUATION_PREFIX}${JOB_RETURN_VALUE_PREFIX}dataset.predictions.log`,
+    "split",
+  ];
+  const evaluations = [
+    {
+      runDir: "runs/eval-a1",
+      overrides: {
+        split: "dev",
+        "dataset.predictions.log": "raw-log-a",
+        "overrides.dataset.predictions.log": "override-log-a",
+      },
+      jobReturnValue: { dataset: { predictions: { log: "job-log-a" } } },
+    },
+    {
+      runDir: "runs/eval-a2",
+      overrides: {
+        split: "test",
+        "dataset.predictions.log": "raw-log-b",
+        "overrides.dataset.predictions.log": "override-log-b",
+      },
+      jobReturnValue: { dataset: { predictions: { log: "job-log-b" } } },
+    },
+  ];
+
+  assert.deepEqual(getDefaultEvalGroupByFields(evalColumns, evaluations), ["split"]);
+});
+
+/**
+ * Ensure evaluation column access resolves run-dir, job-return-value, override, and
+ * missing fields through the extracted selector helper.
+ */
+test("selectors resolve raw evaluation column values across supported namespaces", () => {
+  const evaluation = {
+    runDir: "runs/eval-a1",
+    overrides: { split: "dev", "dataset.predictions.log": "raw-log" },
+    jobReturnValue: { score: 0.8, nested: { leaf: "value" } },
+  };
+
+  assert.equal(getEvaluationColumnRawValue(evaluation, "eval_run_dir"), "runs/eval-a1");
+  assert.equal(getEvaluationColumnRawValue(evaluation, "split"), "dev");
+  assert.equal(getEvaluationColumnRawValue(evaluation, "dataset.predictions.log"), "raw-log");
+  assert.equal(getEvaluationColumnRawValue(evaluation, `${JOB_RETURN_VALUE_PREFIX}score`), 0.8);
+  assert.equal(
+    getEvaluationColumnRawValue(evaluation, `${EVALUATION_PREFIX}${JOB_RETURN_VALUE_PREFIX}nested.leaf`),
+    "value"
+  );
+  assert.equal(getEvaluationColumnRawValue(evaluation, "missing.field"), undefined);
+});
+
+/**
+ * Ensure prediction-view derivation ignores evaluations whose prediction id no longer
+ * exists in canonical prediction state.
+ */
+test("selectors ignore orphaned evaluations when building prediction views", () => {
+  const state = createInitialDashboardState();
+  state.predictions = {
+    "pred-a": {
+      overrides: { model: "alpha" },
+      jobReturnValue: { output_file: "pred-a.json" },
+    },
+  };
+  state.evaluations = [
+    {
+      runDir: "runs/eval-a1",
+      predictionId: "pred-a",
+      overrides: { "experiment/evaluate": "f1_micro" },
+      jobReturnValue: { type: "F1MicroMultipleFieldsMetric" },
+      data: {},
+    },
+    {
+      runDir: "runs/eval-missing",
+      predictionId: "missing-prediction",
+      overrides: { "experiment/evaluate": "f1_micro" },
+      jobReturnValue: { type: "F1MicroMultipleFieldsMetric" },
+      data: {},
+    },
+  ];
+
+  const predictionViews = getPredictionViews(state);
+
+  assert.equal(predictionViews.length, 1);
+  assert.equal(predictionViews[0].predictionId, "pred-a");
+  assert.deepEqual(predictionViews[0].evaluations.map((evaluation) => evaluation.runDir), ["runs/eval-a1"]);
+});
+
+/**
+ * Ensure grouping semantics continue to respect configured effective default values.
+ */
+test("selectors group predictions and evaluations by effective default values", () => {
+  const state = createInitialDashboardState();
+  state.predictions = {
+    "pred-a": {
+      overrides: {},
+      jobReturnValue: { output_file: "pred-a.json" },
+    },
+    "pred-b": {
+      overrides: { variant: "fallback" },
+      jobReturnValue: { output_file: "pred-b.json" },
+    },
+  };
+  state.evaluations = [
+    {
+      runDir: "runs/eval-a1",
+      predictionId: "pred-a",
+      overrides: { "experiment/evaluate": "f1_micro" },
+      jobReturnValue: { type: "F1MicroMultipleFieldsMetric" },
+      data: {},
+    },
+    {
+      runDir: "runs/eval-b1",
+      predictionId: "pred-b",
+      overrides: { "experiment/evaluate": "f1_micro", split: "fallback" },
+      jobReturnValue: { type: "F1MicroMultipleFieldsMetric" },
+      data: {},
+    },
+  ];
+
+  state.predictionDefaultValues["prediction.overrides.variant"] = "fallback";
+  const predictionViews = getPredictionViews(state);
+  const predictionGroups = getPredictionGroups(
+    state,
+    predictionViews,
+    ["prediction.overrides.variant"],
+    ["prediction.overrides.variant"]
+  );
+
+  assert.equal(predictionGroups.length, 1);
+  assert.equal(predictionGroups[0].groupId, "prediction.overrides.variant=fallback");
+  assert.equal(predictionGroups[0].predictions.length, 2);
+
+  const evalTabState = {
+    defaultValues: { split: "fallback" },
+    selectedGroupIds: new Set(),
+    expandedGroupIds: new Set(),
+    sort: [],
+  };
+  const evaluationGroups = getEvaluationGroups(state, state.evaluations, ["split"], [], evalTabState);
+
+  assert.equal(evaluationGroups.length, 1);
+  assert.equal(evaluationGroups[0].groupId, "eval.split=fallback");
+  assert.equal(evaluationGroups[0].evaluations.length, 2);
+});
+
+/**
+ * Ensure empty selection and empty active-evaluation states still derive a stable,
+ * non-throwing evaluation context.
+ */
+test("selectors derive empty evaluation contexts without crashing", () => {
+  const state = buildState();
+
+  assert.equal(getEvaluationContext(state), null);
+  assert.deepEqual(getSelectedEvaluationGroups(state), []);
+
+  state.activeEvalTab = "f1_micro";
+  const evaluationContext = getEvaluationContext(state);
+
+  assert.equal(evaluationContext.activeExperiment, "f1_micro");
+  assert.deepEqual(evaluationContext.experimentEvaluations, []);
+  assert.deepEqual(evaluationContext.evalColumns, []);
+  assert.deepEqual(evaluationContext.evaluationGroups, []);
+  assert.deepEqual(getSelectedEvaluationGroups(state, evaluationContext), []);
+  assert.equal(getMetricTypeForEvaluationContext(state, "f1_micro", evaluationContext), "");
+});
+
+/**
+ * Ensure plot-group derivation falls back to evaluation run dirs when neither prediction
+ * nor evaluation grouping contributes any plot-group fields.
+ */
+test("selectors fall back to runDir when plot groups have no grouping fields", () => {
+  const state = buildState();
+  const selectedEvalGroups = [{ evaluations: state.evaluations.slice(0, 2) }];
+
+  const plotGroups = getPlotGroups(state, "f1_micro", selectedEvalGroups, [], { defaultValues: {} });
+
+  assert.deepEqual(plotGroups.fields, []);
+  assert.deepEqual(
+    plotGroups.groups.map((group) => group.groupId).sort(),
+    ["runs/eval-a1", "runs/eval-a2"]
+  );
 });
 
 /**

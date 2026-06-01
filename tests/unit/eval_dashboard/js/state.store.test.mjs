@@ -10,6 +10,8 @@ import {
   createInitialDashboardState,
   ensureEvalTabState,
   resetDerivedUiStateAfterLoad,
+  syncEvaluationGroupUiState,
+  syncPredictionGroupUiState,
   syncSelectedGroupIds,
 } from "../../../../docs/eval-dashboard/assets/js/state/store.js";
 
@@ -46,6 +48,23 @@ test("store syncs selected group ids against current valid ids", () => {
 });
 
 /**
+ * Ensure prediction-group UI state auto-selects all currently valid groups when the
+ * persisted selection state is still uninitialized.
+ */
+test("store auto-selects all prediction groups when selection starts as null", () => {
+  const state = createInitialDashboardState();
+  state.selectedGroupIds = null;
+  state.availableGroupIds = new Set(["old-group"]);
+  state.expandedGroupIds = new Set(["stale-group", "group-b"]);
+
+  syncPredictionGroupUiState(state, [{ groupId: "group-a" }, { groupId: "group-b" }]);
+
+  assert.deepEqual([...state.selectedGroupIds].sort(), ["group-a", "group-b"]);
+  assert.deepEqual([...state.availableGroupIds].sort(), ["group-a", "group-b"]);
+  assert.deepEqual([...state.expandedGroupIds], ["group-b"]);
+});
+
+/**
  * Ensure evaluation-tab state initialization and normalization stay behavior-equivalent after extraction.
  */
 test("store initializes and normalizes eval-tab state", () => {
@@ -79,6 +98,63 @@ test("store initializes and normalizes eval-tab state", () => {
   assert.deepEqual(normalizedTabState.groupByFields.sort(), ["alpha", "gamma"]);
   assert.deepEqual(normalizedTabState.sort, [{ column: "alpha", direction: "asc" }]);
   assert.deepEqual([...normalizedTabState.truncateEnabledColumns].sort(), ["alpha", "eval_run_dir"]);
+});
+
+/**
+ * Ensure malformed persisted eval-tab state is normalized back into the canonical shape.
+ */
+test("store repairs malformed persisted eval-tab state", () => {
+  const state = createInitialDashboardState();
+  state.evalTabStates["exp-a"] = {
+    knownColumns: ["alpha"],
+    groupByFields: "alpha",
+    sort: { column: "alpha", direction: "desc" },
+    truncateEnabledColumns: ["alpha"],
+    defaultValues: "invalid",
+    activeOptionsTab: "",
+    availableGroupIds: ["group-a"],
+    expandedGroupIds: { bad: true },
+  };
+
+  const normalizedTabState = ensureEvalTabState(state, "exp-a", ["alpha"], {
+    evaluations: [{ overrides: { alpha: "x" } }],
+  });
+
+  assert.deepEqual(normalizedTabState.groupByFields, []);
+  assert.deepEqual(normalizedTabState.sort, []);
+  assert.ok(normalizedTabState.truncateEnabledColumns instanceof Set);
+  assert.deepEqual([...normalizedTabState.truncateEnabledColumns], []);
+  assert.deepEqual(normalizedTabState.defaultValues, {});
+  assert.equal(normalizedTabState.activeOptionsTab, "truncate");
+  assert.ok(normalizedTabState.availableGroupIds instanceof Set);
+  assert.deepEqual([...normalizedTabState.availableGroupIds], []);
+  assert.ok(normalizedTabState.expandedGroupIds instanceof Set);
+  assert.deepEqual([...normalizedTabState.expandedGroupIds], []);
+});
+
+/**
+ * Ensure evaluation-group UI state clears stale group and run selections after regrouping.
+ */
+test("store clears stale evaluation selections and run targets after regrouping", () => {
+  const evalTabState = {
+    selectedGroupIds: null,
+    availableGroupIds: new Set(["old-group"]),
+    expandedGroupIds: new Set(["stale-group", "group-b"]),
+    selectedEvalGroupId: "stale-group",
+    selectedEvalRunDir: "runs/stale",
+  };
+
+  syncEvaluationGroupUiState(
+    evalTabState,
+    [{ groupId: "group-a" }, { groupId: "group-b" }],
+    [{ runDir: "runs/a" }, { runDir: "runs/b" }]
+  );
+
+  assert.deepEqual([...evalTabState.selectedGroupIds].sort(), ["group-a", "group-b"]);
+  assert.deepEqual([...evalTabState.availableGroupIds].sort(), ["group-a", "group-b"]);
+  assert.deepEqual([...evalTabState.expandedGroupIds], ["group-b"]);
+  assert.equal(evalTabState.selectedEvalGroupId, null);
+  assert.equal(evalTabState.selectedEvalRunDir, null);
 });
 
 /**
