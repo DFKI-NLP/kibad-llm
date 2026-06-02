@@ -23,6 +23,7 @@ import {
   buildOptionsPanelModels,
   getToggleOnlyColumns,
   renderPlotControls,
+  renderPlotGroupBarChips,
   renderGroupByButtonState,
   renderOptionsPanelControls,
 } from "./ui/controls.js";
@@ -3085,36 +3086,6 @@ function createTpFpFnCombinedMatrixSvg(aggregation, precision) {
   return svg;
 }
 
-function renderGroupBarChips(varyingGroupByFields, activeExperiment) {
-  if (varyingGroupByFields.length === 0) {
-    const noOptions = document.createElement("span");
-    noOptions.className = "hint";
-    noOptions.textContent = "No varying group-by columns available.";
-    plotGroupBarsList.appendChild(noOptions);
-  } else {
-    for (const field of varyingGroupByFields) {
-      const chip = document.createElement("label");
-      chip.className = "truncate-item";
-      const checkbox = document.createElement("input");
-      checkbox.type = "checkbox";
-      checkbox.checked = state.plotGroupBarFields.has(field);
-      checkbox.addEventListener("change", () => {
-        if (checkbox.checked) {
-          state.plotGroupBarFields.add(field);
-        } else {
-          state.plotGroupBarFields.delete(field);
-        }
-        renderEvaluationPlots(activeExperiment);
-      });
-      const text = document.createElement("span");
-      text.textContent = displayPlotGroupFieldName(field);
-      chip.appendChild(checkbox);
-      chip.appendChild(text);
-      plotGroupBarsList.appendChild(chip);
-    }
-  }
-}
-
 function buildPlotEntries(metricPaths, plotGroups, groupBarFields, categoryFields) {
   const entries = [];
   for (const metricPath of metricPaths) {
@@ -3585,7 +3556,21 @@ function renderEvaluationPlots(
   state.plotGroupBarFields = new Set(
     Array.from(state.plotGroupBarFields).filter((field) => new Set(varyingGroupByFields).has(field))
   );
-  renderGroupBarChips(varyingGroupByFields, activeExperiment);
+  renderPlotGroupBarChips({
+    documentLike: document,
+    listElement: plotGroupBarsList,
+    availableFields: varyingGroupByFields,
+    checkedValues: state.plotGroupBarFields,
+    getLabel: displayPlotGroupFieldName,
+    onToggle: (field, checked) => {
+      if (checked) {
+        state.plotGroupBarFields.add(field);
+      } else {
+        state.plotGroupBarFields.delete(field);
+      }
+      renderEvaluationPlots(activeExperiment);
+    },
+  });
 
   const groupBarFields = varyingGroupByFields.filter((field) => state.plotGroupBarFields.has(field));
   const categoryFields = varyingGroupByFields.filter((field) => !groupBarFields.includes(field));

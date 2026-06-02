@@ -15,6 +15,7 @@ import {
   renderMissingDefaultControls,
   renderOptionsPanelControls,
   renderPlotControls,
+  renderPlotGroupBarChips,
 } from "../../../../docs/eval-dashboard/assets/js/ui/controls.js";
 
 /**
@@ -387,6 +388,52 @@ test("renderOptionsPanelControls renders checkbox and default sections through s
   defaultInput.value = "fallback";
   defaultInput.listeners.get("change")();
   assert.deepEqual(commits, [{ column: "prediction.language", nextValue: "fallback" }]);
+});
+
+test("renderPlotGroupBarChips renders an empty-state hint when no varying fields are available", () => {
+  const documentLike = createDocumentStub();
+  const listElement = new FakeElement("div");
+
+  renderPlotGroupBarChips({
+    documentLike,
+    listElement,
+    availableFields: [],
+    checkedValues: [],
+    onToggle() {},
+  });
+
+  assert.equal(listElement.children.length, 1);
+  assert.equal(listElement.children[0].className, "hint");
+  assert.equal(listElement.children[0].textContent, "No varying group-by columns available.");
+});
+
+test("renderPlotGroupBarChips renders toggle chips and forwards changes", () => {
+  const documentLike = createDocumentStub();
+  const listElement = new FakeElement("div");
+  const toggles = [];
+
+  renderPlotGroupBarChips({
+    documentLike,
+    listElement,
+    availableFields: ["prediction.run_dir", "prediction.language"],
+    checkedValues: new Set(["prediction.language"]),
+    getLabel: (field) => `Plot:${field}`,
+    onToggle(field, checked) {
+      toggles.push({ field, checked });
+    },
+  });
+
+  assert.equal(listElement.children.length, 2);
+  const firstCheckbox = listElement.children[0].children[0];
+  const firstText = listElement.children[0].children[1];
+  const secondCheckbox = listElement.children[1].children[0];
+  assert.equal(firstText.textContent, "Plot:prediction.run_dir");
+  assert.equal(firstCheckbox.checked, false);
+  assert.equal(secondCheckbox.checked, true);
+
+  firstCheckbox.checked = true;
+  firstCheckbox.listeners.get("change")();
+  assert.deepEqual(toggles, [{ field: "prediction.run_dir", checked: true }]);
 });
 
 test("renderPlotControls synchronizes button state, input values, and plot-control row visibility", () => {

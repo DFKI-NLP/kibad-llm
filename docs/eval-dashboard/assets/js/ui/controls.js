@@ -233,6 +233,47 @@ export function renderPlotControls({
 }
 
 /**
+ * Render grouped-bar field toggle chips for the plot-control surface.
+ *
+ * @param {object} options - Plot group-bar chip render inputs.
+ * @param {Document} options.documentLike - Document-like element factory.
+ * @param {HTMLElement | null} options.listElement - Container receiving the chips.
+ * @param {Iterable<string>} options.availableFields - Group-by fields that can be toggled.
+ * @param {Iterable<string>} [options.checkedValues=[]] - Currently active grouped-bar fields.
+ * @param {(field: string) => string} [options.getLabel] - Field-label formatter.
+ * @param {(field: string, checked: boolean) => void} options.onToggle - Toggle callback.
+ * @returns {void}
+ */
+export function renderPlotGroupBarChips({
+  documentLike,
+  listElement,
+  availableFields,
+  checkedValues = [],
+  getLabel = (field) => String(field),
+  onToggle,
+}) {
+  if (!listElement) {
+    return;
+  }
+  listElement.innerHTML = "";
+  const resolvedFields = Array.from(availableFields || []);
+  if (!resolvedFields.length) {
+    const noOptions = documentLike.createElement("span");
+    noOptions.className = "hint";
+    noOptions.textContent = "No varying group-by columns available.";
+    listElement.appendChild(noOptions);
+    return;
+  }
+  renderCheckboxOptionList({
+    documentLike,
+    listElement,
+    options: buildColumnOptions(resolvedFields, getLabel),
+    checkedValues,
+    onToggle,
+  });
+}
+
+/**
  * Render a checkbox list for truncate/group-like option controls.
  *
  * @param {object} options - Checkbox-list render inputs.

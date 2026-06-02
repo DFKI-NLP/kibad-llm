@@ -1366,9 +1366,9 @@ docs/eval-dashboard/assets/js/ui/
 The current branch now matches Phase 10A:
 
 - `docs/eval-dashboard/assets/js/ui/` now contains `controls.js`, `tabs.js`, and `eval-json-pane.js` alongside the Phase 9 `dom.js`, `table-shared.js`, and `status.js` helpers
-- `docs/eval-dashboard/assets/js/main.js` now delegates experiment-tab rendering plus cached options-tab state to `ui/tabs.js`, prediction/evaluation truncate/default/group-by control rendering plus the thin plot-control surface to `ui/controls.js`, and eval JSON-pane highlighting/content-selection rendering to `ui/eval-json-pane.js`
+- `docs/eval-dashboard/assets/js/main.js` now delegates experiment-tab rendering plus cached options-tab state to `ui/tabs.js`, prediction/evaluation truncate/default/group-by control rendering plus the thin plot-control surface (including grouped-bar field chips) to `ui/controls.js`, and eval JSON-pane highlighting/content-selection rendering to `ui/eval-json-pane.js`
 - `tests/unit/eval_dashboard/js/ui.tabs.test.mjs` locks in active-tab resolution, plain tab-button view-model derivation, shared tab-button rendering, and cached tab-state synchronization
-- `tests/unit/eval_dashboard/js/ui.controls.test.mjs` locks in column-option derivation, toggle-only group-by selection, default-control view-model derivation, group-by button enable/disable behavior, the thin plot-control rendering state, and shared checkbox-list rendering semantics
+- `tests/unit/eval_dashboard/js/ui.controls.test.mjs` locks in column-option derivation, toggle-only group-by selection, default-control view-model derivation, group-by button enable/disable behavior, the thin plot-control rendering state including grouped-bar field chips, and shared checkbox-list rendering semantics
 - `tests/unit/eval_dashboard/js/ui.eval-json-pane.test.mjs` locks in HTML escaping, JSON highlighting, selected evaluation/group content resolution, and split-pane tab-state rendering
 - `tests/unit/eval_dashboard/test_eval_dashboard_entrypoint.py`, `tests/unit/eval_dashboard/test_eval_dashboard_baseline_contract.py`, `tests/unit/eval_dashboard/js/README.md`, and `tests/fixtures/eval_dashboard/baseline/baseline-summary.json` now record the Phase 10A UI-module contract explicitly
 
@@ -1424,7 +1424,7 @@ Prefer JS-native tests for renderer-adjacent helpers that stay DOM-free.
 For Phase 10A, the best candidates are:
 
 - `ui.tabs.test.mjs` for active-tab resolution and shared tab-button state derivation
-- `ui.controls.test.mjs` for control-state/view-model helpers such as truncate/default/group-by summaries
+- `ui.controls.test.mjs` for control-state/view-model helpers such as truncate/default/group-by summaries and thin plot-control toggles
 - `ui.eval-json-pane.test.mjs` for HTML escaping, JSON highlighting, and selected-content resolution
 
 For Phase 10B, add JS-native tests only if the table extraction yields stable DOM-free seams such as:
@@ -1463,7 +1463,7 @@ Move plotting, SVG generation, legend handling, and export/download logic into d
 
 This phase should be more specific than the previous plan version: extract the DOM-free aggregation/tab-map/normalization helpers first, then layer the SVG/DOM rendering helpers on top.
 
-If Phase 10A intentionally leaves plot-control rendering in `main.js` to avoid premature coupling, move that plot-control UI at the start of this phase alongside the plot modules rather than forcing it back into the earlier UI step.
+The thin plot-control UI now lives with the other Phase 10A controls. Phase 11 should focus on the remaining plot aggregation, SVG rendering, legend, and export logic rather than pulling basic control rendering back out of `ui/controls.js`.
 
 ### Tasks
 

@@ -169,8 +169,13 @@ def test_main_module_delegates_thin_plot_control_rendering_to_controls_helper() 
     main_js = _main_js()
 
     assert "renderPlotControls," in main_js
+    assert "renderPlotGroupBarChips," in main_js
     assert "function renderPlotControls(" not in main_js
+    assert "function renderGroupBarChips(" not in main_js
     assert main_js.count("renderPlotControls({") == 3
+    assert main_js.count("renderPlotGroupBarChips({") == 1
     assert "plotTabsByPrefixButton," in main_js
     assert "plotConfusionTabsByRow," in main_js
     assert "plotShowLegendOnceRow," in main_js
+    assert "listElement: plotGroupBarsList" in main_js
+    assert "getLabel: displayPlotGroupFieldName" in main_js
