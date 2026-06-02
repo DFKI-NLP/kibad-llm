@@ -1,5 +1,5 @@
 {
-  "baseline_version": 8,
+  "baseline_version": 9,
   "captured_at": "2026-06-02",
   "implementation_shape": {
     "runtime_entrypoint": "docs/eval-dashboard/index.html",
@@ -112,6 +112,24 @@
       "shared table sort/truncation/sticky helpers",
       "status and progress DOM rendering",
       "github token persistence and git_url query-parameter synchronization"
+    ]
+  },
+  "phase_ten_a_contract": {
+    "ui_module_root": "docs/eval-dashboard/assets/js/ui",
+    "ui_modules": [
+      "controls.js",
+      "eval-json-pane.js",
+      "tabs.js"
+    ],
+    "js_test_files": [
+      "ui.controls.test.mjs",
+      "ui.eval-json-pane.test.mjs",
+      "ui.tabs.test.mjs"
+    ],
+    "focus": [
+      "experiment-tab active-state resolution and shared tab-button rendering",
+      "prediction and evaluation truncate/default/group-by control rendering",
+      "eval json pane highlighting and selected-content resolution"
     ]
   },
   "feature_expectations": {

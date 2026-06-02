@@ -18,7 +18,16 @@ import {
   runGitUrlQueryParamBootstrap,
   setGitUrlQueryParam,
 } from "./browser/session.js";
-import { captureDomRefs, setPanelVisibility, syncTabButtonsAndPanels } from "./ui/dom.js";
+import { captureDomRefs, setPanelVisibility } from "./ui/dom.js";
+import {
+  buildColumnOptions,
+  buildMissingDefaultControlModels,
+  getToggleOnlyColumns,
+  renderCheckboxOptionList,
+  renderGroupByButtonState,
+  renderMissingDefaultControls,
+} from "./ui/controls.js";
+import { renderEvalJsonPane } from "./ui/eval-json-pane.js";
 import {
   createSortButton as createSharedSortButton,
   createTruncatingCell as createSharedTruncatingCell,
@@ -27,6 +36,12 @@ import {
   getNextSortConfig as getSharedNextSortConfig,
   updateStickyControlColumnOffsets,
 } from "./ui/table-shared.js";
+import {
+  buildTabButtonModels,
+  renderStaticTabState,
+  renderTabButtons,
+  resolveActiveTabValue,
+} from "./ui/tabs.js";
 import {
   clearLoadProgress,
   renderDownloadFiguresButtonState,
@@ -747,41 +762,6 @@ const evalPlotContentObserver = new MutationObserver(() => {
 evalPlotContentObserver.observe(evalPlotContent, { childList: true, subtree: true });
 updateDownloadFiguresButtonState();
 
-function renderEvalJsonTabs() {
-  evalJsonTabEvaluation.classList.toggle("active", state.activeEvalJsonTab === "evaluation");
-  evalJsonTabPrediction.classList.toggle("active", state.activeEvalJsonTab === "prediction");
-}
-
-function escapeHtml(text) {
-  return String(text)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;");
-}
-
-function highlightJsonContent(value) {
-  const json = JSON.stringify(value ?? {}, null, 2);
-  const escaped = escapeHtml(json);
-  return escaped.replace(
-    /("(?:\\u[0-9a-fA-F]{4}|\\[^u]|[^\\"])*"(?:\s*:)?|\btrue\b|\bfalse\b|\bnull\b|-?\d+(?:\.\d+)?(?:[eE][+\-]?\d+)?)/g,
-    (match) => {
-      if (match.endsWith(":")) {
-        return `<span class="json-key">${match}</span>`;
-      }
-      if (match.startsWith("\"")) {
-        return `<span class="json-string">${match}</span>`;
-      }
-      if (match === "true" || match === "false") {
-        return `<span class="json-boolean">${match}</span>`;
-      }
-      if (match === "null") {
-        return `<span class="json-null">${match}</span>`;
-      }
-      return `<span class="json-number">${match}</span>`;
-    }
-  );
-}
-
 evalJsonTabEvaluation.addEventListener("click", () => {
   if (state.activeEvalJsonTab === "evaluation") {
     return;
@@ -953,59 +933,11 @@ function getEvalMissingValueCount(evaluations, column) {
   return selectors.getEvalMissingValueCount(evaluations, column);
 }
 
-function createMissingDefaultControl({ listElement, column, label, value, suggestions, missingCount, onCommit, inputIdPrefix }) {
-  const wrapper = document.createElement("div");
-  wrapper.className = "missing-default-item";
-
-  const labelWrap = document.createElement("label");
-  labelWrap.className = "missing-default-label";
-  const labelText = document.createElement("strong");
-  labelText.textContent = label;
-  const meta = document.createElement("span");
-  meta.className = "missing-default-meta";
-  meta.textContent = `${missingCount} missing value${missingCount === 1 ? "" : "s"}`;
-  labelWrap.appendChild(labelText);
-  labelWrap.appendChild(meta);
-
-  const input = document.createElement("input");
-  input.type = "text";
-  input.className = "missing-default-input";
-  input.placeholder = "Leave empty to keep blanks";
-  input.value = value;
-  const datalistId = `${inputIdPrefix}-${column.replace(/[^a-zA-Z0-9_-]+/g, "-")}`;
-  input.setAttribute("list", datalistId);
-  input.setAttribute("aria-label", `Default value for missing entries in ${label}`);
-  input.addEventListener("change", () => onCommit(input.value));
-  input.addEventListener("keydown", (event) => {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      input.blur();
-    }
-  });
-
-  const datalist = document.createElement("datalist");
-  datalist.id = datalistId;
-  for (const suggestion of suggestions) {
-    const option = document.createElement("option");
-    option.value = suggestion;
-    datalist.appendChild(option);
-  }
-
-  wrapper.appendChild(labelWrap);
-  wrapper.appendChild(input);
-  wrapper.appendChild(datalist);
-  listElement.appendChild(wrapper);
-}
-
-
 /**
  * Return the current truncate-toggle options for prediction columns.
  */
 function getTruncateColumnOptions(predictionColumns = getCurrentPredictionColumns()) {
-  return predictionColumns.map((column) => ({
-    value: column,
-    label: displayPredictionColumnName(column),
-  }));
+  return buildColumnOptions(predictionColumns, displayPredictionColumnName);
 }
 
 function setGroupByFields(columns) {
@@ -1042,13 +974,6 @@ function setActiveEvalGroupByFields(columns) {
   renderEvaluations();
 }
 
-function renderEvalGroupByButtons(evalColumns) {
-  const hasColumns = evalColumns.length > 0;
-  evalGroupByAllButton.disabled = !hasColumns;
-  evalGroupByToggleButton.disabled = !hasColumns;
-  evalGroupByNoneButton.disabled = !hasColumns;
-}
-
 function ensureEvalTabState(
   experiment,
   evalColumns,
@@ -1079,9 +1004,7 @@ groupByNoneButton.addEventListener("click", () => {
 
 groupByToggleButton.addEventListener("click", () => {
   const predictionColumns = getCurrentPredictionColumns();
-  const nextGroupByFields = predictionColumns.filter(
-    (column) => !state.groupByFields.includes(column)
-  );
+  const nextGroupByFields = getToggleOnlyColumns(predictionColumns, state.groupByFields);
   setGroupByFields(nextGroupByFields);
 });
 
@@ -1099,9 +1022,7 @@ evalGroupByToggleButton.addEventListener("click", () => {
   }
   const evalColumns = getActiveEvalColumns();
   const evalTabState = ensureEvalTabState(state.activeEvalTab, evalColumns);
-  const nextGroupByFields = evalColumns.filter(
-    (column) => !evalTabState.groupByFields.includes(column)
-  );
+  const nextGroupByFields = getToggleOnlyColumns(evalColumns, evalTabState.groupByFields);
   setActiveEvalGroupByFields(nextGroupByFields);
 });
 
@@ -1124,151 +1045,6 @@ evalResetSortButton.addEventListener("click", () => {
   evalTabState.sort = [];
   renderEvaluations();
 });
-
-function renderTruncateControls() {
-  const options = getTruncateColumnOptions();
-  truncateColumnsList.innerHTML = "";
-  for (const option of options) {
-    const wrapper = document.createElement("label");
-    wrapper.className = "truncate-item";
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.checked = state.truncateEnabledColumns.has(option.value);
-    checkbox.addEventListener("change", () => {
-      if (checkbox.checked) {
-        state.truncateEnabledColumns.add(option.value);
-      } else {
-        state.truncateEnabledColumns.delete(option.value);
-      }
-      renderPredictions();
-    });
-    const text = document.createElement("span");
-    text.textContent = option.label;
-    wrapper.appendChild(checkbox);
-    wrapper.appendChild(text);
-    truncateColumnsList.appendChild(wrapper);
-  }
-}
-
-/**
- * Render default-value controls for prediction columns that are missing values
- * within the currently selected prediction views.
- */
-function renderPredictionDefaultControls() {
-  predictionDefaultsList.innerHTML = "";
-  const selectedPredictionViews = getSelectedPredictionViews();
-  const columns = getPredictionColumnsWithMissingValues(selectedPredictionViews);
-  setPanelVisibility(predictionDefaultsPanel, columns.length > 0);
-  if (!columns.length) {
-    return;
-  }
-  for (const column of columns) {
-    createMissingDefaultControl({
-      listElement: predictionDefaultsList,
-      column,
-      label: displayPredictionColumnName(column),
-      value: getPredictionDefaultValue(column),
-      suggestions: getPredictionDefaultSuggestions(selectedPredictionViews, column),
-      missingCount: getPredictionMissingValueCount(selectedPredictionViews, column),
-      inputIdPrefix: "prediction-default",
-      onCommit: (nextValue) => {
-        setConfiguredDefault(state.predictionDefaultValues, column, nextValue);
-        renderPredictions();
-        renderEvaluations();
-      },
-    });
-  }
-}
-
-function renderOptionsTabs() {
-  syncTabButtonsAndPanels({
-    buttonElements: optionsTabButtons,
-    panelElements: optionsTabPanels,
-    activeValue: state.activeOptionsTab,
-  });
-}
-
-function renderEvalOptionsTabs(activeExperiment) {
-  if (!activeExperiment || !state.evalTabStates[activeExperiment]) {
-    return;
-  }
-  syncTabButtonsAndPanels({
-    buttonElements: evalOptionsTabButtons,
-    panelElements: evalOptionsTabPanels,
-    activeValue: state.evalTabStates[activeExperiment].activeOptionsTab,
-    buttonAttribute: "data-eval-tab",
-    panelAttribute: "data-eval-tab-panel",
-  });
-}
-
-function renderEvalTruncateControls(activeExperiment, evalColumns) {
-  if (!activeExperiment || !state.evalTabStates[activeExperiment]) {
-    evalTruncateColumnsList.innerHTML = "";
-    return;
-  }
-  const tabState = state.evalTabStates[activeExperiment];
-  const optionColumns = [...new Set([...evalColumns, "eval_run_dir"])];
-  evalTruncateColumnsList.innerHTML = "";
-  for (const column of optionColumns) {
-    const wrapper = document.createElement("label");
-    wrapper.className = "truncate-item";
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.checked = tabState.truncateEnabledColumns.has(column);
-    checkbox.addEventListener("change", () => {
-      if (checkbox.checked) {
-        tabState.truncateEnabledColumns.add(column);
-      } else {
-        tabState.truncateEnabledColumns.delete(column);
-      }
-      renderEvaluations();
-    });
-    const text = document.createElement("span");
-    text.textContent = displayEvalColumnName(column);
-    wrapper.appendChild(checkbox);
-    wrapper.appendChild(text);
-    evalTruncateColumnsList.appendChild(wrapper);
-  }
-}
-
-/**
- * Render default-value controls for evaluation columns that are missing values
- * within the currently selected evaluation groups of the active experiment.
- */
-function renderEvalDefaultControls(
-  activeExperiment,
-  evaluationContext = getEvaluationContext(activeExperiment)
-) {
-  evalDefaultsList.innerHTML = "";
-  if (!activeExperiment || !evaluationContext) {
-    setPanelVisibility(evalDefaultsPanel, false);
-    return;
-  }
-  const { evalColumns, evalTabState } = evaluationContext;
-  const selectedEvaluations = getSelectedEvaluationGroups(evaluationContext).flatMap(
-    (group) => group.evaluations
-  );
-  const columns = getEvalColumnsWithMissingValues(selectedEvaluations, evalColumns);
-  setPanelVisibility(evalDefaultsPanel, columns.length > 0);
-  if (!columns.length) {
-    return;
-  }
-  for (const column of columns) {
-    createMissingDefaultControl({
-      listElement: evalDefaultsList,
-      column,
-      label: displayEvalColumnName(column),
-      value: getEvalDefaultValue(evalTabState, column),
-      suggestions: getEvalDefaultSuggestions(selectedEvaluations, column),
-      missingCount: getEvalMissingValueCount(selectedEvaluations, column),
-      inputIdPrefix: `eval-default-${activeExperiment.replace(/[^a-zA-Z0-9_-]+/g, "-")}`,
-      onCommit: (nextValue) => {
-        setConfiguredDefault(evalTabState.defaultValues, column, nextValue);
-        renderEvaluations();
-      },
-    });
-  }
-}
 
 optionsTabs.addEventListener("click", (event) => {
   const button = event.target.closest(".options-tab-button");
@@ -1737,9 +1513,48 @@ function renderPredictions() {
 
   const predictionSections = getPredictionColumnSections();
   const orderedPredictionColumns = predictionSections.flatMap((section) => section.columns);
-  renderOptionsTabs();
-  renderTruncateControls();
-  renderPredictionDefaultControls();
+  renderStaticTabState({
+    buttonElements: optionsTabButtons,
+    panelElements: optionsTabPanels,
+    activeValue: state.activeOptionsTab,
+  });
+  renderCheckboxOptionList({
+    documentLike: document,
+    listElement: truncateColumnsList,
+    options: getTruncateColumnOptions(orderedPredictionColumns),
+    checkedValues: state.truncateEnabledColumns,
+    onToggle: (column, checked) => {
+      if (checked) {
+        state.truncateEnabledColumns.add(column);
+      } else {
+        state.truncateEnabledColumns.delete(column);
+      }
+      renderPredictions();
+    },
+  });
+  const selectedPredictionViews = getSelectedPredictionViews();
+  const predictionDefaultColumns = getPredictionColumnsWithMissingValues(
+    selectedPredictionViews,
+    orderedPredictionColumns
+  );
+  renderMissingDefaultControls({
+    documentLike: document,
+    listElement: predictionDefaultsList,
+    panelElement: predictionDefaultsPanel,
+    controlModels: buildMissingDefaultControlModels({
+      columns: predictionDefaultColumns,
+      getLabel: displayPredictionColumnName,
+      getValue: getPredictionDefaultValue,
+      getSuggestions: (column) => getPredictionDefaultSuggestions(selectedPredictionViews, column),
+      getMissingCount: (column) => getPredictionMissingValueCount(selectedPredictionViews, column),
+    }),
+    inputIdPrefix: "prediction-default",
+    onCommit: (column, nextValue) => {
+      setConfiguredDefault(state.predictionDefaultValues, column, nextValue);
+      renderPredictions();
+      renderEvaluations();
+    },
+  });
   const displayedGroups = getSortedPredictionGroups(predictionGroups);
 
   const thead = document.createElement("thead");
@@ -3715,12 +3530,23 @@ function renderEvaluationPlots(
 function renderEvaluations() {
   evalTabs.innerHTML = "";
   evaluationsTable.innerHTML = "";
-  evalLayout.classList.remove("split");
-  renderEvalJsonTabs();
-  renderEvalGroupByButtons([]);
+  renderEvalJsonPane({
+    layoutElement: evalLayout,
+    titleElement: evalJsonTitle,
+    codeElement: evalJsonCode,
+    evaluationButton: evalJsonTabEvaluation,
+    predictionButton: evalJsonTabPrediction,
+    activeTab: state.activeEvalJsonTab,
+  });
+  renderGroupByButtonState(
+    {
+      allButton: evalGroupByAllButton,
+      toggleButton: evalGroupByToggleButton,
+      noneButton: evalGroupByNoneButton,
+    },
+    []
+  );
   renderEvalSortStatus(null, []);
-  evalJsonTitle.textContent = "";
-  evalJsonCode.innerHTML = "";
   evalDefaultsList.innerHTML = "";
 
   const selectedEvaluations = gatherSelectedEvaluations();
@@ -3734,21 +3560,22 @@ function renderEvaluations() {
   const byExperiment = getEvaluationsByExperiment(selectedEvaluations);
 
   const experiments = Array.from(byExperiment.keys()).sort();
-  if (!state.activeEvalTab || !byExperiment.has(state.activeEvalTab)) {
-    state.activeEvalTab = experiments[0];
-  }
-
-  for (const experiment of experiments) {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "tab-button" + (experiment === state.activeEvalTab ? " active" : "");
-    button.textContent = `${experiment} (${byExperiment.get(experiment).length})`;
-    button.addEventListener("click", () => {
+  state.activeEvalTab = resolveActiveTabValue(state.activeEvalTab, experiments);
+  renderTabButtons({
+    documentLike: document,
+    containerElement: evalTabs,
+    tabModels: buildTabButtonModels(experiments, {
+      activeValue: state.activeEvalTab,
+      getLabel: (experiment) => `${experiment} (${byExperiment.get(experiment).length})`,
+    }),
+    onSelect: (experiment) => {
+      if (state.activeEvalTab === experiment) {
+        return;
+      }
       state.activeEvalTab = experiment;
       renderEvaluations();
-    });
-    evalTabs.appendChild(button);
-  }
+    },
+  });
 
   const evaluationContext = getEvaluationContext(state.activeEvalTab, selectedEvaluations);
   const {
@@ -3760,10 +3587,59 @@ function renderEvaluations() {
   const evalColumnSections = getEvalColumnSections(evalColumns);
   const orderedEvalColumns = evalColumnSections.flatMap((section) => section.columns);
   renderEvalSortStatus(state.activeEvalTab, orderedEvalColumns);
-  renderEvalGroupByButtons(orderedEvalColumns);
-  renderEvalOptionsTabs(state.activeEvalTab);
-  renderEvalTruncateControls(state.activeEvalTab, orderedEvalColumns);
-  renderEvalDefaultControls(state.activeEvalTab, evaluationContext);
+  renderGroupByButtonState(
+    {
+      allButton: evalGroupByAllButton,
+      toggleButton: evalGroupByToggleButton,
+      noneButton: evalGroupByNoneButton,
+    },
+    orderedEvalColumns
+  );
+  renderStaticTabState({
+    buttonElements: evalOptionsTabButtons,
+    panelElements: evalOptionsTabPanels,
+    activeValue: evalTabState.activeOptionsTab,
+    buttonAttribute: "data-eval-tab",
+    panelAttribute: "data-eval-tab-panel",
+  });
+  renderCheckboxOptionList({
+    documentLike: document,
+    listElement: evalTruncateColumnsList,
+    options: buildColumnOptions([...new Set([...orderedEvalColumns, "eval_run_dir"])] , displayEvalColumnName),
+    checkedValues: evalTabState.truncateEnabledColumns,
+    onToggle: (column, checked) => {
+      if (checked) {
+        evalTabState.truncateEnabledColumns.add(column);
+      } else {
+        evalTabState.truncateEnabledColumns.delete(column);
+      }
+      renderEvaluations();
+    },
+  });
+  const selectedEvaluationsForDefaults = getSelectedEvaluationGroups(evaluationContext).flatMap(
+    (group) => group.evaluations
+  );
+  const evalDefaultColumns = getEvalColumnsWithMissingValues(
+    selectedEvaluationsForDefaults,
+    evalColumns
+  );
+  renderMissingDefaultControls({
+    documentLike: document,
+    listElement: evalDefaultsList,
+    panelElement: evalDefaultsPanel,
+    controlModels: buildMissingDefaultControlModels({
+      columns: evalDefaultColumns,
+      getLabel: displayEvalColumnName,
+      getValue: (column) => getEvalDefaultValue(evalTabState, column),
+      getSuggestions: (column) => getEvalDefaultSuggestions(selectedEvaluationsForDefaults, column),
+      getMissingCount: (column) => getEvalMissingValueCount(selectedEvaluationsForDefaults, column),
+    }),
+    inputIdPrefix: `eval-default-${state.activeEvalTab.replace(/[^a-zA-Z0-9_-]+/g, "-")}`,
+    onCommit: (column, nextValue) => {
+      setConfiguredDefault(evalTabState.defaultValues, column, nextValue);
+      renderEvaluations();
+    },
+  });
 
   const displayedEvalGroups = getSortedEvaluationGroups(evaluationGroups, evalTabState);
 
@@ -4036,25 +3912,23 @@ function renderEvaluations() {
   }
   evaluationsTable.appendChild(tbody);
 
-  if (evalTabState.selectedEvalRunDir !== null || evalTabState.selectedEvalGroupId !== null) {
-    const selectedEvaluation = experimentEvaluations.find((evaluation) => evaluation.runDir === evalTabState.selectedEvalRunDir) || null;
-    const selectedGroup = displayedEvalGroups.find((group) => group.groupId === evalTabState.selectedEvalGroupId) || null;
-    if (selectedEvaluation || selectedGroup) {
-      evalLayout.classList.add("split");
-      evalJsonTitle.textContent = "";
-      renderEvalJsonTabs();
-      const tabContent = selectedEvaluation
-        ? (
-          state.activeEvalJsonTab === "prediction"
-            ? reconstructPredictionContentForEvaluation(selectedEvaluation)
-            : (selectedEvaluation.data || {})
-        )
-        : (state.activeEvalJsonTab === "prediction"
-          ? selectedGroup.evaluations.map((evaluation) => reconstructPredictionContentForEvaluation(evaluation))
-          : selectedGroup.evaluations.map((evaluation) => evaluation.data || {}));
-      evalJsonCode.innerHTML = highlightJsonContent(tabContent);
-    }
-  }
+  const selectedEvaluation = experimentEvaluations.find(
+    (evaluation) => evaluation.runDir === evalTabState.selectedEvalRunDir
+  ) || null;
+  const selectedGroup = displayedEvalGroups.find(
+    (group) => group.groupId === evalTabState.selectedEvalGroupId
+  ) || null;
+  renderEvalJsonPane({
+    layoutElement: evalLayout,
+    titleElement: evalJsonTitle,
+    codeElement: evalJsonCode,
+    evaluationButton: evalJsonTabEvaluation,
+    predictionButton: evalJsonTabPrediction,
+    activeTab: state.activeEvalJsonTab,
+    selectedEvaluation,
+    selectedGroup,
+    getPredictionContent: reconstructPredictionContentForEvaluation,
+  });
 
   updateStickyControlColumnOffsets(evaluationsTable);
   requestAnimationFrame(() => updateStickyControlColumnOffsets(evaluationsTable));

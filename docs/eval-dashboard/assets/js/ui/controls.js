@@ -1,0 +1,216 @@
+/**
+ * Shared options-panel and control-list helpers for the eval dashboard.
+ */
+
+import { setPanelVisibility } from "./dom.js";
+
+/**
+ * Build labeled option objects from one ordered column list.
+ *
+ * @param {Iterable<string>} columns - Columns to expose as options.
+ * @param {(column: string) => string} [getLabel] - Display-label formatter.
+ * @returns {Array<{value: string, label: string}>} Plain option models.
+ */
+export function buildColumnOptions(columns, getLabel = (column) => String(column)) {
+  return Array.from(columns || []).map((column) => ({ value: column, label: getLabel(column) }));
+}
+
+/**
+ * Return the available columns that are not currently active.
+ *
+ * @param {Iterable<string>} availableColumns - All available columns.
+ * @param {Iterable<string>} activeColumns - Currently active columns.
+ * @returns {string[]} Columns that should become active in a toggle-only action.
+ */
+export function getToggleOnlyColumns(availableColumns, activeColumns) {
+  const activeSet = new Set(activeColumns || []);
+  return Array.from(availableColumns || []).filter((column) => !activeSet.has(column));
+}
+
+/**
+ * Build plain control models for missing-value default inputs.
+ *
+ * @param {object} options - Default-control callbacks.
+ * @param {Iterable<string>} options.columns - Columns that currently need defaults.
+ * @param {(column: string) => string} options.getLabel - Label formatter.
+ * @param {(column: string) => string} options.getValue - Current configured default lookup.
+ * @param {(column: string) => string[]} options.getSuggestions - Suggestion lookup.
+ * @param {(column: string) => number} options.getMissingCount - Missing-value count lookup.
+ * @returns {Array<{column: string, label: string, value: string, suggestions: string[], missingCount: number}>} Plain control models.
+ */
+export function buildMissingDefaultControlModels({
+  columns,
+  getLabel,
+  getValue,
+  getSuggestions,
+  getMissingCount,
+}) {
+  return Array.from(columns || []).map((column) => ({
+    column,
+    label: getLabel(column),
+    value: getValue(column),
+    suggestions: getSuggestions(column),
+    missingCount: getMissingCount(column),
+  }));
+}
+
+/**
+ * Render the enabled/disabled state of the three group-by action buttons.
+ *
+ * @param {{allButton: HTMLButtonElement | null, toggleButton: HTMLButtonElement | null, noneButton: HTMLButtonElement | null}} buttonRefs - Group-by buttons.
+ * @param {Iterable<string>} availableColumns - Columns currently available for grouping.
+ * @returns {void}
+ */
+export function renderGroupByButtonState(buttonRefs, availableColumns) {
+  const disabled = Array.from(availableColumns || []).length === 0;
+  buttonRefs.allButton.disabled = disabled;
+  buttonRefs.toggleButton.disabled = disabled;
+  buttonRefs.noneButton.disabled = disabled;
+}
+
+/**
+ * Render a checkbox list for truncate/group-like option controls.
+ *
+ * @param {object} options - Checkbox-list render inputs.
+ * @param {Document} options.documentLike - Document-like element factory.
+ * @param {HTMLElement | null} options.listElement - Container receiving option labels.
+ * @param {Array<{value: string, label: string}>} options.options - Option models.
+ * @param {Iterable<string>} [options.checkedValues=[]] - Currently checked values.
+ * @param {(value: string, checked: boolean) => void} options.onToggle - Toggle callback.
+ * @param {(option: {value: string, label: string}) => string | null} [options.getAriaLabel] - Optional checkbox aria-label formatter.
+ * @returns {void}
+ */
+export function renderCheckboxOptionList(options) {
+  const {
+    documentLike: resolvedDocumentLike,
+    listElement: resolvedListElement,
+    options: resolvedOptions,
+    checkedValues: resolvedCheckedValues = [],
+    onToggle: resolvedOnToggle,
+    getAriaLabel: resolvedGetAriaLabel = null,
+  } = options;
+  if (!resolvedListElement) {
+    return;
+  }
+  resolvedListElement.innerHTML = "";
+  const checkedSet =
+    resolvedCheckedValues instanceof Set
+      ? resolvedCheckedValues
+      : new Set(resolvedCheckedValues || []);
+  for (const option of resolvedOptions || []) {
+    const wrapper = resolvedDocumentLike.createElement("label");
+    wrapper.className = "truncate-item";
+    const checkbox = resolvedDocumentLike.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = checkedSet.has(option.value);
+    if (resolvedGetAriaLabel) {
+      checkbox.setAttribute("aria-label", resolvedGetAriaLabel(option));
+    }
+    checkbox.addEventListener("change", () => resolvedOnToggle(option.value, checkbox.checked));
+    const text = resolvedDocumentLike.createElement("span");
+    text.textContent = option.label;
+    wrapper.appendChild(checkbox);
+    wrapper.appendChild(text);
+    resolvedListElement.appendChild(wrapper);
+  }
+}
+
+/**
+ * Render missing-default controls and synchronize the panel visibility around them.
+ *
+ * @param {object} options - Default-control render inputs.
+ * @param {Document} options.documentLike - Document-like element factory.
+ * @param {HTMLElement | null} options.listElement - Container receiving the controls.
+ * @param {HTMLElement | null} options.panelElement - Surrounding panel to show or hide.
+ * @param {Array<{column: string, label: string, value: string, suggestions: string[], missingCount: number}>} options.controlModels - Plain control models.
+ * @param {(column: string, nextValue: string) => void} options.onCommit - Commit callback.
+ * @param {string} options.inputIdPrefix - Prefix for generated datalist ids.
+ * @returns {void}
+ */
+export function renderMissingDefaultControls({
+  documentLike,
+  listElement,
+  panelElement,
+  controlModels,
+  onCommit,
+  inputIdPrefix,
+}) {
+  if (!listElement) {
+    return;
+  }
+  listElement.innerHTML = "";
+  setPanelVisibility(panelElement, (controlModels || []).length > 0);
+  for (const controlModel of controlModels || []) {
+    renderMissingDefaultControl({
+      documentLike,
+      listElement,
+      controlModel,
+      onCommit,
+      inputIdPrefix,
+    });
+  }
+}
+
+/**
+ * Render one missing-default input row.
+ *
+ * @param {object} options - One control model and DOM targets.
+ * @param {Document} options.documentLike - Document-like element factory.
+ * @param {HTMLElement} options.listElement - Parent list element.
+ * @param {{column: string, label: string, value: string, suggestions: string[], missingCount: number}} options.controlModel - Plain control model.
+ * @param {(column: string, nextValue: string) => void} options.onCommit - Commit callback.
+ * @param {string} options.inputIdPrefix - Prefix for generated datalist ids.
+ * @returns {void}
+ */
+function renderMissingDefaultControl({
+  documentLike,
+  listElement,
+  controlModel,
+  onCommit,
+  inputIdPrefix,
+}) {
+  const wrapper = documentLike.createElement("div");
+  wrapper.className = "missing-default-item";
+
+  const labelWrap = documentLike.createElement("label");
+  labelWrap.className = "missing-default-label";
+  const labelText = documentLike.createElement("strong");
+  labelText.textContent = controlModel.label;
+  const meta = documentLike.createElement("span");
+  meta.className = "missing-default-meta";
+  meta.textContent = `${controlModel.missingCount} missing value${controlModel.missingCount === 1 ? "" : "s"}`;
+  labelWrap.appendChild(labelText);
+  labelWrap.appendChild(meta);
+
+  const input = documentLike.createElement("input");
+  input.type = "text";
+  input.className = "missing-default-input";
+  input.placeholder = "Leave empty to keep blanks";
+  input.value = controlModel.value;
+  const datalistId = `${inputIdPrefix}-${controlModel.column.replace(/[^a-zA-Z0-9_-]+/g, "-")}`;
+  input.setAttribute("list", datalistId);
+  input.setAttribute(
+    "aria-label",
+    `Default value for missing entries in ${controlModel.label}`
+  );
+  input.addEventListener("change", () => onCommit(controlModel.column, input.value));
+  input.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      input.blur();
+    }
+  });
+
+  const datalist = documentLike.createElement("datalist");
+  datalist.id = datalistId;
+  for (const suggestion of controlModel.suggestions) {
+    const option = documentLike.createElement("option");
+    option.value = suggestion;
+    datalist.appendChild(option);
+  }
+
+  wrapper.appendChild(labelWrap);
+  wrapper.appendChild(input);
+  wrapper.appendChild(datalist);
+  listElement.appendChild(wrapper);
+}

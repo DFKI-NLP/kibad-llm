@@ -1,4 +1,4 @@
-"""Baseline artifact contract tests for the eval-dashboard baseline plus Phase 5 to Phase 9 JS contracts."""
+"""Baseline artifact contract tests for the eval-dashboard baseline plus Phase 5 to Phase 10A JS contracts."""
 
 import json
 
@@ -226,6 +226,25 @@ def test_baseline_summary_includes_phase_nine_ui_contract() -> None:
     }
 
 
+def test_baseline_summary_includes_phase_ten_a_ui_contract() -> None:
+    """Ensure the baseline artifact exposes the Phase 10A tabs/controls/JSON-pane contract."""
+
+    summary = _baseline_summary()
+    phase_ten_a_contract = summary["phase_ten_a_contract"]
+
+    assert phase_ten_a_contract["ui_module_root"] == "docs/eval-dashboard/assets/js/ui"
+    assert set(phase_ten_a_contract["ui_modules"]) == {
+        "controls.js",
+        "eval-json-pane.js",
+        "tabs.js",
+    }
+    assert set(phase_ten_a_contract["js_test_files"]) == {
+        "ui.controls.test.mjs",
+        "ui.eval-json-pane.test.mjs",
+        "ui.tabs.test.mjs",
+    }
+
+
 def test_current_runtime_matches_phase_six_state_contract() -> None:
     """Ensure the extracted Phase 6 state modules and selector/store tests exist and are wired into main.js."""
 
@@ -320,6 +339,25 @@ def test_current_runtime_matches_phase_nine_ui_contract() -> None:
         "shared table sort/truncation/sticky helpers",
         "status and progress DOM rendering",
         "github token persistence and git_url query-parameter synchronization",
+    }
+
+
+def test_current_runtime_matches_phase_ten_a_ui_contract() -> None:
+    """Ensure the extracted Phase 10A UI modules and JS tests exist and are wired into main.js."""
+
+    summary = _baseline_summary()
+    phase_ten_a_contract = summary["phase_ten_a_contract"]
+    main_js = _main_js_entry()
+
+    for file_name in phase_ten_a_contract["ui_modules"]:
+        assert (UI_JS_ROOT / file_name).is_file()
+        assert f"./ui/{file_name}" in main_js
+    for file_name in phase_ten_a_contract["js_test_files"]:
+        assert (JS_TEST_ROOT / file_name).is_file()
+    assert set(phase_ten_a_contract["focus"]) == {
+        "experiment-tab active-state resolution and shared tab-button rendering",
+        "prediction and evaluation truncate/default/group-by control rendering",
+        "eval json pane highlighting and selected-content resolution",
     }
 
 

@@ -46,9 +46,12 @@ EXPECTED_JS_DATA_FILES = (
     "parse-overrides.js",
 )
 EXPECTED_JS_UI_FILES = (
+    "controls.js",
     "dom.js",
+    "eval-json-pane.js",
     "status.js",
     "table-shared.js",
+    "tabs.js",
 )
 EXPECTED_JS_BROWSER_FILES = ("session.js",)
 
@@ -107,8 +110,8 @@ def test_phase_seven_and_phase_eight_dashboard_js_data_modules_exist() -> None:
         assert (DATA_JS_ROOT / file_name).is_file()
 
 
-def test_phase_nine_dashboard_js_ui_modules_exist() -> None:
-    """Ensure the Phase 9 UI infrastructure modules exist under the dashboard asset path."""
+def test_phase_nine_and_phase_ten_a_dashboard_js_ui_modules_exist() -> None:
+    """Ensure the Phase 9 and Phase 10A UI modules exist under the dashboard asset path."""
 
     for file_name in EXPECTED_JS_UI_FILES:
         assert (UI_JS_ROOT / file_name).is_file()
