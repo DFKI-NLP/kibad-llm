@@ -7,6 +7,7 @@ import assert from "node:assert/strict";
 
 import {
   bindDelegatedTabSelection,
+  buildCountTabButtonModels,
   buildTabButtonModels,
   renderStaticTabState,
   renderTabButtons,
@@ -141,6 +142,21 @@ test("buildTabButtonModels derives labels, titles, and active-state flags", () =
     [
       { value: "errors", label: "ERRORS", title: "tab:errors", isActive: false },
       { value: "bars", label: "BARS", title: "tab:bars", isActive: true },
+    ]
+  );
+});
+
+test("buildCountTabButtonModels appends counts while preserving titles and active-state flags", () => {
+  assert.deepEqual(
+    buildCountTabButtonModels(["total", "details"], {
+      activeValue: "details",
+      getLabelText: (value) => value.toUpperCase(),
+      getCount: (value) => (value === "total" ? 3 : 7),
+      getTitle: (value) => `tab:${value}`,
+    }),
+    [
+      { value: "total", label: "TOTAL (3)", title: "tab:total", isActive: false },
+      { value: "details", label: "DETAILS (7)", title: "tab:details", isActive: true },
     ]
   );
 });

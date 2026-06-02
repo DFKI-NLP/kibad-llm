@@ -41,7 +41,7 @@ import {
 } from "./ui/table-shared.js";
 import {
   bindDelegatedTabSelection,
-  buildTabButtonModels,
+  buildCountTabButtonModels,
   renderTabButtons,
   renderStaticTabState,
   resolveActiveTabValue,
@@ -3202,9 +3202,10 @@ function renderPlotTabsAndGrid(tabMap, activeExperiment, groupBarFields, metricT
   renderTabButtons({
     documentLike: document,
     containerElement: evalPlotTabs,
-    tabModels: buildTabButtonModels(sortedTabKeys, {
+    tabModels: buildCountTabButtonModels(sortedTabKeys, {
       activeValue: state.activeEvalPlotTab,
-      getLabel: (key) => `${key} (${tabMap.get(key).length})`,
+      getLabelText: (key) => key,
+      getCount: (key) => tabMap.get(key).length,
       getTitle: (key) => key,
     }),
     onSelect: (key) => {
@@ -3411,14 +3412,14 @@ function renderEvaluationPlots(
     renderTabButtons({
       documentLike: document,
       containerElement: evalPlotTabs,
-      tabModels: buildTabButtonModels(sortedConfusionTabKeys, {
+      tabModels: buildCountTabButtonModels(sortedConfusionTabKeys, {
         activeValue: state.activeEvalPlotTab,
-        getLabel: (key) => {
+        getLabelText: (key) => confusionTabMap.get(key).label,
+        getCount: (key) => {
           const entry = confusionTabMap.get(key);
-          const evaluationCount = countDistinctConfusionMatrixRuns(
+          return countDistinctConfusionMatrixRuns(
             entry.plots.flatMap((plot) => plot.evaluations)
           );
-          return `${entry.label} (${evaluationCount})`;
         },
         getTitle: (key) => confusionTabMap.get(key).label,
       }),
@@ -3496,15 +3497,15 @@ function renderEvaluationPlots(
     renderTabButtons({
       documentLike: document,
       containerElement: evalPlotTabs,
-      tabModels: buildTabButtonModels(sortedTabKeys, {
+      tabModels: buildCountTabButtonModels(sortedTabKeys, {
         activeValue: state.activeEvalPlotTab,
-        getLabel: (key) => {
+        getLabelText: (key) => tpfpfnTabMap.get(key).label,
+        getCount: (key) => {
           const entry = tpfpfnTabMap.get(key);
-          const evaluationCount = entry.plots.reduce(
+          return entry.plots.reduce(
             (sum, plot) => sum + plot.evaluations.length,
             0
           );
-          return `${entry.label} (${evaluationCount})`;
         },
         getTitle: (key) => {
           const entry = tpfpfnTabMap.get(key);
@@ -3648,9 +3649,10 @@ function renderEvaluations() {
   renderTabButtons({
     documentLike: document,
     containerElement: evalTabs,
-    tabModels: buildTabButtonModels(experiments, {
+    tabModels: buildCountTabButtonModels(experiments, {
       activeValue: state.activeEvalTab,
-      getLabel: (experiment) => `${experiment} (${byExperiment.get(experiment).length})`,
+      getLabelText: (experiment) => experiment,
+      getCount: (experiment) => byExperiment.get(experiment).length,
     }),
     onSelect: (experiment) => {
       if (state.activeEvalTab === experiment) {

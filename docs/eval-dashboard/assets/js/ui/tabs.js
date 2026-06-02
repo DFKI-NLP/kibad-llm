@@ -46,6 +46,33 @@ export function buildTabButtonModels(
 }
 
 /**
+ * Build tab-button models whose labels include an item count.
+ *
+ * @param {Iterable<string>} values - Tab ids to render.
+ * @param {object} [options={}] - Label, count, and title callbacks.
+ * @param {string | null} [options.activeValue=null] - Active tab id.
+ * @param {(value: string) => string} [options.getLabelText] - Base label formatter before appending the count.
+ * @param {(value: string) => number} [options.getCount] - Count formatter for each tab.
+ * @param {(value: string) => string} [options.getTitle] - Optional title formatter.
+ * @returns {Array<{value: string, label: string, title: string, isActive: boolean}>} Plain tab models.
+ */
+export function buildCountTabButtonModels(
+  values,
+  {
+    activeValue = null,
+    getLabelText = (value) => String(value),
+    getCount = () => 0,
+    getTitle = () => "",
+  } = {}
+) {
+  return buildTabButtonModels(values, {
+    activeValue,
+    getLabel: (value) => `${getLabelText(value)} (${getCount(value)})`,
+    getTitle,
+  });
+}
+
+/**
  * Render one list of tab buttons from plain tab models.
  *
  * @param {object} options - Render inputs.
