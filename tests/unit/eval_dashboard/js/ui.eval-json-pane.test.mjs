@@ -1,3 +1,7 @@
+/**
+ * Browser-free logic tests for the eval-dashboard JSON-pane helpers.
+ */
+
 import test from "node:test";
 import assert from "node:assert/strict";
 
@@ -8,11 +12,24 @@ import {
   resolveEvalJsonContent,
 } from "../../../../docs/eval-dashboard/assets/js/ui/eval-json-pane.js";
 
+/**
+ * Minimal classList stub for DOM-free JSON-pane rendering tests.
+ */
 class FakeClassList {
+  /**
+   * Create one empty class list.
+   */
   constructor() {
     this.values = new Set();
   }
 
+  /**
+   * Toggle one class name according to the provided force value.
+   *
+   * @param {string} name - Class name to update.
+   * @param {boolean} force - Whether the class should be present.
+   * @returns {void}
+   */
   toggle(name, force) {
     if (force) {
       this.values.add(name);
@@ -21,12 +38,24 @@ class FakeClassList {
     }
   }
 
+  /**
+   * Report whether the class list currently contains one class.
+   *
+   * @param {string} name - Class name to check.
+   * @returns {boolean} Whether the class is present.
+   */
   contains(name) {
     return this.values.has(name);
   }
 }
 
+/**
+ * Minimal element stub used by the extracted JSON-pane tests.
+ */
 class FakeElement {
+  /**
+   * Create one fake element instance with the properties used by the tests.
+   */
   constructor() {
     this.textContent = "";
     this.innerHTML = "";

@@ -1,3 +1,7 @@
+/**
+ * Browser-free logic tests for the eval-dashboard tab helpers.
+ */
+
 import test from "node:test";
 import assert from "node:assert/strict";
 
@@ -8,11 +12,24 @@ import {
   resolveActiveTabValue,
 } from "../../../../docs/eval-dashboard/assets/js/ui/tabs.js";
 
+/**
+ * Minimal classList stub for DOM-free tab rendering tests.
+ */
 class FakeClassList {
+  /**
+   * Create one empty class list.
+   */
   constructor() {
     this.values = new Set();
   }
 
+  /**
+   * Toggle one class name according to the provided force value.
+   *
+   * @param {string} name - Class name to update.
+   * @param {boolean} force - Whether the class should be present.
+   * @returns {void}
+   */
   toggle(name, force) {
     if (force) {
       this.values.add(name);
@@ -21,12 +38,24 @@ class FakeClassList {
     }
   }
 
+  /**
+   * Report whether the class list currently contains one class.
+   *
+   * @param {string} name - Class name to check.
+   * @returns {boolean} Whether the class is present.
+   */
   contains(name) {
     return this.values.has(name);
   }
 }
 
+/**
+ * Minimal element stub used by the extracted tab-helper tests.
+ */
 class FakeElement {
+  /**
+   * Create one fake element instance with the properties used by the tests.
+   */
   constructor() {
     this.type = "";
     this.className = "";
@@ -38,24 +67,55 @@ class FakeElement {
     this.classList = new FakeClassList();
   }
 
+  /**
+   * Append one child element.
+   *
+   * @param {FakeElement} child - Child element to append.
+   * @returns {FakeElement} The appended child.
+   */
   appendChild(child) {
     this.children.push(child);
     return child;
   }
 
+  /**
+   * Store one attribute value.
+   *
+   * @param {string} name - Attribute name.
+   * @param {unknown} value - Attribute value.
+   * @returns {void}
+   */
   setAttribute(name, value) {
     this.attributes.set(name, String(value));
   }
 
+  /**
+   * Read one stored attribute value.
+   *
+   * @param {string} name - Attribute name.
+   * @returns {string | undefined} Stored attribute value.
+   */
   getAttribute(name) {
     return this.attributes.get(name);
   }
 
+  /**
+   * Register one event listener.
+   *
+   * @param {string} type - Event type.
+   * @param {Function} listener - Event callback.
+   * @returns {void}
+   */
   addEventListener(type, listener) {
     this.listeners.set(type, listener);
   }
 }
 
+/**
+ * Build one document-like stub that can create fake elements.
+ *
+ * @returns {{createElement: (tagName: string) => FakeElement}} Document-like stub.
+ */
 function createDocumentStub() {
   return {
     createElement(tagName) {
