@@ -8,6 +8,7 @@ import test from "node:test";
 
 import { parseOverridesYaml } from "../../../../docs/eval-dashboard/assets/js/data/parse-overrides.js";
 import {
+  getNormalizedPredictionFromJobReturnValue,
   getMetricTypeForExperiment,
   getPredictionIdFromNormalizedPrediction,
   normalizeImportedJobReturnValue,
@@ -162,5 +163,63 @@ test("normalize rejects non-object top-level payloads", () => {
   assert.throws(
     () => normalizeImportedJobReturnValue([]),
     /job_return_value\.json must contain a top-level object\./
+  );
+});
+
+/**
+ * Ensure the extracted prediction normalizer keeps returning the canonical empty-object fallback
+ * shape when the embedded prediction payload is malformed.
+ */
+test("normalize prediction helper falls back to empty objects for malformed nested prediction payloads", () => {
+  assert.deepEqual(getNormalizedPredictionFromJobReturnValue({ prediction: [] }), {
+    jobReturnValue: {},
+    overrides: {},
+  });
+  assert.deepEqual(
+    getNormalizedPredictionFromJobReturnValue({
+      prediction: {
+        job_return_value: [],
+        overrides: "not-an-object",
+      },
+    }),
+    {
+      jobReturnValue: {},
+      overrides: {},
+    }
+  );
+});
+
+/**
+ * Ensure version-2 payloads still reject the specific invalid shape that the loader depends on:
+ * missing top-level evaluation `data`.
+ */
+test('normalize rejects version-2 payloads that omit the top-level "data" field', () => {
+  assert.throws(
+    () => normalizeImportedJobReturnValue({
+      version: 2,
+      type: "ConfusionMatrixCollection",
+      prediction: {
+        job_return_value: { output_file: "predictions/example.jsonl" },
+        overrides: { seed: "7" },
+      },
+    }),
+    /job_return_value\.json version 2 must contain a top-level "data" field\./
+  );
+});
+
+/**
+ * Ensure prediction-id extraction preserves the pre-refactor normalization contract by trimming
+ * whitespace and normalizing non-string scalar values.
+ */
+test("normalize prediction-id extraction trims and stringifies scalar output_file values", () => {
+  assert.equal(
+    getPredictionIdFromNormalizedPrediction({
+      jobReturnValue: { output_file: "  predictions/example.jsonl  " },
+    }),
+    "predictions/example.jsonl"
+  );
+  assert.equal(
+    getPredictionIdFromNormalizedPrediction({ jobReturnValue: { output_file: 12345 } }),
+    "12345"
   );
 });

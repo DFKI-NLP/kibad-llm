@@ -62,3 +62,20 @@ test("parse-overrides strips one leading plus and preserves raw string values", 
     spaced: "value with = signs = kept",
   });
 });
+
+/**
+ * Ensure the extracted parser preserves two ingestion-relevant file semantics: CRLF splitting and
+ * last-write-wins behavior when Hydra emits the same key multiple times.
+ */
+test("parse-overrides handles CRLF line endings and duplicate keys with last-write-wins semantics", () => {
+  const text = [
+    "- name=first",
+    "- name=second",
+    "- +seed = 41",
+  ].join("\r\n");
+
+  assert.deepEqual(parseOverridesYaml(text), {
+    name: "second",
+    seed: "41",
+  });
+});
