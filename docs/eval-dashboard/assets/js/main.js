@@ -13,12 +13,13 @@ import { ingestRunEntries } from "./data/ingest-runs.js";
 import { loadGitHubEntriesFromTreeUrl } from "./data/git-loader.js";
 import {
   clearGitUrlQueryParam,
-  getStoredGitHubToken,
-  persistGitHubToken,
-  readGitUrlQueryParam,
+  handleLocalEvaluationFileSelection,
+  initializeGitHubTokenInput,
+  persistGitHubTokenInputValue,
+  runGitUrlQueryParamBootstrap,
   setGitUrlQueryParam,
 } from "./browser/session.js";
-import { captureDomRefs, setPanelVisibility } from "./ui/dom.js";
+import { captureDomRefs, setPanelVisibility, syncTabButtonsAndPanels } from "./ui/dom.js";
 import {
   createSortButton as createSharedSortButton,
   createTruncatingCell as createSharedTruncatingCell,
@@ -798,18 +799,21 @@ evalJsonTabPrediction.addEventListener("click", () => {
   renderEvaluations();
 });
 
-githubTokenInput.value = getStoredGitHubToken();
+initializeGitHubTokenInput(githubTokenInput);
 
 folderInput.addEventListener("change", async (event) => {
   const files = Array.from(event.target.files || []);
-  clearGitUrlQueryParam();
-  await loadEvaluationsFromFiles(files);
-  renderPredictions();
-  renderEvaluations();
+  await handleLocalEvaluationFileSelection({
+    files,
+    clearGitUrl: clearGitUrlQueryParam,
+    loadEvaluationsFromFiles,
+    renderPredictions,
+    renderEvaluations,
+  });
 });
 
 githubTokenInput.addEventListener("change", () => {
-  persistGitHubToken(githubTokenInput.value);
+  persistGitHubTokenInputValue(githubTokenInput);
 });
 
 gitUrlInput.addEventListener("keydown", async (event) => {
@@ -1181,29 +1185,24 @@ function renderPredictionDefaultControls() {
 }
 
 function renderOptionsTabs() {
-  for (const button of optionsTabButtons) {
-    const tab = button.getAttribute("data-tab");
-    button.classList.toggle("active", tab === state.activeOptionsTab);
-  }
-  for (const panel of optionsTabPanels) {
-    const tabPanel = panel.getAttribute("data-tab-panel");
-    panel.classList.toggle("active", tabPanel === state.activeOptionsTab);
-  }
+  syncTabButtonsAndPanels({
+    buttonElements: optionsTabButtons,
+    panelElements: optionsTabPanels,
+    activeValue: state.activeOptionsTab,
+  });
 }
 
 function renderEvalOptionsTabs(activeExperiment) {
   if (!activeExperiment || !state.evalTabStates[activeExperiment]) {
     return;
   }
-  const tabState = state.evalTabStates[activeExperiment];
-  for (const button of evalOptionsTabButtons) {
-    const tab = button.getAttribute("data-eval-tab");
-    button.classList.toggle("active", tab === tabState.activeOptionsTab);
-  }
-  for (const panel of evalOptionsTabPanels) {
-    const tabPanel = panel.getAttribute("data-eval-tab-panel");
-    panel.classList.toggle("active", tabPanel === tabState.activeOptionsTab);
-  }
+  syncTabButtonsAndPanels({
+    buttonElements: evalOptionsTabButtons,
+    panelElements: evalOptionsTabPanels,
+    activeValue: state.evalTabStates[activeExperiment].activeOptionsTab,
+    buttonAttribute: "data-eval-tab",
+    panelAttribute: "data-eval-tab-panel",
+  });
 }
 
 function renderEvalTruncateControls(activeExperiment, evalColumns) {
@@ -1611,8 +1610,7 @@ async function loadEvaluationsFromGitUrl(rawUrl) {
     return;
   }
 
-  const token = String(githubTokenInput.value || "").trim();
-  persistGitHubToken(token);
+  const token = persistGitHubTokenInputValue(githubTokenInput);
   hideLoadProgress();
   const gitLoadResult = await loadGitHubEntriesFromTreeUrl(trimmedUrl, {
     token,
@@ -1661,12 +1659,10 @@ async function handleGitLoadRequest() {
 }
 
 async function initializeGitUrlFromQueryParam() {
-  const gitUrl = readGitUrlQueryParam();
-  if (!gitUrl) {
-    return;
-  }
-  gitUrlInput.value = gitUrl;
-  await handleGitLoadRequest();
+  await runGitUrlQueryParamBootstrap({
+    inputElement: gitUrlInput,
+    onLoadRequested: () => handleGitLoadRequest(),
+  });
 }
 
 void initializeGitUrlFromQueryParam();

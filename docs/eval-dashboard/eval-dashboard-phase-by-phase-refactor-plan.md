@@ -1364,6 +1364,11 @@ These renderer modules should mostly:
 - avoid owning source loading, normalization, or browser-session persistence
 - avoid re-implementing common sort/truncation/sticky logic already extracted in Phase 9
 
+Phase-9-specific reminder for this phase:
+
+- the cached options-tab and eval-options-tab button/panel arrays captured during bootstrap are valid only while Phase 10 keeps those tab nodes structurally stable
+- if Phase 10 starts replacing those tab buttons or panels wholesale instead of updating them in place, refresh the cached refs explicitly or move that lookup responsibility into the extracted tabs renderer rather than assuming the old arrays stay live forever
+
 ### Tests to add in this phase
 
 Only add JS-native tests for any renderer-adjacent helpers that stay DOM-free. Do not force broad DOM-heavy renderer tests here unless a stable, low-friction harness appears naturally.
@@ -1551,6 +1556,7 @@ This phase confirms that the modularization is complete rather than partial.
 - loader/ingestion helpers
 - newly extracted plot aggregation/tab-map/export helpers
 - any shared table/session helpers that stay DOM-free enough for stable JS-native tests
+- lightweight orchestration-level integration helpers around `main.js` composition boundaries such as session bootstrap, local-file query-param clearing, and status/progress callback routing whenever those seams can be isolated without a heavy DOM harness
 
 ### Validation checklist
 

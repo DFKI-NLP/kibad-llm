@@ -33,6 +33,21 @@ export function getStoredGitHubToken({
 }
 
 /**
+ * Hydrate one input-like element from the persisted GitHub token.
+ *
+ * @param {{value?: string} | null} inputElement - Input-like element receiving the stored token.
+ * @param {{storageLike?: Storage | null, storageKey?: string}} [options={}] - Storage adapters and override key.
+ * @returns {string} The stored token value that was applied.
+ */
+export function initializeGitHubTokenInput(inputElement, options = {}) {
+  const token = getStoredGitHubToken(options);
+  if (inputElement) {
+    inputElement.value = token;
+  }
+  return token;
+}
+
+/**
  * Persist or clear the GitHub token in storage, tolerating storage access failures.
  *
  * @param {unknown} token - The token value to persist.
@@ -56,6 +71,20 @@ export function persistGitHubToken(
 }
 
 /**
+ * Persist the current value of one input-like GitHub-token element.
+ *
+ * @param {{value?: unknown} | null} inputElement - Input-like element carrying the token value.
+ * @param {{storageLike?: Storage | null, storageKey?: string}} [options={}] - Storage adapters and override key.
+ * @returns {string} The normalized token value that was persisted.
+ */
+export function persistGitHubTokenInputValue(inputElement, options = {}) {
+  const token = inputElement?.value;
+  const normalized = normalizeSessionValue(token);
+  persistGitHubToken(token, options);
+  return normalized;
+}
+
+/**
  * Read the current `git_url` query parameter from a location-like adapter.
  *
  * @param {{locationLike?: {search?: string} | null}} [options={}] - Optional location adapter.
@@ -64,6 +93,21 @@ export function persistGitHubToken(
 export function readGitUrlQueryParam({ locationLike = globalThis.location } = {}) {
   const params = new URLSearchParams(locationLike?.search || "");
   return normalizeSessionValue(params.get(GIT_URL_QUERY_PARAM));
+}
+
+/**
+ * Hydrate one input-like element from the current `git_url` query parameter.
+ *
+ * @param {{value?: string} | null} inputElement - Input-like element receiving the query-param value.
+ * @param {{locationLike?: {search?: string} | null}} [options={}] - Optional location adapter.
+ * @returns {string} The trimmed `git_url` value that was applied.
+ */
+export function initializeGitUrlInputFromQueryParam(inputElement, options = {}) {
+  const gitUrl = readGitUrlQueryParam(options);
+  if (inputElement) {
+    inputElement.value = gitUrl;
+  }
+  return gitUrl;
 }
 
 /**
@@ -107,4 +151,50 @@ export function setGitUrlQueryParam(
  */
 export function clearGitUrlQueryParam(options = {}) {
   setGitUrlQueryParam("", options);
+}
+
+/**
+ * Populate one input-like element from `git_url` and optionally trigger the initial load callback.
+ *
+ * @param {object} options - Bootstrap options.
+ * @param {{value?: string} | null} [options.inputElement=null] - Input-like element receiving the query value.
+ * @param {(gitUrl: string) => Promise<unknown> | unknown} [options.onLoadRequested] - Callback invoked when a non-empty `git_url` exists.
+ * @param {{search?: string} | null} [options.locationLike=globalThis.location] - Optional location adapter.
+ * @returns {Promise<boolean>} Whether a bootstrap load request was triggered.
+ */
+export async function runGitUrlQueryParamBootstrap({
+  inputElement = null,
+  onLoadRequested,
+  locationLike = globalThis.location,
+} = {}) {
+  const gitUrl = initializeGitUrlInputFromQueryParam(inputElement, { locationLike });
+  if (!gitUrl) {
+    return false;
+  }
+  await onLoadRequested?.(gitUrl);
+  return true;
+}
+
+/**
+ * Handle one local-file selection by clearing `git_url`, then delegating to the current load and render callbacks.
+ *
+ * @param {object} options - Local-load orchestration callbacks.
+ * @param {Array<unknown>} [options.files=[]] - Selected file list.
+ * @param {() => void} [options.clearGitUrl=clearGitUrlQueryParam] - Query-param clear callback.
+ * @param {(files: Array<unknown>) => Promise<unknown> | unknown} [options.loadEvaluationsFromFiles] - Local load callback.
+ * @param {() => void} [options.renderPredictions] - Prediction rerender callback.
+ * @param {() => void} [options.renderEvaluations] - Evaluation rerender callback.
+ * @returns {Promise<void>}
+ */
+export async function handleLocalEvaluationFileSelection({
+  files = [],
+  clearGitUrl = () => clearGitUrlQueryParam(),
+  loadEvaluationsFromFiles,
+  renderPredictions,
+  renderEvaluations,
+} = {}) {
+  clearGitUrl();
+  await loadEvaluationsFromFiles?.(files);
+  renderPredictions?.();
+  renderEvaluations?.();
 }

@@ -774,6 +774,7 @@ For Phase 9 and beyond, keep following the same rule:
 - do **not** force a broad DOM-emulation harness just to claim UI coverage early
 - add `ui.dom.test.mjs`, `ui.status.test.mjs`, `ui.table-shared.test.mjs`, and `browser.session.test.mjs` when those helpers expose stable behavior that can be exercised with simple document/element/storage/history stubs rather than a heavy DOM harness
 - add plot-module tests first at the aggregation/tab-map/export-helper layer, even if full SVG rendering still relies on manual/smoke validation initially
+- add lightweight orchestration-level integration helpers around `main.js` composition seams such as session bootstrap, local-file query-param clearing, and status/progress callback routing whenever those paths can be isolated cleanly without introducing a broad DOM harness
 
 ______________________________________________________________________
 
@@ -893,6 +894,7 @@ ______________________________________________________________________
 From the current repository state, the cleanest next sequence would be:
 
 1. move controls, tabs, JSON-pane rendering, and prediction/evaluation table rendering behind dedicated `ui/` modules
+1. if that Phase 10 tabs work starts replacing the currently cached options-tab or eval-options-tab nodes wholesale, refresh those cached refs explicitly or move the lookup ownership into the extracted tabs renderer instead of assuming the original arrays stay live forever
 1. keep extending `tests/unit/eval_dashboard/js/*.test.mjs` for any newly extracted DOM-free UI/browser helpers while preserving the existing Phase 8 loader/ingestion coverage
 1. extract plot data-shaping / aggregation / tab-map logic first and add JS-native plot tests for those helpers
 1. extract SVG/export/rendering helpers into `plots/` modules

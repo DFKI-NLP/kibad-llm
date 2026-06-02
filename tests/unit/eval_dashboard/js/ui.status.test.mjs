@@ -129,4 +129,7 @@ test("download button helpers switch between idle and busy labels", () => {
   setDownloadFiguresButtonBusy(button, "Exporting plots...");
   assert.equal(button.disabled, true);
   assert.equal(button.textContent, "Exporting plots...");
+
+  setDownloadFiguresButtonBusy(button);
+  assert.equal(button.textContent, "Preparing figures...");
 });

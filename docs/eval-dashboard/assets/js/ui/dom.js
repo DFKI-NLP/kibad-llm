@@ -107,3 +107,33 @@ export function setPanelVisibility(panelElement, shouldShow) {
   }
   panelElement.style.display = shouldShow ? "" : "none";
 }
+
+/**
+ * Synchronize cached tab buttons and panels against one active value.
+ *
+ * @param {object} options - Cached tab DOM collections and attribute names.
+ * @param {Array<{getAttribute?: Function, classList?: {toggle?: Function}}>} [options.buttonElements=[]] - Tab buttons.
+ * @param {Array<{getAttribute?: Function, classList?: {toggle?: Function}}>} [options.panelElements=[]] - Tab panels.
+ * @param {string | null} options.activeValue - The active tab identifier.
+ * @param {string} [options.buttonAttribute="data-tab"] - Attribute carrying the tab id on buttons.
+ * @param {string} [options.panelAttribute="data-tab-panel"] - Attribute carrying the tab id on panels.
+ * @param {string} [options.activeClassName="active"] - Class toggled on active buttons and panels.
+ * @returns {void}
+ */
+export function syncTabButtonsAndPanels({
+  buttonElements = [],
+  panelElements = [],
+  activeValue,
+  buttonAttribute = "data-tab",
+  panelAttribute = "data-tab-panel",
+  activeClassName = "active",
+}) {
+  for (const button of buttonElements) {
+    const buttonValue = button?.getAttribute?.(buttonAttribute);
+    button?.classList?.toggle?.(activeClassName, buttonValue === activeValue);
+  }
+  for (const panel of panelElements) {
+    const panelValue = panel?.getAttribute?.(panelAttribute);
+    panel?.classList?.toggle?.(activeClassName, panelValue === activeValue);
+  }
+}

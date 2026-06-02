@@ -1,7 +1,11 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { captureDomRefs, setPanelVisibility } from "../../../../docs/eval-dashboard/assets/js/ui/dom.js";
+import {
+  captureDomRefs,
+  setPanelVisibility,
+  syncTabButtonsAndPanels,
+} from "../../../../docs/eval-dashboard/assets/js/ui/dom.js";
 
 const DOM_REF_IDS = [
   "folderInput",
@@ -70,9 +74,29 @@ function createElement(id) {
   return {
     id,
     style: { display: "" },
+    attributes: new Map(),
+    classList: {
+      values: new Set(),
+      toggle(name, force) {
+        if (force) {
+          this.values.add(name);
+        } else {
+          this.values.delete(name);
+        }
+      },
+      contains(name) {
+        return this.values.has(name);
+      },
+    },
     queryResults: new Map(),
     querySelectorAll(selector) {
       return this.queryResults.get(selector) || [];
+    },
+    getAttribute(name) {
+      return this.attributes.get(name) || null;
+    },
+    setAttribute(name, value) {
+      this.attributes.set(name, String(value));
     },
   };
 }
@@ -152,4 +176,46 @@ test("setPanelVisibility preserves the existing display contract and ignores nul
   assert.equal(panel.style.display, "");
 
   assert.doesNotThrow(() => setPanelVisibility(null, false));
+});
+
+test("syncTabButtonsAndPanels toggles the active class on cached buttons and panels", () => {
+  const truncateButton = createElement("truncate-button");
+  truncateButton.setAttribute("data-tab", "truncate");
+  const defaultsButton = createElement("defaults-button");
+  defaultsButton.setAttribute("data-tab", "defaults");
+  const truncatePanel = createElement("truncate-panel");
+  truncatePanel.setAttribute("data-tab-panel", "truncate");
+  const defaultsPanel = createElement("defaults-panel");
+  defaultsPanel.setAttribute("data-tab-panel", "defaults");
+
+  syncTabButtonsAndPanels({
+    buttonElements: [truncateButton, defaultsButton],
+    panelElements: [truncatePanel, defaultsPanel],
+    activeValue: "defaults",
+  });
+
+  assert.equal(truncateButton.classList.contains("active"), false);
+  assert.equal(defaultsButton.classList.contains("active"), true);
+  assert.equal(truncatePanel.classList.contains("active"), false);
+  assert.equal(defaultsPanel.classList.contains("active"), true);
+});
+
+test("syncTabButtonsAndPanels supports custom attribute names and tolerates sparse elements", () => {
+  const evalButton = createElement("eval-button");
+  evalButton.setAttribute("data-eval-tab", "defaults");
+  const evalPanel = createElement("eval-panel");
+  evalPanel.setAttribute("data-eval-tab-panel", "defaults");
+
+  assert.doesNotThrow(() => {
+    syncTabButtonsAndPanels({
+      buttonElements: [null, evalButton],
+      panelElements: [undefined, evalPanel],
+      activeValue: "defaults",
+      buttonAttribute: "data-eval-tab",
+      panelAttribute: "data-eval-tab-panel",
+    });
+  });
+
+  assert.equal(evalButton.classList.contains("active"), true);
+  assert.equal(evalPanel.classList.contains("active"), true);
 });

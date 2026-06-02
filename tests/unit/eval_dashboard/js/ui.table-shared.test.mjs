@@ -141,6 +141,21 @@ test("append mode preserves existing sorts while toggling one column", () => {
       { column: "group_size", direction: "asc" },
     ]
   );
+
+  assert.deepEqual(
+    getNextSortConfig(
+      [
+        { column: "prediction.id", direction: "asc" },
+        { column: "group_size", direction: "asc" },
+      ],
+      "group_size",
+      {
+        append: true,
+        sortableControlColumns: SORTABLE_CONTROL_COLUMNS,
+      }
+    ),
+    [{ column: "prediction.id", direction: "asc" }]
+  );
 });
 
 test("formatSortLabel renders special control-column labels and priorities", () => {
@@ -209,6 +224,22 @@ test("createSortButton exposes indicator, aria metadata, and click handling", ()
   assert.deepEqual(events, [clickEvent]);
 });
 
+test("createSortButton renders the inactive button state when the column is not sorted", () => {
+  const documentLike = createDocumentStub();
+  const button = createSortButton({
+    documentLike,
+    label: "title",
+    column: "prediction.content.title",
+    sortConfig: [],
+    onToggle() {},
+    sortableControlColumns: SORTABLE_CONTROL_COLUMNS,
+  });
+
+  assert.equal(button.className, "header-sort-button");
+  assert.equal(button.getAttribute("aria-label"), "title, not sorted");
+  assert.equal(button.children[1].textContent, "↕");
+});
+
 test("createTruncatingCell keeps text content and the shared truncation class semantics", () => {
   const documentLike = createDocumentStub();
   const truncatedCell = createTruncatingCell({
@@ -231,6 +262,8 @@ test("createTruncatingCell keeps text content and the shared truncation class se
 });
 
 test("updateStickyControlColumnOffsets computes sticky offsets and resets missing headers", () => {
+  assert.doesNotThrow(() => updateStickyControlColumnOffsets(null));
+
   const shortTable = new FakeElement("table");
   shortTable.tHead = { rows: [{ cells: [new FakeElement("th")] }] };
 

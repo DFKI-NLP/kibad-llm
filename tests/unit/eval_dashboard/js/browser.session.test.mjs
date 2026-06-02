@@ -2,12 +2,17 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import {
+  handleLocalEvaluationFileSelection,
+  initializeGitHubTokenInput,
+  initializeGitUrlInputFromQueryParam,
   buildGitUrlQueryParamUrl,
   clearGitUrlQueryParam,
   getStoredGitHubToken,
   normalizeSessionValue,
   persistGitHubToken,
+  persistGitHubTokenInputValue,
   readGitUrlQueryParam,
+  runGitUrlQueryParamBootstrap,
   setGitUrlQueryParam,
 } from "../../../../docs/eval-dashboard/assets/js/browser/session.js";
 
@@ -49,6 +54,16 @@ test("GitHub token persistence trims values and clears empty tokens", () => {
   assert.equal(storageLike.snapshot().size, 0);
 });
 
+test("initializeGitHubTokenInput hydrates an input-like element from stored token state", () => {
+  const storageLike = createStorageAdapter(" persisted-token ");
+  const inputElement = { value: "" };
+
+  const token = initializeGitHubTokenInput(inputElement, { storageLike });
+
+  assert.equal(token, " persisted-token ");
+  assert.equal(inputElement.value, " persisted-token ");
+});
+
 test("GitHub token reads tolerate storage adapter failures", () => {
   const failingStorage = {
     getItem() {
@@ -78,6 +93,14 @@ test("GitHub token helpers honor custom storage keys and tolerate write failures
   assert.doesNotThrow(() => persistGitHubToken("   ", { storageLike: failingStorage }));
 });
 
+test("persistGitHubTokenInputValue persists the current input value with the existing trim contract", () => {
+  const storageLike = createStorageAdapter();
+  const inputElement = { value: "  abc123  " };
+
+  assert.equal(persistGitHubTokenInputValue(inputElement, { storageLike }), "abc123");
+  assert.equal(getStoredGitHubToken({ storageLike }), "abc123");
+});
+
 test("readGitUrlQueryParam returns a trimmed git_url query parameter", () => {
   assert.equal(
     readGitUrlQueryParam({
@@ -86,6 +109,17 @@ test("readGitUrlQueryParam returns a trimmed git_url query parameter", () => {
     "https://github.com/org/repo/tree/main/logs"
   );
   assert.equal(readGitUrlQueryParam({ locationLike: { search: "?other=1" } }), "");
+});
+
+test("initializeGitUrlInputFromQueryParam hydrates an input-like element from git_url", () => {
+  const inputElement = { value: "" };
+
+  const gitUrl = initializeGitUrlInputFromQueryParam(inputElement, {
+    locationLike: { search: "?git_url=https%3A%2F%2Fgithub.com%2Forg%2Frepo%2Ftree%2Fmain%2Flogs" },
+  });
+
+  assert.equal(gitUrl, "https://github.com/org/repo/tree/main/logs");
+  assert.equal(inputElement.value, "https://github.com/org/repo/tree/main/logs");
 });
 
 test("buildGitUrlQueryParamUrl sets and removes the git_url query parameter", () => {
@@ -130,4 +164,52 @@ test("setGitUrlQueryParam and clearGitUrlQueryParam use injected history adapter
       url: "https://example.test/eval-dashboard/index.html",
     },
   ]);
+});
+
+test("runGitUrlQueryParamBootstrap hydrates the input and triggers the load callback only for non-empty git_url", async () => {
+  const inputElement = { value: "" };
+  const calls = [];
+
+  const didLoad = await runGitUrlQueryParamBootstrap({
+    inputElement,
+    locationLike: { search: "?git_url=https%3A%2F%2Fgithub.com%2Forg%2Frepo%2Ftree%2Fmain%2Flogs" },
+    onLoadRequested(gitUrl) {
+      calls.push(gitUrl);
+    },
+  });
+  const skippedLoad = await runGitUrlQueryParamBootstrap({
+    inputElement: { value: "unchanged" },
+    locationLike: { search: "?other=1" },
+    onLoadRequested() {
+      throw new Error("should not be called");
+    },
+  });
+
+  assert.equal(didLoad, true);
+  assert.equal(inputElement.value, "https://github.com/org/repo/tree/main/logs");
+  assert.deepEqual(calls, ["https://github.com/org/repo/tree/main/logs"]);
+  assert.equal(skippedLoad, false);
+});
+
+test("handleLocalEvaluationFileSelection clears git_url before loading and rerendering", async () => {
+  const callOrder = [];
+  const files = [{ name: "job_return_value.json" }];
+
+  await handleLocalEvaluationFileSelection({
+    files,
+    clearGitUrl() {
+      callOrder.push("clear");
+    },
+    async loadEvaluationsFromFiles(receivedFiles) {
+      callOrder.push(`load:${receivedFiles.length}`);
+    },
+    renderPredictions() {
+      callOrder.push("renderPredictions");
+    },
+    renderEvaluations() {
+      callOrder.push("renderEvaluations");
+    },
+  });
+
+  assert.deepEqual(callOrder, ["clear", "load:1", "renderPredictions", "renderEvaluations"]);
 });
