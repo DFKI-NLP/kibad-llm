@@ -68,6 +68,12 @@ The fixtures below provide explicit examples for each of those plot families.
 - source basis: synthetic fixture derived from the `confusion_matrix` version-2 sample by truncating the JSON payload
 - notes: contains malformed JSON so loader-side parsing should fail
 
+### `missing_prediction_id`
+
+- purpose: intentionally missing prediction-id example for Phase 7 normalization coverage
+- source basis: synthetic fixture derived from the `confusion_matrix` version-2 sample by removing `prediction.job_return_value.output_file`
+- notes: contains valid JSON and valid overrides, but normalization must fail when the dashboard tries to extract the missing prediction id
+
 ### `unsupported_version`
 
 - purpose: intentionally unsupported `job_return_value.json` version example

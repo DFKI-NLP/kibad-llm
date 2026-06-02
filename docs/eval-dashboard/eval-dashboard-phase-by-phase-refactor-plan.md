@@ -67,10 +67,10 @@ As of the current repository state:
 - `docs/eval-dashboard.html` is currently a temporary compatibility shim
 - `properdocs.yml` navigation points to `eval-dashboard/index.html`
 - `docs/index.md` links point to `eval-dashboard/index.html`
-- populated Phase 6 runtime assets now exist under `docs/eval-dashboard/assets/`: CSS lives under `assets/css/`, `assets/js/main.js` remains the external entry module, pure helpers live under `assets/js/utils/`, and extracted canonical state/selector modules now live under `assets/js/state/`
+- populated Phase 7 runtime assets now exist under `docs/eval-dashboard/assets/`: CSS lives under `assets/css/`, `assets/js/main.js` remains the external entry module, pure helpers live under `assets/js/utils/`, extracted canonical state/selector modules now live under `assets/js/state/`, and parsing/normalization modules now live under `assets/js/data/`
 - structural smoke coverage now includes `tests/unit/eval_dashboard/test_eval_dashboard_entrypoint.py` and `tests/unit/eval_dashboard/test_eval_dashboard_html_contracts.py`
-- browser-free JS utility, store, and selector logic coverage now exists under `tests/unit/eval_dashboard/js/` via the Node.js built-in test runner, which remains the long-term home for extracted dashboard logic tests in later phases
-- curated Phase 2 fixtures now exist under `tests/fixtures/eval_dashboard/`, including valid version-0/1/2 examples, invalid edge-case fixtures, and explicit fixtures for all currently supported plot families (`bars`, `errors`, `confusion_matrix`, `tpfpfn`)
+- browser-free JS utility, store, selector, and data-normalization logic coverage now exists under `tests/unit/eval_dashboard/js/` via the Node.js built-in test runner, which remains the long-term home for extracted dashboard logic tests in later phases
+- curated Phase 2 and Phase 7 fixtures now exist under `tests/fixtures/eval_dashboard/`, including valid version-0/1/2 examples, invalid edge-case fixtures, the dedicated `missing_prediction_id` fixture, and explicit fixtures for all currently supported plot families (`bars`, `errors`, `confusion_matrix`, `tpfpfn`)
 - fixture provenance is documented in `tests/fixtures/eval_dashboard/README.md`
 - fixture integrity smoke coverage exists at `tests/unit/eval_dashboard/test_dashboard_fixtures.py`
 - docs-build validation relies on the repo-level `check-mkdocs (uv)` hook against `properdocs.yml`, rather than a dashboard-specific subprocess test
@@ -78,11 +78,11 @@ As of the current repository state:
 - Phase 3 CSS extraction remains complete: `docs/eval-dashboard/index.html` still loads `assets/css/index.css` and contains no inline `<style>` block
 - Phase 4 JS externalization is complete: `docs/eval-dashboard/index.html` now loads `assets/js/main.js` as a single external `type="module"` script and contains no inline `<script>` block
 - the structural smoke tests now assert the external CSS and external module-script contract rather than a Phase 3 inline-script freeze
-- the baseline contract now records both the Phase 5 utility-module contract and the Phase 6 state/store + selector-module contract instead of freezing the full `main.js` file contents
+- the baseline contract now records the Phase 5 utility-module contract, the Phase 6 state/store + selector-module contract, and the Phase 7 data-module contract instead of freezing the full `main.js` file contents
 
 ### Status checkpoint
 
-The repository is currently **through Phase 6 and ready for Phase 7**:
+The repository is currently **through Phase 7 and ready for Phase 8**:
 
 - Phase 0 baseline artifacts landed
 - Phase 1 folder migration and compatibility shim landed
@@ -91,8 +91,9 @@ The repository is currently **through Phase 6 and ready for Phase 7**:
 - Phase 4 JS externalization landed
 - Phase 5 utility extraction, the permanent JS-native logic-test runner, and explicit CI wiring landed
 - Phase 6 state/store extraction, selector extraction, and selector/store logic tests landed
+- Phase 7 overrides parsing extraction, run normalization extraction, missing-prediction-id fixture coverage, and parsing/normalization logic tests landed
 
-That means the next implementation step is to **start Phase 7** by extracting parsing and normalization logic while extending the same JS-native test harness.
+That means the next implementation step is to **start Phase 8** by extracting the local-file and GitHub loading flows while keeping the current normalization boundary stable.
 
 ______________________________________________________________________
 
@@ -878,6 +879,8 @@ ______________________________________________________________________
 
 ## Phase 7. Extract parsing and normalization, then add normalization tests
 
+**Status in current repository:** completed.
+
 ### Goal
 
 Make imported dashboard data handling testable and clearly separated from rendering.
@@ -981,6 +984,17 @@ Add a curated fixture directory under `tests/fixtures/eval_dashboard/missing_pre
 ### Why this phase matters
 
 Data normalization is one of the most valuable areas to test independently.
+
+### Landed Phase 7 outcome
+
+The current branch now matches this phase:
+
+- `docs/eval-dashboard/assets/js/data/` contains `parse-overrides.js` and `normalize.js`
+- `docs/eval-dashboard/assets/js/main.js` now imports the extracted parsing and normalization helpers while preserving the existing ingestion flow and keeping cross-run conflicting-prediction-id detection in the orchestration layer
+- `tests/unit/eval_dashboard/js/data.parse-overrides.test.mjs` locks in the current permissive override-parser semantics, including accepted `- key=value` lines, single-leading-`+` stripping, raw-string value preservation, and permissive skipping of unhandled lines
+- `tests/unit/eval_dashboard/js/data.normalize.test.mjs` covers supported versions, unsupported-version rejection, malformed JSON fixture behavior at the JSON parse boundary, missing-prediction-id handling, metric-type inference for v0/v1 runs, and the Phase 7 boundary that leaves conflicting-prediction-id detection outside single-run normalization
+- `tests/fixtures/eval_dashboard/missing_prediction_id/` is now checked in and documented alongside the other curated invalid edge fixtures
+- `tests/unit/eval_dashboard/test_eval_dashboard_entrypoint.py`, `tests/unit/eval_dashboard/test_dashboard_fixtures.py`, `tests/unit/eval_dashboard/test_eval_dashboard_baseline_contract.py`, and `tests/fixtures/eval_dashboard/baseline/baseline-summary.json` now record the Phase 7 data-module contract
 
 ### Validation checklist
 
@@ -1431,7 +1445,7 @@ If needed, these can be grouped into fewer PRs:
 - PR 3: utilities + permanent JS-native runner + state + selectors + parsing + normalization + logic tests
 - PR 4: loaders + UI modules + plot/export modules + final cleanup + coverage pass
 
-From the current repository state, work should first finish the remaining Phase 5 testing-seam work — permanent minimal JS-native runner plus explicit CI wiring — before resuming at the `state/store extraction` step.
+From the current repository state, work should next continue with the Phase 8 loader extraction work: move local file ingestion and GitHub loading into dedicated `data/` modules while keeping the newly extracted Phase 7 normalization boundary intact.
 
 After each completed PR or phase in that sequence, refresh the planning docs under `docs/eval-dashboard/` before moving on so the written plan keeps matching the repository state and `CONTRIBUTING.md` expectations.
 
@@ -1463,10 +1477,10 @@ ______________________________________________________________________
 
 Given the current repository state, the safest next implementation step is:
 
-1. extract `.hydra/overrides.yaml` parsing helpers into `docs/eval-dashboard/assets/js/data/parse-overrides.js`
-1. extract `job_return_value.json` version handling and canonical normalization into `docs/eval-dashboard/assets/js/data/normalize.js`
-1. add `data.parse-overrides.test.mjs` and `data.normalize.test.mjs` coverage under `tests/unit/eval_dashboard/js/`
-1. keep `main.js` behavior-equivalent while beginning the Phase 7 parse/normalize split
-1. update the planning docs in `docs/eval-dashboard/` after Phase 7 lands and confirm the change set complies with `CONTRIBUTING.md`
+1. extract the local-file ingestion helpers into `docs/eval-dashboard/assets/js/data/file-loader.js`
+1. extract GitHub URL parsing, listing, fetching, and progress helpers into `docs/eval-dashboard/assets/js/data/git-loader.js`
+1. keep cross-run duplicate/conflicting-prediction-id handling with the ingestion boundary while reusing the extracted Phase 7 normalization helpers
+1. add JS-native tests for pure loader-adjacent helpers such as GitHub URL parsing and local-entry filtering under `tests/unit/eval_dashboard/js/`
+1. update the planning docs in `docs/eval-dashboard/` after Phase 8 lands and confirm the change set complies with `CONTRIBUTING.md`
 
-That continues the next smallest behavior-preserving extraction boundary after Phase 6: keep Python for structural/docs/fixture smoke coverage, and keep the minimal JS-native runner for extracted dashboard logic.
+That continues the next smallest behavior-preserving extraction boundary after Phase 7: keep Python for structural/docs/fixture smoke coverage, keep the minimal JS-native runner for extracted dashboard logic, and move the raw-loading concerns out of `main.js` without redesigning the normalized data contract.

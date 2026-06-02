@@ -12,6 +12,7 @@ DASHBOARD_COMPAT = DOCS_ROOT / "eval-dashboard.html"
 DASHBOARD_CSS_ROOT = DOCS_ROOT / "eval-dashboard" / "assets" / "css"
 DASHBOARD_JS_ROOT = DOCS_ROOT / "eval-dashboard" / "assets" / "js"
 DASHBOARD_JS_ENTRY = DASHBOARD_JS_ROOT / "main.js"
+DATA_JS_ROOT = DASHBOARD_JS_ROOT / "data"
 STATE_JS_ROOT = DASHBOARD_JS_ROOT / "state"
 UTILS_JS_ROOT = DASHBOARD_JS_ROOT / "utils"
 PROPERDOCS_CONFIG = PROJ_ROOT / "properdocs.yml"
@@ -34,6 +35,10 @@ EXPECTED_JS_UTILITY_FILES = (
 EXPECTED_JS_STATE_FILES = (
     "selectors.js",
     "store.js",
+)
+EXPECTED_JS_DATA_FILES = (
+    "normalize.js",
+    "parse-overrides.js",
 )
 
 
@@ -82,6 +87,13 @@ def test_phase_six_dashboard_js_state_modules_exist() -> None:
 
     for file_name in EXPECTED_JS_STATE_FILES:
         assert (STATE_JS_ROOT / file_name).is_file()
+
+
+def test_phase_seven_dashboard_js_data_modules_exist() -> None:
+    """Ensure the Phase 7 data modules exist under the dashboard asset path."""
+
+    for file_name in EXPECTED_JS_DATA_FILES:
+        assert (DATA_JS_ROOT / file_name).is_file()
 
 
 def test_properdocs_nav_points_to_new_dashboard_entry() -> None:
