@@ -1,4 +1,4 @@
-"""Baseline artifact contract tests for the eval-dashboard baseline plus Phase 5 to Phase 7 JS contracts."""
+"""Baseline artifact contract tests for the eval-dashboard baseline plus Phase 5 to Phase 8 JS contracts."""
 
 import json
 
@@ -23,6 +23,7 @@ JS_TEST_ROOT = PROJ_ROOT / "tests" / "unit" / "eval_dashboard" / "js"
 JS_PACKAGE_JSON = JS_ROOT / "package.json"
 JS_TEST_README = JS_TEST_ROOT / "README.md"
 LEGACY_JS_PYTEST_BRIDGE = JS_TEST_ROOT / "test_eval_dashboard_utils.py"
+INGEST_RUNS_MODULE = DATA_JS_ROOT / "ingest-runs.js"
 
 EXPECTED_FEATURE_KEYS = {
     "supports_local_load",
@@ -61,6 +62,12 @@ def _main_js_entry() -> str:
     """Load the external dashboard JavaScript entry module."""
 
     return MAIN_JS_ENTRY.read_text(encoding="utf-8")
+
+
+def _ingest_runs_module() -> str:
+    """Load the shared ingestion module that now owns Phase 7 parse/normalize wiring."""
+
+    return INGEST_RUNS_MODULE.read_text(encoding="utf-8")
 
 
 def _js_package_definition() -> dict:
@@ -180,6 +187,25 @@ def test_baseline_summary_includes_phase_seven_data_contract() -> None:
     }
 
 
+def test_baseline_summary_includes_phase_eight_loader_contract() -> None:
+    """Ensure the baseline artifact exposes the Phase 8 loader and ingestion contract."""
+
+    summary = _baseline_summary()
+    phase_eight_contract = summary["phase_eight_contract"]
+
+    assert phase_eight_contract["data_module_root"] == "docs/eval-dashboard/assets/js/data"
+    assert set(phase_eight_contract["data_modules"]) == {
+        "file-loader.js",
+        "git-loader.js",
+        "ingest-runs.js",
+    }
+    assert set(phase_eight_contract["js_test_files"]) == {
+        "data.file-loader.test.mjs",
+        "data.git-loader.test.mjs",
+        "data.ingest-runs.test.mjs",
+    }
+
+
 def test_current_runtime_matches_phase_six_state_contract() -> None:
     """Ensure the extracted Phase 6 state modules and selector/store tests exist and are wired into main.js."""
 
@@ -202,16 +228,16 @@ def test_current_runtime_matches_phase_six_state_contract() -> None:
 
 
 def test_current_runtime_matches_phase_seven_data_contract() -> None:
-    """Ensure the extracted Phase 7 data modules and JS tests exist and are wired into main.js."""
+    """Ensure the extracted Phase 7 data modules and JS tests exist behind the shared ingestion boundary."""
 
     summary = _baseline_summary()
     phase_seven_contract = summary["phase_seven_contract"]
-    main_js = _main_js_entry()
+    ingest_runs_js = _ingest_runs_module()
 
     for file_name in phase_seven_contract["data_modules"]:
         assert (DATA_JS_ROOT / file_name).is_file()
-    for import_path in ("./data/normalize.js", "./data/parse-overrides.js"):
-        assert import_path in main_js
+    for import_path in ("./normalize.js", "./parse-overrides.js"):
+        assert import_path in ingest_runs_js
     for file_name in phase_seven_contract["js_test_files"]:
         assert (JS_TEST_ROOT / file_name).is_file()
     assert set(phase_seven_contract["normalization_focus"]) == {
@@ -219,6 +245,33 @@ def test_current_runtime_matches_phase_seven_data_contract() -> None:
         "override parsing semantics",
         "missing prediction id handling",
         "unsupported version rejection",
+    }
+
+
+def test_current_runtime_matches_phase_eight_loader_contract() -> None:
+    """Ensure the extracted Phase 8 loader modules and JS tests exist and are wired into main.js."""
+
+    summary = _baseline_summary()
+    phase_eight_contract = summary["phase_eight_contract"]
+    main_js = _main_js_entry()
+
+    for file_name in phase_eight_contract["data_modules"]:
+        assert (DATA_JS_ROOT / file_name).is_file()
+    for import_path in (
+        "./data/file-loader.js",
+        "./data/git-loader.js",
+        "./data/ingest-runs.js",
+    ):
+        assert import_path in main_js
+    for file_name in phase_eight_contract["js_test_files"]:
+        assert (JS_TEST_ROOT / file_name).is_file()
+    assert set(phase_eight_contract["loader_focus"]) == {
+        "local file path filtering, source-label derivation, and FileReader fallback",
+        "shared run ingestion and duplicate/conflict detection",
+        "shared ingestion summary accounting for invalid, unsupported-version, and missing-prediction-id runs",
+        "github tree URL parsing and recursive file loading",
+        "github ref resolution across branches, tags, and unresolved refs",
+        "github loader empty-input and no-files-found paths",
     }
 
 

@@ -1,5 +1,5 @@
 {
-  "baseline_version": 5,
+  "baseline_version": 6,
   "captured_at": "2026-06-02",
   "implementation_shape": {
     "runtime_entrypoint": "docs/eval-dashboard/index.html",
@@ -67,6 +67,27 @@
       "override parsing semantics",
       "missing prediction id handling",
       "unsupported version rejection"
+    ]
+  },
+  "phase_eight_contract": {
+    "data_module_root": "docs/eval-dashboard/assets/js/data",
+    "data_modules": [
+      "file-loader.js",
+      "git-loader.js",
+      "ingest-runs.js"
+    ],
+    "js_test_files": [
+      "data.file-loader.test.mjs",
+      "data.git-loader.test.mjs",
+      "data.ingest-runs.test.mjs"
+    ],
+    "loader_focus": [
+      "local file path filtering, source-label derivation, and FileReader fallback",
+      "shared run ingestion and duplicate/conflict detection",
+      "shared ingestion summary accounting for invalid, unsupported-version, and missing-prediction-id runs",
+      "github tree URL parsing and recursive file loading",
+      "github ref resolution across branches, tags, and unresolved refs",
+      "github loader empty-input and no-files-found paths"
     ]
   },
   "feature_expectations": {

@@ -37,6 +37,9 @@ EXPECTED_JS_STATE_FILES = (
     "store.js",
 )
 EXPECTED_JS_DATA_FILES = (
+    "file-loader.js",
+    "git-loader.js",
+    "ingest-runs.js",
     "normalize.js",
     "parse-overrides.js",
 )
@@ -89,8 +92,8 @@ def test_phase_six_dashboard_js_state_modules_exist() -> None:
         assert (STATE_JS_ROOT / file_name).is_file()
 
 
-def test_phase_seven_dashboard_js_data_modules_exist() -> None:
-    """Ensure the Phase 7 data modules exist under the dashboard asset path."""
+def test_phase_seven_and_phase_eight_dashboard_js_data_modules_exist() -> None:
+    """Ensure the Phase 7 and Phase 8 data modules exist under the dashboard asset path."""
 
     for file_name in EXPECTED_JS_DATA_FILES:
         assert (DATA_JS_ROOT / file_name).is_file()
