@@ -100,18 +100,18 @@ def test_main_module_delegates_phase_ten_a_options_panel_rendering_to_controls_h
 
     main_js = _main_js()
 
-    assert "buildOptionsPanelModels," in main_js
-    assert main_js.count("buildOptionsPanelModels({") == 2
-    assert "renderOptionsPanelControls({" in main_js
-    assert main_js.count("renderOptionsPanelControls({") == 2
-    assert "checkboxOptions: predictionOptionsPanelModels.checkboxOptions" in main_js
-    assert "defaultControlModels: predictionOptionsPanelModels.defaultControlModels" in main_js
-    assert "checkboxOptions: evalOptionsPanelModels.checkboxOptions" in main_js
-    assert "defaultControlModels: evalOptionsPanelModels.defaultControlModels" in main_js
+    assert "renderOptionsPanel," in main_js
+    assert main_js.count("renderOptionsPanel({") == 2
     assert "renderCheckboxOptionList({" not in main_js
     assert "renderMissingDefaultControls({" not in main_js
     assert "buildColumnOptions(" not in main_js
     assert "buildMissingDefaultControlModels(" not in main_js
+    assert "buildOptionsPanelModels(" not in main_js
+    assert "renderOptionsPanelControls({" not in main_js
+    assert "checkboxColumns: orderedPredictionColumns" in main_js
+    assert 'checkboxColumns: [...new Set([...orderedEvalColumns, "eval_run_dir"])]' in main_js
+    assert "defaultColumns: predictionDefaultColumns" in main_js
+    assert "defaultColumns: evalDefaultColumns" in main_js
 
 
 def test_main_module_delegates_prediction_and_evaluation_group_by_button_state_to_controls_helper() -> (
@@ -144,6 +144,19 @@ def test_main_module_delegates_prediction_and_evaluation_group_by_button_state_t
     assert "allButton: evalGroupByAllButton" in evaluation_body
     assert "toggleButton: evalGroupByToggleButton" in evaluation_body
     assert "noneButton: evalGroupByNoneButton" in evaluation_body
+
+
+def test_main_module_delegates_per_column_group_by_toggle_rendering_to_controls_helper() -> None:
+    """Ensure `main.js` no longer open-codes the repeated header checkbox used for per-column grouping."""
+
+    main_js = _main_js()
+
+    assert "createGroupByToggleControl," in main_js
+    assert main_js.count("createGroupByToggleControl({") == 2
+    assert 'toggle.className = "group-toggle"' not in main_js
+    assert 'toggle.title = "Use this column for grouping"' not in main_js
+    assert "toggleCb.checked =" not in main_js
+    assert 'toggleCb.addEventListener("change"' not in main_js
 
 
 def test_main_module_delegates_eval_json_pane_rendering_to_phase_ten_a_helper() -> None:
@@ -179,3 +192,18 @@ def test_main_module_delegates_thin_plot_control_rendering_to_controls_helper() 
     assert "plotShowLegendOnceRow," in main_js
     assert "listElement: plotGroupBarsList" in main_js
     assert "getLabel: displayPlotGroupFieldName" in main_js
+
+
+def test_main_module_delegates_sort_status_rendering_to_controls_helper() -> None:
+    """Ensure `main.js` no longer owns the sort-status label/reset-button rendering logic."""
+
+    main_js = _main_js()
+
+    assert "renderSortStatus," in main_js
+    assert main_js.count("renderSortStatus({") == 3
+    assert "function renderPredictionSortStatus()" not in main_js
+    assert "function renderEvalSortStatus(" not in main_js
+    assert "predictionSortedByLabel.textContent =" not in main_js
+    assert "evalSortedByLabel.textContent =" not in main_js
+    assert "predictionResetSortButton.disabled =" not in main_js
+    assert "evalResetSortButton.disabled =" not in main_js

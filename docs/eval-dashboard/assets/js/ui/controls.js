@@ -2,7 +2,9 @@
  * Shared options-panel and control-list helpers for the eval dashboard.
  */
 
+import { normalizeSortConfig } from "../utils/sort.js";
 import { setPanelVisibility } from "./dom.js";
+import { formatSortLabel as formatSharedSortLabel } from "./table-shared.js";
 
 /**
  * Normalize collection-style metric names down to the plot-control visualization family.
@@ -116,6 +118,66 @@ export function renderGroupByButtonState(buttonRefs, availableColumns) {
   buttonRefs.allButton.disabled = disabled;
   buttonRefs.toggleButton.disabled = disabled;
   buttonRefs.noneButton.disabled = disabled;
+}
+
+/**
+ * Create the shared per-column group-by toggle control used in table headers.
+ *
+ * @param {object} options - Group-by toggle render inputs.
+ * @param {Document} [options.documentLike=globalThis.document] - Document-like element factory.
+ * @param {boolean} [options.checked=false] - Whether the toggle starts checked.
+ * @param {string} [options.title="Use this column for grouping"] - Tooltip for the wrapper.
+ * @param {string | null} [options.ariaLabel=null] - Optional aria-label for the checkbox.
+ * @param {(checked: boolean, event: Event) => void} options.onToggle - Change callback.
+ * @returns {HTMLLabelElement} The configured group-by toggle wrapper.
+ */
+export function createGroupByToggleControl({
+  documentLike = globalThis.document,
+  checked = false,
+  title = "Use this column for grouping",
+  ariaLabel = null,
+  onToggle,
+}) {
+  const toggle = documentLike.createElement("label");
+  toggle.className = "group-toggle";
+  toggle.title = title;
+  const checkbox = documentLike.createElement("input");
+  checkbox.type = "checkbox";
+  checkbox.checked = checked;
+  if (ariaLabel) {
+    checkbox.setAttribute("aria-label", ariaLabel);
+  }
+  checkbox.addEventListener("change", (event) => onToggle(checkbox.checked, event));
+  toggle.appendChild(checkbox);
+  return toggle;
+}
+
+/**
+ * Normalize one sort config and render the current sort status UI.
+ *
+ * @param {object} options - Sort-status render inputs.
+ * @param {HTMLElement | null} options.labelElement - Element receiving the formatted sort label.
+ * @param {HTMLButtonElement | null} options.resetButton - Reset-sort button to enable or disable.
+ * @param {Array<{column: string, direction: string}> | object | null} options.sortConfig - Current sort configuration.
+ * @param {Iterable<string>} options.validColumns - Currently valid sort columns.
+ * @param {(column: string) => string} options.displayColumnName - Formatter for data-column labels.
+ * @returns {Array<{column: string, direction: string}>} The normalized sort config that was rendered.
+ */
+export function renderSortStatus({
+  labelElement,
+  resetButton,
+  sortConfig,
+  validColumns,
+  displayColumnName,
+}) {
+  const normalizedSort = normalizeSortConfig(sortConfig, new Set(validColumns || []));
+  if (labelElement) {
+    labelElement.textContent = formatSharedSortLabel(normalizedSort, displayColumnName);
+  }
+  if (resetButton) {
+    resetButton.disabled = normalizedSort.length === 0;
+  }
+  return normalizedSort;
 }
 
 /**
@@ -403,6 +465,71 @@ export function renderOptionsPanelControls({
     onCommit: onDefaultCommit,
     inputIdPrefix,
   });
+}
+
+/**
+ * Build and render one full options panel from column-level callbacks.
+ *
+ * @param {object} options - Options-panel composition and render inputs.
+ * @param {Document} options.documentLike - Document-like element factory.
+ * @param {HTMLElement | null} options.checkboxListElement - Container receiving checkbox options.
+ * @param {Iterable<string>} options.checkboxColumns - Columns exposed as checkbox toggles.
+ * @param {Iterable<string>} [options.checkedValues=[]] - Currently checked checkbox values.
+ * @param {(value: string, checked: boolean) => void} options.onCheckboxToggle - Checkbox toggle callback.
+ * @param {(column: string) => string} [options.getCheckboxLabel] - Checkbox label formatter.
+ * @param {(option: {value: string, label: string}) => string | null} [options.getCheckboxAriaLabel] - Optional checkbox aria-label formatter.
+ * @param {HTMLElement | null} options.defaultsListElement - Container receiving missing-default controls.
+ * @param {HTMLElement | null} options.defaultsPanelElement - Surrounding panel to show or hide.
+ * @param {Iterable<string>} options.defaultColumns - Columns needing missing-value defaults.
+ * @param {(column: string) => string} options.getDefaultLabel - Missing-default label formatter.
+ * @param {(column: string) => string} options.getDefaultValue - Current configured default lookup.
+ * @param {(column: string) => string[]} options.getDefaultSuggestions - Suggestion lookup.
+ * @param {(column: string) => number} options.getDefaultMissingCount - Missing-value count lookup.
+ * @param {(column: string, nextValue: string) => void} options.onDefaultCommit - Missing-default commit callback.
+ * @param {string} options.inputIdPrefix - Prefix for generated missing-default datalist ids.
+ * @returns {{checkboxOptions: Array<{value: string, label: string}>, defaultControlModels: Array<{column: string, label: string, value: string, suggestions: string[], missingCount: number}>}} The rendered plain option models.
+ */
+export function renderOptionsPanel({
+  documentLike,
+  checkboxListElement,
+  checkboxColumns,
+  checkedValues = [],
+  onCheckboxToggle,
+  getCheckboxLabel = (column) => String(column),
+  getCheckboxAriaLabel = null,
+  defaultsListElement,
+  defaultsPanelElement,
+  defaultColumns,
+  getDefaultLabel,
+  getDefaultValue,
+  getDefaultSuggestions,
+  getDefaultMissingCount,
+  onDefaultCommit,
+  inputIdPrefix,
+}) {
+  const panelModels = buildOptionsPanelModels({
+    checkboxColumns,
+    getCheckboxLabel,
+    defaultColumns,
+    getDefaultLabel,
+    getDefaultValue,
+    getDefaultSuggestions,
+    getDefaultMissingCount,
+  });
+  renderOptionsPanelControls({
+    documentLike,
+    checkboxListElement,
+    checkboxOptions: panelModels.checkboxOptions,
+    checkedValues,
+    onCheckboxToggle,
+    getCheckboxAriaLabel,
+    defaultsListElement,
+    defaultsPanelElement,
+    defaultControlModels: panelModels.defaultControlModels,
+    onDefaultCommit,
+    inputIdPrefix,
+  });
+  return panelModels;
 }
 
 /**

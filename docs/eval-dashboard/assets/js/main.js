@@ -20,12 +20,13 @@ import {
 } from "./browser/session.js";
 import { captureDomRefs, setPanelVisibility } from "./ui/dom.js";
 import {
-  buildOptionsPanelModels,
+  createGroupByToggleControl,
   getToggleOnlyColumns,
+  renderOptionsPanel,
   renderPlotControls,
   renderPlotGroupBarChips,
   renderGroupByButtonState,
-  renderOptionsPanelControls,
+  renderSortStatus,
 } from "./ui/controls.js";
 import {
   bindEvalJsonTabSelection,
@@ -34,7 +35,6 @@ import {
 import {
   createSortButton as createSharedSortButton,
   createTruncatingCell as createSharedTruncatingCell,
-  formatSortLabel as formatSharedSortLabel,
   getAriaSort as getSharedAriaSort,
   getNextSortConfig as getSharedNextSortConfig,
   updateStickyControlColumnOffsets,
@@ -133,10 +133,6 @@ const sortCollator = new Intl.Collator(undefined, { numeric: true, sensitivity: 
 
 function createSortButton(options) {
   return createSharedSortButton({ ...options, sortableControlColumns: SORTABLE_CONTROL_COLUMNS });
-}
-
-function formatSortLabel(sortConfig, displayColumnName) {
-  return formatSharedSortLabel(sortConfig, displayColumnName);
 }
 
 function getAriaSort(sortConfig, column) {
@@ -1250,29 +1246,6 @@ function setEvalSort(column, event = {}) {
   renderEvaluations();
 }
 
-function renderPredictionSortStatus() {
-  const validSortColumns = new Set([...SORTABLE_CONTROL_COLUMNS, ...getCurrentPredictionColumns()]);
-  state.predictionSort = normalizeSortConfig(state.predictionSort, validSortColumns);
-  predictionSortedByLabel.textContent = formatSortLabel(
-    state.predictionSort,
-    displayPredictionColumnName
-  );
-  predictionResetSortButton.disabled = !state.predictionSort.length;
-}
-
-function renderEvalSortStatus(activeExperiment = state.activeEvalTab, evalColumns = getActiveEvalColumns()) {
-  if (!activeExperiment) {
-    evalSortedByLabel.textContent = formatSortLabel([], displayEvalColumnName);
-    evalResetSortButton.disabled = true;
-    return;
-  }
-  const evalTabState = ensureEvalTabState(activeExperiment, evalColumns);
-  const validSortColumns = new Set([...SORTABLE_CONTROL_COLUMNS, ...evalColumns, "eval_run_dir"]);
-  evalTabState.sort = normalizeSortConfig(evalTabState.sort, validSortColumns);
-  evalSortedByLabel.textContent = formatSortLabel(evalTabState.sort, displayEvalColumnName);
-  evalResetSortButton.disabled = !evalTabState.sort.length;
-}
-
 /**
  * Reset load-dependent UI state after new canonical prediction/evaluation data is imported.
  * All prediction/evaluation structures remain selector-derived and are not stored here.
@@ -1487,7 +1460,13 @@ function renderPredictions() {
 
   predictionsTable.innerHTML = "";
   predictionDefaultsList.innerHTML = "";
-  renderPredictionSortStatus();
+  state.predictionSort = renderSortStatus({
+    labelElement: predictionSortedByLabel,
+    resetButton: predictionResetSortButton,
+    sortConfig: state.predictionSort,
+    validColumns: [...SORTABLE_CONTROL_COLUMNS, ...getCurrentPredictionColumns()],
+    displayColumnName: displayPredictionColumnName,
+  });
   if (!predictionGroups.length) {
     renderGroupByButtonState(
       {
@@ -1528,21 +1507,12 @@ function renderPredictions() {
     selectedPredictionViews,
     orderedPredictionColumns
   );
-  const predictionOptionsPanelModels = buildOptionsPanelModels({
-    checkboxColumns: orderedPredictionColumns,
-    getCheckboxLabel: displayPredictionColumnName,
-    defaultColumns: predictionDefaultColumns,
-    getDefaultLabel: displayPredictionColumnName,
-    getDefaultValue: getPredictionDefaultValue,
-    getDefaultSuggestions: (column) => getPredictionDefaultSuggestions(selectedPredictionViews, column),
-    getDefaultMissingCount: (column) =>
-      getPredictionMissingValueCount(selectedPredictionViews, column),
-  });
-  renderOptionsPanelControls({
+  renderOptionsPanel({
     documentLike: document,
     checkboxListElement: truncateColumnsList,
-    checkboxOptions: predictionOptionsPanelModels.checkboxOptions,
+    checkboxColumns: orderedPredictionColumns,
     checkedValues: state.truncateEnabledColumns,
+    getCheckboxLabel: displayPredictionColumnName,
     onCheckboxToggle: (column, checked) => {
       if (checked) {
         state.truncateEnabledColumns.add(column);
@@ -1553,7 +1523,12 @@ function renderPredictions() {
     },
     defaultsListElement: predictionDefaultsList,
     defaultsPanelElement: predictionDefaultsPanel,
-    defaultControlModels: predictionOptionsPanelModels.defaultControlModels,
+    defaultColumns: predictionDefaultColumns,
+    getDefaultLabel: displayPredictionColumnName,
+    getDefaultValue: getPredictionDefaultValue,
+    getDefaultSuggestions: (column) => getPredictionDefaultSuggestions(selectedPredictionViews, column),
+    getDefaultMissingCount: (column) =>
+      getPredictionMissingValueCount(selectedPredictionViews, column),
     inputIdPrefix: "prediction-default",
     onDefaultCommit: (column, nextValue) => {
       setConfiguredDefault(state.predictionDefaultValues, column, nextValue);
@@ -1635,23 +1610,20 @@ function renderPredictions() {
       onToggle: (event) => setPredictionSort(header, event),
     });
 
-    const toggle = document.createElement("label");
-    toggle.className = "group-toggle";
-    toggle.title = "Use this column for grouping";
-    const toggleCb = document.createElement("input");
-    toggleCb.type = "checkbox";
-    toggleCb.setAttribute("aria-label", `Group by ${displayPredictionColumnName(header)}`);
-    toggleCb.checked = state.groupByFields.includes(header);
-    toggleCb.addEventListener("change", () => {
+    const toggle = createGroupByToggleControl({
+      documentLike: document,
+      checked: state.groupByFields.includes(header),
+      ariaLabel: `Group by ${displayPredictionColumnName(header)}`,
+      onToggle: (checked) => {
       const nextGroupByFields = new Set(state.groupByFields);
-      if (toggleCb.checked) {
+        if (checked) {
         nextGroupByFields.add(header);
       } else {
         nextGroupByFields.delete(header);
       }
       setGroupByFields(nextGroupByFields);
+      },
     });
-    toggle.appendChild(toggleCb);
 
     headerControl.appendChild(label);
     headerControl.appendChild(toggle);
@@ -3613,7 +3585,13 @@ function renderEvaluations() {
     },
     []
   );
-  renderEvalSortStatus(null, []);
+  renderSortStatus({
+    labelElement: evalSortedByLabel,
+    resetButton: evalResetSortButton,
+    sortConfig: [],
+    validColumns: [],
+    displayColumnName: displayEvalColumnName,
+  });
   evalDefaultsList.innerHTML = "";
 
   const selectedEvaluations = gatherSelectedEvaluations();
@@ -3654,7 +3632,13 @@ function renderEvaluations() {
   } = evaluationContext;
   const evalColumnSections = getEvalColumnSections(evalColumns);
   const orderedEvalColumns = evalColumnSections.flatMap((section) => section.columns);
-  renderEvalSortStatus(state.activeEvalTab, orderedEvalColumns);
+  evalTabState.sort = renderSortStatus({
+    labelElement: evalSortedByLabel,
+    resetButton: evalResetSortButton,
+    sortConfig: evalTabState.sort,
+    validColumns: [...SORTABLE_CONTROL_COLUMNS, ...orderedEvalColumns, "eval_run_dir"],
+    displayColumnName: displayEvalColumnName,
+  });
   renderGroupByButtonState(
     {
       allButton: evalGroupByAllButton,
@@ -3677,22 +3661,12 @@ function renderEvaluations() {
     selectedEvaluationsForDefaults,
     evalColumns
   );
-  const evalOptionsPanelModels = buildOptionsPanelModels({
-    checkboxColumns: [...new Set([...orderedEvalColumns, "eval_run_dir"])],
-    getCheckboxLabel: displayEvalColumnName,
-    defaultColumns: evalDefaultColumns,
-    getDefaultLabel: displayEvalColumnName,
-    getDefaultValue: (column) => getEvalDefaultValue(evalTabState, column),
-    getDefaultSuggestions: (column) =>
-      getEvalDefaultSuggestions(selectedEvaluationsForDefaults, column),
-    getDefaultMissingCount: (column) =>
-      getEvalMissingValueCount(selectedEvaluationsForDefaults, column),
-  });
-  renderOptionsPanelControls({
+  renderOptionsPanel({
     documentLike: document,
     checkboxListElement: evalTruncateColumnsList,
-    checkboxOptions: evalOptionsPanelModels.checkboxOptions,
+    checkboxColumns: [...new Set([...orderedEvalColumns, "eval_run_dir"])],
     checkedValues: evalTabState.truncateEnabledColumns,
+    getCheckboxLabel: displayEvalColumnName,
     onCheckboxToggle: (column, checked) => {
       if (checked) {
         evalTabState.truncateEnabledColumns.add(column);
@@ -3703,7 +3677,13 @@ function renderEvaluations() {
     },
     defaultsListElement: evalDefaultsList,
     defaultsPanelElement: evalDefaultsPanel,
-    defaultControlModels: evalOptionsPanelModels.defaultControlModels,
+    defaultColumns: evalDefaultColumns,
+    getDefaultLabel: displayEvalColumnName,
+    getDefaultValue: (column) => getEvalDefaultValue(evalTabState, column),
+    getDefaultSuggestions: (column) =>
+      getEvalDefaultSuggestions(selectedEvaluationsForDefaults, column),
+    getDefaultMissingCount: (column) =>
+      getEvalMissingValueCount(selectedEvaluationsForDefaults, column),
     inputIdPrefix: `eval-default-${state.activeEvalTab.replace(/[^a-zA-Z0-9_-]+/g, "-")}`,
     onDefaultCommit: (column, nextValue) => {
       setConfiguredDefault(evalTabState.defaultValues, column, nextValue);
@@ -3814,22 +3794,20 @@ function renderEvaluations() {
       });
       th.style.minWidth = `${Math.max(140, headerLabel.length * 8)}px`;
 
-      const toggle = document.createElement("label");
-      toggle.className = "group-toggle";
-      toggle.title = "Use this column for grouping";
-      const toggleCb = document.createElement("input");
-      toggleCb.type = "checkbox";
-      toggleCb.checked = evalTabState.groupByFields.includes(column);
-      toggleCb.addEventListener("change", () => {
+      const toggle = createGroupByToggleControl({
+        documentLike: document,
+        checked: evalTabState.groupByFields.includes(column),
+        ariaLabel: `Group by ${headerLabel}`,
+        onToggle: (checked) => {
         const next = new Set(evalTabState.groupByFields);
-        if (toggleCb.checked) {
+          if (checked) {
           next.add(column);
         } else {
           next.delete(column);
         }
         setActiveEvalGroupByFields(next);
+        },
       });
-      toggle.appendChild(toggleCb);
 
       headerControl.appendChild(label);
       headerControl.appendChild(toggle);

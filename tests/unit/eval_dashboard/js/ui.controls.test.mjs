@@ -9,13 +9,16 @@ import {
   buildColumnOptions,
   buildMissingDefaultControlModels,
   buildOptionsPanelModels,
+  createGroupByToggleControl,
   getToggleOnlyColumns,
   renderCheckboxOptionList,
   renderGroupByButtonState,
   renderMissingDefaultControls,
+  renderOptionsPanel,
   renderOptionsPanelControls,
   renderPlotControls,
   renderPlotGroupBarChips,
+  renderSortStatus,
 } from "../../../../docs/eval-dashboard/assets/js/ui/controls.js";
 
 /**
@@ -67,6 +70,7 @@ class FakeElement {
     this.checked = false;
     this.disabled = false;
     this.textContent = "";
+    this.title = "";
     this.className = "";
     this.children = [];
     this.attributes = new Map();
@@ -252,6 +256,64 @@ test("renderGroupByButtonState enables or disables all group-by action buttons t
   assert.equal(buttonRefs.noneButton.disabled, false);
 });
 
+test("createGroupByToggleControl renders the shared header toggle and forwards checked state changes", () => {
+  const documentLike = createDocumentStub();
+  const toggles = [];
+
+  const toggle = createGroupByToggleControl({
+    documentLike,
+    checked: true,
+    ariaLabel: "Group by prediction title",
+    onToggle(checked) {
+      toggles.push(checked);
+    },
+  });
+
+  assert.equal(toggle.className, "group-toggle");
+  assert.equal(toggle.title, "Use this column for grouping");
+  assert.equal(toggle.children.length, 1);
+  const checkbox = toggle.children[0];
+  assert.equal(checkbox.type, "checkbox");
+  assert.equal(checkbox.checked, true);
+  assert.equal(checkbox.getAttribute("aria-label"), "Group by prediction title");
+
+  checkbox.checked = false;
+  checkbox.listeners.get("change")({ type: "change" });
+  assert.deepEqual(toggles, [false]);
+});
+
+test("renderSortStatus normalizes sort config and synchronizes the status label and reset button", () => {
+  const labelElement = new FakeElement("span");
+  const resetButton = new FakeElement("button");
+
+  const normalized = renderSortStatus({
+    labelElement,
+    resetButton,
+    sortConfig: [
+      { column: "group_size", direction: "desc" },
+      { column: "stale", direction: "asc" },
+    ],
+    validColumns: ["group_size", "prediction.title"],
+    displayColumnName: (column) => `Label:${column}`,
+  });
+
+  assert.deepEqual(normalized, [{ column: "group_size", direction: "desc" }]);
+  assert.equal(labelElement.textContent, "group size ↓");
+  assert.equal(resetButton.disabled, false);
+
+  const cleared = renderSortStatus({
+    labelElement,
+    resetButton,
+    sortConfig: [{ column: "stale", direction: "asc" }],
+    validColumns: ["prediction.title"],
+    displayColumnName: (column) => `Label:${column}`,
+  });
+
+  assert.deepEqual(cleared, []);
+  assert.equal(labelElement.textContent, "(none)");
+  assert.equal(resetButton.disabled, true);
+});
+
 test("renderCheckboxOptionList builds checkbox rows and emits toggle callbacks", () => {
   const documentLike = createDocumentStub();
   const listElement = new FakeElement("div");
@@ -388,6 +450,64 @@ test("renderOptionsPanelControls renders checkbox and default sections through s
   defaultInput.value = "fallback";
   defaultInput.listeners.get("change")();
   assert.deepEqual(commits, [{ column: "prediction.language", nextValue: "fallback" }]);
+});
+
+test("renderOptionsPanel composes the shared options-panel models and wiring in one helper", () => {
+  const documentLike = createDocumentStub();
+  const checkboxListElement = new FakeElement("div");
+  const defaultsListElement = new FakeElement("div");
+  const defaultsPanelElement = new FakeElement("section");
+  const toggles = [];
+  const commits = [];
+
+  const panelModels = renderOptionsPanel({
+    documentLike,
+    checkboxListElement,
+    checkboxColumns: ["prediction.run_dir"],
+    checkedValues: [],
+    getCheckboxLabel: (column) => `Checkbox:${column}`,
+    onCheckboxToggle(value, checked) {
+      toggles.push({ value, checked });
+    },
+    defaultsListElement,
+    defaultsPanelElement,
+    defaultColumns: ["prediction.language"],
+    getDefaultLabel: (column) => `Default:${column}`,
+    getDefaultValue: () => "de",
+    getDefaultSuggestions: () => ["de", "en"],
+    getDefaultMissingCount: () => 2,
+    onDefaultCommit(column, nextValue) {
+      commits.push({ column, nextValue });
+    },
+    inputIdPrefix: "prediction-default",
+  });
+
+  assert.deepEqual(panelModels, {
+    checkboxOptions: [{ value: "prediction.run_dir", label: "Checkbox:prediction.run_dir" }],
+    defaultControlModels: [
+      {
+        column: "prediction.language",
+        label: "Default:prediction.language",
+        value: "de",
+        suggestions: ["de", "en"],
+        missingCount: 2,
+      },
+    ],
+  });
+  assert.equal(checkboxListElement.children.length, 1);
+  assert.equal(defaultsListElement.children.length, 1);
+  assert.equal(defaultsPanelElement.style.display, "");
+
+  const checkbox = checkboxListElement.children[0].children[0];
+  checkbox.checked = true;
+  checkbox.listeners.get("change")();
+
+  const defaultInput = defaultsListElement.children[0].children[1];
+  defaultInput.value = "fr";
+  defaultInput.listeners.get("change")();
+
+  assert.deepEqual(toggles, [{ value: "prediction.run_dir", checked: true }]);
+  assert.deepEqual(commits, [{ column: "prediction.language", nextValue: "fr" }]);
 });
 
 test("renderPlotGroupBarChips renders an empty-state hint when no varying fields are available", () => {
