@@ -908,7 +908,7 @@ Phase 7 should preserve the dashboard's **current** override-parsing semantics e
 - parse only list items shaped like `- key=value`
 - strip the current single leading `+` from parsed keys when present
 - keep parsed override values as raw strings
-- keep the current permissive behavior where lines that are blank, commented, missing the `- ` list-item prefix, or missing `=` are ignored rather than raising
+- keep the current permissive behavior where lines that are blank, commented, missing the `-` list-item marker plus its required following space, or missing `=` are ignored rather than raising
 - add comprehensive JS-native tests that lock in those current semantics before any later behavioral cleanup
 
 ### `normalize.js`
