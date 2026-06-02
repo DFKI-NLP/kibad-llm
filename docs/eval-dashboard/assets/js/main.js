@@ -16,36 +16,11 @@ import {
   meanAndStd,
   normalizeValue,
 } from "./utils/values.js";
+import * as dashboardStore from "./state/store.js";
+import * as selectors from "./state/selectors.js";
 
 // Central UI state: loaded prediction/evaluation data, current grouping/selection, and per-eval-tab view state.
-const state = {
-  predictions: {},
-  evaluations: [],
-  predictionSort: [],
-  loadedFolders: new Set(),
-  selectedGroupIds: new Set(),
-  availableGroupIds: new Set(),
-  expandedGroupIds: new Set(),
-  activeEvalTab: null,
-  groupByFields: [],
-  truncateEnabledColumns: new Set(),
-  predictionDefaultValues: {},
-  activeOptionsTab: "truncate",
-  evalTabStates: {},
-  activeEvalJsonTab: "evaluation",
-  plotTabsBy: "prefix",
-  activeEvalPlotTab: null,
-  plotGroupBarFields: new Set(),
-  plotShortenLabels: true,
-  plotRoundingPrecision: 0,
-  plotConfusionMinLabelTotal: 3,
-  plotTpFpFnMinLabelTotal: 10,
-  plotTpFpFnMinDocumentTotal: 3,
-  plotShowLegendOnce: true,
-  exportOpaqueBackground: true,
-  confusionTabsBy: "prediction_group",
-  activePlotLegendItems: [],
-};
+const state = dashboardStore.createInitialDashboardState();
 
 const folderInput = document.getElementById("folderInput");
 const gitUrlInput = document.getElementById("gitUrlInput");
@@ -108,68 +83,51 @@ const evalPlotTabs = document.getElementById("evalPlotTabs");
 const evalPlotContent = document.getElementById("evalPlotContent");
 const barTooltip = document.getElementById("barTooltip");
 const GITHUB_TOKEN_STORAGE_KEY = "evalDashboard.githubToken";
-const SORTABLE_CONTROL_COLUMNS = new Set(["expand", "select", "group_size"]);
-const PREDICTION_JOB_RETURN_VALUE_PREFIX = "prediction.job_return_value.";
-const PREDICTION_OVERRIDES_PREFIX = "prediction.overrides.";
-// Prefix used by evaluation column identifiers that point into flattened jobReturnValue keys.
-const JOB_RETURN_VALUE_PREFIX = "job_return_value.";
-// Synthetic namespace for evaluation fields when prediction and evaluation group-by fields are mixed together.
-const EVALUATION_PREFIX = "evaluation.";
+const { SORTABLE_CONTROL_COLUMNS } = dashboardStore;
+const {
+  EVALUATION_PREFIX,
+  JOB_RETURN_VALUE_PREFIX,
+  PREDICTION_JOB_RETURN_VALUE_PREFIX,
+  PREDICTION_OVERRIDES_PREFIX,
+} = selectors;
 const TP_FP_FN_KEYS = ["tp", "fp", "fn"];
 const sortCollator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
 
 // Selectors and accessors for the canonical predictions/evaluations state shape.
 function isJobReturnValueColumn(column) {
-  return column.startsWith(JOB_RETURN_VALUE_PREFIX);
+  return selectors.isJobReturnValueColumn(column);
 }
 
 function stripEvaluationFieldPrefix(column) {
-  return column.startsWith(EVALUATION_PREFIX)
-    ? column.slice(EVALUATION_PREFIX.length)
-    : column;
+  return selectors.stripEvaluationFieldPrefix(column);
 }
 
 function stripPredictionFieldPrefix(column) {
-  if (column.startsWith(PREDICTION_JOB_RETURN_VALUE_PREFIX)) {
-    return column.slice(PREDICTION_JOB_RETURN_VALUE_PREFIX.length);
-  }
-  if (column.startsWith(PREDICTION_OVERRIDES_PREFIX)) {
-    return column.slice(PREDICTION_OVERRIDES_PREFIX.length);
-  }
-  return column.replace(/^predictions?\./, "");
+  return selectors.stripPredictionFieldPrefix(column);
 }
 
 function reconstructPredictionContent(prediction) {
-  return {
-    overrides: prediction?.overrides || {},
-    job_return_value: prediction?.jobReturnValue || {},
-  };
+  return selectors.reconstructPredictionContent(prediction);
 }
 
 function getPredictionById(predictionId) {
-  if (!predictionId) {
-    return null;
-  }
-  return state.predictions?.[predictionId] || null;
+  return selectors.getPredictionById(state, predictionId);
 }
 
 function getPredictionForEvaluation(evaluation) {
-  return getPredictionById(evaluation?.predictionId);
+  return selectors.getPredictionForEvaluation(state, evaluation);
 }
 
 function reconstructPredictionContentForEvaluation(evaluation) {
-  return reconstructPredictionContent(getPredictionForEvaluation(evaluation));
+  return selectors.reconstructPredictionContentForEvaluation(state, evaluation);
 }
 
 function getFlattenedPrediction(prediction) {
-  return {
-    ...flattenObject(prediction?.overrides || {}, "prediction.overrides"),
-    ...flattenObject(prediction?.jobReturnValue || {}, "prediction.job_return_value"),
-  };
+  return selectors.getFlattenedPrediction(prediction);
 }
 
 function getFlattenedPredictionForEvaluation(evaluation) {
-  return getFlattenedPrediction(getPredictionForEvaluation(evaluation));
+  return selectors.getFlattenedPredictionForEvaluation(state, evaluation);
 }
 
 /**
@@ -177,42 +135,21 @@ function getFlattenedPredictionForEvaluation(evaluation) {
  * Each view joins the flattened prediction fields with all linked evaluations.
  */
 function getPredictionViews() {
-  const predictionViewsById = new Map();
-  for (const evaluation of state.evaluations) {
-    const prediction = getPredictionById(evaluation.predictionId);
-    if (!prediction) {
-      continue;
-    }
-    if (!predictionViewsById.has(evaluation.predictionId)) {
-      predictionViewsById.set(evaluation.predictionId, {
-        predictionId: evaluation.predictionId,
-        predictionFlat: getFlattenedPrediction(prediction),
-        evaluations: [],
-      });
-    }
-    predictionViewsById.get(evaluation.predictionId).evaluations.push(evaluation);
-  }
-  return Array.from(predictionViewsById.values());
+  return selectors.getPredictionViews(state);
 }
 
 /**
  * Collect all flattened prediction columns currently present across the given prediction views.
  */
 function getPredictionColumns(predictionViews = getPredictionViews()) {
-  const predictionColumns = new Set();
-  for (const predictionView of predictionViews) {
-    for (const key of Object.keys(predictionView.predictionFlat || {})) {
-      predictionColumns.add(key);
-    }
-  }
-  return Array.from(predictionColumns).sort();
+  return selectors.getPredictionColumns(predictionViews);
 }
 
 /**
  * Return the current prediction columns derived from canonical prediction state.
  */
 function getCurrentPredictionColumns(predictionViews = getPredictionViews()) {
-  return getPredictionColumns(predictionViews);
+  return selectors.getCurrentPredictionColumns(state, predictionViews);
 }
 
 /**
@@ -224,35 +161,14 @@ function getPredictionGroups(
   groupByFields = state.groupByFields,
   predictionColumns = getCurrentPredictionColumns(predictionViews)
 ) {
-  const map = new Map();
-
-  for (const predictionView of predictionViews) {
-    const groupId = !groupByFields.length
-      ? getPredictionEffectiveSignature(predictionView.predictionFlat, predictionColumns)
-      : groupByFields
-        .map((field) => `${field}=${getPredictionEffectiveValue(predictionView.predictionFlat, field)}`)
-        .join(" | ");
-
-    if (!map.has(groupId)) {
-      map.set(groupId, {
-        groupId,
-        predictions: [],
-        values: Object.fromEntries(
-          groupByFields.map((field) => [field, getPredictionEffectiveValue(predictionView.predictionFlat, field)])
-        ),
-      });
-    }
-    map.get(groupId).predictions.push(predictionView);
-  }
-
-  return Array.from(map.values()).sort((a, b) => b.predictions.length - a.predictions.length);
+  return selectors.getPredictionGroups(state, predictionViews, groupByFields, predictionColumns);
 }
 
 /**
  * Filter prediction groups down to the currently selected prediction group ids.
  */
 function getSelectedPredictionGroups(groups = getCurrentPredictionGroups()) {
-  return groups.filter((group) => state.selectedGroupIds.has(group.groupId));
+  return selectors.getSelectedPredictionGroups(state, groups);
 }
 
 /**
@@ -260,11 +176,7 @@ function getSelectedPredictionGroups(groups = getCurrentPredictionGroups()) {
  * This preserves selections for stable ids, auto-selects newly created groups, and drops stale expanded ids.
  */
 function syncPredictionGroupUiState(predictionGroups) {
-  const validIds = new Set(predictionGroups.map((group) => group.groupId));
-  syncSelectedGroupIds(state, validIds);
-  state.expandedGroupIds = new Set(
-    Array.from(state.expandedGroupIds).filter((groupId) => validIds.has(groupId))
-  );
+  dashboardStore.syncPredictionGroupUiState(state, predictionGroups);
 }
 
 /**
@@ -282,93 +194,55 @@ function getCurrentPredictionGroups() {
  * Flatten the evaluations reachable from the selected prediction groups.
  */
 function getSelectedEvaluations(selectedPredictionGroups = getSelectedPredictionGroups()) {
-  return selectedPredictionGroups.flatMap((group) =>
-    group.predictions.flatMap((prediction) => prediction.evaluations)
-  );
+  return selectors.getSelectedEvaluations(selectedPredictionGroups);
 }
 
 function getFlattenedEvaluationJobReturnValue(evaluation) {
-  return flattenObject(evaluation?.jobReturnValue || {});
+  return selectors.getFlattenedEvaluationJobReturnValue(evaluation);
 }
 
 function getEvaluationColumnRawValue(evaluation, column) {
-  if (!evaluation || typeof evaluation !== "object") {
-    return undefined;
-  }
-  const normalizedColumn = stripEvaluationFieldPrefix(column);
-  if (normalizedColumn === "eval_run_dir") {
-    return evaluation.runDir;
-  }
-  if (isJobReturnValueColumn(normalizedColumn)) {
-    return getFlattenedEvaluationJobReturnValue(evaluation)[normalizedColumn.slice(JOB_RETURN_VALUE_PREFIX.length)];
-  }
-  return evaluation?.overrides?.[normalizedColumn];
+  return selectors.getEvaluationColumnRawValue(evaluation, column);
 }
 
 function getEvaluationEffectiveValue(evaluation, column, evalTabState) {
-  return getEffectiveValue(getEvaluationColumnRawValue(evaluation, column), getEvalDefaultValue(evalTabState, column));
+  return selectors.getEvaluationEffectiveValue(evaluation, column, evalTabState);
 }
 
 function getEvaluationExperiment(evaluation) {
-  return getEffectiveValue(
-    evaluation?.overrides?.["experiment/evaluate"],
-    "(missing experiment/evaluate)"
-  );
+  return selectors.getEvaluationExperiment(evaluation);
 }
 
 /**
  * Flatten the currently selected prediction groups into their member prediction views.
  */
 function getSelectedPredictionViews() {
-  return getSelectedPredictionGroups().flatMap((group) => group.predictions);
+  return selectors.getSelectedPredictionViews(state);
 }
 
 function gatherSelectedEvaluations() {
-  if (!state.selectedGroupIds.size) {
-    return [];
-  }
-  return getSelectedEvaluations();
+  return selectors.gatherSelectedEvaluations(state);
 }
 
 /**
  * Group the currently selected evaluations by evaluation experiment.
  */
 function getEvaluationsByExperiment(selectedEvaluations = gatherSelectedEvaluations()) {
-  const byExperiment = new Map();
-  for (const evaluation of selectedEvaluations) {
-    const experiment = getEvaluationExperiment(evaluation);
-    if (!byExperiment.has(experiment)) {
-      byExperiment.set(experiment, []);
-    }
-    byExperiment.get(experiment).push(evaluation);
-  }
-  return byExperiment;
+  return selectors.getEvaluationsByExperiment(state, selectedEvaluations);
 }
 
 /**
  * Return the selected evaluations that belong to one evaluation experiment.
  */
 function getSelectedEvaluationsForExperiment(experiment, selectedEvaluations = gatherSelectedEvaluations()) {
-  if (!experiment) {
-    return [];
-  }
-  return selectedEvaluations.filter((evaluation) => getEvaluationExperiment(evaluation) === experiment);
+  return selectors.getSelectedEvaluationsForExperiment(state, experiment, selectedEvaluations);
 }
 
 /**
  * Collect all evaluation columns currently present across the given evaluations.
  */
 function getEvaluationColumns(evaluations = []) {
-  const evalColumns = new Set();
-  for (const evaluation of evaluations) {
-    for (const key of Object.keys(evaluation.overrides || {})) {
-      evalColumns.add(key);
-    }
-    for (const key of Object.keys(getFlattenedEvaluationJobReturnValue(evaluation))) {
-      evalColumns.add(`${JOB_RETURN_VALUE_PREFIX}${key}`);
-    }
-  }
-  return Array.from(evalColumns).sort();
+  return selectors.getEvaluationColumns(evaluations);
 }
 
 function showBarTooltip(event, lines) {
@@ -950,42 +824,18 @@ function displayPlotGroupFieldName(column) {
 }
 
 function getDefaultTruncateColumns(predictionColumns) {
-  const defaults = new Set();
-  for (const column of predictionColumns) {
-    const name = displayPredictionColumnName(column);
-    if (/file|run/i.test(name) || /file|run/i.test(column)) {
-      defaults.add(column);
-    }
-  }
-  return defaults;
+  return selectors.getDefaultTruncateColumns(predictionColumns);
 }
 
 /**
  * Choose default prediction group-by fields from varying non-seed override columns.
  */
 function getDefaultGroupByFields(predictionColumns, predictionViews = getPredictionViews()) {
-  const candidateColumns = predictionColumns.filter(
-    (column) =>
-      column.startsWith(PREDICTION_OVERRIDES_PREFIX) &&
-      displayPredictionColumnName(column).toLowerCase() !== "seed"
-  );
-  return getColumnsWithMultipleValues(
-    predictionViews,
-    candidateColumns,
-    (predictionView, column) => predictionView.predictionFlat?.[column]
-  );
+  return selectors.getDefaultGroupByFields(predictionColumns, predictionViews);
 }
 
 function getDefaultEvalGroupByFields(evalColumns, evaluations = []) {
-  const candidateColumns = evalColumns.filter((column) => {
-    const normalized = displayEvalColumnName(column);
-    return normalized !== "dataset.predictions.log";
-  });
-  return getColumnsWithMultipleValues(
-    evaluations,
-    candidateColumns,
-    (evaluation, column) => getEvaluationColumnRawValue(evaluation, column)
-  );
+  return selectors.getDefaultEvalGroupByFields(evalColumns, evaluations);
 }
 
 function getDefaultEvalTruncateColumns() {
@@ -1002,11 +852,11 @@ function setConfiguredDefault(defaults, column, value) {
 }
 
 function getPredictionDefaultValue(column) {
-  return state.predictionDefaultValues[column] ?? "";
+  return selectors.getPredictionDefaultValue(state, column);
 }
 
 function getPredictionEffectiveValue(predictionFlat, column) {
-  return getEffectiveValue(predictionFlat?.[column], getPredictionDefaultValue(column));
+  return selectors.getPredictionEffectiveValue(state, predictionFlat, column);
 }
 
 /**
@@ -1016,17 +866,11 @@ function getPredictionEffectiveSignature(
   predictionFlat,
   predictionColumns = getCurrentPredictionColumns()
 ) {
-  return JSON.stringify(
-    Object.fromEntries(
-      predictionColumns
-        .map((column) => [column, getPredictionEffectiveValue(predictionFlat, column)])
-        .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
-    )
-  );
+  return selectors.getPredictionEffectiveSignature(state, predictionFlat, predictionColumns);
 }
 
 function getEvalDefaultValue(evalTabState, column) {
-  return evalTabState?.defaultValues?.[column] ?? "";
+  return selectors.getEvalDefaultValue(evalTabState, column);
 }
 
 /**
@@ -1036,37 +880,33 @@ function getPredictionColumnsWithMissingValues(
   predictionViews,
   predictionColumns = getCurrentPredictionColumns(predictionViews)
 ) {
-  return predictionColumns.filter((column) =>
-    predictionViews.some((predictionView) => isMissingValue(predictionView.predictionFlat?.[column]))
-  );
+  return selectors.getPredictionColumnsWithMissingValues(state, predictionViews, predictionColumns);
 }
 
 /**
  * Collect non-empty suggestion values for a prediction column from the current prediction views.
  */
 function getPredictionDefaultSuggestions(predictionViews, column) {
-  return collectSuggestionValues(
-    predictionViews.map((predictionView) => predictionView.predictionFlat?.[column])
-  );
+  return selectors.getPredictionDefaultSuggestions(predictionViews, column);
 }
 
 /**
  * Count how many prediction views are missing a value for the given prediction column.
  */
 function getPredictionMissingValueCount(predictionViews, column) {
-  return predictionViews.filter((predictionView) => isMissingValue(predictionView.predictionFlat?.[column])).length;
+  return selectors.getPredictionMissingValueCount(predictionViews, column);
 }
 
 function getEvalColumnsWithMissingValues(evaluations, evalColumns) {
-  return evalColumns.filter((column) => evaluations.some((evaluation) => isMissingValue(getEvaluationColumnRawValue(evaluation, column))));
+  return selectors.getEvalColumnsWithMissingValues(evaluations, evalColumns);
 }
 
 function getEvalDefaultSuggestions(evaluations, column) {
-  return collectSuggestionValues(evaluations.map((evaluation) => getEvaluationColumnRawValue(evaluation, column)));
+  return selectors.getEvalDefaultSuggestions(evaluations, column);
 }
 
 function getEvalMissingValueCount(evaluations, column) {
-  return evaluations.filter((evaluation) => isMissingValue(getEvaluationColumnRawValue(evaluation, column))).length;
+  return selectors.getEvalMissingValueCount(evaluations, column);
 }
 
 function createMissingDefaultControl({ listElement, column, label, value, suggestions, missingCount, onCommit, inputIdPrefix }) {
@@ -1150,10 +990,7 @@ function getEvalColumnSections(evalColumns) {
  * Return the evaluation columns for the currently active evaluation experiment.
  */
 function getActiveEvalColumns() {
-  if (!state.activeEvalTab) {
-    return [];
-  }
-  return getEvaluationContext(state.activeEvalTab)?.evalColumns || [];
+  return selectors.getActiveEvalColumns(state);
 }
 
 function setActiveEvalGroupByFields(columns) {
@@ -1179,55 +1016,11 @@ function ensureEvalTabState(
   evalColumns,
   evaluations = getSelectedEvaluationsForExperiment(experiment)
 ) {
-  if (!state.evalTabStates[experiment]) {
-    state.evalTabStates[experiment] = {
-      knownColumns: [...evalColumns],
-      groupByFields: getDefaultEvalGroupByFields(evalColumns, evaluations),
-      sort: [],
-      truncateEnabledColumns: new Set(),
-      defaultValues: {},
-      activeOptionsTab: "truncate",
-      selectedGroupIds: null,
-      availableGroupIds: new Set(),
-      expandedGroupIds: new Set(),
-      selectedEvalGroupId: null,
-      selectedEvalRunDir: null,
-    };
-    return state.evalTabStates[experiment];
-  }
-
-  const tabState = state.evalTabStates[experiment];
-  const known = new Set(tabState.knownColumns || []);
-  if (!(tabState.truncateEnabledColumns instanceof Set)) {
-    tabState.truncateEnabledColumns = getDefaultEvalTruncateColumns();
-  }
-  if (!tabState.defaultValues || typeof tabState.defaultValues !== "object") {
-    tabState.defaultValues = {};
-  }
-  if (!(tabState.availableGroupIds instanceof Set)) {
-    tabState.availableGroupIds = new Set();
-  }
-  for (const column of evalColumns) {
-    if (!known.has(column)) {
-      known.add(column);
-      if (getDefaultEvalGroupByFields([column], evaluations).length) {
-        tabState.groupByFields = [...new Set([...tabState.groupByFields, column])];
-      }
-    }
-  }
-  tabState.knownColumns = [...known];
-  tabState.groupByFields = tabState.groupByFields.filter((field) => known.has(field));
-  tabState.truncateEnabledColumns = new Set(
-    Array.from(tabState.truncateEnabledColumns).filter(
-      (field) => known.has(field) || field === "eval_run_dir"
-    )
-  );
-  const validSortColumns = new Set([...SORTABLE_CONTROL_COLUMNS, ...known, "eval_run_dir"]);
-  tabState.sort = normalizeSortConfig(tabState.sort, validSortColumns);
-  if (!tabState.activeOptionsTab) {
-    tabState.activeOptionsTab = "truncate";
-  }
-  return tabState;
+  return dashboardStore.ensureEvalTabState(state, experiment, evalColumns, {
+    evaluations,
+    getDefaultEvalGroupByFields,
+    getDefaultEvalTruncateColumns,
+  });
 }
 
 /**
@@ -1235,23 +1028,7 @@ function ensureEvalTabState(
  * still-valid selections and auto-selecting newly introduced groups.
  */
 function syncSelectedGroupIds(selectionState, validGroupIds) {
-  if (!(selectionState.availableGroupIds instanceof Set)) {
-    selectionState.availableGroupIds = new Set();
-  }
-  if (selectionState.selectedGroupIds === null) {
-    selectionState.selectedGroupIds = new Set(validGroupIds);
-  } else {
-    const nextSelectedGroupIds = new Set(
-      Array.from(selectionState.selectedGroupIds).filter((groupId) => validGroupIds.has(groupId))
-    );
-    for (const groupId of validGroupIds) {
-      if (!selectionState.availableGroupIds.has(groupId)) {
-        nextSelectedGroupIds.add(groupId);
-      }
-    }
-    selectionState.selectedGroupIds = nextSelectedGroupIds;
-  }
-  selectionState.availableGroupIds = new Set(validGroupIds);
+  dashboardStore.syncSelectedGroupIds(selectionState, validGroupIds);
 }
 
 groupByAllButton.addEventListener("click", () => {
@@ -1885,7 +1662,7 @@ function getPredictionIdFromNormalizedPrediction(prediction) {
 }
 
 function getPredictionContentSignature(prediction) {
-  return getStableObjectSignature(getFlattenedPrediction(prediction));
+  return selectors.getPredictionContentSignature(prediction);
 }
 
 function getMetricTypeForExperiment(activeExperiment) {
@@ -2027,22 +1804,14 @@ function isRelevantEvaluationFilePath(path) {
 function resetDerivedUiStateAfterLoad() {
   const predictionViews = getPredictionViews();
   const predictionColumns = getCurrentPredictionColumns(predictionViews);
-  state.groupByFields = getDefaultGroupByFields(predictionColumns, predictionViews);
-  state.predictionSort = [];
-  state.truncateEnabledColumns = getDefaultTruncateColumns(predictionColumns);
-  state.predictionDefaultValues = {};
-  state.selectedGroupIds = new Set();
-  state.availableGroupIds = new Set();
-  state.expandedGroupIds = new Set();
-  state.activeEvalTab = null;
-  state.evalTabStates = {};
-  state.activeEvalJsonTab = "evaluation";
-  state.activeEvalPlotTab = null;
-  state.plotGroupBarFields = new Set();
-  state.activePlotLegendItems = [];
-  syncPredictionGroupUiState(
-    getPredictionGroups(predictionViews, state.groupByFields, predictionColumns)
-  );
+  const nextGroupByFields = getDefaultGroupByFields(predictionColumns, predictionViews);
+  dashboardStore.resetDerivedUiStateAfterLoad(state, {
+    predictionViews,
+    predictionColumns,
+    predictionGroups: getPredictionGroups(predictionViews, nextGroupByFields, predictionColumns),
+    getDefaultGroupByFields,
+    getDefaultTruncateColumns,
+  });
 }
 
 function updateLoadStatusSummary({ candidateRunDirs, loadedCount, skippedDuplicate, skippedPredictRuns, skippedMissingJob, skippedUnsupportedVersion, skippedInvalid, skippedMissingPredictionId, skippedConflictingPredictionId }) {
@@ -2542,39 +2311,22 @@ async function initializeGitUrlFromQueryParam() {
 void initializeGitUrlFromQueryParam();
 
 function getPredictionGroupSortValue(group, column) {
-  if (column === "expand") {
-    return state.expandedGroupIds.has(group.groupId) ? 1 : 0;
-  }
-  if (column === "select") {
-    return state.selectedGroupIds.has(group.groupId) ? 1 : 0;
-  }
-  if (column === "group_size") {
-    return group.predictions.length;
-  }
-  return getGroupValueDisplay(group, column);
+  return selectors.getPredictionGroupSortValue(state, group, column);
 }
 
 function getPredictionMemberSortValue(predictionView, column) {
-  if (column === "group_size") {
-    return predictionView.evaluations.length;
-  }
-  if (SORTABLE_CONTROL_COLUMNS.has(column)) {
-    return "";
-  }
-  return getPredictionEffectiveValue(predictionView.predictionFlat, column);
+  return selectors.getPredictionMemberSortValue(state, predictionView, column);
 }
 
 /**
  * Return prediction groups sorted according to the active prediction sort config.
  */
 function getSortedPredictionGroups(predictionGroups = getCurrentPredictionGroups()) {
-  const validSortColumns = new Set([...SORTABLE_CONTROL_COLUMNS, ...getCurrentPredictionColumns()]);
-  state.predictionSort = normalizeSortConfig(state.predictionSort, validSortColumns);
-  return sortItems(predictionGroups, state.predictionSort, getPredictionGroupSortValue);
+  return selectors.getSortedPredictionGroups(state, predictionGroups);
 }
 
 function getSortedPredictionMembers(predictions) {
-  return sortItems(predictions, state.predictionSort, getPredictionMemberSortValue);
+  return selectors.getSortedPredictionMembers(state, predictions);
 }
 
 function setSelectedGroupIds(groupIds) {
@@ -2587,14 +2339,7 @@ function setSelectedGroupIds(groupIds) {
  * Summarize selection state for the currently displayed prediction groups.
  */
 function getDisplayedSelectionState(displayedGroups = []) {
-  const displayedGroupIds = displayedGroups.map((group) => group.groupId);
-  const selectedCount = displayedGroupIds.filter((groupId) => state.selectedGroupIds.has(groupId)).length;
-  return {
-    displayedGroupIds,
-    selectedCount,
-    allSelected: displayedGroupIds.length > 0 && selectedCount === displayedGroupIds.length,
-    someSelected: selectedCount > 0 && selectedCount < displayedGroupIds.length,
-  };
+  return selectors.getDisplayedSelectionState(state, displayedGroups);
 }
 
 function createTruncatingCell(content, columnKey = "", truncateEnabledColumns = null) {
@@ -2643,10 +2388,7 @@ window.addEventListener("resize", () => {
 });
 
 function getGroupValueDisplay(group, column) {
-  const values = new Set(
-    group.predictions.map((prediction) => getPredictionEffectiveValue(prediction.predictionFlat, column))
-  );
-  return formatDistinctValueDisplay(values);
+  return selectors.getGroupValueDisplay(state, group, column);
 }
 
 /**
@@ -2853,69 +2595,23 @@ function getEvaluationGroups(
   predictionGroupByFields = state.groupByFields,
   evalTabState = state.activeEvalTab ? state.evalTabStates[state.activeEvalTab] : null
 ) {
-  const map = new Map();
-  for (const evaluation of evaluations) {
-    const keyParts = [];
-    for (const field of predictionGroupByFields) {
-      keyParts.push(`prediction.${field}=${getPredictionEffectiveValue(getFlattenedPredictionForEvaluation(evaluation), field)}`);
-    }
-    for (const field of groupByFields) {
-      keyParts.push(`eval.${field}=${getEvaluationEffectiveValue(evaluation, field, evalTabState)}`);
-    }
-    const groupId = keyParts.length ? keyParts.join(" | ") : evaluation.runDir;
-    if (!map.has(groupId)) {
-      map.set(groupId, {
-        groupId,
-        evaluations: [],
-        values: Object.fromEntries(
-          groupByFields.map((field) => [field, getEvaluationEffectiveValue(evaluation, field, evalTabState)])
-        ),
-      });
-    }
-    map.get(groupId).evaluations.push(evaluation);
-  }
-  return Array.from(map.values()).sort((a, b) => b.evaluations.length - a.evaluations.length);
+  return selectors.getEvaluationGroups(state, evaluations, groupByFields, predictionGroupByFields, evalTabState);
 }
 
 function getEvaluationGroupSortValue(group, column, evalTabState) {
-  if (column === "expand") {
-    return evalTabState.expandedGroupIds.has(group.groupId) ? 1 : 0;
-  }
-  if (column === "select") {
-    return evalTabState.selectedGroupIds.has(group.groupId) ? 1 : 0;
-  }
-  if (column === "group_size") {
-    return group.evaluations.length;
-  }
-  if (column === "eval_run_dir") {
-    return getGroupValueDisplayFromEvaluations(group.evaluations, (evaluation) => evaluation.runDir);
-  }
-  return getGroupValueDisplayFromEvaluations(
-    group.evaluations,
-    (evaluation) => getEvaluationEffectiveValue(evaluation, column, evalTabState)
-  );
+  return selectors.getEvaluationGroupSortValue(group, column, evalTabState);
 }
 
 function getEvaluationRunSortValue(evaluation, column, evalTabState) {
-  if (column === "eval_run_dir") {
-    return evaluation.runDir;
-  }
-  if (SORTABLE_CONTROL_COLUMNS.has(column)) {
-    return "";
-  }
-  return getEvaluationEffectiveValue(evaluation, column, evalTabState);
+  return selectors.getEvaluationRunSortValue(evaluation, column, evalTabState);
 }
 
 function getSortedEvaluationGroups(groups, evalTabState) {
-  return sortItems(groups, evalTabState.sort, (group, column) =>
-    getEvaluationGroupSortValue(group, column, evalTabState)
-  );
+  return selectors.getSortedEvaluationGroups(groups, evalTabState);
 }
 
 function getSortedEvaluations(evaluations, evalTabState) {
-  return sortItems(evaluations, evalTabState.sort, (evaluation, column) =>
-    getEvaluationRunSortValue(evaluation, column, evalTabState)
-  );
+  return selectors.getSortedEvaluations(evaluations, evalTabState);
 }
 
 /**
@@ -2923,18 +2619,7 @@ function getSortedEvaluations(evaluations, evalTabState) {
  * and experiment evaluations.
  */
 function syncEvaluationGroupUiState(evalTabState, evaluationGroups, experimentEvaluations) {
-  const validEvalGroupIds = new Set(evaluationGroups.map((group) => group.groupId));
-  syncSelectedGroupIds(evalTabState, validEvalGroupIds);
-  evalTabState.expandedGroupIds = new Set(
-    Array.from(evalTabState.expandedGroupIds).filter((groupId) => validEvalGroupIds.has(groupId))
-  );
-  if (!validEvalGroupIds.has(evalTabState.selectedEvalGroupId)) {
-    evalTabState.selectedEvalGroupId = null;
-  }
-  const validRunDirs = new Set(experimentEvaluations.map((evaluation) => evaluation.runDir));
-  if (!validRunDirs.has(evalTabState.selectedEvalRunDir)) {
-    evalTabState.selectedEvalRunDir = null;
-  }
+  dashboardStore.syncEvaluationGroupUiState(evalTabState, evaluationGroups, experimentEvaluations);
 }
 
 /**
@@ -2944,42 +2629,18 @@ function getEvaluationContext(
   activeExperiment = state.activeEvalTab,
   selectedEvaluations = gatherSelectedEvaluations()
 ) {
-  if (!activeExperiment) {
-    return null;
-  }
-  const experimentEvaluations = getSelectedEvaluationsForExperiment(activeExperiment, selectedEvaluations);
-  const evalColumns = getEvaluationColumns(experimentEvaluations);
-  const evalTabState = ensureEvalTabState(activeExperiment, evalColumns, experimentEvaluations);
-  const evaluationGroups = getEvaluationGroups(
-    experimentEvaluations,
-    evalTabState.groupByFields,
-    state.groupByFields,
-    evalTabState
-  );
-  syncEvaluationGroupUiState(evalTabState, evaluationGroups, experimentEvaluations);
-  return {
-    activeExperiment,
-    experimentEvaluations,
-    evalColumns,
-    evalTabState,
-    evaluationGroups,
-  };
+  return selectors.getEvaluationContext(state, activeExperiment, selectedEvaluations);
 }
 
 /**
  * Filter evaluation groups down to the currently selected evaluation group ids.
  */
 function getSelectedEvaluationGroups(evaluationContext = getEvaluationContext()) {
-  if (!evaluationContext) {
-    return [];
-  }
-  const { evaluationGroups, evalTabState } = evaluationContext;
-  return evaluationGroups.filter((group) => evalTabState.selectedGroupIds.has(group.groupId));
+  return selectors.getSelectedEvaluationGroups(state, evaluationContext);
 }
 
 function getGroupValueDisplayFromEvaluations(evaluations, getter) {
-  const values = new Set(evaluations.map((evaluation) => normalizeValue(getter(evaluation))));
-  return formatDistinctValueDisplay(values);
+  return selectors.getGroupValueDisplayFromEvaluations(evaluations, getter);
 }
 
 function getVaryingFields(groups, fields) {
@@ -3010,42 +2671,7 @@ function getGroupLabelForFields(group, labelFields, fallback, fieldNameFormatter
  * consumed by plot and confusion-matrix rendering.
  */
 function getPlotGroups(activeExperiment, selectedEvalGroups, evalGroupByFields, evalTabState) {
-  const allFields = [...new Set([
-    ...state.groupByFields,
-    ...evalGroupByFields.map((field) => `${EVALUATION_PREFIX}${field}`),
-  ])];
-
-  const map = new Map();
-  for (const evalGroup of selectedEvalGroups) {
-    for (const evaluation of evalGroup.evaluations) {
-      if (getEvaluationExperiment(evaluation) !== activeExperiment) {
-        continue;
-      }
-      const values = {};
-      for (const field of allFields) {
-        const evaluationField = stripEvaluationFieldPrefix(field);
-        if (evaluationField !== field) {
-          values[field] = getEvaluationEffectiveValue(
-            evaluation,
-            evaluationField,
-            evalTabState
-          );
-        } else {
-          values[field] = getPredictionEffectiveValue(getFlattenedPredictionForEvaluation(evaluation), field);
-        }
-      }
-      const groupId = allFields.length
-        ? allFields.map((field) => `${field}=${normalizeValue(values[field])}`).join(" | ")
-        : evaluation.runDir;
-      if (!map.has(groupId)) {
-        map.set(groupId, { groupId, values, evaluations: [] });
-      }
-      map.get(groupId).evaluations.push(evaluation);
-    }
-  }
-
-  const groups = Array.from(map.values()).sort((a, b) => b.evaluations.length - a.evaluations.length);
-  return { groups, fields: allFields };
+  return selectors.getPlotGroups(state, activeExperiment, selectedEvalGroups, evalGroupByFields, evalTabState);
 }
 
 function getBarColor(index) {
@@ -3425,19 +3051,7 @@ function getMetricTypeForEvaluationContext(
   activeExperiment,
   evaluationContext = getEvaluationContext(activeExperiment)
 ) {
-  const metricTypes = new Set(
-    (evaluationContext?.experimentEvaluations || [])
-      .map((evaluation) => getVisualizationMetricType(normalizeValue(evaluation?.jobReturnValue?.type).trim()))
-      .filter(Boolean)
-  );
-  if (metricTypes.size > 1) {
-    throw new Error(
-      `Multiple evaluation metric types found for ${JSON.stringify(activeExperiment)}: ${Array.from(metricTypes)
-        .sort((a, b) => a.localeCompare(b))
-        .join(", ")}`
-    );
-  }
-  return Array.from(metricTypes)[0] || "";
+  return selectors.getMetricTypeForEvaluationContext(state, activeExperiment, evaluationContext);
 }
 
 function getMetricCollectionSourceRunDir(evaluation) {
