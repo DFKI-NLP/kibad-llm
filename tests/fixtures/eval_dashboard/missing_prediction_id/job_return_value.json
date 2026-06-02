@@ -1,0 +1,25 @@
+{
+  "version": 2,
+  "type": "ConfusionMatrixCollection",
+  "data": {
+    "summary": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0
+    }
+  },
+  "prediction": {
+    "job_return_value": {
+      "commit_hash": "67cce08ad646158085c4b7fc53c8fa2216227125",
+      "branch": "build_schema_description/improve-newline-handling",
+      "is_dirty": false,
+      "slurm_job_id": "2573358"
+    },
+    "overrides": {
+      "name": "missing_prediction_id_fixture",
+      "experiment/predict": "organism_trends_with_evidence",
+      "seed": "42"
+    }
+  }
+}
+

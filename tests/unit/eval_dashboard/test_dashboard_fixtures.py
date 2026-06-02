@@ -22,6 +22,7 @@ VALID_FIXTURE_DIRS = {
 INVALID_FIXTURE_DIRS = {
     "malformed",
     "unsupported_version",
+    "missing_prediction_id",
     "conflicting_prediction_ids",
 }
 
@@ -104,7 +105,7 @@ def test_valid_fixture_overrides_yaml_parse_as_non_empty_lists() -> None:
 def test_invalid_fixture_overrides_yaml_parse_as_expected() -> None:
     """Ensure invalid fixtures stay invalid only in their intended dimensions."""
 
-    for fixture_name in {"malformed", "unsupported_version"}:
+    for fixture_name in {"malformed", "unsupported_version", "missing_prediction_id"}:
         _read_yaml(_overrides_path(fixture_name))
 
     conflict_root = FIXTURE_ROOT / "conflicting_prediction_ids"
@@ -169,7 +170,7 @@ def test_plot_family_fixtures_have_non_empty_family_specific_payloads() -> None:
 def test_invalid_fixture_directories_have_expected_files() -> None:
     """Ensure intentionally invalid fixtures still provide the files needed for smoke tests."""
 
-    for fixture_name in {"malformed", "unsupported_version"}:
+    for fixture_name in {"malformed", "unsupported_version", "missing_prediction_id"}:
         assert _job_return_value_path(fixture_name).is_file()
         assert _overrides_path(fixture_name).is_file()
 
@@ -197,6 +198,16 @@ def test_unsupported_version_fixture_uses_unknown_version() -> None:
 
     payload = _read_json(_job_return_value_path("unsupported_version"))
     assert payload["version"] not in {0, 1, 2}
+
+
+def test_missing_prediction_id_fixture_omits_output_file() -> None:
+    """Verify the missing-prediction-id fixture stays valid JSON while omitting `output_file`."""
+
+    payload = _read_json(_job_return_value_path("missing_prediction_id"))
+    prediction_job_return_value = payload["prediction"]["job_return_value"]
+
+    assert payload["version"] == 2
+    assert "output_file" not in prediction_job_return_value
 
 
 def test_conflicting_prediction_id_fixture_contains_two_different_prediction_payloads() -> None:
@@ -253,6 +264,12 @@ def test_invalid_fixture_readme_sections_document_intended_failure_mode() -> Non
             "- source basis:",
             "- notes:",
             '"version": 99',
+        ),
+        "missing_prediction_id": (
+            "- purpose:",
+            "- source basis:",
+            "- notes:",
+            "missing prediction id",
         ),
         "conflicting_prediction_ids": (
             "- purpose:",

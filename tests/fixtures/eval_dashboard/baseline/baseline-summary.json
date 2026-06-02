@@ -1,6 +1,6 @@
 {
-  "baseline_version": 4,
-  "captured_at": "2026-06-01",
+  "baseline_version": 5,
+  "captured_at": "2026-06-02",
   "implementation_shape": {
     "runtime_entrypoint": "docs/eval-dashboard/index.html",
     "compatibility_entrypoint": "docs/eval-dashboard.html",
@@ -50,6 +50,23 @@
       "evaluation context derivation",
       "plot-group derivation",
       "selection-state synchronization"
+    ]
+  },
+  "phase_seven_contract": {
+    "data_module_root": "docs/eval-dashboard/assets/js/data",
+    "data_modules": [
+      "normalize.js",
+      "parse-overrides.js"
+    ],
+    "js_test_files": [
+      "data.normalize.test.mjs",
+      "data.parse-overrides.test.mjs"
+    ],
+    "normalization_focus": [
+      "supported version handling",
+      "override parsing semantics",
+      "missing prediction id handling",
+      "unsupported version rejection"
     ]
   },
   "feature_expectations": {

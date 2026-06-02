@@ -18,6 +18,11 @@ import {
 } from "./utils/values.js";
 import * as dashboardStore from "./state/store.js";
 import * as selectors from "./state/selectors.js";
+import { parseOverridesYaml } from "./data/parse-overrides.js";
+import {
+  getPredictionIdFromNormalizedPrediction,
+  normalizeImportedJobReturnValue,
+} from "./data/normalize.js";
 
 // Central UI state: loaded prediction/evaluation data, current grouping/selection, and per-eval-tab view state.
 const state = dashboardStore.createInitialDashboardState();
@@ -1588,64 +1593,6 @@ function renderEvalSortStatus(activeExperiment = state.activeEvalTab, evalColumn
   evalSortedByLabel.textContent = formatSortLabel(evalTabState.sort, displayEvalColumnName);
   evalResetSortButton.disabled = !evalTabState.sort.length;
 }
-function parseOverridesYaml(text) {
-  const result = {};
-  const lines = text.split(/\r?\n/);
-  for (const line of lines) {
-    const trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith("#")) {
-      continue;
-    }
-    if (!trimmed.startsWith("- ")) {
-      continue;
-    }
-    const item = trimmed.slice(2).trim();
-    const separatorIndex = item.indexOf("=");
-    if (separatorIndex === -1) {
-      continue;
-    }
-    const key = item.slice(0, separatorIndex).replace(/^\+/, "").trim();
-    result[key] = item.slice(separatorIndex + 1).trim();
-  }
-  return result;
-}
-
-function createUnsupportedJobReturnValueVersionError(version) {
-  const error = new Error(`Unsupported job_return_value.json version: ${version}`);
-  error.name = "UnsupportedJobReturnValueVersionError";
-  error.jobReturnValueVersion = version;
-  return error;
-}
-
-function getNormalizedPredictionFromJobReturnValue(job_return_value) {
-  const prediction =
-    job_return_value?.prediction &&
-    typeof job_return_value.prediction === "object" &&
-    !Array.isArray(job_return_value.prediction)
-      ? job_return_value.prediction
-      : {};
-  return {
-    jobReturnValue:
-      prediction.job_return_value &&
-      typeof prediction.job_return_value === "object" &&
-      !Array.isArray(prediction.job_return_value)
-        ? prediction.job_return_value
-        : {},
-    overrides:
-      prediction.overrides &&
-      typeof prediction.overrides === "object" &&
-      !Array.isArray(prediction.overrides)
-        ? prediction.overrides
-        : {},
-  };
-}
-
-function createMissingPredictionIdError() {
-  const error = new Error('job_return_value.json prediction.job_return_value.output_file must be present.');
-  error.name = 'MissingPredictionIdError';
-  return error;
-}
-
 function createConflictingPredictionIdError(predictionId) {
   const error = new Error(`Conflicting prediction payloads for prediction id: ${predictionId}`);
   error.name = 'ConflictingPredictionIdError';
@@ -1653,100 +1600,10 @@ function createConflictingPredictionIdError(predictionId) {
   return error;
 }
 
-function getPredictionIdFromNormalizedPrediction(prediction) {
-  const predictionId = normalizeValue(prediction?.jobReturnValue?.output_file).trim();
-  if (!predictionId) {
-    throw createMissingPredictionIdError();
-  }
-  return predictionId;
-}
-
 function getPredictionContentSignature(prediction) {
   return selectors.getPredictionContentSignature(prediction);
 }
 
-function getMetricTypeForExperiment(activeExperiment) {
-  if (/confusion_matrix/i.test(activeExperiment || "")) {
-    return "ConfusionMatrix";
-  }
-  if (/error/i.test(activeExperiment || "")) {
-    return "ErrorCollector";
-  }
-  if (/tpfpfn/i.test(activeExperiment || "")) {
-    return "TpFpFnCollector";
-  }
-  if (/f1_micro/i.test(activeExperiment || "")) {
-    return "F1MicroMultipleFieldsMetric";
-  }
-  return "unknown";
-}
-
-const JOB_RETURN_VALUE_VERSION_HANDLERS = {
-  0: (job_return_value, overrides) => ({
-    prediction: getNormalizedPredictionFromJobReturnValue(job_return_value),
-    evaluation: {
-      jobReturnValue: {
-        version: 0,
-        type: getMetricTypeForExperiment(overrides?.["experiment/evaluate"]),
-      },
-      overrides: overrides || {},
-      data: omitTopLevelKeys(job_return_value, new Set(["prediction"])),
-    },
-  }),
-  1: (job_return_value, overrides) => ({
-    prediction: getNormalizedPredictionFromJobReturnValue(job_return_value),
-    evaluation: {
-      jobReturnValue: {
-        version: 1,
-        type: getMetricTypeForExperiment(overrides?.["experiment/evaluate"]),
-      },
-      overrides: overrides || {},
-      data: omitTopLevelKeys(job_return_value, new Set(["prediction", "version"])),
-    },
-  }),
-  2: (job_return_value, overrides) => {
-    if (!Object.prototype.hasOwnProperty.call(job_return_value, "data")) {
-      throw new Error('job_return_value.json version 2 must contain a top-level "data" field.');
-    }
-
-    return {
-      prediction: getNormalizedPredictionFromJobReturnValue(job_return_value),
-      evaluation: {
-        jobReturnValue: omitTopLevelKeys(job_return_value, new Set(["data", "prediction"])),
-        overrides: overrides || {},
-        data: job_return_value.data,
-      },
-    };
-  },
-};
-
-function normalizeImportedJobReturnValue(job_return_value, overrides = {}) {
-  if (!job_return_value || typeof job_return_value !== "object" || Array.isArray(job_return_value)) {
-    throw new Error("job_return_value.json must contain a top-level object.");
-  }
-
-  const version = Object.prototype.hasOwnProperty.call(job_return_value, "version")
-    ? job_return_value.version
-    : 0;
-  const handler = JOB_RETURN_VALUE_VERSION_HANDLERS[version];
-
-  if (!handler) {
-    throw createUnsupportedJobReturnValueVersionError(version);
-  }
-
-  const normalized = handler(job_return_value, overrides);
-  if (
-    !normalized ||
-    typeof normalized !== "object" ||
-    !normalized.prediction ||
-    typeof normalized.prediction !== "object" ||
-    !normalized.evaluation ||
-    typeof normalized.evaluation !== "object"
-  ) {
-    throw new Error(`job_return_value.json version ${version} normalization returned an invalid shape.`);
-  }
-  return normalized;
-}
 
 async function readTextFile(file) {
   return new Promise((resolve, reject) => {

@@ -1,4 +1,4 @@
-"""Baseline artifact contract tests for the eval-dashboard baseline plus Phase 5 and Phase 6 JS contracts."""
+"""Baseline artifact contract tests for the eval-dashboard baseline plus Phase 5 to Phase 7 JS contracts."""
 
 import json
 
@@ -12,6 +12,7 @@ CSS_ROOT = PROJ_ROOT / "docs" / "eval-dashboard" / "assets" / "css"
 JS_ROOT = PROJ_ROOT / "docs" / "eval-dashboard" / "assets" / "js"
 CSS_ENTRY = CSS_ROOT / "index.css"
 MAIN_JS_ENTRY = JS_ROOT / "main.js"
+DATA_JS_ROOT = JS_ROOT / "data"
 STATE_JS_ROOT = JS_ROOT / "state"
 UTILS_JS_ROOT = JS_ROOT / "utils"
 TOKENS_CSS = CSS_ROOT / "tokens.css"
@@ -165,6 +166,20 @@ def test_baseline_summary_includes_phase_six_state_contract() -> None:
     }
 
 
+def test_baseline_summary_includes_phase_seven_data_contract() -> None:
+    """Ensure the baseline artifact exposes the Phase 7 parsing and normalization contract."""
+
+    summary = _baseline_summary()
+    phase_seven_contract = summary["phase_seven_contract"]
+
+    assert phase_seven_contract["data_module_root"] == "docs/eval-dashboard/assets/js/data"
+    assert set(phase_seven_contract["data_modules"]) == {"normalize.js", "parse-overrides.js"}
+    assert set(phase_seven_contract["js_test_files"]) == {
+        "data.normalize.test.mjs",
+        "data.parse-overrides.test.mjs",
+    }
+
+
 def test_current_runtime_matches_phase_six_state_contract() -> None:
     """Ensure the extracted Phase 6 state modules and selector/store tests exist and are wired into main.js."""
 
@@ -183,6 +198,27 @@ def test_current_runtime_matches_phase_six_state_contract() -> None:
         "evaluation context derivation",
         "plot-group derivation",
         "selection-state synchronization",
+    }
+
+
+def test_current_runtime_matches_phase_seven_data_contract() -> None:
+    """Ensure the extracted Phase 7 data modules and JS tests exist and are wired into main.js."""
+
+    summary = _baseline_summary()
+    phase_seven_contract = summary["phase_seven_contract"]
+    main_js = _main_js_entry()
+
+    for file_name in phase_seven_contract["data_modules"]:
+        assert (DATA_JS_ROOT / file_name).is_file()
+    for import_path in ("./data/normalize.js", "./data/parse-overrides.js"):
+        assert import_path in main_js
+    for file_name in phase_seven_contract["js_test_files"]:
+        assert (JS_TEST_ROOT / file_name).is_file()
+    assert set(phase_seven_contract["normalization_focus"]) == {
+        "supported version handling",
+        "override parsing semantics",
+        "missing prediction id handling",
+        "unsupported version rejection",
     }
 
 
