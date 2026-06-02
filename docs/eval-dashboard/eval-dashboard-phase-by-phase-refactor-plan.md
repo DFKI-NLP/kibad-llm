@@ -899,6 +899,15 @@ Move:
 - overrides parsing logic
 - any helper functions dedicated to `.hydra/overrides.yaml`
 
+Phase 7 should preserve the dashboard's **current** override-parsing semantics exactly:
+
+- treat `.hydra/overrides.yaml` as the current lightweight Hydra-override list format rather than introducing a real YAML object parser
+- parse only list items shaped like `- key=value`
+- strip the current single leading `+` from parsed keys when present
+- keep parsed override values as raw strings
+- keep the current permissive behavior where lines that are blank, commented, missing the `- ` list-item prefix, or missing `=` are ignored rather than raising
+- add comprehensive JS-native tests that lock in those current semantics before any later behavioral cleanup
+
 ### `normalize.js`
 
 Move:
@@ -909,9 +918,35 @@ Move:
 - canonical normalization of prediction/evaluation payloads
 - normalization helpers specific to imported run data
 
+Phase 7 should preserve the current normalization semantics rather than redesigning the data model.
+
+The important normalized-result contract to freeze is the shape that is common across supported versions:
+
+- `normalizeImportedJobReturnValue(...)` returns an object with top-level `prediction` and `evaluation` keys
+- `prediction` contains canonical `jobReturnValue` and `overrides` objects
+- `evaluation` contains canonical `jobReturnValue`, `overrides`, and `data` keys
+
+That stable normalized result is produced by version-specific internal handlers:
+
+- version 0 and 1 synthesize `evaluation.jobReturnValue` from the inferred metric type plus version metadata
+- version 2 derives `evaluation.jobReturnValue` by copying top-level evaluation metadata except `data` and `prediction`
+
+For Phase 7, keep these two statements distinct:
+
+- **Normalized-result contract:** the current normalization produces the same canonical `evaluation.jobReturnValue` format across the currently supported versions
+- **Internal implementation detail:** that result is still produced through different version-specific handlers, and Phase 7 should preserve those existing code paths rather than redesigning them during extraction
+
 ### Design rule
 
 This layer should convert raw input into the dashboard’s canonical internal shape.
+
+For Phase 7 specifically:
+
+- `parse-overrides.js` and `normalize.js` should stay dependency-free and must not introduce a frontend build step or a browser-runtime parsing dependency
+- prediction-id **extraction** belongs in `normalize.js`
+- cross-run conflicting-prediction-id detection should remain with the ingestion/orchestration flow until Phase 8 loader extraction
+- preserve the current error taxonomy: keep `UnsupportedJobReturnValueVersionError` and `MissingPredictionIdError` as named errors, while other parse/normalization failures may remain generic invalid-input failures for now
+- treat the current v0/v1 metric-type inference from `overrides["experiment/evaluate"]` as an intentional supported contract and cover it in tests
 
 ### Tests to add in this phase
 
@@ -923,17 +958,25 @@ Use curated fixtures to add logic tests for:
 
 - supported version handling
 
+- current override-parser semantics, including accepted `- key=value` lines, single-leading-`+` stripping, raw string value preservation, and the current permissive skipping of unhandled lines
+
 - unsupported version rejection
 
-- malformed files failing cleanly
+- malformed JSON fixtures failing cleanly
+
+- current permissive handling of non-understood override lines being preserved in tests for now
 
 - missing prediction-id handling
 
-- conflicting prediction-id handling
+- normalization of a dedicated `missing_prediction_id` fixture
+
+- conflicting prediction-id handling should remain covered at the ingestion-flow boundary rather than being pushed into the single-run normalization module during Phase 7
 
 - normalization of newer post-`2026-01-16` experiment-derived fixtures
 
 Keep these as JS-native logic tests under `tests/unit/eval_dashboard/js/`; Python should continue to own fixture/docs/smoke checks around them.
+
+Add a curated fixture directory under `tests/fixtures/eval_dashboard/missing_prediction_id/` so the missing-prediction-id case is checked in and documented like the other supported edge fixtures.
 
 ### Why this phase matters
 
@@ -945,11 +988,22 @@ Verify that:
 
 - supported versions still load
 - unsupported versions are still rejected correctly
-- malformed files still fail cleanly
+- malformed JSON fixtures still fail cleanly
+- current override-parser permissive behavior is preserved exactly in the Phase 7 extraction
 - missing prediction ids are still handled correctly
-- conflicting prediction ids are still handled correctly
+- conflicting prediction ids are still handled correctly without moving cross-run conflict detection out of the ingestion flow prematurely
 - normalization tests pass
 - update the planning docs in `docs/eval-dashboard/` after the phase lands and confirm the parsing/normalization changes comply with `CONTRIBUTING.md`
+
+### Post-refactor follow-up TODOs surfaced during Phase 7 planning
+
+Do **not** make these behavior changes during Phase 7 itself, but record them for a later cleanup pass after the modularization refactor:
+
+- `parse-overrides.js` should eventually strip up to two leading `+` characters from keys rather than only one
+- override lines that the parser cannot understand should eventually raise a dedicated error instead of being skipped silently, and that error should cause the affected run directory to be skipped cleanly
+- investigate a more precise parse/normalization error taxonomy beyond the two currently preserved named errors
+- tighten the long-term contract around missing prediction ids; the dashboard currently needs to handle them, but a later cleanup should consider disallowing them entirely
+- investigate whether a real YAML parser is worthwhile as an optional browser-runtime dependency in a later post-refactor cleanup, without forcing that decision into Phase 7
 
 ### Suggested commit boundaries
 

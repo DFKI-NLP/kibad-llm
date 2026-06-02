@@ -17,6 +17,7 @@
 - [11. What to avoid](#11-what-to-avoid)
 - [12. Practical recommendation for this repository](#12-practical-recommendation-for-this-repository)
 - [13. Suggested next step sequence](#13-suggested-next-step-sequence)
+- [14. Post-refactor cleanup TODOs](#14-post-refactor-cleanup-todos)
 
 ## Checklist
 
@@ -528,11 +529,31 @@ This is likely one of the biggest extraction targets.
 - prediction id extraction
 - canonical imported data shape
 
+For the Phase 7 extraction, preserve the current normalization behavior exactly.
+
+The stable normalized-result contract to freeze is the shared outer normalized shape:
+
+- top-level `prediction` and `evaluation`
+- `prediction.jobReturnValue` and `prediction.overrides`
+- `evaluation.jobReturnValue`, `evaluation.overrides`, and `evaluation.data`
+
+That stable normalized result is still produced by intentionally different internal version handlers:
+
+- v0/v1 synthesize `evaluation.jobReturnValue` from inferred metric-type/version metadata
+- v2 derives `evaluation.jobReturnValue` by copying top-level evaluation metadata except `data` and `prediction`
+
+For Phase 7, keep these two statements distinct:
+
+- **Normalized-result contract:** the current normalization produces the same canonical `evaluation.jobReturnValue` format across the currently supported versions
+- **Internal implementation detail:** that result is still produced through different version-specific handlers, and the refactor should preserve those existing code paths rather than redesigning them during extraction
+
 #### `data/file-loader.js`
 
 - folder/file input handling
 - reading `job_return_value.json`
 - reading `.hydra/overrides.yaml`
+
+Cross-run concerns such as conflicting-prediction-id detection should stay with the ingestion/loading flow until this loader extraction phase, rather than being pulled into single-run normalization too early.
 
 #### `data/git-loader.js`
 
@@ -543,6 +564,16 @@ This is likely one of the biggest extraction targets.
 #### `data/parse-overrides.js`
 
 - overrides parsing logic
+
+For Phase 7, treat this as the current lightweight Hydra-override parser, not a full YAML-object parser:
+
+- accept the existing `- key=value` list-item format
+- strip the current single leading `+` from keys when present
+- keep values as raw strings
+- keep current permissive skipping semantics for non-understood lines during the modularization pass
+- add explicit JS-native tests that lock in those semantics before any later cleanup
+
+Do not add a new parser dependency or a frontend build step just for this extraction.
 
 #### `ui/dom.js`
 
@@ -579,6 +610,12 @@ Make the intended dependency direction explicit:
 - `plots/` consumes selector/data outputs, not broad global DOM state spread across the codebase
 - `main.js` is the top-level orchestrator and should not become a dumping ground again
 - no module should import back from `main.js`
+
+For Phase 7 specifically, also preserve the current error contract during extraction:
+
+- keep `UnsupportedJobReturnValueVersionError` and `MissingPredictionIdError` as the named normalization errors relied on by the runtime load-summary flow
+- other parse/normalization failures may remain generic invalid-input errors for now
+- treat v0/v1 metric-type inference from `overrides["experiment/evaluate"]` as an intentional supported contract
 
 ### DOM reference ownership
 
@@ -618,6 +655,8 @@ tests/
         ...
       malformed/
         ...
+      missing_prediction_id/
+        ...
       unsupported_version/
         ...
       conflicting_prediction_ids/
@@ -641,6 +680,12 @@ tests/
 ```
 
 The repository has now standardized on flat `*.test.mjs` files under `tests/unit/eval_dashboard/js/`, so `node --test tests/unit/eval_dashboard/js/*.test.mjs` remains stable without recursive globbing or another harness migration.
+
+For the Phase 7 data-module tests, prefer to lock in the current semantics before cleanup. In particular:
+
+- test the current permissive override-parser behavior explicitly, even where a later cleanup may want stricter failures
+- cover missing prediction ids with a dedicated curated fixture rather than only inline synthetic test data
+- keep conflicting-prediction-id behavior asserted at the ingestion-flow boundary until loader extraction lands
 
 ______________________________________________________________________
 
@@ -756,9 +801,20 @@ ______________________________________________________________________
 From the current repository state, the cleanest next sequence would be:
 
 1. extract normalization/parsing helpers from `docs/eval-dashboard/assets/js/main.js`
+1. add and document a curated `tests/fixtures/eval_dashboard/missing_prediction_id/` fixture
 1. add normalization tests under `tests/unit/eval_dashboard/js/` using `node --test tests/unit/eval_dashboard/js/*.test.mjs`
 1. extract loaders, UI modules, and plot/export modules
 1. reduce `main.js` to orchestration only
 1. after each completed phase above, update the planning docs under `docs/eval-dashboard/` and confirm the landed changes comply with `CONTRIBUTING.md`
 
 That keeps the refactor incremental, builds directly on the already-landed migration, fixture, smoke-test, CSS-extraction, and Phase 5 JS-harness groundwork, and preserves the test-first direction of the overall plan while deeper JS extraction begins.
+
+## 14. Post-refactor cleanup TODOs
+
+deferred beyond Phase 7:
+
+- allow override-key parsing to strip up to two leading `+` characters rather than only one
+- stop silently skipping override lines that the lightweight parser cannot understand; instead raise a dedicated error and skip the affected run cleanly
+- investigate a more exact parse/normalization error taxonomy
+- revisit whether missing prediction ids should remain tolerated or should become disallowed entirely
+- evaluate whether a real YAML parser is worth adding later as a browser-runtime dependency without compromising the no-build default architecture
