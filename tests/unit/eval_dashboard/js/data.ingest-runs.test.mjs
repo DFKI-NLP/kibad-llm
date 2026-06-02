@@ -149,3 +149,49 @@ test("ingest-runs exposes the named conflicting prediction id error", () => {
   assert.equal(error.predictionId, "predictions/example.jsonl");
   assert.match(error.message, /Conflicting prediction payloads/);
 });
+
+/**
+ * Ensure the shared ingestion boundary keeps the Phase 8 summary accounting for unsupported,
+ * missing-prediction-id, and invalid fixtures rather than leaving those counts in `main.js`.
+ */
+test("ingest-runs classifies unsupported, missing-prediction-id, and invalid fixtures in summary counts", () => {
+  const result = ingestRunEntries([
+    {
+      path: "fixture/unsupported_version/job_return_value.json",
+      text: readFixtureText("unsupported_version/job_return_value.json"),
+    },
+    {
+      path: "fixture/unsupported_version/.hydra/overrides.yaml",
+      text: readFixtureText("unsupported_version/.hydra/overrides.yaml"),
+    },
+    {
+      path: "fixture/missing_prediction_id/job_return_value.json",
+      text: readFixtureText("missing_prediction_id/job_return_value.json"),
+    },
+    {
+      path: "fixture/missing_prediction_id/.hydra/overrides.yaml",
+      text: readFixtureText("missing_prediction_id/.hydra/overrides.yaml"),
+    },
+    {
+      path: "fixture/malformed/job_return_value.json",
+      text: readFixtureText("malformed/job_return_value.json"),
+    },
+    {
+      path: "fixture/malformed/.hydra/overrides.yaml",
+      text: readFixtureText("malformed/.hydra/overrides.yaml"),
+    },
+  ]);
+
+  assert.equal(result.summary.candidateRunDirs, 3);
+  assert.equal(result.summary.loadedCount, 0);
+  assert.equal(result.summary.skippedUnsupportedVersion, 1);
+  assert.equal(result.summary.skippedMissingPredictionId, 1);
+  assert.equal(result.summary.skippedInvalid, 1);
+  assert.equal(result.failures.length, 3);
+  assert.deepEqual(
+    result.failures.map(({ error }) => error?.name).sort(),
+    ["MissingPredictionIdError", "SyntaxError", "UnsupportedJobReturnValueVersionError"].sort()
+  );
+  assert.deepEqual(result.predictionAdditions, {});
+  assert.deepEqual(result.evaluationAdditions, []);
+});

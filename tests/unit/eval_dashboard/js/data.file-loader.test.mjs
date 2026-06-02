@@ -9,6 +9,7 @@ import {
   collectLocalEvaluationEntries,
   deriveLocalSourceLabel,
   isRelevantEvaluationFilePath,
+  readTextFile,
 } from "../../../../docs/eval-dashboard/assets/js/data/file-loader.js";
 
 /**
@@ -68,4 +69,29 @@ test("file-loader collects only relevant local evaluation entries", async () => 
       text: "- name=example",
     },
   ]);
+});
+
+/**
+ * Ensure the local-file adapter keeps its browser-compatibility fallback when `File.text()` is not
+ * available on a selected file-like object.
+ */
+test("file-loader falls back to FileReader when File.text is unavailable", async () => {
+  const originalFileReader = globalThis.FileReader;
+
+  class FakeFileReader {
+    readAsText(file) {
+      this.result = file.fakeText;
+      queueMicrotask(() => this.onload?.());
+    }
+  }
+
+  globalThis.FileReader = FakeFileReader;
+  try {
+    await assert.doesNotReject(async () => {
+      const text = await readTextFile({ fakeText: "fallback reader payload" });
+      assert.equal(text, "fallback reader payload");
+    });
+  } finally {
+    globalThis.FileReader = originalFileReader;
+  }
 });

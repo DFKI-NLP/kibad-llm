@@ -82,9 +82,12 @@
       "data.ingest-runs.test.mjs"
     ],
     "loader_focus": [
-      "local file path filtering and source-label derivation",
+      "local file path filtering, source-label derivation, and FileReader fallback",
       "shared run ingestion and duplicate/conflict detection",
-      "github tree URL parsing and recursive file loading"
+      "shared ingestion summary accounting for invalid, unsupported-version, and missing-prediction-id runs",
+      "github tree URL parsing and recursive file loading",
+      "github ref resolution across branches, tags, and unresolved refs",
+      "github loader empty-input and no-files-found paths"
     ]
   },
   "feature_expectations": {

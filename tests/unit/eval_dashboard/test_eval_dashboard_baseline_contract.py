@@ -266,9 +266,12 @@ def test_current_runtime_matches_phase_eight_loader_contract() -> None:
     for file_name in phase_eight_contract["js_test_files"]:
         assert (JS_TEST_ROOT / file_name).is_file()
     assert set(phase_eight_contract["loader_focus"]) == {
-        "local file path filtering and source-label derivation",
+        "local file path filtering, source-label derivation, and FileReader fallback",
         "shared run ingestion and duplicate/conflict detection",
+        "shared ingestion summary accounting for invalid, unsupported-version, and missing-prediction-id runs",
         "github tree URL parsing and recursive file loading",
+        "github ref resolution across branches, tags, and unresolved refs",
+        "github loader empty-input and no-files-found paths",
     }
 
 

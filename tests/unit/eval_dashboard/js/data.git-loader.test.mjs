@@ -87,6 +87,27 @@ test("git-loader resolves refs and folder paths from tree URL suffixes", async (
 });
 
 /**
+ * Ensure ref resolution also covers the tag branch and the unresolved-ref failure path.
+ */
+test("git-loader resolves tags and rejects unresolved refs", async () => {
+  const tagResolved = await resolveGitHubRefAndFolder("DFKI-NLP", "kibad-llm", "release/v1.2/logs/evaluate", {
+    refExists: async (refKind, candidateRef) => refKind === "tags" && candidateRef === "release/v1.2",
+  });
+  assert.deepEqual(tagResolved, {
+    ref: "release/v1.2",
+    folderPath: "logs/evaluate",
+    refType: "tag",
+  });
+
+  await assert.rejects(
+    () => resolveGitHubRefAndFolder("DFKI-NLP", "kibad-llm", "not-a-real-ref/logs/evaluate", {
+      refExists: async () => false,
+    }),
+    /Could not resolve a matching GitHub branch, tag, or commit SHA/
+  );
+});
+
+/**
  * Ensure contents URLs, folder normalization, and source labels remain deterministic helpers.
  */
 test("git-loader builds deterministic contents URLs and source labels", () => {
@@ -205,6 +226,53 @@ test("git-loader fetches GitHub entries with stable order and progress callbacks
   assert.equal(progressEvents[0].completedFiles, 0);
   assert.equal(progressEvents.at(-1).completedFiles, 2);
   assert.equal(progressEvents.at(-1).totalFiles, 2);
+});
+
+/**
+ * Ensure the high-level GitHub loader keeps its explicit empty-input validation.
+ */
+test("git-loader rejects empty tree URLs before issuing network requests", async () => {
+  await assert.rejects(
+    () => loadGitHubEntriesFromTreeUrl("   "),
+    /Enter a GitHub tree URL first/
+  );
+});
+
+/**
+ * Ensure the high-level GitHub loader returns a clean no-files result when a resolved folder contains
+ * no relevant dashboard files.
+ */
+test("git-loader returns an empty result when no relevant files are found", async () => {
+  const statuses = [];
+  const progressEvents = [];
+  const responses = new Map([
+    [
+      "https://api.github.com/repos/DFKI-NLP/kibad-llm/git/ref/heads/main",
+      createJsonResponse({ ref: "refs/heads/main" }),
+    ],
+    [
+      "https://api.github.com/repos/DFKI-NLP/kibad-llm/contents/logs/evaluate?ref=main",
+      createJsonResponse([]),
+    ],
+  ]);
+  const fetchImpl = async (url) => responses.get(url) || createJsonResponse({ message: `missing ${url}` }, { status: 404, ok: false });
+
+  const result = await loadGitHubEntriesFromTreeUrl(
+    "https://github.com/DFKI-NLP/kibad-llm/tree/main/logs/evaluate",
+    {
+      fetchImpl,
+      onStatus: (status) => statuses.push(status),
+      onProgress: (progress) => progressEvents.push(progress),
+    }
+  );
+
+  assert.equal(result.sourceLabel, "github:DFKI-NLP/kibad-llm@main:logs/evaluate");
+  assert.deepEqual(result.files, []);
+  assert.deepEqual(result.entries, []);
+  assert.equal(result.totalBytes, 0);
+  assert.ok(statuses.some((status) => status.title === "Resolved GitHub ref"));
+  assert.ok(!statuses.some((status) => status.title === "Preparing GitHub file downloads"));
+  assert.equal(progressEvents.length, 0);
 });
 
 /**
