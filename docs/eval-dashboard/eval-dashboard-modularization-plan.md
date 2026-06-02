@@ -94,6 +94,7 @@ docs/
           selectors.js
         data/
           normalize.js
+          ingest-runs.js
           file-loader.js
           git-loader.js
           parse-overrides.js
@@ -470,6 +471,7 @@ docs/eval-dashboard/assets/js/
     selectors.js
   data/
     normalize.js
+    ingest-runs.js
     file-loader.js
     git-loader.js
     parse-overrides.js
@@ -547,19 +549,41 @@ For Phase 7, keep these two statements distinct:
 - **Normalized-result contract:** the current normalization produces the same canonical `evaluation.jobReturnValue` format across the currently supported versions
 - **Internal implementation detail:** that result is still produced through different version-specific handlers, and the refactor should preserve those existing code paths rather than redesigning them during extraction
 
+#### `data/ingest-runs.js`
+
+- shared ingestion from raw `{ path, text }` entries into canonical dashboard runs
+- run-directory discovery
+- `predict/` exclusion
+- missing-`job_return_value.json` accounting
+- JSON parsing
+- overrides parsing through `parse-overrides.js`
+- normalization through `normalize.js`
+- prediction-id extraction
+- duplicate run detection
+- conflicting prediction-id detection
+- load-summary counts and other ingestion results returned as plain data
+
+This shared ingestion boundary is worth naming explicitly rather than forcing identical logic into both source-specific loader modules. Both local-file loading and GitHub loading should feed the same ingestion pipeline.
+
 #### `data/file-loader.js`
 
-- folder/file input handling
-- reading `job_return_value.json`
-- reading `.hydra/overrides.yaml`
+- browser file/folder input handling
+- filtering browser `File` objects down to relevant dashboard files
+- reading file text
+- converting selected local files into raw `{ path, text }` entries plus a source label
 
-Cross-run concerns such as conflicting-prediction-id detection should stay with the ingestion/loading flow until this loader extraction phase, rather than being pulled into single-run normalization too early.
+This module should stay **source-adapter-only**. It should not mutate dashboard state, parse JSON, normalize runs, or write to DOM elements directly.
 
 #### `data/git-loader.js`
 
 - GitHub URL parsing
 - GitHub content listing/fetching
-- token handling if that remains client-side
+- converting GitHub content into raw `{ path, text }` entries plus a source label
+- emitting progress/status data via callbacks or returned plain objects rather than mutating DOM directly
+
+This module should stay **source-adapter-only** as well. It may use `fetch` and browser/network APIs, but it should not mutate dashboard state or own status/progress DOM updates.
+
+Keep browser-session concerns such as query-parameter synchronization and `localStorage` token persistence out of `git-loader.js` during Phase 8. Those behaviors belong with top-level orchestration unless and until a later browser-state helper is introduced deliberately.
 
 #### `data/parse-overrides.js`
 
@@ -606,9 +630,11 @@ Make the intended dependency direction explicit:
 - `utils/` imports nothing dashboard-specific
 - `state/` depends only on plain data shapes and `utils/`
 - `data/` depends on `utils/` and canonical state/data shapes, not on UI modules
+- `data/file-loader.js` and `data/git-loader.js` are source adapters: they may touch browser file/network APIs, but they should remain DOM-free and state-free
+- `data/ingest-runs.js` is the shared ingestion boundary: it turns raw entries into canonical predictions/evaluations plus summary data, while reusing `parse-overrides.js` and `normalize.js`
 - `ui/` consumes selector outputs and DOM refs, but not raw loaders
 - `plots/` consumes selector/data outputs, not broad global DOM state spread across the codebase
-- `main.js` is the top-level orchestrator and should not become a dumping ground again
+- `main.js` is the top-level orchestrator: it owns browser-only concerns such as event wiring, query-parameter/localStorage coordination, invoking source loaders + ingestion, applying returned data to canonical state, and triggering render/update flows
 - no module should import back from `main.js`
 
 For Phase 7 specifically, also preserve the current error contract during extraction:
@@ -616,6 +642,12 @@ For Phase 7 specifically, also preserve the current error contract during extrac
 - keep `UnsupportedJobReturnValueVersionError` and `MissingPredictionIdError` as the named normalization errors relied on by the runtime load-summary flow
 - other parse/normalization failures may remain generic invalid-input errors for now
 - treat v0/v1 metric-type inference from `overrides["experiment/evaluate"]` as an intentional supported contract
+
+For Phase 8 specifically, also make these boundaries explicit:
+
+- loader modules should communicate load progress/status via callbacks or returned plain progress events, not by capturing DOM refs themselves
+- the shared ingestion layer may return summary counts and normalized run additions, but `main.js` should remain responsible for mutating canonical dashboard state and triggering UI resets/renders
+- GitHub token persistence and `git_url` query-parameter behavior should stay in `main.js` during Phase 8 so browser-session behavior does not get buried inside a transport-specific loader
 
 ### DOM reference ownership
 
@@ -674,6 +706,9 @@ tests/
         state.selectors.test.mjs
         data.normalize.test.mjs
         data.parse-overrides.test.mjs
+        data.ingest-runs.test.mjs
+        data.file-loader.test.mjs
+        data.git-loader.test.mjs
   integration/
     eval_dashboard/
       test_eval_dashboard_redirects.py
@@ -686,6 +721,12 @@ For the Phase 7 data-module tests, prefer to lock in the current semantics befor
 - test the current permissive override-parser behavior explicitly, even where a later cleanup may want stricter failures
 - cover missing prediction ids with a dedicated curated fixture rather than only inline synthetic test data
 - keep conflicting-prediction-id behavior asserted at the ingestion-flow boundary until loader extraction lands
+
+For Phase 8, extend that same pattern rather than inventing a second loader-test strategy:
+
+- `data.ingest-runs.test.mjs` should lock in run-directory discovery, `predict/` exclusion, missing-job accounting, duplicate-run detection, and conflicting-prediction-id handling on curated/synthetic entry sets
+- `data.file-loader.test.mjs` should focus on DOM-free local-file helper logic such as relevant-path filtering and relative-path/source-label derivation rather than trying to mock the full browser file picker
+- `data.git-loader.test.mjs` should focus on GitHub tree-URL parsing, ref/path resolution helpers, contents-URL construction, and other deterministic helpers; network fetch orchestration can stay in manual/smoke validation unless isolated cleanly
 
 ______________________________________________________________________
 
@@ -746,6 +787,7 @@ docs/
           selectors.js
         data/
           normalize.js
+          ingest-runs.js
           file-loader.js
           git-loader.js
           parse-overrides.js
@@ -800,14 +842,15 @@ ______________________________________________________________________
 
 From the current repository state, the cleanest next sequence would be:
 
-1. extract local-file ingestion helpers into `docs/eval-dashboard/assets/js/data/file-loader.js`
+1. extract local-file source helpers into `docs/eval-dashboard/assets/js/data/file-loader.js`
+1. extract the shared raw-entry ingestion boundary into `docs/eval-dashboard/assets/js/data/ingest-runs.js`
 1. extract GitHub loading helpers into `docs/eval-dashboard/assets/js/data/git-loader.js`
-1. add JS-native tests for loader-adjacent pure helpers under `tests/unit/eval_dashboard/js/` using `node --test tests/unit/eval_dashboard/js/*.test.mjs`
+1. add JS-native tests for the shared ingestion layer plus loader-adjacent pure helpers under `tests/unit/eval_dashboard/js/` using `node --test tests/unit/eval_dashboard/js/*.test.mjs`
 1. extract UI modules and plot/export modules
 1. reduce `main.js` to orchestration only
 1. after each completed phase above, update the planning docs under `docs/eval-dashboard/` and confirm the landed changes comply with `CONTRIBUTING.md`
 
-That keeps the refactor incremental, builds directly on the already-landed migration, fixture, smoke-test, CSS-extraction, and JS-harness groundwork from Phases 5 to 7, and preserves the test-first direction of the overall plan while the remaining loader/UI/plot extraction begins.
+That keeps the refactor incremental, builds directly on the already-landed migration, fixture, smoke-test, CSS-extraction, and JS-harness groundwork from Phases 5 to 7, and preserves the test-first direction of the overall plan while avoiding a long-term trap where identical ingestion logic gets duplicated across the local-file and GitHub paths.
 
 ## 14. Post-refactor cleanup TODOs
 
