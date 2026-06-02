@@ -636,6 +636,7 @@ This is worth naming explicitly because the current remaining UI code has a real
 #### `ui/*.js`
 
 - DOM rendering for controls/tables/panes/tabs/status
+- the already-landed thin plot-control UI belongs with `ui/controls.js`, while heavier plot-specific aggregation, SVG, legend, and export behavior belongs in `plots/`
 - ideally as stateless render functions fed from selectors and DOM refs
 
 #### `plots/*.js`
@@ -650,6 +651,7 @@ For the post-Phase-8 work, prefer a split where each plot area exposes:
 
 - DOM-free aggregation / tab-map / normalization helpers that are easy to lock in with the Node.js test runner
 - thin SVG/DOM rendering functions layered on top of those pure helpers
+- keep basic control rendering that is not plot-family-specific in `ui/controls.js` rather than moving it back into `plots/`
 
 #### `utils/*.js`
 
@@ -780,6 +782,7 @@ For Phase 9 and beyond, keep following the same rule:
 - do **not** force a broad DOM-emulation harness just to claim UI coverage early
 - add `ui.dom.test.mjs`, `ui.status.test.mjs`, `ui.table-shared.test.mjs`, and `browser.session.test.mjs` when those helpers expose stable behavior that can be exercised with simple document/element/storage/history stubs rather than a heavy DOM harness
 - for the next UI steps, add `ui.tabs.test.mjs`, `ui.controls.test.mjs`, `ui.eval-json-pane.test.mjs`, `ui.prediction-table.test.mjs`, and `ui.evaluation-table.test.mjs` only when the extraction yields stable DOM-free helpers such as active-tab resolution, JSON highlighting/content selection, selection summaries, or header/row view-model builders
+- for `ui.controls.test.mjs`, include control-state seams such as column-option derivation, missing-default models, group-by toggles, and other thin control toggles that stay UI-only without pulling plot implementation logic into the control module
 - add plot-module tests first at the aggregation/tab-map/export-helper layer, even if full SVG rendering still relies on manual/smoke validation initially
 - add lightweight orchestration-level integration helpers around `main.js` composition seams such as session bootstrap, local-file query-param clearing, and status/progress callback routing whenever those paths can be isolated cleanly without introducing a broad DOM harness
 

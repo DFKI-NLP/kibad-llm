@@ -1439,7 +1439,7 @@ focused on header/row/selection view-model builders rather than on a broad DOM-e
 Verify:
 
 - Phase 10A keeps experiment/options tabs working
-- Phase 10A keeps default/truncate/group-by controls working
+- Phase 10A keeps default/truncate/group-by controls and thin plot-control toggles working
 - Phase 10A keeps the JSON pane synchronized with row selection and JSON-tab switching
 - prediction table rendering remains correct
 - evaluation table rendering remains correct
