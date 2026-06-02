@@ -1367,10 +1367,12 @@ The current branch now matches Phase 10A:
 
 - `docs/eval-dashboard/assets/js/ui/` now contains `controls.js`, `tabs.js`, and `eval-json-pane.js` alongside the Phase 9 `dom.js`, `table-shared.js`, and `status.js` helpers
 - `docs/eval-dashboard/assets/js/main.js` now delegates experiment-tab rendering plus cached options-tab state to `ui/tabs.js`, prediction/evaluation truncate/default/group-by control rendering to `ui/controls.js` at both the panel-composition level and the per-column header-toggle level, also routes prediction/evaluation sort-status label plus reset-button rendering and the thin plot-control surface (including grouped-bar field chips) through `ui/controls.js`, and delegates eval JSON-pane highlighting/content-selection rendering to `ui/eval-json-pane.js`
-- `tests/unit/eval_dashboard/js/ui.tabs.test.mjs` locks in active-tab resolution, plain tab-button view-model derivation, shared tab-button rendering, and cached tab-state synchronization
+- `tests/unit/eval_dashboard/js/ui.tabs.test.mjs` locks in active-tab resolution, plain tab-button view-model derivation, shared tab-button rendering, cached tab-state synchronization, and the custom delegated eval-options-tab selection path that reads `data-eval-tab` instead of the default `data-tab`
 - `tests/unit/eval_dashboard/js/ui.controls.test.mjs` locks in column-option derivation, toggle-only group-by selection, default-control view-model derivation, group-by button enable/disable behavior, the thin plot-control rendering state including grouped-bar field chips, and shared checkbox-list rendering semantics
 - `tests/unit/eval_dashboard/js/ui.eval-json-pane.test.mjs` locks in HTML escaping, JSON highlighting, selected evaluation/group content resolution, and split-pane tab-state rendering
 - `tests/unit/eval_dashboard/test_eval_dashboard_entrypoint.py`, `tests/unit/eval_dashboard/test_eval_dashboard_baseline_contract.py`, `tests/unit/eval_dashboard/js/README.md`, and `tests/fixtures/eval_dashboard/baseline/baseline-summary.json` now record the Phase 10A UI-module contract explicitly
+
+Phase 10A is still close to behavior-preserving overall, but one small intentional improvement should remain documented explicitly: the shared group-by toggle helper now applies explicit `aria-label` text to the evaluation-table header grouping checkboxes, improving accessibility compared with the old inline evaluation-toggle rendering.
 
 ### Phase 10B second: prediction and evaluation table renderers
 

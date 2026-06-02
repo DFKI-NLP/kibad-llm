@@ -126,12 +126,18 @@ function createDocumentStub() {
   };
 }
 
+/**
+ * Verify that active-tab resolution preserves valid values and falls back safely.
+ */
 test("resolveActiveTabValue preserves valid tabs and falls back to the first available tab", () => {
   assert.equal(resolveActiveTabValue("beta", ["alpha", "beta"]), "beta");
   assert.equal(resolveActiveTabValue("missing", ["alpha", "beta"]), "alpha");
   assert.equal(resolveActiveTabValue(null, []), null);
 });
 
+/**
+ * Verify that plain tab-button view models carry labels, titles, and active state.
+ */
 test("buildTabButtonModels derives labels, titles, and active-state flags", () => {
   assert.deepEqual(
     buildTabButtonModels(["errors", "bars"], {
@@ -146,6 +152,9 @@ test("buildTabButtonModels derives labels, titles, and active-state flags", () =
   );
 });
 
+/**
+ * Verify that count-based tab-button models append counts without losing metadata.
+ */
 test("buildCountTabButtonModels appends counts while preserving titles and active-state flags", () => {
   assert.deepEqual(
     buildCountTabButtonModels(["total", "details"], {
@@ -161,6 +170,9 @@ test("buildCountTabButtonModels appends counts while preserving titles and activ
   );
 });
 
+/**
+ * Verify that the shared tab-button renderer builds buttons and forwards selections.
+ */
 test("renderTabButtons creates shared tab buttons and wires selection callbacks", () => {
   const documentLike = createDocumentStub();
   const container = new FakeElement("div");
@@ -189,6 +201,9 @@ test("renderTabButtons creates shared tab buttons and wires selection callbacks"
   assert.deepEqual(selectedValues, ["exp-a"]);
 });
 
+/**
+ * Verify that cached button and panel refs stay synchronized with one active tab.
+ */
 test("renderStaticTabState syncs active classes across cached buttons and panels", () => {
   const alphaButton = new FakeElement("button");
   alphaButton.setAttribute("data-tab", "alpha");
@@ -211,6 +226,9 @@ test("renderStaticTabState syncs active classes across cached buttons and panels
   assert.equal(betaPanel.classList.contains("active"), true);
 });
 
+/**
+ * Verify that delegated tab selection ignores unchanged and non-matching clicks.
+ */
 test("bindDelegatedTabSelection forwards only changed tab selections from delegated clicks", () => {
   const container = new FakeElement("div");
   const selectedValues = [];
@@ -252,4 +270,52 @@ test("bindDelegatedTabSelection forwards only changed tab selections from delega
   });
 
   assert.deepEqual(selectedValues, ["beta"]);
+});
+
+/**
+ * Verify that delegated tab selection supports the eval-options path via `data-eval-tab`.
+ */
+test("bindDelegatedTabSelection supports the custom eval-options tab value attribute", () => {
+  const container = new FakeElement("div");
+  const selectedValues = [];
+  let activeValue = "defaults";
+  const defaultsButton = new FakeElement("button");
+  defaultsButton.setAttribute("data-eval-tab", "defaults");
+  const truncateButton = new FakeElement("button");
+  truncateButton.setAttribute("data-eval-tab", "truncate");
+  const missingValueButton = new FakeElement("button");
+
+  bindDelegatedTabSelection({
+    containerElement: container,
+    getActiveValue: () => activeValue,
+    valueAttribute: "data-eval-tab",
+    onSelect(value) {
+      activeValue = value;
+      selectedValues.push(value);
+    },
+  });
+
+  container.listeners.get("click")({
+    target: {
+      closest(selector) {
+        return selector === ".options-tab-button" ? defaultsButton : null;
+      },
+    },
+  });
+  container.listeners.get("click")({
+    target: {
+      closest(selector) {
+        return selector === ".options-tab-button" ? truncateButton : null;
+      },
+    },
+  });
+  container.listeners.get("click")({
+    target: {
+      closest(selector) {
+        return selector === ".options-tab-button" ? missingValueButton : null;
+      },
+    },
+  });
+
+  assert.deepEqual(selectedValues, ["truncate"]);
 });
