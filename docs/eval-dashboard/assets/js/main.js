@@ -27,7 +27,10 @@ import {
   renderGroupByButtonState,
   renderOptionsPanelControls,
 } from "./ui/controls.js";
-import { renderEvalJsonPane } from "./ui/eval-json-pane.js";
+import {
+  bindEvalJsonTabSelection,
+  renderEvalJsonPane,
+} from "./ui/eval-json-pane.js";
 import {
   createSortButton as createSharedSortButton,
   createTruncatingCell as createSharedTruncatingCell,
@@ -37,6 +40,7 @@ import {
   updateStickyControlColumnOffsets,
 } from "./ui/table-shared.js";
 import {
+  bindDelegatedTabSelection,
   buildTabButtonModels,
   renderTabButtons,
   renderStaticTabState,
@@ -762,20 +766,14 @@ const evalPlotContentObserver = new MutationObserver(() => {
 evalPlotContentObserver.observe(evalPlotContent, { childList: true, subtree: true });
 updateDownloadFiguresButtonState();
 
-evalJsonTabEvaluation.addEventListener("click", () => {
-  if (state.activeEvalJsonTab === "evaluation") {
-    return;
-  }
-  state.activeEvalJsonTab = "evaluation";
-  renderEvaluations();
-});
-
-evalJsonTabPrediction.addEventListener("click", () => {
-  if (state.activeEvalJsonTab === "prediction") {
-    return;
-  }
-  state.activeEvalJsonTab = "prediction";
-  renderEvaluations();
+bindEvalJsonTabSelection({
+  evaluationButton: evalJsonTabEvaluation,
+  predictionButton: evalJsonTabPrediction,
+  getActiveTab: () => state.activeEvalJsonTab,
+  onSelect: (nextTab) => {
+    state.activeEvalJsonTab = nextTab;
+    renderEvaluations();
+  },
 });
 
 initializeGitHubTokenInput(githubTokenInput);
@@ -1046,40 +1044,41 @@ evalResetSortButton.addEventListener("click", () => {
   renderEvaluations();
 });
 
-optionsTabs.addEventListener("click", (event) => {
-  const button = event.target.closest(".options-tab-button");
-  if (!button) {
-    return;
-  }
-  const tab = button.getAttribute("data-tab");
-  if (!tab || tab === state.activeOptionsTab) {
-    return;
-  }
-  state.activeOptionsTab = tab;
-  renderStaticTabState({
-    buttonElements: optionsTabButtons,
-    panelElements: optionsTabPanels,
-    activeValue: state.activeOptionsTab,
-  });
+bindDelegatedTabSelection({
+  containerElement: optionsTabs,
+  getActiveValue: () => state.activeOptionsTab,
+  onSelect: (tab) => {
+    state.activeOptionsTab = tab;
+    renderStaticTabState({
+      buttonElements: optionsTabButtons,
+      panelElements: optionsTabPanels,
+      activeValue: state.activeOptionsTab,
+    });
+  },
 });
 
-evalOptionsTabs.addEventListener("click", (event) => {
-  const button = event.target.closest(".options-tab-button");
-  if (!button || !state.activeEvalTab || !state.evalTabStates[state.activeEvalTab]) {
-    return;
-  }
-  const tab = button.getAttribute("data-eval-tab");
-  if (!tab || tab === state.evalTabStates[state.activeEvalTab].activeOptionsTab) {
-    return;
-  }
-  state.evalTabStates[state.activeEvalTab].activeOptionsTab = tab;
-  renderStaticTabState({
-    buttonElements: evalOptionsTabButtons,
-    panelElements: evalOptionsTabPanels,
-    activeValue: state.evalTabStates[state.activeEvalTab].activeOptionsTab,
-    buttonAttribute: "data-eval-tab",
-    panelAttribute: "data-eval-tab-panel",
-  });
+bindDelegatedTabSelection({
+  containerElement: evalOptionsTabs,
+  getActiveValue: () => {
+    if (!state.activeEvalTab || !state.evalTabStates[state.activeEvalTab]) {
+      return null;
+    }
+    return state.evalTabStates[state.activeEvalTab].activeOptionsTab;
+  },
+  onSelect: (tab) => {
+    if (!state.activeEvalTab || !state.evalTabStates[state.activeEvalTab]) {
+      return;
+    }
+    state.evalTabStates[state.activeEvalTab].activeOptionsTab = tab;
+    renderStaticTabState({
+      buttonElements: evalOptionsTabButtons,
+      panelElements: evalOptionsTabPanels,
+      activeValue: state.evalTabStates[state.activeEvalTab].activeOptionsTab,
+      buttonAttribute: "data-eval-tab",
+      panelAttribute: "data-eval-tab-panel",
+    });
+  },
+  valueAttribute: "data-eval-tab",
 });
 
 truncateDefaultsButton.addEventListener("click", () => {

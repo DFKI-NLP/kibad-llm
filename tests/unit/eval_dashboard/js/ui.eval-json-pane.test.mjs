@@ -6,6 +6,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import {
+  bindEvalJsonTabSelection,
   escapeHtml,
   highlightJsonContent,
   renderEvalJsonPane,
@@ -59,7 +60,19 @@ class FakeElement {
   constructor() {
     this.textContent = "";
     this.innerHTML = "";
+    this.listeners = new Map();
     this.classList = new FakeClassList();
+  }
+
+  /**
+   * Register one event listener.
+   *
+   * @param {string} type - Event type.
+   * @param {Function} listener - Event callback.
+   * @returns {void}
+   */
+  addEventListener(type, listener) {
+    this.listeners.set(type, listener);
   }
 }
 
@@ -96,10 +109,37 @@ test("resolveEvalJsonContent chooses evaluation data or reconstructed prediction
     { prediction: "pred-1" }
   );
   assert.deepEqual(
+    resolveEvalJsonContent({ selectedGroup, activeTab: "evaluation", getPredictionContent }),
+    [{ metric: 1 }, { metric: 2 }]
+  );
+  assert.deepEqual(
     resolveEvalJsonContent({ selectedGroup, activeTab: "prediction", getPredictionContent }),
     [{ prediction: "pred-a" }, { prediction: "pred-b" }]
   );
   assert.equal(resolveEvalJsonContent(), null);
+});
+
+test("bindEvalJsonTabSelection triggers selection only when the requested tab changes", () => {
+  const evaluationButton = new FakeElement();
+  const predictionButton = new FakeElement();
+  const selectedTabs = [];
+  let activeTab = "evaluation";
+
+  bindEvalJsonTabSelection({
+    evaluationButton,
+    predictionButton,
+    getActiveTab: () => activeTab,
+    onSelect(nextTab) {
+      activeTab = nextTab;
+      selectedTabs.push(nextTab);
+    },
+  });
+
+  evaluationButton.listeners.get("click")({ type: "click" });
+  predictionButton.listeners.get("click")({ type: "click" });
+  predictionButton.listeners.get("click")({ type: "click" });
+
+  assert.deepEqual(selectedTabs, ["prediction"]);
 });
 
 test("renderEvalJsonPane toggles split layout, tab state, and highlighted content", () => {

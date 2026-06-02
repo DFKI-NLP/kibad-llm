@@ -442,3 +442,46 @@ test("renderPlotControls synchronizes button state, input values, and plot-contr
   assert.equal(refs.plotGroupBarsRow.style.display, "none");
   assert.equal(refs.plotShowLegendOnceRow.style.display, "none");
 });
+
+test("renderPlotControls shows TP/FP/FN-specific threshold rows for that metric family", () => {
+  const refs = {
+    plotTabsByPrefixButton: new FakeElement("button"),
+    plotTabsBySuffixButton: new FakeElement("button"),
+    confusionTabsByMetricFieldButton: new FakeElement("button"),
+    confusionTabsByPredictionGroupButton: new FakeElement("button"),
+    plotShortenLabelsInput: new FakeElement("input"),
+    plotRoundingPrecisionInput: new FakeElement("input"),
+    plotConfusionMinLabelTotalRow: new FakeElement("div"),
+    plotConfusionMinLabelTotalInput: new FakeElement("input"),
+    plotTpFpFnMinLabelTotalRow: new FakeElement("div"),
+    plotTpFpFnMinLabelTotalInput: new FakeElement("input"),
+    plotTpFpFnMinDocumentTotalRow: new FakeElement("div"),
+    plotTpFpFnMinDocumentTotalInput: new FakeElement("input"),
+    plotTabsByRow: new FakeElement("div"),
+    plotConfusionTabsByRow: new FakeElement("div"),
+    plotGroupBarsRow: new FakeElement("div"),
+    plotShowLegendOnceRow: new FakeElement("div"),
+    plotShowLegendOnceInput: new FakeElement("input"),
+    exportOpaqueBackgroundInput: new FakeElement("input"),
+  };
+
+  renderPlotControls({
+    metricType: "TpFpFnCollector",
+    plotTabsBy: "prefix",
+    confusionTabsBy: "metric_field",
+    plotShortenLabels: false,
+    plotRoundingPrecision: 2,
+    plotConfusionMinLabelTotal: 3,
+    plotTpFpFnMinLabelTotal: 4,
+    plotTpFpFnMinDocumentTotal: 5,
+    plotShowLegendOnce: false,
+    exportOpaqueBackground: false,
+    ...refs,
+  });
+
+  assert.equal(refs.plotConfusionMinLabelTotalRow.style.display, "none");
+  assert.equal(refs.plotTpFpFnMinLabelTotalRow.style.display, "");
+  assert.equal(refs.plotTpFpFnMinDocumentTotalRow.style.display, "");
+  assert.equal(refs.plotConfusionTabsByRow.style.display, "");
+  assert.equal(refs.plotGroupBarsRow.style.display, "none");
+});

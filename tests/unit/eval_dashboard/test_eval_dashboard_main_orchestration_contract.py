@@ -73,6 +73,10 @@ def test_main_module_calls_phase_ten_a_tab_helpers_directly_without_local_wrappe
 
     assert "function renderOptionsTabs()" not in main_js
     assert "function renderEvalOptionsTabs(activeExperiment = state.activeEvalTab)" not in main_js
+    assert 'optionsTabs.addEventListener("click"' not in main_js
+    assert 'evalOptionsTabs.addEventListener("click"' not in main_js
+    assert "bindDelegatedTabSelection," in main_js
+    assert main_js.count("bindDelegatedTabSelection({") == 2
     assert main_js.count("renderStaticTabState({") >= 4
     assert "buttonElements: optionsTabButtons" in main_js
     assert "panelElements: optionsTabPanels" in main_js
@@ -130,10 +134,14 @@ def test_main_module_delegates_eval_json_pane_rendering_to_phase_ten_a_helper() 
 
     main_js = _main_js()
 
+    assert "bindEvalJsonTabSelection," in main_js
+    assert main_js.count("bindEvalJsonTabSelection({") == 1
     assert main_js.count("renderEvalJsonPane({") == 2
     assert "selectedEvaluation," in main_js
     assert "selectedGroup," in main_js
     assert "getPredictionContent: reconstructPredictionContentForEvaluation" in main_js
+    assert 'evalJsonTabEvaluation.addEventListener("click"' not in main_js
+    assert 'evalJsonTabPrediction.addEventListener("click"' not in main_js
     assert "highlightJsonContent(" not in main_js
     assert "escapeHtml(" not in main_js
 

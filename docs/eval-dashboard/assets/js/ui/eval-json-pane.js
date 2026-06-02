@@ -89,6 +89,35 @@ export function renderEvalJsonTabState({ evaluationButton, predictionButton, act
 }
 
 /**
+ * Bind click handlers for the two JSON-pane tab buttons.
+ *
+ * @param {object} options - Button refs plus the active-tab lookup.
+ * @param {HTMLElement | null} options.evaluationButton - Evaluation-data tab button.
+ * @param {HTMLElement | null} options.predictionButton - Prediction-metadata tab button.
+ * @param {() => ("evaluation" | "prediction")} [options.getActiveTab] - Current active-tab lookup.
+ * @param {(nextTab: "evaluation" | "prediction", event: Event) => void} options.onSelect - Selection callback.
+ * @returns {void}
+ */
+export function bindEvalJsonTabSelection({
+  evaluationButton,
+  predictionButton,
+  getActiveTab = () => "evaluation",
+  onSelect,
+}) {
+  const bindSelection = (button, nextTab) => {
+    button?.addEventListener?.("click", (event) => {
+      if (getActiveTab() === nextTab) {
+        return;
+      }
+      onSelect(nextTab, event);
+    });
+  };
+
+  bindSelection(evaluationButton, "evaluation");
+  bindSelection(predictionButton, "prediction");
+}
+
+/**
  * Render the JSON side pane from the currently selected evaluation or evaluation group.
  *
  * @param {object} options - JSON-pane DOM refs and selected content.

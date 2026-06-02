@@ -6,6 +6,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import {
+  bindDelegatedTabSelection,
   buildTabButtonModels,
   renderStaticTabState,
   renderTabButtons,
@@ -192,4 +193,47 @@ test("renderStaticTabState syncs active classes across cached buttons and panels
   assert.equal(betaButton.classList.contains("active"), true);
   assert.equal(alphaPanel.classList.contains("active"), false);
   assert.equal(betaPanel.classList.contains("active"), true);
+});
+
+test("bindDelegatedTabSelection forwards only changed tab selections from delegated clicks", () => {
+  const container = new FakeElement("div");
+  const selectedValues = [];
+  let activeValue = "alpha";
+  const alphaButton = new FakeElement("button");
+  alphaButton.setAttribute("data-tab", "alpha");
+  const betaButton = new FakeElement("button");
+  betaButton.setAttribute("data-tab", "beta");
+
+  bindDelegatedTabSelection({
+    containerElement: container,
+    getActiveValue: () => activeValue,
+    onSelect(value) {
+      activeValue = value;
+      selectedValues.push(value);
+    },
+  });
+
+  container.listeners.get("click")({
+    target: {
+      closest(selector) {
+        return selector === ".options-tab-button" ? alphaButton : null;
+      },
+    },
+  });
+  container.listeners.get("click")({
+    target: {
+      closest(selector) {
+        return selector === ".options-tab-button" ? betaButton : null;
+      },
+    },
+  });
+  container.listeners.get("click")({
+    target: {
+      closest() {
+        return null;
+      },
+    },
+  });
+
+  assert.deepEqual(selectedValues, ["beta"]);
 });

@@ -84,6 +84,37 @@ export function renderTabButtons({
 }
 
 /**
+ * Bind delegated click handling for one existing tab-button container.
+ *
+ * @param {object} options - Delegated tab-selection inputs.
+ * @param {HTMLElement | null} options.containerElement - Container that receives click events.
+ * @param {() => string | null} [options.getActiveValue] - Current active-tab lookup.
+ * @param {(value: string, event: Event) => void} options.onSelect - Selection callback.
+ * @param {string} [options.buttonSelector=".options-tab-button"] - Selector used with `closest(...)`.
+ * @param {string} [options.valueAttribute="data-tab"] - Attribute storing the tab id.
+ * @returns {void}
+ */
+export function bindDelegatedTabSelection({
+  containerElement,
+  getActiveValue = () => null,
+  onSelect,
+  buttonSelector = ".options-tab-button",
+  valueAttribute = "data-tab",
+}) {
+  containerElement?.addEventListener?.("click", (event) => {
+    const button = event.target?.closest?.(buttonSelector);
+    if (!button) {
+      return;
+    }
+    const value = button.getAttribute?.(valueAttribute);
+    if (!value || value === getActiveValue()) {
+      return;
+    }
+    onSelect(value, event);
+  });
+}
+
+/**
  * Synchronize already-existing tab buttons and panels against one active value.
  *
  * @param {object} options - Cached tab DOM collections and attribute names.
