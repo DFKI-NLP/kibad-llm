@@ -13,7 +13,6 @@ import { ingestRunEntries } from "./data/ingest-runs.js";
 import { loadGitHubEntriesFromTreeUrl } from "./data/git-loader.js";
 import {
   clearGitUrlQueryParam,
-  handleLocalEvaluationFileSelection,
   initializeGitHubTokenInput,
   persistGitHubTokenInputValue,
   runGitUrlQueryParamBootstrap,
@@ -803,13 +802,10 @@ initializeGitHubTokenInput(githubTokenInput);
 
 folderInput.addEventListener("change", async (event) => {
   const files = Array.from(event.target.files || []);
-  await handleLocalEvaluationFileSelection({
-    files,
-    clearGitUrl: clearGitUrlQueryParam,
-    loadEvaluationsFromFiles,
-    renderPredictions,
-    renderEvaluations,
-  });
+  clearGitUrlQueryParam();
+  await loadEvaluationsFromFiles(files);
+  renderPredictions();
+  renderEvaluations();
 });
 
 githubTokenInput.addEventListener("change", () => {

@@ -2,7 +2,6 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import {
-  handleLocalEvaluationFileSelection,
   initializeGitHubTokenInput,
   initializeGitUrlInputFromQueryParam,
   buildGitUrlQueryParamUrl,
@@ -139,7 +138,7 @@ test("setGitUrlQueryParam and clearGitUrlQueryParam use injected history adapter
   const locationLike = { href: "https://example.test/eval-dashboard/index.html" };
   const calls = [];
   const historyLike = {
-    replaceState(state, title, url) {
+    replaceState: (state, title, url) => {
       calls.push({ state, title, url });
     },
   };
@@ -189,27 +188,4 @@ test("runGitUrlQueryParamBootstrap hydrates the input and triggers the load call
   assert.equal(inputElement.value, "https://github.com/org/repo/tree/main/logs");
   assert.deepEqual(calls, ["https://github.com/org/repo/tree/main/logs"]);
   assert.equal(skippedLoad, false);
-});
-
-test("handleLocalEvaluationFileSelection clears git_url before loading and rerendering", async () => {
-  const callOrder = [];
-  const files = [{ name: "job_return_value.json" }];
-
-  await handleLocalEvaluationFileSelection({
-    files,
-    clearGitUrl() {
-      callOrder.push("clear");
-    },
-    async loadEvaluationsFromFiles(receivedFiles) {
-      callOrder.push(`load:${receivedFiles.length}`);
-    },
-    renderPredictions() {
-      callOrder.push("renderPredictions");
-    },
-    renderEvaluations() {
-      callOrder.push("renderEvaluations");
-    },
-  });
-
-  assert.deepEqual(callOrder, ["clear", "load:1", "renderPredictions", "renderEvaluations"]);
 });

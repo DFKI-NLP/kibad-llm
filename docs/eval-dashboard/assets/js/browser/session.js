@@ -174,27 +174,3 @@ export async function runGitUrlQueryParamBootstrap({
   await onLoadRequested?.(gitUrl);
   return true;
 }
-
-/**
- * Handle one local-file selection by clearing `git_url`, then delegating to the current load and render callbacks.
- *
- * @param {object} options - Local-load orchestration callbacks.
- * @param {Array<unknown>} [options.files=[]] - Selected file list.
- * @param {() => void} [options.clearGitUrl=clearGitUrlQueryParam] - Query-param clear callback.
- * @param {(files: Array<unknown>) => Promise<unknown> | unknown} [options.loadEvaluationsFromFiles] - Local load callback.
- * @param {() => void} [options.renderPredictions] - Prediction rerender callback.
- * @param {() => void} [options.renderEvaluations] - Evaluation rerender callback.
- * @returns {Promise<void>}
- */
-export async function handleLocalEvaluationFileSelection({
-  files = [],
-  clearGitUrl = () => clearGitUrlQueryParam(),
-  loadEvaluationsFromFiles,
-  renderPredictions,
-  renderEvaluations,
-} = {}) {
-  clearGitUrl();
-  await loadEvaluationsFromFiles?.(files);
-  renderPredictions?.();
-  renderEvaluations?.();
-}
