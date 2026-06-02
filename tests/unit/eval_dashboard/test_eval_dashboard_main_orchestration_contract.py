@@ -62,3 +62,47 @@ def test_main_module_keeps_query_param_bootstrap_delegated_to_session_helpers() 
     assert "runGitUrlQueryParamBootstrap" in main_js
     assert "inputElement: gitUrlInput" in main_js
     assert "onLoadRequested: () => handleGitLoadRequest()" in main_js
+
+
+def test_main_module_keeps_options_tab_state_wired_through_phase_ten_a_helpers() -> None:
+    """Ensure options-tab click handling reuses stable local wrappers around the extracted tab helper."""
+
+    main_js = _main_js()
+
+    assert "function renderOptionsTabs()" in main_js
+    assert "function renderEvalOptionsTabs(activeExperiment = state.activeEvalTab)" in main_js
+    assert main_js.count("renderOptionsTabs();") >= 2
+    assert main_js.count("renderEvalOptionsTabs(state.activeEvalTab);") >= 2
+
+    prediction_match = re.search(
+        r"function renderOptionsTabs\(\) \{(?P<body>.*?)\n}",
+        main_js,
+        re.DOTALL,
+    )
+    assert prediction_match is not None
+    prediction_body = prediction_match.group("body")
+    assert "renderStaticTabState({" in prediction_body
+    assert "buttonElements: optionsTabButtons" in prediction_body
+    assert "panelElements: optionsTabPanels" in prediction_body
+
+    evaluation_match = re.search(
+        r"function renderEvalOptionsTabs\(activeExperiment = state\.activeEvalTab\) \{(?P<body>.*?)\n}",
+        main_js,
+        re.DOTALL,
+    )
+    assert evaluation_match is not None
+    evaluation_body = evaluation_match.group("body")
+    assert "renderStaticTabState({" in evaluation_body
+    assert 'buttonAttribute: "data-eval-tab"' in evaluation_body
+    assert 'panelAttribute: "data-eval-tab-panel"' in evaluation_body
+
+
+def test_main_module_delegates_phase_ten_a_options_panel_rendering_to_controls_helper() -> None:
+    """Ensure `main.js` no longer open-codes checkbox/default panel DOM rendering for Phase 10A controls."""
+
+    main_js = _main_js()
+
+    assert "renderOptionsPanelControls({" in main_js
+    assert main_js.count("renderOptionsPanelControls({") == 2
+    assert "renderCheckboxOptionList({" not in main_js
+    assert "renderMissingDefaultControls({" not in main_js

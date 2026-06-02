@@ -152,6 +152,55 @@ export function renderMissingDefaultControls({
 }
 
 /**
+ * Render one options-panel surface consisting of checkbox toggles plus
+ * missing-default controls.
+ *
+ * @param {object} options - Options-panel render inputs.
+ * @param {Document} options.documentLike - Document-like element factory.
+ * @param {HTMLElement | null} options.checkboxListElement - Container receiving checkbox options.
+ * @param {Array<{value: string, label: string}>} options.checkboxOptions - Checkbox option models.
+ * @param {Iterable<string>} [options.checkedValues=[]] - Currently checked checkbox values.
+ * @param {(value: string, checked: boolean) => void} options.onCheckboxToggle - Checkbox toggle callback.
+ * @param {(option: {value: string, label: string}) => string | null} [options.getCheckboxAriaLabel] - Optional checkbox aria-label formatter.
+ * @param {HTMLElement | null} options.defaultsListElement - Container receiving missing-default controls.
+ * @param {HTMLElement | null} options.defaultsPanelElement - Surrounding panel to show or hide.
+ * @param {Array<{column: string, label: string, value: string, suggestions: string[], missingCount: number}>} options.defaultControlModels - Plain missing-default control models.
+ * @param {(column: string, nextValue: string) => void} options.onDefaultCommit - Missing-default commit callback.
+ * @param {string} options.inputIdPrefix - Prefix for generated missing-default datalist ids.
+ * @returns {void}
+ */
+export function renderOptionsPanelControls({
+  documentLike,
+  checkboxListElement,
+  checkboxOptions,
+  checkedValues = [],
+  onCheckboxToggle,
+  getCheckboxAriaLabel = null,
+  defaultsListElement,
+  defaultsPanelElement,
+  defaultControlModels,
+  onDefaultCommit,
+  inputIdPrefix,
+}) {
+  renderCheckboxOptionList({
+    documentLike,
+    listElement: checkboxListElement,
+    options: checkboxOptions,
+    checkedValues,
+    onToggle: onCheckboxToggle,
+    getAriaLabel: getCheckboxAriaLabel,
+  });
+  renderMissingDefaultControls({
+    documentLike,
+    listElement: defaultsListElement,
+    panelElement: defaultsPanelElement,
+    controlModels: defaultControlModels,
+    onCommit: onDefaultCommit,
+    inputIdPrefix,
+  });
+}
+
+/**
  * Render one missing-default input row.
  *
  * @param {object} options - One control model and DOM targets.

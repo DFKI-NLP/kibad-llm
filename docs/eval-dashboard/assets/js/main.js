@@ -23,9 +23,8 @@ import {
   buildColumnOptions,
   buildMissingDefaultControlModels,
   getToggleOnlyColumns,
-  renderCheckboxOptionList,
   renderGroupByButtonState,
-  renderMissingDefaultControls,
+  renderOptionsPanelControls,
 } from "./ui/controls.js";
 import { renderEvalJsonPane } from "./ui/eval-json-pane.js";
 import {
@@ -940,6 +939,27 @@ function getTruncateColumnOptions(predictionColumns = getCurrentPredictionColumn
   return buildColumnOptions(predictionColumns, displayPredictionColumnName);
 }
 
+function renderOptionsTabs() {
+  renderStaticTabState({
+    buttonElements: optionsTabButtons,
+    panelElements: optionsTabPanels,
+    activeValue: state.activeOptionsTab,
+  });
+}
+
+function renderEvalOptionsTabs(activeExperiment = state.activeEvalTab) {
+  if (!activeExperiment || !state.evalTabStates[activeExperiment]) {
+    return;
+  }
+  renderStaticTabState({
+    buttonElements: evalOptionsTabButtons,
+    panelElements: evalOptionsTabPanels,
+    activeValue: state.evalTabStates[activeExperiment].activeOptionsTab,
+    buttonAttribute: "data-eval-tab",
+    panelAttribute: "data-eval-tab-panel",
+  });
+}
+
 function setGroupByFields(columns) {
   state.groupByFields = [...columns];
   renderPredictions();
@@ -1513,17 +1533,18 @@ function renderPredictions() {
 
   const predictionSections = getPredictionColumnSections();
   const orderedPredictionColumns = predictionSections.flatMap((section) => section.columns);
-  renderStaticTabState({
-    buttonElements: optionsTabButtons,
-    panelElements: optionsTabPanels,
-    activeValue: state.activeOptionsTab,
-  });
-  renderCheckboxOptionList({
+  renderOptionsTabs();
+  const selectedPredictionViews = getSelectedPredictionViews();
+  const predictionDefaultColumns = getPredictionColumnsWithMissingValues(
+    selectedPredictionViews,
+    orderedPredictionColumns
+  );
+  renderOptionsPanelControls({
     documentLike: document,
-    listElement: truncateColumnsList,
-    options: getTruncateColumnOptions(orderedPredictionColumns),
+    checkboxListElement: truncateColumnsList,
+    checkboxOptions: getTruncateColumnOptions(orderedPredictionColumns),
     checkedValues: state.truncateEnabledColumns,
-    onToggle: (column, checked) => {
+    onCheckboxToggle: (column, checked) => {
       if (checked) {
         state.truncateEnabledColumns.add(column);
       } else {
@@ -1531,17 +1552,9 @@ function renderPredictions() {
       }
       renderPredictions();
     },
-  });
-  const selectedPredictionViews = getSelectedPredictionViews();
-  const predictionDefaultColumns = getPredictionColumnsWithMissingValues(
-    selectedPredictionViews,
-    orderedPredictionColumns
-  );
-  renderMissingDefaultControls({
-    documentLike: document,
-    listElement: predictionDefaultsList,
-    panelElement: predictionDefaultsPanel,
-    controlModels: buildMissingDefaultControlModels({
+    defaultsListElement: predictionDefaultsList,
+    defaultsPanelElement: predictionDefaultsPanel,
+    defaultControlModels: buildMissingDefaultControlModels({
       columns: predictionDefaultColumns,
       getLabel: displayPredictionColumnName,
       getValue: getPredictionDefaultValue,
@@ -1549,7 +1562,7 @@ function renderPredictions() {
       getMissingCount: (column) => getPredictionMissingValueCount(selectedPredictionViews, column),
     }),
     inputIdPrefix: "prediction-default",
-    onCommit: (column, nextValue) => {
+    onDefaultCommit: (column, nextValue) => {
       setConfiguredDefault(state.predictionDefaultValues, column, nextValue);
       renderPredictions();
       renderEvaluations();
@@ -3595,27 +3608,7 @@ function renderEvaluations() {
     },
     orderedEvalColumns
   );
-  renderStaticTabState({
-    buttonElements: evalOptionsTabButtons,
-    panelElements: evalOptionsTabPanels,
-    activeValue: evalTabState.activeOptionsTab,
-    buttonAttribute: "data-eval-tab",
-    panelAttribute: "data-eval-tab-panel",
-  });
-  renderCheckboxOptionList({
-    documentLike: document,
-    listElement: evalTruncateColumnsList,
-    options: buildColumnOptions([...new Set([...orderedEvalColumns, "eval_run_dir"])] , displayEvalColumnName),
-    checkedValues: evalTabState.truncateEnabledColumns,
-    onToggle: (column, checked) => {
-      if (checked) {
-        evalTabState.truncateEnabledColumns.add(column);
-      } else {
-        evalTabState.truncateEnabledColumns.delete(column);
-      }
-      renderEvaluations();
-    },
-  });
+  renderEvalOptionsTabs(state.activeEvalTab);
   const selectedEvaluationsForDefaults = getSelectedEvaluationGroups(evaluationContext).flatMap(
     (group) => group.evaluations
   );
@@ -3623,11 +3616,25 @@ function renderEvaluations() {
     selectedEvaluationsForDefaults,
     evalColumns
   );
-  renderMissingDefaultControls({
+  renderOptionsPanelControls({
     documentLike: document,
-    listElement: evalDefaultsList,
-    panelElement: evalDefaultsPanel,
-    controlModels: buildMissingDefaultControlModels({
+    checkboxListElement: evalTruncateColumnsList,
+    checkboxOptions: buildColumnOptions(
+      [...new Set([...orderedEvalColumns, "eval_run_dir"])],
+      displayEvalColumnName
+    ),
+    checkedValues: evalTabState.truncateEnabledColumns,
+    onCheckboxToggle: (column, checked) => {
+      if (checked) {
+        evalTabState.truncateEnabledColumns.add(column);
+      } else {
+        evalTabState.truncateEnabledColumns.delete(column);
+      }
+      renderEvaluations();
+    },
+    defaultsListElement: evalDefaultsList,
+    defaultsPanelElement: evalDefaultsPanel,
+    defaultControlModels: buildMissingDefaultControlModels({
       columns: evalDefaultColumns,
       getLabel: displayEvalColumnName,
       getValue: (column) => getEvalDefaultValue(evalTabState, column),
@@ -3635,7 +3642,7 @@ function renderEvaluations() {
       getMissingCount: (column) => getEvalMissingValueCount(selectedEvaluationsForDefaults, column),
     }),
     inputIdPrefix: `eval-default-${state.activeEvalTab.replace(/[^a-zA-Z0-9_-]+/g, "-")}`,
-    onCommit: (column, nextValue) => {
+    onDefaultCommit: (column, nextValue) => {
       setConfiguredDefault(evalTabState.defaultValues, column, nextValue);
       renderEvaluations();
     },
