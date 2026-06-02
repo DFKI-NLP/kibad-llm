@@ -1,4 +1,4 @@
-"""Baseline artifact contract tests for the eval-dashboard baseline plus Phase 5 to Phase 8 JS contracts."""
+"""Baseline artifact contract tests for the eval-dashboard baseline plus Phase 5 to Phase 9 JS contracts."""
 
 import json
 
@@ -14,7 +14,9 @@ CSS_ENTRY = CSS_ROOT / "index.css"
 MAIN_JS_ENTRY = JS_ROOT / "main.js"
 DATA_JS_ROOT = JS_ROOT / "data"
 STATE_JS_ROOT = JS_ROOT / "state"
+UI_JS_ROOT = JS_ROOT / "ui"
 UTILS_JS_ROOT = JS_ROOT / "utils"
+BROWSER_JS_ROOT = JS_ROOT / "browser"
 TOKENS_CSS = CSS_ROOT / "tokens.css"
 BASELINE_SUMMARY = FIXTURE_DATA_ROOT / "eval_dashboard" / "baseline" / "baseline-summary.json"
 FIXTURE_ROOT = FIXTURE_DATA_ROOT / "eval_dashboard"
@@ -206,6 +208,22 @@ def test_baseline_summary_includes_phase_eight_loader_contract() -> None:
     }
 
 
+def test_baseline_summary_includes_phase_nine_ui_contract() -> None:
+    """Ensure the baseline artifact exposes the Phase 9 UI/browser helper contract."""
+
+    summary = _baseline_summary()
+    phase_nine_contract = summary["phase_nine_contract"]
+
+    assert phase_nine_contract["ui_module_root"] == "docs/eval-dashboard/assets/js/ui"
+    assert phase_nine_contract["browser_module_root"] == "docs/eval-dashboard/assets/js/browser"
+    assert set(phase_nine_contract["ui_modules"]) == {"dom.js", "status.js", "table-shared.js"}
+    assert set(phase_nine_contract["browser_modules"]) == {"session.js"}
+    assert set(phase_nine_contract["js_test_files"]) == {
+        "browser.session.test.mjs",
+        "ui.table-shared.test.mjs",
+    }
+
+
 def test_current_runtime_matches_phase_six_state_contract() -> None:
     """Ensure the extracted Phase 6 state modules and selector/store tests exist and are wired into main.js."""
 
@@ -272,6 +290,34 @@ def test_current_runtime_matches_phase_eight_loader_contract() -> None:
         "github tree URL parsing and recursive file loading",
         "github ref resolution across branches, tags, and unresolved refs",
         "github loader empty-input and no-files-found paths",
+    }
+
+
+def test_current_runtime_matches_phase_nine_ui_contract() -> None:
+    """Ensure the extracted Phase 9 UI/browser helper modules and JS tests exist and are wired into main.js."""
+
+    summary = _baseline_summary()
+    phase_nine_contract = summary["phase_nine_contract"]
+    main_js = _main_js_entry()
+
+    for file_name in phase_nine_contract["ui_modules"]:
+        assert (UI_JS_ROOT / file_name).is_file()
+    for file_name in phase_nine_contract["browser_modules"]:
+        assert (BROWSER_JS_ROOT / file_name).is_file()
+    for import_path in (
+        "./ui/dom.js",
+        "./ui/status.js",
+        "./ui/table-shared.js",
+        "./browser/session.js",
+    ):
+        assert import_path in main_js
+    for file_name in phase_nine_contract["js_test_files"]:
+        assert (JS_TEST_ROOT / file_name).is_file()
+    assert set(phase_nine_contract["focus"]) == {
+        "shared DOM reference capture",
+        "shared table sort/truncation/sticky helpers",
+        "status and progress DOM rendering",
+        "github token persistence and git_url query-parameter synchronization",
     }
 
 
