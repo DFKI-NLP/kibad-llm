@@ -238,4 +238,3 @@ export function updateStickyControlColumnOffsets(tableElement) {
 	`${Math.ceil(topHeaderCell.getBoundingClientRect().height)}px`
   );
 }
-

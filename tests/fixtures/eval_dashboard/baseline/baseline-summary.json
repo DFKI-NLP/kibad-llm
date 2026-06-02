@@ -1,5 +1,5 @@
 {
-  "baseline_version": 7,
+  "baseline_version": 8,
   "captured_at": "2026-06-02",
   "implementation_shape": {
     "runtime_entrypoint": "docs/eval-dashboard/index.html",
@@ -103,6 +103,8 @@
     ],
     "js_test_files": [
       "browser.session.test.mjs",
+      "ui.dom.test.mjs",
+      "ui.status.test.mjs",
       "ui.table-shared.test.mjs"
     ],
     "focus": [

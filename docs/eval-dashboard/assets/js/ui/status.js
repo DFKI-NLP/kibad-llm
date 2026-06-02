@@ -142,4 +142,3 @@ export function setDownloadFiguresButtonBusy(buttonElement, busyLabel = "Prepari
   buttonElement.disabled = true;
   buttonElement.textContent = busyLabel;
 }
-

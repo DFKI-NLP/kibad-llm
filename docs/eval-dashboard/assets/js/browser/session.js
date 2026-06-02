@@ -108,4 +108,3 @@ export function setGitUrlQueryParam(
 export function clearGitUrlQueryParam(options = {}) {
   setGitUrlQueryParam("", options);
 }
-

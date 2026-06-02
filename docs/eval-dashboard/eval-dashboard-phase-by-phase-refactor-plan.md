@@ -69,7 +69,7 @@ As of the current repository state:
 - `docs/index.md` links point to `eval-dashboard/index.html`
 - populated Phase 9 runtime assets now exist under `docs/eval-dashboard/assets/`: CSS lives under `assets/css/`, `assets/js/main.js` remains the external entry module, pure helpers live under `assets/js/utils/`, extracted canonical state/selector modules now live under `assets/js/state/`, `assets/js/data/` contains parsing, normalization, source-loader, and shared-ingestion modules, `assets/js/ui/` now contains shared DOM/table/status infrastructure, and `assets/js/browser/` now contains extracted browser-session helpers
 - structural smoke coverage now includes `tests/unit/eval_dashboard/test_eval_dashboard_entrypoint.py` and `tests/unit/eval_dashboard/test_eval_dashboard_html_contracts.py`
-- browser-free JS utility, store, selector, data-normalization, loader/ingestion, and newly extracted Phase 9 shared-table + browser-session logic coverage now exists under `tests/unit/eval_dashboard/js/` via the Node.js built-in test runner, which remains the long-term home for extracted dashboard logic tests in later phases; the current logic-test layer now covers the main source-adapter/shared-ingestion boundaries plus representative Phase 9 sort-cycle and browser-session edge paths
+- browser-free JS utility, store, selector, data-normalization, loader/ingestion, and newly extracted Phase 9 DOM/status/shared-table/browser-session helper coverage now exists under `tests/unit/eval_dashboard/js/` via the Node.js built-in test runner, which remains the long-term home for extracted dashboard logic tests in later phases; the current logic-test layer now covers the main source-adapter/shared-ingestion boundaries plus explicit Phase 9 DOM-ref capture, load-status/progress rendering, shared-table helper, and browser-session edge paths
 - curated Phase 2 and Phase 7 fixtures now exist under `tests/fixtures/eval_dashboard/`, including valid version-0/1/2 examples, invalid edge-case fixtures, the dedicated `missing_prediction_id` fixture, and explicit fixtures for all currently supported plot families (`bars`, `errors`, `confusion_matrix`, `tpfpfn`)
 - fixture provenance is documented in `tests/fixtures/eval_dashboard/README.md`
 - fixture integrity smoke coverage exists at `tests/unit/eval_dashboard/test_dashboard_fixtures.py`
@@ -1265,10 +1265,12 @@ Avoid hiding state mutations deep inside many rendering functions unless necessa
 
 Prefer JS-native tests only for the extracted helpers that are truly browser-free or adapter-driven, for example:
 
+- `ui.dom.test.mjs` for centralized DOM-ref capture and panel-visibility helpers using stubbed document/element adapters
+- `ui.status.test.mjs` for load-status/progress and download-button rendering helpers using plain DOM-ref stubs
 - `ui.table-shared.test.mjs` for sort-cycle helpers, sort-label helpers, or any other shared table logic that stays mostly DOM-free
 - `browser.session.test.mjs` for query-parameter normalization and storage read/write helpers using injected adapters
 
-Do **not** force a heavy DOM-emulation harness into this phase just to test `status.js` or `dom.js`. Structural/manual validation is still acceptable there unless a helper is isolated cleanly.
+Do **not** force a heavy DOM-emulation harness into this phase just to test `status.js` or `dom.js`. If those helpers stay isolated enough for document/element stubs, lightweight JS-native tests are fine; otherwise structural/manual validation is still acceptable there.
 
 ### Landed Phase 9 outcome
 
@@ -1277,8 +1279,10 @@ The current branch now matches this phase:
 - `docs/eval-dashboard/assets/js/ui/` now contains `dom.js`, `table-shared.js`, and `status.js`
 - `docs/eval-dashboard/assets/js/browser/` now contains `session.js`
 - `docs/eval-dashboard/assets/js/main.js` now captures shared DOM refs once through `ui/dom.js`, delegates shared sort/truncation/sticky helpers to `ui/table-shared.js`, delegates load-status/progress plus download-button rendering to `ui/status.js`, and delegates GitHub-token persistence plus `git_url` query-parameter behavior to `browser/session.js`
-- `tests/unit/eval_dashboard/js/ui.table-shared.test.mjs` locks in the shared sort-direction cycle, append-mode behavior, sort-label formatting, and `aria-sort` derivation without introducing a DOM-emulation harness
-- `tests/unit/eval_dashboard/js/browser.session.test.mjs` locks in token persistence semantics plus `git_url` query-parameter parsing/update behavior using injected storage/history/location adapters
+- `tests/unit/eval_dashboard/js/ui.dom.test.mjs` locks in the centralized DOM-ref capture contract, including the shared options-tab query lookups and the panel-visibility helper without introducing a heavy DOM harness
+- `tests/unit/eval_dashboard/js/ui.status.test.mjs` locks in load-status/progress rendering plus download-button state rendering through plain DOM-ref stubs rather than a browser-emulation layer
+- `tests/unit/eval_dashboard/js/ui.table-shared.test.mjs` now locks in the shared sort-direction cycle, append-mode behavior, sort-label formatting, `aria-sort` derivation, reusable sort-button rendering, shared truncating-cell behavior, and sticky-column offset calculation without introducing a DOM-emulation harness
+- `tests/unit/eval_dashboard/js/browser.session.test.mjs` now locks in token persistence semantics plus `git_url` query-parameter parsing/update behavior using injected storage/history/location adapters, including custom-storage-key and write-failure edge paths
 - `tests/unit/eval_dashboard/test_eval_dashboard_entrypoint.py`, `tests/unit/eval_dashboard/test_eval_dashboard_baseline_contract.py`, `tests/unit/eval_dashboard/js/README.md`, and `tests/fixtures/eval_dashboard/baseline/baseline-summary.json` now record the Phase 9 UI/browser-helper contract explicitly
 
 ### Validation checklist

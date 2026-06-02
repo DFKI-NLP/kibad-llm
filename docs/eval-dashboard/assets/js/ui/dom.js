@@ -66,15 +66,32 @@ const DOM_REF_IDS = {
 };
 
 /**
+ * Query all matching elements from one DOM-like root, returning a stable array.
+ *
+ * @param {{querySelectorAll?: (selector: string) => Iterable<HTMLElement> | ArrayLike<HTMLElement>} | null} rootLike - Root node or document.
+ * @param {string} selector - Selector to query.
+ * @returns {HTMLElement[]} Matching elements as a plain array.
+ */
+function queryAll(rootLike, selector) {
+  return Array.from(rootLike?.querySelectorAll?.(selector) || []);
+}
+
+/**
  * Capture the dashboard's shared DOM references once during bootstrap.
  *
  * @param {Document} documentLike - The document to query.
- * @returns {Record<string, HTMLElement | null>} Captured DOM references keyed by stable helper names.
+ * @returns {Record<string, HTMLElement | null | HTMLElement[]>} Captured DOM references keyed by stable helper names.
  */
 export function captureDomRefs(documentLike) {
-  return Object.fromEntries(
+  const refs = Object.fromEntries(
     Object.entries(DOM_REF_IDS).map(([refName, elementId]) => [refName, documentLike.getElementById(elementId)])
   );
+
+  refs.optionsTabButtons = queryAll(refs.optionsTabs, ".options-tab-button");
+  refs.optionsTabPanels = queryAll(documentLike, ".options-tab-panel");
+  refs.evalOptionsTabButtons = queryAll(refs.evalOptionsTabs, ".options-tab-button");
+  refs.evalOptionsTabPanels = queryAll(documentLike, ".options-tab-panel[data-eval-tab-panel]");
+  return refs;
 }
 
 /**
@@ -90,4 +107,3 @@ export function setPanelVisibility(panelElement, shouldShow) {
   }
   panelElement.style.display = shouldShow ? "" : "none";
 }
-

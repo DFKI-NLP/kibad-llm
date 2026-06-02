@@ -39,7 +39,7 @@ A few repo-specific observations first:
 - `properdocs.yml` and `docs/index.md` already point to the new folder-based entrypoint.
 - `scripts/build_docs.py` only generates **Python API reference** pages from `src/`, so it is **not** a frontend asset pipeline.
 - `docs/eval-dashboard/assets/css/` now contains `index.css`, `tokens.css`, `layout.css`, `controls.css`, `tables.css`, and `plots.css`; `docs/eval-dashboard/assets/js/` now contains `main.js`, `utils/`, `state/`, the data modules (`parse-overrides.js`, `normalize.js`, `file-loader.js`, `ingest-runs.js`, and `git-loader.js`), the Phase 9 `ui/` infrastructure modules (`dom.js`, `table-shared.js`, and `status.js`), and the Phase 9 `browser/session.js` helper already split out of the original monolith.
-- `pyproject.toml` has **pytest**, and the repo now has dashboard smoke coverage under `tests/unit/eval_dashboard/`, including entrypoint checks plus HTML-contract checks that enforce external CSS, the external `assets/js/main.js` module reference, and the absence of inline runtime CSS/JS; `tests/unit/eval_dashboard/js/` is now the reserved location for extracted dashboard logic tests, and the long-term harness there is the minimal Node.js built-in test runner (`node --test tests/unit/eval_dashboard/js/*.test.mjs`) covering utilities, Phase 6 state/store + selector modules, the Phase 7 parsing/normalization modules, the Phase 8 loader/ingestion modules, and the new Phase 9 shared-table/browser-session helpers, including their main boundary and representative edge-path coverage.
+- `pyproject.toml` has **pytest**, and the repo now has dashboard smoke coverage under `tests/unit/eval_dashboard/`, including entrypoint checks plus HTML-contract checks that enforce external CSS, the external `assets/js/main.js` module reference, and the absence of inline runtime CSS/JS; `tests/unit/eval_dashboard/js/` is now the reserved location for extracted dashboard logic tests, and the long-term harness there is the minimal Node.js built-in test runner (`node --test tests/unit/eval_dashboard/js/*.test.mjs`) covering utilities, Phase 6 state/store + selector modules, the Phase 7 parsing/normalization modules, the Phase 8 loader/ingestion modules, and the new Phase 9 DOM/status/shared-table/browser-session helpers, including their main boundaries and representative edge-path coverage.
 - `data/prediction_results/readme.md` documents real experiment folders under `data/prediction_results/logs/`; those runs are useful fixture sources, but tests should use curated snapshots rather than reach into mutable live data folders.
 - curated dashboard fixtures now exist under `tests/fixtures/eval_dashboard/`, including valid version coverage, invalid edge-case fixtures, the dedicated `missing_prediction_id` fixture, and explicit examples for all current plot families (`bars`, `errors`, `confusion_matrix`, `tpfpfn`).
 
@@ -736,6 +736,8 @@ tests/
         utils.text.test.mjs
         utils.values.test.mjs
         state.selectors.test.mjs
+        ui.dom.test.mjs
+        ui.status.test.mjs
         ui.table-shared.test.mjs
         browser.session.test.mjs
         data.normalize.test.mjs
@@ -770,7 +772,7 @@ For Phase 9 and beyond, keep following the same rule:
 
 - prefer JS-native tests for DOM-free shared helpers that emerge from UI/plot extraction
 - do **not** force a broad DOM-emulation harness just to claim UI coverage early
-- add `ui.table-shared.test.mjs` and `browser.session.test.mjs` only if those modules expose stable, mostly DOM-free behavior
+- add `ui.dom.test.mjs`, `ui.status.test.mjs`, `ui.table-shared.test.mjs`, and `browser.session.test.mjs` when those helpers expose stable behavior that can be exercised with simple document/element/storage/history stubs rather than a heavy DOM harness
 - add plot-module tests first at the aggregation/tab-map/export-helper layer, even if full SVG rendering still relies on manual/smoke validation initially
 
 ______________________________________________________________________

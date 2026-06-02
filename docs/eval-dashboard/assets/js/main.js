@@ -52,6 +52,8 @@ const {
   predictionSortedByLabel,
   predictionResetSortButton,
   optionsTabs,
+  optionsTabButtons,
+  optionsTabPanels,
   truncateColumnsList,
   predictionDefaultsPanel,
   predictionDefaultsList,
@@ -65,6 +67,8 @@ const {
   evalSortedByLabel,
   evalResetSortButton,
   evalOptionsTabs,
+  evalOptionsTabButtons,
+  evalOptionsTabPanels,
   evalTruncateColumnsList,
   evalDefaultsPanel,
   evalDefaultsList,
@@ -1177,14 +1181,11 @@ function renderPredictionDefaultControls() {
 }
 
 function renderOptionsTabs() {
-  const tabButtons = optionsTabs.querySelectorAll(".options-tab-button");
-  const tabPanels = document.querySelectorAll(".options-tab-panel");
-
-  for (const button of tabButtons) {
+  for (const button of optionsTabButtons) {
     const tab = button.getAttribute("data-tab");
     button.classList.toggle("active", tab === state.activeOptionsTab);
   }
-  for (const panel of tabPanels) {
+  for (const panel of optionsTabPanels) {
     const tabPanel = panel.getAttribute("data-tab-panel");
     panel.classList.toggle("active", tabPanel === state.activeOptionsTab);
   }
@@ -1195,13 +1196,11 @@ function renderEvalOptionsTabs(activeExperiment) {
     return;
   }
   const tabState = state.evalTabStates[activeExperiment];
-  const tabButtons = evalOptionsTabs.querySelectorAll(".options-tab-button");
-  const tabPanels = document.querySelectorAll(".options-tab-panel[data-eval-tab-panel]");
-  for (const button of tabButtons) {
+  for (const button of evalOptionsTabButtons) {
     const tab = button.getAttribute("data-eval-tab");
     button.classList.toggle("active", tab === tabState.activeOptionsTab);
   }
-  for (const panel of tabPanels) {
+  for (const panel of evalOptionsTabPanels) {
     const tabPanel = panel.getAttribute("data-eval-tab-panel");
     panel.classList.toggle("active", tabPanel === tabState.activeOptionsTab);
   }

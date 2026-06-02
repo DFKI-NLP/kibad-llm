@@ -220,6 +220,8 @@ def test_baseline_summary_includes_phase_nine_ui_contract() -> None:
     assert set(phase_nine_contract["browser_modules"]) == {"session.js"}
     assert set(phase_nine_contract["js_test_files"]) == {
         "browser.session.test.mjs",
+        "ui.dom.test.mjs",
+        "ui.status.test.mjs",
         "ui.table-shared.test.mjs",
     }
 

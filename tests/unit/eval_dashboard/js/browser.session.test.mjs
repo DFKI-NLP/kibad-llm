@@ -59,6 +59,25 @@ test("GitHub token reads tolerate storage adapter failures", () => {
   assert.equal(getStoredGitHubToken({ storageLike: failingStorage }), "");
 });
 
+test("GitHub token helpers honor custom storage keys and tolerate write failures", () => {
+  const storageLike = createStorageAdapter();
+
+  persistGitHubToken("  abc123  ", { storageLike, storageKey: "custom.github.token" });
+  assert.equal(getStoredGitHubToken({ storageLike, storageKey: "custom.github.token" }), "abc123");
+  assert.equal(getStoredGitHubToken({ storageLike }), "");
+
+  const failingStorage = {
+    setItem() {
+      throw new Error("boom");
+    },
+    removeItem() {
+      throw new Error("boom");
+    },
+  };
+  assert.doesNotThrow(() => persistGitHubToken("abc123", { storageLike: failingStorage }));
+  assert.doesNotThrow(() => persistGitHubToken("   ", { storageLike: failingStorage }));
+});
+
 test("readGitUrlQueryParam returns a trimmed git_url query parameter", () => {
   assert.equal(
     readGitUrlQueryParam({
@@ -91,7 +110,7 @@ test("setGitUrlQueryParam and clearGitUrlQueryParam use injected history adapter
     },
   };
 
-  setGitUrlQueryParam("https://github.com/org/repo/tree/main/logs", { locationLike, historyLike });
+  setGitUrlQueryParam(" https://github.com/org/repo/tree/main/logs ", { locationLike, historyLike });
   clearGitUrlQueryParam({
     locationLike: {
       href: "https://example.test/eval-dashboard/index.html?git_url=https%3A%2F%2Fgithub.com%2Forg%2Frepo%2Ftree%2Fmain%2Flogs",
@@ -112,4 +131,3 @@ test("setGitUrlQueryParam and clearGitUrlQueryParam use injected history adapter
     },
   ]);
 });
-
