@@ -8,6 +8,7 @@ import assert from "node:assert/strict";
 import {
   buildColumnOptions,
   buildMissingDefaultControlModels,
+  buildOptionsPanelModels,
   getToggleOnlyColumns,
   renderCheckboxOptionList,
   renderGroupByButtonState,
@@ -200,6 +201,35 @@ test("buildMissingDefaultControlModels derives labels, values, suggestions, and 
         missingCount: 3,
       },
     ]
+  );
+});
+
+test("buildOptionsPanelModels composes checkbox and missing-default models for one shared options panel", () => {
+  assert.deepEqual(
+    buildOptionsPanelModels({
+      checkboxColumns: ["prediction.run_dir", "prediction.title"],
+      getCheckboxLabel: (column) => `Checkbox:${column}`,
+      defaultColumns: ["prediction.language"],
+      getDefaultLabel: (column) => `Default:${column}`,
+      getDefaultValue: () => "de",
+      getDefaultSuggestions: () => ["de", "en"],
+      getDefaultMissingCount: () => 2,
+    }),
+    {
+      checkboxOptions: [
+        { value: "prediction.run_dir", label: "Checkbox:prediction.run_dir" },
+        { value: "prediction.title", label: "Checkbox:prediction.title" },
+      ],
+      defaultControlModels: [
+        {
+          column: "prediction.language",
+          label: "Default:prediction.language",
+          value: "de",
+          suggestions: ["de", "en"],
+          missingCount: 2,
+        },
+      ],
+    }
   );
 });
 

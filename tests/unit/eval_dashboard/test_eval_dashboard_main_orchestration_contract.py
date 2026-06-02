@@ -100,10 +100,18 @@ def test_main_module_delegates_phase_ten_a_options_panel_rendering_to_controls_h
 
     main_js = _main_js()
 
+    assert "buildOptionsPanelModels," in main_js
+    assert main_js.count("buildOptionsPanelModels({") == 2
     assert "renderOptionsPanelControls({" in main_js
     assert main_js.count("renderOptionsPanelControls({") == 2
+    assert "checkboxOptions: predictionOptionsPanelModels.checkboxOptions" in main_js
+    assert "defaultControlModels: predictionOptionsPanelModels.defaultControlModels" in main_js
+    assert "checkboxOptions: evalOptionsPanelModels.checkboxOptions" in main_js
+    assert "defaultControlModels: evalOptionsPanelModels.defaultControlModels" in main_js
     assert "renderCheckboxOptionList({" not in main_js
     assert "renderMissingDefaultControls({" not in main_js
+    assert "buildColumnOptions(" not in main_js
+    assert "buildMissingDefaultControlModels(" not in main_js
 
 
 def test_main_module_delegates_prediction_and_evaluation_group_by_button_state_to_controls_helper() -> (

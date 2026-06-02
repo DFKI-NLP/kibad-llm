@@ -71,6 +71,40 @@ export function buildMissingDefaultControlModels({
 }
 
 /**
+ * Build both checkbox options and missing-default control models for one options panel.
+ *
+ * @param {object} options - Checkbox/default model composition callbacks.
+ * @param {Iterable<string>} options.checkboxColumns - Columns exposed as checkbox toggles.
+ * @param {(column: string) => string} [options.getCheckboxLabel] - Checkbox label formatter.
+ * @param {Iterable<string>} options.defaultColumns - Columns needing missing-value defaults.
+ * @param {(column: string) => string} options.getDefaultLabel - Default-control label formatter.
+ * @param {(column: string) => string} options.getDefaultValue - Current configured default lookup.
+ * @param {(column: string) => string[]} options.getDefaultSuggestions - Suggestion lookup.
+ * @param {(column: string) => number} options.getDefaultMissingCount - Missing-value count lookup.
+ * @returns {{checkboxOptions: Array<{value: string, label: string}>, defaultControlModels: Array<{column: string, label: string, value: string, suggestions: string[], missingCount: number}>}} Plain options-panel models.
+ */
+export function buildOptionsPanelModels({
+  checkboxColumns,
+  getCheckboxLabel = (column) => String(column),
+  defaultColumns,
+  getDefaultLabel,
+  getDefaultValue,
+  getDefaultSuggestions,
+  getDefaultMissingCount,
+}) {
+  return {
+    checkboxOptions: buildColumnOptions(checkboxColumns, getCheckboxLabel),
+    defaultControlModels: buildMissingDefaultControlModels({
+      columns: defaultColumns,
+      getLabel: getDefaultLabel,
+      getValue: getDefaultValue,
+      getSuggestions: getDefaultSuggestions,
+      getMissingCount: getDefaultMissingCount,
+    }),
+  };
+}
+
+/**
  * Render the enabled/disabled state of the three group-by action buttons.
  *
  * @param {{allButton: HTMLButtonElement | null, toggleButton: HTMLButtonElement | null, noneButton: HTMLButtonElement | null}} buttonRefs - Group-by buttons.

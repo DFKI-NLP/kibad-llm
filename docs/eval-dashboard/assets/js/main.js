@@ -20,8 +20,7 @@ import {
 } from "./browser/session.js";
 import { captureDomRefs, setPanelVisibility } from "./ui/dom.js";
 import {
-  buildColumnOptions,
-  buildMissingDefaultControlModels,
+  buildOptionsPanelModels,
   getToggleOnlyColumns,
   renderPlotControls,
   renderGroupByButtonState,
@@ -931,12 +930,6 @@ function getEvalMissingValueCount(evaluations, column) {
   return selectors.getEvalMissingValueCount(evaluations, column);
 }
 
-/**
- * Return the current truncate-toggle options for prediction columns.
- */
-function getTruncateColumnOptions(predictionColumns = getCurrentPredictionColumns()) {
-  return buildColumnOptions(predictionColumns, displayPredictionColumnName);
-}
 
 function setGroupByFields(columns) {
   state.groupByFields = [...columns];
@@ -1534,10 +1527,20 @@ function renderPredictions() {
     selectedPredictionViews,
     orderedPredictionColumns
   );
+  const predictionOptionsPanelModels = buildOptionsPanelModels({
+    checkboxColumns: orderedPredictionColumns,
+    getCheckboxLabel: displayPredictionColumnName,
+    defaultColumns: predictionDefaultColumns,
+    getDefaultLabel: displayPredictionColumnName,
+    getDefaultValue: getPredictionDefaultValue,
+    getDefaultSuggestions: (column) => getPredictionDefaultSuggestions(selectedPredictionViews, column),
+    getDefaultMissingCount: (column) =>
+      getPredictionMissingValueCount(selectedPredictionViews, column),
+  });
   renderOptionsPanelControls({
     documentLike: document,
     checkboxListElement: truncateColumnsList,
-    checkboxOptions: getTruncateColumnOptions(orderedPredictionColumns),
+    checkboxOptions: predictionOptionsPanelModels.checkboxOptions,
     checkedValues: state.truncateEnabledColumns,
     onCheckboxToggle: (column, checked) => {
       if (checked) {
@@ -1549,13 +1552,7 @@ function renderPredictions() {
     },
     defaultsListElement: predictionDefaultsList,
     defaultsPanelElement: predictionDefaultsPanel,
-    defaultControlModels: buildMissingDefaultControlModels({
-      columns: predictionDefaultColumns,
-      getLabel: displayPredictionColumnName,
-      getValue: getPredictionDefaultValue,
-      getSuggestions: (column) => getPredictionDefaultSuggestions(selectedPredictionViews, column),
-      getMissingCount: (column) => getPredictionMissingValueCount(selectedPredictionViews, column),
-    }),
+    defaultControlModels: predictionOptionsPanelModels.defaultControlModels,
     inputIdPrefix: "prediction-default",
     onDefaultCommit: (column, nextValue) => {
       setConfiguredDefault(state.predictionDefaultValues, column, nextValue);
@@ -3695,13 +3692,21 @@ function renderEvaluations() {
     selectedEvaluationsForDefaults,
     evalColumns
   );
+  const evalOptionsPanelModels = buildOptionsPanelModels({
+    checkboxColumns: [...new Set([...orderedEvalColumns, "eval_run_dir"])],
+    getCheckboxLabel: displayEvalColumnName,
+    defaultColumns: evalDefaultColumns,
+    getDefaultLabel: displayEvalColumnName,
+    getDefaultValue: (column) => getEvalDefaultValue(evalTabState, column),
+    getDefaultSuggestions: (column) =>
+      getEvalDefaultSuggestions(selectedEvaluationsForDefaults, column),
+    getDefaultMissingCount: (column) =>
+      getEvalMissingValueCount(selectedEvaluationsForDefaults, column),
+  });
   renderOptionsPanelControls({
     documentLike: document,
     checkboxListElement: evalTruncateColumnsList,
-    checkboxOptions: buildColumnOptions(
-      [...new Set([...orderedEvalColumns, "eval_run_dir"])],
-      displayEvalColumnName
-    ),
+    checkboxOptions: evalOptionsPanelModels.checkboxOptions,
     checkedValues: evalTabState.truncateEnabledColumns,
     onCheckboxToggle: (column, checked) => {
       if (checked) {
@@ -3713,13 +3718,7 @@ function renderEvaluations() {
     },
     defaultsListElement: evalDefaultsList,
     defaultsPanelElement: evalDefaultsPanel,
-    defaultControlModels: buildMissingDefaultControlModels({
-      columns: evalDefaultColumns,
-      getLabel: displayEvalColumnName,
-      getValue: (column) => getEvalDefaultValue(evalTabState, column),
-      getSuggestions: (column) => getEvalDefaultSuggestions(selectedEvaluationsForDefaults, column),
-      getMissingCount: (column) => getEvalMissingValueCount(selectedEvaluationsForDefaults, column),
-    }),
+    defaultControlModels: evalOptionsPanelModels.defaultControlModels,
     inputIdPrefix: `eval-default-${state.activeEvalTab.replace(/[^a-zA-Z0-9_-]+/g, "-")}`,
     onDefaultCommit: (column, nextValue) => {
       setConfiguredDefault(evalTabState.defaultValues, column, nextValue);
