@@ -3198,21 +3198,23 @@ function renderPlotTabsAndGrid(tabMap, activeExperiment, groupBarFields, metricT
     if (pb !== -1) return 1;
     return a.localeCompare(b);
   });
-  if (!state.activeEvalPlotTab || !tabMap.has(state.activeEvalPlotTab)) {
-    state.activeEvalPlotTab = sortedTabKeys[0] || null;
-  }
-  for (const key of sortedTabKeys) {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "tab-button" + (key === state.activeEvalPlotTab ? " active" : "");
-    button.textContent = `${key} (${tabMap.get(key).length})`;
-    button.title = key;
-    button.addEventListener("click", () => {
+  state.activeEvalPlotTab = resolveActiveTabValue(state.activeEvalPlotTab, sortedTabKeys);
+  renderTabButtons({
+    documentLike: document,
+    containerElement: evalPlotTabs,
+    tabModels: buildTabButtonModels(sortedTabKeys, {
+      activeValue: state.activeEvalPlotTab,
+      getLabel: (key) => `${key} (${tabMap.get(key).length})`,
+      getTitle: (key) => key,
+    }),
+    onSelect: (key) => {
+      if (state.activeEvalPlotTab === key) {
+        return;
+      }
       state.activeEvalPlotTab = key;
       renderEvaluationPlots(activeExperiment);
-    });
-    evalPlotTabs.appendChild(button);
-  }
+    },
+  });
   const activeEntries = tabMap.get(state.activeEvalPlotTab) || [];
   const groupedLegendModel = groupBarFields.length
     ? buildGroupedLegendModel(activeEntries)
@@ -3405,26 +3407,29 @@ function renderEvaluationPlots(
       return;
     }
 
-    if (!state.activeEvalPlotTab || !confusionTabMap.has(state.activeEvalPlotTab)) {
-      state.activeEvalPlotTab = sortedConfusionTabKeys[0];
-    }
-
-    for (const key of sortedConfusionTabKeys) {
-      const entry = confusionTabMap.get(key);
-      const evaluationCount = countDistinctConfusionMatrixRuns(
-        entry.plots.flatMap((plot) => plot.evaluations)
-      );
-      const button = document.createElement("button");
-      button.type = "button";
-      button.className = "tab-button" + (key === state.activeEvalPlotTab ? " active" : "");
-      button.textContent = `${entry.label} (${evaluationCount})`;
-      button.title = entry.label;
-      button.addEventListener("click", () => {
+    state.activeEvalPlotTab = resolveActiveTabValue(state.activeEvalPlotTab, sortedConfusionTabKeys);
+    renderTabButtons({
+      documentLike: document,
+      containerElement: evalPlotTabs,
+      tabModels: buildTabButtonModels(sortedConfusionTabKeys, {
+        activeValue: state.activeEvalPlotTab,
+        getLabel: (key) => {
+          const entry = confusionTabMap.get(key);
+          const evaluationCount = countDistinctConfusionMatrixRuns(
+            entry.plots.flatMap((plot) => plot.evaluations)
+          );
+          return `${entry.label} (${evaluationCount})`;
+        },
+        getTitle: (key) => confusionTabMap.get(key).label,
+      }),
+      onSelect: (key) => {
+        if (state.activeEvalPlotTab === key) {
+          return;
+        }
         state.activeEvalPlotTab = key;
         renderEvaluationPlots(activeExperiment);
-      });
-      evalPlotTabs.appendChild(button);
-    }
+      },
+    });
 
     const activeConfusionEntry = confusionTabMap.get(state.activeEvalPlotTab);
     const grid = document.createElement("div");
@@ -3487,24 +3492,37 @@ function renderEvaluationPlots(
       return;
     }
 
-    if (!state.activeEvalPlotTab || !tpfpfnTabMap.has(state.activeEvalPlotTab)) {
-      state.activeEvalPlotTab = sortedTabKeys[0];
-    }
-
-    for (const key of sortedTabKeys) {
-      const entry = tpfpfnTabMap.get(key);
-      const evaluationCount = entry.plots.reduce((sum, plot) => sum + plot.evaluations.length, 0);
-      const button = document.createElement("button");
-      button.type = "button";
-      button.className = "tab-button" + (key === state.activeEvalPlotTab ? " active" : "");
-      button.textContent = `${entry.label} (${evaluationCount})`;
-      button.title = `${entry.label} (${evaluationCount} grouped evaluations)`;
-      button.addEventListener("click", () => {
+    state.activeEvalPlotTab = resolveActiveTabValue(state.activeEvalPlotTab, sortedTabKeys);
+    renderTabButtons({
+      documentLike: document,
+      containerElement: evalPlotTabs,
+      tabModels: buildTabButtonModels(sortedTabKeys, {
+        activeValue: state.activeEvalPlotTab,
+        getLabel: (key) => {
+          const entry = tpfpfnTabMap.get(key);
+          const evaluationCount = entry.plots.reduce(
+            (sum, plot) => sum + plot.evaluations.length,
+            0
+          );
+          return `${entry.label} (${evaluationCount})`;
+        },
+        getTitle: (key) => {
+          const entry = tpfpfnTabMap.get(key);
+          const evaluationCount = entry.plots.reduce(
+            (sum, plot) => sum + plot.evaluations.length,
+            0
+          );
+          return `${entry.label} (${evaluationCount} grouped evaluations)`;
+        },
+      }),
+      onSelect: (key) => {
+        if (state.activeEvalPlotTab === key) {
+          return;
+        }
         state.activeEvalPlotTab = key;
         renderEvaluationPlots(activeExperiment);
-      });
-      evalPlotTabs.appendChild(button);
-    }
+      },
+    });
 
     const activeEntry = tpfpfnTabMap.get(state.activeEvalPlotTab);
     const grid = document.createElement("div");

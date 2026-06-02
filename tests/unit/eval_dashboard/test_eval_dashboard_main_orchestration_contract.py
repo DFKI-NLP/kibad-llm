@@ -77,13 +77,20 @@ def test_main_module_calls_phase_ten_a_tab_helpers_directly_without_local_wrappe
     assert 'evalOptionsTabs.addEventListener("click"' not in main_js
     assert "bindDelegatedTabSelection," in main_js
     assert main_js.count("bindDelegatedTabSelection({") == 2
-    assert main_js.count("renderStaticTabState({") >= 4
+    assert "renderTabButtons," in main_js
+    assert main_js.count("renderTabButtons({") == 4
+    assert main_js.count("buildTabButtonModels(") == 4
+    assert main_js.count("resolveActiveTabValue(") == 4
+    assert main_js.count("renderStaticTabState({") >= 3
     assert "buttonElements: optionsTabButtons" in main_js
     assert "panelElements: optionsTabPanels" in main_js
     assert "buttonElements: evalOptionsTabButtons" in main_js
     assert "panelElements: evalOptionsTabPanels" in main_js
     assert 'buttonAttribute: "data-eval-tab"' in main_js
     assert 'panelAttribute: "data-eval-tab-panel"' in main_js
+    assert "containerElement: evalPlotTabs" in main_js
+    assert 'button.className = "tab-button"' not in main_js
+    assert "evalPlotTabs.appendChild(button);" not in main_js
 
 
 def test_main_module_delegates_phase_ten_a_options_panel_rendering_to_controls_helper() -> None:
