@@ -76,10 +76,16 @@ class FakeElement {
   }
 }
 
+/**
+ * Verify that raw text is escaped before it can be inserted as highlighted HTML.
+ */
 test("escapeHtml escapes ampersands and angle brackets", () => {
   assert.equal(escapeHtml('<tag attr="x">&</tag>'), '&lt;tag attr="x"&gt;&amp;&lt;/tag&gt;');
 });
 
+/**
+ * Verify that JSON highlighting preserves the dashboard's token-class mapping.
+ */
 test("highlightJsonContent wraps keys and primitive values in dashboard highlight spans", () => {
   const html = highlightJsonContent({ answer: 42, ok: true, nothing: null, label: "alpha" });
 
@@ -90,6 +96,9 @@ test("highlightJsonContent wraps keys and primitive values in dashboard highligh
   assert.match(html, /<span class="json-string">"alpha"<\/span>/);
 });
 
+/**
+ * Verify that JSON-pane content resolution switches between evaluation and prediction payloads.
+ */
 test("resolveEvalJsonContent chooses evaluation data or reconstructed prediction content", () => {
   const selectedEvaluation = { data: { metric: 0.5 }, predictionId: "pred-1" };
   const selectedGroup = {
@@ -119,6 +128,9 @@ test("resolveEvalJsonContent chooses evaluation data or reconstructed prediction
   assert.equal(resolveEvalJsonContent(), null);
 });
 
+/**
+ * Verify that JSON-pane tab binding ignores redundant selections.
+ */
 test("bindEvalJsonTabSelection triggers selection only when the requested tab changes", () => {
   const evaluationButton = new FakeElement();
   const predictionButton = new FakeElement();
@@ -142,6 +154,9 @@ test("bindEvalJsonTabSelection triggers selection only when the requested tab ch
   assert.deepEqual(selectedTabs, ["prediction"]);
 });
 
+/**
+ * Verify that JSON-pane rendering synchronizes split layout, active tab state, and content output.
+ */
 test("renderEvalJsonPane toggles split layout, tab state, and highlighted content", () => {
   const layoutElement = new FakeElement();
   const titleElement = new FakeElement();

@@ -171,6 +171,9 @@ function createDocumentStub() {
   };
 }
 
+/**
+ * Verify that column-option models preserve order while applying display labels.
+ */
 test("buildColumnOptions preserves column order while applying display labels", () => {
   assert.deepEqual(
     buildColumnOptions(["prediction.run_dir", "prediction.title"], (column) => `label:${column}`),
@@ -181,6 +184,9 @@ test("buildColumnOptions preserves column order while applying display labels", 
   );
 });
 
+/**
+ * Verify that the toggle-only helper returns only currently inactive columns.
+ */
 test("getToggleOnlyColumns returns columns that are not currently active", () => {
   assert.deepEqual(
     getToggleOnlyColumns(["a", "b", "c"], ["b"]),
@@ -188,6 +194,9 @@ test("getToggleOnlyColumns returns columns that are not currently active", () =>
   );
 });
 
+/**
+ * Verify that missing-default control models combine labels, values, suggestions, and counts.
+ */
 test("buildMissingDefaultControlModels derives labels, values, suggestions, and missing counts", () => {
   assert.deepEqual(
     buildMissingDefaultControlModels({
@@ -209,6 +218,9 @@ test("buildMissingDefaultControlModels derives labels, values, suggestions, and 
   );
 });
 
+/**
+ * Verify that the shared options-panel model builder composes checkbox and default-control models together.
+ */
 test("buildOptionsPanelModels composes checkbox and missing-default models for one shared options panel", () => {
   assert.deepEqual(
     buildOptionsPanelModels({
@@ -238,6 +250,9 @@ test("buildOptionsPanelModels composes checkbox and missing-default models for o
   );
 });
 
+/**
+ * Verify that the three group-by action buttons are enabled and disabled as one surface.
+ */
 test("renderGroupByButtonState enables or disables all group-by action buttons together", () => {
   const buttonRefs = {
     allButton: new FakeElement("button"),
@@ -256,6 +271,9 @@ test("renderGroupByButtonState enables or disables all group-by action buttons t
   assert.equal(buttonRefs.noneButton.disabled, false);
 });
 
+/**
+ * Verify that the shared per-column group-by toggle renders correctly and forwards checked state.
+ */
 test("createGroupByToggleControl renders the shared header toggle and forwards checked state changes", () => {
   const documentLike = createDocumentStub();
   const toggles = [];
@@ -282,6 +300,9 @@ test("createGroupByToggleControl renders the shared header toggle and forwards c
   assert.deepEqual(toggles, [false]);
 });
 
+/**
+ * Verify that sort-status rendering normalizes invalid columns and updates the status UI.
+ */
 test("renderSortStatus normalizes sort config and synchronizes the status label and reset button", () => {
   const labelElement = new FakeElement("span");
   const resetButton = new FakeElement("button");
@@ -314,6 +335,9 @@ test("renderSortStatus normalizes sort config and synchronizes the status label 
   assert.equal(resetButton.disabled, true);
 });
 
+/**
+ * Verify that checkbox-list rendering builds rows and emits toggle callbacks.
+ */
 test("renderCheckboxOptionList builds checkbox rows and emits toggle callbacks", () => {
   const documentLike = createDocumentStub();
   const listElement = new FakeElement("div");
@@ -344,6 +368,9 @@ test("renderCheckboxOptionList builds checkbox rows and emits toggle callbacks",
   assert.deepEqual(toggles, [{ value: "prediction.run_dir", checked: false }]);
 });
 
+/**
+ * Verify that missing-default controls render inputs, suggestions, and commit behavior.
+ */
 test("renderMissingDefaultControls renders inputs, suggestions, and commit handlers", () => {
   const documentLike = createDocumentStub();
   const listElement = new FakeElement("div");
@@ -404,6 +431,9 @@ test("renderMissingDefaultControls renders inputs, suggestions, and commit handl
   assert.equal(input.blurCallCount, 1);
 });
 
+/**
+ * Verify that options-panel control rendering reuses the shared checkbox and default-control helpers.
+ */
 test("renderOptionsPanelControls renders checkbox and default sections through shared helpers", () => {
   const documentLike = createDocumentStub();
   const checkboxListElement = new FakeElement("div");
@@ -452,6 +482,9 @@ test("renderOptionsPanelControls renders checkbox and default sections through s
   assert.deepEqual(commits, [{ column: "prediction.language", nextValue: "fallback" }]);
 });
 
+/**
+ * Verify that the full options-panel helper composes models and wiring in one call.
+ */
 test("renderOptionsPanel composes the shared options-panel models and wiring in one helper", () => {
   const documentLike = createDocumentStub();
   const checkboxListElement = new FakeElement("div");
@@ -510,6 +543,9 @@ test("renderOptionsPanel composes the shared options-panel models and wiring in 
   assert.deepEqual(commits, [{ column: "prediction.language", nextValue: "fr" }]);
 });
 
+/**
+ * Verify that grouped-bar chip rendering falls back to the documented empty-state hint.
+ */
 test("renderPlotGroupBarChips renders an empty-state hint when no varying fields are available", () => {
   const documentLike = createDocumentStub();
   const listElement = new FakeElement("div");
@@ -527,6 +563,9 @@ test("renderPlotGroupBarChips renders an empty-state hint when no varying fields
   assert.equal(listElement.children[0].textContent, "No varying group-by columns available.");
 });
 
+/**
+ * Verify that grouped-bar chips render toggles and forward change events.
+ */
 test("renderPlotGroupBarChips renders toggle chips and forwards changes", () => {
   const documentLike = createDocumentStub();
   const listElement = new FakeElement("div");
@@ -556,6 +595,9 @@ test("renderPlotGroupBarChips renders toggle chips and forwards changes", () => 
   assert.deepEqual(toggles, [{ field: "prediction.run_dir", checked: true }]);
 });
 
+/**
+ * Verify that thin plot-control rendering synchronizes button classes, values, and row visibility.
+ */
 test("renderPlotControls synchronizes button state, input values, and plot-control row visibility", () => {
   const refs = {
     plotTabsByPrefixButton: new FakeElement("button"),
@@ -640,6 +682,9 @@ test("renderPlotControls synchronizes button state, input values, and plot-contr
   assert.equal(refs.plotShowLegendOnceRow.style.display, "none");
 });
 
+/**
+ * Verify that TP/FP/FN plot controls expose only the threshold rows relevant to that metric family.
+ */
 test("renderPlotControls shows TP/FP/FN-specific threshold rows for that metric family", () => {
   const refs = {
     plotTabsByPrefixButton: new FakeElement("button"),
