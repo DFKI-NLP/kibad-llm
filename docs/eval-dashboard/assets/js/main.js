@@ -11,71 +11,97 @@ import * as selectors from "./state/selectors.js";
 import { collectLocalEvaluationEntries } from "./data/file-loader.js";
 import { ingestRunEntries } from "./data/ingest-runs.js";
 import { loadGitHubEntriesFromTreeUrl } from "./data/git-loader.js";
+import {
+  clearGitUrlQueryParam,
+  initializeGitHubTokenInput,
+  persistGitHubTokenInputValue,
+  runGitUrlQueryParamBootstrap,
+  setGitUrlQueryParam,
+} from "./browser/session.js";
+import { captureDomRefs, setPanelVisibility, syncTabButtonsAndPanels } from "./ui/dom.js";
+import {
+  createSortButton as createSharedSortButton,
+  createTruncatingCell as createSharedTruncatingCell,
+  formatSortLabel as formatSharedSortLabel,
+  getAriaSort as getSharedAriaSort,
+  getNextSortConfig as getSharedNextSortConfig,
+  updateStickyControlColumnOffsets,
+} from "./ui/table-shared.js";
+import {
+  clearLoadProgress,
+  renderDownloadFiguresButtonState,
+  renderLoadProgress,
+  renderLoadStatusStage,
+  renderLoadStatusSummary,
+  setDownloadFiguresButtonBusy,
+} from "./ui/status.js";
 
 // Central UI state: loaded prediction/evaluation data, current grouping/selection, and per-eval-tab view state.
 const state = dashboardStore.createInitialDashboardState();
 
-const folderInput = document.getElementById("folderInput");
-const gitUrlInput = document.getElementById("gitUrlInput");
-const githubTokenInput = document.getElementById("githubTokenInput");
-const loadGitButton = document.getElementById("loadGitButton");
-const loadStatus = document.getElementById("loadStatus");
-const loadProgressWrap = document.getElementById("loadProgressWrap");
-const loadProgress = document.getElementById("loadProgress");
-const loadProgressLabel = document.getElementById("loadProgressLabel");
-const predictionSummary = document.getElementById("predictionSummary");
-const groupByAllButton = document.getElementById("groupByAllButton");
-const groupByNoneButton = document.getElementById("groupByNoneButton");
-const groupByToggleButton = document.getElementById("groupByToggleButton");
-const predictionSortedByLabel = document.getElementById("predictionSortedByLabel");
-const predictionResetSortButton = document.getElementById("predictionResetSortButton");
-const optionsTabs = document.getElementById("optionsTabs");
-const truncateColumnsList = document.getElementById("truncateColumnsList");
-const predictionDefaultsPanel = document.getElementById("predictionDefaultsPanel");
-const predictionDefaultsList = document.getElementById("predictionDefaultsList");
-const truncateDefaultsButton = document.getElementById("truncateDefaultsButton");
-const predictionsTable = document.getElementById("predictionsTable");
-const evalTabs = document.getElementById("evalTabs");
-const evalSummary = document.getElementById("evalSummary");
-const evalGroupByAllButton = document.getElementById("evalGroupByAllButton");
-const evalGroupByNoneButton = document.getElementById("evalGroupByNoneButton");
-const evalGroupByToggleButton = document.getElementById("evalGroupByToggleButton");
-const evalSortedByLabel = document.getElementById("evalSortedByLabel");
-const evalResetSortButton = document.getElementById("evalResetSortButton");
-const evalOptionsTabs = document.getElementById("evalOptionsTabs");
-const evalTruncateColumnsList = document.getElementById("evalTruncateColumnsList");
-const evalDefaultsPanel = document.getElementById("evalDefaultsPanel");
-const evalDefaultsList = document.getElementById("evalDefaultsList");
-const evalLayout = document.getElementById("evalLayout");
-const evalJsonTabEvaluation = document.getElementById("evalJsonTabEvaluation");
-const evalJsonTabPrediction = document.getElementById("evalJsonTabPrediction");
-const evalJsonTitle = document.getElementById("evalJsonTitle");
-const evalJsonCode = document.getElementById("evalJsonCode");
-const evaluationsTable = document.getElementById("evaluationsTable");
-const plotTabsByPrefixButton = document.getElementById("plotTabsByPrefixButton");
-const plotTabsBySuffixButton = document.getElementById("plotTabsBySuffixButton");
-const plotShortenLabels = document.getElementById("plotShortenLabels");
-const plotRoundingPrecision = document.getElementById("plotRoundingPrecision");
-const plotConfusionMinLabelTotalRow = document.getElementById("plotConfusionMinLabelTotalRow");
-const plotConfusionMinLabelTotal = document.getElementById("plotConfusionMinLabelTotal");
-const plotTpFpFnMinLabelTotalRow = document.getElementById("plotTpFpFnMinLabelTotalRow");
-const plotTpFpFnMinLabelTotal = document.getElementById("plotTpFpFnMinLabelTotal");
-const plotTpFpFnMinDocumentTotalRow = document.getElementById("plotTpFpFnMinDocumentTotalRow");
-const plotTpFpFnMinDocumentTotal = document.getElementById("plotTpFpFnMinDocumentTotal");
-const plotTabsByRow = document.getElementById("plotTabsByRow");
-const plotConfusionTabsByRow = document.getElementById("plotConfusionTabsByRow");
-const confusionTabsByMetricFieldButton = document.getElementById("confusionTabsByMetricFieldButton");
-const confusionTabsByPredictionGroupButton = document.getElementById("confusionTabsByPredictionGroupButton");
-const plotGroupBarsRow = document.getElementById("plotGroupBarsRow");
-const plotGroupBarsList = document.getElementById("plotGroupBarsList");
-const plotShowLegendOnceRow = document.getElementById("plotShowLegendOnceRow");
-const plotShowLegendOnce = document.getElementById("plotShowLegendOnce");
-const downloadFiguresButton = document.getElementById("downloadFiguresButton");
-const exportOpaqueBackground = document.getElementById("exportOpaqueBackground");
-const evalPlotTabs = document.getElementById("evalPlotTabs");
-const evalPlotContent = document.getElementById("evalPlotContent");
-const barTooltip = document.getElementById("barTooltip");
-const GITHUB_TOKEN_STORAGE_KEY = "evalDashboard.githubToken";
+const dom = captureDomRefs(document);
+const {
+  folderInput,
+  gitUrlInput,
+  githubTokenInput,
+  loadGitButton,
+  predictionSummary,
+  groupByAllButton,
+  groupByNoneButton,
+  groupByToggleButton,
+  predictionSortedByLabel,
+  predictionResetSortButton,
+  optionsTabs,
+  optionsTabButtons,
+  optionsTabPanels,
+  truncateColumnsList,
+  predictionDefaultsPanel,
+  predictionDefaultsList,
+  truncateDefaultsButton,
+  predictionsTable,
+  evalTabs,
+  evalSummary,
+  evalGroupByAllButton,
+  evalGroupByNoneButton,
+  evalGroupByToggleButton,
+  evalSortedByLabel,
+  evalResetSortButton,
+  evalOptionsTabs,
+  evalOptionsTabButtons,
+  evalOptionsTabPanels,
+  evalTruncateColumnsList,
+  evalDefaultsPanel,
+  evalDefaultsList,
+  evalLayout,
+  evalJsonTabEvaluation,
+  evalJsonTabPrediction,
+  evalJsonTitle,
+  evalJsonCode,
+  evaluationsTable,
+  plotTabsByPrefixButton,
+  plotTabsBySuffixButton,
+  plotShortenLabels,
+  plotRoundingPrecision,
+  plotConfusionMinLabelTotalRow,
+  plotConfusionMinLabelTotal,
+  plotTpFpFnMinLabelTotalRow,
+  plotTpFpFnMinLabelTotal,
+  plotTpFpFnMinDocumentTotalRow,
+  plotTpFpFnMinDocumentTotal,
+  plotTabsByRow,
+  plotConfusionTabsByRow,
+  confusionTabsByMetricFieldButton,
+  confusionTabsByPredictionGroupButton,
+  plotGroupBarsRow,
+  plotGroupBarsList,
+  plotShowLegendOnceRow,
+  plotShowLegendOnce,
+  downloadFiguresButton,
+  exportOpaqueBackground,
+  evalPlotTabs,
+  evalPlotContent,
+  barTooltip,
+} = dom;
 const { SORTABLE_CONTROL_COLUMNS } = dashboardStore;
 const {
   EVALUATION_PREFIX,
@@ -85,6 +111,34 @@ const {
 } = selectors;
 const TP_FP_FN_KEYS = ["tp", "fp", "fn"];
 const sortCollator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
+
+function createSortButton(options) {
+  return createSharedSortButton({ ...options, sortableControlColumns: SORTABLE_CONTROL_COLUMNS });
+}
+
+function formatSortLabel(sortConfig, displayColumnName) {
+  return formatSharedSortLabel(sortConfig, displayColumnName);
+}
+
+function getAriaSort(sortConfig, column) {
+  return getSharedAriaSort(sortConfig, column);
+}
+
+function getNextSortConfig(currentSort, column, { append = false } = {}) {
+  return getSharedNextSortConfig(currentSort, column, {
+    append,
+    sortableControlColumns: SORTABLE_CONTROL_COLUMNS,
+  });
+}
+
+function createTruncatingCell(content, columnKey = "", truncateEnabledColumns = null) {
+  return createSharedTruncatingCell({
+    documentLike: document,
+    content,
+    columnKey,
+    truncateEnabledColumns,
+  });
+}
 
 // Selectors and accessors for the canonical predictions/evaluations state shape.
 function isJobReturnValueColumn(column) {
@@ -640,10 +694,7 @@ function getVisiblePlotFigureCards() {
 }
 
 function updateDownloadFiguresButtonState() {
-  const figureCount = getVisiblePlotFigureCards().length;
-  downloadFiguresButton.disabled = figureCount === 0;
-  downloadFiguresButton.textContent =
-    figureCount > 0 ? `Download Figures (${figureCount})` : "Download Figures";
+  renderDownloadFiguresButtonState(downloadFiguresButton, getVisiblePlotFigureCards().length);
 }
 
 async function downloadVisibleFigures() {
@@ -747,7 +798,7 @@ evalJsonTabPrediction.addEventListener("click", () => {
   renderEvaluations();
 });
 
-githubTokenInput.value = getStoredGitHubToken();
+initializeGitHubTokenInput(githubTokenInput);
 
 folderInput.addEventListener("change", async (event) => {
   const files = Array.from(event.target.files || []);
@@ -758,7 +809,7 @@ folderInput.addEventListener("change", async (event) => {
 });
 
 githubTokenInput.addEventListener("change", () => {
-  persistGitHubToken(githubTokenInput.value);
+  persistGitHubTokenInputValue(githubTokenInput);
 });
 
 gitUrlInput.addEventListener("keydown", async (event) => {
@@ -946,12 +997,6 @@ function createMissingDefaultControl({ listElement, column, label, value, sugges
   listElement.appendChild(wrapper);
 }
 
-function setPanelVisibility(panelElement, shouldShow) {
-  if (!panelElement) {
-    return;
-  }
-  panelElement.style.display = shouldShow ? "" : "none";
-}
 
 /**
  * Return the current truncate-toggle options for prediction columns.
@@ -1136,34 +1181,24 @@ function renderPredictionDefaultControls() {
 }
 
 function renderOptionsTabs() {
-  const tabButtons = optionsTabs.querySelectorAll(".options-tab-button");
-  const tabPanels = document.querySelectorAll(".options-tab-panel");
-
-  for (const button of tabButtons) {
-    const tab = button.getAttribute("data-tab");
-    button.classList.toggle("active", tab === state.activeOptionsTab);
-  }
-  for (const panel of tabPanels) {
-    const tabPanel = panel.getAttribute("data-tab-panel");
-    panel.classList.toggle("active", tabPanel === state.activeOptionsTab);
-  }
+  syncTabButtonsAndPanels({
+    buttonElements: optionsTabButtons,
+    panelElements: optionsTabPanels,
+    activeValue: state.activeOptionsTab,
+  });
 }
 
 function renderEvalOptionsTabs(activeExperiment) {
   if (!activeExperiment || !state.evalTabStates[activeExperiment]) {
     return;
   }
-  const tabState = state.evalTabStates[activeExperiment];
-  const tabButtons = evalOptionsTabs.querySelectorAll(".options-tab-button");
-  const tabPanels = document.querySelectorAll(".options-tab-panel[data-eval-tab-panel]");
-  for (const button of tabButtons) {
-    const tab = button.getAttribute("data-eval-tab");
-    button.classList.toggle("active", tab === tabState.activeOptionsTab);
-  }
-  for (const panel of tabPanels) {
-    const tabPanel = panel.getAttribute("data-eval-tab-panel");
-    panel.classList.toggle("active", tabPanel === tabState.activeOptionsTab);
-  }
+  syncTabButtonsAndPanels({
+    buttonElements: evalOptionsTabButtons,
+    panelElements: evalOptionsTabPanels,
+    activeValue: state.evalTabStates[activeExperiment].activeOptionsTab,
+    buttonAttribute: "data-eval-tab",
+    panelAttribute: "data-eval-tab-panel",
+  });
 }
 
 function renderEvalTruncateControls(activeExperiment, evalColumns) {
@@ -1360,8 +1395,7 @@ downloadFiguresButton.addEventListener("click", async () => {
   if (downloadFiguresButton.disabled) {
     return;
   }
-  downloadFiguresButton.disabled = true;
-  downloadFiguresButton.textContent = "Preparing figures...";
+  setDownloadFiguresButtonBusy(downloadFiguresButton);
   try {
     await downloadVisibleFigures();
   } finally {
@@ -1436,114 +1470,6 @@ function formatDistinctValueDisplay(values) {
   return `(mixed: ${values.size} values)`;
 }
 
-function getDefaultSortDirection(column) {
-  return SORTABLE_CONTROL_COLUMNS.has(column) ? "desc" : "asc";
-}
-
-function getSortColumnLabel(column, displayColumnName) {
-  if (column === "group_size") {
-    return "group size";
-  }
-  if (column === "select") {
-    return "selected";
-  }
-  if (column === "expand") {
-    return "expanded";
-  }
-  return displayColumnName(column);
-}
-
-function formatSortLabel(sortConfig, displayColumnName) {
-  const activeSorts = normalizeSortConfig(sortConfig);
-  if (!activeSorts.length) {
-    return "(none)";
-  }
-  return activeSorts.map((clause, index) => (
-    `${getSortColumnLabel(clause.column, displayColumnName)} ${clause.direction === "desc" ? "↓" : "↑"}` +
-    (activeSorts.length > 1 ? ` (${index + 1})` : "")
-  )).join(", ");
-}
-
-function getNextSortDirection(currentDirection, column) {
-  const defaultDirection = getDefaultSortDirection(column);
-  if (!currentDirection) {
-    return defaultDirection;
-  }
-  return currentDirection === defaultDirection
-    ? defaultDirection === "asc" ? "desc" : "asc"
-    : null;
-}
-
-function getNextSortConfig(currentSort, column, { append = false } = {}) {
-  const currentSorts = normalizeSortConfig(currentSort);
-  const currentIndex = currentSorts.findIndex((clause) => clause.column === column);
-  const currentDirection = currentIndex === -1 ? null : currentSorts[currentIndex].direction;
-  const nextDirection = getNextSortDirection(currentDirection, column);
-  if (!append) {
-    return nextDirection ? [{ column, direction: nextDirection }] : [];
-  }
-  if (currentIndex === -1) {
-    return nextDirection ? [...currentSorts, { column, direction: nextDirection }] : currentSorts;
-  }
-  if (!nextDirection) {
-    return currentSorts.filter((clause) => clause.column !== column);
-  }
-  const nextSorts = [...currentSorts];
-  nextSorts[currentIndex] = { column, direction: nextDirection };
-  return nextSorts;
-}
-
-function getAriaSort(sortConfig, column) {
-  const primarySort = normalizeSortConfig(sortConfig)[0];
-  if (!primarySort || primarySort.column !== column) {
-    return "none";
-  }
-  return primarySort.direction === "desc" ? "descending" : "ascending";
-}
-
-function getSortPriority(sortConfig, column) {
-  const priority = normalizeSortConfig(sortConfig).findIndex((clause) => clause.column === column);
-  return priority === -1 ? 0 : priority + 1;
-}
-
-function createSortButton({ label, column, sortConfig, onToggle }) {
-  const normalizedSorts = normalizeSortConfig(sortConfig);
-  const priority = getSortPriority(normalizedSorts, column);
-  const isActive = priority > 0;
-  const activeClause = isActive ? normalizedSorts[priority - 1] : null;
-  const button = document.createElement("button");
-  button.type = "button";
-  button.className = "header-sort-button" + (isActive ? " active" : "");
-  const totalActiveSorts = normalizedSorts.length;
-  const nextSingleSort = getNextSortConfig(normalizedSorts, column);
-  const singleActionText = nextSingleSort.length
-    ? `sort only by ${label} ${nextSingleSort[0].direction === "asc" ? "ascending" : "descending"}`
-    : `clear sorting for ${label}`;
-  button.title = `Click: ${singleActionText}. Shift-click: add, toggle, or remove ${label} in multi-column sorting.`;
-  button.setAttribute(
-    "aria-label",
-    isActive
-      ? `${label}, sort priority ${priority}, ${activeClause.direction === "asc" ? "ascending" : "descending"}`
-      : `${label}, not sorted`
-  );
-  button.addEventListener("click", (event) => {
-    event.stopPropagation();
-    onToggle(event);
-  });
-
-  const labelSpan = document.createElement("span");
-  labelSpan.textContent = label;
-  const indicator = document.createElement("span");
-  indicator.className = "header-sort-indicator";
-  indicator.textContent = !isActive
-    ? "↕"
-    : `${activeClause.direction === "asc" ? "▲" : "▼"}${totalActiveSorts > 1 ? priority : ""}`;
-  indicator.setAttribute("aria-hidden", "true");
-
-  button.appendChild(labelSpan);
-  button.appendChild(indicator);
-  return button;
-}
 
 function setPredictionSort(column, event = {}) {
   state.predictionSort = getNextSortConfig(state.predictionSort, column, { append: event.shiftKey });
@@ -1582,42 +1508,6 @@ function renderEvalSortStatus(activeExperiment = state.activeEvalTab, evalColumn
   evalResetSortButton.disabled = !evalTabState.sort.length;
 }
 
-function getStoredGitHubToken() {
-  try {
-    return localStorage.getItem(GITHUB_TOKEN_STORAGE_KEY) || "";
-  } catch {
-    return "";
-  }
-}
-
-function persistGitHubToken(token) {
-  const normalized = String(token || "").trim();
-  try {
-    if (normalized) {
-      localStorage.setItem(GITHUB_TOKEN_STORAGE_KEY, normalized);
-    } else {
-      localStorage.removeItem(GITHUB_TOKEN_STORAGE_KEY);
-    }
-  } catch {
-    // Ignore localStorage write failures and continue without persistence.
-  }
-}
-
-function setGitUrlQueryParam(value) {
-  const currentUrl = new URL(window.location.href);
-  const normalized = String(value || "").trim();
-  if (normalized) {
-    currentUrl.searchParams.set("git_url", normalized);
-  } else {
-    currentUrl.searchParams.delete("git_url");
-  }
-  history.replaceState(null, "", currentUrl.toString());
-}
-
-function clearGitUrlQueryParam() {
-  setGitUrlQueryParam("");
-}
-
 /**
  * Reset load-dependent UI state after new canonical prediction/evaluation data is imported.
  * All prediction/evaluation structures remain selector-derived and are not stored here.
@@ -1636,20 +1526,19 @@ function resetDerivedUiStateAfterLoad() {
 }
 
 function updateLoadStatusSummary({ candidateRunDirs, loadedCount, skippedDuplicate, skippedPredictRuns, skippedMissingJob, skippedUnsupportedVersion, skippedInvalid, skippedMissingPredictionId, skippedConflictingPredictionId }) {
-  const loadedSources = Array.from(state.loadedFolders).sort();
-  loadStatus.textContent = [
-    `Loaded sources (${loadedSources.length}): ${loadedSources.join(", ")}`,
-    `Skipped (is predict run): ${skippedPredictRuns}`,
-    `Candidate evaluation runs: ${candidateRunDirs}`,
-    `New evaluation runs loaded: ${loadedCount}`,
-    `Skipped (already loaded): ${skippedDuplicate}`,
-    `Evaluation runs loaded: ${state.evaluations.length}`,
-    `Skipped (missing job_return_value.json): ${skippedMissingJob}`,
-    `Skipped (missing prediction.job_return_value.output_file): ${skippedMissingPredictionId}`,
-    `Skipped (conflicting prediction ids): ${skippedConflictingPredictionId}`,
-    `Skipped (unsupported data version): ${skippedUnsupportedVersion}`,
-    `Skipped (invalid JSON/YAML): ${skippedInvalid}`,
-  ].join("\n");
+  renderLoadStatusSummary(dom, {
+    loadedSources: Array.from(state.loadedFolders).sort(),
+    totalEvaluations: state.evaluations.length,
+    candidateRunDirs,
+    loadedCount,
+    skippedDuplicate,
+    skippedPredictRuns,
+    skippedMissingJob,
+    skippedUnsupportedVersion,
+    skippedInvalid,
+    skippedMissingPredictionId,
+    skippedConflictingPredictionId,
+  });
 }
 
 /**
@@ -1676,7 +1565,7 @@ function applyIngestionResult(sourceLabel, ingestionResult) {
 // while prediction payloads are canonicalized separately and linked via predictionId.
 async function loadEvaluationsFromEntries(entries, rootLabel) {
   if (!entries.length) {
-    loadStatus.textContent = `No relevant run files found in ${rootLabel}.`;
+    renderLoadStatusStage(dom, `No relevant run files found in ${rootLabel}.`);
     return;
   }
 
@@ -1689,7 +1578,7 @@ async function loadEvaluationsFromEntries(entries, rootLabel) {
 async function loadEvaluationsFromFiles(files) {
   hideLoadProgress();
   if (!files.length) {
-    loadStatus.textContent = "No files selected.";
+    renderLoadStatusStage(dom, "No files selected.");
     return;
   }
 
@@ -1698,54 +1587,26 @@ async function loadEvaluationsFromFiles(files) {
 }
 
 function updateLoadStatusStage(title, details = []) {
-  const lines = [title, ...details.filter(Boolean)];
-  loadStatus.textContent = lines.join("\n");
+  renderLoadStatusStage(dom, title, details);
 }
 
 function hideLoadProgress() {
-  loadProgressWrap.classList.remove("visible");
-  loadProgress.value = 0;
-  loadProgress.max = 1;
-  loadProgressLabel.textContent = "";
+  clearLoadProgress(dom);
 }
 
 function setLoadProgress({ completedFiles = 0, totalFiles = 0, completedBytes = 0, totalBytes = 0, label = "" } = {}) {
-  const maxValue = totalBytes > 0 ? totalBytes : Math.max(totalFiles, 1);
-  const nextValue = totalBytes > 0 ? completedBytes : completedFiles;
-  loadProgressWrap.classList.add("visible");
-  loadProgress.max = maxValue;
-  loadProgress.value = Math.min(nextValue, maxValue);
-  const fileText = totalFiles > 0 ? `${completedFiles}/${totalFiles} files` : `${completedFiles} files`;
-  const byteText = totalBytes > 0 ? ` | ${formatBytes(completedBytes)} / ${formatBytes(totalBytes)}` : "";
-  loadProgressLabel.textContent = [label, `${fileText}${byteText}`].filter(Boolean).join(" | ");
-}
-
-function formatBytes(byteCount) {
-  const value = Number(byteCount || 0);
-  if (!Number.isFinite(value) || value <= 0) {
-    return "0 B";
-  }
-  const units = ["B", "KB", "MB", "GB"];
-  let size = value;
-  let unitIndex = 0;
-  while (size >= 1024 && unitIndex < units.length - 1) {
-    size /= 1024;
-    unitIndex += 1;
-  }
-  const precision = size >= 100 || unitIndex === 0 ? 0 : 1;
-  return `${size.toFixed(precision)} ${units[unitIndex]}`;
+  renderLoadProgress(dom, { completedFiles, totalFiles, completedBytes, totalBytes, label });
 }
 
 async function loadEvaluationsFromGitUrl(rawUrl) {
   const trimmedUrl = String(rawUrl || "").trim();
   if (!trimmedUrl) {
     hideLoadProgress();
-    loadStatus.textContent = "Enter a GitHub tree URL first.";
+    renderLoadStatusStage(dom, "Enter a GitHub tree URL first.");
     return;
   }
 
-  const token = String(githubTokenInput.value || "").trim();
-  persistGitHubToken(token);
+  const token = persistGitHubTokenInputValue(githubTokenInput);
   hideLoadProgress();
   const gitLoadResult = await loadGitHubEntriesFromTreeUrl(trimmedUrl, {
     token,
@@ -1754,7 +1615,7 @@ async function loadEvaluationsFromGitUrl(rawUrl) {
   });
   if (!gitLoadResult.files.length) {
     hideLoadProgress();
-    loadStatus.textContent = `No matching run files found in ${gitLoadResult.sourceLabel}.`;
+    renderLoadStatusStage(dom, `No matching run files found in ${gitLoadResult.sourceLabel}.`);
     return;
   }
 
@@ -1775,7 +1636,7 @@ async function loadEvaluationsFromGitUrl(rawUrl) {
 async function handleGitLoadRequest() {
   const trimmedUrl = String(gitUrlInput.value || "").trim();
   if (!trimmedUrl) {
-    loadStatus.textContent = "Enter a GitHub tree URL first.";
+    renderLoadStatusStage(dom, "Enter a GitHub tree URL first.");
     return;
   }
 
@@ -1787,20 +1648,17 @@ async function handleGitLoadRequest() {
     renderEvaluations();
   } catch (error) {
     console.error(error);
-    loadStatus.textContent = `GitHub load failed: ${error.message || error}`;
+    renderLoadStatusStage(dom, `GitHub load failed: ${error.message || error}`);
   } finally {
     loadGitButton.disabled = false;
   }
 }
 
 async function initializeGitUrlFromQueryParam() {
-  const params = new URLSearchParams(window.location.search);
-  const gitUrl = params.get("git_url");
-  if (!gitUrl) {
-    return;
-  }
-  gitUrlInput.value = gitUrl;
-  await handleGitLoadRequest();
+  await runGitUrlQueryParamBootstrap({
+    inputElement: gitUrlInput,
+    onLoadRequested: () => handleGitLoadRequest(),
+  });
 }
 
 void initializeGitUrlFromQueryParam();
@@ -1837,15 +1695,6 @@ function getDisplayedSelectionState(displayedGroups = []) {
   return selectors.getDisplayedSelectionState(state, displayedGroups);
 }
 
-function createTruncatingCell(content, columnKey = "", truncateEnabledColumns = null) {
-  const td = document.createElement("td");
-  td.textContent = content;
-  if (columnKey && truncateEnabledColumns?.has(columnKey)) {
-    td.classList.add("truncate-enabled");
-  }
-  return td;
-}
-
 function createCell(content, columnKey = "") {
   return createTruncatingCell(content, columnKey, state.truncateEnabledColumns);
 }
@@ -1854,28 +1703,6 @@ function createEvalCell(content, columnKey, evalTabState) {
   return createTruncatingCell(content, columnKey, evalTabState?.truncateEnabledColumns);
 }
 
-// Sticky left offsets depend on rendered widths, so measure them after each table render.
-function updateStickyControlColumnOffsets(tableElement) {
-  if (!tableElement) {
-    return;
-  }
-  const firstHeaderRow = tableElement.tHead?.rows?.[0];
-  if (!firstHeaderRow || firstHeaderRow.cells.length < 3) {
-    tableElement.style.setProperty("--sticky-col-1-left", "0px");
-    tableElement.style.setProperty("--sticky-col-2-left", "0px");
-    tableElement.style.setProperty("--sticky-col-3-left", "0px");
-    tableElement.style.setProperty("--sticky-header-row-1-height", "0px");
-    return;
-  }
-  const widths = Array.from(firstHeaderRow.cells)
-    .slice(0, 3)
-    .map((cell) => Math.ceil(cell.getBoundingClientRect().width));
-  const topHeaderCell = Array.from(firstHeaderRow.cells).find((cell) => cell.rowSpan === 1) || firstHeaderRow.cells[0];
-  tableElement.style.setProperty("--sticky-col-1-left", "0px");
-  tableElement.style.setProperty("--sticky-col-2-left", `${widths[0]}px`);
-  tableElement.style.setProperty("--sticky-col-3-left", `${widths[0] + widths[1]}px`);
-  tableElement.style.setProperty("--sticky-header-row-1-height", `${Math.ceil(topHeaderCell.getBoundingClientRect().height)}px`);
-}
 
 window.addEventListener("resize", () => {
   updateStickyControlColumnOffsets(predictionsTable);

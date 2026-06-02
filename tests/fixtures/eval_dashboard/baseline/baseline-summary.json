@@ -1,5 +1,5 @@
 {
-  "baseline_version": 6,
+  "baseline_version": 8,
   "captured_at": "2026-06-02",
   "implementation_shape": {
     "runtime_entrypoint": "docs/eval-dashboard/index.html",
@@ -88,6 +88,30 @@
       "github tree URL parsing and recursive file loading",
       "github ref resolution across branches, tags, and unresolved refs",
       "github loader empty-input and no-files-found paths"
+    ]
+  },
+  "phase_nine_contract": {
+    "ui_module_root": "docs/eval-dashboard/assets/js/ui",
+    "browser_module_root": "docs/eval-dashboard/assets/js/browser",
+    "ui_modules": [
+      "dom.js",
+      "status.js",
+      "table-shared.js"
+    ],
+    "browser_modules": [
+      "session.js"
+    ],
+    "js_test_files": [
+      "browser.session.test.mjs",
+      "ui.dom.test.mjs",
+      "ui.status.test.mjs",
+      "ui.table-shared.test.mjs"
+    ],
+    "focus": [
+      "shared DOM reference capture",
+      "shared table sort/truncation/sticky helpers",
+      "status and progress DOM rendering",
+      "github token persistence and git_url query-parameter synchronization"
     ]
   },
   "feature_expectations": {

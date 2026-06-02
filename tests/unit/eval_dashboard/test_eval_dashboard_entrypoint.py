@@ -14,7 +14,9 @@ DASHBOARD_JS_ROOT = DOCS_ROOT / "eval-dashboard" / "assets" / "js"
 DASHBOARD_JS_ENTRY = DASHBOARD_JS_ROOT / "main.js"
 DATA_JS_ROOT = DASHBOARD_JS_ROOT / "data"
 STATE_JS_ROOT = DASHBOARD_JS_ROOT / "state"
+UI_JS_ROOT = DASHBOARD_JS_ROOT / "ui"
 UTILS_JS_ROOT = DASHBOARD_JS_ROOT / "utils"
+BROWSER_JS_ROOT = DASHBOARD_JS_ROOT / "browser"
 PROPERDOCS_CONFIG = PROJ_ROOT / "properdocs.yml"
 BASELINE_MANIFEST = FIXTURE_DATA_ROOT / "eval_dashboard" / "baseline" / "baseline-manifest.md"
 BASELINE_SUMMARY = FIXTURE_DATA_ROOT / "eval_dashboard" / "baseline" / "baseline-summary.json"
@@ -43,6 +45,12 @@ EXPECTED_JS_DATA_FILES = (
     "normalize.js",
     "parse-overrides.js",
 )
+EXPECTED_JS_UI_FILES = (
+    "dom.js",
+    "status.js",
+    "table-shared.js",
+)
+EXPECTED_JS_BROWSER_FILES = ("session.js",)
 
 
 def _load_properdocs() -> dict:
@@ -97,6 +105,20 @@ def test_phase_seven_and_phase_eight_dashboard_js_data_modules_exist() -> None:
 
     for file_name in EXPECTED_JS_DATA_FILES:
         assert (DATA_JS_ROOT / file_name).is_file()
+
+
+def test_phase_nine_dashboard_js_ui_modules_exist() -> None:
+    """Ensure the Phase 9 UI infrastructure modules exist under the dashboard asset path."""
+
+    for file_name in EXPECTED_JS_UI_FILES:
+        assert (UI_JS_ROOT / file_name).is_file()
+
+
+def test_phase_nine_dashboard_js_browser_modules_exist() -> None:
+    """Ensure the Phase 9 browser-session module exists under the dashboard asset path."""
+
+    for file_name in EXPECTED_JS_BROWSER_FILES:
+        assert (BROWSER_JS_ROOT / file_name).is_file()
 
 
 def test_properdocs_nav_points_to_new_dashboard_entry() -> None:
