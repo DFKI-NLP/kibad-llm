@@ -9,7 +9,26 @@ import {
   renderGroupByButtonState,
   renderMissingDefaultControls,
   renderOptionsPanelControls,
+  renderPlotControls,
 } from "../../../../docs/eval-dashboard/assets/js/ui/controls.js";
+
+class FakeClassList {
+  constructor() {
+    this.values = new Set();
+  }
+
+  toggle(name, force) {
+    if (force) {
+      this.values.add(name);
+    } else {
+      this.values.delete(name);
+    }
+  }
+
+  contains(name) {
+    return this.values.has(name);
+  }
+}
 
 class FakeElement {
   constructor() {
@@ -27,6 +46,7 @@ class FakeElement {
     this.id = "";
     this._innerHTML = "";
     this.blurCallCount = 0;
+    this.classList = new FakeClassList();
   }
 
   set innerHTML(value) {
@@ -262,4 +282,88 @@ test("renderOptionsPanelControls renders checkbox and default sections through s
   defaultInput.value = "fallback";
   defaultInput.listeners.get("change")();
   assert.deepEqual(commits, [{ column: "prediction.language", nextValue: "fallback" }]);
+});
+
+test("renderPlotControls synchronizes button state, input values, and plot-control row visibility", () => {
+  const refs = {
+    plotTabsByPrefixButton: new FakeElement("button"),
+    plotTabsBySuffixButton: new FakeElement("button"),
+    confusionTabsByMetricFieldButton: new FakeElement("button"),
+    confusionTabsByPredictionGroupButton: new FakeElement("button"),
+    plotShortenLabelsInput: new FakeElement("input"),
+    plotRoundingPrecisionInput: new FakeElement("input"),
+    plotConfusionMinLabelTotalRow: new FakeElement("div"),
+    plotConfusionMinLabelTotalInput: new FakeElement("input"),
+    plotTpFpFnMinLabelTotalRow: new FakeElement("div"),
+    plotTpFpFnMinLabelTotalInput: new FakeElement("input"),
+    plotTpFpFnMinDocumentTotalRow: new FakeElement("div"),
+    plotTpFpFnMinDocumentTotalInput: new FakeElement("input"),
+    plotTabsByRow: new FakeElement("div"),
+    plotConfusionTabsByRow: new FakeElement("div"),
+    plotGroupBarsRow: new FakeElement("div"),
+    plotShowLegendOnceRow: new FakeElement("div"),
+    plotShowLegendOnceInput: new FakeElement("input"),
+    exportOpaqueBackgroundInput: new FakeElement("input"),
+  };
+
+  renderPlotControls({
+    metricType: "F1MicroMultipleFieldsMetric",
+    plotTabsBy: "suffix",
+    confusionTabsBy: "prediction_group",
+    plotShortenLabels: true,
+    plotRoundingPrecision: 4,
+    plotConfusionMinLabelTotal: 6,
+    plotTpFpFnMinLabelTotal: 7,
+    plotTpFpFnMinDocumentTotal: 8,
+    plotShowLegendOnce: true,
+    exportOpaqueBackground: true,
+    ...refs,
+  });
+
+  assert.equal(refs.plotTabsByPrefixButton.classList.contains("active"), false);
+  assert.equal(refs.plotTabsBySuffixButton.classList.contains("active"), true);
+  assert.equal(refs.confusionTabsByMetricFieldButton.classList.contains("active"), false);
+  assert.equal(refs.confusionTabsByPredictionGroupButton.classList.contains("active"), true);
+  assert.equal(refs.plotShortenLabelsInput.checked, true);
+  assert.equal(refs.plotRoundingPrecisionInput.value, "4");
+  assert.equal(refs.plotConfusionMinLabelTotalInput.value, "6");
+  assert.equal(refs.plotTpFpFnMinLabelTotalInput.value, "7");
+  assert.equal(refs.plotTpFpFnMinDocumentTotalInput.value, "8");
+  assert.equal(refs.plotShowLegendOnceInput.checked, true);
+  assert.equal(refs.exportOpaqueBackgroundInput.checked, true);
+  assert.equal(refs.plotTabsByRow.style.display, "");
+  assert.equal(refs.plotConfusionMinLabelTotalRow.style.display, "none");
+  assert.equal(refs.plotTpFpFnMinLabelTotalRow.style.display, "none");
+  assert.equal(refs.plotTpFpFnMinDocumentTotalRow.style.display, "none");
+  assert.equal(refs.plotConfusionTabsByRow.style.display, "none");
+  assert.equal(refs.plotGroupBarsRow.style.display, "");
+  assert.equal(refs.plotShowLegendOnceRow.style.display, "none");
+
+  renderPlotControls({
+    metricType: "ConfusionMatrixCollection",
+    plotTabsBy: "prefix",
+    confusionTabsBy: "metric_field",
+    plotShortenLabels: false,
+    plotRoundingPrecision: 2,
+    plotConfusionMinLabelTotal: 3,
+    plotTpFpFnMinLabelTotal: 4,
+    plotTpFpFnMinDocumentTotal: 5,
+    plotShowLegendOnce: false,
+    exportOpaqueBackground: false,
+    ...refs,
+  });
+
+  assert.equal(refs.plotTabsByPrefixButton.classList.contains("active"), true);
+  assert.equal(refs.plotTabsBySuffixButton.classList.contains("active"), false);
+  assert.equal(refs.confusionTabsByMetricFieldButton.classList.contains("active"), true);
+  assert.equal(refs.confusionTabsByPredictionGroupButton.classList.contains("active"), false);
+  assert.equal(refs.plotShortenLabelsInput.checked, false);
+  assert.equal(refs.exportOpaqueBackgroundInput.checked, false);
+  assert.equal(refs.plotTabsByRow.style.display, "none");
+  assert.equal(refs.plotConfusionMinLabelTotalRow.style.display, "");
+  assert.equal(refs.plotTpFpFnMinLabelTotalRow.style.display, "none");
+  assert.equal(refs.plotTpFpFnMinDocumentTotalRow.style.display, "none");
+  assert.equal(refs.plotConfusionTabsByRow.style.display, "");
+  assert.equal(refs.plotGroupBarsRow.style.display, "none");
+  assert.equal(refs.plotShowLegendOnceRow.style.display, "none");
 });

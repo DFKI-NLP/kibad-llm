@@ -357,6 +357,7 @@ def test_current_runtime_matches_phase_ten_a_ui_contract() -> None:
     assert set(phase_ten_a_contract["focus"]) == {
         "experiment-tab active-state resolution and shared tab-button rendering",
         "prediction and evaluation truncate/default/group-by control rendering",
+        "thin plot-control rendering",
         "eval json pane highlighting and selected-content resolution",
     }
 

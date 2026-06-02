@@ -23,6 +23,7 @@ import {
   buildColumnOptions,
   buildMissingDefaultControlModels,
   getToggleOnlyColumns,
+  renderPlotControls,
   renderGroupByButtonState,
   renderOptionsPanelControls,
 } from "./ui/controls.js";
@@ -37,8 +38,8 @@ import {
 } from "./ui/table-shared.js";
 import {
   buildTabButtonModels,
-  renderStaticTabState,
   renderTabButtons,
+  renderStaticTabState,
   resolveActiveTabValue,
 } from "./ui/tabs.js";
 import {
@@ -939,27 +940,6 @@ function getTruncateColumnOptions(predictionColumns = getCurrentPredictionColumn
   return buildColumnOptions(predictionColumns, displayPredictionColumnName);
 }
 
-function renderOptionsTabs() {
-  renderStaticTabState({
-    buttonElements: optionsTabButtons,
-    panelElements: optionsTabPanels,
-    activeValue: state.activeOptionsTab,
-  });
-}
-
-function renderEvalOptionsTabs(activeExperiment = state.activeEvalTab) {
-  if (!activeExperiment || !state.evalTabStates[activeExperiment]) {
-    return;
-  }
-  renderStaticTabState({
-    buttonElements: evalOptionsTabButtons,
-    panelElements: evalOptionsTabPanels,
-    activeValue: state.evalTabStates[activeExperiment].activeOptionsTab,
-    buttonAttribute: "data-eval-tab",
-    panelAttribute: "data-eval-tab-panel",
-  });
-}
-
 function setGroupByFields(columns) {
   state.groupByFields = [...columns];
   renderPredictions();
@@ -1076,7 +1056,11 @@ optionsTabs.addEventListener("click", (event) => {
     return;
   }
   state.activeOptionsTab = tab;
-  renderOptionsTabs();
+  renderStaticTabState({
+    buttonElements: optionsTabButtons,
+    panelElements: optionsTabPanels,
+    activeValue: state.activeOptionsTab,
+  });
 });
 
 evalOptionsTabs.addEventListener("click", (event) => {
@@ -1089,56 +1073,19 @@ evalOptionsTabs.addEventListener("click", (event) => {
     return;
   }
   state.evalTabStates[state.activeEvalTab].activeOptionsTab = tab;
-  renderEvalOptionsTabs(state.activeEvalTab);
+  renderStaticTabState({
+    buttonElements: evalOptionsTabButtons,
+    panelElements: evalOptionsTabPanels,
+    activeValue: state.evalTabStates[state.activeEvalTab].activeOptionsTab,
+    buttonAttribute: "data-eval-tab",
+    panelAttribute: "data-eval-tab-panel",
+  });
 });
 
 truncateDefaultsButton.addEventListener("click", () => {
   state.truncateEnabledColumns = getDefaultTruncateColumns(getCurrentPredictionColumns());
   renderPredictions();
 })
-
-function getVisualizationMetricType(metricType) {
-  if (metricType === "ConfusionMatrixCollection") {
-    return "ConfusionMatrix";
-  }
-  if (metricType === "TpFpFnCollectorCollection") {
-    return "TpFpFnCollector";
-  }
-  return metricType;
-}
-
-function renderPlotControls(metricType) {
-  const isConfusionMatrixLike = getVisualizationMetricType(metricType) === "ConfusionMatrix";
-  const supportsConfusionStyleTabs = isConfusionMatrixLike || metricType === "TpFpFnCollector";
-  const isTpFpFnCollector = metricType === "TpFpFnCollector";
-  const isF1MicroMultipleFieldsMetric = metricType === "F1MicroMultipleFieldsMetric";
-  const supportsGroupedBars =
-    metricType === "ErrorCollector" || isF1MicroMultipleFieldsMetric;
-  plotTabsByPrefixButton.classList.toggle("active", state.plotTabsBy === "prefix");
-  plotTabsBySuffixButton.classList.toggle("active", state.plotTabsBy === "suffix");
-  confusionTabsByMetricFieldButton.classList.toggle(
-    "active",
-    state.confusionTabsBy === "metric_field"
-  );
-  confusionTabsByPredictionGroupButton.classList.toggle(
-    "active",
-    state.confusionTabsBy === "prediction_group"
-  );
-  plotShortenLabels.checked = state.plotShortenLabels;
-  plotRoundingPrecision.value = String(state.plotRoundingPrecision);
-  plotConfusionMinLabelTotal.value = String(state.plotConfusionMinLabelTotal);
-  plotTpFpFnMinLabelTotal.value = String(state.plotTpFpFnMinLabelTotal);
-  plotTpFpFnMinDocumentTotal.value = String(state.plotTpFpFnMinDocumentTotal);
-  plotShowLegendOnce.checked = state.plotShowLegendOnce;
-  exportOpaqueBackground.checked = state.exportOpaqueBackground;
-  plotTabsByRow.style.display = isF1MicroMultipleFieldsMetric ? "" : "none";
-  plotConfusionMinLabelTotalRow.style.display = isConfusionMatrixLike ? "" : "none";
-  plotTpFpFnMinLabelTotalRow.style.display = isTpFpFnCollector ? "" : "none";
-  plotTpFpFnMinDocumentTotalRow.style.display = isTpFpFnCollector ? "" : "none";
-  plotConfusionTabsByRow.style.display = supportsConfusionStyleTabs ? "" : "none";
-  plotGroupBarsRow.style.display = supportsGroupedBars ? "" : "none";
-  plotShowLegendOnceRow.style.display = "none";
-}
 
 plotShortenLabels.addEventListener("change", () => {
   state.plotShortenLabels = plotShortenLabels.checked;
@@ -1184,7 +1131,36 @@ plotShowLegendOnce.addEventListener("change", () => {
 
 exportOpaqueBackground.addEventListener("change", () => {
   state.exportOpaqueBackground = exportOpaqueBackground.checked;
-  renderPlotControls(getMetricTypeForEvaluationContext(state.activeEvalTab || ""));
+  renderPlotControls({
+    metricType: getMetricTypeForEvaluationContext(state.activeEvalTab || ""),
+    plotTabsBy: state.plotTabsBy,
+    confusionTabsBy: state.confusionTabsBy,
+    plotShortenLabels: state.plotShortenLabels,
+    plotRoundingPrecision: state.plotRoundingPrecision,
+    plotConfusionMinLabelTotal: state.plotConfusionMinLabelTotal,
+    plotTpFpFnMinLabelTotal: state.plotTpFpFnMinLabelTotal,
+    plotTpFpFnMinDocumentTotal: state.plotTpFpFnMinDocumentTotal,
+    plotShowLegendOnce: state.plotShowLegendOnce,
+    exportOpaqueBackground: state.exportOpaqueBackground,
+    plotTabsByPrefixButton,
+    plotTabsBySuffixButton,
+    confusionTabsByMetricFieldButton,
+    confusionTabsByPredictionGroupButton,
+    plotShortenLabelsInput: plotShortenLabels,
+    plotRoundingPrecisionInput: plotRoundingPrecision,
+    plotConfusionMinLabelTotalRow,
+    plotConfusionMinLabelTotalInput: plotConfusionMinLabelTotal,
+    plotTpFpFnMinLabelTotalRow,
+    plotTpFpFnMinLabelTotalInput: plotTpFpFnMinLabelTotal,
+    plotTpFpFnMinDocumentTotalRow,
+    plotTpFpFnMinDocumentTotalInput: plotTpFpFnMinDocumentTotal,
+    plotTabsByRow,
+    plotConfusionTabsByRow,
+    plotGroupBarsRow,
+    plotShowLegendOnceRow,
+    plotShowLegendOnceInput: plotShowLegendOnce,
+    exportOpaqueBackgroundInput: exportOpaqueBackground,
+  });
 });
 
 downloadFiguresButton.addEventListener("click", async () => {
@@ -1520,6 +1496,14 @@ function renderPredictions() {
   predictionDefaultsList.innerHTML = "";
   renderPredictionSortStatus();
   if (!predictionGroups.length) {
+    renderGroupByButtonState(
+      {
+        allButton: groupByAllButton,
+        toggleButton: groupByToggleButton,
+        noneButton: groupByNoneButton,
+      },
+      []
+    );
     setPanelVisibility(predictionDefaultsPanel, false);
     predictionSummary.textContent = "No predictions found. Load a folder containing evaluate run outputs.";
     return;
@@ -1533,7 +1517,19 @@ function renderPredictions() {
 
   const predictionSections = getPredictionColumnSections();
   const orderedPredictionColumns = predictionSections.flatMap((section) => section.columns);
-  renderOptionsTabs();
+  renderGroupByButtonState(
+    {
+      allButton: groupByAllButton,
+      toggleButton: groupByToggleButton,
+      noneButton: groupByNoneButton,
+    },
+    orderedPredictionColumns
+  );
+  renderStaticTabState({
+    buttonElements: optionsTabButtons,
+    panelElements: optionsTabPanels,
+    activeValue: state.activeOptionsTab,
+  });
   const selectedPredictionViews = getSelectedPredictionViews();
   const predictionDefaultColumns = getPredictionColumnsWithMissingValues(
     selectedPredictionViews,
@@ -3272,7 +3268,36 @@ function renderEvaluationPlots(
   activeExperiment,
   evaluationContext = getEvaluationContext(activeExperiment)
 ) {
-  renderPlotControls(null);
+  renderPlotControls({
+    metricType: null,
+    plotTabsBy: state.plotTabsBy,
+    confusionTabsBy: state.confusionTabsBy,
+    plotShortenLabels: state.plotShortenLabels,
+    plotRoundingPrecision: state.plotRoundingPrecision,
+    plotConfusionMinLabelTotal: state.plotConfusionMinLabelTotal,
+    plotTpFpFnMinLabelTotal: state.plotTpFpFnMinLabelTotal,
+    plotTpFpFnMinDocumentTotal: state.plotTpFpFnMinDocumentTotal,
+    plotShowLegendOnce: state.plotShowLegendOnce,
+    exportOpaqueBackground: state.exportOpaqueBackground,
+    plotTabsByPrefixButton,
+    plotTabsBySuffixButton,
+    confusionTabsByMetricFieldButton,
+    confusionTabsByPredictionGroupButton,
+    plotShortenLabelsInput: plotShortenLabels,
+    plotRoundingPrecisionInput: plotRoundingPrecision,
+    plotConfusionMinLabelTotalRow,
+    plotConfusionMinLabelTotalInput: plotConfusionMinLabelTotal,
+    plotTpFpFnMinLabelTotalRow,
+    plotTpFpFnMinLabelTotalInput: plotTpFpFnMinLabelTotal,
+    plotTpFpFnMinDocumentTotalRow,
+    plotTpFpFnMinDocumentTotalInput: plotTpFpFnMinDocumentTotal,
+    plotTabsByRow,
+    plotConfusionTabsByRow,
+    plotGroupBarsRow,
+    plotShowLegendOnceRow,
+    plotShowLegendOnceInput: plotShowLegendOnce,
+    exportOpaqueBackgroundInput: exportOpaqueBackground,
+  });
   evalPlotTabs.innerHTML = "";
   evalPlotContent.innerHTML = "";
   plotGroupBarsList.innerHTML = "";
@@ -3297,7 +3322,36 @@ function renderEvaluationPlots(
 
   const { experimentEvaluations, evalTabState } = evaluationContext;
   const metricType = getMetricTypeForEvaluationContext(activeExperiment, evaluationContext);
-  renderPlotControls(metricType);
+  renderPlotControls({
+    metricType,
+    plotTabsBy: state.plotTabsBy,
+    confusionTabsBy: state.confusionTabsBy,
+    plotShortenLabels: state.plotShortenLabels,
+    plotRoundingPrecision: state.plotRoundingPrecision,
+    plotConfusionMinLabelTotal: state.plotConfusionMinLabelTotal,
+    plotTpFpFnMinLabelTotal: state.plotTpFpFnMinLabelTotal,
+    plotTpFpFnMinDocumentTotal: state.plotTpFpFnMinDocumentTotal,
+    plotShowLegendOnce: state.plotShowLegendOnce,
+    exportOpaqueBackground: state.exportOpaqueBackground,
+    plotTabsByPrefixButton,
+    plotTabsBySuffixButton,
+    confusionTabsByMetricFieldButton,
+    confusionTabsByPredictionGroupButton,
+    plotShortenLabelsInput: plotShortenLabels,
+    plotRoundingPrecisionInput: plotRoundingPrecision,
+    plotConfusionMinLabelTotalRow,
+    plotConfusionMinLabelTotalInput: plotConfusionMinLabelTotal,
+    plotTpFpFnMinLabelTotalRow,
+    plotTpFpFnMinLabelTotalInput: plotTpFpFnMinLabelTotal,
+    plotTpFpFnMinDocumentTotalRow,
+    plotTpFpFnMinDocumentTotalInput: plotTpFpFnMinDocumentTotal,
+    plotTabsByRow,
+    plotConfusionTabsByRow,
+    plotGroupBarsRow,
+    plotShowLegendOnceRow,
+    plotShowLegendOnceInput: plotShowLegendOnce,
+    exportOpaqueBackgroundInput: exportOpaqueBackground,
+  });
   const selectedEvalGroups = getSelectedEvaluationGroups(evaluationContext);
   if (selectedEvalGroups.length === 0) {
     const msg = document.createElement("p");
@@ -3608,7 +3662,13 @@ function renderEvaluations() {
     },
     orderedEvalColumns
   );
-  renderEvalOptionsTabs(state.activeEvalTab);
+  renderStaticTabState({
+    buttonElements: evalOptionsTabButtons,
+    panelElements: evalOptionsTabPanels,
+    activeValue: state.evalTabStates[state.activeEvalTab].activeOptionsTab,
+    buttonAttribute: "data-eval-tab",
+    panelAttribute: "data-eval-tab-panel",
+  });
   const selectedEvaluationsForDefaults = getSelectedEvaluationGroups(evaluationContext).flatMap(
     (group) => group.evaluations
   );

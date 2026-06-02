@@ -5,6 +5,22 @@
 import { setPanelVisibility } from "./dom.js";
 
 /**
+ * Normalize collection-style metric names down to the plot-control visualization family.
+ *
+ * @param {string | null | undefined} metricType - Raw metric type from evaluation context.
+ * @returns {string | null | undefined} Visualization-oriented metric family.
+ */
+function getVisualizationMetricType(metricType) {
+  if (metricType === "ConfusionMatrixCollection") {
+    return "ConfusionMatrix";
+  }
+  if (metricType === "TpFpFnCollectorCollection") {
+    return "TpFpFnCollector";
+  }
+  return metricType;
+}
+
+/**
  * Build labeled option objects from one ordered column list.
  *
  * @param {Iterable<string>} columns - Columns to expose as options.
@@ -66,6 +82,120 @@ export function renderGroupByButtonState(buttonRefs, availableColumns) {
   buttonRefs.allButton.disabled = disabled;
   buttonRefs.toggleButton.disabled = disabled;
   buttonRefs.noneButton.disabled = disabled;
+}
+
+/**
+ * Render the dashboard's thin plot-control state without pulling plot aggregation into this module.
+ *
+ * @param {object} options - Plot-control refs plus the current control values.
+ * @param {string | null | undefined} options.metricType - Active evaluation metric type.
+ * @param {"prefix" | "suffix"} options.plotTabsBy - Current plot-tab grouping mode.
+ * @param {"metric_field" | "prediction_group"} options.confusionTabsBy - Current confusion-tab grouping mode.
+ * @param {boolean} options.plotShortenLabels - Whether plot labels are shortened.
+ * @param {number} options.plotRoundingPrecision - Current rounding precision.
+ * @param {number} options.plotConfusionMinLabelTotal - Current confusion label threshold.
+ * @param {number} options.plotTpFpFnMinLabelTotal - Current TP/FP/FN label threshold.
+ * @param {number} options.plotTpFpFnMinDocumentTotal - Current TP/FP/FN document threshold.
+ * @param {boolean} options.plotShowLegendOnce - Whether legend de-duplication is enabled.
+ * @param {boolean} options.exportOpaqueBackground - Whether exports should use an opaque background.
+ * @param {HTMLElement | null} options.plotTabsByPrefixButton - Prefix-tab mode button.
+ * @param {HTMLElement | null} options.plotTabsBySuffixButton - Suffix-tab mode button.
+ * @param {HTMLElement | null} options.confusionTabsByMetricFieldButton - Metric-field confusion-tab mode button.
+ * @param {HTMLElement | null} options.confusionTabsByPredictionGroupButton - Prediction-group confusion-tab mode button.
+ * @param {HTMLInputElement | null} options.plotShortenLabelsInput - Shorten-labels checkbox.
+ * @param {HTMLInputElement | null} options.plotRoundingPrecisionInput - Rounding-precision input.
+ * @param {HTMLElement | null} options.plotConfusionMinLabelTotalRow - Confusion threshold row.
+ * @param {HTMLInputElement | null} options.plotConfusionMinLabelTotalInput - Confusion threshold input.
+ * @param {HTMLElement | null} options.plotTpFpFnMinLabelTotalRow - TP/FP/FN label-threshold row.
+ * @param {HTMLInputElement | null} options.plotTpFpFnMinLabelTotalInput - TP/FP/FN label-threshold input.
+ * @param {HTMLElement | null} options.plotTpFpFnMinDocumentTotalRow - TP/FP/FN document-threshold row.
+ * @param {HTMLInputElement | null} options.plotTpFpFnMinDocumentTotalInput - TP/FP/FN document-threshold input.
+ * @param {HTMLElement | null} options.plotTabsByRow - Prefix/suffix toggle row.
+ * @param {HTMLElement | null} options.plotConfusionTabsByRow - Confusion-tab mode row.
+ * @param {HTMLElement | null} options.plotGroupBarsRow - Grouped-bars options row.
+ * @param {HTMLElement | null} options.plotShowLegendOnceRow - Legend-once row.
+ * @param {HTMLInputElement | null} options.plotShowLegendOnceInput - Legend-once checkbox.
+ * @param {HTMLInputElement | null} options.exportOpaqueBackgroundInput - Export-background checkbox.
+ * @returns {void}
+ */
+export function renderPlotControls({
+  metricType,
+  plotTabsBy,
+  confusionTabsBy,
+  plotShortenLabels,
+  plotRoundingPrecision,
+  plotConfusionMinLabelTotal,
+  plotTpFpFnMinLabelTotal,
+  plotTpFpFnMinDocumentTotal,
+  plotShowLegendOnce,
+  exportOpaqueBackground,
+  plotTabsByPrefixButton,
+  plotTabsBySuffixButton,
+  confusionTabsByMetricFieldButton,
+  confusionTabsByPredictionGroupButton,
+  plotShortenLabelsInput,
+  plotRoundingPrecisionInput,
+  plotConfusionMinLabelTotalRow,
+  plotConfusionMinLabelTotalInput,
+  plotTpFpFnMinLabelTotalRow,
+  plotTpFpFnMinLabelTotalInput,
+  plotTpFpFnMinDocumentTotalRow,
+  plotTpFpFnMinDocumentTotalInput,
+  plotTabsByRow,
+  plotConfusionTabsByRow,
+  plotGroupBarsRow,
+  plotShowLegendOnceRow,
+  plotShowLegendOnceInput,
+  exportOpaqueBackgroundInput,
+}) {
+  const visualizationMetricType = getVisualizationMetricType(metricType);
+  const isConfusionMatrixLike = visualizationMetricType === "ConfusionMatrix";
+  const supportsConfusionStyleTabs =
+    isConfusionMatrixLike || metricType === "TpFpFnCollector";
+  const isTpFpFnCollector = metricType === "TpFpFnCollector";
+  const isF1MicroMultipleFieldsMetric = metricType === "F1MicroMultipleFieldsMetric";
+  const supportsGroupedBars =
+    metricType === "ErrorCollector" || isF1MicroMultipleFieldsMetric;
+
+  plotTabsByPrefixButton?.classList?.toggle?.("active", plotTabsBy === "prefix");
+  plotTabsBySuffixButton?.classList?.toggle?.("active", plotTabsBy === "suffix");
+  confusionTabsByMetricFieldButton?.classList?.toggle?.(
+    "active",
+    confusionTabsBy === "metric_field"
+  );
+  confusionTabsByPredictionGroupButton?.classList?.toggle?.(
+    "active",
+    confusionTabsBy === "prediction_group"
+  );
+  if (plotShortenLabelsInput) {
+    plotShortenLabelsInput.checked = plotShortenLabels;
+  }
+  if (plotRoundingPrecisionInput) {
+    plotRoundingPrecisionInput.value = String(plotRoundingPrecision);
+  }
+  if (plotConfusionMinLabelTotalInput) {
+    plotConfusionMinLabelTotalInput.value = String(plotConfusionMinLabelTotal);
+  }
+  if (plotTpFpFnMinLabelTotalInput) {
+    plotTpFpFnMinLabelTotalInput.value = String(plotTpFpFnMinLabelTotal);
+  }
+  if (plotTpFpFnMinDocumentTotalInput) {
+    plotTpFpFnMinDocumentTotalInput.value = String(plotTpFpFnMinDocumentTotal);
+  }
+  if (plotShowLegendOnceInput) {
+    plotShowLegendOnceInput.checked = plotShowLegendOnce;
+  }
+  if (exportOpaqueBackgroundInput) {
+    exportOpaqueBackgroundInput.checked = exportOpaqueBackground;
+  }
+
+  setPanelVisibility(plotTabsByRow, isF1MicroMultipleFieldsMetric);
+  setPanelVisibility(plotConfusionMinLabelTotalRow, isConfusionMatrixLike);
+  setPanelVisibility(plotTpFpFnMinLabelTotalRow, isTpFpFnCollector);
+  setPanelVisibility(plotTpFpFnMinDocumentTotalRow, isTpFpFnCollector);
+  setPanelVisibility(plotConfusionTabsByRow, supportsConfusionStyleTabs);
+  setPanelVisibility(plotGroupBarsRow, supportsGroupedBars);
+  setPanelVisibility(plotShowLegendOnceRow, false);
 }
 
 /**
