@@ -40,9 +40,10 @@ vllm_kwargs:
   max_num_seqs: 8
   # FP8 KV cache for memory efficiency on the FP8-quantized model.
   kv_cache_dtype: "fp8"
-  # nano_v3 is a custom plugin from NVIDIA, must be present in the working directory.
-  # Download: wget https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8/resolve/main/nano_v3_reasoning_parser.py
-  # See https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8
+  # Nemotron uses standard <think>...</think> tags (identical to DeepSeek R1), so the
+  # built-in deepseek_r1 parser works without any plugin dependency.
+  # NVIDIA also provides a custom nano_v3 parser (see src/kibad_llm/llms/reasoning_parsers/),
+  # but it is not needed here since deepseek_r1 handles the same tag format.
   reasoning_parser: "deepseek_r1"
   gpu_memory_utilization: 0.95 # fraction of GPU memory reserved (impacts KV cache size)
   # dtype: "auto"
