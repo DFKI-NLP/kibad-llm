@@ -67,9 +67,9 @@ As of the current repository state:
 - `docs/eval-dashboard.html` is currently a temporary compatibility shim
 - `properdocs.yml` navigation points to `eval-dashboard/index.html`
 - `docs/index.md` links point to `eval-dashboard/index.html`
-- populated Phase 7 runtime assets now exist under `docs/eval-dashboard/assets/`: CSS lives under `assets/css/`, `assets/js/main.js` remains the external entry module, pure helpers live under `assets/js/utils/`, extracted canonical state/selector modules now live under `assets/js/state/`, and parsing/normalization modules now live under `assets/js/data/`
+- populated Phase 8 runtime assets now exist under `docs/eval-dashboard/assets/`: CSS lives under `assets/css/`, `assets/js/main.js` remains the external entry module, pure helpers live under `assets/js/utils/`, extracted canonical state/selector modules now live under `assets/js/state/`, and `assets/js/data/` now contains parsing, normalization, source-loader, and shared-ingestion modules
 - structural smoke coverage now includes `tests/unit/eval_dashboard/test_eval_dashboard_entrypoint.py` and `tests/unit/eval_dashboard/test_eval_dashboard_html_contracts.py`
-- browser-free JS utility, store, selector, and data-normalization logic coverage now exists under `tests/unit/eval_dashboard/js/` via the Node.js built-in test runner, which remains the long-term home for extracted dashboard logic tests in later phases
+- browser-free JS utility, store, selector, data-normalization, and Phase 8 loader/ingestion logic coverage now exists under `tests/unit/eval_dashboard/js/` via the Node.js built-in test runner, which remains the long-term home for extracted dashboard logic tests in later phases
 - curated Phase 2 and Phase 7 fixtures now exist under `tests/fixtures/eval_dashboard/`, including valid version-0/1/2 examples, invalid edge-case fixtures, the dedicated `missing_prediction_id` fixture, and explicit fixtures for all currently supported plot families (`bars`, `errors`, `confusion_matrix`, `tpfpfn`)
 - fixture provenance is documented in `tests/fixtures/eval_dashboard/README.md`
 - fixture integrity smoke coverage exists at `tests/unit/eval_dashboard/test_dashboard_fixtures.py`
@@ -78,11 +78,11 @@ As of the current repository state:
 - Phase 3 CSS extraction remains complete: `docs/eval-dashboard/index.html` still loads `assets/css/index.css` and contains no inline `<style>` block
 - Phase 4 JS externalization is complete: `docs/eval-dashboard/index.html` now loads `assets/js/main.js` as a single external `type="module"` script and contains no inline `<script>` block
 - the structural smoke tests now assert the external CSS and external module-script contract rather than a Phase 3 inline-script freeze
-- the baseline contract now records the Phase 5 utility-module contract, the Phase 6 state/store + selector-module contract, and the Phase 7 data-module contract instead of freezing the full `main.js` file contents
+- the baseline contract now records the Phase 5 utility-module contract, the Phase 6 state/store + selector-module contract, the Phase 7 parsing/normalization contract, and the Phase 8 loader/ingestion contract instead of freezing the full `main.js` file contents
 
 ### Status checkpoint
 
-The repository is currently **through Phase 7 and ready for Phase 8**:
+The repository is currently **through Phase 8 and ready for Phase 9**:
 
 - Phase 0 baseline artifacts landed
 - Phase 1 folder migration and compatibility shim landed
@@ -92,8 +92,9 @@ The repository is currently **through Phase 7 and ready for Phase 8**:
 - Phase 5 utility extraction, the permanent JS-native logic-test runner, and explicit CI wiring landed
 - Phase 6 state/store extraction, selector extraction, and selector/store logic tests landed
 - Phase 7 overrides parsing extraction, run normalization extraction, missing-prediction-id fixture coverage, and parsing/normalization logic tests landed
+- Phase 8 local-file loading extraction, shared raw-entry ingestion extraction, GitHub loading extraction, and loader/ingestion logic tests landed
 
-That means the next implementation step is to **start Phase 8** by extracting the local-file source adapter, the shared raw-entry ingestion pipeline, and the GitHub source adapter while keeping the current normalization boundary stable.
+That means the next implementation step is to **start Phase 9** by extracting UI modules, centralizing shared DOM refs, and moving status/progress DOM rendering out of `main.js` while keeping the new Phase 8 source-loader and ingestion boundary stable.
 
 ______________________________________________________________________
 
@@ -1038,6 +1039,8 @@ ______________________________________________________________________
 
 ## Phase 8. Extract source loaders and the shared ingestion pipeline
 
+**Status in current repository:** completed.
+
 ### Goal
 
 Separate source-specific I/O from shared run ingestion, while also keeping normalization and rendering boundaries clean.
@@ -1151,6 +1154,17 @@ Verify:
 - conflicting-prediction-id handling still works at the shared ingestion boundary
 - unsupported-version/malformed-run handling still works
 - update the planning docs in `docs/eval-dashboard/` after the phase lands and confirm the loader changes comply with `CONTRIBUTING.md`
+
+### Landed Phase 8 outcome
+
+The current branch now matches this phase:
+
+- `docs/eval-dashboard/assets/js/data/` now contains `file-loader.js`, `ingest-runs.js`, and `git-loader.js` alongside the Phase 7 `parse-overrides.js` and `normalize.js` modules
+- `docs/eval-dashboard/assets/js/main.js` now delegates local-file source handling to `file-loader.js`, shared raw-entry ingestion plus duplicate/conflict detection to `ingest-runs.js`, and GitHub tree-URL loading to `git-loader.js` while keeping browser-session concerns such as `localStorage` token persistence and `git_url` query-parameter synchronization in the orchestration layer
+- `tests/unit/eval_dashboard/js/data.file-loader.test.mjs` locks in local relevant-path filtering, local source-label derivation, and raw-entry collection semantics without mocking the browser file picker
+- `tests/unit/eval_dashboard/js/data.ingest-runs.test.mjs` covers run-directory discovery, `predict/` exclusion, duplicate-run handling, conflicting-prediction-id handling at the shared ingestion boundary, and the shared prediction-signature helper used for conflict detection
+- `tests/unit/eval_dashboard/js/data.git-loader.test.mjs` covers GitHub tree-URL parsing, ref/path resolution, contents-URL construction, recursive relevant-file listing, progress callback semantics, and high-level GitHub raw-entry loading with mocked transport responses
+- `tests/unit/eval_dashboard/test_eval_dashboard_entrypoint.py`, `tests/unit/eval_dashboard/test_eval_dashboard_baseline_contract.py`, `tests/unit/eval_dashboard/js/README.md`, and `tests/fixtures/eval_dashboard/baseline/baseline-summary.json` now record the Phase 8 loader/ingestion module and test contract explicitly
 
 ### Suggested commit boundaries
 
@@ -1516,7 +1530,7 @@ If needed, these can be grouped into fewer PRs:
 - PR 3: utilities + permanent JS-native runner + state + selectors + parsing + normalization + logic tests
 - PR 4: loaders + UI modules + plot/export modules + final cleanup + coverage pass
 
-From the current repository state, work should next continue with the Phase 8 source-loader and ingestion extraction work: move local-file source handling, shared raw-entry ingestion, and GitHub loading into dedicated `data/` modules while keeping the newly extracted Phase 7 normalization boundary intact.
+From the current repository state, work should next continue with Phase 9 UI extraction: centralize DOM lookup ownership, move status/progress rendering into dedicated UI modules, and keep `main.js` focused on orchestration over the now-stable Phase 8 source-loader and ingestion boundary.
 
 After each completed PR or phase in that sequence, refresh the planning docs under `docs/eval-dashboard/` before moving on so the written plan keeps matching the repository state and `CONTRIBUTING.md` expectations.
 
@@ -1549,11 +1563,11 @@ ______________________________________________________________________
 
 Given the current repository state, the safest next implementation step is:
 
-1. extract the local-file source helpers into `docs/eval-dashboard/assets/js/data/file-loader.js`
-1. extract the shared raw-entry ingestion pipeline into `docs/eval-dashboard/assets/js/data/ingest-runs.js`
-1. extract GitHub URL parsing, listing, fetching, and progress helpers into `docs/eval-dashboard/assets/js/data/git-loader.js`
-1. keep cross-run duplicate/conflicting-prediction-id handling with the shared ingestion boundary while reusing the extracted Phase 7 normalization helpers
-1. add JS-native tests for `data.ingest-runs.test.mjs`, `data.file-loader.test.mjs`, and `data.git-loader.test.mjs` under `tests/unit/eval_dashboard/js/`
-1. update the planning docs in `docs/eval-dashboard/` after Phase 8 lands and confirm the change set complies with `CONTRIBUTING.md`
+1. extract shared DOM lookup into `docs/eval-dashboard/assets/js/ui/dom.js`
+1. extract status and progress rendering into `docs/eval-dashboard/assets/js/ui/status.js`
+1. move remaining prediction/evaluation control rendering behind UI-module boundaries while keeping the Phase 8 loader callbacks plain-data-only
+1. keep browser-session concerns and top-level event wiring in `docs/eval-dashboard/assets/js/main.js` while reducing its direct DOM mutation surface
+1. extend structural/docs smoke coverage as needed to record the new UI-module contract once Phase 9 lands
+1. update the planning docs in `docs/eval-dashboard/` after Phase 9 lands and confirm the change set complies with `CONTRIBUTING.md`
 
-That continues the next smallest behavior-preserving extraction boundary after Phase 7: keep Python for structural/docs/fixture smoke coverage, keep the minimal JS-native runner for extracted dashboard logic, and move the raw-loading concerns out of `main.js` without redesigning the normalized data contract or duplicating ingestion behavior across the two source paths.
+That continues the next smallest behavior-preserving extraction boundary after Phase 8: keep Python for structural/docs/fixture smoke coverage, keep the minimal JS-native runner for extracted dashboard logic, and move the remaining DOM-owning status/control code out of `main.js` without redesigning the now-stable normalized data or shared-ingestion contracts.

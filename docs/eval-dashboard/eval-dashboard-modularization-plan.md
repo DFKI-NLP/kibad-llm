@@ -35,17 +35,17 @@ A few repo-specific observations first:
 
 - the canonical runtime page now lives at `docs/eval-dashboard/index.html`.
 - `docs/eval-dashboard.html` is currently a temporary compatibility shim for the old path.
-- `docs/eval-dashboard/index.html` is still a **single huge static page**, but Phases 3 to 7 have now moved styling, first low-coupling helpers, canonical state/selector logic, and parsing/normalization helpers into external assets; the page loads `assets/css/index.css`, `assets/js/main.js`, the utility modules under `assets/js/utils/`, the state modules under `assets/js/state/`, and the new data modules under `assets/js/data/` while loader/UI/plot logic still remains in one orchestration file for now.
+- `docs/eval-dashboard/index.html` is still a **single huge static page**, but Phases 3 to 8 have now moved styling, first low-coupling helpers, canonical state/selector logic, parsing/normalization helpers, source loaders, and the shared ingestion pipeline into external assets; the page loads `assets/css/index.css`, `assets/js/main.js`, the utility modules under `assets/js/utils/`, the state modules under `assets/js/state/`, and the full Phase 8 `assets/js/data/` split while UI/plot logic still remains in one orchestration file for now.
 - `properdocs.yml` and `docs/index.md` already point to the new folder-based entrypoint.
 - `scripts/build_docs.py` only generates **Python API reference** pages from `src/`, so it is **not** a frontend asset pipeline.
-- `docs/eval-dashboard/assets/css/` now contains `index.css`, `tokens.css`, `layout.css`, `controls.css`, `tables.css`, and `plots.css`; `docs/eval-dashboard/assets/js/` now contains `main.js`, `utils/`, `state/`, and the Phase 7 `data/` modules already split out of the original monolith.
-- `pyproject.toml` has **pytest**, and the repo now has dashboard smoke coverage under `tests/unit/eval_dashboard/`, including entrypoint checks plus HTML-contract checks that enforce external CSS, the external `assets/js/main.js` module reference, and the absence of inline runtime CSS/JS; `tests/unit/eval_dashboard/js/` is now the reserved location for extracted dashboard logic tests, and the long-term harness there is the minimal Node.js built-in test runner (`node --test tests/unit/eval_dashboard/js/*.test.mjs`) covering utilities, Phase 6 state/store + selector modules, and the new Phase 7 parsing/normalization modules.
+- `docs/eval-dashboard/assets/css/` now contains `index.css`, `tokens.css`, `layout.css`, `controls.css`, `tables.css`, and `plots.css`; `docs/eval-dashboard/assets/js/` now contains `main.js`, `utils/`, `state/`, and the Phase 8 `data/` modules (`parse-overrides.js`, `normalize.js`, `file-loader.js`, `ingest-runs.js`, and `git-loader.js`) already split out of the original monolith.
+- `pyproject.toml` has **pytest**, and the repo now has dashboard smoke coverage under `tests/unit/eval_dashboard/`, including entrypoint checks plus HTML-contract checks that enforce external CSS, the external `assets/js/main.js` module reference, and the absence of inline runtime CSS/JS; `tests/unit/eval_dashboard/js/` is now the reserved location for extracted dashboard logic tests, and the long-term harness there is the minimal Node.js built-in test runner (`node --test tests/unit/eval_dashboard/js/*.test.mjs`) covering utilities, Phase 6 state/store + selector modules, the Phase 7 parsing/normalization modules, and the Phase 8 loader/ingestion modules.
 - `data/prediction_results/readme.md` documents real experiment folders under `data/prediction_results/logs/`; those runs are useful fixture sources, but tests should use curated snapshots rather than reach into mutable live data folders.
 - curated dashboard fixtures now exist under `tests/fixtures/eval_dashboard/`, including valid version coverage, invalid edge-case fixtures, the dedicated `missing_prediction_id` fixture, and explicit examples for all current plot families (`bars`, `errors`, `confusion_matrix`, `tpfpfn`).
 
 Given that, the recommendation is to keep the dashboard as a docs asset, but organize it as a small self-contained docs section that is testable and easy to evolve.
 
-In other words, the repository is now effectively **through Phase 7 and ready for Phase 8**: entrypoint migration, compatibility coverage, curated fixtures, baseline artifacts, structural smoke tests, CSS extraction, the external-`main.js` step, the utility extractions, the permanent JS-native logic-test runner, explicit CI wiring, the first state/store + selector extractions, and the parsing/normalization extraction plus missing-prediction-id coverage have all landed.
+In other words, the repository is now effectively **through Phase 8 and ready for Phase 9**: entrypoint migration, compatibility coverage, curated fixtures, baseline artifacts, structural smoke tests, CSS extraction, the external-`main.js` step, the utility extractions, the permanent JS-native logic-test runner, explicit CI wiring, the state/store + selector extractions, the parsing/normalization extraction plus missing-prediction-id coverage, and the source-loader/shared-ingestion extraction have all landed.
 
 All work performed from this plan should comply with `CONTRIBUTING.md`, and after each completed refactor phase the planning docs under `docs/eval-dashboard/` should be updated so the recorded status, sequencing, and next steps stay accurate.
 
@@ -842,19 +842,19 @@ ______________________________________________________________________
 
 From the current repository state, the cleanest next sequence would be:
 
-1. extract local-file source helpers into `docs/eval-dashboard/assets/js/data/file-loader.js`
-1. extract the shared raw-entry ingestion boundary into `docs/eval-dashboard/assets/js/data/ingest-runs.js`
-1. extract GitHub loading helpers into `docs/eval-dashboard/assets/js/data/git-loader.js`
-1. add JS-native tests for the shared ingestion layer plus loader-adjacent pure helpers under `tests/unit/eval_dashboard/js/` using `node --test tests/unit/eval_dashboard/js/*.test.mjs`
-1. extract UI modules and plot/export modules
+1. extract shared DOM lookup helpers into `docs/eval-dashboard/assets/js/ui/dom.js`
+1. extract status/progress rendering into `docs/eval-dashboard/assets/js/ui/status.js`
+1. move prediction/evaluation controls and table rendering behind dedicated `ui/` modules
+1. keep extending `tests/unit/eval_dashboard/js/*.test.mjs` for any newly extracted DOM-free UI helpers while preserving the existing Phase 8 loader/ingestion coverage
+1. extract plot/export modules
 1. reduce `main.js` to orchestration only
 1. after each completed phase above, update the planning docs under `docs/eval-dashboard/` and confirm the landed changes comply with `CONTRIBUTING.md`
 
-That keeps the refactor incremental, builds directly on the already-landed migration, fixture, smoke-test, CSS-extraction, and JS-harness groundwork from Phases 5 to 7, and preserves the test-first direction of the overall plan while avoiding a long-term trap where identical ingestion logic gets duplicated across the local-file and GitHub paths.
+That keeps the refactor incremental, builds directly on the already-landed migration, fixture, smoke-test, CSS-extraction, JS-harness, and Phase 8 loader/ingestion groundwork, and preserves the test-first direction of the overall plan while avoiding a long-term trap where DOM ownership, transport concerns, and orchestration all remain coupled in `main.js`.
 
 ## 14. Post-refactor cleanup TODOs
 
-deferred beyond Phase 7:
+deferred beyond Phase 8:
 
 - allow override-key parsing to strip up to two leading `+` characters rather than only one
 - stop silently skipping override lines that the lightweight parser cannot understand; instead raise a dedicated error and skip the affected run cleanly

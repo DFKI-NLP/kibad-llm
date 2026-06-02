@@ -1,5 +1,5 @@
 {
-  "baseline_version": 5,
+  "baseline_version": 6,
   "captured_at": "2026-06-02",
   "implementation_shape": {
     "runtime_entrypoint": "docs/eval-dashboard/index.html",
@@ -67,6 +67,24 @@
       "override parsing semantics",
       "missing prediction id handling",
       "unsupported version rejection"
+    ]
+  },
+  "phase_eight_contract": {
+    "data_module_root": "docs/eval-dashboard/assets/js/data",
+    "data_modules": [
+      "file-loader.js",
+      "git-loader.js",
+      "ingest-runs.js"
+    ],
+    "js_test_files": [
+      "data.file-loader.test.mjs",
+      "data.git-loader.test.mjs",
+      "data.ingest-runs.test.mjs"
+    ],
+    "loader_focus": [
+      "local file path filtering and source-label derivation",
+      "shared run ingestion and duplicate/conflict detection",
+      "github tree URL parsing and recursive file loading"
     ]
   },
   "feature_expectations": {

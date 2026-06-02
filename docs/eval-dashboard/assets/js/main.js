@@ -1,28 +1,16 @@
-import { flattenObject, getValueAtPath, omitTopLevelKeys } from "./utils/flatten.js";
-import { normalizeSortConfig, sortItems } from "./utils/sort.js";
+import { getValueAtPath } from "./utils/flatten.js";
+import { normalizeSortConfig } from "./utils/sort.js";
 import {
   getFigureTitlePrefix,
   sanitizeFigureFilename,
   splitLabelByLastDot,
 } from "./utils/text.js";
-import {
-  collectSuggestionValues,
-  formatRounded,
-  getEffectiveValue,
-  getColumnsWithMultipleValues,
-  getStableObjectSignature,
-  interpolateColor,
-  isMissingValue,
-  meanAndStd,
-  normalizeValue,
-} from "./utils/values.js";
+import { formatRounded, interpolateColor, meanAndStd, normalizeValue } from "./utils/values.js";
 import * as dashboardStore from "./state/store.js";
 import * as selectors from "./state/selectors.js";
-import { parseOverridesYaml } from "./data/parse-overrides.js";
-import {
-  getPredictionIdFromNormalizedPrediction,
-  normalizeImportedJobReturnValue,
-} from "./data/normalize.js";
+import { collectLocalEvaluationEntries } from "./data/file-loader.js";
+import { ingestRunEntries } from "./data/ingest-runs.js";
+import { loadGitHubEntriesFromTreeUrl } from "./data/git-loader.js";
 
 // Central UI state: loaded prediction/evaluation data, current grouping/selection, and per-eval-tab view state.
 const state = dashboardStore.createInitialDashboardState();
@@ -1593,26 +1581,6 @@ function renderEvalSortStatus(activeExperiment = state.activeEvalTab, evalColumn
   evalSortedByLabel.textContent = formatSortLabel(evalTabState.sort, displayEvalColumnName);
   evalResetSortButton.disabled = !evalTabState.sort.length;
 }
-function createConflictingPredictionIdError(predictionId) {
-  const error = new Error(`Conflicting prediction payloads for prediction id: ${predictionId}`);
-  error.name = 'ConflictingPredictionIdError';
-  error.predictionId = predictionId;
-  return error;
-}
-
-function getPredictionContentSignature(prediction) {
-  return selectors.getPredictionContentSignature(prediction);
-}
-
-
-async function readTextFile(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result || ""));
-    reader.onerror = () => reject(reader.error || new Error("Failed to read file."));
-    reader.readAsText(file);
-  });
-}
 
 function getStoredGitHubToken() {
   try {
@@ -1650,10 +1618,6 @@ function clearGitUrlQueryParam() {
   setGitUrlQueryParam("");
 }
 
-function isRelevantEvaluationFilePath(path) {
-  return /(^|\/)\.hydra\/overrides\.yaml$/.test(path) || /(^|\/)job_return_value\.json$/.test(path);
-}
-
 /**
  * Reset load-dependent UI state after new canonical prediction/evaluation data is imported.
  * All prediction/evaluation structures remain selector-derived and are not stored here.
@@ -1688,6 +1652,25 @@ function updateLoadStatusSummary({ candidateRunDirs, loadedCount, skippedDuplica
   ].join("\n");
 }
 
+/**
+ * Apply a shared-ingestion result to canonical dashboard state and refresh derived UI state.
+ *
+ * @param {string} sourceLabel - Loaded source label.
+ * @param {{predictionAdditions: Record<string, object>, evaluationAdditions: Array<object>, failures: Array<{runDir: string, error: Error}>, summary: object}} ingestionResult - Shared ingestion result.
+ */
+function applyIngestionResult(sourceLabel, ingestionResult) {
+  state.loadedFolders.add(sourceLabel);
+  for (const { runDir, error } of ingestionResult.failures) {
+    console.error(`Failed to parse run at ${runDir}`, error);
+  }
+  for (const [predictionId, prediction] of Object.entries(ingestionResult.predictionAdditions)) {
+    state.predictions[predictionId] = prediction;
+  }
+  state.evaluations.push(...ingestionResult.evaluationAdditions);
+  resetDerivedUiStateAfterLoad();
+  updateLoadStatusSummary(ingestionResult.summary);
+}
+
 // Load only single evaluation runs: any selected folder tree can contribute evaluations as long as a run
 // directory contains both job_return_value.json and .hydra/overrides.yaml. predict runs are excluded,
 // while prediction payloads are canonicalized separately and linked via predictionId.
@@ -1697,115 +1680,10 @@ async function loadEvaluationsFromEntries(entries, rootLabel) {
     return;
   }
 
-  state.loadedFolders.add(rootLabel);
-
-  const byPath = new Map();
-  for (const entry of entries) {
-    if (!entry.path) {
-      continue;
-    }
-    byPath.set(entry.path, entry.text);
-  }
-
-  const hydraRunDirs = new Set();
-  const jobRunDirs = new Set();
-  for (const entry of entries) {
-    const rel = entry.path || "";
-    if (/(^|\/)\.hydra\/overrides\.yaml$/.test(rel)) {
-      hydraRunDirs.add(rel.slice(0, -"/.hydra/overrides.yaml".length));
-    }
-    if (/(^|\/)job_return_value\.json$/.test(rel)) {
-      jobRunDirs.add(rel.slice(0, -"/job_return_value.json".length));
-    }
-  }
-
-  const isPredictRunDir = (runDir) => /(^|\/)predict(\/|$)/.test(runDir);
-  const allSeenRunDirs = new Set([...hydraRunDirs, ...jobRunDirs]);
-  let skippedPredictRuns = 0;
-  for (const runDir of allSeenRunDirs) {
-    if (isPredictRunDir(runDir)) {
-      skippedPredictRuns += 1;
-    }
-  }
-
-  const candidateRunDirs = Array.from(hydraRunDirs)
-    .filter((runDir) => jobRunDirs.has(runDir) && !isPredictRunDir(runDir))
-    .sort();
-
-  let loadedCount = 0;
-  let skippedMissingJob = 0;
-  let skippedUnsupportedVersion = 0;
-  let skippedInvalid = 0;
-  let skippedMissingPredictionId = 0;
-  let skippedConflictingPredictionId = 0;
-  let skippedDuplicate = 0;
-  const knownRunDirs = new Set(state.evaluations.map((run) => run.runDir));
-
-  for (const runDir of hydraRunDirs) {
-    if (!jobRunDirs.has(runDir) && !isPredictRunDir(runDir)) {
-      skippedMissingJob += 1;
-    }
-  }
-
-  for (const runDir of candidateRunDirs) {
-    if (knownRunDirs.has(runDir)) {
-      skippedDuplicate += 1;
-      continue;
-    }
-    const jobText = byPath.get(`${runDir}/job_return_value.json`);
-    const overridesText = byPath.get(`${runDir}/.hydra/overrides.yaml`);
-
-    if (!jobText || !overridesText) {
-      continue;
-    }
-
-    try {
-      const job_return_value = JSON.parse(jobText);
-      const evaluationOverrides = parseOverridesYaml(overridesText);
-      const normalizedRun = normalizeImportedJobReturnValue(job_return_value, evaluationOverrides);
-
-      const predictionId = getPredictionIdFromNormalizedPrediction(normalizedRun.prediction);
-      const existingPrediction = getPredictionById(predictionId);
-      if (existingPrediction && getPredictionContentSignature(existingPrediction) !== getPredictionContentSignature(normalizedRun.prediction)) {
-        skippedConflictingPredictionId += 1;
-        console.error(`Failed to parse run at ${runDir}`, createConflictingPredictionIdError(predictionId));
-        continue;
-      }
-      state.predictions[predictionId] = existingPrediction || normalizedRun.prediction;
-
-      state.evaluations.push({
-        runDir,
-        predictionId,
-        jobReturnValue: normalizedRun.evaluation.jobReturnValue,
-        overrides: normalizedRun.evaluation.overrides,
-        data: normalizedRun.evaluation.data,
-      });
-      knownRunDirs.add(runDir);
-      loadedCount += 1;
-    } catch (error) {
-      if (error?.name === "UnsupportedJobReturnValueVersionError") {
-        skippedUnsupportedVersion += 1;
-      } else if (error?.name === 'MissingPredictionIdError') {
-        skippedMissingPredictionId += 1;
-      } else {
-        skippedInvalid += 1;
-      }
-      console.error(`Failed to parse run at ${runDir}`, error);
-    }
-  }
-
-  resetDerivedUiStateAfterLoad();
-  updateLoadStatusSummary({
-    candidateRunDirs: candidateRunDirs.length,
-    loadedCount,
-    skippedDuplicate,
-    skippedPredictRuns,
-    skippedMissingJob,
-    skippedMissingPredictionId,
-    skippedConflictingPredictionId,
-    skippedUnsupportedVersion,
-    skippedInvalid,
-  });
+  applyIngestionResult(rootLabel, ingestRunEntries(entries, {
+    existingPredictions: state.predictions,
+    existingEvaluations: state.evaluations,
+  }));
 }
 
 async function loadEvaluationsFromFiles(files) {
@@ -1815,12 +1693,7 @@ async function loadEvaluationsFromFiles(files) {
     return;
   }
 
-  const rootLabel = files[0].webkitRelativePath.split("/")[0] || "selected folder";
-  const relevantFiles = files.filter((file) => file.webkitRelativePath && isRelevantEvaluationFilePath(file.webkitRelativePath));
-  const entries = await Promise.all(relevantFiles.map(async (file) => ({
-    path: file.webkitRelativePath,
-    text: await readTextFile(file),
-  })));
+  const { rootLabel, entries } = await collectLocalEvaluationEntries(files);
   await loadEvaluationsFromEntries(entries, rootLabel);
 }
 
@@ -1847,114 +1720,6 @@ function setLoadProgress({ completedFiles = 0, totalFiles = 0, completedBytes = 
   loadProgressLabel.textContent = [label, `${fileText}${byteText}`].filter(Boolean).join(" | ");
 }
 
-async function fetchGitHubResource(url, { token = "", accept = "application/vnd.github+json", responseType = "json", allowNotFound = false, statusText = "" } = {}) {
-  const headers = {
-    "Accept": accept,
-    "X-GitHub-Api-Version": "2022-11-28",
-  };
-  if (token) {
-    headers.Authorization = `Bearer ${token}`;
-  }
-  const response = await fetch(url, { headers });
-  if (allowNotFound && response.status === 404) {
-    return null;
-  }
-  if (!response.ok) {
-    let detail = "";
-    try {
-      const errorPayload = await response.json();
-      if (errorPayload?.message) {
-        detail = ` ${errorPayload.message}`;
-      }
-    } catch {
-      try {
-        const errorText = await response.text();
-        if (errorText.trim()) {
-          detail = ` ${errorText.trim()}`;
-        }
-      } catch {
-        // Ignore secondary error parsing failures.
-      }
-    }
-    throw new Error(`${statusText || "GitHub request failed"} (${response.status}).${detail}`.trim());
-  }
-  if (responseType === "text") {
-    return response.text();
-  }
-  if (responseType === "arrayBuffer") {
-    return response.arrayBuffer();
-  }
-  return response.json();
-}
-
-function parseGitHubTreeUrl(rawUrl) {
-  let parsedUrl;
-  try {
-    parsedUrl = new URL(String(rawUrl || "").trim());
-  } catch {
-    throw new Error("Enter a valid GitHub tree URL.");
-  }
-  const hostname = parsedUrl.hostname.replace(/^www\./, "").toLowerCase();
-  if (hostname !== "github.com") {
-    throw new Error("Only github.com tree URLs are supported right now.");
-  }
-  const pathParts = parsedUrl.pathname.split("/").filter(Boolean);
-  if (pathParts.length < 4 || pathParts[2] !== "tree") {
-    throw new Error("Use a GitHub folder URL of the form /OWNER/REPO/tree/REF/path/to/folder.");
-  }
-  return {
-    owner: pathParts[0],
-    repo: pathParts[1].replace(/\.git$/i, ""),
-    refAndPath: pathParts.slice(3).join("/"),
-  };
-}
-
-function looksLikeCommitSha(value) {
-  return /^[0-9a-f]{7,40}$/i.test(String(value || ""));
-}
-
-async function gitHubRefExists(owner, repo, refKind, candidateRef, token) {
-  const encodedOwner = encodeURIComponent(owner);
-  const encodedRepo = encodeURIComponent(repo);
-  const encodedRef = encodeURIComponent(candidateRef);
-  const url = `https://api.github.com/repos/${encodedOwner}/${encodedRepo}/git/ref/${refKind}/${encodedRef}`;
-  const result = await fetchGitHubResource(url, {
-    token,
-    allowNotFound: true,
-    statusText: `GitHub ref lookup failed for ${candidateRef}`,
-  });
-  return Boolean(result);
-}
-
-async function resolveGitHubRefAndFolder(owner, repo, refAndPath, token) {
-  const segments = String(refAndPath || "").split("/").filter(Boolean);
-  if (!segments.length) {
-    throw new Error("The GitHub tree URL does not include a branch, tag, or commit SHA.");
-  }
-
-  for (let segmentCount = segments.length; segmentCount >= 1; segmentCount -= 1) {
-    const candidateRef = segments.slice(0, segmentCount).join("/");
-    const folderPath = segments.slice(segmentCount).join("/");
-    if (await gitHubRefExists(owner, repo, "heads", candidateRef, token)) {
-      return { ref: candidateRef, folderPath, refType: "branch" };
-    }
-    if (await gitHubRefExists(owner, repo, "tags", candidateRef, token)) {
-      return { ref: candidateRef, folderPath, refType: "tag" };
-    }
-  }
-
-  const commitCandidate = segments[0];
-  if (looksLikeCommitSha(commitCandidate)) {
-    return {
-      ref: commitCandidate,
-      folderPath: segments.slice(1).join("/"),
-      refType: "commit",
-    };
-  }
-
-  throw new Error("Could not resolve a matching GitHub branch, tag, or commit SHA from the URL.");
-}
-
 function formatBytes(byteCount) {
   const value = Number(byteCount || 0);
   if (!Number.isFinite(value) || value <= 0) {
@@ -1971,113 +1736,6 @@ function formatBytes(byteCount) {
   return `${size.toFixed(precision)} ${units[unitIndex]}`;
 }
 
-function buildGitHubContentsUrl(owner, repo, path, ref) {
-  const encodedOwner = encodeURIComponent(owner);
-  const encodedRepo = encodeURIComponent(repo);
-  const baseUrl = `https://api.github.com/repos/${encodedOwner}/${encodedRepo}/contents${path ? `/${path.split("/").filter(Boolean).map((segment) => encodeURIComponent(segment)).join("/")}` : ""}`;
-  const url = new URL(baseUrl);
-  url.searchParams.set("ref", ref);
-  return url.toString();
-}
-
-function normalizeFolderPath(folderPath) {
-  return String(folderPath || "").replace(/^\/+|\/+$/g, "");
-}
-
-async function listGitHubFolderContentsRecursive(owner, repo, ref, folderPath, token) {
-  const normalizedFolderPath = normalizeFolderPath(folderPath);
-  const pendingDirs = [normalizedFolderPath];
-  const relevantFiles = [];
-  let scannedDirs = 0;
-
-  while (pendingDirs.length) {
-    const currentDir = pendingDirs.pop();
-    updateLoadStatusStage("Enumerating GitHub folder", [
-      `${owner}/${repo}@${ref}`,
-      `Folder: ${normalizedFolderPath || "."}`,
-      `Directories scanned: ${scannedDirs}`,
-      `Relevant files found: ${relevantFiles.length}`,
-    ]);
-    const payload = await fetchGitHubResource(buildGitHubContentsUrl(owner, repo, currentDir, ref), {
-      token,
-      statusText: `GitHub directory listing failed for ${currentDir || "/"}`,
-    });
-    const items = Array.isArray(payload) ? payload : [payload];
-    scannedDirs += 1;
-    for (const item of items) {
-      if (item.type === "dir") {
-        pendingDirs.push(item.path);
-      } else if (item.type === "file" && isRelevantEvaluationFilePath(item.path)) {
-        relevantFiles.push(item);
-      }
-    }
-  }
-
-  return relevantFiles.sort((a, b) => a.path.localeCompare(b.path));
-}
-
-async function fetchGitHubFileText(apiUrl, ref, token) {
-  const url = new URL(apiUrl);
-  url.searchParams.set("ref", ref);
-  return fetchGitHubResource(url.toString(), {
-    token,
-    accept: "application/vnd.github.raw+json",
-    responseType: "text",
-    statusText: `GitHub file fetch failed for ${url.pathname}`,
-  });
-}
-
-async function fetchGitHubEntriesWithProgress(files, { ref, token, sourceLabel, folderPath }) {
-  const normalizedFolderPath = normalizeFolderPath(folderPath);
-  const prefix = normalizedFolderPath ? `${normalizedFolderPath}/` : "";
-  const totalFiles = files.length;
-  const totalBytes = files.reduce((sum, file) => sum + Math.max(0, Number(file.size || 0)), 0);
-  let completedFiles = 0;
-  let completedBytes = 0;
-  const concurrency = Math.min(8, totalFiles || 1);
-  const results = new Array(totalFiles);
-  let nextIndex = 0;
-
-  setLoadProgress({
-    completedFiles,
-    totalFiles,
-    completedBytes,
-    totalBytes,
-    label: "Fetching GitHub files",
-  });
-
-  async function worker() {
-    while (true) {
-      const currentIndex = nextIndex;
-      nextIndex += 1;
-      if (currentIndex >= totalFiles) {
-        return;
-      }
-      const file = files[currentIndex];
-      const relativePath = prefix && file.path.startsWith(prefix)
-        ? file.path.slice(prefix.length)
-        : file.path;
-      const text = await fetchGitHubFileText(file.url, ref, token);
-      results[currentIndex] = {
-        path: `${sourceLabel}/${relativePath}`,
-        text,
-      };
-      completedFiles += 1;
-      completedBytes += Math.max(0, Number(file.size || 0));
-      setLoadProgress({
-        completedFiles,
-        totalFiles,
-        completedBytes,
-        totalBytes,
-        label: "Fetching GitHub files",
-      });
-    }
-  }
-
-  await Promise.all(Array.from({ length: concurrency }, () => worker()));
-  return results;
-}
-
 async function loadEvaluationsFromGitUrl(rawUrl) {
   const trimmedUrl = String(rawUrl || "").trim();
   if (!trimmedUrl) {
@@ -2088,48 +1746,28 @@ async function loadEvaluationsFromGitUrl(rawUrl) {
 
   const token = String(githubTokenInput.value || "").trim();
   persistGitHubToken(token);
-  const parsed = parseGitHubTreeUrl(trimmedUrl);
   hideLoadProgress();
-  updateLoadStatusStage("Resolving GitHub ref", [trimmedUrl]);
-
-  const { ref, folderPath, refType } = await resolveGitHubRefAndFolder(parsed.owner, parsed.repo, parsed.refAndPath, token);
-  const sourcePath = folderPath || ".";
-  const sourceLabel = `github:${parsed.owner}/${parsed.repo}@${ref}:${sourcePath}`;
-
-  updateLoadStatusStage("Resolved GitHub ref", [
-    `Repository: ${parsed.owner}/${parsed.repo}`,
-    `Ref (${refType}): ${ref}`,
-    `Folder: ${sourcePath}`,
-  ]);
-
-  const files = await listGitHubFolderContentsRecursive(parsed.owner, parsed.repo, ref, folderPath, token);
-  if (!files.length) {
+  const gitLoadResult = await loadGitHubEntriesFromTreeUrl(trimmedUrl, {
+    token,
+    onStatus: ({ title, details }) => updateLoadStatusStage(title, details),
+    onProgress: (progress) => setLoadProgress(progress),
+  });
+  if (!gitLoadResult.files.length) {
     hideLoadProgress();
-    loadStatus.textContent = `No matching run files found in ${sourceLabel}.`;
+    loadStatus.textContent = `No matching run files found in ${gitLoadResult.sourceLabel}.`;
     return;
   }
 
-  updateLoadStatusStage("Preparing GitHub file downloads", [
-    sourceLabel,
-    `Relevant files found: ${files.length}`,
-  ]);
-  const entries = await fetchGitHubEntriesWithProgress(files, {
-    ref,
-    token,
-    sourceLabel,
-    folderPath,
-  });
-
   updateLoadStatusStage("Loading evaluation runs from GitHub files", [
-    sourceLabel,
-    `Fetched files: ${entries.length}`,
+    gitLoadResult.sourceLabel,
+    `Fetched files: ${gitLoadResult.entries.length}`,
   ]);
-  await loadEvaluationsFromEntries(entries, sourceLabel);
+  await loadEvaluationsFromEntries(gitLoadResult.entries, gitLoadResult.sourceLabel);
   setLoadProgress({
-    completedFiles: entries.length,
-    totalFiles: entries.length,
-    completedBytes: files.reduce((sum, file) => sum + Math.max(0, Number(file.size || 0)), 0),
-    totalBytes: files.reduce((sum, file) => sum + Math.max(0, Number(file.size || 0)), 0),
+    completedFiles: gitLoadResult.files.length,
+    totalFiles: gitLoadResult.files.length,
+    completedBytes: gitLoadResult.totalBytes,
+    totalBytes: gitLoadResult.totalBytes,
     label: "GitHub fetch complete",
   });
 }
