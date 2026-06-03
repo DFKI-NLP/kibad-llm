@@ -127,27 +127,27 @@ The most relevant test locations are:
 
 ## Future Work
 
-The modularization refactor is complete through the current orchestration cleanup. Remaining work is optional and should be driven by actual maintenance needs.
+The modularization refactor is complete through the current orchestration cleanup. Remaining work should be driven by actual maintenance needs.
 
-Browser-level coverage:
+Known dashboard limitations:
+
+- Override keys currently strip only one leading `+`; Hydra overrides with two leading `+` may not be normalized as intended.
+- Unsupported override lines are currently ignored instead of producing a dedicated parser error for the affected run.
+- Prediction metadata is currently shown without the `prediction.` prefix, which makes it harder to distinguish from evaluation metadata in grouping controls and figure labels (when `shorten labels` is disabled).
+- Load-summary error categories are still coarse for some parse/normalization failures.
+- Missing prediction ids are currently handled as skipped runs; this policy should be revisited.
+- The current `MutationObserver`-driven download-button refresh should be reviewed against an explicit render-lifecycle update.
+
+Testing and accessibility:
 
 - Add browser-level UI smoke tests if dashboard interactions start changing often enough to justify Playwright or an equivalent browser harness.
 - Cover representative user flows if browser tests are added: local fixture loading, GitHub tree loading with mocked network responses, prediction/evaluation tab switching, plot rendering, and figure-export enablement.
-
-Parser and data-policy cleanup:
-
-- Decide whether override-key parsing should strip up to two leading `+` characters instead of the current single leading `+`.
-- Decide whether unsupported override lines should raise a dedicated parser error and skip the affected run cleanly instead of being silently ignored.
-- Re-integrate prefixing prediction metadata keys with `prediction.` to better disambiguate them from evaluation metadata (this was unintentionally removed during the normalization refactor).
-- Revisit the parse/normalization error taxonomy if load summaries need more precise failure categories.
-- Revisit whether missing prediction ids should remain tolerated as skipped runs or become disallowed entirely.
-- Evaluate whether a real YAML parser is worth adding as a browser-runtime dependency while preserving the no-build default architecture.
-
-Accessibility and export cleanup:
-
 - Run a dedicated accessibility pass for keyboard navigation, focus management, ARIA semantics for tabs/expanders/select-all controls, and copy/export feedback.
+
+Dependency decisions:
+
+- Evaluate whether a real YAML parser is worth adding as a browser-runtime dependency while preserving the no-build default architecture.
 - Re-evaluate whether the custom ZIP/CRC/export helpers should remain custom or be replaced with a maintained dependency under the repository's dependency policy and no-build constraints.
-- Re-evaluate whether the current `MutationObserver`-driven download-button refresh should remain DOM-observer-based or be replaced with an explicit render-lifecycle update.
 
 Entrypoint maintenance:
 
