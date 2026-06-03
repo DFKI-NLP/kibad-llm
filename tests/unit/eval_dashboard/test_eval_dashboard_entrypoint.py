@@ -8,6 +8,7 @@ from tests import FIXTURE_DATA_ROOT
 DOCS_ROOT = PROJ_ROOT / "docs"
 DOCS_INDEX = DOCS_ROOT / "index.md"
 DASHBOARD_ENTRY = DOCS_ROOT / "eval-dashboard" / "index.html"
+DASHBOARD_DOCS_PAGE = DOCS_ROOT / "eval-dashboard.md"
 DASHBOARD_COMPAT = DOCS_ROOT / "eval-dashboard.html"
 DASHBOARD_CSS_ROOT = DOCS_ROOT / "eval-dashboard" / "assets" / "css"
 DASHBOARD_JS_ROOT = DOCS_ROOT / "eval-dashboard" / "assets" / "js"
@@ -75,8 +76,9 @@ def _load_properdocs() -> dict:
 
 
 def test_dashboard_entrypoint_exists() -> None:
-    """Ensure the new dashboard entrypoint and compatibility shim both exist."""
+    """Ensure the dashboard documentation page, runtime entrypoint, and compatibility shim exist."""
 
+    assert DASHBOARD_DOCS_PAGE.is_file()
     assert DASHBOARD_ENTRY.is_file()
     assert DASHBOARD_COMPAT.is_file()
 
@@ -143,17 +145,26 @@ def test_phase_eleven_dashboard_js_plot_modules_exist() -> None:
         assert (PLOTS_JS_ROOT / file_name).is_file()
 
 
-def test_properdocs_nav_points_to_new_dashboard_entry() -> None:
-    """Ensure docs navigation points to the folder-based dashboard entrypoint."""
+def test_properdocs_nav_points_to_dashboard_docs_page() -> None:
+    """Ensure docs navigation points to the dashboard documentation page."""
 
     config = _load_properdocs()
-    assert {"Evaluation dashboard": "eval-dashboard/index.html"} in config["nav"]
+    assert {"Evaluation dashboard": "eval-dashboard.md"} in config["nav"]
 
 
-def test_docs_index_links_point_to_new_dashboard_entry() -> None:
-    """Ensure docs landing-page links target the new dashboard path only."""
+def test_docs_index_links_point_to_dashboard_docs_page() -> None:
+    """Ensure docs landing-page links target the dashboard documentation page."""
 
     text = DOCS_INDEX.read_text(encoding="utf-8")
+    assert "(eval-dashboard.md)" in text
+    assert "(eval-dashboard.html)" not in text
+
+
+def test_dashboard_docs_page_links_to_runtime_entrypoint() -> None:
+    """Ensure the documentation page keeps a prominent link to the runtime dashboard."""
+
+    text = DASHBOARD_DOCS_PAGE.read_text(encoding="utf-8")
+    assert "**Open the dashboard:**" in text
     assert "(eval-dashboard/index.html)" in text
     assert "(eval-dashboard.html)" not in text
 

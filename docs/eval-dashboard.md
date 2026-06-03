@@ -4,6 +4,8 @@ The evaluation dashboard is a static documentation page for inspecting evaluatio
 
 Use it to load one or more evaluation-run folders, compare prediction groups, inspect evaluation outputs, visualize metric families, and export the visible plot figures.
 
+**Open the dashboard:** [docs/eval-dashboard/index.html](eval-dashboard/index.html)
+
 ## Running the Dashboard
 
 Open `docs/eval-dashboard/index.html` through the docs site or directly from the repository checkout.
