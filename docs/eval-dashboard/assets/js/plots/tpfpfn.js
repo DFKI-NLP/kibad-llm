@@ -6,6 +6,7 @@ import { formatRounded, interpolateColor, normalizeValue } from "../utils/values
 import {
   TP_FP_FN_KEYS,
   getGroupLabelForFields,
+  getPlotDisplayLabel,
   plotSortCollator,
 } from "./shared.js";
 import { expandMetricFieldCollectionEvaluation } from "./confusion.js";
@@ -268,6 +269,7 @@ export function buildTpFpFnTabMap({
   confusionTabsBy,
   getEvaluationEffectiveValue,
   displayPlotGroupFieldName,
+  shortenLabels = false,
 }) {
   const tabMap = new Map();
   const normalizedExperimentEvaluations = normalizeTpFpFnLikeEvaluations(experimentEvaluations);
@@ -290,7 +292,10 @@ export function buildTpFpFnTabMap({
       const rawField = getEvaluationEffectiveValue(evaluation, "metric.field", evalTabState);
       const fieldLabel = rawField || "(missing metric.field)";
       if (!tabMap.has(fieldLabel)) {
-        tabMap.set(fieldLabel, { label: fieldLabel, plots: [] });
+        tabMap.set(fieldLabel, {
+          label: getPlotDisplayLabel(fieldLabel, { shortenLabels }),
+          plots: [],
+        });
       }
     }
 

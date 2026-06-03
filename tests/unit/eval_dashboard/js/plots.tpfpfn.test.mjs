@@ -68,12 +68,12 @@ test("tpfpfn helpers expand collection metrics, build tab maps, and summarize ce
       runDir: "run-a",
       jobReturnValue: { type: "TpFpFnCollectorCollection" },
       data: {
-        field_a: { doc: { tp: ["A"] } },
-        field_b: { doc: { fp: ["B"] } },
+        "outer.field_a": { doc: { tp: ["A"] } },
+        "outer.field_b": { doc: { fp: ["B"] } },
       },
     },
   ]);
-  assert.deepEqual(expanded.map((evaluation) => evaluation.overrides["metric.field"]), ["field_a", "field_b"]);
+  assert.deepEqual(expanded.map((evaluation) => evaluation.overrides["metric.field"]), ["outer.field_a", "outer.field_b"]);
 
   const evaluations = expanded.map((evaluation) => ({
     ...evaluation,
@@ -87,8 +87,10 @@ test("tpfpfn helpers expand collection metrics, build tab maps, and summarize ce
     confusionTabsBy: "metric_field",
     getEvaluationEffectiveValue,
     displayPlotGroupFieldName: (field) => field,
+    shortenLabels: true,
   });
-  assert.deepEqual(Array.from(tabMap.keys()), ["field_a", "field_b"]);
+  assert.deepEqual(Array.from(tabMap.keys()), ["outer.field_a", "outer.field_b"]);
+  assert.deepEqual(Array.from(tabMap.values()).map((entry) => entry.label), ["field_a", "field_b"]);
 
   const summary = buildTpFpFnCellSummary(
     "doc",

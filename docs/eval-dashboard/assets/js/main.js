@@ -2273,6 +2273,7 @@ function renderEvaluationPlots(
       confusionTabsBy: state.confusionTabsBy,
       getEvaluationEffectiveValue,
       displayPlotGroupFieldName,
+      shortenLabels: state.plotShortenLabels,
     });
     const sortedTabKeys = Array.from(tpfpfnTabMap.keys()).sort((a, b) =>
       tpfpfnTabMap.get(a).label.localeCompare(tpfpfnTabMap.get(b).label)
