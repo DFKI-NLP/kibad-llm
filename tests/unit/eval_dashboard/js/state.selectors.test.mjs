@@ -18,11 +18,13 @@ import {
   getEvaluationContext,
   getMetricTypeForEvaluationContext,
   getPlotGroups,
+  getPredictionQualifiedDisplayName,
   getPredictionContentSignature,
   getPredictionGroups,
   getPredictionViews,
   getSelectedEvaluationGroups,
   getSortedPredictionGroups,
+  stripPredictionFieldPrefix,
 } from "../../../../docs/eval-dashboard/assets/js/state/selectors.js";
 
 function buildState() {
@@ -62,6 +64,29 @@ function buildState() {
   ];
   return state;
 }
+
+/**
+ * Ensure prediction table labels stay prediction-local while mixed
+ * prediction/evaluation labels keep the prediction source namespace.
+ */
+test("selectors expose separate local and qualified prediction metadata display labels", () => {
+  assert.equal(
+    stripPredictionFieldPrefix("prediction.overrides.model"),
+    "model"
+  );
+  assert.equal(
+    stripPredictionFieldPrefix("prediction.job_return_value.output_file"),
+    "output_file"
+  );
+  assert.equal(
+    getPredictionQualifiedDisplayName("prediction.overrides.model"),
+    "prediction.model"
+  );
+  assert.equal(
+    getPredictionQualifiedDisplayName("prediction.job_return_value.output_file"),
+    "prediction.output_file"
+  );
+});
 
 /**
  * Ensure prediction views, grouping, and sorting stay behavior-equivalent after selector extraction.
