@@ -1478,6 +1478,8 @@ The current branch now matches Phase 10B:
 - `tests/unit/eval_dashboard/js/ui.table-shared.test.mjs` now also locks in the shared displayed-selection state plus the shared `select` and static control-header rendering helpers introduced during Phase 10B
 - `tests/unit/eval_dashboard/test_eval_dashboard_entrypoint.py`, `tests/unit/eval_dashboard/test_eval_dashboard_baseline_contract.py`, `tests/unit/eval_dashboard/js/README.md`, and `tests/fixtures/eval_dashboard/baseline/baseline-summary.json` now record the Phase 10B table-renderer contract explicitly
 
+Phase 10B also carries one small intentional accessibility improvement that should remain documented explicitly: the shared evaluation `select` header control now applies an explicit `aria-label` to the select-all checkbox, improving accessibility compared with the old inline evaluation select-all rendering.
+
 ### Tests to add in this phase
 
 Prefer JS-native tests for renderer-adjacent helpers that stay DOM-free.

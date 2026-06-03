@@ -35,8 +35,14 @@ import {
   getNextSortConfig as getSharedNextSortConfig,
   updateStickyControlColumnOffsets,
 } from "./ui/table-shared.js";
-import { renderPredictionTable } from "./ui/prediction-table.js";
-import { renderEvaluationTable } from "./ui/evaluation-table.js";
+import {
+  buildPredictionColumnSections,
+  renderPredictionTable,
+} from "./ui/prediction-table.js";
+import {
+  buildEvaluationColumnSections,
+  renderEvaluationTable,
+} from "./ui/evaluation-table.js";
 import {
   bindDelegatedTabSelection,
   buildCountTabButtonModels,
@@ -916,15 +922,6 @@ function setGroupByFields(columns) {
 }
 
 
-function getEvalColumnSections(evalColumns) {
-  const overrides = evalColumns.filter((column) => !isJobReturnValueColumn(column)).sort();
-  const jobReturnValueColumns = evalColumns.filter((column) => isJobReturnValueColumn(column)).sort();
-  return [
-    { label: "overrides", columns: overrides },
-    { label: "job_return_value", columns: jobReturnValueColumns },
-  ].filter((section) => section.columns.length > 0);
-}
-
 /**
  * Return the evaluation columns for the currently active evaluation experiment.
  */
@@ -1181,38 +1178,6 @@ confusionTabsByPredictionGroupButton.addEventListener("click", () => {
   renderEvaluations();
 });
 
-/**
- * Split current prediction columns into UI sections for rendering the prediction table header.
- */
-function getPredictionColumnSections(predictionColumns = getCurrentPredictionColumns()) {
-  const jobReturnValueColumns = predictionColumns
-    .filter((column) => column.startsWith(PREDICTION_JOB_RETURN_VALUE_PREFIX))
-    .sort();
-  const overrideColumns = predictionColumns
-    .filter((column) => column.startsWith(PREDICTION_OVERRIDES_PREFIX))
-    .sort();
-  const otherColumns = predictionColumns
-    .filter(
-      (column) =>
-        !column.startsWith(PREDICTION_JOB_RETURN_VALUE_PREFIX) &&
-        !column.startsWith(PREDICTION_OVERRIDES_PREFIX)
-    )
-    .sort();
-  return [
-    { label: "overrides", columns: overrideColumns },
-    { label: "job_return_value", columns: jobReturnValueColumns },
-    { label: "other", columns: otherColumns },
-  ].filter((section) => section.columns.length > 0);
-}
-
-function formatDistinctValueDisplay(values) {
-  if (values.size <= 1) {
-    return values.values().next().value || "";
-  }
-  return `(mixed: ${values.size} values)`;
-}
-
-
 function setPredictionSort(column, event = {}) {
   state.predictionSort = getNextSortConfig(state.predictionSort, column, { append: event.shiftKey });
   renderPredictions();
@@ -1453,7 +1418,11 @@ function renderPredictions() {
       ? state.groupByFields.map((field) => displayPredictionColumnName(field)).join(", ")
       : "(none; one row per unique prediction)");
 
-  const predictionSections = getPredictionColumnSections();
+  const predictionSections = buildPredictionColumnSections({
+    predictionColumns: getCurrentPredictionColumns(predictionViews),
+    predictionJobReturnValuePrefix: PREDICTION_JOB_RETURN_VALUE_PREFIX,
+    predictionOverridesPrefix: PREDICTION_OVERRIDES_PREFIX,
+  });
   const orderedPredictionColumns = predictionSections.flatMap((section) => section.columns);
   renderGroupByButtonState(
     {
@@ -3484,7 +3453,9 @@ function renderEvaluations() {
     evalTabState,
     evaluationGroups,
   } = evaluationContext;
-  const evalColumnSections = getEvalColumnSections(evalColumns);
+  const evalColumnSections = buildEvaluationColumnSections(evalColumns, {
+    isJobReturnValueColumn,
+  });
   const orderedEvalColumns = evalColumnSections.flatMap((section) => section.columns);
   evalTabState.sort = renderSortStatus({
     labelElement: evalSortedByLabel,

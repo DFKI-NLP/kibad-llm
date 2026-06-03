@@ -13,6 +13,42 @@ import {
 } from "./table-shared.js";
 
 /**
+ * Split ordered prediction columns into the table header sections rendered by the
+ * prediction table.
+ *
+ * @param {object} options - Section-builder inputs.
+ * @param {Iterable<string>} options.predictionColumns - Prediction columns to organize.
+ * @param {string} options.predictionJobReturnValuePrefix - Prefix for prediction job-return-value fields.
+ * @param {string} options.predictionOverridesPrefix - Prefix for prediction override fields.
+ * @returns {Array<{label: string, columns: string[]}>} Ordered non-empty section models.
+ */
+export function buildPredictionColumnSections({
+  predictionColumns,
+  predictionJobReturnValuePrefix,
+  predictionOverridesPrefix,
+}) {
+  const resolvedColumns = Array.from(predictionColumns || []);
+  const jobReturnValueColumns = resolvedColumns
+    .filter((column) => column.startsWith(predictionJobReturnValuePrefix))
+    .sort();
+  const overrideColumns = resolvedColumns
+    .filter((column) => column.startsWith(predictionOverridesPrefix))
+    .sort();
+  const otherColumns = resolvedColumns
+    .filter(
+      (column) =>
+        !column.startsWith(predictionJobReturnValuePrefix) &&
+        !column.startsWith(predictionOverridesPrefix)
+    )
+    .sort();
+  return [
+    { label: "overrides", columns: overrideColumns },
+    { label: "job_return_value", columns: jobReturnValueColumns },
+    { label: "other", columns: otherColumns },
+  ].filter((section) => section.columns.length > 0);
+}
+
+/**
  * Build the plain row model for one grouped prediction row.
  *
  * @param {object} options - Prediction-group row inputs.

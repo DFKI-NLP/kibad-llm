@@ -171,8 +171,10 @@ def test_main_module_delegates_per_column_group_by_toggle_rendering_to_table_mod
     prediction_table_js = _prediction_table_js()
     evaluation_table_js = _evaluation_table_js()
 
-    assert 'renderPredictionTable } from "./ui/prediction-table.js"' in main_js
-    assert 'renderEvaluationTable } from "./ui/evaluation-table.js"' in main_js
+    assert 'from "./ui/prediction-table.js"' in main_js
+    assert "renderPredictionTable," in main_js
+    assert 'from "./ui/evaluation-table.js"' in main_js
+    assert "renderEvaluationTable," in main_js
     assert "createGroupByToggleControl," not in main_js
     assert main_js.count("createGroupByToggleControl({") == 0
     assert prediction_table_js.count("createGroupByToggleControl({") == 1
@@ -181,6 +183,23 @@ def test_main_module_delegates_per_column_group_by_toggle_rendering_to_table_mod
     assert 'toggle.title = "Use this column for grouping"' not in main_js
     assert "toggleCb.checked =" not in main_js
     assert 'toggleCb.addEventListener("change"' not in main_js
+
+
+def test_main_module_delegates_table_section_builders_to_table_modules() -> None:
+    """Ensure `main.js` no longer owns prediction/evaluation header-section builders."""
+
+    main_js = _main_js()
+    prediction_table_js = _prediction_table_js()
+    evaluation_table_js = _evaluation_table_js()
+
+    assert "function getPredictionColumnSections(" not in main_js
+    assert "function getEvalColumnSections(" not in main_js
+    assert "buildPredictionColumnSections," in main_js
+    assert "buildEvaluationColumnSections," in main_js
+    assert "const predictionSections = buildPredictionColumnSections({" in main_js
+    assert "const evalColumnSections = buildEvaluationColumnSections(evalColumns, {" in main_js
+    assert "export function buildPredictionColumnSections(" in prediction_table_js
+    assert "export function buildEvaluationColumnSections(" in evaluation_table_js
 
 
 def test_main_module_delegates_eval_json_pane_rendering_to_phase_ten_a_helper() -> None:

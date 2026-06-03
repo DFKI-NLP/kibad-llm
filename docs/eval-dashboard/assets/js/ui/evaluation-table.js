@@ -14,6 +14,25 @@ import {
 } from "./table-shared.js";
 
 /**
+ * Split ordered evaluation columns into the table header sections rendered by the
+ * evaluation table.
+ *
+ * @param {Iterable<string>} evalColumns - Evaluation columns to organize.
+ * @param {object} options - Section-builder callbacks.
+ * @param {(column: string) => boolean} options.isJobReturnValueColumn - Job-return-value predicate.
+ * @returns {Array<{label: string, columns: string[]}>} Ordered non-empty section models.
+ */
+export function buildEvaluationColumnSections(evalColumns, { isJobReturnValueColumn }) {
+  const resolvedColumns = Array.from(evalColumns || []);
+  const overrides = resolvedColumns.filter((column) => !isJobReturnValueColumn(column)).sort();
+  const jobReturnValueColumns = resolvedColumns.filter((column) => isJobReturnValueColumn(column)).sort();
+  return [
+    { label: "overrides", columns: overrides },
+    { label: "job_return_value", columns: jobReturnValueColumns },
+  ].filter((section) => section.columns.length > 0);
+}
+
+/**
  * Build the plain row model for one grouped evaluation row.
  *
  * @param {object} options - Evaluation-group row inputs.

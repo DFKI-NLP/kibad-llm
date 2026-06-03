@@ -144,8 +144,8 @@
       "ui.evaluation-table.test.mjs"
     ],
     "focus": [
-      "prediction grouped-row and member-row view-model helpers",
-      "evaluation grouped-row and member-row view-model helpers",
+      "prediction table section-building and renderer integration",
+      "evaluation table section-building and renderer integration",
       "shared select-all and static control-header rendering"
     ]
   },

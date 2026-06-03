@@ -392,8 +392,8 @@ def test_current_runtime_matches_phase_ten_b_table_contract() -> None:
     for file_name in phase_ten_b_contract["js_test_files"]:
         assert (JS_TEST_ROOT / file_name).is_file()
     assert set(phase_ten_b_contract["focus"]) == {
-        "prediction grouped-row and member-row view-model helpers",
-        "evaluation grouped-row and member-row view-model helpers",
+        "prediction table section-building and renderer integration",
+        "evaluation table section-building and renderer integration",
         "shared select-all and static control-header rendering",
     }
 
