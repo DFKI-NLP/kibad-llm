@@ -1,4 +1,4 @@
-"""Baseline artifact contract tests for the eval-dashboard baseline plus Phase 5 to Phase 11 JS contracts."""
+"""Baseline artifact contract tests for the eval-dashboard baseline plus Phase 5 to Phase 12 JS contracts."""
 
 import json
 
@@ -287,6 +287,27 @@ def test_baseline_summary_includes_phase_eleven_plot_contract() -> None:
     }
 
 
+def test_baseline_summary_includes_phase_twelve_orchestration_contract() -> None:
+    """Ensure the baseline artifact exposes the Phase 12 plot-dashboard adapter contract."""
+
+    summary = _baseline_summary()
+    phase_twelve_contract = summary["phase_twelve_contract"]
+
+    assert (
+        phase_twelve_contract["plot_dashboard_module"]
+        == "docs/eval-dashboard/assets/js/plots/dashboard.js"
+    )
+    assert phase_twelve_contract["main_js_role"] == "dashboard orchestration entrypoint"
+    assert set(phase_twelve_contract["js_test_files"]) == {
+        "plots.dashboard.test.mjs",
+    }
+    assert set(phase_twelve_contract["focus"]) == {
+        "main.js delegates dashboard plot rendering, plot-control synchronization, tooltip wiring, and figure export to plots/dashboard.js",
+        "plots/dashboard.js adapts the extracted Phase 11 plot modules to dashboard state and DOM refs",
+        "dashboard adapter seams are covered by Node.js unit tests",
+    }
+
+
 def test_current_runtime_matches_phase_six_state_contract() -> None:
     """Ensure the extracted Phase 6 state modules and selector/store tests exist and are wired into main.js."""
 
@@ -424,15 +445,18 @@ def test_current_runtime_matches_phase_ten_b_table_contract() -> None:
 
 
 def test_current_runtime_matches_phase_eleven_plot_contract() -> None:
-    """Ensure the extracted Phase 11 plot modules and JS tests exist and are wired into main.js."""
+    """Ensure the extracted Phase 11 plot modules and JS tests exist and are wired into the plot runtime."""
 
     summary = _baseline_summary()
     phase_eleven_contract = summary["phase_eleven_contract"]
     main_js = _main_js_entry()
+    plot_runtime_js = "\n".join(
+        path.read_text(encoding="utf-8") for path in PLOTS_JS_ROOT.glob("*.js")
+    )
 
     for file_name in phase_eleven_contract["plot_modules"]:
         assert (PLOTS_JS_ROOT / file_name).is_file()
-        assert f"./plots/{file_name}" in main_js
+        assert f"./plots/{file_name}" in main_js or f"./{file_name}" in plot_runtime_js
     for file_name in phase_eleven_contract["js_test_files"]:
         assert (JS_TEST_ROOT / file_name).is_file()
     assert set(phase_eleven_contract["focus"]) == {
@@ -443,6 +467,41 @@ def test_current_runtime_matches_phase_eleven_plot_contract() -> None:
         "TP/FP/FN collection expansion, aggregation, filtering, tab maps, palettes, and copy summaries",
         "figure filename derivation, SVG export helpers, CRC32, and ZIP archive creation",
     }
+
+
+def test_current_runtime_matches_phase_twelve_orchestration_contract() -> None:
+    """Ensure Phase 12 keeps main.js at orchestration level and tests the plot-dashboard adapter."""
+
+    summary = _baseline_summary()
+    phase_twelve_contract = summary["phase_twelve_contract"]
+    main_js = _main_js_entry()
+    dashboard_js = (PLOTS_JS_ROOT / "dashboard.js").read_text(encoding="utf-8")
+
+    assert (PLOTS_JS_ROOT / "dashboard.js").is_file()
+    assert "./plots/dashboard.js" in main_js
+    assert "renderEvaluationPlotsForDashboard({" in main_js
+    assert "downloadVisiblePlotFigures({" in main_js
+    assert "renderDashboardPlotControls({" in main_js
+    assert "renderPlotControls," not in main_js
+    assert "renderPlotGroupBarChips," not in main_js
+    assert "renderPlotTabsAndGrid as renderSharedPlotTabsAndGrid" not in main_js
+    assert "function renderPlotTabsAndGrid(" not in main_js
+    assert "buildConfusionTabMap(" not in main_js
+    assert "createConfusionMatrixHeatmapSvg(" not in main_js
+    assert "createTpFpFnCombinedMatrixSvg(" not in main_js
+    assert "downloadVisibleFigures(" not in main_js
+
+    for imported_module in (
+        "./bars.js",
+        "./confusion.js",
+        "./export.js",
+        "./legend.js",
+        "./shared.js",
+        "./tpfpfn.js",
+    ):
+        assert imported_module in dashboard_js
+    for file_name in phase_twelve_contract["js_test_files"]:
+        assert (JS_TEST_ROOT / file_name).is_file()
 
 
 def test_current_runtime_matches_phase_five_utility_contract() -> None:

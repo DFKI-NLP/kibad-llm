@@ -85,7 +85,7 @@ def test_main_module_keeps_query_param_bootstrap_delegated_to_session_helpers() 
 def test_main_module_calls_phase_ten_a_tab_helpers_directly_without_local_wrapper_functions() -> (
     None
 ):
-    """Ensure `main.js` uses the extracted tab helper directly instead of new pass-through wrappers."""
+    """Ensure `main.js` uses shared tab helpers directly for top-level tabs only."""
 
     main_js = _main_js()
 
@@ -97,11 +97,11 @@ def test_main_module_calls_phase_ten_a_tab_helpers_directly_without_local_wrappe
     assert main_js.count("bindDelegatedTabSelection({") == 2
     assert "buildCountTabButtonModels," in main_js
     assert "renderTabButtons," in main_js
-    assert "renderPlotTabsAndGrid as renderSharedPlotTabsAndGrid" in main_js
-    assert main_js.count("renderTabButtons({") == 3
-    assert main_js.count("buildCountTabButtonModels(") == 3
+    assert "renderPlotTabsAndGrid as renderSharedPlotTabsAndGrid" not in main_js
+    assert main_js.count("renderTabButtons({") == 1
+    assert main_js.count("buildCountTabButtonModels(") == 1
     assert "buildTabButtonModels(" not in main_js
-    assert main_js.count("resolveActiveTabValue(") == 3
+    assert main_js.count("resolveActiveTabValue(") == 1
     assert main_js.count("renderStaticTabState({") >= 3
     assert "buttonElements: optionsTabButtons" in main_js
     assert "panelElements: optionsTabPanels" in main_js
@@ -109,7 +109,7 @@ def test_main_module_calls_phase_ten_a_tab_helpers_directly_without_local_wrappe
     assert "panelElements: evalOptionsTabPanels" in main_js
     assert 'buttonAttribute: "data-eval-tab"' in main_js
     assert 'panelAttribute: "data-eval-tab-panel"' in main_js
-    assert "containerElement: evalPlotTabs" in main_js
+    assert "containerElement: evalPlotTabs" not in main_js
     assert 'button.className = "tab-button"' not in main_js
     assert "evalPlotTabs.appendChild(button);" not in main_js
 
@@ -220,22 +220,25 @@ def test_main_module_delegates_eval_json_pane_rendering_to_phase_ten_a_helper() 
     assert "escapeHtml(" not in main_js
 
 
-def test_main_module_delegates_thin_plot_control_rendering_to_controls_helper() -> None:
-    """Ensure the remaining thin plot-control surface no longer lives inline in `main.js`."""
+def test_main_module_delegates_plot_surface_rendering_to_dashboard_adapter() -> None:
+    """Ensure the plot-control, plot-grid, and figure-export surfaces no longer live inline in `main.js`."""
 
     main_js = _main_js()
 
-    assert "renderPlotControls," in main_js
-    assert "renderPlotGroupBarChips," in main_js
+    assert "renderDashboardPlotControls," in main_js
+    assert "renderEvaluationPlotsForDashboard," in main_js
+    assert "downloadVisiblePlotFigures," in main_js
+    assert "renderPlotControls," not in main_js
+    assert "renderPlotGroupBarChips," not in main_js
     assert "function renderPlotControls(" not in main_js
     assert "function renderGroupBarChips(" not in main_js
-    assert main_js.count("renderPlotControls({") == 3
-    assert main_js.count("renderPlotGroupBarChips({") == 1
-    assert "plotTabsByPrefixButton," in main_js
-    assert "plotConfusionTabsByRow," in main_js
-    assert "plotShowLegendOnceRow," in main_js
-    assert "listElement: plotGroupBarsList" in main_js
-    assert "getLabel: displayPlotGroupFieldName" in main_js
+    assert "function renderPlotTabsAndGrid(" not in main_js
+    assert "buildConfusionTabMap(" not in main_js
+    assert "createConfusionMatrixHeatmapSvg(" not in main_js
+    assert "createTpFpFnCombinedMatrixSvg(" not in main_js
+    assert main_js.count("renderDashboardPlotControls({") == 1
+    assert main_js.count("renderEvaluationPlotsForDashboard({") == 1
+    assert main_js.count("downloadVisiblePlotFigures({") == 1
 
 
 def test_main_module_delegates_sort_status_rendering_to_controls_helper() -> None:
