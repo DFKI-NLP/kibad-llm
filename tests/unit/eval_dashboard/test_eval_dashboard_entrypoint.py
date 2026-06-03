@@ -17,6 +17,7 @@ STATE_JS_ROOT = DASHBOARD_JS_ROOT / "state"
 UI_JS_ROOT = DASHBOARD_JS_ROOT / "ui"
 UTILS_JS_ROOT = DASHBOARD_JS_ROOT / "utils"
 BROWSER_JS_ROOT = DASHBOARD_JS_ROOT / "browser"
+PLOTS_JS_ROOT = DASHBOARD_JS_ROOT / "plots"
 PROPERDOCS_CONFIG = PROJ_ROOT / "properdocs.yml"
 BASELINE_MANIFEST = FIXTURE_DATA_ROOT / "eval_dashboard" / "baseline" / "baseline-manifest.md"
 BASELINE_SUMMARY = FIXTURE_DATA_ROOT / "eval_dashboard" / "baseline" / "baseline-summary.json"
@@ -56,6 +57,14 @@ EXPECTED_JS_UI_FILES = (
     "tabs.js",
 )
 EXPECTED_JS_BROWSER_FILES = ("session.js",)
+EXPECTED_JS_PLOTS_FILES = (
+    "bars.js",
+    "confusion.js",
+    "export.js",
+    "legend.js",
+    "shared.js",
+    "tpfpfn.js",
+)
 
 
 def _load_properdocs() -> dict:
@@ -124,6 +133,13 @@ def test_phase_nine_dashboard_js_browser_modules_exist() -> None:
 
     for file_name in EXPECTED_JS_BROWSER_FILES:
         assert (BROWSER_JS_ROOT / file_name).is_file()
+
+
+def test_phase_eleven_dashboard_js_plot_modules_exist() -> None:
+    """Ensure the Phase 11 plot/export modules exist under the dashboard asset path."""
+
+    for file_name in EXPECTED_JS_PLOTS_FILES:
+        assert (PLOTS_JS_ROOT / file_name).is_file()
 
 
 def test_properdocs_nav_points_to_new_dashboard_entry() -> None:

@@ -1,11 +1,5 @@
-import { getValueAtPath } from "./utils/flatten.js";
 import { normalizeSortConfig } from "./utils/sort.js";
-import {
-  getFigureTitlePrefix,
-  sanitizeFigureFilename,
-  splitLabelByLastDot,
-} from "./utils/text.js";
-import { formatRounded, interpolateColor, meanAndStd, normalizeValue } from "./utils/values.js";
+import { formatRounded, interpolateColor, normalizeValue } from "./utils/values.js";
 import * as dashboardStore from "./state/store.js";
 import * as selectors from "./state/selectors.js";
 import { collectLocalEvaluationEntries } from "./data/file-loader.js";
@@ -58,6 +52,47 @@ import {
   renderLoadStatusSummary,
   setDownloadFiguresButtonBusy,
 } from "./ui/status.js";
+import {
+  collectNumericMetricLeafPaths,
+  getBarColor,
+  getGroupLabelForFields,
+  getPlotDisplayLabel as getSharedPlotDisplayLabel,
+  getPlotTitleLabel as getSharedPlotTitleLabel,
+  getVaryingFields,
+  TP_FP_FN_KEYS,
+} from "./plots/shared.js";
+import {
+  buildBarsTabMap,
+  buildErrorsTabMap,
+  buildPlotEntries,
+} from "./plots/bars.js";
+import {
+  buildGroupedLegendModel,
+  getLegendItemsForPoints,
+} from "./plots/legend.js";
+import {
+  buildConfusionTabMap,
+  countDistinctConfusionMatrixRuns,
+  filterConfusionMatrixAggregationByLabelTotal,
+  getConfusionMatrixAggregation,
+  getConfusionMatrixTitle,
+} from "./plots/confusion.js";
+import {
+  buildTpFpFnCellSummary,
+  buildTpFpFnTabMap,
+  filterTpFpFnAggregationByTotals,
+  getTpFpFnCombinedAggregation,
+  getTpFpFnOutcomeColor,
+  getTpFpFnPalette,
+} from "./plots/tpfpfn.js";
+import {
+  buildPlotTabZipFilename,
+  createZipBlob,
+  getUniqueFigureFilename,
+  resolveOpaqueExportBackgroundColor as resolveSharedOpaqueExportBackgroundColor,
+  serializeLegendSvg as serializeSharedLegendSvg,
+  serializeSvgForDownload as serializeSharedSvgForDownload,
+} from "./plots/export.js";
 
 // Central UI state: loaded prediction/evaluation data, current grouping/selection, and per-eval-tab view state.
 const state = dashboardStore.createInitialDashboardState();
@@ -132,8 +167,6 @@ const {
   PREDICTION_JOB_RETURN_VALUE_PREFIX,
   PREDICTION_OVERRIDES_PREFIX,
 } = selectors;
-const TP_FP_FN_KEYS = ["tp", "fp", "fn"];
-const sortCollator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
 
 function getNextSortConfig(currentSort, column, { append = false } = {}) {
   return getSharedNextSortConfig(currentSort, column, {
@@ -340,62 +373,13 @@ async function writeTextToClipboard(text) {
   }
 }
 
-function getUniqueFigureFilename(title, usedNames) {
-  const baseName = sanitizeFigureFilename(getFigureTitlePrefix(title));
-  let candidate = baseName;
-  let suffix = 2;
-  while (usedNames.has(candidate.toLowerCase())) {
-    candidate = `${baseName} (${suffix})`;
-    suffix += 1;
-  }
-  usedNames.add(candidate.toLowerCase());
-  return `${candidate}.svg`;
-}
-
 function getActivePlotTabZipFilename() {
   const activeButton = evalPlotTabs.querySelector(".tab-button.active");
   const plotTabLabel = activeButton?.getAttribute("title") || activeButton?.textContent || "figures";
-  const evalTabLabel = typeof state.activeEvalTab === "string" ? state.activeEvalTab.trim() : "";
-  const filenameParts = [evalTabLabel, getFigureTitlePrefix(String(plotTabLabel).trim())]
-    .filter((part) => part.length > 0)
-    .map((part) => sanitizeFigureFilename(part));
-  return `${filenameParts.join("-") || "figures"}.zip`;
-}
-
-function buildGroupedLegendModel(entries) {
-  const seriesOrder = [];
-  const seenSeries = new Set();
-  const displayBySeries = new Map();
-
-  for (const entry of entries) {
-    for (const point of entry.points || []) {
-      if (!seenSeries.has(point.series)) {
-        seenSeries.add(point.series);
-        seriesOrder.push(point.series);
-      }
-      if (!displayBySeries.has(point.series)) {
-        displayBySeries.set(point.series, point.displaySeries || point.series);
-      }
-    }
-  }
-
-  const colorBySeries = new Map();
-  const items = seriesOrder.map((series, index) => {
-    const color = getBarColor(index);
-    const label = displayBySeries.get(series) || series;
-    colorBySeries.set(series, color);
-    return { series, label, color };
+  return buildPlotTabZipFilename({
+    activeEvalTab: state.activeEvalTab,
+    activePlotTabLabel: plotTabLabel,
   });
-
-  return { seriesOrder, displayBySeries, colorBySeries, items };
-}
-
-function getLegendItemsForPoints(points, legendModel) {
-  if (!legendModel) {
-    return [];
-  }
-  const seriesInPoints = new Set(points.map((point) => point.series));
-  return legendModel.items.filter((item) => seriesInPoints.has(item.series));
 }
 
 function createPlotLegendElement(legendItems) {
@@ -421,134 +405,40 @@ function styleErrorBarSegment(line) {
   line.setAttribute("stroke-opacity", "0.78");
 }
 
-function getSvgExportViewBox(svg, width, height) {
-  const viewBox = svg.getAttribute("viewBox");
-  if (!viewBox) {
-    return { minX: 0, minY: 0, width: Number(width), height: Number(height) };
-  }
-  const parts = viewBox
-    .trim()
-    .split(/\s+/)
-    .map((part) => Number(part));
-  if (parts.length !== 4 || parts.some((part) => !Number.isFinite(part))) {
-    return { minX: 0, minY: 0, width: Number(width), height: Number(height) };
-  }
-  return { minX: parts[0], minY: parts[1], width: parts[2], height: parts[3] };
-}
-
 function resolveOpaqueExportBackgroundColor() {
-  const candidates = [evalPlotContent, document.body, document.documentElement];
-  for (const element of candidates) {
-    if (!element) {
-      continue;
-    }
-    const backgroundColor = getComputedStyle(element).backgroundColor;
-    if (
-      backgroundColor &&
-      backgroundColor !== "transparent" &&
-      backgroundColor !== "rgba(0, 0, 0, 0)"
-    ) {
-      return backgroundColor;
-    }
-  }
-  return "#ffffff";
+  return resolveSharedOpaqueExportBackgroundColor(
+    [evalPlotContent, document.body, document.documentElement],
+    getComputedStyle
+  );
 }
 
-function prependExportBackgroundRect(svg, width, height, color = "#ffffff") {
-  const box = getSvgExportViewBox(svg, width, height);
-  const background = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-  background.setAttribute("x", String(box.minX));
-  background.setAttribute("y", String(box.minY));
-  background.setAttribute("width", String(box.width));
-  background.setAttribute("height", String(box.height));
-  background.setAttribute("fill", color);
-  svg.insertBefore(background, svg.firstChild);
-}
-
-function serializeLegendSvg(legendItems, options = {}) {
-  if (!legendItems.length) {
-    return "";
-  }
-
-  const fontSize = 12;
-  const rowHeight = 22;
-  const padding = 10;
-  const swatchSize = 12;
-  const textX = padding + swatchSize + 8;
-  const computedStyle = getComputedStyle(evalPlotContent);
-  const fontFamily = computedStyle.fontFamily || "Inter, Arial, sans-serif";
-  const textColor = computedStyle.color || "#cbd5e1";
-
+function measureCanvasText(text, font) {
   const canvas = document.createElement("canvas");
   const context = canvas.getContext("2d");
-  if (context) {
-    context.font = `${fontSize}px ${fontFamily}`;
+  if (!context) {
+    return text.length * 7.5;
   }
-  const textWidths = legendItems.map((item) =>
-    context ? context.measureText(item.label).width : item.label.length * (fontSize * 0.62)
-  );
-  const width = Math.ceil(
-    Math.max(120, textX + Math.max(...textWidths, 0) + padding)
-  );
-  const height = padding * 2 + legendItems.length * rowHeight;
-
-  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-  svg.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
-  svg.setAttribute("width", String(width));
-  svg.setAttribute("height", String(height));
-  svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
-
-  if (options.opaqueBackground) {
-    prependExportBackgroundRect(svg, width, height, options.backgroundColor || resolveOpaqueExportBackgroundColor());
-  }
-
-  legendItems.forEach((item, index) => {
-    const centerY = padding + index * rowHeight + rowHeight / 2;
-
-    const swatch = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-    swatch.setAttribute("x", String(padding));
-    swatch.setAttribute("y", String(centerY - swatchSize / 2));
-    swatch.setAttribute("width", String(swatchSize));
-    swatch.setAttribute("height", String(swatchSize));
-    swatch.setAttribute("rx", "2");
-    swatch.setAttribute("fill", item.color);
-    svg.appendChild(swatch);
-
-    const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    text.setAttribute("x", String(textX));
-    text.setAttribute("y", String(centerY + fontSize / 3));
-    text.setAttribute("fill", textColor);
-    text.setAttribute("font-size", String(fontSize));
-    text.setAttribute("font-family", fontFamily);
-    text.textContent = item.label;
-    svg.appendChild(text);
-  });
-
-  return `<?xml version="1.0" encoding="UTF-8"?>\n${new XMLSerializer().serializeToString(svg)}`;
+  context.font = font;
+  return context.measureText(text).width;
 }
 
-function serializeSvgForDownload(sourceSvg, options = {}) {
-  const clone = sourceSvg.cloneNode(true);
-  const computedStyle = getComputedStyle(sourceSvg);
-  const width = sourceSvg.getAttribute("width") || String(Math.ceil(sourceSvg.getBoundingClientRect().width));
-  const height = sourceSvg.getAttribute("height") || String(Math.ceil(sourceSvg.getBoundingClientRect().height));
+function serializeLegendSvg(legendItems, exportOptions = {}) {
+  return serializeSharedLegendSvg({
+    documentLike: document,
+    legendItems,
+    computedStyle: getComputedStyle(evalPlotContent),
+    measureText: measureCanvasText,
+    exportOptions,
+  });
+}
 
-  clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-  clone.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
-  clone.setAttribute("width", width);
-  clone.setAttribute("height", height);
-  if (!clone.hasAttribute("viewBox")) {
-    clone.setAttribute("viewBox", `0 0 ${width} ${height}`);
-  }
-  if (options.opaqueBackground) {
-    prependExportBackgroundRect(clone, width, height, options.backgroundColor || resolveOpaqueExportBackgroundColor());
-  }
-  clone.style.color = computedStyle.color;
-  clone.style.fontFamily = computedStyle.fontFamily;
-  clone.style.backgroundColor = computedStyle.backgroundColor;
-
-  return `<?xml version="1.0" encoding="UTF-8"?>\n${new XMLSerializer().serializeToString(clone)}`;
+function serializeSvgForDownload(sourceSvg, exportOptions = {}) {
+  return serializeSharedSvgForDownload({
+    documentLike: document,
+    sourceSvg,
+    computedStyle: getComputedStyle(sourceSvg),
+    exportOptions,
+  });
 }
 
 function triggerBlobDownload(filename, blob) {
@@ -561,114 +451,6 @@ function triggerBlobDownload(filename, blob) {
   link.click();
   link.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
-
-function getZipDosDateTime(date = new Date()) {
-  const year = Math.max(1980, date.getFullYear());
-  return {
-    time: ((date.getHours() & 0x1f) << 11) | ((date.getMinutes() & 0x3f) << 5) | ((Math.floor(date.getSeconds() / 2)) & 0x1f),
-    date: (((year - 1980) & 0x7f) << 9) | (((date.getMonth() + 1) & 0x0f) << 5) | (date.getDate() & 0x1f),
-  };
-}
-
-const crc32Table = (() => {
-  const table = new Uint32Array(256);
-  for (let i = 0; i < 256; i += 1) {
-    let value = i;
-    for (let bit = 0; bit < 8; bit += 1) {
-      value = (value & 1) ? (0xedb88320 ^ (value >>> 1)) : (value >>> 1);
-    }
-    table[i] = value >>> 0;
-  }
-  return table;
-})();
-
-function computeCrc32(bytes) {
-  let crc = 0xffffffff;
-  for (const byte of bytes) {
-    crc = crc32Table[(crc ^ byte) & 0xff] ^ (crc >>> 8);
-  }
-  return (crc ^ 0xffffffff) >>> 0;
-}
-
-function concatUint8Arrays(chunks) {
-  const totalLength = chunks.reduce((sum, chunk) => sum + chunk.length, 0);
-  const result = new Uint8Array(totalLength);
-  let offset = 0;
-  for (const chunk of chunks) {
-    result.set(chunk, offset);
-    offset += chunk.length;
-  }
-  return result;
-}
-
-function createZipBlob(files) {
-  const encoder = new TextEncoder();
-  const fileDate = getZipDosDateTime();
-  const localChunks = [];
-  const centralChunks = [];
-  let offset = 0;
-
-  for (const file of files) {
-    const nameBytes = encoder.encode(file.name);
-    const dataBytes = encoder.encode(file.content);
-    const crc32 = computeCrc32(dataBytes);
-
-    const localHeader = new Uint8Array(30 + nameBytes.length);
-    const localView = new DataView(localHeader.buffer);
-    localView.setUint32(0, 0x04034b50, true);
-    localView.setUint16(4, 20, true);
-    localView.setUint16(6, 0x0800, true);
-    localView.setUint16(8, 0, true);
-    localView.setUint16(10, fileDate.time, true);
-    localView.setUint16(12, fileDate.date, true);
-    localView.setUint32(14, crc32, true);
-    localView.setUint32(18, dataBytes.length, true);
-    localView.setUint32(22, dataBytes.length, true);
-    localView.setUint16(26, nameBytes.length, true);
-    localView.setUint16(28, 0, true);
-    localHeader.set(nameBytes, 30);
-    localChunks.push(localHeader, dataBytes);
-
-    const centralHeader = new Uint8Array(46 + nameBytes.length);
-    const centralView = new DataView(centralHeader.buffer);
-    centralView.setUint32(0, 0x02014b50, true);
-    centralView.setUint16(4, 20, true);
-    centralView.setUint16(6, 20, true);
-    centralView.setUint16(8, 0x0800, true);
-    centralView.setUint16(10, 0, true);
-    centralView.setUint16(12, fileDate.time, true);
-    centralView.setUint16(14, fileDate.date, true);
-    centralView.setUint32(16, crc32, true);
-    centralView.setUint32(20, dataBytes.length, true);
-    centralView.setUint32(24, dataBytes.length, true);
-    centralView.setUint16(28, nameBytes.length, true);
-    centralView.setUint16(30, 0, true);
-    centralView.setUint16(32, 0, true);
-    centralView.setUint16(34, 0, true);
-    centralView.setUint16(36, 0, true);
-    centralView.setUint32(38, 0, true);
-    centralView.setUint32(42, offset, true);
-    centralHeader.set(nameBytes, 46);
-    centralChunks.push(centralHeader);
-
-    offset += localHeader.length + dataBytes.length;
-  }
-
-  const centralDirectory = concatUint8Arrays(centralChunks);
-  const endRecord = new Uint8Array(22);
-  const endView = new DataView(endRecord.buffer);
-  endView.setUint32(0, 0x06054b50, true);
-  endView.setUint16(4, 0, true);
-  endView.setUint16(6, 0, true);
-  endView.setUint16(8, files.length, true);
-  endView.setUint16(10, files.length, true);
-  endView.setUint32(12, centralDirectory.length, true);
-  endView.setUint32(16, offset, true);
-  endView.setUint16(20, 0, true);
-
-  const zipBytes = concatUint8Arrays([...localChunks, centralDirectory, endRecord]);
-  return new Blob([zipBytes], { type: "application/zip" });
 }
 
 async function saveBlob(blob, suggestedName, types) {
@@ -809,19 +591,14 @@ function displayGroupFieldName(column) {
 }
 
 function getPlotDisplayLabel(label) {
-  const text = String(label ?? "");
-  return state.plotShortenLabels ? splitLabelByLastDot(text) : text;
+  return getSharedPlotDisplayLabel(label, { shortenLabels: state.plotShortenLabels });
 }
 
 function getPlotTitleLabel(plotEntry, metricType) {
-  if (
-    metricType === "F1MicroMultipleFieldsMetric" &&
-    state.plotShortenLabels &&
-    state.plotTabsBy === "suffix"
-  ) {
-    return plotEntry.prefix === "(root)" ? plotEntry.metricLabel : plotEntry.prefix;
-  }
-  return getPlotDisplayLabel(plotEntry.metricLabel);
+  return getSharedPlotTitleLabel(plotEntry, metricType, {
+    shortenLabels: state.plotShortenLabels,
+    plotTabsBy: state.plotTabsBy,
+  });
 }
 
 function displayPlotGroupFieldName(column) {
@@ -1581,51 +1358,12 @@ function getGroupValueDisplayFromEvaluations(evaluations, getter) {
   return selectors.getGroupValueDisplayFromEvaluations(evaluations, getter);
 }
 
-function getVaryingFields(groups, fields) {
-  if (!fields.length || groups.length <= 1) {
-    return [];
-  }
-  return fields.filter((field) => {
-    const values = new Set(groups.map((group) => normalizeValue(group.values?.[field])));
-    return values.size > 1;
-  });
-}
-
-
-function getGroupLabelForFields(group, labelFields, fallback, fieldNameFormatter = displayGroupFieldName) {
-  if (labelFields.length === 0) {
-    return fallback;
-  }
-  return labelFields
-    .map(
-      (field) =>
-        `${fieldNameFormatter(field)}=${normalizeValue(group.values[field])}`
-    )
-    .join(" | ");
-}
-
 /**
  * Combine prediction grouping and evaluation grouping into the plot-group shape
  * consumed by plot and confusion-matrix rendering.
  */
 function getPlotGroups(activeExperiment, selectedEvalGroups, evalGroupByFields, evalTabState) {
   return selectors.getPlotGroups(state, activeExperiment, selectedEvalGroups, evalGroupByFields, evalTabState);
-}
-
-function getBarColor(index) {
-  const palette = [
-    "#60a5fa",
-    "#f97316",
-    "#22c55e",
-    "#a78bfa",
-    "#f43f5e",
-    "#14b8a6",
-    "#eab308",
-    "#8b5cf6",
-    "#06b6d4",
-    "#ef4444",
-  ];
-  return palette[index % palette.length];
 }
 
 function fitSvgToContents(svg, contentGroup, minWidth, minHeight) {
@@ -1957,343 +1695,12 @@ function createGroupedBarPlotSvg(points, legendModel = null) {
   return svg;
 }
 
-function collectNumericMetricLeafPaths(value, parts = [], out = new Map()) {
-  if (!value || typeof value !== "object") {
-    return out;
-  }
-  for (const [key, child] of Object.entries(value)) {
-    const pathParts = [...parts, key];
-    if (typeof child === "number" && Number.isFinite(child)) {
-      out.set(pathParts.join("|#|"), pathParts);
-      continue;
-    }
-    if (child && typeof child === "object" && !Array.isArray(child)) {
-      collectNumericMetricLeafPaths(child, pathParts, out);
-    }
-  }
-  return out;
-}
-
-function splitMetricLabelAtLastDot(label) {
-  const lastDotIndex = label.lastIndexOf(".");
-  if (lastDotIndex === -1) {
-    return { prefix: "(root)", suffix: label };
-  }
-  return {
-    prefix: label.slice(0, lastDotIndex),
-    suffix: label.slice(lastDotIndex + 1),
-  };
-}
-
 function getMetricTypeForEvaluationContext(
   activeExperiment,
   evaluationContext = getEvaluationContext(activeExperiment)
 ) {
   return selectors.getMetricTypeForEvaluationContext(state, activeExperiment, evaluationContext);
 }
-
-function getMetricCollectionSourceRunDir(evaluation) {
-  return normalizeValue(evaluation?.sourceRunDir ?? evaluation?.runDir).trim();
-}
-
-function expandMetricFieldCollectionEvaluation(
-  evaluation,
-  { collectionType, singularType, fallbackRunDirPrefix }
-) {
-  if (!evaluation || typeof evaluation !== "object") {
-    return [];
-  }
-
-  const metricType = normalizeValue(evaluation?.jobReturnValue?.type).trim();
-  const sourceRunDir = getMetricCollectionSourceRunDir(evaluation);
-  if (metricType === collectionType) {
-    const fieldEntries = evaluation.data;
-    if (!fieldEntries || typeof fieldEntries !== "object" || Array.isArray(fieldEntries)) {
-      return [];
-    }
-
-    const baseOverrides =
-      evaluation.overrides && typeof evaluation.overrides === "object" && !Array.isArray(evaluation.overrides)
-        ? evaluation.overrides
-        : {};
-
-    return Object.entries(fieldEntries)
-      .filter(([, fieldEntry]) => fieldEntry && typeof fieldEntry === "object" && !Array.isArray(fieldEntry))
-      .map(([field, fieldEntry]) => ({
-        ...evaluation,
-        runDir: sourceRunDir ? `${sourceRunDir}#${field}` : `${fallbackRunDirPrefix}#${field}`,
-        sourceRunDir,
-        jobReturnValue: {
-          ...(evaluation.jobReturnValue || {}),
-          type: singularType,
-        },
-        overrides: {
-          ...baseOverrides,
-          "metric.field": field,
-        },
-        data: fieldEntry,
-      }));
-  }
-
-  return [
-    {
-      ...evaluation,
-      sourceRunDir,
-    },
-  ];
-}
-
-function expandConfusionMatrixLikeEvaluation(evaluation) {
-  return expandMetricFieldCollectionEvaluation(evaluation, {
-    collectionType: "ConfusionMatrixCollection",
-    singularType: "ConfusionMatrix",
-    fallbackRunDirPrefix: "confusion-field",
-  });
-}
-
-function normalizeConfusionMatrixLikeEvaluations(evaluations) {
-  return (evaluations || []).flatMap((evaluation) => expandConfusionMatrixLikeEvaluation(evaluation));
-}
-
-function expandTpFpFnLikeEvaluation(evaluation) {
-  return expandMetricFieldCollectionEvaluation(evaluation, {
-    collectionType: "TpFpFnCollectorCollection",
-    singularType: "TpFpFnCollector",
-    fallbackRunDirPrefix: "tpfpfn-field",
-  });
-}
-
-function normalizeTpFpFnLikeEvaluations(evaluations) {
-  return (evaluations || []).flatMap((evaluation) => expandTpFpFnLikeEvaluation(evaluation));
-}
-
-function countDistinctConfusionMatrixRuns(evaluations) {
-  return new Set(
-    (evaluations || [])
-      .map((evaluation) => getMetricCollectionSourceRunDir(evaluation))
-      .filter(Boolean)
-  ).size;
-}
-
-function getConfusionMatrixTitle(experimentEvaluations, evalTabState) {
-  const fieldValues = new Set(
-    experimentEvaluations
-      .map((evaluation) => getEvaluationEffectiveValue(evaluation, "metric.field", evalTabState))
-      .filter((value) => value)
-  );
-  if (fieldValues.size === 0) {
-    return "(missing metric.field)";
-  }
-  if (fieldValues.size === 1) {
-    return getPlotDisplayLabel(Array.from(fieldValues)[0]);
-  }
-  return `mixed metric.field: ${Array.from(fieldValues)
-    .sort((a, b) => a.localeCompare(b))
-    .map((value) => getPlotDisplayLabel(value))
-    .join(", ")}`;
-}
-
-// Convert per-evaluation confusion counts into one aligned matrix with mean/std per cell.
-// Missing cells are treated as zeros so evaluations with different support can still be aggregated together.
-function getConfusionMatrixAggregation(experimentEvaluations) {
-  const rowLabels = new Set();
-  const colLabels = new Set();
-  const evaluationCells = [];
-
-  for (const evaluation of experimentEvaluations) {
-    const map = new Map();
-    const evalData = evaluation.data || {};
-    for (const [actualLabel, predictedMap] of Object.entries(evalData)) {
-      if (!predictedMap || typeof predictedMap !== "object" || Array.isArray(predictedMap)) {
-        continue;
-      }
-      for (const [predictedLabel, rawValue] of Object.entries(predictedMap)) {
-        if (!Number.isFinite(rawValue)) {
-          continue;
-        }
-        const value = Number(rawValue);
-        rowLabels.add(actualLabel);
-        colLabels.add(predictedLabel);
-        map.set(`${actualLabel}|#|${predictedLabel}`, value);
-      }
-    }
-    evaluationCells.push(map);
-  }
-
-  const sortWithForcedLast = (values, forcedLast) =>
-    Array.from(values).sort((a, b) => {
-      if (a === forcedLast && b !== forcedLast) {
-        return 1;
-      }
-      if (b === forcedLast && a !== forcedLast) {
-        return -1;
-      }
-      return a.localeCompare(b);
-    });
-
-  const rows = sortWithForcedLast(rowLabels, "UNASSIGNABLE");
-  const cols = sortWithForcedLast(colLabels, "UNDETECTED");
-  const cells = new Map();
-  for (const row of rows) {
-    for (const col of cols) {
-      const key = `${row}|#|${col}`;
-      const values = evaluationCells.map((cellMap) => cellMap.get(key) ?? 0);
-      const stats = meanAndStd(values) || { mean: 0, std: 0 };
-      cells.set(key, stats);
-    }
-  }
-
-  return { rows, cols, cells };
-}
-
-function filterConfusionMatrixAggregationByLabelTotal(aggregation, minLabelTotal) {
-  const threshold = Number.isFinite(minLabelTotal) ? Math.max(0, Number(minLabelTotal)) : 0;
-  if (!aggregation || threshold <= 0) {
-    return aggregation;
-  }
-
-  const { rows = [], cols = [], cells = new Map() } = aggregation;
-  let filteredRows = [...rows];
-  let filteredCols = [...cols];
-  let rowTotals = new Map();
-  let colTotals = new Map();
-
-  while (true) {
-    rowTotals = new Map(
-      filteredRows.map((row) => [
-        row,
-        filteredCols.reduce((sum, col) => sum + (cells.get(`${row}|#|${col}`)?.mean ?? 0), 0),
-      ])
-    );
-    colTotals = new Map(
-      filteredCols.map((col) => [
-        col,
-        filteredRows.reduce((sum, row) => sum + (cells.get(`${row}|#|${col}`)?.mean ?? 0), 0),
-      ])
-    );
-
-    const nextRows = filteredRows.filter((row) => (rowTotals.get(row) ?? 0) >= threshold);
-    const nextCols = filteredCols.filter((col) => (colTotals.get(col) ?? 0) >= threshold);
-    if (nextRows.length === filteredRows.length && nextCols.length === filteredCols.length) {
-      filteredRows = nextRows;
-      filteredCols = nextCols;
-      break;
-    }
-    filteredRows = nextRows;
-    filteredCols = nextCols;
-    if (!filteredRows.length || !filteredCols.length) {
-      break;
-    }
-  }
-
-  rowTotals = new Map(
-    filteredRows.map((row) => [
-      row,
-      filteredCols.reduce((sum, col) => sum + (cells.get(`${row}|#|${col}`)?.mean ?? 0), 0),
-    ])
-  );
-  colTotals = new Map(
-    filteredCols.map((col) => [
-      col,
-      filteredRows.reduce((sum, row) => sum + (cells.get(`${row}|#|${col}`)?.mean ?? 0), 0),
-    ])
-  );
-
-  const filteredCells = new Map();
-  for (const row of filteredRows) {
-    for (const col of filteredCols) {
-      const key = `${row}|#|${col}`;
-      filteredCells.set(key, cells.get(key) || { mean: 0, std: 0 });
-    }
-  }
-  return {
-    rows: filteredRows,
-    cols: filteredCols,
-    cells: filteredCells,
-    rowTotals,
-    colTotals,
-  };
-}
-
-function filterTpFpFnAggregationByTotals(aggregation, minLabelTotal, minDocumentTotal) {
-  const labelThreshold = Number.isFinite(minLabelTotal) ? Math.max(0, Number(minLabelTotal)) : 0;
-  const documentThreshold = Number.isFinite(minDocumentTotal) ? Math.max(0, Number(minDocumentTotal)) : 0;
-  if (!aggregation || (labelThreshold <= 0 && documentThreshold <= 0)) {
-    return aggregation;
-  }
-
-  const { rows = [], cols = [], cells = new Map() } = aggregation;
-  let filteredRows = [...rows];
-  let filteredCols = [...cols];
-  let rowTotals = new Map();
-  let colTotals = new Map();
-
-  while (true) {
-    rowTotals = new Map(
-      filteredRows.map((row) => [
-        row,
-        filteredCols.reduce((sum, col) => sum + (cells.get(`${row}|#|${col}`)?.presentCount ?? 0), 0),
-      ])
-    );
-    colTotals = new Map(
-      filteredCols.map((col) => [
-        col,
-        filteredRows.reduce((sum, row) => sum + (cells.get(`${row}|#|${col}`)?.presentCount ?? 0), 0),
-      ])
-    );
-
-    const nextRows = filteredRows.filter((row) => (rowTotals.get(row) ?? 0) >= documentThreshold);
-    const nextCols = filteredCols.filter((col) => (colTotals.get(col) ?? 0) >= labelThreshold);
-    if (nextRows.length === filteredRows.length && nextCols.length === filteredCols.length) {
-      filteredRows = nextRows;
-      filteredCols = nextCols;
-      break;
-    }
-    filteredRows = nextRows;
-    filteredCols = nextCols;
-    if (!filteredRows.length || !filteredCols.length) {
-      break;
-    }
-  }
-
-  rowTotals = new Map(
-    filteredRows.map((row) => [
-      row,
-      filteredCols.reduce((sum, col) => sum + (cells.get(`${row}|#|${col}`)?.presentCount ?? 0), 0),
-    ])
-  );
-  colTotals = new Map(
-    filteredCols.map((col) => [
-      col,
-      filteredRows.reduce((sum, row) => sum + (cells.get(`${row}|#|${col}`)?.presentCount ?? 0), 0),
-    ])
-  );
-
-  const filteredCells = new Map();
-  for (const row of filteredRows) {
-    for (const col of filteredCols) {
-      const key = `${row}|#|${col}`;
-      filteredCells.set(
-        key,
-        cells.get(key) || {
-          rowStates: [],
-          counts: { tp: 0, fp: 0, fn: 0, empty: 0 },
-          presentCount: 0,
-        }
-      );
-    }
-  }
-
-  return {
-    ...aggregation,
-    rows: filteredRows,
-    cols: filteredCols,
-    cells: filteredCells,
-    rowTotals,
-    colTotals,
-  };
-}
-
 
 // Render an already-aggregated confusion matrix as an SVG heatmap with values and tooltips.
 function createConfusionMatrixHeatmapSvg(aggregation, precision) {
@@ -2400,333 +1807,12 @@ function createConfusionMatrixHeatmapSvg(aggregation, precision) {
   return svg;
 }
 
-// Depending on the current tab strategy, group confusion plots either by metric.field or by
-// the active prediction/evaluation grouping, while keeping different metric.field values separate.
-function buildConfusionTabMap(activeExperiment, plotGroups, experimentEvaluations, labelFields, evalTabState) {
-  const tabMap = new Map();
-  const normalizedExperimentEvaluations = normalizeConfusionMatrixLikeEvaluations(experimentEvaluations);
-  const groupEntries = plotGroups
-    .map((group, index) => ({
-      key: `group|#|${group.groupId}`,
-      label: getGroupLabelForFields(group, labelFields, `group ${index + 1}`, displayPlotGroupFieldName),
-      evaluations: normalizeConfusionMatrixLikeEvaluations(
-        group.evaluations.filter((evaluation) => getEvaluationExperiment(evaluation) === activeExperiment)
-      ),
-    }))
-    .filter((entry) => entry.evaluations.length > 0);
-
-  if (state.confusionTabsBy === "metric_field") {
-    for (const evaluation of normalizedExperimentEvaluations) {
-      const rawField = getEvaluationEffectiveValue(evaluation, "metric.field", evalTabState);
-      const fieldLabel = rawField || "(missing metric.field)";
-      if (!tabMap.has(fieldLabel)) {
-        tabMap.set(fieldLabel, { label: getPlotDisplayLabel(fieldLabel), plots: [] });
-      }
-    }
-
-    for (const [fieldKey, tab] of tabMap.entries()) {
-      for (const groupEntry of groupEntries) {
-        const evaluationsForFieldAndGroup = groupEntry.evaluations.filter((evaluation) => {
-          const rawField = getEvaluationEffectiveValue(evaluation, "metric.field", evalTabState);
-          const fieldLabel = rawField || "(missing metric.field)";
-          return fieldLabel === fieldKey;
-        });
-        if (evaluationsForFieldAndGroup.length === 0) {
-          continue;
-        }
-        tab.plots.push({ label: groupEntry.label, evaluations: evaluationsForFieldAndGroup });
-      }
-    }
-    return tabMap;
-  }
-
-  for (const groupEntry of groupEntries) {
-    // Split evaluations by metric.field so different fields don't get mixed into one matrix.
-    const byField = new Map();
-    for (const evaluation of groupEntry.evaluations) {
-      const rawField = getEvaluationEffectiveValue(evaluation, "metric.field", evalTabState);
-      const fieldLabel = rawField || "(missing metric.field)";
-      if (!byField.has(fieldLabel)) {
-        byField.set(fieldLabel, []);
-      }
-      byField.get(fieldLabel).push(evaluation);
-    }
-    const plots = Array.from(byField.entries())
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([fieldLabel, evaluations]) => ({
-        label: fieldLabel,
-        evaluations,
-      }));
-    tabMap.set(groupEntry.key, { label: groupEntry.label, plots });
-  }
-
-  return tabMap;
-}
-
-function getTpFpFnOutcomeLabel(outcomeKey) {
-  if (outcomeKey === "tp") {
-    return "TP";
-  }
-  if (outcomeKey === "fp") {
-    return "FP";
-  }
-  if (outcomeKey === "fn") {
-    return "FN";
-  }
-  return String(outcomeKey ?? "").toUpperCase();
-}
-
-function getTpFpFnPalette(outcomeKey) {
-  if (outcomeKey === "tp") {
-    return { start: [240, 253, 244], end: [22, 163, 74] };
-  }
-  if (outcomeKey === "fp") {
-    return { start: [255, 247, 237], end: [234, 88, 12] };
-  }
-  if (outcomeKey === "fn") {
-    return { start: [250, 245, 255], end: [126, 34, 206] };
-  }
-  return { start: [247, 251, 255], end: [8, 48, 107] };
-}
-
-function getTpFpFnOutcomeColor(outcomeKey) {
-  if (!outcomeKey) {
-    return "#e2e8f0";
-  }
-  return interpolateColor(getTpFpFnPalette(outcomeKey).start, getTpFpFnPalette(outcomeKey).end, 1);
-}
-
-function normalizeTpFpFnCollectorData(rawData) {
-  const result = {};
-
-  const getRecordEntry = (recordId) => {
-    const key = normalizeValue(recordId) || "(missing record_id)";
-    if (!result[key]) {
-      result[key] = { tp: [], fp: [], fn: [] };
-    }
-    return result[key];
-  };
-
-  const appendUniqueValues = (target, bucket, values) => {
-    if (!Array.isArray(values)) {
-      return;
-    }
-    const seen = new Set(target[bucket]);
-    for (const value of values) {
-      const normalized = normalizeValue(value);
-      if (seen.has(normalized)) {
-        continue;
-      }
-      seen.add(normalized);
-      target[bucket].push(normalized);
-    }
-    target[bucket].sort((a, b) => sortCollator.compare(a, b));
-  };
-
-  if (!rawData || typeof rawData !== "object" || Array.isArray(rawData)) {
-    return result;
-  }
-
-  const looksLikeGlobalOutput = TP_FP_FN_KEYS.some((bucket) => Array.isArray(rawData?.[bucket]));
-  if (looksLikeGlobalOutput) {
-    for (const bucket of TP_FP_FN_KEYS) {
-      const entries = Array.isArray(rawData[bucket]) ? rawData[bucket] : [];
-      for (const entry of entries) {
-        if (!Array.isArray(entry) || entry.length < 2) {
-          continue;
-        }
-        appendUniqueValues(getRecordEntry(entry[0]), bucket, [entry[1]]);
-      }
-    }
-    return result;
-  }
-
-  for (const [recordId, entry] of Object.entries(rawData)) {
-    const normalizedEntry = entry && typeof entry === "object" && !Array.isArray(entry) ? entry : {};
-    const target = getRecordEntry(recordId);
-    for (const bucket of TP_FP_FN_KEYS) {
-      appendUniqueValues(target, bucket, normalizedEntry[bucket]);
-    }
-  }
-
-  return result;
-}
-
-function getTpFpFnCombinedAggregation(experimentEvaluations) {
-  const rowLabels = new Set();
-  const colLabels = new Set();
-  const evaluationCells = [];
-  const evaluationLabels = [];
-
-  for (const [evaluationIndex, evaluation] of experimentEvaluations.entries()) {
-    const map = new Map();
-    evaluationLabels.push(normalizeValue(evaluation?.runDir) || `evaluation ${evaluationIndex + 1}`);
-    const normalizedData = normalizeTpFpFnCollectorData(evaluation.data);
-    for (const [recordId, recordEntry] of Object.entries(normalizedData)) {
-      rowLabels.add(recordId);
-      const entriesByLabel = new Map();
-      for (const outcomeKey of TP_FP_FN_KEYS) {
-        const labels = Array.isArray(recordEntry?.[outcomeKey]) ? recordEntry[outcomeKey] : [];
-        for (const label of labels) {
-          colLabels.add(label);
-          if (!entriesByLabel.has(label)) {
-            entriesByLabel.set(label, { tp: false, fp: false, fn: false });
-          }
-          entriesByLabel.get(label)[outcomeKey] = true;
-        }
-      }
-      for (const [label, rowState] of entriesByLabel.entries()) {
-        map.set(`${recordId}|#|${label}`, rowState);
-      }
-    }
-    evaluationCells.push(map);
-  }
-
-  const rows = Array.from(rowLabels).sort((a, b) => sortCollator.compare(a, b));
-  const cols = Array.from(colLabels).sort((a, b) => sortCollator.compare(a, b));
-  const cells = new Map();
-
-  for (const row of rows) {
-    for (const col of cols) {
-      const key = `${row}|#|${col}`;
-      const rowStates = evaluationCells.map(
-        (cellMap) => cellMap.get(key) || { tp: false, fp: false, fn: false }
-      );
-      const counts = { tp: 0, fp: 0, fn: 0, empty: 0 };
-      for (const rowState of rowStates) {
-        let rowHasAny = false;
-        for (const outcomeKey of TP_FP_FN_KEYS) {
-          if (rowState[outcomeKey]) {
-            counts[outcomeKey] += 1;
-            rowHasAny = true;
-          }
-        }
-        if (!rowHasAny) {
-          counts.empty += 1;
-        }
-      }
-      cells.set(key, {
-        rowStates,
-        counts,
-        presentCount: counts.tp + counts.fp + counts.fn,
-      });
-    }
-  }
-
-  return {
-    rows,
-    cols,
-    cells,
-    totalEvaluations: evaluationCells.length,
-    evaluationLabels,
-  };
-}
-
-function buildTpFpFnTabMap(plotGroups, experimentEvaluations, labelFields, evalTabState) {
-  const tabMap = new Map();
-  const normalizedExperimentEvaluations = normalizeTpFpFnLikeEvaluations(experimentEvaluations);
-
-  const groupEntries = plotGroups
-    .map((group, index) => ({
-      key: `group|#|${group.groupId}`,
-      label: getGroupLabelForFields(group, labelFields, `group ${index + 1}`, displayPlotGroupFieldName),
-      evaluations: normalizeTpFpFnLikeEvaluations(group.evaluations),
-    }))
-    .filter((entry) => entry.evaluations.length > 0);
-
-  if (state.confusionTabsBy === "metric_field") {
-    for (const evaluation of normalizedExperimentEvaluations) {
-      const rawField = getEvaluationEffectiveValue(evaluation, "metric.field", evalTabState);
-      const fieldLabel = rawField || "(missing metric.field)";
-      if (!tabMap.has(fieldLabel)) {
-        tabMap.set(fieldLabel, { label: getPlotDisplayLabel(fieldLabel), plots: [] });
-      }
-    }
-
-    for (const [fieldKey, tab] of tabMap.entries()) {
-      for (const groupEntry of groupEntries) {
-        const evaluationsForFieldAndGroup = groupEntry.evaluations.filter((evaluation) => {
-          const rawField = getEvaluationEffectiveValue(evaluation, "metric.field", evalTabState);
-          const fieldLabel = rawField || "(missing metric.field)";
-          return fieldLabel === fieldKey;
-        });
-        if (evaluationsForFieldAndGroup.length === 0) {
-          continue;
-        }
-        tab.plots.push({ label: groupEntry.label, fieldLabel: fieldKey, evaluations: evaluationsForFieldAndGroup });
-      }
-    }
-    return tabMap;
-  }
-
-  for (const groupEntry of groupEntries) {
-    const byField = new Map();
-    for (const evaluation of groupEntry.evaluations) {
-      const rawField = getEvaluationEffectiveValue(evaluation, "metric.field", evalTabState);
-      const fieldLabel = rawField || "(missing metric.field)";
-      if (!byField.has(fieldLabel)) {
-        byField.set(fieldLabel, []);
-      }
-      byField.get(fieldLabel).push(evaluation);
-    }
-    const plots = Array.from(byField.entries())
-      .sort(([a], [b]) => sortCollator.compare(a, b))
-      .map(([fieldLabel, evaluations]) => ({
-        label: fieldLabel,
-        fieldLabel,
-        evaluations,
-      }));
-    tabMap.set(groupEntry.key, { label: groupEntry.label, plots });
-  }
-
-  return tabMap;
-}
-
 function createTpFpFnLegendElement() {
   return createPlotLegendElement([
     { label: "TP", color: getTpFpFnOutcomeColor("tp") },
     { label: "FP", color: getTpFpFnOutcomeColor("fp") },
     { label: "FN", color: getTpFpFnOutcomeColor("fn") },
   ]);
-}
-
-function buildTpFpFnCellSummary(row, col, stats, totalEvaluations, evaluationLabels, precision) {
-  const tpShare = totalEvaluations ? (stats.counts.tp / totalEvaluations) * 100 : 0;
-  const fpShare = totalEvaluations ? (stats.counts.fp / totalEvaluations) * 100 : 0;
-  const fnShare = totalEvaluations ? (stats.counts.fn / totalEvaluations) * 100 : 0;
-  const evaluations = stats.rowStates.map((rowState, evalIndex) => {
-    const outcomes = TP_FP_FN_KEYS.filter((bucket) => rowState[bucket]);
-    return {
-      run_dir: evaluationLabels[evalIndex] || `evaluation ${evalIndex + 1}`,
-      value: outcomes.map((bucket) => getTpFpFnOutcomeLabel(bucket)).join(", ") || "empty",
-    };
-  });
-
-  const lines = [
-    `document: ${row}`,
-    `label:    ${col}`,
-    `TP/FP/FN %: ${formatRounded(tpShare, precision)} / ${formatRounded(fpShare, precision)} / ${formatRounded(fnShare, precision)}`,
-  ];
-
-  return {
-    lines,
-    payload: {
-      document_id: row,
-      label: col,
-      counts: {
-        tp: stats.counts.tp,
-        fp: stats.counts.fp,
-        fn: stats.counts.fn,
-        empty: stats.counts.empty,
-      },
-      percentages: {
-        tp: tpShare,
-        fp: fpShare,
-        fn: fnShare,
-      },
-      evaluations,
-    },
-  };
 }
 
 function createTpFpFnCombinedMatrixSvg(aggregation, precision) {
@@ -2879,76 +1965,6 @@ function createTpFpFnCombinedMatrixSvg(aggregation, precision) {
 
   scheduleAdaptiveSvgFit(svg, contentGroup, width, height);
   return svg;
-}
-
-function buildPlotEntries(metricPaths, plotGroups, groupBarFields, categoryFields) {
-  const entries = [];
-  for (const metricPath of metricPaths) {
-    const points = [];
-    plotGroups.forEach((group, index) => {
-      const values = group.evaluations
-            .map((evaluation) => Number(getValueAtPath(evaluation.data, metricPath.parts)))
-        .filter((value) => Number.isFinite(value));
-      const stats = meanAndStd(values);
-      if (!stats) {
-        return;
-      }
-      const categoryLabel = groupBarFields.length
-        ? getGroupLabelForFields(group, categoryFields, "all")
-        : getGroupLabelForFields(group, categoryFields, `group ${index + 1}`);
-      const displayCategoryLabel = groupBarFields.length
-        ? getGroupLabelForFields(group, categoryFields, "all", displayPlotGroupFieldName)
-        : getGroupLabelForFields(group, categoryFields, `group ${index + 1}`, displayPlotGroupFieldName);
-      const seriesLabel = groupBarFields.length
-        ? getGroupLabelForFields(group, groupBarFields, "series")
-        : "__single__";
-      const displaySeriesLabel = groupBarFields.length
-        ? getGroupLabelForFields(group, groupBarFields, "series", displayPlotGroupFieldName)
-        : "__single__";
-      points.push({
-        label: categoryLabel,
-        displayLabel: displayCategoryLabel,
-        category: categoryLabel,
-        displayCategory: displayCategoryLabel,
-        series: seriesLabel,
-        displaySeries: displaySeriesLabel,
-        mean: stats.mean,
-        std: stats.std,
-      });
-    });
-    if (!points.length) {
-      continue;
-    }
-    const split = splitMetricLabelAtLastDot(metricPath.label);
-    entries.push({ metricLabel: metricPath.label, parts: metricPath.parts, points, ...split });
-  }
-  return entries;
-}
-
-function buildBarsTabMap(plotEntries) {
-  const tabMap = new Map();
-  for (const entry of plotEntries) {
-    const tabKey = state.plotTabsBy === "suffix" ? entry.suffix : entry.prefix;
-    if (!tabMap.has(tabKey)) {
-      tabMap.set(tabKey, []);
-    }
-    tabMap.get(tabKey).push(entry);
-  }
-  return tabMap;
-}
-
-function buildErrorsTabMap(plotEntries) {
-  const totalKeys = new Set(["with_error", "no_error"]);
-  const total = plotEntries.filter((entry) => totalKeys.has(entry.parts[0]));
-  const details = plotEntries.filter((entry) => !totalKeys.has(entry.parts[0]));
-  const tabMap = new Map();
-  if (total.length) {
-    tabMap.set("total", total);
-  }
-  if (details.length) {
-    tabMap.set("details", details);
-  }
-  return tabMap;
 }
 
 function renderPlotTabsAndGrid(tabMap, activeExperiment, groupBarFields, metricType) {
@@ -3153,13 +2169,18 @@ function renderEvaluationPlots(
     // Confusion plots do not reuse the generic metric plot path below; they get their own tab map
     // and heatmap rendering because the aggregation shape is matrix-like instead of metric-like.
     const labelFields = varyingPlotGroupFields.length ? varyingPlotGroupFields : plotGroupFields;
-    const confusionTabMap = buildConfusionTabMap(
+    const confusionTabMap = buildConfusionTabMap({
       activeExperiment,
       plotGroups,
       experimentEvaluations,
       labelFields,
-      evalTabState
-    );
+      evalTabState,
+      confusionTabsBy: state.confusionTabsBy,
+      getEvaluationEffectiveValue,
+      getEvaluationExperiment,
+      displayPlotGroupFieldName,
+      shortenLabels: state.plotShortenLabels,
+    });
     const sortedConfusionTabKeys = Array.from(confusionTabMap.keys()).sort((a, b) =>
       confusionTabMap.get(a).label.localeCompare(confusionTabMap.get(b).label)
     );
@@ -3212,7 +2233,12 @@ function renderEvaluationPlots(
       card.className = "plot-card";
       const title = document.createElement("p");
       title.className = "plot-title";
-      const fieldTitle = getConfusionMatrixTitle(plotEntry.evaluations, evalTabState);
+      const fieldTitle = getConfusionMatrixTitle({
+        experimentEvaluations: plotEntry.evaluations,
+        evalTabState,
+        getEvaluationEffectiveValue,
+        shortenLabels: state.plotShortenLabels,
+      });
       if (state.confusionTabsBy === "metric_field") {
         title.textContent = `${plotEntry.label} (mean ± std)`;
       } else {
@@ -3239,12 +2265,15 @@ function renderEvaluationPlots(
 
   if (metricType === "TpFpFnCollector") {
     const labelFields = varyingPlotGroupFields.length ? varyingPlotGroupFields : plotGroupFields;
-    const tpfpfnTabMap = buildTpFpFnTabMap(
+    const tpfpfnTabMap = buildTpFpFnTabMap({
       plotGroups,
       experimentEvaluations,
       labelFields,
-      evalTabState
-    );
+      evalTabState,
+      confusionTabsBy: state.confusionTabsBy,
+      getEvaluationEffectiveValue,
+      displayPlotGroupFieldName,
+    });
     const sortedTabKeys = Array.from(tpfpfnTabMap.keys()).sort((a, b) =>
       tpfpfnTabMap.get(a).label.localeCompare(tpfpfnTabMap.get(b).label)
     );
@@ -3306,7 +2335,12 @@ function renderEvaluationPlots(
       card.className = "plot-card";
       const title = document.createElement("p");
       title.className = "plot-title";
-      const fieldTitle = getConfusionMatrixTitle(plotEntry.evaluations, evalTabState);
+      const fieldTitle = getConfusionMatrixTitle({
+        experimentEvaluations: plotEntry.evaluations,
+        evalTabState,
+        getEvaluationEffectiveValue,
+        shortenLabels: state.plotShortenLabels,
+      });
       if (state.confusionTabsBy === "metric_field") {
         title.textContent = `${plotEntry.label} (${aggregation.totalEvaluations} grouped evals)`;
       } else {
@@ -3370,7 +2404,15 @@ function renderEvaluationPlots(
   const groupBarFields = varyingGroupByFields.filter((field) => state.plotGroupBarFields.has(field));
   const categoryFields = varyingGroupByFields.filter((field) => !groupBarFields.includes(field));
 
-  const plotEntries = buildPlotEntries(metricPaths, plotGroups, groupBarFields, categoryFields);
+  const plotEntries = buildPlotEntries({
+    metricPaths,
+    plotGroups,
+    groupBarFields,
+    categoryFields,
+    getGroupLabel: (group, fields, fallback, formatter = displayGroupFieldName) =>
+      getGroupLabelForFields(group, fields, fallback, formatter),
+    displayGroupFieldName: displayPlotGroupFieldName,
+  });
   if (!plotEntries.length) {
     const msg = document.createElement("p");
     msg.className = "plot-empty";
@@ -3381,7 +2423,7 @@ function renderEvaluationPlots(
 
   const tabMap = metricType === "ErrorCollector"
     ? buildErrorsTabMap(plotEntries)
-    : buildBarsTabMap(plotEntries);
+    : buildBarsTabMap(plotEntries, { plotTabsBy: state.plotTabsBy });
 
   renderPlotTabsAndGrid(tabMap, activeExperiment, groupBarFields, metricType);
 }

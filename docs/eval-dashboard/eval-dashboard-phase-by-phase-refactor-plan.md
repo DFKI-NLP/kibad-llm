@@ -82,7 +82,7 @@ As of the current repository state:
 
 ### Status checkpoint
 
-The repository is currently **through Phase 10B and ready for Phase 11**:
+The repository is currently **through Phase 11 and ready for Phase 12**:
 
 - Phase 0 baseline artifacts landed
 - Phase 1 folder migration and compatibility shim landed
@@ -96,8 +96,9 @@ The repository is currently **through Phase 10B and ready for Phase 11**:
 - Phase 9 DOM-ref capture extraction, shared table-helper extraction, status/progress rendering extraction, browser-session extraction, and targeted JS logic tests landed
 - Phase 10A controls extraction, tabs extraction, eval-JSON-pane extraction, and targeted JS logic tests landed
 - Phase 10B prediction/evaluation table extraction, shared select-header/static-control helper extraction, and targeted JS logic tests landed
+- Phase 11 plot/export helper extraction landed under `assets/js/plots/`, with targeted JS logic tests for shared plot entries, legend models, confusion aggregation, TP/FP/FN aggregation, and ZIP/export behavior
 
-That means the next implementation step is to **start Phase 11**, not to reopen Phase 10B: keep reusing the now-stable Phase 9 DOM/table/status/browser infrastructure, the landed Phase 10A controls/tabs/JSON-pane modules, and the newly landed Phase 10B `ui/prediction-table.js` plus `ui/evaluation-table.js` modules while moving the remaining plot aggregation, legend, and export code behind dedicated `plots/` modules.
+That means the next implementation step is to **start Phase 12**, not to reopen Phase 11: keep reusing the now-stable Phase 9 DOM/table/status/browser infrastructure, the landed Phase 10A controls/tabs/JSON-pane modules, the landed Phase 10B `ui/prediction-table.js` plus `ui/evaluation-table.js` modules, and the Phase 11 `plots/` helper modules while reducing `main.js` toward orchestration-only code.
 
 The earlier wording here was directionally correct but still too broad. After looking at the actual post-Phase-9 `main.js`, the remaining work is not just “UI”: it is a mix of large prediction/evaluation renderers, JSON highlighting and selection behavior, plot/export implementations, and many one-line pass-through wrappers around already-extracted helpers. The follow-up phases should separate those concerns explicitly and prefer DOM-free helper/view-model extraction wherever possible.
 
@@ -1584,6 +1585,20 @@ docs/eval-dashboard/assets/js/plots/
 - browser download/save helpers
 - clipboard-export helpers if TP/FP/FN JSON-copy behavior stays part of the dashboard
 
+### Landed Phase 11 outcome
+
+The current branch now matches Phase 11 at the deterministic helper boundary:
+
+- `docs/eval-dashboard/assets/js/plots/` now contains `shared.js`, `bars.js`, `legend.js`, `confusion.js`, `tpfpfn.js`, and `export.js`
+- `docs/eval-dashboard/assets/js/main.js` now delegates shared plot display labels, metric-path collection, plot-entry shaping, bars/errors tab maps, grouped legend models, confusion-matrix collection expansion/aggregation/filtering/tab maps, TP/FP/FN normalization/aggregation/filtering/tab maps/copy summaries, and figure filename/CRC/ZIP/SVG serialization helper behavior to `plots/`
+- `tests/unit/eval_dashboard/js/plots.shared.test.mjs` covers metric-path collection, plot-entry derivation, tab maps, display-title behavior, varying fields, and grouped legend models
+- `tests/unit/eval_dashboard/js/plots.confusion.test.mjs` covers collection expansion, distinct-run counting, matrix aggregation/filtering, metric-field tabs, prediction-group tabs, and title derivation
+- `tests/unit/eval_dashboard/js/plots.tpfpfn.test.mjs` covers both supported collector input shapes, collection expansion, combined aggregation/filtering, tab maps, outcome colors, and cell copy-summary payloads
+- `tests/unit/eval_dashboard/js/plots.export.test.mjs` covers figure/archive filename derivation, viewBox fallback parsing, opaque-background resolution, CRC32, byte concatenation, and uncompressed ZIP creation
+- `tests/unit/eval_dashboard/test_eval_dashboard_entrypoint.py`, `tests/unit/eval_dashboard/test_eval_dashboard_baseline_contract.py`, `tests/unit/eval_dashboard/js/README.md`, and `tests/fixtures/eval_dashboard/baseline/baseline-summary.json` now record the Phase 11 plot/export module contract explicitly
+
+Some browser-only SVG DOM renderers and small browser adapters still live in `main.js`; Phase 12 should decide whether moving those behind thin plot-rendering adapters improves readability enough to justify more DOM-oriented seams before optional browser-level UI tests exist.
+
 ### Design rule
 
 Plot modules should depend on selector/data outputs, not on raw DOM state spread throughout the codebase.
@@ -1771,7 +1786,7 @@ If needed, these can be grouped into fewer PRs:
 - PR 4: loaders + UI infrastructure + controls/tabs/JSON-pane extraction
 - PR 5: prediction/evaluation table extraction + plot/export modules + final cleanup + coverage pass
 
-From the current repository state, work should next continue with **Phase 11**: move the remaining plot aggregation, legend, and export logic behind dedicated `plots/` modules while reusing the now-stable Phase 9 DOM/table/status/browser infrastructure, the landed Phase 10A controls/tabs/JSON-pane modules, the landed Phase 10B table-renderer modules, and the already-stable Phase 8 source-loader/ingestion boundary.
+From the current repository state, work should next continue with **Phase 12**: reduce `main.js` to orchestration-only code while reusing the now-stable Phase 9 DOM/table/status/browser infrastructure, the landed Phase 10A controls/tabs/JSON-pane modules, the landed Phase 10B table-renderer modules, the Phase 11 plot/export helpers, and the already-stable Phase 8 source-loader/ingestion boundary.
 
 After each completed PR or phase in that sequence, refresh the planning docs under `docs/eval-dashboard/` before moving on so the written plan keeps matching the repository state and `CONTRIBUTING.md` expectations.
 
@@ -1805,11 +1820,10 @@ ______________________________________________________________________
 
 Given the current repository state, the safest next implementation step is:
 
-1. extract the DOM-free plot aggregation and tab-map helpers into `docs/eval-dashboard/assets/js/plots/shared.js`, `plots/bars.js`, `plots/confusion.js`, and `plots/tpfpfn.js` before splitting out more UI helpers
-1. keep the already-landed thin plot-control surface in `ui/controls.js` and move only plot-family-specific aggregation/SVG/legend/export behavior into the new `plots/` modules
-1. add JS-native tests for any newly extracted aggregation, tab-map, legend-model, or export-helper seams that stay stable without a heavy DOM harness
-1. keep the Phase 9 shared DOM/table/status/browser helpers plus the landed Phase 10A and Phase 10B table/UI modules as stable dependencies rather than reintroducing plot-specific helpers in `main.js`
+1. remove avoidable one-line pass-through wrappers from `main.js` where direct selector/store/UI/plot module calls are clearer
+1. decide whether the remaining browser-only SVG DOM renderers should stay in `main.js` as orchestration adapters or move into thin `plots/` rendering modules
+1. keep the Phase 9 shared DOM/table/status/browser helpers plus the landed Phase 10A, Phase 10B, and Phase 11 modules as stable dependencies rather than reintroducing helper logic in `main.js`
 1. extend structural/docs smoke coverage as needed and keep Python focused on structural/docs/fixture contracts while the permanent Node.js-native runner continues to cover extracted dashboard logic
-1. update the planning docs in `docs/eval-dashboard/` after Phase 11 lands, and confirm the change set complies with `CONTRIBUTING.md`
+1. update the planning docs in `docs/eval-dashboard/` after Phase 12 lands, and confirm the change set complies with `CONTRIBUTING.md`
 
-That continues the next smallest behavior-preserving extraction boundary after Phase 10B: keep Python for structural/docs/fixture smoke coverage, keep the minimal JS-native runner for extracted dashboard logic, and next move the remaining plot/export implementation out of `main.js` as coarse module units before the final orchestration-only cleanup pass.
+That continues the next smallest behavior-preserving extraction boundary after Phase 11: keep Python for structural/docs/fixture smoke coverage, keep the minimal JS-native runner for extracted dashboard logic, and next make `main.js` a clearer bootstrap/orchestration layer rather than a place where reusable helper seams accumulate.
