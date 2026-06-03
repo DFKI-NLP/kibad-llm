@@ -190,10 +190,6 @@ function getCurrentPredictionGroups() {
   return predictionGroups;
 }
 
-function getEvaluationEffectiveValue(evaluation, column, evalTabState) {
-  return selectors.getEvaluationEffectiveValue(evaluation, column, evalTabState);
-}
-
 /**
  * Flatten the currently selected prediction groups into their member prediction views.
  */
@@ -301,10 +297,6 @@ function getPlotTitleLabel(plotEntry, metricType) {
   });
 }
 
-function displayPlotGroupFieldName(column) {
-  return getPlotDisplayLabel(displayGroupFieldName(column));
-}
-
 function getDefaultTruncateColumns(predictionColumns) {
   return selectors.getDefaultTruncateColumns(predictionColumns);
 }
@@ -318,10 +310,6 @@ function getDefaultGroupByFields(predictionColumns, predictionViews = getPredict
 
 function getDefaultEvalGroupByFields(evalColumns, evaluations = []) {
   return selectors.getDefaultEvalGroupByFields(evalColumns, evaluations);
-}
-
-function getDefaultEvalTruncateColumns() {
-  return new Set();
 }
 
 function setConfiguredDefault(defaults, column, value) {
@@ -365,7 +353,7 @@ function ensureEvalTabState(
   return dashboardStore.ensureEvalTabState(state, experiment, evalColumns, {
     evaluations,
     getDefaultEvalGroupByFields,
-    getDefaultEvalTruncateColumns,
+    getDefaultEvalTruncateColumns: () => new Set(),
   });
 }
 
@@ -903,35 +891,6 @@ function renderPredictions() {
 }
 
 /**
- * Group evaluations by the active prediction and evaluation grouping fields.
- * The returned group shape matches the current evaluation table/rendering expectations.
- */
-function getEvaluationGroups(
-  evaluations,
-  groupByFields,
-  predictionGroupByFields = state.groupByFields,
-  evalTabState = state.activeEvalTab ? state.evalTabStates[state.activeEvalTab] : null
-) {
-  return selectors.getEvaluationGroups(state, evaluations, groupByFields, predictionGroupByFields, evalTabState);
-}
-
-function getSortedEvaluationGroups(groups, evalTabState) {
-  return selectors.getSortedEvaluationGroups(groups, evalTabState);
-}
-
-function getSortedEvaluations(evaluations, evalTabState) {
-  return selectors.getSortedEvaluations(evaluations, evalTabState);
-}
-
-/**
- * Synchronize evaluation-group UI state with the currently derived evaluation groups
- * and experiment evaluations.
- */
-function syncEvaluationGroupUiState(evalTabState, evaluationGroups, experimentEvaluations) {
-  dashboardStore.syncEvaluationGroupUiState(evalTabState, evaluationGroups, experimentEvaluations);
-}
-
-/**
  * Return the current evaluation context derived from canonical state and current evaluation UI settings.
  */
 function getEvaluationContext(
@@ -984,9 +943,9 @@ function renderEvaluationPlots(
     getSelectedEvaluationGroups,
     getMetricTypeForEvaluationContext,
     getPlotGroups,
-    getEvaluationEffectiveValue,
+    getEvaluationEffectiveValue: selectors.getEvaluationEffectiveValue,
     getEvaluationExperiment: selectors.getEvaluationExperiment,
-    displayPlotGroupFieldName,
+    displayPlotGroupFieldName: (column) => getPlotDisplayLabel(displayGroupFieldName(column)),
     displayGroupFieldName,
     getPlotDisplayLabel,
     getPlotTitleLabel,
@@ -1124,7 +1083,7 @@ function renderEvaluations() {
     },
   });
 
-  const displayedEvalGroups = getSortedEvaluationGroups(evaluationGroups, evalTabState);
+  const displayedEvalGroups = selectors.getSortedEvaluationGroups(evaluationGroups, evalTabState);
 
   renderEvaluationTable({
     documentLike: document,
@@ -1185,8 +1144,8 @@ function renderEvaluations() {
       renderEvaluations();
     },
     getGroupValueDisplayFromEvaluations: selectors.getGroupValueDisplayFromEvaluations,
-    getEvaluationEffectiveValue,
-    getSortedEvaluations,
+    getEvaluationEffectiveValue: selectors.getEvaluationEffectiveValue,
+    getSortedEvaluations: selectors.getSortedEvaluations,
     sortableControlColumns: SORTABLE_CONTROL_COLUMNS,
   });
 
