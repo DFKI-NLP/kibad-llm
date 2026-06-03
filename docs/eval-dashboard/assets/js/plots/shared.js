@@ -12,11 +12,26 @@ export const plotSortCollator = new Intl.Collator(undefined, {
   sensitivity: "base",
 });
 
+/**
+ * Formats a plot label, optionally shortening dotted paths to their suffix.
+ *
+ * @param {*} label - Raw label value.
+ * @param {object} [options] - Display options.
+ * @returns {string} Normalized label text.
+ */
 export function getPlotDisplayLabel(label, { shortenLabels = false } = {}) {
   const text = normalizeValue(label);
   return shortenLabels ? splitLabelByLastDot(text) : text;
 }
 
+/**
+ * Resolves the display title for a metric plot entry.
+ *
+ * @param {object} plotEntry - Plot entry created by buildPlotEntries.
+ * @param {string} metricType - Metric type for special title handling.
+ * @param {object} [options] - Label and tab display options.
+ * @returns {string} Display title label.
+ */
 export function getPlotTitleLabel(plotEntry, metricType, { shortenLabels = false, plotTabsBy = "prefix" } = {}) {
   if (
     metricType === "F1MicroMultipleFieldsMetric" &&
@@ -28,6 +43,12 @@ export function getPlotTitleLabel(plotEntry, metricType, { shortenLabels = false
   return getPlotDisplayLabel(plotEntry.metricLabel, { shortenLabels });
 }
 
+/**
+ * Selects a deterministic bar color from the dashboard palette.
+ *
+ * @param {number} index - Zero-based series index.
+ * @returns {string} Hex color value.
+ */
 export function getBarColor(index) {
   const palette = [
     "#60a5fa",
@@ -44,11 +65,26 @@ export function getBarColor(index) {
   return palette[index % palette.length];
 }
 
+/**
+ * Applies shared visual styling to an SVG error-bar line segment.
+ *
+ * @param {SVGLineElement} line - Line element to style.
+ * @returns {void}
+ */
 export function styleErrorBarSegment(line) {
   line.setAttribute("stroke", "currentColor");
   line.setAttribute("stroke-opacity", "0.78");
 }
 
+/**
+ * Expands an SVG viewport so all generated plot content is visible.
+ *
+ * @param {SVGSVGElement} svg - SVG element to resize.
+ * @param {SVGGElement} contentGroup - Group whose bounding box is measured.
+ * @param {number} minWidth - Minimum SVG width.
+ * @param {number} minHeight - Minimum SVG height.
+ * @returns {boolean} True when fitting succeeded.
+ */
 export function fitSvgToContents(svg, contentGroup, minWidth, minHeight) {
   if (!svg.isConnected) {
     return false;
@@ -87,6 +123,12 @@ export function fitSvgToContents(svg, contentGroup, minWidth, minHeight) {
   return true;
 }
 
+/**
+ * Schedules repeated SVG fitting attempts after layout and font loading.
+ *
+ * @param {object} options - Fitting dependencies and dimensions.
+ * @returns {void}
+ */
 export function scheduleAdaptiveSvgFit({
   documentLike = globalThis.document,
   requestAnimationFrameLike = globalThis.requestAnimationFrame,
@@ -115,6 +157,12 @@ export function scheduleAdaptiveSvgFit({
   }
 }
 
+/**
+ * Builds a shared legend model for grouped bar plot entries.
+ *
+ * @param {Array<object>} entries - Plot entries containing grouped points.
+ * @returns {object} Series order, display labels, colors, and legend items.
+ */
 export function buildGroupedLegendModel(entries) {
   const seriesOrder = [];
   const seenSeries = new Set();
@@ -143,6 +191,13 @@ export function buildGroupedLegendModel(entries) {
   return { seriesOrder, displayBySeries, colorBySeries, items };
 }
 
+/**
+ * Filters a legend model down to the series present in a point collection.
+ *
+ * @param {Array<object>} points - Points rendered in a plot.
+ * @param {?object} legendModel - Shared legend model.
+ * @returns {Array<object>} Legend items used by the points.
+ */
 export function getLegendItemsForPoints(points, legendModel) {
   if (!legendModel) {
     return [];
@@ -151,6 +206,13 @@ export function getLegendItemsForPoints(points, legendModel) {
   return legendModel.items.filter((item) => seriesInPoints.has(item.series));
 }
 
+/**
+ * Finds grouping fields whose values differ across groups.
+ *
+ * @param {Array<object>} groups - Plot groups with value maps.
+ * @param {Array<string>} fields - Candidate field names.
+ * @returns {Array<string>} Fields with more than one normalized value.
+ */
 export function getVaryingFields(groups, fields) {
   if (!fields.length || groups.length <= 1) {
     return [];
@@ -161,6 +223,15 @@ export function getVaryingFields(groups, fields) {
   });
 }
 
+/**
+ * Builds a readable label from selected group fields.
+ *
+ * @param {object} group - Plot group containing values.
+ * @param {Array<string>} labelFields - Field names to include.
+ * @param {string} fallback - Label used when no fields are selected.
+ * @param {Function} [fieldNameFormatter] - Formatter for field names.
+ * @returns {string} Group label text.
+ */
 export function getGroupLabelForFields(
   group,
   labelFields,
@@ -175,6 +246,14 @@ export function getGroupLabelForFields(
     .join(" | ");
 }
 
+/**
+ * Recursively collects numeric leaf paths from a metric data object.
+ *
+ * @param {*} value - Metric data value to inspect.
+ * @param {Array<string>} [parts] - Current path parts during recursion.
+ * @param {Map<string, Array<string>>} [out] - Accumulator keyed by encoded paths.
+ * @returns {Map<string, Array<string>>} Numeric metric leaf paths.
+ */
 export function collectNumericMetricLeafPaths(value, parts = [], out = new Map()) {
   if (!value || typeof value !== "object") {
     return out;
@@ -192,6 +271,12 @@ export function collectNumericMetricLeafPaths(value, parts = [], out = new Map()
   return out;
 }
 
+/**
+ * Splits a metric label into prefix and suffix at the final dot.
+ *
+ * @param {string} label - Metric label.
+ * @returns {{prefix: string, suffix: string}} Split label components.
+ */
 export function splitMetricLabelAtLastDot(label) {
   const lastDotIndex = label.lastIndexOf(".");
   if (lastDotIndex === -1) {
@@ -203,6 +288,12 @@ export function splitMetricLabelAtLastDot(label) {
   };
 }
 
+/**
+ * Converts metric paths and evaluation groups into plottable bar entries.
+ *
+ * @param {object} options - Plot entry construction inputs.
+ * @returns {Array<object>} Plot entries with mean/std point data.
+ */
 export function buildPlotEntries({
   metricPaths,
   plotGroups,
@@ -254,6 +345,13 @@ export function buildPlotEntries({
   return entries;
 }
 
+/**
+ * Groups metric plot entries into bar plot tabs.
+ *
+ * @param {Array<object>} plotEntries - Entries produced by buildPlotEntries.
+ * @param {object} [options] - Tab grouping options.
+ * @returns {Map<string, Array<object>>} Tab map keyed by prefix or suffix.
+ */
 export function buildBarsTabMap(plotEntries, { plotTabsBy = "prefix" } = {}) {
   const tabMap = new Map();
   for (const entry of plotEntries) {
@@ -266,6 +364,12 @@ export function buildBarsTabMap(plotEntries, { plotTabsBy = "prefix" } = {}) {
   return tabMap;
 }
 
+/**
+ * Splits error metric entries into total and details tabs.
+ *
+ * @param {Array<object>} plotEntries - Error metric plot entries.
+ * @returns {Map<string, Array<object>>} Tab map for available error sections.
+ */
 export function buildErrorsTabMap(plotEntries) {
   const totalKeys = new Set(["with_error", "no_error"]);
   const total = plotEntries.filter((entry) => totalKeys.has(entry.parts[0]));

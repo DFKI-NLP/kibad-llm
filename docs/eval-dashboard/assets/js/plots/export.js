@@ -7,6 +7,13 @@ import {
   sanitizeFigureFilename,
 } from "../utils/text.js";
 
+/**
+ * Creates a sanitized SVG filename that is unique within a figure set.
+ *
+ * @param {string} title - Figure title used as the filename source.
+ * @param {Set<string>} usedNames - Case-insensitive names already assigned.
+ * @returns {string} Unique filename with an .svg extension.
+ */
 export function getUniqueFigureFilename(title, usedNames) {
   const baseName = sanitizeFigureFilename(getFigureTitlePrefix(title));
   let candidate = baseName;
@@ -19,6 +26,12 @@ export function getUniqueFigureFilename(title, usedNames) {
   return `${candidate}.svg`;
 }
 
+/**
+ * Builds the ZIP filename for the active evaluation and plot tabs.
+ *
+ * @param {object} options - Active evaluation tab and plot tab labels.
+ * @returns {string} Sanitized ZIP filename.
+ */
 export function buildPlotTabZipFilename({ activeEvalTab, activePlotTabLabel }) {
   const evalTabLabel = typeof activeEvalTab === "string" ? activeEvalTab.trim() : "";
   const filenameParts = [evalTabLabel, getFigureTitlePrefix(String(activePlotTabLabel || "figures").trim())]
@@ -27,6 +40,14 @@ export function buildPlotTabZipFilename({ activeEvalTab, activePlotTabLabel }) {
   return `${filenameParts.join("-") || "figures"}.zip`;
 }
 
+/**
+ * Parses an SVG viewBox, falling back to width and height when needed.
+ *
+ * @param {SVGSVGElement} svg - SVG element to inspect.
+ * @param {number|string} width - Fallback width.
+ * @param {number|string} height - Fallback height.
+ * @returns {{minX: number, minY: number, width: number, height: number}} Export view box.
+ */
 export function getSvgExportViewBox(svg, width, height) {
   const viewBox = svg.getAttribute("viewBox");
   if (!viewBox) {
@@ -42,6 +63,13 @@ export function getSvgExportViewBox(svg, width, height) {
   return { minX: parts[0], minY: parts[1], width: parts[2], height: parts[3] };
 }
 
+/**
+ * Finds the first opaque background color among candidate elements.
+ *
+ * @param {Iterable<Element>} elements - Elements checked in priority order.
+ * @param {Function} [getStyle] - Computed-style provider.
+ * @returns {string} CSS background color, or white when none is found.
+ */
 export function resolveOpaqueExportBackgroundColor(elements, getStyle = globalThis.getComputedStyle) {
   for (const element of elements || []) {
     if (!element) {
@@ -59,6 +87,12 @@ export function resolveOpaqueExportBackgroundColor(elements, getStyle = globalTh
   return "#ffffff";
 }
 
+/**
+ * Positions a tooltip near a pointer event while keeping it inside the viewport.
+ *
+ * @param {object} options - Tooltip element, viewport object, pointer event, and padding.
+ * @returns {void}
+ */
 export function positionTooltip({ tooltipElement, windowLike = globalThis.window, event, pad = 14 }) {
   let x = event.clientX + pad;
   let y = event.clientY - pad - tooltipElement.offsetHeight;
@@ -72,6 +106,12 @@ export function positionTooltip({ tooltipElement, windowLike = globalThis.window
   tooltipElement.style.top = `${y}px`;
 }
 
+/**
+ * Shows a tooltip with line-based text content.
+ *
+ * @param {object} options - Tooltip element, viewport object, event, and text lines.
+ * @returns {void}
+ */
 export function showTooltip({
   tooltipElement,
   windowLike = globalThis.window,
@@ -83,10 +123,22 @@ export function showTooltip({
   positionTooltip({ tooltipElement, windowLike, event });
 }
 
+/**
+ * Hides the shared tooltip element.
+ *
+ * @param {object} options - Tooltip element to hide.
+ * @returns {void}
+ */
 export function hideTooltip({ tooltipElement }) {
   tooltipElement.style.display = "none";
 }
 
+/**
+ * Writes text to the clipboard, using a textarea fallback for older browsers.
+ *
+ * @param {object} options - Clipboard dependencies and text content.
+ * @returns {Promise<void>} Resolves when copy succeeds.
+ */
 export async function writeTextToClipboard({
   documentLike = globalThis.document,
   navigatorLike = globalThis.navigator,
@@ -113,6 +165,12 @@ export async function writeTextToClipboard({
   }
 }
 
+/**
+ * Resolves the ZIP filename for the currently active plot tab button.
+ *
+ * @param {object} options - Active evaluation tab and plot tab container.
+ * @returns {string} Sanitized ZIP filename.
+ */
 export function getActivePlotTabZipFilename({
   activeEvalTab,
   evalPlotTabs,
@@ -125,6 +183,12 @@ export function getActivePlotTabZipFilename({
   });
 }
 
+/**
+ * Measures rendered text width using a temporary canvas.
+ *
+ * @param {object} options - Document dependency, text, and CSS font string.
+ * @returns {number} Text width in pixels.
+ */
 export function measureCanvasText({ documentLike = globalThis.document, text, font }) {
   const canvas = documentLike.createElement("canvas");
   const context = canvas.getContext("2d");
@@ -135,6 +199,12 @@ export function measureCanvasText({ documentLike = globalThis.document, text, fo
   return context.measureText(text).width;
 }
 
+/**
+ * Starts a browser download for a Blob via a temporary object URL.
+ *
+ * @param {object} options - DOM, URL, timer dependencies, filename, and blob.
+ * @returns {void}
+ */
 export function triggerBlobDownload({
   documentLike = globalThis.document,
   urlLike = globalThis.URL,
@@ -153,6 +223,12 @@ export function triggerBlobDownload({
   setTimeoutLike(() => urlLike.revokeObjectURL(url), 1000);
 }
 
+/**
+ * Saves a Blob with the File System Access API or falls back to download.
+ *
+ * @param {object} options - Save picker dependencies, blob metadata, and fallback callback.
+ * @returns {Promise<boolean>} True when a save/download was started, false on user abort.
+ */
 export async function saveBlob({
   windowLike = globalThis.window,
   blob,
@@ -180,10 +256,22 @@ export async function saveBlob({
   return true;
 }
 
+/**
+ * Returns visible plot cards that contain SVG figures.
+ *
+ * @param {Element} evalPlotContent - Plot content container.
+ * @returns {Array<Element>} Plot cards with SVG children.
+ */
 export function getVisiblePlotFigureCards(evalPlotContent) {
   return Array.from(evalPlotContent.querySelectorAll(".plot-card")).filter((card) => card.querySelector("svg"));
 }
 
+/**
+ * Serializes all visible figures, optionally including a shared legend file.
+ *
+ * @param {object} options - Figure cards, legend items, export options, and serializers.
+ * @returns {Array<{filename: string, content: string}>} Files ready for ZIP creation.
+ */
 export function buildVisibleFigureFiles({
   figureCards,
   activePlotLegendItems,
@@ -216,6 +304,12 @@ export function buildVisibleFigureFiles({
   return files;
 }
 
+/**
+ * Packages visible figures into a ZIP and prompts the user to save it.
+ *
+ * @param {object} options - Figure data, serializers, ZIP creator, saver, and filename provider.
+ * @returns {Promise<boolean>} True when a ZIP save/download was started.
+ */
 export async function downloadVisibleFigures({
   figureCards,
   activePlotLegendItems,
@@ -247,6 +341,12 @@ export async function downloadVisibleFigures({
   ]);
 }
 
+/**
+ * Inserts an opaque background rectangle as the first child of an SVG.
+ *
+ * @param {object} options - SVG, dimensions, color, and DOM dependency.
+ * @returns {void}
+ */
 export function prependExportBackgroundRect({
   documentLike = globalThis.document,
   svg,
@@ -264,6 +364,12 @@ export function prependExportBackgroundRect({
   svg.insertBefore(background, svg.firstChild);
 }
 
+/**
+ * Serializes legend items as a standalone SVG document.
+ *
+ * @param {object} options - Legend items, styling, export options, and serializer dependencies.
+ * @returns {string} XML SVG string, or an empty string when no items exist.
+ */
 export function serializeLegendSvg({
   documentLike = globalThis.document,
   serializer = new XMLSerializer(),
@@ -331,6 +437,12 @@ export function serializeLegendSvg({
   return `<?xml version="1.0" encoding="UTF-8"?>\n${serializer.serializeToString(svg)}`;
 }
 
+/**
+ * Clones and serializes a rendered SVG for download.
+ *
+ * @param {object} options - Source SVG, computed styles, export options, and serializer dependencies.
+ * @returns {string} XML SVG string.
+ */
 export function serializeSvgForDownload({
   documentLike = globalThis.document,
   serializer = new XMLSerializer(),
@@ -365,6 +477,12 @@ export function serializeSvgForDownload({
   return `<?xml version="1.0" encoding="UTF-8"?>\n${serializer.serializeToString(clone)}`;
 }
 
+/**
+ * Converts a JavaScript Date to ZIP DOS date/time fields.
+ *
+ * @param {Date} [date] - Timestamp to encode.
+ * @returns {{time: number, date: number}} DOS time and date bit fields.
+ */
 export function getZipDosDateTime(date = new Date()) {
   const year = Math.max(1980, date.getFullYear());
   return {
@@ -385,6 +503,12 @@ const crc32Table = (() => {
   return table;
 })();
 
+/**
+ * Computes a CRC-32 checksum for a byte array.
+ *
+ * @param {Uint8Array} bytes - Bytes to checksum.
+ * @returns {number} Unsigned CRC-32 value.
+ */
 export function computeCrc32(bytes) {
   let crc = 0xffffffff;
   for (const byte of bytes) {
@@ -393,6 +517,12 @@ export function computeCrc32(bytes) {
   return (crc ^ 0xffffffff) >>> 0;
 }
 
+/**
+ * Concatenates Uint8Array chunks into a single byte array.
+ *
+ * @param {Array<Uint8Array>} chunks - Byte chunks to combine.
+ * @returns {Uint8Array} Combined byte array.
+ */
 export function concatUint8Arrays(chunks) {
   const totalLength = chunks.reduce((sum, chunk) => sum + chunk.length, 0);
   const result = new Uint8Array(totalLength);
@@ -404,6 +534,13 @@ export function concatUint8Arrays(chunks) {
   return result;
 }
 
+/**
+ * Creates a simple ZIP Blob containing text files without compression.
+ *
+ * @param {Array<{name: string, content: string}>} files - Files to include.
+ * @param {object} [options] - ZIP timestamp and Blob constructor overrides.
+ * @returns {Blob} ZIP archive blob.
+ */
 export function createZipBlob(files, { date = new Date(), BlobCtor = globalThis.Blob } = {}) {
   const encoder = new TextEncoder();
   const fileDate = getZipDosDateTime(date);

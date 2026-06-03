@@ -17,6 +17,12 @@ export {
   buildPlotEntries,
 } from "./shared.js";
 
+/**
+ * Creates an SVG bar plot with mean bars and standard-deviation error bars.
+ *
+ * @param {object} options - Rendering dependencies, points, and tooltip handlers.
+ * @returns {SVGSVGElement} Rendered bar plot SVG.
+ */
 export function createBarPlotSvg({
   documentLike = globalThis.document,
   requestAnimationFrameLike = globalThis.requestAnimationFrame,
@@ -135,6 +141,12 @@ export function createBarPlotSvg({
   return svg;
 }
 
+/**
+ * Creates an SVG grouped bar plot with one bar per category/series pair.
+ *
+ * @param {object} options - Rendering dependencies, points, legend model, and tooltip handlers.
+ * @returns {SVGSVGElement} Rendered grouped bar plot SVG.
+ */
 export function createGroupedBarPlotSvg({
   documentLike = globalThis.document,
   requestAnimationFrameLike = globalThis.requestAnimationFrame,
@@ -303,6 +315,12 @@ export function createGroupedBarPlotSvg({
   return svg;
 }
 
+/**
+ * Renders plot tab buttons, optional legends, and the active plot grid.
+ *
+ * @param {object} options - Current tab state, plot data, DOM nodes, and renderer callbacks.
+ * @returns {{activeEvalPlotTab: string, activePlotLegendItems: Array<object>}} Updated active tab and shared legend items.
+ */
 export function renderPlotTabsAndGrid({
   documentLike = globalThis.document,
   tabMap,

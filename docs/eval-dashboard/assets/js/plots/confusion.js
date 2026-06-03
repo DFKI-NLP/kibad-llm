@@ -8,10 +8,23 @@ import {
   getPlotDisplayLabel,
 } from "./shared.js";
 
+/**
+ * Resolves the stable source run directory for a metric collection evaluation.
+ *
+ * @param {object} evaluation - Evaluation record.
+ * @returns {string} Normalized source run directory.
+ */
 export function getMetricCollectionSourceRunDir(evaluation) {
   return normalizeValue(evaluation?.sourceRunDir ?? evaluation?.runDir).trim();
 }
 
+/**
+ * Expands field-based metric collections into single-field evaluation records.
+ *
+ * @param {object} evaluation - Evaluation record to normalize.
+ * @param {object} options - Collection type names and fallback run id prefix.
+ * @returns {Array<object>} Expanded singular evaluations or the original evaluation.
+ */
 export function expandMetricFieldCollectionEvaluation(
   evaluation,
   { collectionType, singularType, fallbackRunDirPrefix }
@@ -59,6 +72,12 @@ export function expandMetricFieldCollectionEvaluation(
   ];
 }
 
+/**
+ * Expands a confusion-matrix collection evaluation into per-field matrices.
+ *
+ * @param {object} evaluation - Confusion-matrix-like evaluation record.
+ * @returns {Array<object>} Singular confusion matrix evaluations.
+ */
 export function expandConfusionMatrixLikeEvaluation(evaluation) {
   return expandMetricFieldCollectionEvaluation(evaluation, {
     collectionType: "ConfusionMatrixCollection",
@@ -67,10 +86,22 @@ export function expandConfusionMatrixLikeEvaluation(evaluation) {
   });
 }
 
+/**
+ * Normalizes a list of confusion-matrix-like evaluations.
+ *
+ * @param {Array<object>} evaluations - Raw evaluation records.
+ * @returns {Array<object>} Flattened singular confusion matrix evaluations.
+ */
 export function normalizeConfusionMatrixLikeEvaluations(evaluations) {
   return (evaluations || []).flatMap((evaluation) => expandConfusionMatrixLikeEvaluation(evaluation));
 }
 
+/**
+ * Counts distinct source runs represented by confusion-matrix evaluations.
+ *
+ * @param {Array<object>} evaluations - Evaluation records.
+ * @returns {number} Number of unique non-empty source run directories.
+ */
 export function countDistinctConfusionMatrixRuns(evaluations) {
   return new Set(
     (evaluations || [])
@@ -79,6 +110,12 @@ export function countDistinctConfusionMatrixRuns(evaluations) {
   ).size;
 }
 
+/**
+ * Builds the display title for a confusion matrix plot group.
+ *
+ * @param {object} options - Evaluations, tab state, value resolver, and label options.
+ * @returns {string} Title describing the selected metric.field values.
+ */
 export function getConfusionMatrixTitle({
   experimentEvaluations,
   evalTabState,
@@ -102,6 +139,12 @@ export function getConfusionMatrixTitle({
     .join(", ")}`;
 }
 
+/**
+ * Aggregates confusion matrix cells across evaluations into mean/std values.
+ *
+ * @param {Array<object>} experimentEvaluations - Singular confusion matrix evaluations.
+ * @returns {{rows: Array<string>, cols: Array<string>, cells: Map<string, object>}} Aggregated matrix.
+ */
 export function getConfusionMatrixAggregation(experimentEvaluations) {
   const rowLabels = new Set();
   const colLabels = new Set();
@@ -153,6 +196,13 @@ export function getConfusionMatrixAggregation(experimentEvaluations) {
   return { rows, cols, cells };
 }
 
+/**
+ * Removes matrix rows and columns whose mean totals are below a threshold.
+ *
+ * @param {object} aggregation - Confusion matrix aggregation.
+ * @param {number} minLabelTotal - Minimum row/column total to keep.
+ * @returns {object} Filtered aggregation with totals.
+ */
 export function filterConfusionMatrixAggregationByLabelTotal(aggregation, minLabelTotal) {
   const threshold = Number.isFinite(minLabelTotal) ? Math.max(0, Number(minLabelTotal)) : 0;
   if (!aggregation || threshold <= 0) {
@@ -222,6 +272,12 @@ export function filterConfusionMatrixAggregationByLabelTotal(aggregation, minLab
   };
 }
 
+/**
+ * Builds confusion-matrix plot tabs grouped by metric field or plot group.
+ *
+ * @param {object} options - Plot groups, evaluations, tab mode, and label helpers.
+ * @returns {Map<string, object>} Tab map with labels and plot definitions.
+ */
 export function buildConfusionTabMap({
   activeExperiment,
   plotGroups,
@@ -301,6 +357,12 @@ export function buildConfusionTabMap({
   return tabMap;
 }
 
+/**
+ * Creates an SVG heatmap for an aggregated confusion matrix.
+ *
+ * @param {object} options - Aggregation, precision, label formatter, and tooltip handlers.
+ * @returns {SVGSVGElement} Rendered heatmap SVG.
+ */
 export function createConfusionMatrixHeatmapSvg({
   documentLike = globalThis.document,
   aggregation,

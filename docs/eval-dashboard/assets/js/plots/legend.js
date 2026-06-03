@@ -7,6 +7,12 @@ export {
   getLegendItemsForPoints,
 } from "./shared.js";
 
+/**
+ * Builds the DOM element used to display plot series legend items.
+ *
+ * @param {object} options - Legend rendering options.
+ * @returns {HTMLElement} A legend container with swatches and labels.
+ */
 export function createPlotLegendElement({ documentLike = globalThis.document, legendItems }) {
   const legend = documentLike.createElement("div");
   legend.className = "plot-legend";

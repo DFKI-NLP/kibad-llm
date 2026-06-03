@@ -13,6 +13,12 @@ import {
 import { expandMetricFieldCollectionEvaluation } from "./confusion.js";
 import { createPlotLegendElement } from "./legend.js";
 
+/**
+ * Expands a TP/FP/FN collector collection into per-field collector evaluations.
+ *
+ * @param {object} evaluation - TP/FP/FN-like evaluation record.
+ * @returns {Array<object>} Singular TP/FP/FN collector evaluations.
+ */
 export function expandTpFpFnLikeEvaluation(evaluation) {
   return expandMetricFieldCollectionEvaluation(evaluation, {
     collectionType: "TpFpFnCollectorCollection",
@@ -21,10 +27,22 @@ export function expandTpFpFnLikeEvaluation(evaluation) {
   });
 }
 
+/**
+ * Normalizes a list of TP/FP/FN-like evaluations.
+ *
+ * @param {Array<object>} evaluations - Raw evaluation records.
+ * @returns {Array<object>} Flattened singular collector evaluations.
+ */
 export function normalizeTpFpFnLikeEvaluations(evaluations) {
   return (evaluations || []).flatMap((evaluation) => expandTpFpFnLikeEvaluation(evaluation));
 }
 
+/**
+ * Converts an outcome key to its display label.
+ *
+ * @param {string} outcomeKey - Outcome key such as tp, fp, or fn.
+ * @returns {string} Uppercase outcome label.
+ */
 export function getTpFpFnOutcomeLabel(outcomeKey) {
   if (outcomeKey === "tp") {
     return "TP";
@@ -38,6 +56,12 @@ export function getTpFpFnOutcomeLabel(outcomeKey) {
   return String(outcomeKey ?? "").toUpperCase();
 }
 
+/**
+ * Returns the heatmap color palette for a TP/FP/FN outcome.
+ *
+ * @param {string} outcomeKey - Outcome key such as tp, fp, or fn.
+ * @returns {{start: Array<number>, end: Array<number>}} RGB interpolation endpoints.
+ */
 export function getTpFpFnPalette(outcomeKey) {
   if (outcomeKey === "tp") {
     return { start: [240, 253, 244], end: [22, 163, 74] };
@@ -51,6 +75,12 @@ export function getTpFpFnPalette(outcomeKey) {
   return { start: [247, 251, 255], end: [8, 48, 107] };
 }
 
+/**
+ * Resolves the saturated display color for a TP/FP/FN outcome.
+ *
+ * @param {string} outcomeKey - Outcome key such as tp, fp, or fn.
+ * @returns {string} CSS color string.
+ */
 export function getTpFpFnOutcomeColor(outcomeKey) {
   if (!outcomeKey) {
     return "#e2e8f0";
@@ -58,6 +88,12 @@ export function getTpFpFnOutcomeColor(outcomeKey) {
   return interpolateColor(getTpFpFnPalette(outcomeKey).start, getTpFpFnPalette(outcomeKey).end, 1);
 }
 
+/**
+ * Normalizes collector output into document ids mapped to tp/fp/fn label lists.
+ *
+ * @param {*} rawData - Collector data in per-document or global bucket form.
+ * @returns {object} Normalized record map.
+ */
 export function normalizeTpFpFnCollectorData(rawData) {
   const result = {};
 
@@ -114,6 +150,12 @@ export function normalizeTpFpFnCollectorData(rawData) {
   return result;
 }
 
+/**
+ * Aggregates TP/FP/FN collector data across evaluations.
+ *
+ * @param {Array<object>} experimentEvaluations - Singular collector evaluations.
+ * @returns {object} Aggregated rows, columns, cell states, counts, and evaluation labels.
+ */
 export function getTpFpFnCombinedAggregation(experimentEvaluations) {
   const rowLabels = new Set();
   const colLabels = new Set();
@@ -184,6 +226,14 @@ export function getTpFpFnCombinedAggregation(experimentEvaluations) {
   };
 }
 
+/**
+ * Filters TP/FP/FN rows and columns by document and label totals.
+ *
+ * @param {object} aggregation - Combined TP/FP/FN aggregation.
+ * @param {number} minLabelTotal - Minimum column total to keep.
+ * @param {number} minDocumentTotal - Minimum row total to keep.
+ * @returns {object} Filtered aggregation with totals.
+ */
 export function filterTpFpFnAggregationByTotals(aggregation, minLabelTotal, minDocumentTotal) {
   const labelThreshold = Number.isFinite(minLabelTotal) ? Math.max(0, Number(minLabelTotal)) : 0;
   const documentThreshold = Number.isFinite(minDocumentTotal) ? Math.max(0, Number(minDocumentTotal)) : 0;
@@ -263,6 +313,12 @@ export function filterTpFpFnAggregationByTotals(aggregation, minLabelTotal, minD
   };
 }
 
+/**
+ * Builds TP/FP/FN plot tabs grouped by metric field or plot group.
+ *
+ * @param {object} options - Plot groups, evaluations, tab mode, and label helpers.
+ * @returns {Map<string, object>} Tab map with labels and plot definitions.
+ */
 export function buildTpFpFnTabMap({
   plotGroups,
   experimentEvaluations,
@@ -344,6 +400,17 @@ export function buildTpFpFnTabMap({
   return tabMap;
 }
 
+/**
+ * Builds tooltip lines and copyable JSON payload for a TP/FP/FN matrix cell.
+ *
+ * @param {string} row - Document id.
+ * @param {string} col - Label value.
+ * @param {object} stats - Aggregated cell stats.
+ * @param {number} totalEvaluations - Number of evaluations in the aggregation.
+ * @param {Array<string>} evaluationLabels - Labels for each evaluation.
+ * @param {number} precision - Decimal precision for displayed percentages.
+ * @returns {{lines: Array<string>, payload: object}} Tooltip text and JSON payload.
+ */
 export function buildTpFpFnCellSummary(row, col, stats, totalEvaluations, evaluationLabels, precision) {
   const tpShare = totalEvaluations ? (stats.counts.tp / totalEvaluations) * 100 : 0;
   const fpShare = totalEvaluations ? (stats.counts.fp / totalEvaluations) * 100 : 0;
@@ -383,6 +450,12 @@ export function buildTpFpFnCellSummary(row, col, stats, totalEvaluations, evalua
   };
 }
 
+/**
+ * Creates the shared TP/FP/FN legend element.
+ *
+ * @param {object} [options] - DOM dependency override.
+ * @returns {HTMLElement} Legend element with TP, FP, and FN items.
+ */
 export function createTpFpFnLegendElement({ documentLike = globalThis.document } = {}) {
   return createPlotLegendElement({
     documentLike,
@@ -394,6 +467,12 @@ export function createTpFpFnLegendElement({ documentLike = globalThis.document }
   });
 }
 
+/**
+ * Creates an SVG matrix showing TP/FP/FN shares per document/label cell.
+ *
+ * @param {object} options - Aggregation, precision, tooltip handlers, clipboard writer, and DOM dependencies.
+ * @returns {SVGSVGElement} Rendered combined TP/FP/FN matrix SVG.
+ */
 export function createTpFpFnCombinedMatrixSvg({
   documentLike = globalThis.document,
   requestAnimationFrameLike = globalThis.requestAnimationFrame,
