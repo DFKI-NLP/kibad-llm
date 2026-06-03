@@ -1,3 +1,7 @@
+/**
+ * Tests for eval-dashboard TP/FP/FN plot helper seams.
+ */
+
 import test from "node:test";
 import assert from "node:assert/strict";
 
@@ -14,6 +18,9 @@ import {
 const getEvaluationEffectiveValue = (evaluation, column) =>
   evaluation.overrides?.[column] ?? "";
 
+/**
+ * Verify both TP/FP/FN input shapes normalize into stable per-record buckets.
+ */
 test("tpfpfn helpers normalize collector data and aggregate row states", () => {
   assert.deepEqual(
     normalizeTpFpFnCollectorData({
@@ -52,6 +59,9 @@ test("tpfpfn helpers normalize collector data and aggregate row states", () => {
   assert.deepEqual(filtered.cols, ["A"]);
 });
 
+/**
+ * Verify TP/FP/FN collection expansion, tab grouping, cell summaries, and palette output.
+ */
 test("tpfpfn helpers expand collection metrics, build tab maps, and summarize cells", () => {
   const expanded = normalizeTpFpFnLikeEvaluations([
     {

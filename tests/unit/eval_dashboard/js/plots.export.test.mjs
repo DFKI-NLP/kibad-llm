@@ -1,3 +1,7 @@
+/**
+ * Tests for eval-dashboard plot export helper seams.
+ */
+
 import test from "node:test";
 import assert from "node:assert/strict";
 
@@ -11,6 +15,9 @@ import {
   resolveOpaqueExportBackgroundColor,
 } from "../../../../docs/eval-dashboard/assets/js/plots/export.js";
 
+/**
+ * Verify figure and archive filenames preserve the dashboard's sanitizer contract.
+ */
 test("export helpers derive stable figure and archive filenames", () => {
   const usedNames = new Set();
   assert.equal(getUniqueFigureFilename("Accuracy / macro F1", usedNames), "Accuracy - macro F1.svg");
@@ -22,6 +29,9 @@ test("export helpers derive stable figure and archive filenames", () => {
   assert.equal(buildPlotTabZipFilename({ activeEvalTab: "", activePlotTabLabel: "" }), "figures.zip");
 });
 
+/**
+ * Verify SVG export fallback geometry and opaque-background selection.
+ */
 test("export helpers parse SVG viewBox values and choose opaque backgrounds", () => {
   assert.deepEqual(
     getSvgExportViewBox({ getAttribute: () => "1 2 300 400" }, "10", "20"),
@@ -41,6 +51,9 @@ test("export helpers parse SVG viewBox values and choose opaque backgrounds", ()
   );
 });
 
+/**
+ * Verify custom CRC32, byte concatenation, and uncompressed ZIP archive assembly.
+ */
 test("export helpers compute crc32 and create uncompressed zip blobs", async () => {
   assert.equal(computeCrc32(new TextEncoder().encode("hello")), 0x3610a686);
   assert.deepEqual(

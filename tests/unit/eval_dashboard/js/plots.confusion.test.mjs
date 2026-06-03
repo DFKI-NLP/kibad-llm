@@ -1,3 +1,7 @@
+/**
+ * Tests for eval-dashboard confusion-matrix plot helper seams.
+ */
+
 import test from "node:test";
 import assert from "node:assert/strict";
 
@@ -13,6 +17,9 @@ import {
 const getEvaluationEffectiveValue = (evaluation, column) =>
   evaluation.overrides?.[column] ?? "";
 
+/**
+ * Verify collection expansion and aligned mean/std aggregation for confusion matrices.
+ */
 test("confusion helpers expand collection metrics and aggregate aligned cells", () => {
   const expanded = normalizeConfusionMatrixLikeEvaluations([
     {
@@ -44,6 +51,9 @@ test("confusion helpers expand collection metrics and aggregate aligned cells", 
   assert.deepEqual(filtered.cols, ["x"]);
 });
 
+/**
+ * Verify confusion tab-map construction for both metric-field and prediction-group modes.
+ */
 test("confusion helpers build tab maps for metric-field and group-tab modes", () => {
   const evaluations = [
     { runDir: "r1", overrides: { "metric.field": "field_a", experiment: "exp" }, jobReturnValue: { type: "ConfusionMatrix" }, data: {} },

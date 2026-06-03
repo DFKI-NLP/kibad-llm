@@ -1,3 +1,7 @@
+/**
+ * Tests for shared eval-dashboard plot helper seams.
+ */
+
 import test from "node:test";
 import assert from "node:assert/strict";
 
@@ -13,6 +17,9 @@ import {
   getVaryingFields,
 } from "../../../../docs/eval-dashboard/assets/js/plots/shared.js";
 
+/**
+ * Verify numeric metric discovery and plot-entry shaping across grouped evaluations.
+ */
 test("shared plot helpers collect numeric metric paths and derive plot entries", () => {
   const paths = Array.from(
     collectNumericMetricLeafPaths({
@@ -53,6 +60,9 @@ test("shared plot helpers collect numeric metric paths and derive plot entries",
   );
 });
 
+/**
+ * Verify tab-map grouping, shortened plot labels, and grouped-series legend models.
+ */
 test("shared plot helpers derive tab maps, titles, and legend models", () => {
   const entries = [
     { metricLabel: "errors.with_error", prefix: "errors", suffix: "with_error", parts: ["with_error"], points: [] },
