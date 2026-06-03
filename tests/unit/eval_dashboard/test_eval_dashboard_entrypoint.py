@@ -9,7 +9,6 @@ DOCS_ROOT = PROJ_ROOT / "docs"
 DOCS_INDEX = DOCS_ROOT / "index.md"
 DASHBOARD_ENTRY = DOCS_ROOT / "eval-dashboard" / "index.html"
 DASHBOARD_DOCS_PAGE = DOCS_ROOT / "eval-dashboard.md"
-DASHBOARD_COMPAT = DOCS_ROOT / "eval-dashboard.html"
 DASHBOARD_CSS_ROOT = DOCS_ROOT / "eval-dashboard" / "assets" / "css"
 DASHBOARD_JS_ROOT = DOCS_ROOT / "eval-dashboard" / "assets" / "js"
 DASHBOARD_JS_ENTRY = DASHBOARD_JS_ROOT / "main.js"
@@ -76,11 +75,10 @@ def _load_properdocs() -> dict:
 
 
 def test_dashboard_entrypoint_exists() -> None:
-    """Ensure the dashboard documentation page, runtime entrypoint, and compatibility shim exist."""
+    """Ensure the dashboard documentation page and runtime entrypoint exist."""
 
     assert DASHBOARD_DOCS_PAGE.is_file()
     assert DASHBOARD_ENTRY.is_file()
-    assert DASHBOARD_COMPAT.is_file()
 
 
 def test_phase_zero_baseline_artifacts_exist() -> None:
@@ -167,11 +165,3 @@ def test_dashboard_docs_page_links_to_runtime_entrypoint() -> None:
     assert "**Open the dashboard:**" in text
     assert "(eval-dashboard/index.html)" in text
     assert "(eval-dashboard.html)" not in text
-
-
-def test_old_dashboard_path_has_redirect_coverage() -> None:
-    """Ensure the legacy dashboard path still redirects to the new entrypoint."""
-
-    compat_html = DASHBOARD_COMPAT.read_text(encoding="utf-8")
-    assert 'http-equiv="refresh"' in compat_html
-    assert "eval-dashboard/index.html" in compat_html

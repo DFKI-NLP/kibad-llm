@@ -104,7 +104,7 @@ def test_baseline_summary_describes_phase_zero_reference_state() -> None:
     implementation_shape = summary["implementation_shape"]
 
     assert implementation_shape["runtime_entrypoint"] == "docs/eval-dashboard/index.html"
-    assert implementation_shape["compatibility_entrypoint"] == "docs/eval-dashboard.html"
+    assert implementation_shape["compatibility_entrypoint"] is None
     assert implementation_shape["css_extraction_started"] is False
     assert implementation_shape["js_extraction_started"] is False
     assert "inline CSS" in implementation_shape["page_style"]

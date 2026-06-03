@@ -3,7 +3,7 @@
   "captured_at": "2026-06-03",
   "implementation_shape": {
     "runtime_entrypoint": "docs/eval-dashboard/index.html",
-    "compatibility_entrypoint": "docs/eval-dashboard.html",
+    "compatibility_entrypoint": null,
     "page_style": "single static HTML page with inline CSS and inline JavaScript",
     "css_extraction_started": false,
     "js_extraction_started": false

@@ -115,7 +115,7 @@ The most relevant test locations are:
 - Keep `main.js` as orchestration code. New reusable behavior should go into `data/`, `state/`, `ui/`, `plots/`, `browser/`, or `utils/`.
 - Prefer DOM-free helpers and plain data models for code that needs tests.
 - Update curated fixtures and baseline contracts when the supported run payload shape changes.
-- Keep compatibility expectations for `docs/eval-dashboard/index.html` and the legacy `docs/eval-dashboard.html` shim covered by tests.
+- Keep the dashboard runtime entrypoint `docs/eval-dashboard/index.html` covered by tests.
 - Do not make tests depend on mutable live experiment folders such as `data/prediction_results/logs/`; use curated snapshots under `tests/fixtures/eval_dashboard/`.
 
 ## Future Work
@@ -135,9 +135,8 @@ Parser and data-policy cleanup:
 - Revisit whether missing prediction ids should remain tolerated as skipped runs or become disallowed entirely.
 - Evaluate whether a real YAML parser is worth adding as a browser-runtime dependency while preserving the no-build default architecture.
 
-Compatibility, accessibility, and export cleanup:
+Accessibility and export cleanup:
 
-- Remove the temporary `docs/eval-dashboard.html` compatibility shim once link stability and hosting behavior have been verified well enough to retire it safely.
 - Run a dedicated accessibility pass for keyboard navigation, focus management, ARIA semantics for tabs/expanders/select-all controls, and copy/export feedback.
 - Re-evaluate whether the custom ZIP/CRC/export helpers should remain custom or be replaced with a maintained dependency under the repository's dependency policy and no-build constraints.
 - Re-evaluate whether the current `MutationObserver`-driven download-button refresh should remain DOM-observer-based or be replaced with an explicit render-lifecycle update.
