@@ -1,5 +1,12 @@
+/**
+ * Eval-dashboard browser entry point.
+ *
+ * This module owns the singleton page state, wires DOM events to shared dashboard modules,
+ * and coordinates data loading plus prediction/evaluation rendering. Domain logic and
+ * reusable UI behavior should stay in the imported modules; this file should remain the
+ * orchestration layer for the static dashboard page.
+ */
 import { normalizeSortConfig } from "./utils/sort.js";
-import { normalizeValue } from "./utils/values.js";
 import * as dashboardStore from "./state/store.js";
 import * as selectors from "./state/selectors.js";
 import { collectLocalEvaluationEntries } from "./data/file-loader.js";
@@ -107,19 +114,11 @@ const {
   plotTabsBySuffixButton,
   plotShortenLabels,
   plotRoundingPrecision,
-  plotConfusionMinLabelTotalRow,
   plotConfusionMinLabelTotal,
-  plotTpFpFnMinLabelTotalRow,
   plotTpFpFnMinLabelTotal,
-  plotTpFpFnMinDocumentTotalRow,
   plotTpFpFnMinDocumentTotal,
-  plotTabsByRow,
-  plotConfusionTabsByRow,
   confusionTabsByMetricFieldButton,
   confusionTabsByPredictionGroupButton,
-  plotGroupBarsRow,
-  plotGroupBarsList,
-  plotShowLegendOnceRow,
   plotShowLegendOnce,
   downloadFiguresButton,
   exportOpaqueBackground,
@@ -135,6 +134,7 @@ const {
   PREDICTION_OVERRIDES_PREFIX,
 } = selectors;
 
+// Helper functions for adapting shared selector/store APIs to this page's singleton UI state.
 function getNextSortConfig(currentSort, column, { append = false } = {}) {
   return getSharedNextSortConfig(currentSort, column, {
     append,
@@ -142,69 +142,18 @@ function getNextSortConfig(currentSort, column, { append = false } = {}) {
   });
 }
 
-// Selectors and accessors for the canonical predictions/evaluations state shape.
-function isJobReturnValueColumn(column) {
-  return selectors.isJobReturnValueColumn(column);
-}
-
-function stripEvaluationFieldPrefix(column) {
-  return selectors.stripEvaluationFieldPrefix(column);
-}
-
-function stripPredictionFieldPrefix(column) {
-  return selectors.stripPredictionFieldPrefix(column);
-}
-
-function reconstructPredictionContent(prediction) {
-  return selectors.reconstructPredictionContent(prediction);
-}
-
-function getPredictionById(predictionId) {
-  return selectors.getPredictionById(state, predictionId);
-}
-
-function getPredictionForEvaluation(evaluation) {
-  return selectors.getPredictionForEvaluation(state, evaluation);
-}
-
 function reconstructPredictionContentForEvaluation(evaluation) {
   return selectors.reconstructPredictionContentForEvaluation(state, evaluation);
 }
 
-function getFlattenedPrediction(prediction) {
-  return selectors.getFlattenedPrediction(prediction);
-}
-
-function getFlattenedPredictionForEvaluation(evaluation) {
-  return selectors.getFlattenedPredictionForEvaluation(state, evaluation);
-}
-
-/**
- * Derive one prediction view per canonical prediction id.
- * Each view joins the flattened prediction fields with all linked evaluations.
- */
 function getPredictionViews() {
   return selectors.getPredictionViews(state);
 }
 
-/**
- * Collect all flattened prediction columns currently present across the given prediction views.
- */
-function getPredictionColumns(predictionViews = getPredictionViews()) {
-  return selectors.getPredictionColumns(predictionViews);
-}
-
-/**
- * Return the current prediction columns derived from canonical prediction state.
- */
 function getCurrentPredictionColumns(predictionViews = getPredictionViews()) {
   return selectors.getCurrentPredictionColumns(state, predictionViews);
 }
 
-/**
- * Group prediction views according to the active prediction group-by fields.
- * The returned group shape matches the current prediction table/rendering expectations.
- */
 function getPredictionGroups(
   predictionViews = getPredictionViews(),
   groupByFields = state.groupByFields,
@@ -213,9 +162,6 @@ function getPredictionGroups(
   return selectors.getPredictionGroups(state, predictionViews, groupByFields, predictionColumns);
 }
 
-/**
- * Filter prediction groups down to the currently selected prediction group ids.
- */
 function getSelectedPredictionGroups(groups = getCurrentPredictionGroups()) {
   return selectors.getSelectedPredictionGroups(state, groups);
 }
@@ -229,7 +175,7 @@ function syncPredictionGroupUiState(predictionGroups) {
 }
 
 /**
- * Return the current prediction groups derived from canonical state and current prediction UI settings.
+ * Return current prediction groups and synchronize selection/expansion state against them.
  */
 function getCurrentPredictionGroups() {
   const predictionViews = getPredictionViews();
@@ -239,32 +185,6 @@ function getCurrentPredictionGroups() {
   return predictionGroups;
 }
 
-/**
- * Flatten the evaluations reachable from the selected prediction groups.
- */
-function getSelectedEvaluations(selectedPredictionGroups = getSelectedPredictionGroups()) {
-  return selectors.getSelectedEvaluations(selectedPredictionGroups);
-}
-
-function getFlattenedEvaluationJobReturnValue(evaluation) {
-  return selectors.getFlattenedEvaluationJobReturnValue(evaluation);
-}
-
-function getEvaluationColumnRawValue(evaluation, column) {
-  return selectors.getEvaluationColumnRawValue(evaluation, column);
-}
-
-function getEvaluationEffectiveValue(evaluation, column, evalTabState) {
-  return selectors.getEvaluationEffectiveValue(evaluation, column, evalTabState);
-}
-
-function getEvaluationExperiment(evaluation) {
-  return selectors.getEvaluationExperiment(evaluation);
-}
-
-/**
- * Flatten the currently selected prediction groups into their member prediction views.
- */
 function getSelectedPredictionViews() {
   return selectors.getSelectedPredictionViews(state);
 }
@@ -273,25 +193,12 @@ function gatherSelectedEvaluations() {
   return selectors.gatherSelectedEvaluations(state);
 }
 
-/**
- * Group the currently selected evaluations by evaluation experiment.
- */
 function getEvaluationsByExperiment(selectedEvaluations = gatherSelectedEvaluations()) {
   return selectors.getEvaluationsByExperiment(state, selectedEvaluations);
 }
 
-/**
- * Return the selected evaluations that belong to one evaluation experiment.
- */
 function getSelectedEvaluationsForExperiment(experiment, selectedEvaluations = gatherSelectedEvaluations()) {
   return selectors.getSelectedEvaluationsForExperiment(state, experiment, selectedEvaluations);
-}
-
-/**
- * Collect all evaluation columns currently present across the given evaluations.
- */
-function getEvaluationColumns(evaluations = []) {
-  return selectors.getEvaluationColumns(evaluations);
 }
 
 const plotTooltipHandlers = createPlotTooltipHandlers({ tooltipElement: barTooltip, windowLike: window });
@@ -300,54 +207,13 @@ function updateDownloadFiguresButtonState() {
   updatePlotDownloadFiguresButtonState({ downloadFiguresButton, evalPlotContent });
 }
 
-const evalPlotContentObserver = new MutationObserver(() => {
-  updateDownloadFiguresButtonState();
-});
-evalPlotContentObserver.observe(evalPlotContent, { childList: true, subtree: true });
-updateDownloadFiguresButtonState();
-
-bindEvalJsonTabSelection({
-  evaluationButton: evalJsonTabEvaluation,
-  predictionButton: evalJsonTabPrediction,
-  getActiveTab: () => state.activeEvalJsonTab,
-  onSelect: (nextTab) => {
-    state.activeEvalJsonTab = nextTab;
-    renderEvaluations();
-  },
-});
-
-initializeGitHubTokenInput(githubTokenInput);
-
-folderInput.addEventListener("change", async (event) => {
-  const files = Array.from(event.target.files || []);
-  clearGitUrlQueryParam();
-  await loadEvaluationsFromFiles(files);
-  renderPredictions();
-  renderEvaluations();
-});
-
-githubTokenInput.addEventListener("change", () => {
-  persistGitHubTokenInputValue(githubTokenInput);
-});
-
-gitUrlInput.addEventListener("keydown", async (event) => {
-  if (event.key !== "Enter") {
-    return;
-  }
-  event.preventDefault();
-  await handleGitLoadRequest();
-});
-
-loadGitButton.addEventListener("click", async () => {
-  await handleGitLoadRequest();
-});
-
+// Helper functions for labels and default column choices.
 function displayPredictionColumnName(column) {
-  return stripPredictionFieldPrefix(column);
+  return selectors.stripPredictionFieldPrefix(column);
 }
 
 function displayEvalColumnName(column) {
-  const normalizedColumn = stripEvaluationFieldPrefix(column);
+  const normalizedColumn = selectors.stripEvaluationFieldPrefix(column);
   if (normalizedColumn.startsWith(JOB_RETURN_VALUE_PREFIX)) {
     return normalizedColumn.slice(JOB_RETURN_VALUE_PREFIX.length);
   }
@@ -376,29 +242,19 @@ function getPlotTitleLabel(plotEntry, metricType) {
   });
 }
 
-function displayPlotGroupFieldName(column) {
-  return getPlotDisplayLabel(displayGroupFieldName(column));
+function getDefaultGroupByFields(predictionColumns, predictionViews = getPredictionViews()) {
+  return selectors.getDefaultGroupByFields(predictionColumns, predictionViews);
 }
 
 function getDefaultTruncateColumns(predictionColumns) {
   return selectors.getDefaultTruncateColumns(predictionColumns);
 }
 
-/**
- * Choose default prediction group-by fields from varying non-seed override columns.
- */
-function getDefaultGroupByFields(predictionColumns, predictionViews = getPredictionViews()) {
-  return selectors.getDefaultGroupByFields(predictionColumns, predictionViews);
-}
-
 function getDefaultEvalGroupByFields(evalColumns, evaluations = []) {
   return selectors.getDefaultEvalGroupByFields(evalColumns, evaluations);
 }
 
-function getDefaultEvalTruncateColumns() {
-  return new Set();
-}
-
+// Helper functions for control value normalization and UI state updates.
 function setConfiguredDefault(defaults, column, value) {
   const nextValue = String(value ?? "");
   if (nextValue.trim() === "") {
@@ -408,75 +264,12 @@ function setConfiguredDefault(defaults, column, value) {
   }
 }
 
-function getPredictionDefaultValue(column) {
-  return selectors.getPredictionDefaultValue(state, column);
-}
-
-function getPredictionEffectiveValue(predictionFlat, column) {
-  return selectors.getPredictionEffectiveValue(state, predictionFlat, column);
-}
-
-/**
- * Build a stable signature from the effective prediction values for the provided columns.
- */
-function getPredictionEffectiveSignature(
-  predictionFlat,
-  predictionColumns = getCurrentPredictionColumns()
-) {
-  return selectors.getPredictionEffectiveSignature(state, predictionFlat, predictionColumns);
-}
-
-function getEvalDefaultValue(evalTabState, column) {
-  return selectors.getEvalDefaultValue(evalTabState, column);
-}
-
-/**
- * Return prediction columns whose selected prediction views still contain missing values.
- */
-function getPredictionColumnsWithMissingValues(
-  predictionViews,
-  predictionColumns = getCurrentPredictionColumns(predictionViews)
-) {
-  return selectors.getPredictionColumnsWithMissingValues(state, predictionViews, predictionColumns);
-}
-
-/**
- * Collect non-empty suggestion values for a prediction column from the current prediction views.
- */
-function getPredictionDefaultSuggestions(predictionViews, column) {
-  return selectors.getPredictionDefaultSuggestions(predictionViews, column);
-}
-
-/**
- * Count how many prediction views are missing a value for the given prediction column.
- */
-function getPredictionMissingValueCount(predictionViews, column) {
-  return selectors.getPredictionMissingValueCount(predictionViews, column);
-}
-
-function getEvalColumnsWithMissingValues(evaluations, evalColumns) {
-  return selectors.getEvalColumnsWithMissingValues(evaluations, evalColumns);
-}
-
-function getEvalDefaultSuggestions(evaluations, column) {
-  return selectors.getEvalDefaultSuggestions(evaluations, column);
-}
-
-function getEvalMissingValueCount(evaluations, column) {
-  return selectors.getEvalMissingValueCount(evaluations, column);
-}
-
-
 function setGroupByFields(columns) {
   state.groupByFields = [...columns];
   renderPredictions();
   renderEvaluations();
 }
 
-
-/**
- * Return the evaluation columns for the currently active evaluation experiment.
- */
 function getActiveEvalColumns() {
   return selectors.getActiveEvalColumns(state);
 }
@@ -500,221 +293,38 @@ function ensureEvalTabState(
   return dashboardStore.ensureEvalTabState(state, experiment, evalColumns, {
     evaluations,
     getDefaultEvalGroupByFields,
-    getDefaultEvalTruncateColumns,
+    getDefaultEvalTruncateColumns: () => new Set(),
   });
 }
 
-/**
- * Synchronize selected group ids with the current valid group-id set while preserving
- * still-valid selections and auto-selecting newly introduced groups.
- */
-function syncSelectedGroupIds(selectionState, validGroupIds) {
-  dashboardStore.syncSelectedGroupIds(selectionState, validGroupIds);
+function readClampedIntegerInput(inputElement, { fallback, min = 0, max = Infinity }) {
+  const parsed = Number.parseInt(inputElement.value, 10);
+  const clamped = Number.isFinite(parsed)
+    ? Math.max(min, Math.min(max, parsed))
+    : fallback;
+  inputElement.value = String(clamped);
+  return clamped;
 }
 
-groupByAllButton.addEventListener("click", () => {
-  setGroupByFields(getCurrentPredictionColumns());
-});
-
-groupByNoneButton.addEventListener("click", () => {
-  setGroupByFields([]);
-});
-
-groupByToggleButton.addEventListener("click", () => {
-  const predictionColumns = getCurrentPredictionColumns();
-  const nextGroupByFields = getToggleOnlyColumns(predictionColumns, state.groupByFields);
-  setGroupByFields(nextGroupByFields);
-});
-
-evalGroupByAllButton.addEventListener("click", () => {
-  setActiveEvalGroupByFields(getActiveEvalColumns());
-});
-
-evalGroupByNoneButton.addEventListener("click", () => {
-  setActiveEvalGroupByFields([]);
-});
-
-evalGroupByToggleButton.addEventListener("click", () => {
-  if (!state.activeEvalTab) {
+function setPlotTabsBy(nextTabsBy) {
+  if (state.plotTabsBy === nextTabsBy) {
     return;
   }
-  const evalColumns = getActiveEvalColumns();
-  const evalTabState = ensureEvalTabState(state.activeEvalTab, evalColumns);
-  const nextGroupByFields = getToggleOnlyColumns(evalColumns, evalTabState.groupByFields);
-  setActiveEvalGroupByFields(nextGroupByFields);
-});
-
-predictionResetSortButton.addEventListener("click", () => {
-  if (!normalizeSortConfig(state.predictionSort).length) {
-    return;
-  }
-  state.predictionSort = [];
-  renderPredictions();
-});
-
-evalResetSortButton.addEventListener("click", () => {
-  if (!state.activeEvalTab) {
-    return;
-  }
-  const evalTabState = ensureEvalTabState(state.activeEvalTab, getActiveEvalColumns());
-  if (!normalizeSortConfig(evalTabState.sort).length) {
-    return;
-  }
-  evalTabState.sort = [];
-  renderEvaluations();
-});
-
-bindDelegatedTabSelection({
-  containerElement: optionsTabs,
-  getActiveValue: () => state.activeOptionsTab,
-  onSelect: (tab) => {
-    state.activeOptionsTab = tab;
-    renderStaticTabState({
-      buttonElements: optionsTabButtons,
-      panelElements: optionsTabPanels,
-      activeValue: state.activeOptionsTab,
-    });
-  },
-});
-
-bindDelegatedTabSelection({
-  containerElement: evalOptionsTabs,
-  getActiveValue: () => {
-    if (!state.activeEvalTab || !state.evalTabStates[state.activeEvalTab]) {
-      return null;
-    }
-    return state.evalTabStates[state.activeEvalTab].activeOptionsTab;
-  },
-  onSelect: (tab) => {
-    if (!state.activeEvalTab || !state.evalTabStates[state.activeEvalTab]) {
-      return;
-    }
-    state.evalTabStates[state.activeEvalTab].activeOptionsTab = tab;
-    renderStaticTabState({
-      buttonElements: evalOptionsTabButtons,
-      panelElements: evalOptionsTabPanels,
-      activeValue: state.evalTabStates[state.activeEvalTab].activeOptionsTab,
-      buttonAttribute: "data-eval-tab",
-      panelAttribute: "data-eval-tab-panel",
-    });
-  },
-  valueAttribute: "data-eval-tab",
-});
-
-truncateDefaultsButton.addEventListener("click", () => {
-  state.truncateEnabledColumns = getDefaultTruncateColumns(getCurrentPredictionColumns());
-  renderPredictions();
-})
-
-plotShortenLabels.addEventListener("change", () => {
-  state.plotShortenLabels = plotShortenLabels.checked;
-  renderEvaluations();
-});
-
-plotRoundingPrecision.addEventListener("change", () => {
-  const parsed = Number.parseInt(plotRoundingPrecision.value, 10);
-  const clamped = Number.isFinite(parsed) ? Math.max(0, Math.min(6, parsed)) : 2;
-  state.plotRoundingPrecision = clamped;
-  plotRoundingPrecision.value = String(clamped);
-  renderEvaluations();
-});
-
-plotConfusionMinLabelTotal.addEventListener("change", () => {
-  const parsed = Number.parseInt(plotConfusionMinLabelTotal.value, 10);
-  const clamped = Number.isFinite(parsed) ? Math.max(0, parsed) : 3;
-  state.plotConfusionMinLabelTotal = clamped;
-  plotConfusionMinLabelTotal.value = String(clamped);
-  renderEvaluations();
-});
-
-plotTpFpFnMinLabelTotal.addEventListener("change", () => {
-  const parsed = Number.parseInt(plotTpFpFnMinLabelTotal.value, 10);
-  const clamped = Number.isFinite(parsed) ? Math.max(0, parsed) : 3;
-  state.plotTpFpFnMinLabelTotal = clamped;
-  plotTpFpFnMinLabelTotal.value = String(clamped);
-  renderEvaluations();
-});
-
-plotTpFpFnMinDocumentTotal.addEventListener("change", () => {
-  const parsed = Number.parseInt(plotTpFpFnMinDocumentTotal.value, 10);
-  const clamped = Number.isFinite(parsed) ? Math.max(0, parsed) : 0;
-  state.plotTpFpFnMinDocumentTotal = clamped;
-  plotTpFpFnMinDocumentTotal.value = String(clamped);
-  renderEvaluations();
-});
-
-plotShowLegendOnce.addEventListener("change", () => {
-  state.plotShowLegendOnce = plotShowLegendOnce.checked;
-  renderEvaluations();
-});
-
-exportOpaqueBackground.addEventListener("change", () => {
-  state.exportOpaqueBackground = exportOpaqueBackground.checked;
-  renderDashboardPlotControls({
-    state,
-    dom,
-    metricType: getMetricTypeForEvaluationContext(state.activeEvalTab || ""),
-  });
-});
-
-downloadFiguresButton.addEventListener("click", async () => {
-  if (downloadFiguresButton.disabled) {
-    return;
-  }
-  setDownloadFiguresButtonBusy(downloadFiguresButton);
-  try {
-    await downloadVisiblePlotFigures({
-      state,
-      evalPlotContent,
-      evalPlotTabs,
-      documentLike: document,
-      windowLike: window,
-      urlLike: URL,
-      setTimeoutLike: setTimeout,
-      getStyle: getComputedStyle,
-      consoleLike: console,
-    });
-  } finally {
-    updateDownloadFiguresButtonState();
-  }
-});
-
-plotTabsByPrefixButton.addEventListener("click", () => {
-  if (state.plotTabsBy === "prefix") {
-    return;
-  }
-  state.plotTabsBy = "prefix";
+  state.plotTabsBy = nextTabsBy;
   state.activeEvalPlotTab = null;
   renderEvaluations();
-});
+}
 
-plotTabsBySuffixButton.addEventListener("click", () => {
-  if (state.plotTabsBy === "suffix") {
+function setConfusionTabsBy(nextTabsBy) {
+  if (state.confusionTabsBy === nextTabsBy) {
     return;
   }
-  state.plotTabsBy = "suffix";
+  state.confusionTabsBy = nextTabsBy;
   state.activeEvalPlotTab = null;
   renderEvaluations();
-});
+}
 
-confusionTabsByMetricFieldButton.addEventListener("click", () => {
-  if (state.confusionTabsBy === "metric_field") {
-    return;
-  }
-  state.confusionTabsBy = "metric_field";
-  state.activeEvalPlotTab = null;
-  renderEvaluations();
-});
-
-confusionTabsByPredictionGroupButton.addEventListener("click", () => {
-  if (state.confusionTabsBy === "prediction_group") {
-    return;
-  }
-  state.confusionTabsBy = "prediction_group";
-  state.activeEvalPlotTab = null;
-  renderEvaluations();
-});
-
+// Helper functions for table sorting and selection changes.
 function setPredictionSort(column, event = {}) {
   state.predictionSort = getNextSortConfig(state.predictionSort, column, { append: event.shiftKey });
   renderPredictions();
@@ -729,6 +339,21 @@ function setEvalSort(column, event = {}) {
   renderEvaluations();
 }
 
+function getSortedPredictionGroups(predictionGroups = getCurrentPredictionGroups()) {
+  return selectors.getSortedPredictionGroups(state, predictionGroups);
+}
+
+function getSortedPredictionMembers(predictions) {
+  return selectors.getSortedPredictionMembers(state, predictions);
+}
+
+function setSelectedGroupIds(groupIds) {
+  state.selectedGroupIds = new Set(groupIds);
+  renderPredictions();
+  renderEvaluations();
+}
+
+// Helper functions for loading local/GitHub evaluation data into canonical dashboard state.
 /**
  * Reset load-dependent UI state after new canonical prediction/evaluation data is imported.
  * All prediction/evaluation structures remain selector-derived and are not stored here.
@@ -764,9 +389,6 @@ function updateLoadStatusSummary({ candidateRunDirs, loadedCount, skippedDuplica
 
 /**
  * Apply a shared-ingestion result to canonical dashboard state and refresh derived UI state.
- *
- * @param {string} sourceLabel - Loaded source label.
- * @param {{predictionAdditions: Record<string, object>, evaluationAdditions: Array<object>, failures: Array<{runDir: string, error: Error}>, summary: object}} ingestionResult - Shared ingestion result.
  */
 function applyIngestionResult(sourceLabel, ingestionResult) {
   state.loadedFolders.add(sourceLabel);
@@ -781,9 +403,13 @@ function applyIngestionResult(sourceLabel, ingestionResult) {
   updateLoadStatusSummary(ingestionResult.summary);
 }
 
-// Load only single evaluation runs: any selected folder tree can contribute evaluations as long as a run
-// directory contains both job_return_value.json and .hydra/overrides.yaml. predict runs are excluded,
-// while prediction payloads are canonicalized separately and linked via predictionId.
+/**
+ * Ingest evaluation-run file entries after filtering out predict runs and incomplete run directories.
+ *
+ * Selected folder trees can contribute evaluations when a run directory contains both
+ * job_return_value.json and .hydra/overrides.yaml. Prediction payloads are canonicalized
+ * separately and linked through predictionId.
+ */
 async function loadEvaluationsFromEntries(entries, rootLabel) {
   if (!entries.length) {
     renderLoadStatusStage(dom, `No relevant run files found in ${rootLabel}.`);
@@ -819,6 +445,9 @@ function setLoadProgress({ completedFiles = 0, totalFiles = 0, completedBytes = 
   renderLoadProgress(dom, { completedFiles, totalFiles, completedBytes, totalBytes, label });
 }
 
+/**
+ * Fetch evaluation-run files from a GitHub tree URL and apply them through the shared ingestion path.
+ */
 async function loadEvaluationsFromGitUrl(rawUrl) {
   const trimmedUrl = String(rawUrl || "").trim();
   if (!trimmedUrl) {
@@ -882,43 +511,246 @@ async function initializeGitUrlFromQueryParam() {
   });
 }
 
-void initializeGitUrlFromQueryParam();
-
-function getPredictionGroupSortValue(group, column) {
-  return selectors.getPredictionGroupSortValue(state, group, column);
-}
-
-function getPredictionMemberSortValue(predictionView, column) {
-  return selectors.getPredictionMemberSortValue(state, predictionView, column);
-}
-
-/**
- * Return prediction groups sorted according to the active prediction sort config.
- */
-function getSortedPredictionGroups(predictionGroups = getCurrentPredictionGroups()) {
-  return selectors.getSortedPredictionGroups(state, predictionGroups);
-}
-
-function getSortedPredictionMembers(predictions) {
-  return selectors.getSortedPredictionMembers(state, predictions);
-}
-
-function setSelectedGroupIds(groupIds) {
-  state.selectedGroupIds = new Set(groupIds);
+// Event wiring for source loading, controls, plot settings, and layout observers.
+folderInput.addEventListener("change", async (event) => {
+  const files = Array.from(event.target.files || []);
+  clearGitUrlQueryParam();
+  await loadEvaluationsFromFiles(files);
   renderPredictions();
   renderEvaluations();
-}
-
-
-window.addEventListener("resize", () => {
-  updateStickyControlColumnOffsets(predictionsTable);
-  updateStickyControlColumnOffsets(evaluationsTable);
 });
 
-function getGroupValueDisplay(group, column) {
-  return selectors.getGroupValueDisplay(state, group, column);
+function bindDataSourceControls() {
+  initializeGitHubTokenInput(githubTokenInput);
+
+  githubTokenInput.addEventListener("change", () => {
+    persistGitHubTokenInputValue(githubTokenInput);
+  });
+
+  gitUrlInput.addEventListener("keydown", async (event) => {
+    if (event.key !== "Enter") {
+      return;
+    }
+    event.preventDefault();
+    await handleGitLoadRequest();
+  });
+
+  loadGitButton.addEventListener("click", async () => {
+    await handleGitLoadRequest();
+  });
 }
 
+function bindPredictionControls() {
+  groupByAllButton.addEventListener("click", () => {
+    setGroupByFields(getCurrentPredictionColumns());
+  });
+
+  groupByNoneButton.addEventListener("click", () => {
+    setGroupByFields([]);
+  });
+
+  groupByToggleButton.addEventListener("click", () => {
+    const predictionColumns = getCurrentPredictionColumns();
+    const nextGroupByFields = getToggleOnlyColumns(predictionColumns, state.groupByFields);
+    setGroupByFields(nextGroupByFields);
+  });
+
+  predictionResetSortButton.addEventListener("click", () => {
+    if (!normalizeSortConfig(state.predictionSort).length) {
+      return;
+    }
+    state.predictionSort = [];
+    renderPredictions();
+  });
+
+  bindDelegatedTabSelection({
+    containerElement: optionsTabs,
+    getActiveValue: () => state.activeOptionsTab,
+    onSelect: (tab) => {
+      state.activeOptionsTab = tab;
+      renderStaticTabState({
+        buttonElements: optionsTabButtons,
+        panelElements: optionsTabPanels,
+        activeValue: state.activeOptionsTab,
+      });
+    },
+  });
+
+  truncateDefaultsButton.addEventListener("click", () => {
+    state.truncateEnabledColumns = getDefaultTruncateColumns(getCurrentPredictionColumns());
+    renderPredictions();
+  });
+}
+
+function bindEvaluationControls() {
+  evalGroupByAllButton.addEventListener("click", () => {
+    setActiveEvalGroupByFields(getActiveEvalColumns());
+  });
+
+  evalGroupByNoneButton.addEventListener("click", () => {
+    setActiveEvalGroupByFields([]);
+  });
+
+  evalGroupByToggleButton.addEventListener("click", () => {
+    if (!state.activeEvalTab) {
+      return;
+    }
+    const evalColumns = getActiveEvalColumns();
+    const evalTabState = ensureEvalTabState(state.activeEvalTab, evalColumns);
+    const nextGroupByFields = getToggleOnlyColumns(evalColumns, evalTabState.groupByFields);
+    setActiveEvalGroupByFields(nextGroupByFields);
+  });
+
+  evalResetSortButton.addEventListener("click", () => {
+    if (!state.activeEvalTab) {
+      return;
+    }
+    const evalTabState = ensureEvalTabState(state.activeEvalTab, getActiveEvalColumns());
+    if (!normalizeSortConfig(evalTabState.sort).length) {
+      return;
+    }
+    evalTabState.sort = [];
+    renderEvaluations();
+  });
+
+  bindDelegatedTabSelection({
+    containerElement: evalOptionsTabs,
+    getActiveValue: () => {
+      if (!state.activeEvalTab || !state.evalTabStates[state.activeEvalTab]) {
+        return null;
+      }
+      return state.evalTabStates[state.activeEvalTab].activeOptionsTab;
+    },
+    onSelect: (tab) => {
+      if (!state.activeEvalTab || !state.evalTabStates[state.activeEvalTab]) {
+        return;
+      }
+      state.evalTabStates[state.activeEvalTab].activeOptionsTab = tab;
+      renderStaticTabState({
+        buttonElements: evalOptionsTabButtons,
+        panelElements: evalOptionsTabPanels,
+        activeValue: state.evalTabStates[state.activeEvalTab].activeOptionsTab,
+        buttonAttribute: "data-eval-tab",
+        panelAttribute: "data-eval-tab-panel",
+      });
+    },
+    valueAttribute: "data-eval-tab",
+  });
+
+  bindEvalJsonTabSelection({
+    evaluationButton: evalJsonTabEvaluation,
+    predictionButton: evalJsonTabPrediction,
+    getActiveTab: () => state.activeEvalJsonTab,
+    onSelect: (nextTab) => {
+      state.activeEvalJsonTab = nextTab;
+      renderEvaluations();
+    },
+  });
+}
+
+function bindPlotControls() {
+  plotShortenLabels.addEventListener("change", () => {
+    state.plotShortenLabels = plotShortenLabels.checked;
+    renderEvaluations();
+  });
+
+  plotRoundingPrecision.addEventListener("change", () => {
+    state.plotRoundingPrecision = readClampedIntegerInput(plotRoundingPrecision, {
+      fallback: 2,
+      max: 6,
+    });
+    renderEvaluations();
+  });
+
+  plotConfusionMinLabelTotal.addEventListener("change", () => {
+    state.plotConfusionMinLabelTotal = readClampedIntegerInput(plotConfusionMinLabelTotal, {
+      fallback: 3,
+    });
+    renderEvaluations();
+  });
+
+  plotTpFpFnMinLabelTotal.addEventListener("change", () => {
+    state.plotTpFpFnMinLabelTotal = readClampedIntegerInput(plotTpFpFnMinLabelTotal, {
+      fallback: 3,
+    });
+    renderEvaluations();
+  });
+
+  plotTpFpFnMinDocumentTotal.addEventListener("change", () => {
+    state.plotTpFpFnMinDocumentTotal = readClampedIntegerInput(plotTpFpFnMinDocumentTotal, {
+      fallback: 0,
+    });
+    renderEvaluations();
+  });
+
+  plotShowLegendOnce.addEventListener("change", () => {
+    state.plotShowLegendOnce = plotShowLegendOnce.checked;
+    renderEvaluations();
+  });
+
+  exportOpaqueBackground.addEventListener("change", () => {
+    state.exportOpaqueBackground = exportOpaqueBackground.checked;
+    renderDashboardPlotControls({
+      state,
+      dom,
+      metricType: getMetricTypeForEvaluationContext(state.activeEvalTab || ""),
+    });
+  });
+
+  downloadFiguresButton.addEventListener("click", async () => {
+    if (downloadFiguresButton.disabled) {
+      return;
+    }
+    setDownloadFiguresButtonBusy(downloadFiguresButton);
+    try {
+      await downloadVisiblePlotFigures({
+        state,
+        evalPlotContent,
+        evalPlotTabs,
+        documentLike: document,
+        windowLike: window,
+        urlLike: URL,
+        setTimeoutLike: setTimeout,
+        getStyle: getComputedStyle,
+        consoleLike: console,
+      });
+    } finally {
+      updateDownloadFiguresButtonState();
+    }
+  });
+
+  plotTabsByPrefixButton.addEventListener("click", () => setPlotTabsBy("prefix"));
+  plotTabsBySuffixButton.addEventListener("click", () => setPlotTabsBy("suffix"));
+  confusionTabsByMetricFieldButton.addEventListener("click", () => setConfusionTabsBy("metric_field"));
+  confusionTabsByPredictionGroupButton.addEventListener("click", () => setConfusionTabsBy("prediction_group"));
+}
+
+function bindLayoutObservers() {
+  const evalPlotContentObserver = new MutationObserver(() => {
+    updateDownloadFiguresButtonState();
+  });
+  evalPlotContentObserver.observe(evalPlotContent, { childList: true, subtree: true });
+  updateDownloadFiguresButtonState();
+
+  window.addEventListener("resize", () => {
+    updateStickyControlColumnOffsets(predictionsTable);
+    updateStickyControlColumnOffsets(evaluationsTable);
+  });
+}
+
+// Startup wiring for the browser page. Keep side effects here so render functions below stay easy to scan.
+function initializeDashboard() {
+  bindDataSourceControls();
+  bindPredictionControls();
+  bindEvaluationControls();
+  bindPlotControls();
+  bindLayoutObservers();
+  void initializeGitUrlFromQueryParam();
+}
+
+initializeDashboard();
+
+// Render functions for the prediction table, evaluation table, JSON pane, and plots.
 /**
  * Render the Predictions table from derived prediction views and prediction groups.
  */
@@ -975,7 +807,8 @@ function renderPredictions() {
     activeValue: state.activeOptionsTab,
   });
   const selectedPredictionViews = getSelectedPredictionViews();
-  const predictionDefaultColumns = getPredictionColumnsWithMissingValues(
+  const predictionDefaultColumns = selectors.getPredictionColumnsWithMissingValues(
+    state,
     selectedPredictionViews,
     orderedPredictionColumns
   );
@@ -997,10 +830,11 @@ function renderPredictions() {
     defaultsPanelElement: predictionDefaultsPanel,
     defaultColumns: predictionDefaultColumns,
     getDefaultLabel: displayPredictionColumnName,
-    getDefaultValue: getPredictionDefaultValue,
-    getDefaultSuggestions: (column) => getPredictionDefaultSuggestions(selectedPredictionViews, column),
+    getDefaultValue: (column) => selectors.getPredictionDefaultValue(state, column),
+    getDefaultSuggestions: (column) =>
+      selectors.getPredictionDefaultSuggestions(selectedPredictionViews, column),
     getDefaultMissingCount: (column) =>
-      getPredictionMissingValueCount(selectedPredictionViews, column),
+      selectors.getPredictionMissingValueCount(selectedPredictionViews, column),
     inputIdPrefix: "prediction-default",
     onDefaultCommit: (column, nextValue) => {
       setConfiguredDefault(state.predictionDefaultValues, column, nextValue);
@@ -1052,54 +886,17 @@ function renderPredictions() {
     onSelectAllDisplayed: (checked, displayedGroupIds) => {
       setSelectedGroupIds(checked ? displayedGroupIds : []);
     },
-    getGroupValueDisplay,
+    getGroupValueDisplay: (group, column) =>
+      selectors.getGroupValueDisplay(state, group, column),
     getSortedPredictionMembers,
-    getPredictionEffectiveValue,
+    getPredictionEffectiveValue: (predictionFlat, column) =>
+      selectors.getPredictionEffectiveValue(state, predictionFlat, column),
     sortableControlColumns: SORTABLE_CONTROL_COLUMNS,
   });
   updateStickyControlColumnOffsets(predictionsTable);
 }
 
-/**
- * Group evaluations by the active prediction and evaluation grouping fields.
- * The returned group shape matches the current evaluation table/rendering expectations.
- */
-function getEvaluationGroups(
-  evaluations,
-  groupByFields,
-  predictionGroupByFields = state.groupByFields,
-  evalTabState = state.activeEvalTab ? state.evalTabStates[state.activeEvalTab] : null
-) {
-  return selectors.getEvaluationGroups(state, evaluations, groupByFields, predictionGroupByFields, evalTabState);
-}
-
-function getEvaluationGroupSortValue(group, column, evalTabState) {
-  return selectors.getEvaluationGroupSortValue(group, column, evalTabState);
-}
-
-function getEvaluationRunSortValue(evaluation, column, evalTabState) {
-  return selectors.getEvaluationRunSortValue(evaluation, column, evalTabState);
-}
-
-function getSortedEvaluationGroups(groups, evalTabState) {
-  return selectors.getSortedEvaluationGroups(groups, evalTabState);
-}
-
-function getSortedEvaluations(evaluations, evalTabState) {
-  return selectors.getSortedEvaluations(evaluations, evalTabState);
-}
-
-/**
- * Synchronize evaluation-group UI state with the currently derived evaluation groups
- * and experiment evaluations.
- */
-function syncEvaluationGroupUiState(evalTabState, evaluationGroups, experimentEvaluations) {
-  dashboardStore.syncEvaluationGroupUiState(evalTabState, evaluationGroups, experimentEvaluations);
-}
-
-/**
- * Return the current evaluation context derived from canonical state and current evaluation UI settings.
- */
+// Helper functions for adapting evaluation context and plot-group state to shared renderers.
 function getEvaluationContext(
   activeExperiment = state.activeEvalTab,
   selectedEvaluations = gatherSelectedEvaluations()
@@ -1107,21 +904,10 @@ function getEvaluationContext(
   return selectors.getEvaluationContext(state, activeExperiment, selectedEvaluations);
 }
 
-/**
- * Filter evaluation groups down to the currently selected evaluation group ids.
- */
 function getSelectedEvaluationGroups(evaluationContext = getEvaluationContext()) {
   return selectors.getSelectedEvaluationGroups(state, evaluationContext);
 }
 
-function getGroupValueDisplayFromEvaluations(evaluations, getter) {
-  return selectors.getGroupValueDisplayFromEvaluations(evaluations, getter);
-}
-
-/**
- * Combine prediction grouping and evaluation grouping into the plot-group shape
- * consumed by plot and confusion-matrix rendering.
- */
 function getPlotGroups(activeExperiment, selectedEvalGroups, evalGroupByFields, evalTabState) {
   return selectors.getPlotGroups(state, activeExperiment, selectedEvalGroups, evalGroupByFields, evalTabState);
 }
@@ -1154,9 +940,9 @@ function renderEvaluationPlots(
     getSelectedEvaluationGroups,
     getMetricTypeForEvaluationContext,
     getPlotGroups,
-    getEvaluationEffectiveValue,
-    getEvaluationExperiment,
-    displayPlotGroupFieldName,
+    getEvaluationEffectiveValue: selectors.getEvaluationEffectiveValue,
+    getEvaluationExperiment: selectors.getEvaluationExperiment,
+    displayPlotGroupFieldName: (column) => getPlotDisplayLabel(displayGroupFieldName(column)),
     displayGroupFieldName,
     getPlotDisplayLabel,
     getPlotTitleLabel,
@@ -1232,7 +1018,7 @@ function renderEvaluations() {
     evaluationGroups,
   } = evaluationContext;
   const evalColumnSections = buildEvaluationColumnSections(evalColumns, {
-    isJobReturnValueColumn,
+    isJobReturnValueColumn: selectors.isJobReturnValueColumn,
   });
   const orderedEvalColumns = evalColumnSections.flatMap((section) => section.columns);
   evalTabState.sort = renderSortStatus({
@@ -1260,7 +1046,7 @@ function renderEvaluations() {
   const selectedEvaluationsForDefaults = getSelectedEvaluationGroups(evaluationContext).flatMap(
     (group) => group.evaluations
   );
-  const evalDefaultColumns = getEvalColumnsWithMissingValues(
+  const evalDefaultColumns = selectors.getEvalColumnsWithMissingValues(
     selectedEvaluationsForDefaults,
     evalColumns
   );
@@ -1282,11 +1068,11 @@ function renderEvaluations() {
     defaultsPanelElement: evalDefaultsPanel,
     defaultColumns: evalDefaultColumns,
     getDefaultLabel: displayEvalColumnName,
-    getDefaultValue: (column) => getEvalDefaultValue(evalTabState, column),
+    getDefaultValue: (column) => selectors.getEvalDefaultValue(evalTabState, column),
     getDefaultSuggestions: (column) =>
-      getEvalDefaultSuggestions(selectedEvaluationsForDefaults, column),
+      selectors.getEvalDefaultSuggestions(selectedEvaluationsForDefaults, column),
     getDefaultMissingCount: (column) =>
-      getEvalMissingValueCount(selectedEvaluationsForDefaults, column),
+      selectors.getEvalMissingValueCount(selectedEvaluationsForDefaults, column),
     inputIdPrefix: `eval-default-${state.activeEvalTab.replace(/[^a-zA-Z0-9_-]+/g, "-")}`,
     onDefaultCommit: (column, nextValue) => {
       setConfiguredDefault(evalTabState.defaultValues, column, nextValue);
@@ -1294,7 +1080,7 @@ function renderEvaluations() {
     },
   });
 
-  const displayedEvalGroups = getSortedEvaluationGroups(evaluationGroups, evalTabState);
+  const displayedEvalGroups = selectors.getSortedEvaluationGroups(evaluationGroups, evalTabState);
 
   renderEvaluationTable({
     documentLike: document,
@@ -1354,9 +1140,9 @@ function renderEvaluations() {
       }
       renderEvaluations();
     },
-    getGroupValueDisplayFromEvaluations,
-    getEvaluationEffectiveValue,
-    getSortedEvaluations,
+    getGroupValueDisplayFromEvaluations: selectors.getGroupValueDisplayFromEvaluations,
+    getEvaluationEffectiveValue: selectors.getEvaluationEffectiveValue,
+    getSortedEvaluations: selectors.getSortedEvaluations,
     sortableControlColumns: SORTABLE_CONTROL_COLUMNS,
   });
 

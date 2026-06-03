@@ -5,12 +5,12 @@
 This baseline captures the current behavior of the monolithic eval dashboard implementation before CSS/JS modularization.
 
 The baseline was recorded during the Phase 0/1 migration window on 2026-05-27.
-It is intended to preserve behavior while the dashboard is moved from `docs/eval-dashboard.html` to `docs/eval-dashboard/index.html` and later split into modules.
+It is intended to preserve behavior while the dashboard runtime entrypoint remains at `docs/eval-dashboard/index.html` and the implementation is split into modules.
 
 ## Current implementation shape
 
 - runtime page: `docs/eval-dashboard/index.html`
-- compatibility path: `docs/eval-dashboard.html`
+- compatibility path: none; the temporary `docs/eval-dashboard.html` shim has been retired
 - implementation style: single static HTML page with large inline CSS and inline JavaScript
 - CSS extraction status: not started
 - JavaScript extraction status: not started
@@ -59,7 +59,7 @@ Manual validation target for this baseline:
 1. build the docs site
 2. open the dashboard
 3. verify the feature families above still behave as expected
-4. confirm the new entry path works and the old path remains covered by redirect/shim handling
+4. confirm the runtime entry path works
 
 ## Baseline artifact contents
 
@@ -73,4 +73,3 @@ Phase 3 is intentionally limited to CSS extraction.
 While `docs/eval-dashboard/index.html` is switched from inline CSS to `assets/css/index.css`, the lone inline `<script>` block is expected to remain behavior-equivalent until Phase 4 moves it to an external JS file.
 
 To make that constraint reviewable, `baseline-summary.json` includes a normalized inline-script fingerprint that Phase 3 tests compare against.
-

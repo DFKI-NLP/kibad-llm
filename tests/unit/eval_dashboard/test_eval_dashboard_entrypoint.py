@@ -8,7 +8,7 @@ from tests import FIXTURE_DATA_ROOT
 DOCS_ROOT = PROJ_ROOT / "docs"
 DOCS_INDEX = DOCS_ROOT / "index.md"
 DASHBOARD_ENTRY = DOCS_ROOT / "eval-dashboard" / "index.html"
-DASHBOARD_COMPAT = DOCS_ROOT / "eval-dashboard.html"
+DASHBOARD_DOCS_PAGE = DOCS_ROOT / "eval-dashboard-docs.md"
 DASHBOARD_CSS_ROOT = DOCS_ROOT / "eval-dashboard" / "assets" / "css"
 DASHBOARD_JS_ROOT = DOCS_ROOT / "eval-dashboard" / "assets" / "js"
 DASHBOARD_JS_ENTRY = DASHBOARD_JS_ROOT / "main.js"
@@ -75,10 +75,16 @@ def _load_properdocs() -> dict:
 
 
 def test_dashboard_entrypoint_exists() -> None:
-    """Ensure the new dashboard entrypoint and compatibility shim both exist."""
+    """Ensure the dashboard documentation page and runtime entrypoint exist."""
 
+    assert DASHBOARD_DOCS_PAGE.is_file()
     assert DASHBOARD_ENTRY.is_file()
-    assert DASHBOARD_COMPAT.is_file()
+
+
+def test_dashboard_docs_page_does_not_collide_with_runtime_output_path() -> None:
+    """Ensure ProperDocs does not render the docs page over the raw dashboard HTML."""
+
+    assert DASHBOARD_DOCS_PAGE.name != "eval-dashboard.md"
 
 
 def test_phase_zero_baseline_artifacts_exist() -> None:
@@ -143,24 +149,25 @@ def test_phase_eleven_dashboard_js_plot_modules_exist() -> None:
         assert (PLOTS_JS_ROOT / file_name).is_file()
 
 
-def test_properdocs_nav_points_to_new_dashboard_entry() -> None:
-    """Ensure docs navigation points to the folder-based dashboard entrypoint."""
+def test_properdocs_nav_points_to_dashboard_docs_page() -> None:
+    """Ensure docs navigation points to the dashboard documentation page."""
 
     config = _load_properdocs()
-    assert {"Evaluation dashboard": "eval-dashboard/index.html"} in config["nav"]
+    assert {"Evaluation dashboard": "eval-dashboard-docs.md"} in config["nav"]
 
 
-def test_docs_index_links_point_to_new_dashboard_entry() -> None:
-    """Ensure docs landing-page links target the new dashboard path only."""
+def test_docs_index_links_point_to_dashboard_docs_page() -> None:
+    """Ensure docs landing-page links target the dashboard documentation page."""
 
     text = DOCS_INDEX.read_text(encoding="utf-8")
-    assert "(eval-dashboard/index.html)" in text
+    assert "(eval-dashboard-docs.md)" in text
     assert "(eval-dashboard.html)" not in text
 
 
-def test_old_dashboard_path_has_redirect_coverage() -> None:
-    """Ensure the legacy dashboard path still redirects to the new entrypoint."""
+def test_dashboard_docs_page_links_to_runtime_entrypoint() -> None:
+    """Ensure the documentation page keeps a prominent link to the runtime dashboard."""
 
-    compat_html = DASHBOARD_COMPAT.read_text(encoding="utf-8")
-    assert 'http-equiv="refresh"' in compat_html
-    assert "eval-dashboard/index.html" in compat_html
+    text = DASHBOARD_DOCS_PAGE.read_text(encoding="utf-8")
+    assert "**Open the dashboard:**" in text
+    assert "(eval-dashboard/index.html)" in text
+    assert "(eval-dashboard.html)" not in text
