@@ -1,5 +1,4 @@
 import { normalizeSortConfig } from "./utils/sort.js";
-import { normalizeValue } from "./utils/values.js";
 import * as dashboardStore from "./state/store.js";
 import * as selectors from "./state/selectors.js";
 import { collectLocalEvaluationEntries } from "./data/file-loader.js";
@@ -107,19 +106,11 @@ const {
   plotTabsBySuffixButton,
   plotShortenLabels,
   plotRoundingPrecision,
-  plotConfusionMinLabelTotalRow,
   plotConfusionMinLabelTotal,
-  plotTpFpFnMinLabelTotalRow,
   plotTpFpFnMinLabelTotal,
-  plotTpFpFnMinDocumentTotalRow,
   plotTpFpFnMinDocumentTotal,
-  plotTabsByRow,
-  plotConfusionTabsByRow,
   confusionTabsByMetricFieldButton,
   confusionTabsByPredictionGroupButton,
-  plotGroupBarsRow,
-  plotGroupBarsList,
-  plotShowLegendOnceRow,
   plotShowLegendOnce,
   downloadFiguresButton,
   exportOpaqueBackground,
@@ -472,40 +463,46 @@ truncateDefaultsButton.addEventListener("click", () => {
   renderPredictions();
 });
 
+function readClampedIntegerInput(inputElement, { fallback, min = 0, max = Infinity }) {
+  const parsed = Number.parseInt(inputElement.value, 10);
+  const clamped = Number.isFinite(parsed)
+    ? Math.max(min, Math.min(max, parsed))
+    : fallback;
+  inputElement.value = String(clamped);
+  return clamped;
+}
+
 plotShortenLabels.addEventListener("change", () => {
   state.plotShortenLabels = plotShortenLabels.checked;
   renderEvaluations();
 });
 
 plotRoundingPrecision.addEventListener("change", () => {
-  const parsed = Number.parseInt(plotRoundingPrecision.value, 10);
-  const clamped = Number.isFinite(parsed) ? Math.max(0, Math.min(6, parsed)) : 2;
-  state.plotRoundingPrecision = clamped;
-  plotRoundingPrecision.value = String(clamped);
+  state.plotRoundingPrecision = readClampedIntegerInput(plotRoundingPrecision, {
+    fallback: 2,
+    max: 6,
+  });
   renderEvaluations();
 });
 
 plotConfusionMinLabelTotal.addEventListener("change", () => {
-  const parsed = Number.parseInt(plotConfusionMinLabelTotal.value, 10);
-  const clamped = Number.isFinite(parsed) ? Math.max(0, parsed) : 3;
-  state.plotConfusionMinLabelTotal = clamped;
-  plotConfusionMinLabelTotal.value = String(clamped);
+  state.plotConfusionMinLabelTotal = readClampedIntegerInput(plotConfusionMinLabelTotal, {
+    fallback: 3,
+  });
   renderEvaluations();
 });
 
 plotTpFpFnMinLabelTotal.addEventListener("change", () => {
-  const parsed = Number.parseInt(plotTpFpFnMinLabelTotal.value, 10);
-  const clamped = Number.isFinite(parsed) ? Math.max(0, parsed) : 3;
-  state.plotTpFpFnMinLabelTotal = clamped;
-  plotTpFpFnMinLabelTotal.value = String(clamped);
+  state.plotTpFpFnMinLabelTotal = readClampedIntegerInput(plotTpFpFnMinLabelTotal, {
+    fallback: 3,
+  });
   renderEvaluations();
 });
 
 plotTpFpFnMinDocumentTotal.addEventListener("change", () => {
-  const parsed = Number.parseInt(plotTpFpFnMinDocumentTotal.value, 10);
-  const clamped = Number.isFinite(parsed) ? Math.max(0, parsed) : 0;
-  state.plotTpFpFnMinDocumentTotal = clamped;
-  plotTpFpFnMinDocumentTotal.value = String(clamped);
+  state.plotTpFpFnMinDocumentTotal = readClampedIntegerInput(plotTpFpFnMinDocumentTotal, {
+    fallback: 0,
+  });
   renderEvaluations();
 });
 
@@ -545,41 +542,28 @@ downloadFiguresButton.addEventListener("click", async () => {
   }
 });
 
-plotTabsByPrefixButton.addEventListener("click", () => {
-  if (state.plotTabsBy === "prefix") {
+function setPlotTabsBy(nextTabsBy) {
+  if (state.plotTabsBy === nextTabsBy) {
     return;
   }
-  state.plotTabsBy = "prefix";
+  state.plotTabsBy = nextTabsBy;
   state.activeEvalPlotTab = null;
   renderEvaluations();
-});
+}
 
-plotTabsBySuffixButton.addEventListener("click", () => {
-  if (state.plotTabsBy === "suffix") {
+function setConfusionTabsBy(nextTabsBy) {
+  if (state.confusionTabsBy === nextTabsBy) {
     return;
   }
-  state.plotTabsBy = "suffix";
+  state.confusionTabsBy = nextTabsBy;
   state.activeEvalPlotTab = null;
   renderEvaluations();
-});
+}
 
-confusionTabsByMetricFieldButton.addEventListener("click", () => {
-  if (state.confusionTabsBy === "metric_field") {
-    return;
-  }
-  state.confusionTabsBy = "metric_field";
-  state.activeEvalPlotTab = null;
-  renderEvaluations();
-});
-
-confusionTabsByPredictionGroupButton.addEventListener("click", () => {
-  if (state.confusionTabsBy === "prediction_group") {
-    return;
-  }
-  state.confusionTabsBy = "prediction_group";
-  state.activeEvalPlotTab = null;
-  renderEvaluations();
-});
+plotTabsByPrefixButton.addEventListener("click", () => setPlotTabsBy("prefix"));
+plotTabsBySuffixButton.addEventListener("click", () => setPlotTabsBy("suffix"));
+confusionTabsByMetricFieldButton.addEventListener("click", () => setConfusionTabsBy("metric_field"));
+confusionTabsByPredictionGroupButton.addEventListener("click", () => setConfusionTabsBy("prediction_group"));
 
 function setPredictionSort(column, event = {}) {
   state.predictionSort = getNextSortConfig(state.predictionSort, column, { append: event.shiftKey });
