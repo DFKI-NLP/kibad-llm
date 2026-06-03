@@ -16,8 +16,6 @@ import { captureDomRefs, setPanelVisibility } from "./ui/dom.js";
 import {
   getToggleOnlyColumns,
   renderOptionsPanel,
-  renderPlotControls,
-  renderPlotGroupBarChips,
   renderGroupByButtonState,
   renderSortStatus,
 } from "./ui/controls.js";
@@ -46,61 +44,22 @@ import {
 } from "./ui/tabs.js";
 import {
   clearLoadProgress,
-  renderDownloadFiguresButtonState,
   renderLoadProgress,
   renderLoadStatusStage,
   renderLoadStatusSummary,
   setDownloadFiguresButtonBusy,
 } from "./ui/status.js";
 import {
-  collectNumericMetricLeafPaths,
-  getGroupLabelForFields,
   getPlotDisplayLabel as getSharedPlotDisplayLabel,
   getPlotTitleLabel as getSharedPlotTitleLabel,
-  getVaryingFields,
 } from "./plots/shared.js";
 import {
-  buildBarsTabMap,
-  buildErrorsTabMap,
-  buildPlotEntries,
-  createBarPlotSvg,
-  createGroupedBarPlotSvg,
-  renderPlotTabsAndGrid as renderSharedPlotTabsAndGrid,
-} from "./plots/bars.js";
-import {
-  createPlotLegendElement as createSharedPlotLegendElement,
-} from "./plots/legend.js";
-import {
-  buildConfusionTabMap,
-  countDistinctConfusionMatrixRuns,
-  createConfusionMatrixHeatmapSvg,
-  filterConfusionMatrixAggregationByLabelTotal,
-  getConfusionMatrixAggregation,
-  getConfusionMatrixTitle,
-} from "./plots/confusion.js";
-import {
-  buildTpFpFnTabMap,
-  createTpFpFnCombinedMatrixSvg,
-  createTpFpFnLegendElement,
-  filterTpFpFnAggregationByTotals,
-  getTpFpFnCombinedAggregation,
-} from "./plots/tpfpfn.js";
-import {
-  downloadVisibleFigures as downloadSharedVisibleFigures,
-  getActivePlotTabZipFilename as getSharedActivePlotTabZipFilename,
-  getVisiblePlotFigureCards as getSharedVisiblePlotFigureCards,
-  createZipBlob,
-  hideTooltip as hideSharedTooltip,
-  measureCanvasText as measureSharedCanvasText,
-  positionTooltip as positionSharedTooltip,
-  resolveOpaqueExportBackgroundColor as resolveSharedOpaqueExportBackgroundColor,
-  saveBlob as saveSharedBlob,
-  serializeLegendSvg as serializeSharedLegendSvg,
-  serializeSvgForDownload as serializeSharedSvgForDownload,
-  showTooltip as showSharedTooltip,
-  triggerBlobDownload as triggerSharedBlobDownload,
-  writeTextToClipboard as writeSharedTextToClipboard,
-} from "./plots/export.js";
+  createPlotTooltipHandlers,
+  downloadVisiblePlotFigures,
+  renderDashboardPlotControls,
+  renderEvaluationPlotsForDashboard,
+  updateDownloadFiguresButtonState as updatePlotDownloadFiguresButtonState,
+} from "./plots/dashboard.js";
 
 // Central UI state: loaded prediction/evaluation data, current grouping/selection, and per-eval-tab view state.
 const state = dashboardStore.createInitialDashboardState();
@@ -335,21 +294,10 @@ function getEvaluationColumns(evaluations = []) {
   return selectors.getEvaluationColumns(evaluations);
 }
 
-const plotTooltipHandlers = {
-  show: (event, lines) => showSharedTooltip({ tooltipElement: barTooltip, windowLike: window, event, lines }),
-  move: (event) => positionSharedTooltip({ tooltipElement: barTooltip, windowLike: window, event }),
-  hide: () => hideSharedTooltip({ tooltipElement: barTooltip }),
-};
-
-function resolveOpaqueExportBackgroundColor() {
-  return resolveSharedOpaqueExportBackgroundColor(
-    [evalPlotContent, document.body, document.documentElement],
-    getComputedStyle
-  );
-}
+const plotTooltipHandlers = createPlotTooltipHandlers({ tooltipElement: barTooltip, windowLike: window });
 
 function updateDownloadFiguresButtonState() {
-  renderDownloadFiguresButtonState(downloadFiguresButton, getSharedVisiblePlotFigureCards(evalPlotContent).length);
+  updatePlotDownloadFiguresButtonState({ downloadFiguresButton, evalPlotContent });
 }
 
 const evalPlotContentObserver = new MutationObserver(() => {
@@ -702,35 +650,10 @@ plotShowLegendOnce.addEventListener("change", () => {
 
 exportOpaqueBackground.addEventListener("change", () => {
   state.exportOpaqueBackground = exportOpaqueBackground.checked;
-  renderPlotControls({
+  renderDashboardPlotControls({
+    state,
+    dom,
     metricType: getMetricTypeForEvaluationContext(state.activeEvalTab || ""),
-    plotTabsBy: state.plotTabsBy,
-    confusionTabsBy: state.confusionTabsBy,
-    plotShortenLabels: state.plotShortenLabels,
-    plotRoundingPrecision: state.plotRoundingPrecision,
-    plotConfusionMinLabelTotal: state.plotConfusionMinLabelTotal,
-    plotTpFpFnMinLabelTotal: state.plotTpFpFnMinLabelTotal,
-    plotTpFpFnMinDocumentTotal: state.plotTpFpFnMinDocumentTotal,
-    plotShowLegendOnce: state.plotShowLegendOnce,
-    exportOpaqueBackground: state.exportOpaqueBackground,
-    plotTabsByPrefixButton,
-    plotTabsBySuffixButton,
-    confusionTabsByMetricFieldButton,
-    confusionTabsByPredictionGroupButton,
-    plotShortenLabelsInput: plotShortenLabels,
-    plotRoundingPrecisionInput: plotRoundingPrecision,
-    plotConfusionMinLabelTotalRow,
-    plotConfusionMinLabelTotalInput: plotConfusionMinLabelTotal,
-    plotTpFpFnMinLabelTotalRow,
-    plotTpFpFnMinLabelTotalInput: plotTpFpFnMinLabelTotal,
-    plotTpFpFnMinDocumentTotalRow,
-    plotTpFpFnMinDocumentTotalInput: plotTpFpFnMinDocumentTotal,
-    plotTabsByRow,
-    plotConfusionTabsByRow,
-    plotGroupBarsRow,
-    plotShowLegendOnceRow,
-    plotShowLegendOnceInput: plotShowLegendOnce,
-    exportOpaqueBackgroundInput: exportOpaqueBackground,
   });
 });
 
@@ -740,43 +663,16 @@ downloadFiguresButton.addEventListener("click", async () => {
   }
   setDownloadFiguresButtonBusy(downloadFiguresButton);
   try {
-    const exportOptions = {
-      opaqueBackground: state.exportOpaqueBackground,
-      backgroundColor: state.exportOpaqueBackground ? resolveOpaqueExportBackgroundColor() : null,
-    };
-    await downloadSharedVisibleFigures({
-      figureCards: getSharedVisiblePlotFigureCards(evalPlotContent),
-      activePlotLegendItems: state.activePlotLegendItems,
-      exportOptions,
-      serializeLegend: (legendItems, nextExportOptions) => serializeSharedLegendSvg({
-        documentLike: document,
-        legendItems,
-        computedStyle: getComputedStyle(evalPlotContent),
-        measureText: (text, font) => measureSharedCanvasText({ documentLike: document, text, font }),
-        exportOptions: nextExportOptions,
-      }),
-      serializeSvg: (sourceSvg, nextExportOptions) => serializeSharedSvgForDownload({
-        documentLike: document,
-        sourceSvg,
-        computedStyle: getComputedStyle(sourceSvg),
-        exportOptions: nextExportOptions,
-      }),
-      createZip: createZipBlob,
-      saveZip: (blob, suggestedName, types) => saveSharedBlob({
-        windowLike: window,
-        blob,
-        suggestedName,
-        types,
-        triggerDownload: (nextBlob, filename) => triggerSharedBlobDownload({
-          documentLike: document,
-          urlLike: URL,
-          setTimeoutLike: setTimeout,
-          filename,
-          blob: nextBlob,
-        }),
-        consoleLike: console,
-      }),
-      getZipFilename: () => getSharedActivePlotTabZipFilename({ activeEvalTab: state.activeEvalTab, evalPlotTabs }),
+    await downloadVisiblePlotFigures({
+      state,
+      evalPlotContent,
+      evalPlotTabs,
+      documentLike: document,
+      windowLike: window,
+      urlLike: URL,
+      setTimeoutLike: setTimeout,
+      getStyle: getComputedStyle,
+      consoleLike: console,
     });
   } finally {
     updateDownloadFiguresButtonState();
@@ -1237,55 +1133,6 @@ function getMetricTypeForEvaluationContext(
   return selectors.getMetricTypeForEvaluationContext(state, activeExperiment, evaluationContext);
 }
 
-function renderPlotTabsAndGrid(tabMap, activeExperiment, groupBarFields, metricType) {
-  const result = renderSharedPlotTabsAndGrid({
-    documentLike: document,
-    tabMap,
-    activeExperiment,
-    groupBarFields,
-    metricType,
-    activeEvalPlotTab: state.activeEvalPlotTab,
-    plotShowLegendOnce: state.plotShowLegendOnce,
-    plotShowLegendOnceRow,
-    evalPlotTabs,
-    evalPlotContent,
-    buildCountTabButtonModels,
-    renderTabButtons,
-    resolveActiveTabValue,
-    getPlotTitleLabel,
-    displayPlotGroupFieldName,
-    createLegendElement: createSharedPlotLegendElement,
-    createBarSvg: (points) => createBarPlotSvg({
-      documentLike: document,
-      requestAnimationFrameLike: requestAnimationFrame,
-      points,
-      showTooltip: plotTooltipHandlers.show,
-      moveTooltip: plotTooltipHandlers.move,
-      hideTooltip: plotTooltipHandlers.hide,
-    }),
-    createGroupedBarSvg: (points, legendModel) => createGroupedBarPlotSvg({
-      documentLike: document,
-      requestAnimationFrameLike: requestAnimationFrame,
-      points,
-      legendModel,
-      showTooltip: plotTooltipHandlers.show,
-      moveTooltip: plotTooltipHandlers.move,
-      hideTooltip: plotTooltipHandlers.hide,
-    }),
-    onActiveTabChange: (key) => {
-      if (state.activeEvalPlotTab === key) {
-        return;
-      }
-      state.activeEvalPlotTab = key;
-      renderEvaluationPlots(activeExperiment);
-    },
-  });
-  state.activeEvalPlotTab = result.activeEvalPlotTab;
-  state.activePlotLegendItems = result.activePlotLegendItems;
-}
-
-// Plot rendering always starts from the currently selected prediction groups and selected eval groups,
-// then branches into metric-specific aggregation/rendering.
 /**
  * Render evaluation plots from the current selector-derived evaluation context.
  */
@@ -1293,407 +1140,28 @@ function renderEvaluationPlots(
   activeExperiment,
   evaluationContext = getEvaluationContext(activeExperiment)
 ) {
-  renderPlotControls({
-    metricType: null,
-    plotTabsBy: state.plotTabsBy,
-    confusionTabsBy: state.confusionTabsBy,
-    plotShortenLabels: state.plotShortenLabels,
-    plotRoundingPrecision: state.plotRoundingPrecision,
-    plotConfusionMinLabelTotal: state.plotConfusionMinLabelTotal,
-    plotTpFpFnMinLabelTotal: state.plotTpFpFnMinLabelTotal,
-    plotTpFpFnMinDocumentTotal: state.plotTpFpFnMinDocumentTotal,
-    plotShowLegendOnce: state.plotShowLegendOnce,
-    exportOpaqueBackground: state.exportOpaqueBackground,
-    plotTabsByPrefixButton,
-    plotTabsBySuffixButton,
-    confusionTabsByMetricFieldButton,
-    confusionTabsByPredictionGroupButton,
-    plotShortenLabelsInput: plotShortenLabels,
-    plotRoundingPrecisionInput: plotRoundingPrecision,
-    plotConfusionMinLabelTotalRow,
-    plotConfusionMinLabelTotalInput: plotConfusionMinLabelTotal,
-    plotTpFpFnMinLabelTotalRow,
-    plotTpFpFnMinLabelTotalInput: plotTpFpFnMinLabelTotal,
-    plotTpFpFnMinDocumentTotalRow,
-    plotTpFpFnMinDocumentTotalInput: plotTpFpFnMinDocumentTotal,
-    plotTabsByRow,
-    plotConfusionTabsByRow,
-    plotGroupBarsRow,
-    plotShowLegendOnceRow,
-    plotShowLegendOnceInput: plotShowLegendOnce,
-    exportOpaqueBackgroundInput: exportOpaqueBackground,
-  });
-  evalPlotTabs.innerHTML = "";
-  evalPlotContent.innerHTML = "";
-  plotGroupBarsList.innerHTML = "";
-  state.activePlotLegendItems = [];
-
-  const selectedPredictionGroups = getSelectedPredictionGroups();
-  if (selectedPredictionGroups.length === 0) {
-    const msg = document.createElement("p");
-    msg.className = "plot-empty";
-    msg.textContent = "Select prediction groups to generate plots.";
-    evalPlotContent.appendChild(msg);
-    return;
-  }
-
-  if (!evaluationContext) {
-    const msg = document.createElement("p");
-    msg.className = "plot-empty";
-    msg.textContent = "Select one or more prediction groups to generate plots.";
-    evalPlotContent.appendChild(msg);
-    return;
-  }
-
-  const { experimentEvaluations, evalTabState } = evaluationContext;
-  const metricType = getMetricTypeForEvaluationContext(activeExperiment, evaluationContext);
-  renderPlotControls({
-    metricType,
-    plotTabsBy: state.plotTabsBy,
-    confusionTabsBy: state.confusionTabsBy,
-    plotShortenLabels: state.plotShortenLabels,
-    plotRoundingPrecision: state.plotRoundingPrecision,
-    plotConfusionMinLabelTotal: state.plotConfusionMinLabelTotal,
-    plotTpFpFnMinLabelTotal: state.plotTpFpFnMinLabelTotal,
-    plotTpFpFnMinDocumentTotal: state.plotTpFpFnMinDocumentTotal,
-    plotShowLegendOnce: state.plotShowLegendOnce,
-    exportOpaqueBackground: state.exportOpaqueBackground,
-    plotTabsByPrefixButton,
-    plotTabsBySuffixButton,
-    confusionTabsByMetricFieldButton,
-    confusionTabsByPredictionGroupButton,
-    plotShortenLabelsInput: plotShortenLabels,
-    plotRoundingPrecisionInput: plotRoundingPrecision,
-    plotConfusionMinLabelTotalRow,
-    plotConfusionMinLabelTotalInput: plotConfusionMinLabelTotal,
-    plotTpFpFnMinLabelTotalRow,
-    plotTpFpFnMinLabelTotalInput: plotTpFpFnMinLabelTotal,
-    plotTpFpFnMinDocumentTotalRow,
-    plotTpFpFnMinDocumentTotalInput: plotTpFpFnMinDocumentTotal,
-    plotTabsByRow,
-    plotConfusionTabsByRow,
-    plotGroupBarsRow,
-    plotShowLegendOnceRow,
-    plotShowLegendOnceInput: plotShowLegendOnce,
-    exportOpaqueBackgroundInput: exportOpaqueBackground,
-  });
-  const selectedEvalGroups = getSelectedEvaluationGroups(evaluationContext);
-  if (selectedEvalGroups.length === 0) {
-    const msg = document.createElement("p");
-    msg.className = "plot-empty";
-    msg.textContent = "Select evaluation groups to generate plots.";
-    evalPlotContent.appendChild(msg);
-    return;
-  }
-
-  if (
-    metricType !== "ConfusionMatrix" &&
-    metricType !== "ErrorCollector" &&
-    metricType !== "F1MicroMultipleFieldsMetric" &&
-    metricType !== "TpFpFnCollector"
-  ) {
-    const msg = document.createElement("p");
-    msg.className = "plot-empty";
-    msg.textContent = `(unknown metric type: ${metricType || "(missing)"}, data visualization not yet implemented)`;
-    evalPlotContent.appendChild(msg);
-    return;
-  }
-
-  const combined = getPlotGroups(
+  renderEvaluationPlotsForDashboard({
+    state,
+    dom,
     activeExperiment,
-    selectedEvalGroups,
-    evalTabState.groupByFields,
-    evalTabState
-  );
-  const plotGroups = combined.groups;
-  const plotGroupFields = combined.fields;
-  const varyingPlotGroupFields = getVaryingFields(plotGroups, plotGroupFields);
-
-  if (metricType === "ConfusionMatrix") {
-    // Confusion plots do not reuse the generic metric plot path below; they get their own tab map
-    // and heatmap rendering because the aggregation shape is matrix-like instead of metric-like.
-    const labelFields = varyingPlotGroupFields.length ? varyingPlotGroupFields : plotGroupFields;
-    const confusionTabMap = buildConfusionTabMap({
-      activeExperiment,
-      plotGroups,
-      experimentEvaluations,
-      labelFields,
-      evalTabState,
-      confusionTabsBy: state.confusionTabsBy,
-      getEvaluationEffectiveValue,
-      getEvaluationExperiment,
-      displayPlotGroupFieldName,
-      shortenLabels: state.plotShortenLabels,
-    });
-    const sortedConfusionTabKeys = Array.from(confusionTabMap.keys()).sort((a, b) =>
-      confusionTabMap.get(a).label.localeCompare(confusionTabMap.get(b).label)
-    );
-    if (sortedConfusionTabKeys.length === 0) {
-      const msg = document.createElement("p");
-      msg.className = "plot-empty";
-      msg.textContent = `No confusion matrix data found for ${activeExperiment}.`;
-      evalPlotContent.appendChild(msg);
-      return;
-    }
-
-    state.activeEvalPlotTab = resolveActiveTabValue(state.activeEvalPlotTab, sortedConfusionTabKeys);
-    renderTabButtons({
-      documentLike: document,
-      containerElement: evalPlotTabs,
-      tabModels: buildCountTabButtonModels(sortedConfusionTabKeys, {
-        activeValue: state.activeEvalPlotTab,
-        getLabelText: (key) => confusionTabMap.get(key).label,
-        getCount: (key) => {
-          const entry = confusionTabMap.get(key);
-          return countDistinctConfusionMatrixRuns(
-            entry.plots.flatMap((plot) => plot.evaluations)
-          );
-        },
-        getTitle: (key) => confusionTabMap.get(key).label,
-      }),
-      onSelect: (key) => {
-        if (state.activeEvalPlotTab === key) {
-          return;
-        }
-        state.activeEvalPlotTab = key;
-        renderEvaluationPlots(activeExperiment);
-      },
-    });
-
-    const activeConfusionEntry = confusionTabMap.get(state.activeEvalPlotTab);
-    const grid = document.createElement("div");
-    grid.className = "plot-grid";
-
-    for (const plotEntry of activeConfusionEntry.plots) {
-      const aggregation = filterConfusionMatrixAggregationByLabelTotal(
-        getConfusionMatrixAggregation(plotEntry.evaluations),
-        state.plotConfusionMinLabelTotal
-      );
-      if (!aggregation.rows.length || !aggregation.cols.length) {
-        continue;
-      }
-
-      const card = document.createElement("section");
-      card.className = "plot-card";
-      const title = document.createElement("p");
-      title.className = "plot-title";
-      const fieldTitle = getConfusionMatrixTitle({
-        experimentEvaluations: plotEntry.evaluations,
-        evalTabState,
-        getEvaluationEffectiveValue,
-        shortenLabels: state.plotShortenLabels,
-      });
-      if (state.confusionTabsBy === "metric_field") {
-        title.textContent = `${plotEntry.label} (mean ± std)`;
-      } else {
-        title.textContent = `${fieldTitle} (mean ± std)`;
-      }
-      card.appendChild(title);
-      card.appendChild(
-        createConfusionMatrixHeatmapSvg({
-          documentLike: document,
-          aggregation,
-          precision: state.plotRoundingPrecision,
-          getDisplayLabel: getPlotDisplayLabel,
-          showTooltip: plotTooltipHandlers.show,
-          moveTooltip: plotTooltipHandlers.move,
-          hideTooltip: plotTooltipHandlers.hide,
-        })
-      );
-      grid.appendChild(card);
-    }
-
-    if (!grid.childElementCount) {
-      const msg = document.createElement("p");
-      msg.className = "plot-empty";
-      msg.textContent = `No confusion matrix values found for ${activeConfusionEntry.label} with minimum label total ${state.plotConfusionMinLabelTotal}.`;
-      evalPlotContent.appendChild(msg);
-      return;
-    }
-
-    evalPlotContent.appendChild(grid);
-    return;
-  }
-
-  if (metricType === "TpFpFnCollector") {
-    const labelFields = varyingPlotGroupFields.length ? varyingPlotGroupFields : plotGroupFields;
-    const tpfpfnTabMap = buildTpFpFnTabMap({
-      plotGroups,
-      experimentEvaluations,
-      labelFields,
-      evalTabState,
-      confusionTabsBy: state.confusionTabsBy,
-      getEvaluationEffectiveValue,
-      displayPlotGroupFieldName,
-      shortenLabels: state.plotShortenLabels,
-    });
-    const sortedTabKeys = Array.from(tpfpfnTabMap.keys()).sort((a, b) =>
-      tpfpfnTabMap.get(a).label.localeCompare(tpfpfnTabMap.get(b).label)
-    );
-    if (!sortedTabKeys.length) {
-      const msg = document.createElement("p");
-      msg.className = "plot-empty";
-      msg.textContent = `No ${metricType} data found for ${activeExperiment}.`;
-      evalPlotContent.appendChild(msg);
-      return;
-    }
-
-    state.activeEvalPlotTab = resolveActiveTabValue(state.activeEvalPlotTab, sortedTabKeys);
-    renderTabButtons({
-      documentLike: document,
-      containerElement: evalPlotTabs,
-      tabModels: buildCountTabButtonModels(sortedTabKeys, {
-        activeValue: state.activeEvalPlotTab,
-        getLabelText: (key) => tpfpfnTabMap.get(key).label,
-        getCount: (key) => {
-          const entry = tpfpfnTabMap.get(key);
-          return entry.plots.reduce(
-            (sum, plot) => sum + plot.evaluations.length,
-            0
-          );
-        },
-        getTitle: (key) => {
-          const entry = tpfpfnTabMap.get(key);
-          const evaluationCount = entry.plots.reduce(
-            (sum, plot) => sum + plot.evaluations.length,
-            0
-          );
-          return `${entry.label} (${evaluationCount} grouped evaluations)`;
-        },
-      }),
-      onSelect: (key) => {
-        if (state.activeEvalPlotTab === key) {
-          return;
-        }
-        state.activeEvalPlotTab = key;
-        renderEvaluationPlots(activeExperiment);
-      },
-    });
-
-    const activeEntry = tpfpfnTabMap.get(state.activeEvalPlotTab);
-    const grid = document.createElement("div");
-    grid.className = "plot-grid";
-
-    for (const plotEntry of activeEntry.plots) {
-      const aggregation = filterTpFpFnAggregationByTotals(
-        getTpFpFnCombinedAggregation(plotEntry.evaluations),
-        state.plotTpFpFnMinLabelTotal,
-        state.plotTpFpFnMinDocumentTotal
-      );
-      if (!aggregation.rows.length || !aggregation.cols.length) {
-        continue;
-      }
-
-      const card = document.createElement("section");
-      card.className = "plot-card";
-      const title = document.createElement("p");
-      title.className = "plot-title";
-      const fieldTitle = getConfusionMatrixTitle({
-        experimentEvaluations: plotEntry.evaluations,
-        evalTabState,
-        getEvaluationEffectiveValue,
-        shortenLabels: state.plotShortenLabels,
-      });
-      if (state.confusionTabsBy === "metric_field") {
-        title.textContent = `${plotEntry.label} (${aggregation.totalEvaluations} grouped evals)`;
-      } else {
-        title.textContent = `${fieldTitle} (${aggregation.totalEvaluations} grouped evals)`;
-      }
-      card.appendChild(title);
-      card.appendChild(createTpFpFnCombinedMatrixSvg({
-        documentLike: document,
-        requestAnimationFrameLike: requestAnimationFrame,
-        aggregation,
-        precision: state.plotRoundingPrecision,
-        getDisplayLabel: getPlotDisplayLabel,
-        showTooltip: plotTooltipHandlers.show,
-        moveTooltip: plotTooltipHandlers.move,
-        hideTooltip: plotTooltipHandlers.hide,
-        writeTextToClipboard: (text) => writeSharedTextToClipboard({
-          documentLike: document,
-          navigatorLike: navigator,
-          text,
-        }),
-        consoleLike: console,
-      }));
-      grid.appendChild(card);
-    }
-
-    if (!grid.childElementCount) {
-      const msg = document.createElement("p");
-      msg.className = "plot-empty";
-      msg.textContent = `No TP/FP/FN values found for ${activeEntry.label} with minimum label total ${state.plotTpFpFnMinLabelTotal} and minimum document total ${state.plotTpFpFnMinDocumentTotal}.`;
-      evalPlotContent.appendChild(msg);
-      return;
-    }
-
-    evalPlotContent.appendChild(createTpFpFnLegendElement({ documentLike: document }));
-    evalPlotContent.appendChild(grid);
-    return;
-  }
-
-  const metricPaths = Array.from(
-    experimentEvaluations.reduce(
-      (acc, evaluation) => collectNumericMetricLeafPaths(evaluation.data, [], acc),
-      new Map()
-    )
-  )
-    .map(([, pathParts]) => ({ parts: pathParts, label: pathParts.join(".") }))
-    .sort((a, b) => a.label.localeCompare(b.label));
-
-  if (metricPaths.length === 0) {
-    const msg = document.createElement("p");
-    msg.className = "plot-empty";
-    msg.textContent = `No numeric metric data found for ${activeExperiment}.`;
-    evalPlotContent.appendChild(msg);
-    return;
-  }
-
-  const varyingGroupByFields = varyingPlotGroupFields;
-  state.plotGroupBarFields = new Set(
-    Array.from(state.plotGroupBarFields).filter((field) => new Set(varyingGroupByFields).has(field))
-  );
-  renderPlotGroupBarChips({
+    evaluationContext,
     documentLike: document,
-    listElement: plotGroupBarsList,
-    availableFields: varyingGroupByFields,
-    checkedValues: state.plotGroupBarFields,
-    getLabel: displayPlotGroupFieldName,
-    onToggle: (field, checked) => {
-      if (checked) {
-        state.plotGroupBarFields.add(field);
-      } else {
-        state.plotGroupBarFields.delete(field);
-      }
-      renderEvaluationPlots(activeExperiment);
-    },
+    requestAnimationFrameLike: requestAnimationFrame,
+    navigatorLike: navigator,
+    consoleLike: console,
+    plotTooltipHandlers,
+    getSelectedPredictionGroups,
+    getSelectedEvaluationGroups,
+    getMetricTypeForEvaluationContext,
+    getPlotGroups,
+    getEvaluationEffectiveValue,
+    getEvaluationExperiment,
+    displayPlotGroupFieldName,
+    displayGroupFieldName,
+    getPlotDisplayLabel,
+    getPlotTitleLabel,
+    rerenderEvaluationPlots: renderEvaluationPlots,
   });
-
-  const groupBarFields = varyingGroupByFields.filter((field) => state.plotGroupBarFields.has(field));
-  const categoryFields = varyingGroupByFields.filter((field) => !groupBarFields.includes(field));
-
-  const plotEntries = buildPlotEntries({
-    metricPaths,
-    plotGroups,
-    groupBarFields,
-    categoryFields,
-    getGroupLabel: (group, fields, fallback, formatter = displayGroupFieldName) =>
-      getGroupLabelForFields(group, fields, fallback, formatter),
-    displayGroupFieldName: displayPlotGroupFieldName,
-  });
-  if (!plotEntries.length) {
-    const msg = document.createElement("p");
-    msg.className = "plot-empty";
-    msg.textContent = `No plottable metric values found for ${activeExperiment}.`;
-    evalPlotContent.appendChild(msg);
-    return;
-  }
-
-  const tabMap = metricType === "ErrorCollector"
-    ? buildErrorsTabMap(plotEntries)
-    : buildBarsTabMap(plotEntries, { plotTabsBy: state.plotTabsBy });
-
-  renderPlotTabsAndGrid(tabMap, activeExperiment, groupBarFields, metricType);
 }
 
 /**

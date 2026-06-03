@@ -60,6 +60,7 @@ EXPECTED_JS_BROWSER_FILES = ("session.js",)
 EXPECTED_JS_PLOTS_FILES = (
     "bars.js",
     "confusion.js",
+    "dashboard.js",
     "export.js",
     "legend.js",
     "shared.js",
@@ -136,7 +137,7 @@ def test_phase_nine_dashboard_js_browser_modules_exist() -> None:
 
 
 def test_phase_eleven_dashboard_js_plot_modules_exist() -> None:
-    """Ensure the Phase 11 plot/export modules exist under the dashboard asset path."""
+    """Ensure the Phase 11 and Phase 12 plot/export modules exist under the dashboard asset path."""
 
     for file_name in EXPECTED_JS_PLOTS_FILES:
         assert (PLOTS_JS_ROOT / file_name).is_file()

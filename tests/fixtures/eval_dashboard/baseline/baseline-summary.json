@@ -1,5 +1,5 @@
 {
-  "baseline_version": 11,
+  "baseline_version": 12,
   "captured_at": "2026-06-03",
   "implementation_shape": {
     "runtime_entrypoint": "docs/eval-dashboard/index.html",
@@ -173,6 +173,18 @@
       "confusion matrix collection expansion, aggregation, filtering, and tab maps",
       "TP/FP/FN collection expansion, aggregation, filtering, tab maps, palettes, and copy summaries",
       "figure filename derivation, SVG export helpers, CRC32, and ZIP archive creation"
+    ]
+  },
+  "phase_twelve_contract": {
+    "plot_dashboard_module": "docs/eval-dashboard/assets/js/plots/dashboard.js",
+    "main_js_role": "dashboard orchestration entrypoint",
+    "js_test_files": [
+      "plots.dashboard.test.mjs"
+    ],
+    "focus": [
+      "main.js delegates dashboard plot rendering, plot-control synchronization, tooltip wiring, and figure export to plots/dashboard.js",
+      "plots/dashboard.js adapts the extracted Phase 11 plot modules to dashboard state and DOM refs",
+      "dashboard adapter seams are covered by Node.js unit tests"
     ]
   },
   "feature_expectations": {
