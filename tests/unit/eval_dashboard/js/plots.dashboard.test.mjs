@@ -240,3 +240,105 @@ test("dashboard render adapter renders bar-like plot cards", () => {
   assert.equal(dom.evalPlotContent.querySelector(".plot-card").querySelector(".plot-title").textContent, "score.mean (mean ± std)");
   assert.equal(dom.evalPlotContent.querySelector("svg").tagName, "svg");
 });
+
+/**
+ * Verify the dashboard render adapter routes confusion-matrix plots through the extracted branch.
+ */
+test("dashboard render adapter renders confusion-matrix plot cards", () => {
+  const documentLike = createDocumentStub();
+  const dom = createPlotDom(documentLike);
+  const state = createPlotState({ plotConfusionMinLabelTotal: 1 });
+  const evaluations = [
+    {
+      runDir: "run-a",
+      overrides: { experiment: "experiment/a", "metric.field": "field_a" },
+      jobReturnValue: { type: "ConfusionMatrix" },
+      data: { actual: { predicted: 2 } },
+    },
+  ];
+  const evaluationContext = {
+    experimentEvaluations: evaluations,
+    evalTabState: { groupByFields: ["model"] },
+  };
+
+  renderEvaluationPlotsForDashboard({
+    state,
+    dom,
+    activeExperiment: "experiment/a",
+    evaluationContext,
+    documentLike,
+    plotTooltipHandlers: { show: () => {}, move: () => {}, hide: () => {} },
+    getSelectedPredictionGroups: () => [{}],
+    getSelectedEvaluationGroups: () => [{ evaluations }],
+    getMetricTypeForEvaluationContext: () => "ConfusionMatrix",
+    getPlotGroups: () => ({
+      fields: ["model"],
+      groups: [{ groupId: "g1", values: { model: "a" }, evaluations }],
+    }),
+    getEvaluationEffectiveValue: (evaluation, column) => evaluation.overrides?.[column] ?? "",
+    getEvaluationExperiment: (evaluation) => evaluation.overrides.experiment,
+    displayPlotGroupFieldName: (field) => field,
+    displayGroupFieldName: (field) => field,
+    getPlotDisplayLabel: (label) => label,
+    getPlotTitleLabel: (entry) => entry.metricLabel,
+    rerenderEvaluationPlots: () => {},
+  });
+
+  assert.equal(state.activeEvalPlotTab, "field_a");
+  assert.equal(dom.evalPlotTabs.querySelector("button").textContent, "field_a (1)");
+  assert.equal(dom.evalPlotContent.querySelector(".plot-card").querySelector(".plot-title").textContent, "model=a (mean ± std)");
+  assert.ok(dom.evalPlotContent.querySelectorAll("text").some((text) => text.textContent === "actual"));
+});
+
+/**
+ * Verify the dashboard render adapter routes TP/FP/FN collector plots through the extracted branch.
+ */
+test("dashboard render adapter renders TP/FP/FN plot cards", () => {
+  const documentLike = createDocumentStub();
+  const dom = createPlotDom(documentLike);
+  const state = createPlotState({ plotTpFpFnMinLabelTotal: 1 });
+  const evaluations = [
+    {
+      runDir: "run-a",
+      overrides: { "metric.field": "field_a" },
+      jobReturnValue: { type: "TpFpFnCollector" },
+      data: { doc1: { tp: ["label"], fp: [], fn: [] } },
+    },
+  ];
+  const evaluationContext = {
+    experimentEvaluations: evaluations,
+    evalTabState: { groupByFields: ["model"] },
+  };
+
+  renderEvaluationPlotsForDashboard({
+    state,
+    dom,
+    activeExperiment: "experiment/a",
+    evaluationContext,
+    documentLike,
+    requestAnimationFrameLike: (callback) => callback(),
+    navigatorLike: {},
+    consoleLike: { warn: () => {} },
+    plotTooltipHandlers: { show: () => {}, move: () => {}, hide: () => {} },
+    getSelectedPredictionGroups: () => [{}],
+    getSelectedEvaluationGroups: () => [{ evaluations }],
+    getMetricTypeForEvaluationContext: () => "TpFpFnCollector",
+    getPlotGroups: () => ({
+      fields: ["model"],
+      groups: [{ groupId: "g1", values: { model: "a" }, evaluations }],
+    }),
+    getEvaluationEffectiveValue: (evaluation, column) => evaluation.overrides?.[column] ?? "",
+    getEvaluationExperiment: () => "experiment/a",
+    displayPlotGroupFieldName: (field) => field,
+    displayGroupFieldName: (field) => field,
+    getPlotDisplayLabel: (label) => label,
+    getPlotTitleLabel: (entry) => entry.metricLabel,
+    rerenderEvaluationPlots: () => {},
+  });
+
+  assert.equal(state.activeEvalPlotTab, "field_a");
+  assert.equal(dom.evalPlotTabs.querySelector("button").textContent, "field_a (1)");
+  assert.equal(dom.evalPlotContent.querySelector(".plot-legend").children.length, 3);
+  assert.equal(dom.evalPlotContent.querySelector(".plot-card").querySelector(".plot-title").textContent, "model=a (1 grouped evals)");
+  assert.ok(dom.evalPlotContent.querySelectorAll("text").some((text) => text.textContent === "doc1"));
+});
