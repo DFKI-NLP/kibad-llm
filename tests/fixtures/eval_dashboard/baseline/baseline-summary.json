@@ -1,6 +1,6 @@
 {
-  "baseline_version": 8,
-  "captured_at": "2026-06-02",
+  "baseline_version": 10,
+  "captured_at": "2026-06-03",
   "implementation_shape": {
     "runtime_entrypoint": "docs/eval-dashboard/index.html",
     "compatibility_entrypoint": "docs/eval-dashboard.html",
@@ -112,6 +112,41 @@
       "shared table sort/truncation/sticky helpers",
       "status and progress DOM rendering",
       "github token persistence and git_url query-parameter synchronization"
+    ]
+  },
+  "phase_ten_a_contract": {
+    "ui_module_root": "docs/eval-dashboard/assets/js/ui",
+    "ui_modules": [
+      "controls.js",
+      "eval-json-pane.js",
+      "tabs.js"
+    ],
+    "js_test_files": [
+      "ui.controls.test.mjs",
+      "ui.eval-json-pane.test.mjs",
+      "ui.tabs.test.mjs"
+    ],
+    "focus": [
+      "experiment-tab active-state resolution and shared tab-button rendering",
+      "prediction and evaluation truncate/default/group-by control rendering",
+      "thin plot-control rendering",
+      "eval json pane highlighting and selected-content resolution"
+    ]
+  },
+  "phase_ten_b_contract": {
+    "ui_module_root": "docs/eval-dashboard/assets/js/ui",
+    "ui_modules": [
+      "prediction-table.js",
+      "evaluation-table.js"
+    ],
+    "js_test_files": [
+      "ui.prediction-table.test.mjs",
+      "ui.evaluation-table.test.mjs"
+    ],
+    "focus": [
+      "prediction table section-building and renderer integration",
+      "evaluation table section-building and renderer integration",
+      "shared select-all and static control-header rendering"
     ]
   },
   "feature_expectations": {

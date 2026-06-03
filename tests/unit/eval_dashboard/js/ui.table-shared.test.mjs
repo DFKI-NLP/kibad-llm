@@ -1,8 +1,15 @@
+/**
+ * Browser-free logic tests for eval-dashboard shared table helpers.
+ */
+
 import test from "node:test";
 import assert from "node:assert/strict";
 
 import {
+  buildSelectionState,
+  createSelectHeaderCell,
   createSortButton,
+  createStaticControlHeaderCell,
   createTruncatingCell,
   formatSortLabel,
   getAriaSort,
@@ -13,11 +20,25 @@ import {
 
 const SORTABLE_CONTROL_COLUMNS = new Set(["expand", "select", "group_size"]);
 
+/**
+ * Format one column name for deterministic label assertions.
+ *
+ * @param {string} column - Column name to format.
+ * @returns {string} Stable display label used by the tests.
+ */
 function displayColumnName(column) {
   return `label:${column}`;
 }
 
+/**
+ * Minimal element stub for DOM-free shared-table rendering tests.
+ */
 class FakeElement {
+  /**
+   * Create one fake element instance with the properties used by the tests.
+   *
+   * @param {string} [tagName="div"] - Tag name to expose on the fake element.
+   */
   constructor(tagName = "div") {
     this.tagName = tagName.toUpperCase();
     this.type = "";
@@ -40,24 +61,55 @@ class FakeElement {
     };
   }
 
+  /**
+   * Append one child element.
+   *
+   * @param {FakeElement} child - Child element to append.
+   * @returns {FakeElement} The appended child.
+   */
   appendChild(child) {
     this.children.push(child);
     return child;
   }
 
+  /**
+   * Store one attribute value.
+   *
+   * @param {string} name - Attribute name.
+   * @param {unknown} value - Attribute value.
+   * @returns {void}
+   */
   setAttribute(name, value) {
     this.attributes.set(name, String(value));
   }
 
+  /**
+   * Read one stored attribute value.
+   *
+   * @param {string} name - Attribute name.
+   * @returns {string | undefined} Stored attribute value.
+   */
   getAttribute(name) {
     return this.attributes.get(name);
   }
 
+  /**
+   * Register one event listener.
+   *
+   * @param {string} type - Event type.
+   * @param {Function} listener - Event callback.
+   * @returns {void}
+   */
   addEventListener(type, listener) {
     this.listeners.set(type, listener);
   }
 }
 
+/**
+ * Build one document-like stub that can create fake elements.
+ *
+ * @returns {{createElement: (tagName: string) => FakeElement}} Document-like stub.
+ */
 function createDocumentStub() {
   return {
     createElement(tagName) {
@@ -66,11 +118,38 @@ function createDocumentStub() {
   };
 }
 
+/**
+ * Verify that the shared displayed-selection helper derives counts and tri-state flags.
+ */
+test("buildSelectionState derives displayed ids, selected counts, and tri-state flags", () => {
+  assert.deepEqual(
+    buildSelectionState(["group-a", "group-b", "group-c"], new Set(["group-a", "group-c"])),
+    {
+      displayedGroupIds: ["group-a", "group-b", "group-c"],
+      selectedCount: 2,
+      allSelected: false,
+      someSelected: true,
+    }
+  );
+  assert.deepEqual(buildSelectionState([], new Set(["group-a"])), {
+    displayedGroupIds: [],
+    selectedCount: 0,
+    allSelected: false,
+    someSelected: false,
+  });
+});
+
+/**
+ * Verify the default sort direction split between control columns and data columns.
+ */
 test("control columns default to descending while data columns default to ascending", () => {
   assert.equal(getDefaultSortDirection("select", SORTABLE_CONTROL_COLUMNS), "desc");
   assert.equal(getDefaultSortDirection("prediction.content.title", SORTABLE_CONTROL_COLUMNS), "asc");
 });
 
+/**
+ * Verify the single-column sort toggle cycle across both ascending-first and descending-first columns.
+ */
 test("single-column sort toggles cycle through default direction, opposite direction, then cleared", () => {
   const ascendingColumn = "prediction.content.title";
   const descendingColumn = "select";
@@ -110,6 +189,9 @@ test("single-column sort toggles cycle through default direction, opposite direc
   );
 });
 
+/**
+ * Verify that append-mode sorting updates one column while preserving the others.
+ */
 test("append mode preserves existing sorts while toggling one column", () => {
   const currentSort = [{ column: "prediction.id", direction: "asc" }];
 
@@ -158,6 +240,9 @@ test("append mode preserves existing sorts while toggling one column", () => {
   );
 });
 
+/**
+ * Verify that the shared sort-label formatter reports control labels and sort priorities.
+ */
 test("formatSortLabel renders special control-column labels and priorities", () => {
   assert.equal(formatSortLabel([], displayColumnName), "(none)");
   assert.equal(
@@ -172,6 +257,9 @@ test("formatSortLabel renders special control-column labels and priorities", () 
   );
 });
 
+/**
+ * Verify that `aria-sort` is exposed only for the primary active sort column.
+ */
 test("getAriaSort reports only the primary active sort column", () => {
   const sortConfig = [
     { column: "prediction.id", direction: "desc" },
@@ -183,6 +271,9 @@ test("getAriaSort reports only the primary active sort column", () => {
   assert.equal(getAriaSort([], "prediction.id"), "none");
 });
 
+/**
+ * Verify that the shared sort-button renderer exposes indicator, tooltip, and click behavior.
+ */
 test("createSortButton exposes indicator, aria metadata, and click handling", () => {
   const documentLike = createDocumentStub();
   const events = [];
@@ -224,6 +315,9 @@ test("createSortButton exposes indicator, aria metadata, and click handling", ()
   assert.deepEqual(events, [clickEvent]);
 });
 
+/**
+ * Verify that unsorted columns render the inactive shared sort-button state.
+ */
 test("createSortButton renders the inactive button state when the column is not sorted", () => {
   const documentLike = createDocumentStub();
   const button = createSortButton({
@@ -240,6 +334,78 @@ test("createSortButton renders the inactive button state when the column is not 
   assert.equal(button.children[1].textContent, "↕");
 });
 
+/**
+ * Verify that the shared static control-header helper configures sort metadata and row span.
+ */
+test("createStaticControlHeaderCell renders a shared static control header", () => {
+  const documentLike = createDocumentStub();
+  const events = [];
+  const headerCell = createStaticControlHeaderCell({
+    documentLike,
+    label: "#",
+    column: "group_size",
+    sortConfig: [{ column: "group_size", direction: "desc" }],
+    onToggle(event) {
+      events.push(event);
+    },
+    sortableControlColumns: SORTABLE_CONTROL_COLUMNS,
+  });
+
+  assert.equal(headerCell.tagName, "TH");
+  assert.equal(headerCell.rowSpan, 2);
+  assert.equal(headerCell.getAttribute("aria-sort"), "descending");
+  assert.equal(headerCell.children[0].className, "header-static-control");
+  assert.equal(headerCell.children[0].children[0].children[0].textContent, "#");
+
+  const clickEvent = { stopPropagation() {} };
+  headerCell.children[0].children[0].listeners.get("click")(clickEvent);
+  assert.deepEqual(events, [clickEvent]);
+});
+
+/**
+ * Verify that the shared select-header helper configures tri-state selection and forwards checkbox changes.
+ */
+test("createSelectHeaderCell renders the shared select-all control and forwards checkbox changes", () => {
+  const documentLike = createDocumentStub();
+  const events = [];
+  const headerCell = createSelectHeaderCell({
+    documentLike,
+    sortConfig: [{ column: "select", direction: "desc" }],
+    onToggle() {},
+    selectionState: {
+      displayedGroupIds: ["group-a", "group-b"],
+      selectedCount: 1,
+      allSelected: false,
+      someSelected: true,
+    },
+    onSelectAllToggle(checked, event) {
+      events.push({ checked, event });
+    },
+    sortableControlColumns: SORTABLE_CONTROL_COLUMNS,
+    checkboxTitle: "Select all rows",
+    checkboxAriaLabel: "Select or deselect all rows",
+  });
+
+  assert.equal(headerCell.tagName, "TH");
+  assert.equal(headerCell.rowSpan, 2);
+  assert.equal(headerCell.getAttribute("aria-sort"), "descending");
+  assert.equal(headerCell.children[0].className, "header-select-control");
+  const checkbox = headerCell.children[0].children[1];
+  assert.equal(checkbox.type, "checkbox");
+  assert.equal(checkbox.checked, false);
+  assert.equal(checkbox.indeterminate, true);
+  assert.equal(checkbox.title, "Select all rows");
+  assert.equal(checkbox.getAttribute("aria-label"), "Select or deselect all rows");
+
+  checkbox.checked = true;
+  const changeEvent = { type: "change" };
+  checkbox.listeners.get("change")(changeEvent);
+  assert.deepEqual(events, [{ checked: true, event: changeEvent }]);
+});
+
+/**
+ * Verify that truncating-cell rendering preserves text and toggles the shared truncation class.
+ */
 test("createTruncatingCell keeps text content and the shared truncation class semantics", () => {
   const documentLike = createDocumentStub();
   const truncatedCell = createTruncatingCell({
@@ -261,6 +427,9 @@ test("createTruncatingCell keeps text content and the shared truncation class se
   assert.equal(normalCell.classList.contains("truncate-enabled"), false);
 });
 
+/**
+ * Verify that sticky control-column offsets are computed and reset according to measured headers.
+ */
 test("updateStickyControlColumnOffsets computes sticky offsets and resets missing headers", () => {
   assert.doesNotThrow(() => updateStickyControlColumnOffsets(null));
 

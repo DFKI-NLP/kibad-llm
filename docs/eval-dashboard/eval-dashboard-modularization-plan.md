@@ -35,17 +35,20 @@ A few repo-specific observations first:
 
 - the canonical runtime page now lives at `docs/eval-dashboard/index.html`.
 - `docs/eval-dashboard.html` is currently a temporary compatibility shim for the old path.
-- `docs/eval-dashboard/index.html` is still a **single huge static page**, but Phases 3 to 9 have now moved styling, first low-coupling helpers, canonical state/selector logic, parsing/normalization helpers, source loaders, the shared ingestion pipeline, shared DOM/status/table helpers, and browser-session helpers into external assets; the page loads `assets/css/index.css`, `assets/js/main.js`, the utility modules under `assets/js/utils/`, the state modules under `assets/js/state/`, the data modules under `assets/js/data/`, the shared UI infrastructure under `assets/js/ui/`, and the browser-session helpers under `assets/js/browser/` while the larger table/tab/pane renderers plus plot/export logic still remain inside a very large `main.js`.
+- `docs/eval-dashboard/index.html` is still a **single huge static page**, but Phases 3 to 10B have now moved styling, first low-coupling helpers, canonical state/selector logic, parsing/normalization helpers, source loaders, the shared ingestion pipeline, shared DOM/status/table helpers, browser-session helpers, the smaller controls/tabs/eval-JSON-pane seams, and the prediction/evaluation table renderers into external assets; the page loads `assets/css/index.css`, `assets/js/main.js`, the utility modules under `assets/js/utils/`, the state modules under `assets/js/state/`, the data modules under `assets/js/data/`, the shared plus Phase 10A/10B UI modules under `assets/js/ui/`, and the browser-session helpers under `assets/js/browser/` while the larger plot/export implementations still remain inside a very large `main.js`; the Phase 10A controls extraction still covers higher-level options-panel composition, per-column group-by header toggles, and sort-status label/reset-button rendering instead of leaving those control seams duplicated inline in `main.js`, and Phase 10B now also routes both large table renderers through dedicated UI modules.
 - `properdocs.yml` and `docs/index.md` already point to the new folder-based entrypoint.
 - `scripts/build_docs.py` only generates **Python API reference** pages from `src/`, so it is **not** a frontend asset pipeline.
-- `docs/eval-dashboard/assets/css/` now contains `index.css`, `tokens.css`, `layout.css`, `controls.css`, `tables.css`, and `plots.css`; `docs/eval-dashboard/assets/js/` now contains `main.js`, `utils/`, `state/`, the data modules (`parse-overrides.js`, `normalize.js`, `file-loader.js`, `ingest-runs.js`, and `git-loader.js`), the Phase 9 `ui/` infrastructure modules (`dom.js`, `table-shared.js`, and `status.js`), and the Phase 9 `browser/session.js` helper already split out of the original monolith.
-- `pyproject.toml` has **pytest**, and the repo now has dashboard smoke coverage under `tests/unit/eval_dashboard/`, including entrypoint checks plus HTML-contract checks that enforce external CSS, the external `assets/js/main.js` module reference, and the absence of inline runtime CSS/JS; `tests/unit/eval_dashboard/js/` is now the reserved location for extracted dashboard logic tests, and the long-term harness there is the minimal Node.js built-in test runner (`node --test tests/unit/eval_dashboard/js/*.test.mjs`) covering utilities, Phase 6 state/store + selector modules, the Phase 7 parsing/normalization modules, the Phase 8 loader/ingestion modules, and the new Phase 9 DOM/status/shared-table/browser-session helpers, including their main boundaries and representative edge-path coverage.
+- `docs/eval-dashboard/assets/css/` now contains `index.css`, `tokens.css`, `layout.css`, `controls.css`, `tables.css`, and `plots.css`; `docs/eval-dashboard/assets/js/` now contains `main.js`, `utils/`, `state/`, the data modules (`parse-overrides.js`, `normalize.js`, `file-loader.js`, `ingest-runs.js`, and `git-loader.js`), the Phase 9 `ui/` infrastructure modules (`dom.js`, `table-shared.js`, and `status.js`), the Phase 10A `controls.js`, `tabs.js`, and `eval-json-pane.js` modules, the Phase 10B `prediction-table.js` and `evaluation-table.js` modules, and the Phase 9 `browser/session.js` helper already split out of the original monolith.
+- `pyproject.toml` has **pytest**, and the repo now has dashboard smoke coverage under `tests/unit/eval_dashboard/`, including entrypoint checks plus HTML-contract checks that enforce external CSS, the external `assets/js/main.js` module reference, and the absence of inline runtime CSS/JS; `tests/unit/eval_dashboard/js/` is now the reserved location for extracted dashboard logic tests, and the long-term harness there is the minimal Node.js built-in test runner (`node --test tests/unit/eval_dashboard/js/*.test.mjs`) covering utilities, Phase 6 state/store + selector modules, the Phase 7 parsing/normalization modules, the Phase 8 loader/ingestion modules, the Phase 9 DOM/status/shared-table/browser-session helpers, the Phase 10A controls/tabs/eval-JSON-pane helpers, and the new Phase 10B prediction/evaluation table row-model plus shared-header helpers, including the thin plot-control UI boundary, the custom delegated eval-options-tab path that reads `data-eval-tab`, and representative edge-path coverage.
+- the Python-side contract layer already included `tests/unit/eval_dashboard/test_eval_dashboard_main_orchestration_contract.py` before this branch; Phase 10 extends that pre-existing file with additional assertions that lock in the new Phase 10A/10B `main.js` delegation boundaries, while the file as a whole still also covers earlier already-landed browser-session and local-file orchestration seams. That makes it a cross-phase guardrail rather than part of the JS-native harness itself.
+- because the remaining renderer code is still large, the old combined Phase 10 has now been split successfully: Phase 10A extracted the smaller controls/tabs/JSON-pane seams plus the thin plot-control surface, and Phase 10B moved the two large table renderers behind dedicated modules with DOM-free row-model coverage first, so the next follow-up step is the Phase 11 plot/export extraction.
+- two small non-perfectly-behavior-preserving accessibility improvements should stay documented explicitly: the Phase 10A shared group-by toggle helper now gives the evaluation-table header grouping checkboxes explicit `aria-label` text, and the Phase 10B shared evaluation select-header control now also gives the select-all checkbox an explicit `aria-label`, improving accessibility compared with the old inline evaluation-toggle/select-all rendering.
 - `data/prediction_results/readme.md` documents real experiment folders under `data/prediction_results/logs/`; those runs are useful fixture sources, but tests should use curated snapshots rather than reach into mutable live data folders.
 - curated dashboard fixtures now exist under `tests/fixtures/eval_dashboard/`, including valid version coverage, invalid edge-case fixtures, the dedicated `missing_prediction_id` fixture, and explicit examples for all current plot families (`bars`, `errors`, `confusion_matrix`, `tpfpfn`).
 
 Given that, the recommendation is to keep the dashboard as a docs asset, but organize it as a small self-contained docs section that is testable and easy to evolve.
 
-In other words, the repository is now effectively **through Phase 9 and ready for Phase 10**: entrypoint migration, compatibility coverage, curated fixtures, baseline artifacts, structural smoke tests, CSS extraction, the external-`main.js` step, the utility extractions, the permanent JS-native logic-test runner, explicit CI wiring, the state/store + selector extractions, the parsing/normalization extraction plus missing-prediction-id coverage, the source-loader/shared-ingestion extraction, and the shared DOM/table/status/browser-session extraction have all landed.
+In other words, the repository is now effectively **through Phase 10B and ready for Phase 11**: entrypoint migration, compatibility coverage, curated fixtures, baseline artifacts, structural smoke tests, CSS extraction, the external-`main.js` step, the utility extractions, the permanent JS-native logic-test runner, explicit CI wiring, the state/store + selector extractions, the parsing/normalization extraction plus missing-prediction-id coverage, the source-loader/shared-ingestion extraction, the shared DOM/table/status/browser-session extraction, the smaller controls/tabs/eval-JSON-pane plus thin plot-control extraction, and the larger prediction/evaluation table extraction have all landed.
 
 All work performed from this plan should comply with `CONTRIBUTING.md`, and after each completed refactor phase the planning docs under `docs/eval-dashboard/` should be updated so the recorded status, sequencing, and next steps stay accurate.
 
@@ -635,6 +638,7 @@ This is worth naming explicitly because the current remaining UI code has a real
 #### `ui/*.js`
 
 - DOM rendering for controls/tables/panes/tabs/status
+- the already-landed thin plot-control UI belongs with `ui/controls.js`, while heavier plot-specific aggregation, SVG, legend, and export behavior belongs in `plots/`
 - ideally as stateless render functions fed from selectors and DOM refs
 
 #### `plots/*.js`
@@ -649,6 +653,7 @@ For the post-Phase-8 work, prefer a split where each plot area exposes:
 
 - DOM-free aggregation / tab-map / normalization helpers that are easy to lock in with the Node.js test runner
 - thin SVG/DOM rendering functions layered on top of those pure helpers
+- keep basic control rendering that is not plot-family-specific in `ui/controls.js` rather than moving it back into `plots/`
 
 #### `utils/*.js`
 
@@ -736,9 +741,14 @@ tests/
         utils.text.test.mjs
         utils.values.test.mjs
         state.selectors.test.mjs
+        ui.controls.test.mjs
         ui.dom.test.mjs
+        ui.eval-json-pane.test.mjs
+        ui.evaluation-table.test.mjs
+        ui.prediction-table.test.mjs
         ui.status.test.mjs
         ui.table-shared.test.mjs
+        ui.tabs.test.mjs
         browser.session.test.mjs
         data.normalize.test.mjs
         data.parse-overrides.test.mjs
@@ -773,6 +783,8 @@ For Phase 9 and beyond, keep following the same rule:
 - prefer JS-native tests for DOM-free shared helpers that emerge from UI/plot extraction
 - do **not** force a broad DOM-emulation harness just to claim UI coverage early
 - add `ui.dom.test.mjs`, `ui.status.test.mjs`, `ui.table-shared.test.mjs`, and `browser.session.test.mjs` when those helpers expose stable behavior that can be exercised with simple document/element/storage/history stubs rather than a heavy DOM harness
+- for the next UI steps, add `ui.tabs.test.mjs`, `ui.controls.test.mjs`, `ui.eval-json-pane.test.mjs`, `ui.prediction-table.test.mjs`, and `ui.evaluation-table.test.mjs` only when the extraction yields stable DOM-free helpers such as active-tab resolution, JSON highlighting/content selection, selection summaries, or header/row view-model builders
+- for `ui.controls.test.mjs`, include control-state seams such as column-option derivation, missing-default models, group-by toggles, and other thin control toggles that stay UI-only without pulling plot implementation logic into the control module
 - add plot-module tests first at the aggregation/tab-map/export-helper layer, even if full SVG rendering still relies on manual/smoke validation initially
 - add lightweight orchestration-level integration helpers around `main.js` composition seams such as session bootstrap, local-file query-param clearing, and status/progress callback routing whenever those paths can be isolated cleanly without introducing a broad DOM harness
 
@@ -893,15 +905,13 @@ ______________________________________________________________________
 
 From the current repository state, the cleanest next sequence would be:
 
-1. move controls, tabs, JSON-pane rendering, and prediction/evaluation table rendering behind dedicated `ui/` modules
-1. if that Phase 10 tabs work starts replacing the currently cached options-tab or eval-options-tab nodes wholesale, refresh those cached refs explicitly or move the lookup ownership into the extracted tabs renderer instead of assuming the original arrays stay live forever
-1. keep extending `tests/unit/eval_dashboard/js/*.test.mjs` for any newly extracted DOM-free UI/browser helpers while preserving the existing Phase 8 loader/ingestion coverage
-1. extract plot data-shaping / aggregation / tab-map logic first and add JS-native plot tests for those helpers
+1. extract plot data-shaping / aggregation / tab-map logic first and add JS-native plot tests for those helpers; keep the already-extracted thin plot-control UI in `ui/controls.js`, and move only the remaining plot-specific implementation logic into the later `plots/` modules
 1. extract SVG/export/rendering helpers into `plots/` modules
-1. reduce `main.js` to orchestration only, with no remaining reusable render/math/browser helper layer embedded in it
+1. keep extending `tests/unit/eval_dashboard/js/*.test.mjs` for any newly extracted DOM-free plot/export helpers while preserving the existing Phase 8 loader/ingestion coverage, Phase 9 infrastructure coverage, and the current cross-phase orchestration-contract checks in the pre-existing `tests/unit/eval_dashboard/test_eval_dashboard_main_orchestration_contract.py`, whose Phase 10 branch additions mostly cover Phase 10A/10B `main.js` delegation boundaries while the file overall still retains a small number of earlier browser-session/local-file orchestration assertions
+1. reduce `main.js` to orchestration only, with no remaining reusable render/math/browser helper layer or avoidable pass-through wrappers embedded in it
 1. after each completed phase above, update the planning docs under `docs/eval-dashboard/` and confirm the landed changes comply with `CONTRIBUTING.md`
 
-That keeps the refactor incremental, builds directly on the already-landed migration, fixture, smoke-test, CSS-extraction, JS-harness, Phase 8 loader/ingestion groundwork, and Phase 9 DOM/table/status/browser-session groundwork, and preserves the test-first direction of the overall plan while avoiding a long-term trap where renderer logic, plotting, and orchestration all remain coupled in `main.js`.
+That keeps the refactor incremental, builds directly on the already-landed migration, fixture, smoke-test, CSS-extraction, JS-harness, Phase 8 loader/ingestion groundwork, Phase 9 DOM/table/status/browser-session groundwork, and the landed Phase 10A/10B UI groundwork, and preserves the test-first direction of the overall plan while avoiding a long-term trap where plotting/export logic and orchestration still remain coupled in `main.js`.
 
 ## 14. Post-refactor cleanup TODOs
 
@@ -915,3 +925,5 @@ deferred beyond Phase 8:
 - remove the temporary `docs/eval-dashboard.html` compatibility shim once link stability and hosting behavior have been verified well enough to retire it safely
 - run a dedicated dashboard accessibility pass after modularization, covering keyboard navigation, focus management, ARIA semantics for tabs/expanders/select-all controls, and user feedback for copy/export actions
 - re-evaluate whether the handwritten ZIP/CRC/export helper implementation should remain custom or later be replaced with a maintained dependency if that can be justified under the repository's dependency policy and no-build constraints
+- once renderer extraction is complete, remove remaining one-line selector/store/table-helper pass-through wrappers in `main.js` where direct module calls improve readability instead of preserving them as accidental long-term seams
+- after plot extraction, re-evaluate whether the current `MutationObserver`-driven download-button refresh should remain DOM-observer-based or be replaced with an explicit render-lifecycle update that is easier to reason about and test

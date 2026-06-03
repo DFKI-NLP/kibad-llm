@@ -126,6 +126,30 @@ export function getSortPriority(sortConfig, column) {
 }
 
 /**
+ * Build shared displayed-selection state for one rendered table.
+ *
+ * @param {Iterable<string>} displayedGroupIds - Group ids currently rendered in the table.
+ * @param {Iterable<string>} selectedGroupIds - Group ids currently selected in state.
+ * @returns {{displayedGroupIds: string[], selectedCount: number, allSelected: boolean, someSelected: boolean}} Plain selection-state summary.
+ */
+export function buildSelectionState(displayedGroupIds, selectedGroupIds) {
+  const resolvedDisplayedGroupIds = Array.from(displayedGroupIds || []);
+  const selectedSet = selectedGroupIds instanceof Set
+    ? selectedGroupIds
+    : new Set(selectedGroupIds || []);
+  const selectedCount = resolvedDisplayedGroupIds.filter((groupId) => selectedSet.has(groupId)).length;
+  const allSelected =
+    resolvedDisplayedGroupIds.length > 0 && selectedCount === resolvedDisplayedGroupIds.length;
+  const someSelected = selectedCount > 0 && !allSelected;
+  return {
+    displayedGroupIds: resolvedDisplayedGroupIds,
+    selectedCount,
+    allSelected,
+    someSelected,
+  };
+}
+
+/**
  * Create one reusable header sort button for prediction or evaluation tables.
  *
  * @param {object} options - Sort-button options.
@@ -181,6 +205,96 @@ export function createSortButton({
   button.appendChild(labelSpan);
   button.appendChild(indicator);
   return button;
+}
+
+/**
+ * Create one shared static sortable control-header cell such as `expand` or `group_size`.
+ *
+ * @param {object} options - Static control-header render inputs.
+ * @param {Document} [options.documentLike=globalThis.document] - The document used to create DOM nodes.
+ * @param {string} options.label - The displayed button label.
+ * @param {string} options.column - The canonical column identifier.
+ * @param {Array<{column: string, direction: string}> | object | null} options.sortConfig - The active sort configuration.
+ * @param {(event: MouseEvent) => void} options.onToggle - Toggle callback invoked on click.
+ * @param {Set<string>} options.sortableControlColumns - Control columns that default to descending order.
+ * @returns {HTMLTableCellElement} The configured table header cell.
+ */
+export function createStaticControlHeaderCell({
+  documentLike = globalThis.document,
+  label,
+  column,
+  sortConfig,
+  onToggle,
+  sortableControlColumns,
+}) {
+  const th = documentLike.createElement("th");
+  th.setAttribute("aria-sort", getAriaSort(sortConfig, column));
+  const staticControl = documentLike.createElement("div");
+  staticControl.className = "header-static-control";
+  staticControl.appendChild(
+    createSortButton({
+      documentLike,
+      label,
+      column,
+      sortConfig,
+      onToggle,
+      sortableControlColumns,
+    })
+  );
+  th.appendChild(staticControl);
+  th.rowSpan = 2;
+  return th;
+}
+
+/**
+ * Create one shared sortable `select` control-header cell with a select-all checkbox.
+ *
+ * @param {object} options - Select-header render inputs.
+ * @param {Document} [options.documentLike=globalThis.document] - The document used to create DOM nodes.
+ * @param {Array<{column: string, direction: string}> | object | null} options.sortConfig - The active sort configuration.
+ * @param {(event: MouseEvent) => void} options.onToggle - Sort toggle callback for the `select` column.
+ * @param {{displayedGroupIds: string[], selectedCount: number, allSelected: boolean, someSelected: boolean}} options.selectionState - Displayed selection-state summary.
+ * @param {(checked: boolean, event: Event) => void} options.onSelectAllToggle - Select-all change callback.
+ * @param {Set<string>} options.sortableControlColumns - Control columns that default to descending order.
+ * @param {string} options.checkboxTitle - Checkbox tooltip text.
+ * @param {string} options.checkboxAriaLabel - Checkbox aria-label text.
+ * @returns {HTMLTableCellElement} The configured table header cell.
+ */
+export function createSelectHeaderCell({
+  documentLike = globalThis.document,
+  sortConfig,
+  onToggle,
+  selectionState,
+  onSelectAllToggle,
+  sortableControlColumns,
+  checkboxTitle,
+  checkboxAriaLabel,
+}) {
+  const th = documentLike.createElement("th");
+  th.setAttribute("aria-sort", getAriaSort(sortConfig, "select"));
+  const selectControl = documentLike.createElement("div");
+  selectControl.className = "header-select-control";
+  selectControl.appendChild(
+    createSortButton({
+      documentLike,
+      label: "select",
+      column: "select",
+      sortConfig,
+      onToggle,
+      sortableControlColumns,
+    })
+  );
+  const selectAllCheckbox = documentLike.createElement("input");
+  selectAllCheckbox.type = "checkbox";
+  selectAllCheckbox.checked = Boolean(selectionState?.allSelected);
+  selectAllCheckbox.indeterminate = Boolean(selectionState?.someSelected);
+  selectAllCheckbox.title = checkboxTitle;
+  selectAllCheckbox.setAttribute("aria-label", checkboxAriaLabel);
+  selectAllCheckbox.addEventListener("change", (event) => onSelectAllToggle(selectAllCheckbox.checked, event));
+  selectControl.appendChild(selectAllCheckbox);
+  th.appendChild(selectControl);
+  th.rowSpan = 2;
+  return th;
 }
 
 /**
