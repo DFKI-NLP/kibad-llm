@@ -37,11 +37,11 @@ The checked-in dashboard fixtures under `tests/fixtures/eval_dashboard/` cover t
 
 ## Architecture
 
-The dashboard is intentionally kept as a docs asset, not Python package code. Runtime files live under `docs/eval-dashboard/`, while the user-facing documentation page lives at `docs/eval-dashboard.md`.
+The dashboard is intentionally kept as a docs asset, not Python package code. Runtime files live under `docs/eval-dashboard/`, while the user-facing documentation page lives at `docs/eval-dashboard-docs.md`.
 
 ```text
 docs/
-├── eval-dashboard.md                         <- User-facing dashboard documentation and link to the runtime page.
+├── eval-dashboard-docs.md                    <- User-facing dashboard documentation and link to the runtime page.
 └── eval-dashboard/
     ├── index.html                            <- Static browser entrypoint for the dashboard UI.
     └── assets/

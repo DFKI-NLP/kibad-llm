@@ -8,7 +8,7 @@ from tests import FIXTURE_DATA_ROOT
 DOCS_ROOT = PROJ_ROOT / "docs"
 DOCS_INDEX = DOCS_ROOT / "index.md"
 DASHBOARD_ENTRY = DOCS_ROOT / "eval-dashboard" / "index.html"
-DASHBOARD_DOCS_PAGE = DOCS_ROOT / "eval-dashboard.md"
+DASHBOARD_DOCS_PAGE = DOCS_ROOT / "eval-dashboard-docs.md"
 DASHBOARD_CSS_ROOT = DOCS_ROOT / "eval-dashboard" / "assets" / "css"
 DASHBOARD_JS_ROOT = DOCS_ROOT / "eval-dashboard" / "assets" / "js"
 DASHBOARD_JS_ENTRY = DASHBOARD_JS_ROOT / "main.js"
@@ -81,6 +81,12 @@ def test_dashboard_entrypoint_exists() -> None:
     assert DASHBOARD_ENTRY.is_file()
 
 
+def test_dashboard_docs_page_does_not_collide_with_runtime_output_path() -> None:
+    """Ensure ProperDocs does not render the docs page over the raw dashboard HTML."""
+
+    assert DASHBOARD_DOCS_PAGE.name != "eval-dashboard.md"
+
+
 def test_phase_zero_baseline_artifacts_exist() -> None:
     """Ensure the baseline artifacts established before refactoring are present."""
 
@@ -147,14 +153,14 @@ def test_properdocs_nav_points_to_dashboard_docs_page() -> None:
     """Ensure docs navigation points to the dashboard documentation page."""
 
     config = _load_properdocs()
-    assert {"Evaluation dashboard": "eval-dashboard.md"} in config["nav"]
+    assert {"Evaluation dashboard": "eval-dashboard-docs.md"} in config["nav"]
 
 
 def test_docs_index_links_point_to_dashboard_docs_page() -> None:
     """Ensure docs landing-page links target the dashboard documentation page."""
 
     text = DOCS_INDEX.read_text(encoding="utf-8")
-    assert "(eval-dashboard.md)" in text
+    assert "(eval-dashboard-docs.md)" in text
     assert "(eval-dashboard.html)" not in text
 
 

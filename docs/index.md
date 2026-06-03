@@ -9,7 +9,7 @@ A short description of the project.
 - [General project overview](root-readme.md)
 - [LLM usage instructions](models-readme.md)
 - [Faktencheck database instructions](podman-readme.md)
-- [Evaluation dashboard](eval-dashboard.md)
+- [Evaluation dashboard](eval-dashboard-docs.md)
 
 ## Commands
 
@@ -33,4 +33,4 @@ uv run properdocs serve
 
 ## Tools
 
-- [eval-dashboard](eval-dashboard.md): view and compare evaluation results
+- [eval-dashboard](eval-dashboard-docs.md): view and compare evaluation results
