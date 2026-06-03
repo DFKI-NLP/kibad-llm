@@ -1,4 +1,4 @@
-"""Baseline artifact contract tests for the eval-dashboard baseline plus Phase 5 to Phase 10A JS contracts."""
+"""Baseline artifact contract tests for the eval-dashboard baseline plus Phase 5 to Phase 10B JS contracts."""
 
 import json
 
@@ -245,6 +245,23 @@ def test_baseline_summary_includes_phase_ten_a_ui_contract() -> None:
     }
 
 
+def test_baseline_summary_includes_phase_ten_b_table_contract() -> None:
+    """Ensure the baseline artifact exposes the Phase 10B prediction/evaluation table contract."""
+
+    summary = _baseline_summary()
+    phase_ten_b_contract = summary["phase_ten_b_contract"]
+
+    assert phase_ten_b_contract["ui_module_root"] == "docs/eval-dashboard/assets/js/ui"
+    assert set(phase_ten_b_contract["ui_modules"]) == {
+        "evaluation-table.js",
+        "prediction-table.js",
+    }
+    assert set(phase_ten_b_contract["js_test_files"]) == {
+        "ui.evaluation-table.test.mjs",
+        "ui.prediction-table.test.mjs",
+    }
+
+
 def test_current_runtime_matches_phase_six_state_contract() -> None:
     """Ensure the extracted Phase 6 state modules and selector/store tests exist and are wired into main.js."""
 
@@ -359,6 +376,25 @@ def test_current_runtime_matches_phase_ten_a_ui_contract() -> None:
         "prediction and evaluation truncate/default/group-by control rendering",
         "thin plot-control rendering",
         "eval json pane highlighting and selected-content resolution",
+    }
+
+
+def test_current_runtime_matches_phase_ten_b_table_contract() -> None:
+    """Ensure the extracted Phase 10B table modules and JS tests exist and are wired into main.js."""
+
+    summary = _baseline_summary()
+    phase_ten_b_contract = summary["phase_ten_b_contract"]
+    main_js = _main_js_entry()
+
+    for file_name in phase_ten_b_contract["ui_modules"]:
+        assert (UI_JS_ROOT / file_name).is_file()
+        assert f"./ui/{file_name}" in main_js
+    for file_name in phase_ten_b_contract["js_test_files"]:
+        assert (JS_TEST_ROOT / file_name).is_file()
+    assert set(phase_ten_b_contract["focus"]) == {
+        "prediction grouped-row and member-row view-model helpers",
+        "evaluation grouped-row and member-row view-model helpers",
+        "shared select-all and static control-header rendering",
     }
 
 

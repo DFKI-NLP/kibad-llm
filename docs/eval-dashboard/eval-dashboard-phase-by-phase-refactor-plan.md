@@ -67,9 +67,9 @@ As of the current repository state:
 - `docs/eval-dashboard.html` is currently a temporary compatibility shim
 - `properdocs.yml` navigation points to `eval-dashboard/index.html`
 - `docs/index.md` links point to `eval-dashboard/index.html`
-- populated runtime assets now exist under `docs/eval-dashboard/assets/`: CSS lives under `assets/css/`, `assets/js/main.js` remains the external entry module, pure helpers live under `assets/js/utils/`, extracted canonical state/selector modules now live under `assets/js/state/`, `assets/js/data/` contains parsing, normalization, source-loader, and shared-ingestion modules, `assets/js/ui/` now contains the Phase 9 shared DOM/table/status infrastructure plus the Phase 10A `controls.js`, `tabs.js`, and `eval-json-pane.js` modules, and `assets/js/browser/` now contains extracted browser-session helpers
+- populated runtime assets now exist under `docs/eval-dashboard/assets/`: CSS lives under `assets/css/`, `assets/js/main.js` remains the external entry module, pure helpers live under `assets/js/utils/`, extracted canonical state/selector modules now live under `assets/js/state/`, `assets/js/data/` contains parsing, normalization, source-loader, and shared-ingestion modules, `assets/js/ui/` now contains the Phase 9 shared DOM/table/status infrastructure, the Phase 10A `controls.js`, `tabs.js`, and `eval-json-pane.js` modules, and the Phase 10B `prediction-table.js` and `evaluation-table.js` renderers, while `assets/js/browser/` now contains extracted browser-session helpers
 - structural smoke coverage now includes `tests/unit/eval_dashboard/test_eval_dashboard_entrypoint.py` and `tests/unit/eval_dashboard/test_eval_dashboard_html_contracts.py`
-- browser-free JS utility, store, selector, data-normalization, loader/ingestion, and extracted Phase 9/10A UI-helper coverage now exists under `tests/unit/eval_dashboard/js/` via the Node.js built-in test runner, which remains the long-term home for extracted dashboard logic tests in later phases; the current logic-test layer now covers the main source-adapter/shared-ingestion boundaries plus explicit Phase 9 DOM-ref capture, load-status/progress rendering, shared-table helper, and browser-session edge paths, and now also locks in Phase 10A tab-state resolution, option-control rendering helpers, and eval-JSON highlighting/content-selection behavior
+- browser-free JS utility, store, selector, data-normalization, loader/ingestion, and extracted Phase 9/10A/10B UI-helper coverage now exists under `tests/unit/eval_dashboard/js/` via the Node.js built-in test runner, which remains the long-term home for extracted dashboard logic tests in later phases; the current logic-test layer now covers the main source-adapter/shared-ingestion boundaries plus explicit Phase 9 DOM-ref capture, load-status/progress rendering, shared-table helper, and browser-session edge paths, and now also locks in Phase 10A tab-state resolution, option-control rendering helpers, eval-JSON highlighting/content-selection behavior, and Phase 10B shared header-selection helpers plus prediction/evaluation row-model behavior
 - curated Phase 2 and Phase 7 fixtures now exist under `tests/fixtures/eval_dashboard/`, including valid version-0/1/2 examples, invalid edge-case fixtures, the dedicated `missing_prediction_id` fixture, and explicit fixtures for all currently supported plot families (`bars`, `errors`, `confusion_matrix`, `tpfpfn`)
 - fixture provenance is documented in `tests/fixtures/eval_dashboard/README.md`
 - fixture integrity smoke coverage exists at `tests/unit/eval_dashboard/test_dashboard_fixtures.py`
@@ -78,11 +78,11 @@ As of the current repository state:
 - Phase 3 CSS extraction remains complete: `docs/eval-dashboard/index.html` still loads `assets/css/index.css` and contains no inline `<style>` block
 - Phase 4 JS externalization is complete: `docs/eval-dashboard/index.html` now loads `assets/js/main.js` as a single external `type="module"` script and contains no inline `<script>` block
 - the structural smoke tests now assert the external CSS and external module-script contract rather than a Phase 3 inline-script freeze
-- the baseline contract now records the Phase 5 utility-module contract, the Phase 6 state/store + selector-module contract, the Phase 7 parsing/normalization contract, the Phase 8 loader/ingestion contract, the Phase 9 UI/browser-helper contract, and the new Phase 10A tabs/controls/JSON-pane contract instead of freezing the full `main.js` file contents
+- the baseline contract now records the Phase 5 utility-module contract, the Phase 6 state/store + selector-module contract, the Phase 7 parsing/normalization contract, the Phase 8 loader/ingestion contract, the Phase 9 UI/browser-helper contract, the Phase 10A tabs/controls/JSON-pane contract, and the new Phase 10B table-renderer contract instead of freezing the full `main.js` file contents
 
 ### Status checkpoint
 
-The repository is currently **through Phase 10A and ready for Phase 10B**:
+The repository is currently **through Phase 10B and ready for Phase 11**:
 
 - Phase 0 baseline artifacts landed
 - Phase 1 folder migration and compatibility shim landed
@@ -95,8 +95,9 @@ The repository is currently **through Phase 10A and ready for Phase 10B**:
 - Phase 8 local-file loading extraction, shared raw-entry ingestion extraction, GitHub loading extraction, and loader/ingestion logic tests landed
 - Phase 9 DOM-ref capture extraction, shared table-helper extraction, status/progress rendering extraction, browser-session extraction, and targeted JS logic tests landed
 - Phase 10A controls extraction, tabs extraction, eval-JSON-pane extraction, and targeted JS logic tests landed
+- Phase 10B prediction/evaluation table extraction, shared select-header/static-control helper extraction, and targeted JS logic tests landed
 
-That means the next implementation step is to **start Phase 10B**, not to reopen Phase 10A: keep reusing the now-stable Phase 9 DOM/table/status/browser infrastructure and the newly extracted Phase 10A `ui/controls.js`, `ui/tabs.js`, and `ui/eval-json-pane.js` modules while moving the two large table renderers behind dedicated `ui/prediction-table.js` and `ui/evaluation-table.js` modules.
+That means the next implementation step is to **start Phase 11**, not to reopen Phase 10B: keep reusing the now-stable Phase 9 DOM/table/status/browser infrastructure, the landed Phase 10A controls/tabs/JSON-pane modules, and the newly landed Phase 10B `ui/prediction-table.js` plus `ui/evaluation-table.js` modules while moving the remaining plot aggregation, legend, and export code behind dedicated `plots/` modules.
 
 The earlier wording here was directionally correct but still too broad. After looking at the actual post-Phase-9 `main.js`, the remaining work is not just “UI”: it is a mix of large prediction/evaluation renderers, JSON highlighting and selection behavior, plot/export implementations, and many one-line pass-through wrappers around already-extracted helpers. The follow-up phases should separate those concerns explicitly and prefer DOM-free helper/view-model extraction wherever possible.
 
@@ -1465,6 +1466,18 @@ Phase-9-specific reminder for this phase:
 - the cached options-tab and eval-options-tab button/panel arrays captured during bootstrap are valid only while Phase 10 keeps those tab nodes structurally stable
 - if Phase 10 starts replacing those tab buttons or panels wholesale instead of updating them in place, refresh the cached refs explicitly or move that lookup responsibility into the extracted tabs renderer rather than assuming the old arrays stay live forever
 
+### Landed Phase 10B outcome
+
+The current branch now matches Phase 10B:
+
+- `docs/eval-dashboard/assets/js/ui/` now contains `prediction-table.js` and `evaluation-table.js` alongside the earlier Phase 9 and Phase 10A UI modules
+- `docs/eval-dashboard/assets/js/main.js` now delegates the prediction-table header/group/member rendering flow to `ui/prediction-table.js` and the evaluation-table header/group/member plus `eval_run_dir` meta-column rendering flow to `ui/evaluation-table.js`
+- `docs/eval-dashboard/assets/js/ui/table-shared.js` now also owns the shared displayed-selection summary helper plus the shared `select` header control and static sortable control-header cells used by both table renderers
+- `tests/unit/eval_dashboard/js/ui.prediction-table.test.mjs` now locks in the extracted prediction grouped-row and member-row view-model helpers without introducing a DOM-emulation harness
+- `tests/unit/eval_dashboard/js/ui.evaluation-table.test.mjs` now locks in the extracted evaluation grouped-row and member-row view-model helpers without introducing a DOM-emulation harness
+- `tests/unit/eval_dashboard/js/ui.table-shared.test.mjs` now also locks in the shared displayed-selection state plus the shared `select` and static control-header rendering helpers introduced during Phase 10B
+- `tests/unit/eval_dashboard/test_eval_dashboard_entrypoint.py`, `tests/unit/eval_dashboard/test_eval_dashboard_baseline_contract.py`, `tests/unit/eval_dashboard/js/README.md`, and `tests/fixtures/eval_dashboard/baseline/baseline-summary.json` now record the Phase 10B table-renderer contract explicitly
+
 ### Tests to add in this phase
 
 Prefer JS-native tests for renderer-adjacent helpers that stay DOM-free.
@@ -1755,7 +1768,7 @@ If needed, these can be grouped into fewer PRs:
 - PR 4: loaders + UI infrastructure + controls/tabs/JSON-pane extraction
 - PR 5: prediction/evaluation table extraction + plot/export modules + final cleanup + coverage pass
 
-From the current repository state, work should next continue with **Phase 10B**: move prediction and evaluation table rendering behind dedicated renderer/helper modules while reusing the now-stable Phase 9 DOM/table/status/browser infrastructure, the Phase 10A controls/tabs/JSON-pane modules, and the already-stable Phase 8 source-loader/ingestion boundary.
+From the current repository state, work should next continue with **Phase 11**: move the remaining plot aggregation, legend, and export logic behind dedicated `plots/` modules while reusing the now-stable Phase 9 DOM/table/status/browser infrastructure, the landed Phase 10A controls/tabs/JSON-pane modules, the landed Phase 10B table-renderer modules, and the already-stable Phase 8 source-loader/ingestion boundary.
 
 After each completed PR or phase in that sequence, refresh the planning docs under `docs/eval-dashboard/` before moving on so the written plan keeps matching the repository state and `CONTRIBUTING.md` expectations.
 
@@ -1789,12 +1802,11 @@ ______________________________________________________________________
 
 Given the current repository state, the safest next implementation step is:
 
-1. extract the prediction-table header renderer, grouped-row renderer, and member-row renderer into `docs/eval-dashboard/assets/js/ui/prediction-table.js` before trying to split out many tiny helpers
-1. extract the evaluation-table header renderer, grouped-row renderer, member-row renderer, and `eval_run_dir` meta-column handling into `docs/eval-dashboard/assets/js/ui/evaluation-table.js`
-1. factor only the clearly repeated control-header pieces into `docs/eval-dashboard/assets/js/ui/table-shared.js`, starting with the `select` header control and the static sortable `expand` / `group_size` header cells if those abstractions stay callback-driven and simpler than the inline code
-1. add JS-native tests for any DOM-free row/header/selection view-model helpers that emerge naturally from those extractions
-1. keep the Phase 9 shared DOM/table/status/browser helpers and the landed Phase 10A controls/tabs/JSON-pane modules as stable dependencies rather than reintroducing ad hoc helpers in `main.js`
-1. extend structural/docs smoke coverage as needed and add JS-native tests only for any newly extracted renderer-adjacent helpers that stay stable without a heavy DOM harness
-1. update the planning docs in `docs/eval-dashboard/` after Phase 10B lands, and confirm the change set complies with `CONTRIBUTING.md`
+1. extract the DOM-free plot aggregation and tab-map helpers into `docs/eval-dashboard/assets/js/plots/shared.js`, `plots/bars.js`, `plots/confusion.js`, and `plots/tpfpfn.js` before splitting out more UI helpers
+1. keep the already-landed thin plot-control surface in `ui/controls.js` and move only plot-family-specific aggregation/SVG/legend/export behavior into the new `plots/` modules
+1. add JS-native tests for any newly extracted aggregation, tab-map, legend-model, or export-helper seams that stay stable without a heavy DOM harness
+1. keep the Phase 9 shared DOM/table/status/browser helpers plus the landed Phase 10A and Phase 10B table/UI modules as stable dependencies rather than reintroducing plot-specific helpers in `main.js`
+1. extend structural/docs smoke coverage as needed and keep Python focused on structural/docs/fixture contracts while the permanent Node.js-native runner continues to cover extracted dashboard logic
+1. update the planning docs in `docs/eval-dashboard/` after Phase 11 lands, and confirm the change set complies with `CONTRIBUTING.md`
 
-That continues the next smallest behavior-preserving extraction boundary after Phase 10A: keep Python for structural/docs/fixture smoke coverage, keep the minimal JS-native runner for extracted dashboard logic, and next move the two large table renderers out of `main.js` as coarse renderer units before chasing smaller helper/view-model splits or tackling the plotting/export modules.
+That continues the next smallest behavior-preserving extraction boundary after Phase 10B: keep Python for structural/docs/fixture smoke coverage, keep the minimal JS-native runner for extracted dashboard logic, and next move the remaining plot/export implementation out of `main.js` as coarse module units before the final orchestration-only cleanup pass.

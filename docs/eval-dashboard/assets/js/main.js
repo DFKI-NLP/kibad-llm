@@ -20,7 +20,6 @@ import {
 } from "./browser/session.js";
 import { captureDomRefs, setPanelVisibility } from "./ui/dom.js";
 import {
-  createGroupByToggleControl,
   getToggleOnlyColumns,
   renderOptionsPanel,
   renderPlotControls,
@@ -33,12 +32,11 @@ import {
   renderEvalJsonPane,
 } from "./ui/eval-json-pane.js";
 import {
-  createSortButton as createSharedSortButton,
-  createTruncatingCell as createSharedTruncatingCell,
-  getAriaSort as getSharedAriaSort,
   getNextSortConfig as getSharedNextSortConfig,
   updateStickyControlColumnOffsets,
 } from "./ui/table-shared.js";
+import { renderPredictionTable } from "./ui/prediction-table.js";
+import { renderEvaluationTable } from "./ui/evaluation-table.js";
 import {
   bindDelegatedTabSelection,
   buildCountTabButtonModels,
@@ -131,27 +129,10 @@ const {
 const TP_FP_FN_KEYS = ["tp", "fp", "fn"];
 const sortCollator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
 
-function createSortButton(options) {
-  return createSharedSortButton({ ...options, sortableControlColumns: SORTABLE_CONTROL_COLUMNS });
-}
-
-function getAriaSort(sortConfig, column) {
-  return getSharedAriaSort(sortConfig, column);
-}
-
 function getNextSortConfig(currentSort, column, { append = false } = {}) {
   return getSharedNextSortConfig(currentSort, column, {
     append,
     sortableControlColumns: SORTABLE_CONTROL_COLUMNS,
-  });
-}
-
-function createTruncatingCell(content, columnKey = "", truncateEnabledColumns = null) {
-  return createSharedTruncatingCell({
-    documentLike: document,
-    content,
-    columnKey,
-    truncateEnabledColumns,
   });
 }
 
@@ -1426,21 +1407,6 @@ function setSelectedGroupIds(groupIds) {
   renderEvaluations();
 }
 
-/**
- * Summarize selection state for the currently displayed prediction groups.
- */
-function getDisplayedSelectionState(displayedGroups = []) {
-  return selectors.getDisplayedSelectionState(state, displayedGroups);
-}
-
-function createCell(content, columnKey = "") {
-  return createTruncatingCell(content, columnKey, state.truncateEnabledColumns);
-}
-
-function createEvalCell(content, columnKey, evalTabState) {
-  return createTruncatingCell(content, columnKey, evalTabState?.truncateEnabledColumns);
-}
-
 
 window.addEventListener("resize", () => {
   updateStickyControlColumnOffsets(predictionsTable);
@@ -1538,165 +1504,53 @@ function renderPredictions() {
   });
   const displayedGroups = getSortedPredictionGroups(predictionGroups);
 
-  const thead = document.createElement("thead");
-  const sectionRow = document.createElement("tr");
-  const selectionState = getDisplayedSelectionState(displayedGroups);
-  ["expand", "select", "group_size"].forEach((header) => {
-    const th = document.createElement("th");
-    th.setAttribute("aria-sort", getAriaSort(state.predictionSort, header));
-    if (header === "select") {
-      const selectControl = document.createElement("div");
-      selectControl.className = "header-select-control";
-      const selectButton = createSortButton({
-        label: "select",
-        column: header,
-        sortConfig: state.predictionSort,
-        onToggle: (event) => setPredictionSort(header, event),
-      });
-      const selectAllCheckbox = document.createElement("input");
-      selectAllCheckbox.type = "checkbox";
-      selectAllCheckbox.checked = selectionState.allSelected;
-      selectAllCheckbox.indeterminate = selectionState.someSelected;
-      selectAllCheckbox.title = "Select or deselect all displayed groups";
-      selectAllCheckbox.setAttribute("aria-label", "Select or deselect all displayed prediction groups");
-      selectAllCheckbox.addEventListener("change", () => {
-        if (selectAllCheckbox.checked) {
-          setSelectedGroupIds(selectionState.displayedGroupIds);
-        } else {
-          setSelectedGroupIds([]);
-        }
-      });
-      selectControl.appendChild(selectButton);
-      selectControl.appendChild(selectAllCheckbox);
-      th.appendChild(selectControl);
-    } else {
-      const staticControl = document.createElement("div");
-      staticControl.className = "header-static-control";
-      staticControl.appendChild(
-        createSortButton({
-          label: header === "group_size" ? "#" : header,
-          column: header,
-          sortConfig: state.predictionSort,
-          onToggle: (event) => setPredictionSort(header, event),
-        })
-      );
-      th.appendChild(staticControl);
-    }
-    th.rowSpan = 2;
-    sectionRow.appendChild(th);
-  });
-  for (const section of predictionSections) {
-    const th = document.createElement("th");
-    th.className = "section-header";
-    th.colSpan = section.columns.length;
-    th.textContent = section.label;
-    sectionRow.appendChild(th);
-  }
-  thead.appendChild(sectionRow);
-
-  const columnRow = document.createElement("tr");
-  for (const header of orderedPredictionColumns) {
-    const th = document.createElement("th");
-    th.setAttribute("aria-sort", getAriaSort(state.predictionSort, header));
-    if (state.truncateEnabledColumns.has(header)) {
-      th.classList.add("truncate-enabled");
-    }
-    const headerControl = document.createElement("div");
-    headerControl.className = "header-column-control";
-    const label = createSortButton({
-      label: displayPredictionColumnName(header),
-      column: header,
-      sortConfig: state.predictionSort,
-      onToggle: (event) => setPredictionSort(header, event),
-    });
-
-    const toggle = createGroupByToggleControl({
-      documentLike: document,
-      checked: state.groupByFields.includes(header),
-      ariaLabel: `Group by ${displayPredictionColumnName(header)}`,
-      onToggle: (checked) => {
+  renderPredictionTable({
+    documentLike: document,
+    tableElement: predictionsTable,
+    predictionSections,
+    orderedPredictionColumns,
+    displayedGroups,
+    predictionSort: state.predictionSort,
+    truncateEnabledColumns: state.truncateEnabledColumns,
+    groupByFields: state.groupByFields,
+    selectedGroupIds: state.selectedGroupIds,
+    expandedGroupIds: state.expandedGroupIds,
+    displayColumnName: displayPredictionColumnName,
+    onSortToggle: setPredictionSort,
+    onToggleGroupByColumn: (column, checked) => {
       const nextGroupByFields = new Set(state.groupByFields);
-        if (checked) {
-        nextGroupByFields.add(header);
+      if (checked) {
+        nextGroupByFields.add(column);
       } else {
-        nextGroupByFields.delete(header);
+        nextGroupByFields.delete(column);
       }
       setGroupByFields(nextGroupByFields);
-      },
-    });
-
-    headerControl.appendChild(label);
-    headerControl.appendChild(toggle);
-    th.appendChild(headerControl);
-    columnRow.appendChild(th);
-  }
-  thead.appendChild(columnRow);
-  predictionsTable.appendChild(thead);
-
-  const tbody = document.createElement("tbody");
-  for (const group of displayedGroups) {
-    const tr = document.createElement("tr");
-
-    const expandTd = document.createElement("td");
-    const expandButton = document.createElement("button");
-    const isExpanded = state.expandedGroupIds.has(group.groupId);
-    expandButton.type = "button";
-    expandButton.className = "expand-button";
-    expandButton.textContent = isExpanded ? "-" : "+";
-    expandButton.title = isExpanded ? "Collapse group members" : "Expand group members";
-    expandButton.addEventListener("click", () => {
-      if (state.expandedGroupIds.has(group.groupId)) {
-        state.expandedGroupIds.delete(group.groupId);
+    },
+    onToggleGroupExpansion: (groupId) => {
+      if (state.expandedGroupIds.has(groupId)) {
+        state.expandedGroupIds.delete(groupId);
       } else {
-        state.expandedGroupIds.add(group.groupId);
+        state.expandedGroupIds.add(groupId);
       }
       renderPredictions();
-    });
-    expandTd.appendChild(expandButton);
-    tr.appendChild(expandTd);
-
-    const selectTd = document.createElement("td");
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.checked = state.selectedGroupIds.has(group.groupId);
-    checkbox.addEventListener("change", () => {
+    },
+    onToggleGroupSelection: (groupId, checked) => {
       const nextSelectedGroupIds = new Set(state.selectedGroupIds);
-      if (checkbox.checked) {
-        nextSelectedGroupIds.add(group.groupId);
+      if (checked) {
+        nextSelectedGroupIds.add(groupId);
       } else {
-        nextSelectedGroupIds.delete(group.groupId);
+        nextSelectedGroupIds.delete(groupId);
       }
       setSelectedGroupIds(nextSelectedGroupIds);
-    });
-    selectTd.appendChild(checkbox);
-    tr.appendChild(selectTd);
-
-    tr.appendChild(createCell(String(group.predictions.length)));
-
-    for (const field of orderedPredictionColumns) {
-      tr.appendChild(createCell(getGroupValueDisplay(group, field), field));
-    }
-    tbody.appendChild(tr);
-
-    if (isExpanded) {
-      const sortedMembers = getSortedPredictionMembers(group.predictions);
-      for (const member of sortedMembers) {
-        const memberRow = document.createElement("tr");
-        memberRow.className = "member-row";
-        memberRow.appendChild(createCell(""));
-        memberRow.appendChild(createCell(""));
-        memberRow.appendChild(createCell("member"));
-        for (const field of orderedPredictionColumns) {
-          memberRow.appendChild(
-            createCell(getPredictionEffectiveValue(member.predictionFlat, field), field)
-          );
-        }
-        tbody.appendChild(memberRow);
-      }
-    }
-  }
-
-  predictionsTable.appendChild(tbody);
+    },
+    onSelectAllDisplayed: (checked, displayedGroupIds) => {
+      setSelectedGroupIds(checked ? displayedGroupIds : []);
+    },
+    getGroupValueDisplay,
+    getSortedPredictionMembers,
+    getPredictionEffectiveValue,
+    sortableControlColumns: SORTABLE_CONTROL_COLUMNS,
+  });
   updateStickyControlColumnOffsets(predictionsTable);
 }
 
@@ -3693,272 +3547,69 @@ function renderEvaluations() {
 
   const displayedEvalGroups = getSortedEvaluationGroups(evaluationGroups, evalTabState);
 
-  const evalSelectionState = {
-    displayedGroupIds: displayedEvalGroups.map((group) => group.groupId),
-  };
-  evalSelectionState.selectedCount = evalSelectionState.displayedGroupIds.filter((groupId) =>
-    evalTabState.selectedGroupIds.has(groupId)
-  ).length;
-  evalSelectionState.allSelected =
-    evalSelectionState.displayedGroupIds.length > 0 &&
-    evalSelectionState.selectedCount === evalSelectionState.displayedGroupIds.length;
-  evalSelectionState.someSelected =
-    evalSelectionState.selectedCount > 0 && !evalSelectionState.allSelected;
-
-  const thead = document.createElement("thead");
-  const sectionRow = document.createElement("tr");
-  ["expand", "select", "group_size"].forEach((header) => {
-    const th = document.createElement("th");
-    th.setAttribute("aria-sort", getAriaSort(evalTabState.sort, header));
-    if (header === "select") {
-      const selectControl = document.createElement("div");
-      selectControl.className = "header-select-control";
-      const selectButton = createSortButton({
-        label: "select",
-        column: header,
-        sortConfig: evalTabState.sort,
-        onToggle: (event) => setEvalSort(header, event),
-      });
-      const selectAllCheckbox = document.createElement("input");
-      selectAllCheckbox.type = "checkbox";
-      selectAllCheckbox.checked = evalSelectionState.allSelected;
-      selectAllCheckbox.indeterminate = evalSelectionState.someSelected;
-      selectAllCheckbox.title = "Select or deselect all displayed evaluation groups";
-      selectAllCheckbox.addEventListener("change", () => {
-        if (selectAllCheckbox.checked) {
-          evalTabState.selectedGroupIds = new Set(evalSelectionState.displayedGroupIds);
-        } else {
-          evalTabState.selectedGroupIds = new Set();
-        }
-        renderEvaluations();
-      });
-      selectControl.appendChild(selectButton);
-      selectControl.appendChild(selectAllCheckbox);
-      th.appendChild(selectControl);
-    } else {
-      const staticControl = document.createElement("div");
-      staticControl.className = "header-static-control";
-      staticControl.appendChild(
-        createSortButton({
-          label: header === "group_size" ? "#" : header,
-          column: header,
-          sortConfig: evalTabState.sort,
-          onToggle: (event) => setEvalSort(header, event),
-        })
-      );
-      th.appendChild(staticControl);
-    }
-    th.rowSpan = 2;
-    sectionRow.appendChild(th);
-  });
-
-  if (evalColumnSections.length > 0) {
-    for (const section of evalColumnSections) {
-      const th = document.createElement("th");
-      th.className = "section-header";
-      th.colSpan = section.columns.length;
-      th.textContent = section.label;
-      sectionRow.appendChild(th);
-    }
-  } else {
-    const th = document.createElement("th");
-    th.className = "section-header";
-    th.colSpan = 1;
-    th.textContent = "evaluation";
-    sectionRow.appendChild(th);
-  }
-
-  const evalRunDirSection = document.createElement("th");
-  evalRunDirSection.className = "section-header";
-  evalRunDirSection.colSpan = 1;
-  evalRunDirSection.textContent = "meta";
-  sectionRow.appendChild(evalRunDirSection);
-  thead.appendChild(sectionRow);
-
-  const columnRow = document.createElement("tr");
-  if (orderedEvalColumns.length > 0) {
-    for (const column of orderedEvalColumns) {
-      const th = document.createElement("th");
-      th.setAttribute("aria-sort", getAriaSort(evalTabState.sort, column));
-      if (evalTabState.truncateEnabledColumns.has(column)) {
-        th.classList.add("truncate-enabled");
+  renderEvaluationTable({
+    documentLike: document,
+    tableElement: evaluationsTable,
+    evalColumnSections,
+    orderedEvalColumns,
+    displayedGroups: displayedEvalGroups,
+    evalTabState,
+    displayColumnName: displayEvalColumnName,
+    onSortToggle: setEvalSort,
+    onToggleGroupByColumn: (column, checked) => {
+      const next = new Set(evalTabState.groupByFields);
+      if (checked) {
+        next.add(column);
+      } else {
+        next.delete(column);
       }
-      const headerLabel = displayEvalColumnName(column);
-      const headerControl = document.createElement("div");
-      headerControl.className = "header-column-control";
-      const label = createSortButton({
-        label: headerLabel,
-        column,
-        sortConfig: evalTabState.sort,
-        onToggle: (event) => setEvalSort(column, event),
-      });
-      th.style.minWidth = `${Math.max(140, headerLabel.length * 8)}px`;
-
-      const toggle = createGroupByToggleControl({
-        documentLike: document,
-        checked: evalTabState.groupByFields.includes(column),
-        ariaLabel: `Group by ${headerLabel}`,
-        onToggle: (checked) => {
-        const next = new Set(evalTabState.groupByFields);
-          if (checked) {
-          next.add(column);
-        } else {
-          next.delete(column);
-        }
-        setActiveEvalGroupByFields(next);
-        },
-      });
-
-      headerControl.appendChild(label);
-      headerControl.appendChild(toggle);
-      th.appendChild(headerControl);
-      columnRow.appendChild(th);
-    }
-  } else {
-    const th = document.createElement("th");
-    th.textContent = "(no evaluation columns)";
-    columnRow.appendChild(th);
-  }
-
-  const runDirTh = document.createElement("th");
-  runDirTh.setAttribute("aria-sort", getAriaSort(evalTabState.sort, "eval_run_dir"));
-  if (evalTabState.truncateEnabledColumns.has("eval_run_dir")) {
-    runDirTh.classList.add("truncate-enabled");
-  }
-  runDirTh.appendChild(
-    createSortButton({
-      label: "eval_run_dir",
-      column: "eval_run_dir",
-      sortConfig: evalTabState.sort,
-      onToggle: (event) => setEvalSort("eval_run_dir", event),
-    })
-  );
-  runDirTh.style.minWidth = "240px";
-  columnRow.appendChild(runDirTh);
-  thead.appendChild(columnRow);
-  evaluationsTable.appendChild(thead);
-
-  const tbody = document.createElement("tbody");
-  for (const group of displayedEvalGroups) {
-    const tr = document.createElement("tr");
-    tr.style.cursor = "pointer";
-    if (group.groupId === evalTabState.selectedEvalGroupId) {
-      tr.classList.add("eval-row-selected");
-    }
-    tr.addEventListener("click", () => {
-      if (evalTabState.selectedEvalGroupId === group.groupId) {
+      setActiveEvalGroupByFields(next);
+    },
+    onSelectAllDisplayed: (checked, displayedGroupIds) => {
+      evalTabState.selectedGroupIds = checked ? new Set(displayedGroupIds) : new Set();
+      renderEvaluations();
+    },
+    onGroupRowSelect: (groupId) => {
+      if (evalTabState.selectedEvalGroupId === groupId) {
         evalTabState.selectedEvalGroupId = null;
       } else {
-        evalTabState.selectedEvalGroupId = group.groupId;
+        evalTabState.selectedEvalGroupId = groupId;
         evalTabState.selectedEvalRunDir = null;
         state.activeEvalJsonTab = "evaluation";
       }
       renderEvaluations();
-    });
-
-    const expandTd = document.createElement("td");
-    const expandButton = document.createElement("button");
-    const isExpanded = evalTabState.expandedGroupIds.has(group.groupId);
-    expandButton.type = "button";
-    expandButton.className = "expand-button";
-    expandButton.textContent = isExpanded ? "-" : "+";
-    expandButton.title = isExpanded ? "Collapse group members" : "Expand group members";
-    expandButton.addEventListener("click", (event) => {
-      event.stopPropagation();
-      if (evalTabState.expandedGroupIds.has(group.groupId)) {
-        evalTabState.expandedGroupIds.delete(group.groupId);
+    },
+    onToggleGroupExpansion: (groupId) => {
+      if (evalTabState.expandedGroupIds.has(groupId)) {
+        evalTabState.expandedGroupIds.delete(groupId);
       } else {
-        evalTabState.expandedGroupIds.add(group.groupId);
+        evalTabState.expandedGroupIds.add(groupId);
       }
       renderEvaluations();
-    });
-    expandTd.appendChild(expandButton);
-    tr.appendChild(expandTd);
-
-    const selectTd = document.createElement("td");
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.checked = evalTabState.selectedGroupIds.has(group.groupId);
-    checkbox.addEventListener("click", (event) => event.stopPropagation());
-    checkbox.addEventListener("change", () => {
-      if (checkbox.checked) {
-        evalTabState.selectedGroupIds.add(group.groupId);
+    },
+    onToggleGroupSelection: (groupId, checked) => {
+      if (checked) {
+        evalTabState.selectedGroupIds.add(groupId);
       } else {
-        evalTabState.selectedGroupIds.delete(group.groupId);
+        evalTabState.selectedGroupIds.delete(groupId);
       }
       renderEvaluations();
-    });
-    selectTd.appendChild(checkbox);
-    tr.appendChild(selectTd);
-
-    tr.appendChild(createCell(String(group.evaluations.length)));
-
-    if (orderedEvalColumns.length === 0) {
-      tr.appendChild(createCell(""));
-    }
-    for (const column of orderedEvalColumns) {
-      tr.appendChild(
-        createEvalCell(
-          getGroupValueDisplayFromEvaluations(
-            group.evaluations,
-            (evaluation) => getEvaluationEffectiveValue(evaluation, column, evalTabState)
-          ),
-          column,
-          evalTabState
-        )
-      );
-    }
-    tr.appendChild(
-      createEvalCell(
-        getGroupValueDisplayFromEvaluations(group.evaluations, (evaluation) => evaluation.runDir),
-        "eval_run_dir",
-        evalTabState
-      )
-    );
-    tbody.appendChild(tr);
-
-    if (evalTabState.expandedGroupIds.has(group.groupId)) {
-      const sortedMembers = getSortedEvaluations(group.evaluations, evalTabState);
-      for (const evaluation of sortedMembers) {
-        const memberRow = document.createElement("tr");
-        memberRow.className = "member-row";
-        memberRow.style.cursor = "pointer";
-        if (evaluation.runDir === evalTabState.selectedEvalRunDir) {
-          memberRow.classList.add("eval-row-selected");
-        }
-        memberRow.addEventListener("click", () => {
-          if (evalTabState.selectedEvalRunDir === evaluation.runDir) {
-            evalTabState.selectedEvalRunDir = null;
-          } else {
-            evalTabState.selectedEvalRunDir = evaluation.runDir;
-            evalTabState.selectedEvalGroupId = null;
-            state.activeEvalJsonTab = "evaluation";
-          }
-          renderEvaluations();
-        });
-        memberRow.appendChild(createCell(""));
-        memberRow.appendChild(createCell(""));
-        memberRow.appendChild(createCell("member"));
-        if (orderedEvalColumns.length === 0) {
-          memberRow.appendChild(createCell(""));
-        }
-        for (const column of orderedEvalColumns) {
-          memberRow.appendChild(
-            createEvalCell(
-              getEvaluationEffectiveValue(evaluation, column, evalTabState),
-              column,
-              evalTabState
-            )
-          );
-        }
-        memberRow.appendChild(
-          createEvalCell(normalizeValue(evaluation.runDir), "eval_run_dir", evalTabState)
-        );
-        tbody.appendChild(memberRow);
+    },
+    onMemberRowSelect: (runDir) => {
+      if (evalTabState.selectedEvalRunDir === runDir) {
+        evalTabState.selectedEvalRunDir = null;
+      } else {
+        evalTabState.selectedEvalRunDir = runDir;
+        evalTabState.selectedEvalGroupId = null;
+        state.activeEvalJsonTab = "evaluation";
       }
-    }
-  }
-  evaluationsTable.appendChild(tbody);
+      renderEvaluations();
+    },
+    getGroupValueDisplayFromEvaluations,
+    getEvaluationEffectiveValue,
+    getSortedEvaluations,
+    sortableControlColumns: SORTABLE_CONTROL_COLUMNS,
+  });
 
   const selectedEvaluation = experimentEvaluations.find(
     (evaluation) => evaluation.runDir === evalTabState.selectedEvalRunDir

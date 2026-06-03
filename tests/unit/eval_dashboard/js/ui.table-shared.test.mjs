@@ -6,7 +6,10 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import {
+  buildSelectionState,
+  createSelectHeaderCell,
   createSortButton,
+  createStaticControlHeaderCell,
   createTruncatingCell,
   formatSortLabel,
   getAriaSort,
@@ -114,6 +117,27 @@ function createDocumentStub() {
     },
   };
 }
+
+/**
+ * Verify that the shared displayed-selection helper derives counts and tri-state flags.
+ */
+test("buildSelectionState derives displayed ids, selected counts, and tri-state flags", () => {
+  assert.deepEqual(
+    buildSelectionState(["group-a", "group-b", "group-c"], new Set(["group-a", "group-c"])),
+    {
+      displayedGroupIds: ["group-a", "group-b", "group-c"],
+      selectedCount: 2,
+      allSelected: false,
+      someSelected: true,
+    }
+  );
+  assert.deepEqual(buildSelectionState([], new Set(["group-a"])), {
+    displayedGroupIds: [],
+    selectedCount: 0,
+    allSelected: false,
+    someSelected: false,
+  });
+});
 
 /**
  * Verify the default sort direction split between control columns and data columns.
@@ -308,6 +332,75 @@ test("createSortButton renders the inactive button state when the column is not 
   assert.equal(button.className, "header-sort-button");
   assert.equal(button.getAttribute("aria-label"), "title, not sorted");
   assert.equal(button.children[1].textContent, "↕");
+});
+
+/**
+ * Verify that the shared static control-header helper configures sort metadata and row span.
+ */
+test("createStaticControlHeaderCell renders a shared static control header", () => {
+  const documentLike = createDocumentStub();
+  const events = [];
+  const headerCell = createStaticControlHeaderCell({
+    documentLike,
+    label: "#",
+    column: "group_size",
+    sortConfig: [{ column: "group_size", direction: "desc" }],
+    onToggle(event) {
+      events.push(event);
+    },
+    sortableControlColumns: SORTABLE_CONTROL_COLUMNS,
+  });
+
+  assert.equal(headerCell.tagName, "TH");
+  assert.equal(headerCell.rowSpan, 2);
+  assert.equal(headerCell.getAttribute("aria-sort"), "descending");
+  assert.equal(headerCell.children[0].className, "header-static-control");
+  assert.equal(headerCell.children[0].children[0].children[0].textContent, "#");
+
+  const clickEvent = { stopPropagation() {} };
+  headerCell.children[0].children[0].listeners.get("click")(clickEvent);
+  assert.deepEqual(events, [clickEvent]);
+});
+
+/**
+ * Verify that the shared select-header helper configures tri-state selection and forwards checkbox changes.
+ */
+test("createSelectHeaderCell renders the shared select-all control and forwards checkbox changes", () => {
+  const documentLike = createDocumentStub();
+  const events = [];
+  const headerCell = createSelectHeaderCell({
+    documentLike,
+    sortConfig: [{ column: "select", direction: "desc" }],
+    onToggle() {},
+    selectionState: {
+      displayedGroupIds: ["group-a", "group-b"],
+      selectedCount: 1,
+      allSelected: false,
+      someSelected: true,
+    },
+    onSelectAllToggle(checked, event) {
+      events.push({ checked, event });
+    },
+    sortableControlColumns: SORTABLE_CONTROL_COLUMNS,
+    checkboxTitle: "Select all rows",
+    checkboxAriaLabel: "Select or deselect all rows",
+  });
+
+  assert.equal(headerCell.tagName, "TH");
+  assert.equal(headerCell.rowSpan, 2);
+  assert.equal(headerCell.getAttribute("aria-sort"), "descending");
+  assert.equal(headerCell.children[0].className, "header-select-control");
+  const checkbox = headerCell.children[0].children[1];
+  assert.equal(checkbox.type, "checkbox");
+  assert.equal(checkbox.checked, false);
+  assert.equal(checkbox.indeterminate, true);
+  assert.equal(checkbox.title, "Select all rows");
+  assert.equal(checkbox.getAttribute("aria-label"), "Select or deselect all rows");
+
+  checkbox.checked = true;
+  const changeEvent = { type: "change" };
+  checkbox.listeners.get("change")(changeEvent);
+  assert.deepEqual(events, [{ checked: true, event: changeEvent }]);
 });
 
 /**

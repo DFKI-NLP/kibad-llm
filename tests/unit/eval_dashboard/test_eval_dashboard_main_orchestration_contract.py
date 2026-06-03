@@ -6,6 +6,12 @@ from kibad_llm.config import PROJ_ROOT
 
 MAIN_JS = PROJ_ROOT / "docs" / "eval-dashboard" / "assets" / "js" / "main.js"
 SESSION_JS = PROJ_ROOT / "docs" / "eval-dashboard" / "assets" / "js" / "browser" / "session.js"
+PREDICTION_TABLE_JS = (
+    PROJ_ROOT / "docs" / "eval-dashboard" / "assets" / "js" / "ui" / "prediction-table.js"
+)
+EVALUATION_TABLE_JS = (
+    PROJ_ROOT / "docs" / "eval-dashboard" / "assets" / "js" / "ui" / "evaluation-table.js"
+)
 
 
 def _main_js() -> str:
@@ -18,6 +24,18 @@ def _session_js() -> str:
     """Load the eval-dashboard browser-session helper source."""
 
     return SESSION_JS.read_text(encoding="utf-8")
+
+
+def _prediction_table_js() -> str:
+    """Load the eval-dashboard prediction-table helper source."""
+
+    return PREDICTION_TABLE_JS.read_text(encoding="utf-8")
+
+
+def _evaluation_table_js() -> str:
+    """Load the eval-dashboard evaluation-table helper source."""
+
+    return EVALUATION_TABLE_JS.read_text(encoding="utf-8")
 
 
 def test_browser_session_module_keeps_to_session_and_query_parameter_helpers() -> None:
@@ -146,13 +164,19 @@ def test_main_module_delegates_prediction_and_evaluation_group_by_button_state_t
     assert "noneButton: evalGroupByNoneButton" in evaluation_body
 
 
-def test_main_module_delegates_per_column_group_by_toggle_rendering_to_controls_helper() -> None:
-    """Ensure `main.js` no longer open-codes the repeated header checkbox used for per-column grouping."""
+def test_main_module_delegates_per_column_group_by_toggle_rendering_to_table_modules() -> None:
+    """Ensure per-column table-header grouping now lives in the extracted Phase 10B table modules."""
 
     main_js = _main_js()
+    prediction_table_js = _prediction_table_js()
+    evaluation_table_js = _evaluation_table_js()
 
-    assert "createGroupByToggleControl," in main_js
-    assert main_js.count("createGroupByToggleControl({") == 2
+    assert 'renderPredictionTable } from "./ui/prediction-table.js"' in main_js
+    assert 'renderEvaluationTable } from "./ui/evaluation-table.js"' in main_js
+    assert "createGroupByToggleControl," not in main_js
+    assert main_js.count("createGroupByToggleControl({") == 0
+    assert prediction_table_js.count("createGroupByToggleControl({") == 1
+    assert evaluation_table_js.count("createGroupByToggleControl({") == 1
     assert 'toggle.className = "group-toggle"' not in main_js
     assert 'toggle.title = "Use this column for grouping"' not in main_js
     assert "toggleCb.checked =" not in main_js
