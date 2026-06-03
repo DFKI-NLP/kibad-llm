@@ -47,18 +47,20 @@ test("parse-overrides ignores non-understood lines without raising", () => {
 });
 
 /**
- * Ensure the parser strips exactly one leading plus from keys and keeps raw string values.
+ * Ensure the parser strips Hydra add/force-add prefixes from keys and keeps raw string values.
  */
-test("parse-overrides strips one leading plus and preserves raw string values", () => {
+test("parse-overrides strips leading plus prefixes and preserves raw string values", () => {
   const text = [
     "- +single=value",
     "- ++double=value",
+    "- +++triple=value",
     "- spaced =  value with = signs = kept  ",
   ].join("\n");
 
   assert.deepEqual(parseOverridesYaml(text), {
     single: "value",
-    "+double": "value",
+    double: "value",
+    triple: "value",
     spaced: "value with = signs = kept",
   });
 });

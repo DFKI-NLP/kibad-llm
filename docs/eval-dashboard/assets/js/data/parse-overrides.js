@@ -27,7 +27,7 @@ export function parseOverridesYaml(text) {
     if (separatorIndex === -1) {
       continue;
     }
-    const key = item.slice(0, separatorIndex).replace(/^\+/, "").trim();
+    const key = item.slice(0, separatorIndex).replace(/^\++/, "").trim();
     result[key] = item.slice(separatorIndex + 1).trim();
   }
   return result;
