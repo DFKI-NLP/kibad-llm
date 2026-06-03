@@ -8,11 +8,13 @@ import assert from "node:assert/strict";
 import {
   buildConfusionTabMap,
   countDistinctConfusionMatrixRuns,
+  createConfusionMatrixHeatmapSvg,
   filterConfusionMatrixAggregationByLabelTotal,
   getConfusionMatrixAggregation,
   getConfusionMatrixTitle,
   normalizeConfusionMatrixLikeEvaluations,
 } from "../../../../docs/eval-dashboard/assets/js/plots/confusion.js";
+import { createDocumentStub } from "./plots.dom-test-helpers.mjs";
 
 const getEvaluationEffectiveValue = (evaluation, column) =>
   evaluation.overrides?.[column] ?? "";
@@ -99,4 +101,39 @@ test("confusion helpers build tab maps for metric-field and group-tab modes", ()
     }),
     "mixed metric.field: field_a, field_b"
   );
+});
+
+/**
+ * Verify confusion heatmap SVG rendering wires labels, values, and tooltip events.
+ */
+test("confusion renderer creates labelled interactive heatmap cells", () => {
+  const documentLike = createDocumentStub();
+  const shown = [];
+  const svg = createConfusionMatrixHeatmapSvg({
+    documentLike,
+    aggregation: {
+      rows: ["outer.actual"],
+      cols: ["outer.predicted"],
+      cells: new Map([["outer.actual|#|outer.predicted", { mean: 0.75, std: 0.125 }]]),
+    },
+    precision: 2,
+    getDisplayLabel: (label) => label.split(".").at(-1),
+    showTooltip: (_event, lines) => shown.push(lines),
+    moveTooltip: () => {},
+    hideTooltip: () => {},
+  });
+
+  assert.equal(svg.getAttribute("viewBox"), "0 0 396 246");
+  assert.ok(svg.querySelectorAll("text").some((text) => text.textContent === "actual"));
+  assert.ok(svg.querySelectorAll("text").some((text) => text.textContent === "predicted"));
+  assert.ok(svg.querySelectorAll("text").some((text) => text.textContent === "0.75±0.13"));
+
+  const heatmapCell = svg.querySelectorAll("rect").find((rect) => rect.style.cursor === "crosshair");
+  heatmapCell.dispatch("mouseover", { clientX: 10, clientY: 10 });
+  assert.deepEqual(shown[0], [
+    "actual:    outer.actual",
+    "predicted: outer.predicted",
+    "mean: 0.75",
+    "std:  0.13",
+  ]);
 });

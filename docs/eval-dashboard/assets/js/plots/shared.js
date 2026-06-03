@@ -44,6 +44,77 @@ export function getBarColor(index) {
   return palette[index % palette.length];
 }
 
+export function styleErrorBarSegment(line) {
+  line.setAttribute("stroke", "currentColor");
+  line.setAttribute("stroke-opacity", "0.78");
+}
+
+export function fitSvgToContents(svg, contentGroup, minWidth, minHeight) {
+  if (!svg.isConnected) {
+    return false;
+  }
+  let bbox;
+  try {
+    bbox = contentGroup.getBBox();
+  } catch (error) {
+    return false;
+  }
+  if (
+    !bbox ||
+    !Number.isFinite(bbox.x) ||
+    !Number.isFinite(bbox.y) ||
+    !Number.isFinite(bbox.width) ||
+    !Number.isFinite(bbox.height)
+  ) {
+    return false;
+  }
+
+  const padding = 8;
+  const shiftX = Math.max(0, padding - bbox.x);
+  const shiftY = Math.max(0, padding - bbox.y);
+  contentGroup.setAttribute("transform", `translate(${shiftX}, ${shiftY})`);
+
+  const fittedWidth = Math.ceil(
+    Math.max(minWidth + shiftX, bbox.x + bbox.width + shiftX + padding)
+  );
+  const fittedHeight = Math.ceil(
+    Math.max(minHeight + shiftY, bbox.y + bbox.height + shiftY + padding)
+  );
+
+  svg.setAttribute("width", String(fittedWidth));
+  svg.setAttribute("height", String(fittedHeight));
+  svg.setAttribute("viewBox", `0 0 ${fittedWidth} ${fittedHeight}`);
+  return true;
+}
+
+export function scheduleAdaptiveSvgFit({
+  documentLike = globalThis.document,
+  requestAnimationFrameLike = globalThis.requestAnimationFrame,
+  svg,
+  contentGroup,
+  minWidth,
+  minHeight,
+}) {
+  let attempts = 4;
+  const requestFrame = requestAnimationFrameLike || ((callback) => callback());
+  const runFit = () => {
+    const fitted = fitSvgToContents(svg, contentGroup, minWidth, minHeight);
+    if (!fitted && attempts > 0) {
+      attempts -= 1;
+      requestFrame(runFit);
+    }
+  };
+
+  requestFrame(runFit);
+  if (documentLike?.fonts?.ready) {
+    documentLike.fonts.ready
+      .then(() => {
+        requestFrame(runFit);
+      })
+      .catch(() => {});
+  }
+}
+
 export function buildGroupedLegendModel(entries) {
   const seriesOrder = [];
   const seenSeries = new Set();

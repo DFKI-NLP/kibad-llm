@@ -97,10 +97,11 @@ def test_main_module_calls_phase_ten_a_tab_helpers_directly_without_local_wrappe
     assert main_js.count("bindDelegatedTabSelection({") == 2
     assert "buildCountTabButtonModels," in main_js
     assert "renderTabButtons," in main_js
-    assert main_js.count("renderTabButtons({") == 4
-    assert main_js.count("buildCountTabButtonModels(") == 4
+    assert "renderPlotTabsAndGrid as renderSharedPlotTabsAndGrid" in main_js
+    assert main_js.count("renderTabButtons({") == 3
+    assert main_js.count("buildCountTabButtonModels(") == 3
     assert "buildTabButtonModels(" not in main_js
-    assert main_js.count("resolveActiveTabValue(") == 4
+    assert main_js.count("resolveActiveTabValue(") == 3
     assert main_js.count("renderStaticTabState({") >= 3
     assert "buttonElements: optionsTabButtons" in main_js
     assert "panelElements: optionsTabPanels" in main_js

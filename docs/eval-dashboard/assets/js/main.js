@@ -1,5 +1,5 @@
 import { normalizeSortConfig } from "./utils/sort.js";
-import { formatRounded, interpolateColor, normalizeValue } from "./utils/values.js";
+import { normalizeValue } from "./utils/values.js";
 import * as dashboardStore from "./state/store.js";
 import * as selectors from "./state/selectors.js";
 import { collectLocalEvaluationEntries } from "./data/file-loader.js";
@@ -54,44 +54,52 @@ import {
 } from "./ui/status.js";
 import {
   collectNumericMetricLeafPaths,
-  getBarColor,
   getGroupLabelForFields,
   getPlotDisplayLabel as getSharedPlotDisplayLabel,
   getPlotTitleLabel as getSharedPlotTitleLabel,
   getVaryingFields,
-  TP_FP_FN_KEYS,
 } from "./plots/shared.js";
 import {
   buildBarsTabMap,
   buildErrorsTabMap,
   buildPlotEntries,
+  createBarPlotSvg,
+  createGroupedBarPlotSvg,
+  renderPlotTabsAndGrid as renderSharedPlotTabsAndGrid,
 } from "./plots/bars.js";
 import {
-  buildGroupedLegendModel,
-  getLegendItemsForPoints,
+  createPlotLegendElement as createSharedPlotLegendElement,
 } from "./plots/legend.js";
 import {
   buildConfusionTabMap,
   countDistinctConfusionMatrixRuns,
+  createConfusionMatrixHeatmapSvg,
   filterConfusionMatrixAggregationByLabelTotal,
   getConfusionMatrixAggregation,
   getConfusionMatrixTitle,
 } from "./plots/confusion.js";
 import {
-  buildTpFpFnCellSummary,
   buildTpFpFnTabMap,
+  createTpFpFnCombinedMatrixSvg,
+  createTpFpFnLegendElement,
   filterTpFpFnAggregationByTotals,
   getTpFpFnCombinedAggregation,
-  getTpFpFnOutcomeColor,
-  getTpFpFnPalette,
 } from "./plots/tpfpfn.js";
 import {
-  buildPlotTabZipFilename,
+  downloadVisibleFigures as downloadSharedVisibleFigures,
+  getActivePlotTabZipFilename as getSharedActivePlotTabZipFilename,
+  getVisiblePlotFigureCards as getSharedVisiblePlotFigureCards,
   createZipBlob,
-  getUniqueFigureFilename,
+  hideTooltip as hideSharedTooltip,
+  measureCanvasText as measureSharedCanvasText,
+  positionTooltip as positionSharedTooltip,
   resolveOpaqueExportBackgroundColor as resolveSharedOpaqueExportBackgroundColor,
+  saveBlob as saveSharedBlob,
   serializeLegendSvg as serializeSharedLegendSvg,
   serializeSvgForDownload as serializeSharedSvgForDownload,
+  showTooltip as showSharedTooltip,
+  triggerBlobDownload as triggerSharedBlobDownload,
+  writeTextToClipboard as writeSharedTextToClipboard,
 } from "./plots/export.js";
 
 // Central UI state: loaded prediction/evaluation data, current grouping/selection, and per-eval-tab view state.
@@ -327,83 +335,11 @@ function getEvaluationColumns(evaluations = []) {
   return selectors.getEvaluationColumns(evaluations);
 }
 
-function showBarTooltip(event, lines) {
-  barTooltip.textContent = lines.join("\n");
-  barTooltip.style.display = "block";
-  positionBarTooltip(event);
-}
-
-function positionBarTooltip(event) {
-  const pad = 14;
-  let x = event.clientX + pad;
-  let y = event.clientY - pad - barTooltip.offsetHeight;
-  if (x + barTooltip.offsetWidth > window.innerWidth - pad) {
-    x = event.clientX - barTooltip.offsetWidth - pad;
-  }
-  if (y < pad) {
-    y = event.clientY + pad;
-  }
-  barTooltip.style.left = `${x}px`;
-  barTooltip.style.top = `${y}px`;
-}
-
-function hideBarTooltip() {
-  barTooltip.style.display = "none";
-}
-
-async function writeTextToClipboard(text) {
-  if (navigator.clipboard?.writeText) {
-    await navigator.clipboard.writeText(text);
-    return;
-  }
-
-  const textarea = document.createElement("textarea");
-  textarea.value = text;
-  textarea.setAttribute("readonly", "readonly");
-  textarea.style.position = "fixed";
-  textarea.style.top = "-9999px";
-  textarea.style.left = "-9999px";
-  document.body.appendChild(textarea);
-  textarea.focus();
-  textarea.select();
-  const copied = document.execCommand("copy");
-  document.body.removeChild(textarea);
-  if (!copied) {
-    throw new Error("Clipboard copy command was not successful.");
-  }
-}
-
-function getActivePlotTabZipFilename() {
-  const activeButton = evalPlotTabs.querySelector(".tab-button.active");
-  const plotTabLabel = activeButton?.getAttribute("title") || activeButton?.textContent || "figures";
-  return buildPlotTabZipFilename({
-    activeEvalTab: state.activeEvalTab,
-    activePlotTabLabel: plotTabLabel,
-  });
-}
-
-function createPlotLegendElement(legendItems) {
-  const legend = document.createElement("div");
-  legend.className = "plot-legend";
-  legendItems.forEach((item) => {
-    const legendItem = document.createElement("span");
-    legendItem.className = "plot-legend-item";
-    const swatch = document.createElement("span");
-    swatch.className = "plot-legend-swatch";
-    swatch.style.backgroundColor = item.color;
-    const text = document.createElement("span");
-    text.textContent = item.label;
-    legendItem.appendChild(swatch);
-    legendItem.appendChild(text);
-    legend.appendChild(legendItem);
-  });
-  return legend;
-}
-
-function styleErrorBarSegment(line) {
-  line.setAttribute("stroke", "currentColor");
-  line.setAttribute("stroke-opacity", "0.78");
-}
+const plotTooltipHandlers = {
+  show: (event, lines) => showSharedTooltip({ tooltipElement: barTooltip, windowLike: window, event, lines }),
+  move: (event) => positionSharedTooltip({ tooltipElement: barTooltip, windowLike: window, event }),
+  hide: () => hideSharedTooltip({ tooltipElement: barTooltip }),
+};
 
 function resolveOpaqueExportBackgroundColor() {
   return resolveSharedOpaqueExportBackgroundColor(
@@ -412,117 +348,8 @@ function resolveOpaqueExportBackgroundColor() {
   );
 }
 
-function measureCanvasText(text, font) {
-  const canvas = document.createElement("canvas");
-  const context = canvas.getContext("2d");
-  if (!context) {
-    return text.length * 7.5;
-  }
-  context.font = font;
-  return context.measureText(text).width;
-}
-
-function serializeLegendSvg(legendItems, exportOptions = {}) {
-  return serializeSharedLegendSvg({
-    documentLike: document,
-    legendItems,
-    computedStyle: getComputedStyle(evalPlotContent),
-    measureText: measureCanvasText,
-    exportOptions,
-  });
-}
-
-function serializeSvgForDownload(sourceSvg, exportOptions = {}) {
-  return serializeSharedSvgForDownload({
-    documentLike: document,
-    sourceSvg,
-    computedStyle: getComputedStyle(sourceSvg),
-    exportOptions,
-  });
-}
-
-function triggerBlobDownload(filename, blob) {
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = filename;
-  link.rel = "noopener";
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
-
-async function saveBlob(blob, suggestedName, types) {
-  if (typeof window.showSaveFilePicker === "function") {
-    try {
-      const handle = await window.showSaveFilePicker({ suggestedName, types });
-      const writable = await handle.createWritable();
-      await writable.write(blob);
-      await writable.close();
-      return true;
-    } catch (error) {
-      if (error && error.name === "AbortError") {
-        return false;
-      }
-      console.warn("Save picker failed, falling back to browser download.", error);
-    }
-  }
-
-  triggerBlobDownload(suggestedName, blob);
-  return true;
-}
-
-function getVisiblePlotFigureCards() {
-  return Array.from(evalPlotContent.querySelectorAll(".plot-card")).filter((card) => card.querySelector("svg"));
-}
-
 function updateDownloadFiguresButtonState() {
-  renderDownloadFiguresButtonState(downloadFiguresButton, getVisiblePlotFigureCards().length);
-}
-
-async function downloadVisibleFigures() {
-  const figureCards = getVisiblePlotFigureCards();
-  if (!figureCards.length) {
-    return;
-  }
-
-  const exportOptions = {
-    opaqueBackground: state.exportOpaqueBackground,
-    backgroundColor: state.exportOpaqueBackground ? resolveOpaqueExportBackgroundColor() : null,
-  };
-  const includeLegend = state.activePlotLegendItems.length > 1;
-  const usedNames = new Set(includeLegend ? ["legend"] : []);
-  const files = [];
-  if (includeLegend) {
-    files.push({
-      filename: "legend.svg",
-      content: serializeLegendSvg(state.activePlotLegendItems, exportOptions),
-    });
-  }
-
-  figureCards.forEach((card, index) => {
-    const svg = card.querySelector("svg");
-    if (!svg) {
-      return;
-    }
-    const title = card.querySelector(".plot-title")?.textContent?.trim() || `figure ${index + 1}`;
-    files.push({
-      filename: getUniqueFigureFilename(title, usedNames),
-      content: serializeSvgForDownload(svg, exportOptions),
-    });
-  });
-
-  if (!files.length) {
-    return;
-  }
-
-  const zipBlob = createZipBlob(files.map((file) => ({ name: file.filename, content: file.content })));
-  await saveBlob(
-    zipBlob,
-    getActivePlotTabZipFilename(),
-    [{ description: "ZIP archive", accept: { "application/zip": [".zip"] } }]
-  );
+  renderDownloadFiguresButtonState(downloadFiguresButton, getSharedVisiblePlotFigureCards(evalPlotContent).length);
 }
 
 const evalPlotContentObserver = new MutationObserver(() => {
@@ -913,7 +740,44 @@ downloadFiguresButton.addEventListener("click", async () => {
   }
   setDownloadFiguresButtonBusy(downloadFiguresButton);
   try {
-    await downloadVisibleFigures();
+    const exportOptions = {
+      opaqueBackground: state.exportOpaqueBackground,
+      backgroundColor: state.exportOpaqueBackground ? resolveOpaqueExportBackgroundColor() : null,
+    };
+    await downloadSharedVisibleFigures({
+      figureCards: getSharedVisiblePlotFigureCards(evalPlotContent),
+      activePlotLegendItems: state.activePlotLegendItems,
+      exportOptions,
+      serializeLegend: (legendItems, nextExportOptions) => serializeSharedLegendSvg({
+        documentLike: document,
+        legendItems,
+        computedStyle: getComputedStyle(evalPlotContent),
+        measureText: (text, font) => measureSharedCanvasText({ documentLike: document, text, font }),
+        exportOptions: nextExportOptions,
+      }),
+      serializeSvg: (sourceSvg, nextExportOptions) => serializeSharedSvgForDownload({
+        documentLike: document,
+        sourceSvg,
+        computedStyle: getComputedStyle(sourceSvg),
+        exportOptions: nextExportOptions,
+      }),
+      createZip: createZipBlob,
+      saveZip: (blob, suggestedName, types) => saveSharedBlob({
+        windowLike: window,
+        blob,
+        suggestedName,
+        types,
+        triggerDownload: (nextBlob, filename) => triggerSharedBlobDownload({
+          documentLike: document,
+          urlLike: URL,
+          setTimeoutLike: setTimeout,
+          filename,
+          blob: nextBlob,
+        }),
+        consoleLike: console,
+      }),
+      getZipFilename: () => getSharedActivePlotTabZipFilename({ activeEvalTab: state.activeEvalTab, evalPlotTabs }),
+    });
   } finally {
     updateDownloadFiguresButtonState();
   }
@@ -1366,335 +1230,6 @@ function getPlotGroups(activeExperiment, selectedEvalGroups, evalGroupByFields, 
   return selectors.getPlotGroups(state, activeExperiment, selectedEvalGroups, evalGroupByFields, evalTabState);
 }
 
-function fitSvgToContents(svg, contentGroup, minWidth, minHeight) {
-  if (!svg.isConnected) {
-    return false;
-  }
-  let bbox;
-  try {
-    bbox = contentGroup.getBBox();
-  } catch (error) {
-    return false;
-  }
-  if (
-    !bbox ||
-    !Number.isFinite(bbox.x) ||
-    !Number.isFinite(bbox.y) ||
-    !Number.isFinite(bbox.width) ||
-    !Number.isFinite(bbox.height)
-  ) {
-    return false;
-  }
-
-  const padding = 8;
-  const shiftX = Math.max(0, padding - bbox.x);
-  const shiftY = Math.max(0, padding - bbox.y);
-  contentGroup.setAttribute("transform", `translate(${shiftX}, ${shiftY})`);
-
-  const fittedWidth = Math.ceil(
-    Math.max(minWidth + shiftX, bbox.x + bbox.width + shiftX + padding)
-  );
-  const fittedHeight = Math.ceil(
-    Math.max(minHeight + shiftY, bbox.y + bbox.height + shiftY + padding)
-  );
-
-  svg.setAttribute("width", String(fittedWidth));
-  svg.setAttribute("height", String(fittedHeight));
-  svg.setAttribute("viewBox", `0 0 ${fittedWidth} ${fittedHeight}`);
-  return true;
-}
-
-function scheduleAdaptiveSvgFit(svg, contentGroup, minWidth, minHeight) {
-  let attempts = 4;
-  const runFit = () => {
-    const fitted = fitSvgToContents(svg, contentGroup, minWidth, minHeight);
-    if (!fitted && attempts > 0) {
-      attempts -= 1;
-      requestAnimationFrame(runFit);
-    }
-  };
-
-  requestAnimationFrame(runFit);
-  if (document.fonts && document.fonts.ready) {
-    document.fonts.ready
-      .then(() => {
-        requestAnimationFrame(runFit);
-      })
-      .catch(() => {});
-  }
-}
-
-function createBarPlotSvg(points) {
-  const width = Math.max(720, points.length * 150);
-  const height = 320;
-  const margin = { top: 18, right: 20, bottom: 95, left: 60 };
-  const chartWidth = width - margin.left - margin.right;
-  const chartHeight = height - margin.top - margin.bottom;
-  const yMax = Math.max(
-    0.05,
-    ...points.map((point) => point.mean + point.std)
-  );
-  const step = chartWidth / Math.max(points.length, 1);
-  const barWidth = Math.max(20, Math.min(60, step * 0.55));
-
-  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  svg.setAttribute("width", String(width));
-  svg.setAttribute("height", String(height));
-  svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
-  const contentGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
-  svg.appendChild(contentGroup);
-
-  const yTicks = 5;
-  for (let tick = 0; tick <= yTicks; tick += 1) {
-    const value = (yMax * tick) / yTicks;
-    const y = margin.top + chartHeight - (value / yMax) * chartHeight;
-    const grid = document.createElementNS("http://www.w3.org/2000/svg", "line");
-    grid.setAttribute("x1", String(margin.left));
-    grid.setAttribute("x2", String(width - margin.right));
-    grid.setAttribute("y1", String(y));
-    grid.setAttribute("y2", String(y));
-    grid.setAttribute("stroke", "#64748b66");
-    grid.setAttribute("stroke-width", "1");
-    contentGroup.appendChild(grid);
-
-    const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    label.setAttribute("x", String(margin.left - 8));
-    label.setAttribute("y", String(y + 4));
-    label.setAttribute("text-anchor", "end");
-    label.setAttribute("fill", "currentColor");
-    label.setAttribute("font-size", "11");
-    label.textContent = value.toFixed(2);
-    contentGroup.appendChild(label);
-  }
-
-  for (const [index, point] of points.entries()) {
-    const centerX = margin.left + step * index + step / 2;
-    const barHeight = (point.mean / yMax) * chartHeight;
-    const barY = margin.top + chartHeight - barHeight;
-    const barX = centerX - barWidth / 2;
-
-    const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-    rect.setAttribute("x", String(barX));
-    rect.setAttribute("y", String(barY));
-    rect.setAttribute("width", String(barWidth));
-    rect.setAttribute("height", String(Math.max(0, barHeight)));
-    rect.setAttribute("fill", "#60a5fa");
-    rect.style.cursor = "crosshair";
-    rect.addEventListener("mouseover", (event) => {
-      showBarTooltip(event, [
-        point.label,
-        `mean: ${Number(point.mean).toFixed(4)}`,
-        `std:  ${Number(point.std).toFixed(4)}`,
-      ]);
-    });
-    rect.addEventListener("mousemove", positionBarTooltip);
-    rect.addEventListener("mouseout", hideBarTooltip);
-    contentGroup.appendChild(rect);
-
-    const errTop = margin.top + chartHeight - ((point.mean + point.std) / yMax) * chartHeight;
-    const errBottom = margin.top + chartHeight - ((point.mean - point.std) / yMax) * chartHeight;
-    const errorLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
-    errorLine.setAttribute("x1", String(centerX));
-    errorLine.setAttribute("x2", String(centerX));
-    errorLine.setAttribute("y1", String(errTop));
-    errorLine.setAttribute("y2", String(errBottom));
-    styleErrorBarSegment(errorLine);
-    errorLine.setAttribute("stroke-width", "2");
-    contentGroup.appendChild(errorLine);
-
-    const capTop = document.createElementNS("http://www.w3.org/2000/svg", "line");
-    capTop.setAttribute("x1", String(centerX - 6));
-    capTop.setAttribute("x2", String(centerX + 6));
-    capTop.setAttribute("y1", String(errTop));
-    capTop.setAttribute("y2", String(errTop));
-    styleErrorBarSegment(capTop);
-    capTop.setAttribute("stroke-width", "2");
-    contentGroup.appendChild(capTop);
-
-    const capBottom = document.createElementNS("http://www.w3.org/2000/svg", "line");
-    capBottom.setAttribute("x1", String(centerX - 6));
-    capBottom.setAttribute("x2", String(centerX + 6));
-    capBottom.setAttribute("y1", String(errBottom));
-    capBottom.setAttribute("y2", String(errBottom));
-    styleErrorBarSegment(capBottom);
-    capBottom.setAttribute("stroke-width", "2");
-    contentGroup.appendChild(capBottom);
-
-    const xLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    xLabel.setAttribute("x", String(centerX));
-    xLabel.setAttribute("y", String(height - margin.bottom + 16));
-    xLabel.setAttribute("transform", `rotate(-28 ${centerX} ${height - margin.bottom + 16})`);
-    xLabel.setAttribute("text-anchor", "end");
-    xLabel.setAttribute("fill", "currentColor");
-    xLabel.setAttribute("font-size", "11");
-    xLabel.textContent = point.displayLabel;
-    contentGroup.appendChild(xLabel);
-  }
-
-  scheduleAdaptiveSvgFit(svg, contentGroup, width, height);
-  return svg;
-}
-
-function createGroupedBarPlotSvg(points, legendModel = null) {
-  const categoryOrder = [];
-  const categorySet = new Set();
-  const categoryDisplayMap = new Map();
-  const valueMap = new Map();
-
-  for (const point of points) {
-    if (!categorySet.has(point.category)) {
-      categorySet.add(point.category);
-      categoryOrder.push(point.category);
-    }
-    if (!categoryDisplayMap.has(point.category)) {
-      categoryDisplayMap.set(point.category, point.displayCategory);
-    }
-    valueMap.set(`${point.category}|#|${point.series}`, point);
-  }
-
-  const localSeriesOrder = [];
-  const localSeriesSet = new Set();
-  for (const point of points) {
-    if (!localSeriesSet.has(point.series)) {
-      localSeriesSet.add(point.series);
-      localSeriesOrder.push(point.series);
-    }
-  }
-
-  const seriesOrder = legendModel?.seriesOrder?.length ? legendModel.seriesOrder : localSeriesOrder;
-
-  const seriesCount = Math.max(1, seriesOrder.length);
-  const width = Math.max(760, categoryOrder.length * (120 + seriesCount * 26));
-  const height = 340;
-  const margin = { top: 18, right: 20, bottom: 95, left: 60 };
-  const chartWidth = width - margin.left - margin.right;
-  const chartHeight = height - margin.top - margin.bottom;
-  const yMax = Math.max(
-    0.05,
-    ...points.map((point) => point.mean + point.std)
-  );
-  const categoryStep = chartWidth / Math.max(categoryOrder.length, 1);
-  const categoryWidth = categoryStep * 0.82;
-  const barGap = 4;
-  const barWidth = Math.max(
-    10,
-    Math.min(26, (categoryWidth - barGap * Math.max(0, seriesCount - 1)) / seriesCount)
-  );
-  const groupPixelWidth = barWidth * seriesCount + barGap * Math.max(0, seriesCount - 1);
-
-  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  svg.setAttribute("width", String(width));
-  svg.setAttribute("height", String(height));
-  svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
-  const contentGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
-  svg.appendChild(contentGroup);
-
-  const yTicks = 5;
-  for (let tick = 0; tick <= yTicks; tick += 1) {
-    const value = (yMax * tick) / yTicks;
-    const y = margin.top + chartHeight - (value / yMax) * chartHeight;
-    const grid = document.createElementNS("http://www.w3.org/2000/svg", "line");
-    grid.setAttribute("x1", String(margin.left));
-    grid.setAttribute("x2", String(width - margin.right));
-    grid.setAttribute("y1", String(y));
-    grid.setAttribute("y2", String(y));
-    grid.setAttribute("stroke", "#64748b66");
-    grid.setAttribute("stroke-width", "1");
-    contentGroup.appendChild(grid);
-
-    const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    label.setAttribute("x", String(margin.left - 8));
-    label.setAttribute("y", String(y + 4));
-    label.setAttribute("text-anchor", "end");
-    label.setAttribute("fill", "currentColor");
-    label.setAttribute("font-size", "11");
-    label.textContent = value.toFixed(2);
-    contentGroup.appendChild(label);
-  }
-
-  for (const [categoryIndex, category] of categoryOrder.entries()) {
-    const centerX = margin.left + categoryStep * categoryIndex + categoryStep / 2;
-    const groupStartX = centerX - groupPixelWidth / 2;
-
-    for (const [seriesIndex, series] of seriesOrder.entries()) {
-      const point = valueMap.get(`${category}|#|${series}`);
-      if (!point) {
-        continue;
-      }
-      const barHeight = (point.mean / yMax) * chartHeight;
-      const barY = margin.top + chartHeight - barHeight;
-      const barX = groupStartX + seriesIndex * (barWidth + barGap);
-      const color = legendModel?.colorBySeries?.get(series) || getBarColor(seriesIndex);
-
-      const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-      rect.setAttribute("x", String(barX));
-      rect.setAttribute("y", String(barY));
-      rect.setAttribute("width", String(barWidth));
-      rect.setAttribute("height", String(Math.max(0, barHeight)));
-      rect.setAttribute("fill", color);
-      rect.style.cursor = "crosshair";
-      rect.addEventListener("mouseover", (event) => {
-        const tooltipLines = [category];
-        if (seriesOrder.length > 1) {
-          tooltipLines.push(`series: ${point.displaySeries || legendModel?.displayBySeries?.get(series) || series}`);
-        }
-        tooltipLines.push(
-          `mean: ${Number(point.mean).toFixed(4)}`,
-          `std:  ${Number(point.std).toFixed(4)}`
-        );
-        showBarTooltip(event, tooltipLines);
-      });
-      rect.addEventListener("mousemove", positionBarTooltip);
-      rect.addEventListener("mouseout", hideBarTooltip);
-      contentGroup.appendChild(rect);
-
-      const errTop = margin.top + chartHeight - ((point.mean + point.std) / yMax) * chartHeight;
-      const errBottom = margin.top + chartHeight - ((point.mean - point.std) / yMax) * chartHeight;
-      const centerBarX = barX + barWidth / 2;
-
-      const errorLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
-      errorLine.setAttribute("x1", String(centerBarX));
-      errorLine.setAttribute("x2", String(centerBarX));
-      errorLine.setAttribute("y1", String(errTop));
-      errorLine.setAttribute("y2", String(errBottom));
-      styleErrorBarSegment(errorLine);
-      errorLine.setAttribute("stroke-width", "2");
-      contentGroup.appendChild(errorLine);
-
-      const capTop = document.createElementNS("http://www.w3.org/2000/svg", "line");
-      capTop.setAttribute("x1", String(centerBarX - 5));
-      capTop.setAttribute("x2", String(centerBarX + 5));
-      capTop.setAttribute("y1", String(errTop));
-      capTop.setAttribute("y2", String(errTop));
-      styleErrorBarSegment(capTop);
-      capTop.setAttribute("stroke-width", "2");
-      contentGroup.appendChild(capTop);
-
-      const capBottom = document.createElementNS("http://www.w3.org/2000/svg", "line");
-      capBottom.setAttribute("x1", String(centerBarX - 5));
-      capBottom.setAttribute("x2", String(centerBarX + 5));
-      capBottom.setAttribute("y1", String(errBottom));
-      capBottom.setAttribute("y2", String(errBottom));
-      styleErrorBarSegment(capBottom);
-      capBottom.setAttribute("stroke-width", "2");
-      contentGroup.appendChild(capBottom);
-    }
-
-    const xLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    xLabel.setAttribute("x", String(centerX));
-    xLabel.setAttribute("y", String(height - margin.bottom + 16));
-    xLabel.setAttribute("transform", `rotate(-28 ${centerX} ${height - margin.bottom + 16})`);
-    xLabel.setAttribute("text-anchor", "end");
-    xLabel.setAttribute("fill", "currentColor");
-    xLabel.setAttribute("font-size", "11");
-    xLabel.textContent = categoryDisplayMap.get(category) || category;
-    contentGroup.appendChild(xLabel);
-  }
-
-  scheduleAdaptiveSvgFit(svg, contentGroup, width, height);
-  return svg;
-}
-
 function getMetricTypeForEvaluationContext(
   activeExperiment,
   evaluationContext = getEvaluationContext(activeExperiment)
@@ -1702,292 +1237,42 @@ function getMetricTypeForEvaluationContext(
   return selectors.getMetricTypeForEvaluationContext(state, activeExperiment, evaluationContext);
 }
 
-// Render an already-aggregated confusion matrix as an SVG heatmap with values and tooltips.
-function createConfusionMatrixHeatmapSvg(aggregation, precision) {
-  const { rows, cols, cells } = aggregation;
-  const cellSize = 96;
-  const margin = { top: 130, right: 20, bottom: 20, left: 280 };
-  const width = margin.left + cols.length * cellSize + margin.right;
-  const height = margin.top + rows.length * cellSize + margin.bottom;
-  const maxMean = Math.max(0, ...Array.from(cells.values()).map((cell) => cell.mean));
-
-  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  svg.setAttribute("width", String(width));
-  svg.setAttribute("height", String(height));
-  svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
-
-  const xAxisTitle = document.createElementNS("http://www.w3.org/2000/svg", "text");
-  xAxisTitle.setAttribute("x", String(margin.left + (cols.length * cellSize) / 2));
-  xAxisTitle.setAttribute("y", "20");
-  xAxisTitle.setAttribute("text-anchor", "middle");
-  xAxisTitle.setAttribute("fill", "currentColor");
-  xAxisTitle.setAttribute("font-size", "13");
-  xAxisTitle.textContent = "Predicted label";
-  svg.appendChild(xAxisTitle);
-
-  const yAxisTitle = document.createElementNS("http://www.w3.org/2000/svg", "text");
-  yAxisTitle.setAttribute("x", "20");
-  yAxisTitle.setAttribute("y", String(margin.top + (rows.length * cellSize) / 2));
-  yAxisTitle.setAttribute("transform", `rotate(-90 20 ${margin.top + (rows.length * cellSize) / 2})`);
-  yAxisTitle.setAttribute("text-anchor", "middle");
-  yAxisTitle.setAttribute("fill", "currentColor");
-  yAxisTitle.setAttribute("font-size", "13");
-  yAxisTitle.textContent = "Actual label";
-  svg.appendChild(yAxisTitle);
-
-  rows.forEach((row, rowIndex) => {
-    const y = margin.top + rowIndex * cellSize + cellSize / 2;
-    const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    label.setAttribute("x", String(margin.left - 10));
-    label.setAttribute("y", String(y + 4));
-    label.setAttribute("text-anchor", "end");
-    label.setAttribute("fill", "currentColor");
-    label.setAttribute("font-size", "11");
-    label.textContent = getPlotDisplayLabel(row);
-    svg.appendChild(label);
-  });
-
-  rows.forEach((row, rowIndex) => {
-    cols.forEach((col, colIndex) => {
-      const key = `${row}|#|${col}`;
-      const stats = cells.get(key) || { mean: 0, std: 0 };
-      const x = margin.left + colIndex * cellSize;
-      const y = margin.top + rowIndex * cellSize;
-      const t = maxMean > 0 ? stats.mean / maxMean : 0;
-      const fill = interpolateColor([247, 251, 255], [8, 48, 107], t);
-
-      const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-      rect.setAttribute("x", String(x));
-      rect.setAttribute("y", String(y));
-      rect.setAttribute("width", String(cellSize));
-      rect.setAttribute("height", String(cellSize));
-      rect.setAttribute("fill", fill);
-      rect.setAttribute("stroke", "#33415555");
-      rect.setAttribute("stroke-width", "1");
-      rect.style.cursor = "crosshair";
-      rect.addEventListener("mouseover", (event) => {
-        showBarTooltip(event, [
-          `actual:    ${row}`,
-          `predicted: ${col}`,
-          `mean: ${formatRounded(stats.mean, precision)}`,
-          `std:  ${formatRounded(stats.std, precision)}`,
-        ]);
-      });
-      rect.addEventListener("mousemove", positionBarTooltip);
-      rect.addEventListener("mouseout", hideBarTooltip);
-      svg.appendChild(rect);
-
-      const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-      text.setAttribute("x", String(x + cellSize / 2));
-      text.setAttribute("y", String(y + cellSize / 2 + 4));
-      text.setAttribute("text-anchor", "middle");
-      text.setAttribute("fill", t > 0.55 ? "#f8fafc" : "#0f172a");
-      text.setAttribute("font-size", "11");
-      text.textContent = `${formatRounded(stats.mean, precision)}±${formatRounded(stats.std, precision)}`;
-      svg.appendChild(text);
-    });
-  });
-
-  // Draw predicted-label ticks last so they stay visible above heatmap cells.
-  cols.forEach((col, colIndex) => {
-    const x = margin.left + colIndex * cellSize + cellSize / 2;
-    const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    const y = margin.top - 10;
-    label.setAttribute("x", String(x + 2));
-    label.setAttribute("y", String(y));
-    label.setAttribute("transform", `rotate(-35 ${x + 2} ${y})`);
-    // Anchor from the tick position so the label text grows away from the matrix.
-    label.setAttribute("text-anchor", "start");
-    label.setAttribute("fill", "currentColor");
-    label.setAttribute("font-size", "11");
-    label.textContent = getPlotDisplayLabel(col);
-    svg.appendChild(label);
-  });
-
-  return svg;
-}
-
-function createTpFpFnLegendElement() {
-  return createPlotLegendElement([
-    { label: "TP", color: getTpFpFnOutcomeColor("tp") },
-    { label: "FP", color: getTpFpFnOutcomeColor("fp") },
-    { label: "FN", color: getTpFpFnOutcomeColor("fn") },
-  ]);
-}
-
-function createTpFpFnCombinedMatrixSvg(aggregation, precision) {
-  const { rows, cols, cells, totalEvaluations, evaluationLabels } = aggregation;
-  const miniCellWidth = 18;
-  const miniCellHeight = 18;
-  const miniGap = 2;
-  const cellPadding = 4;
-  const outcomeCols = TP_FP_FN_KEYS.length;
-  const cellWidth = Math.max(
-    52,
-    outcomeCols * miniCellWidth + Math.max(0, outcomeCols - 1) * miniGap + cellPadding * 2
-  );
-  const cellHeight = Math.max(28, miniCellHeight + cellPadding * 2);
-  const margin = { top: 140, right: 20, bottom: 20, left: 120 };
-  const width = margin.left + cols.length * cellWidth + margin.right;
-  const height = margin.top + rows.length * cellHeight + margin.bottom;
-
-  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  svg.setAttribute("width", String(width));
-  svg.setAttribute("height", String(height));
-  svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
-  const contentGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
-  svg.appendChild(contentGroup);
-
-  const xAxisTitle = document.createElementNS("http://www.w3.org/2000/svg", "text");
-  xAxisTitle.setAttribute("x", String(margin.left + (cols.length * cellWidth) / 2));
-  xAxisTitle.setAttribute("y", "20");
-  xAxisTitle.setAttribute("text-anchor", "middle");
-  xAxisTitle.setAttribute("fill", "currentColor");
-  xAxisTitle.setAttribute("font-size", "13");
-  xAxisTitle.textContent = "Label";
-  contentGroup.appendChild(xAxisTitle);
-
-  const yAxisTitle = document.createElementNS("http://www.w3.org/2000/svg", "text");
-  yAxisTitle.setAttribute("x", "18");
-  yAxisTitle.setAttribute("y", String(margin.top + (rows.length * cellHeight) / 2));
-  yAxisTitle.setAttribute("transform", `rotate(-90 18 ${margin.top + (rows.length * cellHeight) / 2})`);
-  yAxisTitle.setAttribute("text-anchor", "middle");
-  yAxisTitle.setAttribute("fill", "currentColor");
-  yAxisTitle.setAttribute("font-size", "13");
-  yAxisTitle.textContent = "Document id";
-  contentGroup.appendChild(yAxisTitle);
-
-  rows.forEach((row, rowIndex) => {
-    const y = margin.top + rowIndex * cellHeight + cellHeight / 2;
-    const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    label.setAttribute("x", String(margin.left - 10));
-    label.setAttribute("y", String(y + 4));
-    label.setAttribute("text-anchor", "end");
-    label.setAttribute("fill", "currentColor");
-    label.setAttribute("font-size", "11");
-    label.textContent = row;
-    contentGroup.appendChild(label);
-  });
-
-  cols.forEach((col, colIndex) => {
-    const labelStartX = margin.left + colIndex * cellWidth;
-    const x = labelStartX + cellWidth / 2;
-    const y = margin.top - 12;
-    const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    label.setAttribute("x", String(x + 2));
-    label.setAttribute("y", String(y));
-    label.setAttribute("transform", `rotate(-35 ${x + 2} ${y})`);
-    label.setAttribute("text-anchor", "start");
-    label.setAttribute("fill", "currentColor");
-    label.setAttribute("font-size", "11");
-    label.textContent = getPlotDisplayLabel(col);
-    contentGroup.appendChild(label);
-  });
-
-  rows.forEach((row, rowIndex) => {
-    cols.forEach((col, colIndex) => {
-      const key = `${row}|#|${col}`;
-      const stats = cells.get(key) || {
-        rowStates: Array.from({ length: totalEvaluations }, () => ({ tp: false, fp: false, fn: false })),
-        counts: { tp: 0, fp: 0, fn: 0, empty: totalEvaluations },
-        presentCount: 0,
-      };
-      const x = margin.left + colIndex * cellWidth;
-      const y = margin.top + rowIndex * cellHeight;
-
-      const cellBorder = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-      cellBorder.setAttribute("x", String(x));
-      cellBorder.setAttribute("y", String(y));
-      cellBorder.setAttribute("width", String(cellWidth));
-      cellBorder.setAttribute("height", String(cellHeight));
-      cellBorder.setAttribute("fill", "#ffffff");
-      cellBorder.setAttribute("stroke", "#33415555");
-      cellBorder.setAttribute("stroke-width", "1");
-      contentGroup.appendChild(cellBorder);
-
-      TP_FP_FN_KEYS.forEach((outcomeKey, outcomeIndex) => {
-        const subX = x + cellPadding + outcomeIndex * (miniCellWidth + miniGap);
-        const subY = y + cellPadding;
-        const share = totalEvaluations ? stats.counts[outcomeKey] / totalEvaluations : 0;
-        const palette = getTpFpFnPalette(outcomeKey);
-        const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-        rect.setAttribute("x", String(subX));
-        rect.setAttribute("y", String(subY));
-        rect.setAttribute("width", String(miniCellWidth));
-        rect.setAttribute("height", String(miniCellHeight));
-        rect.setAttribute("rx", "2");
-        rect.setAttribute("fill", interpolateColor(palette.start, palette.end, share));
-        rect.setAttribute("stroke", "#ffffffcc");
-        rect.setAttribute("stroke-width", "1");
-        contentGroup.appendChild(rect);
-      });
-
-      const overlay = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-      overlay.setAttribute("x", String(x));
-      overlay.setAttribute("y", String(y));
-      overlay.setAttribute("width", String(cellWidth));
-      overlay.setAttribute("height", String(cellHeight));
-      overlay.setAttribute("fill", "transparent");
-      overlay.style.cursor = "pointer";
-      overlay.addEventListener("mouseover", (event) => {
-        const summary = buildTpFpFnCellSummary(
-          row,
-          col,
-          stats,
-          totalEvaluations,
-          evaluationLabels,
-          precision
-        );
-        showBarTooltip(event, summary.lines);
-      });
-      overlay.addEventListener("mousemove", positionBarTooltip);
-      overlay.addEventListener("mouseout", hideBarTooltip);
-      overlay.addEventListener("click", async (event) => {
-        const summary = buildTpFpFnCellSummary(
-          row,
-          col,
-          stats,
-          totalEvaluations,
-          evaluationLabels,
-          precision
-        );
-        try {
-          await writeTextToClipboard(JSON.stringify(summary.payload, null, 2));
-          showBarTooltip(event, [...summary.lines, "", "Copied JSON to clipboard."]);
-        } catch (error) {
-          console.warn("Failed to copy TpFpFn cell summary to clipboard.", error);
-          showBarTooltip(event, [...summary.lines, "", "Copy to clipboard failed."]);
-        }
-      });
-      contentGroup.appendChild(overlay);
-    });
-  });
-
-  scheduleAdaptiveSvgFit(svg, contentGroup, width, height);
-  return svg;
-}
-
 function renderPlotTabsAndGrid(tabMap, activeExperiment, groupBarFields, metricType) {
-  const tabPriority = ["total", "details"];
-  const sortedTabKeys = Array.from(tabMap.keys()).sort((a, b) => {
-    const pa = tabPriority.indexOf(a);
-    const pb = tabPriority.indexOf(b);
-    if (pa !== -1 && pb !== -1) return pa - pb;
-    if (pa !== -1) return -1;
-    if (pb !== -1) return 1;
-    return a.localeCompare(b);
-  });
-  state.activeEvalPlotTab = resolveActiveTabValue(state.activeEvalPlotTab, sortedTabKeys);
-  renderTabButtons({
+  const result = renderSharedPlotTabsAndGrid({
     documentLike: document,
-    containerElement: evalPlotTabs,
-    tabModels: buildCountTabButtonModels(sortedTabKeys, {
-      activeValue: state.activeEvalPlotTab,
-      getLabelText: (key) => key,
-      getCount: (key) => tabMap.get(key).length,
-      getTitle: (key) => key,
+    tabMap,
+    activeExperiment,
+    groupBarFields,
+    metricType,
+    activeEvalPlotTab: state.activeEvalPlotTab,
+    plotShowLegendOnce: state.plotShowLegendOnce,
+    plotShowLegendOnceRow,
+    evalPlotTabs,
+    evalPlotContent,
+    buildCountTabButtonModels,
+    renderTabButtons,
+    resolveActiveTabValue,
+    getPlotTitleLabel,
+    displayPlotGroupFieldName,
+    createLegendElement: createSharedPlotLegendElement,
+    createBarSvg: (points) => createBarPlotSvg({
+      documentLike: document,
+      requestAnimationFrameLike: requestAnimationFrame,
+      points,
+      showTooltip: plotTooltipHandlers.show,
+      moveTooltip: plotTooltipHandlers.move,
+      hideTooltip: plotTooltipHandlers.hide,
     }),
-    onSelect: (key) => {
+    createGroupedBarSvg: (points, legendModel) => createGroupedBarPlotSvg({
+      documentLike: document,
+      requestAnimationFrameLike: requestAnimationFrame,
+      points,
+      legendModel,
+      showTooltip: plotTooltipHandlers.show,
+      moveTooltip: plotTooltipHandlers.move,
+      hideTooltip: plotTooltipHandlers.hide,
+    }),
+    onActiveTabChange: (key) => {
       if (state.activeEvalPlotTab === key) {
         return;
       }
@@ -1995,49 +1280,8 @@ function renderPlotTabsAndGrid(tabMap, activeExperiment, groupBarFields, metricT
       renderEvaluationPlots(activeExperiment);
     },
   });
-  const activeEntries = tabMap.get(state.activeEvalPlotTab) || [];
-  const groupedLegendModel = groupBarFields.length
-    ? buildGroupedLegendModel(activeEntries)
-    : null;
-  const hasSharedLegend = Boolean(groupedLegendModel && groupedLegendModel.items.length > 1);
-  state.activePlotLegendItems = hasSharedLegend ? groupedLegendModel.items : [];
-  plotShowLegendOnceRow.style.display = hasSharedLegend ? "" : "none";
-
-  if (hasSharedLegend && state.plotShowLegendOnce) {
-    evalPlotContent.appendChild(createPlotLegendElement(groupedLegendModel.items));
-  }
-
-  const grid = document.createElement("div");
-  grid.className = "plot-grid";
-  for (const entry of activeEntries) {
-    const card = document.createElement("section");
-    card.className = "plot-card";
-    const title = document.createElement("p");
-    title.className = "plot-title";
-    const groupedByText = groupBarFields.length
-      ? ` | grouped by: ${groupBarFields.map((f) => displayPlotGroupFieldName(f)).join(", ")}`
-      : "";
-    title.textContent = `${getPlotTitleLabel(entry, metricType)} (mean ± std)${groupedByText}`;
-    card.appendChild(title);
-    if (groupBarFields.length) {
-      const plotLegendItems = getLegendItemsForPoints(entry.points, groupedLegendModel);
-      if (plotLegendItems.length > 1 && !state.plotShowLegendOnce) {
-        card.appendChild(createPlotLegendElement(plotLegendItems));
-      }
-      card.appendChild(createGroupedBarPlotSvg(entry.points, groupedLegendModel));
-    } else {
-      card.appendChild(createBarPlotSvg(entry.points));
-    }
-    grid.appendChild(card);
-  }
-  if (!grid.childElementCount) {
-    const msg = document.createElement("p");
-    msg.className = "plot-empty";
-    msg.textContent = "No plottable metric values found for the active tab.";
-    evalPlotContent.appendChild(msg);
-    return;
-  }
-  evalPlotContent.appendChild(grid);
+  state.activeEvalPlotTab = result.activeEvalPlotTab;
+  state.activePlotLegendItems = result.activePlotLegendItems;
 }
 
 // Plot rendering always starts from the currently selected prediction groups and selected eval groups,
@@ -2246,7 +1490,15 @@ function renderEvaluationPlots(
       }
       card.appendChild(title);
       card.appendChild(
-        createConfusionMatrixHeatmapSvg(aggregation, state.plotRoundingPrecision)
+        createConfusionMatrixHeatmapSvg({
+          documentLike: document,
+          aggregation,
+          precision: state.plotRoundingPrecision,
+          getDisplayLabel: getPlotDisplayLabel,
+          showTooltip: plotTooltipHandlers.show,
+          moveTooltip: plotTooltipHandlers.move,
+          hideTooltip: plotTooltipHandlers.hide,
+        })
       );
       grid.appendChild(card);
     }
@@ -2348,7 +1600,22 @@ function renderEvaluationPlots(
         title.textContent = `${fieldTitle} (${aggregation.totalEvaluations} grouped evals)`;
       }
       card.appendChild(title);
-      card.appendChild(createTpFpFnCombinedMatrixSvg(aggregation, state.plotRoundingPrecision));
+      card.appendChild(createTpFpFnCombinedMatrixSvg({
+        documentLike: document,
+        requestAnimationFrameLike: requestAnimationFrame,
+        aggregation,
+        precision: state.plotRoundingPrecision,
+        getDisplayLabel: getPlotDisplayLabel,
+        showTooltip: plotTooltipHandlers.show,
+        moveTooltip: plotTooltipHandlers.move,
+        hideTooltip: plotTooltipHandlers.hide,
+        writeTextToClipboard: (text) => writeSharedTextToClipboard({
+          documentLike: document,
+          navigatorLike: navigator,
+          text,
+        }),
+        consoleLike: console,
+      }));
       grid.appendChild(card);
     }
 
@@ -2360,7 +1627,7 @@ function renderEvaluationPlots(
       return;
     }
 
-    evalPlotContent.appendChild(createTpFpFnLegendElement());
+    evalPlotContent.appendChild(createTpFpFnLegendElement({ documentLike: document }));
     evalPlotContent.appendChild(grid);
     return;
   }

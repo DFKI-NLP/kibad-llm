@@ -59,6 +59,194 @@ export function resolveOpaqueExportBackgroundColor(elements, getStyle = globalTh
   return "#ffffff";
 }
 
+export function positionTooltip({ tooltipElement, windowLike = globalThis.window, event, pad = 14 }) {
+  let x = event.clientX + pad;
+  let y = event.clientY - pad - tooltipElement.offsetHeight;
+  if (x + tooltipElement.offsetWidth > windowLike.innerWidth - pad) {
+    x = event.clientX - tooltipElement.offsetWidth - pad;
+  }
+  if (y < pad) {
+    y = event.clientY + pad;
+  }
+  tooltipElement.style.left = `${x}px`;
+  tooltipElement.style.top = `${y}px`;
+}
+
+export function showTooltip({
+  tooltipElement,
+  windowLike = globalThis.window,
+  event,
+  lines,
+}) {
+  tooltipElement.textContent = lines.join("\n");
+  tooltipElement.style.display = "block";
+  positionTooltip({ tooltipElement, windowLike, event });
+}
+
+export function hideTooltip({ tooltipElement }) {
+  tooltipElement.style.display = "none";
+}
+
+export async function writeTextToClipboard({
+  documentLike = globalThis.document,
+  navigatorLike = globalThis.navigator,
+  text,
+}) {
+  if (navigatorLike.clipboard?.writeText) {
+    await navigatorLike.clipboard.writeText(text);
+    return;
+  }
+
+  const textarea = documentLike.createElement("textarea");
+  textarea.value = text;
+  textarea.setAttribute("readonly", "readonly");
+  textarea.style.position = "fixed";
+  textarea.style.top = "-9999px";
+  textarea.style.left = "-9999px";
+  documentLike.body.appendChild(textarea);
+  textarea.focus();
+  textarea.select();
+  const copied = documentLike.execCommand("copy");
+  documentLike.body.removeChild(textarea);
+  if (!copied) {
+    throw new Error("Clipboard copy command was not successful.");
+  }
+}
+
+export function getActivePlotTabZipFilename({
+  activeEvalTab,
+  evalPlotTabs,
+}) {
+  const activeButton = evalPlotTabs.querySelector(".tab-button.active");
+  const plotTabLabel = activeButton?.getAttribute("title") || activeButton?.textContent || "figures";
+  return buildPlotTabZipFilename({
+    activeEvalTab,
+    activePlotTabLabel: plotTabLabel,
+  });
+}
+
+export function measureCanvasText({ documentLike = globalThis.document, text, font }) {
+  const canvas = documentLike.createElement("canvas");
+  const context = canvas.getContext("2d");
+  if (!context) {
+    return text.length * 7.5;
+  }
+  context.font = font;
+  return context.measureText(text).width;
+}
+
+export function triggerBlobDownload({
+  documentLike = globalThis.document,
+  urlLike = globalThis.URL,
+  setTimeoutLike = globalThis.setTimeout,
+  filename,
+  blob,
+}) {
+  const url = urlLike.createObjectURL(blob);
+  const link = documentLike.createElement("a");
+  link.href = url;
+  link.download = filename;
+  link.rel = "noopener";
+  documentLike.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeoutLike(() => urlLike.revokeObjectURL(url), 1000);
+}
+
+export async function saveBlob({
+  windowLike = globalThis.window,
+  blob,
+  suggestedName,
+  types,
+  triggerDownload,
+  consoleLike = globalThis.console,
+}) {
+  if (typeof windowLike.showSaveFilePicker === "function") {
+    try {
+      const handle = await windowLike.showSaveFilePicker({ suggestedName, types });
+      const writable = await handle.createWritable();
+      await writable.write(blob);
+      await writable.close();
+      return true;
+    } catch (error) {
+      if (error && error.name === "AbortError") {
+        return false;
+      }
+      consoleLike?.warn?.("Save picker failed, falling back to browser download.", error);
+    }
+  }
+
+  triggerDownload(blob, suggestedName);
+  return true;
+}
+
+export function getVisiblePlotFigureCards(evalPlotContent) {
+  return Array.from(evalPlotContent.querySelectorAll(".plot-card")).filter((card) => card.querySelector("svg"));
+}
+
+export function buildVisibleFigureFiles({
+  figureCards,
+  activePlotLegendItems,
+  exportOptions,
+  serializeLegend,
+  serializeSvg,
+}) {
+  const includeLegend = activePlotLegendItems.length > 1;
+  const usedNames = new Set(includeLegend ? ["legend"] : []);
+  const files = [];
+  if (includeLegend) {
+    files.push({
+      filename: "legend.svg",
+      content: serializeLegend(activePlotLegendItems, exportOptions),
+    });
+  }
+
+  figureCards.forEach((card, index) => {
+    const svg = card.querySelector("svg");
+    if (!svg) {
+      return;
+    }
+    const title = card.querySelector(".plot-title")?.textContent?.trim() || `figure ${index + 1}`;
+    files.push({
+      filename: getUniqueFigureFilename(title, usedNames),
+      content: serializeSvg(svg, exportOptions),
+    });
+  });
+
+  return files;
+}
+
+export async function downloadVisibleFigures({
+  figureCards,
+  activePlotLegendItems,
+  exportOptions,
+  serializeLegend,
+  serializeSvg,
+  createZip,
+  saveZip,
+  getZipFilename,
+}) {
+  if (!figureCards.length) {
+    return false;
+  }
+
+  const files = buildVisibleFigureFiles({
+    figureCards,
+    activePlotLegendItems,
+    exportOptions,
+    serializeLegend,
+    serializeSvg,
+  });
+  if (!files.length) {
+    return false;
+  }
+
+  const zipBlob = createZip(files.map((file) => ({ name: file.filename, content: file.content })));
+  return saveZip(zipBlob, getZipFilename(), [
+    { description: "ZIP archive", accept: { "application/zip": [".zip"] } },
+  ]);
+}
+
 export function prependExportBackgroundRect({
   documentLike = globalThis.document,
   svg,

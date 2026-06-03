@@ -2,7 +2,7 @@
  * Confusion-matrix plot aggregation and tab-map helpers.
  */
 
-import { meanAndStd, normalizeValue } from "../utils/values.js";
+import { formatRounded, interpolateColor, meanAndStd, normalizeValue } from "../utils/values.js";
 import {
   getGroupLabelForFields,
   getPlotDisplayLabel,
@@ -299,4 +299,114 @@ export function buildConfusionTabMap({
   }
 
   return tabMap;
+}
+
+export function createConfusionMatrixHeatmapSvg({
+  documentLike = globalThis.document,
+  aggregation,
+  precision,
+  getDisplayLabel = (label) => label,
+  showTooltip,
+  moveTooltip,
+  hideTooltip,
+}) {
+  const { rows, cols, cells } = aggregation;
+  const cellSize = 96;
+  const margin = { top: 130, right: 20, bottom: 20, left: 280 };
+  const width = margin.left + cols.length * cellSize + margin.right;
+  const height = margin.top + rows.length * cellSize + margin.bottom;
+  const maxMean = Math.max(0, ...Array.from(cells.values()).map((cell) => cell.mean));
+
+  const svg = documentLike.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("width", String(width));
+  svg.setAttribute("height", String(height));
+  svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+
+  const xAxisTitle = documentLike.createElementNS("http://www.w3.org/2000/svg", "text");
+  xAxisTitle.setAttribute("x", String(margin.left + (cols.length * cellSize) / 2));
+  xAxisTitle.setAttribute("y", "20");
+  xAxisTitle.setAttribute("text-anchor", "middle");
+  xAxisTitle.setAttribute("fill", "currentColor");
+  xAxisTitle.setAttribute("font-size", "13");
+  xAxisTitle.textContent = "Predicted label";
+  svg.appendChild(xAxisTitle);
+
+  const yAxisTitle = documentLike.createElementNS("http://www.w3.org/2000/svg", "text");
+  yAxisTitle.setAttribute("x", "20");
+  yAxisTitle.setAttribute("y", String(margin.top + (rows.length * cellSize) / 2));
+  yAxisTitle.setAttribute("transform", `rotate(-90 20 ${margin.top + (rows.length * cellSize) / 2})`);
+  yAxisTitle.setAttribute("text-anchor", "middle");
+  yAxisTitle.setAttribute("fill", "currentColor");
+  yAxisTitle.setAttribute("font-size", "13");
+  yAxisTitle.textContent = "Actual label";
+  svg.appendChild(yAxisTitle);
+
+  rows.forEach((row, rowIndex) => {
+    const y = margin.top + rowIndex * cellSize + cellSize / 2;
+    const label = documentLike.createElementNS("http://www.w3.org/2000/svg", "text");
+    label.setAttribute("x", String(margin.left - 10));
+    label.setAttribute("y", String(y + 4));
+    label.setAttribute("text-anchor", "end");
+    label.setAttribute("fill", "currentColor");
+    label.setAttribute("font-size", "11");
+    label.textContent = getDisplayLabel(row);
+    svg.appendChild(label);
+  });
+
+  rows.forEach((row, rowIndex) => {
+    cols.forEach((col, colIndex) => {
+      const key = `${row}|#|${col}`;
+      const stats = cells.get(key) || { mean: 0, std: 0 };
+      const x = margin.left + colIndex * cellSize;
+      const y = margin.top + rowIndex * cellSize;
+      const t = maxMean > 0 ? stats.mean / maxMean : 0;
+      const fill = interpolateColor([247, 251, 255], [8, 48, 107], t);
+
+      const rect = documentLike.createElementNS("http://www.w3.org/2000/svg", "rect");
+      rect.setAttribute("x", String(x));
+      rect.setAttribute("y", String(y));
+      rect.setAttribute("width", String(cellSize));
+      rect.setAttribute("height", String(cellSize));
+      rect.setAttribute("fill", fill);
+      rect.setAttribute("stroke", "#33415555");
+      rect.setAttribute("stroke-width", "1");
+      rect.style.cursor = "crosshair";
+      rect.addEventListener("mouseover", (event) => {
+        showTooltip(event, [
+          `actual:    ${row}`,
+          `predicted: ${col}`,
+          `mean: ${formatRounded(stats.mean, precision)}`,
+          `std:  ${formatRounded(stats.std, precision)}`,
+        ]);
+      });
+      rect.addEventListener("mousemove", moveTooltip);
+      rect.addEventListener("mouseout", hideTooltip);
+      svg.appendChild(rect);
+
+      const text = documentLike.createElementNS("http://www.w3.org/2000/svg", "text");
+      text.setAttribute("x", String(x + cellSize / 2));
+      text.setAttribute("y", String(y + cellSize / 2 + 4));
+      text.setAttribute("text-anchor", "middle");
+      text.setAttribute("fill", t > 0.55 ? "#f8fafc" : "#0f172a");
+      text.setAttribute("font-size", "11");
+      text.textContent = `${formatRounded(stats.mean, precision)}±${formatRounded(stats.std, precision)}`;
+      svg.appendChild(text);
+    });
+  });
+
+  cols.forEach((col, colIndex) => {
+    const x = margin.left + colIndex * cellSize + cellSize / 2;
+    const label = documentLike.createElementNS("http://www.w3.org/2000/svg", "text");
+    const y = margin.top - 10;
+    label.setAttribute("x", String(x + 2));
+    label.setAttribute("y", String(y));
+    label.setAttribute("transform", `rotate(-35 ${x + 2} ${y})`);
+    label.setAttribute("text-anchor", "start");
+    label.setAttribute("fill", "currentColor");
+    label.setAttribute("font-size", "11");
+    label.textContent = getDisplayLabel(col);
+    svg.appendChild(label);
+  });
+
+  return svg;
 }

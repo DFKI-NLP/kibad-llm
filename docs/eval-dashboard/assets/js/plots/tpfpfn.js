@@ -8,8 +8,10 @@ import {
   getGroupLabelForFields,
   getPlotDisplayLabel,
   plotSortCollator,
+  scheduleAdaptiveSvgFit,
 } from "./shared.js";
 import { expandMetricFieldCollectionEvaluation } from "./confusion.js";
+import { createPlotLegendElement } from "./legend.js";
 
 export function expandTpFpFnLikeEvaluation(evaluation) {
   return expandMetricFieldCollectionEvaluation(evaluation, {
@@ -379,4 +381,178 @@ export function buildTpFpFnCellSummary(row, col, stats, totalEvaluations, evalua
       evaluations,
     },
   };
+}
+
+export function createTpFpFnLegendElement({ documentLike = globalThis.document } = {}) {
+  return createPlotLegendElement({
+    documentLike,
+    legendItems: [
+      { label: "TP", color: getTpFpFnOutcomeColor("tp") },
+      { label: "FP", color: getTpFpFnOutcomeColor("fp") },
+      { label: "FN", color: getTpFpFnOutcomeColor("fn") },
+    ],
+  });
+}
+
+export function createTpFpFnCombinedMatrixSvg({
+  documentLike = globalThis.document,
+  requestAnimationFrameLike = globalThis.requestAnimationFrame,
+  aggregation,
+  precision,
+  getDisplayLabel = (label) => label,
+  showTooltip,
+  moveTooltip,
+  hideTooltip,
+  writeTextToClipboard,
+  consoleLike = globalThis.console,
+}) {
+  const { rows, cols, cells, totalEvaluations, evaluationLabels } = aggregation;
+  const miniCellWidth = 18;
+  const miniCellHeight = 18;
+  const miniGap = 2;
+  const cellPadding = 4;
+  const outcomeCols = TP_FP_FN_KEYS.length;
+  const cellWidth = Math.max(
+    52,
+    outcomeCols * miniCellWidth + Math.max(0, outcomeCols - 1) * miniGap + cellPadding * 2
+  );
+  const cellHeight = Math.max(28, miniCellHeight + cellPadding * 2);
+  const margin = { top: 140, right: 20, bottom: 20, left: 120 };
+  const width = margin.left + cols.length * cellWidth + margin.right;
+  const height = margin.top + rows.length * cellHeight + margin.bottom;
+
+  const svg = documentLike.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("width", String(width));
+  svg.setAttribute("height", String(height));
+  svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+  const contentGroup = documentLike.createElementNS("http://www.w3.org/2000/svg", "g");
+  svg.appendChild(contentGroup);
+
+  const xAxisTitle = documentLike.createElementNS("http://www.w3.org/2000/svg", "text");
+  xAxisTitle.setAttribute("x", String(margin.left + (cols.length * cellWidth) / 2));
+  xAxisTitle.setAttribute("y", "20");
+  xAxisTitle.setAttribute("text-anchor", "middle");
+  xAxisTitle.setAttribute("fill", "currentColor");
+  xAxisTitle.setAttribute("font-size", "13");
+  xAxisTitle.textContent = "Label";
+  contentGroup.appendChild(xAxisTitle);
+
+  const yAxisTitle = documentLike.createElementNS("http://www.w3.org/2000/svg", "text");
+  yAxisTitle.setAttribute("x", "18");
+  yAxisTitle.setAttribute("y", String(margin.top + (rows.length * cellHeight) / 2));
+  yAxisTitle.setAttribute("transform", `rotate(-90 18 ${margin.top + (rows.length * cellHeight) / 2})`);
+  yAxisTitle.setAttribute("text-anchor", "middle");
+  yAxisTitle.setAttribute("fill", "currentColor");
+  yAxisTitle.setAttribute("font-size", "13");
+  yAxisTitle.textContent = "Document id";
+  contentGroup.appendChild(yAxisTitle);
+
+  rows.forEach((row, rowIndex) => {
+    const y = margin.top + rowIndex * cellHeight + cellHeight / 2;
+    const label = documentLike.createElementNS("http://www.w3.org/2000/svg", "text");
+    label.setAttribute("x", String(margin.left - 10));
+    label.setAttribute("y", String(y + 4));
+    label.setAttribute("text-anchor", "end");
+    label.setAttribute("fill", "currentColor");
+    label.setAttribute("font-size", "11");
+    label.textContent = row;
+    contentGroup.appendChild(label);
+  });
+
+  cols.forEach((col, colIndex) => {
+    const labelStartX = margin.left + colIndex * cellWidth;
+    const x = labelStartX + cellWidth / 2;
+    const y = margin.top - 12;
+    const label = documentLike.createElementNS("http://www.w3.org/2000/svg", "text");
+    label.setAttribute("x", String(x + 2));
+    label.setAttribute("y", String(y));
+    label.setAttribute("transform", `rotate(-35 ${x + 2} ${y})`);
+    label.setAttribute("text-anchor", "start");
+    label.setAttribute("fill", "currentColor");
+    label.setAttribute("font-size", "11");
+    label.textContent = getDisplayLabel(col);
+    contentGroup.appendChild(label);
+  });
+
+  rows.forEach((row, rowIndex) => {
+    cols.forEach((col, colIndex) => {
+      const key = `${row}|#|${col}`;
+      const stats = cells.get(key) || {
+        rowStates: Array.from({ length: totalEvaluations }, () => ({ tp: false, fp: false, fn: false })),
+        counts: { tp: 0, fp: 0, fn: 0, empty: totalEvaluations },
+        presentCount: 0,
+      };
+      const x = margin.left + colIndex * cellWidth;
+      const y = margin.top + rowIndex * cellHeight;
+
+      const cellBorder = documentLike.createElementNS("http://www.w3.org/2000/svg", "rect");
+      cellBorder.setAttribute("x", String(x));
+      cellBorder.setAttribute("y", String(y));
+      cellBorder.setAttribute("width", String(cellWidth));
+      cellBorder.setAttribute("height", String(cellHeight));
+      cellBorder.setAttribute("fill", "#ffffff");
+      cellBorder.setAttribute("stroke", "#33415555");
+      cellBorder.setAttribute("stroke-width", "1");
+      contentGroup.appendChild(cellBorder);
+
+      TP_FP_FN_KEYS.forEach((outcomeKey, outcomeIndex) => {
+        const subX = x + cellPadding + outcomeIndex * (miniCellWidth + miniGap);
+        const subY = y + cellPadding;
+        const share = totalEvaluations ? stats.counts[outcomeKey] / totalEvaluations : 0;
+        const palette = getTpFpFnPalette(outcomeKey);
+        const rect = documentLike.createElementNS("http://www.w3.org/2000/svg", "rect");
+        rect.setAttribute("x", String(subX));
+        rect.setAttribute("y", String(subY));
+        rect.setAttribute("width", String(miniCellWidth));
+        rect.setAttribute("height", String(miniCellHeight));
+        rect.setAttribute("rx", "2");
+        rect.setAttribute("fill", interpolateColor(palette.start, palette.end, share));
+        rect.setAttribute("stroke", "#ffffffcc");
+        rect.setAttribute("stroke-width", "1");
+        contentGroup.appendChild(rect);
+      });
+
+      const overlay = documentLike.createElementNS("http://www.w3.org/2000/svg", "rect");
+      overlay.setAttribute("x", String(x));
+      overlay.setAttribute("y", String(y));
+      overlay.setAttribute("width", String(cellWidth));
+      overlay.setAttribute("height", String(cellHeight));
+      overlay.setAttribute("fill", "transparent");
+      overlay.style.cursor = "pointer";
+      overlay.addEventListener("mouseover", (event) => {
+        const summary = buildTpFpFnCellSummary(
+          row,
+          col,
+          stats,
+          totalEvaluations,
+          evaluationLabels,
+          precision
+        );
+        showTooltip(event, summary.lines);
+      });
+      overlay.addEventListener("mousemove", moveTooltip);
+      overlay.addEventListener("mouseout", hideTooltip);
+      overlay.addEventListener("click", async (event) => {
+        const summary = buildTpFpFnCellSummary(
+          row,
+          col,
+          stats,
+          totalEvaluations,
+          evaluationLabels,
+          precision
+        );
+        try {
+          await writeTextToClipboard(JSON.stringify(summary.payload, null, 2));
+          showTooltip(event, [...summary.lines, "", "Copied JSON to clipboard."]);
+        } catch (error) {
+          consoleLike?.warn?.("Failed to copy TpFpFn cell summary to clipboard.", error);
+          showTooltip(event, [...summary.lines, "", "Copy to clipboard failed."]);
+        }
+      });
+      contentGroup.appendChild(overlay);
+    });
+  });
+
+  scheduleAdaptiveSvgFit({ documentLike, requestAnimationFrameLike, svg, contentGroup, minWidth: width, minHeight: height });
+  return svg;
 }

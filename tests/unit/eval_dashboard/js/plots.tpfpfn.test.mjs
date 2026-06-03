@@ -8,12 +8,15 @@ import assert from "node:assert/strict";
 import {
   buildTpFpFnCellSummary,
   buildTpFpFnTabMap,
+  createTpFpFnCombinedMatrixSvg,
+  createTpFpFnLegendElement,
   filterTpFpFnAggregationByTotals,
   getTpFpFnCombinedAggregation,
   getTpFpFnOutcomeColor,
   normalizeTpFpFnCollectorData,
   normalizeTpFpFnLikeEvaluations,
 } from "../../../../docs/eval-dashboard/assets/js/plots/tpfpfn.js";
+import { createDocumentStub } from "./plots.dom-test-helpers.mjs";
 
 const getEvaluationEffectiveValue = (evaluation, column) =>
   evaluation.overrides?.[column] ?? "";
@@ -106,4 +109,82 @@ test("tpfpfn helpers expand collection metrics, build tab maps, and summarize ce
   assert.equal(summary.payload.percentages.tp, 50);
   assert.deepEqual(summary.payload.evaluations.map((entry) => entry.value), ["TP", "FP"]);
   assert.equal(getTpFpFnOutcomeColor("tp"), "rgb(22, 163, 74)");
+});
+
+/**
+ * Verify TP/FP/FN legend rendering uses the outcome labels and colors.
+ */
+test("tpfpfn renderer creates outcome legend elements", () => {
+  const documentLike = createDocumentStub();
+  const legend = createTpFpFnLegendElement({ documentLike });
+
+  assert.equal(legend.className, "plot-legend");
+  assert.deepEqual(legend.querySelectorAll(".plot-legend-item").map((item) => item.children[1].textContent), ["TP", "FP", "FN"]);
+  assert.equal(legend.querySelectorAll(".plot-legend-swatch")[0].style.backgroundColor, "rgb(22, 163, 74)");
+});
+
+/**
+ * Verify TP/FP/FN matrix SVG rendering exposes labels, tooltips, and successful clipboard copies.
+ */
+test("tpfpfn renderer creates interactive combined matrix cells", async () => {
+  const documentLike = createDocumentStub();
+  const shown = [];
+  let copied = "";
+  const aggregation = getTpFpFnCombinedAggregation([
+    { runDir: "r1", data: { doc1: { tp: ["outer.label"], fp: [], fn: [] } } },
+    { runDir: "r2", data: { doc1: { tp: [], fp: ["outer.label"], fn: [] } } },
+  ]);
+
+  const svg = createTpFpFnCombinedMatrixSvg({
+    documentLike,
+    requestAnimationFrameLike: (callback) => callback(),
+    aggregation,
+    precision: 1,
+    getDisplayLabel: (label) => label.split(".").at(-1),
+    showTooltip: (_event, lines) => shown.push(lines),
+    moveTooltip: () => {},
+    hideTooltip: () => {},
+    writeTextToClipboard: async (text) => {
+      copied = text;
+    },
+  });
+
+  assert.ok(svg.querySelectorAll("text").some((text) => text.textContent === "label"));
+  const overlay = svg.querySelectorAll("rect").find((rect) => rect.getAttribute("fill") === "transparent");
+  overlay.dispatch("mouseover", { clientX: 10, clientY: 10 });
+  assert.deepEqual(shown[0], ["document: doc1", "label:    outer.label", "TP/FP/FN %: 50.0 / 50.0 / 0.0"]);
+
+  await overlay.dispatch("click", { clientX: 10, clientY: 10 });
+  assert.equal(JSON.parse(copied).counts.tp, 1);
+  assert.equal(shown.at(-1).at(-1), "Copied JSON to clipboard.");
+});
+
+/**
+ * Verify TP/FP/FN matrix click handling reports clipboard failures without throwing.
+ */
+test("tpfpfn renderer reports clipboard copy failures", async () => {
+  const documentLike = createDocumentStub();
+  const shown = [];
+  const warnings = [];
+  const aggregation = getTpFpFnCombinedAggregation([
+    { runDir: "r1", data: { doc1: { tp: ["label"], fp: [], fn: [] } } },
+  ]);
+  const svg = createTpFpFnCombinedMatrixSvg({
+    documentLike,
+    requestAnimationFrameLike: (callback) => callback(),
+    aggregation,
+    precision: 2,
+    showTooltip: (_event, lines) => shown.push(lines),
+    moveTooltip: () => {},
+    hideTooltip: () => {},
+    writeTextToClipboard: async () => {
+      throw new Error("no clipboard");
+    },
+    consoleLike: { warn: (...args) => warnings.push(args) },
+  });
+
+  const overlay = svg.querySelectorAll("rect").find((rect) => rect.getAttribute("fill") === "transparent");
+  await overlay.dispatch("click", { clientX: 10, clientY: 10 });
+  assert.equal(shown.at(-1).at(-1), "Copy to clipboard failed.");
+  assert.equal(warnings.length, 1);
 });

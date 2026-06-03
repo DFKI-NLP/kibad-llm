@@ -279,6 +279,7 @@ def test_baseline_summary_includes_phase_eleven_plot_contract() -> None:
         "tpfpfn.js",
     }
     assert set(phase_eleven_contract["js_test_files"]) == {
+        "plots.bars.test.mjs",
         "plots.confusion.test.mjs",
         "plots.export.test.mjs",
         "plots.shared.test.mjs",
@@ -436,7 +437,7 @@ def test_current_runtime_matches_phase_eleven_plot_contract() -> None:
         assert (JS_TEST_ROOT / file_name).is_file()
     assert set(phase_eleven_contract["focus"]) == {
         "shared plot display, legend, metric-path, plot-entry, and tab-map helpers",
-        "bar/error plot-entry and tab-map module boundaries",
+        "bar/error plot-entry, SVG renderer, and tab-grid module boundaries",
         "grouped legend-model module boundaries",
         "confusion matrix collection expansion, aggregation, filtering, and tab maps",
         "TP/FP/FN collection expansion, aggregation, filtering, tab maps, palettes, and copy summaries",

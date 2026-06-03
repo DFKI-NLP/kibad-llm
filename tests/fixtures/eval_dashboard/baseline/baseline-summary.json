@@ -161,13 +161,14 @@
     ],
     "js_test_files": [
       "plots.shared.test.mjs",
+      "plots.bars.test.mjs",
       "plots.confusion.test.mjs",
       "plots.tpfpfn.test.mjs",
       "plots.export.test.mjs"
     ],
     "focus": [
       "shared plot display, legend, metric-path, plot-entry, and tab-map helpers",
-      "bar/error plot-entry and tab-map module boundaries",
+      "bar/error plot-entry, SVG renderer, and tab-grid module boundaries",
       "grouped legend-model module boundaries",
       "confusion matrix collection expansion, aggregation, filtering, and tab maps",
       "TP/FP/FN collection expansion, aggregation, filtering, tab maps, palettes, and copy summaries",
