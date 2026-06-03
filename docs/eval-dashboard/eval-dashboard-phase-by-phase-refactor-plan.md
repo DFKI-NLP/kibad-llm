@@ -1598,7 +1598,7 @@ The current branch now matches Phase 11 at the deterministic helper boundary:
 - `tests/unit/eval_dashboard/js/plots.export.test.mjs` covers figure/archive filename derivation, viewBox fallback parsing, opaque-background resolution, CRC32, byte concatenation, and uncompressed ZIP creation
 - `tests/unit/eval_dashboard/test_eval_dashboard_entrypoint.py`, `tests/unit/eval_dashboard/test_eval_dashboard_baseline_contract.py`, `tests/unit/eval_dashboard/js/README.md`, and `tests/fixtures/eval_dashboard/baseline/baseline-summary.json` now record the Phase 11 plot/export module contract explicitly
 
-Some browser-only SVG DOM renderers and small browser adapters still live in `main.js`; Phase 12 should decide whether moving those behind thin plot-rendering adapters improves readability enough to justify more DOM-oriented seams before optional browser-level UI tests exist.
+Phase 12 moved the dashboard-level SVG DOM renderers and small browser adapters behind `plots/dashboard.js`; remaining browser-level interaction checks are deferred to optional Phase 13.
 
 ### Design rule
 
@@ -1796,7 +1796,7 @@ If needed, these can be grouped into fewer PRs:
 - PR 4: loaders + UI infrastructure + controls/tabs/JSON-pane extraction
 - PR 5: prediction/evaluation table extraction + plot/export modules + final cleanup + coverage pass
 
-From the current repository state, work should next continue with **Phase 12**: reduce `main.js` to orchestration-only code while reusing the now-stable Phase 9 DOM/table/status/browser infrastructure, the landed Phase 10A controls/tabs/JSON-pane modules, the landed Phase 10B table-renderer modules, the Phase 11 plot/export helpers, and the already-stable Phase 8 source-loader/ingestion boundary.
+From the current repository state, work should next continue only if optional **Phase 13** browser-level UI testing is worthwhile: reuse the now-stable Phase 9 DOM/table/status/browser infrastructure, the landed Phase 10A controls/tabs/JSON-pane modules, the landed Phase 10B table-renderer modules, the Phase 11 plot/export helpers, the Phase 12 plot-dashboard adapter, and the already-stable Phase 8 source-loader/ingestion boundary.
 
 After each completed PR or phase in that sequence, refresh the planning docs under `docs/eval-dashboard/` before moving on so the written plan keeps matching the repository state and `CONTRIBUTING.md` expectations.
 
@@ -1830,10 +1830,9 @@ ______________________________________________________________________
 
 Given the current repository state, the safest next implementation step is:
 
-1. remove avoidable one-line pass-through wrappers from `main.js` where direct selector/store/UI/plot module calls are clearer
-1. decide whether the remaining browser-only SVG DOM renderers should stay in `main.js` as orchestration adapters or move into thin `plots/` rendering modules
-1. keep the Phase 9 shared DOM/table/status/browser helpers plus the landed Phase 10A, Phase 10B, and Phase 11 modules as stable dependencies rather than reintroducing helper logic in `main.js`
-1. extend structural/docs smoke coverage as needed and keep Python focused on structural/docs/fixture contracts while the permanent Node.js-native runner continues to cover extracted dashboard logic
-1. update the planning docs in `docs/eval-dashboard/` after Phase 12 lands, and confirm the change set complies with `CONTRIBUTING.md`
+1. decide whether optional browser-level UI testing is worth adding for fixture loading, tab switching, plot rendering, and figure-export enablement
+1. keep the Phase 9 shared DOM/table/status/browser helpers plus the landed Phase 10A, Phase 10B, Phase 11, and Phase 12 modules as stable dependencies rather than reintroducing helper logic in `main.js`
+1. extend structural/docs smoke coverage only when the browser-level surface changes, while the permanent Node.js-native runner continues to cover extracted dashboard logic
+1. update the planning docs in `docs/eval-dashboard/` after any optional follow-up lands, and confirm the change set complies with `CONTRIBUTING.md`
 
-That continues the next smallest behavior-preserving extraction boundary after Phase 11: keep Python for structural/docs/fixture smoke coverage, keep the minimal JS-native runner for extracted dashboard logic, and next make `main.js` a clearer bootstrap/orchestration layer rather than a place where reusable helper seams accumulate.
+That keeps Python focused on structural/docs/fixture smoke coverage and keeps the minimal JS-native runner focused on extracted dashboard logic. Optional Phase 13 should add browser-level coverage only if the dashboard interaction surface starts changing often enough to justify it.
