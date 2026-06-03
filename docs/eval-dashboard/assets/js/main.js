@@ -142,41 +142,8 @@ function getNextSortConfig(currentSort, column, { append = false } = {}) {
   });
 }
 
-// Selectors and accessors for the canonical predictions/evaluations state shape.
-function isJobReturnValueColumn(column) {
-  return selectors.isJobReturnValueColumn(column);
-}
-
-function stripEvaluationFieldPrefix(column) {
-  return selectors.stripEvaluationFieldPrefix(column);
-}
-
-function stripPredictionFieldPrefix(column) {
-  return selectors.stripPredictionFieldPrefix(column);
-}
-
-function reconstructPredictionContent(prediction) {
-  return selectors.reconstructPredictionContent(prediction);
-}
-
-function getPredictionById(predictionId) {
-  return selectors.getPredictionById(state, predictionId);
-}
-
-function getPredictionForEvaluation(evaluation) {
-  return selectors.getPredictionForEvaluation(state, evaluation);
-}
-
 function reconstructPredictionContentForEvaluation(evaluation) {
   return selectors.reconstructPredictionContentForEvaluation(state, evaluation);
-}
-
-function getFlattenedPrediction(prediction) {
-  return selectors.getFlattenedPrediction(prediction);
-}
-
-function getFlattenedPredictionForEvaluation(evaluation) {
-  return selectors.getFlattenedPredictionForEvaluation(state, evaluation);
 }
 
 /**
@@ -185,13 +152,6 @@ function getFlattenedPredictionForEvaluation(evaluation) {
  */
 function getPredictionViews() {
   return selectors.getPredictionViews(state);
-}
-
-/**
- * Collect all flattened prediction columns currently present across the given prediction views.
- */
-function getPredictionColumns(predictionViews = getPredictionViews()) {
-  return selectors.getPredictionColumns(predictionViews);
 }
 
 /**
@@ -239,27 +199,8 @@ function getCurrentPredictionGroups() {
   return predictionGroups;
 }
 
-/**
- * Flatten the evaluations reachable from the selected prediction groups.
- */
-function getSelectedEvaluations(selectedPredictionGroups = getSelectedPredictionGroups()) {
-  return selectors.getSelectedEvaluations(selectedPredictionGroups);
-}
-
-function getFlattenedEvaluationJobReturnValue(evaluation) {
-  return selectors.getFlattenedEvaluationJobReturnValue(evaluation);
-}
-
-function getEvaluationColumnRawValue(evaluation, column) {
-  return selectors.getEvaluationColumnRawValue(evaluation, column);
-}
-
 function getEvaluationEffectiveValue(evaluation, column, evalTabState) {
   return selectors.getEvaluationEffectiveValue(evaluation, column, evalTabState);
-}
-
-function getEvaluationExperiment(evaluation) {
-  return selectors.getEvaluationExperiment(evaluation);
 }
 
 /**
@@ -285,13 +226,6 @@ function getEvaluationsByExperiment(selectedEvaluations = gatherSelectedEvaluati
  */
 function getSelectedEvaluationsForExperiment(experiment, selectedEvaluations = gatherSelectedEvaluations()) {
   return selectors.getSelectedEvaluationsForExperiment(state, experiment, selectedEvaluations);
-}
-
-/**
- * Collect all evaluation columns currently present across the given evaluations.
- */
-function getEvaluationColumns(evaluations = []) {
-  return selectors.getEvaluationColumns(evaluations);
 }
 
 const plotTooltipHandlers = createPlotTooltipHandlers({ tooltipElement: barTooltip, windowLike: window });
@@ -343,11 +277,11 @@ loadGitButton.addEventListener("click", async () => {
 });
 
 function displayPredictionColumnName(column) {
-  return stripPredictionFieldPrefix(column);
+  return selectors.stripPredictionFieldPrefix(column);
 }
 
 function displayEvalColumnName(column) {
-  const normalizedColumn = stripEvaluationFieldPrefix(column);
+  const normalizedColumn = selectors.stripEvaluationFieldPrefix(column);
   if (normalizedColumn.startsWith(JOB_RETURN_VALUE_PREFIX)) {
     return normalizedColumn.slice(JOB_RETURN_VALUE_PREFIX.length);
   }
@@ -408,71 +342,11 @@ function setConfiguredDefault(defaults, column, value) {
   }
 }
 
-function getPredictionDefaultValue(column) {
-  return selectors.getPredictionDefaultValue(state, column);
-}
-
-function getPredictionEffectiveValue(predictionFlat, column) {
-  return selectors.getPredictionEffectiveValue(state, predictionFlat, column);
-}
-
-/**
- * Build a stable signature from the effective prediction values for the provided columns.
- */
-function getPredictionEffectiveSignature(
-  predictionFlat,
-  predictionColumns = getCurrentPredictionColumns()
-) {
-  return selectors.getPredictionEffectiveSignature(state, predictionFlat, predictionColumns);
-}
-
-function getEvalDefaultValue(evalTabState, column) {
-  return selectors.getEvalDefaultValue(evalTabState, column);
-}
-
-/**
- * Return prediction columns whose selected prediction views still contain missing values.
- */
-function getPredictionColumnsWithMissingValues(
-  predictionViews,
-  predictionColumns = getCurrentPredictionColumns(predictionViews)
-) {
-  return selectors.getPredictionColumnsWithMissingValues(state, predictionViews, predictionColumns);
-}
-
-/**
- * Collect non-empty suggestion values for a prediction column from the current prediction views.
- */
-function getPredictionDefaultSuggestions(predictionViews, column) {
-  return selectors.getPredictionDefaultSuggestions(predictionViews, column);
-}
-
-/**
- * Count how many prediction views are missing a value for the given prediction column.
- */
-function getPredictionMissingValueCount(predictionViews, column) {
-  return selectors.getPredictionMissingValueCount(predictionViews, column);
-}
-
-function getEvalColumnsWithMissingValues(evaluations, evalColumns) {
-  return selectors.getEvalColumnsWithMissingValues(evaluations, evalColumns);
-}
-
-function getEvalDefaultSuggestions(evaluations, column) {
-  return selectors.getEvalDefaultSuggestions(evaluations, column);
-}
-
-function getEvalMissingValueCount(evaluations, column) {
-  return selectors.getEvalMissingValueCount(evaluations, column);
-}
-
-
 function setGroupByFields(columns) {
   state.groupByFields = [...columns];
   renderPredictions();
   renderEvaluations();
 }
-
 
 /**
  * Return the evaluation columns for the currently active evaluation experiment.
@@ -502,14 +376,6 @@ function ensureEvalTabState(
     getDefaultEvalGroupByFields,
     getDefaultEvalTruncateColumns,
   });
-}
-
-/**
- * Synchronize selected group ids with the current valid group-id set while preserving
- * still-valid selections and auto-selecting newly introduced groups.
- */
-function syncSelectedGroupIds(selectionState, validGroupIds) {
-  dashboardStore.syncSelectedGroupIds(selectionState, validGroupIds);
 }
 
 groupByAllButton.addEventListener("click", () => {
@@ -604,7 +470,7 @@ bindDelegatedTabSelection({
 truncateDefaultsButton.addEventListener("click", () => {
   state.truncateEnabledColumns = getDefaultTruncateColumns(getCurrentPredictionColumns());
   renderPredictions();
-})
+});
 
 plotShortenLabels.addEventListener("change", () => {
   state.plotShortenLabels = plotShortenLabels.checked;
@@ -884,14 +750,6 @@ async function initializeGitUrlFromQueryParam() {
 
 void initializeGitUrlFromQueryParam();
 
-function getPredictionGroupSortValue(group, column) {
-  return selectors.getPredictionGroupSortValue(state, group, column);
-}
-
-function getPredictionMemberSortValue(predictionView, column) {
-  return selectors.getPredictionMemberSortValue(state, predictionView, column);
-}
-
 /**
  * Return prediction groups sorted according to the active prediction sort config.
  */
@@ -914,10 +772,6 @@ window.addEventListener("resize", () => {
   updateStickyControlColumnOffsets(predictionsTable);
   updateStickyControlColumnOffsets(evaluationsTable);
 });
-
-function getGroupValueDisplay(group, column) {
-  return selectors.getGroupValueDisplay(state, group, column);
-}
 
 /**
  * Render the Predictions table from derived prediction views and prediction groups.
@@ -975,7 +829,8 @@ function renderPredictions() {
     activeValue: state.activeOptionsTab,
   });
   const selectedPredictionViews = getSelectedPredictionViews();
-  const predictionDefaultColumns = getPredictionColumnsWithMissingValues(
+  const predictionDefaultColumns = selectors.getPredictionColumnsWithMissingValues(
+    state,
     selectedPredictionViews,
     orderedPredictionColumns
   );
@@ -997,10 +852,11 @@ function renderPredictions() {
     defaultsPanelElement: predictionDefaultsPanel,
     defaultColumns: predictionDefaultColumns,
     getDefaultLabel: displayPredictionColumnName,
-    getDefaultValue: getPredictionDefaultValue,
-    getDefaultSuggestions: (column) => getPredictionDefaultSuggestions(selectedPredictionViews, column),
+    getDefaultValue: (column) => selectors.getPredictionDefaultValue(state, column),
+    getDefaultSuggestions: (column) =>
+      selectors.getPredictionDefaultSuggestions(selectedPredictionViews, column),
     getDefaultMissingCount: (column) =>
-      getPredictionMissingValueCount(selectedPredictionViews, column),
+      selectors.getPredictionMissingValueCount(selectedPredictionViews, column),
     inputIdPrefix: "prediction-default",
     onDefaultCommit: (column, nextValue) => {
       setConfiguredDefault(state.predictionDefaultValues, column, nextValue);
@@ -1052,9 +908,11 @@ function renderPredictions() {
     onSelectAllDisplayed: (checked, displayedGroupIds) => {
       setSelectedGroupIds(checked ? displayedGroupIds : []);
     },
-    getGroupValueDisplay,
+    getGroupValueDisplay: (group, column) =>
+      selectors.getGroupValueDisplay(state, group, column),
     getSortedPredictionMembers,
-    getPredictionEffectiveValue,
+    getPredictionEffectiveValue: (predictionFlat, column) =>
+      selectors.getPredictionEffectiveValue(state, predictionFlat, column),
     sortableControlColumns: SORTABLE_CONTROL_COLUMNS,
   });
   updateStickyControlColumnOffsets(predictionsTable);
@@ -1071,14 +929,6 @@ function getEvaluationGroups(
   evalTabState = state.activeEvalTab ? state.evalTabStates[state.activeEvalTab] : null
 ) {
   return selectors.getEvaluationGroups(state, evaluations, groupByFields, predictionGroupByFields, evalTabState);
-}
-
-function getEvaluationGroupSortValue(group, column, evalTabState) {
-  return selectors.getEvaluationGroupSortValue(group, column, evalTabState);
-}
-
-function getEvaluationRunSortValue(evaluation, column, evalTabState) {
-  return selectors.getEvaluationRunSortValue(evaluation, column, evalTabState);
 }
 
 function getSortedEvaluationGroups(groups, evalTabState) {
@@ -1112,10 +962,6 @@ function getEvaluationContext(
  */
 function getSelectedEvaluationGroups(evaluationContext = getEvaluationContext()) {
   return selectors.getSelectedEvaluationGroups(state, evaluationContext);
-}
-
-function getGroupValueDisplayFromEvaluations(evaluations, getter) {
-  return selectors.getGroupValueDisplayFromEvaluations(evaluations, getter);
 }
 
 /**
@@ -1155,7 +1001,7 @@ function renderEvaluationPlots(
     getMetricTypeForEvaluationContext,
     getPlotGroups,
     getEvaluationEffectiveValue,
-    getEvaluationExperiment,
+    getEvaluationExperiment: selectors.getEvaluationExperiment,
     displayPlotGroupFieldName,
     displayGroupFieldName,
     getPlotDisplayLabel,
@@ -1232,7 +1078,7 @@ function renderEvaluations() {
     evaluationGroups,
   } = evaluationContext;
   const evalColumnSections = buildEvaluationColumnSections(evalColumns, {
-    isJobReturnValueColumn,
+    isJobReturnValueColumn: selectors.isJobReturnValueColumn,
   });
   const orderedEvalColumns = evalColumnSections.flatMap((section) => section.columns);
   evalTabState.sort = renderSortStatus({
@@ -1260,7 +1106,7 @@ function renderEvaluations() {
   const selectedEvaluationsForDefaults = getSelectedEvaluationGroups(evaluationContext).flatMap(
     (group) => group.evaluations
   );
-  const evalDefaultColumns = getEvalColumnsWithMissingValues(
+  const evalDefaultColumns = selectors.getEvalColumnsWithMissingValues(
     selectedEvaluationsForDefaults,
     evalColumns
   );
@@ -1282,11 +1128,11 @@ function renderEvaluations() {
     defaultsPanelElement: evalDefaultsPanel,
     defaultColumns: evalDefaultColumns,
     getDefaultLabel: displayEvalColumnName,
-    getDefaultValue: (column) => getEvalDefaultValue(evalTabState, column),
+    getDefaultValue: (column) => selectors.getEvalDefaultValue(evalTabState, column),
     getDefaultSuggestions: (column) =>
-      getEvalDefaultSuggestions(selectedEvaluationsForDefaults, column),
+      selectors.getEvalDefaultSuggestions(selectedEvaluationsForDefaults, column),
     getDefaultMissingCount: (column) =>
-      getEvalMissingValueCount(selectedEvaluationsForDefaults, column),
+      selectors.getEvalMissingValueCount(selectedEvaluationsForDefaults, column),
     inputIdPrefix: `eval-default-${state.activeEvalTab.replace(/[^a-zA-Z0-9_-]+/g, "-")}`,
     onDefaultCommit: (column, nextValue) => {
       setConfiguredDefault(evalTabState.defaultValues, column, nextValue);
@@ -1354,7 +1200,7 @@ function renderEvaluations() {
       }
       renderEvaluations();
     },
-    getGroupValueDisplayFromEvaluations,
+    getGroupValueDisplayFromEvaluations: selectors.getGroupValueDisplayFromEvaluations,
     getEvaluationEffectiveValue,
     getSortedEvaluations,
     sortableControlColumns: SORTABLE_CONTROL_COLUMNS,
