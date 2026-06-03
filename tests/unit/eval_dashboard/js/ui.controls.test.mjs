@@ -727,3 +727,50 @@ test("renderPlotControls shows TP/FP/FN-specific threshold rows for that metric 
   assert.equal(refs.plotConfusionTabsByRow.style.display, "");
   assert.equal(refs.plotGroupBarsRow.style.display, "none");
 });
+
+/**
+ * Verify that the collection-style TP/FP/FN metric alias stays on the generic
+ * plot-control path under the current contract.
+ */
+test("renderPlotControls keeps TpFpFnCollectorCollection on the generic control path", () => {
+  const refs = {
+    plotTabsByPrefixButton: new FakeElement("button"),
+    plotTabsBySuffixButton: new FakeElement("button"),
+    confusionTabsByMetricFieldButton: new FakeElement("button"),
+    confusionTabsByPredictionGroupButton: new FakeElement("button"),
+    plotShortenLabelsInput: new FakeElement("input"),
+    plotRoundingPrecisionInput: new FakeElement("input"),
+    plotConfusionMinLabelTotalRow: new FakeElement("div"),
+    plotConfusionMinLabelTotalInput: new FakeElement("input"),
+    plotTpFpFnMinLabelTotalRow: new FakeElement("div"),
+    plotTpFpFnMinLabelTotalInput: new FakeElement("input"),
+    plotTpFpFnMinDocumentTotalRow: new FakeElement("div"),
+    plotTpFpFnMinDocumentTotalInput: new FakeElement("input"),
+    plotTabsByRow: new FakeElement("div"),
+    plotConfusionTabsByRow: new FakeElement("div"),
+    plotGroupBarsRow: new FakeElement("div"),
+    plotShowLegendOnceRow: new FakeElement("div"),
+    plotShowLegendOnceInput: new FakeElement("input"),
+    exportOpaqueBackgroundInput: new FakeElement("input"),
+  };
+
+  renderPlotControls({
+    metricType: "TpFpFnCollectorCollection",
+    plotTabsBy: "prefix",
+    confusionTabsBy: "metric_field",
+    plotShortenLabels: false,
+    plotRoundingPrecision: 2,
+    plotConfusionMinLabelTotal: 3,
+    plotTpFpFnMinLabelTotal: 4,
+    plotTpFpFnMinDocumentTotal: 5,
+    plotShowLegendOnce: false,
+    exportOpaqueBackground: false,
+    ...refs,
+  });
+
+  assert.equal(refs.plotConfusionMinLabelTotalRow.style.display, "none");
+  assert.equal(refs.plotTpFpFnMinLabelTotalRow.style.display, "none");
+  assert.equal(refs.plotTpFpFnMinDocumentTotalRow.style.display, "none");
+  assert.equal(refs.plotConfusionTabsByRow.style.display, "none");
+  assert.equal(refs.plotGroupBarsRow.style.display, "none");
+});
