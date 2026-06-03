@@ -131,7 +131,6 @@ The modularization refactor is complete through the current orchestration cleanu
 
 Known dashboard limitations:
 
-- Override keys currently strip only one leading `+`; Hydra overrides with two leading `+` may not be normalized as intended.
 - Unsupported override lines are currently ignored instead of producing a dedicated parser error for the affected run.
 - Prediction metadata is currently shown without the `prediction.` prefix, which makes it harder to distinguish from evaluation metadata in grouping controls and figure labels (when `shorten labels` is disabled).
 - Load-summary error categories are still coarse for some parse/normalization failures.
