@@ -12,9 +12,9 @@ import {
   createTpFpFnLegendElement,
   filterTpFpFnAggregationByTotals,
   getTpFpFnCombinedAggregation,
+  getTpFpFnCollectionViews,
   getTpFpFnOutcomeColor,
   normalizeTpFpFnCollectorData,
-  normalizeTpFpFnLikeEvaluations,
 } from "../../../../docs/eval-dashboard/assets/js/plots/tpfpfn.js";
 import { createDocumentStub } from "./plots.dom-test-helpers.mjs";
 
@@ -49,9 +49,9 @@ test("tpfpfn helpers normalize collector data and aggregate row states", () => {
   );
 
   const aggregation = getTpFpFnCombinedAggregation([
-    { runDir: "r1", data: { doc1: { tp: ["A"], fp: [], fn: ["B"] } } },
-    { runDir: "r2", data: { doc1: { tp: [], fp: ["A"], fn: [] }, doc2: { tp: ["C"], fp: [], fn: [] } } },
-  ]);
+    { runDir: "r1", fields: new Map([["field_a", { doc1: { tp: ["A"], fp: [], fn: ["B"] } }]]) },
+    { runDir: "r2", fields: new Map([["field_a", { doc1: { tp: [], fp: ["A"], fn: [] }, doc2: { tp: ["C"], fp: [], fn: [] } }]]) },
+  ], "field_a");
   assert.deepEqual(aggregation.rows, ["doc1", "doc2"]);
   assert.deepEqual(aggregation.cols, ["A", "B", "C"]);
   assert.deepEqual(aggregation.cells.get("doc1|#|A").counts, { tp: 1, fp: 1, fn: 0, empty: 0 });
@@ -63,28 +63,32 @@ test("tpfpfn helpers normalize collector data and aggregate row states", () => {
 });
 
 /**
- * Verify TP/FP/FN collection expansion, tab grouping, cell summaries, and palette output.
+ * Verify TP/FP/FN collection views, tab grouping, cell summaries, and palette output.
  */
-test("tpfpfn helpers expand collection metrics, build tab maps, and summarize cells", () => {
-  const expanded = normalizeTpFpFnLikeEvaluations([
+test("tpfpfn helpers wrap collection metrics, build tab maps, and summarize cells", () => {
+  const collectionData = {
+    "outer.field_a": { doc: { tp: ["A"] } },
+    "outer.field_b": { doc: { fp: ["B"] } },
+  };
+  const collections = getTpFpFnCollectionViews([
     {
       runDir: "run-a",
       jobReturnValue: { type: "TpFpFnCollectorCollection" },
-      data: {
-        "outer.field_a": { doc: { tp: ["A"] } },
-        "outer.field_b": { doc: { fp: ["B"] } },
-      },
+      data: collectionData,
     },
   ]);
-  assert.deepEqual(expanded.map((evaluation) => evaluation.overrides["metric.field"]), ["outer.field_a", "outer.field_b"]);
+  assert.equal(collections.length, 1);
+  assert.deepEqual(Array.from(collections[0].fields.keys()), ["outer.field_a", "outer.field_b"]);
+  assert.equal(collections[0].fields.get("outer.field_a"), collectionData["outer.field_a"]);
 
-  const evaluations = expanded.map((evaluation) => ({
-    ...evaluation,
-    overrides: { ...evaluation.overrides, experiment: "exp" },
-  }));
+  const evaluations = [{
+    runDir: "run-a",
+    jobReturnValue: { type: "TpFpFnCollectorCollection" },
+    overrides: { experiment: "exp" },
+    data: collectionData,
+  }];
   const tabMap = buildTpFpFnTabMap({
     plotGroups: [{ groupId: "g1", values: { model: "a" }, evaluations }],
-    experimentEvaluations: evaluations,
     labelFields: ["model"],
     evalTabState: {},
     confusionTabsBy: "metric_field",
@@ -94,6 +98,7 @@ test("tpfpfn helpers expand collection metrics, build tab maps, and summarize ce
   });
   assert.deepEqual(Array.from(tabMap.keys()), ["outer.field_a", "outer.field_b"]);
   assert.deepEqual(Array.from(tabMap.values()).map((entry) => entry.label), ["field_a", "field_b"]);
+  assert.equal(tabMap.get("outer.field_a").plots[0].collections[0].fields.get("outer.field_a"), collectionData["outer.field_a"]);
 
   const summary = buildTpFpFnCellSummary(
     "doc",
@@ -109,6 +114,78 @@ test("tpfpfn helpers expand collection metrics, build tab maps, and summarize ce
   assert.equal(summary.payload.percentages.tp, 50);
   assert.deepEqual(summary.payload.evaluations.map((entry) => entry.value), ["TP", "FP"]);
   assert.equal(getTpFpFnOutcomeColor("tp"), "rgb(22, 163, 74)");
+});
+
+/**
+ * Verify malformed TP/FP/FN metric records fail at the adapter boundary.
+ */
+test("tpfpfn collection views reject missing fields and malformed collection data", () => {
+  assert.throws(
+    () => getTpFpFnCollectionViews([
+      { runDir: "r1", overrides: {}, jobReturnValue: { type: "TpFpFnCollector" }, data: {} },
+    ], { evalTabState: {}, getEvaluationEffectiveValue }),
+    /TpFpFnCollector evaluation must define a non-empty metric\.field\./
+  );
+
+  assert.throws(
+    () => getTpFpFnCollectionViews([
+      { runDir: "r1", jobReturnValue: { type: "TpFpFnCollectorCollection" }, data: [] },
+    ]),
+    /TpFpFnCollectorCollection data must be an object mapping metric fields to metric data\./
+  );
+
+  assert.throws(
+    () => getTpFpFnCollectionViews([
+      {
+        runDir: "r1",
+        jobReturnValue: { type: "TpFpFnCollectorCollection" },
+        data: { " field_a ": {}, field_a: {} },
+      },
+    ]),
+    /TpFpFnCollectorCollection data contains duplicate metric field "field_a" after normalization\./
+  );
+
+  assert.throws(
+    () => getTpFpFnCombinedAggregation([
+      { runDir: "r1", fields: new Map([["field_b", {}]]) },
+    ], "field_a"),
+    /TpFpFnCollector collection view is missing metric field "field_a"\./
+  );
+
+  assert.throws(
+    () => normalizeTpFpFnCollectorData(null),
+    /TpFpFnCollector data must be an object\./
+  );
+
+  assert.throws(
+    () => normalizeTpFpFnCollectorData({ tp: [["doc1"]] }),
+    /TpFpFnCollector global bucket "tp" entry 0 must be a \[record_id, label\] array\./
+  );
+
+  assert.throws(
+    () => normalizeTpFpFnCollectorData({ tp: [["doc1", "label", "extra"]] }),
+    /TpFpFnCollector global bucket "tp" entry 0 must be a \[record_id, label\] array\./
+  );
+
+  assert.throws(
+    () => normalizeTpFpFnCollectorData({ tp: [["", "label"]] }),
+    /TpFpFnCollector data contains an empty record id\./
+  );
+
+  assert.throws(
+    () => normalizeTpFpFnCollectorData({ doc1: [] }),
+    /TpFpFnCollector record "doc1" must contain object bucket data\./
+  );
+
+  assert.throws(
+    () => normalizeTpFpFnCollectorData({ doc1: { tp: "label" } }),
+    /TpFpFnCollector record "doc1" bucket "tp" must be an array\./
+  );
+
+  assert.throws(
+    () => normalizeTpFpFnCollectorData({ doc1: { tp: [""] } }),
+    /TpFpFnCollector record "doc1" bucket "tp" contains an empty label at index 0\./
+  );
 });
 
 /**
@@ -131,9 +208,9 @@ test("tpfpfn renderer creates interactive combined matrix cells", async () => {
   const shown = [];
   let copied = "";
   const aggregation = getTpFpFnCombinedAggregation([
-    { runDir: "r1", data: { doc1: { tp: ["outer.label"], fp: [], fn: [] } } },
-    { runDir: "r2", data: { doc1: { tp: [], fp: ["outer.label"], fn: [] } } },
-  ]);
+    { runDir: "r1", fields: new Map([["field_a", { doc1: { tp: ["outer.label"], fp: [], fn: [] } }]]) },
+    { runDir: "r2", fields: new Map([["field_a", { doc1: { tp: [], fp: ["outer.label"], fn: [] } }]]) },
+  ], "field_a");
 
   const svg = createTpFpFnCombinedMatrixSvg({
     documentLike,
@@ -167,8 +244,8 @@ test("tpfpfn renderer reports clipboard copy failures", async () => {
   const shown = [];
   const warnings = [];
   const aggregation = getTpFpFnCombinedAggregation([
-    { runDir: "r1", data: { doc1: { tp: ["label"], fp: [], fn: [] } } },
-  ]);
+    { runDir: "r1", fields: new Map([["field_a", { doc1: { tp: ["label"], fp: [], fn: [] } }]]) },
+  ], "field_a");
   const svg = createTpFpFnCombinedMatrixSvg({
     documentLike,
     requestAnimationFrameLike: (callback) => callback(),

@@ -1,40 +1,59 @@
 /**
  * TP/FP/FN collector plot aggregation and tab-map helpers.
+ *
+ * Data flow:
+ * - Raw dashboard evaluations stay unchanged for tables and grouping.
+ * - Plot code wraps each selected TP/FP/FN evaluation in one collection view.
+ * - A `TpFpFnCollectorCollection` view exposes every top-level `data` field as
+ *   `fields: Map<metric.field, collectorData>`.
+ * - A single-field `TpFpFnCollector` view exposes exactly one field, resolved
+ *   from `metric.field`, as `fields: Map<metric.field, evaluation.data>`.
+ * - Tab construction derives available plot fields from collection-view field
+ *   keys, and active plot aggregation reads `collection.fields.get(fieldLabel)`.
+ *
+ * The adapter is deliberately strict: missing `metric.field`, malformed metric
+ * data, empty collection fields, and unsupported metric types throw early.
  */
 
 import { formatRounded, interpolateColor, normalizeValue } from "../utils/values.js";
 import {
   TP_FP_FN_KEYS,
   getGroupLabelForFields,
+  getMetricCollectionView,
   getPlotDisplayLabel,
+  isMetricDataRecord,
   plotSortCollator,
   scheduleAdaptiveSvgFit,
 } from "./shared.js";
-import { expandMetricFieldCollectionEvaluation } from "./confusion.js";
 import { createPlotLegendElement } from "./legend.js";
 
 /**
- * Expands a TP/FP/FN collector collection into per-field collector evaluations.
+ * Builds a TP/FP/FN collection view for one evaluation.
  *
  * @param {object} evaluation - TP/FP/FN-like evaluation record.
- * @returns {Array<object>} Singular TP/FP/FN collector evaluations.
+ * @param {object} [options] - Field resolution helpers.
+ * @returns {object} TP/FP/FN collection view.
+ * @throws {Error} If the evaluation shape violates the TP/FP/FN contract.
  */
-export function expandTpFpFnLikeEvaluation(evaluation) {
-  return expandMetricFieldCollectionEvaluation(evaluation, {
+export function getTpFpFnCollectionView(evaluation, options = {}) {
+  return getMetricCollectionView(evaluation, {
     collectionType: "TpFpFnCollectorCollection",
     singularType: "TpFpFnCollector",
-    fallbackRunDirPrefix: "tpfpfn-field",
+    metricLabel: "TpFpFnCollector",
+    ...options,
   });
 }
 
 /**
- * Normalizes a list of TP/FP/FN-like evaluations.
+ * Builds TP/FP/FN collection views for a list of evaluations.
  *
  * @param {Array<object>} evaluations - Raw evaluation records.
- * @returns {Array<object>} Flattened singular collector evaluations.
+ * @param {object} [options] - Field resolution helpers.
+ * @returns {Array<object>} TP/FP/FN collection views.
+ * @throws {Error} If any evaluation shape violates the TP/FP/FN contract.
  */
-export function normalizeTpFpFnLikeEvaluations(evaluations) {
-  return (evaluations || []).flatMap((evaluation) => expandTpFpFnLikeEvaluation(evaluation));
+export function getTpFpFnCollectionViews(evaluations, options = {}) {
+  return (evaluations || []).map((evaluation) => getTpFpFnCollectionView(evaluation, options));
 }
 
 /**
@@ -93,25 +112,35 @@ export function getTpFpFnOutcomeColor(outcomeKey) {
  *
  * @param {*} rawData - Collector data in per-document or global bucket form.
  * @returns {object} Normalized record map.
+ * @throws {Error} If the collector data violates the TP/FP/FN data contract.
  */
 export function normalizeTpFpFnCollectorData(rawData) {
   const result = {};
 
   const getRecordEntry = (recordId) => {
-    const key = normalizeValue(recordId) || "(missing record_id)";
+    const key = normalizeValue(recordId).trim();
+    if (!key) {
+      throw new Error("TpFpFnCollector data contains an empty record id.");
+    }
     if (!result[key]) {
       result[key] = { tp: [], fp: [], fn: [] };
     }
     return result[key];
   };
 
-  const appendUniqueValues = (target, bucket, values) => {
-    if (!Array.isArray(values)) {
+  const appendUniqueValues = (target, bucket, values, context) => {
+    if (values === undefined) {
       return;
     }
+    if (!Array.isArray(values)) {
+      throw new Error(`TpFpFnCollector ${context} bucket ${JSON.stringify(bucket)} must be an array.`);
+    }
     const seen = new Set(target[bucket]);
-    for (const value of values) {
-      const normalized = normalizeValue(value);
+    for (const [index, value] of values.entries()) {
+      const normalized = normalizeValue(value).trim();
+      if (!normalized) {
+        throw new Error(`TpFpFnCollector ${context} bucket ${JSON.stringify(bucket)} contains an empty label at index ${index}.`);
+      }
       if (seen.has(normalized)) {
         continue;
       }
@@ -122,28 +151,39 @@ export function normalizeTpFpFnCollectorData(rawData) {
   };
 
   if (!rawData || typeof rawData !== "object" || Array.isArray(rawData)) {
-    return result;
+    throw new Error("TpFpFnCollector data must be an object.");
   }
 
   const looksLikeGlobalOutput = TP_FP_FN_KEYS.some((bucket) => Array.isArray(rawData?.[bucket]));
   if (looksLikeGlobalOutput) {
     for (const bucket of TP_FP_FN_KEYS) {
-      const entries = Array.isArray(rawData[bucket]) ? rawData[bucket] : [];
-      for (const entry of entries) {
-        if (!Array.isArray(entry) || entry.length < 2) {
-          continue;
+      if (rawData[bucket] !== undefined && !Array.isArray(rawData[bucket])) {
+        throw new Error(`TpFpFnCollector global bucket ${JSON.stringify(bucket)} must be an array.`);
+      }
+      const entries = rawData[bucket] || [];
+      for (const [index, entry] of entries.entries()) {
+        if (!Array.isArray(entry) || entry.length !== 2) {
+          throw new Error(
+            `TpFpFnCollector global bucket ${JSON.stringify(bucket)} entry ${index} must be a [record_id, label] array.`
+          );
         }
-        appendUniqueValues(getRecordEntry(entry[0]), bucket, [entry[1]]);
+        appendUniqueValues(getRecordEntry(entry[0]), bucket, [entry[1]], `global entry ${index}`);
       }
     }
     return result;
   }
 
   for (const [recordId, entry] of Object.entries(rawData)) {
-    const normalizedEntry = entry && typeof entry === "object" && !Array.isArray(entry) ? entry : {};
+    const normalizedRecordId = normalizeValue(recordId).trim();
+    if (!normalizedRecordId) {
+      throw new Error("TpFpFnCollector data contains an empty record id.");
+    }
+    if (!entry || typeof entry !== "object" || Array.isArray(entry)) {
+      throw new Error(`TpFpFnCollector record ${JSON.stringify(recordId)} must contain object bucket data.`);
+    }
     const target = getRecordEntry(recordId);
     for (const bucket of TP_FP_FN_KEYS) {
-      appendUniqueValues(target, bucket, normalizedEntry[bucket]);
+      appendUniqueValues(target, bucket, entry[bucket], `record ${JSON.stringify(recordId)}`);
     }
   }
 
@@ -151,12 +191,17 @@ export function normalizeTpFpFnCollectorData(rawData) {
 }
 
 /**
- * Aggregates TP/FP/FN collector data across evaluations.
+ * Aggregates one TP/FP/FN collector field across collection views.
  *
- * @param {Array<object>} experimentEvaluations - Singular collector evaluations.
+ * @param {Array<object>} experimentEvaluations - TP/FP/FN collection views.
+ * @param {string} fieldLabel - Metric field to aggregate.
  * @returns {object} Aggregated rows, columns, cell states, counts, and evaluation labels.
  */
-export function getTpFpFnCombinedAggregation(experimentEvaluations) {
+export function getTpFpFnCombinedAggregation(experimentEvaluations, fieldLabel) {
+  const normalizedFieldLabel = normalizeValue(fieldLabel).trim();
+  if (!normalizedFieldLabel) {
+    throw new Error("TpFpFnCollector aggregation requires a non-empty metric field.");
+  }
   const rowLabels = new Set();
   const colLabels = new Set();
   const evaluationCells = [];
@@ -165,7 +210,19 @@ export function getTpFpFnCombinedAggregation(experimentEvaluations) {
   for (const [evaluationIndex, evaluation] of experimentEvaluations.entries()) {
     const map = new Map();
     evaluationLabels.push(normalizeValue(evaluation?.runDir) || `evaluation ${evaluationIndex + 1}`);
-    const normalizedData = normalizeTpFpFnCollectorData(evaluation.data);
+    let rawData;
+    if (evaluation?.fields instanceof Map) {
+      if (!evaluation.fields.has(normalizedFieldLabel)) {
+        throw new Error(`TpFpFnCollector collection view is missing metric field ${JSON.stringify(normalizedFieldLabel)}.`);
+      }
+      rawData = evaluation.fields.get(normalizedFieldLabel);
+    } else {
+      rawData = evaluation?.data;
+    }
+    if (!isMetricDataRecord(rawData)) {
+      throw new Error(`TpFpFnCollector field ${JSON.stringify(normalizedFieldLabel)} must contain object metric data.`);
+    }
+    const normalizedData = normalizeTpFpFnCollectorData(rawData);
     for (const [recordId, recordEntry] of Object.entries(normalizedData)) {
       rowLabels.add(recordId);
       const entriesByLabel = new Map();
@@ -321,7 +378,6 @@ export function filterTpFpFnAggregationByTotals(aggregation, minLabelTotal, minD
  */
 export function buildTpFpFnTabMap({
   plotGroups,
-  experimentEvaluations,
   labelFields,
   evalTabState,
   confusionTabsBy,
@@ -330,7 +386,7 @@ export function buildTpFpFnTabMap({
   shortenLabels = false,
 }) {
   const tabMap = new Map();
-  const normalizedExperimentEvaluations = normalizeTpFpFnLikeEvaluations(experimentEvaluations);
+  const collectionViewOptions = { evalTabState, getEvaluationEffectiveValue };
 
   const groupEntries = plotGroups
     .map((group, index) => ({
@@ -341,36 +397,36 @@ export function buildTpFpFnTabMap({
         `group ${index + 1}`,
         displayPlotGroupFieldName
       ),
-      evaluations: normalizeTpFpFnLikeEvaluations(group.evaluations),
+      collections: getTpFpFnCollectionViews(group.evaluations, collectionViewOptions),
     }))
-    .filter((entry) => entry.evaluations.length > 0);
+    .filter((entry) => entry.collections.length > 0);
 
   if (confusionTabsBy === "metric_field") {
-    for (const evaluation of normalizedExperimentEvaluations) {
-      const rawField = getEvaluationEffectiveValue(evaluation, "metric.field", evalTabState);
-      const fieldLabel = rawField || "(missing metric.field)";
-      if (!tabMap.has(fieldLabel)) {
-        tabMap.set(fieldLabel, {
-          label: getPlotDisplayLabel(fieldLabel, { shortenLabels }),
-          plots: [],
-        });
+    for (const groupEntry of groupEntries) {
+      const byField = new Map();
+      for (const collection of groupEntry.collections) {
+        for (const fieldLabel of collection.fields.keys()) {
+          if (!tabMap.has(fieldLabel)) {
+            tabMap.set(fieldLabel, {
+              label: getPlotDisplayLabel(fieldLabel, { shortenLabels }),
+              plots: [],
+            });
+          }
+          if (!byField.has(fieldLabel)) {
+            byField.set(fieldLabel, []);
+          }
+          byField.get(fieldLabel).push(collection);
+        }
       }
-    }
-
-    for (const [fieldKey, tab] of tabMap.entries()) {
-      for (const groupEntry of groupEntries) {
-        const evaluationsForFieldAndGroup = groupEntry.evaluations.filter((evaluation) => {
-          const rawField = getEvaluationEffectiveValue(evaluation, "metric.field", evalTabState);
-          const fieldLabel = rawField || "(missing metric.field)";
-          return fieldLabel === fieldKey;
-        });
-        if (evaluationsForFieldAndGroup.length === 0) {
+      for (const [fieldKey, collectionsForFieldAndGroup] of byField.entries()) {
+        const tab = tabMap.get(fieldKey);
+        if (!tab || collectionsForFieldAndGroup.length === 0) {
           continue;
         }
         tab.plots.push({
           label: groupEntry.label,
           fieldLabel: fieldKey,
-          evaluations: evaluationsForFieldAndGroup,
+          collections: collectionsForFieldAndGroup,
         });
       }
     }
@@ -379,20 +435,20 @@ export function buildTpFpFnTabMap({
 
   for (const groupEntry of groupEntries) {
     const byField = new Map();
-    for (const evaluation of groupEntry.evaluations) {
-      const rawField = getEvaluationEffectiveValue(evaluation, "metric.field", evalTabState);
-      const fieldLabel = rawField || "(missing metric.field)";
-      if (!byField.has(fieldLabel)) {
-        byField.set(fieldLabel, []);
+    for (const collection of groupEntry.collections) {
+      for (const fieldLabel of collection.fields.keys()) {
+        if (!byField.has(fieldLabel)) {
+          byField.set(fieldLabel, []);
+        }
+        byField.get(fieldLabel).push(collection);
       }
-      byField.get(fieldLabel).push(evaluation);
     }
     const plots = Array.from(byField.entries())
       .sort(([a], [b]) => plotSortCollator.compare(a, b))
-      .map(([fieldLabel, evaluations]) => ({
+      .map(([fieldLabel, collections]) => ({
         label: fieldLabel,
         fieldLabel,
-        evaluations,
+        collections,
       }));
     tabMap.set(groupEntry.key, { label: groupEntry.label, plots });
   }

@@ -11,8 +11,8 @@ import {
   createConfusionMatrixHeatmapSvg,
   filterConfusionMatrixAggregationByLabelTotal,
   getConfusionMatrixAggregation,
+  getConfusionMatrixCollectionViews,
   getConfusionMatrixTitle,
-  normalizeConfusionMatrixLikeEvaluations,
 } from "../../../../docs/eval-dashboard/assets/js/plots/confusion.js";
 import { createDocumentStub } from "./plots.dom-test-helpers.mjs";
 
@@ -20,29 +20,31 @@ const getEvaluationEffectiveValue = (evaluation, column) =>
   evaluation.overrides?.[column] ?? "";
 
 /**
- * Verify collection expansion and aligned mean/std aggregation for confusion matrices.
+ * Verify collection views and aligned mean/std aggregation for confusion matrices.
  */
-test("confusion helpers expand collection metrics and aggregate aligned cells", () => {
-  const expanded = normalizeConfusionMatrixLikeEvaluations([
+test("confusion helpers wrap collection metrics and aggregate aligned cells", () => {
+  const collectionData = {
+    field_a: { gold: { pred: 2 } },
+    field_b: { gold: { pred: 4 } },
+  };
+  const collections = getConfusionMatrixCollectionViews([
     {
       runDir: "run-a",
       jobReturnValue: { type: "ConfusionMatrixCollection" },
       overrides: { experiment: "exp" },
-      data: {
-        field_a: { gold: { pred: 2 } },
-        field_b: { gold: { pred: 4 } },
-      },
+      data: collectionData,
     },
   ]);
 
-  assert.deepEqual(expanded.map((evaluation) => evaluation.runDir), ["run-a#field_a", "run-a#field_b"]);
-  assert.deepEqual(expanded.map((evaluation) => evaluation.overrides["metric.field"]), ["field_a", "field_b"]);
-  assert.equal(countDistinctConfusionMatrixRuns(expanded), 1);
+  assert.equal(collections.length, 1);
+  assert.deepEqual(Array.from(collections[0].fields.keys()), ["field_a", "field_b"]);
+  assert.equal(collections[0].fields.get("field_a"), collectionData.field_a);
+  assert.equal(countDistinctConfusionMatrixRuns(collections), 1);
 
   const aggregation = getConfusionMatrixAggregation([
-    { data: { b: { x: 2 }, UNASSIGNABLE: { UNDETECTED: 1 } } },
-    { data: { b: { x: 4 }, a: { x: 2 } } },
-  ]);
+    { runDir: "r1", fields: new Map([["field_a", { b: { x: 2 }, UNASSIGNABLE: { UNDETECTED: 1 } }]]) },
+    { runDir: "r2", fields: new Map([["field_a", { b: { x: 4 }, a: { x: 2 } }]]) },
+  ], "field_a");
   assert.deepEqual(aggregation.rows, ["a", "b", "UNASSIGNABLE"]);
   assert.deepEqual(aggregation.cols, ["x", "UNDETECTED"]);
   assert.equal(aggregation.cells.get("b|#|x").mean, 3);
@@ -68,7 +70,6 @@ test("confusion helpers build tab maps for metric-field and group-tab modes", ()
   const metricFieldTabs = buildConfusionTabMap({
     activeExperiment: "exp",
     plotGroups,
-    experimentEvaluations: evaluations,
     labelFields: ["model"],
     evalTabState: {},
     confusionTabsBy: "metric_field",
@@ -78,11 +79,11 @@ test("confusion helpers build tab maps for metric-field and group-tab modes", ()
   });
   assert.deepEqual(Array.from(metricFieldTabs.keys()), ["field_a", "field_b"]);
   assert.equal(metricFieldTabs.get("field_a").plots[0].label, "model=a");
+  assert.equal(metricFieldTabs.get("field_a").plots[0].collections[0].fields.get("field_a"), evaluations[0].data);
 
   const groupTabs = buildConfusionTabMap({
     activeExperiment: "exp",
     plotGroups,
-    experimentEvaluations: evaluations,
     labelFields: ["model"],
     evalTabState: {},
     confusionTabsBy: "prediction_group",
@@ -95,11 +96,62 @@ test("confusion helpers build tab maps for metric-field and group-tab modes", ()
 
   assert.equal(
     getConfusionMatrixTitle({
-      experimentEvaluations: evaluations,
+      experimentEvaluations: metricFieldTabs.get("field_a").plots[0].collections,
       evalTabState: {},
       getEvaluationEffectiveValue,
     }),
-    "mixed metric.field: field_a, field_b"
+    "field_a"
+  );
+});
+
+/**
+ * Verify malformed confusion-matrix metric records fail at the adapter boundary.
+ */
+test("confusion collection views reject missing fields and malformed collection data", () => {
+  assert.throws(
+    () => getConfusionMatrixCollectionViews([
+      { runDir: "r1", overrides: {}, jobReturnValue: { type: "ConfusionMatrix" }, data: {} },
+    ], { evalTabState: {}, getEvaluationEffectiveValue }),
+    /ConfusionMatrix evaluation must define a non-empty metric\.field\./
+  );
+
+  assert.throws(
+    () => getConfusionMatrixCollectionViews([
+      { runDir: "r1", jobReturnValue: { type: "ConfusionMatrixCollection" }, data: [] },
+    ]),
+    /ConfusionMatrixCollection data must be an object mapping metric fields to metric data\./
+  );
+
+  assert.throws(
+    () => getConfusionMatrixCollectionViews([
+      {
+        runDir: "r1",
+        jobReturnValue: { type: "ConfusionMatrixCollection" },
+        data: { " field_a ": {}, field_a: {} },
+      },
+    ]),
+    /ConfusionMatrixCollection data contains duplicate metric field "field_a" after normalization\./
+  );
+
+  assert.throws(
+    () => getConfusionMatrixAggregation([
+      { runDir: "r1", fields: new Map([["field_b", {}]]) },
+    ], "field_a"),
+    /ConfusionMatrix collection view is missing metric field "field_a"\./
+  );
+
+  assert.throws(
+    () => getConfusionMatrixAggregation([
+      { runDir: "r1", fields: new Map([["field_a", { actual: [] }]]) },
+    ], "field_a"),
+    /ConfusionMatrix field "field_a" actual label "actual" must map to object predicted-label data\./
+  );
+
+  assert.throws(
+    () => getConfusionMatrixAggregation([
+      { runDir: "r1", fields: new Map([["field_a", { actual: { predicted: "1" } }]]) },
+    ], "field_a"),
+    /ConfusionMatrix field "field_a" cell "actual" -> "predicted" must be a finite number\./
   );
 });
 

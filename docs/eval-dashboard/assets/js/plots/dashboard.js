@@ -29,7 +29,6 @@ import {
   createConfusionMatrixHeatmapSvg,
   filterConfusionMatrixAggregationByLabelTotal,
   getConfusionMatrixAggregation,
-  getConfusionMatrixTitle,
 } from "./confusion.js";
 import {
   buildTpFpFnTabMap,
@@ -379,7 +378,6 @@ function renderConfusionMatrixPlots({
   const confusionTabMap = buildConfusionTabMap({
     activeExperiment,
     plotGroups,
-    experimentEvaluations,
     labelFields,
     evalTabState,
     confusionTabsBy: state.confusionTabsBy,
@@ -405,7 +403,7 @@ function renderConfusionMatrixPlots({
       getLabelText: (key) => confusionTabMap.get(key).label,
       getCount: (key) => {
         const entry = confusionTabMap.get(key);
-        return countDistinctConfusionMatrixRuns(entry.plots.flatMap((plot) => plot.evaluations));
+        return countDistinctConfusionMatrixRuns(entry.plots.flatMap((plot) => plot.collections));
       },
       getTitle: (key) => confusionTabMap.get(key).label,
     }),
@@ -424,7 +422,7 @@ function renderConfusionMatrixPlots({
 
   for (const plotEntry of activeConfusionEntry.plots) {
     const aggregation = filterConfusionMatrixAggregationByLabelTotal(
-      getConfusionMatrixAggregation(plotEntry.evaluations),
+      getConfusionMatrixAggregation(plotEntry.collections, plotEntry.fieldLabel),
       state.plotConfusionMinLabelTotal
     );
     if (!aggregation.rows.length || !aggregation.cols.length) {
@@ -435,12 +433,7 @@ function renderConfusionMatrixPlots({
     card.className = "plot-card";
     const title = documentLike.createElement("p");
     title.className = "plot-title";
-    const fieldTitle = getConfusionMatrixTitle({
-      experimentEvaluations: plotEntry.evaluations,
-      evalTabState,
-      getEvaluationEffectiveValue,
-      shortenLabels: state.plotShortenLabels,
-    });
+    const fieldTitle = getPlotDisplayLabel(plotEntry.fieldLabel, { shortenLabels: state.plotShortenLabels });
     title.textContent = state.confusionTabsBy === "metric_field"
       ? `${plotEntry.label} (mean ± std)`
       : `${fieldTitle} (mean ± std)`;
@@ -493,7 +486,6 @@ function renderTpFpFnPlots({
   const labelFields = varyingPlotGroupFields.length ? varyingPlotGroupFields : plotGroupFields;
   const tpfpfnTabMap = buildTpFpFnTabMap({
     plotGroups,
-    experimentEvaluations,
     labelFields,
     evalTabState,
     confusionTabsBy: state.confusionTabsBy,
@@ -518,11 +510,11 @@ function renderTpFpFnPlots({
       getLabelText: (key) => tpfpfnTabMap.get(key).label,
       getCount: (key) => {
         const entry = tpfpfnTabMap.get(key);
-        return entry.plots.reduce((sum, plot) => sum + plot.evaluations.length, 0);
+        return entry.plots.reduce((sum, plot) => sum + plot.collections.length, 0);
       },
       getTitle: (key) => {
         const entry = tpfpfnTabMap.get(key);
-        const evaluationCount = entry.plots.reduce((sum, plot) => sum + plot.evaluations.length, 0);
+        const evaluationCount = entry.plots.reduce((sum, plot) => sum + plot.collections.length, 0);
         return `${entry.label} (${evaluationCount} grouped evaluations)`;
       },
     }),
@@ -541,7 +533,7 @@ function renderTpFpFnPlots({
 
   for (const plotEntry of activeEntry.plots) {
     const aggregation = filterTpFpFnAggregationByTotals(
-      getTpFpFnCombinedAggregation(plotEntry.evaluations),
+      getTpFpFnCombinedAggregation(plotEntry.collections, plotEntry.fieldLabel),
       state.plotTpFpFnMinLabelTotal,
       state.plotTpFpFnMinDocumentTotal
     );
@@ -553,12 +545,7 @@ function renderTpFpFnPlots({
     card.className = "plot-card";
     const title = documentLike.createElement("p");
     title.className = "plot-title";
-    const fieldTitle = getConfusionMatrixTitle({
-      experimentEvaluations: plotEntry.evaluations,
-      evalTabState,
-      getEvaluationEffectiveValue,
-      shortenLabels: state.plotShortenLabels,
-    });
+    const fieldTitle = getPlotDisplayLabel(plotEntry.fieldLabel, { shortenLabels: state.plotShortenLabels });
     title.textContent = state.confusionTabsBy === "metric_field"
       ? `${plotEntry.label} (${aggregation.totalEvaluations} grouped evals)`
       : `${fieldTitle} (${aggregation.totalEvaluations} grouped evals)`;
