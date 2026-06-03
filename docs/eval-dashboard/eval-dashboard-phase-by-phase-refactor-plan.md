@@ -1393,12 +1393,50 @@ docs/eval-dashboard/assets/js/ui/
 - prediction-table header/row view-model builders where those can be kept DOM-free
 - prediction-table event hookup via callbacks exposed to `main.js`
 
+Based on the current `main.js`, the safest first-pass extraction order inside this module is:
+
+1. move the prediction-table header renderer as one unit, including:
+    - the section-header row
+    - the control-column header cells for `expand`, `select`, and `group_size`
+    - the per-column header row for data columns
+1. move the prediction grouped-row renderer, including the expand button, group-selection checkbox, and grouped value cells
+1. move the prediction member-row renderer for expanded groups
+1. only after those renderers are stable, consider smaller DOM-free helpers for any header-cell or row view-model shaping that emerges naturally
+
+The current duplicated prediction-table sub-seams most worth extracting are:
+
+- the `select` header control that combines a sort button with a select-all checkbox
+- the repeated static control-header wrapper used for sortable `expand` / `group_size` cells
+- the grouped-row expand-button rendering and state wiring
+- the grouped-row selection-checkbox rendering and state wiring
+- the grouped-row versus member-row cell population split
+
 #### `evaluation-table.js`
 
 - evaluation table rendering
 - evaluation grouping-row/member-row rendering
 - evaluation selection behavior when it is truly table-specific
 - evaluation-table header/row/selection view-model builders where those can be kept DOM-free
+
+Based on the current `main.js`, the safest first-pass extraction order inside this module is:
+
+1. move the evaluation-table header renderer as one unit, including:
+    - the section-header row
+    - the control-column header cells for `expand`, `select`, and `group_size`
+    - the per-column header row for evaluation columns
+    - the extra `eval_run_dir` meta column header
+1. move the grouped evaluation-row renderer, including row-click selection, expand-button behavior, and group-selection checkbox behavior
+1. move the member evaluation-row renderer, including the selected-run highlighting path
+1. only after those renderers are stable, split out any DOM-free row/header/selection view-model helpers that prove worth testing in isolation
+
+The current evaluation-table sub-seams most worth extracting are:
+
+- the `select` header control that combines a sort button with a select-all checkbox
+- the repeated static control-header wrapper used for sortable `expand` / `group_size` cells
+- the `eval_run_dir` meta-column header handling that currently sits outside the main evaluation-column loop
+- the grouped-row click-selection behavior that also resets `selectedEvalRunDir` and `activeEvalJsonTab`
+- the grouped-row expand-button and group-selection checkbox rendering
+- the member-row rendering path, which is similar to but not identical with the prediction member rows
 
 ### Design rule
 
@@ -1413,6 +1451,14 @@ Phase 10 modules should mostly:
 - remove existing one-line pass-through wrappers from `main.js` as call sites move; do **not** create fresh wrappers that only rename imported helpers
 
 If shared selection/header/expand-collapse logic becomes obvious while moving the tables, extend `ui/table-shared.js` rather than duplicating the same logic in `prediction-table.js` and `evaluation-table.js`.
+
+Given the current code, the most likely Phase 10B additions to `ui/table-shared.js` are:
+
+- a shared helper for the `select` header control that pairs a sort button with a select-all checkbox
+- a shared helper for the static sortable control-header cells (`expand` and `group_size`)
+- possibly a shared expand-button helper if the prediction and evaluation renderers can use one callback-driven contract without hiding selection state inside the helper
+
+Do **not** force the grouped-row selection checkbox or the evaluation row-click-selection behavior into `ui/table-shared.js` unless the resulting abstraction stays genuinely callback-driven and clearer than the duplicated inline logic.
 
 Phase-9-specific reminder for this phase:
 
@@ -1743,12 +1789,12 @@ ______________________________________________________________________
 
 Given the current repository state, the safest next implementation step is:
 
-1. extract prediction table rendering into `docs/eval-dashboard/assets/js/ui/prediction-table.js`
-1. extract evaluation table rendering into `docs/eval-dashboard/assets/js/ui/evaluation-table.js`
-1. factor any obviously shared header/selection/expand-collapse logic into `docs/eval-dashboard/assets/js/ui/table-shared.js` instead of duplicating it across the two renderers
+1. extract the prediction-table header renderer, grouped-row renderer, and member-row renderer into `docs/eval-dashboard/assets/js/ui/prediction-table.js` before trying to split out many tiny helpers
+1. extract the evaluation-table header renderer, grouped-row renderer, member-row renderer, and `eval_run_dir` meta-column handling into `docs/eval-dashboard/assets/js/ui/evaluation-table.js`
+1. factor only the clearly repeated control-header pieces into `docs/eval-dashboard/assets/js/ui/table-shared.js`, starting with the `select` header control and the static sortable `expand` / `group_size` header cells if those abstractions stay callback-driven and simpler than the inline code
 1. add JS-native tests for any DOM-free row/header/selection view-model helpers that emerge naturally from those extractions
 1. keep the Phase 9 shared DOM/table/status/browser helpers and the landed Phase 10A controls/tabs/JSON-pane modules as stable dependencies rather than reintroducing ad hoc helpers in `main.js`
 1. extend structural/docs smoke coverage as needed and add JS-native tests only for any newly extracted renderer-adjacent helpers that stay stable without a heavy DOM harness
 1. update the planning docs in `docs/eval-dashboard/` after Phase 10B lands, and confirm the change set complies with `CONTRIBUTING.md`
 
-That continues the next smallest behavior-preserving extraction boundary after Phase 10A: keep Python for structural/docs/fixture smoke coverage, keep the minimal JS-native runner for extracted dashboard logic, and next move the two large table renderers out of `main.js` before tackling the plotting/export modules.
+That continues the next smallest behavior-preserving extraction boundary after Phase 10A: keep Python for structural/docs/fixture smoke coverage, keep the minimal JS-native runner for extracted dashboard logic, and next move the two large table renderers out of `main.js` as coarse renderer units before chasing smaller helper/view-model splits or tackling the plotting/export modules.
