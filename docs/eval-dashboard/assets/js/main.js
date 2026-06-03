@@ -212,6 +212,10 @@ function displayPredictionColumnName(column) {
   return selectors.stripPredictionFieldPrefix(column);
 }
 
+function displayQualifiedPredictionColumnName(column) {
+  return selectors.getPredictionQualifiedDisplayName(column);
+}
+
 function displayEvalColumnName(column) {
   const normalizedColumn = selectors.stripEvaluationFieldPrefix(column);
   if (normalizedColumn.startsWith(JOB_RETURN_VALUE_PREFIX)) {
@@ -228,7 +232,7 @@ function displayGroupFieldName(column) {
   ) {
     return displayEvalColumnName(column);
   }
-  return displayPredictionColumnName(column);
+  return displayQualifiedPredictionColumnName(column);
 }
 
 function getPlotDisplayLabel(label) {

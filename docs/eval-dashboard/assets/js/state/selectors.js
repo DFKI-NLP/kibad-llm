@@ -81,6 +81,16 @@ export function stripPredictionFieldPrefix(column) {
 }
 
 /**
+ * Format prediction columns for mixed prediction/evaluation labels.
+ *
+ * @param {string} column - Column identifier.
+ * @returns {string} The display-oriented prediction-prefixed column identifier.
+ */
+export function getPredictionQualifiedDisplayName(column) {
+  return `prediction.${stripPredictionFieldPrefix(column)}`;
+}
+
+/**
  * Reconstruct the dashboard's serialized prediction payload shape.
  *
  * @param {object | null | undefined} prediction - Canonical prediction object.

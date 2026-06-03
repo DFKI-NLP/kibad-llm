@@ -340,6 +340,7 @@ test("renderPredictionTable renders extracted headers and forwards interaction c
   const languageHeader = columnRow.children[0];
   assert.equal(languageHeader.getAttribute("aria-sort"), "ascending");
   assert.equal(languageHeader.classList.contains("truncate-enabled"), true);
+  assert.equal(languageHeader.children[0].children[0].children[0].textContent, "Label:prediction.language");
   const groupByToggle = languageHeader.children[0].children[1].children[0];
   assert.equal(groupByToggle.getAttribute("aria-label"), "Group by Label:prediction.language");
   assert.equal(groupByToggle.checked, true);
