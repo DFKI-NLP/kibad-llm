@@ -1,5 +1,5 @@
 {
-  "baseline_version": 10,
+  "baseline_version": 11,
   "captured_at": "2026-06-03",
   "implementation_shape": {
     "runtime_entrypoint": "docs/eval-dashboard/index.html",
@@ -149,6 +149,32 @@
       "shared select-all and static control-header rendering"
     ]
   },
+  "phase_eleven_contract": {
+    "plot_module_root": "docs/eval-dashboard/assets/js/plots",
+    "plot_modules": [
+      "shared.js",
+      "bars.js",
+      "legend.js",
+      "confusion.js",
+      "tpfpfn.js",
+      "export.js"
+    ],
+    "js_test_files": [
+      "plots.shared.test.mjs",
+      "plots.bars.test.mjs",
+      "plots.confusion.test.mjs",
+      "plots.tpfpfn.test.mjs",
+      "plots.export.test.mjs"
+    ],
+    "focus": [
+      "shared plot display, legend, metric-path, plot-entry, and tab-map helpers",
+      "bar/error plot-entry, SVG renderer, and tab-grid module boundaries",
+      "grouped legend-model module boundaries",
+      "confusion matrix collection expansion, aggregation, filtering, and tab maps",
+      "TP/FP/FN collection expansion, aggregation, filtering, tab maps, palettes, and copy summaries",
+      "figure filename derivation, SVG export helpers, CRC32, and ZIP archive creation"
+    ]
+  },
   "feature_expectations": {
     "supports_local_load": true,
     "supports_github_url_load": true,
@@ -181,4 +207,3 @@
     "Use older runs only when needed to preserve compatibility with an earlier input shape."
   ]
 }
-

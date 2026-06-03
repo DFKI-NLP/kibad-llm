@@ -1,4 +1,4 @@
-"""Baseline artifact contract tests for the eval-dashboard baseline plus Phase 5 to Phase 10B JS contracts."""
+"""Baseline artifact contract tests for the eval-dashboard baseline plus Phase 5 to Phase 11 JS contracts."""
 
 import json
 
@@ -17,6 +17,7 @@ STATE_JS_ROOT = JS_ROOT / "state"
 UI_JS_ROOT = JS_ROOT / "ui"
 UTILS_JS_ROOT = JS_ROOT / "utils"
 BROWSER_JS_ROOT = JS_ROOT / "browser"
+PLOTS_JS_ROOT = JS_ROOT / "plots"
 TOKENS_CSS = CSS_ROOT / "tokens.css"
 BASELINE_SUMMARY = FIXTURE_DATA_ROOT / "eval_dashboard" / "baseline" / "baseline-summary.json"
 FIXTURE_ROOT = FIXTURE_DATA_ROOT / "eval_dashboard"
@@ -262,6 +263,30 @@ def test_baseline_summary_includes_phase_ten_b_table_contract() -> None:
     }
 
 
+def test_baseline_summary_includes_phase_eleven_plot_contract() -> None:
+    """Ensure the baseline artifact exposes the Phase 11 plot/export module contract."""
+
+    summary = _baseline_summary()
+    phase_eleven_contract = summary["phase_eleven_contract"]
+
+    assert phase_eleven_contract["plot_module_root"] == "docs/eval-dashboard/assets/js/plots"
+    assert set(phase_eleven_contract["plot_modules"]) == {
+        "bars.js",
+        "confusion.js",
+        "export.js",
+        "legend.js",
+        "shared.js",
+        "tpfpfn.js",
+    }
+    assert set(phase_eleven_contract["js_test_files"]) == {
+        "plots.bars.test.mjs",
+        "plots.confusion.test.mjs",
+        "plots.export.test.mjs",
+        "plots.shared.test.mjs",
+        "plots.tpfpfn.test.mjs",
+    }
+
+
 def test_current_runtime_matches_phase_six_state_contract() -> None:
     """Ensure the extracted Phase 6 state modules and selector/store tests exist and are wired into main.js."""
 
@@ -398,19 +423,41 @@ def test_current_runtime_matches_phase_ten_b_table_contract() -> None:
     }
 
 
+def test_current_runtime_matches_phase_eleven_plot_contract() -> None:
+    """Ensure the extracted Phase 11 plot modules and JS tests exist and are wired into main.js."""
+
+    summary = _baseline_summary()
+    phase_eleven_contract = summary["phase_eleven_contract"]
+    main_js = _main_js_entry()
+
+    for file_name in phase_eleven_contract["plot_modules"]:
+        assert (PLOTS_JS_ROOT / file_name).is_file()
+        assert f"./plots/{file_name}" in main_js
+    for file_name in phase_eleven_contract["js_test_files"]:
+        assert (JS_TEST_ROOT / file_name).is_file()
+    assert set(phase_eleven_contract["focus"]) == {
+        "shared plot display, legend, metric-path, plot-entry, and tab-map helpers",
+        "bar/error plot-entry, SVG renderer, and tab-grid module boundaries",
+        "grouped legend-model module boundaries",
+        "confusion matrix collection expansion, aggregation, filtering, and tab maps",
+        "TP/FP/FN collection expansion, aggregation, filtering, tab maps, palettes, and copy summaries",
+        "figure filename derivation, SVG export helpers, CRC32, and ZIP archive creation",
+    }
+
+
 def test_current_runtime_matches_phase_five_utility_contract() -> None:
     """Ensure the extracted Phase 5 utility modules and JS-native test assets exist."""
 
     summary = _baseline_summary()
     phase_five_contract = summary["phase_five_contract"]
-    main_js = _main_js_entry()
+    runtime_js = "\n".join(path.read_text(encoding="utf-8") for path in JS_ROOT.rglob("*.js"))
     js_package = _js_package_definition()
     js_test_readme = _js_test_readme()
 
     assert MAIN_JS_ENTRY.is_file()
     for file_name in phase_five_contract["utility_modules"]:
         assert (UTILS_JS_ROOT / file_name).is_file()
-        assert f"./utils/{file_name}" in main_js
+        assert f"/utils/{file_name}" in runtime_js or f"../utils/{file_name}" in runtime_js
     assert (PROJ_ROOT / phase_five_contract["js_test_root"]).is_dir()
     for file_name in phase_five_contract["js_test_files"]:
         assert (JS_TEST_ROOT / file_name).is_file()
