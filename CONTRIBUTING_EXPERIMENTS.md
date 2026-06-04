@@ -86,9 +86,12 @@ Always pass the shared experiment name:
        experiment/predict=<predict_experiment_config> \
        pdf_directory=<pdf_directory> \
        extractor/llm=<llm_config> \
-       seed=42 \
+       seed=42,1337,7331 \
        --multirun"
 ```
+
+> [!NOTE]
+> We want relieble evaluation results, so always set a random seed for prediction runs. Use multiple seeds when possible to get a better estimate of the true performance.
 
 If the run used cluster-local `logs/` and `predictions/`, copy the relevant artefacts into `data/prediction_results` from within that directory:
 
