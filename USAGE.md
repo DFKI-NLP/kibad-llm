@@ -67,7 +67,7 @@ DB_USER=<username-here>
 DB_PASSWORD=<password-here>
 ```
 
-Then, run the faktencheck database with podman (see [podman/faktencheck-db/README.md](./podman/faktencheck-db/README.md) for instructions).
+Then, run the faktencheck database with podman (see [podman/faktencheck-db/README.md](/podman/faktencheck-db/README.md) for instructions).
 
 #### DB conversion
 
@@ -95,7 +95,7 @@ uv run -m kibad_llm.data_integration.synch_nextcloud_with_cluster
 
 #### Prerequisite: LLM Hosting
 
-Follow the instructions [here for a quickstart](./models/README.md#quickstart), [here for an all-in-one script](./models/README.md#all-in-one-run-script) or [here for general instructions on uv and the cluster](./models/README.md#the-two-ways-to-use-uv-on-pegasus).
+Follow the instructions [here for a quickstart](/models/README.md#quickstart), [here for an all-in-one script](/models/README.md#all-in-one-run-script) or [here for general instructions on uv and the cluster](/models/README.md#the-two-ways-to-use-uv-on-pegasus).
 
 #### Inference
 

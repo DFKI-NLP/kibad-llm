@@ -1,5 +1,5 @@
 """
-Properdocs hook that rewrites GitHub-style README links to properdocs page URLs.
+Properdocs hook that rewrites GitHub-style repository links to properdocs page URLs.
 
 The READMEs are included via snippets, so their links (e.g. ./models/README.md)
 are relative to the GitHub repo root and can't be resolved by properdocs. This
@@ -10,9 +10,10 @@ import re
 
 # Maps href patterns (GitHub paths) to properdocs page directories
 _REWRITES = [
-    (re.compile(r'href="\./models/README\.md(#[^"]*)?'), "models-readme/"),
-    (re.compile(r'href="\./podman/faktencheck-db/README\.md(#[^"]*)?'), "podman-readme/"),
+    (re.compile(r'href="/models/README\.md(#[^"]*)?'), "models-readme/"),
+    (re.compile(r'href="/podman/faktencheck-db/README\.md(#[^"]*)?'), "podman-readme/"),
     (re.compile(r'href="/CONTRIBUTING\.md(#[^"]*)?'), "contributing/"),
+    (re.compile(r'href="/CONTRIBUTING_CODE\.md(#[^"]*)?'), "contributing-code/"),
     (re.compile(r'href="/USAGE\.md(#[^"]*)?'), "usage/"),
 ]
 

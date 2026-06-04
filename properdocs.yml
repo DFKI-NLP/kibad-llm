@@ -38,7 +38,9 @@ nav:
 - LLM usage instructions: models-readme.md
 - Faktencheck database instructions: podman-readme.md
 - Evaluation dashboard: eval-dashboard-docs.md
-- Contribution guidelines: contributing.md
+- Contribution guidelines:
+  - Overview: contributing.md
+  - Source Code: contributing-code.md
 # defer to gen-files + literate-nav
 - KIBA-D code Reference: reference/kibad_llm/
 
@@ -54,6 +56,7 @@ plugins:
       'models/README.md': 'models-readme.md'
       'podman/faktencheck-db/README.md': 'podman-readme.md'
       'CONTRIBUTING.md': 'contributing.md'
+      'CONTRIBUTING_CODE.md': 'contributing-code.md'
 - gen-files:
     scripts:
     - scripts/build_docs.py
