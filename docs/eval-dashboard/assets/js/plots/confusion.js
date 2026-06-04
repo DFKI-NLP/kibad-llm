@@ -19,6 +19,7 @@ import { formatRounded, interpolateColor, meanAndStd, normalizeValue } from "../
 import {
   getMetricCollectionSourceRunDir,
   getMetricCollectionView,
+  getMetricPreparedDataContainer,
   getGroupLabelForFields,
   getPlotDisplayLabel,
   isMetricDataRecord,
@@ -104,6 +105,87 @@ export function getConfusionMatrixTitle({
     .join(", ")}`;
 }
 
+
+/**
+ * Resolves raw matrix data for a normalized confusion metric field.
+ *
+ * @param {object} evaluation - Confusion collection view or direct evaluation.
+ * @param {string} normalizedFieldLabel - Normalized metric.field label.
+ * @returns {object|undefined} Raw confusion matrix data for the field.
+ * @throws {Error} If a collection view does not contain the requested field.
+ */
+function getConfusionMatrixFieldData(evaluation, normalizedFieldLabel) {
+  if (evaluation?.fields instanceof Map) {
+    if (!evaluation.fields.has(normalizedFieldLabel)) {
+      throw new Error(`ConfusionMatrix collection view is missing metric field ${JSON.stringify(normalizedFieldLabel)}.`);
+    }
+    return evaluation.fields.get(normalizedFieldLabel);
+  }
+  return evaluation?.data;
+}
+
+/**
+ * Lazily prepares one evaluation's confusion data for aggregation.
+ *
+ * The prepared shape stores the row-label union, column-label union, and sparse
+ * cell lookup for one evaluation/field. Cross-run alignment and mean/std
+ * aggregation remain in `getConfusionMatrixAggregation()`.
+ *
+ * @param {object} evaluation - Confusion collection view or direct evaluation.
+ * @param {string} normalizedFieldLabel - Normalized metric.field label.
+ * @returns {{rowLabels: Set<string>, colLabels: Set<string>, cells: Map<string, number>}} Prepared per-evaluation data.
+ * @throws {Error} If the requested field data violates the confusion matrix contract.
+ */
+function prepareConfusionMatrixEvaluationData(evaluation, normalizedFieldLabel) {
+  const cache = getMetricPreparedDataContainer(evaluation);
+  if (cache && Object.hasOwn(cache, normalizedFieldLabel)) {
+    return cache[normalizedFieldLabel];
+  }
+
+  const evalData = getConfusionMatrixFieldData(evaluation, normalizedFieldLabel);
+  if (!isMetricDataRecord(evalData)) {
+    throw new Error(`ConfusionMatrix field ${JSON.stringify(normalizedFieldLabel)} must contain object metric data.`);
+  }
+
+  const rowLabels = new Set();
+  const colLabels = new Set();
+  const cells = new Map();
+  // The raw matrix shape is actual label -> predicted label -> count.
+  for (const [actualLabel, predictedMap] of Object.entries(evalData)) {
+    const normalizedActualLabel = normalizeValue(actualLabel).trim();
+    if (!normalizedActualLabel) {
+      throw new Error(`ConfusionMatrix field ${JSON.stringify(normalizedFieldLabel)} contains an empty actual label.`);
+    }
+    if (!isMetricDataRecord(predictedMap)) {
+      throw new Error(
+        `ConfusionMatrix field ${JSON.stringify(normalizedFieldLabel)} actual label ${JSON.stringify(actualLabel)} must map to object predicted-label data.`
+      );
+    }
+    for (const [predictedLabel, rawValue] of Object.entries(predictedMap)) {
+      const normalizedPredictedLabel = normalizeValue(predictedLabel).trim();
+      if (!normalizedPredictedLabel) {
+        throw new Error(
+          `ConfusionMatrix field ${JSON.stringify(normalizedFieldLabel)} actual label ${JSON.stringify(actualLabel)} contains an empty predicted label.`
+        );
+      }
+      if (!Number.isFinite(rawValue)) {
+        throw new Error(
+          `ConfusionMatrix field ${JSON.stringify(normalizedFieldLabel)} cell ${JSON.stringify(actualLabel)} -> ${JSON.stringify(predictedLabel)} must be a finite number.`
+        );
+      }
+      rowLabels.add(actualLabel);
+      colLabels.add(predictedLabel);
+      cells.set(`${actualLabel}|#|${predictedLabel}`, Number(rawValue));
+    }
+  }
+
+  const prepared = { rowLabels, colLabels, cells };
+  if (cache) {
+    cache[normalizedFieldLabel] = prepared;
+  }
+  return prepared;
+}
+
 /**
  * Aggregates one confusion-matrix field across collection views into mean/std values.
  *
@@ -121,58 +203,18 @@ export function getConfusionMatrixAggregation(experimentEvaluations, fieldLabel)
   const evaluationCells = [];
 
   for (const evaluation of experimentEvaluations) {
-    // Build one sparse lookup map for this evaluation/run. Later aggregation
-    // aligns these per-run maps by the same `${actual}|#|${predicted}` key.
-    const map = new Map();
-    let evalData;
-    if (evaluation?.fields instanceof Map) {
-      if (!evaluation.fields.has(normalizedFieldLabel)) {
-        throw new Error(`ConfusionMatrix collection view is missing metric field ${JSON.stringify(normalizedFieldLabel)}.`);
-      }
-      // Collection metrics may contain several metric.field values; only the
-      // currently selected field is used for this aggregation.
-      evalData = evaluation.fields.get(normalizedFieldLabel);
-    } else {
-      // Non-collection inputs are already scoped to a single confusion matrix.
-      evalData = evaluation?.data;
+    const prepared = prepareConfusionMatrixEvaluationData(evaluation, normalizedFieldLabel);
+    // Keep the union of labels seen in any run so absent cells can still be
+    // represented as zero during the later mean/std calculation.
+    for (const actualLabel of prepared.rowLabels) {
+      rowLabels.add(actualLabel);
     }
-    if (!isMetricDataRecord(evalData)) {
-      throw new Error(`ConfusionMatrix field ${JSON.stringify(normalizedFieldLabel)} must contain object metric data.`);
-    }
-    // The raw matrix shape is actual label -> predicted label -> count.
-    for (const [actualLabel, predictedMap] of Object.entries(evalData)) {
-      const normalizedActualLabel = normalizeValue(actualLabel).trim();
-      if (!normalizedActualLabel) {
-        throw new Error(`ConfusionMatrix field ${JSON.stringify(normalizedFieldLabel)} contains an empty actual label.`);
-      }
-      if (!isMetricDataRecord(predictedMap)) {
-        throw new Error(
-          `ConfusionMatrix field ${JSON.stringify(normalizedFieldLabel)} actual label ${JSON.stringify(actualLabel)} must map to object predicted-label data.`
-        );
-      }
-      for (const [predictedLabel, rawValue] of Object.entries(predictedMap)) {
-        const normalizedPredictedLabel = normalizeValue(predictedLabel).trim();
-        if (!normalizedPredictedLabel) {
-          throw new Error(
-            `ConfusionMatrix field ${JSON.stringify(normalizedFieldLabel)} actual label ${JSON.stringify(actualLabel)} contains an empty predicted label.`
-          );
-        }
-        if (!Number.isFinite(rawValue)) {
-          throw new Error(
-            `ConfusionMatrix field ${JSON.stringify(normalizedFieldLabel)} cell ${JSON.stringify(actualLabel)} -> ${JSON.stringify(predictedLabel)} must be a finite number.`
-          );
-        }
-        const value = Number(rawValue);
-        // Keep the union of labels seen in any run so absent cells can still be
-        // represented as zero during the later mean/std calculation.
-        rowLabels.add(actualLabel);
-        colLabels.add(predictedLabel);
-        map.set(`${actualLabel}|#|${predictedLabel}`, value);
-      }
+    for (const predictedLabel of prepared.colLabels) {
+      colLabels.add(predictedLabel);
     }
     // Store this run's sparse cell map as one sample in the cross-run
     // aggregation.
-    evaluationCells.push(map);
+    evaluationCells.push(prepared.cells);
   }
 
   const sortWithForcedLast = (values, forcedLast) =>

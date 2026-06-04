@@ -11,7 +11,7 @@ import {
 import { renderDownloadFiguresButtonState } from "../ui/status.js";
 import { createTimingCollector } from "../utils/timing.js";
 import {
-  collectNumericMetricLeafPaths,
+  collectPreparedNumericMetricPaths,
   getGroupLabelForFields,
   getVaryingFields,
 } from "./shared.js";
@@ -652,14 +652,7 @@ function renderBarLikePlots({
 }) {
   const metricPaths = timing.time(
     "bar metric path discovery",
-    () => Array.from(
-      experimentEvaluations.reduce(
-        (acc, evaluation) => collectNumericMetricLeafPaths(evaluation.data, [], acc),
-        new Map()
-      )
-    )
-      .map(([, pathParts]) => ({ parts: pathParts, label: pathParts.join(".") }))
-      .sort((a, b) => a.label.localeCompare(b.label))
+    () => collectPreparedNumericMetricPaths(experimentEvaluations)
   );
 
   if (metricPaths.length === 0) {

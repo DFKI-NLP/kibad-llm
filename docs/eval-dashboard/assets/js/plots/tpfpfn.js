@@ -20,6 +20,7 @@ import {
   TP_FP_FN_KEYS,
   getGroupLabelForFields,
   getMetricCollectionView,
+  getMetricPreparedDataContainer,
   getPlotDisplayLabel,
   isMetricDataRecord,
   plotSortCollator,
@@ -191,6 +192,76 @@ export function normalizeTpFpFnCollectorData(rawData) {
 }
 
 /**
+ * Resolves raw collector data for a normalized TP/FP/FN metric field.
+ *
+ * @param {object} evaluation - TP/FP/FN collection view or direct evaluation.
+ * @param {string} normalizedFieldLabel - Normalized metric.field label.
+ * @returns {object|undefined} Raw TP/FP/FN collector data for the field.
+ * @throws {Error} If a collection view does not contain the requested field.
+ */
+function getTpFpFnFieldData(evaluation, normalizedFieldLabel) {
+  if (evaluation?.fields instanceof Map) {
+    if (!evaluation.fields.has(normalizedFieldLabel)) {
+      throw new Error(`TpFpFnCollector collection view is missing metric field ${JSON.stringify(normalizedFieldLabel)}.`);
+    }
+    return evaluation.fields.get(normalizedFieldLabel);
+  }
+  return evaluation?.data;
+}
+
+/**
+ * Lazily prepares one evaluation's TP/FP/FN data for aggregation.
+ *
+ * The prepared shape stores the document-label union and sparse outcome-state
+ * lookup for one evaluation/field. Cross-run alignment and outcome counting
+ * remain in `getTpFpFnCombinedAggregation()`.
+ *
+ * @param {object} evaluation - TP/FP/FN collection view or direct evaluation.
+ * @param {string} normalizedFieldLabel - Normalized metric.field label.
+ * @returns {{rowLabels: Set<string>, colLabels: Set<string>, cells: Map<string, object>}} Prepared per-evaluation data.
+ * @throws {Error} If the requested field data violates the TP/FP/FN collector contract.
+ */
+function prepareTpFpFnEvaluationData(evaluation, normalizedFieldLabel) {
+  const cache = getMetricPreparedDataContainer(evaluation);
+  if (cache && Object.hasOwn(cache, normalizedFieldLabel)) {
+    return cache[normalizedFieldLabel];
+  }
+
+  const rawData = getTpFpFnFieldData(evaluation, normalizedFieldLabel);
+  if (!isMetricDataRecord(rawData)) {
+    throw new Error(`TpFpFnCollector field ${JSON.stringify(normalizedFieldLabel)} must contain object metric data.`);
+  }
+
+  const rowLabels = new Set();
+  const colLabels = new Set();
+  const cells = new Map();
+  const normalizedData = normalizeTpFpFnCollectorData(rawData);
+  for (const [recordId, recordEntry] of Object.entries(normalizedData)) {
+    rowLabels.add(recordId);
+    const entriesByLabel = new Map();
+    for (const outcomeKey of TP_FP_FN_KEYS) {
+      const labels = Array.isArray(recordEntry?.[outcomeKey]) ? recordEntry[outcomeKey] : [];
+      for (const label of labels) {
+        colLabels.add(label);
+        if (!entriesByLabel.has(label)) {
+          entriesByLabel.set(label, { tp: false, fp: false, fn: false });
+        }
+        entriesByLabel.get(label)[outcomeKey] = true;
+      }
+    }
+    for (const [label, rowState] of entriesByLabel.entries()) {
+      cells.set(`${recordId}|#|${label}`, rowState);
+    }
+  }
+
+  const prepared = { rowLabels, colLabels, cells };
+  if (cache) {
+    cache[normalizedFieldLabel] = prepared;
+  }
+  return prepared;
+}
+
+/**
  * Aggregates one TP/FP/FN collector field across collection views.
  *
  * @param {Array<object>} experimentEvaluations - TP/FP/FN collection views.
@@ -208,39 +279,15 @@ export function getTpFpFnCombinedAggregation(experimentEvaluations, fieldLabel) 
   const evaluationLabels = [];
 
   for (const [evaluationIndex, evaluation] of experimentEvaluations.entries()) {
-    const map = new Map();
     evaluationLabels.push(normalizeValue(evaluation?.runDir) || `evaluation ${evaluationIndex + 1}`);
-    let rawData;
-    if (evaluation?.fields instanceof Map) {
-      if (!evaluation.fields.has(normalizedFieldLabel)) {
-        throw new Error(`TpFpFnCollector collection view is missing metric field ${JSON.stringify(normalizedFieldLabel)}.`);
-      }
-      rawData = evaluation.fields.get(normalizedFieldLabel);
-    } else {
-      rawData = evaluation?.data;
-    }
-    if (!isMetricDataRecord(rawData)) {
-      throw new Error(`TpFpFnCollector field ${JSON.stringify(normalizedFieldLabel)} must contain object metric data.`);
-    }
-    const normalizedData = normalizeTpFpFnCollectorData(rawData);
-    for (const [recordId, recordEntry] of Object.entries(normalizedData)) {
+    const prepared = prepareTpFpFnEvaluationData(evaluation, normalizedFieldLabel);
+    for (const recordId of prepared.rowLabels) {
       rowLabels.add(recordId);
-      const entriesByLabel = new Map();
-      for (const outcomeKey of TP_FP_FN_KEYS) {
-        const labels = Array.isArray(recordEntry?.[outcomeKey]) ? recordEntry[outcomeKey] : [];
-        for (const label of labels) {
-          colLabels.add(label);
-          if (!entriesByLabel.has(label)) {
-            entriesByLabel.set(label, { tp: false, fp: false, fn: false });
-          }
-          entriesByLabel.get(label)[outcomeKey] = true;
-        }
-      }
-      for (const [label, rowState] of entriesByLabel.entries()) {
-        map.set(`${recordId}|#|${label}`, rowState);
-      }
     }
-    evaluationCells.push(map);
+    for (const label of prepared.colLabels) {
+      colLabels.add(label);
+    }
+    evaluationCells.push(prepared.cells);
   }
 
   const rows = Array.from(rowLabels).sort((a, b) => plotSortCollator.compare(a, b));

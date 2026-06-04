@@ -63,6 +63,67 @@ test("tpfpfn helpers normalize collector data and aggregate row states", () => {
 });
 
 /**
+ * Verify TP/FP/FN aggregation caches prepared per-evaluation field data lazily.
+ */
+test("tpfpfn aggregation stores prepared field data on the source evaluation", () => {
+  const evaluation = {
+    runDir: "r1",
+    jobReturnValue: { type: "TpFpFnCollectorCollection" },
+    data: { field_a: { doc: { tp: ["A"], fp: [], fn: [] } } },
+  };
+  const [collection] = getTpFpFnCollectionViews([evaluation]);
+
+  const aggregation = getTpFpFnCombinedAggregation([collection], "field_a");
+
+  assert.deepEqual(aggregation.cells.get("doc|#|A").counts, { tp: 1, fp: 0, fn: 0, empty: 0 });
+  assert.ok(evaluation.dataPrepared.field_a);
+  assert.deepEqual(Object.keys(evaluation), ["runDir", "jobReturnValue", "data"]);
+  assert.deepEqual(evaluation.dataPrepared.field_a.cells.get("doc|#|A"), { tp: true, fp: false, fn: false });
+});
+
+/**
+ * Verify cache lookup handles metric fields that collide with object prototype names.
+ */
+test("tpfpfn aggregation caches prototype-named metric fields safely", () => {
+  const evaluation = {
+    runDir: "r1",
+    jobReturnValue: { type: "TpFpFnCollectorCollection" },
+    data: { toString: { doc: { tp: ["A"], fp: [], fn: [] } } },
+  };
+  const [collection] = getTpFpFnCollectionViews([evaluation]);
+
+  const aggregation = getTpFpFnCombinedAggregation([collection], "toString");
+
+  assert.deepEqual(aggregation.cells.get("doc|#|A").counts, { tp: 1, fp: 0, fn: 0, empty: 0 });
+  assert.deepEqual(evaluation.dataPrepared.toString.cells.get("doc|#|A"), { tp: true, fp: false, fn: false });
+});
+
+/**
+ * Verify existing plain prepared-data containers are normalized before caching.
+ */
+test("tpfpfn aggregation normalizes existing prepared containers for prototype keys", () => {
+  const data = {};
+  Object.defineProperty(data, "__proto__", {
+    value: { doc: { tp: ["A"], fp: [], fn: [] } },
+    enumerable: true,
+    configurable: true,
+  });
+  const evaluation = {
+    runDir: "r1",
+    jobReturnValue: { type: "TpFpFnCollectorCollection" },
+    dataPrepared: {},
+    data,
+  };
+  const [collection] = getTpFpFnCollectionViews([evaluation]);
+
+  const aggregation = getTpFpFnCombinedAggregation([collection], "__proto__");
+
+  assert.deepEqual(aggregation.cells.get("doc|#|A").counts, { tp: 1, fp: 0, fn: 0, empty: 0 });
+  assert.equal(Object.getPrototypeOf(evaluation.dataPrepared), null);
+  assert.deepEqual(evaluation.dataPrepared.__proto__.cells.get("doc|#|A"), { tp: true, fp: false, fn: false });
+});
+
+/**
  * Verify TP/FP/FN collection views, tab grouping, cell summaries, and palette output.
  */
 test("tpfpfn helpers wrap collection metrics, build tab maps, and summarize cells", () => {

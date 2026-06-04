@@ -56,6 +56,67 @@ test("confusion helpers wrap collection metrics and aggregate aligned cells", ()
 });
 
 /**
+ * Verify confusion aggregation caches prepared per-evaluation field data lazily.
+ */
+test("confusion aggregation stores prepared field data on the source evaluation", () => {
+  const evaluation = {
+    runDir: "r1",
+    jobReturnValue: { type: "ConfusionMatrixCollection" },
+    data: { field_a: { gold: { pred: 2 } } },
+  };
+  const [collection] = getConfusionMatrixCollectionViews([evaluation]);
+
+  const aggregation = getConfusionMatrixAggregation([collection], "field_a");
+
+  assert.equal(aggregation.cells.get("gold|#|pred").mean, 2);
+  assert.ok(evaluation.dataPrepared.field_a);
+  assert.deepEqual(Object.keys(evaluation), ["runDir", "jobReturnValue", "data"]);
+  assert.equal(evaluation.dataPrepared.field_a.cells.get("gold|#|pred"), 2);
+});
+
+/**
+ * Verify cache lookup handles metric fields that collide with object prototype names.
+ */
+test("confusion aggregation caches prototype-named metric fields safely", () => {
+  const evaluation = {
+    runDir: "r1",
+    jobReturnValue: { type: "ConfusionMatrixCollection" },
+    data: { toString: { gold: { pred: 3 } } },
+  };
+  const [collection] = getConfusionMatrixCollectionViews([evaluation]);
+
+  const aggregation = getConfusionMatrixAggregation([collection], "toString");
+
+  assert.equal(aggregation.cells.get("gold|#|pred").mean, 3);
+  assert.equal(evaluation.dataPrepared.toString.cells.get("gold|#|pred"), 3);
+});
+
+/**
+ * Verify existing plain prepared-data containers are normalized before caching.
+ */
+test("confusion aggregation normalizes existing prepared containers for prototype keys", () => {
+  const data = {};
+  Object.defineProperty(data, "__proto__", {
+    value: { gold: { pred: 4 } },
+    enumerable: true,
+    configurable: true,
+  });
+  const evaluation = {
+    runDir: "r1",
+    jobReturnValue: { type: "ConfusionMatrixCollection" },
+    dataPrepared: {},
+    data,
+  };
+  const [collection] = getConfusionMatrixCollectionViews([evaluation]);
+
+  const aggregation = getConfusionMatrixAggregation([collection], "__proto__");
+
+  assert.equal(aggregation.cells.get("gold|#|pred").mean, 4);
+  assert.equal(Object.getPrototypeOf(evaluation.dataPrepared), null);
+  assert.equal(evaluation.dataPrepared.__proto__.cells.get("gold|#|pred"), 4);
+});
+
+/**
  * Verify confusion tab-map construction for both metric-field and prediction-group modes.
  */
 test("confusion helpers build tab maps for metric-field and group-tab modes", () => {

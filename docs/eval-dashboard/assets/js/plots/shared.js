@@ -2,7 +2,6 @@
  * Shared DOM-free plot helpers for the eval dashboard.
  */
 
-import { getValueAtPath } from "../utils/flatten.js";
 import { splitLabelByLastDot } from "../utils/text.js";
 import { meanAndStd, normalizeValue } from "../utils/values.js";
 
@@ -30,6 +29,43 @@ export function getMetricCollectionSourceRunDir(evaluation) {
  */
 export function isMetricDataRecord(value) {
   return Boolean(value && typeof value === "object" && !Array.isArray(value));
+}
+
+/**
+ * Resolves the non-enumerable prepared-data container for a metric evaluation.
+ *
+ * Collection views keep the raw dashboard evaluation on `.evaluation`; caching
+ * on that source record lets rebuilt views reuse the same prepared data. Direct
+ * aggregation inputs fall back to the object they received.
+ *
+ * @param {object} evaluation - Collection view or direct evaluation.
+ * @returns {object} Mutable prepared-data container.
+ * @throws {Error} If the input cannot own prepared data.
+ */
+export function getMetricPreparedDataContainer(evaluation) {
+  const cacheTarget = evaluation?.evaluation && typeof evaluation.evaluation === "object"
+    ? evaluation.evaluation
+    : evaluation;
+  if (!cacheTarget || typeof cacheTarget !== "object") {
+    throw new Error("Metric preparation cache target must be an object.");
+  }
+  if (!cacheTarget.dataPrepared || typeof cacheTarget.dataPrepared !== "object") {
+    Object.defineProperty(cacheTarget, "dataPrepared", {
+      value: Object.create(null),
+      enumerable: false,
+      configurable: true,
+      writable: true,
+    });
+  } else if (Object.getPrototypeOf(cacheTarget.dataPrepared) !== null) {
+    const preparedData = Object.assign(Object.create(null), cacheTarget.dataPrepared);
+    Object.defineProperty(cacheTarget, "dataPrepared", {
+      value: preparedData,
+      enumerable: false,
+      configurable: true,
+      writable: true,
+    });
+  }
+  return cacheTarget.dataPrepared;
 }
 
 /**
@@ -367,6 +403,83 @@ export function collectNumericMetricLeafPaths(value, parts = [], out = new Map()
 }
 
 /**
+ * Encodes metric path parts into the stable key used by prepared numeric data.
+ *
+ * @param {Array<string>} parts - Metric path parts.
+ * @returns {string} Encoded metric path key.
+ */
+export function getNumericMetricPathKey(parts) {
+  return (parts || []).join("|#|");
+}
+
+/**
+ * Recursively collects numeric metric paths and values for one evaluation.
+ *
+ * @param {*} value - Metric data value to inspect.
+ * @param {Array<string>} [parts] - Current path parts during recursion.
+ * @param {Map<string, object>} [metricPaths] - Path accumulator keyed by encoded path.
+ * @param {Map<string, number>} [values] - Numeric value accumulator keyed by encoded path.
+ * @returns {{metricPaths: Map<string, object>, values: Map<string, number>}} Prepared numeric data.
+ */
+function collectNumericMetricLeafData(value, parts = [], metricPaths = new Map(), values = new Map()) {
+  if (!value || typeof value !== "object") {
+    return { metricPaths, values };
+  }
+  for (const [key, child] of Object.entries(value)) {
+    const pathParts = [...parts, key];
+    if (typeof child === "number" && Number.isFinite(child)) {
+      const pathKey = getNumericMetricPathKey(pathParts);
+      metricPaths.set(pathKey, { key: pathKey, parts: pathParts, label: pathParts.join(".") });
+      values.set(pathKey, child);
+      continue;
+    }
+    if (child && typeof child === "object" && !Array.isArray(child)) {
+      collectNumericMetricLeafData(child, pathParts, metricPaths, values);
+    }
+  }
+  return { metricPaths, values };
+}
+
+/**
+ * Lazily prepares one evaluation's numeric metric data for bar/error plots.
+ *
+ * The prepared shape stores metric path metadata and flat per-path numeric
+ * values. `buildPlotEntries()` uses the same prepared values for aggregation
+ * and exposes them as point samples for future `Download data` support.
+ *
+ * @param {object} evaluation - Raw evaluation record with metric data.
+ * @returns {{metricPaths: Map<string, object>, values: Map<string, number>}} Prepared per-evaluation numeric data.
+ */
+export function prepareNumericMetricEvaluationData(evaluation) {
+  const cache = getMetricPreparedDataContainer(evaluation);
+  if (cache?.numericMetrics) {
+    return cache.numericMetrics;
+  }
+
+  const prepared = collectNumericMetricLeafData(evaluation?.data);
+  if (cache) {
+    cache.numericMetrics = prepared;
+  }
+  return prepared;
+}
+
+/**
+ * Collects the union of numeric metric paths from prepared evaluation data.
+ *
+ * @param {Array<object>} evaluations - Evaluation records.
+ * @returns {Array<object>} Sorted metric path records.
+ */
+export function collectPreparedNumericMetricPaths(evaluations) {
+  const metricPaths = new Map();
+  for (const evaluation of evaluations || []) {
+    for (const [key, metricPath] of prepareNumericMetricEvaluationData(evaluation).metricPaths) {
+      metricPaths.set(key, metricPath);
+    }
+  }
+  return Array.from(metricPaths.values()).sort((a, b) => a.label.localeCompare(b.label));
+}
+
+/**
  * Splits a metric label into prefix and suffix at the final dot.
  *
  * @param {string} label - Metric label.
@@ -399,11 +512,24 @@ export function buildPlotEntries({
 }) {
   const entries = [];
   for (const metricPath of metricPaths) {
+    const metricPathKey = metricPath.key || getNumericMetricPathKey(metricPath.parts);
     const points = [];
     plotGroups.forEach((group, index) => {
-      const values = group.evaluations
-        .map((evaluation) => Number(getValueAtPath(evaluation.data, metricPath.parts)))
-        .filter((value) => Number.isFinite(value));
+      const samples = group.evaluations
+        .map((evaluation) => {
+          const value = prepareNumericMetricEvaluationData(evaluation).values.get(metricPathKey);
+          if (!Number.isFinite(value)) {
+            return null;
+          }
+          return {
+            runDir: normalizeValue(evaluation?.runDir),
+            metricLabel: metricPath.label,
+            metricPath: metricPath.parts,
+            value,
+          };
+        })
+        .filter(Boolean);
+      const values = samples.map((sample) => sample.value);
       const stats = meanAndStd(values);
       if (!stats) {
         return;
@@ -429,6 +555,7 @@ export function buildPlotEntries({
         displaySeries: displaySeriesLabel,
         mean: stats.mean,
         std: stats.std,
+        samples,
       });
     });
     if (!points.length) {

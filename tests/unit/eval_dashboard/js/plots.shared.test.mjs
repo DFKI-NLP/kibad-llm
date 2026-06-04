@@ -11,7 +11,9 @@ import {
   buildGroupedLegendModel,
   buildPlotEntries,
   collectNumericMetricLeafPaths,
+  collectPreparedNumericMetricPaths,
   getLegendItemsForPoints,
+  prepareNumericMetricEvaluationData,
   getPlotDisplayLabel,
   getPlotTitleLabel,
   getVaryingFields,
@@ -62,6 +64,62 @@ test("shared plot helpers collect numeric metric paths and derive plot entries",
     entries[0].points.map((point) => [point.category, point.mean, point.std]),
     [["model=a", 0.6, 0.09999999999999998], ["model=b", 0.9, 0]]
   );
+  assert.deepEqual(
+    entries[0].points[0].samples.map((sample) => [sample.runDir, sample.metricLabel, sample.value]),
+    [["", "score.mean", 0.5], ["", "score.mean", 0.7]]
+  );
+});
+
+/**
+ * Verify numeric metric preparation is cached and reusable for bar/error data export.
+ */
+test("shared plot helpers lazily prepare numeric metric data for bars and errors", () => {
+  const evaluation = {
+    runDir: "run-a",
+    data: {
+      score: { mean: 0.75 },
+      errors: { with_error: 2, by_label: { A: 1 } },
+      ignored: "x",
+    },
+  };
+
+  const prepared = prepareNumericMetricEvaluationData(evaluation);
+
+  assert.deepEqual(
+    Array.from(prepared.metricPaths.values()).map((path) => [path.key, path.label]),
+    [
+      ["score|#|mean", "score.mean"],
+      ["errors|#|with_error", "errors.with_error"],
+      ["errors|#|by_label|#|A", "errors.by_label.A"],
+    ]
+  );
+  assert.equal(prepared.values.get("score|#|mean"), 0.75);
+  assert.equal(prepareNumericMetricEvaluationData(evaluation), prepared);
+  assert.deepEqual(Object.keys(evaluation), ["runDir", "data"]);
+  assert.deepEqual(
+    collectPreparedNumericMetricPaths([evaluation]).map((path) => path.label),
+    ["errors.by_label.A", "errors.with_error", "score.mean"]
+  );
+
+  const entries = buildPlotEntries({
+    metricPaths: collectPreparedNumericMetricPaths([evaluation]),
+    plotGroups: [{ values: {}, evaluations: [evaluation] }],
+    groupBarFields: [],
+    categoryFields: [],
+  });
+
+  const scoreEntry = entries.find((entry) => entry.metricLabel === "score.mean");
+  assert.deepEqual(scoreEntry.points[0].samples.map((sample) => ({
+    runDir: sample.runDir,
+    metricLabel: sample.metricLabel,
+    metricPath: sample.metricPath,
+    value: sample.value,
+  })), [{
+    runDir: "run-a",
+    metricLabel: "score.mean",
+    metricPath: ["score", "mean"],
+    value: 0.75,
+  }]);
 });
 
 /**
