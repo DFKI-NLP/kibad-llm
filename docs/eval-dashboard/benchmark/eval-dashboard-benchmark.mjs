@@ -370,6 +370,7 @@ async function openLoadedDashboardPage({ browser, dashboardUrl, absoluteFolder, 
   await page.waitForSelector("#folderInput", { timeout: timeoutMs });
 
   const beforeLoad = await page.evaluate(() => window.__timingTables.length);
+  const loadStart = await page.evaluate(() => performance.now());
   await page.locator("#folderInput").setInputFiles(absoluteFolder);
   await page.waitForFunction(
     (count) => {
@@ -380,8 +381,24 @@ async function openLoadedDashboardPage({ browser, dashboardUrl, absoluteFolder, 
     beforeLoad,
     { timeout: timeoutMs }
   );
+  await page.evaluate(
+    () => new Promise((resolve) => requestAnimationFrame(() => resolve()))
+  );
+  const loadEnd = await page.evaluate(() => performance.now());
+  const afterLoad = await page.evaluate(() => window.__timingTables.length);
 
-  return { context, page };
+  return {
+    context,
+    page,
+    loadMeasurement: {
+      name: "complete folder load to usable dashboard",
+      wall_ms: Number((loadEnd - loadStart).toFixed(2)),
+      timing_table_indexes: Array.from(
+        { length: Math.max(0, afterLoad - beforeLoad) },
+        (_, index) => beforeLoad + index
+      ),
+    },
+  };
 }
 
 async function runFreshInteractionScenario({
@@ -429,7 +446,7 @@ async function runFolderBenchmark({ browser, dashboardUrl, folder, timeoutMs }) 
   }
 
   const relevantFileCount = await collectRelevantFileCount(absoluteFolder);
-  const { context, page } = await openLoadedDashboardPage({
+  const { context, page, loadMeasurement } = await openLoadedDashboardPage({
     browser,
     dashboardUrl,
     absoluteFolder,
@@ -523,6 +540,7 @@ async function runFolderBenchmark({ browser, dashboardUrl, folder, timeoutMs }) 
     folder,
     absolute_folder: absoluteFolder,
     relevant_files: relevantFileCount,
+    initial_load: loadMeasurement,
     interactions,
     tables,
   };
@@ -532,6 +550,7 @@ function printSummary(report) {
   for (const result of report.results) {
     console.log(`\n${result.folder}`);
     console.log(`  relevant files: ${result.relevant_files}`);
+    console.log(`  initial load: ${result.initial_load.wall_ms} ms`);
     console.log(
       `  interactions: ${
         result.interactions.map((interaction) => `${interaction.name} (${interaction.wall_ms} ms)`).join(", ") ||
@@ -584,6 +603,7 @@ async function main() {
       benchmarked_at: new Date().toISOString(),
       dashboard_url: dashboardUrl,
       browser_channel: options.channel,
+      browser_version: await browser.version(),
       headless: !options.headed,
       output: path.resolve(options.output),
       results,

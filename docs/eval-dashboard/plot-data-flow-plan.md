@@ -79,6 +79,7 @@ The benchmark records two timing concepts:
 
 The current scenarios measure:
 
+- `complete folder load to usable dashboard`: after a fresh page load, set the complete folder on the local file input and wait until local import processing, initial prediction rendering, initial evaluation/plot rendering, and download-button state updates have completed. Its timing-table total is shown as the three initial timing tables because the wall-clock span covers all three phases.
 - `local import processing`: local file collection, run ingestion, canonical state updates, derived prediction state reset, and load-status rendering for the complete folder.
 - `initial prediction render`: the first prediction-table render after import, including prediction selectors, controls, table rendering, and sticky-column offset work.
 - `initial evaluation/plot render`: the first evaluation render after import, including evaluation selection/grouping, evaluation controls/table/JSON pane, plot controls, active plot-tab data preparation, aggregation, and SVG rendering.
@@ -102,20 +103,21 @@ Important interpretation details:
 
 ### Initial Baseline
 
-The following baseline was captured on 2026-06-04 in headless Chrome 149 with `debugTiming=1`. The benchmark used the complete top-level folders listed above. It injected all relevant folder files into the dashboard as browser `File` objects with their `webkitRelativePath` values preserved, so it measures dashboard import processing and rendering work but not native OS file-picker overhead. Post-load interaction rows include Playwright wall-clock duration from action start until the next animation frame after timing-table emission; timing-table totals show the internal instrumented render work. Each post-load interaction scenario is measured on a fresh post-load page before changing plot tab or grouping state.
+The following baseline was captured on 2026-06-04 in headless Chrome 149.0.7827.53 with `debugTiming=1`. The benchmark used the complete top-level folders listed above. It injected all relevant folder files into the dashboard as browser `File` objects with their `webkitRelativePath` values preserved, so it measures dashboard import processing and rendering work but not native OS file-picker overhead. The load wall-clock row measures from folder assignment until the dashboard is usable after initial rendering. Post-load interaction rows include Playwright wall-clock duration from action start until the next animation frame after timing-table emission; timing-table totals show the internal instrumented render work. Each post-load interaction scenario is measured on a fresh post-load page before changing plot tab or grouping state.
 
 | Scenario | Timing table | 477_faktencheck_core (Total) | 477_faktencheck_core (Wall-clock) | 481_faktencheck_core (Total) | 481_faktencheck_core (Wall-clock) |
 | --- | --- | ---: | ---: | ---: | ---: |
-| local import processing | `eval-dashboard local folder load` | 36.0 ms | - | 70.8 ms | - |
-| initial prediction render | `eval-dashboard prediction render` | 11.4 ms | - | 13.5 ms | - |
-| initial evaluation/plot render | `eval-dashboard evaluation render` | 1584.3 ms | - | 1365.2 ms | - |
-| fresh post-load switch tab grouping to metric field | `eval-dashboard evaluation render` | 5.9 ms | 34.0 ms | 99.9 ms | 236.9 ms |
-| fresh post-load switch active plot tab | `eval-dashboard plot render` | 463.2 ms | 499.1 ms | 407.9 ms | 505.7 ms |
-| fresh post-load switch to metric-field `german_name` tab | `eval-dashboard evaluation render` + `eval-dashboard plot render` | 5.6 ms + 3384.2 ms | 3455.6 ms | 93.4 ms + 2603.7 ms | 3007.4 ms |
-| fresh post-load switch to metric-field `scientific_name` tab | `eval-dashboard evaluation render` + `eval-dashboard plot render` | 5.4 ms + 3471.3 ms | 3546.7 ms | 94.2 ms + 2771.8 ms | 3137.8 ms |
-| fresh post-load set evaluation group-by to none | `eval-dashboard evaluation render` | 1662.9 ms | 1736.5 ms | 1137.8 ms | 1325.0 ms |
-| fresh post-load deselect evaluation table row | `eval-dashboard evaluation render` | 1649.4 ms | 1737.3 ms | 1295.7 ms | 1587.8 ms |
-| fresh post-load deselect prediction table row | `eval-dashboard prediction render` + `eval-dashboard evaluation render` | 5.1 ms + 1643.7 ms | 1743.0 ms | 7.5 ms + 1340.1 ms | 1662.6 ms |
+| complete folder load to usable dashboard | `eval-dashboard local folder load` + `eval-dashboard prediction render` + `eval-dashboard evaluation render` | 87.6 ms + 19.5 ms + 3683.2 ms | 3929.7 ms | 117.7 ms + 22.7 ms + 1964.5 ms | 2441.1 ms |
+| local import processing | `eval-dashboard local folder load` | 87.6 ms | - | 117.7 ms | - |
+| initial prediction render | `eval-dashboard prediction render` | 19.5 ms | - | 22.7 ms | - |
+| initial evaluation/plot render | `eval-dashboard evaluation render` | 3683.2 ms | - | 1964.5 ms | - |
+| fresh post-load switch tab grouping to metric field | `eval-dashboard evaluation render` | 14.7 ms | 56.7 ms | 298.6 ms | 587.4 ms |
+| fresh post-load switch active plot tab | `eval-dashboard plot render` | 1524.6 ms | 1616.5 ms | 633.1 ms | 776.1 ms |
+| fresh post-load switch to metric-field `german_name` tab | `eval-dashboard evaluation render` + `eval-dashboard plot render` | 23.0 ms + 7124.0 ms | 7256.4 ms | 140.6 ms + 5092.8 ms | 5740.6 ms |
+| fresh post-load switch to metric-field `scientific_name` tab | `eval-dashboard evaluation render` + `eval-dashboard plot render` | 11.1 ms + 6794.4 ms | 6950.8 ms | 153.7 ms + 4890.2 ms | 5501.7 ms |
+| fresh post-load set evaluation group-by to none | `eval-dashboard evaluation render` | 3476.5 ms | 3568.2 ms | 4499.5 ms | 5124.6 ms |
+| fresh post-load deselect evaluation table row | `eval-dashboard evaluation render` | 2410.3 ms | 2531.4 ms | 2661.7 ms | 3091.3 ms |
+| fresh post-load deselect prediction table row | `eval-dashboard prediction render` + `eval-dashboard evaluation render` | 9.6 ms + 3403.5 ms | 3613.6 ms | 12.6 ms + 2310.5 ms | 2752.1 ms |
 
 Baseline-specific observations:
 

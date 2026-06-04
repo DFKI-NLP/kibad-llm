@@ -139,7 +139,7 @@ By default, the benchmark loads the complete local folders:
 - `data/prediction_results/logs/477_faktencheck_core`
 - `data/prediction_results/logs/481_faktencheck_core`
 
-The benchmark starts a local static server for `docs/eval-dashboard`, opens the dashboard in system Chrome with `debugTiming=1`, uploads each complete folder through the dashboard's local-folder input, captures the dashboard timing tables from the browser console, runs representative post-load interactions, records wall-clock interaction durations, and writes a JSON report under `/tmp/eval-dashboard-benchmark-<timestamp>.json`.
+The benchmark starts a local static server for `docs/eval-dashboard`, opens the dashboard in system Chrome with `debugTiming=1`, uploads each complete folder through the dashboard's local-folder input, captures the dashboard timing tables from the browser console, runs representative post-load interactions, records folder-load and interaction wall-clock durations, records the browser version, and writes a JSON report under `/tmp/eval-dashboard-benchmark-<timestamp>.json`.
 
 Useful options:
 
@@ -151,6 +151,7 @@ npm run benchmark -- ../../../data/prediction_results/logs/477_faktencheck_core
 
 The benchmark currently measures:
 
+- complete folder load until the dashboard is usable after initial rendering
 - local import processing
 - initial post-load prediction, evaluation, and plot rendering
 - switching plot tab grouping to metric-field mode from a fresh post-load state
@@ -160,7 +161,7 @@ The benchmark currently measures:
 - deselecting a row in the evaluations table from a fresh post-load state
 - deselecting a row in the predictions table from a fresh post-load state
 
-Each interaction record in the JSON report includes `wall_ms` and the timing-table indexes emitted by that interaction.
+Each folder result in the JSON report includes `initial_load.wall_ms` and the timing-table indexes emitted by the initial load. Each interaction record includes `wall_ms` and the timing-table indexes emitted by that interaction.
 
 Timing instrumentation is disabled in normal dashboard use. Add `debugTiming=1` to the dashboard URL to emit structured timing rows manually in the browser console.
 
