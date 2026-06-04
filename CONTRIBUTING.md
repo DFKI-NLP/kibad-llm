@@ -101,6 +101,7 @@ High-level overview of contributor-relevant paths (local caches and other genera
 ├── .pre-commit-config.yaml     <- `prek`/pre-commit hook configuration used locally and in CI.
 ├── CONTRIBUTING.md             <- Contribution workflow and repository-level contribution guidelines.
 ├── CONTRIBUTING_CODE.md        <- Source-code, test, documentation, and dependency guidelines.
+├── CONTRIBUTING_EXPERIMENTS.md <- Experiment planning, execution, result tracking, and documentation guidelines.
 ├── LICENSE                     <- AGPL-v3 license text for the project.
 ├── Makefile                    <- Legacy helper targets. TODO: clarify which targets are still maintained now that
 │                                  the project uses `uv` instead of `poetry` in most docs.
@@ -190,9 +191,9 @@ They cover general implementation principles, test layout, source-code documenta
 
 ## Experiments
 
-Experiment guidelines will cover how to plan, configure, run, track, and document reproducible experiments for this project.
+The experiment guidelines live in [CONTRIBUTING_EXPERIMENTS.md](/CONTRIBUTING_EXPERIMENTS.md).
 
-A real page is coming soon as part of [#491](https://github.com/DFKI-NLP/kibad-llm/issues/491).
+They cover how to plan, configure, run, track, and document reproducible experiments for this project.
 
 ## Documentation
 

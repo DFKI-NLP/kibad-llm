@@ -41,6 +41,7 @@ nav:
 - Contribution guidelines:
   - Overview: contributing.md
   - Source Code: contributing-code.md
+  - Experiments: contributing-experiments.md
 # defer to gen-files + literate-nav
 - KIBA-D code Reference: reference/kibad_llm/
 
@@ -57,6 +58,7 @@ plugins:
       'podman/faktencheck-db/README.md': 'podman-readme.md'
       'CONTRIBUTING.md': 'contributing.md'
       'CONTRIBUTING_CODE.md': 'contributing-code.md'
+      'CONTRIBUTING_EXPERIMENTS.md': 'contributing-experiments.md'
 - gen-files:
     scripts:
     - scripts/build_docs.py
