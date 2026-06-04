@@ -12,6 +12,7 @@ The following guidelines ensure consistency across the project, so please read t
     - [PR description](#pr-description)
     - [CI/CD](#cicd)
 - [Source code](#source-code)
+- [Experiments](#experiments)
 - [Documentation](#documentation)
     - [Documentation sources](#documentation-sources)
     - [Adding or changing pages](#adding-or-changing-pages)
@@ -186,6 +187,12 @@ The name should be descriptive and concise, ideally reflecting the work done on 
 The source-code guidelines live in [CONTRIBUTING_CODE.md](/CONTRIBUTING_CODE.md).
 
 They cover general implementation principles, test layout, source-code documentation standards, fixture regeneration, and dependency changes.
+
+## Experiments
+
+Experiment guidelines will cover how to plan, configure, run, track, and document reproducible experiments for this project.
+
+A real page is coming soon as part of [#491](https://github.com/DFKI-NLP/kibad-llm/issues/491).
 
 ## Documentation
 
