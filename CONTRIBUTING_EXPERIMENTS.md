@@ -36,13 +36,17 @@ Before starting a new experiment:
 
 ### Choose a name
 
+> [!TIP]
+> Create a draft PR early in the experiment process to get the PR ID before naming run outputs.
+
 Choose a descriptive experiment name:
 
 ```text
-[issue_or_pr_id]_[descriptive_text]
+[pr_id]_[descriptive_text]
 ```
 
-Use the same `name` value in every `predict` and `evaluate` command that belongs to the experiment.
+> [!IMPORTANT]
+> Use the same `name` value in every `predict` and `evaluate` command that belongs to the experiment.
 
 The name determines the experiment subfolders under:
 
@@ -124,15 +128,15 @@ To evaluate selected prediction runs instead of every run under `logs/<name>/pre
 prediction_logs=[logs/<name>/predict/multiruns/<timestamp-1>,logs/<name>/predict/multiruns/<timestamp-2>]
 ```
 
-Copy local evaluation outputs to the committed result folder:
+Copy local evaluation outputs to the committed result folder (execute from `data/prediction_results`):
 
 ```text
-cp -r logs/<name>/evaluate data/prediction_results/logs/<name>/evaluate
+cp -r ../../logs/<name>/evaluate logs/<name>/evaluate
 ```
 
 ### Inspect results in the eval dashboard
 
-Open the [eval dashboard](https://dfki-nlp.github.io/kibad-llm/eval-dashboard/) and load the new evaluation data, usually:
+Open the [eval dashboard](https://dfki-nlp.github.io/kibad-llm/eval-dashboard-docs/) and load the new evaluation data, usually:
 
 ```text
 data/prediction_results/logs/<name>/evaluate
@@ -159,7 +163,7 @@ Then add a row to the table in [data/prediction_results/readme.md](https://githu
 
 - the log folder link,
 - the date,
-- the related issue or PR link, and
+- the related PR link, and
 - short notes describing the experiment.
 
 ## Result locations
