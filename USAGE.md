@@ -67,7 +67,7 @@ DB_USER=<username-here>
 DB_PASSWORD=<password-here>
 ```
 
-Then, run the faktencheck database with podman (see [podman/faktencheck-db/README.md](./podman/faktencheck-db/README.md) for instructions).
+Then, run the faktencheck database with podman (see [podman/faktencheck-db/README.md](/podman/faktencheck-db/README.md) for instructions).
 
 #### DB conversion
 
