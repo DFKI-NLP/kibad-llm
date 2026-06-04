@@ -121,10 +121,10 @@ To evaluate selected prediction runs instead of every run under `logs/<name>/pre
 prediction_logs=[logs/<name>/predict/multiruns/<timestamp-1>,logs/<name>/predict/multiruns/<timestamp-2>]
 ```
 
-Copy or keep evaluation outputs under:
+Copy local evaluation outputs to the committed result folder:
 
 ```text
-data/prediction_results/logs/<name>/evaluate
+cp -r logs/<name>/evaluate data/prediction_results/logs/<name>/evaluate
 ```
 
 ### Inspect results in the eval dashboard
