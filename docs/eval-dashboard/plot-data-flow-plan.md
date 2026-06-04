@@ -93,25 +93,7 @@ Implications:
 - The immediate optimization target should be reusable plot datasets and cached collection aggregation inputs.
 - Narrower render entry points should follow so table selection, plot-tab changes, and grouping controls avoid repeating plot-data work when their underlying samples have not changed.
 
-### 2. Split Render Responsibilities
-
-Introduce narrower render entry points:
-
-- `renderEvaluationShell()` for tabs, table, options, JSON pane, and summary
-- `renderEvaluationPlotsOnly()` for plot controls, plot tabs, and plot content
-- `renderActivePlotTabOnly()` where active-tab changes can reuse already prepared plot data
-
-Plot-only controls should avoid rebuilding the evaluation table unless they affect table state. This applies to controls such as:
-
-- plot tab grouping
-- confusion tab grouping
-- label shortening
-- rounding precision
-- plot thresholds
-- legend mode
-- grouped-bar chip toggles
-
-### 3. Introduce a DOM-Free Plot Dataset Module
+### 2. Introduce a DOM-Free Plot Dataset Module
 
 Create a module such as `docs/eval-dashboard/assets/js/plots/data.js`.
 
@@ -123,12 +105,26 @@ This module should build a normalized plot dataset from:
 - selected evaluation groups
 - plot groups
 - grouping fields
-- active plot tab mode
+- plot tab grouping mode
 - display label settings where needed for stable export labels
 
-The dataset should be the shared input for both rendering and the future `Download data` action.
+The dataset module is the internal shared data boundary. Its output should prioritize rendering reuse, cacheability, and DOM-free tests. Rendering should consume this dataset directly or through small aggregation adapters, and the future `Download data` action should derive its public file format from the same dataset instead of rebuilding plot inputs independently.
+
+This should be the next major boundary after instrumentation because the baseline shows the expensive paths are dominated by plot-data recomputation rather than table rendering.
+
+### 3. Make Rendering Aggregation Consume the Plot Dataset
+
+After the dataset boundary exists, refactor current plot aggregation helpers so rendering consumes:
+
+- the raw plot dataset
+- active tab and filter settings
+- aggregated output derived from that dataset
+
+This makes the dataset boundary real for rendering first, removes remaining duplicated data shaping, and makes render/export behavior easier to compare. It also keeps `Download data` from depending on a parallel data path that only resembles the rendered figures.
 
 ### 4. Define Pre-Aggregated Export Shapes
+
+Define the public download schema produced from the internal plot dataset. This schema should prioritize inspectability, stability, and reconstructing the visible figures. It does not need to be identical to the internal dataset shape as long as it is derived from the same data boundary.
 
 The exported data should represent the samples used to make the visible figures, before mean, standard deviation, or count aggregation.
 
@@ -155,50 +151,9 @@ For confusion matrices, use one record per evaluation and matrix cell. If a cell
 
 For TP/FP/FN collectors, use one record per evaluation, document, label, and outcome state. Preserve whether each state is `tp`, `fp`, `fn`, or `empty` so the plotted counts can be reconstructed.
 
-### 5. Move Aggregation After Dataset Creation
+### 5. Add Download Data
 
-Refactor current aggregation helpers so rendering consumes:
-
-- the raw plot dataset
-- active tab and filter settings
-- aggregated output derived from that dataset
-
-This separates data shaping from aggregation and makes `Download data` a straightforward export of the pre-aggregated dataset.
-
-### 6. Cache Derived Plot Data
-
-Add a small cache for derived plot datasets. The cache key should include state that changes the underlying plotted samples:
-
-- loaded data revision
-- selected prediction group ids
-- active evaluation tab
-- selected evaluation group ids
-- prediction group-by fields
-- evaluation group-by fields
-- default values that affect grouping
-- metric type
-
-View-only settings should be kept out of the heavy cache key where possible:
-
-- active plot tab
-- rounding precision
-- export background
-- label shortening, unless labels are stored in the dataset
-- thresholds, if raw data can be cached and filtered afterward
-
-### 7. Cache Expensive Metric-Family Sub-Results
-
-Useful targeted caches include:
-
-- numeric metric leaf paths per experiment and metric type
-- collection views per evaluation for confusion matrices
-- collection views per evaluation for TP/FP/FN collectors
-- normalized TP/FP/FN collector data per evaluation and field
-- resolved plot-group values after grouping and default resolution
-
-### 8. Add Download Data
-
-After the plot dataset model is stable, add a `Download data` button near `Download Figures`.
+After the plot dataset model and rendering aggregation path are stable, add a `Download data` button near `Download Figures` so the plotted data can be inspected early while the deeper latency refactor continues.
 
 The export should match the same visible figure scope as `Download Figures`:
 
@@ -211,6 +166,58 @@ The export should match the same visible figure scope as `Download Figures`:
 The export should not include aggregated means, standard deviations, or derived count summaries as the primary data. If useful, metadata may include the active dashboard state and field mappings needed to reconstruct the plot.
 
 JSON is the recommended first format because confusion matrices and TP/FP/FN data are naturally structured. CSV can be added later if users need table-oriented exports.
+
+### 6. Cache Expensive Metric-Family Sub-Results
+
+Add targeted caches for repeated metric-family work before relying on narrow render entry points for latency gains.
+
+Useful targeted caches include:
+
+- numeric metric leaf paths per experiment and metric type
+- collection views per evaluation for confusion matrices
+- collection views per evaluation for TP/FP/FN collectors
+- normalized TP/FP/FN collector data per evaluation and field
+- resolved plot-group values after grouping and default resolution
+- aggregation inputs for large collection fields such as `taxa.german_name` and `taxa.scientific_name`
+
+### 7. Cache Derived Plot Data
+
+Add a cache for derived plot datasets. The cache key should include state that changes the underlying plotted samples:
+
+- loaded data revision
+- selected prediction group ids
+- active evaluation tab
+- selected evaluation group ids
+- prediction group-by fields
+- evaluation group-by fields
+- default values that affect grouping
+- metric type
+
+View-only settings should be kept out of the heavy raw-dataset cache key where possible:
+
+- rounding precision
+- export background
+- label shortening, unless labels are stored in the dataset
+
+Treat active plot tab and thresholds carefully. They may not change the underlying raw samples, but the benchmark shows some tab and threshold-dependent paths are expensive. Keep them out of the raw dataset cache key only if the per-tab or post-filter aggregation work is cached separately or can be derived cheaply from cached raw data.
+
+### 8. Split Render Responsibilities
+
+Introduce narrower render entry points after the shared plot dataset and expensive sub-result caches exist:
+
+- `renderEvaluationShell()` for tabs, table, options, JSON pane, and summary
+- `renderEvaluationPlotsOnly()` for plot controls, plot tabs, and plot content
+- `renderActivePlotTabOnly()` where active-tab changes can reuse already prepared plot data and cached aggregation inputs
+
+Plot-only controls should avoid rebuilding the evaluation table unless they affect table state. This applies to controls such as:
+
+- plot tab grouping
+- confusion tab grouping
+- label shortening
+- rounding precision
+- plot thresholds
+- legend mode
+- grouped-bar chip toggles
 
 ### 9. Test Coverage
 
@@ -230,7 +237,7 @@ Keep `plots.dashboard.test.mjs` focused on orchestration and button wiring.
 
 Prefer two PR-sized steps:
 
-1. Refactor plot data preparation and split plot rendering from full evaluation rendering. Include instrumentation and tests.
-1. Add `Download data` using the new plot dataset model.
+1. Introduce the shared plot dataset model, make rendering aggregation consume it, and add `Download data` for early inspection. Include focused tests for export shape and visible-scope matching.
+1. Add targeted caches and split plot rendering from full evaluation rendering. Use the existing benchmark and instrumentation to compare before/after latency.
 
-This keeps the latency-focused refactor useful even before the download button lands, and it creates a clear reusable data boundary for future plotting work.
+This makes plotted-data inspection available early, while the second slice can focus on measurable latency improvements using the same reusable data boundary.
