@@ -16,7 +16,7 @@ The plotting path is currently driven from `docs/eval-dashboard/assets/js/main.j
 1. `renderEvaluationPlots()` delegates to `renderEvaluationPlotsForDashboard()` in `plots/dashboard.js`.
 1. `renderEvaluationPlotsForDashboard()` recomputes selected groups, metric type, plot groups, varying group fields, tab maps, aggregations, and then redraws SVG figures.
 1. Metric-specific aggregation happens in the plot modules:
-    - numeric bar/error metrics use prepared numeric metric data and `buildPlotEntries()` in `plots/shared.js`
+    - numeric bar/error metrics use prepared numeric metric data and `buildPlotEntries()` in `plots/bars.js`
     - confusion matrices use collection views and `getConfusionMatrixAggregation()` in `plots/confusion.js`
     - TP/FP/FN collectors use collection views and `getTpFpFnCombinedAggregation()` in `plots/tpfpfn.js`
 1. `Download Figures` currently exports visible rendered SVG cards through `plots/export.js`.

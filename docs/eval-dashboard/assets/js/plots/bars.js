@@ -2,20 +2,266 @@
  * Generic bar/error plot entry and tab-map helpers.
  */
 
+import { meanAndStd, normalizeValue } from "../utils/values.js";
 import {
   buildGroupedLegendModel,
+  getGroupLabelForFields,
   getBarColor,
   getLegendItemsForPoints,
+  getMetricPreparedDataContainer,
+  getPlotDisplayLabel,
   scheduleAdaptiveSvgFit,
   styleErrorBarSegment,
 } from "./shared.js";
 import { createPlotLegendElement } from "./legend.js";
 
-export {
-  buildBarsTabMap,
-  buildErrorsTabMap,
-  buildPlotEntries,
-} from "./shared.js";
+/**
+ * Resolves the display title for a metric plot entry.
+ *
+ * @param {object} plotEntry - Plot entry created by buildPlotEntries.
+ * @param {string} metricType - Metric type for special title handling.
+ * @param {object} [options] - Label and tab display options.
+ * @returns {string} Display title label.
+ */
+export function getPlotTitleLabel(plotEntry, metricType, { shortenLabels = false, plotTabsBy = "prefix" } = {}) {
+  if (
+    metricType === "F1MicroMultipleFieldsMetric" &&
+    shortenLabels &&
+    plotTabsBy === "suffix"
+  ) {
+    return plotEntry.prefix === "(root)" ? plotEntry.metricLabel : plotEntry.prefix;
+  }
+  return getPlotDisplayLabel(plotEntry.metricLabel, { shortenLabels });
+}
+
+/**
+ * Recursively collects numeric leaf paths from a metric data object.
+ *
+ * @param {*} value - Metric data value to inspect.
+ * @param {Array<string>} [parts] - Current path parts during recursion.
+ * @param {Map<string, Array<string>>} [out] - Accumulator keyed by encoded paths.
+ * @returns {Map<string, Array<string>>} Numeric metric leaf paths.
+ */
+export function collectNumericMetricLeafPaths(value, parts = [], out = new Map()) {
+  if (!value || typeof value !== "object") {
+    return out;
+  }
+  for (const [key, child] of Object.entries(value)) {
+    const pathParts = [...parts, key];
+    if (typeof child === "number" && Number.isFinite(child)) {
+      out.set(pathParts.join("|#|"), pathParts);
+      continue;
+    }
+    if (child && typeof child === "object" && !Array.isArray(child)) {
+      collectNumericMetricLeafPaths(child, pathParts, out);
+    }
+  }
+  return out;
+}
+
+/**
+ * Encodes metric path parts into the stable key used by prepared numeric data.
+ *
+ * @param {Array<string>} parts - Metric path parts.
+ * @returns {string} Encoded metric path key.
+ */
+export function getNumericMetricPathKey(parts) {
+  return (parts || []).join("|#|");
+}
+
+/**
+ * Recursively collects numeric metric paths and values for one evaluation.
+ *
+ * @param {*} value - Metric data value to inspect.
+ * @param {Array<string>} [parts] - Current path parts during recursion.
+ * @param {Map<string, object>} [metricPaths] - Path accumulator keyed by encoded path.
+ * @param {Map<string, number>} [values] - Numeric value accumulator keyed by encoded path.
+ * @returns {{metricPaths: Map<string, object>, values: Map<string, number>}} Prepared numeric data.
+ */
+function collectNumericMetricLeafData(value, parts = [], metricPaths = new Map(), values = new Map()) {
+  if (!value || typeof value !== "object") {
+    return { metricPaths, values };
+  }
+  for (const [key, child] of Object.entries(value)) {
+    const pathParts = [...parts, key];
+    if (typeof child === "number" && Number.isFinite(child)) {
+      const pathKey = getNumericMetricPathKey(pathParts);
+      metricPaths.set(pathKey, { key: pathKey, parts: pathParts, label: pathParts.join(".") });
+      values.set(pathKey, child);
+      continue;
+    }
+    if (child && typeof child === "object" && !Array.isArray(child)) {
+      collectNumericMetricLeafData(child, pathParts, metricPaths, values);
+    }
+  }
+  return { metricPaths, values };
+}
+
+/**
+ * Lazily prepares one evaluation's numeric metric data for bar/error plots.
+ *
+ * The prepared shape stores metric path metadata and flat per-path numeric
+ * values. `buildPlotEntries()` uses the same prepared values for aggregation
+ * and exposes them as point samples for future `Download data` support.
+ *
+ * @param {object} evaluation - Raw evaluation record with metric data.
+ * @returns {{metricPaths: Map<string, object>, values: Map<string, number>}} Prepared per-evaluation numeric data.
+ */
+export function prepareNumericMetricEvaluationData(evaluation) {
+  const cache = getMetricPreparedDataContainer(evaluation);
+  if (cache?.numericMetrics) {
+    return cache.numericMetrics;
+  }
+
+  const prepared = collectNumericMetricLeafData(evaluation?.data);
+  if (cache) {
+    cache.numericMetrics = prepared;
+  }
+  return prepared;
+}
+
+/**
+ * Collects the union of numeric metric paths from prepared evaluation data.
+ *
+ * @param {Array<object>} evaluations - Evaluation records.
+ * @returns {Array<object>} Sorted metric path records.
+ */
+export function collectPreparedNumericMetricPaths(evaluations) {
+  const metricPaths = new Map();
+  for (const evaluation of evaluations || []) {
+    for (const [key, metricPath] of prepareNumericMetricEvaluationData(evaluation).metricPaths) {
+      metricPaths.set(key, metricPath);
+    }
+  }
+  return Array.from(metricPaths.values()).sort((a, b) => a.label.localeCompare(b.label));
+}
+
+/**
+ * Splits a metric label into prefix and suffix at the final dot.
+ *
+ * @param {string} label - Metric label.
+ * @returns {{prefix: string, suffix: string}} Split label components.
+ */
+export function splitMetricLabelAtLastDot(label) {
+  const lastDotIndex = label.lastIndexOf(".");
+  if (lastDotIndex === -1) {
+    return { prefix: "(root)", suffix: label };
+  }
+  return {
+    prefix: label.slice(0, lastDotIndex),
+    suffix: label.slice(lastDotIndex + 1),
+  };
+}
+
+/**
+ * Converts metric paths and evaluation groups into plottable bar entries.
+ *
+ * @param {object} options - Plot entry construction inputs.
+ * @returns {Array<object>} Plot entries with mean/std point data.
+ */
+export function buildPlotEntries({
+  metricPaths,
+  plotGroups,
+  groupBarFields,
+  categoryFields,
+  getGroupLabel = getGroupLabelForFields,
+  displayGroupFieldName = (field) => field,
+}) {
+  const entries = [];
+  for (const metricPath of metricPaths) {
+    const metricPathKey = metricPath.key || getNumericMetricPathKey(metricPath.parts);
+    const points = [];
+    plotGroups.forEach((group, index) => {
+      const samples = group.evaluations
+        .map((evaluation) => {
+          const value = prepareNumericMetricEvaluationData(evaluation).values.get(metricPathKey);
+          if (!Number.isFinite(value)) {
+            return null;
+          }
+          return {
+            runDir: normalizeValue(evaluation?.runDir),
+            metricLabel: metricPath.label,
+            metricPath: metricPath.parts,
+            value,
+          };
+        })
+        .filter(Boolean);
+      const values = samples.map((sample) => sample.value);
+      const stats = meanAndStd(values);
+      if (!stats) {
+        return;
+      }
+      const categoryLabel = groupBarFields.length
+        ? getGroupLabel(group, categoryFields, "all")
+        : getGroupLabel(group, categoryFields, `group ${index + 1}`);
+      const displayCategoryLabel = groupBarFields.length
+        ? getGroupLabel(group, categoryFields, "all", displayGroupFieldName)
+        : getGroupLabel(group, categoryFields, `group ${index + 1}`, displayGroupFieldName);
+      const seriesLabel = groupBarFields.length
+        ? getGroupLabel(group, groupBarFields, "series")
+        : "__single__";
+      const displaySeriesLabel = groupBarFields.length
+        ? getGroupLabel(group, groupBarFields, "series", displayGroupFieldName)
+        : "__single__";
+      points.push({
+        label: categoryLabel,
+        displayLabel: displayCategoryLabel,
+        category: categoryLabel,
+        displayCategory: displayCategoryLabel,
+        series: seriesLabel,
+        displaySeries: displaySeriesLabel,
+        mean: stats.mean,
+        std: stats.std,
+        samples,
+      });
+    });
+    if (!points.length) {
+      continue;
+    }
+    const split = splitMetricLabelAtLastDot(metricPath.label);
+    entries.push({ metricLabel: metricPath.label, parts: metricPath.parts, points, ...split });
+  }
+  return entries;
+}
+
+/**
+ * Groups metric plot entries into bar plot tabs.
+ *
+ * @param {Array<object>} plotEntries - Entries produced by buildPlotEntries.
+ * @param {object} [options] - Tab grouping options.
+ * @returns {Map<string, Array<object>>} Tab map keyed by prefix or suffix.
+ */
+export function buildBarsTabMap(plotEntries, { plotTabsBy = "prefix" } = {}) {
+  const tabMap = new Map();
+  for (const entry of plotEntries) {
+    const tabKey = plotTabsBy === "suffix" ? entry.suffix : entry.prefix;
+    if (!tabMap.has(tabKey)) {
+      tabMap.set(tabKey, []);
+    }
+    tabMap.get(tabKey).push(entry);
+  }
+  return tabMap;
+}
+
+/**
+ * Splits error metric entries into total and details tabs.
+ *
+ * @param {Array<object>} plotEntries - Error metric plot entries.
+ * @returns {Map<string, Array<object>>} Tab map for available error sections.
+ */
+export function buildErrorsTabMap(plotEntries) {
+  const totalKeys = new Set(["with_error", "no_error"]);
+  const total = plotEntries.filter((entry) => totalKeys.has(entry.parts[0]));
+  const details = plotEntries.filter((entry) => !totalKeys.has(entry.parts[0]));
+  const tabMap = new Map();
+  if (total.length) {
+    tabMap.set("total", total);
+  }
+  if (details.length) {
+    tabMap.set("details", details);
+  }
+  return tabMap;
+}
 
 /**
  * Creates an SVG bar plot with mean bars and standard-deviation error bars.

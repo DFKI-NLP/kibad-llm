@@ -11,7 +11,6 @@ import {
 import { renderDownloadFiguresButtonState } from "../ui/status.js";
 import { createTimingCollector } from "../utils/timing.js";
 import {
-  collectPreparedNumericMetricPaths,
   getGroupLabelForFields,
   getVaryingFields,
 } from "./shared.js";
@@ -19,6 +18,7 @@ import {
   buildBarsTabMap,
   buildErrorsTabMap,
   buildPlotEntries,
+  collectPreparedNumericMetricPaths,
   createBarPlotSvg,
   createGroupedBarPlotSvg,
   renderPlotTabsAndGrid as renderSharedPlotTabsAndGrid,

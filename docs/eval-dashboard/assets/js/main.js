@@ -58,8 +58,10 @@ import {
 } from "./ui/status.js";
 import {
   getPlotDisplayLabel as getSharedPlotDisplayLabel,
-  getPlotTitleLabel as getSharedPlotTitleLabel,
 } from "./plots/shared.js";
+import {
+  getPlotTitleLabel as getSharedPlotTitleLabel,
+} from "./plots/bars.js";
 import {
   createTimingCollector,
   isDebugTimingEnabled,
