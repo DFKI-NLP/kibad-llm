@@ -40,84 +40,46 @@ Repeated selector and plot-data work also contributes:
 
 Some plot-tab clicks already avoid the full table render, but they still rebuild tab maps and active plot data before redrawing.
 
-## Latency Candidate Data
+## Refactor Plan
 
-The following repository data folders are good candidates for latency investigation because they exercise the large matrix-style plot families and are already present under `data/prediction_results/logs/`:
+### 1. Add Lightweight Instrumentation
 
-- `data/prediction_results/logs/477_faktencheck_core`
-- `data/prediction_results/logs/481_faktencheck_core`
+The dashboard now has dev-facing timing instrumentation and a persisted Playwright benchmark. The benchmark setup, benchmark data rationale, scenario definitions, timing semantics, and interpretation caveats are documented in the [Benchmarking section of `eval-dashboard-docs.md`](../eval-dashboard-docs.md#benchmarking).
 
-Both are evaluations over predictions from `397_faktencheck_core_v1_for_chunking` on flattened data.
+Keep instrumentation disabled by default. Enable it with the `debugTiming=1` URL query parameter and write structured timing rows to the browser console. The instrumentation should remain lightweight and testable, with timing boundaries around the main expensive stages:
 
-`477_faktencheck_core` uses `faktencheck_core_confusion_matrix_multiple_fields_flat` and produces `ConfusionMatrixCollection` data. It is a good benchmark candidate for confusion-matrix collection handling, label-union alignment, tab-map construction, aggregation, and matrix SVG rendering.
+- `getEvaluationContext`
+- `getPlotGroups`
+- metric path discovery
+- collection-view construction or equivalent collection normalization
+- tab-map construction
+- aggregation
+- SVG rendering
 
-`481_faktencheck_core` uses `faktencheck_core_tpfpfn_multiple_fields_flat` and produces `TpFpFnCollectorCollection` data. It is a good benchmark candidate for TP/FP/FN collection handling, per-document normalization, tab-map construction, aggregation, and matrix SVG rendering.
+Use the measurements to confirm which stages dominate before making broad changes. Benchmarking should continue to load complete top-level folders through the same dashboard import path a user would use, not hand-picked subruns or reduced subsets. The two required benchmark categories are:
 
-Benchmarking should load each complete top-level folder through the same dashboard import path a user would use, not a hand-picked subrun or reduced subset. The two benchmark scenarios should be:
-
-1. **Loading/importing:** measure how long the dashboard takes to import and normalize the complete folder after selection.
+1. **Loading/importing:** measure how long the dashboard takes to import, normalize, and initially render the complete folder after selection.
 1. **Post-load interactions:** after the complete folder has been loaded, measure latency for changes to grouping settings, active plot tabs, tab grouping modes, plot thresholds, grouped-bar controls where applicable, and other plot options.
 
-These folders are useful benchmark inputs because they stress:
+The complete `477_faktencheck_core` and `481_faktencheck_core` folders should remain the default benchmark inputs because they exercise the highest-risk plot families: collection-view construction across many metric fields, large label-union alignment for confusion matrices, TP/FP/FN normalization across many documents and labels, tab-map rebuilding for metric-field and prediction-group modes, and large SVG matrix rendering after aggregation.
 
-- collection-view construction across many metric fields
-- large label-union alignment for confusion matrices
-- TP/FP/FN normalization across many documents and labels
-- tab-map rebuilding for metric-field and prediction-group modes
-- large SVG matrix rendering after aggregation
+#### Benchmark Results
 
-### Benchmark Methodology
+The following baseline was captured on 2026-06-04 in headless Chrome 149.0.7827.53 with `debugTiming=1`. The benchmark used the complete top-level folders listed in the dashboard benchmark documentation. The load wall-clock row measures from folder assignment until the dashboard is usable after initial rendering. Post-load interaction rows include Playwright wall-clock duration from action start until the next animation frame after timing-table emission; timing-table totals show the internal instrumented render work.
 
-The persisted benchmark lives in `docs/eval-dashboard/benchmark/`. It is a manual Playwright benchmark, not a CI gate. It starts a local static server for `docs/eval-dashboard`, opens the dashboard with `debugTiming=1`, loads local folders through the browser file-input path, records dashboard console timing tables, records wall-clock interaction durations, and writes a JSON report.
-
-Each default benchmark folder is loaded as a complete top-level folder. The browser receives the folder files through Playwright's file input support with browser-relative paths preserved, so local import processing follows the same dashboard code path as a user selecting the folder. The benchmark does not measure native OS file-picker overhead, user think time, browser-cache variability across different manual sessions, or visual perception beyond waiting for one animation frame after the dashboard emits the expected timing table.
-
-The benchmark records two timing concepts:
-
-- **Timing table total:** the sum of instrumented, non-overlapping dashboard timing rows emitted for a render or load phase. These rows are useful for diagnosing which dashboard stages dominate.
-- **Wall-clock:** elapsed browser `performance.now()` time from the benchmark action start until the next animation frame after the relevant timing table has been emitted. This better approximates interaction latency but can include event dispatch, layout, paint, and uninstrumented work.
-
-The current scenarios measure:
-
-- `complete folder load to usable dashboard`: after a fresh page load, set the complete folder on the local file input and wait until local import processing, initial prediction rendering, initial evaluation/plot rendering, and download-button state updates have completed. Its timing-table total is shown as the three initial timing tables because the wall-clock span covers all three phases.
-- `local import processing`: local file collection, run ingestion, canonical state updates, derived prediction state reset, and load-status rendering for the complete folder.
-- `initial prediction render`: the first prediction-table render after import, including prediction selectors, controls, table rendering, and sticky-column offset work.
-- `initial evaluation/plot render`: the first evaluation render after import, including evaluation selection/grouping, evaluation controls/table/JSON pane, plot controls, active plot-tab data preparation, aggregation, and SVG rendering.
-- `fresh post-load switch tab grouping to metric field`: on a freshly loaded page, click the confusion/TP-FP-FN tab-grouping control from prediction-group mode to metric-field mode. This resets the active plot tab and renders the first metric-field tab selected by the dashboard, which is usually a small field. It measures the mode switch itself, not the worst metric-field tab.
-- `fresh post-load switch active plot tab`: on a freshly loaded page in the default tab mode, click the first inactive plot tab. This measures changing between prediction-group tabs, with the target tab determined by current tab ordering.
-- `fresh post-load switch to metric-field german_name tab`: on a freshly loaded page, switch to metric-field mode, then click the `german_name` metric-field tab. This measures the complete user workflow needed to reach that large metric-field tab. The scenario emits one timing table for the mode switch and one timing table for the target-tab render.
-- `fresh post-load switch to metric-field scientific_name tab`: same as the `german_name` scenario, but targets `scientific_name`.
-- `fresh post-load set evaluation group-by to none`: on a freshly loaded page, click the evaluation group-by `none` control. This changes evaluation grouping and forces a full evaluation and plot render while the expensive default plot tab is still active.
-- `fresh post-load deselect evaluation table row`: on a freshly loaded page, click the first selected evaluation-group checkbox. This changes selected evaluation groups and forces a full evaluation and plot render while the expensive default plot tab is still active.
-- `fresh post-load deselect prediction table row`: on a freshly loaded page, click the first selected prediction-group checkbox. This first renders the prediction table, then renders evaluations and plots because selected evaluations depend on selected predictions.
-
-The post-load scenarios are intentionally isolated from each other. Each scenario reloads the complete folder into a fresh page before performing its interaction. This avoids hidden interdependencies where an earlier cheapening action, such as switching to a smaller plot tab or changing grouping, would make later scenarios look faster than the corresponding manual workflow immediately after loading.
-
-Important interpretation details:
-
-- The exact active plot tab matters. Large fields such as `german_name` and `scientific_name` are much more expensive than small fields such as `biodiversity_level`.
-- Some scenarios intentionally produce multiple timing tables. For example, prediction-row deselection emits prediction render timing and evaluation render timing; metric-field target-tab scenarios emit the mode-switch render and the target-tab render.
-- Timing table totals should not be compared to wall-clock numbers as if they measured the same thing. Timing table totals are diagnostic; wall-clock values are closer to user-perceived latency.
-- The benchmark captures only the current default viewport, browser channel, and tab ordering. Changes to viewport size, active tab defaults, plot-tab sorting, or selected data can materially change scenario cost.
-- The benchmark currently focuses on confusion-matrix and TP/FP/FN collection workflows. Numeric bar/error plot workflows should get their own representative data and scenarios before using this benchmark to reason about them.
-
-### Initial Baseline
-
-The following baseline was captured on 2026-06-04 in headless Chrome 149.0.7827.53 with `debugTiming=1`. The benchmark used the complete top-level folders listed above. It injected all relevant folder files into the dashboard as browser `File` objects with their `webkitRelativePath` values preserved, so it measures dashboard import processing and rendering work but not native OS file-picker overhead. The load wall-clock row measures from folder assignment until the dashboard is usable after initial rendering. Post-load interaction rows include Playwright wall-clock duration from action start until the next animation frame after timing-table emission; timing-table totals show the internal instrumented render work. Each post-load interaction scenario is measured on a fresh post-load page before changing plot tab or grouping state.
-
-| Scenario | Timing table | 477_faktencheck_core (Total) | 477_faktencheck_core (Wall-clock) | 481_faktencheck_core (Total) | 481_faktencheck_core (Wall-clock) |
-| --- | --- | ---: | ---: | ---: | ---: |
-| complete folder load to usable dashboard | `eval-dashboard local folder load` + `eval-dashboard prediction render` + `eval-dashboard evaluation render` | 87.6 ms + 19.5 ms + 3683.2 ms | 3929.7 ms | 117.7 ms + 22.7 ms + 1964.5 ms | 2441.1 ms |
-| local import processing | `eval-dashboard local folder load` | 87.6 ms | - | 117.7 ms | - |
-| initial prediction render | `eval-dashboard prediction render` | 19.5 ms | - | 22.7 ms | - |
-| initial evaluation/plot render | `eval-dashboard evaluation render` | 3683.2 ms | - | 1964.5 ms | - |
-| fresh post-load switch tab grouping to metric field | `eval-dashboard evaluation render` | 14.7 ms | 56.7 ms | 298.6 ms | 587.4 ms |
-| fresh post-load switch active plot tab | `eval-dashboard plot render` | 1524.6 ms | 1616.5 ms | 633.1 ms | 776.1 ms |
-| fresh post-load switch to metric-field `german_name` tab | `eval-dashboard evaluation render` + `eval-dashboard plot render` | 23.0 ms + 7124.0 ms | 7256.4 ms | 140.6 ms + 5092.8 ms | 5740.6 ms |
-| fresh post-load switch to metric-field `scientific_name` tab | `eval-dashboard evaluation render` + `eval-dashboard plot render` | 11.1 ms + 6794.4 ms | 6950.8 ms | 153.7 ms + 4890.2 ms | 5501.7 ms |
-| fresh post-load set evaluation group-by to none | `eval-dashboard evaluation render` | 3476.5 ms | 3568.2 ms | 4499.5 ms | 5124.6 ms |
-| fresh post-load deselect evaluation table row | `eval-dashboard evaluation render` | 2410.3 ms | 2531.4 ms | 2661.7 ms | 3091.3 ms |
-| fresh post-load deselect prediction table row | `eval-dashboard prediction render` + `eval-dashboard evaluation render` | 9.6 ms + 3403.5 ms | 3613.6 ms | 12.6 ms + 2310.5 ms | 2752.1 ms |
+| Scenario                                                     | Timing table                                                                                                 |  477_faktencheck_core (Total) | 477_faktencheck_core (Wall-clock) |   481_faktencheck_core (Total) | 481_faktencheck_core (Wall-clock) |
+| ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------ | ----------------------------: | --------------------------------: | -----------------------------: | --------------------------------: |
+| complete folder load to usable dashboard                     | `eval-dashboard local folder load` + `eval-dashboard prediction render` + `eval-dashboard evaluation render` | 87.6 ms + 19.5 ms + 3683.2 ms |                         3929.7 ms | 117.7 ms + 22.7 ms + 1964.5 ms |                         2441.1 ms |
+| local import processing                                      | `eval-dashboard local folder load`                                                                           |                       87.6 ms |                                 - |                       117.7 ms |                                 - |
+| initial prediction render                                    | `eval-dashboard prediction render`                                                                           |                       19.5 ms |                                 - |                        22.7 ms |                                 - |
+| initial evaluation/plot render                               | `eval-dashboard evaluation render`                                                                           |                     3683.2 ms |                                 - |                      1964.5 ms |                                 - |
+| fresh post-load switch tab grouping to metric field          | `eval-dashboard evaluation render`                                                                           |                       14.7 ms |                           56.7 ms |                       298.6 ms |                          587.4 ms |
+| fresh post-load switch active plot tab                       | `eval-dashboard plot render`                                                                                 |                     1524.6 ms |                         1616.5 ms |                       633.1 ms |                          776.1 ms |
+| fresh post-load switch to metric-field `german_name` tab     | `eval-dashboard evaluation render` + `eval-dashboard plot render`                                            |           23.0 ms + 7124.0 ms |                         7256.4 ms |           140.6 ms + 5092.8 ms |                         5740.6 ms |
+| fresh post-load switch to metric-field `scientific_name` tab | `eval-dashboard evaluation render` + `eval-dashboard plot render`                                            |           11.1 ms + 6794.4 ms |                         6950.8 ms |           153.7 ms + 4890.2 ms |                         5501.7 ms |
+| fresh post-load set evaluation group-by to none              | `eval-dashboard evaluation render`                                                                           |                     3476.5 ms |                         3568.2 ms |                      4499.5 ms |                         5124.6 ms |
+| fresh post-load deselect evaluation table row                | `eval-dashboard evaluation render`                                                                           |                     2410.3 ms |                         2531.4 ms |                      2661.7 ms |                         3091.3 ms |
+| fresh post-load deselect prediction table row                | `eval-dashboard prediction render` + `eval-dashboard evaluation render`                                      |            9.6 ms + 3403.5 ms |                         3613.6 ms |            12.6 ms + 2310.5 ms |                         2752.1 ms |
 
 Baseline-specific observations:
 
@@ -130,24 +92,6 @@ Implications:
 
 - The immediate optimization target should be reusable plot datasets and cached collection aggregation inputs.
 - Narrower render entry points should follow so table selection, plot-tab changes, and grouping controls avoid repeating plot-data work when their underlying samples have not changed.
-
-## Refactor Plan
-
-### 1. Add Lightweight Instrumentation
-
-Add temporary or testable timing boundaries around the main expensive stages:
-
-- `getEvaluationContext`
-- `getPlotGroups`
-- metric path discovery
-- collection-view construction
-- tab-map construction
-- aggregation
-- SVG rendering
-
-Keep instrumentation dev-facing and disabled by default. Enable it with the `debugTiming=1` URL query parameter and write structured timing rows to the browser console.
-
-Use the measurements to confirm which stages dominate before making broad changes. The complete `477_faktencheck_core` and `481_faktencheck_core` folders should be used as benchmark inputs for both loading/importing and post-load interaction measurements because they exercise the highest-risk plot families.
 
 ### 2. Split Render Responsibilities
 

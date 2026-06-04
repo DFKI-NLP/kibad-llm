@@ -121,6 +121,8 @@ The most relevant test locations are:
 
 The dashboard has a manual Playwright benchmark for latency investigation. It is not part of the normal test suite and should not be treated as a strict pass/fail gate because browser timings are hardware- and load-dependent.
 
+The persisted benchmark lives in `docs/eval-dashboard/benchmark/`. It starts a local static server for `docs/eval-dashboard`, opens the dashboard with `debugTiming=1`, loads local folders through the browser file-input path, records dashboard console timing tables, records folder-load and interaction wall-clock durations, records the browser version, and writes a JSON report.
+
 Install the optional Node dev dependency:
 
 ```bash
@@ -139,7 +141,9 @@ By default, the benchmark loads the complete local folders:
 - `data/prediction_results/logs/477_faktencheck_core`
 - `data/prediction_results/logs/481_faktencheck_core`
 
-The benchmark starts a local static server for `docs/eval-dashboard`, opens the dashboard in system Chrome with `debugTiming=1`, uploads each complete folder through the dashboard's local-folder input, captures the dashboard timing tables from the browser console, runs representative post-load interactions, records folder-load and interaction wall-clock durations, records the browser version, and writes a JSON report under `/tmp/eval-dashboard-benchmark-<timestamp>.json`.
+Both folders contain evaluations over predictions from `397_faktencheck_core_v1_for_chunking` on flattened data. `477_faktencheck_core` uses `faktencheck_core_confusion_matrix_multiple_fields_flat` and produces `ConfusionMatrixCollection` data. It stresses confusion-matrix collection handling, label-union alignment, tab-map construction, aggregation, and matrix SVG rendering. `481_faktencheck_core` uses `faktencheck_core_tpfpfn_multiple_fields_flat` and produces `TpFpFnCollectorCollection` data. It stresses TP/FP/FN collection handling, per-document normalization, tab-map construction, aggregation, and matrix SVG rendering.
+
+The default folders are intentionally loaded as complete top-level folders through the same dashboard import path a user would use, not as hand-picked subruns or reduced subsets. The browser receives the folder files through Playwright's file input support with browser-relative paths preserved, so local import processing follows the same dashboard code path as a user selecting the folder. The benchmark does not measure native OS file-picker overhead, user think time, browser-cache variability across different manual sessions, or visual perception beyond waiting for one animation frame after the dashboard emits the expected timing table.
 
 Useful options:
 
@@ -151,17 +155,34 @@ npm run benchmark -- ../../../data/prediction_results/logs/477_faktencheck_core
 
 The benchmark currently measures:
 
-- complete folder load until the dashboard is usable after initial rendering
-- local import processing
-- initial post-load prediction, evaluation, and plot rendering
-- switching plot tab grouping to metric-field mode from a fresh post-load state
-- switching the active plot tab from a fresh post-load state
-- switching to the `german_name` and `scientific_name` metric-field tabs from a fresh post-load state
-- setting evaluation group-by to none from a fresh post-load state
-- deselecting a row in the evaluations table from a fresh post-load state
-- deselecting a row in the predictions table from a fresh post-load state
+- `complete folder load to usable dashboard`: after a fresh page load, set the complete folder on the local file input and wait until local import processing, initial prediction rendering, initial evaluation/plot rendering, and download-button state updates have completed.
+- `local import processing`: local file collection, run ingestion, canonical state updates, derived prediction state reset, and load-status rendering for the complete folder.
+- `initial prediction render`: the first prediction-table render after import, including prediction selectors, controls, table rendering, and sticky-column offset work.
+- `initial evaluation/plot render`: the first evaluation render after import, including evaluation selection/grouping, evaluation controls/table/JSON pane, plot controls, active plot-tab data preparation, aggregation, and SVG rendering.
+- `fresh post-load switch tab grouping to metric field`: on a freshly loaded page, click the confusion/TP-FP-FN tab-grouping control from prediction-group mode to metric-field mode. This resets the active plot tab and renders the first metric-field tab selected by the dashboard, which is usually a small field.
+- `fresh post-load switch active plot tab`: on a freshly loaded page in the default tab mode, click the first inactive plot tab. This measures changing between prediction-group tabs, with the target tab determined by current tab ordering.
+- `fresh post-load switch to metric-field german_name tab`: on a freshly loaded page, switch to metric-field mode, then click the `german_name` metric-field tab. This measures the complete user workflow needed to reach that large metric-field tab and emits one timing table for the mode switch and one timing table for the target-tab render.
+- `fresh post-load switch to metric-field scientific_name tab`: same as the `german_name` scenario, but targets `scientific_name`.
+- `fresh post-load set evaluation group-by to none`: on a freshly loaded page, click the evaluation group-by `none` control. This changes evaluation grouping and forces a full evaluation and plot render while the expensive default plot tab is still active.
+- `fresh post-load deselect evaluation table row`: on a freshly loaded page, click the first selected evaluation-group checkbox. This changes selected evaluation groups and forces a full evaluation and plot render while the expensive default plot tab is still active.
+- `fresh post-load deselect prediction table row`: on a freshly loaded page, click the first selected prediction-group checkbox. This first renders the prediction table, then renders evaluations and plots because selected evaluations depend on selected predictions.
 
 Each folder result in the JSON report includes `initial_load.wall_ms` and the timing-table indexes emitted by the initial load. Each interaction record includes `wall_ms` and the timing-table indexes emitted by that interaction.
+
+The benchmark records two timing concepts:
+
+- **Timing table total:** the sum of instrumented, non-overlapping dashboard timing rows emitted for a render or load phase. These rows are useful for diagnosing which dashboard stages dominate.
+- **Wall-clock:** elapsed browser `performance.now()` time from the benchmark action start until the next animation frame after the relevant timing table has been emitted. This better approximates interaction latency but can include event dispatch, layout, paint, and uninstrumented work.
+
+The post-load scenarios are intentionally isolated from each other. Each scenario reloads the complete folder into a fresh page before performing its interaction. This avoids hidden interdependencies where an earlier cheapening action, such as switching to a smaller plot tab or changing grouping, would make later scenarios look faster than the corresponding manual workflow immediately after loading.
+
+Important interpretation details:
+
+- The exact active plot tab matters. Large fields such as `german_name` and `scientific_name` are much more expensive than small fields such as `biodiversity_level`.
+- Some scenarios intentionally produce multiple timing tables. For example, prediction-row deselection emits prediction render timing and evaluation render timing; metric-field target-tab scenarios emit the mode-switch render and the target-tab render.
+- Timing table totals should not be compared to wall-clock numbers as if they measured the same thing. Timing table totals are diagnostic; wall-clock values are closer to user-perceived latency.
+- The benchmark captures only the current default viewport, browser channel, and tab ordering. Changes to viewport size, active tab defaults, plot-tab sorting, or selected data can materially change scenario cost.
+- The benchmark currently focuses on confusion-matrix and TP/FP/FN collection workflows. Numeric bar/error plot workflows should get their own representative data and scenarios before using this benchmark to reason about them.
 
 Timing instrumentation is disabled in normal dashboard use. Add `debugTiming=1` to the dashboard URL to emit structured timing rows manually in the browser console.
 
