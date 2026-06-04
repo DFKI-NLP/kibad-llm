@@ -121,19 +121,25 @@ export function getConfusionMatrixAggregation(experimentEvaluations, fieldLabel)
   const evaluationCells = [];
 
   for (const evaluation of experimentEvaluations) {
+    // Build one sparse lookup map for this evaluation/run. Later aggregation
+    // aligns these per-run maps by the same `${actual}|#|${predicted}` key.
     const map = new Map();
     let evalData;
     if (evaluation?.fields instanceof Map) {
       if (!evaluation.fields.has(normalizedFieldLabel)) {
         throw new Error(`ConfusionMatrix collection view is missing metric field ${JSON.stringify(normalizedFieldLabel)}.`);
       }
+      // Collection metrics may contain several metric.field values; only the
+      // currently selected field is used for this aggregation.
       evalData = evaluation.fields.get(normalizedFieldLabel);
     } else {
+      // Non-collection inputs are already scoped to a single confusion matrix.
       evalData = evaluation?.data;
     }
     if (!isMetricDataRecord(evalData)) {
       throw new Error(`ConfusionMatrix field ${JSON.stringify(normalizedFieldLabel)} must contain object metric data.`);
     }
+    // The raw matrix shape is actual label -> predicted label -> count.
     for (const [actualLabel, predictedMap] of Object.entries(evalData)) {
       const normalizedActualLabel = normalizeValue(actualLabel).trim();
       if (!normalizedActualLabel) {
@@ -157,11 +163,15 @@ export function getConfusionMatrixAggregation(experimentEvaluations, fieldLabel)
           );
         }
         const value = Number(rawValue);
+        // Keep the union of labels seen in any run so absent cells can still be
+        // represented as zero during the later mean/std calculation.
         rowLabels.add(actualLabel);
         colLabels.add(predictedLabel);
         map.set(`${actualLabel}|#|${predictedLabel}`, value);
       }
     }
+    // Store this run's sparse cell map as one sample in the cross-run
+    // aggregation.
     evaluationCells.push(map);
   }
 
@@ -182,7 +192,12 @@ export function getConfusionMatrixAggregation(experimentEvaluations, fieldLabel)
   for (const row of rows) {
     for (const col of cols) {
       const key = `${row}|#|${col}`;
+      // Each confusion-matrix cell is aligned across all selected runs. If a
+      // run has no explicit count for this actual/predicted pair, it
+      // contributes 0 before computing the aggregate.
       const values = evaluationCells.map((cellMap) => cellMap.get(key) ?? 0);
+      // The displayed value is the population mean and population standard
+      // deviation of those aligned per-run counts.
       const stats = meanAndStd(values) || { mean: 0, std: 0 };
       cells.set(key, stats);
     }

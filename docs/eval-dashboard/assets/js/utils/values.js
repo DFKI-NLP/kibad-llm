@@ -105,6 +105,8 @@ export function meanAndStd(values) {
   if (values.length === 0) {
     return null;
   }
+  // Dashboard plots aggregate complete selected-run populations, so the
+  // standard deviation divides by N rather than N - 1.
   const mean = values.reduce((sum, value) => sum + value, 0) / values.length;
   const variance =
     values.reduce((sum, value) => sum + (value - mean) ** 2, 0) / values.length;

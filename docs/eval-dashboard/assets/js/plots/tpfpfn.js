@@ -250,10 +250,14 @@ export function getTpFpFnCombinedAggregation(experimentEvaluations, fieldLabel) 
   for (const row of rows) {
     for (const col of cols) {
       const key = `${row}|#|${col}`;
+      // Align this document/label cell across all selected runs. Missing cells
+      // become an all-false state, so they count as "empty" instead of TP/FP/FN.
       const rowStates = evaluationCells.map(
         (cellMap) => cellMap.get(key) || { tp: false, fp: false, fn: false }
       );
       const counts = { tp: 0, fp: 0, fn: 0, empty: 0 };
+      // Counts are raw run counts: how many selected evaluations marked this
+      // document/label as TP, FP, FN, or none of them.
       for (const rowState of rowStates) {
         let rowHasAny = false;
         for (const outcomeKey of TP_FP_FN_KEYS) {
@@ -468,6 +472,9 @@ export function buildTpFpFnTabMap({
  * @returns {{lines: Array<string>, payload: object}} Tooltip text and JSON payload.
  */
 export function buildTpFpFnCellSummary(row, col, stats, totalEvaluations, evaluationLabels, precision) {
+  // Percentages normalize raw TP/FP/FN counts by the number of selected
+  // evaluations, not by the number of non-empty cells. Empty runs remain in the
+  // denominator, so TP + FP + FN can be below 100%.
   const tpShare = totalEvaluations ? (stats.counts.tp / totalEvaluations) * 100 : 0;
   const fpShare = totalEvaluations ? (stats.counts.fp / totalEvaluations) * 100 : 0;
   const fnShare = totalEvaluations ? (stats.counts.fn / totalEvaluations) * 100 : 0;
@@ -633,6 +640,8 @@ export function createTpFpFnCombinedMatrixSvg({
       TP_FP_FN_KEYS.forEach((outcomeKey, outcomeIndex) => {
         const subX = x + cellPadding + outcomeIndex * (miniCellWidth + miniGap);
         const subY = y + cellPadding;
+        // Mini-cell color intensity uses the same normalization as the tooltip:
+        // count for this outcome divided by all selected evaluations.
         const share = totalEvaluations ? stats.counts[outcomeKey] / totalEvaluations : 0;
         const palette = getTpFpFnPalette(outcomeKey);
         const rect = documentLike.createElementNS("http://www.w3.org/2000/svg", "rect");
