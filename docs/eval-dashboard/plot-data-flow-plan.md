@@ -97,18 +97,23 @@ Implications:
 
 Create a module such as `docs/eval-dashboard/assets/js/plots/data.js`.
 
-This module should build a normalized plot dataset from:
+TODO: double-check parts below! Note that only "changing default values" should change the plot dataset, not the grouping etc. What does this imply?
 
-- active experiment
-- metric type
-- evaluation context
-- selected evaluation groups
-- plot groups
-- grouping fields
-- plot tab grouping mode
-- display label settings where needed for stable export labels
+This module should build a normalized plot dataset from the same state and selector-derived inputs the current plot renderer uses:
+
+- active evaluation experiment and visualization metric type
+- selected prediction groups and selected evaluation groups
+- evaluation context, including experiment evaluations, evaluation tab state, evaluation group-by fields, selected evaluation group ids, and evaluation default values
+- prediction grouping state, including prediction group-by fields and prediction default values used when resolving effective plot-group values
+- resolved plot groups, plot-group fields, and varying plot-group fields
+- metric-family source data, including numeric metric paths, confusion-matrix collection views, or TP/FP/FN collection views
+- plot tab grouping mode, such as prefix/suffix tabs for bar plots and metric-field/prediction-group tabs for confusion and TP/FP/FN plots
+- grouped-bar field selections for numeric plots
+- display label settings where labels are stored in the dataset or exported schema
 
 The dataset module is the internal shared data boundary. Its output should prioritize rendering reuse, cacheability, and DOM-free tests. Rendering should consume this dataset directly or through small aggregation adapters, and the future `Download data` action should derive its public file format from the same dataset instead of rebuilding plot inputs independently.
+
+DOM dependencies and pure presentation settings should stay outside the raw dataset. Active plot tab, thresholds, rounding precision, export background, and similar view settings should be applied by downstream aggregation, filtering, rendering, or export adapters unless storing them in the dataset is required to make visible-scope export unambiguous.
 
 This should be the next major boundary after instrumentation because the baseline shows the expensive paths are dominated by plot-data recomputation rather than table rendering.
 
