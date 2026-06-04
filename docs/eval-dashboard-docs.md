@@ -135,7 +135,9 @@ Known dashboard limitations:
 - Load-summary error categories are still coarse for some parse/normalization failures.
 - Missing prediction ids are currently handled as skipped runs; this policy should be revisited.
 - The current `MutationObserver`-driven download-button refresh should be reviewed against an explicit render-lifecycle update.
-- Processing many confusion matrix or TP/FP/FN runs is currently very slow. This is probably caused by the normalization logic that unifies single field and collection evaluation run data.
+- Processing many confusion matrix or TP/FP/FN runs is currently very slow.
+    - This is probably caused by the normalization logic that unifies single field and collection evaluation run data. Edit: Some improvements have been made in this area, but further review is needed.
+    - And/or by re-calculating all data preparation each time some grouping or plot option changes.
 
 Testing and accessibility:
 

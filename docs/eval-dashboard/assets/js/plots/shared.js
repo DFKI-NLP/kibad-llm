@@ -13,6 +13,101 @@ export const plotSortCollator = new Intl.Collator(undefined, {
 });
 
 /**
+ * Resolves the stable source run directory for a metric collection evaluation.
+ *
+ * @param {object} evaluation - Evaluation record.
+ * @returns {string} Normalized source run directory.
+ */
+export function getMetricCollectionSourceRunDir(evaluation) {
+  return normalizeValue(evaluation?.sourceRunDir ?? evaluation?.runDir).trim();
+}
+
+/**
+ * Check whether a value is a plain object record.
+ *
+ * @param {*} value - Candidate record.
+ * @returns {boolean} Whether the value is a non-array object.
+ */
+export function isMetricDataRecord(value) {
+  return Boolean(value && typeof value === "object" && !Array.isArray(value));
+}
+
+/**
+ * Build a collection-view wrapper for one field-based metric evaluation.
+ *
+ * Collection metrics expose their field map by reference. Single-field metrics
+ * are wrapped as one-field collections and must define a non-empty metric.field.
+ *
+ * @param {object} evaluation - Evaluation record to wrap.
+ * @param {object} options - Collection type names, metric label, and field resolver.
+ * @returns {object} Collection-view record.
+ * @throws {Error} If the evaluation shape violates the metric contract.
+ */
+export function getMetricCollectionView(
+  evaluation,
+  { collectionType, singularType, metricLabel, evalTabState, getEvaluationEffectiveValue }
+) {
+  if (!evaluation || typeof evaluation !== "object") {
+    throw new Error(`${metricLabel} evaluation must be an object.`);
+  }
+
+  const metricType = normalizeValue(evaluation?.jobReturnValue?.type).trim();
+  const sourceRunDir = getMetricCollectionSourceRunDir(evaluation);
+  if (metricType === collectionType) {
+    const fieldEntries = evaluation.data;
+    if (!isMetricDataRecord(fieldEntries)) {
+      throw new Error(`${collectionType} data must be an object mapping metric fields to metric data.`);
+    }
+
+    const fields = new Map();
+    for (const [rawField, fieldEntry] of Object.entries(fieldEntries)) {
+      const fieldLabel = normalizeValue(rawField).trim();
+      if (!fieldLabel) {
+        throw new Error(`${collectionType} data contains an empty metric field name.`);
+      }
+      if (fields.has(fieldLabel)) {
+        throw new Error(`${collectionType} data contains duplicate metric field ${JSON.stringify(fieldLabel)} after normalization.`);
+      }
+      if (!isMetricDataRecord(fieldEntry)) {
+        throw new Error(`${collectionType} field ${JSON.stringify(fieldLabel)} must contain object metric data.`);
+      }
+      fields.set(fieldLabel, fieldEntry);
+    }
+    if (fields.size === 0) {
+      throw new Error(`${collectionType} data must contain at least one metric field.`);
+    }
+
+    return {
+      evaluation,
+      runDir: normalizeValue(evaluation?.runDir) || sourceRunDir,
+      sourceRunDir,
+      fields,
+    };
+  }
+
+  if (metricType === singularType) {
+    const rawField = getEvaluationEffectiveValue
+      ? getEvaluationEffectiveValue(evaluation, "metric.field", evalTabState)
+      : evaluation?.overrides?.["metric.field"];
+    const fieldLabel = normalizeValue(rawField).trim();
+    if (!fieldLabel) {
+      throw new Error(`${singularType} evaluation must define a non-empty metric.field.`);
+    }
+    if (!isMetricDataRecord(evaluation.data)) {
+      throw new Error(`${singularType} data must be an object.`);
+    }
+    return {
+      evaluation,
+      runDir: normalizeValue(evaluation?.runDir) || sourceRunDir,
+      sourceRunDir,
+      fields: new Map([[fieldLabel, evaluation.data]]),
+    };
+  }
+
+  throw new Error(`${metricLabel} plot received unsupported metric type: ${metricType || "(missing)"}.`);
+}
+
+/**
  * Formats a plot label, optionally shortening dotted paths to their suffix.
  *
  * @param {*} label - Raw label value.

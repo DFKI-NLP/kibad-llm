@@ -1,99 +1,56 @@
 /**
  * Confusion-matrix plot aggregation and tab-map helpers.
+ *
+ * Data flow:
+ * - Raw dashboard evaluations stay unchanged for tables and grouping.
+ * - Plot code wraps each selected confusion evaluation in one collection view.
+ * - A `ConfusionMatrixCollection` view exposes every top-level `data` field as
+ *   `fields: Map<metric.field, matrixData>`.
+ * - A single-field `ConfusionMatrix` view exposes exactly one field, resolved
+ *   from `metric.field`, as `fields: Map<metric.field, evaluation.data>`.
+ * - Tab construction derives available plot fields from collection-view field
+ *   keys, and active plot aggregation reads `collection.fields.get(fieldLabel)`.
+ *
+ * The adapter is deliberately strict: missing `metric.field`, malformed metric
+ * data, empty collection fields, and unsupported metric types throw early.
  */
 
 import { formatRounded, interpolateColor, meanAndStd, normalizeValue } from "../utils/values.js";
 import {
+  getMetricCollectionSourceRunDir,
+  getMetricCollectionView,
   getGroupLabelForFields,
   getPlotDisplayLabel,
+  isMetricDataRecord,
 } from "./shared.js";
 
 /**
- * Resolves the stable source run directory for a metric collection evaluation.
- *
- * @param {object} evaluation - Evaluation record.
- * @returns {string} Normalized source run directory.
- */
-export function getMetricCollectionSourceRunDir(evaluation) {
-  return normalizeValue(evaluation?.sourceRunDir ?? evaluation?.runDir).trim();
-}
-
-/**
- * Expands field-based metric collections into single-field evaluation records.
- *
- * @param {object} evaluation - Evaluation record to normalize.
- * @param {object} options - Collection type names and fallback run id prefix.
- * @returns {Array<object>} Expanded singular evaluations or the original evaluation.
- */
-export function expandMetricFieldCollectionEvaluation(
-  evaluation,
-  { collectionType, singularType, fallbackRunDirPrefix }
-) {
-  if (!evaluation || typeof evaluation !== "object") {
-    return [];
-  }
-
-  const metricType = normalizeValue(evaluation?.jobReturnValue?.type).trim();
-  const sourceRunDir = getMetricCollectionSourceRunDir(evaluation);
-  if (metricType === collectionType) {
-    const fieldEntries = evaluation.data;
-    if (!fieldEntries || typeof fieldEntries !== "object" || Array.isArray(fieldEntries)) {
-      return [];
-    }
-
-    const baseOverrides =
-      evaluation.overrides && typeof evaluation.overrides === "object" && !Array.isArray(evaluation.overrides)
-        ? evaluation.overrides
-        : {};
-
-    return Object.entries(fieldEntries)
-      .filter(([, fieldEntry]) => fieldEntry && typeof fieldEntry === "object" && !Array.isArray(fieldEntry))
-      .map(([field, fieldEntry]) => ({
-        ...evaluation,
-        runDir: sourceRunDir ? `${sourceRunDir}#${field}` : `${fallbackRunDirPrefix}#${field}`,
-        sourceRunDir,
-        jobReturnValue: {
-          ...(evaluation.jobReturnValue || {}),
-          type: singularType,
-        },
-        overrides: {
-          ...baseOverrides,
-          "metric.field": field,
-        },
-        data: fieldEntry,
-      }));
-  }
-
-  return [
-    {
-      ...evaluation,
-      sourceRunDir,
-    },
-  ];
-}
-
-/**
- * Expands a confusion-matrix collection evaluation into per-field matrices.
+ * Builds a confusion-matrix collection view for one evaluation.
  *
  * @param {object} evaluation - Confusion-matrix-like evaluation record.
- * @returns {Array<object>} Singular confusion matrix evaluations.
+ * @param {object} [options] - Field resolution helpers.
+ * @returns {object} Confusion matrix collection view.
+ * @throws {Error} If the evaluation shape violates the confusion-matrix contract.
  */
-export function expandConfusionMatrixLikeEvaluation(evaluation) {
-  return expandMetricFieldCollectionEvaluation(evaluation, {
+export function getConfusionMatrixCollectionView(evaluation, options = {}) {
+  return getMetricCollectionView(evaluation, {
     collectionType: "ConfusionMatrixCollection",
     singularType: "ConfusionMatrix",
-    fallbackRunDirPrefix: "confusion-field",
+    metricLabel: "ConfusionMatrix",
+    ...options,
   });
 }
 
 /**
- * Normalizes a list of confusion-matrix-like evaluations.
+ * Builds confusion-matrix collection views for a list of evaluations.
  *
  * @param {Array<object>} evaluations - Raw evaluation records.
- * @returns {Array<object>} Flattened singular confusion matrix evaluations.
+ * @param {object} [options] - Field resolution helpers.
+ * @returns {Array<object>} Confusion matrix collection views.
+ * @throws {Error} If any evaluation shape violates the confusion-matrix contract.
  */
-export function normalizeConfusionMatrixLikeEvaluations(evaluations) {
-  return (evaluations || []).flatMap((evaluation) => expandConfusionMatrixLikeEvaluation(evaluation));
+export function getConfusionMatrixCollectionViews(evaluations, options = {}) {
+  return (evaluations || []).map((evaluation) => getConfusionMatrixCollectionView(evaluation, options));
 }
 
 /**
@@ -105,7 +62,7 @@ export function normalizeConfusionMatrixLikeEvaluations(evaluations) {
 export function countDistinctConfusionMatrixRuns(evaluations) {
   return new Set(
     (evaluations || [])
-      .map((evaluation) => getMetricCollectionSourceRunDir(evaluation))
+      .map((evaluation) => evaluation?.sourceRunDir || getMetricCollectionSourceRunDir(evaluation?.evaluation || evaluation))
       .filter(Boolean)
   ).size;
 }
@@ -122,13 +79,21 @@ export function getConfusionMatrixTitle({
   getEvaluationEffectiveValue,
   shortenLabels = false,
 }) {
-  const fieldValues = new Set(
-    experimentEvaluations
-      .map((evaluation) => getEvaluationEffectiveValue(evaluation, "metric.field", evalTabState))
-      .filter((value) => value)
-  );
+  const fieldValues = new Set();
+  for (const evaluation of experimentEvaluations || []) {
+    if (evaluation?.fields instanceof Map) {
+      for (const fieldLabel of evaluation.fields.keys()) {
+        fieldValues.add(fieldLabel);
+      }
+      continue;
+    }
+    const value = getEvaluationEffectiveValue(evaluation, "metric.field", evalTabState);
+    if (value) {
+      fieldValues.add(value);
+    }
+  }
   if (fieldValues.size === 0) {
-    return "(missing metric.field)";
+    throw new Error("ConfusionMatrix title requires at least one metric.field.");
   }
   if (fieldValues.size === 1) {
     return getPlotDisplayLabel(Array.from(fieldValues)[0], { shortenLabels });
@@ -140,33 +105,73 @@ export function getConfusionMatrixTitle({
 }
 
 /**
- * Aggregates confusion matrix cells across evaluations into mean/std values.
+ * Aggregates one confusion-matrix field across collection views into mean/std values.
  *
- * @param {Array<object>} experimentEvaluations - Singular confusion matrix evaluations.
+ * @param {Array<object>} experimentEvaluations - Confusion matrix collection views.
+ * @param {string} fieldLabel - Metric field to aggregate.
  * @returns {{rows: Array<string>, cols: Array<string>, cells: Map<string, object>}} Aggregated matrix.
  */
-export function getConfusionMatrixAggregation(experimentEvaluations) {
+export function getConfusionMatrixAggregation(experimentEvaluations, fieldLabel) {
+  const normalizedFieldLabel = normalizeValue(fieldLabel).trim();
+  if (!normalizedFieldLabel) {
+    throw new Error("ConfusionMatrix aggregation requires a non-empty metric field.");
+  }
   const rowLabels = new Set();
   const colLabels = new Set();
   const evaluationCells = [];
 
   for (const evaluation of experimentEvaluations) {
+    // Build one sparse lookup map for this evaluation/run. Later aggregation
+    // aligns these per-run maps by the same `${actual}|#|${predicted}` key.
     const map = new Map();
-    const evalData = evaluation.data || {};
+    let evalData;
+    if (evaluation?.fields instanceof Map) {
+      if (!evaluation.fields.has(normalizedFieldLabel)) {
+        throw new Error(`ConfusionMatrix collection view is missing metric field ${JSON.stringify(normalizedFieldLabel)}.`);
+      }
+      // Collection metrics may contain several metric.field values; only the
+      // currently selected field is used for this aggregation.
+      evalData = evaluation.fields.get(normalizedFieldLabel);
+    } else {
+      // Non-collection inputs are already scoped to a single confusion matrix.
+      evalData = evaluation?.data;
+    }
+    if (!isMetricDataRecord(evalData)) {
+      throw new Error(`ConfusionMatrix field ${JSON.stringify(normalizedFieldLabel)} must contain object metric data.`);
+    }
+    // The raw matrix shape is actual label -> predicted label -> count.
     for (const [actualLabel, predictedMap] of Object.entries(evalData)) {
-      if (!predictedMap || typeof predictedMap !== "object" || Array.isArray(predictedMap)) {
-        continue;
+      const normalizedActualLabel = normalizeValue(actualLabel).trim();
+      if (!normalizedActualLabel) {
+        throw new Error(`ConfusionMatrix field ${JSON.stringify(normalizedFieldLabel)} contains an empty actual label.`);
+      }
+      if (!isMetricDataRecord(predictedMap)) {
+        throw new Error(
+          `ConfusionMatrix field ${JSON.stringify(normalizedFieldLabel)} actual label ${JSON.stringify(actualLabel)} must map to object predicted-label data.`
+        );
       }
       for (const [predictedLabel, rawValue] of Object.entries(predictedMap)) {
+        const normalizedPredictedLabel = normalizeValue(predictedLabel).trim();
+        if (!normalizedPredictedLabel) {
+          throw new Error(
+            `ConfusionMatrix field ${JSON.stringify(normalizedFieldLabel)} actual label ${JSON.stringify(actualLabel)} contains an empty predicted label.`
+          );
+        }
         if (!Number.isFinite(rawValue)) {
-          continue;
+          throw new Error(
+            `ConfusionMatrix field ${JSON.stringify(normalizedFieldLabel)} cell ${JSON.stringify(actualLabel)} -> ${JSON.stringify(predictedLabel)} must be a finite number.`
+          );
         }
         const value = Number(rawValue);
+        // Keep the union of labels seen in any run so absent cells can still be
+        // represented as zero during the later mean/std calculation.
         rowLabels.add(actualLabel);
         colLabels.add(predictedLabel);
         map.set(`${actualLabel}|#|${predictedLabel}`, value);
       }
     }
+    // Store this run's sparse cell map as one sample in the cross-run
+    // aggregation.
     evaluationCells.push(map);
   }
 
@@ -187,7 +192,12 @@ export function getConfusionMatrixAggregation(experimentEvaluations) {
   for (const row of rows) {
     for (const col of cols) {
       const key = `${row}|#|${col}`;
+      // Each confusion-matrix cell is aligned across all selected runs. If a
+      // run has no explicit count for this actual/predicted pair, it
+      // contributes 0 before computing the aggregate.
       const values = evaluationCells.map((cellMap) => cellMap.get(key) ?? 0);
+      // The displayed value is the population mean and population standard
+      // deviation of those aligned per-run counts.
       const stats = meanAndStd(values) || { mean: 0, std: 0 };
       cells.set(key, stats);
     }
@@ -281,7 +291,6 @@ export function filterConfusionMatrixAggregationByLabelTotal(aggregation, minLab
 export function buildConfusionTabMap({
   activeExperiment,
   plotGroups,
-  experimentEvaluations,
   labelFields,
   evalTabState,
   confusionTabsBy,
@@ -291,7 +300,7 @@ export function buildConfusionTabMap({
   shortenLabels = false,
 }) {
   const tabMap = new Map();
-  const normalizedExperimentEvaluations = normalizeConfusionMatrixLikeEvaluations(experimentEvaluations);
+  const collectionViewOptions = { evalTabState, getEvaluationEffectiveValue };
   const groupEntries = plotGroups
     .map((group, index) => ({
       key: `group|#|${group.groupId}`,
@@ -301,35 +310,40 @@ export function buildConfusionTabMap({
         `group ${index + 1}`,
         displayPlotGroupFieldName
       ),
-      evaluations: normalizeConfusionMatrixLikeEvaluations(
-        group.evaluations.filter((evaluation) => getEvaluationExperiment(evaluation) === activeExperiment)
+      collections: getConfusionMatrixCollectionViews(
+        group.evaluations.filter((evaluation) => getEvaluationExperiment(evaluation) === activeExperiment),
+        collectionViewOptions
       ),
     }))
-    .filter((entry) => entry.evaluations.length > 0);
+    .filter((entry) => entry.collections.length > 0);
 
   if (confusionTabsBy === "metric_field") {
-    for (const evaluation of normalizedExperimentEvaluations) {
-      const rawField = getEvaluationEffectiveValue(evaluation, "metric.field", evalTabState);
-      const fieldLabel = rawField || "(missing metric.field)";
-      if (!tabMap.has(fieldLabel)) {
-        tabMap.set(fieldLabel, {
-          label: getPlotDisplayLabel(fieldLabel, { shortenLabels }),
-          plots: [],
-        });
+    for (const groupEntry of groupEntries) {
+      const byField = new Map();
+      for (const collection of groupEntry.collections) {
+        for (const fieldLabel of collection.fields.keys()) {
+          if (!tabMap.has(fieldLabel)) {
+            tabMap.set(fieldLabel, {
+              label: getPlotDisplayLabel(fieldLabel, { shortenLabels }),
+              plots: [],
+            });
+          }
+          if (!byField.has(fieldLabel)) {
+            byField.set(fieldLabel, []);
+          }
+          byField.get(fieldLabel).push(collection);
+        }
       }
-    }
-
-    for (const [fieldKey, tab] of tabMap.entries()) {
-      for (const groupEntry of groupEntries) {
-        const evaluationsForFieldAndGroup = groupEntry.evaluations.filter((evaluation) => {
-          const rawField = getEvaluationEffectiveValue(evaluation, "metric.field", evalTabState);
-          const fieldLabel = rawField || "(missing metric.field)";
-          return fieldLabel === fieldKey;
-        });
-        if (evaluationsForFieldAndGroup.length === 0) {
+      for (const [fieldKey, collectionsForFieldAndGroup] of byField.entries()) {
+        const tab = tabMap.get(fieldKey);
+        if (!tab || collectionsForFieldAndGroup.length === 0) {
           continue;
         }
-        tab.plots.push({ label: groupEntry.label, evaluations: evaluationsForFieldAndGroup });
+        tab.plots.push({
+          label: groupEntry.label,
+          fieldLabel: fieldKey,
+          collections: collectionsForFieldAndGroup,
+        });
       }
     }
     return tabMap;
@@ -337,19 +351,20 @@ export function buildConfusionTabMap({
 
   for (const groupEntry of groupEntries) {
     const byField = new Map();
-    for (const evaluation of groupEntry.evaluations) {
-      const rawField = getEvaluationEffectiveValue(evaluation, "metric.field", evalTabState);
-      const fieldLabel = rawField || "(missing metric.field)";
-      if (!byField.has(fieldLabel)) {
-        byField.set(fieldLabel, []);
+    for (const collection of groupEntry.collections) {
+      for (const fieldLabel of collection.fields.keys()) {
+        if (!byField.has(fieldLabel)) {
+          byField.set(fieldLabel, []);
+        }
+        byField.get(fieldLabel).push(collection);
       }
-      byField.get(fieldLabel).push(evaluation);
     }
     const plots = Array.from(byField.entries())
       .sort(([a], [b]) => a.localeCompare(b))
-      .map(([fieldLabel, evaluations]) => ({
+      .map(([fieldLabel, collections]) => ({
         label: fieldLabel,
-        evaluations,
+        fieldLabel,
+        collections,
       }));
     tabMap.set(groupEntry.key, { label: groupEntry.label, plots });
   }
