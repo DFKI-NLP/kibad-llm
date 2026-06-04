@@ -11,7 +11,12 @@ The following guidelines ensure consistency across the project, so please read t
 - [Contribution requirements](#contribution-requirements)
     - [PR description](#pr-description)
     - [CI/CD](#cicd)
-- [Coding guidelines](#coding-guidelines)
+- [Source code](#source-code)
+- [Documentation](#documentation)
+    - [Documentation sources](#documentation-sources)
+    - [Adding or changing pages](#adding-or-changing-pages)
+    - [Links and redirects](#links-and-redirects)
+    - [Building and hosting locally](#building-and-hosting-locally)
 - [Local checks and CI commands](#local-checks-and-ci-commands)
 - [Misc](#misc)
 
@@ -123,7 +128,7 @@ uv sync --group cicd
 
 Pushing to main is prohibited. If you want to contribute code, open a pull request against main.
 
-All contributions need to be documented, both in the [PR description](#pr-description), and in the repo's [Documentation](/CONTRIBUTING_CODE.md#documentation).
+All contributions need to be documented, both in the [PR description](#pr-description), and in the repo's [Documentation](#documentation).
 
 PRs must be reviewed.
 
@@ -176,11 +181,57 @@ Do not end your branch name with a hyphen. For example, `feature-new-login-` is 
 **Descriptive** <br>
 The name should be descriptive and concise, ideally reflecting the work done on the branch.
 
-## Coding guidelines
+## Source Code
 
 The source-code guidelines live in [CONTRIBUTING_CODE.md](/CONTRIBUTING_CODE.md).
 
-They cover general implementation principles, test layout, documentation standards, fixture regeneration, and dependency changes.
+They cover general implementation principles, test layout, source-code documentation standards, fixture regeneration, and dependency changes.
+
+## Documentation
+
+This project uses [ProperDocs](https://properdocs.org/) for the documentation website, which is hosted on [GitHub Pages](https://dfki-nlp.github.io/kibad-llm/).
+
+Documentation changes should be part of the same PR as the code or workflow changes they describe. For source-code docstring and API reference rules, see [CONTRIBUTING_CODE.md](/CONTRIBUTING_CODE.md#documentation).
+
+### Documentation sources
+
+The documentation website is built from:
+
+- Markdown pages under `docs/`.
+- Snippet wrapper pages such as `docs/usage.md`, which include root-level files with `--8<--`.
+- The site navigation and redirects in `properdocs.yml`.
+- Generated API reference pages from `scripts/build_docs.py`.
+- Link rewrites in `scripts/docs_hooks.py` for GitHub-style repository links that need different URLs on the generated website.
+
+### Adding or changing pages
+
+To add a normal documentation page, create a Markdown file under `docs/` and add it to the `nav` section in `properdocs.yml`.
+
+To publish an existing root-level Markdown file, create a small wrapper under `docs/` that includes the source file with a snippet directive, then add that wrapper to `properdocs.yml`.
+
+Keep the main navigation focused. If a topic grows into several pages, use a parent nav entry with descriptive subentries.
+
+The API reference is generated from Python source files by `scripts/build_docs.py`; do not manually edit generated files under `docs/reference/`.
+
+### Links and redirects
+
+Use repository-root links such as `/CONTRIBUTING_CODE.md` when linking to root-level files from snippet-included content. If that link needs to work on the generated website, add or update the corresponding rewrite in `scripts/docs_hooks.py`.
+
+If a public documentation URL changes, add a redirect in `properdocs.yml` so existing links keep working.
+
+### Building and hosting locally
+
+You can build the documentation locally with:
+
+```bash
+uv run --group cicd properdocs build -f properdocs.yml
+```
+
+You can build and serve the documentation locally with:
+
+```bash
+uv run --group cicd properdocs serve -w .
+```
 
 ## Local checks and CI commands
 

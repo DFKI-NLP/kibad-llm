@@ -12,7 +12,6 @@
     - [Guidelines](#guidelines)
     - [Google-style docstring guidelines](#google-style-docstring-guidelines)
     - [Linking](#linking)
-    - [Hosting locally](#hosting-locally)
 - [Changing dependencies](#changing-dependencies)
     - [Adding dependencies](#adding-dependencies)
     - [Updating dependencies](#updating-dependencies)
@@ -80,7 +79,7 @@ Never run the full test suite with `WRITE_FIXTURE_DATA=1` or `WRITE_LLM_CHAT_FIX
 
 ## Documentation
 
-This project uses [ProperDocs](https://properdocs.org/) for documentation, which is hosted on [GitHub Pages](https://dfki-nlp.github.io/kibad-llm/).
+This section covers source-code documentation and API reference conventions. For documentation website structure, navigation, and local hosting, see [Documentation](/CONTRIBUTING.md#documentation).
 
 ### Guidelines
 
@@ -200,14 +199,6 @@ From there, the first dot refers to the class, the second to the directory, and 
 ______________________________________________________________________
 
 Relative links can help with readability/ saving space, but can also be a lot more complex to get perfectly functional.
-
-### Hosting locally
-
-You can build and serve the documentation locally with:
-
-```bash
-uv run --group cicd properdocs serve -w .
-```
 
 ## Changing dependencies
 
