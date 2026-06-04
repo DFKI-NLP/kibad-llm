@@ -117,6 +117,53 @@ The most relevant test locations are:
 - `tests/unit/eval_dashboard/js/` for extracted module behavior.
 - `tests/fixtures/eval_dashboard/` for curated dashboard input fixtures and baseline artifacts.
 
+## Benchmarking
+
+The dashboard has a manual Playwright benchmark for latency investigation. It is not part of the normal test suite and should not be treated as a strict pass/fail gate because browser timings are hardware- and load-dependent.
+
+Install the optional Node dev dependency:
+
+```bash
+cd docs/eval-dashboard/benchmark
+npm install
+```
+
+Run the default benchmark:
+
+```bash
+npm run benchmark
+```
+
+By default, the benchmark loads the complete local folders:
+
+- `data/prediction_results/logs/477_faktencheck_core`
+- `data/prediction_results/logs/481_faktencheck_core`
+
+The benchmark starts a local static server for `docs/eval-dashboard`, opens the dashboard in system Chrome with `debugTiming=1`, uploads each complete folder through the dashboard's local-folder input, captures the dashboard timing tables from the browser console, runs representative post-load interactions, records wall-clock interaction durations, and writes a JSON report under `/tmp/eval-dashboard-benchmark-<timestamp>.json`.
+
+Useful options:
+
+```bash
+npm run benchmark -- --headed
+npm run benchmark -- --output /tmp/dashboard-benchmark.json
+npm run benchmark -- ../../../data/prediction_results/logs/477_faktencheck_core
+```
+
+The benchmark currently measures:
+
+- local import processing
+- initial post-load prediction, evaluation, and plot rendering
+- switching plot tab grouping to metric-field mode from a fresh post-load state
+- switching the active plot tab from a fresh post-load state
+- switching to the `german_name` and `scientific_name` metric-field tabs from a fresh post-load state
+- setting evaluation group-by to none from a fresh post-load state
+- deselecting a row in the evaluations table from a fresh post-load state
+- deselecting a row in the predictions table from a fresh post-load state
+
+Each interaction record in the JSON report includes `wall_ms` and the timing-table indexes emitted by that interaction.
+
+Timing instrumentation is disabled in normal dashboard use. Add `debugTiming=1` to the dashboard URL to emit structured timing rows manually in the browser console.
+
 ## Maintenance Notes
 
 - Keep `main.js` as orchestration code. New reusable behavior should go into `data/`, `state/`, `ui/`, `plots/`, `browser/`, or `utils/`.

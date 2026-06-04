@@ -61,6 +61,10 @@ import {
   getPlotTitleLabel as getSharedPlotTitleLabel,
 } from "./plots/shared.js";
 import {
+  createTimingCollector,
+  isDebugTimingEnabled,
+} from "./utils/timing.js";
+import {
   createPlotTooltipHandlers,
   downloadVisiblePlotFigures,
   renderDashboardPlotControls,
@@ -70,6 +74,7 @@ import {
 
 // Central UI state: loaded prediction/evaluation data, current grouping/selection, and per-eval-tab view state.
 const state = dashboardStore.createInitialDashboardState();
+const debugTimingEnabled = isDebugTimingEnabled({ locationLike: window.location });
 
 const dom = captureDomRefs(document);
 const {
@@ -202,6 +207,15 @@ function getSelectedEvaluationsForExperiment(experiment, selectedEvaluations = g
 }
 
 const plotTooltipHandlers = createPlotTooltipHandlers({ tooltipElement: barTooltip, windowLike: window });
+
+function createDashboardTiming(label) {
+  return createTimingCollector({
+    enabled: debugTimingEnabled,
+    label,
+    performanceLike: performance,
+    consoleLike: console,
+  });
+}
 
 function updateDownloadFiguresButtonState() {
   updatePlotDownloadFiguresButtonState({ downloadFiguresButton, evalPlotContent });
@@ -362,16 +376,28 @@ function setSelectedGroupIds(groupIds) {
  * Reset load-dependent UI state after new canonical prediction/evaluation data is imported.
  * All prediction/evaluation structures remain selector-derived and are not stored here.
  */
-function resetDerivedUiStateAfterLoad() {
-  const predictionViews = getPredictionViews();
-  const predictionColumns = getCurrentPredictionColumns(predictionViews);
-  const nextGroupByFields = getDefaultGroupByFields(predictionColumns, predictionViews);
-  dashboardStore.resetDerivedUiStateAfterLoad(state, {
-    predictionViews,
-    predictionColumns,
-    predictionGroups: getPredictionGroups(predictionViews, nextGroupByFields, predictionColumns),
-    getDefaultGroupByFields,
-    getDefaultTruncateColumns,
+function resetDerivedUiStateAfterLoad(timing = createTimingCollector({ enabled: false })) {
+  const predictionViews = timing.time("load derive prediction views", () => getPredictionViews());
+  const predictionColumns = timing.time(
+    "load derive prediction columns",
+    () => getCurrentPredictionColumns(predictionViews)
+  );
+  const nextGroupByFields = timing.time(
+    "load derive default prediction group-by",
+    () => getDefaultGroupByFields(predictionColumns, predictionViews)
+  );
+  const predictionGroups = timing.time(
+    "load derive prediction groups",
+    () => getPredictionGroups(predictionViews, nextGroupByFields, predictionColumns)
+  );
+  timing.time("load reset derived ui state", () => {
+    dashboardStore.resetDerivedUiStateAfterLoad(state, {
+      predictionViews,
+      predictionColumns,
+      predictionGroups,
+      getDefaultGroupByFields,
+      getDefaultTruncateColumns,
+    });
   });
 }
 
@@ -394,17 +420,19 @@ function updateLoadStatusSummary({ candidateRunDirs, loadedCount, skippedDuplica
 /**
  * Apply a shared-ingestion result to canonical dashboard state and refresh derived UI state.
  */
-function applyIngestionResult(sourceLabel, ingestionResult) {
+function applyIngestionResult(sourceLabel, ingestionResult, timing = createTimingCollector({ enabled: false })) {
   state.loadedFolders.add(sourceLabel);
   for (const { runDir, error } of ingestionResult.failures) {
     console.error(`Failed to parse run at ${runDir}`, error);
   }
-  for (const [predictionId, prediction] of Object.entries(ingestionResult.predictionAdditions)) {
-    state.predictions[predictionId] = prediction;
-  }
-  state.evaluations.push(...ingestionResult.evaluationAdditions);
-  resetDerivedUiStateAfterLoad();
-  updateLoadStatusSummary(ingestionResult.summary);
+  timing.time("load apply canonical additions", () => {
+    for (const [predictionId, prediction] of Object.entries(ingestionResult.predictionAdditions)) {
+      state.predictions[predictionId] = prediction;
+    }
+    state.evaluations.push(...ingestionResult.evaluationAdditions);
+  });
+  resetDerivedUiStateAfterLoad(timing);
+  timing.time("load render status summary", () => updateLoadStatusSummary(ingestionResult.summary));
 }
 
 /**
@@ -414,27 +442,38 @@ function applyIngestionResult(sourceLabel, ingestionResult) {
  * job_return_value.json and .hydra/overrides.yaml. Prediction payloads are canonicalized
  * separately and linked through predictionId.
  */
-async function loadEvaluationsFromEntries(entries, rootLabel) {
+async function loadEvaluationsFromEntries(entries, rootLabel, timing = createTimingCollector({ enabled: false })) {
   if (!entries.length) {
     renderLoadStatusStage(dom, `No relevant run files found in ${rootLabel}.`);
     return;
   }
 
-  applyIngestionResult(rootLabel, ingestRunEntries(entries, {
-    existingPredictions: state.predictions,
-    existingEvaluations: state.evaluations,
-  }));
+  const ingestionResult = timing.time(
+    "load ingest run entries",
+    () => ingestRunEntries(entries, {
+      existingPredictions: state.predictions,
+      existingEvaluations: state.evaluations,
+    }),
+    { entry_count: entries.length }
+  );
+  applyIngestionResult(rootLabel, ingestionResult, timing);
 }
 
 async function loadEvaluationsFromFiles(files) {
+  const timing = createDashboardTiming("eval-dashboard local folder load");
   hideLoadProgress();
   if (!files.length) {
     renderLoadStatusStage(dom, "No files selected.");
     return;
   }
 
-  const { rootLabel, entries } = await collectLocalEvaluationEntries(files);
-  await loadEvaluationsFromEntries(entries, rootLabel);
+  const { rootLabel, entries } = await timing.timeAsync(
+    "load collect local file entries",
+    () => collectLocalEvaluationEntries(files),
+    { file_count: files.length }
+  );
+  await loadEvaluationsFromEntries(entries, rootLabel, timing);
+  timing.flush({ source: rootLabel });
 }
 
 function updateLoadStatusStage(title, details = []) {
@@ -453,6 +492,7 @@ function setLoadProgress({ completedFiles = 0, totalFiles = 0, completedBytes = 
  * Fetch evaluation-run files from a GitHub tree URL and apply them through the shared ingestion path.
  */
 async function loadEvaluationsFromGitUrl(rawUrl) {
+  const timing = createDashboardTiming("eval-dashboard github load");
   const trimmedUrl = String(rawUrl || "").trim();
   if (!trimmedUrl) {
     hideLoadProgress();
@@ -462,11 +502,14 @@ async function loadEvaluationsFromGitUrl(rawUrl) {
 
   const token = persistGitHubTokenInputValue(githubTokenInput);
   hideLoadProgress();
-  const gitLoadResult = await loadGitHubEntriesFromTreeUrl(trimmedUrl, {
-    token,
-    onStatus: ({ title, details }) => updateLoadStatusStage(title, details),
-    onProgress: (progress) => setLoadProgress(progress),
-  });
+  const gitLoadResult = await timing.timeAsync(
+    "load fetch github entries",
+    () => loadGitHubEntriesFromTreeUrl(trimmedUrl, {
+      token,
+      onStatus: ({ title, details }) => updateLoadStatusStage(title, details),
+      onProgress: (progress) => setLoadProgress(progress),
+    })
+  );
   if (!gitLoadResult.files.length) {
     hideLoadProgress();
     renderLoadStatusStage(dom, `No matching run files found in ${gitLoadResult.sourceLabel}.`);
@@ -477,7 +520,7 @@ async function loadEvaluationsFromGitUrl(rawUrl) {
     gitLoadResult.sourceLabel,
     `Fetched files: ${gitLoadResult.entries.length}`,
   ]);
-  await loadEvaluationsFromEntries(gitLoadResult.entries, gitLoadResult.sourceLabel);
+  await loadEvaluationsFromEntries(gitLoadResult.entries, gitLoadResult.sourceLabel, timing);
   setLoadProgress({
     completedFiles: gitLoadResult.files.length,
     totalFiles: gitLoadResult.files.length,
@@ -485,6 +528,7 @@ async function loadEvaluationsFromGitUrl(rawUrl) {
     totalBytes: gitLoadResult.totalBytes,
     label: "GitHub fetch complete",
   });
+  timing.flush({ source: gitLoadResult.sourceLabel });
 }
 
 async function handleGitLoadRequest() {
@@ -759,145 +803,181 @@ initializeDashboard();
  * Render the Predictions table from derived prediction views and prediction groups.
  */
 function renderPredictions() {
-  const predictionViews = getPredictionViews();
-  const predictionGroups = getCurrentPredictionGroups();
+  const timing = createDashboardTiming("eval-dashboard prediction render");
 
-  predictionsTable.innerHTML = "";
-  predictionDefaultsList.innerHTML = "";
-  state.predictionSort = renderSortStatus({
-    labelElement: predictionSortedByLabel,
-    resetButton: predictionResetSortButton,
-    sortConfig: state.predictionSort,
-    validColumns: [...SORTABLE_CONTROL_COLUMNS, ...getCurrentPredictionColumns()],
-    displayColumnName: displayPredictionColumnName,
-  });
-  if (!predictionGroups.length) {
-    renderGroupByButtonState(
-      {
-        allButton: groupByAllButton,
-        toggleButton: groupByToggleButton,
-        noneButton: groupByNoneButton,
-      },
-      []
+  try {
+    const predictionViews = timing.time("render derive prediction views", () => getPredictionViews());
+    const predictionGroups = timing.time("render derive prediction groups", () => getCurrentPredictionGroups());
+    const predictionColumns = timing.time(
+      "render derive prediction columns",
+      () => getCurrentPredictionColumns(predictionViews)
     );
-    setPanelVisibility(predictionDefaultsPanel, false);
-    predictionSummary.textContent = "No predictions found. Load a folder containing evaluate run outputs.";
-    return;
+
+    timing.time("render clear prediction ui", () => {
+      predictionsTable.innerHTML = "";
+      predictionDefaultsList.innerHTML = "";
+    });
+    state.predictionSort = timing.time("render prediction sort status", () =>
+      renderSortStatus({
+        labelElement: predictionSortedByLabel,
+        resetButton: predictionResetSortButton,
+        sortConfig: state.predictionSort,
+        validColumns: [...SORTABLE_CONTROL_COLUMNS, ...predictionColumns],
+        displayColumnName: displayPredictionColumnName,
+      })
+    );
+    if (!predictionGroups.length) {
+      timing.time("render empty prediction state", () => {
+        renderGroupByButtonState(
+          {
+            allButton: groupByAllButton,
+            toggleButton: groupByToggleButton,
+            noneButton: groupByNoneButton,
+          },
+          []
+        );
+        setPanelVisibility(predictionDefaultsPanel, false);
+        predictionSummary.textContent = "No predictions found. Load a folder containing evaluate run outputs.";
+      });
+      return;
+    }
+
+    timing.time("render prediction summary", () => {
+      predictionSummary.textContent =
+        `Predictions: ${predictionViews.length} | Groups: ${predictionGroups.length} | Group-by: ` +
+        (state.groupByFields.length
+          ? state.groupByFields.map((field) => displayPredictionColumnName(field)).join(", ")
+          : "(none; one row per unique prediction)");
+    });
+
+    const predictionSections = timing.time("render build prediction columns", () =>
+      buildPredictionColumnSections({
+        predictionColumns,
+        predictionJobReturnValuePrefix: PREDICTION_JOB_RETURN_VALUE_PREFIX,
+        predictionOverridesPrefix: PREDICTION_OVERRIDES_PREFIX,
+      })
+    );
+    const orderedPredictionColumns = predictionSections.flatMap((section) => section.columns);
+    timing.time("render prediction group controls", () => {
+      renderGroupByButtonState(
+        {
+          allButton: groupByAllButton,
+          toggleButton: groupByToggleButton,
+          noneButton: groupByNoneButton,
+        },
+        orderedPredictionColumns
+      );
+      renderStaticTabState({
+        buttonElements: optionsTabButtons,
+        panelElements: optionsTabPanels,
+        activeValue: state.activeOptionsTab,
+      });
+    });
+    const selectedPredictionViews = timing.time(
+      "render derive selected prediction views",
+      () => getSelectedPredictionViews()
+    );
+    const predictionDefaultColumns = timing.time("render derive prediction defaults", () =>
+      selectors.getPredictionColumnsWithMissingValues(
+        state,
+        selectedPredictionViews,
+        orderedPredictionColumns
+      )
+    );
+    timing.time("render prediction options panel", () => {
+      renderOptionsPanel({
+        documentLike: document,
+        checkboxListElement: truncateColumnsList,
+        checkboxColumns: orderedPredictionColumns,
+        checkedValues: state.truncateEnabledColumns,
+        getCheckboxLabel: displayPredictionColumnName,
+        onCheckboxToggle: (column, checked) => {
+          if (checked) {
+            state.truncateEnabledColumns.add(column);
+          } else {
+            state.truncateEnabledColumns.delete(column);
+          }
+          renderPredictions();
+        },
+        defaultsListElement: predictionDefaultsList,
+        defaultsPanelElement: predictionDefaultsPanel,
+        defaultColumns: predictionDefaultColumns,
+        getDefaultLabel: displayPredictionColumnName,
+        getDefaultValue: (column) => selectors.getPredictionDefaultValue(state, column),
+        getDefaultSuggestions: (column) =>
+          selectors.getPredictionDefaultSuggestions(selectedPredictionViews, column),
+        getDefaultMissingCount: (column) =>
+          selectors.getPredictionMissingValueCount(selectedPredictionViews, column),
+        inputIdPrefix: "prediction-default",
+        onDefaultCommit: (column, nextValue) => {
+          setConfiguredDefault(state.predictionDefaultValues, column, nextValue);
+          renderPredictions();
+          renderEvaluations();
+        },
+      });
+    });
+    const displayedGroups = timing.time(
+      "render sort prediction groups",
+      () => getSortedPredictionGroups(predictionGroups)
+    );
+
+    timing.time("render prediction table", () => {
+      renderPredictionTable({
+        documentLike: document,
+        tableElement: predictionsTable,
+        predictionSections,
+        orderedPredictionColumns,
+        displayedGroups,
+        predictionSort: state.predictionSort,
+        truncateEnabledColumns: state.truncateEnabledColumns,
+        groupByFields: state.groupByFields,
+        selectedGroupIds: state.selectedGroupIds,
+        expandedGroupIds: state.expandedGroupIds,
+        displayColumnName: displayPredictionColumnName,
+        onSortToggle: setPredictionSort,
+        onToggleGroupByColumn: (column, checked) => {
+          const nextGroupByFields = new Set(state.groupByFields);
+          if (checked) {
+            nextGroupByFields.add(column);
+          } else {
+            nextGroupByFields.delete(column);
+          }
+          setGroupByFields(nextGroupByFields);
+        },
+        onToggleGroupExpansion: (groupId) => {
+          if (state.expandedGroupIds.has(groupId)) {
+            state.expandedGroupIds.delete(groupId);
+          } else {
+            state.expandedGroupIds.add(groupId);
+          }
+          renderPredictions();
+        },
+        onToggleGroupSelection: (groupId, checked) => {
+          const nextSelectedGroupIds = new Set(state.selectedGroupIds);
+          if (checked) {
+            nextSelectedGroupIds.add(groupId);
+          } else {
+            nextSelectedGroupIds.delete(groupId);
+          }
+          setSelectedGroupIds(nextSelectedGroupIds);
+        },
+        onSelectAllDisplayed: (checked, displayedGroupIds) => {
+          setSelectedGroupIds(checked ? displayedGroupIds : []);
+        },
+        getGroupValueDisplay: (group, column) =>
+          selectors.getGroupValueDisplay(state, group, column),
+        getSortedPredictionMembers,
+        getPredictionEffectiveValue: (predictionFlat, column) =>
+          selectors.getPredictionEffectiveValue(state, predictionFlat, column),
+        sortableControlColumns: SORTABLE_CONTROL_COLUMNS,
+      });
+    });
+    timing.time("render prediction sticky offsets", () => {
+      updateStickyControlColumnOffsets(predictionsTable);
+    });
+  } finally {
+    timing.flush();
   }
-
-  predictionSummary.textContent =
-    `Predictions: ${predictionViews.length} | Groups: ${predictionGroups.length} | Group-by: ` +
-    (state.groupByFields.length
-      ? state.groupByFields.map((field) => displayPredictionColumnName(field)).join(", ")
-      : "(none; one row per unique prediction)");
-
-  const predictionSections = buildPredictionColumnSections({
-    predictionColumns: getCurrentPredictionColumns(predictionViews),
-    predictionJobReturnValuePrefix: PREDICTION_JOB_RETURN_VALUE_PREFIX,
-    predictionOverridesPrefix: PREDICTION_OVERRIDES_PREFIX,
-  });
-  const orderedPredictionColumns = predictionSections.flatMap((section) => section.columns);
-  renderGroupByButtonState(
-    {
-      allButton: groupByAllButton,
-      toggleButton: groupByToggleButton,
-      noneButton: groupByNoneButton,
-    },
-    orderedPredictionColumns
-  );
-  renderStaticTabState({
-    buttonElements: optionsTabButtons,
-    panelElements: optionsTabPanels,
-    activeValue: state.activeOptionsTab,
-  });
-  const selectedPredictionViews = getSelectedPredictionViews();
-  const predictionDefaultColumns = selectors.getPredictionColumnsWithMissingValues(
-    state,
-    selectedPredictionViews,
-    orderedPredictionColumns
-  );
-  renderOptionsPanel({
-    documentLike: document,
-    checkboxListElement: truncateColumnsList,
-    checkboxColumns: orderedPredictionColumns,
-    checkedValues: state.truncateEnabledColumns,
-    getCheckboxLabel: displayPredictionColumnName,
-    onCheckboxToggle: (column, checked) => {
-      if (checked) {
-        state.truncateEnabledColumns.add(column);
-      } else {
-        state.truncateEnabledColumns.delete(column);
-      }
-      renderPredictions();
-    },
-    defaultsListElement: predictionDefaultsList,
-    defaultsPanelElement: predictionDefaultsPanel,
-    defaultColumns: predictionDefaultColumns,
-    getDefaultLabel: displayPredictionColumnName,
-    getDefaultValue: (column) => selectors.getPredictionDefaultValue(state, column),
-    getDefaultSuggestions: (column) =>
-      selectors.getPredictionDefaultSuggestions(selectedPredictionViews, column),
-    getDefaultMissingCount: (column) =>
-      selectors.getPredictionMissingValueCount(selectedPredictionViews, column),
-    inputIdPrefix: "prediction-default",
-    onDefaultCommit: (column, nextValue) => {
-      setConfiguredDefault(state.predictionDefaultValues, column, nextValue);
-      renderPredictions();
-      renderEvaluations();
-    },
-  });
-  const displayedGroups = getSortedPredictionGroups(predictionGroups);
-
-  renderPredictionTable({
-    documentLike: document,
-    tableElement: predictionsTable,
-    predictionSections,
-    orderedPredictionColumns,
-    displayedGroups,
-    predictionSort: state.predictionSort,
-    truncateEnabledColumns: state.truncateEnabledColumns,
-    groupByFields: state.groupByFields,
-    selectedGroupIds: state.selectedGroupIds,
-    expandedGroupIds: state.expandedGroupIds,
-    displayColumnName: displayPredictionColumnName,
-    onSortToggle: setPredictionSort,
-    onToggleGroupByColumn: (column, checked) => {
-      const nextGroupByFields = new Set(state.groupByFields);
-      if (checked) {
-        nextGroupByFields.add(column);
-      } else {
-        nextGroupByFields.delete(column);
-      }
-      setGroupByFields(nextGroupByFields);
-    },
-    onToggleGroupExpansion: (groupId) => {
-      if (state.expandedGroupIds.has(groupId)) {
-        state.expandedGroupIds.delete(groupId);
-      } else {
-        state.expandedGroupIds.add(groupId);
-      }
-      renderPredictions();
-    },
-    onToggleGroupSelection: (groupId, checked) => {
-      const nextSelectedGroupIds = new Set(state.selectedGroupIds);
-      if (checked) {
-        nextSelectedGroupIds.add(groupId);
-      } else {
-        nextSelectedGroupIds.delete(groupId);
-      }
-      setSelectedGroupIds(nextSelectedGroupIds);
-    },
-    onSelectAllDisplayed: (checked, displayedGroupIds) => {
-      setSelectedGroupIds(checked ? displayedGroupIds : []);
-    },
-    getGroupValueDisplay: (group, column) =>
-      selectors.getGroupValueDisplay(state, group, column),
-    getSortedPredictionMembers,
-    getPredictionEffectiveValue: (predictionFlat, column) =>
-      selectors.getPredictionEffectiveValue(state, predictionFlat, column),
-    sortableControlColumns: SORTABLE_CONTROL_COLUMNS,
-  });
-  updateStickyControlColumnOffsets(predictionsTable);
 }
 
 // Helper functions for adapting evaluation context and plot-group state to shared renderers.
@@ -928,13 +1008,20 @@ function getMetricTypeForEvaluationContext(
  */
 function renderEvaluationPlots(
   activeExperiment,
-  evaluationContext = getEvaluationContext(activeExperiment)
+  evaluationContext = null,
+  timing = null
 ) {
+  const ownsTiming = !timing;
+  const plotTiming = timing || createDashboardTiming("eval-dashboard plot render");
+  const resolvedEvaluationContext = evaluationContext || plotTiming.time(
+    "render get evaluation context",
+    () => getEvaluationContext(activeExperiment)
+  );
   renderEvaluationPlotsForDashboard({
     state,
     dom,
     activeExperiment,
-    evaluationContext,
+    evaluationContext: resolvedEvaluationContext,
     documentLike: document,
     requestAnimationFrameLike: requestAnimationFrame,
     navigatorLike: navigator,
@@ -951,13 +1038,18 @@ function renderEvaluationPlots(
     getPlotDisplayLabel,
     getPlotTitleLabel,
     rerenderEvaluationPlots: renderEvaluationPlots,
+    timing: plotTiming,
   });
+  if (ownsTiming) {
+    plotTiming.flush({ active_experiment: activeExperiment || "" });
+  }
 }
 
 /**
  * Render the evaluation table, JSON pane, and plots from selector-derived evaluation state.
  */
 function renderEvaluations() {
+  const timing = createDashboardTiming("eval-dashboard evaluation render");
   evalTabs.innerHTML = "";
   evaluationsTable.innerHTML = "";
   renderEvalJsonPane({
@@ -985,15 +1077,22 @@ function renderEvaluations() {
   });
   evalDefaultsList.innerHTML = "";
 
-  const selectedEvaluations = gatherSelectedEvaluations();
+  const selectedEvaluations = timing.time(
+    "render gather selected evaluations",
+    () => gatherSelectedEvaluations()
+  );
   if (!selectedEvaluations.length) {
     setPanelVisibility(evalDefaultsPanel, false);
     evalSummary.textContent = "Select one or more prediction groups to view evaluation overrides and job_return_value fields.";
-    renderEvaluationPlots(state.activeEvalTab || "");
+    renderEvaluationPlots(state.activeEvalTab || "", null, timing);
+    timing.flush({ active_experiment: state.activeEvalTab || "" });
     return;
   }
 
-  const byExperiment = getEvaluationsByExperiment(selectedEvaluations);
+  const byExperiment = timing.time(
+    "render group evaluations by experiment",
+    () => getEvaluationsByExperiment(selectedEvaluations)
+  );
 
   const experiments = Array.from(byExperiment.keys()).sort();
   state.activeEvalTab = resolveActiveTabValue(state.activeEvalTab, experiments);
@@ -1014,7 +1113,10 @@ function renderEvaluations() {
     },
   });
 
-  const evaluationContext = getEvaluationContext(state.activeEvalTab, selectedEvaluations);
+  const evaluationContext = timing.time(
+    "render get evaluation context",
+    () => getEvaluationContext(state.activeEvalTab, selectedEvaluations)
+  );
   const {
     experimentEvaluations,
     evalColumns,
@@ -1047,107 +1149,117 @@ function renderEvaluations() {
     buttonAttribute: "data-eval-tab",
     panelAttribute: "data-eval-tab-panel",
   });
-  const selectedEvaluationsForDefaults = getSelectedEvaluationGroups(evaluationContext).flatMap(
-    (group) => group.evaluations
+  const selectedEvaluationsForDefaults = timing.time(
+    "render selected evaluations for defaults",
+    () => getSelectedEvaluationGroups(evaluationContext).flatMap(
+      (group) => group.evaluations
+    )
   );
   const evalDefaultColumns = selectors.getEvalColumnsWithMissingValues(
     selectedEvaluationsForDefaults,
     evalColumns
   );
-  renderOptionsPanel({
-    documentLike: document,
-    checkboxListElement: evalTruncateColumnsList,
-    checkboxColumns: [...new Set([...orderedEvalColumns, "eval_run_dir"])],
-    checkedValues: evalTabState.truncateEnabledColumns,
-    getCheckboxLabel: displayEvalColumnName,
-    onCheckboxToggle: (column, checked) => {
-      if (checked) {
-        evalTabState.truncateEnabledColumns.add(column);
-      } else {
-        evalTabState.truncateEnabledColumns.delete(column);
-      }
-      renderEvaluations();
-    },
-    defaultsListElement: evalDefaultsList,
-    defaultsPanelElement: evalDefaultsPanel,
-    defaultColumns: evalDefaultColumns,
-    getDefaultLabel: displayEvalColumnName,
-    getDefaultValue: (column) => selectors.getEvalDefaultValue(evalTabState, column),
-    getDefaultSuggestions: (column) =>
-      selectors.getEvalDefaultSuggestions(selectedEvaluationsForDefaults, column),
-    getDefaultMissingCount: (column) =>
-      selectors.getEvalMissingValueCount(selectedEvaluationsForDefaults, column),
-    inputIdPrefix: `eval-default-${state.activeEvalTab.replace(/[^a-zA-Z0-9_-]+/g, "-")}`,
-    onDefaultCommit: (column, nextValue) => {
-      setConfiguredDefault(evalTabState.defaultValues, column, nextValue);
-      renderEvaluations();
-    },
+  timing.time("render evaluation options panel", () => {
+    renderOptionsPanel({
+      documentLike: document,
+      checkboxListElement: evalTruncateColumnsList,
+      checkboxColumns: [...new Set([...orderedEvalColumns, "eval_run_dir"])],
+      checkedValues: evalTabState.truncateEnabledColumns,
+      getCheckboxLabel: displayEvalColumnName,
+      onCheckboxToggle: (column, checked) => {
+        if (checked) {
+          evalTabState.truncateEnabledColumns.add(column);
+        } else {
+          evalTabState.truncateEnabledColumns.delete(column);
+        }
+        renderEvaluations();
+      },
+      defaultsListElement: evalDefaultsList,
+      defaultsPanelElement: evalDefaultsPanel,
+      defaultColumns: evalDefaultColumns,
+      getDefaultLabel: displayEvalColumnName,
+      getDefaultValue: (column) => selectors.getEvalDefaultValue(evalTabState, column),
+      getDefaultSuggestions: (column) =>
+        selectors.getEvalDefaultSuggestions(selectedEvaluationsForDefaults, column),
+      getDefaultMissingCount: (column) =>
+        selectors.getEvalMissingValueCount(selectedEvaluationsForDefaults, column),
+      inputIdPrefix: `eval-default-${state.activeEvalTab.replace(/[^a-zA-Z0-9_-]+/g, "-")}`,
+      onDefaultCommit: (column, nextValue) => {
+        setConfiguredDefault(evalTabState.defaultValues, column, nextValue);
+        renderEvaluations();
+      },
+    });
   });
 
-  const displayedEvalGroups = selectors.getSortedEvaluationGroups(evaluationGroups, evalTabState);
+  const displayedEvalGroups = timing.time(
+    "render sort evaluation groups",
+    () => selectors.getSortedEvaluationGroups(evaluationGroups, evalTabState)
+  );
 
-  renderEvaluationTable({
-    documentLike: document,
-    tableElement: evaluationsTable,
-    evalColumnSections,
-    orderedEvalColumns,
-    displayedGroups: displayedEvalGroups,
-    evalTabState,
-    displayColumnName: displayEvalColumnName,
-    onSortToggle: setEvalSort,
-    onToggleGroupByColumn: (column, checked) => {
-      const next = new Set(evalTabState.groupByFields);
-      if (checked) {
-        next.add(column);
-      } else {
-        next.delete(column);
-      }
-      setActiveEvalGroupByFields(next);
-    },
-    onSelectAllDisplayed: (checked, displayedGroupIds) => {
-      evalTabState.selectedGroupIds = checked ? new Set(displayedGroupIds) : new Set();
-      renderEvaluations();
-    },
-    onGroupRowSelect: (groupId) => {
-      if (evalTabState.selectedEvalGroupId === groupId) {
-        evalTabState.selectedEvalGroupId = null;
-      } else {
-        evalTabState.selectedEvalGroupId = groupId;
-        evalTabState.selectedEvalRunDir = null;
-        state.activeEvalJsonTab = "evaluation";
-      }
-      renderEvaluations();
-    },
-    onToggleGroupExpansion: (groupId) => {
-      if (evalTabState.expandedGroupIds.has(groupId)) {
-        evalTabState.expandedGroupIds.delete(groupId);
-      } else {
-        evalTabState.expandedGroupIds.add(groupId);
-      }
-      renderEvaluations();
-    },
-    onToggleGroupSelection: (groupId, checked) => {
-      if (checked) {
-        evalTabState.selectedGroupIds.add(groupId);
-      } else {
-        evalTabState.selectedGroupIds.delete(groupId);
-      }
-      renderEvaluations();
-    },
-    onMemberRowSelect: (runDir) => {
-      if (evalTabState.selectedEvalRunDir === runDir) {
-        evalTabState.selectedEvalRunDir = null;
-      } else {
-        evalTabState.selectedEvalRunDir = runDir;
-        evalTabState.selectedEvalGroupId = null;
-        state.activeEvalJsonTab = "evaluation";
-      }
-      renderEvaluations();
-    },
-    getGroupValueDisplayFromEvaluations: selectors.getGroupValueDisplayFromEvaluations,
-    getEvaluationEffectiveValue: selectors.getEvaluationEffectiveValue,
-    getSortedEvaluations: selectors.getSortedEvaluations,
-    sortableControlColumns: SORTABLE_CONTROL_COLUMNS,
+  timing.time("render evaluation table", () => {
+    renderEvaluationTable({
+      documentLike: document,
+      tableElement: evaluationsTable,
+      evalColumnSections,
+      orderedEvalColumns,
+      displayedGroups: displayedEvalGroups,
+      evalTabState,
+      displayColumnName: displayEvalColumnName,
+      onSortToggle: setEvalSort,
+      onToggleGroupByColumn: (column, checked) => {
+        const next = new Set(evalTabState.groupByFields);
+        if (checked) {
+          next.add(column);
+        } else {
+          next.delete(column);
+        }
+        setActiveEvalGroupByFields(next);
+      },
+      onSelectAllDisplayed: (checked, displayedGroupIds) => {
+        evalTabState.selectedGroupIds = checked ? new Set(displayedGroupIds) : new Set();
+        renderEvaluations();
+      },
+      onGroupRowSelect: (groupId) => {
+        if (evalTabState.selectedEvalGroupId === groupId) {
+          evalTabState.selectedEvalGroupId = null;
+        } else {
+          evalTabState.selectedEvalGroupId = groupId;
+          evalTabState.selectedEvalRunDir = null;
+          state.activeEvalJsonTab = "evaluation";
+        }
+        renderEvaluations();
+      },
+      onToggleGroupExpansion: (groupId) => {
+        if (evalTabState.expandedGroupIds.has(groupId)) {
+          evalTabState.expandedGroupIds.delete(groupId);
+        } else {
+          evalTabState.expandedGroupIds.add(groupId);
+        }
+        renderEvaluations();
+      },
+      onToggleGroupSelection: (groupId, checked) => {
+        if (checked) {
+          evalTabState.selectedGroupIds.add(groupId);
+        } else {
+          evalTabState.selectedGroupIds.delete(groupId);
+        }
+        renderEvaluations();
+      },
+      onMemberRowSelect: (runDir) => {
+        if (evalTabState.selectedEvalRunDir === runDir) {
+          evalTabState.selectedEvalRunDir = null;
+        } else {
+          evalTabState.selectedEvalRunDir = runDir;
+          evalTabState.selectedEvalGroupId = null;
+          state.activeEvalJsonTab = "evaluation";
+        }
+        renderEvaluations();
+      },
+      getGroupValueDisplayFromEvaluations: selectors.getGroupValueDisplayFromEvaluations,
+      getEvaluationEffectiveValue: selectors.getEvaluationEffectiveValue,
+      getSortedEvaluations: selectors.getSortedEvaluations,
+      sortableControlColumns: SORTABLE_CONTROL_COLUMNS,
+    });
   });
 
   const selectedEvaluation = experimentEvaluations.find(
@@ -1156,16 +1268,18 @@ function renderEvaluations() {
   const selectedGroup = displayedEvalGroups.find(
     (group) => group.groupId === evalTabState.selectedEvalGroupId
   ) || null;
-  renderEvalJsonPane({
-    layoutElement: evalLayout,
-    titleElement: evalJsonTitle,
-    codeElement: evalJsonCode,
-    evaluationButton: evalJsonTabEvaluation,
-    predictionButton: evalJsonTabPrediction,
-    activeTab: state.activeEvalJsonTab,
-    selectedEvaluation,
-    selectedGroup,
-    getPredictionContent: reconstructPredictionContentForEvaluation,
+  timing.time("render evaluation json pane", () => {
+    renderEvalJsonPane({
+      layoutElement: evalLayout,
+      titleElement: evalJsonTitle,
+      codeElement: evalJsonCode,
+      evaluationButton: evalJsonTabEvaluation,
+      predictionButton: evalJsonTabPrediction,
+      activeTab: state.activeEvalJsonTab,
+      selectedEvaluation,
+      selectedGroup,
+      getPredictionContent: reconstructPredictionContentForEvaluation,
+    });
   });
 
   updateStickyControlColumnOffsets(evaluationsTable);
@@ -1183,5 +1297,6 @@ function renderEvaluations() {
   evalSummary.textContent =
     `Selected evaluations: ${selectedEvaluationsCount} | Active tab: ${state.activeEvalTab} | Groups: ${displayedEvalGroups.length} | Group-by: ${evalGroupByText} (+ prediction group-by: ${predictionGroupByText})`;
 
-  renderEvaluationPlots(state.activeEvalTab, evaluationContext);
+  renderEvaluationPlots(state.activeEvalTab, evaluationContext, timing);
+  timing.flush({ active_experiment: state.activeEvalTab || "" });
 }

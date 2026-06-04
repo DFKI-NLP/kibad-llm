@@ -9,6 +9,9 @@ site_url: https://dfki-nlp.github.io/kibad-llm/
 #
 site_author: kiba-d project team
 #
+exclude_docs: |
+  eval-dashboard/benchmark/**
+
 theme:
   name: material
   font:

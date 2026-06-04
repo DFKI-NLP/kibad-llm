@@ -9,6 +9,7 @@ import {
   resolveActiveTabValue,
 } from "../ui/tabs.js";
 import { renderDownloadFiguresButtonState } from "../ui/status.js";
+import { createTimingCollector } from "../utils/timing.js";
 import {
   collectNumericMetricLeafPaths,
   getGroupLabelForFields,
@@ -191,8 +192,10 @@ export function renderEvaluationPlotsForDashboard({
   getPlotDisplayLabel,
   getPlotTitleLabel,
   rerenderEvaluationPlots,
+  timing = null,
 }) {
   const { evalPlotTabs, evalPlotContent, plotGroupBarsList } = dom;
+  const plotTiming = timing || createTimingCollector({ enabled: false });
 
   renderDashboardPlotControls({ state, dom, metricType: null });
   evalPlotTabs.innerHTML = "";
@@ -200,7 +203,10 @@ export function renderEvaluationPlotsForDashboard({
   plotGroupBarsList.innerHTML = "";
   state.activePlotLegendItems = [];
 
-  const selectedPredictionGroups = getSelectedPredictionGroups();
+  const selectedPredictionGroups = plotTiming.time(
+    "plots selected prediction groups",
+    () => getSelectedPredictionGroups()
+  );
   if (selectedPredictionGroups.length === 0) {
     appendPlotEmptyMessage(documentLike, evalPlotContent, "Select prediction groups to generate plots.");
     return;
@@ -212,10 +218,16 @@ export function renderEvaluationPlotsForDashboard({
   }
 
   const { experimentEvaluations, evalTabState } = evaluationContext;
-  const metricType = getMetricTypeForEvaluationContext(activeExperiment, evaluationContext);
+  const metricType = plotTiming.time(
+    "plots metric type",
+    () => getMetricTypeForEvaluationContext(activeExperiment, evaluationContext)
+  );
   renderDashboardPlotControls({ state, dom, metricType });
 
-  const selectedEvalGroups = getSelectedEvaluationGroups(evaluationContext);
+  const selectedEvalGroups = plotTiming.time(
+    "plots selected evaluation groups",
+    () => getSelectedEvaluationGroups(evaluationContext)
+  );
   if (selectedEvalGroups.length === 0) {
     appendPlotEmptyMessage(documentLike, evalPlotContent, "Select evaluation groups to generate plots.");
     return;
@@ -230,15 +242,21 @@ export function renderEvaluationPlotsForDashboard({
     return;
   }
 
-  const combined = getPlotGroups(
-    activeExperiment,
-    selectedEvalGroups,
-    evalTabState.groupByFields,
-    evalTabState
+  const combined = plotTiming.time(
+    "plots group selected evaluations",
+    () => getPlotGroups(
+      activeExperiment,
+      selectedEvalGroups,
+      evalTabState.groupByFields,
+      evalTabState
+    )
   );
   const plotGroups = combined.groups;
   const plotGroupFields = combined.fields;
-  const varyingPlotGroupFields = getVaryingFields(plotGroups, plotGroupFields);
+  const varyingPlotGroupFields = plotTiming.time(
+    "plots varying group fields",
+    () => getVaryingFields(plotGroups, plotGroupFields)
+  );
 
   if (metricType === "ConfusionMatrix") {
     renderConfusionMatrixPlots({
@@ -257,6 +275,7 @@ export function renderEvaluationPlotsForDashboard({
       displayPlotGroupFieldName,
       getPlotDisplayLabel,
       rerenderEvaluationPlots,
+      timing: plotTiming,
     });
     return;
   }
@@ -280,6 +299,7 @@ export function renderEvaluationPlotsForDashboard({
       displayPlotGroupFieldName,
       getPlotDisplayLabel,
       rerenderEvaluationPlots,
+      timing: plotTiming,
     });
     return;
   }
@@ -299,6 +319,7 @@ export function renderEvaluationPlotsForDashboard({
     displayGroupFieldName,
     getPlotTitleLabel,
     rerenderEvaluationPlots,
+    timing: plotTiming,
   });
 }
 
@@ -373,21 +394,28 @@ function renderConfusionMatrixPlots({
   displayPlotGroupFieldName,
   getPlotDisplayLabel,
   rerenderEvaluationPlots,
+  timing,
 }) {
   const labelFields = varyingPlotGroupFields.length ? varyingPlotGroupFields : plotGroupFields;
-  const confusionTabMap = buildConfusionTabMap({
-    activeExperiment,
-    plotGroups,
-    labelFields,
-    evalTabState,
-    confusionTabsBy: state.confusionTabsBy,
-    getEvaluationEffectiveValue,
-    getEvaluationExperiment,
-    displayPlotGroupFieldName,
-    shortenLabels: state.plotShortenLabels,
-  });
-  const sortedConfusionTabKeys = Array.from(confusionTabMap.keys()).sort((a, b) =>
-    confusionTabMap.get(a).label.localeCompare(confusionTabMap.get(b).label)
+  const confusionTabMap = timing.time(
+    "confusion tab map",
+    () => buildConfusionTabMap({
+      activeExperiment,
+      plotGroups,
+      labelFields,
+      evalTabState,
+      confusionTabsBy: state.confusionTabsBy,
+      getEvaluationEffectiveValue,
+      getEvaluationExperiment,
+      displayPlotGroupFieldName,
+      shortenLabels: state.plotShortenLabels,
+    })
+  );
+  const sortedConfusionTabKeys = timing.time(
+    "confusion sort tabs",
+    () => Array.from(confusionTabMap.keys()).sort((a, b) =>
+      confusionTabMap.get(a).label.localeCompare(confusionTabMap.get(b).label)
+    )
   );
   if (sortedConfusionTabKeys.length === 0) {
     appendPlotEmptyMessage(documentLike, dom.evalPlotContent, `No confusion matrix data found for ${activeExperiment}.`);
@@ -421,9 +449,13 @@ function renderConfusionMatrixPlots({
   grid.className = "plot-grid";
 
   for (const plotEntry of activeConfusionEntry.plots) {
-    const aggregation = filterConfusionMatrixAggregationByLabelTotal(
-      getConfusionMatrixAggregation(plotEntry.collections, plotEntry.fieldLabel),
-      state.plotConfusionMinLabelTotal
+    const aggregation = timing.time(
+      "confusion aggregate and filter",
+      () => filterConfusionMatrixAggregationByLabelTotal(
+        getConfusionMatrixAggregation(plotEntry.collections, plotEntry.fieldLabel),
+        state.plotConfusionMinLabelTotal
+      ),
+      { plot: plotEntry.label, field: plotEntry.fieldLabel }
     );
     if (!aggregation.rows.length || !aggregation.cols.length) {
       continue;
@@ -438,8 +470,9 @@ function renderConfusionMatrixPlots({
       ? `${plotEntry.label} (mean ± std)`
       : `${fieldTitle} (mean ± std)`;
     card.appendChild(title);
-    card.appendChild(
-      createConfusionMatrixHeatmapSvg({
+    const svg = timing.time(
+      "confusion render svg",
+      () => createConfusionMatrixHeatmapSvg({
         documentLike,
         aggregation,
         precision: state.plotRoundingPrecision,
@@ -447,8 +480,10 @@ function renderConfusionMatrixPlots({
         showTooltip: plotTooltipHandlers.show,
         moveTooltip: plotTooltipHandlers.move,
         hideTooltip: plotTooltipHandlers.hide,
-      })
+      }),
+      { plot: plotEntry.label, field: plotEntry.fieldLabel }
     );
+    card.appendChild(svg);
     grid.appendChild(card);
   }
 
@@ -482,19 +517,26 @@ function renderTpFpFnPlots({
   displayPlotGroupFieldName,
   getPlotDisplayLabel,
   rerenderEvaluationPlots,
+  timing,
 }) {
   const labelFields = varyingPlotGroupFields.length ? varyingPlotGroupFields : plotGroupFields;
-  const tpfpfnTabMap = buildTpFpFnTabMap({
-    plotGroups,
-    labelFields,
-    evalTabState,
-    confusionTabsBy: state.confusionTabsBy,
-    getEvaluationEffectiveValue,
-    displayPlotGroupFieldName,
-    shortenLabels: state.plotShortenLabels,
-  });
-  const sortedTabKeys = Array.from(tpfpfnTabMap.keys()).sort((a, b) =>
-    tpfpfnTabMap.get(a).label.localeCompare(tpfpfnTabMap.get(b).label)
+  const tpfpfnTabMap = timing.time(
+    "tpfpfn tab map",
+    () => buildTpFpFnTabMap({
+      plotGroups,
+      labelFields,
+      evalTabState,
+      confusionTabsBy: state.confusionTabsBy,
+      getEvaluationEffectiveValue,
+      displayPlotGroupFieldName,
+      shortenLabels: state.plotShortenLabels,
+    })
+  );
+  const sortedTabKeys = timing.time(
+    "tpfpfn sort tabs",
+    () => Array.from(tpfpfnTabMap.keys()).sort((a, b) =>
+      tpfpfnTabMap.get(a).label.localeCompare(tpfpfnTabMap.get(b).label)
+    )
   );
   if (!sortedTabKeys.length) {
     appendPlotEmptyMessage(documentLike, dom.evalPlotContent, "No TpFpFnCollector data found for " + activeExperiment + ".");
@@ -532,10 +574,14 @@ function renderTpFpFnPlots({
   grid.className = "plot-grid";
 
   for (const plotEntry of activeEntry.plots) {
-    const aggregation = filterTpFpFnAggregationByTotals(
-      getTpFpFnCombinedAggregation(plotEntry.collections, plotEntry.fieldLabel),
-      state.plotTpFpFnMinLabelTotal,
-      state.plotTpFpFnMinDocumentTotal
+    const aggregation = timing.time(
+      "tpfpfn aggregate and filter",
+      () => filterTpFpFnAggregationByTotals(
+        getTpFpFnCombinedAggregation(plotEntry.collections, plotEntry.fieldLabel),
+        state.plotTpFpFnMinLabelTotal,
+        state.plotTpFpFnMinDocumentTotal
+      ),
+      { plot: plotEntry.label, field: plotEntry.fieldLabel }
     );
     if (!aggregation.rows.length || !aggregation.cols.length) {
       continue;
@@ -550,22 +596,27 @@ function renderTpFpFnPlots({
       ? `${plotEntry.label} (${aggregation.totalEvaluations} grouped evals)`
       : `${fieldTitle} (${aggregation.totalEvaluations} grouped evals)`;
     card.appendChild(title);
-    card.appendChild(createTpFpFnCombinedMatrixSvg({
-      documentLike,
-      requestAnimationFrameLike,
-      aggregation,
-      precision: state.plotRoundingPrecision,
-      getDisplayLabel: getPlotDisplayLabel,
-      showTooltip: plotTooltipHandlers.show,
-      moveTooltip: plotTooltipHandlers.move,
-      hideTooltip: plotTooltipHandlers.hide,
-      writeTextToClipboard: (text) => writeTextToClipboard({
+    const svg = timing.time(
+      "tpfpfn render svg",
+      () => createTpFpFnCombinedMatrixSvg({
         documentLike,
-        navigatorLike,
-        text,
+        requestAnimationFrameLike,
+        aggregation,
+        precision: state.plotRoundingPrecision,
+        getDisplayLabel: getPlotDisplayLabel,
+        showTooltip: plotTooltipHandlers.show,
+        moveTooltip: plotTooltipHandlers.move,
+        hideTooltip: plotTooltipHandlers.hide,
+        writeTextToClipboard: (text) => writeTextToClipboard({
+          documentLike,
+          navigatorLike,
+          text,
+        }),
+        consoleLike,
       }),
-      consoleLike,
-    }));
+      { plot: plotEntry.label, field: plotEntry.fieldLabel }
+    );
+    card.appendChild(svg);
     grid.appendChild(card);
   }
 
@@ -597,15 +648,19 @@ function renderBarLikePlots({
   displayGroupFieldName,
   getPlotTitleLabel,
   rerenderEvaluationPlots,
+  timing,
 }) {
-  const metricPaths = Array.from(
-    experimentEvaluations.reduce(
-      (acc, evaluation) => collectNumericMetricLeafPaths(evaluation.data, [], acc),
-      new Map()
+  const metricPaths = timing.time(
+    "bar metric path discovery",
+    () => Array.from(
+      experimentEvaluations.reduce(
+        (acc, evaluation) => collectNumericMetricLeafPaths(evaluation.data, [], acc),
+        new Map()
+      )
     )
-  )
-    .map(([, pathParts]) => ({ parts: pathParts, label: pathParts.join(".") }))
-    .sort((a, b) => a.label.localeCompare(b.label));
+      .map(([, pathParts]) => ({ parts: pathParts, label: pathParts.join(".") }))
+      .sort((a, b) => a.label.localeCompare(b.label))
+  );
 
   if (metricPaths.length === 0) {
     appendPlotEmptyMessage(documentLike, dom.evalPlotContent, `No numeric metric data found for ${activeExperiment}.`);
@@ -635,66 +690,76 @@ function renderBarLikePlots({
   const groupBarFields = varyingGroupByFields.filter((field) => state.plotGroupBarFields.has(field));
   const categoryFields = varyingGroupByFields.filter((field) => !groupBarFields.includes(field));
 
-  const plotEntries = buildPlotEntries({
-    metricPaths,
-    plotGroups,
-    groupBarFields,
-    categoryFields,
-    getGroupLabel: (group, fields, fallback, formatter = displayGroupFieldName) =>
-      getGroupLabelForFields(group, fields, fallback, formatter),
-    displayGroupFieldName: displayPlotGroupFieldName,
-  });
+  const plotEntries = timing.time(
+    "bar aggregate plot entries",
+    () => buildPlotEntries({
+      metricPaths,
+      plotGroups,
+      groupBarFields,
+      categoryFields,
+      getGroupLabel: (group, fields, fallback, formatter = displayGroupFieldName) =>
+        getGroupLabelForFields(group, fields, fallback, formatter),
+      displayGroupFieldName: displayPlotGroupFieldName,
+    })
+  );
   if (!plotEntries.length) {
     appendPlotEmptyMessage(documentLike, dom.evalPlotContent, `No plottable metric values found for ${activeExperiment}.`);
     return;
   }
 
-  const tabMap = metricType === "ErrorCollector"
-    ? buildErrorsTabMap(plotEntries)
-    : buildBarsTabMap(plotEntries, { plotTabsBy: state.plotTabsBy });
+  const tabMap = timing.time(
+    "bar tab map",
+    () => metricType === "ErrorCollector"
+      ? buildErrorsTabMap(plotEntries)
+      : buildBarsTabMap(plotEntries, { plotTabsBy: state.plotTabsBy })
+  );
 
-  const result = renderSharedPlotTabsAndGrid({
-    documentLike,
-    tabMap,
-    activeExperiment,
-    groupBarFields,
-    metricType,
-    activeEvalPlotTab: state.activeEvalPlotTab,
-    plotShowLegendOnce: state.plotShowLegendOnce,
-    plotShowLegendOnceRow: dom.plotShowLegendOnceRow,
-    evalPlotTabs: dom.evalPlotTabs,
-    evalPlotContent: dom.evalPlotContent,
-    buildCountTabButtonModels,
-    renderTabButtons,
-    resolveActiveTabValue,
-    getPlotTitleLabel,
-    displayPlotGroupFieldName,
-    createLegendElement: createPlotLegendElement,
-    createBarSvg: (points) => createBarPlotSvg({
+  const result = timing.time(
+    "bar render tabs and grid",
+    () => renderSharedPlotTabsAndGrid({
       documentLike,
-      requestAnimationFrameLike,
-      points,
-      showTooltip: plotTooltipHandlers.show,
-      moveTooltip: plotTooltipHandlers.move,
-      hideTooltip: plotTooltipHandlers.hide,
+      tabMap,
+      activeExperiment,
+      groupBarFields,
+      metricType,
+      activeEvalPlotTab: state.activeEvalPlotTab,
+      plotShowLegendOnce: state.plotShowLegendOnce,
+      plotShowLegendOnceRow: dom.plotShowLegendOnceRow,
+      evalPlotTabs: dom.evalPlotTabs,
+      evalPlotContent: dom.evalPlotContent,
+      buildCountTabButtonModels,
+      renderTabButtons,
+      resolveActiveTabValue,
+      getPlotTitleLabel,
+      displayPlotGroupFieldName,
+      createLegendElement: createPlotLegendElement,
+      createBarSvg: (points) => createBarPlotSvg({
+        documentLike,
+        requestAnimationFrameLike,
+        points,
+        showTooltip: plotTooltipHandlers.show,
+        moveTooltip: plotTooltipHandlers.move,
+        hideTooltip: plotTooltipHandlers.hide,
+      }),
+      createGroupedBarSvg: (points, legendModel) => createGroupedBarPlotSvg({
+        documentLike,
+        requestAnimationFrameLike,
+        points,
+        legendModel,
+        showTooltip: plotTooltipHandlers.show,
+        moveTooltip: plotTooltipHandlers.move,
+        hideTooltip: plotTooltipHandlers.hide,
+      }),
+      onActiveTabChange: (key) => {
+        if (state.activeEvalPlotTab === key) {
+          return;
+        }
+        state.activeEvalPlotTab = key;
+        rerenderEvaluationPlots(activeExperiment);
+      },
     }),
-    createGroupedBarSvg: (points, legendModel) => createGroupedBarPlotSvg({
-      documentLike,
-      requestAnimationFrameLike,
-      points,
-      legendModel,
-      showTooltip: plotTooltipHandlers.show,
-      moveTooltip: plotTooltipHandlers.move,
-      hideTooltip: plotTooltipHandlers.hide,
-    }),
-    onActiveTabChange: (key) => {
-      if (state.activeEvalPlotTab === key) {
-        return;
-      }
-      state.activeEvalPlotTab = key;
-      rerenderEvaluationPlots(activeExperiment);
-    },
-  });
+    { tab_count: tabMap.size, entry_count: plotEntries.length }
+  );
   state.activeEvalPlotTab = result.activeEvalPlotTab;
   state.activePlotLegendItems = result.activePlotLegendItems;
 }
