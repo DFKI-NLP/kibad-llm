@@ -71,8 +71,10 @@ import {
   downloadVisiblePlotFigures,
   renderDashboardPlotControls,
   renderEvaluationPlotsForDashboard,
+  updateDownloadDataButtonState as updatePlotDownloadDataButtonState,
   updateDownloadFiguresButtonState as updatePlotDownloadFiguresButtonState,
 } from "./plots/dashboard.js";
+import { downloadActivePlotData } from "./plots/download-data.js";
 
 // Central UI state: loaded prediction/evaluation data, current grouping/selection, and per-eval-tab view state.
 const state = dashboardStore.createInitialDashboardState();
@@ -128,6 +130,7 @@ const {
   confusionTabsByPredictionGroupButton,
   plotShowLegendOnce,
   downloadFiguresButton,
+  downloadDataButton,
   exportOpaqueBackground,
   evalPlotTabs,
   evalPlotContent,
@@ -221,6 +224,10 @@ function createDashboardTiming(label) {
 
 function updateDownloadFiguresButtonState() {
   updatePlotDownloadFiguresButtonState({ downloadFiguresButton, evalPlotContent });
+}
+
+function updateDownloadDataButtonState() {
+  updatePlotDownloadDataButtonState({ downloadDataButton, state });
 }
 
 // Helper functions for labels and default column choices.
@@ -769,6 +776,25 @@ function bindPlotControls() {
     }
   });
 
+  downloadDataButton.addEventListener("click", async () => {
+    if (downloadDataButton.disabled) {
+      return;
+    }
+    setDownloadFiguresButtonBusy(downloadDataButton, "Preparing data...");
+    try {
+      await downloadActivePlotData({
+        state,
+        documentLike: document,
+        windowLike: window,
+        urlLike: URL,
+        setTimeoutLike: setTimeout,
+        consoleLike: console,
+      });
+    } finally {
+      updateDownloadDataButtonState();
+    }
+  });
+
   plotTabsByPrefixButton.addEventListener("click", () => setPlotTabsBy("prefix"));
   plotTabsBySuffixButton.addEventListener("click", () => setPlotTabsBy("suffix"));
   confusionTabsByMetricFieldButton.addEventListener("click", () => setConfusionTabsBy("metric_field"));
@@ -781,6 +807,7 @@ function bindLayoutObservers() {
   });
   evalPlotContentObserver.observe(evalPlotContent, { childList: true, subtree: true });
   updateDownloadFiguresButtonState();
+  updateDownloadDataButtonState();
 
   window.addEventListener("resize", () => {
     updateStickyControlColumnOffsets(predictionsTable);
@@ -1042,6 +1069,7 @@ function renderEvaluationPlots(
     rerenderEvaluationPlots: renderEvaluationPlots,
     timing: plotTiming,
   });
+  updateDownloadDataButtonState();
   if (ownsTiming) {
     plotTiming.flush({ active_experiment: activeExperiment || "" });
   }

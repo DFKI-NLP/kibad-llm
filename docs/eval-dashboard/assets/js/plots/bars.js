@@ -1,22 +1,45 @@
 /**
  * Generic bar/error plot entry and tab-map helpers.
+ *
+ * This module keeps numeric metric preparation, pre-aggregation sample data,
+ * mean/std calculation, tab grouping, and SVG rendering separate so downloads
+ * can export the same raw values that rendering aggregates.
  */
 
-import { meanAndStd, normalizeValue } from "../utils/values.js";
+import { meanAndStd } from "../utils/values.js";
 import {
-  buildGroupedLegendModel,
   getGroupLabelForFields,
-  getBarColor,
-  getLegendItemsForPoints,
   getMetricPreparedDataContainer,
   getPlotDisplayLabel,
   scheduleAdaptiveSvgFit,
-  styleErrorBarSegment,
 } from "./shared.js";
-import { createPlotLegendElement } from "./legend.js";
+import {
+  buildGroupedLegendModel,
+  createPlotLegendElement,
+  getBarColor,
+  getLegendItemsForPoints,
+} from "./legend.js";
+
+/**
+ * Applies shared visual styling to an SVG error-bar line segment.
+ *
+ * Bar and grouped-bar renderers draw several SVG line elements for error bars;
+ * this helper keeps those segments visually consistent within numeric plots.
+ *
+ * @param {SVGLineElement} line - Line element to style.
+ * @returns {void}
+ */
+function styleErrorBarSegment(line) {
+  line.setAttribute("stroke", "currentColor");
+  line.setAttribute("stroke-opacity", "0.78");
+}
 
 /**
  * Resolves the display title for a metric plot entry.
+ *
+ * Most metric families display the full metric label, optionally shortened.
+ * F1 micro multi-field plots need a special suffix-tab title so the figure
+ * title stays stable while tabs expose the leaf metric names.
  *
  * @param {object} plotEntry - Plot entry created by buildPlotEntries.
  * @param {string} metricType - Metric type for special title handling.
@@ -29,48 +52,31 @@ export function getPlotTitleLabel(plotEntry, metricType, { shortenLabels = false
     shortenLabels &&
     plotTabsBy === "suffix"
   ) {
-    return plotEntry.prefix === "(root)" ? plotEntry.metricLabel : plotEntry.prefix;
+    return plotEntry.metricPrefix === "(root)" ? plotEntry.metricLabel : plotEntry.metricPrefix;
   }
   return getPlotDisplayLabel(plotEntry.metricLabel, { shortenLabels });
 }
 
 /**
- * Recursively collects numeric leaf paths from a metric data object.
- *
- * @param {*} value - Metric data value to inspect.
- * @param {Array<string>} [parts] - Current path parts during recursion.
- * @param {Map<string, Array<string>>} [out] - Accumulator keyed by encoded paths.
- * @returns {Map<string, Array<string>>} Numeric metric leaf paths.
- */
-export function collectNumericMetricLeafPaths(value, parts = [], out = new Map()) {
-  if (!value || typeof value !== "object") {
-    return out;
-  }
-  for (const [key, child] of Object.entries(value)) {
-    const pathParts = [...parts, key];
-    if (typeof child === "number" && Number.isFinite(child)) {
-      out.set(pathParts.join("|#|"), pathParts);
-      continue;
-    }
-    if (child && typeof child === "object" && !Array.isArray(child)) {
-      collectNumericMetricLeafPaths(child, pathParts, out);
-    }
-  }
-  return out;
-}
-
-/**
  * Encodes metric path parts into the stable key used by prepared numeric data.
+ *
+ * Prepared numeric values are stored in a flat map so later plot-entry
+ * construction can look up each metric path without rewalking nested metric
+ * objects for every plot group.
  *
  * @param {Array<string>} parts - Metric path parts.
  * @returns {string} Encoded metric path key.
  */
-export function getNumericMetricPathKey(parts) {
+function getNumericMetricPathKey(parts) {
   return (parts || []).join("|#|");
 }
 
 /**
  * Recursively collects numeric metric paths and values for one evaluation.
+ *
+ * This is the per-evaluation preparation step behind numeric plots: it records
+ * both path metadata for cross-run metric discovery and flat values for fast
+ * aggregation once the active plot groups are known.
  *
  * @param {*} value - Metric data value to inspect.
  * @param {Array<string>} [parts] - Current path parts during recursion.
@@ -86,7 +92,12 @@ function collectNumericMetricLeafData(value, parts = [], metricPaths = new Map()
     const pathParts = [...parts, key];
     if (typeof child === "number" && Number.isFinite(child)) {
       const pathKey = getNumericMetricPathKey(pathParts);
-      metricPaths.set(pathKey, { key: pathKey, parts: pathParts, label: pathParts.join(".") });
+      metricPaths.set(pathKey, {
+        key: pathKey,
+        root: pathParts[0],
+        parts: pathParts,
+        label: pathParts.join("."),
+      });
       values.set(pathKey, child);
       continue;
     }
@@ -101,8 +112,8 @@ function collectNumericMetricLeafData(value, parts = [], metricPaths = new Map()
  * Lazily prepares one evaluation's numeric metric data for bar/error plots.
  *
  * The prepared shape stores metric path metadata and flat per-path numeric
- * values. `buildPlotEntries()` uses the same prepared values for aggregation
- * and exposes them as point samples for future `Download data` support.
+ * values. The cache avoids repeated nested metric walks when tab maps,
+ * download payloads, and render entries are rebuilt for the same evaluation.
  *
  * @param {object} evaluation - Raw evaluation record with metric data.
  * @returns {{metricPaths: Map<string, object>, values: Map<string, number>}} Prepared per-evaluation numeric data.
@@ -123,6 +134,10 @@ export function prepareNumericMetricEvaluationData(evaluation) {
 /**
  * Collects the union of numeric metric paths from prepared evaluation data.
  *
+ * Numeric plot tabs need the complete metric set across all selected
+ * evaluations, including metrics that only appear in some runs. Returning a
+ * sorted union keeps tab and figure order deterministic.
+ *
  * @param {Array<object>} evaluations - Evaluation records.
  * @returns {Array<object>} Sorted metric path records.
  */
@@ -137,29 +152,38 @@ export function collectPreparedNumericMetricPaths(evaluations) {
 }
 
 /**
- * Splits a metric label into prefix and suffix at the final dot.
+ * Splits a metric label into metric prefix and suffix at the final dot.
+ *
+ * Bar plots use these display-oriented pieces for prefix/suffix tab grouping
+ * and titles. Structural classification stays separate in `metricRoot`.
  *
  * @param {string} label - Metric label.
- * @returns {{prefix: string, suffix: string}} Split label components.
+ * @returns {{metricPrefix: string, metricSuffix: string}} Split label components.
  */
-export function splitMetricLabelAtLastDot(label) {
+function splitMetricLabelAtLastDot(label) {
   const lastDotIndex = label.lastIndexOf(".");
   if (lastDotIndex === -1) {
-    return { prefix: "(root)", suffix: label };
+    return { metricPrefix: "(root)", metricSuffix: label };
   }
   return {
-    prefix: label.slice(0, lastDotIndex),
-    suffix: label.slice(lastDotIndex + 1),
+    metricPrefix: label.slice(0, lastDotIndex),
+    metricSuffix: label.slice(lastDotIndex + 1),
   };
 }
 
 /**
- * Converts metric paths and evaluation groups into plottable bar entries.
+ * Converts metric paths and evaluation groups into sample-only numeric plot input.
  *
- * @param {object} options - Plot entry construction inputs.
- * @returns {Array<object>} Plot entries with mean/std point data.
+ * Rendering and data download both need the same grouped sample data. Keeping
+ * this step separate from mean/std calculation makes numeric plots follow the
+ * same pre-aggregation data flow as confusion and TP/FP/FN matrices.
+ * The resulting entries are the shared boundary before render-only statistics
+ * are added.
+ *
+ * @param {object} options - Plot entry input construction inputs.
+ * @returns {Array<object>} Plot entries whose points contain raw samples only.
  */
-export function buildPlotEntries({
+export function getNumericPlotEntriesInput({
   metricPaths,
   plotGroups,
   groupBarFields,
@@ -169,7 +193,14 @@ export function buildPlotEntries({
 }) {
   const entries = [];
   for (const metricPath of metricPaths) {
-    const metricPathKey = metricPath.key || getNumericMetricPathKey(metricPath.parts);
+    const metricPathKey = metricPath.key;
+    if (!metricPathKey) {
+      throw new Error(`Numeric metric path ${JSON.stringify(metricPath?.label || "(unknown)")} is missing key.`);
+    }
+    const metricRoot = metricPath.root;
+    if (!metricRoot) {
+      throw new Error(`Numeric metric path ${JSON.stringify(metricPath?.label || "(unknown)")} is missing root.`);
+    }
     const points = [];
     plotGroups.forEach((group, index) => {
       const samples = group.evaluations
@@ -178,17 +209,10 @@ export function buildPlotEntries({
           if (!Number.isFinite(value)) {
             return null;
           }
-          return {
-            runDir: normalizeValue(evaluation?.runDir),
-            metricLabel: metricPath.label,
-            metricPath: metricPath.parts,
-            value,
-          };
+          return value;
         })
-        .filter(Boolean);
-      const values = samples.map((sample) => sample.value);
-      const stats = meanAndStd(values);
-      if (!stats) {
+        .filter((sample) => sample !== null);
+      if (!samples.length) {
         return;
       }
       const categoryLabel = groupBarFields.length
@@ -210,8 +234,6 @@ export function buildPlotEntries({
         displayCategory: displayCategoryLabel,
         series: seriesLabel,
         displaySeries: displaySeriesLabel,
-        mean: stats.mean,
-        std: stats.std,
         samples,
       });
     });
@@ -219,22 +241,95 @@ export function buildPlotEntries({
       continue;
     }
     const split = splitMetricLabelAtLastDot(metricPath.label);
-    entries.push({ metricLabel: metricPath.label, parts: metricPath.parts, points, ...split });
+    entries.push({ metricLabel: metricPath.label, metricRoot, points, ...split });
   }
   return entries;
 }
 
 /**
+ * Builds the JSON-safe numeric plotting data used by downloads.
+ *
+ * Numeric input entries are already sample-only before rendering adds mean/std.
+ * Downloads expose those raw sample values directly, keeping metric identity in
+ * `plotEntry` and leaving UI grouping helpers out of the public JSON schema.
+ *
+ * @param {object} plotEntry - Numeric plot input entry.
+ * @returns {object} JSON-safe numeric plotting data.
+ */
+export function buildJsonSafeNumericPlottingData(plotEntry) {
+  return {
+    points: (plotEntry?.points || []).map((point) => ({
+      category: point.category,
+      displayCategory: point.displayCategory,
+      series: point.series,
+      displaySeries: point.displaySeries,
+      samples: point.samples || [],
+    })),
+  };
+}
+
+/**
+ * Adds mean/std render values to sample-only numeric plot input.
+ *
+ * This keeps derived statistics out of the download source data while
+ * preserving the existing render-entry shape expected by bar/error SVG code.
+ * Rendering consumes the derived entries; downloads continue to consume the
+ * sample-only input entries.
+ *
+ * @param {Array<object>} plotEntriesInput - Output of getNumericPlotEntriesInput.
+ * @returns {Array<object>} Plot entries with mean/std point data for rendering.
+ */
+export function getNumericPlotEntriesFromInput(plotEntriesInput) {
+  return (plotEntriesInput || [])
+    .map((entry) => ({
+      ...entry,
+      points: (entry.points || [])
+        .map((point) => {
+          const stats = meanAndStd(point.samples || []);
+          if (!stats) {
+            return null;
+          }
+          return {
+            ...point,
+            mean: stats.mean,
+            std: stats.std,
+          };
+        })
+        .filter(Boolean),
+    }))
+    .filter((entry) => entry.points.length > 0);
+}
+
+/**
+ * Converts metric paths and evaluation groups into plottable bar entries.
+ *
+ * This compatibility wrapper preserves the older public API while the
+ * dashboard uses the split input/from-input helpers to keep download data
+ * pre-aggregation.
+ * New code should prefer the split helpers when it needs access to raw samples.
+ *
+ * @param {object} options - Plot entry construction inputs.
+ * @returns {Array<object>} Plot entries with mean/std point data.
+ */
+export function buildPlotEntries(options) {
+  return getNumericPlotEntriesFromInput(getNumericPlotEntriesInput(options));
+}
+
+/**
  * Groups metric plot entries into bar plot tabs.
+ *
+ * Numeric metrics can be browsed by metric prefix or suffix depending on the
+ * dashboard control state. Keeping this as a separate tab-map step lets the
+ * same plot entries feed both rendering and active-tab download selection.
  *
  * @param {Array<object>} plotEntries - Entries produced by buildPlotEntries.
  * @param {object} [options] - Tab grouping options.
- * @returns {Map<string, Array<object>>} Tab map keyed by prefix or suffix.
+ * @returns {Map<string, Array<object>>} Tab map keyed by metric prefix or suffix.
  */
 export function buildBarsTabMap(plotEntries, { plotTabsBy = "prefix" } = {}) {
   const tabMap = new Map();
   for (const entry of plotEntries) {
-    const tabKey = plotTabsBy === "suffix" ? entry.suffix : entry.prefix;
+    const tabKey = plotTabsBy === "suffix" ? entry.metricSuffix : entry.metricPrefix;
     if (!tabMap.has(tabKey)) {
       tabMap.set(tabKey, []);
     }
@@ -246,13 +341,17 @@ export function buildBarsTabMap(plotEntries, { plotTabsBy = "prefix" } = {}) {
 /**
  * Splits error metric entries into total and details tabs.
  *
+ * ErrorCollector plots use fixed semantic tabs instead of prefix/suffix metric
+ * tabs. `metricRoot` identifies top-level total counters such as `with_error`
+ * and keeps that classification independent from display labels.
+ *
  * @param {Array<object>} plotEntries - Error metric plot entries.
  * @returns {Map<string, Array<object>>} Tab map for available error sections.
  */
 export function buildErrorsTabMap(plotEntries) {
   const totalKeys = new Set(["with_error", "no_error"]);
-  const total = plotEntries.filter((entry) => totalKeys.has(entry.parts[0]));
-  const details = plotEntries.filter((entry) => !totalKeys.has(entry.parts[0]));
+  const total = plotEntries.filter((entry) => totalKeys.has(entry.metricRoot));
+  const details = plotEntries.filter((entry) => !totalKeys.has(entry.metricRoot));
   const tabMap = new Map();
   if (total.length) {
     tabMap.set("total", total);
@@ -265,6 +364,10 @@ export function buildErrorsTabMap(plotEntries) {
 
 /**
  * Creates an SVG bar plot with mean bars and standard-deviation error bars.
+ *
+ * The renderer is dependency-injected so tests and the dashboard can share the
+ * same DOM-free plotting code, while the SVG only receives already-aggregated
+ * render points.
  *
  * @param {object} options - Rendering dependencies, points, and tooltip handlers.
  * @returns {SVGSVGElement} Rendered bar plot SVG.
@@ -389,6 +492,10 @@ export function createBarPlotSvg({
 
 /**
  * Creates an SVG grouped bar plot with one bar per category/series pair.
+ *
+ * Grouped plots use the same render-point contract as plain bars, but arrange
+ * points by category and series so model/seed or other varying fields can be
+ * compared within each category.
  *
  * @param {object} options - Rendering dependencies, points, legend model, and tooltip handlers.
  * @returns {SVGSVGElement} Rendered grouped bar plot SVG.
@@ -564,10 +671,15 @@ export function createGroupedBarPlotSvg({
 /**
  * Renders plot tab buttons, optional legends, and the active plot grid.
  *
+ * This is the shared DOM adapter for numeric bar-like plots. It keeps tab
+ * resolution, shared legend behavior, and card rendering in one place so the
+ * dashboard can reuse the same flow for ordinary metrics and ErrorCollector
+ * metrics.
+ *
  * @param {object} options - Current tab state, plot data, DOM nodes, and renderer callbacks.
  * @returns {{activeEvalPlotTab: string, activePlotLegendItems: Array<object>}} Updated active tab and shared legend items.
  */
-export function renderPlotTabsAndGrid({
+export function renderBarPlotTabsAndGrid({
   documentLike = globalThis.document,
   tabMap,
   activeExperiment,

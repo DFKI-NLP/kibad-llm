@@ -17,8 +17,10 @@ The plotting path is currently driven from `docs/eval-dashboard/assets/js/main.j
 1. `renderEvaluationPlotsForDashboard()` recomputes selected groups, metric type, plot groups, varying group fields, tab maps, aggregations, and then redraws SVG figures.
 1. Metric-specific aggregation happens in the plot modules:
     - numeric bar/error metrics use prepared numeric metric data and `buildPlotEntries()` in `plots/bars.js`
-    - confusion matrices use collection views and `getConfusionMatrixAggregation()` in `plots/confusion.js`
-    - TP/FP/FN collectors use collection views and `getTpFpFnCombinedAggregation()` in `plots/tpfpfn.js`
+    - confusion matrices use collection views, `getConfusionMatrixAggregationInput()`, and `getConfusionMatrixAggregationFromInput()` in `plots/confusion.js`
+
+- TP/FP/FN collectors use collection views, `getTpFpFnAggregationInput()`, and `getTpFpFnAggregationFromInput()` in `plots/tpfpfn.js`
+
 1. `Download Figures` currently exports visible rendered SVG cards through `plots/export.js`.
 
 ## Likely Latency Causes
@@ -97,7 +99,7 @@ Implications:
 
 Implemented on 2026-06-04 as a targeted cache before introducing the broader plot dataset boundary.
 
-`getConfusionMatrixAggregation()` now separates the work done for one selected evaluation from the later cross-run aggregation. For each evaluation and normalized `metric.field`, the helper lazily prepares:
+`getConfusionMatrixAggregationInput()` separates the work done for one selected evaluation from the later cross-run aggregation. For each evaluation and normalized `metric.field`, the helper lazily prepares:
 
 - the row-label set observed in that evaluation
 - the column-label set observed in that evaluation
@@ -105,7 +107,7 @@ Implemented on 2026-06-04 as a targeted cache before introducing the broader plo
 
 The prepared result is stored at `evaluation.dataPrepared[fieldLabel]`. When the aggregator receives a collection view, the cache is stored on the wrapped raw evaluation object instead of the temporary collection-view wrapper, so it can be reused after tab maps and collection views are rebuilt. `dataPrepared` is defined as a non-enumerable, null-prototype object to avoid changing normal object iteration or JSON serialization and to keep prototype-named metric fields safe.
 
-`getTpFpFnCombinedAggregation()` uses the same pattern. For each evaluation and normalized `metric.field`, the helper lazily prepares:
+`getTpFpFnAggregationInput()` uses the same pattern. For each evaluation and normalized `metric.field`, the helper lazily prepares:
 
 - the document-label row set
 - the label column set
@@ -118,7 +120,7 @@ The shared bar/error plotting path now uses the same preparation model for numer
 - the numeric metric path metadata
 - the flat numeric value lookup keyed by the encoded metric path
 
-The prepared result is stored at `evaluation.dataPrepared.numericMetrics`. Bar/error metric path discovery now collects the metric-path union from this prepared data, and `buildPlotEntries()` reads the same prepared values when calculating mean/std points. Each point also carries JSON-friendly `samples` records with `runDir`, `metricLabel`, `metricPath`, and `value`, so the future `Download data` action can use the same pre-aggregation inputs instead of rewalking metric data.
+The prepared result is stored at `evaluation.dataPrepared.numericMetrics`. Bar/error metric path discovery now collects the metric-path union from this prepared data, and `buildPlotEntries()` reads the same prepared values when calculating mean/std points. Each point carries JSON-friendly `samples` as compact numeric value arrays, which the `Download data` action can expose directly without render-helper metadata.
 
 This step keeps the public aggregation APIs unchanged. Cross-run alignment, mean/std calculation, TP/FP/FN outcome counting, and threshold filtering still run per active plot. The cache only removes repeated per-evaluation field extraction, numeric metric-data walks, confusion sparse-map construction, and TP/FP/FN collector normalization/state-map construction.
 
@@ -164,11 +166,140 @@ Implications after the cache:
 - Narrower render entry points are still important. Table-row deselection and grouping changes are faster than baseline, but they still invoke evaluation rendering and active plot aggregation.
 - Because the cache mutates evaluation objects with non-enumerable prepared data, future data-revision handling should clear or replace loaded evaluation objects on import rather than trying to reuse stale prepared caches across datasets.
 
-### 3. Introduce a DOM-Free Plot Dataset Module
+### 3. Add Active Plot Download Payloads
+
+Implemented on 2026-06-04 as an incremental export path before the broader plot dataset module.
+
+The dashboard now keeps the active plot tab's download source in `state.activePlotDownloadData` while rendering the same figures. This state is intentionally not the final public JSON payload: each plot stores sanitized `metaData` plus an internal `dataSource` object. A `Download Data` button next to `Download Figures` converts that active source into the public JSON payload in `downloadActivePlotData()` and serializes it as pretty-printed JSON. The button is disabled when no active plot source exists and shows the number of downloadable plots for the active tab.
+
+The export is intentionally built from the same plot data path used for rendering:
+
+- numeric bar/error plots use `getNumericPlotEntriesInput()` for grouped sample data; rendering adds mean/std with `getNumericPlotEntriesFromInput()`, while download data uses the active tab's sample-only input entries
+- confusion matrices use `getConfusionMatrixAggregationInput()` for the shared rows, columns, and per-evaluation cell maps; rendering aggregates and threshold-filters that input with `getConfusionMatrixAggregationFromInput()`, while download data intentionally exports the unfiltered pre-aggregation input
+- TP/FP/FN matrices use `getTpFpFnAggregationInput()` for the shared rows, columns, and per-evaluation outcome maps; rendering aggregates and threshold-filters that input with `getTpFpFnAggregationFromInput()`, while download data intentionally exports the unfiltered pre-aggregation input
+
+The internal `state.activePlotDownloadData` source uses a small common envelope:
+
+- `metric_family`
+- `plot_tab`
+- `plots`, each with `metaData` and `dataSource`
+
+`downloadActivePlotData()` turns that source into the public JSON envelope:
+
+- `metric_family`
+- `plot_tab`
+- `plots`, each with `metaData` and JSON-safe `data`
+
+Experiment, metric type, threshold, and other view state stay outside this envelope unless a later user need requires that metadata in the downloaded JSON.
+
+The current numeric shape stays close to the bar/error plotting data. It exports one plot entry per metric and keeps raw evaluation samples nested under each plotted point:
+
+```json
+{
+  "metric_family": "numeric",
+  "plot_tab": "score",
+  "plots": [
+    {
+      "metaData": {
+        "metricLabel": "score.mean"
+      },
+      "data": {
+        "points": [
+          {
+            "category": "model=a",
+            "displayCategory": "Model A",
+            "series": "seed=1",
+            "displaySeries": "Seed 1",
+            "samples": [0.75, 0.81]
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+Matrix-like exports use the same envelope, but keep matrix metadata in `metaData` and aligned pre-aggregation cells in `data`:
+
+```json
+{
+  "metric_family": "confusion_matrix",
+  "plot_tab": "taxa.german_name",
+  "plots": [
+    {
+      "metaData": {
+        "label": "model=a",
+        "fieldLabel": "taxa.german_name"
+      },
+      "data": {
+        "rows": ["Birke", "Eiche"],
+        "cols": ["Birke", "UNDETECTED"],
+        "evaluationCells": [
+          [
+            ["Birke|#|Birke", 12],
+            ["Eiche|#|UNDETECTED", 1]
+          ],
+          [
+            ["Birke|#|Birke", 10]
+          ]
+        ]
+      }
+    }
+  ]
+}
+```
+
+Numeric exports embed metadata in `metaData` and sample-only pre-aggregation data in `data.points`. During rendering, numeric plot sources store the active tab's sample-only `getNumericPlotEntriesInput()` entries as `dataSource`; `downloadActivePlotData()` converts those entries with `buildJsonSafeNumericPlottingData()`.
+
+Confusion-matrix exports use one plot object per visible heatmap. During rendering, each source plot embeds sanitized `metaData` without `collections` and keeps the raw `getConfusionMatrixAggregationInput()` result as `dataSource`. On download, `buildJsonSafeMatrixPlottingData()` converts each sparse cell `Map` to an array of `[cellKey, value]` pairs because JSON does not serialize `Map` entries. These entries intentionally do not add per-run metadata.
+
+TP/FP/FN exports use one plot object per visible matrix. During rendering, each source plot embeds sanitized `metaData` without `collections` and keeps the raw `getTpFpFnAggregationInput()` result as `dataSource`. On download, `buildJsonSafeMatrixPlottingData()` converts each sparse outcome-state `Map` to an array of `[cellKey, outcomeState]` pairs without adding per-run metadata.
+
+Matrix download data intentionally remains pre-filter and sparse:
+
+- Threshold controls determine the rendered matrix cells, but the JSON keeps the full aligned aggregation input for the active plot. This preserves the raw material needed to recompute alternative thresholds without re-exporting.
+- Missing sparse confusion entries mean `0` for that evaluation/cell when aggregating.
+- Missing sparse TP/FP/FN entries mean the evaluation/cell has no TP, FP, or FN state and is counted as `empty` during aggregation.
+
+Focused tests cover the new path:
+
+- shared confusion and TP/FP/FN aggregation-input helpers
+- dashboard button state for active plot data
+- click-time conversion, JSON serialization, unsupported metric-family rejection, and filename generation in `downloadActivePlotData()`
+- active plot sources populated by the bar/error, confusion, and TP/FP/FN render branches
+
+Observations:
+
+- Rendering stores the active download sources without converting them to JSON-safe arrays. This avoids `Map` and point-array conversion for users who never click `Download Data`.
+- The click path performs JSON-safe conversion from the active `dataSource` values and then serializes the public payload.
+- The exported numeric samples are nested where plotting keeps them, rather than flattened into separate records. This keeps the JSON close to the rendered point structure and avoids including `mean` or `std`.
+- Matrix exports intentionally do not apply threshold-filtered visible rows and columns; thresholds are a render-time view over the exported pre-aggregation input.
+
+Implications:
+
+- The implemented button gives immediate inspectability while the broader plot dataset boundary remains future work.
+- The public JSON schema is now an active contract covered by unit tests. Future dataset refactors should preserve the current visible-scope behavior or update the schema deliberately.
+- Full-figure export parity is still scoped to the active plot tab, matching `Download Figures`; broader multi-tab or CSV exports can be considered separately.
+
+TODO:
+
+- [x] cleanup download data:
+    - [x] remove duplicate matrix `fieldLabel` from `data`; keep it only in `metaData`
+    - [x] numeric data has
+        - [x] remove redundant `parts`, `prefix`, and `suffix` from `metaData`
+        - [x] `metricLabel` and `metricPath` in each sample, which are also redundant with the plot entry and with each other
+        - [x] remove `runDir` from each sample
+- [ ] (P2) Shared matrix tab/card rendering. renderConfusionMatrixPlots() and renderTpFpFnPlots() could move into their respective modules, but I would not do that blindly. They need many dashboard dependencies. Moving them as-is would make confusion.js and tpfpfn.js know too much about dashboard state/DOM wiring. A better step than moving both full matrix renderers would be extracting a renderMatrixPlotTabsAndGrid() adapter, analogous to renderPlotTabsAndGrid(), probably into shared-matrix.js or a new matrix-render.js. Confusion and TP/FP/FN could pass callbacks for aggregation/filtering/SVG/title/legend. This is only worth it if it stays simple.
+- [ ] (P1) add list of runDirs to plots/metaData in the download data. Number of entries should be exactly the same as entries in plots/data/evaluationCells (confusion and TP/FP/FN) or plots/data/points/samples (numeric).
+- [x] optimization: call buildJsonSafeMatrixPlottingData / buildJsonSafeNumericPlottingData in downloadActivePlotData instead of during rendering in dashboard.js
+- [ ] (P0) TP/FP/FN cell summaries lost real run-directory labels. docs/eval-dashboard/assets/js/plots/tpfpfn.js:330 now recreates evaluationLabels as evaluation 1, evaluation 2, etc. after splitting aggregation into input/from-input helpers. Before this refactor, the aggregation collected normalizeValue(evaluation?.runDir) while iterating the source evaluations. Those labels feed buildTpFpFnCellSummary() and become the copied/tooltip payload’s run_dir values at docs/eval-dashboard/assets/js/plots/tpfpfn.js:523. Impact: clicking a TP/FP/FN matrix cell no longer tells the user which run produced each TP/FP/FN/empty state. This is a visible behavior regression and also makes copied JSON less useful. Fix by carrying evaluationLabels or runDirs through getTpFpFnAggregationInput() alongside evaluationCells, then reuse them in getTpFpFnAggregationFromInput().
+- [ ] (P1) add "plot_tab_variant" (values: "prefix", "suffix", "overrides.metric.group", or "prediction group") to download data metadata so downstream consumers can disambiguate grouping modes without guessing from the plot tab name.
+
+### 4. Introduce a DOM-Free Plot Dataset Module
 
 Create a module such as `docs/eval-dashboard/assets/js/plots/data.js`.
 
-TODO: double-check parts below! Note that only "changing default values" should change the plot dataset, not the grouping etc. What does this imply?
+TODO: double-check parts below! Note that only "changing default values" should change the plot dataset, not the grouping etc. What does this imply? EDIT: not even "changing default values" should change the state!
 
 This module should build a normalized plot dataset from the same state and selector-derived inputs the current plot renderer uses:
 
@@ -188,7 +319,7 @@ DOM dependencies and pure presentation settings should stay outside the raw data
 
 This should be the next major boundary after instrumentation because the baseline shows the expensive paths are dominated by plot-data recomputation rather than table rendering.
 
-### 4. Make Rendering Aggregation Consume the Plot Dataset
+### 5. Make Rendering Aggregation Consume the Plot Dataset
 
 After the dataset boundary exists, refactor current plot aggregation helpers so rendering consumes:
 
@@ -198,40 +329,21 @@ After the dataset boundary exists, refactor current plot aggregation helpers so 
 
 This makes the dataset boundary real for rendering first, removes remaining duplicated data shaping, and makes render/export behavior easier to compare. It also keeps `Download data` from depending on a parallel data path that only resembles the rendered figures.
 
-### 5. Define Pre-Aggregated Export Shapes
+### 6. Refine Pre-Aggregated Export Shapes
 
-Define the public download schema produced from the internal plot dataset. This schema should prioritize inspectability, stability, and reconstructing the visible figures. It does not need to be identical to the internal dataset shape as long as it is derived from the same data boundary.
+After the internal plot dataset exists, revisit the public download schema produced from that dataset. The current active-plot JSON schema should remain the baseline unless the dataset boundary exposes a clearer representation. Any change should prioritize inspectability, stability, and reconstructing the visible figures.
 
-The exported data should represent the samples used to make the visible figures, before mean, standard deviation, or count aggregation.
+The exported data should continue to represent the samples used to make the visible figures, before mean, standard deviation, or count aggregation. Numeric samples should stay nested under `samples` on each plotted point, unless there is a concrete user need for a flattened secondary format.
 
-For numeric bar/error metrics, use one record per evaluation and numeric metric path:
+For confusion matrices, the current baseline keeps sparse per-evaluation cell maps where missing entries are interpreted as `0`. A future dense export can make one explicit value per evaluation and visible matrix cell if that improves reconstructability enough to justify the larger files.
 
-```json
-{
-  "metric_label": "score.mean",
-  "metric_path": ["score", "mean"],
-  "plot_tab": "score",
-  "plot_group_id": "model=a",
-  "category": "model=a",
-  "series": "seed=1",
-  "evaluation_run_dir": "run-a",
-  "value": 0.75,
-  "group_values": {
-    "prediction.overrides.model": "a",
-    "evaluation.overrides.seed": "1"
-  }
-}
-```
+For TP/FP/FN collectors, the current baseline keeps sparse per-evaluation outcome-state maps where missing entries are interpreted as `empty`. A future dense export can use one record per evaluation, document, label, and outcome state if that proves clearer for downstream consumers.
 
-For confusion matrices, use one record per evaluation and matrix cell. If a cell belongs to the plotted aligned label union but is absent in a specific run, represent it explicitly with value `0`.
+### 7. Expand Download Data
 
-For TP/FP/FN collectors, use one record per evaluation, document, label, and outcome state. Preserve whether each state is `tp`, `fp`, `fn`, or `empty` so the plotted counts can be reconstructed.
+The initial `Download Data` button is implemented. After the plot dataset model and rendering aggregation path are stable, expand or adjust the data export only where it gives clearer reconstruction of the visible figures.
 
-### 6. Add Download Data
-
-After the plot dataset model and rendering aggregation path are stable, add a `Download data` button near `Download Figures` so the plotted data can be inspected early while the deeper latency refactor continues.
-
-The export should match the same visible figure scope as `Download Figures`:
+The export should continue to match the same visible figure scope as `Download Figures`:
 
 - active evaluation tab
 - active plot tab
@@ -243,7 +355,7 @@ The export should not include aggregated means, standard deviations, or derived 
 
 JSON is the recommended first format because confusion matrices and TP/FP/FN data are naturally structured. CSV can be added later if users need table-oriented exports.
 
-### 7. Cache Expensive Metric-Family Sub-Results
+### 8. Cache Expensive Metric-Family Sub-Results
 
 Add targeted caches for repeated metric-family work before relying on narrow render entry points for latency gains.
 

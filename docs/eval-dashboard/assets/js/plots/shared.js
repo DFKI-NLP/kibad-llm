@@ -1,18 +1,20 @@
 /**
  * Shared DOM-free plot helpers for the eval dashboard.
+ *
+ * Plot families use these helpers to keep data preparation, grouping labels,
+ * and adaptive SVG sizing consistent without depending on the dashboard
+ * controller module.
  */
 
 import { splitLabelByLastDot } from "../utils/text.js";
 import { normalizeValue } from "../utils/values.js";
 
-export const TP_FP_FN_KEYS = ["tp", "fp", "fn"];
-export const plotSortCollator = new Intl.Collator(undefined, {
-  numeric: true,
-  sensitivity: "base",
-});
-
 /**
  * Resolves the stable source run directory for a metric collection evaluation.
+ *
+ * Collection views may wrap a raw evaluation and carry their own `runDir`.
+ * Source-run identity keeps counts and labels tied to the original run rather
+ * than to temporary wrappers rebuilt during plotting.
  *
  * @param {object} evaluation - Evaluation record.
  * @returns {string} Normalized source run directory.
@@ -23,6 +25,10 @@ export function getMetricCollectionSourceRunDir(evaluation) {
 
 /**
  * Check whether a value is a plain object record.
+ *
+ * Metric plot inputs use object records for nested metric data. Centralizing
+ * this check keeps collection wrapping and metric validation from accepting
+ * arrays or scalar values by accident.
  *
  * @param {*} value - Candidate record.
  * @returns {boolean} Whether the value is a non-array object.
@@ -73,6 +79,8 @@ export function getMetricPreparedDataContainer(evaluation) {
  *
  * Collection metrics expose their field map by reference. Single-field metrics
  * are wrapped as one-field collections and must define a non-empty metric.field.
+ * The wrapper gives confusion and TP/FP/FN plots one field-map contract while
+ * leaving raw dashboard evaluations unchanged for tables and grouping.
  *
  * @param {object} evaluation - Evaluation record to wrap.
  * @param {object} options - Collection type names, metric label, and field resolver.
@@ -146,6 +154,9 @@ export function getMetricCollectionView(
 /**
  * Formats a plot label, optionally shortening dotted paths to their suffix.
  *
+ * The dashboard can shorten long metric or label paths for dense matrices while
+ * keeping the full label available in data and tooltips.
+ *
  * @param {*} label - Raw label value.
  * @param {object} [options] - Display options.
  * @returns {string} Normalized label text.
@@ -156,40 +167,11 @@ export function getPlotDisplayLabel(label, { shortenLabels = false } = {}) {
 }
 
 /**
- * Selects a deterministic bar color from the dashboard palette.
- *
- * @param {number} index - Zero-based series index.
- * @returns {string} Hex color value.
- */
-export function getBarColor(index) {
-  const palette = [
-    "#60a5fa",
-    "#f97316",
-    "#22c55e",
-    "#a78bfa",
-    "#f43f5e",
-    "#14b8a6",
-    "#eab308",
-    "#8b5cf6",
-    "#06b6d4",
-    "#ef4444",
-  ];
-  return palette[index % palette.length];
-}
-
-/**
- * Applies shared visual styling to an SVG error-bar line segment.
- *
- * @param {SVGLineElement} line - Line element to style.
- * @returns {void}
- */
-export function styleErrorBarSegment(line) {
-  line.setAttribute("stroke", "currentColor");
-  line.setAttribute("stroke-opacity", "0.78");
-}
-
-/**
  * Expands an SVG viewport so all generated plot content is visible.
+ *
+ * Rotated axis labels and browser font metrics can extend beyond the initial
+ * viewBox. Measuring the content group after render prevents clipped exports
+ * and clipped on-screen plots.
  *
  * @param {SVGSVGElement} svg - SVG element to resize.
  * @param {SVGGElement} contentGroup - Group whose bounding box is measured.
@@ -197,7 +179,7 @@ export function styleErrorBarSegment(line) {
  * @param {number} minHeight - Minimum SVG height.
  * @returns {boolean} True when fitting succeeded.
  */
-export function fitSvgToContents(svg, contentGroup, minWidth, minHeight) {
+function fitSvgToContents(svg, contentGroup, minWidth, minHeight) {
   if (!svg.isConnected) {
     return false;
   }
@@ -238,6 +220,10 @@ export function fitSvgToContents(svg, contentGroup, minWidth, minHeight) {
 /**
  * Schedules repeated SVG fitting attempts after layout and font loading.
  *
+ * SVG text bounding boxes are not always available immediately after elements
+ * are created. Retrying across animation frames and after `document.fonts`
+ * settles makes sizing robust in both browsers and DOM-like tests.
+ *
  * @param {object} options - Fitting dependencies and dimensions.
  * @returns {void}
  */
@@ -270,56 +256,11 @@ export function scheduleAdaptiveSvgFit({
 }
 
 /**
- * Builds a shared legend model for grouped bar plot entries.
- *
- * @param {Array<object>} entries - Plot entries containing grouped points.
- * @returns {object} Series order, display labels, colors, and legend items.
- */
-export function buildGroupedLegendModel(entries) {
-  const seriesOrder = [];
-  const seenSeries = new Set();
-  const displayBySeries = new Map();
-
-  for (const entry of entries) {
-    for (const point of entry.points || []) {
-      if (!seenSeries.has(point.series)) {
-        seenSeries.add(point.series);
-        seriesOrder.push(point.series);
-      }
-      if (!displayBySeries.has(point.series)) {
-        displayBySeries.set(point.series, point.displaySeries || point.series);
-      }
-    }
-  }
-
-  const colorBySeries = new Map();
-  const items = seriesOrder.map((series, index) => {
-    const color = getBarColor(index);
-    const label = displayBySeries.get(series) || series;
-    colorBySeries.set(series, color);
-    return { series, label, color };
-  });
-
-  return { seriesOrder, displayBySeries, colorBySeries, items };
-}
-
-/**
- * Filters a legend model down to the series present in a point collection.
- *
- * @param {Array<object>} points - Points rendered in a plot.
- * @param {?object} legendModel - Shared legend model.
- * @returns {Array<object>} Legend items used by the points.
- */
-export function getLegendItemsForPoints(points, legendModel) {
-  if (!legendModel) {
-    return [];
-  }
-  const seriesInPoints = new Set(points.map((point) => point.series));
-  return legendModel.items.filter((item) => seriesInPoints.has(item.series));
-}
-
-/**
  * Finds grouping fields whose values differ across groups.
+ *
+ * Plot labels and grouping controls should focus on fields that actually
+ * distinguish the visible groups. Omitting constant fields keeps titles and
+ * chips concise.
  *
  * @param {Array<object>} groups - Plot groups with value maps.
  * @param {Array<string>} fields - Candidate field names.
@@ -337,6 +278,10 @@ export function getVaryingFields(groups, fields) {
 
 /**
  * Builds a readable label from selected group fields.
+ *
+ * Plot tabs, titles, and categories need a stable text representation of the
+ * active grouping fields. This helper centralizes fallback handling and display
+ * name formatting.
  *
  * @param {object} group - Plot group containing values.
  * @param {Array<string>} labelFields - Field names to include.

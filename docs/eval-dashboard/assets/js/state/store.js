@@ -42,6 +42,7 @@ export function createInitialDashboardState() {
     exportOpaqueBackground: true,
     confusionTabsBy: "prediction_group",
     activePlotLegendItems: [],
+    activePlotDownloadData: null,
   };
 }
 
@@ -227,5 +228,6 @@ export function resetDerivedUiStateAfterLoad(
   state.activeEvalPlotTab = null;
   state.plotGroupBarFields = new Set();
   state.activePlotLegendItems = [];
+  state.activePlotDownloadData = null;
   syncPredictionGroupUiState(state, predictionGroups);
 }

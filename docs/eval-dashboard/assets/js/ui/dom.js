@@ -59,6 +59,7 @@ const DOM_REF_IDS = {
   plotShowLegendOnceRow: "plotShowLegendOnceRow",
   plotShowLegendOnce: "plotShowLegendOnce",
   downloadFiguresButton: "downloadFiguresButton",
+  downloadDataButton: "downloadDataButton",
   exportOpaqueBackground: "exportOpaqueBackground",
   evalPlotTabs: "evalPlotTabs",
   evalPlotContent: "evalPlotContent",

@@ -8,7 +8,10 @@ import {
   renderTabButtons,
   resolveActiveTabValue,
 } from "../ui/tabs.js";
-import { renderDownloadFiguresButtonState } from "../ui/status.js";
+import {
+  renderDownloadDataButtonState,
+  renderDownloadFiguresButtonState,
+} from "../ui/status.js";
 import { createTimingCollector } from "../utils/timing.js";
 import {
   getGroupLabelForFields,
@@ -17,26 +20,30 @@ import {
 import {
   buildBarsTabMap,
   buildErrorsTabMap,
-  buildPlotEntries,
   collectPreparedNumericMetricPaths,
   createBarPlotSvg,
   createGroupedBarPlotSvg,
-  renderPlotTabsAndGrid as renderSharedPlotTabsAndGrid,
+  getNumericPlotEntriesFromInput,
+  getNumericPlotEntriesInput,
+  renderBarPlotTabsAndGrid,
 } from "./bars.js";
+import { getDownloadPlotEntryMetadata } from "./download-data.js";
 import { createPlotLegendElement } from "./legend.js";
 import {
   buildConfusionTabMap,
   countDistinctConfusionMatrixRuns,
   createConfusionMatrixHeatmapSvg,
   filterConfusionMatrixAggregationByLabelTotal,
-  getConfusionMatrixAggregation,
+  getConfusionMatrixAggregationFromInput,
+  getConfusionMatrixAggregationInput,
 } from "./confusion.js";
 import {
   buildTpFpFnTabMap,
   createTpFpFnCombinedMatrixSvg,
   createTpFpFnLegendElement,
   filterTpFpFnAggregationByTotals,
-  getTpFpFnCombinedAggregation,
+  getTpFpFnAggregationFromInput,
+  getTpFpFnAggregationInput,
 } from "./tpfpfn.js";
 import {
   createZipBlob,
@@ -100,6 +107,22 @@ export function updateDownloadFiguresButtonState({
     downloadFiguresButton,
     getVisiblePlotFigureCards(evalPlotContent).length
   );
+}
+
+/**
+ * Synchronizes the data-download button with the current active plot data payload.
+ *
+ * This keeps button state derived from the same payload that will be saved, so
+ * the UI cannot advertise data when the active render did not produce any.
+ *
+ * @param {object} options - Button and state dependencies.
+ * @returns {void}
+ */
+export function updateDownloadDataButtonState({ downloadDataButton, state }) {
+  const plotCount = Array.isArray(state?.activePlotDownloadData?.plots)
+    ? state.activePlotDownloadData.plots.length
+    : 0;
+  renderDownloadDataButtonState(downloadDataButton, plotCount);
 }
 
 /**
@@ -196,6 +219,7 @@ export function renderEvaluationPlotsForDashboard({
 }) {
   const { evalPlotTabs, evalPlotContent, plotGroupBarsList } = dom;
   const plotTiming = timing || createTimingCollector({ enabled: false });
+  state.activePlotDownloadData = null;
 
   renderDashboardPlotControls({ state, dom, metricType: null });
   evalPlotTabs.innerHTML = "";
@@ -263,7 +287,6 @@ export function renderEvaluationPlotsForDashboard({
       state,
       dom,
       activeExperiment,
-      experimentEvaluations,
       evalTabState,
       plotGroups,
       plotGroupFields,
@@ -285,7 +308,6 @@ export function renderEvaluationPlotsForDashboard({
       state,
       dom,
       activeExperiment,
-      experimentEvaluations,
       evalTabState,
       plotGroups,
       plotGroupFields,
@@ -382,7 +404,6 @@ function renderConfusionMatrixPlots({
   state,
   dom,
   activeExperiment,
-  experimentEvaluations,
   evalTabState,
   plotGroups,
   plotGroupFields,
@@ -404,7 +425,7 @@ function renderConfusionMatrixPlots({
       plotGroups,
       labelFields,
       evalTabState,
-      confusionTabsBy: state.confusionTabsBy,
+      matrixTabsBy: state.confusionTabsBy,
       getEvaluationEffectiveValue,
       getEvaluationExperiment,
       displayPlotGroupFieldName,
@@ -447,12 +468,18 @@ function renderConfusionMatrixPlots({
   const activeConfusionEntry = confusionTabMap.get(state.activeEvalPlotTab);
   const grid = documentLike.createElement("div");
   grid.className = "plot-grid";
+  const downloadPlots = [];
 
   for (const plotEntry of activeConfusionEntry.plots) {
+    const aggregationInput = timing.time(
+      "confusion aggregation input",
+      () => getConfusionMatrixAggregationInput(plotEntry.collections, plotEntry.fieldLabel),
+      { plot: plotEntry.label, field: plotEntry.fieldLabel }
+    );
     const aggregation = timing.time(
       "confusion aggregate and filter",
       () => filterConfusionMatrixAggregationByLabelTotal(
-        getConfusionMatrixAggregation(plotEntry.collections, plotEntry.fieldLabel),
+        getConfusionMatrixAggregationFromInput(aggregationInput),
         state.plotConfusionMinLabelTotal
       ),
       { plot: plotEntry.label, field: plotEntry.fieldLabel }
@@ -460,6 +487,10 @@ function renderConfusionMatrixPlots({
     if (!aggregation.rows.length || !aggregation.cols.length) {
       continue;
     }
+    downloadPlots.push({
+      metaData: getDownloadPlotEntryMetadata(plotEntry),
+      dataSource: aggregationInput,
+    });
 
     const card = documentLike.createElement("section");
     card.className = "plot-card";
@@ -496,6 +527,11 @@ function renderConfusionMatrixPlots({
     return;
   }
 
+  state.activePlotDownloadData = {
+    metric_family: "confusion_matrix",
+    plot_tab: state.activeEvalPlotTab,
+    plots: downloadPlots,
+  };
   dom.evalPlotContent.appendChild(grid);
 }
 
@@ -503,7 +539,6 @@ function renderTpFpFnPlots({
   state,
   dom,
   activeExperiment,
-  experimentEvaluations,
   evalTabState,
   plotGroups,
   plotGroupFields,
@@ -526,7 +561,7 @@ function renderTpFpFnPlots({
       plotGroups,
       labelFields,
       evalTabState,
-      confusionTabsBy: state.confusionTabsBy,
+      matrixTabsBy: state.confusionTabsBy,
       getEvaluationEffectiveValue,
       displayPlotGroupFieldName,
       shortenLabels: state.plotShortenLabels,
@@ -572,12 +607,18 @@ function renderTpFpFnPlots({
   const activeEntry = tpfpfnTabMap.get(state.activeEvalPlotTab);
   const grid = documentLike.createElement("div");
   grid.className = "plot-grid";
+  const downloadPlots = [];
 
   for (const plotEntry of activeEntry.plots) {
+    const aggregationInput = timing.time(
+      "tpfpfn aggregation input",
+      () => getTpFpFnAggregationInput(plotEntry.collections, plotEntry.fieldLabel),
+      { plot: plotEntry.label, field: plotEntry.fieldLabel }
+    );
     const aggregation = timing.time(
       "tpfpfn aggregate and filter",
       () => filterTpFpFnAggregationByTotals(
-        getTpFpFnCombinedAggregation(plotEntry.collections, plotEntry.fieldLabel),
+        getTpFpFnAggregationFromInput(aggregationInput),
         state.plotTpFpFnMinLabelTotal,
         state.plotTpFpFnMinDocumentTotal
       ),
@@ -586,6 +627,10 @@ function renderTpFpFnPlots({
     if (!aggregation.rows.length || !aggregation.cols.length) {
       continue;
     }
+    downloadPlots.push({
+      metaData: getDownloadPlotEntryMetadata(plotEntry),
+      dataSource: aggregationInput,
+    });
 
     const card = documentLike.createElement("section");
     card.className = "plot-card";
@@ -629,6 +674,11 @@ function renderTpFpFnPlots({
     return;
   }
 
+  state.activePlotDownloadData = {
+    metric_family: "tpfpfn",
+    plot_tab: state.activeEvalPlotTab,
+    plots: downloadPlots,
+  };
   dom.evalPlotContent.appendChild(createTpFpFnLegendElement({ documentLike }));
   dom.evalPlotContent.appendChild(grid);
 }
@@ -683,9 +733,9 @@ function renderBarLikePlots({
   const groupBarFields = varyingGroupByFields.filter((field) => state.plotGroupBarFields.has(field));
   const categoryFields = varyingGroupByFields.filter((field) => !groupBarFields.includes(field));
 
-  const plotEntries = timing.time(
-    "bar aggregate plot entries",
-    () => buildPlotEntries({
+  const plotEntriesInput = timing.time(
+    "bar plot entry input",
+    () => getNumericPlotEntriesInput({
       metricPaths,
       plotGroups,
       groupBarFields,
@@ -694,6 +744,10 @@ function renderBarLikePlots({
         getGroupLabelForFields(group, fields, fallback, formatter),
       displayGroupFieldName: displayPlotGroupFieldName,
     })
+  );
+  const plotEntries = timing.time(
+    "bar aggregate plot entries",
+    () => getNumericPlotEntriesFromInput(plotEntriesInput)
   );
   if (!plotEntries.length) {
     appendPlotEmptyMessage(documentLike, dom.evalPlotContent, `No plottable metric values found for ${activeExperiment}.`);
@@ -706,10 +760,16 @@ function renderBarLikePlots({
       ? buildErrorsTabMap(plotEntries)
       : buildBarsTabMap(plotEntries, { plotTabsBy: state.plotTabsBy })
   );
+  const downloadTabMap = timing.time(
+    "bar download tab map",
+    () => metricType === "ErrorCollector"
+      ? buildErrorsTabMap(plotEntriesInput)
+      : buildBarsTabMap(plotEntriesInput, { plotTabsBy: state.plotTabsBy })
+  );
 
   const result = timing.time(
     "bar render tabs and grid",
-    () => renderSharedPlotTabsAndGrid({
+    () => renderBarPlotTabsAndGrid({
       documentLike,
       tabMap,
       activeExperiment,
@@ -755,4 +815,13 @@ function renderBarLikePlots({
   );
   state.activeEvalPlotTab = result.activeEvalPlotTab;
   state.activePlotLegendItems = result.activePlotLegendItems;
+  const activePlotEntries = downloadTabMap.get(result.activeEvalPlotTab) || [];
+  state.activePlotDownloadData = {
+    metric_family: "numeric",
+    plot_tab: result.activeEvalPlotTab,
+    plots: activePlotEntries.map((entry) => ({
+      metaData: getDownloadPlotEntryMetadata(entry),
+      dataSource: entry,
+    })),
+  };
 }

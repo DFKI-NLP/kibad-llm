@@ -10,14 +10,19 @@ import {
   countDistinctConfusionMatrixRuns,
   createConfusionMatrixHeatmapSvg,
   filterConfusionMatrixAggregationByLabelTotal,
-  getConfusionMatrixAggregation,
+  getConfusionMatrixAggregationFromInput,
+  getConfusionMatrixAggregationInput,
   getConfusionMatrixCollectionViews,
-  getConfusionMatrixTitle,
 } from "../../../../docs/eval-dashboard/assets/js/plots/confusion.js";
 import { createDocumentStub } from "./plots.dom-test-helpers.mjs";
 
 const getEvaluationEffectiveValue = (evaluation, column) =>
   evaluation.overrides?.[column] ?? "";
+
+const aggregateConfusionMatrix = (collections, fieldLabel) =>
+  getConfusionMatrixAggregationFromInput(
+    getConfusionMatrixAggregationInput(collections, fieldLabel)
+  );
 
 /**
  * Verify collection views and aligned mean/std aggregation for confusion matrices.
@@ -41,7 +46,7 @@ test("confusion helpers wrap collection metrics and aggregate aligned cells", ()
   assert.equal(collections[0].fields.get("field_a"), collectionData.field_a);
   assert.equal(countDistinctConfusionMatrixRuns(collections), 1);
 
-  const aggregation = getConfusionMatrixAggregation([
+  const aggregation = aggregateConfusionMatrix([
     { runDir: "r1", fields: new Map([["field_a", { b: { x: 2 }, UNASSIGNABLE: { UNDETECTED: 1 } }]]) },
     { runDir: "r2", fields: new Map([["field_a", { b: { x: 4 }, a: { x: 2 } }]]) },
   ], "field_a");
@@ -66,7 +71,7 @@ test("confusion aggregation stores prepared field data on the source evaluation"
   };
   const [collection] = getConfusionMatrixCollectionViews([evaluation]);
 
-  const aggregation = getConfusionMatrixAggregation([collection], "field_a");
+  const aggregation = aggregateConfusionMatrix([collection], "field_a");
 
   assert.equal(aggregation.cells.get("gold|#|pred").mean, 2);
   assert.ok(evaluation.dataPrepared.field_a);
@@ -85,7 +90,7 @@ test("confusion aggregation caches prototype-named metric fields safely", () => 
   };
   const [collection] = getConfusionMatrixCollectionViews([evaluation]);
 
-  const aggregation = getConfusionMatrixAggregation([collection], "toString");
+  const aggregation = aggregateConfusionMatrix([collection], "toString");
 
   assert.equal(aggregation.cells.get("gold|#|pred").mean, 3);
   assert.equal(evaluation.dataPrepared.toString.cells.get("gold|#|pred"), 3);
@@ -109,11 +114,38 @@ test("confusion aggregation normalizes existing prepared containers for prototyp
   };
   const [collection] = getConfusionMatrixCollectionViews([evaluation]);
 
-  const aggregation = getConfusionMatrixAggregation([collection], "__proto__");
+  const aggregation = aggregateConfusionMatrix([collection], "__proto__");
 
   assert.equal(aggregation.cells.get("gold|#|pred").mean, 4);
   assert.equal(Object.getPrototypeOf(evaluation.dataPrepared), null);
   assert.equal(evaluation.dataPrepared.__proto__.cells.get("gold|#|pred"), 4);
+});
+
+/**
+ * Verify confusion aggregation exposes reusable aligned inputs.
+ */
+test("confusion helpers build reusable aligned aggregation inputs", () => {
+  const collections = [
+    {
+      runDir: "run-a",
+      sourceRunDir: "source-a",
+      fields: new Map([["field_a", { actual: { predicted: 2 }, filtered: { hidden: 5 } }]]),
+    },
+    {
+      runDir: "run-b",
+      sourceRunDir: "source-b",
+      fields: new Map([["field_a", { actual: { predicted: 4 } }]]),
+    },
+  ];
+  const input = getConfusionMatrixAggregationInput(collections, "field_a");
+  const aggregation = getConfusionMatrixAggregationFromInput(input);
+
+  assert.deepEqual(input.rows, ["actual", "filtered"]);
+  assert.deepEqual(input.cols, ["hidden", "predicted"]);
+  assert.equal(input.evaluationCells[0].get("actual|#|predicted"), 2);
+  assert.equal(input.evaluationCells[1].get("actual|#|predicted"), 4);
+  assert.equal(aggregation.cells.get("actual|#|predicted").mean, 3);
+  assert.equal(aggregation.cells.get("filtered|#|hidden").mean, 2.5);
 });
 
 /**
@@ -133,7 +165,7 @@ test("confusion helpers build tab maps for metric-field and group-tab modes", ()
     plotGroups,
     labelFields: ["model"],
     evalTabState: {},
-    confusionTabsBy: "metric_field",
+    matrixTabsBy: "metric_field",
     getEvaluationEffectiveValue,
     getEvaluationExperiment: (evaluation) => evaluation.overrides.experiment,
     displayPlotGroupFieldName: (field) => field,
@@ -147,7 +179,7 @@ test("confusion helpers build tab maps for metric-field and group-tab modes", ()
     plotGroups,
     labelFields: ["model"],
     evalTabState: {},
-    confusionTabsBy: "prediction_group",
+    matrixTabsBy: "prediction_group",
     getEvaluationEffectiveValue,
     getEvaluationExperiment: (evaluation) => evaluation.overrides.experiment,
     displayPlotGroupFieldName: (field) => field,
@@ -155,14 +187,6 @@ test("confusion helpers build tab maps for metric-field and group-tab modes", ()
   assert.deepEqual(Array.from(groupTabs.keys()), ["group|#|g1"]);
   assert.deepEqual(groupTabs.get("group|#|g1").plots.map((plot) => plot.label), ["field_a", "field_b"]);
 
-  assert.equal(
-    getConfusionMatrixTitle({
-      experimentEvaluations: metricFieldTabs.get("field_a").plots[0].collections,
-      evalTabState: {},
-      getEvaluationEffectiveValue,
-    }),
-    "field_a"
-  );
 });
 
 /**
@@ -195,21 +219,21 @@ test("confusion collection views reject missing fields and malformed collection 
   );
 
   assert.throws(
-    () => getConfusionMatrixAggregation([
+    () => aggregateConfusionMatrix([
       { runDir: "r1", fields: new Map([["field_b", {}]]) },
     ], "field_a"),
     /ConfusionMatrix collection view is missing metric field "field_a"\./
   );
 
   assert.throws(
-    () => getConfusionMatrixAggregation([
+    () => aggregateConfusionMatrix([
       { runDir: "r1", fields: new Map([["field_a", { actual: [] }]]) },
     ], "field_a"),
     /ConfusionMatrix field "field_a" actual label "actual" must map to object predicted-label data\./
   );
 
   assert.throws(
-    () => getConfusionMatrixAggregation([
+    () => aggregateConfusionMatrix([
       { runDir: "r1", fields: new Map([["field_a", { actual: { predicted: "1" } }]]) },
     ], "field_a"),
     /ConfusionMatrix field "field_a" cell "actual" -> "predicted" must be a finite number\./

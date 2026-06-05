@@ -8,14 +8,16 @@ import assert from "node:assert/strict";
 import {
   buildBarsTabMap,
   buildErrorsTabMap,
+  buildJsonSafeNumericPlottingData,
   buildPlotEntries,
-  collectNumericMetricLeafPaths,
   collectPreparedNumericMetricPaths,
   createBarPlotSvg,
   createGroupedBarPlotSvg,
+  getNumericPlotEntriesFromInput,
+  getNumericPlotEntriesInput,
   getPlotTitleLabel,
   prepareNumericMetricEvaluationData,
-  renderPlotTabsAndGrid,
+  renderBarPlotTabsAndGrid,
 } from "../../../../docs/eval-dashboard/assets/js/plots/bars.js";
 import { createDocumentStub } from "./plots.dom-test-helpers.mjs";
 
@@ -23,15 +25,6 @@ import { createDocumentStub } from "./plots.dom-test-helpers.mjs";
  * Verify numeric metric discovery and plot-entry shaping across grouped evaluations.
  */
 test("bar plot helpers collect numeric metric paths and derive plot entries", () => {
-  const paths = Array.from(
-    collectNumericMetricLeafPaths({
-      score: { mean: 0.75, detail: { f1: 0.5 } },
-      ignored: "x",
-      list: [1],
-    }).values()
-  );
-  assert.deepEqual(paths, [["score", "mean"], ["score", "detail", "f1"]]);
-
   const plotGroups = [
     {
       values: { model: "a", seed: "1" },
@@ -44,7 +37,7 @@ test("bar plot helpers collect numeric metric paths and derive plot entries", ()
   ];
 
   const entries = buildPlotEntries({
-    metricPaths: [{ parts: ["score", "mean"], label: "score.mean" }],
+    metricPaths: [{ key: "score|#|mean", root: "score", parts: ["score", "mean"], label: "score.mean" }],
     plotGroups,
     groupBarFields: [],
     categoryFields: ["model"],
@@ -52,15 +45,76 @@ test("bar plot helpers collect numeric metric paths and derive plot entries", ()
   });
 
   assert.equal(entries.length, 1);
-  assert.equal(entries[0].prefix, "score");
-  assert.equal(entries[0].suffix, "mean");
+  assert.equal(entries[0].metricRoot, "score");
+  assert.equal(entries[0].metricPrefix, "score");
+  assert.equal(entries[0].metricSuffix, "mean");
   assert.deepEqual(
     entries[0].points.map((point) => [point.category, point.mean, point.std]),
     [["model=a", 0.6, 0.09999999999999998], ["model=b", 0.9, 0]]
   );
   assert.deepEqual(
-    entries[0].points[0].samples.map((sample) => [sample.runDir, sample.metricLabel, sample.value]),
-    [["", "score.mean", 0.5], ["", "score.mean", 0.7]]
+    entries[0].points[0].samples,
+    [0.5, 0.7]
+  );
+
+  assert.throws(
+    () => getNumericPlotEntriesInput({
+      metricPaths: [{ parts: ["score", "mean"], label: "score.mean" }],
+      plotGroups,
+      groupBarFields: [],
+      categoryFields: ["model"],
+    }),
+    /Numeric metric path "score\.mean" is missing key\./
+  );
+});
+
+/**
+ * Verify numeric plot entry input stays pre-aggregation before render stats are added.
+ */
+test("bar plot helpers separate sample input from mean/std render entries", () => {
+  const inputEntries = getNumericPlotEntriesInput({
+    metricPaths: [{ key: "score", root: "score", parts: ["score"], label: "score" }],
+    plotGroups: [{
+      values: { model: "a" },
+      evaluations: [{ runDir: "run-a", data: { score: 0 } }, { runDir: "run-b", data: { score: 0.7 } }],
+    }],
+    groupBarFields: [],
+    categoryFields: ["model"],
+  });
+  const renderEntries = getNumericPlotEntriesFromInput(inputEntries);
+
+  assert.deepEqual(inputEntries[0].points[0].samples, [0, 0.7]);
+  assert.equal("mean" in inputEntries[0].points[0], false);
+  assert.equal("std" in inputEntries[0].points[0], false);
+  assert.equal(renderEntries[0].points[0].mean, 0.35);
+  assert.equal(renderEntries[0].points[0].std, 0.35);
+});
+
+/**
+ * Verify numeric download data preserves compact sample values.
+ */
+test("bar plot helpers build compact JSON-safe numeric plotting data", () => {
+  assert.deepEqual(
+    buildJsonSafeNumericPlottingData({
+      points: [{
+        category: "model=a",
+        displayCategory: "Model A",
+        series: "seed=1",
+        displaySeries: "Seed 1",
+        label: "model=a",
+        displayLabel: "Model A",
+        samples: [0.75, 0.81],
+      }],
+    }),
+    {
+      points: [{
+        category: "model=a",
+        displayCategory: "Model A",
+        series: "seed=1",
+        displaySeries: "Seed 1",
+        samples: [0.75, 0.81],
+      }],
+    }
   );
 });
 
@@ -103,17 +157,7 @@ test("bar plot helpers lazily prepare numeric metric data for bars and errors", 
   });
 
   const scoreEntry = entries.find((entry) => entry.metricLabel === "score.mean");
-  assert.deepEqual(scoreEntry.points[0].samples.map((sample) => ({
-    runDir: sample.runDir,
-    metricLabel: sample.metricLabel,
-    metricPath: sample.metricPath,
-    value: sample.value,
-  })), [{
-    runDir: "run-a",
-    metricLabel: "score.mean",
-    metricPath: ["score", "mean"],
-    value: 0.75,
-  }]);
+  assert.deepEqual(scoreEntry.points[0].samples, [0.75]);
 });
 
 /**
@@ -121,8 +165,8 @@ test("bar plot helpers lazily prepare numeric metric data for bars and errors", 
  */
 test("bar plot helpers derive tab maps and titles", () => {
   const entries = [
-    { metricLabel: "errors.with_error", prefix: "errors", suffix: "with_error", parts: ["with_error"], points: [] },
-    { metricLabel: "details.x", prefix: "details", suffix: "x", parts: ["detail"], points: [] },
+    { metricLabel: "errors.with_error", metricRoot: "with_error", metricPrefix: "errors", metricSuffix: "with_error", points: [] },
+    { metricLabel: "details.x", metricRoot: "detail", metricPrefix: "details", metricSuffix: "x", points: [] },
   ];
 
   assert.deepEqual(Array.from(buildBarsTabMap(entries).keys()), ["errors", "details"]);
@@ -130,7 +174,7 @@ test("bar plot helpers derive tab maps and titles", () => {
   assert.deepEqual(Array.from(buildErrorsTabMap(entries).keys()), ["total", "details"]);
   assert.equal(
     getPlotTitleLabel(
-      { prefix: "macro", metricLabel: "field.f1" },
+      { metricPrefix: "macro", metricLabel: "field.f1" },
       "F1MicroMultipleFieldsMetric",
       { shortenLabels: true, plotTabsBy: "suffix" }
     ),
@@ -200,7 +244,7 @@ test("bar grid renderer renders tabs, shared legends, and cards", () => {
   const evalPlotContent = documentLike.createElement("div");
   let selected = null;
 
-  const result = renderPlotTabsAndGrid({
+  const result = renderBarPlotTabsAndGrid({
     documentLike,
     tabMap: new Map([
       [
@@ -208,8 +252,8 @@ test("bar grid renderer renders tabs, shared legends, and cards", () => {
         [
           {
             metricLabel: "score.mean",
-            prefix: "score",
-            suffix: "mean",
+            metricPrefix: "score",
+            metricSuffix: "mean",
             points: [
               { category: "model=a", displayCategory: "Model A", series: "seed=1", displaySeries: "Seed 1", mean: 0.5, std: 0 },
               { category: "model=a", displayCategory: "Model A", series: "seed=2", displaySeries: "Seed 2", mean: 0.6, std: 0 },
@@ -266,7 +310,7 @@ test("bar grid renderer renders tabs, shared legends, and cards", () => {
 test("bar grid renderer preserves export legend items when shared legend is not rendered", () => {
   const documentLike = createDocumentStub();
   const evalPlotContent = documentLike.createElement("div");
-  const result = renderPlotTabsAndGrid({
+  const result = renderBarPlotTabsAndGrid({
     documentLike,
     tabMap: new Map([
       [
@@ -274,16 +318,16 @@ test("bar grid renderer preserves export legend items when shared legend is not 
         [
           {
             metricLabel: "score.mean",
-            prefix: "score",
-            suffix: "mean",
+            metricPrefix: "score",
+            metricSuffix: "mean",
             points: [
               { category: "model=a", displayCategory: "Model A", series: "seed=1", displaySeries: "Seed 1", mean: 0.5, std: 0 },
             ],
           },
           {
             metricLabel: "score.mean",
-            prefix: "score",
-            suffix: "mean",
+            metricPrefix: "score",
+            metricSuffix: "mean",
             points: [
               { category: "model=b", displayCategory: "Model B", series: "seed=2", displaySeries: "Seed 2", mean: 0.7, std: 0 },
             ],
@@ -319,7 +363,7 @@ test("bar grid renderer defaults create SVGs for ungrouped and grouped entries",
 
   for (const groupBarFields of [[], ["seed"]]) {
     const evalPlotContent = documentLike.createElement("div");
-    const result = renderPlotTabsAndGrid({
+    const result = renderBarPlotTabsAndGrid({
       documentLike,
       tabMap: new Map([
         [
@@ -327,8 +371,8 @@ test("bar grid renderer defaults create SVGs for ungrouped and grouped entries",
           [
             {
               metricLabel: "score.mean",
-              prefix: "score",
-              suffix: "mean",
+              metricPrefix: "score",
+              metricSuffix: "mean",
               points: [
                 {
                   label: "model=a",
@@ -371,7 +415,7 @@ test("bar grid renderer defaults create SVGs for ungrouped and grouped entries",
 test("bar grid renderer shows an empty message for empty tabs", () => {
   const documentLike = createDocumentStub();
   const evalPlotContent = documentLike.createElement("div");
-  const result = renderPlotTabsAndGrid({
+  const result = renderBarPlotTabsAndGrid({
     documentLike,
     tabMap: new Map([["score", []]]),
     activeExperiment: "exp",

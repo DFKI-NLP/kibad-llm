@@ -6,13 +6,9 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import {
-  buildGroupedLegendModel,
-  getLegendItemsForPoints,
   getPlotDisplayLabel,
   getVaryingFields,
-  fitSvgToContents,
   scheduleAdaptiveSvgFit,
-  styleErrorBarSegment,
 } from "../../../../docs/eval-dashboard/assets/js/plots/shared.js";
 import { createDocumentStub } from "./plots.dom-test-helpers.mjs";
 
@@ -33,39 +29,30 @@ test("shared plot helpers detect varying group fields", () => {
 });
 
 /**
- * Verify shortened plot labels and grouped-series legend models.
+ * Verify shortened plot labels.
  */
-test("shared plot helpers derive labels and legend models", () => {
+test("shared plot helpers derive display labels", () => {
   assert.equal(getPlotDisplayLabel("a.b.c", { shortenLabels: true }), "c");
-
-  const legend = buildGroupedLegendModel([
-    {
-      points: [
-        { series: "s1", displaySeries: "Series 1" },
-        { series: "s2", displaySeries: "Series 2" },
-      ],
-    },
-  ]);
-  assert.deepEqual(legend.items.map((item) => item.label), ["Series 1", "Series 2"]);
-  assert.deepEqual(getLegendItemsForPoints([{ series: "s2" }], legend).map((item) => item.series), ["s2"]);
 });
 
 /**
- * Verify shared SVG helpers style error bars and fit connected SVG content.
+ * Verify shared SVG helpers adapt connected SVG content.
  */
-test("shared plot helpers style and adapt SVG dimensions", () => {
+test("shared plot helpers adapt SVG dimensions", async () => {
   const documentLike = createDocumentStub();
   const svg = documentLike.createElementNS("", "svg");
   const group = documentLike.createElementNS("", "g");
   group._bbox = { x: -12, y: -5, width: 140.2, height: 80.1 };
   svg.appendChild(group);
 
-  const line = documentLike.createElementNS("", "line");
-  styleErrorBarSegment(line);
-  assert.equal(line.getAttribute("stroke"), "currentColor");
-  assert.equal(line.getAttribute("stroke-opacity"), "0.78");
-
-  assert.equal(fitSvgToContents(svg, group, 100, 60), true);
+  scheduleAdaptiveSvgFit({
+    documentLike: {},
+    requestAnimationFrameLike: (callback) => callback(),
+    svg,
+    contentGroup: group,
+    minWidth: 100,
+    minHeight: 60,
+  });
   assert.equal(group.getAttribute("transform"), "translate(20, 13)");
   assert.equal(svg.getAttribute("viewBox"), "0 0 157 97");
 });

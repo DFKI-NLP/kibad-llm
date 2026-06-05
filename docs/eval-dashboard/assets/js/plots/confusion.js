@@ -1,18 +1,11 @@
 /**
- * Confusion-matrix plot aggregation and tab-map helpers.
+ * Confusion-matrix plot helpers for collection wrapping, aggregation, tab maps,
+ * download inputs, and SVG rendering.
  *
- * Data flow:
- * - Raw dashboard evaluations stay unchanged for tables and grouping.
- * - Plot code wraps each selected confusion evaluation in one collection view.
- * - A `ConfusionMatrixCollection` view exposes every top-level `data` field as
- *   `fields: Map<metric.field, matrixData>`.
- * - A single-field `ConfusionMatrix` view exposes exactly one field, resolved
- *   from `metric.field`, as `fields: Map<metric.field, evaluation.data>`.
- * - Tab construction derives available plot fields from collection-view field
- *   keys, and active plot aggregation reads `collection.fields.get(fieldLabel)`.
- *
- * The adapter is deliberately strict: missing `metric.field`, malformed metric
- * data, empty collection fields, and unsupported metric types throw early.
+ * This file exists to keep confusion-specific matrix behavior out of the
+ * dashboard controller and out of generic plot helpers. It normalizes single
+ * and collection metrics into one field-map contract, then shares the same
+ * pre-aggregation inputs between rendering and downloaded plot data.
  */
 
 import { formatRounded, interpolateColor, meanAndStd, normalizeValue } from "../utils/values.js";
@@ -20,30 +13,17 @@ import {
   getMetricCollectionSourceRunDir,
   getMetricCollectionView,
   getMetricPreparedDataContainer,
-  getGroupLabelForFields,
-  getPlotDisplayLabel,
   isMetricDataRecord,
 } from "./shared.js";
-
-/**
- * Builds a confusion-matrix collection view for one evaluation.
- *
- * @param {object} evaluation - Confusion-matrix-like evaluation record.
- * @param {object} [options] - Field resolution helpers.
- * @returns {object} Confusion matrix collection view.
- * @throws {Error} If the evaluation shape violates the confusion-matrix contract.
- */
-export function getConfusionMatrixCollectionView(evaluation, options = {}) {
-  return getMetricCollectionView(evaluation, {
-    collectionType: "ConfusionMatrixCollection",
-    singularType: "ConfusionMatrix",
-    metricLabel: "ConfusionMatrix",
-    ...options,
-  });
-}
+import { buildMatrixTabMap, getMatrixCellKey } from "./shared-matrix.js";
 
 /**
  * Builds confusion-matrix collection views for a list of evaluations.
+ *
+ * Confusion plots can receive either collection metrics with many fields or
+ * single-field metrics resolved through `metric.field`. Wrapping both shapes in
+ * the shared collection-view contract lets tab construction and aggregation use
+ * one `fields` map path.
  *
  * @param {Array<object>} evaluations - Raw evaluation records.
  * @param {object} [options] - Field resolution helpers.
@@ -51,11 +31,19 @@ export function getConfusionMatrixCollectionView(evaluation, options = {}) {
  * @throws {Error} If any evaluation shape violates the confusion-matrix contract.
  */
 export function getConfusionMatrixCollectionViews(evaluations, options = {}) {
-  return (evaluations || []).map((evaluation) => getConfusionMatrixCollectionView(evaluation, options));
+  return (evaluations || []).map((evaluation) => getMetricCollectionView(evaluation, {
+    collectionType: "ConfusionMatrixCollection",
+    singularType: "ConfusionMatrix",
+    metricLabel: "ConfusionMatrix",
+    ...options,
+  }));
 }
 
 /**
  * Counts distinct source runs represented by confusion-matrix evaluations.
+ *
+ * Tab labels use source-run counts rather than collection-view counts so a
+ * collection metric and its wrapped view still represent one evaluation run.
  *
  * @param {Array<object>} evaluations - Evaluation records.
  * @returns {number} Number of unique non-empty source run directories.
@@ -69,45 +57,11 @@ export function countDistinctConfusionMatrixRuns(evaluations) {
 }
 
 /**
- * Builds the display title for a confusion matrix plot group.
- *
- * @param {object} options - Evaluations, tab state, value resolver, and label options.
- * @returns {string} Title describing the selected metric.field values.
- */
-export function getConfusionMatrixTitle({
-  experimentEvaluations,
-  evalTabState,
-  getEvaluationEffectiveValue,
-  shortenLabels = false,
-}) {
-  const fieldValues = new Set();
-  for (const evaluation of experimentEvaluations || []) {
-    if (evaluation?.fields instanceof Map) {
-      for (const fieldLabel of evaluation.fields.keys()) {
-        fieldValues.add(fieldLabel);
-      }
-      continue;
-    }
-    const value = getEvaluationEffectiveValue(evaluation, "metric.field", evalTabState);
-    if (value) {
-      fieldValues.add(value);
-    }
-  }
-  if (fieldValues.size === 0) {
-    throw new Error("ConfusionMatrix title requires at least one metric.field.");
-  }
-  if (fieldValues.size === 1) {
-    return getPlotDisplayLabel(Array.from(fieldValues)[0], { shortenLabels });
-  }
-  return `mixed metric.field: ${Array.from(fieldValues)
-    .sort((a, b) => a.localeCompare(b))
-    .map((value) => getPlotDisplayLabel(value, { shortenLabels }))
-    .join(", ")}`;
-}
-
-
-/**
  * Resolves raw matrix data for a normalized confusion metric field.
+ *
+ * Aggregation code works with collection views and direct evaluations. This
+ * helper keeps the field lookup and missing-field error in one place before the
+ * raw matrix shape is validated.
  *
  * @param {object} evaluation - Confusion collection view or direct evaluation.
  * @param {string} normalizedFieldLabel - Normalized metric.field label.
@@ -128,8 +82,10 @@ function getConfusionMatrixFieldData(evaluation, normalizedFieldLabel) {
  * Lazily prepares one evaluation's confusion data for aggregation.
  *
  * The prepared shape stores the row-label union, column-label union, and sparse
- * cell lookup for one evaluation/field. Cross-run alignment and mean/std
- * aggregation remain in `getConfusionMatrixAggregation()`.
+ * cell lookup for one evaluation/field. Later helpers handle cross-run
+ * alignment and mean/std aggregation.
+ * Caching this per evaluation avoids rebuilding sparse maps when tab maps,
+ * download payloads, or filters are recomputed.
  *
  * @param {object} evaluation - Confusion collection view or direct evaluation.
  * @param {string} normalizedFieldLabel - Normalized metric.field label.
@@ -175,7 +131,7 @@ function prepareConfusionMatrixEvaluationData(evaluation, normalizedFieldLabel) 
       }
       rowLabels.add(actualLabel);
       colLabels.add(predictedLabel);
-      cells.set(`${actualLabel}|#|${predictedLabel}`, Number(rawValue));
+      cells.set(getMatrixCellKey(actualLabel, predictedLabel), Number(rawValue));
     }
   }
 
@@ -187,13 +143,41 @@ function prepareConfusionMatrixEvaluationData(evaluation, normalizedFieldLabel) 
 }
 
 /**
- * Aggregates one confusion-matrix field across collection views into mean/std values.
+ * Sorts labels deterministically while keeping sentinel labels at the end.
+ *
+ * Confusion matrices use special row/column labels for unassigned or
+ * undetected cases. Keeping those labels last makes the heatmap easier to scan
+ * without changing ordinary locale sorting for real labels.
+ *
+ * @param {Iterable<string>} values - Labels to sort.
+ * @param {string} forcedLast - Sentinel label that should sort last.
+ * @returns {Array<string>} Sorted labels.
+ */
+function sortWithForcedLast(values, forcedLast) {
+  return Array.from(values).sort((a, b) => {
+    if (a === forcedLast && b !== forcedLast) {
+      return 1;
+    }
+    if (b === forcedLast && a !== forcedLast) {
+      return -1;
+    }
+    return a.localeCompare(b);
+  });
+}
+
+/**
+ * Builds aligned per-evaluation inputs for confusion-matrix aggregation.
+ *
+ * Rendering and data download both need the same normalized rows, columns, and
+ * sparse per-evaluation cells. Keeping that setup here prevents a separate
+ * download path from re-preparing confusion data.
+ * The returned input is the shared pre-aggregation boundary.
  *
  * @param {Array<object>} experimentEvaluations - Confusion matrix collection views.
- * @param {string} fieldLabel - Metric field to aggregate.
- * @returns {{rows: Array<string>, cols: Array<string>, cells: Map<string, object>}} Aggregated matrix.
+ * @param {string} fieldLabel - Metric field to align.
+ * @returns {{rows: Array<string>, cols: Array<string>, evaluationCells: Array<Map<string, number>>}} Aligned aggregation inputs.
  */
-export function getConfusionMatrixAggregation(experimentEvaluations, fieldLabel) {
+export function getConfusionMatrixAggregationInput(experimentEvaluations, fieldLabel) {
   const normalizedFieldLabel = normalizeValue(fieldLabel).trim();
   if (!normalizedFieldLabel) {
     throw new Error("ConfusionMatrix aggregation requires a non-empty metric field.");
@@ -217,23 +201,28 @@ export function getConfusionMatrixAggregation(experimentEvaluations, fieldLabel)
     evaluationCells.push(prepared.cells);
   }
 
-  const sortWithForcedLast = (values, forcedLast) =>
-    Array.from(values).sort((a, b) => {
-      if (a === forcedLast && b !== forcedLast) {
-        return 1;
-      }
-      if (b === forcedLast && a !== forcedLast) {
-        return -1;
-      }
-      return a.localeCompare(b);
-    });
-
   const rows = sortWithForcedLast(rowLabels, "UNASSIGNABLE");
   const cols = sortWithForcedLast(colLabels, "UNDETECTED");
+  return { rows, cols, evaluationCells };
+}
+
+/**
+ * Aggregates aligned confusion-matrix inputs into mean/std values.
+ *
+ * This lets callers reuse the already-prepared aggregation input for rendering
+ * and download data instead of running the per-evaluation preparation twice.
+ * Missing sparse cells contribute zero so each visible cell is aligned across
+ * the same evaluation count.
+ *
+ * @param {object} aggregationInput - Output of getConfusionMatrixAggregationInput.
+ * @returns {{rows: Array<string>, cols: Array<string>, cells: Map<string, object>}} Aggregated matrix.
+ */
+export function getConfusionMatrixAggregationFromInput(aggregationInput) {
+  const { rows, cols, evaluationCells } = aggregationInput;
   const cells = new Map();
   for (const row of rows) {
     for (const col of cols) {
-      const key = `${row}|#|${col}`;
+      const key = getMatrixCellKey(row, col);
       // Each confusion-matrix cell is aligned across all selected runs. If a
       // run has no explicit count for this actual/predicted pair, it
       // contributes 0 before computing the aggregate.
@@ -250,6 +239,10 @@ export function getConfusionMatrixAggregation(experimentEvaluations, fieldLabel)
 
 /**
  * Removes matrix rows and columns whose mean totals are below a threshold.
+ *
+ * Row and column filtering is iterative because dropping a low-total row can
+ * also lower column totals, and vice versa. The resulting matrix matches the
+ * visible heatmap while preserving totals for labels that remain.
  *
  * @param {object} aggregation - Confusion matrix aggregation.
  * @param {number} minLabelTotal - Minimum row/column total to keep.
@@ -271,13 +264,13 @@ export function filterConfusionMatrixAggregationByLabelTotal(aggregation, minLab
     rowTotals = new Map(
       filteredRows.map((row) => [
         row,
-        filteredCols.reduce((sum, col) => sum + (cells.get(`${row}|#|${col}`)?.mean ?? 0), 0),
+        filteredCols.reduce((sum, col) => sum + (cells.get(getMatrixCellKey(row, col))?.mean ?? 0), 0),
       ])
     );
     colTotals = new Map(
       filteredCols.map((col) => [
         col,
-        filteredRows.reduce((sum, row) => sum + (cells.get(`${row}|#|${col}`)?.mean ?? 0), 0),
+        filteredRows.reduce((sum, row) => sum + (cells.get(getMatrixCellKey(row, col))?.mean ?? 0), 0),
       ])
     );
 
@@ -298,20 +291,20 @@ export function filterConfusionMatrixAggregationByLabelTotal(aggregation, minLab
   rowTotals = new Map(
     filteredRows.map((row) => [
       row,
-      filteredCols.reduce((sum, col) => sum + (cells.get(`${row}|#|${col}`)?.mean ?? 0), 0),
+      filteredCols.reduce((sum, col) => sum + (cells.get(getMatrixCellKey(row, col))?.mean ?? 0), 0),
     ])
   );
   colTotals = new Map(
     filteredCols.map((col) => [
       col,
-      filteredRows.reduce((sum, row) => sum + (cells.get(`${row}|#|${col}`)?.mean ?? 0), 0),
+      filteredRows.reduce((sum, row) => sum + (cells.get(getMatrixCellKey(row, col))?.mean ?? 0), 0),
     ])
   );
 
   const filteredCells = new Map();
   for (const row of filteredRows) {
     for (const col of filteredCols) {
-      const key = `${row}|#|${col}`;
+      const key = getMatrixCellKey(row, col);
       filteredCells.set(key, cells.get(key) || { mean: 0, std: 0 });
     }
   }
@@ -327,6 +320,11 @@ export function filterConfusionMatrixAggregationByLabelTotal(aggregation, minLab
 /**
  * Builds confusion-matrix plot tabs grouped by metric field or plot group.
  *
+ * The dashboard supports two views of the same collection data: metric-field
+ * tabs compare plot groups for one field, while prediction-group tabs compare
+ * fields inside one plot group. This helper centralizes that tab-map shape so
+ * rendering and download selection use the same active plot definitions.
+ *
  * @param {object} options - Plot groups, evaluations, tab mode, and label helpers.
  * @returns {Map<string, object>} Tab map with labels and plot definitions.
  */
@@ -335,87 +333,32 @@ export function buildConfusionTabMap({
   plotGroups,
   labelFields,
   evalTabState,
-  confusionTabsBy,
+  matrixTabsBy,
   getEvaluationEffectiveValue,
   getEvaluationExperiment,
   displayPlotGroupFieldName,
   shortenLabels = false,
 }) {
-  const tabMap = new Map();
-  const collectionViewOptions = { evalTabState, getEvaluationEffectiveValue };
-  const groupEntries = plotGroups
-    .map((group, index) => ({
-      key: `group|#|${group.groupId}`,
-      label: getGroupLabelForFields(
-        group,
-        labelFields,
-        `group ${index + 1}`,
-        displayPlotGroupFieldName
-      ),
-      collections: getConfusionMatrixCollectionViews(
-        group.evaluations.filter((evaluation) => getEvaluationExperiment(evaluation) === activeExperiment),
-        collectionViewOptions
-      ),
-    }))
-    .filter((entry) => entry.collections.length > 0);
-
-  if (confusionTabsBy === "metric_field") {
-    for (const groupEntry of groupEntries) {
-      const byField = new Map();
-      for (const collection of groupEntry.collections) {
-        for (const fieldLabel of collection.fields.keys()) {
-          if (!tabMap.has(fieldLabel)) {
-            tabMap.set(fieldLabel, {
-              label: getPlotDisplayLabel(fieldLabel, { shortenLabels }),
-              plots: [],
-            });
-          }
-          if (!byField.has(fieldLabel)) {
-            byField.set(fieldLabel, []);
-          }
-          byField.get(fieldLabel).push(collection);
-        }
-      }
-      for (const [fieldKey, collectionsForFieldAndGroup] of byField.entries()) {
-        const tab = tabMap.get(fieldKey);
-        if (!tab || collectionsForFieldAndGroup.length === 0) {
-          continue;
-        }
-        tab.plots.push({
-          label: groupEntry.label,
-          fieldLabel: fieldKey,
-          collections: collectionsForFieldAndGroup,
-        });
-      }
-    }
-    return tabMap;
-  }
-
-  for (const groupEntry of groupEntries) {
-    const byField = new Map();
-    for (const collection of groupEntry.collections) {
-      for (const fieldLabel of collection.fields.keys()) {
-        if (!byField.has(fieldLabel)) {
-          byField.set(fieldLabel, []);
-        }
-        byField.get(fieldLabel).push(collection);
-      }
-    }
-    const plots = Array.from(byField.entries())
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([fieldLabel, collections]) => ({
-        label: fieldLabel,
-        fieldLabel,
-        collections,
-      }));
-    tabMap.set(groupEntry.key, { label: groupEntry.label, plots });
-  }
-
-  return tabMap;
+  return buildMatrixTabMap({
+    plotGroups,
+    labelFields,
+    evalTabState,
+    matrixTabsBy,
+    getEvaluationEffectiveValue,
+    displayPlotGroupFieldName,
+    shortenLabels,
+    getCollectionViews: getConfusionMatrixCollectionViews,
+    filterEvaluations: (evaluations) =>
+      evaluations.filter((evaluation) => getEvaluationExperiment(evaluation) === activeExperiment),
+  });
 }
 
 /**
  * Creates an SVG heatmap for an aggregated confusion matrix.
+ *
+ * The renderer receives already-filtered mean/std cells and is dependency
+ * injected for tests. Tooltips expose the exact actual/predicted label pair and
+ * aggregated values without coupling SVG rendering to data preparation.
  *
  * @param {object} options - Aggregation, precision, label formatter, and tooltip handlers.
  * @returns {SVGSVGElement} Rendered heatmap SVG.
@@ -474,7 +417,7 @@ export function createConfusionMatrixHeatmapSvg({
 
   rows.forEach((row, rowIndex) => {
     cols.forEach((col, colIndex) => {
-      const key = `${row}|#|${col}`;
+      const key = getMatrixCellKey(row, col);
       const stats = cells.get(key) || { mean: 0, std: 0 };
       const x = margin.left + colIndex * cellSize;
       const y = margin.top + rowIndex * cellSize;
