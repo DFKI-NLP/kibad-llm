@@ -10,7 +10,7 @@ class UnionExtractor:
     This extractor calls the base extraction function multiple times (for each entry in overrides)
     on the same input text and aggregates the structured outputs.
 
-    Args:
+    Attributes:
         aggregator: Aggregator function to use for aggregating results
         overrides: A list of dictionaries containing parameter overrides for each extraction.
         return_as_list: List of field names to return as lists of all extracted values
