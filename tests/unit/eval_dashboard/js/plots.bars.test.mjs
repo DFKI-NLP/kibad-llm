@@ -10,12 +10,11 @@ import {
   buildErrorsTabMap,
   buildJsonSafeNumericPlottingData,
   buildNumericDownloadMetadata,
+  buildNumericPlotEntriesInput,
   buildPlotEntries,
-  collectPreparedNumericMetricPaths,
   createBarPlotSvg,
   createGroupedBarPlotSvg,
   getNumericPlotEntriesFromInput,
-  getNumericPlotEntriesInput,
   getPlotTitleLabel,
   prepareNumericMetricEvaluationData,
   renderBarPlotTabsAndGrid,
@@ -38,7 +37,7 @@ test("bar plot helpers collect numeric metric paths and derive plot entries", ()
   ];
 
   const entries = buildPlotEntries({
-    metricPaths: [{ key: "score|#|mean", root: "score", parts: ["score", "mean"], label: "score.mean" }],
+    metricType: "F1MicroMultipleFieldsMetric",
     plotGroups,
     groupBarFields: [],
     categoryFields: ["model"],
@@ -59,13 +58,12 @@ test("bar plot helpers collect numeric metric paths and derive plot entries", ()
   );
 
   assert.throws(
-    () => getNumericPlotEntriesInput({
-      metricPaths: [{ parts: ["score", "mean"], label: "score.mean" }],
+    () => buildNumericPlotEntriesInput({
       plotGroups,
       groupBarFields: [],
       categoryFields: ["model"],
     }),
-    /Numeric metric path "score\.mean" is missing key\./
+    /Numeric plot entry construction requires a metric type\./
   );
 });
 
@@ -73,8 +71,8 @@ test("bar plot helpers collect numeric metric paths and derive plot entries", ()
  * Verify numeric plot entry input stays pre-aggregation before render stats are added.
  */
 test("bar plot helpers separate sample input from mean/std render entries", () => {
-  const inputEntries = getNumericPlotEntriesInput({
-    metricPaths: [{ key: "score", root: "score", parts: ["score"], label: "score" }],
+  const inputEntries = buildNumericPlotEntriesInput({
+    metricType: "F1MicroMultipleFieldsMetric",
     plotGroups: [{
       values: { model: "a" },
       evaluations: [{ runDir: "run-a", data: { score: 0 } }, { runDir: "run-b", data: { score: 0.7 } }],
@@ -89,6 +87,75 @@ test("bar plot helpers separate sample input from mean/std render entries", () =
   assert.equal("std" in inputEntries[0].points[0], false);
   assert.equal(renderEntries[0].points[0].mean, 0.35);
   assert.equal(renderEntries[0].points[0].std, 0.35);
+});
+
+/**
+ * Verify sparse ErrorCollector counters contribute zero for every evaluation.
+ */
+test("bar plot helpers default missing ErrorCollector counters to zero", () => {
+  const entries = buildNumericPlotEntriesInput({
+    metricType: "ErrorCollector",
+    plotGroups: [{
+      values: { model: "a" },
+      evaluations: [
+        { runDir: "run-a", data: { no_error: 90, with_error: 10, MissingResponseContentError: 10 } },
+        { runDir: "run-b", data: { no_error: 100 } },
+      ],
+    }],
+    groupBarFields: [],
+    categoryFields: ["model"],
+  });
+
+  const missingContentEntry = entries.find(
+    (entry) => entry.metricLabel === "MissingResponseContentError"
+  );
+  assert.deepEqual(missingContentEntry.points[0].samples, [10, 0]);
+  const renderEntry = getNumericPlotEntriesFromInput([missingContentEntry])[0];
+  assert.equal(renderEntry.points[0].mean, 5);
+  assert.equal(renderEntry.points[0].std, 5);
+});
+
+/**
+ * Verify missing required metrics fail when their metric type has no default.
+ */
+test("bar plot helpers reject missing required numeric values", () => {
+  const buildInput = (metricType) => buildNumericPlotEntriesInput({
+    metricType,
+    plotGroups: [{
+      values: {},
+      evaluations: [
+        { runDir: "run-a", data: { score: { mean: 0.75 } } },
+        { runDir: "run-b", data: { score: {} } },
+      ],
+    }],
+    groupBarFields: [],
+    categoryFields: [],
+  });
+
+  assert.throws(
+    () => buildInput("F1MicroMultipleFieldsMetric"),
+    /Numeric metric "score\.mean" is missing from evaluation "run-b".*"F1MicroMultipleFieldsMetric" has no missing-value default\./
+  );
+});
+
+/**
+ * Verify metric discovery uses the union of evaluations in the plot groups.
+ */
+test("bar plot helpers discover metrics from selected plot groups", () => {
+  const entries = buildNumericPlotEntriesInput({
+    metricType: "ErrorCollector",
+    plotGroups: [{
+      values: {},
+      evaluations: [
+        { runDir: "run-a", data: { no_error: 100 } },
+        { runDir: "run-b", data: { no_error: 90, ValueError: 10 } },
+      ],
+    }],
+    groupBarFields: [],
+    categoryFields: [],
+  });
+
+  assert.deepEqual(entries.map((entry) => entry.metricLabel), ["no_error", "ValueError"]);
 });
 
 /**
@@ -164,13 +231,8 @@ test("bar plot helpers lazily prepare numeric metric data for bars and errors", 
   assert.equal(prepared.values.get("score|#|mean"), 0.75);
   assert.equal(prepareNumericMetricEvaluationData(evaluation), prepared);
   assert.deepEqual(Object.keys(evaluation), ["runDir", "data"]);
-  assert.deepEqual(
-    collectPreparedNumericMetricPaths([evaluation]).map((path) => path.label),
-    ["errors.by_label.A", "errors.with_error", "score.mean"]
-  );
-
   const entries = buildPlotEntries({
-    metricPaths: collectPreparedNumericMetricPaths([evaluation]),
+    metricType: "F1MicroMultipleFieldsMetric",
     plotGroups: [{ values: {}, evaluations: [evaluation] }],
     groupBarFields: [],
     categoryFields: [],
@@ -178,6 +240,11 @@ test("bar plot helpers lazily prepare numeric metric data for bars and errors", 
 
   const scoreEntry = entries.find((entry) => entry.metricLabel === "score.mean");
   assert.deepEqual(scoreEntry.points[0].samples, [0.75]);
+
+  assert.throws(
+    () => prepareNumericMetricEvaluationData({ data: { score: Number.POSITIVE_INFINITY } }),
+    /Numeric metric "score" must be finite\./
+  );
 });
 
 /**

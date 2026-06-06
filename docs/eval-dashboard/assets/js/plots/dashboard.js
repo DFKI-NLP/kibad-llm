@@ -20,11 +20,10 @@ import {
 import {
   buildBarsTabMap,
   buildErrorsTabMap,
-  collectPreparedNumericMetricPaths,
+  buildNumericPlotEntriesInput,
   createBarPlotSvg,
   createGroupedBarPlotSvg,
   getNumericPlotEntriesFromInput,
-  getNumericPlotEntriesInput,
   renderBarPlotTabsAndGrid,
 } from "./bars.js";
 import { buildDownloadPlotMetadata } from "./download-data.js";
@@ -241,7 +240,7 @@ export function renderEvaluationPlotsForDashboard({
     return;
   }
 
-  const { experimentEvaluations, evalTabState } = evaluationContext;
+  const { evalTabState } = evaluationContext;
   const metricType = plotTiming.time(
     "plots metric type",
     () => getMetricTypeForEvaluationContext(activeExperiment, evaluationContext)
@@ -330,7 +329,6 @@ export function renderEvaluationPlotsForDashboard({
     state,
     dom,
     activeExperiment,
-    experimentEvaluations,
     plotGroups,
     varyingPlotGroupFields,
     metricType,
@@ -687,7 +685,6 @@ function renderBarLikePlots({
   state,
   dom,
   activeExperiment,
-  experimentEvaluations,
   plotGroups,
   varyingPlotGroupFields,
   metricType,
@@ -700,16 +697,6 @@ function renderBarLikePlots({
   rerenderEvaluationPlots,
   timing,
 }) {
-  const metricPaths = timing.time(
-    "bar metric path discovery",
-    () => collectPreparedNumericMetricPaths(experimentEvaluations)
-  );
-
-  if (metricPaths.length === 0) {
-    appendPlotEmptyMessage(documentLike, dom.evalPlotContent, `No numeric metric data found for ${activeExperiment}.`);
-    return;
-  }
-
   const varyingGroupByFields = varyingPlotGroupFields;
   state.plotGroupBarFields = new Set(
     Array.from(state.plotGroupBarFields).filter((field) => new Set(varyingGroupByFields).has(field))
@@ -735,8 +722,8 @@ function renderBarLikePlots({
 
   const plotEntriesInput = timing.time(
     "bar plot entry input",
-    () => getNumericPlotEntriesInput({
-      metricPaths,
+    () => buildNumericPlotEntriesInput({
+      metricType,
       plotGroups,
       groupBarFields,
       categoryFields,

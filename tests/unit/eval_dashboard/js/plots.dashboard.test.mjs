@@ -376,6 +376,57 @@ test("dashboard render adapter renders bar-like plot cards", () => {
 });
 
 /**
+ * Verify numeric path discovery cannot leak metrics from unselected evaluation groups.
+ */
+test("dashboard numeric plots discover metrics only from selected plot groups", () => {
+  const documentLike = createDocumentStub();
+  const dom = createPlotDom(documentLike);
+  const state = createPlotState();
+  const selectedEvaluation = {
+    runDir: "run-a",
+    data: { no_error: 100 },
+  };
+  const unselectedEvaluation = {
+    runDir: "run-b",
+    data: { no_error: 90, ValueError: 10 },
+  };
+  const evaluationContext = {
+    experimentEvaluations: [selectedEvaluation, unselectedEvaluation],
+    evalTabState: { groupByFields: [] },
+  };
+
+  renderEvaluationPlotsForDashboard({
+    state,
+    dom,
+    activeExperiment: "experiment/a",
+    evaluationContext,
+    documentLike,
+    requestAnimationFrameLike: (callback) => callback(),
+    plotTooltipHandlers: { show: () => {}, move: () => {}, hide: () => {} },
+    getSelectedPredictionGroups: () => [{}],
+    getSelectedEvaluationGroups: () => [{ evaluations: [selectedEvaluation] }],
+    getMetricTypeForEvaluationContext: () => "ErrorCollector",
+    getPlotGroups: () => ({
+      fields: [],
+      groups: [{ groupId: "selected", values: {}, evaluations: [selectedEvaluation] }],
+    }),
+    getEvaluationEffectiveValue: () => null,
+    getEvaluationExperiment: () => "experiment/a",
+    displayPlotGroupFieldName: (field) => field,
+    displayGroupFieldName: (field) => field,
+    getPlotDisplayLabel: (label) => label,
+    getPlotTitleLabel: (entry) => entry.metricLabel,
+    rerenderEvaluationPlots: () => {},
+  });
+
+  assert.equal(state.activeEvalPlotTab, "total");
+  assert.deepEqual(
+    state.activePlotDownloadData.plots.map((plot) => plot.metadata.metricLabel),
+    ["no_error"]
+  );
+});
+
+/**
  * Verify the dashboard render adapter routes confusion-matrix plots through the extracted branch.
  */
 test("dashboard render adapter renders confusion-matrix plot cards", () => {

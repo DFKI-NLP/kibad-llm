@@ -41,7 +41,7 @@ function styleErrorBarSegment(line) {
  * F1 micro multi-field plots need a special suffix-tab title so the figure
  * title stays stable while tabs expose the leaf metric names.
  *
- * @param {object} plotEntry - Plot entry created by buildPlotEntries.
+ * @param {object} plotEntry - Numeric plot entry.
  * @param {string} metricType - Metric type for special title handling.
  * @param {object} [options] - Label and tab display options.
  * @returns {string} Display title label.
@@ -72,6 +72,42 @@ function getNumericMetricPathKey(parts) {
 }
 
 /**
+ * Defaults that are semantically valid when a numeric metric path is absent.
+ *
+ * ErrorCollector output is sparse: counters with zero occurrences are omitted.
+ * Other numeric metric types must provide every discovered path explicitly.
+ */
+const NUMERIC_METRIC_MISSING_DEFAULTS = new Map([
+  ["ErrorCollector", 0],
+]);
+
+/**
+ * Resolves one numeric plotting sample under the metric type's missing-value contract.
+ *
+ * @param {object} evaluation - Source evaluation record.
+ * @param {object} metricPath - Prepared metric path descriptor.
+ * @param {string} metricType - Numeric metric implementation type.
+ * @returns {number} Finite numeric sample value.
+ * @throws {Error} If a required path is absent.
+ */
+function getNumericMetricSampleValue(evaluation, metricPath, metricType) {
+  const values = prepareNumericMetricEvaluationData(evaluation).values;
+  if (values.has(metricPath.key)) {
+    return values.get(metricPath.key);
+  }
+
+  if (NUMERIC_METRIC_MISSING_DEFAULTS.has(metricType)) {
+    return NUMERIC_METRIC_MISSING_DEFAULTS.get(metricType);
+  }
+
+  throw new Error(
+    `Numeric metric ${JSON.stringify(metricPath.label)} is missing from evaluation ` +
+    `${JSON.stringify(evaluation?.runDir || "(unknown)")} and metric type ` +
+    `${JSON.stringify(metricType)} has no missing-value default.`
+  );
+}
+
+/**
  * Recursively collects numeric metric paths and values for one evaluation.
  *
  * This is the per-evaluation preparation step behind numeric plots: it records
@@ -83,6 +119,7 @@ function getNumericMetricPathKey(parts) {
  * @param {Map<string, object>} [metricPaths] - Path accumulator keyed by encoded path.
  * @param {Map<string, number>} [values] - Numeric value accumulator keyed by encoded path.
  * @returns {{metricPaths: Map<string, object>, values: Map<string, number>}} Prepared numeric data.
+ * @throws {Error} If a numeric leaf is not finite.
  */
 function collectNumericMetricLeafData(value, parts = [], metricPaths = new Map(), values = new Map()) {
   if (!value || typeof value !== "object") {
@@ -90,7 +127,12 @@ function collectNumericMetricLeafData(value, parts = [], metricPaths = new Map()
   }
   for (const [key, child] of Object.entries(value)) {
     const pathParts = [...parts, key];
-    if (typeof child === "number" && Number.isFinite(child)) {
+    if (typeof child === "number") {
+      if (!Number.isFinite(child)) {
+        throw new Error(
+          `Numeric metric ${JSON.stringify(pathParts.join("."))} must be finite.`
+        );
+      }
       const pathKey = getNumericMetricPathKey(pathParts);
       metricPaths.set(pathKey, {
         key: pathKey,
@@ -141,7 +183,7 @@ export function prepareNumericMetricEvaluationData(evaluation) {
  * @param {Array<object>} evaluations - Evaluation records.
  * @returns {Array<object>} Sorted metric path records.
  */
-export function collectPreparedNumericMetricPaths(evaluations) {
+function collectPreparedNumericMetricPaths(evaluations) {
   const metricPaths = new Map();
   for (const evaluation of evaluations || []) {
     for (const [key, metricPath] of prepareNumericMetricEvaluationData(evaluation).metricPaths) {
@@ -172,46 +214,31 @@ function splitMetricLabelAtLastDot(label) {
 }
 
 /**
- * Converts metric paths and evaluation groups into sample-only numeric plot input.
+ * Converts prepared metric paths and evaluation groups into sample-only entries.
  *
- * Rendering and data download both need the same grouped sample data. Keeping
- * this step separate from mean/std calculation makes numeric plots follow the
- * same pre-aggregation data flow as confusion and TP/FP/FN matrices.
- * The resulting entries are the shared boundary before render-only statistics
- * are added.
+ * Metric paths and plot groups must represent the same selected evaluation
+ * population. Keeping this helper private prevents callers from supplying
+ * paths discovered from a different population.
  *
- * @param {object} options - Plot entry input construction inputs.
+ * @param {object} options - Prepared paths and plot grouping inputs.
  * @returns {Array<object>} Plot entries whose points contain raw samples only.
  */
-export function getNumericPlotEntriesInput({
+function buildNumericPlotEntriesForMetricPaths({
+  metricType,
   metricPaths,
   plotGroups,
   groupBarFields,
   categoryFields,
-  getGroupLabel = getGroupLabelForFields,
-  displayGroupFieldName = (field) => field,
+  getGroupLabel,
+  displayGroupFieldName,
 }) {
   const entries = [];
   for (const metricPath of metricPaths) {
-    const metricPathKey = metricPath.key;
-    if (!metricPathKey) {
-      throw new Error(`Numeric metric path ${JSON.stringify(metricPath?.label || "(unknown)")} is missing key.`);
-    }
-    const metricRoot = metricPath.root;
-    if (!metricRoot) {
-      throw new Error(`Numeric metric path ${JSON.stringify(metricPath?.label || "(unknown)")} is missing root.`);
-    }
     const points = [];
     plotGroups.forEach((group, index) => {
-      const samples = group.evaluations
-        .map((evaluation) => {
-          const value = prepareNumericMetricEvaluationData(evaluation).values.get(metricPathKey);
-          if (!Number.isFinite(value)) {
-            return null;
-          }
-          return value;
-        })
-        .filter((sample) => sample !== null);
+      const samples = (group.evaluations || []).map((evaluation) =>
+        getNumericMetricSampleValue(evaluation, metricPath, metricType)
+      );
       if (!samples.length) {
         return;
       }
@@ -241,9 +268,54 @@ export function getNumericPlotEntriesInput({
       continue;
     }
     const split = splitMetricLabelAtLastDot(metricPath.label);
-    entries.push({ metricLabel: metricPath.label, metricRoot, points, ...split });
+    entries.push({
+      metricLabel: metricPath.label,
+      metricRoot: metricPath.root,
+      points,
+      ...split,
+    });
   }
   return entries;
+}
+
+/**
+ * Builds sample-only numeric plot input from the selected plot groups.
+ *
+ * Rendering and data download both need the same grouped sample data. Keeping
+ * this step separate from mean/std calculation makes numeric plots follow the
+ * same pre-aggregation data flow as confusion and TP/FP/FN matrices.
+ *
+ * Metric-path discovery is part of this boundary and uses exactly the
+ * evaluations contained in `plotGroups`. This guarantees that discovered
+ * metrics and aligned samples always describe the same selected population.
+ *
+ * @param {object} options - Plot entry input construction inputs.
+ * @returns {Array<object>} Plot entries whose points contain raw samples only.
+ */
+export function buildNumericPlotEntriesInput({
+  metricType,
+  plotGroups,
+  groupBarFields,
+  categoryFields,
+  getGroupLabel = getGroupLabelForFields,
+  displayGroupFieldName = (field) => field,
+}) {
+  if (!metricType) {
+    throw new Error("Numeric plot entry construction requires a metric type.");
+  }
+  const selectedEvaluations = (plotGroups || [])
+    .flatMap((group) => group.evaluations || []);
+  const metricPaths = collectPreparedNumericMetricPaths(selectedEvaluations);
+
+  return buildNumericPlotEntriesForMetricPaths({
+    metricType,
+    metricPaths,
+    plotGroups: plotGroups || [],
+    groupBarFields: groupBarFields || [],
+    categoryFields: categoryFields || [],
+    getGroupLabel,
+    displayGroupFieldName,
+  });
 }
 
 /**
@@ -291,7 +363,7 @@ export function buildJsonSafeNumericPlottingData(plotEntry) {
  * Rendering consumes the derived entries; downloads continue to consume the
  * sample-only input entries.
  *
- * @param {Array<object>} plotEntriesInput - Output of getNumericPlotEntriesInput.
+ * @param {Array<object>} plotEntriesInput - Output of buildNumericPlotEntriesInput.
  * @returns {Array<object>} Plot entries with mean/std point data for rendering.
  */
 export function getNumericPlotEntriesFromInput(plotEntriesInput) {
@@ -316,18 +388,17 @@ export function getNumericPlotEntriesFromInput(plotEntriesInput) {
 }
 
 /**
- * Converts metric paths and evaluation groups into plottable bar entries.
+ * Builds render-ready numeric entries from selected plot groups.
  *
- * This compatibility wrapper preserves the older public API while the
- * dashboard uses the split input/from-input helpers to keep download data
- * pre-aggregation.
- * New code should prefer the split helpers when it needs access to raw samples.
+ * This convenience wrapper applies render-only mean/std aggregation directly.
+ * Callers that also need download data should retain the sample-only output of
+ * `buildNumericPlotEntriesInput()` and aggregate it separately.
  *
  * @param {object} options - Plot entry construction inputs.
  * @returns {Array<object>} Plot entries with mean/std point data.
  */
 export function buildPlotEntries(options) {
-  return getNumericPlotEntriesFromInput(getNumericPlotEntriesInput(options));
+  return getNumericPlotEntriesFromInput(buildNumericPlotEntriesInput(options));
 }
 
 /**

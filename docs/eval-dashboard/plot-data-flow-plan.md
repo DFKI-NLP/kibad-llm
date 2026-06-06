@@ -120,9 +120,9 @@ The shared bar/error plotting path now uses the same preparation model for numer
 - the numeric metric path metadata
 - the flat numeric value lookup keyed by the encoded metric path
 
-The prepared result is stored at `evaluation.dataPrepared.numericMetrics`. Bar/error metric path discovery now collects the metric-path union from this prepared data, and `buildPlotEntries()` reads the same prepared values when calculating mean/std points. Each point carries JSON-friendly `samples` as compact numeric value arrays, which the `Download data` action can expose directly without render-helper metadata.
+The prepared result is stored at `evaluation.dataPrepared.numericMetrics`. `buildNumericPlotEntriesInput()` discovers the metric-path union from the evaluations in the selected plot groups and reads the same prepared values to build aligned, pre-aggregation samples. Missing numeric paths follow an explicit metric-type contract: sparse `ErrorCollector` counters default to zero, while metric types without a declared missing-value default fail loudly. Numeric leaves must be finite; nonnumeric content is not discovered as numeric metric data. Each point carries JSON-friendly `samples` as compact numeric value arrays, which the `Download data` action can expose directly without render-helper metadata.
 
-This step keeps the public aggregation APIs unchanged. Cross-run alignment, mean/std calculation, TP/FP/FN outcome counting, and threshold filtering still run per active plot. The cache only removes repeated per-evaluation field extraction, numeric metric-data walks, confusion sparse-map construction, and TP/FP/FN collector normalization/state-map construction.
+Cross-run alignment, mean/std calculation, TP/FP/FN outcome counting, and threshold filtering still run per active plot. The numeric pre-aggregation API now accepts selected plot groups directly so metric discovery and sample construction cannot use different evaluation populations. The cache only removes repeated per-evaluation field extraction, numeric metric-data walks, confusion sparse-map construction, and TP/FP/FN collector normalization/state-map construction.
 
 Focused DOM-free tests cover both cache paths:
 
@@ -174,7 +174,7 @@ The dashboard now keeps the active plot tab's download source in `state.activePl
 
 The export is intentionally built from the same plot data path used for rendering:
 
-- numeric bar/error plots use `getNumericPlotEntriesInput()` for grouped sample data; rendering adds mean/std with `getNumericPlotEntriesFromInput()`, while download data uses the active tab's sample-only input entries
+- numeric bar/error plots use `buildNumericPlotEntriesInput()` for selected grouped sample data; rendering adds mean/std with `getNumericPlotEntriesFromInput()`, while download data uses the active tab's sample-only input entries
 - confusion matrices use `getConfusionMatrixAggregationInput()` for the shared rows, columns, and per-evaluation cell maps; rendering aggregates and threshold-filters that input with `getConfusionMatrixAggregationFromInput()`, while download data intentionally exports the unfiltered pre-aggregation input
 - TP/FP/FN matrices use `getTpFpFnAggregationInput()` for the shared rows, columns, and per-evaluation outcome maps; rendering aggregates and threshold-filters that input with `getTpFpFnAggregationFromInput()`, while download data intentionally exports the unfiltered pre-aggregation input
 
@@ -249,7 +249,7 @@ Matrix-like exports use the same envelope, but keep matrix metadata in `metadata
 }
 ```
 
-Numeric exports embed metadata in `metadata` and sample-only pre-aggregation data in `data.points`. During rendering, numeric plot sources store the active tab's sample-only `getNumericPlotEntriesInput()` entries as `dataSource`; `downloadActivePlotData()` converts those entries with `buildJsonSafeNumericPlottingData()`.
+Numeric exports embed metadata in `metadata` and sample-only pre-aggregation data in `data.points`. During rendering, numeric plot sources store the active tab's sample-only `buildNumericPlotEntriesInput()` entries as `dataSource`; `downloadActivePlotData()` converts those entries with `buildJsonSafeNumericPlottingData()`.
 
 Confusion-matrix exports use one plot object per visible heatmap. During rendering, each source plot embeds allowlisted `metadata` without `collections` and keeps the raw `getConfusionMatrixAggregationInput()` result as `dataSource`. On download, `buildJsonSafeMatrixPlottingData()` converts each sparse cell `Map` to an array of `[cellKey, value]` pairs because JSON does not serialize `Map` entries. These entries intentionally do not add per-run metadata.
 
