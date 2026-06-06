@@ -52,7 +52,7 @@ test("shared matrix helpers build download metadata", () => {
     }),
     {
       label: "model=a",
-      fieldLabel: "field_a",
+      field_label: "field_a",
     }
   );
 });
@@ -66,22 +66,22 @@ test("shared matrix helpers serialize aligned run directories", () => {
       rows: ["actual"],
       cols: ["predicted"],
       runDirs: ["run-a"],
-      evaluationCells: [new Map([["actual|#|predicted", 2]])],
+      cells: [new Map([["actual|#|predicted", 2]])],
     }),
     {
       rows: ["actual"],
-      cols: ["predicted"],
-      runDirs: ["run-a"],
-      evaluationCells: [[["actual|#|predicted", 2]]],
+      columns: ["predicted"],
+      run_dirs: ["run-a"],
+      cells: [[["actual|#|predicted", 2]]],
     }
   );
 
   assert.throws(
     () => buildJsonSafeMatrixPlottingData({
       runDirs: ["run-a"],
-      evaluationCells: [],
+      cells: [],
     }),
-    /runDirs\.length \(1\) to equal evaluationCells\.length \(0\)/
+    /runDirs\.length \(1\) to equal cells\.length \(0\)/
   );
 });
 

@@ -281,7 +281,7 @@ function prepareTpFpFnEvaluationData(evaluation, normalizedFieldLabel) {
  *
  * @param {Array<object>} experimentEvaluations - TP/FP/FN collection views.
  * @param {string} fieldLabel - Metric field to align.
- * @returns {{rows: Array<string>, cols: Array<string>, runDirs: Array<string>, evaluationCells: Array<Map<string, string>>}} Aligned aggregation inputs.
+ * @returns {{rows: Array<string>, cols: Array<string>, runDirs: Array<string>, cells: Array<Map<string, string>>}} Aligned aggregation inputs.
  */
 export function getTpFpFnAggregationInput(experimentEvaluations, fieldLabel) {
   const normalizedFieldLabel = normalizeValue(fieldLabel).trim();
@@ -291,7 +291,7 @@ export function getTpFpFnAggregationInput(experimentEvaluations, fieldLabel) {
   const rowLabels = new Set();
   const colLabels = new Set();
   const runDirs = [];
-  const evaluationCells = [];
+  const cells = [];
 
   for (const evaluation of experimentEvaluations) {
     const prepared = prepareTpFpFnEvaluationData(evaluation, normalizedFieldLabel);
@@ -302,19 +302,19 @@ export function getTpFpFnAggregationInput(experimentEvaluations, fieldLabel) {
       colLabels.add(label);
     }
     runDirs.push(getRequiredPlotRunDir(evaluation, "TpFpFnCollector aggregation"));
-    evaluationCells.push(prepared.cells);
+    cells.push(prepared.cells);
   }
   assertAlignedArrayLengths(
     "TpFpFnCollector aggregation",
     "runDirs",
     runDirs,
-    "evaluationCells",
-    evaluationCells
+    "cells",
+    cells
   );
 
   const rows = Array.from(rowLabels).sort((a, b) => plotSortCollator.compare(a, b));
   const cols = Array.from(colLabels).sort((a, b) => plotSortCollator.compare(a, b));
-  return { rows, cols, runDirs, evaluationCells };
+  return { rows, cols, runDirs, cells };
 }
 
 /**
@@ -329,21 +329,21 @@ export function getTpFpFnAggregationInput(experimentEvaluations, fieldLabel) {
  * @returns {object} Aggregated rows, columns, counts, and aligned source data.
  */
 export function getTpFpFnAggregationFromInput(aggregationInput) {
-  const { rows, cols, runDirs, evaluationCells } = aggregationInput;
+  const { rows, cols, runDirs, cells: inputCells } = aggregationInput;
   assertAlignedArrayLengths(
     "TpFpFnCollector aggregation input",
     "runDirs",
     runDirs,
-    "evaluationCells",
-    evaluationCells
+    "cells",
+    inputCells
   );
-  const cells = new Map();
+  const aggregatedCells = new Map();
 
   for (const row of rows) {
     for (const col of cols) {
       const key = getMatrixCellKey(row, col);
       const counts = { tp: 0, fp: 0, fn: 0, empty: 0 };
-      for (const cellMap of evaluationCells) {
+      for (const cellMap of inputCells) {
         const outcome = cellMap.get(key);
         if (outcome === undefined) {
           counts.empty += 1;
@@ -351,7 +351,7 @@ export function getTpFpFnAggregationFromInput(aggregationInput) {
         }
         counts[outcome] += 1;
       }
-      cells.set(key, {
+      aggregatedCells.set(key, {
         counts,
         presentCount: counts.tp + counts.fp + counts.fn,
       });
@@ -361,10 +361,8 @@ export function getTpFpFnAggregationFromInput(aggregationInput) {
   return {
     rows,
     cols,
-    cells,
-    totalEvaluations: evaluationCells.length,
-    runDirs: [...runDirs],
-    evaluationCells,
+    cells: aggregatedCells,
+    totalEvaluations: inputCells.length,
   };
 }
 
@@ -543,20 +541,20 @@ export function buildTpFpFnCellTooltipLines(row, col, details, precision) {
  * @param {string} row - Document id.
  * @param {string} col - Label value.
  * @param {object} details - Output of buildTpFpFnCellDetails.
- * @param {Array<Map<string, string>>} evaluationCells - Sparse outcomes by evaluation.
+ * @param {Array<Map<string, string>>} cells - Sparse outcomes by run.
  * @param {Array<string>} runDirs - Run directory for each evaluation.
  * @returns {object} Clipboard JSON payload.
  */
-export function buildTpFpFnCellClipboardPayload(row, col, details, evaluationCells, runDirs) {
+export function buildTpFpFnCellClipboardPayload(row, col, details, cells, runDirs) {
   assertAlignedArrayLengths(
     "TpFpFnCollector clipboard payload",
     "runDirs",
     runDirs,
-    "evaluationCells",
-    evaluationCells
+    "cells",
+    cells
   );
   const key = getMatrixCellKey(row, col);
-  const values = evaluationCells.map((cellMap) => cellMap.get(key) ?? "empty");
+  const values = cells.map((cellMap) => cellMap.get(key) ?? "empty");
 
   return {
     document_id: row,
@@ -599,13 +597,14 @@ export function createTpFpFnLegendElement({ documentLike = globalThis.document }
  * dependency-injected for tests. Each matrix cell uses three mini-cells so TP,
  * FP, and FN shares remain visible at the same document/label coordinate.
  *
- * @param {object} options - Aggregation, precision, tooltip handlers, clipboard writer, and DOM dependencies.
+ * @param {object} options - Aggregation, aligned source input, interaction handlers, and DOM dependencies.
  * @returns {SVGSVGElement} Rendered combined TP/FP/FN matrix SVG.
  */
 export function createTpFpFnCombinedMatrixSvg({
   documentLike = globalThis.document,
   requestAnimationFrameLike = globalThis.requestAnimationFrame,
   aggregation,
+  aggregationInput,
   precision,
   getDisplayLabel = (label) => label,
   showTooltip,
@@ -614,7 +613,8 @@ export function createTpFpFnCombinedMatrixSvg({
   writeTextToClipboard,
   consoleLike = globalThis.console,
 }) {
-  const { rows, cols, cells, totalEvaluations, runDirs, evaluationCells } = aggregation;
+  const { rows, cols, cells, totalEvaluations } = aggregation;
+  const { runDirs, cells: inputCells } = aggregationInput;
   const miniCellWidth = 18;
   const miniCellHeight = 18;
   const miniGap = 2;
@@ -745,7 +745,7 @@ export function createTpFpFnCombinedMatrixSvg({
           row,
           col,
           details,
-          evaluationCells,
+          inputCells,
           runDirs
         );
         try {

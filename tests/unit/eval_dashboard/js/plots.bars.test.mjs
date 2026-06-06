@@ -182,10 +182,10 @@ test("bar plot helpers build compact JSON-safe numeric plotting data", () => {
     {
       points: [{
         category: "model=a",
-        displayCategory: "Model A",
+        display_category: "Model A",
         series: "seed=1",
-        displaySeries: "Seed 1",
-        runDirs: ["run-a", "run-b"],
+        display_series: "Seed 1",
+        run_dirs: ["run-a", "run-b"],
         samples: [0.75, 0.81],
       }],
     }
@@ -213,7 +213,7 @@ test("bar plot helpers build numeric download metadata", () => {
       internalField: "must not leak",
     }),
     {
-      metricLabel: "score.mean",
+      metric_label: "score.mean",
     }
   );
 });

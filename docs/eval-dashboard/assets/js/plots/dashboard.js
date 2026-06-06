@@ -646,6 +646,7 @@ function renderTpFpFnPlots({
         documentLike,
         requestAnimationFrameLike,
         aggregation,
+        aggregationInput,
         precision: state.plotRoundingPrecision,
         getDisplayLabel: getPlotDisplayLabel,
         showTooltip: plotTooltipHandlers.show,

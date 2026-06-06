@@ -204,16 +204,16 @@ The current numeric shape stays close to the bar/error plotting data. It exports
   "plots": [
     {
       "metadata": {
-        "metricLabel": "score.mean"
+        "metric_label": "score.mean"
       },
       "data": {
         "points": [
           {
             "category": "model=a",
-            "displayCategory": "Model A",
+            "display_category": "Model A",
             "series": "seed=1",
-            "displaySeries": "Seed 1",
-            "runDirs": ["run-a", "run-b"],
+            "display_series": "Seed 1",
+            "run_dirs": ["run-a", "run-b"],
             "samples": [0.75, 0.81]
           }
         ]
@@ -234,13 +234,13 @@ Matrix-like exports use the same envelope, but keep matrix metadata in `metadata
     {
       "metadata": {
         "label": "model=a",
-        "fieldLabel": "taxa.german_name"
+        "field_label": "taxa.german_name"
       },
       "data": {
         "rows": ["Birke", "Eiche"],
-        "cols": ["Birke", "UNDETECTED"],
-        "runDirs": ["run-a", "run-b"],
-        "evaluationCells": [
+        "columns": ["Birke", "UNDETECTED"],
+        "run_dirs": ["run-a", "run-b"],
+        "cells": [
           [
             ["Birke|#|Birke", 12],
             ["Eiche|#|UNDETECTED", 1]
@@ -255,11 +255,11 @@ Matrix-like exports use the same envelope, but keep matrix metadata in `metadata
 }
 ```
 
-Numeric exports embed metadata in `metadata` and sample-only pre-aggregation data in `data.points`. Each point keeps `runDirs` parallel to `samples`, so `runDirs[i]` identifies the evaluation that produced `samples[i]`. During rendering, numeric plot sources store the active tab's sample-only `buildNumericPlotEntriesInput()` entries as `dataSource`; `downloadActivePlotData()` converts those entries with `buildJsonSafeNumericPlottingData()`.
+Numeric exports embed metadata in `metadata` and sample-only pre-aggregation data in `data.points`. Each point keeps public `run_dirs` parallel to `samples`, so `run_dirs[i]` identifies the evaluation that produced `samples[i]`. During rendering, numeric plot sources store the active tab's sample-only `buildNumericPlotEntriesInput()` entries as `dataSource`; `downloadActivePlotData()` converts those entries with `buildJsonSafeNumericPlottingData()`.
 
-Confusion-matrix exports use one plot object per visible heatmap. Matrix `runDirs` stay parallel to `evaluationCells`, so `runDirs[i]` identifies `evaluationCells[i]`. During rendering, each source plot embeds allowlisted `metadata` without `collections` and keeps the raw `getConfusionMatrixAggregationInput()` result as `dataSource`. On download, `buildJsonSafeMatrixPlottingData()` converts each sparse cell `Map` to an array of `[cellKey, value]` pairs because JSON does not serialize `Map` entries.
+Confusion-matrix exports use one plot object per visible heatmap. Matrix `run_dirs` stay parallel to `cells`, so `run_dirs[i]` identifies `cells[i]`. During rendering, each source plot embeds allowlisted `metadata` without `collections` and keeps the raw `getConfusionMatrixAggregationInput()` result as `dataSource`. On download, `buildJsonSafeMatrixPlottingData()` converts each sparse cell `Map` to an array of `[cellKey, value]` pairs because JSON does not serialize `Map` entries.
 
-TP/FP/FN exports use the same matrix alignment contract. `getTpFpFnAggregationInput()` carries `runDirs` for both downloads and cell tooltip/copy summaries, preserving the original run identity for every outcome. Each sparse cell value is exactly one of `"tp"`, `"fp"`, or `"fn"`; a missing entry represents `empty`. On download, `buildJsonSafeMatrixPlottingData()` converts each sparse outcome `Map` to an array of `[cellKey, outcome]` pairs.
+TP/FP/FN exports use the same matrix alignment contract. `getTpFpFnAggregationInput()` carries internal `runDirs` for both downloads and cell tooltip/copy summaries, preserving the original run identity for every outcome. Each sparse cell value is exactly one of `"tp"`, `"fp"`, or `"fn"`; a missing entry represents `empty`. On download, `buildJsonSafeMatrixPlottingData()` converts each sparse outcome `Map` to an array of `[cellKey, outcome]` pairs.
 
 Matrix download data intentionally remains pre-filter and sparse:
 
@@ -297,12 +297,12 @@ TODO:
         - [x] `metricLabel` and `metricPath` in each sample, which are also redundant with the plot entry and with each other
         - [x] remove `runDir` from each sample
 - [ ] (P2) Shared matrix tab/card rendering. renderConfusionMatrixPlots() and renderTpFpFnPlots() could move into their respective modules, but I would not do that blindly. They need many dashboard dependencies. Moving them as-is would make confusion.js and tpfpfn.js know too much about dashboard state/DOM wiring. A better step than moving both full matrix renderers would be extracting a renderMatrixPlotTabsAndGrid() adapter, analogous to renderPlotTabsAndGrid(), probably into shared-matrix.js or a new matrix-render.js. Confusion and TP/FP/FN could pass callbacks for aggregation/filtering/SVG/title/legend. This is only worth it if it stays simple.
-- [x] (P1) add aligned run directories to plot data: numeric points keep `runDirs` parallel to `samples`; matrix plots keep `runDirs` parallel to `evaluationCells`.
+- [x] (P1) add aligned run directories to plot data: numeric points keep `runDirs` parallel to `samples`; matrix plots keep `runDirs` parallel to `cells`.
 - [x] optimization: call buildJsonSafeMatrixPlottingData / buildJsonSafeNumericPlottingData in downloadActivePlotData instead of during rendering in dashboard.js
 - [x] (P0) restore TP/FP/FN cell-summary run directories by carrying `runDirs` through the shared aggregation input and reusing them for tooltip/copy payloads.
-    - [x] Keep only counts and `presentCount` in aggregated cells. Preserve `evaluationCells` once on the aggregation and reconstruct one cell's aligned outcomes only on click.
+    - [x] Keep only counts and `presentCount` in aggregated cells. Preserve source `cells` on the aggregation input and reconstruct one cell's aligned outcomes only on click.
 - [x] (P1) add `"plot_tab_variant"` (values: `"prefix"`, `"suffix"`, `"error_section"`, `"metric_field"`, or `"prediction_group"`) to root level download data so downstream consumers can disambiguate grouping modes without guessing from the plot tab name. Prediction-group downloads expose the raw group ID as `"plot_tab"` instead of the internal tab-map key.
-- [ ] (P2) improve keys in downloaded plot data: rename "evaluationCells" to simply "cells", should "runDirs" better be "run_dirs"? Same for "fieldLabel". Compare with other keys in the export and consider a consistent style (e.g. camelCase vs snake_case) for the public JSON schema
+- [x] (P2) use consistent snake_case keys in downloaded plot data and rename internal matrix input `evaluationCells` to `cells`.
 
 ### 4. Introduce a DOM-Free Plot Dataset Module
 

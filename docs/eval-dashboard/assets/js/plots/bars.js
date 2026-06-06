@@ -339,11 +339,11 @@ export function buildNumericPlotEntriesInput({
  * into the downloaded JSON when the internal entry shape changes.
  *
  * @param {object} plotEntry - Numeric plot input entry.
- * @returns {{metricLabel: string}} Public numeric plot metadata.
+ * @returns {{metric_label: string}} Public numeric plot metadata.
  */
 export function buildNumericDownloadMetadata(plotEntry = {}) {
   return {
-    metricLabel: plotEntry.metricLabel,
+    metric_label: plotEntry.metricLabel,
   };
 }
 
@@ -371,10 +371,10 @@ export function buildJsonSafeNumericPlottingData(plotEntry) {
       );
       return {
         category: point.category,
-        displayCategory: point.displayCategory,
+        display_category: point.displayCategory,
         series: point.series,
-        displaySeries: point.displaySeries,
-        runDirs,
+        display_series: point.displaySeries,
+        run_dirs: runDirs,
         samples,
       };
     }),

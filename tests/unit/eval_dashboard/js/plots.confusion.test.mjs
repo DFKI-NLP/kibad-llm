@@ -143,8 +143,8 @@ test("confusion helpers build reusable aligned aggregation inputs", () => {
   assert.deepEqual(input.rows, ["actual", "filtered"]);
   assert.deepEqual(input.cols, ["hidden", "predicted"]);
   assert.deepEqual(input.runDirs, ["source-a", "source-b"]);
-  assert.equal(input.evaluationCells[0].get("actual|#|predicted"), 2);
-  assert.equal(input.evaluationCells[1].get("actual|#|predicted"), 4);
+  assert.equal(input.cells[0].get("actual|#|predicted"), 2);
+  assert.equal(input.cells[1].get("actual|#|predicted"), 4);
   assert.equal(aggregation.cells.get("actual|#|predicted").mean, 3);
   assert.equal(aggregation.cells.get("filtered|#|hidden").mean, 2.5);
 
@@ -153,9 +153,9 @@ test("confusion helpers build reusable aligned aggregation inputs", () => {
       rows: [],
       cols: [],
       runDirs: ["source-a"],
-      evaluationCells: [],
+      cells: [],
     }),
-    /runDirs\.length \(1\) to equal evaluationCells\.length \(0\)/
+    /runDirs\.length \(1\) to equal cells\.length \(0\)/
   );
 });
 

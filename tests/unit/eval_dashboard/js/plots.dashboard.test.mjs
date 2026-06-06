@@ -139,7 +139,7 @@ test("dashboard data download helper exports active plot data as JSON", async ()
     plot_tab: "score",
     plot_tab_variant: "prefix",
     plots: [{
-      metadata: { metricLabel: "score.mean" },
+      metadata: { metric_label: "score.mean" },
       dataSource: {
         points: [{
           category: "model=a",
@@ -157,14 +157,14 @@ test("dashboard data download helper exports active plot data as JSON", async ()
     plot_tab: "score",
     plot_tab_variant: "prefix",
     plots: [{
-      metadata: { metricLabel: "score.mean" },
+      metadata: { metric_label: "score.mean" },
       data: {
         points: [{
           category: "model=a",
-          displayCategory: "Model A",
+          display_category: "Model A",
           series: "__single__",
-          displaySeries: "__single__",
-          runDirs: ["run-a"],
+          display_series: "__single__",
+          run_dirs: ["run-a"],
           samples: [0.75],
         }],
       },
@@ -347,7 +347,7 @@ test("dashboard render adapter renders bar-like plot cards", () => {
   assert.equal(state.activePlotDownloadData.plot_tab, "score");
   assert.equal(state.activePlotDownloadData.plot_tab_variant, "prefix");
   assert.deepEqual(state.activePlotDownloadData.plots[0].metadata, {
-    metricLabel: "score.mean",
+    metric_label: "score.mean",
   });
   assert.deepEqual(state.activePlotDownloadData.plots[0].dataSource.points, [{
     label: "group 1",
@@ -366,15 +366,15 @@ test("dashboard render adapter renders bar-like plot cards", () => {
     plot_tab_variant: "prefix",
     plots: [{
       metadata: {
-        metricLabel: "score.mean",
+        metric_label: "score.mean",
       },
       data: {
         points: [{
           category: "group 1",
-          displayCategory: "group 1",
+          display_category: "group 1",
           series: "__single__",
-          displaySeries: "__single__",
-          runDirs: ["run-a"],
+          display_series: "__single__",
+          run_dirs: ["run-a"],
           samples: [0.75],
         }],
       },
@@ -432,7 +432,7 @@ test("dashboard numeric plots discover metrics only from selected plot groups", 
   assert.equal(state.activePlotDownloadData.plot_tab, "total");
   assert.equal(state.activePlotDownloadData.plot_tab_variant, "error_section");
   assert.deepEqual(
-    state.activePlotDownloadData.plots.map((plot) => plot.metadata.metricLabel),
+    state.activePlotDownloadData.plots.map((plot) => plot.metadata.metric_label),
     ["no_error"]
   );
 });
@@ -489,21 +489,21 @@ test("dashboard render adapter renders confusion-matrix plot cards", () => {
   assert.equal(state.activePlotDownloadData.plot_tab_variant, "metric_field");
   assert.deepEqual(state.activePlotDownloadData.plots[0].metadata, {
     label: "model=a",
-    fieldLabel: "field_a",
+    field_label: "field_a",
   });
   assert.equal(state.activePlotDownloadData.plots[0].dataSource.rows[0], "actual");
   assert.equal(state.activePlotDownloadData.plots[0].dataSource.cols[0], "predicted");
-  assert.equal(state.activePlotDownloadData.plots[0].dataSource.evaluationCells[0].get("actual|#|predicted"), 2);
+  assert.equal(state.activePlotDownloadData.plots[0].dataSource.cells[0].get("actual|#|predicted"), 2);
   assert.deepEqual(buildJsonSafeActivePlotDownloadData(state.activePlotDownloadData).plots[0], {
     metadata: {
       label: "model=a",
-      fieldLabel: "field_a",
+      field_label: "field_a",
     },
     data: {
       rows: ["actual"],
-      cols: ["predicted"],
-      runDirs: ["run-a"],
-      evaluationCells: [[["actual|#|predicted", 2]]],
+      columns: ["predicted"],
+      run_dirs: ["run-a"],
+      cells: [[["actual|#|predicted", 2]]],
     },
   });
   assert.equal("collections" in state.activePlotDownloadData.plots[0].metadata, false);
@@ -560,9 +560,9 @@ test("dashboard confusion download data keeps unfiltered sparse matrix input", (
   assert.equal(renderedText.includes("filtered"), false);
   assert.deepEqual(buildJsonSafeActivePlotDownloadData(state.activePlotDownloadData).plots[0].data, {
     rows: ["actual", "filtered"],
-    cols: ["hidden", "predicted"],
-    runDirs: ["run-a"],
-    evaluationCells: [[
+    columns: ["hidden", "predicted"],
+    run_dirs: ["run-a"],
+    cells: [[
       ["actual|#|predicted", 2],
       ["filtered|#|hidden", 1],
     ]],
@@ -628,24 +628,24 @@ test("dashboard render adapter renders TP/FP/FN plot cards", () => {
   assert.equal(state.activePlotDownloadData.plot_tab_variant, "prediction_group");
   assert.deepEqual(state.activePlotDownloadData.plots[0].metadata, {
     label: "field_a",
-    fieldLabel: "field_a",
+    field_label: "field_a",
   });
   assert.equal(state.activePlotDownloadData.plots[0].dataSource.rows[0], "doc1");
   assert.equal(state.activePlotDownloadData.plots[0].dataSource.cols[0], "label");
   assert.equal(
-    state.activePlotDownloadData.plots[0].dataSource.evaluationCells[0].get("doc1|#|label"),
+    state.activePlotDownloadData.plots[0].dataSource.cells[0].get("doc1|#|label"),
     "tp"
   );
   assert.deepEqual(buildJsonSafeActivePlotDownloadData(state.activePlotDownloadData).plots[0], {
     metadata: {
       label: "field_a",
-      fieldLabel: "field_a",
+      field_label: "field_a",
     },
     data: {
       rows: ["doc1"],
-      cols: ["label"],
-      runDirs: ["run-a"],
-      evaluationCells: [[["doc1|#|label", "tp"]]],
+      columns: ["label"],
+      run_dirs: ["run-a"],
+      cells: [[["doc1|#|label", "tp"]]],
     },
   });
   assert.equal("collections" in state.activePlotDownloadData.plots[0].metadata, false);
@@ -716,9 +716,9 @@ test("dashboard TP/FP/FN download data keeps unfiltered sparse matrix input", ()
   assert.equal(renderedText.includes("filtered"), false);
   assert.deepEqual(buildJsonSafeActivePlotDownloadData(state.activePlotDownloadData).plots[0].data, {
     rows: ["doc1", "filtered"],
-    cols: ["hidden", "label"],
-    runDirs: ["run-a", "run-b"],
-    evaluationCells: [
+    columns: ["hidden", "label"],
+    run_dirs: ["run-a", "run-b"],
+    cells: [
       [
         ["doc1|#|label", "tp"],
         ["filtered|#|hidden", "fn"],

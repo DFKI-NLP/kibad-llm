@@ -191,7 +191,7 @@ function sortWithForcedLast(values, forcedLast) {
  *
  * @param {Array<object>} experimentEvaluations - Confusion matrix collection views.
  * @param {string} fieldLabel - Metric field to align.
- * @returns {{rows: Array<string>, cols: Array<string>, runDirs: Array<string>, evaluationCells: Array<Map<string, number>>}} Aligned aggregation inputs.
+ * @returns {{rows: Array<string>, cols: Array<string>, runDirs: Array<string>, cells: Array<Map<string, number>>}} Aligned aggregation inputs.
  */
 export function getConfusionMatrixAggregationInput(experimentEvaluations, fieldLabel) {
   const normalizedFieldLabel = normalizeValue(fieldLabel).trim();
@@ -201,7 +201,7 @@ export function getConfusionMatrixAggregationInput(experimentEvaluations, fieldL
   const rowLabels = new Set();
   const colLabels = new Set();
   const runDirs = [];
-  const evaluationCells = [];
+  const cells = [];
 
   for (const evaluation of experimentEvaluations) {
     const prepared = prepareConfusionMatrixEvaluationData(evaluation, normalizedFieldLabel);
@@ -216,19 +216,19 @@ export function getConfusionMatrixAggregationInput(experimentEvaluations, fieldL
     // Store this run's sparse cell map as one sample in the cross-run
     // aggregation.
     runDirs.push(getRequiredPlotRunDir(evaluation, "ConfusionMatrix aggregation"));
-    evaluationCells.push(prepared.cells);
+    cells.push(prepared.cells);
   }
   assertAlignedArrayLengths(
     "ConfusionMatrix aggregation",
     "runDirs",
     runDirs,
-    "evaluationCells",
-    evaluationCells
+    "cells",
+    cells
   );
 
   const rows = sortWithForcedLast(rowLabels, "UNASSIGNABLE");
   const cols = sortWithForcedLast(colLabels, "UNDETECTED");
-  return { rows, cols, runDirs, evaluationCells };
+  return { rows, cols, runDirs, cells };
 }
 
 /**
@@ -243,30 +243,30 @@ export function getConfusionMatrixAggregationInput(experimentEvaluations, fieldL
  * @returns {{rows: Array<string>, cols: Array<string>, cells: Map<string, object>}} Aggregated matrix.
  */
 export function getConfusionMatrixAggregationFromInput(aggregationInput) {
-  const { rows, cols, runDirs, evaluationCells } = aggregationInput;
+  const { rows, cols, runDirs, cells: inputCells } = aggregationInput;
   assertAlignedArrayLengths(
     "ConfusionMatrix aggregation input",
     "runDirs",
     runDirs,
-    "evaluationCells",
-    evaluationCells
+    "cells",
+    inputCells
   );
-  const cells = new Map();
+  const aggregatedCells = new Map();
   for (const row of rows) {
     for (const col of cols) {
       const key = getMatrixCellKey(row, col);
       // Each confusion-matrix cell is aligned across all selected runs. If a
       // run has no explicit count for this actual/predicted pair, it
       // contributes 0 before computing the aggregate.
-      const values = evaluationCells.map((cellMap) => cellMap.get(key) ?? 0);
+      const values = inputCells.map((cellMap) => cellMap.get(key) ?? 0);
       // The displayed value is the population mean and population standard
       // deviation of those aligned per-run counts.
       const stats = meanAndStd(values) || { mean: 0, std: 0 };
-      cells.set(key, stats);
+      aggregatedCells.set(key, stats);
     }
   }
 
-  return { rows, cols, cells };
+  return { rows, cols, cells: aggregatedCells };
 }
 
 /**

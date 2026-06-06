@@ -53,12 +53,12 @@ export function getMatrixCellKey(row, col) {
  * fields cannot leak into the downloaded JSON.
  *
  * @param {object} plotEntry - Matrix plot definition.
- * @returns {{label: string, fieldLabel: string}} Public matrix plot metadata.
+ * @returns {{label: string, field_label: string}} Public matrix plot metadata.
  */
 export function buildMatrixDownloadMetadata(plotEntry = {}) {
   return {
     label: plotEntry.label,
-    fieldLabel: plotEntry.fieldLabel,
+    field_label: plotEntry.fieldLabel,
   };
 }
 
@@ -74,19 +74,19 @@ export function buildMatrixDownloadMetadata(plotEntry = {}) {
  */
 export function buildJsonSafeMatrixPlottingData(aggregationInput) {
   const runDirs = aggregationInput?.runDirs || [];
-  const evaluationCells = aggregationInput?.evaluationCells || [];
+  const cells = aggregationInput?.cells || [];
   assertAlignedArrayLengths(
     "Matrix download data",
     "runDirs",
     runDirs,
-    "evaluationCells",
-    evaluationCells
+    "cells",
+    cells
   );
   return {
     rows: aggregationInput?.rows || [],
-    cols: aggregationInput?.cols || [],
-    runDirs,
-    evaluationCells: evaluationCells.map((cellMap) => {
+    columns: aggregationInput?.cols || [],
+    run_dirs: runDirs,
+    cells: cells.map((cellMap) => {
       // Matrix plotting data uses sparse Maps; JSON needs stable array entries.
       return Array.from(cellMap.entries());
     }),
