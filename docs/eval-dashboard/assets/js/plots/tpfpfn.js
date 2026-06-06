@@ -17,7 +17,11 @@ import {
   isMetricDataRecord,
   scheduleAdaptiveSvgFit,
 } from "./shared.js";
-import { buildMatrixTabMap, getMatrixCellKey } from "./shared-matrix.js";
+import {
+  assertMatrixLabelExcludesKeyDelimiter,
+  buildMatrixTabMap,
+  getMatrixCellKey,
+} from "./shared-matrix.js";
 import { createPlotLegendElement } from "./legend.js";
 
 /**
@@ -53,28 +57,6 @@ export function getTpFpFnCollectionViews(evaluations, options = {}) {
     metricLabel: "TpFpFnCollector",
     ...options,
   }));
-}
-
-/**
- * Converts an outcome key to its display label.
- *
- * Cell summaries and copyable payloads use compact, user-facing outcome labels
- * while the aggregation internals keep lower-case bucket keys.
- *
- * @param {string} outcomeKey - Outcome key such as tp, fp, or fn.
- * @returns {string} Uppercase outcome label.
- */
-function getTpFpFnOutcomeLabel(outcomeKey) {
-  if (outcomeKey === "tp") {
-    return "TP";
-  }
-  if (outcomeKey === "fp") {
-    return "FP";
-  }
-  if (outcomeKey === "fn") {
-    return "FN";
-  }
-  return String(outcomeKey ?? "").toUpperCase();
 }
 
 /**
@@ -228,15 +210,15 @@ function getTpFpFnFieldData(evaluation, normalizedFieldLabel) {
 /**
  * Lazily prepares one evaluation's TP/FP/FN data for aggregation.
  *
- * The prepared shape stores the document-label union and sparse outcome-state
+ * The prepared shape stores the document-label union and sparse outcome
  * lookup for one evaluation/field. Later helpers handle cross-run alignment
  * and outcome counting.
  * Caching this per evaluation avoids rebuilding normalized collectors and
- * sparse state maps when tab maps, download payloads, or filters are recomputed.
+ * sparse outcome maps when tab maps, download payloads, or filters are recomputed.
  *
  * @param {object} evaluation - TP/FP/FN collection view or direct evaluation.
  * @param {string} normalizedFieldLabel - Normalized metric.field label.
- * @returns {{rowLabels: Set<string>, colLabels: Set<string>, cells: Map<string, object>}} Prepared per-evaluation data.
+ * @returns {{rowLabels: Set<string>, colLabels: Set<string>, cells: Map<string, string>}} Prepared per-evaluation data.
  * @throws {Error} If the requested field data violates the TP/FP/FN collector contract.
  */
 function prepareTpFpFnEvaluationData(evaluation, normalizedFieldLabel) {
@@ -255,20 +237,30 @@ function prepareTpFpFnEvaluationData(evaluation, normalizedFieldLabel) {
   const cells = new Map();
   const normalizedData = normalizeTpFpFnCollectorData(rawData);
   for (const [recordId, recordEntry] of Object.entries(normalizedData)) {
+    assertMatrixLabelExcludesKeyDelimiter(
+      recordId,
+      `TpFpFnCollector record id ${JSON.stringify(recordId)}`
+    );
     rowLabels.add(recordId);
-    const entriesByLabel = new Map();
     for (const outcomeKey of TP_FP_FN_KEYS) {
-      const labels = Array.isArray(recordEntry?.[outcomeKey]) ? recordEntry[outcomeKey] : [];
-      for (const label of labels) {
-        colLabels.add(label);
-        if (!entriesByLabel.has(label)) {
-          entriesByLabel.set(label, { tp: false, fp: false, fn: false });
+      for (const label of recordEntry[outcomeKey]) {
+        if (!colLabels.has(label)) {
+          assertMatrixLabelExcludesKeyDelimiter(
+            label,
+            `TpFpFnCollector record ${JSON.stringify(recordId)} label ${JSON.stringify(label)}`
+          );
+          colLabels.add(label);
         }
-        entriesByLabel.get(label)[outcomeKey] = true;
+        const key = getMatrixCellKey(recordId, label);
+        if (cells.has(key)) {
+          const existingOutcome = cells.get(key);
+          throw new Error(
+            `TpFpFnCollector record ${JSON.stringify(recordId)} label ${JSON.stringify(label)} ` +
+            `cannot be both ${JSON.stringify(existingOutcome)} and ${JSON.stringify(outcomeKey)}.`
+          );
+        }
+        cells.set(key, outcomeKey);
       }
-    }
-    for (const [label, rowState] of entriesByLabel.entries()) {
-      cells.set(getMatrixCellKey(recordId, label), rowState);
     }
   }
 
@@ -283,13 +275,13 @@ function prepareTpFpFnEvaluationData(evaluation, normalizedFieldLabel) {
  * Builds aligned per-evaluation inputs for TP/FP/FN aggregation.
  *
  * Rendering and data download both need the same normalized rows, columns, and
- * sparse per-evaluation outcome states. Keeping that setup here prevents a
+ * sparse per-evaluation outcomes. Keeping that setup here prevents a
  * separate download path from re-normalizing collector data.
  * The returned input is the shared pre-aggregation boundary.
  *
  * @param {Array<object>} experimentEvaluations - TP/FP/FN collection views.
  * @param {string} fieldLabel - Metric field to align.
- * @returns {{rows: Array<string>, cols: Array<string>, runDirs: Array<string>, evaluationCells: Array<Map<string, object>>}} Aligned aggregation inputs.
+ * @returns {{rows: Array<string>, cols: Array<string>, runDirs: Array<string>, evaluationCells: Array<Map<string, string>>}} Aligned aggregation inputs.
  */
 export function getTpFpFnAggregationInput(experimentEvaluations, fieldLabel) {
   const normalizedFieldLabel = normalizeValue(fieldLabel).trim();
@@ -330,11 +322,11 @@ export function getTpFpFnAggregationInput(experimentEvaluations, fieldLabel) {
  *
  * This lets callers reuse the already-prepared aggregation input for rendering
  * and download data instead of running the per-evaluation preparation twice.
- * Missing sparse cells become an all-false state so every document/label cell
- * is aligned across the same evaluation count and can report explicit empties.
+ * Missing sparse entries count as empty. Per-run outcomes remain in the shared
+ * sparse evaluation maps and are reconstructed only when a cell is copied.
  *
  * @param {object} aggregationInput - Output of getTpFpFnAggregationInput.
- * @returns {object} Aggregated rows, columns, cell states, counts, and run directories.
+ * @returns {object} Aggregated rows, columns, counts, and aligned source data.
  */
 export function getTpFpFnAggregationFromInput(aggregationInput) {
   const { rows, cols, runDirs, evaluationCells } = aggregationInput;
@@ -350,28 +342,16 @@ export function getTpFpFnAggregationFromInput(aggregationInput) {
   for (const row of rows) {
     for (const col of cols) {
       const key = getMatrixCellKey(row, col);
-      // Align this document/label cell across all selected runs. Missing cells
-      // become an all-false state, so they count as "empty" instead of TP/FP/FN.
-      const rowStates = evaluationCells.map(
-        (cellMap) => cellMap.get(key) || { tp: false, fp: false, fn: false }
-      );
       const counts = { tp: 0, fp: 0, fn: 0, empty: 0 };
-      // Counts are raw run counts: how many selected evaluations marked this
-      // document/label as TP, FP, FN, or none of them.
-      for (const rowState of rowStates) {
-        let rowHasAny = false;
-        for (const outcomeKey of TP_FP_FN_KEYS) {
-          if (rowState[outcomeKey]) {
-            counts[outcomeKey] += 1;
-            rowHasAny = true;
-          }
-        }
-        if (!rowHasAny) {
+      for (const cellMap of evaluationCells) {
+        const outcome = cellMap.get(key);
+        if (outcome === undefined) {
           counts.empty += 1;
+          continue;
         }
+        counts[outcome] += 1;
       }
       cells.set(key, {
-        rowStates,
         counts,
         presentCount: counts.tp + counts.fp + counts.fn,
       });
@@ -384,6 +364,7 @@ export function getTpFpFnAggregationFromInput(aggregationInput) {
     cells,
     totalEvaluations: evaluationCells.length,
     runDirs: [...runDirs],
+    evaluationCells,
   };
 }
 
@@ -461,7 +442,6 @@ export function filterTpFpFnAggregationByTotals(aggregation, minLabelTotal, minD
       filteredCells.set(
         key,
         cells.get(key) || {
-          rowStates: [],
           counts: { tp: 0, fp: 0, fn: 0, empty: 0 },
           presentCount: 0,
         }
@@ -563,22 +543,20 @@ export function buildTpFpFnCellTooltipLines(row, col, details, precision) {
  * @param {string} row - Document id.
  * @param {string} col - Label value.
  * @param {object} details - Output of buildTpFpFnCellDetails.
- * @param {Array<object>} rowStates - Per-evaluation outcome states.
+ * @param {Array<Map<string, string>>} evaluationCells - Sparse outcomes by evaluation.
  * @param {Array<string>} runDirs - Run directory for each evaluation.
  * @returns {object} Clipboard JSON payload.
  */
-export function buildTpFpFnCellClipboardPayload(row, col, details, rowStates, runDirs) {
+export function buildTpFpFnCellClipboardPayload(row, col, details, evaluationCells, runDirs) {
   assertAlignedArrayLengths(
     "TpFpFnCollector clipboard payload",
     "runDirs",
     runDirs,
-    "rowStates",
-    rowStates
+    "evaluationCells",
+    evaluationCells
   );
-  const values = rowStates.map((rowState) => {
-    const outcomes = TP_FP_FN_KEYS.filter((bucket) => rowState[bucket]);
-    return outcomes.map((bucket) => getTpFpFnOutcomeLabel(bucket)).join(", ") || "empty";
-  });
+  const key = getMatrixCellKey(row, col);
+  const values = evaluationCells.map((cellMap) => cellMap.get(key) ?? "empty");
 
   return {
     document_id: row,
@@ -636,7 +614,7 @@ export function createTpFpFnCombinedMatrixSvg({
   writeTextToClipboard,
   consoleLike = globalThis.console,
 }) {
-  const { rows, cols, cells, totalEvaluations, runDirs } = aggregation;
+  const { rows, cols, cells, totalEvaluations, runDirs, evaluationCells } = aggregation;
   const miniCellWidth = 18;
   const miniCellHeight = 18;
   const miniGap = 2;
@@ -708,7 +686,6 @@ export function createTpFpFnCombinedMatrixSvg({
     cols.forEach((col, colIndex) => {
       const key = getMatrixCellKey(row, col);
       const stats = cells.get(key) || {
-        rowStates: Array.from({ length: totalEvaluations }, () => ({ tp: false, fp: false, fn: false })),
         counts: { tp: 0, fp: 0, fn: 0, empty: totalEvaluations },
         presentCount: 0,
       };
@@ -768,7 +745,7 @@ export function createTpFpFnCombinedMatrixSvg({
           row,
           col,
           details,
-          stats.rowStates,
+          evaluationCells,
           runDirs
         );
         try {

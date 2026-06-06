@@ -17,7 +17,11 @@ import {
   getRequiredPlotRunDir,
   isMetricDataRecord,
 } from "./shared.js";
-import { buildMatrixTabMap, getMatrixCellKey } from "./shared-matrix.js";
+import {
+  assertMatrixLabelExcludesKeyDelimiter,
+  buildMatrixTabMap,
+  getMatrixCellKey,
+} from "./shared-matrix.js";
 
 /**
  * Builds confusion-matrix collection views for a list of evaluations.
@@ -114,6 +118,10 @@ function prepareConfusionMatrixEvaluationData(evaluation, normalizedFieldLabel) 
     if (!normalizedActualLabel) {
       throw new Error(`ConfusionMatrix field ${JSON.stringify(normalizedFieldLabel)} contains an empty actual label.`);
     }
+    assertMatrixLabelExcludesKeyDelimiter(
+      actualLabel,
+      `ConfusionMatrix field ${JSON.stringify(normalizedFieldLabel)} actual label ${JSON.stringify(actualLabel)}`
+    );
     if (!isMetricDataRecord(predictedMap)) {
       throw new Error(
         `ConfusionMatrix field ${JSON.stringify(normalizedFieldLabel)} actual label ${JSON.stringify(actualLabel)} must map to object predicted-label data.`
@@ -126,13 +134,19 @@ function prepareConfusionMatrixEvaluationData(evaluation, normalizedFieldLabel) 
           `ConfusionMatrix field ${JSON.stringify(normalizedFieldLabel)} actual label ${JSON.stringify(actualLabel)} contains an empty predicted label.`
         );
       }
+      if (!colLabels.has(predictedLabel)) {
+        assertMatrixLabelExcludesKeyDelimiter(
+          predictedLabel,
+          `ConfusionMatrix field ${JSON.stringify(normalizedFieldLabel)} predicted label ${JSON.stringify(predictedLabel)}`
+        );
+        colLabels.add(predictedLabel);
+      }
       if (!Number.isFinite(rawValue)) {
         throw new Error(
           `ConfusionMatrix field ${JSON.stringify(normalizedFieldLabel)} cell ${JSON.stringify(actualLabel)} -> ${JSON.stringify(predictedLabel)} must be a finite number.`
         );
       }
       rowLabels.add(actualLabel);
-      colLabels.add(predictedLabel);
       cells.set(getMatrixCellKey(actualLabel, predictedLabel), Number(rawValue));
     }
   }

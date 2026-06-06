@@ -619,11 +619,10 @@ test("dashboard render adapter renders TP/FP/FN plot cards", () => {
   });
   assert.equal(state.activePlotDownloadData.plots[0].dataSource.rows[0], "doc1");
   assert.equal(state.activePlotDownloadData.plots[0].dataSource.cols[0], "label");
-  assert.deepEqual(state.activePlotDownloadData.plots[0].dataSource.evaluationCells[0].get("doc1|#|label"), {
-    tp: true,
-    fp: false,
-    fn: false,
-  });
+  assert.equal(
+    state.activePlotDownloadData.plots[0].dataSource.evaluationCells[0].get("doc1|#|label"),
+    "tp"
+  );
   assert.deepEqual(buildJsonSafeActivePlotDownloadData(state.activePlotDownloadData).plots[0], {
     metadata: {
       label: "model=a",
@@ -633,11 +632,7 @@ test("dashboard render adapter renders TP/FP/FN plot cards", () => {
       rows: ["doc1"],
       cols: ["label"],
       runDirs: ["run-a"],
-      evaluationCells: [[["doc1|#|label", {
-          tp: true,
-          fp: false,
-          fn: false,
-        }]]],
+      evaluationCells: [[["doc1|#|label", "tp"]]],
     },
   });
   assert.equal("collections" in state.activePlotDownloadData.plots[0].metadata, false);
@@ -712,11 +707,11 @@ test("dashboard TP/FP/FN download data keeps unfiltered sparse matrix input", ()
     runDirs: ["run-a", "run-b"],
     evaluationCells: [
       [
-        ["doc1|#|label", { tp: true, fp: false, fn: false }],
-        ["filtered|#|hidden", { tp: false, fp: false, fn: true }],
+        ["doc1|#|label", "tp"],
+        ["filtered|#|hidden", "fn"],
       ],
       [
-        ["doc1|#|label", { tp: false, fp: false, fn: true }],
+        ["doc1|#|label", "fn"],
       ],
     ],
   });

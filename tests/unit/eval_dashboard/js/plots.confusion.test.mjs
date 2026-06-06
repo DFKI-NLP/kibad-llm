@@ -249,6 +249,16 @@ test("confusion collection views reject missing fields and malformed collection 
     ], "field_a"),
     /ConfusionMatrix field "field_a" cell "actual" -> "predicted" must be a finite number\./
   );
+
+  assert.throws(
+    () => aggregateConfusionMatrix([
+      {
+        runDir: "r1",
+        fields: new Map([["field_a", { actual: { "predicted|#|label": 1 } }]]),
+      },
+    ], "field_a"),
+    /predicted label "predicted\|#\|label" must not contain reserved matrix key delimiter "\|#\|"/
+  );
 });
 
 /**

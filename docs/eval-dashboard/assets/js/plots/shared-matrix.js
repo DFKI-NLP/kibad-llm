@@ -8,6 +8,28 @@ import {
   getPlotDisplayLabel,
 } from "./shared.js";
 
+const MATRIX_CELL_KEY_DELIMITER = "|#|";
+
+/**
+ * Rejects labels that would make the string-encoded matrix key ambiguous.
+ *
+ * Matrix producers call this once while preparing source labels so hot
+ * aggregation and rendering loops can construct keys without repeated checks.
+ *
+ * @param {string} label - Matrix row or column label.
+ * @param {string} context - Label context used in validation errors.
+ * @returns {void}
+ * @throws {Error} If the label contains the reserved matrix-key delimiter.
+ */
+export function assertMatrixLabelExcludesKeyDelimiter(label, context) {
+  if (label.includes(MATRIX_CELL_KEY_DELIMITER)) {
+    throw new Error(
+      `${context} must not contain reserved matrix key delimiter ` +
+      `${JSON.stringify(MATRIX_CELL_KEY_DELIMITER)}.`
+    );
+  }
+}
+
 /**
  * Builds the stable sparse-cell key used by matrix aggregation maps.
  *
@@ -21,7 +43,7 @@ import {
  * @returns {string} Stable sparse-cell key.
  */
 export function getMatrixCellKey(row, col) {
-  return `${row}|#|${col}`;
+  return `${row}${MATRIX_CELL_KEY_DELIMITER}${col}`;
 }
 
 /**

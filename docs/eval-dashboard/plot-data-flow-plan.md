@@ -111,7 +111,7 @@ The prepared result is stored at `evaluation.dataPrepared[fieldLabel]`. When the
 
 - the document-label row set
 - the label column set
-- the sparse outcome-state lookup keyed by `${documentId}|#|${label}`
+- the sparse outcome lookup keyed by `${documentId}|#|${label}`, whose values are `"tp"`, `"fp"`, or `"fn"`
 
 The prepared result is stored at `evaluation.dataPrepared[fieldLabel]`, again preferring the wrapped raw evaluation object for collection views.
 
@@ -255,11 +255,12 @@ Numeric exports embed metadata in `metadata` and sample-only pre-aggregation dat
 
 Confusion-matrix exports use one plot object per visible heatmap. Matrix `runDirs` stay parallel to `evaluationCells`, so `runDirs[i]` identifies `evaluationCells[i]`. During rendering, each source plot embeds allowlisted `metadata` without `collections` and keeps the raw `getConfusionMatrixAggregationInput()` result as `dataSource`. On download, `buildJsonSafeMatrixPlottingData()` converts each sparse cell `Map` to an array of `[cellKey, value]` pairs because JSON does not serialize `Map` entries.
 
-TP/FP/FN exports use the same matrix alignment contract. `getTpFpFnAggregationInput()` carries `runDirs` for both downloads and cell tooltip/copy summaries, preserving the original run identity for every outcome state. On download, `buildJsonSafeMatrixPlottingData()` converts each sparse outcome-state `Map` to an array of `[cellKey, outcomeState]` pairs.
+TP/FP/FN exports use the same matrix alignment contract. `getTpFpFnAggregationInput()` carries `runDirs` for both downloads and cell tooltip/copy summaries, preserving the original run identity for every outcome. Each sparse cell value is exactly one of `"tp"`, `"fp"`, or `"fn"`; a missing entry represents `empty`. On download, `buildJsonSafeMatrixPlottingData()` converts each sparse outcome `Map` to an array of `[cellKey, outcome]` pairs.
 
 Matrix download data intentionally remains pre-filter and sparse:
 
 - Threshold controls determine the rendered matrix cells, but the JSON keeps the full aligned aggregation input for the active plot. This preserves the raw material needed to recompute alternative thresholds without re-exporting.
+- Matrix row and column labels may not contain the reserved `|#|` delimiter used by sparse cell keys. This is validated once during per-evaluation preparation so aggregation and rendering can construct keys without repeated checks.
 - Missing sparse confusion entries mean `0` for that evaluation/cell when aggregating.
 - Missing sparse TP/FP/FN entries mean the evaluation/cell has no TP, FP, or FN state and is counted as `empty` during aggregation.
 
@@ -295,7 +296,7 @@ TODO:
 - [x] (P1) add aligned run directories to plot data: numeric points keep `runDirs` parallel to `samples`; matrix plots keep `runDirs` parallel to `evaluationCells`.
 - [x] optimization: call buildJsonSafeMatrixPlottingData / buildJsonSafeNumericPlottingData in downloadActivePlotData instead of during rendering in dashboard.js
 - [x] (P0) restore TP/FP/FN cell-summary run directories by carrying `runDirs` through the shared aggregation input and reusing them for tooltip/copy payloads.
-    - [ ] check potential performance regression reported (does it really belong to this change?): TP/FP/FN provenance is still eagerly materialized for every matrix cell. docs/eval-dashboard/assets/js/plots/tpfpfn.js:355 creates an array of one state per evaluation for every row/column pair, then retains it in cells at docs/eval-dashboard/assets/js/plots/tpfpfn.js:373. The new lazy tooltip/clipboard helpers therefore remove only small object/string allocations, while the costly rows × columns × evaluations allocation remains. cells should retain only counts and presentCount. Preserve evaluationCells once on the aggregation object, then reconstruct one cell’s rowStates from those sparse maps only in the click handler. This matches the decision that clipboard details may be recalculated infrequently and should materially reduce aggregation memory and GC pressure. EDIT: I looked into it, and there is indeed too much logic that happens in getTpFpFnAggregationFromInput which should already happen in getTpFpFnAggregationInput (converting boolean tp/fp/fn to counts).
+    - [x] Keep only counts and `presentCount` in aggregated cells. Preserve `evaluationCells` once on the aggregation and reconstruct one cell's aligned outcomes only on click.
 - [ ] (P1) add "plot_tab_variant" (values: "prefix", "suffix", "overrides.metric.group", or "prediction group") to root level download data so downstream consumers can disambiguate grouping modes without guessing from the plot tab name. This should also clean up the plot tab name (e.g. for tpfpfn data, it currently starts with "group" if "Create tabs by:" is set to "prediction group", but this exact information should be covered by the new field instead of the tab name parsing logic).
 - [ ] (P2) improve keys in downloaded plot data: rename "evaluationCells" to simply "cells", should "runDirs" better be "run_dirs"? Same for "fieldLabel". Compare with other keys in the export and consider a consistent style (e.g. camelCase vs snake_case) for the public JSON schema
 
@@ -341,7 +342,7 @@ The exported data should continue to represent the samples used to make the visi
 
 For confusion matrices, the current baseline keeps sparse per-evaluation cell maps where missing entries are interpreted as `0`. A future dense export can make one explicit value per evaluation and visible matrix cell if that improves reconstructability enough to justify the larger files.
 
-For TP/FP/FN collectors, the current baseline keeps sparse per-evaluation outcome-state maps where missing entries are interpreted as `empty`. A future dense export can use one record per evaluation, document, label, and outcome state if that proves clearer for downstream consumers.
+For TP/FP/FN collectors, the current baseline keeps sparse per-evaluation outcome maps whose values are `"tp"`, `"fp"`, or `"fn"` and whose missing entries are interpreted as `empty`. A future dense export can use one record per evaluation, document, label, and outcome if that proves clearer for downstream consumers.
 
 ### 7. Expand Download Data
 
