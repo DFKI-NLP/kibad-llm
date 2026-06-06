@@ -21,6 +21,22 @@ export function getMatrixCellKey(row, col) {
 }
 
 /**
+ * Builds the public download metadata for a matrix plot.
+ *
+ * Keep this allowlist explicit so collection data and future renderer-only
+ * fields cannot leak into the downloaded JSON.
+ *
+ * @param {object} plotEntry - Matrix plot definition.
+ * @returns {{label: string, fieldLabel: string}} Public matrix plot metadata.
+ */
+export function buildMatrixDownloadMetadata(plotEntry = {}) {
+  return {
+    label: plotEntry.label,
+    fieldLabel: plotEntry.fieldLabel,
+  };
+}
+
+/**
  * Builds the JSON-safe matrix plotting data used by downloads.
  *
  * Confusion and TP/FP/FN rendering both consume aggregation input objects with

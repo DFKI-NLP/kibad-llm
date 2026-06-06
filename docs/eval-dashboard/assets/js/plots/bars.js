@@ -247,6 +247,21 @@ export function getNumericPlotEntriesInput({
 }
 
 /**
+ * Builds the public download metadata for a numeric plot.
+ *
+ * Keep this allowlist explicit so renderer-only plot-entry fields cannot leak
+ * into the downloaded JSON when the internal entry shape changes.
+ *
+ * @param {object} plotEntry - Numeric plot input entry.
+ * @returns {{metricLabel: string}} Public numeric plot metadata.
+ */
+export function buildNumericDownloadMetadata(plotEntry = {}) {
+  return {
+    metricLabel: plotEntry.metricLabel,
+  };
+}
+
+/**
  * Builds the JSON-safe numeric plotting data used by downloads.
  *
  * Numeric input entries are already sample-only before rendering adds mean/std.

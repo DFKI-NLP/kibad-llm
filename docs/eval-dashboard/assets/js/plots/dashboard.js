@@ -27,7 +27,7 @@ import {
   getNumericPlotEntriesInput,
   renderBarPlotTabsAndGrid,
 } from "./bars.js";
-import { getDownloadPlotEntryMetadata } from "./download-data.js";
+import { buildDownloadPlotMetadata } from "./download-data.js";
 import { createPlotLegendElement } from "./legend.js";
 import {
   buildConfusionTabMap,
@@ -488,7 +488,7 @@ function renderConfusionMatrixPlots({
       continue;
     }
     downloadPlots.push({
-      metaData: getDownloadPlotEntryMetadata(plotEntry),
+      metadata: buildDownloadPlotMetadata("confusion_matrix", plotEntry),
       dataSource: aggregationInput,
     });
 
@@ -628,7 +628,7 @@ function renderTpFpFnPlots({
       continue;
     }
     downloadPlots.push({
-      metaData: getDownloadPlotEntryMetadata(plotEntry),
+      metadata: buildDownloadPlotMetadata("tpfpfn", plotEntry),
       dataSource: aggregationInput,
     });
 
@@ -820,7 +820,7 @@ function renderBarLikePlots({
     metric_family: "numeric",
     plot_tab: result.activeEvalPlotTab,
     plots: activePlotEntries.map((entry) => ({
-      metaData: getDownloadPlotEntryMetadata(entry),
+      metadata: buildDownloadPlotMetadata("numeric", entry),
       dataSource: entry,
     })),
   };

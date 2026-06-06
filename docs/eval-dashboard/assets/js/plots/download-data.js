@@ -3,12 +3,36 @@
  */
 
 import { sanitizeFigureFilename } from "../utils/text.js";
-import { buildJsonSafeNumericPlottingData } from "./bars.js";
+import {
+  buildJsonSafeNumericPlottingData,
+  buildNumericDownloadMetadata,
+} from "./bars.js";
 import {
   saveBlob,
   triggerBlobDownload,
 } from "./export.js";
-import { buildJsonSafeMatrixPlottingData } from "./shared-matrix.js";
+import {
+  buildJsonSafeMatrixPlottingData,
+  buildMatrixDownloadMetadata,
+} from "./shared-matrix.js";
+
+/**
+ * Builds public plot metadata using the schema owned by the metric family.
+ *
+ * @param {string} metricFamily - Active plot metric family.
+ * @param {object} plotEntry - Internal plot entry used by the renderer.
+ * @returns {object} Public download metadata.
+ * @throws {Error} If the metric family is unsupported.
+ */
+export function buildDownloadPlotMetadata(metricFamily, plotEntry) {
+  if (metricFamily === "numeric") {
+    return buildNumericDownloadMetadata(plotEntry);
+  }
+  if (metricFamily === "confusion_matrix" || metricFamily === "tpfpfn") {
+    return buildMatrixDownloadMetadata(plotEntry);
+  }
+  throw new Error(`Unsupported download metadata metric family: ${metricFamily || "(missing)"}`);
+}
 
 /**
  * Converts the active plot download source into the public JSON payload.
@@ -45,7 +69,7 @@ export function buildJsonSafeActivePlotDownloadData(downloadData) {
     metric_family: downloadData.metric_family,
     plot_tab: downloadData.plot_tab,
     plots: downloadData.plots.map((plot) => ({
-      metaData: plot?.metaData || {},
+      metadata: plot?.metadata || {},
       data: buildData(plot),
     })),
   };
@@ -92,29 +116,4 @@ export async function downloadActivePlotData({
     triggerDownload,
     consoleLike,
   });
-}
-
-/**
- * Extracts only metadata fields from a plot entry for downloads.
- *
- * Plot entries also carry raw source data (`collections`) or numeric input data
- * (`points`). Downloads store that data separately in `data`, so this helper
- * prevents accidental duplication in exported metadata.
- *
- * @param {object} plotEntry - Plot entry used by the renderer.
- * @returns {object} Plot metadata without embedded data arrays.
- */
-export function getDownloadPlotEntryMetadata({
-  collections,
-  points,
-  parts,
-  prefix,
-  suffix,
-  metricRoot,
-  metricPrefix,
-  metricSuffix,
-  ...metadata
-} = {}) {
-  // TODO: add or also return runDirs? would this work?
-  return metadata;
 }

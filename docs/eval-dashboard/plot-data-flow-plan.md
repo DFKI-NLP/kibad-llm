@@ -170,7 +170,7 @@ Implications after the cache:
 
 Implemented on 2026-06-04 as an incremental export path before the broader plot dataset module.
 
-The dashboard now keeps the active plot tab's download source in `state.activePlotDownloadData` while rendering the same figures. This state is intentionally not the final public JSON payload: each plot stores sanitized `metaData` plus an internal `dataSource` object. A `Download Data` button next to `Download Figures` converts that active source into the public JSON payload in `downloadActivePlotData()` and serializes it as pretty-printed JSON. The button is disabled when no active plot source exists and shows the number of downloadable plots for the active tab.
+The dashboard now keeps the active plot tab's download source in `state.activePlotDownloadData` while rendering the same figures. This state is intentionally not the final public JSON payload: each plot stores allowlisted `metadata` plus an internal `dataSource` object. The family-owned `buildNumericDownloadMetadata()` and `buildMatrixDownloadMetadata()` helpers define the public metadata fields, while `buildDownloadPlotMetadata()` provides the common dispatch interface. A `Download Data` button next to `Download Figures` converts that active source into the public JSON payload in `downloadActivePlotData()` and serializes it as pretty-printed JSON. The button is disabled when no active plot source exists and shows the number of downloadable plots for the active tab.
 
 The export is intentionally built from the same plot data path used for rendering:
 
@@ -182,13 +182,13 @@ The internal `state.activePlotDownloadData` source uses a small common envelope:
 
 - `metric_family`
 - `plot_tab`
-- `plots`, each with `metaData` and `dataSource`
+- `plots`, each with `metadata` and `dataSource`
 
 `downloadActivePlotData()` turns that source into the public JSON envelope:
 
 - `metric_family`
 - `plot_tab`
-- `plots`, each with `metaData` and JSON-safe `data`
+- `plots`, each with `metadata` and JSON-safe `data`
 
 Experiment, metric type, threshold, and other view state stay outside this envelope unless a later user need requires that metadata in the downloaded JSON.
 
@@ -200,7 +200,7 @@ The current numeric shape stays close to the bar/error plotting data. It exports
   "plot_tab": "score",
   "plots": [
     {
-      "metaData": {
+      "metadata": {
         "metricLabel": "score.mean"
       },
       "data": {
@@ -219,7 +219,7 @@ The current numeric shape stays close to the bar/error plotting data. It exports
 }
 ```
 
-Matrix-like exports use the same envelope, but keep matrix metadata in `metaData` and aligned pre-aggregation cells in `data`:
+Matrix-like exports use the same envelope, but keep matrix metadata in `metadata` and aligned pre-aggregation cells in `data`:
 
 ```json
 {
@@ -227,7 +227,7 @@ Matrix-like exports use the same envelope, but keep matrix metadata in `metaData
   "plot_tab": "taxa.german_name",
   "plots": [
     {
-      "metaData": {
+      "metadata": {
         "label": "model=a",
         "fieldLabel": "taxa.german_name"
       },
@@ -249,11 +249,11 @@ Matrix-like exports use the same envelope, but keep matrix metadata in `metaData
 }
 ```
 
-Numeric exports embed metadata in `metaData` and sample-only pre-aggregation data in `data.points`. During rendering, numeric plot sources store the active tab's sample-only `getNumericPlotEntriesInput()` entries as `dataSource`; `downloadActivePlotData()` converts those entries with `buildJsonSafeNumericPlottingData()`.
+Numeric exports embed metadata in `metadata` and sample-only pre-aggregation data in `data.points`. During rendering, numeric plot sources store the active tab's sample-only `getNumericPlotEntriesInput()` entries as `dataSource`; `downloadActivePlotData()` converts those entries with `buildJsonSafeNumericPlottingData()`.
 
-Confusion-matrix exports use one plot object per visible heatmap. During rendering, each source plot embeds sanitized `metaData` without `collections` and keeps the raw `getConfusionMatrixAggregationInput()` result as `dataSource`. On download, `buildJsonSafeMatrixPlottingData()` converts each sparse cell `Map` to an array of `[cellKey, value]` pairs because JSON does not serialize `Map` entries. These entries intentionally do not add per-run metadata.
+Confusion-matrix exports use one plot object per visible heatmap. During rendering, each source plot embeds allowlisted `metadata` without `collections` and keeps the raw `getConfusionMatrixAggregationInput()` result as `dataSource`. On download, `buildJsonSafeMatrixPlottingData()` converts each sparse cell `Map` to an array of `[cellKey, value]` pairs because JSON does not serialize `Map` entries. These entries intentionally do not add per-run metadata.
 
-TP/FP/FN exports use one plot object per visible matrix. During rendering, each source plot embeds sanitized `metaData` without `collections` and keeps the raw `getTpFpFnAggregationInput()` result as `dataSource`. On download, `buildJsonSafeMatrixPlottingData()` converts each sparse outcome-state `Map` to an array of `[cellKey, outcomeState]` pairs without adding per-run metadata.
+TP/FP/FN exports use one plot object per visible matrix. During rendering, each source plot embeds allowlisted `metadata` without `collections` and keeps the raw `getTpFpFnAggregationInput()` result as `dataSource`. On download, `buildJsonSafeMatrixPlottingData()` converts each sparse outcome-state `Map` to an array of `[cellKey, outcomeState]` pairs without adding per-run metadata.
 
 Matrix download data intentionally remains pre-filter and sparse:
 
@@ -284,13 +284,13 @@ Implications:
 TODO:
 
 - [x] cleanup download data:
-    - [x] remove duplicate matrix `fieldLabel` from `data`; keep it only in `metaData`
+    - [x] remove duplicate matrix `fieldLabel` from `data`; keep it only in `metadata`
     - [x] numeric data has
-        - [x] remove redundant `parts`, `prefix`, and `suffix` from `metaData`
+        - [x] remove redundant `parts`, `prefix`, and `suffix` from `metadata`
         - [x] `metricLabel` and `metricPath` in each sample, which are also redundant with the plot entry and with each other
         - [x] remove `runDir` from each sample
 - [ ] (P2) Shared matrix tab/card rendering. renderConfusionMatrixPlots() and renderTpFpFnPlots() could move into their respective modules, but I would not do that blindly. They need many dashboard dependencies. Moving them as-is would make confusion.js and tpfpfn.js know too much about dashboard state/DOM wiring. A better step than moving both full matrix renderers would be extracting a renderMatrixPlotTabsAndGrid() adapter, analogous to renderPlotTabsAndGrid(), probably into shared-matrix.js or a new matrix-render.js. Confusion and TP/FP/FN could pass callbacks for aggregation/filtering/SVG/title/legend. This is only worth it if it stays simple.
-- [ ] (P1) add list of runDirs to plots/metaData in the download data. Number of entries should be exactly the same as entries in plots/data/evaluationCells (confusion and TP/FP/FN) or plots/data/points/samples (numeric).
+- [ ] (P1) add list of runDirs to plots/metadata in the download data. Number of entries should be exactly the same as entries in plots/data/evaluationCells (confusion and TP/FP/FN) or plots/data/points/samples (numeric).
 - [x] optimization: call buildJsonSafeMatrixPlottingData / buildJsonSafeNumericPlottingData in downloadActivePlotData instead of during rendering in dashboard.js
 - [ ] (P0) TP/FP/FN cell summaries lost real run-directory labels. docs/eval-dashboard/assets/js/plots/tpfpfn.js:330 now recreates evaluationLabels as evaluation 1, evaluation 2, etc. after splitting aggregation into input/from-input helpers. Before this refactor, the aggregation collected normalizeValue(evaluation?.runDir) while iterating the source evaluations. Those labels feed buildTpFpFnCellSummary() and become the copied/tooltip payload’s run_dir values at docs/eval-dashboard/assets/js/plots/tpfpfn.js:523. Impact: clicking a TP/FP/FN matrix cell no longer tells the user which run produced each TP/FP/FN/empty state. This is a visible behavior regression and also makes copied JSON less useful. Fix by carrying evaluationLabels or runDirs through getTpFpFnAggregationInput() alongside evaluationCells, then reuse them in getTpFpFnAggregationFromInput().
 - [ ] (P1) add "plot_tab_variant" (values: "prefix", "suffix", "overrides.metric.group", or "prediction group") to download data metadata so downstream consumers can disambiguate grouping modes without guessing from the plot tab name.

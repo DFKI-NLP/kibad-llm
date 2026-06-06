@@ -9,6 +9,7 @@ import {
   buildBarsTabMap,
   buildErrorsTabMap,
   buildJsonSafeNumericPlottingData,
+  buildNumericDownloadMetadata,
   buildPlotEntries,
   collectPreparedNumericMetricPaths,
   createBarPlotSvg,
@@ -114,6 +115,25 @@ test("bar plot helpers build compact JSON-safe numeric plotting data", () => {
         displaySeries: "Seed 1",
         samples: [0.75, 0.81],
       }],
+    }
+  );
+});
+
+/**
+ * Verify numeric download metadata uses an explicit public-field allowlist.
+ */
+test("bar plot helpers build numeric download metadata", () => {
+  assert.deepEqual(
+    buildNumericDownloadMetadata({
+      metricLabel: "score.mean",
+      metricRoot: "score",
+      metricPrefix: "score",
+      metricSuffix: "mean",
+      points: [{ samples: [0.75] }],
+      internalField: "must not leak",
+    }),
+    {
+      metricLabel: "score.mean",
     }
   );
 });

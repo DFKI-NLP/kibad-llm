@@ -10,6 +10,9 @@ import {
   getVaryingFields,
   scheduleAdaptiveSvgFit,
 } from "../../../../docs/eval-dashboard/assets/js/plots/shared.js";
+import {
+  buildMatrixDownloadMetadata,
+} from "../../../../docs/eval-dashboard/assets/js/plots/shared-matrix.js";
 import { createDocumentStub } from "./plots.dom-test-helpers.mjs";
 
 /**
@@ -33,6 +36,24 @@ test("shared plot helpers detect varying group fields", () => {
  */
 test("shared plot helpers derive display labels", () => {
   assert.equal(getPlotDisplayLabel("a.b.c", { shortenLabels: true }), "c");
+});
+
+/**
+ * Verify matrix download metadata uses an explicit public-field allowlist.
+ */
+test("shared matrix helpers build download metadata", () => {
+  assert.deepEqual(
+    buildMatrixDownloadMetadata({
+      label: "model=a",
+      fieldLabel: "field_a",
+      collections: [{ fields: new Map() }],
+      internalField: "must not leak",
+    }),
+    {
+      label: "model=a",
+      fieldLabel: "field_a",
+    }
+  );
 });
 
 /**
