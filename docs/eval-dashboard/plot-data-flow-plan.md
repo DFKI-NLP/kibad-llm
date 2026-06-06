@@ -182,12 +182,14 @@ The internal `state.activePlotDownloadData` source uses a small common envelope:
 
 - `metric_family`
 - `plot_tab`
+- `plot_tab_variant`
 - `plots`, each with `metadata` and `dataSource`
 
 `downloadActivePlotData()` turns that source into the public JSON envelope:
 
 - `metric_family`
 - `plot_tab`
+- `plot_tab_variant`
 - `plots`, each with `metadata` and JSON-safe `data`
 
 Experiment, metric type, threshold, and other view state stay outside this envelope unless a later user need requires that metadata in the downloaded JSON.
@@ -198,6 +200,7 @@ The current numeric shape stays close to the bar/error plotting data. It exports
 {
   "metric_family": "numeric",
   "plot_tab": "score",
+  "plot_tab_variant": "prefix",
   "plots": [
     {
       "metadata": {
@@ -226,6 +229,7 @@ Matrix-like exports use the same envelope, but keep matrix metadata in `metadata
 {
   "metric_family": "confusion_matrix",
   "plot_tab": "taxa.german_name",
+  "plot_tab_variant": "metric_field",
   "plots": [
     {
       "metadata": {
@@ -297,7 +301,7 @@ TODO:
 - [x] optimization: call buildJsonSafeMatrixPlottingData / buildJsonSafeNumericPlottingData in downloadActivePlotData instead of during rendering in dashboard.js
 - [x] (P0) restore TP/FP/FN cell-summary run directories by carrying `runDirs` through the shared aggregation input and reusing them for tooltip/copy payloads.
     - [x] Keep only counts and `presentCount` in aggregated cells. Preserve `evaluationCells` once on the aggregation and reconstruct one cell's aligned outcomes only on click.
-- [ ] (P1) add "plot_tab_variant" (values: "prefix", "suffix", "overrides.metric.group", or "prediction group") to root level download data so downstream consumers can disambiguate grouping modes without guessing from the plot tab name. This should also clean up the plot tab name (e.g. for tpfpfn data, it currently starts with "group" if "Create tabs by:" is set to "prediction group", but this exact information should be covered by the new field instead of the tab name parsing logic).
+- [x] (P1) add `"plot_tab_variant"` (values: `"prefix"`, `"suffix"`, `"error_section"`, `"metric_field"`, or `"prediction_group"`) to root level download data so downstream consumers can disambiguate grouping modes without guessing from the plot tab name. Prediction-group downloads expose the raw group ID as `"plot_tab"` instead of the internal tab-map key.
 - [ ] (P2) improve keys in downloaded plot data: rename "evaluationCells" to simply "cells", should "runDirs" better be "run_dirs"? Same for "fieldLabel". Compare with other keys in the export and consider a consistent style (e.g. camelCase vs snake_case) for the public JSON schema
 
 ### 4. Introduce a DOM-Free Plot Dataset Module

@@ -269,9 +269,37 @@ test("bar plot helpers derive tab maps and titles", () => {
     { metricLabel: "details.x", metricRoot: "detail", metricPrefix: "details", metricSuffix: "x", points: [] },
   ];
 
-  assert.deepEqual(Array.from(buildBarsTabMap(entries).keys()), ["errors", "details"]);
-  assert.deepEqual(Array.from(buildBarsTabMap(entries, { plotTabsBy: "suffix" }).keys()), ["with_error", "x"]);
-  assert.deepEqual(Array.from(buildErrorsTabMap(entries).keys()), ["total", "details"]);
+  const prefixTabs = buildBarsTabMap(entries, "prefix");
+  const suffixTabs = buildBarsTabMap(entries, "suffix");
+  const errorTabs = buildErrorsTabMap(entries);
+  assert.deepEqual(Array.from(prefixTabs.keys()), ["errors", "details"]);
+  assert.deepEqual(
+    {
+      label: prefixTabs.get("errors").label,
+      plotTab: prefixTabs.get("errors").plotTab,
+      plotTabVariant: prefixTabs.get("errors").plotTabVariant,
+      plots: prefixTabs.get("errors").plots,
+    },
+    {
+      label: "errors",
+      plotTab: "errors",
+      plotTabVariant: "prefix",
+      plots: [entries[0]],
+    }
+  );
+  assert.deepEqual(Array.from(suffixTabs.keys()), ["with_error", "x"]);
+  assert.equal(suffixTabs.get("with_error").plotTabVariant, "suffix");
+  assert.deepEqual(Array.from(errorTabs.keys()), ["total", "details"]);
+  assert.equal(errorTabs.get("total").plotTabVariant, "error_section");
+  assert.deepEqual(errorTabs.get("total").plots, [entries[0]]);
+  assert.throws(
+    () => buildBarsTabMap(entries),
+    /Unsupported numeric plot tab variant: \(missing\)/
+  );
+  assert.throws(
+    () => buildBarsTabMap(entries, "unknown"),
+    /Unsupported numeric plot tab variant: unknown/
+  );
   assert.equal(
     getPlotTitleLabel(
       { metricPrefix: "macro", metricLabel: "field.f1" },
@@ -349,17 +377,22 @@ test("bar grid renderer renders tabs, shared legends, and cards", () => {
     tabMap: new Map([
       [
         "score",
-        [
-          {
-            metricLabel: "score.mean",
-            metricPrefix: "score",
-            metricSuffix: "mean",
-            points: [
-              { category: "model=a", displayCategory: "Model A", series: "seed=1", displaySeries: "Seed 1", mean: 0.5, std: 0 },
-              { category: "model=a", displayCategory: "Model A", series: "seed=2", displaySeries: "Seed 2", mean: 0.6, std: 0 },
-            ],
-          },
-        ],
+        {
+          label: "score",
+          plotTab: "score",
+          plotTabVariant: "prefix",
+          plots: [
+            {
+              metricLabel: "score.mean",
+              metricPrefix: "score",
+              metricSuffix: "mean",
+              points: [
+                { category: "model=a", displayCategory: "Model A", series: "seed=1", displaySeries: "Seed 1", mean: 0.5, std: 0 },
+                { category: "model=a", displayCategory: "Model A", series: "seed=2", displaySeries: "Seed 2", mean: 0.6, std: 0 },
+              ],
+            },
+          ],
+        },
       ],
     ]),
     activeExperiment: "exp",
@@ -415,24 +448,29 @@ test("bar grid renderer preserves export legend items when shared legend is not 
     tabMap: new Map([
       [
         "score",
-        [
-          {
-            metricLabel: "score.mean",
-            metricPrefix: "score",
-            metricSuffix: "mean",
-            points: [
-              { category: "model=a", displayCategory: "Model A", series: "seed=1", displaySeries: "Seed 1", mean: 0.5, std: 0 },
-            ],
-          },
-          {
-            metricLabel: "score.mean",
-            metricPrefix: "score",
-            metricSuffix: "mean",
-            points: [
-              { category: "model=b", displayCategory: "Model B", series: "seed=2", displaySeries: "Seed 2", mean: 0.7, std: 0 },
-            ],
-          },
-        ],
+        {
+          label: "score",
+          plotTab: "score",
+          plotTabVariant: "prefix",
+          plots: [
+            {
+              metricLabel: "score.mean",
+              metricPrefix: "score",
+              metricSuffix: "mean",
+              points: [
+                { category: "model=a", displayCategory: "Model A", series: "seed=1", displaySeries: "Seed 1", mean: 0.5, std: 0 },
+              ],
+            },
+            {
+              metricLabel: "score.mean",
+              metricPrefix: "score",
+              metricSuffix: "mean",
+              points: [
+                { category: "model=b", displayCategory: "Model B", series: "seed=2", displaySeries: "Seed 2", mean: 0.7, std: 0 },
+              ],
+            },
+          ],
+        },
       ],
     ]),
     activeExperiment: "exp",
@@ -468,25 +506,30 @@ test("bar grid renderer defaults create SVGs for ungrouped and grouped entries",
       tabMap: new Map([
         [
           "score",
-          [
-            {
-              metricLabel: "score.mean",
-              metricPrefix: "score",
-              metricSuffix: "mean",
-              points: [
-                {
-                  label: "model=a",
-                  displayLabel: "Model A",
-                  category: "model=a",
-                  displayCategory: "Model A",
-                  series: "seed=1",
-                  displaySeries: "Seed 1",
-                  mean: 0.5,
-                  std: 0,
-                },
-              ],
-            },
-          ],
+          {
+            label: "score",
+            plotTab: "score",
+            plotTabVariant: "prefix",
+            plots: [
+              {
+                metricLabel: "score.mean",
+                metricPrefix: "score",
+                metricSuffix: "mean",
+                points: [
+                  {
+                    label: "model=a",
+                    displayLabel: "Model A",
+                    category: "model=a",
+                    displayCategory: "Model A",
+                    series: "seed=1",
+                    displaySeries: "Seed 1",
+                    mean: 0.5,
+                    std: 0,
+                  },
+                ],
+              },
+            ],
+          },
         ],
       ]),
       activeExperiment: "exp",
@@ -517,7 +560,12 @@ test("bar grid renderer shows an empty message for empty tabs", () => {
   const evalPlotContent = documentLike.createElement("div");
   const result = renderBarPlotTabsAndGrid({
     documentLike,
-    tabMap: new Map([["score", []]]),
+    tabMap: new Map([["score", {
+      label: "score",
+      plotTab: "score",
+      plotTabVariant: "prefix",
+      plots: [],
+    }]]),
     activeExperiment: "exp",
     groupBarFields: [],
     metricType: "Metric",

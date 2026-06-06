@@ -103,6 +103,7 @@ export function buildJsonSafeMatrixPlottingData(aggregationInput) {
  *
  * @param {object} options - Plot groups, tab mode, collection wrapping, and label helpers.
  * @returns {Map<string, object>} Tab map with labels and plot definitions.
+ * @throws {Error} If the tab grouping mode is unsupported.
  */
 export function buildMatrixTabMap({
   plotGroups,
@@ -121,6 +122,7 @@ export function buildMatrixTabMap({
   const groupEntries = (plotGroups || [])
     .map((group, index) => ({
       key: `group|#|${group.groupId}`,
+      groupId: group.groupId,
       label: getGroupLabelForFields(
         group,
         labelFields,
@@ -142,6 +144,8 @@ export function buildMatrixTabMap({
           if (!tabMap.has(fieldLabel)) {
             tabMap.set(fieldLabel, {
               label: getPlotDisplayLabel(fieldLabel, { shortenLabels }),
+              plotTab: fieldLabel,
+              plotTabVariant: matrixTabsBy,
               plots: [],
             });
           }
@@ -166,25 +170,33 @@ export function buildMatrixTabMap({
     return tabMap;
   }
 
-  for (const groupEntry of groupEntries) {
-    const byField = new Map();
-    for (const collection of groupEntry.collections) {
-      for (const fieldLabel of collection.fields.keys()) {
-        if (!byField.has(fieldLabel)) {
-          byField.set(fieldLabel, []);
+  if (matrixTabsBy === "prediction_group") {
+    for (const groupEntry of groupEntries) {
+      const byField = new Map();
+      for (const collection of groupEntry.collections) {
+        for (const fieldLabel of collection.fields.keys()) {
+          if (!byField.has(fieldLabel)) {
+            byField.set(fieldLabel, []);
+          }
+          byField.get(fieldLabel).push(collection);
         }
-        byField.get(fieldLabel).push(collection);
       }
+      const plots = Array.from(byField.entries())
+        .sort(([a], [b]) => compareFieldLabels(a, b))
+        .map(([fieldLabel, collections]) => ({
+          label: fieldLabel,
+          fieldLabel,
+          collections,
+        }));
+      tabMap.set(groupEntry.key, {
+        label: groupEntry.label,
+        plotTab: groupEntry.groupId,
+        plotTabVariant: matrixTabsBy,
+        plots,
+      });
     }
-    const plots = Array.from(byField.entries())
-      .sort(([a], [b]) => compareFieldLabels(a, b))
-      .map(([fieldLabel, collections]) => ({
-        label: fieldLabel,
-        fieldLabel,
-        collections,
-      }));
-    tabMap.set(groupEntry.key, { label: groupEntry.label, plots });
+    return tabMap;
   }
 
-  return tabMap;
+  throw new Error(`Unsupported matrix plot tab variant: ${matrixTabsBy || "(missing)"}`);
 }

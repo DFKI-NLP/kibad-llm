@@ -527,7 +527,8 @@ function renderConfusionMatrixPlots({
 
   state.activePlotDownloadData = {
     metric_family: "confusion_matrix",
-    plot_tab: state.activeEvalPlotTab,
+    plot_tab: activeConfusionEntry.plotTab,
+    plot_tab_variant: activeConfusionEntry.plotTabVariant,
     plots: downloadPlots,
   };
   dom.evalPlotContent.appendChild(grid);
@@ -674,7 +675,8 @@ function renderTpFpFnPlots({
 
   state.activePlotDownloadData = {
     metric_family: "tpfpfn",
-    plot_tab: state.activeEvalPlotTab,
+    plot_tab: activeEntry.plotTab,
+    plot_tab_variant: activeEntry.plotTabVariant,
     plots: downloadPlots,
   };
   dom.evalPlotContent.appendChild(createTpFpFnLegendElement({ documentLike }));
@@ -745,13 +747,13 @@ function renderBarLikePlots({
     "bar tab map",
     () => metricType === "ErrorCollector"
       ? buildErrorsTabMap(plotEntries)
-      : buildBarsTabMap(plotEntries, { plotTabsBy: state.plotTabsBy })
+      : buildBarsTabMap(plotEntries, state.plotTabsBy)
   );
   const downloadTabMap = timing.time(
     "bar download tab map",
     () => metricType === "ErrorCollector"
       ? buildErrorsTabMap(plotEntriesInput)
-      : buildBarsTabMap(plotEntriesInput, { plotTabsBy: state.plotTabsBy })
+      : buildBarsTabMap(plotEntriesInput, state.plotTabsBy)
   );
 
   const result = timing.time(
@@ -802,11 +804,12 @@ function renderBarLikePlots({
   );
   state.activeEvalPlotTab = result.activeEvalPlotTab;
   state.activePlotLegendItems = result.activePlotLegendItems;
-  const activePlotEntries = downloadTabMap.get(result.activeEvalPlotTab) || [];
+  const activeDownloadTab = downloadTabMap.get(result.activeEvalPlotTab);
   state.activePlotDownloadData = {
     metric_family: "numeric",
-    plot_tab: result.activeEvalPlotTab,
-    plots: activePlotEntries.map((entry) => ({
+    plot_tab: activeDownloadTab.plotTab,
+    plot_tab_variant: activeDownloadTab.plotTabVariant,
+    plots: activeDownloadTab.plots.map((entry) => ({
       metadata: buildDownloadPlotMetadata("numeric", entry),
       dataSource: entry,
     })),

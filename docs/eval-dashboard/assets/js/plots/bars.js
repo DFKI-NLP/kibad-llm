@@ -435,17 +435,26 @@ export function buildPlotEntries(options) {
  * same plot entries feed both rendering and active-tab download selection.
  *
  * @param {Array<object>} plotEntries - Entries produced by buildPlotEntries.
- * @param {object} [options] - Tab grouping options.
- * @returns {Map<string, Array<object>>} Tab map keyed by metric prefix or suffix.
+ * @param {"prefix" | "suffix"} plotTabsBy - Metric path component used for tabs.
+ * @returns {Map<string, object>} Tab map keyed by metric prefix or suffix.
+ * @throws {Error} If the tab grouping mode is unsupported.
  */
-export function buildBarsTabMap(plotEntries, { plotTabsBy = "prefix" } = {}) {
+export function buildBarsTabMap(plotEntries, plotTabsBy) {
+  if (plotTabsBy !== "prefix" && plotTabsBy !== "suffix") {
+    throw new Error(`Unsupported numeric plot tab variant: ${plotTabsBy || "(missing)"}`);
+  }
   const tabMap = new Map();
   for (const entry of plotEntries) {
     const tabKey = plotTabsBy === "suffix" ? entry.metricSuffix : entry.metricPrefix;
     if (!tabMap.has(tabKey)) {
-      tabMap.set(tabKey, []);
+      tabMap.set(tabKey, {
+        label: tabKey,
+        plotTab: tabKey,
+        plotTabVariant: plotTabsBy,
+        plots: [],
+      });
     }
-    tabMap.get(tabKey).push(entry);
+    tabMap.get(tabKey).plots.push(entry);
   }
   return tabMap;
 }
@@ -458,7 +467,7 @@ export function buildBarsTabMap(plotEntries, { plotTabsBy = "prefix" } = {}) {
  * and keeps that classification independent from display labels.
  *
  * @param {Array<object>} plotEntries - Error metric plot entries.
- * @returns {Map<string, Array<object>>} Tab map for available error sections.
+ * @returns {Map<string, object>} Tab map for available error sections.
  */
 export function buildErrorsTabMap(plotEntries) {
   const totalKeys = new Set(["with_error", "no_error"]);
@@ -466,10 +475,20 @@ export function buildErrorsTabMap(plotEntries) {
   const details = plotEntries.filter((entry) => !totalKeys.has(entry.metricRoot));
   const tabMap = new Map();
   if (total.length) {
-    tabMap.set("total", total);
+    tabMap.set("total", {
+      label: "total",
+      plotTab: "total",
+      plotTabVariant: "error_section",
+      plots: total,
+    });
   }
   if (details.length) {
-    tabMap.set("details", details);
+    tabMap.set("details", {
+      label: "details",
+      plotTab: "details",
+      plotTabVariant: "error_section",
+      plots: details,
+    });
   }
   return tabMap;
 }
@@ -827,14 +846,14 @@ export function renderBarPlotTabsAndGrid({
     containerElement: evalPlotTabs,
     tabModels: buildCountTabButtonModels(sortedTabKeys, {
       activeValue: nextActiveTab,
-      getLabelText: (key) => key,
-      getCount: (key) => tabMap.get(key).length,
-      getTitle: (key) => key,
+      getLabelText: (key) => tabMap.get(key).label,
+      getCount: (key) => tabMap.get(key).plots.length,
+      getTitle: (key) => tabMap.get(key).label,
     }),
     onSelect: (key) => onActiveTabChange(key),
   });
 
-  const activeEntries = tabMap.get(nextActiveTab) || [];
+  const activeEntries = tabMap.get(nextActiveTab)?.plots || [];
   const groupedLegendModel = groupBarFields.length
     ? buildGroupedLegendModel(activeEntries)
     : null;

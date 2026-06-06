@@ -137,6 +137,7 @@ test("dashboard data download helper exports active plot data as JSON", async ()
   const payload = {
     metric_family: "numeric",
     plot_tab: "score",
+    plot_tab_variant: "prefix",
     plots: [{
       metadata: { metricLabel: "score.mean" },
       dataSource: {
@@ -154,6 +155,7 @@ test("dashboard data download helper exports active plot data as JSON", async ()
   const expectedJson = {
     metric_family: "numeric",
     plot_tab: "score",
+    plot_tab_variant: "prefix",
     plots: [{
       metadata: { metricLabel: "score.mean" },
       data: {
@@ -343,6 +345,7 @@ test("dashboard render adapter renders bar-like plot cards", () => {
   assert.equal(dom.evalPlotContent.querySelector("svg").tagName, "svg");
   assert.equal(state.activePlotDownloadData.metric_family, "numeric");
   assert.equal(state.activePlotDownloadData.plot_tab, "score");
+  assert.equal(state.activePlotDownloadData.plot_tab_variant, "prefix");
   assert.deepEqual(state.activePlotDownloadData.plots[0].metadata, {
     metricLabel: "score.mean",
   });
@@ -360,6 +363,7 @@ test("dashboard render adapter renders bar-like plot cards", () => {
   assert.deepEqual(downloadPayload, {
     metric_family: "numeric",
     plot_tab: "score",
+    plot_tab_variant: "prefix",
     plots: [{
       metadata: {
         metricLabel: "score.mean",
@@ -425,6 +429,8 @@ test("dashboard numeric plots discover metrics only from selected plot groups", 
   });
 
   assert.equal(state.activeEvalPlotTab, "total");
+  assert.equal(state.activePlotDownloadData.plot_tab, "total");
+  assert.equal(state.activePlotDownloadData.plot_tab_variant, "error_section");
   assert.deepEqual(
     state.activePlotDownloadData.plots.map((plot) => plot.metadata.metricLabel),
     ["no_error"]
@@ -479,6 +485,8 @@ test("dashboard render adapter renders confusion-matrix plot cards", () => {
   assert.equal(dom.evalPlotContent.querySelector(".plot-card").querySelector(".plot-title").textContent, "model=a (mean ± std)");
   assert.ok(dom.evalPlotContent.querySelectorAll("text").some((text) => text.textContent === "actual"));
   assert.equal(state.activePlotDownloadData.metric_family, "confusion_matrix");
+  assert.equal(state.activePlotDownloadData.plot_tab, "field_a");
+  assert.equal(state.activePlotDownloadData.plot_tab_variant, "metric_field");
   assert.deepEqual(state.activePlotDownloadData.plots[0].metadata, {
     label: "model=a",
     fieldLabel: "field_a",
@@ -567,7 +575,10 @@ test("dashboard confusion download data keeps unfiltered sparse matrix input", (
 test("dashboard render adapter renders TP/FP/FN plot cards", () => {
   const documentLike = createDocumentStub();
   const dom = createPlotDom(documentLike);
-  const state = createPlotState({ plotTpFpFnMinLabelTotal: 1 });
+  const state = createPlotState({
+    plotTpFpFnMinLabelTotal: 1,
+    confusionTabsBy: "prediction_group",
+  });
   const evaluations = [
     {
       runDir: "run-a",
@@ -607,14 +618,16 @@ test("dashboard render adapter renders TP/FP/FN plot cards", () => {
     rerenderEvaluationPlots: () => {},
   });
 
-  assert.equal(state.activeEvalPlotTab, "field_a");
-  assert.equal(dom.evalPlotTabs.querySelector("button").textContent, "field_a (1)");
+  assert.equal(state.activeEvalPlotTab, "group|#|g1");
+  assert.equal(dom.evalPlotTabs.querySelector("button").textContent, "model=a (1)");
   assert.equal(dom.evalPlotContent.querySelector(".plot-legend").children.length, 3);
-  assert.equal(dom.evalPlotContent.querySelector(".plot-card").querySelector(".plot-title").textContent, "model=a (1 grouped evals)");
+  assert.equal(dom.evalPlotContent.querySelector(".plot-card").querySelector(".plot-title").textContent, "field_a (1 grouped evals)");
   assert.ok(dom.evalPlotContent.querySelectorAll("text").some((text) => text.textContent === "doc1"));
   assert.equal(state.activePlotDownloadData.metric_family, "tpfpfn");
+  assert.equal(state.activePlotDownloadData.plot_tab, "g1");
+  assert.equal(state.activePlotDownloadData.plot_tab_variant, "prediction_group");
   assert.deepEqual(state.activePlotDownloadData.plots[0].metadata, {
-    label: "model=a",
+    label: "field_a",
     fieldLabel: "field_a",
   });
   assert.equal(state.activePlotDownloadData.plots[0].dataSource.rows[0], "doc1");
@@ -625,7 +638,7 @@ test("dashboard render adapter renders TP/FP/FN plot cards", () => {
   );
   assert.deepEqual(buildJsonSafeActivePlotDownloadData(state.activePlotDownloadData).plots[0], {
     metadata: {
-      label: "model=a",
+      label: "field_a",
       fieldLabel: "field_a",
     },
     data: {

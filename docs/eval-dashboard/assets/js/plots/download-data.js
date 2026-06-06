@@ -68,6 +68,7 @@ export function buildJsonSafeActivePlotDownloadData(downloadData) {
   return {
     metric_family: downloadData.metric_family,
     plot_tab: downloadData.plot_tab,
+    plot_tab_variant: downloadData.plot_tab_variant,
     plots: downloadData.plots.map((plot) => ({
       metadata: plot?.metadata || {},
       data: buildData(plot),

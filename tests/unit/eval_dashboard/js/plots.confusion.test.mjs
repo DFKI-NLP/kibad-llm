@@ -182,6 +182,8 @@ test("confusion helpers build tab maps for metric-field and group-tab modes", ()
     displayPlotGroupFieldName: (field) => field,
   });
   assert.deepEqual(Array.from(metricFieldTabs.keys()), ["field_a", "field_b"]);
+  assert.equal(metricFieldTabs.get("field_a").plotTab, "field_a");
+  assert.equal(metricFieldTabs.get("field_a").plotTabVariant, "metric_field");
   assert.equal(metricFieldTabs.get("field_a").plots[0].label, "model=a");
   assert.equal(metricFieldTabs.get("field_a").plots[0].collections[0].fields.get("field_a"), evaluations[0].data);
 
@@ -196,8 +198,28 @@ test("confusion helpers build tab maps for metric-field and group-tab modes", ()
     displayPlotGroupFieldName: (field) => field,
   });
   assert.deepEqual(Array.from(groupTabs.keys()), ["group|#|g1"]);
+  assert.equal(groupTabs.get("group|#|g1").plotTab, "g1");
+  assert.equal(groupTabs.get("group|#|g1").plotTabVariant, "prediction_group");
   assert.deepEqual(groupTabs.get("group|#|g1").plots.map((plot) => plot.label), ["field_a", "field_b"]);
 
+  const buildTabsWithMode = (matrixTabsBy) => buildConfusionTabMap({
+    activeExperiment: "exp",
+    plotGroups,
+    labelFields: ["model"],
+    evalTabState: {},
+    matrixTabsBy,
+    getEvaluationEffectiveValue,
+    getEvaluationExperiment: (evaluation) => evaluation.overrides.experiment,
+    displayPlotGroupFieldName: (field) => field,
+  });
+  assert.throws(
+    () => buildTabsWithMode(),
+    /Unsupported matrix plot tab variant: \(missing\)/
+  );
+  assert.throws(
+    () => buildTabsWithMode("unknown"),
+    /Unsupported matrix plot tab variant: unknown/
+  );
 });
 
 /**
