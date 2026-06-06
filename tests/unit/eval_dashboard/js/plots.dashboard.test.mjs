@@ -145,6 +145,7 @@ test("dashboard data download helper exports active plot data as JSON", async ()
           displayCategory: "Model A",
           series: "__single__",
           displaySeries: "__single__",
+          runDirs: ["run-a"],
           samples: [0.75],
         }],
       },
@@ -161,6 +162,7 @@ test("dashboard data download helper exports active plot data as JSON", async ()
           displayCategory: "Model A",
           series: "__single__",
           displaySeries: "__single__",
+          runDirs: ["run-a"],
           samples: [0.75],
         }],
       },
@@ -305,8 +307,9 @@ test("dashboard render adapter renders bar-like plot cards", () => {
   const documentLike = createDocumentStub();
   const dom = createPlotDom(documentLike);
   const state = createPlotState();
+  const evaluation = { runDir: "run-a", data: { score: { mean: 0.75 } } };
   const evaluationContext = {
-    experimentEvaluations: [{ data: { score: { mean: 0.75 } } }],
+    experimentEvaluations: [evaluation],
     evalTabState: { groupByFields: [] },
   };
 
@@ -319,11 +322,11 @@ test("dashboard render adapter renders bar-like plot cards", () => {
     requestAnimationFrameLike: (callback) => callback(),
     plotTooltipHandlers: { show: () => {}, move: () => {}, hide: () => {} },
     getSelectedPredictionGroups: () => [{}],
-    getSelectedEvaluationGroups: () => [{ evaluations: [{ data: { score: { mean: 0.75 } } }] }],
+    getSelectedEvaluationGroups: () => [{ evaluations: [evaluation] }],
     getMetricTypeForEvaluationContext: () => "F1MicroMultipleFieldsMetric",
     getPlotGroups: () => ({
       fields: [],
-      groups: [{ groupId: "all", values: {}, evaluations: [{ data: { score: { mean: 0.75 } } }] }],
+      groups: [{ groupId: "all", values: {}, evaluations: [evaluation] }],
     }),
     getEvaluationEffectiveValue: () => null,
     getEvaluationExperiment: () => "experiment/a",
@@ -350,6 +353,7 @@ test("dashboard render adapter renders bar-like plot cards", () => {
     displayCategory: "group 1",
     series: "__single__",
     displaySeries: "__single__",
+    runDirs: ["run-a"],
     samples: [0.75],
   }]);
   const downloadPayload = buildJsonSafeActivePlotDownloadData(state.activePlotDownloadData);
@@ -366,6 +370,7 @@ test("dashboard render adapter renders bar-like plot cards", () => {
           displayCategory: "group 1",
           series: "__single__",
           displaySeries: "__single__",
+          runDirs: ["run-a"],
           samples: [0.75],
         }],
       },
@@ -489,6 +494,7 @@ test("dashboard render adapter renders confusion-matrix plot cards", () => {
     data: {
       rows: ["actual"],
       cols: ["predicted"],
+      runDirs: ["run-a"],
       evaluationCells: [[["actual|#|predicted", 2]]],
     },
   });
@@ -547,6 +553,7 @@ test("dashboard confusion download data keeps unfiltered sparse matrix input", (
   assert.deepEqual(buildJsonSafeActivePlotDownloadData(state.activePlotDownloadData).plots[0].data, {
     rows: ["actual", "filtered"],
     cols: ["hidden", "predicted"],
+    runDirs: ["run-a"],
     evaluationCells: [[
       ["actual|#|predicted", 2],
       ["filtered|#|hidden", 1],
@@ -625,6 +632,7 @@ test("dashboard render adapter renders TP/FP/FN plot cards", () => {
     data: {
       rows: ["doc1"],
       cols: ["label"],
+      runDirs: ["run-a"],
       evaluationCells: [[["doc1|#|label", {
           tp: true,
           fp: false,
@@ -701,6 +709,7 @@ test("dashboard TP/FP/FN download data keeps unfiltered sparse matrix input", ()
   assert.deepEqual(buildJsonSafeActivePlotDownloadData(state.activePlotDownloadData).plots[0].data, {
     rows: ["doc1", "filtered"],
     cols: ["hidden", "label"],
+    runDirs: ["run-a", "run-b"],
     evaluationCells: [
       [
         ["doc1|#|label", { tp: true, fp: false, fn: false }],

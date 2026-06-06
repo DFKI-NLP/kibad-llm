@@ -2,7 +2,11 @@
  * Shared sparse-matrix helpers for matrix-like plot data.
  */
 
-import { getGroupLabelForFields, getPlotDisplayLabel } from "./shared.js";
+import {
+  assertAlignedArrayLengths,
+  getGroupLabelForFields,
+  getPlotDisplayLabel,
+} from "./shared.js";
 
 /**
  * Builds the stable sparse-cell key used by matrix aggregation maps.
@@ -47,10 +51,20 @@ export function buildMatrixDownloadMetadata(plotEntry = {}) {
  * @returns {object} JSON-safe matrix plotting data.
  */
 export function buildJsonSafeMatrixPlottingData(aggregationInput) {
+  const runDirs = aggregationInput?.runDirs || [];
+  const evaluationCells = aggregationInput?.evaluationCells || [];
+  assertAlignedArrayLengths(
+    "Matrix download data",
+    "runDirs",
+    runDirs,
+    "evaluationCells",
+    evaluationCells
+  );
   return {
     rows: aggregationInput?.rows || [],
     cols: aggregationInput?.cols || [],
-    evaluationCells: (aggregationInput?.evaluationCells || []).map((cellMap) => {
+    runDirs,
+    evaluationCells: evaluationCells.map((cellMap) => {
       // Matrix plotting data uses sparse Maps; JSON needs stable array entries.
       return Array.from(cellMap.entries());
     }),

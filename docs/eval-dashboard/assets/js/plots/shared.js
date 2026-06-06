@@ -20,7 +20,57 @@ import { normalizeValue } from "../utils/values.js";
  * @returns {string} Normalized source run directory.
  */
 export function getMetricCollectionSourceRunDir(evaluation) {
-  return normalizeValue(evaluation?.sourceRunDir ?? evaluation?.runDir).trim();
+  const sourceRunDir = normalizeValue(evaluation?.sourceRunDir).trim();
+  return sourceRunDir || normalizeValue(evaluation?.runDir).trim();
+}
+
+/**
+ * Resolves the required source run directory for aligned plot data.
+ *
+ * Numeric inputs use raw evaluations while matrix inputs use collection views.
+ * Both must expose the same source-run identity before values are detached from
+ * their evaluation records for aggregation and download.
+ *
+ * @param {object} evaluation - Raw evaluation or metric collection view.
+ * @param {string} context - Plot-data context used in validation errors.
+ * @returns {string} Non-empty normalized source run directory.
+ * @throws {Error} If source-run identity is unavailable.
+ */
+export function getRequiredPlotRunDir(evaluation, context = "Plot data") {
+  const runDir = getMetricCollectionSourceRunDir(evaluation);
+  if (!runDir) {
+    throw new Error(`${context} requires every evaluation to define a run directory.`);
+  }
+  return runDir;
+}
+
+/**
+ * Asserts that two arrays remain index-aligned.
+ *
+ * @param {string} context - Plot-data context used in validation errors.
+ * @param {string} firstName - First array field name.
+ * @param {Array<*>} firstValues - First aligned array.
+ * @param {string} secondName - Second array field name.
+ * @param {Array<*>} secondValues - Second aligned array.
+ * @returns {void}
+ * @throws {Error} If either value is not an array or their lengths differ.
+ */
+export function assertAlignedArrayLengths(
+  context,
+  firstName,
+  firstValues,
+  secondName,
+  secondValues
+) {
+  if (!Array.isArray(firstValues) || !Array.isArray(secondValues)) {
+    throw new Error(`${context} requires ${firstName} and ${secondName} to be arrays.`);
+  }
+  if (firstValues.length !== secondValues.length) {
+    throw new Error(
+      `${context} requires ${firstName}.length (${firstValues.length}) to equal ` +
+      `${secondName}.length (${secondValues.length}).`
+    );
+  }
 }
 
 /**

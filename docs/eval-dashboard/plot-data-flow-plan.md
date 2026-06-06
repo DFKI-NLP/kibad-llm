@@ -210,6 +210,7 @@ The current numeric shape stays close to the bar/error plotting data. It exports
             "displayCategory": "Model A",
             "series": "seed=1",
             "displaySeries": "Seed 1",
+            "runDirs": ["run-a", "run-b"],
             "samples": [0.75, 0.81]
           }
         ]
@@ -234,6 +235,7 @@ Matrix-like exports use the same envelope, but keep matrix metadata in `metadata
       "data": {
         "rows": ["Birke", "Eiche"],
         "cols": ["Birke", "UNDETECTED"],
+        "runDirs": ["run-a", "run-b"],
         "evaluationCells": [
           [
             ["Birke|#|Birke", 12],
@@ -249,11 +251,11 @@ Matrix-like exports use the same envelope, but keep matrix metadata in `metadata
 }
 ```
 
-Numeric exports embed metadata in `metadata` and sample-only pre-aggregation data in `data.points`. During rendering, numeric plot sources store the active tab's sample-only `buildNumericPlotEntriesInput()` entries as `dataSource`; `downloadActivePlotData()` converts those entries with `buildJsonSafeNumericPlottingData()`.
+Numeric exports embed metadata in `metadata` and sample-only pre-aggregation data in `data.points`. Each point keeps `runDirs` parallel to `samples`, so `runDirs[i]` identifies the evaluation that produced `samples[i]`. During rendering, numeric plot sources store the active tab's sample-only `buildNumericPlotEntriesInput()` entries as `dataSource`; `downloadActivePlotData()` converts those entries with `buildJsonSafeNumericPlottingData()`.
 
-Confusion-matrix exports use one plot object per visible heatmap. During rendering, each source plot embeds allowlisted `metadata` without `collections` and keeps the raw `getConfusionMatrixAggregationInput()` result as `dataSource`. On download, `buildJsonSafeMatrixPlottingData()` converts each sparse cell `Map` to an array of `[cellKey, value]` pairs because JSON does not serialize `Map` entries. These entries intentionally do not add per-run metadata.
+Confusion-matrix exports use one plot object per visible heatmap. Matrix `runDirs` stay parallel to `evaluationCells`, so `runDirs[i]` identifies `evaluationCells[i]`. During rendering, each source plot embeds allowlisted `metadata` without `collections` and keeps the raw `getConfusionMatrixAggregationInput()` result as `dataSource`. On download, `buildJsonSafeMatrixPlottingData()` converts each sparse cell `Map` to an array of `[cellKey, value]` pairs because JSON does not serialize `Map` entries.
 
-TP/FP/FN exports use one plot object per visible matrix. During rendering, each source plot embeds allowlisted `metadata` without `collections` and keeps the raw `getTpFpFnAggregationInput()` result as `dataSource`. On download, `buildJsonSafeMatrixPlottingData()` converts each sparse outcome-state `Map` to an array of `[cellKey, outcomeState]` pairs without adding per-run metadata.
+TP/FP/FN exports use the same matrix alignment contract. `getTpFpFnAggregationInput()` carries `runDirs` for both downloads and cell tooltip/copy summaries, preserving the original run identity for every outcome state. On download, `buildJsonSafeMatrixPlottingData()` converts each sparse outcome-state `Map` to an array of `[cellKey, outcomeState]` pairs.
 
 Matrix download data intentionally remains pre-filter and sparse:
 
@@ -290,10 +292,12 @@ TODO:
         - [x] `metricLabel` and `metricPath` in each sample, which are also redundant with the plot entry and with each other
         - [x] remove `runDir` from each sample
 - [ ] (P2) Shared matrix tab/card rendering. renderConfusionMatrixPlots() and renderTpFpFnPlots() could move into their respective modules, but I would not do that blindly. They need many dashboard dependencies. Moving them as-is would make confusion.js and tpfpfn.js know too much about dashboard state/DOM wiring. A better step than moving both full matrix renderers would be extracting a renderMatrixPlotTabsAndGrid() adapter, analogous to renderPlotTabsAndGrid(), probably into shared-matrix.js or a new matrix-render.js. Confusion and TP/FP/FN could pass callbacks for aggregation/filtering/SVG/title/legend. This is only worth it if it stays simple.
-- [ ] (P1) add list of runDirs to plots/metadata in the download data. Number of entries should be exactly the same as entries in plots/data/evaluationCells (confusion and TP/FP/FN) or plots/data/points/samples (numeric).
+- [x] (P1) add aligned run directories to plot data: numeric points keep `runDirs` parallel to `samples`; matrix plots keep `runDirs` parallel to `evaluationCells`.
 - [x] optimization: call buildJsonSafeMatrixPlottingData / buildJsonSafeNumericPlottingData in downloadActivePlotData instead of during rendering in dashboard.js
-- [ ] (P0) TP/FP/FN cell summaries lost real run-directory labels. docs/eval-dashboard/assets/js/plots/tpfpfn.js:330 now recreates evaluationLabels as evaluation 1, evaluation 2, etc. after splitting aggregation into input/from-input helpers. Before this refactor, the aggregation collected normalizeValue(evaluation?.runDir) while iterating the source evaluations. Those labels feed buildTpFpFnCellSummary() and become the copied/tooltip payload’s run_dir values at docs/eval-dashboard/assets/js/plots/tpfpfn.js:523. Impact: clicking a TP/FP/FN matrix cell no longer tells the user which run produced each TP/FP/FN/empty state. This is a visible behavior regression and also makes copied JSON less useful. Fix by carrying evaluationLabels or runDirs through getTpFpFnAggregationInput() alongside evaluationCells, then reuse them in getTpFpFnAggregationFromInput().
-- [ ] (P1) add "plot_tab_variant" (values: "prefix", "suffix", "overrides.metric.group", or "prediction group") to download data metadata so downstream consumers can disambiguate grouping modes without guessing from the plot tab name.
+- [x] (P0) restore TP/FP/FN cell-summary run directories by carrying `runDirs` through the shared aggregation input and reusing them for tooltip/copy payloads.
+    - [ ] check potential performance regression reported (does it really belong to this change?): TP/FP/FN provenance is still eagerly materialized for every matrix cell. docs/eval-dashboard/assets/js/plots/tpfpfn.js:355 creates an array of one state per evaluation for every row/column pair, then retains it in cells at docs/eval-dashboard/assets/js/plots/tpfpfn.js:373. The new lazy tooltip/clipboard helpers therefore remove only small object/string allocations, while the costly rows × columns × evaluations allocation remains. cells should retain only counts and presentCount. Preserve evaluationCells once on the aggregation object, then reconstruct one cell’s rowStates from those sparse maps only in the click handler. This matches the decision that clipboard details may be recalculated infrequently and should materially reduce aggregation memory and GC pressure. EDIT: I looked into it, and there is indeed too much logic that happens in getTpFpFnAggregationFromInput which should already happen in getTpFpFnAggregationInput (converting boolean tp/fp/fn to counts).
+- [ ] (P1) add "plot_tab_variant" (values: "prefix", "suffix", "overrides.metric.group", or "prediction group") to root level download data so downstream consumers can disambiguate grouping modes without guessing from the plot tab name. This should also clean up the plot tab name (e.g. for tpfpfn data, it currently starts with "group" if "Create tabs by:" is set to "prediction group", but this exact information should be covered by the new field instead of the tab name parsing logic).
+- [ ] (P2) improve keys in downloaded plot data: rename "evaluationCells" to simply "cells", should "runDirs" better be "run_dirs"? Same for "fieldLabel". Compare with other keys in the export and consider a consistent style (e.g. camelCase vs snake_case) for the public JSON schema
 
 ### 4. Introduce a DOM-Free Plot Dataset Module
 

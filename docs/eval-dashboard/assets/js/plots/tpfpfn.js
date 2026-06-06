@@ -10,8 +10,10 @@
 
 import { formatRounded, interpolateColor, normalizeValue } from "../utils/values.js";
 import {
+  assertAlignedArrayLengths,
   getMetricCollectionView,
   getMetricPreparedDataContainer,
+  getRequiredPlotRunDir,
   isMetricDataRecord,
   scheduleAdaptiveSvgFit,
 } from "./shared.js";
@@ -287,7 +289,7 @@ function prepareTpFpFnEvaluationData(evaluation, normalizedFieldLabel) {
  *
  * @param {Array<object>} experimentEvaluations - TP/FP/FN collection views.
  * @param {string} fieldLabel - Metric field to align.
- * @returns {{rows: Array<string>, cols: Array<string>, evaluationCells: Array<Map<string, object>>}} Aligned aggregation inputs.
+ * @returns {{rows: Array<string>, cols: Array<string>, runDirs: Array<string>, evaluationCells: Array<Map<string, object>>}} Aligned aggregation inputs.
  */
 export function getTpFpFnAggregationInput(experimentEvaluations, fieldLabel) {
   const normalizedFieldLabel = normalizeValue(fieldLabel).trim();
@@ -296,6 +298,7 @@ export function getTpFpFnAggregationInput(experimentEvaluations, fieldLabel) {
   }
   const rowLabels = new Set();
   const colLabels = new Set();
+  const runDirs = [];
   const evaluationCells = [];
 
   for (const evaluation of experimentEvaluations) {
@@ -306,12 +309,20 @@ export function getTpFpFnAggregationInput(experimentEvaluations, fieldLabel) {
     for (const label of prepared.colLabels) {
       colLabels.add(label);
     }
+    runDirs.push(getRequiredPlotRunDir(evaluation, "TpFpFnCollector aggregation"));
     evaluationCells.push(prepared.cells);
   }
+  assertAlignedArrayLengths(
+    "TpFpFnCollector aggregation",
+    "runDirs",
+    runDirs,
+    "evaluationCells",
+    evaluationCells
+  );
 
   const rows = Array.from(rowLabels).sort((a, b) => plotSortCollator.compare(a, b));
   const cols = Array.from(colLabels).sort((a, b) => plotSortCollator.compare(a, b));
-  return { rows, cols, evaluationCells };
+  return { rows, cols, runDirs, evaluationCells };
 }
 
 /**
@@ -323,11 +334,17 @@ export function getTpFpFnAggregationInput(experimentEvaluations, fieldLabel) {
  * is aligned across the same evaluation count and can report explicit empties.
  *
  * @param {object} aggregationInput - Output of getTpFpFnAggregationInput.
- * @returns {object} Aggregated rows, columns, cell states, counts, and evaluation labels.
+ * @returns {object} Aggregated rows, columns, cell states, counts, and run directories.
  */
 export function getTpFpFnAggregationFromInput(aggregationInput) {
-  const { rows, cols, evaluationCells } = aggregationInput;
-  const evaluationLabels = evaluationCells.map((_cellMap, index) => `evaluation ${index + 1}`);
+  const { rows, cols, runDirs, evaluationCells } = aggregationInput;
+  assertAlignedArrayLengths(
+    "TpFpFnCollector aggregation input",
+    "runDirs",
+    runDirs,
+    "evaluationCells",
+    evaluationCells
+  );
   const cells = new Map();
 
   for (const row of rows) {
@@ -366,7 +383,7 @@ export function getTpFpFnAggregationFromInput(aggregationInput) {
     cols,
     cells,
     totalEvaluations: evaluationCells.length,
-    evaluationLabels,
+    runDirs: [...runDirs],
   };
 }
 
@@ -496,59 +513,84 @@ export function buildTpFpFnTabMap({
 }
 
 /**
- * Builds tooltip lines and copyable JSON payload for a TP/FP/FN matrix cell.
+ * Builds the shared semantic details for one TP/FP/FN matrix cell.
  *
- * Tooltips need compact percentages for quick inspection, while clicks need a
- * structured payload that preserves per-evaluation empty/TP/FP/FN states. This
- * helper keeps those two views of one aggregated cell consistent.
+ * This interaction model is constructed lazily for tooltips and clipboard
+ * data. Per-run provenance is formatted separately only when a cell is copied.
+ *
+ * @param {object} stats - Aggregated cell stats.
+ * @param {number} totalEvaluations - Number of evaluations in the aggregation.
+ * @returns {{counts: object, shares: object}} Cell display details.
+ */
+export function buildTpFpFnCellDetails(stats, totalEvaluations) {
+  return {
+    counts: { ...stats.counts },
+    shares: Object.fromEntries(
+      TP_FP_FN_KEYS.map((outcomeKey) => [
+        outcomeKey,
+        getTpFpFnOutcomeShare(stats, totalEvaluations, outcomeKey),
+      ])
+    ),
+  };
+}
+
+function getTpFpFnOutcomeShare(stats, totalEvaluations, outcomeKey) {
+  return totalEvaluations ? stats.counts[outcomeKey] / totalEvaluations : 0;
+}
+
+/**
+ * Builds tooltip lines from semantic TP/FP/FN cell details.
  *
  * @param {string} row - Document id.
  * @param {string} col - Label value.
- * @param {object} stats - Aggregated cell stats.
- * @param {number} totalEvaluations - Number of evaluations in the aggregation.
- * @param {Array<string>} evaluationLabels - Labels for each evaluation.
+ * @param {object} details - Output of buildTpFpFnCellDetails.
  * @param {number} precision - Decimal precision for displayed percentages.
- * @returns {{lines: Array<string>, payload: object}} Tooltip text and JSON payload.
+ * @returns {Array<string>} Tooltip lines.
  */
-export function buildTpFpFnCellSummary(row, col, stats, totalEvaluations, evaluationLabels, precision) {
-  // Percentages normalize raw TP/FP/FN counts by the number of selected
-  // evaluations, not by the number of non-empty cells. Empty runs remain in the
-  // denominator, so TP + FP + FN can be below 100%.
-  const tpShare = totalEvaluations ? (stats.counts.tp / totalEvaluations) * 100 : 0;
-  const fpShare = totalEvaluations ? (stats.counts.fp / totalEvaluations) * 100 : 0;
-  const fnShare = totalEvaluations ? (stats.counts.fn / totalEvaluations) * 100 : 0;
-  const evaluations = stats.rowStates.map((rowState, evalIndex) => {
-    const outcomes = TP_FP_FN_KEYS.filter((bucket) => rowState[bucket]);
-    return {
-      run_dir: evaluationLabels[evalIndex] || `evaluation ${evalIndex + 1}`,
-      value: outcomes.map((bucket) => getTpFpFnOutcomeLabel(bucket)).join(", ") || "empty",
-    };
-  });
-
-  const lines = [
+export function buildTpFpFnCellTooltipLines(row, col, details, precision) {
+  return [
     `document: ${row}`,
     `label:    ${col}`,
-    `TP/FP/FN %: ${formatRounded(tpShare, precision)} / ${formatRounded(fpShare, precision)} / ${formatRounded(fnShare, precision)}`,
+    `TP/FP/FN %: ${formatRounded(details.shares.tp * 100, precision)} / ` +
+      `${formatRounded(details.shares.fp * 100, precision)} / ` +
+      `${formatRounded(details.shares.fn * 100, precision)}`,
   ];
+}
+
+/**
+ * Builds the copyable JSON payload from semantic TP/FP/FN cell details.
+ *
+ * @param {string} row - Document id.
+ * @param {string} col - Label value.
+ * @param {object} details - Output of buildTpFpFnCellDetails.
+ * @param {Array<object>} rowStates - Per-evaluation outcome states.
+ * @param {Array<string>} runDirs - Run directory for each evaluation.
+ * @returns {object} Clipboard JSON payload.
+ */
+export function buildTpFpFnCellClipboardPayload(row, col, details, rowStates, runDirs) {
+  assertAlignedArrayLengths(
+    "TpFpFnCollector clipboard payload",
+    "runDirs",
+    runDirs,
+    "rowStates",
+    rowStates
+  );
+  const values = rowStates.map((rowState) => {
+    const outcomes = TP_FP_FN_KEYS.filter((bucket) => rowState[bucket]);
+    return outcomes.map((bucket) => getTpFpFnOutcomeLabel(bucket)).join(", ") || "empty";
+  });
 
   return {
-    lines,
-    payload: {
-      document_id: row,
-      label: col,
-      counts: {
-        tp: stats.counts.tp,
-        fp: stats.counts.fp,
-        fn: stats.counts.fn,
-        empty: stats.counts.empty,
-      },
-      percentages: {
-        tp: tpShare,
-        fp: fpShare,
-        fn: fnShare,
-      },
-      evaluations,
+    document_id: row,
+    label: col,
+    counts: { ...details.counts },
+    percentages: {
+      tp: details.shares.tp * 100,
+      fp: details.shares.fp * 100,
+      fn: details.shares.fn * 100,
     },
+    values,
+    run_dirs: [...runDirs],
   };
 }
 
@@ -594,7 +636,7 @@ export function createTpFpFnCombinedMatrixSvg({
   writeTextToClipboard,
   consoleLike = globalThis.console,
 }) {
-  const { rows, cols, cells, totalEvaluations, evaluationLabels } = aggregation;
+  const { rows, cols, cells, totalEvaluations, runDirs } = aggregation;
   const miniCellWidth = 18;
   const miniCellHeight = 18;
   const miniGap = 2;
@@ -686,9 +728,6 @@ export function createTpFpFnCombinedMatrixSvg({
       TP_FP_FN_KEYS.forEach((outcomeKey, outcomeIndex) => {
         const subX = x + cellPadding + outcomeIndex * (miniCellWidth + miniGap);
         const subY = y + cellPadding;
-        // Mini-cell color intensity uses the same normalization as the tooltip:
-        // count for this outcome divided by all selected evaluations.
-        const share = totalEvaluations ? stats.counts[outcomeKey] / totalEvaluations : 0;
         const palette = getTpFpFnPalette(outcomeKey);
         const rect = documentLike.createElementNS("http://www.w3.org/2000/svg", "rect");
         rect.setAttribute("x", String(subX));
@@ -696,7 +735,14 @@ export function createTpFpFnCombinedMatrixSvg({
         rect.setAttribute("width", String(miniCellWidth));
         rect.setAttribute("height", String(miniCellHeight));
         rect.setAttribute("rx", "2");
-        rect.setAttribute("fill", interpolateColor(palette.start, palette.end, share));
+        rect.setAttribute(
+          "fill",
+          interpolateColor(
+            palette.start,
+            palette.end,
+            getTpFpFnOutcomeShare(stats, totalEvaluations, outcomeKey)
+          )
+        );
         rect.setAttribute("stroke", "#ffffffcc");
         rect.setAttribute("stroke-width", "1");
         contentGroup.appendChild(rect);
@@ -710,33 +756,27 @@ export function createTpFpFnCombinedMatrixSvg({
       overlay.setAttribute("fill", "transparent");
       overlay.style.cursor = "pointer";
       overlay.addEventListener("mouseover", (event) => {
-        const summary = buildTpFpFnCellSummary(
-          row,
-          col,
-          stats,
-          totalEvaluations,
-          evaluationLabels,
-          precision
-        );
-        showTooltip(event, summary.lines);
+        const details = buildTpFpFnCellDetails(stats, totalEvaluations);
+        showTooltip(event, buildTpFpFnCellTooltipLines(row, col, details, precision));
       });
       overlay.addEventListener("mousemove", moveTooltip);
       overlay.addEventListener("mouseout", hideTooltip);
       overlay.addEventListener("click", async (event) => {
-        const summary = buildTpFpFnCellSummary(
+        const details = buildTpFpFnCellDetails(stats, totalEvaluations);
+        const tooltipLines = buildTpFpFnCellTooltipLines(row, col, details, precision);
+        const payload = buildTpFpFnCellClipboardPayload(
           row,
           col,
-          stats,
-          totalEvaluations,
-          evaluationLabels,
-          precision
+          details,
+          stats.rowStates,
+          runDirs
         );
         try {
-          await writeTextToClipboard(JSON.stringify(summary.payload, null, 2));
-          showTooltip(event, [...summary.lines, "", "Copied JSON to clipboard."]);
+          await writeTextToClipboard(JSON.stringify(payload, null, 2));
+          showTooltip(event, [...tooltipLines, "", "Copied JSON to clipboard."]);
         } catch (error) {
           consoleLike?.warn?.("Failed to copy TpFpFn cell summary to clipboard.", error);
-          showTooltip(event, [...summary.lines, "", "Copy to clipboard failed."]);
+          showTooltip(event, [...tooltipLines, "", "Copy to clipboard failed."]);
         }
       });
       contentGroup.appendChild(overlay);

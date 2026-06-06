@@ -11,6 +11,7 @@ import {
   scheduleAdaptiveSvgFit,
 } from "../../../../docs/eval-dashboard/assets/js/plots/shared.js";
 import {
+  buildJsonSafeMatrixPlottingData,
   buildMatrixDownloadMetadata,
 } from "../../../../docs/eval-dashboard/assets/js/plots/shared-matrix.js";
 import { createDocumentStub } from "./plots.dom-test-helpers.mjs";
@@ -53,6 +54,34 @@ test("shared matrix helpers build download metadata", () => {
       label: "model=a",
       fieldLabel: "field_a",
     }
+  );
+});
+
+/**
+ * Verify matrix download serialization preserves and validates run alignment.
+ */
+test("shared matrix helpers serialize aligned run directories", () => {
+  assert.deepEqual(
+    buildJsonSafeMatrixPlottingData({
+      rows: ["actual"],
+      cols: ["predicted"],
+      runDirs: ["run-a"],
+      evaluationCells: [new Map([["actual|#|predicted", 2]])],
+    }),
+    {
+      rows: ["actual"],
+      cols: ["predicted"],
+      runDirs: ["run-a"],
+      evaluationCells: [[["actual|#|predicted", 2]]],
+    }
+  );
+
+  assert.throws(
+    () => buildJsonSafeMatrixPlottingData({
+      runDirs: ["run-a"],
+      evaluationCells: [],
+    }),
+    /runDirs\.length \(1\) to equal evaluationCells\.length \(0\)/
   );
 });
 

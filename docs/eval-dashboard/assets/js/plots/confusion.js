@@ -10,9 +10,11 @@
 
 import { formatRounded, interpolateColor, meanAndStd, normalizeValue } from "../utils/values.js";
 import {
+  assertAlignedArrayLengths,
   getMetricCollectionSourceRunDir,
   getMetricCollectionView,
   getMetricPreparedDataContainer,
+  getRequiredPlotRunDir,
   isMetricDataRecord,
 } from "./shared.js";
 import { buildMatrixTabMap, getMatrixCellKey } from "./shared-matrix.js";
@@ -175,7 +177,7 @@ function sortWithForcedLast(values, forcedLast) {
  *
  * @param {Array<object>} experimentEvaluations - Confusion matrix collection views.
  * @param {string} fieldLabel - Metric field to align.
- * @returns {{rows: Array<string>, cols: Array<string>, evaluationCells: Array<Map<string, number>>}} Aligned aggregation inputs.
+ * @returns {{rows: Array<string>, cols: Array<string>, runDirs: Array<string>, evaluationCells: Array<Map<string, number>>}} Aligned aggregation inputs.
  */
 export function getConfusionMatrixAggregationInput(experimentEvaluations, fieldLabel) {
   const normalizedFieldLabel = normalizeValue(fieldLabel).trim();
@@ -184,6 +186,7 @@ export function getConfusionMatrixAggregationInput(experimentEvaluations, fieldL
   }
   const rowLabels = new Set();
   const colLabels = new Set();
+  const runDirs = [];
   const evaluationCells = [];
 
   for (const evaluation of experimentEvaluations) {
@@ -198,12 +201,20 @@ export function getConfusionMatrixAggregationInput(experimentEvaluations, fieldL
     }
     // Store this run's sparse cell map as one sample in the cross-run
     // aggregation.
+    runDirs.push(getRequiredPlotRunDir(evaluation, "ConfusionMatrix aggregation"));
     evaluationCells.push(prepared.cells);
   }
+  assertAlignedArrayLengths(
+    "ConfusionMatrix aggregation",
+    "runDirs",
+    runDirs,
+    "evaluationCells",
+    evaluationCells
+  );
 
   const rows = sortWithForcedLast(rowLabels, "UNASSIGNABLE");
   const cols = sortWithForcedLast(colLabels, "UNDETECTED");
-  return { rows, cols, evaluationCells };
+  return { rows, cols, runDirs, evaluationCells };
 }
 
 /**
@@ -218,7 +229,14 @@ export function getConfusionMatrixAggregationInput(experimentEvaluations, fieldL
  * @returns {{rows: Array<string>, cols: Array<string>, cells: Map<string, object>}} Aggregated matrix.
  */
 export function getConfusionMatrixAggregationFromInput(aggregationInput) {
-  const { rows, cols, evaluationCells } = aggregationInput;
+  const { rows, cols, runDirs, evaluationCells } = aggregationInput;
+  assertAlignedArrayLengths(
+    "ConfusionMatrix aggregation input",
+    "runDirs",
+    runDirs,
+    "evaluationCells",
+    evaluationCells
+  );
   const cells = new Map();
   for (const row of rows) {
     for (const col of cols) {

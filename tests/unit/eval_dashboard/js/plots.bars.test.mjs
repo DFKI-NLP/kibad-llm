@@ -28,11 +28,14 @@ test("bar plot helpers collect numeric metric paths and derive plot entries", ()
   const plotGroups = [
     {
       values: { model: "a", seed: "1" },
-      evaluations: [{ data: { score: { mean: 0.5 } } }, { data: { score: { mean: 0.7 } } }],
+      evaluations: [
+        { runDir: "run-a1", data: { score: { mean: 0.5 } } },
+        { runDir: "run-a2", data: { score: { mean: 0.7 } } },
+      ],
     },
     {
       values: { model: "b", seed: "1" },
-      evaluations: [{ data: { score: { mean: 0.9 } } }],
+      evaluations: [{ runDir: "run-b1", data: { score: { mean: 0.9 } } }],
     },
   ];
 
@@ -56,6 +59,7 @@ test("bar plot helpers collect numeric metric paths and derive plot entries", ()
     entries[0].points[0].samples,
     [0.5, 0.7]
   );
+  assert.deepEqual(entries[0].points[0].runDirs, ["run-a1", "run-a2"]);
 
   assert.throws(
     () => buildNumericPlotEntriesInput({
@@ -171,6 +175,7 @@ test("bar plot helpers build compact JSON-safe numeric plotting data", () => {
         displaySeries: "Seed 1",
         label: "model=a",
         displayLabel: "Model A",
+        runDirs: ["run-a", "run-b"],
         samples: [0.75, 0.81],
       }],
     }),
@@ -180,9 +185,17 @@ test("bar plot helpers build compact JSON-safe numeric plotting data", () => {
         displayCategory: "Model A",
         series: "seed=1",
         displaySeries: "Seed 1",
+        runDirs: ["run-a", "run-b"],
         samples: [0.75, 0.81],
       }],
     }
+  );
+
+  assert.throws(
+    () => buildJsonSafeNumericPlottingData({
+      points: [{ runDirs: ["run-a"], samples: [0.75, 0.81] }],
+    }),
+    /runDirs\.length \(1\) to equal samples\.length \(2\)/
   );
 });
 

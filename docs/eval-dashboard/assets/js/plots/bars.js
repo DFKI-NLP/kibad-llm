@@ -8,9 +8,11 @@
 
 import { meanAndStd } from "../utils/values.js";
 import {
+  assertAlignedArrayLengths,
   getGroupLabelForFields,
   getMetricPreparedDataContainer,
   getPlotDisplayLabel,
+  getRequiredPlotRunDir,
   scheduleAdaptiveSvgFit,
 } from "./shared.js";
 import {
@@ -236,8 +238,19 @@ function buildNumericPlotEntriesForMetricPaths({
   for (const metricPath of metricPaths) {
     const points = [];
     plotGroups.forEach((group, index) => {
-      const samples = (group.evaluations || []).map((evaluation) =>
+      const evaluations = group.evaluations || [];
+      const samples = evaluations.map((evaluation) =>
         getNumericMetricSampleValue(evaluation, metricPath, metricType)
+      );
+      const runDirs = evaluations.map((evaluation) =>
+        getRequiredPlotRunDir(evaluation, `Numeric metric ${JSON.stringify(metricPath.label)}`)
+      );
+      assertAlignedArrayLengths(
+        `Numeric metric ${JSON.stringify(metricPath.label)}`,
+        "runDirs",
+        runDirs,
+        "samples",
+        samples
       );
       if (!samples.length) {
         return;
@@ -261,6 +274,7 @@ function buildNumericPlotEntriesForMetricPaths({
         displayCategory: displayCategoryLabel,
         series: seriesLabel,
         displaySeries: displaySeriesLabel,
+        runDirs,
         samples,
       });
     });
@@ -345,13 +359,25 @@ export function buildNumericDownloadMetadata(plotEntry = {}) {
  */
 export function buildJsonSafeNumericPlottingData(plotEntry) {
   return {
-    points: (plotEntry?.points || []).map((point) => ({
-      category: point.category,
-      displayCategory: point.displayCategory,
-      series: point.series,
-      displaySeries: point.displaySeries,
-      samples: point.samples || [],
-    })),
+    points: (plotEntry?.points || []).map((point, index) => {
+      const runDirs = point?.runDirs || [];
+      const samples = point?.samples || [];
+      assertAlignedArrayLengths(
+        `Numeric download point ${index}`,
+        "runDirs",
+        runDirs,
+        "samples",
+        samples
+      );
+      return {
+        category: point.category,
+        displayCategory: point.displayCategory,
+        series: point.series,
+        displaySeries: point.displaySeries,
+        runDirs,
+        samples,
+      };
+    }),
   };
 }
 

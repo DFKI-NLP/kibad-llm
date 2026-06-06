@@ -6,7 +6,9 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import {
-  buildTpFpFnCellSummary,
+  buildTpFpFnCellClipboardPayload,
+  buildTpFpFnCellDetails,
+  buildTpFpFnCellTooltipLines,
   buildTpFpFnTabMap,
   createTpFpFnCombinedMatrixSvg,
   createTpFpFnLegendElement,
@@ -150,10 +152,22 @@ test("tpfpfn helpers build reusable aligned aggregation inputs", () => {
 
   assert.deepEqual(input.rows, ["doc1", "filtered"]);
   assert.deepEqual(input.cols, ["A", "B", "hidden"]);
+  assert.deepEqual(input.runDirs, ["source-a", "source-b"]);
   assert.deepEqual(input.evaluationCells[0].get("doc1|#|A"), { tp: true, fp: false, fn: false });
   assert.deepEqual(input.evaluationCells[1].get("doc1|#|A"), { tp: false, fp: false, fn: true });
   assert.deepEqual(aggregation.cells.get("doc1|#|A").counts, { tp: 1, fp: 0, fn: 1, empty: 0 });
   assert.deepEqual(aggregation.cells.get("filtered|#|hidden").counts, { tp: 0, fp: 0, fn: 1, empty: 1 });
+  assert.deepEqual(aggregation.runDirs, ["source-a", "source-b"]);
+
+  assert.throws(
+    () => getTpFpFnAggregationFromInput({
+      rows: [],
+      cols: [],
+      runDirs: ["source-a"],
+      evaluationCells: [],
+    }),
+    /runDirs\.length \(1\) to equal evaluationCells\.length \(0\)/
+  );
 });
 
 /**
@@ -194,19 +208,44 @@ test("tpfpfn helpers wrap collection metrics, build tab maps, and summarize cell
   assert.deepEqual(Array.from(tabMap.values()).map((entry) => entry.label), ["field_a", "field_b"]);
   assert.equal(tabMap.get("outer.field_a").plots[0].collections[0].fields.get("outer.field_a"), collectionData["outer.field_a"]);
 
-  const summary = buildTpFpFnCellSummary(
-    "doc",
-    "A",
+  const details = buildTpFpFnCellDetails(
     {
       rowStates: [{ tp: true, fp: false, fn: false }, { tp: false, fp: true, fn: false }],
       counts: { tp: 1, fp: 1, fn: 0, empty: 0 },
     },
-    2,
-    ["r1", "r2"],
     2
   );
-  assert.equal(summary.payload.percentages.tp, 50);
-  assert.deepEqual(summary.payload.evaluations.map((entry) => entry.value), ["TP", "FP"]);
+  assert.deepEqual(details.shares, { tp: 0.5, fp: 0.5, fn: 0 });
+  assert.equal("values" in details, false);
+  assert.equal("runDirs" in details, false);
+  assert.deepEqual(
+    buildTpFpFnCellTooltipLines("doc", "A", details, 2),
+    ["document: doc", "label:    A", "TP/FP/FN %: 50.00 / 50.00 / 0.00"]
+  );
+  const rowStates = [
+    { tp: true, fp: false, fn: false },
+    { tp: false, fp: true, fn: false },
+  ];
+  const payload = buildTpFpFnCellClipboardPayload(
+    "doc",
+    "A",
+    details,
+    rowStates,
+    ["r1", "r2"]
+  );
+  assert.equal(payload.percentages.tp, 50);
+  assert.deepEqual(payload.values, ["TP", "FP"]);
+  assert.deepEqual(payload.run_dirs, ["r1", "r2"]);
+  assert.throws(
+    () => buildTpFpFnCellClipboardPayload(
+      "doc",
+      "A",
+      details,
+      [{ tp: true, fp: false, fn: false }],
+      []
+    ),
+    /TpFpFnCollector clipboard payload requires runDirs\.length \(0\) to equal rowStates\.length \(1\)/
+  );
   assert.equal(getTpFpFnOutcomeColor("tp"), "rgb(22, 163, 74)");
 });
 
@@ -326,7 +365,8 @@ test("tpfpfn renderer creates interactive combined matrix cells", async () => {
   assert.deepEqual(shown[0], ["document: doc1", "label:    outer.label", "TP/FP/FN %: 50.0 / 50.0 / 0.0"]);
 
   await overlay.dispatch("click", { clientX: 10, clientY: 10 });
-  assert.equal(JSON.parse(copied).counts.tp, 1);
+  assert.deepEqual(JSON.parse(copied).values, ["TP", "FP"]);
+  assert.deepEqual(JSON.parse(copied).run_dirs, ["r1", "r2"]);
   assert.equal(shown.at(-1).at(-1), "Copied JSON to clipboard.");
 });
 
