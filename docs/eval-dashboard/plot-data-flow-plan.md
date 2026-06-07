@@ -296,7 +296,6 @@ TODO:
         - [x] remove redundant `parts`, `prefix`, and `suffix` from `metadata`
         - [x] `metricLabel` and `metricPath` in each sample, which are also redundant with the plot entry and with each other
         - [x] remove `runDir` from each sample
-- [ ] (P2) Shared matrix tab/card rendering. renderConfusionMatrixPlots() and renderTpFpFnPlots() could move into their respective modules, but I would not do that blindly. They need many dashboard dependencies. Moving them as-is would make confusion.js and tpfpfn.js know too much about dashboard state/DOM wiring. A better step than moving both full matrix renderers would be extracting a renderMatrixPlotTabsAndGrid() adapter, analogous to renderPlotTabsAndGrid(), probably into shared-matrix.js or a new matrix-render.js. Confusion and TP/FP/FN could pass callbacks for aggregation/filtering/SVG/title/legend. This is only worth it if it stays simple.
 - [x] (P1) add aligned run directories to plot data: numeric points keep `runDirs` parallel to `samples`; matrix plots keep `runDirs` parallel to `cells`.
 - [x] optimization: call buildJsonSafeMatrixPlottingData / buildJsonSafeNumericPlottingData in downloadActivePlotData instead of during rendering in dashboard.js
 - [x] (P0) restore TP/FP/FN cell-summary run directories by carrying `runDirs` through the shared aggregation input and reusing them for tooltip/copy payloads.
@@ -304,6 +303,7 @@ TODO:
 - [x] (P1) add `"plot_tab_variant"` (values: `"prefix"`, `"suffix"`, `"error_section"`, `"metric_field"`, or `"prediction_group"`) to root level download data so downstream consumers can disambiguate grouping modes without guessing from the plot tab name. Prediction-group downloads expose the raw group ID as `"plot_tab"` instead of the internal tab-map key.
 - [x] (P2) use consistent snake_case keys in downloaded plot data and rename internal matrix input `evaluationCells` to `cells`.
 - [x] (P1) align numeric and matrix preparation around a definition-first pipeline: build tabs from lightweight plot definitions, resolve the active tab, and prepare numeric samples only for active definitions.
+- [ ] (P2) Unify plot-family orchestration around a shared active-tab contract. All plot families should: build definitions and tabs, resolve the active tab once, prepare only active-tab data, render prepared cards, and construct downloads from the same inputs. Extract small shared helpers for tab rendering, card/grid DOM construction, and download envelopes. Refactor renderBarPlotTabsAndGrid() to use these helpers alongside confusion and TP/FP/FN. Keep family-specific preparation, filtering, titles, legends, and SVG rendering in their existing modules. Avoid a universal callback-heavy renderer.
 
 ### 4. Introduce a DOM-Free Plot Dataset Module
 
