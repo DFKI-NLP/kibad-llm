@@ -310,7 +310,7 @@ TODO:
 
 Create a module such as `docs/eval-dashboard/assets/js/plots/data.js`.
 
-TODO: double-check parts below! Note that only "changing default values" should change the plot dataset, not the grouping etc. What does this imply? EDIT: not even "changing default values" should change the state!
+TODO: double-check parts below, it is quite outdated!
 
 This module should build a normalized plot dataset from the same state and selector-derived inputs the current plot renderer uses:
 
