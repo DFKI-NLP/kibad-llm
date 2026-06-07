@@ -304,6 +304,7 @@ TODO:
 - [x] (P2) use consistent snake_case keys in downloaded plot data and rename internal matrix input `evaluationCells` to `cells`.
 - [x] (P1) align numeric and matrix preparation around a definition-first pipeline: build tabs from lightweight plot definitions, resolve the active tab, and prepare numeric samples only for active definitions.
 - [ ] (P2) Unify plot-family orchestration around a shared active-tab contract. All plot families should: build definitions and tabs, resolve the active tab once, prepare only active-tab data, render prepared cards, and construct downloads from the same inputs. Extract small shared helpers for tab rendering, card/grid DOM construction, and download envelopes. Refactor renderBarPlotTabsAndGrid() to use these helpers alongside confusion and TP/FP/FN. Keep family-specific preparation, filtering, titles, legends, and SVG rendering in their existing modules. Avoid a universal callback-heavy renderer.
+    - [ ] check this plan regarding efficiency implications. It should increase efficiency, not lowering it!
 
 ### 4. Introduce a DOM-Free Plot Dataset Module
 
