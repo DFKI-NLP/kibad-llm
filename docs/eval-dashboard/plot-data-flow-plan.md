@@ -1,9 +1,11 @@
 # Eval Dashboard Plot Data Flow Plan
 
-This plan captures the current plotting data flow and a staged refactor path for two future goals:
+This plan captures the current plotting data flow, the implemented download-data work, and the staged refactor path for the remaining goals:
 
 - reduce latency when changing grouping, plot tabs, or plot options
-- add a `Download data` action below the figures that exports the exact data used by the currently downloadable figures, before plot aggregation such as mean and standard deviation
+- keep `Download Data` derived from the exact pre-aggregation inputs used by the downloadable figures
+- clarify plot-family orchestration without introducing a universal renderer
+- make one selected plot, rather than every card in an active tab, the eventual unit of expensive preparation and rendering
 
 The plan follows the repository guidance in `CONTRIBUTING_CODE.md`: related refactors are acceptable when they clarify responsibilities and provide concrete long-term value, and dashboard logic should stay DOM-free where practical with focused JavaScript tests.
 
@@ -12,14 +14,18 @@ The plan follows the repository guidance in `CONTRIBUTING_CODE.md`: related refa
 The plotting path is currently driven from `docs/eval-dashboard/assets/js/main.js`.
 
 1. `main.js` owns the singleton dashboard state and calls `renderEvaluations()` for most evaluation and plot setting changes.
-1. `renderEvaluations()` rebuilds evaluation tabs, table, JSON pane, options, summary, and then calls `renderEvaluationPlots()`.
-1. `renderEvaluationPlots()` delegates to `renderEvaluationPlotsForDashboard()` in `plots/dashboard.js`.
-1. `renderEvaluationPlotsForDashboard()` recomputes selected groups, metric type, plot groups, varying group fields, tab maps, aggregations, and then redraws SVG figures.
-1. Metric-specific aggregation happens in the plot modules:
-    - numeric bar/error metrics use prepared numeric metric data and `buildPlotEntries()` in `plots/bars.js`
-    - confusion matrices use collection views, `getConfusionMatrixAggregationInput()`, and `getConfusionMatrixAggregationFromInput()` in `plots/confusion.js`
 
-- TP/FP/FN collectors use collection views, `getTpFpFnAggregationInput()`, and `getTpFpFnAggregationFromInput()` in `plots/tpfpfn.js`
+1. `renderEvaluations()` rebuilds evaluation tabs, table, JSON pane, options, summary, and then calls `renderEvaluationPlots()`.
+
+1. `renderEvaluationPlots()` delegates to `renderEvaluationPlotsForDashboard()` in `plots/dashboard.js`.
+
+1. `renderEvaluationPlotsForDashboard()` recomputes selected groups, metric type, plot groups, varying group fields, tab maps, aggregations, and then redraws SVG figures.
+
+1. Metric-specific aggregation happens in the plot modules:
+
+    - numeric bar/error metrics discover lightweight definitions with `buildNumericPlotDefinitions()`, prepare active-tab samples with `buildNumericPlotEntriesInput()`, and aggregate those samples with `getNumericPlotEntriesFromInput()` in `plots/bars.js`
+    - confusion matrices use collection views, `getConfusionMatrixAggregationInput()`, and `getConfusionMatrixAggregationFromInput()` in `plots/confusion.js`
+    - TP/FP/FN collectors use collection views, `getTpFpFnAggregationInput()`, and `getTpFpFnAggregationFromInput()` in `plots/tpfpfn.js`
 
 1. `Download Figures` currently exports visible rendered SVG cards through `plots/export.js`.
 
@@ -40,7 +46,7 @@ Repeated selector and plot-data work also contributes:
 - metric-family aggregation
 - SVG rendering
 
-Some plot-tab clicks already avoid the full table render, but they still rebuild tab maps and active plot data before redrawing.
+Active plot-tab clicks already avoid the full table render, but they still rebuild tab maps and prepare, aggregate, and render every plot card in the active tab. Other plot-only controls still call the full `renderEvaluations()` path.
 
 ## Refactor Plan
 
@@ -303,142 +309,190 @@ TODO:
 - [x] (P1) add `"plot_tab_variant"` (values: `"prefix"`, `"suffix"`, `"error_section"`, `"metric_field"`, or `"prediction_group"`) to root level download data so downstream consumers can disambiguate grouping modes without guessing from the plot tab name. Prediction-group downloads expose the raw group ID as `"plot_tab"` instead of the internal tab-map key.
 - [x] (P2) use consistent snake_case keys in downloaded plot data and rename internal matrix input `evaluationCells` to `cells`.
 - [x] (P1) align numeric and matrix preparation around a definition-first pipeline: build tabs from lightweight plot definitions, resolve the active tab, and prepare numeric samples only for active definitions.
-- [ ] (P2) Unify plot-family orchestration around a shared active-tab contract. All plot families should: build definitions and tabs, resolve the active tab once, prepare only active-tab data, render prepared cards, and construct downloads from the same inputs. Extract small shared helpers for tab rendering, card/grid DOM construction, and download envelopes. Refactor renderBarPlotTabsAndGrid() to use these helpers alongside confusion and TP/FP/FN. Keep family-specific preparation, filtering, titles, legends, and SVG rendering in their existing modules. Avoid a universal callback-heavy renderer.
-    - [ ] check this plan regarding efficiency implications. It should increase efficiency, not lowering it!
+- [ ] (P2, current PR) Unify plot-family orchestration around a shared active-tab contract without changing visible behavior or download scope.
+    - [ ] Make every family follow the same explicit sequence: build lightweight definitions and tabs, order tabs, resolve the active tab once, prepare only definitions in that active tab, aggregate/filter prepared inputs, render cards, and construct downloads from those same inputs.
+    - [ ] Introduce a small DOM-free active-tab result, for example `{orderedKeys, activeKey, activeTab}`, rather than adding a normalized all-family prepared-data model.
+    - [ ] Extract small concrete helpers for rendering precomputed tab-button models, appending empty states, creating plot cards/grids, and constructing lazy active-tab download envelopes.
+    - [ ] Remove the numeric-only orchestration ownership from `renderBarPlotTabsAndGrid()` and make numeric, confusion, and TP/FP/FN branches use the same lifecycle helpers. Family modules should continue to own preparation, aggregation, filtering, sorting details, titles, legends, and SVG rendering.
+    - [ ] Keep JSON-safe conversion on the download click path. Rendering should retain references to the exact active-tab pre-aggregation inputs and must not eagerly convert `Map` or point data.
+    - [ ] Preserve current matrix empty-state behavior: a plot filtered to no visible rows or columns is neither rendered nor included in the active download envelope.
+    - [ ] Do not prepare, aggregate, filter, create cards, or build download inputs for inactive tabs. Add focused call-count or sentinel tests that fail if inactive-tab preparation occurs.
+    - [ ] Avoid a universal callback-heavy renderer, a rigid cross-family prepared-plot schema, caches tied to complete active-tab arrays, or APIs that make rendering every active-tab plot a permanent requirement.
+    - [ ] Keep this step compatible with a later `active tab -> active plot` extension. The card/grid helper may later render one card, but active-tab resolution and shared lifecycle ownership should remain reusable.
+    - [ ] Verify with the complete eval-dashboard JavaScript test suite and dashboard-specific Python tests. Use the benchmark as a regression check for confusion and TP/FP/FN paths; do not claim numeric timing improvements until representative numeric benchmark scenarios exist.
 
-### 4. Introduce a DOM-Free Plot Dataset Module
+The current PR should end after this orchestration cleanup. It completes the download-data feature and its related plot-module cleanup without mixing in the larger behavior and render-lifecycle changes below.
 
-Create a module such as `docs/eval-dashboard/assets/js/plots/data.js`.
+### 4. Make One Plot the Active Unit of Work
 
-TODO: double-check parts below, it is quite outdated!
+In the next PR, deliberately relax the current active-tab-wide rendering behavior. An active tab can currently contain many expensive plot definitions:
 
-This module should build a normalized plot dataset from the same state and selector-derived inputs the current plot renderer uses:
+- a matrix metric-field tab contains one matrix per prediction group
+- a matrix prediction-group tab contains one matrix per metric field
+- a numeric tab contains one card per metric path
 
-- active evaluation experiment and visualization metric type
-- selected prediction groups and selected evaluation groups
-- evaluation context, including experiment evaluations, evaluation tab state, evaluation group-by fields, selected evaluation group ids, and evaluation default values
-- prediction grouping state, including prediction group-by fields and prediction default values used when resolving effective plot-group values
-- resolved plot groups, plot-group fields, and varying plot-group fields
-- metric-family source data, including numeric metric paths, confusion-matrix collection views, or TP/FP/FN collection views
-- plot tab grouping mode, such as prefix/suffix tabs for bar plots and metric-field/prediction-group tabs for confusion and TP/FP/FN plots
-- grouped-bar field selections for numeric plots
-- display label settings where labels are stored in the dataset or exported schema
+Today every definition in the active tab is prepared, aggregated, filtered, rendered as SVG, and included in downloads. Replace that with a two-level selection contract:
 
-The dataset module is the internal shared data boundary. Its output should prioritize rendering reuse, cacheability, and DOM-free tests. Rendering should consume this dataset directly or through small aggregation adapters, and the future `Download data` action should derive its public file format from the same dataset instead of rebuilding plot inputs independently.
+```text
+plot family
+  -> active tab
+    -> active plot
+```
 
-DOM dependencies and pure presentation settings should stay outside the raw dataset. Active plot tab, thresholds, rounding precision, export background, and similar view settings should be applied by downstream aggregation, filtering, rendering, or export adapters unless storing them in the dataset is required to make visible-scope export unambiguous.
+Required behavior changes:
 
-This should be the next major boundary after instrumentation because the baseline shows the expensive paths are dominated by plot-data recomputation rather than table rendering.
+- Show one selected plot card at a time instead of rendering the complete active-tab grid.
+- Expose the other plot definitions through a lightweight secondary tab row, selector, or equivalent control.
+- Resolve the active plot after resolving the active tab and before expensive preparation.
+- Prepare, aggregate, filter, and render only the active plot definition.
+- Scope `Download Figures` and `Download Data` to the visible active plot.
+- Keep access to every existing plot; this is a presentation and work-scheduling change, not removal of a plot mode.
+- Define deterministic fallback when the previous active plot is unavailable after tab, grouping, or selection changes.
+- Define empty-filter behavior explicitly. Prefer showing the selected plot's empty state rather than eagerly preparing later plots merely to find a non-empty one.
 
-### 5. Make Rendering Aggregation Consume the Plot Dataset
+The resulting shared lifecycle should be:
 
-After the dataset boundary exists, refactor current plot aggregation helpers so rendering consumes:
+1. Build lightweight family definitions.
+1. Group and order definitions into tabs.
+1. Resolve the active tab.
+1. Build lightweight plot choices for that tab.
+1. Resolve the active plot.
+1. Prepare its pre-aggregation input.
+1. Aggregate and apply view filters.
+1. Render one card.
+1. Store one lazy download source derived from the same preparation input.
 
-- the raw plot dataset
-- active tab and filter settings
-- aggregated output derived from that dataset
+This bounds aggregation, SVG creation, adaptive layout, event-listener creation, DOM size, and download state to one plot. It also turns the current active-tab contract into a reusable foundation instead of replacing it.
 
-This makes the dataset boundary real for rendering first, removes remaining duplicated data shaping, and makes render/export behavior easier to compare. It also keeps `Download data` from depending on a parallel data path that only resembles the rendered figures.
+As part of this behavior change, evaluate changing the default matrix grouping from `prediction_group` to `metric_field`. The benchmark datasets often make metric-field mode cheaper on initial render, but this is data-dependent and should be benchmarked rather than assumed. Keep both grouping modes unless there is a separate product decision to remove one.
 
-### 6. Refine Pre-Aggregated Export Shapes
+### 5. Split Plot Rendering From Evaluation Rendering
 
-After the internal plot dataset exists, revisit the public download schema produced from that dataset. The current active-plot JSON schema should remain the baseline unless the dataset boundary exposes a clearer representation. Any change should prioritize inspectability, stability, and reconstructing the visible figures.
+Plot-only controls currently call `renderEvaluations()`, which rebuilds evaluation tabs, defaults, options, table rows, JSON pane, sticky-column offsets, summary text, plot groups, and plots. Introduce explicit render entry points and route each state change to the narrowest valid one:
 
-The exported data should continue to represent the samples used to make the visible figures, before mean, standard deviation, or count aggregation. Numeric samples should stay nested under `samples` on each plotted point, unless there is a concrete user need for a flattened secondary format.
+- `renderEvaluationShell()` for evaluation tabs, defaults, table, JSON pane, sticky offsets, and summary
+- `renderEvaluationPlotsOnly()` for plot controls and lightweight tab/plot definition selection
+- `renderActivePlotOnly()` for active-plot preparation, aggregation, filtering, SVG rendering, legends, and download state
 
-For confusion matrices, the current baseline keeps sparse per-evaluation cell maps where missing entries are interpreted as `0`. A future dense export can make one explicit value per evaluation and visible matrix cell if that improves reconstructability enough to justify the larger files.
+At minimum, the following controls must stop rebuilding the evaluation table:
 
-For TP/FP/FN collectors, the current baseline keeps sparse per-evaluation outcome maps whose values are `"tp"`, `"fp"`, or `"fn"` and whose missing entries are interpreted as `empty`. A future dense export can use one record per evaluation, document, label, and outcome if that proves clearer for downstream consumers.
-
-### 7. Expand Download Data
-
-The initial `Download Data` button is implemented. After the plot dataset model and rendering aggregation path are stable, expand or adjust the data export only where it gives clearer reconstruction of the visible figures.
-
-The export should continue to match the same visible figure scope as `Download Figures`:
-
-- active evaluation tab
-- active plot tab
-- selected prediction and evaluation groups
-- active grouping mode
-- active plot thresholds and filters where they determine which figure cells or points are visible
-
-The export should not include aggregated means, standard deviations, or derived count summaries as the primary data. If useful, metadata may include the active dashboard state and field mappings needed to reconstruct the plot.
-
-JSON is the recommended first format because confusion matrices and TP/FP/FN data are naturally structured. CSV can be added later if users need table-oriented exports.
-
-### 8. Cache Expensive Metric-Family Sub-Results
-
-Add targeted caches for repeated metric-family work before relying on narrow render entry points for latency gains.
-
-Useful targeted caches include:
-
-- numeric metric leaf paths per experiment and metric type
-- collection views per evaluation for confusion matrices
-- collection views per evaluation for TP/FP/FN collectors
-- normalized TP/FP/FN collector data per evaluation and field (partially implemented by the per-evaluation preparation cache)
-- confusion sparse cell maps per evaluation and field (implemented by the per-evaluation preparation cache)
-- numeric metric paths and values per evaluation (implemented by the per-evaluation preparation cache)
-- resolved plot-group values after grouping and default resolution
-- aggregation inputs for large collection fields such as `taxa.german_name` and `taxa.scientific_name`
-
-### 8. Cache Derived Plot Data
-
-Add a cache for derived plot datasets. The cache key should include state that changes the underlying plotted samples:
-
-- loaded data revision
-- selected prediction group ids
-- active evaluation tab
-- selected evaluation group ids
-- prediction group-by fields
-- evaluation group-by fields
-- default values that affect grouping
-- metric type
-
-View-only settings should be kept out of the heavy raw-dataset cache key where possible:
-
-- rounding precision
-- export background
-- label shortening, unless labels are stored in the dataset
-
-Treat active plot tab and thresholds carefully. They may not change the underlying raw samples, but the benchmark shows some tab and threshold-dependent paths are expensive. Keep them out of the raw dataset cache key only if the per-tab or post-filter aggregation work is cached separately or can be derived cheaply from cached raw data.
-
-### 9. Split Render Responsibilities
-
-Introduce narrower render entry points after the shared plot dataset and expensive sub-result caches exist:
-
-- `renderEvaluationShell()` for tabs, table, options, JSON pane, and summary
-- `renderEvaluationPlotsOnly()` for plot controls, plot tabs, and plot content
-- `renderActivePlotTabOnly()` where active-tab changes can reuse already prepared plot data and cached aggregation inputs
-
-Plot-only controls should avoid rebuilding the evaluation table unless they affect table state. This applies to controls such as:
-
-- plot tab grouping
-- confusion tab grouping
+- active plot tab and active plot selection
+- numeric prefix/suffix grouping
+- matrix metric-field/prediction-group grouping
 - label shortening
 - rounding precision
-- plot thresholds
+- confusion and TP/FP/FN thresholds
 - legend mode
 - grouped-bar chip toggles
 
-### 10. Test Coverage
+Use explicit render completion to update both download buttons and remove the plot-content `MutationObserver`. This makes button state part of the render lifecycle instead of an indirect DOM side effect.
 
-Add DOM-free JavaScript tests under `tests/unit/eval_dashboard/js/` for the new plot dataset module.
+This split does not require a visible behavior change beyond the active-plot selection introduced in step 4, but it is a major architectural and interaction-latency improvement.
 
-Cover:
+### 6. Introduce the Smallest Useful DOM-Free Plot Data Boundary
 
-- numeric pre-aggregated records
-- confusion matrix aligned cell records, including explicit zeros
-- TP/FP/FN per-evaluation records
-- cache invalidation keys
-- download file content and filename scope
+Do not start with a universal normalized dataset for all families. After active-plot selection and narrow render entry points establish the real unit of work, extract the smallest DOM-free models needed for reuse and caching:
 
-Keep `plots.dashboard.test.mjs` focused on orchestration and button wiring.
+- a lightweight plot-definition index for tabs and active-plot choices
+- the active plot's family-owned pre-aggregation input
+- optional cached active-plot aggregation output
+- the lazy download source referencing the same pre-aggregation input
+
+The boundary should include state that changes definitions or underlying samples:
+
+- loaded data revision
+- active evaluation experiment and metric family
+- selected prediction and evaluation group ids
+- prediction and evaluation group-by fields
+- effective defaults that affect grouping
+- numeric grouped-bar field selections where they change point construction
+- plot-tab grouping mode where it changes definition organization
+
+Keep presentation-only state outside the heavy preparation key:
+
+- rounding precision
+- export background
+- legend placement
+- label shortening where raw labels remain available
+
+Thresholds should not invalidate pre-aggregation input. Cache filtered or aggregated views separately only if measurement shows that this is useful and invalidation remains clear.
+
+Rendering and downloads must consume this boundary directly. Do not create a parallel export-only reconstruction path.
+
+### 7. Add Targeted Higher-Level Caches
+
+Retain the implemented per-evaluation preparation caches. Add higher-level caches only around measured repeated work:
+
+- lightweight numeric definition indexes per selected data population
+- matrix collection-view/definition indexes
+- resolved plot-group values after grouping and default resolution
+- active-plot aggregation inputs for large fields such as `taxa.german_name` and `taxa.scientific_name`
+- active-plot aggregation output when only rounding, labels, legends, or export settings change
+
+Cache keys must be explicit and testable. They should include the data and grouping state that changes samples, and exclude view-only state whenever possible. Loaded evaluation objects should be replaced or their prepared caches cleared on data revision; stale caches must not survive imports.
+
+Do not cache complete active-tab arrays merely because the current UI once rendered all cards. The active plot is the intended expensive-work and cache unit.
+
+### 8. Revisit Export Scope and Schema Deliberately
+
+The current public JSON schema is an active contract. Step 4 intentionally changes visible/download scope from all cards in the active tab to one active plot. Update tests and documentation deliberately when making that change.
+
+Continue to export pre-aggregation data:
+
+- numeric points retain aligned `samples` and `run_dirs`
+- confusion matrices retain aligned sparse per-evaluation cells, with missing entries interpreted as zero
+- TP/FP/FN matrices retain aligned sparse per-evaluation outcomes, with missing entries interpreted as empty
+
+Do not add aggregated means, standard deviations, or derived count summaries as the primary payload. Keep JSON as the structured format; add CSV only in response to a concrete downstream need.
+
+Changing the download envelope from a `plots` array to a singular plot object may simplify the new contract, but it is optional. A one-element `plots` array may be retained to reduce schema churn if it remains clear.
+
+### 9. Test and Benchmark the New Lifecycle
+
+Keep `plots.dashboard.test.mjs` focused on orchestration and button wiring. Add DOM-free tests for:
+
+- active-tab fallback and active-plot fallback
+- inactive tabs and inactive plots never invoking expensive preparation
+- one active plot producing one render card and one matching download source
+- plot-only controls avoiding evaluation-table rendering
+- cache-key invalidation and reuse
+- explicit download-button lifecycle updates
+- public download content and filename scope after the active-plot behavior change
+
+Run:
+
+- `node --test tests/unit/eval_dashboard/js/*.test.mjs`
+- `uv run --group cicd pytest tests/unit/eval_dashboard`
+- the repository checks required by `CONTRIBUTING.md` before claiming CI readiness
+
+Extend the persisted benchmark with:
+
+- active plot selection inside one tab
+- threshold, rounding, and label-only changes
+- representative numeric bar/error fixtures and scenarios
+
+Compare both timing-table totals and wall-clock latency. The key acceptance condition is that active-plot and plot-only interactions no longer perform inactive-plot aggregation or evaluation-table rendering.
 
 ## Recommended Implementation Order
 
-With lightweight instrumentation and the per-evaluation preparation cache in place, prefer the next work as two PR-sized steps:
+1. **Current PR:** finish step 3 by unifying plot-family orchestration around the behavior-preserving shared active-tab contract. Keep current active-tab-wide cards and downloads, and verify inactive tabs remain lazy.
+1. **Next PR:** implement steps 4 and 5 together: add active-plot selection, render one card at a time, scope downloads to that card, split plot rendering from evaluation rendering, and replace observer-driven download-button updates.
+1. **Following PR:** implement steps 6 and 7 based on benchmark evidence: extract the smallest useful DOM-free active-plot data boundary and add targeted higher-level caches.
+1. **Schema/performance follow-up:** complete steps 8 and 9, preserving pre-aggregation export semantics while documenting and testing the intentional active-plot scope change.
 
-1. Introduce the shared plot dataset model, make rendering aggregation consume it, and add `Download data` for early inspection. Include focused tests for export shape and visible-scope matching.
-1. Add higher-level aggregation caches and split plot rendering from full evaluation rendering. Use the existing benchmark and instrumentation to compare before/after latency.
+This order finishes the current download-data PR at a coherent architectural boundary. The active-tab work remains valuable because the later active-plot contract extends it rather than replacing it, while the behavior and caching changes stay isolated in follow-up reviews with measurable performance goals.
 
-This makes plotted-data inspection available early, while the second slice can focus on measurable latency improvements using the same reusable data boundary.
+## Feedback for recent changes to this plan (double-check any integrate into the plan above):
+
+1. Medium: Plot-only invalidation wording is inaccurate. docs/eval-dashboard/plot-data-flow-plan.md:366 says plot-only controls currently call renderEvaluations(), then includes active-tab selection and grouped-bar toggles as acceptance cases. Those already call renderEvaluationPlots(). Distinguish:
+
+    - controls currently causing full evaluation renders;
+    - controls already plot-only but still rebuilding excessive plot work.
+
+1. Medium: The active-plot identity contract is underspecified. docs/eval-dashboard/plot-data-flow-plan.md:337 requires fallback behavior but never defines a stable plot key or state scope. Specify that keys derive from raw family identifiers, not display labels, and whether selection is retained per tab/family or globally. This affects caching, downloads, and grouping-mode transitions.
+
+1. Medium: Filtered-empty download behavior is unresolved. The current PR explicitly excludes filtered-empty matrix plots from downloads at docs/eval-dashboard/plot-data-flow-plan.md:313. The follow-up says to show the selected plot’s empty state and scope downloads to the active plot, but does not say whether its pre-filter data remains downloadable. This should be decided explicitly.
+
+1. Low: The historical implication at docs/eval-dashboard/plot-data-flow-plan.md:96 still says reusable plot datasets are the “immediate” target. That conflicts with the revised order: active-tab cleanup, then active-plot/render splitting, then the minimal data boundary. Update it to reflect the new sequence.
+
+Otherwise, the current-PR boundary and follow-up ordering are coherent. No formatting errors were found.
