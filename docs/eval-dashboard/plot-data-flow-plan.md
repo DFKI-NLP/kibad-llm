@@ -482,7 +482,7 @@ Compare both timing-table totals and wall-clock latency. The key acceptance cond
 
 This order finishes the current download-data PR at a coherent architectural boundary. The active-tab work remains valuable because the later active-plot contract extends it rather than replacing it, while the behavior and caching changes stay isolated in follow-up reviews with measurable performance goals.
 
-## Feedback for recent changes to this plan (double-check any integrate into the plan above):
+## Feedback for recent changes to this plan (double-check and integrate into the plan above, if reasonable):
 
 1. Medium: Plot-only invalidation wording is inaccurate. docs/eval-dashboard/plot-data-flow-plan.md:366 says plot-only controls currently call renderEvaluations(), then includes active-tab selection and grouped-bar toggles as acceptance cases. Those already call renderEvaluationPlots(). Distinguish:
 
