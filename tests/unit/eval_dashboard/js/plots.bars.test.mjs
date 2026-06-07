@@ -10,6 +10,7 @@ import {
   buildErrorsTabMap,
   buildJsonSafeNumericPlottingData,
   buildNumericDownloadMetadata,
+  buildNumericPlotDefinitions,
   buildNumericPlotEntriesInput,
   buildPlotEntries,
   createBarPlotSvg,
@@ -20,6 +21,13 @@ import {
   renderBarPlotTabsAndGrid,
 } from "../../../../docs/eval-dashboard/assets/js/plots/bars.js";
 import { createDocumentStub } from "./plots.dom-test-helpers.mjs";
+
+function buildNumericInput(options) {
+  return buildNumericPlotEntriesInput({
+    ...options,
+    plotDefinitions: buildNumericPlotDefinitions(options?.plotGroups),
+  });
+}
 
 /**
  * Verify numeric metric discovery and plot-entry shaping across grouped evaluations.
@@ -60,14 +68,39 @@ test("bar plot helpers collect numeric metric paths and derive plot entries", ()
     [0.5, 0.7]
   );
   assert.deepEqual(entries[0].points[0].runDirs, ["run-a1", "run-a2"]);
+  const definitions = buildNumericPlotDefinitions(plotGroups);
+  assert.deepEqual(
+    definitions.map(({ metricLabel, metricRoot, metricPrefix, metricSuffix }) => ({
+      metricLabel,
+      metricRoot,
+      metricPrefix,
+      metricSuffix,
+    })),
+    [{
+      metricLabel: "score.mean",
+      metricRoot: "score",
+      metricPrefix: "score",
+      metricSuffix: "mean",
+    }]
+  );
+  assert.equal("points" in definitions[0], false);
 
   assert.throws(
-    () => buildNumericPlotEntriesInput({
+    () => buildNumericInput({
       plotGroups,
       groupBarFields: [],
       categoryFields: ["model"],
     }),
     /Numeric plot entry construction requires a metric type\./
+  );
+  assert.throws(
+    () => buildNumericPlotEntriesInput({
+      metricType: "F1MicroMultipleFieldsMetric",
+      plotGroups,
+      groupBarFields: [],
+      categoryFields: ["model"],
+    }),
+    /Numeric plot entry construction requires plot definitions\./
   );
 });
 
@@ -75,7 +108,7 @@ test("bar plot helpers collect numeric metric paths and derive plot entries", ()
  * Verify numeric plot entry input stays pre-aggregation before render stats are added.
  */
 test("bar plot helpers separate sample input from mean/std render entries", () => {
-  const inputEntries = buildNumericPlotEntriesInput({
+  const inputEntries = buildNumericInput({
     metricType: "F1MicroMultipleFieldsMetric",
     plotGroups: [{
       values: { model: "a" },
@@ -97,7 +130,7 @@ test("bar plot helpers separate sample input from mean/std render entries", () =
  * Verify sparse ErrorCollector counters contribute zero for every evaluation.
  */
 test("bar plot helpers default missing ErrorCollector counters to zero", () => {
-  const entries = buildNumericPlotEntriesInput({
+  const entries = buildNumericInput({
     metricType: "ErrorCollector",
     plotGroups: [{
       values: { model: "a" },
@@ -123,7 +156,7 @@ test("bar plot helpers default missing ErrorCollector counters to zero", () => {
  * Verify missing required metrics fail when their metric type has no default.
  */
 test("bar plot helpers reject missing required numeric values", () => {
-  const buildInput = (metricType) => buildNumericPlotEntriesInput({
+  const buildInput = (metricType) => buildNumericInput({
     metricType,
     plotGroups: [{
       values: {},
@@ -146,7 +179,7 @@ test("bar plot helpers reject missing required numeric values", () => {
  * Verify metric discovery uses the union of evaluations in the plot groups.
  */
 test("bar plot helpers discover metrics from selected plot groups", () => {
-  const entries = buildNumericPlotEntriesInput({
+  const entries = buildNumericInput({
     metricType: "ErrorCollector",
     plotGroups: [{
       values: {},
@@ -371,6 +404,17 @@ test("bar grid renderer renders tabs, shared legends, and cards", () => {
   const evalPlotTabs = documentLike.createElement("div");
   const evalPlotContent = documentLike.createElement("div");
   let selected = null;
+  const activeEntries = [
+    {
+      metricLabel: "score.mean",
+      metricPrefix: "score",
+      metricSuffix: "mean",
+      points: [
+        { category: "model=a", displayCategory: "Model A", series: "seed=1", displaySeries: "Seed 1", mean: 0.5, std: 0 },
+        { category: "model=a", displayCategory: "Model A", series: "seed=2", displaySeries: "Seed 2", mean: 0.6, std: 0 },
+      ],
+    },
+  ];
 
   const result = renderBarPlotTabsAndGrid({
     documentLike,
@@ -381,20 +425,11 @@ test("bar grid renderer renders tabs, shared legends, and cards", () => {
           label: "score",
           plotTab: "score",
           plotTabVariant: "prefix",
-          plots: [
-            {
-              metricLabel: "score.mean",
-              metricPrefix: "score",
-              metricSuffix: "mean",
-              points: [
-                { category: "model=a", displayCategory: "Model A", series: "seed=1", displaySeries: "Seed 1", mean: 0.5, std: 0 },
-                { category: "model=a", displayCategory: "Model A", series: "seed=2", displaySeries: "Seed 2", mean: 0.6, std: 0 },
-              ],
-            },
-          ],
+          plots: activeEntries,
         },
       ],
     ]),
+    activeEntries,
     activeExperiment: "exp",
     groupBarFields: ["seed"],
     metricType: "Metric",
@@ -443,6 +478,24 @@ test("bar grid renderer renders tabs, shared legends, and cards", () => {
 test("bar grid renderer preserves export legend items when shared legend is not rendered", () => {
   const documentLike = createDocumentStub();
   const evalPlotContent = documentLike.createElement("div");
+  const activeEntries = [
+    {
+      metricLabel: "score.mean",
+      metricPrefix: "score",
+      metricSuffix: "mean",
+      points: [
+        { category: "model=a", displayCategory: "Model A", series: "seed=1", displaySeries: "Seed 1", mean: 0.5, std: 0 },
+      ],
+    },
+    {
+      metricLabel: "score.mean",
+      metricPrefix: "score",
+      metricSuffix: "mean",
+      points: [
+        { category: "model=b", displayCategory: "Model B", series: "seed=2", displaySeries: "Seed 2", mean: 0.7, std: 0 },
+      ],
+    },
+  ];
   const result = renderBarPlotTabsAndGrid({
     documentLike,
     tabMap: new Map([
@@ -452,27 +505,11 @@ test("bar grid renderer preserves export legend items when shared legend is not 
           label: "score",
           plotTab: "score",
           plotTabVariant: "prefix",
-          plots: [
-            {
-              metricLabel: "score.mean",
-              metricPrefix: "score",
-              metricSuffix: "mean",
-              points: [
-                { category: "model=a", displayCategory: "Model A", series: "seed=1", displaySeries: "Seed 1", mean: 0.5, std: 0 },
-              ],
-            },
-            {
-              metricLabel: "score.mean",
-              metricPrefix: "score",
-              metricSuffix: "mean",
-              points: [
-                { category: "model=b", displayCategory: "Model B", series: "seed=2", displaySeries: "Seed 2", mean: 0.7, std: 0 },
-              ],
-            },
-          ],
+          plots: activeEntries,
         },
       ],
     ]),
+    activeEntries,
     activeExperiment: "exp",
     groupBarFields: ["seed"],
     metricType: "Metric",
@@ -501,6 +538,25 @@ test("bar grid renderer defaults create SVGs for ungrouped and grouped entries",
 
   for (const groupBarFields of [[], ["seed"]]) {
     const evalPlotContent = documentLike.createElement("div");
+    const activeEntries = [
+      {
+        metricLabel: "score.mean",
+        metricPrefix: "score",
+        metricSuffix: "mean",
+        points: [
+          {
+            label: "model=a",
+            displayLabel: "Model A",
+            category: "model=a",
+            displayCategory: "Model A",
+            series: "seed=1",
+            displaySeries: "Seed 1",
+            mean: 0.5,
+            std: 0,
+          },
+        ],
+      },
+    ];
     const result = renderBarPlotTabsAndGrid({
       documentLike,
       tabMap: new Map([
@@ -510,28 +566,11 @@ test("bar grid renderer defaults create SVGs for ungrouped and grouped entries",
             label: "score",
             plotTab: "score",
             plotTabVariant: "prefix",
-            plots: [
-              {
-                metricLabel: "score.mean",
-                metricPrefix: "score",
-                metricSuffix: "mean",
-                points: [
-                  {
-                    label: "model=a",
-                    displayLabel: "Model A",
-                    category: "model=a",
-                    displayCategory: "Model A",
-                    series: "seed=1",
-                    displaySeries: "Seed 1",
-                    mean: 0.5,
-                    std: 0,
-                  },
-                ],
-              },
-            ],
+            plots: activeEntries,
           },
         ],
       ]),
+      activeEntries,
       activeExperiment: "exp",
       groupBarFields,
       metricType: "Metric",
@@ -566,6 +605,7 @@ test("bar grid renderer shows an empty message for empty tabs", () => {
       plotTabVariant: "prefix",
       plots: [],
     }]]),
+    activeEntries: [],
     activeExperiment: "exp",
     groupBarFields: [],
     metricType: "Metric",

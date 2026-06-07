@@ -1,9 +1,9 @@
 /**
  * Generic bar/error plot entry and tab-map helpers.
  *
- * This module keeps numeric metric preparation, pre-aggregation sample data,
- * mean/std calculation, tab grouping, and SVG rendering separate so downloads
- * can export the same raw values that rendering aggregates.
+ * This module keeps numeric metric discovery, tab definitions, active-tab
+ * sample preparation, mean/std calculation, and SVG rendering separate so
+ * downloads can export the same raw values that rendering aggregates.
  */
 
 import { meanAndStd } from "../utils/values.js";
@@ -216,18 +216,39 @@ function splitMetricLabelAtLastDot(label) {
 }
 
 /**
- * Converts prepared metric paths and evaluation groups into sample-only entries.
+ * Builds lightweight numeric plot definitions from selected plot groups.
  *
- * Metric paths and plot groups must represent the same selected evaluation
- * population. Keeping this helper private prevents callers from supplying
- * paths discovered from a different population.
+ * Definitions contain metric identity and tab-grouping fields, but no points
+ * or samples. This lets callers organize tabs before preparing active plot
+ * data, matching the definition-first matrix plotting flow.
  *
- * @param {object} options - Prepared paths and plot grouping inputs.
+ * @param {Array<object>} plotGroups - Selected numeric plot groups.
+ * @returns {Array<object>} Lightweight numeric plot definitions.
+ */
+export function buildNumericPlotDefinitions(plotGroups) {
+  const selectedEvaluations = (plotGroups || [])
+    .flatMap((group) => group.evaluations || []);
+  return collectPreparedNumericMetricPaths(selectedEvaluations).map((metricPath) => ({
+    metricPath,
+    metricLabel: metricPath.label,
+    metricRoot: metricPath.root,
+    ...splitMetricLabelAtLastDot(metricPath.label),
+  }));
+}
+
+/**
+ * Converts numeric plot definitions and evaluation groups into sample-only entries.
+ *
+ * Definitions must come from `buildNumericPlotDefinitions()` for the same
+ * selected plot groups. The dashboard enforces that contract by retaining both
+ * values within one render pass.
+ *
+ * @param {object} options - Definitions and plot grouping inputs.
  * @returns {Array<object>} Plot entries whose points contain raw samples only.
  */
-function buildNumericPlotEntriesForMetricPaths({
+function buildNumericPlotEntriesForDefinitions({
   metricType,
-  metricPaths,
+  plotDefinitions,
   plotGroups,
   groupBarFields,
   categoryFields,
@@ -235,7 +256,8 @@ function buildNumericPlotEntriesForMetricPaths({
   displayGroupFieldName,
 }) {
   const entries = [];
-  for (const metricPath of metricPaths) {
+  for (const definition of plotDefinitions) {
+    const { metricPath } = definition;
     const points = [];
     plotGroups.forEach((group, index) => {
       const evaluations = group.evaluations || [];
@@ -281,33 +303,30 @@ function buildNumericPlotEntriesForMetricPaths({
     if (!points.length) {
       continue;
     }
-    const split = splitMetricLabelAtLastDot(metricPath.label);
     entries.push({
-      metricLabel: metricPath.label,
-      metricRoot: metricPath.root,
+      metricLabel: definition.metricLabel,
+      metricRoot: definition.metricRoot,
+      metricPrefix: definition.metricPrefix,
+      metricSuffix: definition.metricSuffix,
       points,
-      ...split,
     });
   }
   return entries;
 }
 
 /**
- * Builds sample-only numeric plot input from the selected plot groups.
+ * Builds sample-only numeric plot input for selected plot definitions.
  *
- * Rendering and data download both need the same grouped sample data. Keeping
- * this step separate from mean/std calculation makes numeric plots follow the
- * same pre-aggregation data flow as confusion and TP/FP/FN matrices.
- *
- * Metric-path discovery is part of this boundary and uses exactly the
- * evaluations contained in `plotGroups`. This guarantees that discovered
- * metrics and aligned samples always describe the same selected population.
+ * Rendering and data download both need the same grouped sample data. Callers
+ * first organize lightweight definitions into tabs, then invoke this helper
+ * only for the active tab, matching the matrix definition-first data flow.
  *
  * @param {object} options - Plot entry input construction inputs.
  * @returns {Array<object>} Plot entries whose points contain raw samples only.
  */
 export function buildNumericPlotEntriesInput({
   metricType,
+  plotDefinitions,
   plotGroups,
   groupBarFields,
   categoryFields,
@@ -317,13 +336,13 @@ export function buildNumericPlotEntriesInput({
   if (!metricType) {
     throw new Error("Numeric plot entry construction requires a metric type.");
   }
-  const selectedEvaluations = (plotGroups || [])
-    .flatMap((group) => group.evaluations || []);
-  const metricPaths = collectPreparedNumericMetricPaths(selectedEvaluations);
+  if (!Array.isArray(plotDefinitions)) {
+    throw new Error("Numeric plot entry construction requires plot definitions.");
+  }
 
-  return buildNumericPlotEntriesForMetricPaths({
+  return buildNumericPlotEntriesForDefinitions({
     metricType,
-    metricPaths,
+    plotDefinitions,
     plotGroups: plotGroups || [],
     groupBarFields: groupBarFields || [],
     categoryFields: categoryFields || [],
@@ -389,7 +408,7 @@ export function buildJsonSafeNumericPlottingData(plotEntry) {
  * Rendering consumes the derived entries; downloads continue to consume the
  * sample-only input entries.
  *
- * @param {Array<object>} plotEntriesInput - Output of buildNumericPlotEntriesInput.
+ * @param {Array<object>} plotEntriesInput - Active-tab output of buildNumericPlotEntriesInput.
  * @returns {Array<object>} Plot entries with mean/std point data for rendering.
  */
 export function getNumericPlotEntriesFromInput(plotEntriesInput) {
@@ -417,14 +436,17 @@ export function getNumericPlotEntriesFromInput(plotEntriesInput) {
  * Builds render-ready numeric entries from selected plot groups.
  *
  * This convenience wrapper applies render-only mean/std aggregation directly.
- * Callers that also need download data should retain the sample-only output of
- * `buildNumericPlotEntriesInput()` and aggregate it separately.
+ * Callers that need tab-level laziness should use `buildNumericPlotDefinitions`
+ * and `buildNumericPlotEntriesInput()` separately.
  *
  * @param {object} options - Plot entry construction inputs.
  * @returns {Array<object>} Plot entries with mean/std point data.
  */
 export function buildPlotEntries(options) {
-  return getNumericPlotEntriesFromInput(buildNumericPlotEntriesInput(options));
+  const plotDefinitions = buildNumericPlotDefinitions(options?.plotGroups);
+  return getNumericPlotEntriesFromInput(
+    buildNumericPlotEntriesInput({ ...options, plotDefinitions })
+  );
 }
 
 /**
@@ -491,6 +513,28 @@ export function buildErrorsTabMap(plotEntries) {
     });
   }
   return tabMap;
+}
+
+/**
+ * Returns numeric tab keys in their UI order.
+ *
+ * ErrorCollector uses a semantic total/details order; other numeric tabs sort
+ * lexically. Sharing this helper lets the dashboard resolve the active tab
+ * before it prepares points and keeps rendering on the same ordering contract.
+ *
+ * @param {Map<string, object>} tabMap - Numeric plot definition or entry tabs.
+ * @returns {Array<string>} Ordered tab keys.
+ */
+export function getSortedBarPlotTabKeys(tabMap) {
+  const tabPriority = ["total", "details"];
+  return Array.from(tabMap.keys()).sort((a, b) => {
+    const pa = tabPriority.indexOf(a);
+    const pb = tabPriority.indexOf(b);
+    if (pa !== -1 && pb !== -1) return pa - pb;
+    if (pa !== -1) return -1;
+    if (pb !== -1) return 1;
+    return a.localeCompare(b);
+  });
 }
 
 /**
@@ -807,12 +851,13 @@ export function createGroupedBarPlotSvg({
  * dashboard can reuse the same flow for ordinary metrics and ErrorCollector
  * metrics.
  *
- * @param {object} options - Current tab state, plot data, DOM nodes, and renderer callbacks.
+ * @param {object} options - Current tab definitions, active entries, DOM nodes, and renderer callbacks.
  * @returns {{activeEvalPlotTab: string, activePlotLegendItems: Array<object>}} Updated active tab and shared legend items.
  */
 export function renderBarPlotTabsAndGrid({
   documentLike = globalThis.document,
   tabMap,
+  activeEntries,
   activeExperiment,
   groupBarFields,
   metricType,
@@ -831,15 +876,7 @@ export function renderBarPlotTabsAndGrid({
   createLegendElement = createPlotLegendElement,
   onActiveTabChange,
 }) {
-  const tabPriority = ["total", "details"];
-  const sortedTabKeys = Array.from(tabMap.keys()).sort((a, b) => {
-    const pa = tabPriority.indexOf(a);
-    const pb = tabPriority.indexOf(b);
-    if (pa !== -1 && pb !== -1) return pa - pb;
-    if (pa !== -1) return -1;
-    if (pb !== -1) return 1;
-    return a.localeCompare(b);
-  });
+  const sortedTabKeys = getSortedBarPlotTabKeys(tabMap);
   const nextActiveTab = resolveActiveTabValue(activeEvalPlotTab, sortedTabKeys);
   renderTabButtons({
     documentLike,
@@ -853,7 +890,6 @@ export function renderBarPlotTabsAndGrid({
     onSelect: (key) => onActiveTabChange(key),
   });
 
-  const activeEntries = tabMap.get(nextActiveTab)?.plots || [];
   const groupedLegendModel = groupBarFields.length
     ? buildGroupedLegendModel(activeEntries)
     : null;

@@ -385,6 +385,63 @@ test("dashboard render adapter renders bar-like plot cards", () => {
 });
 
 /**
+ * Verify numeric sample preparation is limited to definitions in the active tab.
+ */
+test("dashboard prepares numeric plot data only for the active tab", () => {
+  const documentLike = createDocumentStub();
+  const dom = createPlotDom(documentLike);
+  const state = createPlotState({ activeEvalPlotTab: "active" });
+  const evaluations = [
+    {
+      runDir: "run-a",
+      data: { active: { value: 0.5 }, inactive: { value: 0.7 } },
+    },
+    {
+      runDir: "run-b",
+      data: { active: { value: 0.9 } },
+    },
+  ];
+  const evaluationContext = {
+    experimentEvaluations: evaluations,
+    evalTabState: { groupByFields: [] },
+  };
+
+  renderEvaluationPlotsForDashboard({
+    state,
+    dom,
+    activeExperiment: "experiment/a",
+    evaluationContext,
+    documentLike,
+    requestAnimationFrameLike: (callback) => callback(),
+    plotTooltipHandlers: { show: () => {}, move: () => {}, hide: () => {} },
+    getSelectedPredictionGroups: () => [{}],
+    getSelectedEvaluationGroups: () => [{ evaluations }],
+    getMetricTypeForEvaluationContext: () => "F1MicroMultipleFieldsMetric",
+    getPlotGroups: () => ({
+      fields: [],
+      groups: [{ groupId: "all", values: {}, evaluations }],
+    }),
+    getEvaluationEffectiveValue: () => null,
+    getEvaluationExperiment: () => "experiment/a",
+    displayPlotGroupFieldName: (field) => field,
+    displayGroupFieldName: (field) => field,
+    getPlotDisplayLabel: (label) => label,
+    getPlotTitleLabel: (entry) => entry.metricLabel,
+    rerenderEvaluationPlots: () => {},
+  });
+
+  assert.equal(state.activeEvalPlotTab, "active");
+  assert.deepEqual(
+    Array.from(dom.evalPlotTabs.querySelectorAll("button"), (button) => button.textContent),
+    ["active (1)", "inactive (1)"]
+  );
+  assert.deepEqual(
+    state.activePlotDownloadData.plots.map((plot) => plot.metadata.metric_label),
+    ["active.value"]
+  );
+});
+
+/**
  * Verify numeric path discovery cannot leak metrics from unselected evaluation groups.
  */
 test("dashboard numeric plots discover metrics only from selected plot groups", () => {

@@ -120,9 +120,9 @@ The shared bar/error plotting path now uses the same preparation model for numer
 - the numeric metric path metadata
 - the flat numeric value lookup keyed by the encoded metric path
 
-The prepared result is stored at `evaluation.dataPrepared.numericMetrics`. `buildNumericPlotEntriesInput()` discovers the metric-path union from the evaluations in the selected plot groups and reads the same prepared values to build aligned, pre-aggregation samples. Missing numeric paths follow an explicit metric-type contract: sparse `ErrorCollector` counters default to zero, while metric types without a declared missing-value default fail loudly. Numeric leaves must be finite; nonnumeric content is not discovered as numeric metric data. Each point carries JSON-friendly `samples` as compact numeric value arrays, which the `Download data` action can expose directly without render-helper metadata.
+The prepared result is stored at `evaluation.dataPrepared.numericMetrics`. `buildNumericPlotDefinitions()` discovers the metric-path union from the evaluations in the selected plot groups. After the definitions are organized into tabs, `buildNumericPlotEntriesInput()` reads the same prepared values for the active definitions and builds aligned, pre-aggregation samples. Missing numeric paths follow an explicit metric-type contract: sparse `ErrorCollector` counters default to zero, while metric types without a declared missing-value default fail loudly. Numeric leaves must be finite; nonnumeric content is not discovered as numeric metric data. Each point carries JSON-friendly `samples` as compact numeric value arrays, which the `Download data` action can expose directly without render-helper metadata.
 
-Cross-run alignment, mean/std calculation, TP/FP/FN outcome counting, and threshold filtering still run per active plot. The numeric pre-aggregation API now accepts selected plot groups directly so metric discovery and sample construction cannot use different evaluation populations. The cache only removes repeated per-evaluation field extraction, numeric metric-data walks, confusion sparse-map construction, and TP/FP/FN collector normalization/state-map construction.
+Cross-run alignment, mean/std calculation, TP/FP/FN outcome counting, and threshold filtering still run per active plot. The numeric definition and pre-aggregation APIs receive definitions and selected plot groups from the same render pass, keeping metric discovery and sample construction tied to the same evaluation population while preparing samples only for the active tab. The cache only removes repeated per-evaluation field extraction, numeric metric-data walks, confusion sparse-map construction, and TP/FP/FN collector normalization/state-map construction.
 
 Focused DOM-free tests cover both cache paths:
 
@@ -174,7 +174,7 @@ The dashboard now keeps the active plot tab's download source in `state.activePl
 
 The export is intentionally built from the same plot data path used for rendering:
 
-- numeric bar/error plots use `buildNumericPlotEntriesInput()` for selected grouped sample data; rendering adds mean/std with `getNumericPlotEntriesFromInput()`, while download data uses the active tab's sample-only input entries
+- numeric bar/error plots use `buildNumericPlotDefinitions()` to discover lightweight metric definitions, organize those definitions into tabs, and resolve the active tab before `buildNumericPlotEntriesInput()` constructs grouped samples. Rendering adds mean/std with `getNumericPlotEntriesFromInput()`, while download data retains the same active tab's sample-only input entries
 - confusion matrices use `getConfusionMatrixAggregationInput()` for the shared rows, columns, and per-evaluation cell maps; rendering aggregates and threshold-filters that input with `getConfusionMatrixAggregationFromInput()`, while download data intentionally exports the unfiltered pre-aggregation input
 - TP/FP/FN matrices use `getTpFpFnAggregationInput()` for the shared rows, columns, and per-evaluation outcome maps; rendering aggregates and threshold-filters that input with `getTpFpFnAggregationFromInput()`, while download data intentionally exports the unfiltered pre-aggregation input
 
@@ -255,7 +255,7 @@ Matrix-like exports use the same envelope, but keep matrix metadata in `metadata
 }
 ```
 
-Numeric exports embed metadata in `metadata` and sample-only pre-aggregation data in `data.points`. Each point keeps public `run_dirs` parallel to `samples`, so `run_dirs[i]` identifies the evaluation that produced `samples[i]`. During rendering, numeric plot sources store the active tab's sample-only `buildNumericPlotEntriesInput()` entries as `dataSource`; `downloadActivePlotData()` converts those entries with `buildJsonSafeNumericPlottingData()`.
+Numeric exports embed metadata in `metadata` and sample-only pre-aggregation data in `data.points`. Each point keeps public `run_dirs` parallel to `samples`, so `run_dirs[i]` identifies the evaluation that produced `samples[i]`. During rendering, `buildNumericPlotDefinitions()` discovers metric identity for all selected evaluations, tabs are built from those lightweight definitions, and only active-tab definitions are converted to sample-only `buildNumericPlotEntriesInput()` entries. Those entries become `dataSource`; `downloadActivePlotData()` converts them with `buildJsonSafeNumericPlottingData()`.
 
 Confusion-matrix exports use one plot object per visible heatmap. Matrix `run_dirs` stay parallel to `cells`, so `run_dirs[i]` identifies `cells[i]`. During rendering, each source plot embeds allowlisted `metadata` without `collections` and keeps the raw `getConfusionMatrixAggregationInput()` result as `dataSource`. On download, `buildJsonSafeMatrixPlottingData()` converts each sparse cell `Map` to an array of `[cellKey, value]` pairs because JSON does not serialize `Map` entries.
 
@@ -303,6 +303,7 @@ TODO:
     - [x] Keep only counts and `presentCount` in aggregated cells. Preserve source `cells` on the aggregation input and reconstruct one cell's aligned outcomes only on click.
 - [x] (P1) add `"plot_tab_variant"` (values: `"prefix"`, `"suffix"`, `"error_section"`, `"metric_field"`, or `"prediction_group"`) to root level download data so downstream consumers can disambiguate grouping modes without guessing from the plot tab name. Prediction-group downloads expose the raw group ID as `"plot_tab"` instead of the internal tab-map key.
 - [x] (P2) use consistent snake_case keys in downloaded plot data and rename internal matrix input `evaluationCells` to `cells`.
+- [x] (P1) align numeric and matrix preparation around a definition-first pipeline: build tabs from lightweight plot definitions, resolve the active tab, and prepare numeric samples only for active definitions.
 
 ### 4. Introduce a DOM-Free Plot Dataset Module
 

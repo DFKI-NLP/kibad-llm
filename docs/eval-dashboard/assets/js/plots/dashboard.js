@@ -20,10 +20,12 @@ import {
 import {
   buildBarsTabMap,
   buildErrorsTabMap,
+  buildNumericPlotDefinitions,
   buildNumericPlotEntriesInput,
   createBarPlotSvg,
   createGroupedBarPlotSvg,
   getNumericPlotEntriesFromInput,
+  getSortedBarPlotTabKeys,
   renderBarPlotTabsAndGrid,
 } from "./bars.js";
 import { buildDownloadPlotMetadata } from "./download-data.js";
@@ -723,10 +725,29 @@ function renderBarLikePlots({
   const groupBarFields = varyingGroupByFields.filter((field) => state.plotGroupBarFields.has(field));
   const categoryFields = varyingGroupByFields.filter((field) => !groupBarFields.includes(field));
 
+  const plotDefinitions = timing.time(
+    "bar plot definitions",
+    () => buildNumericPlotDefinitions(plotGroups)
+  );
+  if (!plotDefinitions.length) {
+    appendPlotEmptyMessage(documentLike, dom.evalPlotContent, `No plottable metric values found for ${activeExperiment}.`);
+    return;
+  }
+
+  const tabMap = timing.time(
+    "bar tab map",
+    () => metricType === "ErrorCollector"
+      ? buildErrorsTabMap(plotDefinitions)
+      : buildBarsTabMap(plotDefinitions, state.plotTabsBy)
+  );
+  const sortedTabKeys = getSortedBarPlotTabKeys(tabMap);
+  const activeEvalPlotTab = resolveActiveTabValue(state.activeEvalPlotTab, sortedTabKeys);
+  const activeDefinitions = tabMap.get(activeEvalPlotTab)?.plots || [];
   const plotEntriesInput = timing.time(
-    "bar plot entry input",
+    "bar active plot entry input",
     () => buildNumericPlotEntriesInput({
       metricType,
+      plotDefinitions: activeDefinitions,
       plotGroups,
       groupBarFields,
       categoryFields,
@@ -736,25 +757,8 @@ function renderBarLikePlots({
     })
   );
   const plotEntries = timing.time(
-    "bar aggregate plot entries",
+    "bar aggregate active plot entries",
     () => getNumericPlotEntriesFromInput(plotEntriesInput)
-  );
-  if (!plotEntries.length) {
-    appendPlotEmptyMessage(documentLike, dom.evalPlotContent, `No plottable metric values found for ${activeExperiment}.`);
-    return;
-  }
-
-  const tabMap = timing.time(
-    "bar tab map",
-    () => metricType === "ErrorCollector"
-      ? buildErrorsTabMap(plotEntries)
-      : buildBarsTabMap(plotEntries, state.plotTabsBy)
-  );
-  const downloadTabMap = timing.time(
-    "bar download tab map",
-    () => metricType === "ErrorCollector"
-      ? buildErrorsTabMap(plotEntriesInput)
-      : buildBarsTabMap(plotEntriesInput, state.plotTabsBy)
   );
 
   const result = timing.time(
@@ -762,10 +766,11 @@ function renderBarLikePlots({
     () => renderBarPlotTabsAndGrid({
       documentLike,
       tabMap,
+      activeEntries: plotEntries,
       activeExperiment,
       groupBarFields,
       metricType,
-      activeEvalPlotTab: state.activeEvalPlotTab,
+      activeEvalPlotTab,
       plotShowLegendOnce: state.plotShowLegendOnce,
       plotShowLegendOnceRow: dom.plotShowLegendOnceRow,
       evalPlotTabs: dom.evalPlotTabs,
@@ -805,12 +810,12 @@ function renderBarLikePlots({
   );
   state.activeEvalPlotTab = result.activeEvalPlotTab;
   state.activePlotLegendItems = result.activePlotLegendItems;
-  const activeDownloadTab = downloadTabMap.get(result.activeEvalPlotTab);
+  const activeDownloadTab = tabMap.get(result.activeEvalPlotTab);
   state.activePlotDownloadData = {
     metric_family: "numeric",
     plot_tab: activeDownloadTab.plotTab,
     plot_tab_variant: activeDownloadTab.plotTabVariant,
-    plots: activeDownloadTab.plots.map((entry) => ({
+    plots: plotEntriesInput.map((entry) => ({
       metadata: buildDownloadPlotMetadata("numeric", entry),
       dataSource: entry,
     })),
