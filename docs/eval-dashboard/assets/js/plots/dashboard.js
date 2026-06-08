@@ -205,167 +205,6 @@ export async function downloadVisiblePlotFigures({
 }
 
 /**
- * Renders the dashboard plot surface from the selected evaluation context.
- *
- * This is the shared lifecycle owner: it clears stale plot state, derives the
- * selected plot groups once, and dispatches to exactly one metric-family branch.
- * Keeping that coordination here prevents family modules from depending on the
- * dashboard singleton or duplicating selection behavior.
- *
- * @param {object} options - State, DOM refs, selector callbacks, and browser dependencies.
- * @returns {void}
- */
-export function renderEvaluationPlotsForDashboard({
-  state,
-  dom,
-  activeExperiment,
-  evaluationContext,
-  documentLike = globalThis.document,
-  requestAnimationFrameLike = globalThis.requestAnimationFrame,
-  navigatorLike = globalThis.navigator,
-  consoleLike = globalThis.console,
-  plotTooltipHandlers,
-  getSelectedPredictionGroups,
-  getSelectedEvaluationGroups,
-  getMetricTypeForEvaluationContext,
-  getPlotGroups,
-  getEvaluationEffectiveValue,
-  getEvaluationExperiment,
-  displayPlotGroupFieldName,
-  displayGroupFieldName,
-  getPlotDisplayLabel,
-  getPlotTitleLabel,
-  rerenderEvaluationPlots,
-  timing = null,
-}) {
-  const { evalPlotTabs, evalPlotContent, plotGroupBarsList } = dom;
-  const plotTiming = timing || createTimingCollector({ enabled: false });
-  state.activePlotDownloadData = null;
-
-  renderDashboardPlotControls({ state, dom, metricType: null });
-  evalPlotTabs.innerHTML = "";
-  evalPlotContent.innerHTML = "";
-  plotGroupBarsList.innerHTML = "";
-  state.activePlotLegendItems = [];
-
-  const selectedPredictionGroups = plotTiming.time(
-    "plots selected prediction groups",
-    () => getSelectedPredictionGroups()
-  );
-  if (selectedPredictionGroups.length === 0) {
-    appendPlotEmptyMessage(documentLike, evalPlotContent, "Select prediction groups to generate plots.");
-    return;
-  }
-
-  if (!evaluationContext) {
-    appendPlotEmptyMessage(documentLike, evalPlotContent, "Select one or more prediction groups to generate plots.");
-    return;
-  }
-
-  const { evalTabState } = evaluationContext;
-  const metricType = plotTiming.time(
-    "plots metric type",
-    () => getMetricTypeForEvaluationContext(activeExperiment, evaluationContext)
-  );
-  renderDashboardPlotControls({ state, dom, metricType });
-
-  const selectedEvalGroups = plotTiming.time(
-    "plots selected evaluation groups",
-    () => getSelectedEvaluationGroups(evaluationContext)
-  );
-  if (selectedEvalGroups.length === 0) {
-    appendPlotEmptyMessage(documentLike, evalPlotContent, "Select evaluation groups to generate plots.");
-    return;
-  }
-
-  if (!isSupportedPlotMetricType(metricType)) {
-    appendPlotEmptyMessage(
-      documentLike,
-      evalPlotContent,
-      `(unknown metric type: ${metricType || "(missing)"}, data visualization not yet implemented)`
-    );
-    return;
-  }
-
-  const combined = plotTiming.time(
-    "plots group selected evaluations",
-    () => getPlotGroups(
-      activeExperiment,
-      selectedEvalGroups,
-      evalTabState.groupByFields,
-      evalTabState
-    )
-  );
-  const plotGroups = combined.groups;
-  const plotGroupFields = combined.fields;
-  const varyingPlotGroupFields = plotTiming.time(
-    "plots varying group fields",
-    () => getVaryingFields(plotGroups, plotGroupFields)
-  );
-
-  if (metricType === "ConfusionMatrix") {
-    renderConfusionMatrixPlots({
-      state,
-      dom,
-      activeExperiment,
-      evalTabState,
-      plotGroups,
-      plotGroupFields,
-      varyingPlotGroupFields,
-      documentLike,
-      plotTooltipHandlers,
-      getEvaluationEffectiveValue,
-      getEvaluationExperiment,
-      displayPlotGroupFieldName,
-      getPlotDisplayLabel,
-      rerenderEvaluationPlots,
-      timing: plotTiming,
-    });
-    return;
-  }
-
-  if (metricType === "TpFpFnCollector") {
-    renderTpFpFnPlots({
-      state,
-      dom,
-      activeExperiment,
-      evalTabState,
-      plotGroups,
-      plotGroupFields,
-      varyingPlotGroupFields,
-      documentLike,
-      requestAnimationFrameLike,
-      navigatorLike,
-      consoleLike,
-      plotTooltipHandlers,
-      getEvaluationEffectiveValue,
-      displayPlotGroupFieldName,
-      getPlotDisplayLabel,
-      rerenderEvaluationPlots,
-      timing: plotTiming,
-    });
-    return;
-  }
-
-  renderBarLikePlots({
-    state,
-    dom,
-    activeExperiment,
-    plotGroups,
-    varyingPlotGroupFields,
-    metricType,
-    documentLike,
-    requestAnimationFrameLike,
-    plotTooltipHandlers,
-    displayPlotGroupFieldName,
-    displayGroupFieldName,
-    getPlotTitleLabel,
-    rerenderEvaluationPlots,
-    timing: plotTiming,
-  });
-}
-
-/**
  * Synchronizes plot-control DOM refs from the current dashboard state.
  *
  * Centralizing this projection ensures early empty/error returns still leave
@@ -1000,4 +839,165 @@ function renderBarLikePlots({
       dataSource: entry,
     }))
   );
+}
+
+/**
+ * Renders the dashboard plot surface from the selected evaluation context.
+ *
+ * This is the shared lifecycle owner: it clears stale plot state, derives the
+ * selected plot groups once, and dispatches to exactly one metric-family branch.
+ * Keeping that coordination here prevents family modules from depending on the
+ * dashboard singleton or duplicating selection behavior.
+ *
+ * @param {object} options - State, DOM refs, selector callbacks, and browser dependencies.
+ * @returns {void}
+ */
+export function renderEvaluationPlotsForDashboard({
+  state,
+  dom,
+  activeExperiment,
+  evaluationContext,
+  documentLike = globalThis.document,
+  requestAnimationFrameLike = globalThis.requestAnimationFrame,
+  navigatorLike = globalThis.navigator,
+  consoleLike = globalThis.console,
+  plotTooltipHandlers,
+  getSelectedPredictionGroups,
+  getSelectedEvaluationGroups,
+  getMetricTypeForEvaluationContext,
+  getPlotGroups,
+  getEvaluationEffectiveValue,
+  getEvaluationExperiment,
+  displayPlotGroupFieldName,
+  displayGroupFieldName,
+  getPlotDisplayLabel,
+  getPlotTitleLabel,
+  rerenderEvaluationPlots,
+  timing = null,
+}) {
+  const { evalPlotTabs, evalPlotContent, plotGroupBarsList } = dom;
+  const plotTiming = timing || createTimingCollector({ enabled: false });
+  state.activePlotDownloadData = null;
+
+  renderDashboardPlotControls({ state, dom, metricType: null });
+  evalPlotTabs.innerHTML = "";
+  evalPlotContent.innerHTML = "";
+  plotGroupBarsList.innerHTML = "";
+  state.activePlotLegendItems = [];
+
+  const selectedPredictionGroups = plotTiming.time(
+    "plots selected prediction groups",
+    () => getSelectedPredictionGroups()
+  );
+  if (selectedPredictionGroups.length === 0) {
+    appendPlotEmptyMessage(documentLike, evalPlotContent, "Select prediction groups to generate plots.");
+    return;
+  }
+
+  if (!evaluationContext) {
+    appendPlotEmptyMessage(documentLike, evalPlotContent, "Select one or more prediction groups to generate plots.");
+    return;
+  }
+
+  const { evalTabState } = evaluationContext;
+  const metricType = plotTiming.time(
+    "plots metric type",
+    () => getMetricTypeForEvaluationContext(activeExperiment, evaluationContext)
+  );
+  renderDashboardPlotControls({ state, dom, metricType });
+
+  const selectedEvalGroups = plotTiming.time(
+    "plots selected evaluation groups",
+    () => getSelectedEvaluationGroups(evaluationContext)
+  );
+  if (selectedEvalGroups.length === 0) {
+    appendPlotEmptyMessage(documentLike, evalPlotContent, "Select evaluation groups to generate plots.");
+    return;
+  }
+
+  if (!isSupportedPlotMetricType(metricType)) {
+    appendPlotEmptyMessage(
+      documentLike,
+      evalPlotContent,
+      `(unknown metric type: ${metricType || "(missing)"}, data visualization not yet implemented)`
+    );
+    return;
+  }
+
+  const combined = plotTiming.time(
+    "plots group selected evaluations",
+    () => getPlotGroups(
+      activeExperiment,
+      selectedEvalGroups,
+      evalTabState.groupByFields,
+      evalTabState
+    )
+  );
+  const plotGroups = combined.groups;
+  const plotGroupFields = combined.fields;
+  const varyingPlotGroupFields = plotTiming.time(
+    "plots varying group fields",
+    () => getVaryingFields(plotGroups, plotGroupFields)
+  );
+
+  if (metricType === "ConfusionMatrix") {
+    renderConfusionMatrixPlots({
+      state,
+      dom,
+      activeExperiment,
+      evalTabState,
+      plotGroups,
+      plotGroupFields,
+      varyingPlotGroupFields,
+      documentLike,
+      plotTooltipHandlers,
+      getEvaluationEffectiveValue,
+      getEvaluationExperiment,
+      displayPlotGroupFieldName,
+      getPlotDisplayLabel,
+      rerenderEvaluationPlots,
+      timing: plotTiming,
+    });
+    return;
+  }
+
+  if (metricType === "TpFpFnCollector") {
+    renderTpFpFnPlots({
+      state,
+      dom,
+      activeExperiment,
+      evalTabState,
+      plotGroups,
+      plotGroupFields,
+      varyingPlotGroupFields,
+      documentLike,
+      requestAnimationFrameLike,
+      navigatorLike,
+      consoleLike,
+      plotTooltipHandlers,
+      getEvaluationEffectiveValue,
+      displayPlotGroupFieldName,
+      getPlotDisplayLabel,
+      rerenderEvaluationPlots,
+      timing: plotTiming,
+    });
+    return;
+  }
+
+  renderBarLikePlots({
+    state,
+    dom,
+    activeExperiment,
+    plotGroups,
+    varyingPlotGroupFields,
+    metricType,
+    documentLike,
+    requestAnimationFrameLike,
+    plotTooltipHandlers,
+    displayPlotGroupFieldName,
+    displayGroupFieldName,
+    getPlotTitleLabel,
+    rerenderEvaluationPlots,
+    timing: plotTiming,
+  });
 }
