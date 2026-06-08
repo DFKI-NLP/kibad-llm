@@ -98,8 +98,8 @@ Baseline-specific observations:
 
 Implications:
 
-- The immediate optimization target should be reusable plot datasets and cached collection aggregation inputs.
-- Narrower render entry points should follow so table selection, plot-tab changes, and grouping controls avoid repeating plot-data work when their underlying samples have not changed.
+- These measurements justify the per-evaluation preparation cache in step 2 as the first optimization because it removes repeated collector normalization and sparse-map construction without requiring a new lifecycle.
+- The broader reusable plot-data boundary should remain deferred until active-tab orchestration, active-plot selection, and narrower render entry points establish the intended unit of work. Those lifecycle changes should prevent plot-tab and plot-only controls from repeating unrelated work before higher-level caches are added.
 
 ### 2. Cache Per-Evaluation Metric Preparation
 
@@ -344,11 +344,13 @@ Required behavior changes:
 - Show one selected plot card at a time instead of rendering the complete active-tab grid.
 - Expose the other plot definitions through a lightweight secondary tab row, selector, or equivalent control.
 - Resolve the active plot after resolving the active tab and before expensive preparation.
+- Give every plot definition a stable key derived from raw family identifiers, never display labels. Numeric plot keys should use the encoded metric path; matrix plot keys should use the raw prediction-group id when choosing among groups and the normalized raw metric field when choosing among fields.
+- Retain active-plot selection per evaluation experiment, metric family, tab variant, and raw tab key rather than in one global value. Changing grouping mode therefore enters a separate selection context; returning to a previously visited family/tab context restores its prior plot when that key still exists.
+- When a stored key is absent, select the first plot in the family's deterministic definition order and persist that fallback for the current context.
 - Prepare, aggregate, filter, and render only the active plot definition.
-- Scope `Download Figures` and `Download Data` to the visible active plot.
+- Scope `Download Figures` and `Download Data` to the selected active plot.
 - Keep access to every existing plot; this is a presentation and work-scheduling change, not removal of a plot mode.
-- Define deterministic fallback when the previous active plot is unavailable after tab, grouping, or selection changes.
-- Define empty-filter behavior explicitly. Prefer showing the selected plot's empty state rather than eagerly preparing later plots merely to find a non-empty one.
+- If matrix thresholds filter the selected plot to no visible rows or columns, show that plot's empty state and do not search or prepare later plots. Keep `Download Data` enabled for the selected plot's pre-filter input, but disable `Download Figures` because no SVG was rendered.
 
 The resulting shared lifecycle should be:
 
@@ -368,22 +370,29 @@ As part of this behavior change, evaluate changing the default matrix grouping f
 
 ### 5. Split Plot Rendering From Evaluation Rendering
 
-Plot-only controls currently call `renderEvaluations()`, which rebuilds evaluation tabs, defaults, options, table rows, JSON pane, sticky-column offsets, summary text, plot groups, and plots. Introduce explicit render entry points and route each state change to the narrowest valid one:
+Several plot-only controls currently call `renderEvaluations()`, which rebuilds evaluation tabs, defaults, options, table rows, JSON pane, sticky-column offsets, summary text, plot groups, and plots. These include numeric prefix/suffix grouping, matrix metric-field/prediction-group grouping, label shortening, rounding precision, matrix thresholds, and legend mode.
+
+Active plot-tab clicks and grouped-bar chip toggles already call `renderEvaluationPlots()` rather than rebuilding the evaluation table, but they still rebuild tab maps and excessive active-tab plot work. Introduce explicit render entry points and route both categories to the narrowest valid one:
 
 - `renderEvaluationShell()` for evaluation tabs, defaults, table, JSON pane, sticky offsets, and summary
 - `renderEvaluationPlotsOnly()` for plot controls and lightweight tab/plot definition selection
 - `renderActivePlotOnly()` for active-plot preparation, aggregation, filtering, SVG rendering, legends, and download state
 
-At minimum, the following controls must stop rebuilding the evaluation table:
+Controls that currently trigger a full evaluation render must stop rebuilding the evaluation table:
 
-- active plot tab and active plot selection
 - numeric prefix/suffix grouping
 - matrix metric-field/prediction-group grouping
 - label shortening
 - rounding precision
 - confusion and TP/FP/FN thresholds
 - legend mode
+
+Controls that are already plot-only must use the narrower active-tab or active-plot path instead of recomputing all plot orchestration:
+
+- active plot tab
 - grouped-bar chip toggles
+
+The new active plot selection introduced in step 4 must call `renderActivePlotOnly()` directly.
 
 Use explicit render completion to update both download buttons and remove the plot-content `MutationObserver`. This makes button state part of the render lifecycle instead of an indirect DOM side effect.
 
@@ -452,8 +461,10 @@ Changing the download envelope from a `plots` array to a singular plot object ma
 Keep `plots.dashboard.test.mjs` focused on orchestration and button wiring. Add DOM-free tests for:
 
 - active-tab fallback and active-plot fallback
+- stable raw plot keys and per-experiment/family/tab selection retention across grouping-mode transitions
 - inactive tabs and inactive plots never invoking expensive preparation
 - one active plot producing one render card and one matching download source
+- filtered-empty matrix plots retaining pre-filter download data while producing no figure download
 - plot-only controls avoiding evaluation-table rendering
 - cache-key invalidation and reuse
 - explicit download-button lifecycle updates
@@ -481,18 +492,3 @@ Compare both timing-table totals and wall-clock latency. The key acceptance cond
 1. **Schema/performance follow-up:** complete steps 8 and 9, preserving pre-aggregation export semantics while documenting and testing the intentional active-plot scope change.
 
 This order finishes the current download-data PR at a coherent architectural boundary. The active-tab work remains valuable because the later active-plot contract extends it rather than replacing it, while the behavior and caching changes stay isolated in follow-up reviews with measurable performance goals.
-
-## Feedback for recent changes to this plan (double-check and integrate into the plan above, if reasonable):
-
-1. Medium: Plot-only invalidation wording is inaccurate. docs/eval-dashboard/plot-data-flow-plan.md:366 says plot-only controls currently call renderEvaluations(), then includes active-tab selection and grouped-bar toggles as acceptance cases. Those already call renderEvaluationPlots(). Distinguish:
-
-    - controls currently causing full evaluation renders;
-    - controls already plot-only but still rebuilding excessive plot work.
-
-1. Medium: The active-plot identity contract is underspecified. docs/eval-dashboard/plot-data-flow-plan.md:337 requires fallback behavior but never defines a stable plot key or state scope. Specify that keys derive from raw family identifiers, not display labels, and whether selection is retained per tab/family or globally. This affects caching, downloads, and grouping-mode transitions.
-
-1. Medium: Filtered-empty download behavior is unresolved. The current PR explicitly excludes filtered-empty matrix plots from downloads at docs/eval-dashboard/plot-data-flow-plan.md:313. The follow-up says to show the selected plot’s empty state and scope downloads to the active plot, but does not say whether its pre-filter data remains downloadable. This should be decided explicitly.
-
-1. Low: The historical implication at docs/eval-dashboard/plot-data-flow-plan.md:96 still says reusable plot datasets are the “immediate” target. That conflicts with the revised order: active-tab cleanup, then active-plot/render splitting, then the minimal data boundary. Update it to reflect the new sequence.
-
-Otherwise, the current-PR boundary and follow-up ordering are coherent. No formatting errors were found.
