@@ -162,8 +162,12 @@ def aggregate_majority_vote(
         structured_outputs: list of structured outputs from multiple extractions
         skip_type_mismatches: If True, skips keys with inconsistent types across extractions
             instead of raising an error (default: False)
+
     Returns:
         aggregated structured output or None if all entries are None
+
+    Raises:
+        NotImplementedError: If a value type is encountered that has not been listed above.
     """
     if all(res is None for res in structured_outputs):
         return None
@@ -279,7 +283,8 @@ def aggregate_unanimous(
         aggregated structured output or None if all entries are None
 
     Raises:
-        AggregationError: If the same key has non-None values in multiple extractions
+        AggregationError: If the same key has non-None values in multiple extractions. (Through `_aggregate_unanimous`)
+        NotImplementedError: If the encountered value is not in (str, int, float, bool, dict, list).
     """
 
     if all(res is None for res in structured_outputs):
@@ -348,6 +353,9 @@ def aggregate_single_majority_vote_multi_union(
 
     Returns:
         aggregated structured output or None if all entries are None
+
+    Raises:
+        NotImplementedError: If the encountered value type is not in (str, int, float, bool, dict, list).
     """
 
     if all(res is None for res in structured_outputs):
