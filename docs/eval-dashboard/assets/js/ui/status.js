@@ -132,6 +132,21 @@ export function renderDownloadFiguresButtonState(buttonElement, figureCount) {
 }
 
 /**
+ * Render the idle data-download button label based on the number of exportable plots.
+ *
+ * This mirrors the figure-download button contract while counting active plot
+ * payloads instead of visible SVG cards.
+ *
+ * @param {HTMLButtonElement | null} buttonElement - The download button element.
+ * @param {number} plotCount - The number of plots with downloadable data.
+ * @returns {void}
+ */
+export function renderDownloadDataButtonState(buttonElement, plotCount) {
+  buttonElement.disabled = plotCount === 0;
+  buttonElement.textContent = plotCount > 0 ? `Download Data (${plotCount})` : "Download Data";
+}
+
+/**
  * Put the download button into its temporary busy state.
  *
  * @param {HTMLButtonElement | null} buttonElement - The download button element.

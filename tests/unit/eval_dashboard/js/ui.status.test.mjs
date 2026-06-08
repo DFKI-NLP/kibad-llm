@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import {
   clearLoadProgress,
   formatBytes,
+  renderDownloadDataButtonState,
   renderDownloadFiguresButtonState,
   renderLoadProgress,
   renderLoadStatusStage,
@@ -125,6 +126,14 @@ test("download button helpers switch between idle and busy labels", () => {
   renderDownloadFiguresButtonState(button, 3);
   assert.equal(button.disabled, false);
   assert.equal(button.textContent, "Download Figures (3)");
+
+  renderDownloadDataButtonState(button, 0);
+  assert.equal(button.disabled, true);
+  assert.equal(button.textContent, "Download Data");
+
+  renderDownloadDataButtonState(button, 2);
+  assert.equal(button.disabled, false);
+  assert.equal(button.textContent, "Download Data (2)");
 
   setDownloadFiguresButtonBusy(button, "Exporting plots...");
   assert.equal(button.disabled, true);

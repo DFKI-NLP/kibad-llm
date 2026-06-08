@@ -20,6 +20,27 @@ export function resolveActiveTabValue(activeValue, availableValues) {
 }
 
 /**
+ * Resolve one active tab entry from an ordered tab map.
+ *
+ * @param {Map<string, object>} tabMap - Tab entries keyed by stable tab ids.
+ * @param {Iterable<string>} orderedKeys - Tab ids in display order.
+ * @param {string | null} requestedKey - Requested active tab id.
+ * @returns {{orderedKeys: Array<string>, activeKey: string | null, activeTab: object | null}} Active-tab result.
+ */
+export function resolveActiveTab(tabMap, orderedKeys, requestedKey) {
+  const keys = Array.from(orderedKeys || []);
+  const activeKey = resolveActiveTabValue(requestedKey, keys);
+  if (activeKey !== null && !tabMap.has(activeKey)) {
+    throw new Error(`Active tab key is missing from the tab map: ${activeKey}`);
+  }
+  return {
+    orderedKeys: keys,
+    activeKey,
+    activeTab: activeKey === null ? null : tabMap.get(activeKey),
+  };
+}
+
+/**
  * Build plain tab-button view models from tab ids.
  *
  * @param {Iterable<string>} values - Tab ids to render.

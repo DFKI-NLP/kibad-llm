@@ -11,6 +11,7 @@ import {
   buildTabButtonModels,
   renderStaticTabState,
   renderTabButtons,
+  resolveActiveTab,
   resolveActiveTabValue,
 } from "../../../../docs/eval-dashboard/assets/js/ui/tabs.js";
 
@@ -133,6 +134,31 @@ test("resolveActiveTabValue preserves valid tabs and falls back to the first ava
   assert.equal(resolveActiveTabValue("beta", ["alpha", "beta"]), "beta");
   assert.equal(resolveActiveTabValue("missing", ["alpha", "beta"]), "alpha");
   assert.equal(resolveActiveTabValue(null, []), null);
+});
+
+/**
+ * Verify the active-tab contract returns ordered keys and only the resolved entry.
+ */
+test("resolveActiveTab returns the ordered active-tab contract", () => {
+  const tabMap = new Map([
+    ["alpha", { label: "Alpha" }],
+    ["beta", { label: "Beta" }],
+  ]);
+
+  assert.deepEqual(resolveActiveTab(tabMap, ["beta", "alpha"], "missing"), {
+    orderedKeys: ["beta", "alpha"],
+    activeKey: "beta",
+    activeTab: { label: "Beta" },
+  });
+  assert.deepEqual(resolveActiveTab(tabMap, [], "alpha"), {
+    orderedKeys: [],
+    activeKey: null,
+    activeTab: null,
+  });
+  assert.throws(
+    () => resolveActiveTab(tabMap, ["missing"], null),
+    /Active tab key is missing from the tab map: missing/
+  );
 });
 
 /**

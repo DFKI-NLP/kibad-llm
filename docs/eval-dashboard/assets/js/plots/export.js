@@ -347,7 +347,7 @@ export async function downloadVisibleFigures({
  * @param {object} options - SVG, dimensions, color, and DOM dependency.
  * @returns {void}
  */
-export function prependExportBackgroundRect({
+function prependExportBackgroundRect({
   documentLike = globalThis.document,
   svg,
   width,
@@ -483,7 +483,7 @@ export function serializeSvgForDownload({
  * @param {Date} [date] - Timestamp to encode.
  * @returns {{time: number, date: number}} DOS time and date bit fields.
  */
-export function getZipDosDateTime(date = new Date()) {
+function getZipDosDateTime(date = new Date()) {
   const year = Math.max(1980, date.getFullYear());
   return {
     time: ((date.getHours() & 0x1f) << 11) | ((date.getMinutes() & 0x3f) << 5) | ((Math.floor(date.getSeconds() / 2)) & 0x1f),

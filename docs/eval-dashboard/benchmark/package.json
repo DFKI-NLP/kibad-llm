@@ -1,0 +1,10 @@
+{
+  "name": "eval-dashboard-benchmark",
+  "private": true,
+  "scripts": {
+    "benchmark": "node eval-dashboard-benchmark.mjs"
+  },
+  "devDependencies": {
+    "playwright": ">=1.56.0 <2.0.0"
+  }
+}

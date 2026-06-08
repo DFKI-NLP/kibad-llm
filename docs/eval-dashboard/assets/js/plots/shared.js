@@ -1,29 +1,84 @@
 /**
  * Shared DOM-free plot helpers for the eval dashboard.
+ *
+ * Plot families use these helpers to keep data preparation, grouping labels,
+ * and adaptive SVG sizing consistent without depending on the dashboard
+ * controller module.
  */
 
-import { getValueAtPath } from "../utils/flatten.js";
 import { splitLabelByLastDot } from "../utils/text.js";
-import { meanAndStd, normalizeValue } from "../utils/values.js";
-
-export const TP_FP_FN_KEYS = ["tp", "fp", "fn"];
-export const plotSortCollator = new Intl.Collator(undefined, {
-  numeric: true,
-  sensitivity: "base",
-});
+import { normalizeValue } from "../utils/values.js";
 
 /**
  * Resolves the stable source run directory for a metric collection evaluation.
+ *
+ * Collection views may wrap a raw evaluation and carry their own `runDir`.
+ * Source-run identity keeps counts and labels tied to the original run rather
+ * than to temporary wrappers rebuilt during plotting.
  *
  * @param {object} evaluation - Evaluation record.
  * @returns {string} Normalized source run directory.
  */
 export function getMetricCollectionSourceRunDir(evaluation) {
-  return normalizeValue(evaluation?.sourceRunDir ?? evaluation?.runDir).trim();
+  const sourceRunDir = normalizeValue(evaluation?.sourceRunDir).trim();
+  return sourceRunDir || normalizeValue(evaluation?.runDir).trim();
+}
+
+/**
+ * Resolves the required source run directory for aligned plot data.
+ *
+ * Numeric inputs use raw evaluations while matrix inputs use collection views.
+ * Both must expose the same source-run identity before values are detached from
+ * their evaluation records for aggregation and download.
+ *
+ * @param {object} evaluation - Raw evaluation or metric collection view.
+ * @param {string} context - Plot-data context used in validation errors.
+ * @returns {string} Non-empty normalized source run directory.
+ * @throws {Error} If source-run identity is unavailable.
+ */
+export function getRequiredPlotRunDir(evaluation, context = "Plot data") {
+  const runDir = getMetricCollectionSourceRunDir(evaluation);
+  if (!runDir) {
+    throw new Error(`${context} requires every evaluation to define a run directory.`);
+  }
+  return runDir;
+}
+
+/**
+ * Asserts that two arrays remain index-aligned.
+ *
+ * @param {string} context - Plot-data context used in validation errors.
+ * @param {string} firstName - First array field name.
+ * @param {Array<*>} firstValues - First aligned array.
+ * @param {string} secondName - Second array field name.
+ * @param {Array<*>} secondValues - Second aligned array.
+ * @returns {void}
+ * @throws {Error} If either value is not an array or their lengths differ.
+ */
+export function assertAlignedArrayLengths(
+  context,
+  firstName,
+  firstValues,
+  secondName,
+  secondValues
+) {
+  if (!Array.isArray(firstValues) || !Array.isArray(secondValues)) {
+    throw new Error(`${context} requires ${firstName} and ${secondName} to be arrays.`);
+  }
+  if (firstValues.length !== secondValues.length) {
+    throw new Error(
+      `${context} requires ${firstName}.length (${firstValues.length}) to equal ` +
+      `${secondName}.length (${secondValues.length}).`
+    );
+  }
 }
 
 /**
  * Check whether a value is a plain object record.
+ *
+ * Metric plot inputs use object records for nested metric data. Centralizing
+ * this check keeps collection wrapping and metric validation from accepting
+ * arrays or scalar values by accident.
  *
  * @param {*} value - Candidate record.
  * @returns {boolean} Whether the value is a non-array object.
@@ -33,10 +88,49 @@ export function isMetricDataRecord(value) {
 }
 
 /**
+ * Resolves the non-enumerable prepared-data container for a metric evaluation.
+ *
+ * Collection views keep the raw dashboard evaluation on `.evaluation`; caching
+ * on that source record lets rebuilt views reuse the same prepared data. Direct
+ * aggregation inputs fall back to the object they received.
+ *
+ * @param {object} evaluation - Collection view or direct evaluation.
+ * @returns {object} Mutable prepared-data container.
+ * @throws {Error} If the input cannot own prepared data.
+ */
+export function getMetricPreparedDataContainer(evaluation) {
+  const cacheTarget = evaluation?.evaluation && typeof evaluation.evaluation === "object"
+    ? evaluation.evaluation
+    : evaluation;
+  if (!cacheTarget || typeof cacheTarget !== "object") {
+    throw new Error("Metric preparation cache target must be an object.");
+  }
+  if (!cacheTarget.dataPrepared || typeof cacheTarget.dataPrepared !== "object") {
+    Object.defineProperty(cacheTarget, "dataPrepared", {
+      value: Object.create(null),
+      enumerable: false,
+      configurable: true,
+      writable: true,
+    });
+  } else if (Object.getPrototypeOf(cacheTarget.dataPrepared) !== null) {
+    const preparedData = Object.assign(Object.create(null), cacheTarget.dataPrepared);
+    Object.defineProperty(cacheTarget, "dataPrepared", {
+      value: preparedData,
+      enumerable: false,
+      configurable: true,
+      writable: true,
+    });
+  }
+  return cacheTarget.dataPrepared;
+}
+
+/**
  * Build a collection-view wrapper for one field-based metric evaluation.
  *
  * Collection metrics expose their field map by reference. Single-field metrics
  * are wrapped as one-field collections and must define a non-empty metric.field.
+ * The wrapper gives confusion and TP/FP/FN plots one field-map contract while
+ * leaving raw dashboard evaluations unchanged for tables and grouping.
  *
  * @param {object} evaluation - Evaluation record to wrap.
  * @param {object} options - Collection type names, metric label, and field resolver.
@@ -110,6 +204,9 @@ export function getMetricCollectionView(
 /**
  * Formats a plot label, optionally shortening dotted paths to their suffix.
  *
+ * The dashboard can shorten long metric or label paths for dense matrices while
+ * keeping the full label available in data and tooltips.
+ *
  * @param {*} label - Raw label value.
  * @param {object} [options] - Display options.
  * @returns {string} Normalized label text.
@@ -120,59 +217,11 @@ export function getPlotDisplayLabel(label, { shortenLabels = false } = {}) {
 }
 
 /**
- * Resolves the display title for a metric plot entry.
- *
- * @param {object} plotEntry - Plot entry created by buildPlotEntries.
- * @param {string} metricType - Metric type for special title handling.
- * @param {object} [options] - Label and tab display options.
- * @returns {string} Display title label.
- */
-export function getPlotTitleLabel(plotEntry, metricType, { shortenLabels = false, plotTabsBy = "prefix" } = {}) {
-  if (
-    metricType === "F1MicroMultipleFieldsMetric" &&
-    shortenLabels &&
-    plotTabsBy === "suffix"
-  ) {
-    return plotEntry.prefix === "(root)" ? plotEntry.metricLabel : plotEntry.prefix;
-  }
-  return getPlotDisplayLabel(plotEntry.metricLabel, { shortenLabels });
-}
-
-/**
- * Selects a deterministic bar color from the dashboard palette.
- *
- * @param {number} index - Zero-based series index.
- * @returns {string} Hex color value.
- */
-export function getBarColor(index) {
-  const palette = [
-    "#60a5fa",
-    "#f97316",
-    "#22c55e",
-    "#a78bfa",
-    "#f43f5e",
-    "#14b8a6",
-    "#eab308",
-    "#8b5cf6",
-    "#06b6d4",
-    "#ef4444",
-  ];
-  return palette[index % palette.length];
-}
-
-/**
- * Applies shared visual styling to an SVG error-bar line segment.
- *
- * @param {SVGLineElement} line - Line element to style.
- * @returns {void}
- */
-export function styleErrorBarSegment(line) {
-  line.setAttribute("stroke", "currentColor");
-  line.setAttribute("stroke-opacity", "0.78");
-}
-
-/**
  * Expands an SVG viewport so all generated plot content is visible.
+ *
+ * Rotated axis labels and browser font metrics can extend beyond the initial
+ * viewBox. Measuring the content group after render prevents clipped exports
+ * and clipped on-screen plots.
  *
  * @param {SVGSVGElement} svg - SVG element to resize.
  * @param {SVGGElement} contentGroup - Group whose bounding box is measured.
@@ -180,7 +229,7 @@ export function styleErrorBarSegment(line) {
  * @param {number} minHeight - Minimum SVG height.
  * @returns {boolean} True when fitting succeeded.
  */
-export function fitSvgToContents(svg, contentGroup, minWidth, minHeight) {
+function fitSvgToContents(svg, contentGroup, minWidth, minHeight) {
   if (!svg.isConnected) {
     return false;
   }
@@ -221,6 +270,10 @@ export function fitSvgToContents(svg, contentGroup, minWidth, minHeight) {
 /**
  * Schedules repeated SVG fitting attempts after layout and font loading.
  *
+ * SVG text bounding boxes are not always available immediately after elements
+ * are created. Retrying across animation frames and after `document.fonts`
+ * settles makes sizing robust in both browsers and DOM-like tests.
+ *
  * @param {object} options - Fitting dependencies and dimensions.
  * @returns {void}
  */
@@ -253,56 +306,11 @@ export function scheduleAdaptiveSvgFit({
 }
 
 /**
- * Builds a shared legend model for grouped bar plot entries.
- *
- * @param {Array<object>} entries - Plot entries containing grouped points.
- * @returns {object} Series order, display labels, colors, and legend items.
- */
-export function buildGroupedLegendModel(entries) {
-  const seriesOrder = [];
-  const seenSeries = new Set();
-  const displayBySeries = new Map();
-
-  for (const entry of entries) {
-    for (const point of entry.points || []) {
-      if (!seenSeries.has(point.series)) {
-        seenSeries.add(point.series);
-        seriesOrder.push(point.series);
-      }
-      if (!displayBySeries.has(point.series)) {
-        displayBySeries.set(point.series, point.displaySeries || point.series);
-      }
-    }
-  }
-
-  const colorBySeries = new Map();
-  const items = seriesOrder.map((series, index) => {
-    const color = getBarColor(index);
-    const label = displayBySeries.get(series) || series;
-    colorBySeries.set(series, color);
-    return { series, label, color };
-  });
-
-  return { seriesOrder, displayBySeries, colorBySeries, items };
-}
-
-/**
- * Filters a legend model down to the series present in a point collection.
- *
- * @param {Array<object>} points - Points rendered in a plot.
- * @param {?object} legendModel - Shared legend model.
- * @returns {Array<object>} Legend items used by the points.
- */
-export function getLegendItemsForPoints(points, legendModel) {
-  if (!legendModel) {
-    return [];
-  }
-  const seriesInPoints = new Set(points.map((point) => point.series));
-  return legendModel.items.filter((item) => seriesInPoints.has(item.series));
-}
-
-/**
  * Finds grouping fields whose values differ across groups.
+ *
+ * Plot labels and grouping controls should focus on fields that actually
+ * distinguish the visible groups. Omitting constant fields keeps titles and
+ * chips concise.
  *
  * @param {Array<object>} groups - Plot groups with value maps.
  * @param {Array<string>} fields - Candidate field names.
@@ -320,6 +328,10 @@ export function getVaryingFields(groups, fields) {
 
 /**
  * Builds a readable label from selected group fields.
+ *
+ * Plot tabs, titles, and categories need a stable text representation of the
+ * active grouping fields. This helper centralizes fallback handling and display
+ * name formatting.
  *
  * @param {object} group - Plot group containing values.
  * @param {Array<string>} labelFields - Field names to include.
@@ -339,142 +351,4 @@ export function getGroupLabelForFields(
   return labelFields
     .map((field) => `${fieldNameFormatter(field)}=${normalizeValue(group.values[field])}`)
     .join(" | ");
-}
-
-/**
- * Recursively collects numeric leaf paths from a metric data object.
- *
- * @param {*} value - Metric data value to inspect.
- * @param {Array<string>} [parts] - Current path parts during recursion.
- * @param {Map<string, Array<string>>} [out] - Accumulator keyed by encoded paths.
- * @returns {Map<string, Array<string>>} Numeric metric leaf paths.
- */
-export function collectNumericMetricLeafPaths(value, parts = [], out = new Map()) {
-  if (!value || typeof value !== "object") {
-    return out;
-  }
-  for (const [key, child] of Object.entries(value)) {
-    const pathParts = [...parts, key];
-    if (typeof child === "number" && Number.isFinite(child)) {
-      out.set(pathParts.join("|#|"), pathParts);
-      continue;
-    }
-    if (child && typeof child === "object" && !Array.isArray(child)) {
-      collectNumericMetricLeafPaths(child, pathParts, out);
-    }
-  }
-  return out;
-}
-
-/**
- * Splits a metric label into prefix and suffix at the final dot.
- *
- * @param {string} label - Metric label.
- * @returns {{prefix: string, suffix: string}} Split label components.
- */
-export function splitMetricLabelAtLastDot(label) {
-  const lastDotIndex = label.lastIndexOf(".");
-  if (lastDotIndex === -1) {
-    return { prefix: "(root)", suffix: label };
-  }
-  return {
-    prefix: label.slice(0, lastDotIndex),
-    suffix: label.slice(lastDotIndex + 1),
-  };
-}
-
-/**
- * Converts metric paths and evaluation groups into plottable bar entries.
- *
- * @param {object} options - Plot entry construction inputs.
- * @returns {Array<object>} Plot entries with mean/std point data.
- */
-export function buildPlotEntries({
-  metricPaths,
-  plotGroups,
-  groupBarFields,
-  categoryFields,
-  getGroupLabel = getGroupLabelForFields,
-  displayGroupFieldName = (field) => field,
-}) {
-  const entries = [];
-  for (const metricPath of metricPaths) {
-    const points = [];
-    plotGroups.forEach((group, index) => {
-      const values = group.evaluations
-        .map((evaluation) => Number(getValueAtPath(evaluation.data, metricPath.parts)))
-        .filter((value) => Number.isFinite(value));
-      const stats = meanAndStd(values);
-      if (!stats) {
-        return;
-      }
-      const categoryLabel = groupBarFields.length
-        ? getGroupLabel(group, categoryFields, "all")
-        : getGroupLabel(group, categoryFields, `group ${index + 1}`);
-      const displayCategoryLabel = groupBarFields.length
-        ? getGroupLabel(group, categoryFields, "all", displayGroupFieldName)
-        : getGroupLabel(group, categoryFields, `group ${index + 1}`, displayGroupFieldName);
-      const seriesLabel = groupBarFields.length
-        ? getGroupLabel(group, groupBarFields, "series")
-        : "__single__";
-      const displaySeriesLabel = groupBarFields.length
-        ? getGroupLabel(group, groupBarFields, "series", displayGroupFieldName)
-        : "__single__";
-      points.push({
-        label: categoryLabel,
-        displayLabel: displayCategoryLabel,
-        category: categoryLabel,
-        displayCategory: displayCategoryLabel,
-        series: seriesLabel,
-        displaySeries: displaySeriesLabel,
-        mean: stats.mean,
-        std: stats.std,
-      });
-    });
-    if (!points.length) {
-      continue;
-    }
-    const split = splitMetricLabelAtLastDot(metricPath.label);
-    entries.push({ metricLabel: metricPath.label, parts: metricPath.parts, points, ...split });
-  }
-  return entries;
-}
-
-/**
- * Groups metric plot entries into bar plot tabs.
- *
- * @param {Array<object>} plotEntries - Entries produced by buildPlotEntries.
- * @param {object} [options] - Tab grouping options.
- * @returns {Map<string, Array<object>>} Tab map keyed by prefix or suffix.
- */
-export function buildBarsTabMap(plotEntries, { plotTabsBy = "prefix" } = {}) {
-  const tabMap = new Map();
-  for (const entry of plotEntries) {
-    const tabKey = plotTabsBy === "suffix" ? entry.suffix : entry.prefix;
-    if (!tabMap.has(tabKey)) {
-      tabMap.set(tabKey, []);
-    }
-    tabMap.get(tabKey).push(entry);
-  }
-  return tabMap;
-}
-
-/**
- * Splits error metric entries into total and details tabs.
- *
- * @param {Array<object>} plotEntries - Error metric plot entries.
- * @returns {Map<string, Array<object>>} Tab map for available error sections.
- */
-export function buildErrorsTabMap(plotEntries) {
-  const totalKeys = new Set(["with_error", "no_error"]);
-  const total = plotEntries.filter((entry) => totalKeys.has(entry.parts[0]));
-  const details = plotEntries.filter((entry) => !totalKeys.has(entry.parts[0]));
-  const tabMap = new Map();
-  if (total.length) {
-    tabMap.set("total", total);
-  }
-  if (details.length) {
-    tabMap.set("details", details);
-  }
-  return tabMap;
 }
