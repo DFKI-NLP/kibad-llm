@@ -197,8 +197,8 @@ def test_main_module_delegates_table_section_builders_to_table_modules() -> None
     assert "function getEvalColumnSections(" not in main_js
     assert "buildPredictionColumnSections," in main_js
     assert "buildEvaluationColumnSections," in main_js
-    assert "const predictionSections = buildPredictionColumnSections({" in main_js
-    assert "const evalColumnSections = buildEvaluationColumnSections(evalColumns, {" in main_js
+    assert main_js.count("buildPredictionColumnSections({") == 1
+    assert main_js.count("buildEvaluationColumnSections(evalColumns, {") == 1
     assert "export function buildPredictionColumnSections(" in prediction_table_js
     assert "export function buildEvaluationColumnSections(" in evaluation_table_js
 

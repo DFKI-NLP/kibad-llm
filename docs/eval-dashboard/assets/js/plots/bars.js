@@ -16,10 +16,7 @@ import {
   scheduleAdaptiveSvgFit,
 } from "./shared.js";
 import {
-  buildGroupedLegendModel,
-  createPlotLegendElement,
   getBarColor,
-  getLegendItemsForPoints,
 } from "./legend.js";
 
 /**
@@ -841,109 +838,4 @@ export function createGroupedBarPlotSvg({
 
   scheduleAdaptiveSvgFit({ documentLike, requestAnimationFrameLike, svg, contentGroup, minWidth: width, minHeight: height });
   return svg;
-}
-
-/**
- * Renders plot tab buttons, optional legends, and the active plot grid.
- *
- * This is the shared DOM adapter for numeric bar-like plots. It keeps tab
- * resolution, shared legend behavior, and card rendering in one place so the
- * dashboard can reuse the same flow for ordinary metrics and ErrorCollector
- * metrics.
- *
- * @param {object} options - Current tab definitions, active entries, DOM nodes, and renderer callbacks.
- * @returns {{activeEvalPlotTab: string, activePlotLegendItems: Array<object>}} Updated active tab and shared legend items.
- */
-export function renderBarPlotTabsAndGrid({
-  documentLike = globalThis.document,
-  tabMap,
-  activeEntries,
-  activeExperiment,
-  groupBarFields,
-  metricType,
-  activeEvalPlotTab,
-  plotShowLegendOnce,
-  plotShowLegendOnceRow,
-  evalPlotTabs,
-  evalPlotContent,
-  buildCountTabButtonModels,
-  renderTabButtons,
-  resolveActiveTabValue,
-  getPlotTitleLabel,
-  displayPlotGroupFieldName,
-  createBarSvg = (points) => createBarPlotSvg({ documentLike, points }),
-  createGroupedBarSvg = (points, legendModel) => createGroupedBarPlotSvg({ documentLike, points, legendModel }),
-  createLegendElement = createPlotLegendElement,
-  onActiveTabChange,
-}) {
-  const sortedTabKeys = getSortedBarPlotTabKeys(tabMap);
-  const nextActiveTab = resolveActiveTabValue(activeEvalPlotTab, sortedTabKeys);
-  renderTabButtons({
-    documentLike,
-    containerElement: evalPlotTabs,
-    tabModels: buildCountTabButtonModels(sortedTabKeys, {
-      activeValue: nextActiveTab,
-      getLabelText: (key) => tabMap.get(key).label,
-      getCount: (key) => tabMap.get(key).plots.length,
-      getTitle: (key) => tabMap.get(key).label,
-    }),
-    onSelect: (key) => onActiveTabChange(key),
-  });
-
-  const groupedLegendModel = groupBarFields.length
-    ? buildGroupedLegendModel(activeEntries)
-    : null;
-  evalPlotContent.innerHTML = "";
-
-  if (plotShowLegendOnceRow) {
-    plotShowLegendOnceRow.style.display = groupedLegendModel?.items.length > 1 ? "" : "none";
-  }
-  const hasSharedLegend = Boolean(groupedLegendModel && groupedLegendModel.items.length > 1);
-  if (hasSharedLegend && plotShowLegendOnce) {
-    evalPlotContent.appendChild(createLegendElement({
-      documentLike,
-      legendItems: groupedLegendModel.items,
-    }));
-  }
-
-  const grid = documentLike.createElement("div");
-  grid.className = "plot-grid";
-  for (const entry of activeEntries) {
-    const card = documentLike.createElement("section");
-    card.className = "plot-card";
-    const title = documentLike.createElement("p");
-    title.className = "plot-title";
-    const groupedByText = groupBarFields.length
-      ? ` | grouped by: ${groupBarFields.map((field) => displayPlotGroupFieldName(field)).join(", ")}`
-      : "";
-    title.textContent = `${getPlotTitleLabel(entry, metricType)} (mean ± std)${groupedByText}`;
-    card.appendChild(title);
-    if (groupBarFields.length) {
-      const plotLegendItems = getLegendItemsForPoints(entry.points, groupedLegendModel);
-      if (plotLegendItems.length > 1 && !plotShowLegendOnce) {
-        card.appendChild(createLegendElement({
-          documentLike,
-          legendItems: plotLegendItems,
-        }));
-      }
-      card.appendChild(createGroupedBarSvg(entry.points, groupedLegendModel));
-    } else {
-      card.appendChild(createBarSvg(entry.points));
-    }
-    grid.appendChild(card);
-  }
-
-  if (!grid.childElementCount) {
-    const msg = documentLike.createElement("p");
-    msg.className = "plot-empty";
-    msg.textContent = "No plottable metric values found for the active tab.";
-    evalPlotContent.appendChild(msg);
-  } else {
-    evalPlotContent.appendChild(grid);
-  }
-
-  return {
-    activeEvalPlotTab: nextActiveTab,
-    activePlotLegendItems: hasSharedLegend ? groupedLegendModel.items : [],
-  };
 }

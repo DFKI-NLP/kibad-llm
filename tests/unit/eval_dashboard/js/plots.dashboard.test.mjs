@@ -6,10 +6,15 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import {
+  appendPlotEmptyMessage,
+  buildActiveTabDownloadEnvelope,
+  createPlotCard,
+  createPlotGrid,
   createPlotTooltipHandlers,
   downloadVisiblePlotFigures,
   renderDashboardPlotControls,
   renderEvaluationPlotsForDashboard,
+  renderPlotTabButtonModels,
   resolvePlotExportBackgroundColor,
   updateDownloadDataButtonState,
   updateDownloadFiguresButtonState,
@@ -66,6 +71,55 @@ function createPlotState(overrides = {}) {
     ...overrides,
   };
 }
+
+/**
+ * Verify concrete active-tab DOM helpers preserve the shared plot markup contract.
+ */
+test("dashboard active-tab helpers render tabs, cards, grids, empty states, and downloads", () => {
+  const documentLike = createDocumentStub();
+  const tabs = documentLike.createElement("div");
+  let selected = null;
+  renderPlotTabButtonModels({
+    documentLike,
+    containerElement: tabs,
+    tabModels: [
+      { value: "active", label: "Active", isActive: true },
+      { value: "other", label: "Other" },
+    ],
+    activeKey: "active",
+    onActiveTabChange: (key) => {
+      selected = key;
+    },
+  });
+  tabs.querySelectorAll("button")[0].click();
+  assert.equal(selected, null);
+  tabs.querySelectorAll("button")[1].click();
+  assert.equal(selected, "other");
+
+  const grid = createPlotGrid(documentLike);
+  grid.appendChild(createPlotCard(documentLike, "Plot title"));
+  assert.equal(grid.className, "plot-grid");
+  assert.equal(grid.querySelector(".plot-title").textContent, "Plot title");
+
+  const content = documentLike.createElement("div");
+  appendPlotEmptyMessage(documentLike, content, "Nothing to plot.");
+  assert.equal(content.querySelector(".plot-empty").textContent, "Nothing to plot.");
+
+  const plots = [{ metadata: {}, dataSource: new Map() }];
+  assert.deepEqual(
+    buildActiveTabDownloadEnvelope(
+      "confusion_matrix",
+      { plotTab: "field", plotTabVariant: "metric_field" },
+      plots
+    ),
+    {
+      metric_family: "confusion_matrix",
+      plot_tab: "field",
+      plot_tab_variant: "metric_field",
+      plots,
+    }
+  );
+});
 
 /**
  * Verify the dashboard adapter wires the shared tooltip helpers without changing positions.
@@ -385,6 +439,100 @@ test("dashboard render adapter renders bar-like plot cards", () => {
 });
 
 /**
+ * Verify grouped numeric orchestration preserves shared and per-card legend behavior.
+ */
+test("dashboard renders grouped numeric legends and export legend state", () => {
+  for (const plotShowLegendOnce of [true, false]) {
+    const documentLike = createDocumentStub();
+    const dom = createPlotDom(documentLike);
+    const state = createPlotState({
+      plotGroupBarFields: new Set(["seed"]),
+      plotShowLegendOnce,
+    });
+    const evaluations = [
+      { runDir: "run-a-1", data: { score: { mean: 0.5 } } },
+      { runDir: "run-a-2", data: { score: { mean: 0.6 } } },
+      { runDir: "run-b-1", data: { score: { mean: 0.7 } } },
+      { runDir: "run-b-2", data: { score: { mean: 0.8 } } },
+    ];
+    const plotGroups = [
+      {
+        groupId: "a-1",
+        values: { model: "a", seed: "1" },
+        evaluations: [evaluations[0]],
+      },
+      {
+        groupId: "a-2",
+        values: { model: "a", seed: "2" },
+        evaluations: [evaluations[1]],
+      },
+      {
+        groupId: "b-1",
+        values: { model: "b", seed: "1" },
+        evaluations: [evaluations[2]],
+      },
+      {
+        groupId: "b-2",
+        values: { model: "b", seed: "2" },
+        evaluations: [evaluations[3]],
+      },
+    ];
+
+    renderEvaluationPlotsForDashboard({
+      state,
+      dom,
+      activeExperiment: "experiment/a",
+      evaluationContext: {
+        experimentEvaluations: evaluations,
+        evalTabState: { groupByFields: ["model", "seed"] },
+      },
+      documentLike,
+      requestAnimationFrameLike: (callback) => callback(),
+      plotTooltipHandlers: { show: () => {}, move: () => {}, hide: () => {} },
+      getSelectedPredictionGroups: () => [{}],
+      getSelectedEvaluationGroups: () => [{ evaluations }],
+      getMetricTypeForEvaluationContext: () => "F1MicroMultipleFieldsMetric",
+      getPlotGroups: () => ({
+        fields: ["model", "seed"],
+        groups: plotGroups,
+      }),
+      getEvaluationEffectiveValue: () => null,
+      getEvaluationExperiment: () => "experiment/a",
+      displayPlotGroupFieldName: (field) => field,
+      displayGroupFieldName: (field) => field,
+      getPlotDisplayLabel: (label) => label,
+      getPlotTitleLabel: (entry) => entry.metricLabel,
+      rerenderEvaluationPlots: () => {},
+    });
+
+    const legends = dom.evalPlotContent.querySelectorAll(".plot-legend");
+    assert.equal(legends.length, 1);
+    assert.deepEqual(
+      legends[0].querySelectorAll(".plot-legend-item").map((item) => item.children[1].textContent),
+      ["seed=1", "seed=2"]
+    );
+    assert.equal(
+      dom.evalPlotContent.querySelector(".plot-title").textContent,
+      "score.mean (mean ± std) | grouped by: seed"
+    );
+    assert.equal(dom.evalPlotContent.querySelector(".plot-card").querySelector("svg").tagName, "svg");
+    assert.equal(dom.plotShowLegendOnceRow.style.display, "");
+    assert.deepEqual(
+      state.activePlotLegendItems.map((item) => item.label),
+      ["seed=1", "seed=2"]
+    );
+    assert.equal(
+      dom.evalPlotContent.children[0].className,
+      plotShowLegendOnce ? "plot-legend" : "plot-grid"
+    );
+    assert.equal(
+      dom.evalPlotContent.querySelector(".plot-card").querySelector(".plot-legend") !== null,
+      !plotShowLegendOnce
+    );
+  }
+});
+
+/**
  * Verify numeric sample preparation is limited to definitions in the active tab.
  */
 test("dashboard prepares numeric plot data only for the active tab", () => {
@@ -438,6 +586,133 @@ test("dashboard prepares numeric plot data only for the active tab", () => {
   assert.deepEqual(
     state.activePlotDownloadData.plots.map((plot) => plot.metadata.metric_label),
     ["active.value"]
+  );
+});
+
+/**
+ * Verify inactive confusion tabs never prepare their collection data.
+ */
+test("dashboard prepares confusion data only for the active tab", () => {
+  const documentLike = createDocumentStub();
+  const dom = createPlotDom(documentLike);
+  const state = createPlotState({
+    activeEvalPlotTab: "active_field",
+    plotConfusionMinLabelTotal: 1,
+  });
+  const activeEvaluation = {
+    runDir: "run-active",
+    overrides: { experiment: "experiment/a", "metric.field": "active_field" },
+    jobReturnValue: { type: "ConfusionMatrix" },
+    data: { actual: { predicted: 2 } },
+  };
+  const inactiveEvaluation = {
+    runDir: "run-inactive",
+    overrides: { experiment: "experiment/a", "metric.field": "inactive_field" },
+    jobReturnValue: { type: "ConfusionMatrix" },
+    data: { "invalid|#|row": { predicted: 1 } },
+  };
+  const evaluations = [activeEvaluation, inactiveEvaluation];
+
+  renderEvaluationPlotsForDashboard({
+    state,
+    dom,
+    activeExperiment: "experiment/a",
+    evaluationContext: {
+      experimentEvaluations: evaluations,
+      evalTabState: { groupByFields: [] },
+    },
+    documentLike,
+    plotTooltipHandlers: { show: () => {}, move: () => {}, hide: () => {} },
+    getSelectedPredictionGroups: () => [{}],
+    getSelectedEvaluationGroups: () => [{ evaluations }],
+    getMetricTypeForEvaluationContext: () => "ConfusionMatrix",
+    getPlotGroups: () => ({
+      fields: [],
+      groups: [{ groupId: "all", values: {}, evaluations }],
+    }),
+    getEvaluationEffectiveValue: (evaluation, column) => evaluation.overrides?.[column] ?? "",
+    getEvaluationExperiment: (evaluation) => evaluation.overrides.experiment,
+    displayPlotGroupFieldName: (field) => field,
+    displayGroupFieldName: (field) => field,
+    getPlotDisplayLabel: (label) => label,
+    getPlotTitleLabel: (entry) => entry.metricLabel,
+    rerenderEvaluationPlots: () => {},
+  });
+
+  assert.equal(state.activeEvalPlotTab, "active_field");
+  assert.deepEqual(
+    Array.from(dom.evalPlotTabs.querySelectorAll("button"), (button) => button.textContent),
+    ["active_field (1)", "inactive_field (1)"]
+  );
+  assert.equal(inactiveEvaluation.dataPrepared, undefined);
+  assert.deepEqual(
+    state.activePlotDownloadData.plots.map((plot) => plot.metadata.field_label),
+    ["active_field"]
+  );
+});
+
+/**
+ * Verify inactive TP/FP/FN tabs never prepare their collection data.
+ */
+test("dashboard prepares TP/FP/FN data only for the active tab", () => {
+  const documentLike = createDocumentStub();
+  const dom = createPlotDom(documentLike);
+  const state = createPlotState({
+    activeEvalPlotTab: "active_field",
+    plotTpFpFnMinLabelTotal: 1,
+  });
+  const activeEvaluation = {
+    runDir: "run-active",
+    overrides: { "metric.field": "active_field" },
+    jobReturnValue: { type: "TpFpFnCollector" },
+    data: { doc1: { tp: ["label"], fp: [], fn: [] } },
+  };
+  const inactiveEvaluation = {
+    runDir: "run-inactive",
+    overrides: { "metric.field": "inactive_field" },
+    jobReturnValue: { type: "TpFpFnCollector" },
+    data: { "invalid|#|document": { tp: ["label"], fp: [], fn: [] } },
+  };
+  const evaluations = [activeEvaluation, inactiveEvaluation];
+
+  renderEvaluationPlotsForDashboard({
+    state,
+    dom,
+    activeExperiment: "experiment/a",
+    evaluationContext: {
+      experimentEvaluations: evaluations,
+      evalTabState: { groupByFields: [] },
+    },
+    documentLike,
+    requestAnimationFrameLike: (callback) => callback(),
+    navigatorLike: {},
+    consoleLike: { warn: () => {} },
+    plotTooltipHandlers: { show: () => {}, move: () => {}, hide: () => {} },
+    getSelectedPredictionGroups: () => [{}],
+    getSelectedEvaluationGroups: () => [{ evaluations }],
+    getMetricTypeForEvaluationContext: () => "TpFpFnCollector",
+    getPlotGroups: () => ({
+      fields: [],
+      groups: [{ groupId: "all", values: {}, evaluations }],
+    }),
+    getEvaluationEffectiveValue: (evaluation, column) => evaluation.overrides?.[column] ?? "",
+    getEvaluationExperiment: () => "experiment/a",
+    displayPlotGroupFieldName: (field) => field,
+    displayGroupFieldName: (field) => field,
+    getPlotDisplayLabel: (label) => label,
+    getPlotTitleLabel: (entry) => entry.metricLabel,
+    rerenderEvaluationPlots: () => {},
+  });
+
+  assert.equal(state.activeEvalPlotTab, "active_field");
+  assert.deepEqual(
+    Array.from(dom.evalPlotTabs.querySelectorAll("button"), (button) => button.textContent),
+    ["active_field (1)", "inactive_field (1)"]
+  );
+  assert.equal(inactiveEvaluation.dataPrepared, undefined);
+  assert.deepEqual(
+    state.activePlotDownloadData.plots.map((plot) => plot.metadata.field_label),
+    ["active_field"]
   );
 });
 
