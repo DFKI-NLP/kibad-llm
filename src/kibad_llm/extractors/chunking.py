@@ -24,7 +24,7 @@ def _document_chunk_iterator(
         tokenizer: Optional tokenizer instance.
 
     Returns:
-        TextChunk containing document ID for a corresponding document.
+        Tuple of TextChunks.
     """
     return tuple(
         core.ChunkIterator(

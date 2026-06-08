@@ -38,13 +38,13 @@ class SingleExtractionResult(FieldDict):
 
     Attributes:
         character_start: Start index of the chunk of text that has been processed
-        character_end: Start index of the chunk of text that has been processed (exclusive)
+        character_end: End index of the chunk of text that has been processed (exclusive)
         response_content: Response formatted as json
         structured: Parsed version of response_content. Possibly validated against a schema. Possibly with metadata.
         structured_with_metadata: Parsed version of response_content, enriched with metadata.
         reasoning_content: Reasoning as text
         messages: { "system": system_message, "user": user_message }
-        messages_formatted:
+        messages_formatted: TODO
         errors: list of strings "error_name: error_message"
         errors_long: list of strings "error_name: error_message_and_traceback"
     """
@@ -181,6 +181,8 @@ def build_chat_messages(
 
     Returns:
         A list of ChatMessage objects.
+
+    Warns:
     """
 
     # return the prompt messages without input text and schema description
@@ -465,6 +467,7 @@ def augment_metadata_node_with_evidence(
             in the snippet.
         character_offset: An optional offset to add to the start/end character positions
             (useful if the text is a chunk of a larger document).
+
     Returns:
         The augmented metadata wrapper dict with evidence metadata added where applicable.
     """
@@ -774,6 +777,7 @@ def extract_from_text(
     Raises:
         DeprecationWarning: If deprecated args are used, the extraction exits early.
         TextOffsetValueError: If character_start and/or character_end are set erroneously.
+        ValueError: If schema is None and use_guided_decoding or adjust_schema_for_evidence_detection is True.
     """
     # setting the log level on every query is suboptimal, but the simplest solution in our current architecture
     logging.getLogger("httpx").setLevel(logging.WARNING)
@@ -940,9 +944,6 @@ def extract_from_text_lenient(
 
     Returns:
         A SingleExtractionResult object with the extraction result or error message.
-
-    Warns:
-        Exception: Catches any errors raised in `extract_from_text` and logs them instead.
     """
 
     try:

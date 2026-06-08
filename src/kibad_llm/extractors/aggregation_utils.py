@@ -51,6 +51,7 @@ def collect_values_and_type_per_key(
         structured_outputs: list of structured outputs from multiple extractions
         skip_type_mismatches: If True, skips keys with inconsistent types across extractions
             instead of raising an error (default: False)
+
     Returns:
         tuple of:
             - dict mapping keys to list of values
@@ -124,6 +125,7 @@ def _multi_entry_majority_vote(values: list[list[Any] | None]) -> list[Any]:
 
     Args:
         values: List of lists (or None).
+
     Returns:
         List of majority items.
     """
