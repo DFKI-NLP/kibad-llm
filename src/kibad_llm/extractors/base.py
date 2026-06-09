@@ -1,3 +1,28 @@
+"""Core extraction function and supporting types for LLM-based structured extraction.
+
+Classes:
+    SingleExtractionResult: Result container for a single extraction call.
+    TextOffsetValueError: Raised when character offset arguments are invalid.
+
+Functions:
+    extract_from_text: Extract structured output from text using an LLM.
+    extract_from_text_lenient: Wrapper around [`extract_from_text`][.extract_from_text]
+        that catches and records all exceptions instead of raising.
+    build_chat_messages: Build a list of chat messages from system/user templates,
+        inserting document text and schema description where needed, using [`build_chat_message`][.build_chat_message].
+    build_chat_message: Build a single chat message from a template.
+    strip_metadata: Strip metadata wrappers from a JSON-parsed result.
+    augment_metadata: Recursively augment metadata wrapper dicts with evidence location info.
+    augment_metadata_node_with_evidence: Augment a single metadata wrapper dict with
+        evidence location info.
+    add_response_content_callback: Postprocessing callback to add response content to output.
+    add_reasoning_content_callback: Postprocessing callback to add reasoning content to output.
+    add_structured_callback: Postprocessing callback to parse and validate structured output.
+    augment_and_strip_metadata_from_structured_callback: Postprocessing callback to augment
+        metadata and strip it from structured output.
+    exception2error_msg: Format an exception into short and long error message strings.
+"""
+
 from __future__ import annotations
 
 from collections import defaultdict
@@ -183,7 +208,8 @@ def build_chat_messages(
         A list of ChatMessage objects.
 
     Raises:
-        ValueError: If no document placeholder is supplied. (no input text would be inserted)
+        ValueError: If neither a system_message nor user_message are provided.
+        ValueError: If no document placeholder is supplied and history is false. (no input text would be inserted)
 
     Warns:
         UserWarning: If a schema description is supplied, but there is no schema description placeholder.
@@ -529,11 +555,10 @@ def augment_metadata(
 
     Returns:
         The data, augmented with the metadata. Currently only evidence.
+        The returned structure mirrors the input but includes added evidence fields where applicable.
 
     Raises:
       ValueError: unknown kwargs raise ValueError (fail fast).
-
-    The returned structure mirrors the input but includes added evidence fields where applicable.
     """
 
     # split augmentation kwargs into those for evidence and others (future use)
@@ -774,7 +799,7 @@ def extract_from_text(
         A SingleExtractionResult object with the extraction result.
 
     Warns:
-        No LLM: When there is no LLM provided, the call to it is skipped.
+        UserWarning: When there is no LLM provided, the call to it is skipped.
 
     Raises:
         DeprecationWarning: If deprecated args are used, the extraction exits early.

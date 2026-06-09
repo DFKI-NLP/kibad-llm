@@ -1,3 +1,9 @@
+"""[`RepeatingExtractor`][.RepeatingExtractor] for repeated extraction with aggregation.
+
+Classes:
+    RepeatingExtractor: Runs extraction `n` times on the same text and aggregates the results.
+"""
+
 from typing import Any
 
 from .aggregation_utils import Aggregator

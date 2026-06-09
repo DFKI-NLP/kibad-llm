@@ -1,3 +1,11 @@
+"""[`ConditionalUnionExtractor`][.ConditionalUnionExtractor] for multi-pass extraction
+with chat history passed between passes.
+
+Classes:
+    ConditionalUnionExtractor: Extends [`UnionExtractor`][kibad_llm.extractors.union.UnionExtractor]
+        by feeding each pass's response into the chat history for subsequent passes.
+"""
+
 from typing import Any
 
 from llama_index.core.base.llms.types import MessageRole

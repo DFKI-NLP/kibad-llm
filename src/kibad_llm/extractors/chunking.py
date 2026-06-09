@@ -1,3 +1,10 @@
+"""[`ChunkingExtractor`][.ChunkingExtractor] for running
+extraction over bounded chunks of a document.
+
+Classes:
+    ChunkingExtractor: Splits a document into chunks and aggregates per-chunk extraction results.
+"""
+
 import logging
 from typing import Any
 
@@ -16,7 +23,7 @@ def _document_chunk_iterator(
     max_char_buffer: int,
     tokenizer: tokenizer_lib.Tokenizer | None = None,
 ) -> tuple[core.TextChunk, ...]:
-    """Iterates over documents to return text chunks along with the document ID.
+    """Iterates over a document to return it in text chunks
 
     Args:
         document: An input text as str.

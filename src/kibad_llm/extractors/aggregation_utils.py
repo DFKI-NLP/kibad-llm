@@ -1,3 +1,17 @@
+"""Aggregation functions for combining structured outputs from multiple extractions.
+
+Classes:
+    AggregationError: Raised when aggregation fails due to conflicts or type inconsistencies.
+
+Functions:
+    aggregate_majority_vote: Aggregate outputs by majority vote per key.
+    aggregate_unanimous: Aggregate outputs by requiring unanimous agreement per key.
+    aggregate_single_majority_vote_multi_union: Aggregate outputs with majority vote for
+        single-valued fields and union for list fields.
+    collect_values_and_type_per_key: Collect values and type per key across a list of outputs.
+    make_hashable_simple: Recursively convert a value to a hashable representation.
+"""
+
 from collections import Counter, defaultdict
 from collections.abc import Callable
 from typing import Any, TypeAlias

@@ -1,3 +1,10 @@
+"""[`UnionExtractor`][.UnionExtractor] for multi-pass extraction with per-pass parameter overrides.
+
+Classes:
+    UnionExtractor: Runs extraction once per override set on the same text and aggregates
+        the results.
+"""
+
 from typing import Any
 
 from .aggregation_utils import Aggregator
