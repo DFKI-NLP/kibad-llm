@@ -56,9 +56,7 @@ class ConfusionMatrix(MetricWithTpFpFnEntries):
         self.undetected_label = undetected_label
         self.show_as_markdown = show_as_markdown
 
-    def _build_counts(
-        self, state: dict[str, set[tuple[Hashable, Any]]]
-    ) -> dict[tuple[str, str], int]:
+    def _build_counts(self) -> dict[tuple[str, str], float]:
         """Convert shared tp/fp/fn entry state into confusion-matrix cell counts.
 
         Args:
@@ -71,29 +69,41 @@ class ConfusionMatrix(MetricWithTpFpFnEntries):
             ValueError: If predictions or references already use one of the reserved placeholder
                 labels.
         """
-        counts: dict[tuple[str, str], int] = defaultdict(int)
+        counts: dict[tuple[str, str], float] = defaultdict(float)
 
-        if any(label == self.unassignable_label for _, label in state["tp"] | state["fn"]):
+        if any(
+            label == self.unassignable_label for _, label in self.state["tp"] | self.state["fn"]
+        ):
             raise ValueError(
                 f"The gold reference has the label '{self.unassignable_label}' for unassignable instances. "
                 f"Set a different unassignable_label."
             )
-        if any(label == self.undetected_label for _, label in state["tp"] | state["fp"]):
+        if any(label == self.undetected_label for _, label in self.state["tp"] | self.state["fp"]):
             raise ValueError(
                 f"The prediction has the label '{self.undetected_label}' for undetected instances. "
                 f"Set a different undetected_label."
             )
 
-        for _, label in state["tp"]:
-            counts[(str(label), str(label))] += 1
-        for _, label in state["fn"]:
-            counts[(str(label), self.undetected_label)] += 1
-        for _, label in state["fp"]:
-            counts[(self.unassignable_label, str(label))] += 1
+        # calculate for each document independently
+        for state in self.state_per_record.values():
+            for label in state["tp"]:
+                counts[(str(label), str(label))] += 1
+            for label in state["fn"]:
+                # each false negative could be either one of the false positives ("shift")
+                # or undetected ("real false negative")
+                other_labels = list(state["fp"]) + [self.undetected_label]
+                for other_label in other_labels:
+                    counts[(str(label), str(other_label))] += 1 / len(other_labels)
+            for label in state["fp"]:
+                # each false positive could be either one of the false negatives ("shift")
+                # or unassignable ("real false positive")
+                other_labels = list(state["tp"]) + [self.unassignable_label]
+                for other_label in other_labels:
+                    counts[(str(other_label), str(label))] += 1 / len(other_labels)
 
         return counts
 
-    def _compute(self) -> dict[str, dict[str, int]]:
+    def _compute(self) -> dict[str, dict[str, float]]:
         """Compute the confusion matrix from the accumulated tp/fp/fn entry state.
 
         Returns:
@@ -103,14 +113,14 @@ class ConfusionMatrix(MetricWithTpFpFnEntries):
             ValueError: If predictions or references already use one of the reserved placeholder
                 labels.
         """
-        counts = self._build_counts(self.state)
+        counts = self._build_counts()
 
-        res: dict[str, dict[str, int]] = {}
+        res: dict[str, dict[str, float]] = {}
         for gold_label, pred_label in sorted(counts):
             res.setdefault(gold_label, {})[pred_label] = counts[(gold_label, pred_label)]
 
         if self.show_as_markdown:
-            res_df = pd.DataFrame(res).fillna(0)
+            res_df = pd.DataFrame(res).fillna(0.0)
             # index is prediction, columns is gold
             gold_labels = res_df.columns
             pred_labels = res_df.index
