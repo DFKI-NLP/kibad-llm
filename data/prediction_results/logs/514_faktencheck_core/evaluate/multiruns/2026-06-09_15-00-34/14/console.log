@@ -1,0 +1,3019 @@
+[2026-06-09 15:00:42,750][__main__][INFO] - Loading dataset with predictions and references ...
+[2026-06-09 15:00:42,752][__main__][INFO] - Dataset config: {'predictions': {'_target_': 'kibad_llm.dataset.prediction.load_with_metadata', 'log': 'logs/397_faktencheck_core_v1_for_chunking/predict/multiruns/2026-04-02_16-54-29/0', 'file': None, 'id_key': 'file_name', 'process_id': {'_partial_': True, '_target_': 'kibad_llm.utils.path.strip_filename_extension'}, 'preprocess': {'_target_': 'kibad_llm.utils.dictionary.get', '_partial_': True, 'key': 'structured'}}, 'references': {'_target_': 'kibad_llm.dataset.json.read_and_preprocess', 'file': '/home/arbi01/projects/kibad-llm/data/interim/faktencheck-db/faktencheck-db-converted_2025-11-05.jsonl', 'id_key': 'zotitem_ptr_id'}, '_target_': 'kibad_llm.dataset.utils.merge_references_into_predictions'}
+[2026-06-09 15:00:42,756][kibad_llm.dataset.json][INFO] - Loading dataset from JSON file: predictions/397_faktencheck_core_v1_for_chunking/2026-04-02_16-54-29/2026-04-02_16-54-30_606984/predictions.jsonl ...
+[2026-06-09 15:00:42,787][kibad_llm.dataset.json][INFO] - Apply preprocessing function to dataset: functools.partial(<function get at 0x7f341272b2e0>, key='structured') ...
+[2026-06-09 15:00:42,789][kibad_llm.dataset.json][INFO] - Loading dataset from JSON file: /home/arbi01/projects/kibad-llm/data/interim/faktencheck-db/faktencheck-db-converted_2025-11-05.jsonl ...
+[2026-06-09 15:00:42,891][__main__][INFO] - Instantiating metric ...
+[2026-06-09 15:00:42,891][__main__][INFO] - Metric config: {'_target_': 'kibad_llm.metrics.ConfusionMatrixCollection', 'flatten_dicts': True, 'fields': ['habitat', 'biodiversity_level', 'ecosystem_type.term', 'ecosystem_type.category', 'taxa.german_name', 'taxa.scientific_name', 'taxa.species_group']}
+[2026-06-09 15:00:42,893][__main__][INFO] - Computing metric ...
+[2026-06-09 15:00:42,926][kibad_llm.metric][INFO] - Evaluation results:
+{
+  "habitat": {
+    "Agrar- und Offenland": {
+      "Agrar- und Offenland": 26.0,
+      "Binnengew\u00e4sser und Auen": 2.4166666666666665,
+      "Boden": 1.25,
+      "K\u00fcsten und K\u00fcstengew\u00e4sser": 0.5,
+      "UNDETECTED": 12.916666666666668,
+      "Urbane R\u00e4ume": 0.8333333333333333,
+      "Wald": 2.75
+    },
+    "Binnengew\u00e4sser und Auen": {
+      "Agrar- und Offenland": 0.3333333333333333,
+      "Binnengew\u00e4sser und Auen": 15.0,
+      "Boden": 0.3333333333333333,
+      "UNDETECTED": 8.833333333333334,
+      "Wald": 1.3333333333333333
+    },
+    "Boden": {
+      "Agrar- und Offenland": 0.5,
+      "Boden": 3.0,
+      "UNDETECTED": 9.0,
+      "Urbane R\u00e4ume": 0.3333333333333333,
+      "Wald": 0.8333333333333333
+    },
+    "K\u00fcsten und K\u00fcstengew\u00e4sser": {
+      "Binnengew\u00e4sser und Auen": 2.5,
+      "Boden": 1.3333333333333333,
+      "K\u00fcsten und K\u00fcstengew\u00e4sser": 23.0,
+      "UNDETECTED": 13.5,
+      "Urbane R\u00e4ume": 0.5
+    },
+    "UNASSIGNABLE": {
+      "Agrar- und Offenland": 2.5,
+      "Binnengew\u00e4sser und Auen": 8.5,
+      "Boden": 4.333333333333333,
+      "K\u00fcsten und K\u00fcstengew\u00e4sser": 0.5,
+      "Urbane R\u00e4ume": 1.3333333333333333,
+      "Wald": 8.333333333333332
+    },
+    "Urbane R\u00e4ume": {
+      "UNDETECTED": 4.0,
+      "Urbane R\u00e4ume": 3.0
+    },
+    "Wald": {
+      "Agrar- und Offenland": 0.5,
+      "UNDETECTED": 5.0,
+      "Wald": 9.0
+    }
+  },
+  "biodiversity_level": {
+    "Artenvielfalt": {
+      "Artenvielfalt": 14.0,
+      "Funktionelle Diversit\u00e4t": 1.8333333333333333,
+      "Habitatdiversit\u00e4t": 0.8333333333333333,
+      "UNDETECTED": 6.0,
+      "Zusammensetzung der Artengemeinschaft": 0.8333333333333333
+    },
+    "Funktionelle Diversit\u00e4t": {
+      "Funktionelle Diversit\u00e4t": 1.0,
+      "UNDETECTED": 1.0
+    },
+    "Genetische Diversit\u00e4t": {
+      "Artenvielfalt": 0.5,
+      "Funktionelle Diversit\u00e4t": 0.3333333333333333,
+      "Genetische Diversit\u00e4t": 3.0,
+      "Habitatdiversit\u00e4t": 0.3333333333333333,
+      "Strukturelle Diversit\u00e4t": 0.5,
+      "UNDETECTED": 2.0
+    },
+    "Habitatdiversit\u00e4t": {
+      "Artenvielfalt": 1.5,
+      "Habitatdiversit\u00e4t": 4.0,
+      "UNDETECTED": 5.0,
+      "Zusammensetzung der Artengemeinschaft": 0.3333333333333333
+    },
+    "Phylogenetische Diversit\u00e4t": {
+      "Strukturelle Diversit\u00e4t": 0.5,
+      "UNDETECTED": 1.5
+    },
+    "Strukturelle Diversit\u00e4t": {
+      "UNDETECTED": 3.0
+    },
+    "UNASSIGNABLE": {
+      "Artenvielfalt": 38.0,
+      "Funktionelle Diversit\u00e4t": 7.333333333333333,
+      "Genetische Diversit\u00e4t": 1.0,
+      "Habitatdiversit\u00e4t": 5.333333333333333,
+      "Strukturelle Diversit\u00e4t": 2.0,
+      "Zusammensetzung der Artengemeinschaft": 17.833333333333332
+    },
+    "Zusammensetzung der Artengemeinschaft": {
+      "Artenvielfalt": 4.333333333333334,
+      "Funktionelle Diversit\u00e4t": 0.5,
+      "Habitatdiversit\u00e4t": 0.5,
+      "Strukturelle Diversit\u00e4t": 0.3333333333333333,
+      "UNDETECTED": 10.833333333333334,
+      "Zusammensetzung der Artengemeinschaft": 9.0
+    }
+  },
+  "ecosystem_type.term": {
+    "Bauwerke": {
+      "Laub(Misch)W\u00e4lder und -Forste (Laubbaumanteil \u00fcber 50 Prozent)": 0.5,
+      "UNDETECTED": 0.5
+    },
+    "Benthal der Nordsee": {
+      "Benthal der Nordsee": 1.0,
+      "Fels- und Steilk\u00fcsten": 0.5,
+      "Salzgr\u00fcnland der Nordseek\u00fcste (Supralitoral)": 1.5,
+      "S\u00e4nde, Sand-, Ger\u00f6ll- und Blockstr\u00e4nde": 1.0,
+      "UNDETECTED": 5.0
+    },
+    "Benthal der Ostsee": {
+      "Benthal der Ostsee": 1.0,
+      "UNDETECTED": 1.0
+    },
+    "Flie\u00dfende Gew\u00e4sser": {
+      "Flie\u00dfende Gew\u00e4sser": 6.0,
+      "K\u00fcstend\u00fcnen": 0.25,
+      "R\u00f6hrichte (ohne Brackwasserr\u00f6hrichte)": 1.0,
+      "Stehende Gew\u00e4sser": 0.5,
+      "UNDETECTED": 2.0,
+      "Wald- und Ufers\u00e4ume, Staudenfluren": 0.5
+    },
+    "Grundwasser und H\u00f6hlengew\u00e4sser": {
+      "Grundwasser und H\u00f6hlengew\u00e4sser": 1.0,
+      "K\u00fcstend\u00fcnen": 0.25
+    },
+    "Hoch-, Zwischen- und \u00dcbergangsmoore": {
+      "Hoch-, Zwischen- und \u00dcbergangsmoore": 1.0
+    },
+    "H\u00f6hlen (einschlie\u00dflich Stollen, Brunnensch\u00e4chte etc.)": {
+      "Laub(Misch)W\u00e4lder und -Forste (Laubbaumanteil \u00fcber 50 Prozent)": 0.5,
+      "UNDETECTED": 0.5
+    },
+    "K\u00fcstend\u00fcnen": {
+      "UNDETECTED": 1.0
+    },
+    "Laub(Misch)W\u00e4lder und -Forste (Laubbaumanteil \u00fcber 50 Prozent)": {
+      "Laub(Misch)W\u00e4lder und -Forste (Laubbaumanteil \u00fcber 50 Prozent)": 2.0
+    },
+    "Nadel(Misch)W\u00e4lder und -Forste": {
+      "UNDETECTED": 1.0
+    },
+    "Pelagial der Nordsee": {
+      "Benthal der Nordsee": 1.0,
+      "Pelagial der Nordsee": 2.0,
+      "UNDETECTED": 1.5
+    },
+    "Pelagial der Ostsee": {
+      "Benthal der Nordsee": 0.5,
+      "Benthal der Ostsee": 0.5,
+      "Flie\u00dfende Gew\u00e4sser": 0.5,
+      "Stehende Gew\u00e4sser": 0.5,
+      "UNDETECTED": 6.0
+    },
+    "Quellen (inklusive Quellabfluss (Krenal))": {
+      "UNDETECTED": 1.0
+    },
+    "Salzgr\u00fcnland der Nordseek\u00fcste (Supralitoral)": {
+      "Salzgr\u00fcnland der Nordseek\u00fcste (Supralitoral)": 1.0
+    },
+    "Stehende Gew\u00e4sser": {
+      "K\u00fcstend\u00fcnen": 0.25,
+      "Stehende Gew\u00e4sser": 4.0
+    },
+    "S\u00e4nde, Sand-, Ger\u00f6ll- und Blockstr\u00e4nde": {
+      "K\u00fcstend\u00fcnen": 0.5,
+      "UNDETECTED": 0.5
+    },
+    "Trockenrasen sowie Gr\u00fcnland trockener bis frischer Standorte": {
+      "UNDETECTED": 1.0
+    },
+    "UNASSIGNABLE": {
+      "Bauwerke": 2.0,
+      "Benthal der Nordsee": 6.5,
+      "Benthal der Ostsee": 4.0,
+      "Feldgeh\u00f6lze, Geb\u00fcsche, Hecken und Geh\u00f6lzkulturen": 3.0,
+      "Fels- und Steilk\u00fcsten": 1.0,
+      "Felsen, Block- und Schutthalden, Ger\u00f6llfelder, offene Bereiche mit sandigem oder bindigem Substrat": 1.0,
+      "Flie\u00dfende Gew\u00e4sser": 6.0,
+      "Gro\u00dfseggenriede": 1.0,
+      "Gr\u00fcn- und Freifl\u00e4chen": 5.0,
+      "Hoch-, Zwischen- und \u00dcbergangsmoore": 2.0,
+      "Kleine, unbefestigte Freifl\u00e4chen des besiedelten Bereiches": 1.0,
+      "K\u00fcstend\u00fcnen": 5.25,
+      "Laub(Misch)W\u00e4lder und -Forste (Laubbaumanteil \u00fcber 50 Prozent)": 11.0,
+      "Moore der subalpinen bis alpinen Stufe": 2.0,
+      "Nadel(Misch)W\u00e4lder und -Forste": 2.0,
+      "Pelagial der Nordsee": 3.0,
+      "Pelagial der Ostsee": 2.0,
+      "R\u00f6hrichte (ohne Brackwasserr\u00f6hrichte)": 6.5,
+      "Salzgr\u00fcnland der Nordseek\u00fcste (Supralitoral)": 6.0,
+      "Schneeb\u00f6den, Schneet\u00e4lchen": 1.0,
+      "Stehende Gew\u00e4sser": 4.5,
+      "S\u00e4nde, Sand-, Ger\u00f6ll- und Blockstr\u00e4nde": 2.0,
+      "Trockenrasen sowie Gr\u00fcnland trockener bis frischer Standorte": 5.0,
+      "Wald- und Ufers\u00e4ume, Staudenfluren": 4.0,
+      "Waldfreie Niedermoore und S\u00fcmpfe, Gr\u00fcnland nasser bis feuchter Standorte": 4.0,
+      "Waldm\u00e4ntel und Vorw\u00e4lder, spezielle Waldnutzungsformen": 2.0,
+      "Zwergstrauchheiden": 1.0,
+      "\u00c4cker und Ackerbrachen": 18.0
+    },
+    "Waldfreie Niedermoore und S\u00fcmpfe, Gr\u00fcnland nasser bis feuchter Standorte": {
+      "R\u00f6hrichte (ohne Brackwasserr\u00f6hrichte)": 0.5,
+      "UNDETECTED": 1.5,
+      "Waldfreie Niedermoore und S\u00fcmpfe, Gr\u00fcnland nasser bis feuchter Standorte": 1.0
+    },
+    "\u00c4cker und Ackerbrachen": {
+      "Flie\u00dfende Gew\u00e4sser": 0.16666666666666666,
+      "Gro\u00dfseggenriede": 0.16666666666666666,
+      "R\u00f6hrichte (ohne Brackwasserr\u00f6hrichte)": 0.16666666666666666,
+      "Trockenrasen sowie Gr\u00fcnland trockener bis frischer Standorte": 0.16666666666666666,
+      "UNDETECTED": 0.16666666666666666,
+      "Waldfreie Niedermoore und S\u00fcmpfe, Gr\u00fcnland nasser bis feuchter Standorte": 0.16666666666666666,
+      "\u00c4cker und Ackerbrachen": 1.0
+    }
+  },
+  "ecosystem_type.category": {
+    "I Biotoptypengruppen der Meere und K\u00fcsten": {
+      "I Biotoptypengruppen der Meere und K\u00fcsten": 14.0,
+      "II Biotoptypengruppen der Binnengew\u00e4sser": 1.0,
+      "UNDETECTED": 7.0
+    },
+    "II Biotoptypengruppen der Binnengew\u00e4sser": {
+      "I Biotoptypengruppen der Meere und K\u00fcsten": 0.5,
+      "II Biotoptypengruppen der Binnengew\u00e4sser": 8.0,
+      "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes": 1.8333333333333333,
+      "UNDETECTED": 3.333333333333333,
+      "VI Weitere": 0.3333333333333333
+    },
+    "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes": {
+      "II Biotoptypengruppen der Binnengew\u00e4sser": 0.5,
+      "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes": 7.0,
+      "UNDETECTED": 3.0
+    },
+    "IV Technische Biotoptypengruppen": {
+      "UNDETECTED": 1.0
+    },
+    "UNASSIGNABLE": {
+      "I Biotoptypengruppen der Meere und K\u00fcsten": 9.5,
+      "II Biotoptypengruppen der Binnengew\u00e4sser": 10.5,
+      "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes": 29.5,
+      "IV Technische Biotoptypengruppen": 2.0,
+      "VI Weitere": 4.0
+    }
+  },
+  "taxa.german_name": {
+    "Acker-Hasenohr, Rundbl\u00e4ttriges Hasenohr": {
+      "UNDETECTED": 1.0
+    },
+    "Acker-Kleinling": {
+      "UNDETECTED": 1.0
+    },
+    "Acker-Leinkraut": {
+      "UNDETECTED": 1.0
+    },
+    "Ackerunkraut": {
+      "Acker-Hahnenfu\u00df": 0.07142857142857142,
+      "Acker-Krummhals": 0.07142857142857142,
+      "Acker-Lichtnelke": 0.07142857142857142,
+      "Acker-Steinsame": 0.07142857142857142,
+      "Ackerr\u00f6te": 0.07142857142857142,
+      "Breitbl\u00e4ttriger Wolfsmilch": 0.07142857142857142,
+      "Breitbl\u00e4ttriges Hasenohr": 0.07142857142857142,
+      "Echter Frauenspiegel": 0.07142857142857142,
+      "Feld-Rittersporn": 0.07142857142857142,
+      "Klatschmohn": 0.07142857142857142,
+      "Kleiner Orant": 0.07142857142857142,
+      "Kornblume": 0.07142857142857142,
+      "Sandmohn": 0.07142857142857142,
+      "UNDETECTED": 0.07142857142857142
+    },
+    "Algen": {
+      "Meerneunauge": 0.5,
+      "UNDETECTED": 0.5
+    },
+    "Amerikanische Teichsimse": {
+      "UNDETECTED": 1.0
+    },
+    "Ameronothrus schneideri": {
+      "UNDETECTED": 1.0
+    },
+    "Amphibien": {
+      "UNDETECTED": 1.0
+    },
+    "Aquatische Makrophyten": {
+      "Fischfauna": 0.25,
+      "Makrophyten": 0.25,
+      "Meerneunauge": 0.5,
+      "Phytobenthos": 0.25,
+      "UNDETECTED": 0.75
+    },
+    "Archaeen": {
+      "UNDETECTED": 3.0
+    },
+    "Asseln": {
+      "UNDETECTED": 1.0
+    },
+    "Atlantische Makrele": {
+      "Cod": 0.2,
+      "Dab": 0.2,
+      "Hering": 0.2,
+      "Makrele": 0.2,
+      "UNDETECTED": 0.2
+    },
+    "Atlantischer Hering": {
+      "Blau-Muschel": 0.16666666666666666,
+      "Blauwandmuschel": 0.25,
+      "Cod": 0.2,
+      "Dab": 0.2,
+      "Dornfisch": 0.16666666666666666,
+      "Gemeiner Gobi": 0.16666666666666666,
+      "Hering": 0.45,
+      "Kabeljau": 0.25,
+      "Makrele": 0.2,
+      "Schwarzer Gobi": 0.16666666666666666,
+      "Seehecht": 0.16666666666666666,
+      "UNDETECTED": 1.6166666666666667
+    },
+    "Atlantischer Kabeljau": {
+      "Blau-Muschel": 0.16666666666666666,
+      "Blauwandmuschel": 0.25,
+      "Cod": 0.2,
+      "Dab": 0.2,
+      "Dornfisch": 0.16666666666666666,
+      "Gemeiner Gobi": 0.16666666666666666,
+      "Hering": 0.45,
+      "Kabeljau": 0.25,
+      "Makrele": 0.2,
+      "Schwarzer Gobi": 0.16666666666666666,
+      "Seehecht": 0.16666666666666666,
+      "UNDETECTED": 0.6166666666666667
+    },
+    "Auenvegetation": {
+      "Blaue Brombeere": 0.125,
+      "Echter Ahorn": 0.125,
+      "Esche": 0.125,
+      "Essbare Nesseln": 0.125,
+      "Hahnenfu\u00df": 0.125,
+      "Stechginster": 0.125,
+      "UNDETECTED": 0.125,
+      "Waldsteinbrech": 0.125
+    },
+    "Bakterien": {
+      "Diatomeen": 0.2,
+      "Phaeocystis": 0.2,
+      "Picocyanobakterien": 0.2,
+      "Piko-Eukaryoten": 0.2,
+      "UNDETECTED": 3.2
+    },
+    "Baltische Plattmuschel": {
+      "Blauschnecke": 0.25,
+      "Blauwandmuschel": 0.25,
+      "Gelber Schwimmkrebse": 0.25,
+      "Hering": 0.25,
+      "Kabeljau": 0.25,
+      "Schwarzer Schwimmkrebse": 0.25,
+      "UNDETECTED": 0.5
+    },
+    "Barsch": {
+      "Dreistachliger Stichling": 0.5,
+      "UNDETECTED": 0.5
+    },
+    "Benthische Invertebraten": {
+      "Blauschnecke": 0.25,
+      "Gelber Schwimmkrebse": 0.25,
+      "Schwarzer Schwimmkrebse": 0.25,
+      "UNDETECTED": 0.25
+    },
+    "Betaproteobakterien": {
+      "UNDETECTED": 1.0
+    },
+    "Blasentang": {
+      "Blauschnecke": 0.25,
+      "Blauwandmuschel": 0.25,
+      "Gelber Schwimmkrebse": 0.25,
+      "Hering": 0.25,
+      "Kabeljau": 0.25,
+      "Schwarzer Schwimmkrebse": 0.25,
+      "UNDETECTED": 1.5
+    },
+    "Blaufelchen": {
+      "Blaufelchen": 1.0,
+      "Dreistachliger Stichling": 0.2
+    },
+    "Brachse": {
+      "Dreistachliger Stichling": 0.5,
+      "UNDETECTED": 0.5
+    },
+    "Brackwasser-Seepocke": {
+      "Blauwandmuschel": 0.25,
+      "Hering": 0.25,
+      "Kabeljau": 0.25,
+      "UNDETECTED": 0.25
+    },
+    "Brandmaus": {
+      "UNDETECTED": 1.0
+    },
+    "Braunalgen": {
+      "Braunalgen": 1.0,
+      "Rotalfen": 0.3333333333333333
+    },
+    "Brutv\u00f6gel": {
+      "UNDETECTED": 1.0
+    },
+    "Buche": {
+      "Norwegische Fichte": 0.3333333333333333,
+      "Schottische Kiefer": 0.3333333333333333,
+      "UNDETECTED": 0.3333333333333333
+    },
+    "B\u00e4ume": {
+      "Andere Laubb\u00e4ume mit hoher Lebensdauer (ALH)": 0.1,
+      "Andere Laubb\u00e4ume mit niedriger Lebensdauer (ALN)": 0.1,
+      "Buche": 0.1,
+      "Douglasie": 0.1,
+      "Eiche": 0.1,
+      "Fichte": 0.1,
+      "Kiefer": 0.1,
+      "L\u00e4rche": 0.1,
+      "Tanne": 0.1,
+      "UNDETECTED": 0.1
+    },
+    "Calanus finmarchicus": {
+      "Blauwandmuschel": 0.25,
+      "Hering": 0.25,
+      "Kabeljau": 0.25,
+      "UNDETECTED": 0.25
+    },
+    "Chordata": {
+      "Andere Gruppen": 0.2,
+      "Krebse": 0.2,
+      "Ringelw\u00fcrmer": 0.2,
+      "UNDETECTED": 0.2,
+      "Wirbeltiere": 0.2
+    },
+    "Coccolithophyceae": {
+      "UNDETECTED": 1.0
+    },
+    "Cryptophyceae": {
+      "UNDETECTED": 1.0
+    },
+    "Cyanobakterien": {
+      "Blauwandmuschel": 0.25,
+      "Diatomeen": 0.2,
+      "Hering": 0.25,
+      "Kabeljau": 0.25,
+      "Phaeocystis": 0.2,
+      "Picocyanobakterien": 0.2,
+      "Piko-Eukaryoten": 0.2,
+      "UNDETECTED": 0.45
+    },
+    "Cyanophyceae": {
+      "UNDETECTED": 1.0
+    },
+    "Dinoflagellaten": {
+      "Diatomeen": 0.3333333333333333,
+      "Dinoflagellaten": 1.0,
+      "Phaeocystis": 0.3333333333333333,
+      "Picocyanobakterien": 0.3333333333333333,
+      "Piko-Eukaryoten": 0.3333333333333333
+    },
+    "Dinophyceae": {
+      "UNDETECTED": 1.0
+    },
+    "Doppelf\u00fc\u00dfer": {
+      "UNDETECTED": 2.0
+    },
+    "Dreih\u00f6rniges Labkraut": {
+      "UNDETECTED": 1.0
+    },
+    "Dreistachliger Stichling": {
+      "Blau-Muschel": 0.16666666666666666,
+      "Dornfisch": 0.16666666666666666,
+      "Gemeiner Gobi": 0.16666666666666666,
+      "Schwarzer Gobi": 0.16666666666666666,
+      "Seehecht": 0.16666666666666666,
+      "UNDETECTED": 0.16666666666666666
+    },
+    "Echtes Seegras": {
+      "Blau-Muschel": 0.16666666666666666,
+      "Blauschnecke": 0.25,
+      "Blauwandmuschel": 0.25,
+      "Dornfisch": 0.16666666666666666,
+      "Gelber Schwimmkrebse": 0.25,
+      "Gemeiner Gobi": 0.16666666666666666,
+      "Hering": 0.25,
+      "Kabeljau": 0.25,
+      "Schwarzer Gobi": 0.16666666666666666,
+      "Schwarzer Schwimmkrebse": 0.25,
+      "Seehecht": 0.16666666666666666,
+      "UNDETECTED": 0.6666666666666666
+    },
+    "Eichen": {
+      "Norwegische Fichte": 0.3333333333333333,
+      "Schottische Kiefer": 0.3333333333333333,
+      "UNDETECTED": 0.3333333333333333
+    },
+    "Einj\u00e4hriger Ziest": {
+      "Einj\u00e4hriger Ziest": 1.0
+    },
+    "Endofauna": {
+      "Andere Gruppen": 0.2,
+      "Krebse": 0.2,
+      "Ringelw\u00fcrmer": 0.2,
+      "UNDETECTED": 0.2,
+      "Wirbeltiere": 0.2
+    },
+    "Epifauna": {
+      "Andere Gruppen": 0.2,
+      "Krebse": 0.2,
+      "Ringelw\u00fcrmer": 0.2,
+      "UNDETECTED": 0.2,
+      "Wirbeltiere": 0.2
+    },
+    "Europ\u00e4ische Sprotte": {
+      "Blauwandmuschel": 0.25,
+      "Hering": 0.25,
+      "Kabeljau": 0.25,
+      "UNDETECTED": 1.25
+    },
+    "Europ\u00e4ische Sumpfschildkr\u00f6te": {
+      "UNDETECTED": 1.0
+    },
+    "Fadenw\u00fcrmer": {
+      "UNDETECTED": 1.0
+    },
+    "Feldmaus": {
+      "UNDETECTED": 1.0
+    },
+    "Fichte": {
+      "Norwegische Fichte": 0.3333333333333333,
+      "Schottische Kiefer": 0.3333333333333333,
+      "UNDETECTED": 0.3333333333333333
+    },
+    "Finkensame": {
+      "UNDETECTED": 1.0
+    },
+    "Fische": {
+      "Andere Gruppen": 0.2,
+      "Blauwandmuschel": 0.25,
+      "Fischfauna": 0.25,
+      "Hering": 0.25,
+      "Kabeljau": 0.25,
+      "Kegelrobbe": 0.25,
+      "Krebse": 0.2,
+      "Makrophyten": 0.25,
+      "Meerneunauge": 0.5,
+      "Phytobenthos": 0.25,
+      "Ringelw\u00fcrmer": 0.2,
+      "Schweinswal": 0.25,
+      "Seehund": 0.25,
+      "UNDETECTED": 2.45,
+      "Wirbeltiere": 0.2
+    },
+    "Flechten, Moose und Gef\u00e4\u00dfpflanzen": {
+      "UNDETECTED": 1.0
+    },
+    "Flunder": {
+      "Cod": 0.5,
+      "Dab": 0.5,
+      "Flunder": 1.0,
+      "Hering": 0.5,
+      "Makrele": 0.5
+    },
+    "Gangfisch": {
+      "Dreistachliger Stichling": 0.2,
+      "Gangfisch": 1.0
+    },
+    "Gef\u00e4\u00dfpflanzen": {
+      "Asiatischer Gespensterkrebs": 0.03225806451612903,
+      "Bryozoe": 0.03225806451612903,
+      "Donau-Schwebegarnele": 0.03225806451612903,
+      "Gro\u00dfer H\u00f6ckerflohkrebs": 0.03225806451612903,
+      "Gr\u00fcne Gabelalge": 0.03225806451612903,
+      "Haarige Schlauchalge": 0.03225806451612903,
+      "Hafenrose": 0.03225806451612903,
+      "Japanischer Beerentang": 0.03225806451612903,
+      "Kaspischer Wasserfloh": 0.03225806451612903,
+      "Keulenascidie, Faltenascidie, Warzige Seescheide": 0.03225806451612903,
+      "Killer-Shrimp": 0.03225806451612903,
+      "Kleiner H\u00f6ckerflohkrebs": 0.03225806451612903,
+      "Krusten-Seescheide": 0.03225806451612903,
+      "Langst\u00e4ngelige Schlauchalge": 0.03225806451612903,
+      "Meertraube": 0.03225806451612903,
+      "Meerwalnuss": 0.03225806451612903,
+      "Nacktschnecke": 0.03225806451612903,
+      "Neuseel\u00e4ndische (Zwerg-)Deckelschnecke": 0.03225806451612903,
+      "Pantoffelschnecke": 0.03225806451612903,
+      "Pfeilschwanzkrebs": 0.03225806451612903,
+      "Rotflecken-Schwebegarnele": 0.03225806451612903,
+      "Sandklaffmuschel": 0.03225806451612903,
+      "Schwarzmaulgrundel": 0.03225806451612903,
+      "Schwimmblasenwurm": 0.03225806451612903,
+      "Spionide": 0.03225806451612903,
+      "St\u00f6re": 0.03225806451612903,
+      "S\u00fc\u00dfwasser-R\u00f6hren-/Schlickkrebs": 0.03225806451612903,
+      "S\u00fc\u00dfwasser-Strandfloh": 0.03225806451612903,
+      "UNDETECTED": 1.032258064516129,
+      "Wakame": 0.03225806451612903,
+      "Zebramuschel": 0.03225806451612903
+    },
+    "Gemeine Miesmuschel": {
+      "Blau-Muschel": 0.6111111111111112,
+      "Blauschnecke": 0.1111111111111111,
+      "Blauwandmuschel": 0.25,
+      "Dornfisch": 0.16666666666666666,
+      "Gemeiner Gobi": 0.16666666666666666,
+      "Gro\u00dfe Austern": 0.1111111111111111,
+      "Gro\u00dfes Seegras": 0.1111111111111111,
+      "Hering": 0.25,
+      "Kabeljau": 0.25,
+      "Mediterrane Muschel": 0.1111111111111111,
+      "Miesmuschel": 0.1111111111111111,
+      "Niederl\u00e4ndisches Seegras": 0.1111111111111111,
+      "Pazifik-Austern": 0.3333333333333333,
+      "Schwarzer Gobi": 0.16666666666666666,
+      "Seehecht": 0.16666666666666666,
+      "UNDETECTED": 0.8611111111111112,
+      "blaue Muschel": 0.1111111111111111
+    },
+    "Gemeiner Blasentang": {
+      "Blauschnecke": 0.25,
+      "Gelber Schwimmkrebse": 0.25,
+      "Schwarzer Schwimmkrebse": 0.25,
+      "UNDETECTED": 0.25
+    },
+    "Gemeiner Seestern": {
+      "Blau-Muschel": 0.16666666666666666,
+      "Dornfisch": 0.16666666666666666,
+      "Gemeiner Gobi": 0.16666666666666666,
+      "Schwarzer Gobi": 0.16666666666666666,
+      "Seehecht": 0.16666666666666666,
+      "UNDETECTED": 0.16666666666666666
+    },
+    "Gew\u00f6hnlicher Frauenspiegel": {
+      "UNDETECTED": 1.0
+    },
+    "Gew\u00f6hnlicher Schweinswal": {
+      "Seehund": 0.5,
+      "UNDETECTED": 0.5
+    },
+    "Gliederf\u00fc\u00dfer": {
+      "Andere Pflanzen": 0.25,
+      "Insekten": 0.25,
+      "UNDETECTED": 1.25,
+      "V\u00f6gel": 0.25
+    },
+    "Gliederw\u00fcrmer": {
+      "Blau-Muschel": 0.16666666666666666,
+      "Dornfisch": 0.16666666666666666,
+      "Gemeiner Gobi": 0.16666666666666666,
+      "Schwarzer Gobi": 0.16666666666666666,
+      "Seehecht": 0.16666666666666666,
+      "UNDETECTED": 0.16666666666666666
+    },
+    "Goldalgen": {
+      "UNDETECTED": 1.0
+    },
+    "Gro\u00dfes Mausohr": {
+      "Mausohr": 0.5,
+      "UNDETECTED": 0.5
+    },
+    "Grundeln": {
+      "Blau-Muschel": 0.16666666666666666,
+      "Dornfisch": 0.16666666666666666,
+      "Gemeiner Gobi": 0.16666666666666666,
+      "Schwarzer Gobi": 0.16666666666666666,
+      "Seehecht": 0.16666666666666666,
+      "UNDETECTED": 0.16666666666666666
+    },
+    "Gr\u00fcnalgen": {
+      "Gr\u00fcnalgen": 1.0,
+      "Rotalfen": 0.3333333333333333
+    },
+    "G\u00fcrtelw\u00fcrmer": {
+      "UNDETECTED": 1.0
+    },
+    "Hackenw\u00fcrmer": {
+      "UNDETECTED": 1.0
+    },
+    "Hecht": {
+      "Dreistachliger Stichling": 0.5,
+      "UNDETECTED": 0.5
+    },
+    "Hermannia pulchella": {
+      "UNDETECTED": 1.0
+    },
+    "Heuschrecken": {
+      "UNDETECTED": 2.0
+    },
+    "Hornmilben": {
+      "UNDETECTED": 1.0
+    },
+    "Hundertf\u00fc\u00dfer": {
+      "UNDETECTED": 2.0
+    },
+    "Insekten": {
+      "UNDETECTED": 1.0
+    },
+    "Kahles Ferkelkraut": {
+      "UNDETECTED": 1.0
+    },
+    "Kalikokrebs": {
+      "Kalikokrebs": 1.0
+    },
+    "Kiefer": {
+      "Norwegische Fichte": 0.3333333333333333,
+      "Schottische Kiefer": 0.3333333333333333,
+      "UNDETECTED": 0.3333333333333333
+    },
+    "Kieselalgen": {
+      "Diatomeen": 0.2,
+      "Phaeocystis": 0.2,
+      "Picocyanobakterien": 0.2,
+      "Piko-Eukaryoten": 0.2,
+      "UNDETECTED": 0.2
+    },
+    "Kilch": {
+      "Dreistachliger Stichling": 0.2,
+      "Kilch": 1.0
+    },
+    "Kleinbl\u00fctiger Erdrauch": {
+      "UNDETECTED": 1.0
+    },
+    "Kleiner Frauenspiegel": {
+      "UNDETECTED": 1.0
+    },
+    "Kliesche": {
+      "Cod": 0.2,
+      "Dab": 0.2,
+      "Hering": 0.2,
+      "Makrele": 0.2,
+      "UNDETECTED": 0.2
+    },
+    "Kopff\u00fc\u00dfer": {
+      "Kegelrobbe": 0.25,
+      "Schweinswal": 0.25,
+      "Seehund": 0.25,
+      "UNDETECTED": 0.25
+    },
+    "Krebstiere": {
+      "Andere Gruppen": 0.2,
+      "Blau-Muschel": 0.16666666666666666,
+      "Dornfisch": 0.16666666666666666,
+      "Gemeiner Gobi": 0.16666666666666666,
+      "Krebse": 0.2,
+      "Ringelw\u00fcrmer": 0.2,
+      "Schwarzer Gobi": 0.16666666666666666,
+      "Seehecht": 0.16666666666666666,
+      "UNDETECTED": 0.3666666666666667,
+      "Wirbeltiere": 0.2
+    },
+    "Kriechtiere": {
+      "Meerneunauge": 0.5,
+      "UNDETECTED": 0.5
+    },
+    "Kuh": {
+      "UNDETECTED": 1.0
+    },
+    "K\u00e4fer": {
+      "UNDETECTED": 1.0
+    },
+    "K\u00fcsten-Salzgras": {
+      "UNDETECTED": 1.0
+    },
+    "Laufk\u00e4fer": {
+      "Laufk\u00e4fer": 1.0,
+      "Springfl\u00f6he": 0.5
+    },
+    "Libellen": {
+      "UNDETECTED": 1.0
+    },
+    "Lurche": {
+      "Meerneunauge": 0.5,
+      "UNDETECTED": 0.5
+    },
+    "Makroalgen": {
+      "Asiatischer Gespensterkrebs": 0.03225806451612903,
+      "Blauwandmuschel": 0.25,
+      "Bryozoe": 0.03225806451612903,
+      "Donau-Schwebegarnele": 0.03225806451612903,
+      "Gro\u00dfer H\u00f6ckerflohkrebs": 0.03225806451612903,
+      "Gr\u00fcne Gabelalge": 0.03225806451612903,
+      "Haarige Schlauchalge": 0.03225806451612903,
+      "Hafenrose": 0.03225806451612903,
+      "Hering": 0.25,
+      "Japanischer Beerentang": 0.03225806451612903,
+      "Kabeljau": 0.25,
+      "Kaspischer Wasserfloh": 0.03225806451612903,
+      "Keulenascidie, Faltenascidie, Warzige Seescheide": 0.03225806451612903,
+      "Killer-Shrimp": 0.03225806451612903,
+      "Kleiner H\u00f6ckerflohkrebs": 0.03225806451612903,
+      "Krusten-Seescheide": 0.03225806451612903,
+      "Langst\u00e4ngelige Schlauchalge": 0.03225806451612903,
+      "Meertraube": 0.03225806451612903,
+      "Meerwalnuss": 0.03225806451612903,
+      "Nacktschnecke": 0.03225806451612903,
+      "Neuseel\u00e4ndische (Zwerg-)Deckelschnecke": 0.03225806451612903,
+      "Pantoffelschnecke": 0.03225806451612903,
+      "Pfeilschwanzkrebs": 0.03225806451612903,
+      "Rotalfen": 0.5,
+      "Rotflecken-Schwebegarnele": 0.03225806451612903,
+      "Sandklaffmuschel": 0.03225806451612903,
+      "Schwarzmaulgrundel": 0.03225806451612903,
+      "Schwimmblasenwurm": 0.03225806451612903,
+      "Spionide": 0.03225806451612903,
+      "St\u00f6re": 0.03225806451612903,
+      "S\u00fc\u00dfwasser-R\u00f6hren-/Schlickkrebs": 0.03225806451612903,
+      "S\u00fc\u00dfwasser-Strandfloh": 0.03225806451612903,
+      "UNDETECTED": 1.782258064516129,
+      "Wakame": 0.03225806451612903,
+      "Zebramuschel": 0.03225806451612903
+    },
+    "Makrofauna": {
+      "UNDETECTED": 1.0
+    },
+    "Makrozoobenthos": {
+      "Andere Gruppen": 0.2,
+      "Bachflohkrebs": 0.125,
+      "Blauwandmuschel": 0.25,
+      "Dreieckskopfstrudelwurm": 0.125,
+      "Eintagsfliegen": 0.125,
+      "Eintagsfliegenlarve": 0.125,
+      "Fischfauna": 0.3333333333333333,
+      "Flussnapfschnecke": 0.125,
+      "Hering": 0.25,
+      "Kabeljau": 0.25,
+      "Kegelrobbe": 0.25,
+      "Krebse": 0.2,
+      "K\u00f6cherfliege": 0.125,
+      "K\u00f6cherfliegen": 0.125,
+      "Makrophyten": 0.3333333333333333,
+      "Makrozoobenthos": 1.0,
+      "Meerneunauge": 0.5,
+      "Phytobenthos": 0.3333333333333333,
+      "Ringelw\u00fcrmer": 0.2,
+      "Schweinswal": 0.25,
+      "Seehund": 0.25,
+      "UNDETECTED": 1.325,
+      "Wirbeltiere": 0.2
+    },
+    "Mangroven": {
+      "UNDETECTED": 1.0
+    },
+    "Marine S\u00e4ugetiere": {
+      "Kegelrobbe": 0.25,
+      "Schweinswal": 0.25,
+      "Seehund": 0.25,
+      "UNDETECTED": 0.25
+    },
+    "Mensch": {
+      "UNDETECTED": 1.0
+    },
+    "Mikroben": {
+      "UNDETECTED": 1.0
+    },
+    "Mikrofauna": {
+      "Asiatischer Gespensterkrebs": 0.03225806451612903,
+      "Bryozoe": 0.03225806451612903,
+      "Donau-Schwebegarnele": 0.03225806451612903,
+      "Gro\u00dfer H\u00f6ckerflohkrebs": 0.03225806451612903,
+      "Gr\u00fcne Gabelalge": 0.03225806451612903,
+      "Haarige Schlauchalge": 0.03225806451612903,
+      "Hafenrose": 0.03225806451612903,
+      "Japanischer Beerentang": 0.03225806451612903,
+      "Kaspischer Wasserfloh": 0.03225806451612903,
+      "Keulenascidie, Faltenascidie, Warzige Seescheide": 0.03225806451612903,
+      "Killer-Shrimp": 0.03225806451612903,
+      "Kleiner H\u00f6ckerflohkrebs": 0.03225806451612903,
+      "Krusten-Seescheide": 0.03225806451612903,
+      "Langst\u00e4ngelige Schlauchalge": 0.03225806451612903,
+      "Meertraube": 0.03225806451612903,
+      "Meerwalnuss": 0.03225806451612903,
+      "Nacktschnecke": 0.03225806451612903,
+      "Neuseel\u00e4ndische (Zwerg-)Deckelschnecke": 0.03225806451612903,
+      "Pantoffelschnecke": 0.03225806451612903,
+      "Pfeilschwanzkrebs": 0.03225806451612903,
+      "Rotflecken-Schwebegarnele": 0.03225806451612903,
+      "Sandklaffmuschel": 0.03225806451612903,
+      "Schwarzmaulgrundel": 0.03225806451612903,
+      "Schwimmblasenwurm": 0.03225806451612903,
+      "Spionide": 0.03225806451612903,
+      "St\u00f6re": 0.03225806451612903,
+      "S\u00fc\u00dfwasser-R\u00f6hren-/Schlickkrebs": 0.03225806451612903,
+      "S\u00fc\u00dfwasser-Strandfloh": 0.03225806451612903,
+      "UNDETECTED": 0.03225806451612903,
+      "Wakame": 0.03225806451612903,
+      "Zebramuschel": 0.03225806451612903
+    },
+    "Mikrophytobenthos": {
+      "UNDETECTED": 1.0
+    },
+    "Monoporeia affinis": {
+      "Blauschnecke": 0.25,
+      "Gelber Schwimmkrebse": 0.25,
+      "Schwarzer Schwimmkrebse": 0.25,
+      "UNDETECTED": 0.25
+    },
+    "Moostierchen": {
+      "Andere Gruppen": 0.2,
+      "Krebse": 0.2,
+      "Ringelw\u00fcrmer": 0.2,
+      "UNDETECTED": 0.2,
+      "Wirbeltiere": 0.2
+    },
+    "Multioppia neglecta": {
+      "UNDETECTED": 1.0
+    },
+    "Muscheln": {
+      "UNDETECTED": 1.0
+    },
+    "M\u00f6hren-Haftdolde": {
+      "UNDETECTED": 1.0
+    },
+    "Nanoflagellaten": {
+      "Diatomeen": 0.3333333333333333,
+      "Nanoflagellaten": 1.0,
+      "Phaeocystis": 0.3333333333333333,
+      "Picocyanobakterien": 0.3333333333333333,
+      "Piko-Eukaryoten": 0.3333333333333333
+    },
+    "Nesseltiere": {
+      "Andere Gruppen": 0.2,
+      "Krebse": 0.2,
+      "Ringelw\u00fcrmer": 0.2,
+      "UNDETECTED": 1.2,
+      "Wirbeltiere": 0.2
+    },
+    "Pazifische Auster": {
+      "Blau-Muschel": 0.3333333333333333,
+      "Pazifik-Austern": 0.3333333333333333,
+      "UNDETECTED": 0.3333333333333333
+    },
+    "Peitschenwurm": {
+      "UNDETECTED": 1.0
+    },
+    "Pflanzen": {
+      "Andere Pflanzen": 0.25,
+      "Honigbienen": 0.3333333333333333,
+      "Hummeln": 0.3333333333333333,
+      "Insekten": 0.25,
+      "UNDETECTED": 1.5833333333333333,
+      "V\u00f6gel": 0.25
+    },
+    "Phaeocystis spp.": {
+      "Diatomeen": 0.2,
+      "Phaeocystis": 0.2,
+      "Picocyanobakterien": 0.2,
+      "Piko-Eukaryoten": 0.2,
+      "UNDETECTED": 0.2
+    },
+    "Phytobenthos": {
+      "UNDETECTED": 1.0
+    },
+    "Phytoplankton": {
+      "Blauschnecke": 0.25,
+      "Blauwandmuschel": 0.25,
+      "Diatomeen": 0.2,
+      "Fischfauna": 0.3333333333333333,
+      "Gelber Schwimmkrebse": 0.25,
+      "Hering": 0.25,
+      "Kabeljau": 0.25,
+      "Kegelrobbe": 0.25,
+      "Makrophyten": 0.3333333333333333,
+      "Phaeocystis": 0.2,
+      "Phytobenthos": 0.3333333333333333,
+      "Phytoplankton": 1.0,
+      "Picocyanobakterien": 0.2,
+      "Piko-Eukaryoten": 0.2,
+      "Schwarzer Schwimmkrebse": 0.25,
+      "Schweinswal": 0.25,
+      "Seehund": 0.25,
+      "UNDETECTED": 3.95
+    },
+    "Pseudocalanus spp.": {
+      "Blauwandmuschel": 0.25,
+      "Hering": 0.25,
+      "Kabeljau": 0.25,
+      "UNDETECTED": 0.25
+    },
+    "Raubmilben": {
+      "UNDETECTED": 1.0
+    },
+    "Regenw\u00fcrmer": {
+      "Regenw\u00fcrmer": 1.0,
+      "UNDETECTED": 1.0
+    },
+    "Reis": {
+      "UNDETECTED": 1.0
+    },
+    "Ringelnatter": {
+      "UNDETECTED": 1.0
+    },
+    "Rotalgen": {
+      "Rotalfen": 0.5,
+      "UNDETECTED": 0.5
+    },
+    "Rotauge": {
+      "Dreistachliger Stichling": 0.5,
+      "UNDETECTED": 0.5
+    },
+    "Ruderfu\u00dfkrebse": {
+      "UNDETECTED": 1.0
+    },
+    "R\u00e4dertierchen": {
+      "UNDETECTED": 1.0
+    },
+    "Salzwiesen": {
+      "UNDETECTED": 1.0
+    },
+    "Salzwiesen-Kordelgras": {
+      "UNDETECTED": 1.0
+    },
+    "Sandfelchen": {
+      "Dreistachliger Stichling": 0.2,
+      "Sandfelchen": 1.0
+    },
+    "Sauergrasgew\u00e4chse": {
+      "UNDETECTED": 1.0
+    },
+    "Scheloribates laevigatus": {
+      "UNDETECTED": 1.0
+    },
+    "Schmetterlinge": {
+      "UNDETECTED": 1.0
+    },
+    "Schnecken": {
+      "UNDETECTED": 1.0
+    },
+    "Schwarzerle": {
+      "UNDETECTED": 1.0
+    },
+    "Schwarzgrundel": {
+      "Blau-Muschel": 0.16666666666666666,
+      "Dornfisch": 0.16666666666666666,
+      "Gemeiner Gobi": 0.16666666666666666,
+      "Schwarzer Gobi": 0.16666666666666666,
+      "Seehecht": 0.16666666666666666,
+      "UNDETECTED": 0.16666666666666666
+    },
+    "Seeforelle": {
+      "Blau-Muschel": 0.16666666666666666,
+      "Dornfisch": 0.16666666666666666,
+      "Dreistachliger Stichling": 0.5,
+      "Gemeiner Gobi": 0.16666666666666666,
+      "Schwarzer Gobi": 0.16666666666666666,
+      "Seehecht": 0.16666666666666666,
+      "UNDETECTED": 0.6666666666666666
+    },
+    "Seegras": {
+      "Blau-Muschel": 0.1111111111111111,
+      "Blauschnecke": 0.1111111111111111,
+      "Gro\u00dfe Austern": 0.1111111111111111,
+      "Gro\u00dfes Seegras": 0.1111111111111111,
+      "Mediterrane Muschel": 0.1111111111111111,
+      "Miesmuschel": 0.1111111111111111,
+      "Niederl\u00e4ndisches Seegras": 0.1111111111111111,
+      "UNDETECTED": 2.111111111111111,
+      "blaue Muschel": 0.1111111111111111
+    },
+    "Seehunde": {
+      "Seehund": 0.5,
+      "UNDETECTED": 0.5
+    },
+    "Seesaibling": {
+      "Dreistachliger Stichling": 0.5,
+      "UNDETECTED": 0.5
+    },
+    "Seev\u00f6gel": {
+      "Kegelrobbe": 0.25,
+      "Schweinswal": 0.25,
+      "Seehund": 0.25,
+      "UNDETECTED": 0.25
+    },
+    "Sichel-Wolfsmilch": {
+      "UNDETECTED": 1.0
+    },
+    "Sommer-Adonisr\u00f6schen": {
+      "UNDETECTED": 1.0
+    },
+    "Spelz-Trespe": {
+      "UNDETECTED": 1.0
+    },
+    "Springschw\u00e4nze": {
+      "Springfl\u00f6he": 0.5,
+      "UNDETECTED": 1.5
+    },
+    "Spulwurm": {
+      "UNDETECTED": 1.0
+    },
+    "Stachelh\u00e4uter": {
+      "Andere Gruppen": 0.3333333333333333,
+      "Krebse": 0.3333333333333333,
+      "Ringelw\u00fcrmer": 0.3333333333333333,
+      "Stachelh\u00e4uter": 1.0,
+      "Wirbeltiere": 0.3333333333333333
+    },
+    "Stinkende Hundskamille": {
+      "UNDETECTED": 1.0
+    },
+    "S\u00e4ugetiere": {
+      "UNDETECTED": 2.0
+    },
+    "S\u00fc\u00dfgr\u00e4sser": {
+      "UNDETECTED": 1.0
+    },
+    "UNASSIGNABLE": {
+      "Acker-Hahnenfu\u00df": 1.0,
+      "Acker-Krummhals": 1.0,
+      "Acker-Lichtnelke": 1.0,
+      "Acker-Steinsame": 1.0,
+      "Ackerhummel": 1.0,
+      "Ackerr\u00f6te": 1.0,
+      "Ameisen": 1.0,
+      "Amphibien": 2.0,
+      "Amurgrundel": 1.0,
+      "Andere Gruppen": 0.3333333333333333,
+      "Andere Laubb\u00e4ume mit hoher Lebensdauer (ALH)": 1.0,
+      "Andere Laubb\u00e4ume mit niedriger Lebensdauer (ALN)": 1.0,
+      "Andere Pflanzen": 1.0,
+      "Arbuskul\u00e4re Mykorrhizapilze": 1.0,
+      "Asiatische Hornisse": 1.0,
+      "Asiatischer Gespensterkrebs": 1.0,
+      "Auerhuhn": 1.0,
+      "Austernfischer": 2.0,
+      "Bachflohkrebs": 1.0,
+      "Bakterien": 1.0,
+      "Beutegreifer": 1.0,
+      "Biber": 1.0,
+      "Bienen": 1.0,
+      "Bisam": 1.0,
+      "Blattschneiderbiene": 1.0,
+      "Blau-Muschel": 4.0,
+      "Blaubandb\u00e4rbling": 1.0,
+      "Blaue Brombeere": 1.0,
+      "Blaue Muschel": 1.0,
+      "Blauschnecke": 2.0,
+      "Blauwandmuschel": 1.0,
+      "Braunrobe": 1.0,
+      "Breitbl\u00e4ttriger Wolfsmilch": 1.0,
+      "Breitbl\u00e4ttriges Flohschaf": 1.0,
+      "Breitbl\u00e4ttriges Hasenohr": 1.0,
+      "Bryozoe": 1.0,
+      "Buche": 1.0,
+      "Buchenmulm-Zwergstutzk\u00e4fer": 1.0,
+      "Buchstaben-Schmuckschildkr\u00f6te": 1.0,
+      "Buquets Flachstirn-Tastk\u00e4fer": 1.0,
+      "Chaix'sches Grashalmkraut": 1.0,
+      "Chinesische Wollhandkrabbe": 1.0,
+      "Chinesischer Muntjak": 1.0,
+      "Cod": 0.5,
+      "Collembolen": 1.0,
+      "Dab": 0.5,
+      "Diatomeen": 0.3333333333333333,
+      "Distelrezeptakelk\u00e4fer": 1.0,
+      "Donau-Schwebegarnele": 1.0,
+      "Dornfisch": 1.0,
+      "Douglasie": 1.0,
+      "Dreieckskopfstrudelwurm": 1.0,
+      "Dreistachliger Stichling": 0.2,
+      "Echter Ahorn": 1.0,
+      "Echter Frauenspiegel": 1.0,
+      "Edelmuschel": 1.0,
+      "Eiche": 1.0,
+      "Eiderente": 1.0,
+      "Eintagsfliegen": 1.0,
+      "Eintagsfliegenlarve": 1.0,
+      "Eisenia-Erdwurm": 1.0,
+      "Erdhummel": 1.0,
+      "Erdwurm": 1.0,
+      "Erdw\u00fcrmer": 1.0,
+      "Eremit": 1.0,
+      "Esche": 1.0,
+      "Essbare Nesseln": 1.0,
+      "Europ\u00e4ischer Trollblume": 1.0,
+      "Fadenf\u00f6rmiger Faden-Saftk\u00e4fer": 1.0,
+      "Feld-Rittersporn": 1.0,
+      "Feldhamster": 1.0,
+      "Feuerschmied": 1.0,
+      "Fichte": 1.0,
+      "Fischfauna": 0.3333333333333333,
+      "Flederm\u00e4use": 1.0,
+      "Flunder": 1.0,
+      "Flussnapfschnecke": 1.0,
+      "Gartenhumel": 1.0,
+      "Gef\u00e4\u00dfpflanzen": 1.0,
+      "Gelber Schwimmkrebse": 1.0,
+      "Gemeine Hummel": 1.0,
+      "Gemeiner Gobi": 1.0,
+      "Gemeiner Schreiadler": 1.0,
+      "Gemeiner Schwimmfarn": 1.0,
+      "Gemeines Roggenhirse": 1.0,
+      "Gem\u00fcseschafskraut": 1.0,
+      "Glockenblumen-Scherenbiene": 1.0,
+      "Gl\u00e4nzender Walzen-Saftk\u00e4fer": 1.0,
+      "Graugans": 1.0,
+      "Grauh\u00f6rnchen": 1.0,
+      "Gro\u00dfe Austern": 2.0,
+      "Gro\u00dfe Hafergrasart": 1.0,
+      "Gro\u00dfer H\u00f6ckerflohkrebs": 1.0,
+      "Gro\u00dfes Seegras": 1.0,
+      "Gro\u00dfv\u00f6gel": 1.0,
+      "Gr\u00fcne Gabelalge": 1.0,
+      "Haarige Schlauchalge": 1.0,
+      "Hafenrose": 1.0,
+      "Hahnenfu\u00df": 1.0,
+      "Heiliger Ibis": 1.0,
+      "Heldbock": 1.0,
+      "Hering": 1.5,
+      "Herzmuschel": 1.0,
+      "Hirtenmaina": 1.0,
+      "Holzbienen": 1.0,
+      "Honigbiene": 1.0,
+      "Honigbienen": 1.0,
+      "Hornmilben": 1.0,
+      "Hummel": 1.0,
+      "Hummeln": 1.0,
+      "Indisches Springkraut": 1.0,
+      "Insekten": 6.0,
+      "Japanischer Beerentang": 1.0,
+      "Japanischer Staudenkn\u00f6terich": 1.0,
+      "Kabeljau": 1.0,
+      "Kamberkrebs": 1.0,
+      "Kaspischer Wasserfloh": 1.0,
+      "Kegelrobbe": 1.0,
+      "Keulenascidie, Faltenascidie, Warzige Seescheide": 1.0,
+      "Kiebitz": 1.0,
+      "Kiefer": 1.0,
+      "Killer-Shrimp": 1.0,
+      "Klatschmohn": 1.0,
+      "Kleiner H\u00f6ckerflohkrebs": 1.0,
+      "Kleiner M\u00f6we": 1.0,
+      "Kleiner Orant": 1.0,
+      "Knickiger Blutgras": 1.0,
+      "Kornblume": 1.0,
+      "Kranich": 1.0,
+      "Krebse": 0.3333333333333333,
+      "Krusten-Seescheide": 1.0,
+      "Kr\u00f6ten": 1.0,
+      "Kuckucksbiene": 1.0,
+      "Kulturpflanzen": 1.0,
+      "K\u00f6cherfliege": 1.0,
+      "K\u00f6cherfliegen": 1.0,
+      "Langhornbiene": 1.0,
+      "Langst\u00e4ngelige Schlauchalge": 1.0,
+      "Libellenarten": 1.0,
+      "L\u00e4rche": 1.0,
+      "L\u00f6cherbiene": 1.0,
+      "L\u00f6ffler": 1.0,
+      "Makrele": 0.5,
+      "Makrophyten": 0.3333333333333333,
+      "Marderhund": 1.0,
+      "Marmorkrebs": 1.0,
+      "Maskenbiene": 1.0,
+      "Mauerbiene": 1.0,
+      "Mausohr": 1.0,
+      "Mediterrane Muschel": 1.0,
+      "Meerneunauge": 1.0,
+      "Meertraube": 1.0,
+      "Meerwalnuss": 1.0,
+      "Miesmuschel": 1.0,
+      "Milben": 1.0,
+      "M\u00f6rtelbiene": 1.0,
+      "Nacktschnecke": 1.0,
+      "Natterkopf-Mauerbiene": 1.0,
+      "Nematoden": 1.0,
+      "Neuseel\u00e4ndische (Zwerg-)Deckelschnecke": 1.0,
+      "Niederliegende Distel": 1.0,
+      "Niederl\u00e4ndisches Seegras": 1.0,
+      "Nilgans": 1.0,
+      "Nordamerikanischer Ochsenfrosch": 1.0,
+      "Norwegische Fichte": 1.0,
+      "Nutria": 1.0,
+      "Oribatiden": 1.0,
+      "Ortolan": 1.0,
+      "Pantoffelschnecke": 1.0,
+      "Pazifik-Austern": 1.0,
+      "Pelzbienen": 1.0,
+      "Pfeifente": 2.0,
+      "Pfeilschwanzkrebs": 1.0,
+      "Phaeocystis": 0.3333333333333333,
+      "Phytobenthos": 0.3333333333333333,
+      "Picocyanobakterien": 0.3333333333333333,
+      "Piko-Eukaryoten": 0.3333333333333333,
+      "Pilze": 1.0,
+      "Plattr\u00fcssler": 1.0,
+      "Regenw\u00fcrmer": 1.0,
+      "Relikt\u00e4rer Linien-Schwarzk\u00e4fer": 1.0,
+      "Rhizobien": 1.0,
+      "Ringelgans": 1.0,
+      "Ringelw\u00fcrmer": 1.3333333333333333,
+      "Rondanis Spindelhorn-Rindenk\u00e4fer": 1.0,
+      "Rosenhauers Mulm-Schnellk\u00e4fer": 1.0,
+      "Rosenkrebse": 1.0,
+      "Rotalfen": 0.3333333333333333,
+      "Rotbinden-Linien-Schwarzk\u00e4fer": 1.0,
+      "Roter Amerikanischer Sumpfkrebs": 1.0,
+      "Roter Nasenb\u00e4r": 1.0,
+      "Rotflecken-Schwebegarnele": 1.0,
+      "Rotgras": 1.0,
+      "Rothalsiger Bl\u00fcten-Walzenk\u00e4fer": 1.0,
+      "Rotmilan": 1.0,
+      "Sandbiene": 1.0,
+      "Sandklaffmuschel": 1.0,
+      "Sandmohn": 1.0,
+      "Schafgras": 1.0,
+      "Scherenbiene": 1.0,
+      "Schlafhumel": 1.0,
+      "Schmalbiene": 1.0,
+      "Schmarotzerhummel": 1.0,
+      "Schottische Ginster": 1.0,
+      "Schottische Kiefer": 1.0,
+      "Schwarz-Schwertlilie": 1.0,
+      "Schwarzer Gobi": 1.0,
+      "Schwarzer Schwimmkrebse": 1.0,
+      "Schwarzkopf-Ruderente": 1.0,
+      "Schwarzmantel": 1.0,
+      "Schwarzmaulgrundel": 1.0,
+      "Schweinswal": 1.0,
+      "Schwimmblasenwurm": 1.0,
+      "Seehecht": 1.0,
+      "Seehund": 3.0,
+      "Seidenbiene": 1.0,
+      "Sibirisches Streifenh\u00f6rnchen": 1.0,
+      "Signalkrebs": 1.0,
+      "Sonnenbarsch": 1.0,
+      "Spionide": 1.0,
+      "Spiralhornbiene": 1.0,
+      "Spitzen-Schwertlilie": 1.0,
+      "Springfl\u00f6he": 1.5,
+      "Stechginster": 1.0,
+      "St\u00f6re": 1.0,
+      "S\u00e4belschn\u00e4bler": 1.0,
+      "S\u00e4gehornbiene": 1.0,
+      "S\u00fc\u00dfwasser-R\u00f6hren-/Schlickkrebs": 1.0,
+      "S\u00fc\u00dfwasser-Strandfloh": 1.0,
+      "Tanne": 1.0,
+      "Termiten": 1.0,
+      "Termites": 1.0,
+      "V\u00f6gel": 4.0,
+      "Wakame": 1.0,
+      "Waldgei\u00dfblatt": 1.0,
+      "Waldsteinbrech": 1.0,
+      "Waschb\u00e4r": 1.0,
+      "Weichhaarige L\u00f6wenzahnart": 1.0,
+      "Wei\u00dfe Kuhblume": 1.0,
+      "Westliche Honigbiene": 1.0,
+      "Wiesen-Hummel": 1.0,
+      "Wiesenhirse": 1.0,
+      "Wiesenhumel": 1.0,
+      "Wiesenv\u00f6gel": 1.0,
+      "Wildkatze": 1.0,
+      "Wirbellose Tiere": 1.0,
+      "Wirbeltiere": 1.3333333333333333,
+      "Wolf": 1.0,
+      "Wollbiene": 1.0,
+      "Zebramuschel": 1.0,
+      "Zottelbiene": 1.0,
+      "Zweibl\u00e4ttriges Polygonum": 1.0,
+      "Zweij\u00e4hriger Klee": 1.0,
+      "blaue Muschel": 2.0,
+      "gemeiner Seeschwalben": 1.0,
+      "gro\u00dfe Wasserfreundin": 1.0
+    },
+    "Ulmenwelkpilz": {
+      "UNDETECTED": 1.0
+    },
+    "Venuskamm": {
+      "UNDETECTED": 1.0
+    },
+    "Vibrio alginolyticus": {
+      "UNDETECTED": 1.0
+    },
+    "Vibrio parahaemolyticus": {
+      "UNDETECTED": 1.0
+    },
+    "Vibrio spp.": {
+      "UNDETECTED": 1.0
+    },
+    "Vibrio vulnificus": {
+      "UNDETECTED": 1.0
+    },
+    "Vielborster": {
+      "Andere Gruppen": 0.2,
+      "Krebse": 0.2,
+      "Ringelw\u00fcrmer": 0.2,
+      "UNDETECTED": 0.2,
+      "Wirbeltiere": 0.2
+    },
+    "V\u00f6gel": {
+      "Austernfischer": 0.20168067226890757,
+      "Blau-Muschel": 0.058823529411764705,
+      "Blaue Muschel": 0.058823529411764705,
+      "Braunrobe": 0.058823529411764705,
+      "Edelmuschel": 0.058823529411764705,
+      "Eiderente": 0.14285714285714285,
+      "Flunder": 0.058823529411764705,
+      "Gemeiner Schreiadler": 0.058823529411764705,
+      "Graugans": 0.058823529411764705,
+      "Gro\u00dfe Austern": 0.058823529411764705,
+      "Herzmuschel": 0.058823529411764705,
+      "Kleiner M\u00f6we": 0.058823529411764705,
+      "L\u00f6ffler": 0.14285714285714285,
+      "Meerneunauge": 0.5,
+      "Pfeifente": 0.20168067226890757,
+      "Ringelgans": 0.14285714285714285,
+      "Rosenkrebse": 0.058823529411764705,
+      "Schwarzmantel": 0.058823529411764705,
+      "S\u00e4belschn\u00e4bler": 0.14285714285714285,
+      "UNDETECTED": 1.7016806722689075,
+      "blaue Muschel": 0.058823529411764705,
+      "gemeiner Seeschwalben": 0.058823529411764705
+    },
+    "Wanzen": {
+      "UNDETECTED": 1.0
+    },
+    "Wasserfl\u00f6he": {
+      "UNDETECTED": 1.0
+    },
+    "Wasserv\u00f6gel": {
+      "UNDETECTED": 1.0
+    },
+    "Weichtiere": {
+      "Andere Gruppen": 0.3333333333333333,
+      "Krebse": 0.3333333333333333,
+      "Ringelw\u00fcrmer": 0.3333333333333333,
+      "Weichtiere": 1.0,
+      "Wirbeltiere": 0.3333333333333333
+    },
+    "Wildbest\u00e4uber": {
+      "Honigbienen": 0.3333333333333333,
+      "Hummeln": 0.3333333333333333,
+      "UNDETECTED": 0.3333333333333333
+    },
+    "Wildbienen": {
+      "Ackerhummel": 0.03225806451612903,
+      "Blattschneiderbiene": 0.03225806451612903,
+      "Erdhummel": 0.03225806451612903,
+      "Gartenhumel": 0.03225806451612903,
+      "Gemeine Hummel": 0.03225806451612903,
+      "Glockenblumen-Scherenbiene": 0.03225806451612903,
+      "Holzbienen": 0.03225806451612903,
+      "Honigbiene": 0.03225806451612903,
+      "Hummel": 0.03225806451612903,
+      "Kuckucksbiene": 0.03225806451612903,
+      "Langhornbiene": 0.03225806451612903,
+      "L\u00f6cherbiene": 0.03225806451612903,
+      "Maskenbiene": 0.03225806451612903,
+      "Mauerbiene": 0.03225806451612903,
+      "M\u00f6rtelbiene": 0.03225806451612903,
+      "Natterkopf-Mauerbiene": 0.03225806451612903,
+      "Pelzbienen": 0.03225806451612903,
+      "Sandbiene": 0.03225806451612903,
+      "Scherenbiene": 0.03225806451612903,
+      "Schlafhumel": 0.03225806451612903,
+      "Schmalbiene": 0.03225806451612903,
+      "Schmarotzerhummel": 0.03225806451612903,
+      "Seidenbiene": 0.03225806451612903,
+      "Spiralhornbiene": 0.03225806451612903,
+      "S\u00e4gehornbiene": 0.03225806451612903,
+      "UNDETECTED": 0.03225806451612903,
+      "Westliche Honigbiene": 0.03225806451612903,
+      "Wiesen-Hummel": 0.03225806451612903,
+      "Wiesenhumel": 0.03225806451612903,
+      "Wollbiene": 0.03225806451612903,
+      "Zottelbiene": 0.03225806451612903
+    },
+    "Wirbellose": {
+      "Asiatischer Gespensterkrebs": 0.03225806451612903,
+      "Bryozoe": 0.03225806451612903,
+      "Donau-Schwebegarnele": 0.03225806451612903,
+      "Gro\u00dfer H\u00f6ckerflohkrebs": 0.03225806451612903,
+      "Gr\u00fcne Gabelalge": 0.03225806451612903,
+      "Haarige Schlauchalge": 0.03225806451612903,
+      "Hafenrose": 0.03225806451612903,
+      "Japanischer Beerentang": 0.03225806451612903,
+      "Kaspischer Wasserfloh": 0.03225806451612903,
+      "Keulenascidie, Faltenascidie, Warzige Seescheide": 0.03225806451612903,
+      "Killer-Shrimp": 0.03225806451612903,
+      "Kleiner H\u00f6ckerflohkrebs": 0.03225806451612903,
+      "Krusten-Seescheide": 0.03225806451612903,
+      "Langst\u00e4ngelige Schlauchalge": 0.03225806451612903,
+      "Meerneunauge": 0.5,
+      "Meertraube": 0.03225806451612903,
+      "Meerwalnuss": 0.03225806451612903,
+      "Nacktschnecke": 0.03225806451612903,
+      "Neuseel\u00e4ndische (Zwerg-)Deckelschnecke": 0.03225806451612903,
+      "Pantoffelschnecke": 0.03225806451612903,
+      "Pfeilschwanzkrebs": 0.03225806451612903,
+      "Rotflecken-Schwebegarnele": 0.03225806451612903,
+      "Sandklaffmuschel": 0.03225806451612903,
+      "Schwarzmaulgrundel": 0.03225806451612903,
+      "Schwimmblasenwurm": 0.03225806451612903,
+      "Spionide": 0.03225806451612903,
+      "St\u00f6re": 0.03225806451612903,
+      "S\u00fc\u00dfwasser-R\u00f6hren-/Schlickkrebs": 0.03225806451612903,
+      "S\u00fc\u00dfwasser-Strandfloh": 0.03225806451612903,
+      "UNDETECTED": 0.532258064516129,
+      "Wakame": 0.03225806451612903,
+      "Zebramuschel": 0.03225806451612903
+    },
+    "Wirbeltiere": {
+      "Asiatischer Gespensterkrebs": 0.03225806451612903,
+      "Bryozoe": 0.03225806451612903,
+      "Donau-Schwebegarnele": 0.03225806451612903,
+      "Gro\u00dfer H\u00f6ckerflohkrebs": 0.03225806451612903,
+      "Gr\u00fcne Gabelalge": 0.03225806451612903,
+      "Haarige Schlauchalge": 0.03225806451612903,
+      "Hafenrose": 0.03225806451612903,
+      "Japanischer Beerentang": 0.03225806451612903,
+      "Kaspischer Wasserfloh": 0.03225806451612903,
+      "Keulenascidie, Faltenascidie, Warzige Seescheide": 0.03225806451612903,
+      "Killer-Shrimp": 0.03225806451612903,
+      "Kleiner H\u00f6ckerflohkrebs": 0.03225806451612903,
+      "Krusten-Seescheide": 0.03225806451612903,
+      "Langst\u00e4ngelige Schlauchalge": 0.03225806451612903,
+      "Meertraube": 0.03225806451612903,
+      "Meerwalnuss": 0.03225806451612903,
+      "Nacktschnecke": 0.03225806451612903,
+      "Neuseel\u00e4ndische (Zwerg-)Deckelschnecke": 0.03225806451612903,
+      "Pantoffelschnecke": 0.03225806451612903,
+      "Pfeilschwanzkrebs": 0.03225806451612903,
+      "Rotflecken-Schwebegarnele": 0.03225806451612903,
+      "Sandklaffmuschel": 0.03225806451612903,
+      "Schwarzmaulgrundel": 0.03225806451612903,
+      "Schwimmblasenwurm": 0.03225806451612903,
+      "Spionide": 0.03225806451612903,
+      "St\u00f6re": 0.03225806451612903,
+      "S\u00fc\u00dfwasser-R\u00f6hren-/Schlickkrebs": 0.03225806451612903,
+      "S\u00fc\u00dfwasser-Strandfloh": 0.03225806451612903,
+      "UNDETECTED": 0.03225806451612903,
+      "Wakame": 0.03225806451612903,
+      "Zebramuschel": 0.03225806451612903
+    },
+    "Zachvatkinibates quadrivertex": {
+      "UNDETECTED": 1.0
+    },
+    "Zander": {
+      "Zander": 1.0
+    },
+    "Zikaden": {
+      "UNDETECTED": 1.0
+    },
+    "Zoobenthos": {
+      "UNDETECTED": 1.0
+    },
+    "Zooplankton": {
+      "Blauwandmuschel": 0.25,
+      "Hering": 0.25,
+      "Kabeljau": 0.25,
+      "Kegelrobbe": 0.25,
+      "Schweinswal": 0.25,
+      "Seehund": 0.25,
+      "UNDETECTED": 1.5
+    },
+    "Zweifl\u00fcgler": {
+      "UNDETECTED": 1.0
+    },
+    "xylobionte K\u00e4fer": {
+      "Buchenmulm-Zwergstutzk\u00e4fer": 0.07142857142857142,
+      "Buquets Flachstirn-Tastk\u00e4fer": 0.07142857142857142,
+      "Eremit": 0.07142857142857142,
+      "Fadenf\u00f6rmiger Faden-Saftk\u00e4fer": 0.07142857142857142,
+      "Feuerschmied": 0.07142857142857142,
+      "Gl\u00e4nzender Walzen-Saftk\u00e4fer": 0.07142857142857142,
+      "Heldbock": 0.07142857142857142,
+      "Plattr\u00fcssler": 0.07142857142857142,
+      "Relikt\u00e4rer Linien-Schwarzk\u00e4fer": 0.07142857142857142,
+      "Rondanis Spindelhorn-Rindenk\u00e4fer": 0.07142857142857142,
+      "Rosenhauers Mulm-Schnellk\u00e4fer": 0.07142857142857142,
+      "Rotbinden-Linien-Schwarzk\u00e4fer": 0.07142857142857142,
+      "Rothalsiger Bl\u00fcten-Walzenk\u00e4fer": 0.07142857142857142,
+      "UNDETECTED": 0.07142857142857142
+    }
+  },
+  "taxa.scientific_name": {
+    "-": {
+      "Acartia tonsa": 0.018518518518518517,
+      "Acipenser spp.": 0.018518518518518517,
+      "Allotheuthis subulata": 0.25,
+      "Ameira divagans": 0.018518518518518517,
+      "Amphibalanus improvisus": 0.018518518518518517,
+      "Andrena": 0.01694915254237288,
+      "Andrena curvungula": 0.01694915254237288,
+      "Andrena lathyri": 0.01694915254237288,
+      "Andrena oblongatum": 0.01694915254237288,
+      "Andrena tscheki": 0.01694915254237288,
+      "Andrena vaga": 0.01694915254237288,
+      "Anguillicoloides crassus": 0.018518518518518517,
+      "Anthidium": 0.01694915254237288,
+      "Anthidium manicatum": 0.01694915254237288,
+      "Anthophora plumipes": 0.01694915254237288,
+      "Aoroides semicurvatus": 0.018518518518518517,
+      "Apis mellifera": 0.01694915254237288,
+      "Arachnidium lacourti": 0.018518518518518517,
+      "Austrominius modestus": 0.018518518518518517,
+      "Bombus": 0.01694915254237288,
+      "Bombus gerstaeckeri": 0.01694915254237288,
+      "Bombus hortorum": 0.01694915254237288,
+      "Bombus hypnorum": 0.01694915254237288,
+      "Bombus pascuorum": 0.01694915254237288,
+      "Bombus pomorum": 0.01694915254237288,
+      "Bombus pratorum": 0.01694915254237288,
+      "Bombus terrestris": 0.01694915254237288,
+      "Bombus wurflenii": 0.01694915254237288,
+      "Botryllus schlosseri": 0.018518518518518517,
+      "Bugula neritina": 0.018518518518518517,
+      "Caprella mutica": 0.018518518518518517,
+      "Cercopagis pengoi": 0.018518518518518517,
+      "Chelicorophium curvispinum": 0.018518518518518517,
+      "Chelostoma campanularum": 0.01694915254237288,
+      "Chelostoma florisomne": 0.01694915254237288,
+      "Chlorophycota": 0.25,
+      "Codium fragile ssp. fragile": 0.018518518518518517,
+      "Coelioxys conica": 0.01694915254237288,
+      "Colletes": 0.01694915254237288,
+      "Colletes cunicularius": 0.01694915254237288,
+      "Colletes nasutus": 0.01694915254237288,
+      "Corambe obscura": 0.018518518518518517,
+      "Corella eumyota": 0.018518518518518517,
+      "Crepidula fornicata": 0.018518518518518517,
+      "Cryptorchestia cavimana": 0.018518518518518517,
+      "Dasypoda": 0.01694915254237288,
+      "Diadumene lineata": 0.018518518518518517,
+      "Diatoms": 0.16666666666666666,
+      "Didemnum vexillum": 0.018518518518518517,
+      "Dikerogammarus haemobaphes": 0.018518518518518517,
+      "Dikerogammarus villosus": 0.018518518518518517,
+      "Dinoflagellates": 0.16666666666666666,
+      "Diplosoma listerianum": 0.018518518518518517,
+      "Dreissena polymorpha": 0.018518518518518517,
+      "Dufourea halictula": 0.01694915254237288,
+      "Echinogammarus ischnus": 0.018518518518518517,
+      "Echinogammarus trichiatus": 0.018518518518518517,
+      "Eucera alticincta": 0.01694915254237288,
+      "Evylaeus": 0.01694915254237288,
+      "Gonionemus vertens": 0.018518518518518517,
+      "Halictus": 0.01694915254237288,
+      "Hemimysis anomala": 0.018518518518518517,
+      "Heriades truncorum": 0.01694915254237288,
+      "Hylaeus punctulatissimus": 0.01694915254237288,
+      "Lasioglossum": 0.01694915254237288,
+      "Lasioglossum malachurum": 0.01694915254237288,
+      "Lasioglossum subfulvicorne": 0.01694915254237288,
+      "Limnomysis benedeni": 0.018518518518518517,
+      "Limulus polyphemus": 0.018518518518518517,
+      "Loligo forbesi": 0.25,
+      "Megachile": 0.01694915254237288,
+      "Megachile centuncularis": 0.01694915254237288,
+      "Megachile ligniseca": 0.01694915254237288,
+      "Megachile parietina": 0.01694915254237288,
+      "Melitta haeorrhoidalis": 0.01694915254237288,
+      "Mnemiopsis leidyi": 0.018518518518518517,
+      "Molgula manhattensis": 0.018518518518518517,
+      "Mya arenaria": 0.018518518518518517,
+      "Mytilicola intestinalis": 0.018518518518518517,
+      "Mytilicola orientalis": 0.018518518518518517,
+      "Nanoflagellates": 0.16666666666666666,
+      "Neogobius melanostomus": 0.018518518518518517,
+      "Nippoleucon hinumensis": 0.018518518518518517,
+      "Nomada": 0.01694915254237288,
+      "Oithona davisae": 0.018518518518518517,
+      "Osmia": 0.01694915254237288,
+      "Osmia adunca": 0.01694915254237288,
+      "Osmia anthocopoides": 0.01694915254237288,
+      "Osmia bicornis": 0.01694915254237288,
+      "Osmia cerinthidis": 0.01694915254237288,
+      "Osmia cornuta": 0.01694915254237288,
+      "Osmia papaveris": 0.01694915254237288,
+      "Panurgus calcaratus": 0.01694915254237288,
+      "Paramysis lacustris": 0.018518518518518517,
+      "Perophora japonica": 0.018518518518518517,
+      "Phaeophycota": 0.25,
+      "Picocyanobacteria": 0.16666666666666666,
+      "Picoeukaryotes": 0.16666666666666666,
+      "Potamopyrgus antipodarum": 0.018518518518518517,
+      "Proasellus coxalis": 0.018518518518518517,
+      "Pseudodiaptomus marinus": 0.018518518518518517,
+      "Psithyrus bohemicus": 0.01694915254237288,
+      "Psithyrus vestalis": 0.01694915254237288,
+      "Rhodophycota": 0.25,
+      "Sargassum muticum": 0.018518518518518517,
+      "Sepiola atlantica": 0.25,
+      "Sinelobus vanhaareni": 0.018518518518518517,
+      "Sphecodes": 0.01694915254237288,
+      "Stelis signata": 0.01694915254237288,
+      "Streblospio benedicti": 0.018518518518518517,
+      "Styela clava": 0.018518518518518517,
+      "Synidotea laticauda": 0.018518518518518517,
+      "Systropha planidens": 0.01694915254237288,
+      "UNDETECTED": 5.77356290915613,
+      "Ulva australis": 0.018518518518518517,
+      "Ulva californica": 0.018518518518518517,
+      "Undaria pinnatifida": 0.018518518518518517,
+      "Vaucheria cf. velutina": 0.018518518518518517,
+      "Vaucheria longicaulis": 0.018518518518518517,
+      "Xylocopa": 0.01694915254237288,
+      "Xylocopa frontalis": 0.01694915254237288,
+      "Xylocopa valga": 0.01694915254237288,
+      "Xylocopa violacea": 0.01694915254237288,
+      "_Aeletes atomarius_": 0.07142857142857142,
+      "_Batrisodes buqueti_": 0.07142857142857142,
+      "_Cerambyx cerdo_": 0.07142857142857142,
+      "_Colydium filiforme_": 0.07142857142857142,
+      "_Corticeus bicoloroides_": 0.07142857142857142,
+      "_Corticeus fasciatus_": 0.07142857142857142,
+      "_Crepidophorus mutilatus_": 0.07142857142857142,
+      "_Dermestoides sanguinicollis_": 0.07142857142857142,
+      "_Elater ferrugineus_": 0.07142857142857142,
+      "_Gasterocercus depressirostris_": 0.07142857142857142,
+      "_Osmoderma eremita_": 0.07142857142857142,
+      "_Ropalocerus rondanii_": 0.07142857142857142,
+      "_Teredus cylindricus_": 0.07142857142857142
+    },
+    "Abramis brama": {
+      "Gasterosteus aculeatus": 0.5,
+      "UNDETECTED": 0.5
+    },
+    "Adonis aestivalis L.": {
+      "Euphorbia falcata": 0.2,
+      "Hypochaeris glabra": 0.2,
+      "Linaria arvensis": 0.2,
+      "Stachys annua": 0.2,
+      "UNDETECTED": 0.2
+    },
+    "Alnus glutinosa": {
+      "UNDETECTED": 1.0
+    },
+    "Ameronothrus schneideri": {
+      "Ameronothrus schneideri": 1.0
+    },
+    "Amphibalanus improvisus": {
+      "UNDETECTED": 1.0
+    },
+    "Amphibia": {
+      "Petromyzon marinus": 0.5,
+      "UNDETECTED": 1.5
+    },
+    "Anagallis minima (L.) E. H. L. Krause": {
+      "Euphorbia falcata": 0.2,
+      "Hypochaeris glabra": 0.2,
+      "Linaria arvensis": 0.2,
+      "Stachys annua": 0.2,
+      "UNDETECTED": 0.2
+    },
+    "Ancylostomatidae": {
+      "UNDETECTED": 1.0
+    },
+    "Annelida": {
+      "Pomatoschistus microps": 0.5,
+      "UNDETECTED": 0.5
+    },
+    "Anthemis cotula L.": {
+      "Euphorbia falcata": 0.2,
+      "Hypochaeris glabra": 0.2,
+      "Linaria arvensis": 0.2,
+      "Stachys annua": 0.2,
+      "UNDETECTED": 0.2
+    },
+    "Apodemus agrarius": {
+      "Apodemus agrarius": 1.0,
+      "Apodemus sylvaticus": 0.3333333333333333
+    },
+    "Archaea": {
+      "UNDETECTED": 3.0
+    },
+    "Arthropoda": {
+      "UNDETECTED": 2.0
+    },
+    "Ascaris lumbricoides": {
+      "UNDETECTED": 1.0
+    },
+    "Asterias rubens": {
+      "Pomatoschistus microps": 0.5,
+      "UNDETECTED": 0.5
+    },
+    "Auchenorrhyncha": {
+      "UNDETECTED": 1.0
+    },
+    "Aves": {
+      "Anas crecca": 0.14285714285714285,
+      "Brachionus plicatilis": 0.07692307692307693,
+      "Branta bernicla": 0.14285714285714285,
+      "Corophium volutator": 0.07692307692307693,
+      "Crassostrea gigas": 0.07692307692307693,
+      "Echinocardium cordatum": 0.07692307692307693,
+      "Haematopus ostralegus": 0.14285714285714285,
+      "Larus argentatus": 0.07692307692307693,
+      "Mytilus edulis": 0.07692307692307693,
+      "Nereis virens": 0.07692307692307693,
+      "Petromyzon marinus": 0.5,
+      "Phoca vitulina": 0.07692307692307693,
+      "Platalea leucorodia": 0.14285714285714285,
+      "Platichthys flesus": 0.07692307692307693,
+      "Recurvirostra avosetta": 0.14285714285714285,
+      "Somateria mollissima": 0.21978021978021978,
+      "Tadorna tadorna": 0.07692307692307693,
+      "UNDETECTED": 1.7197802197802199,
+      "Uria aalge": 0.07692307692307693
+    },
+    "Bacteria": {
+      "Diatoms": 0.16666666666666666,
+      "Dinoflagellates": 0.16666666666666666,
+      "Nanoflagellates": 0.16666666666666666,
+      "Picocyanobacteria": 0.16666666666666666,
+      "Picoeukaryotes": 0.16666666666666666,
+      "UNDETECTED": 3.166666666666667
+    },
+    "Betaproteobacteria": {
+      "UNDETECTED": 1.0
+    },
+    "Bivalvia": {
+      "UNDETECTED": 1.0
+    },
+    "Bos taurus": {
+      "UNDETECTED": 1.0
+    },
+    "Bromus grossus A. P. de Candolle 1805": {
+      "Euphorbia falcata": 0.2,
+      "Hypochaeris glabra": 0.2,
+      "Linaria arvensis": 0.2,
+      "Stachys annua": 0.2,
+      "UNDETECTED": 0.2
+    },
+    "Bryozoa": {
+      "Amphiura filiformis": 0.16666666666666666,
+      "Andere Gruppen": 0.16666666666666666,
+      "Annelida, Polychaeta": 0.16666666666666666,
+      "Nucula nitidosa": 0.16666666666666666,
+      "Tellina fabula": 0.16666666666666666,
+      "UNDETECTED": 0.16666666666666666
+    },
+    "Bupleurum rotundifolium L.": {
+      "Euphorbia falcata": 0.2,
+      "Hypochaeris glabra": 0.2,
+      "Linaria arvensis": 0.2,
+      "Stachys annua": 0.2,
+      "UNDETECTED": 0.2
+    },
+    "B\u00e4ume": {
+      "UNDETECTED": 1.0
+    },
+    "Calanus finmarchicus": {
+      "UNDETECTED": 1.0
+    },
+    "Carabidae": {
+      "Carabidae": 1.0
+    },
+    "Caucalis platycarpos L.": {
+      "Euphorbia falcata": 0.2,
+      "Hypochaeris glabra": 0.2,
+      "Linaria arvensis": 0.2,
+      "Stachys annua": 0.2,
+      "UNDETECTED": 0.2
+    },
+    "Cephalopoda": {
+      "Allotheuthis subulata": 0.25,
+      "Loligo forbesi": 0.25,
+      "Sepiola atlantica": 0.25,
+      "UNDETECTED": 0.25
+    },
+    "Chilopoda": {
+      "Cylindroiulus caeruleocinctus": 0.1111111111111111,
+      "Eupelops occultus": 0.1111111111111111,
+      "Geophilus flavus": 0.1111111111111111,
+      "Isotoma viridis": 0.1111111111111111,
+      "Parasitidae": 0.1111111111111111,
+      "Schendyla nemorensis": 0.1111111111111111,
+      "Tectocepheus velatus": 0.1111111111111111,
+      "Trichoribates trimaculatus": 0.1111111111111111,
+      "UNDETECTED": 1.1111111111111112
+    },
+    "Chlorophyceae": {
+      "Chlorophycota": 0.25,
+      "Phaeophycota": 0.25,
+      "Rhodophycota": 0.25,
+      "UNDETECTED": 0.25
+    },
+    "Chordata": {
+      "Amphiura filiformis": 0.2,
+      "Andere Gruppen": 0.2,
+      "Annelida, Polychaeta": 0.2,
+      "Chordata": 1.0,
+      "Nucula nitidosa": 0.2,
+      "Tellina fabula": 0.2
+    },
+    "Chrysophyceae": {
+      "UNDETECTED": 1.0
+    },
+    "Cladocera": {
+      "UNDETECTED": 1.0
+    },
+    "Clitellata": {
+      "UNDETECTED": 1.0
+    },
+    "Clupea harengus": {
+      "Clupea harengus": 2.0,
+      "Pomatoschistus microps": 0.5,
+      "UNDETECTED": 1.5
+    },
+    "Cnidaria": {
+      "Amphiura filiformis": 0.16666666666666666,
+      "Andere Gruppen": 0.16666666666666666,
+      "Annelida, Polychaeta": 0.16666666666666666,
+      "Nucula nitidosa": 0.16666666666666666,
+      "Tellina fabula": 0.16666666666666666,
+      "UNDETECTED": 1.1666666666666667
+    },
+    "Coccolithophyceae": {
+      "UNDETECTED": 1.0
+    },
+    "Coleoptera": {
+      "UNDETECTED": 1.0
+    },
+    "Collembola": {
+      "Collembola": 1.0,
+      "Cylindroiulus caeruleocinctus": 0.1111111111111111,
+      "Eupelops occultus": 0.1111111111111111,
+      "Geophilus flavus": 0.1111111111111111,
+      "Isotoma viridis": 0.1111111111111111,
+      "Parasitidae": 0.1111111111111111,
+      "Schendyla nemorensis": 0.1111111111111111,
+      "Tectocepheus velatus": 0.1111111111111111,
+      "Trichoribates trimaculatus": 0.1111111111111111,
+      "UNDETECTED": 0.1111111111111111
+    },
+    "Copepoda": {
+      "UNDETECTED": 1.0
+    },
+    "Coregonus arenicolus": {
+      "Coregonus arenicolus": 1.0,
+      "Gasterosteus aculeatus": 0.2
+    },
+    "Coregonus gutturosus": {
+      "Coregonus gutturosus": 1.0,
+      "Gasterosteus aculeatus": 0.2
+    },
+    "Coregonus macrophthalmus": {
+      "Coregonus macrophthalmus": 1.0,
+      "Gasterosteus aculeatus": 0.2
+    },
+    "Coregonus wartmanni": {
+      "Coregonus wartmanni": 1.0,
+      "Gasterosteus aculeatus": 0.2
+    },
+    "Crustacea": {
+      "Amphiura filiformis": 0.2,
+      "Andere Gruppen": 0.2,
+      "Annelida, Polychaeta": 0.2,
+      "Crustacea": 1.0,
+      "Nucula nitidosa": 0.2,
+      "Pomatoschistus microps": 0.5,
+      "Tellina fabula": 0.2,
+      "UNDETECTED": 0.5
+    },
+    "Cryptophyceae": {
+      "UNDETECTED": 1.0
+    },
+    "Cyanobacteria": {
+      "Diatoms": 0.16666666666666666,
+      "Dinoflagellates": 0.16666666666666666,
+      "Nanoflagellates": 0.16666666666666666,
+      "Picocyanobacteria": 0.16666666666666666,
+      "Picoeukaryotes": 0.16666666666666666,
+      "UNDETECTED": 1.1666666666666667
+    },
+    "Cyanophyceae": {
+      "UNDETECTED": 1.0
+    },
+    "Cyperaceae": {
+      "UNDETECTED": 1.0
+    },
+    "Diatomeen": {
+      "Diatoms": 0.16666666666666666,
+      "Dinoflagellates": 0.16666666666666666,
+      "Nanoflagellates": 0.16666666666666666,
+      "Picocyanobacteria": 0.16666666666666666,
+      "Picoeukaryotes": 0.16666666666666666,
+      "UNDETECTED": 0.16666666666666666
+    },
+    "Dinophyceae": {
+      "UNDETECTED": 1.0
+    },
+    "Dinophyta": {
+      "Diatoms": 0.16666666666666666,
+      "Dinoflagellates": 0.16666666666666666,
+      "Nanoflagellates": 0.16666666666666666,
+      "Picocyanobacteria": 0.16666666666666666,
+      "Picoeukaryotes": 0.16666666666666666,
+      "UNDETECTED": 0.16666666666666666
+    },
+    "Diplopoda": {
+      "Cylindroiulus caeruleocinctus": 0.1111111111111111,
+      "Eupelops occultus": 0.1111111111111111,
+      "Geophilus flavus": 0.1111111111111111,
+      "Isotoma viridis": 0.1111111111111111,
+      "Parasitidae": 0.1111111111111111,
+      "Schendyla nemorensis": 0.1111111111111111,
+      "Tectocepheus velatus": 0.1111111111111111,
+      "Trichoribates trimaculatus": 0.1111111111111111,
+      "UNDETECTED": 1.1111111111111112
+    },
+    "Diptera": {
+      "UNDETECTED": 1.0
+    },
+    "Distichlis spicata": {
+      "Distichlis spicata": 1.0
+    },
+    "Echinodermata": {
+      "Amphiura filiformis": 0.2,
+      "Andere Gruppen": 0.2,
+      "Annelida, Polychaeta": 0.2,
+      "Echinodermata": 1.0,
+      "Nucula nitidosa": 0.2,
+      "Tellina fabula": 0.2
+    },
+    "Emys orbicularis": {
+      "UNDETECTED": 1.0
+    },
+    "Esox lucius": {
+      "Gasterosteus aculeatus": 0.5,
+      "UNDETECTED": 0.5
+    },
+    "Euphorbia falcata L.": {
+      "Euphorbia falcata": 0.2,
+      "Hypochaeris glabra": 0.2,
+      "Linaria arvensis": 0.2,
+      "Stachys annua": 0.2,
+      "UNDETECTED": 0.2
+    },
+    "Fagus": {
+      "Picea abies": 0.3333333333333333,
+      "Pinus sylvestris": 0.3333333333333333,
+      "UNDETECTED": 0.3333333333333333
+    },
+    "Faxonius immunis (Syn. Orconectes immunis)": {
+      "Orconectes immunis": 0.5,
+      "UNDETECTED": 0.5
+    },
+    "Fucus spp": {
+      "Bylgides sarsi": 0.3333333333333333,
+      "Fucus serratus": 0.3333333333333333,
+      "Fucus vesiculosus": 0.3333333333333333,
+      "Macoma balthica": 0.3333333333333333,
+      "UNDETECTED": 1.6666666666666665
+    },
+    "Fucus vesiculosus": {
+      "Bylgides sarsi": 0.3333333333333333,
+      "Macoma balthica": 0.3333333333333333,
+      "UNDETECTED": 0.3333333333333333
+    },
+    "Fumaria parviflora Lam.": {
+      "Euphorbia falcata": 0.2,
+      "Hypochaeris glabra": 0.2,
+      "Linaria arvensis": 0.2,
+      "Stachys annua": 0.2,
+      "UNDETECTED": 0.2
+    },
+    "Gadus morhua": {
+      "Gadus morhua": 3.0,
+      "Pomatoschistus microps": 0.2
+    },
+    "Galium tricornutum Dandy": {
+      "Euphorbia falcata": 0.2,
+      "Hypochaeris glabra": 0.2,
+      "Linaria arvensis": 0.2,
+      "Stachys annua": 0.2,
+      "UNDETECTED": 0.2
+    },
+    "Gasterosteus aculeatus": {
+      "Gasterosteus aculeatus": 1.0,
+      "Pomatoschistus microps": 0.2
+    },
+    "Gastropoda": {
+      "UNDETECTED": 1.0
+    },
+    "Gobius niger": {
+      "Gobius niger": 1.0,
+      "Pomatoschistus microps": 0.2
+    },
+    "Hermannia pulchella": {
+      "Hermannia pulchella": 1.0
+    },
+    "Heteroptera": {
+      "UNDETECTED": 1.0
+    },
+    "Homo sapiens": {
+      "UNDETECTED": 1.0
+    },
+    "Hypochaeris glabra L.": {
+      "Euphorbia falcata": 0.2,
+      "Hypochaeris glabra": 0.2,
+      "Linaria arvensis": 0.2,
+      "Stachys annua": 0.2,
+      "UNDETECTED": 0.2
+    },
+    "Insecta": {
+      "UNDETECTED": 1.0
+    },
+    "Invertebraten": {
+      "Acartia tonsa": 0.018518518518518517,
+      "Acipenser spp.": 0.018518518518518517,
+      "Ameira divagans": 0.018518518518518517,
+      "Amphibalanus improvisus": 0.018518518518518517,
+      "Anguillicoloides crassus": 0.018518518518518517,
+      "Aoroides semicurvatus": 0.018518518518518517,
+      "Arachnidium lacourti": 0.018518518518518517,
+      "Austrominius modestus": 0.018518518518518517,
+      "Botryllus schlosseri": 0.018518518518518517,
+      "Bugula neritina": 0.018518518518518517,
+      "Caprella mutica": 0.018518518518518517,
+      "Cercopagis pengoi": 0.018518518518518517,
+      "Chelicorophium curvispinum": 0.018518518518518517,
+      "Codium fragile ssp. fragile": 0.018518518518518517,
+      "Corambe obscura": 0.018518518518518517,
+      "Corella eumyota": 0.018518518518518517,
+      "Crepidula fornicata": 0.018518518518518517,
+      "Cryptorchestia cavimana": 0.018518518518518517,
+      "Diadumene lineata": 0.018518518518518517,
+      "Didemnum vexillum": 0.018518518518518517,
+      "Dikerogammarus haemobaphes": 0.018518518518518517,
+      "Dikerogammarus villosus": 0.018518518518518517,
+      "Diplosoma listerianum": 0.018518518518518517,
+      "Dreissena polymorpha": 0.018518518518518517,
+      "Echinogammarus ischnus": 0.018518518518518517,
+      "Echinogammarus trichiatus": 0.018518518518518517,
+      "Gonionemus vertens": 0.018518518518518517,
+      "Hemimysis anomala": 0.018518518518518517,
+      "Limnomysis benedeni": 0.018518518518518517,
+      "Limulus polyphemus": 0.018518518518518517,
+      "Mnemiopsis leidyi": 0.018518518518518517,
+      "Molgula manhattensis": 0.018518518518518517,
+      "Mya arenaria": 0.018518518518518517,
+      "Mytilicola intestinalis": 0.018518518518518517,
+      "Mytilicola orientalis": 0.018518518518518517,
+      "Neogobius melanostomus": 0.018518518518518517,
+      "Nippoleucon hinumensis": 0.018518518518518517,
+      "Oithona davisae": 0.018518518518518517,
+      "Paramysis lacustris": 0.018518518518518517,
+      "Perophora japonica": 0.018518518518518517,
+      "Petromyzon marinus": 0.5,
+      "Potamopyrgus antipodarum": 0.018518518518518517,
+      "Proasellus coxalis": 0.018518518518518517,
+      "Pseudodiaptomus marinus": 0.018518518518518517,
+      "Sargassum muticum": 0.018518518518518517,
+      "Sinelobus vanhaareni": 0.018518518518518517,
+      "Streblospio benedicti": 0.018518518518518517,
+      "Styela clava": 0.018518518518518517,
+      "Synidotea laticauda": 0.018518518518518517,
+      "UNDETECTED": 0.5185185185185185,
+      "Ulva australis": 0.018518518518518517,
+      "Ulva californica": 0.018518518518518517,
+      "Undaria pinnatifida": 0.018518518518518517,
+      "Vaucheria cf. velutina": 0.018518518518518517,
+      "Vaucheria longicaulis": 0.018518518518518517
+    },
+    "Isopoda": {
+      "UNDETECTED": 1.0
+    },
+    "Legousia hybrida (L.) Delarbre": {
+      "Euphorbia falcata": 0.2,
+      "Hypochaeris glabra": 0.2,
+      "Linaria arvensis": 0.2,
+      "Stachys annua": 0.2,
+      "UNDETECTED": 0.2
+    },
+    "Legousia speculum-veneris (L.) Chaix": {
+      "Euphorbia falcata": 0.2,
+      "Hypochaeris glabra": 0.2,
+      "Linaria arvensis": 0.2,
+      "Stachys annua": 0.2,
+      "UNDETECTED": 0.2
+    },
+    "Lepidoptera": {
+      "UNDETECTED": 1.0
+    },
+    "Limanda limanda": {
+      "Limanda limanda": 1.0
+    },
+    "Linaria arvensis (L.) Desf.": {
+      "Euphorbia falcata": 0.2,
+      "Hypochaeris glabra": 0.2,
+      "Linaria arvensis": 0.2,
+      "Stachys annua": 0.2,
+      "UNDETECTED": 0.2
+    },
+    "Lumbricidae": {
+      "UNDETECTED": 2.0
+    },
+    "Macoma baltica": {
+      "Bylgides sarsi": 0.3333333333333333,
+      "Macoma balthica": 0.3333333333333333,
+      "UNDETECTED": 1.3333333333333333
+    },
+    "Magallana (Crassostrea) gigas": {
+      "Crassostrea gigas": 0.5,
+      "UNDETECTED": 0.5
+    },
+    "Mammalia": {
+      "UNDETECTED": 2.0
+    },
+    "Mesostigmata": {
+      "Cylindroiulus caeruleocinctus": 0.1111111111111111,
+      "Eupelops occultus": 0.1111111111111111,
+      "Geophilus flavus": 0.1111111111111111,
+      "Isotoma viridis": 0.1111111111111111,
+      "Parasitidae": 0.1111111111111111,
+      "Schendyla nemorensis": 0.1111111111111111,
+      "Tectocepheus velatus": 0.1111111111111111,
+      "Trichoribates trimaculatus": 0.1111111111111111,
+      "UNDETECTED": 0.1111111111111111
+    },
+    "Microtus arvalis": {
+      "Apodemus sylvaticus": 0.3333333333333333,
+      "Microtus arvalis": 1.0
+    },
+    "Mikroben": {
+      "UNDETECTED": 1.0
+    },
+    "Mollusca": {
+      "Amphiura filiformis": 0.2,
+      "Andere Gruppen": 0.2,
+      "Annelida, Polychaeta": 0.2,
+      "Mollusca": 1.0,
+      "Nucula nitidosa": 0.2,
+      "Tellina fabula": 0.2
+    },
+    "Monoporeia affinis": {
+      "Bylgides sarsi": 0.5,
+      "Macoma balthica": 0.5,
+      "Monoporeia affinis": 1.0
+    },
+    "Multioppia neglecta": {
+      "Multioppia neglecta": 1.0
+    },
+    "Myotis myotis": {
+      "Myotis myotis": 1.0
+    },
+    "Mytilus edulis": {
+      "Crassostrea gigas": 1.0,
+      "Mytilus edulis": 4.0,
+      "Mytilus galloprovincialis": 0.5,
+      "Pomatoschistus microps": 0.2,
+      "Zostera marina": 0.5,
+      "Zostera noltii": 0.5,
+      "_Mytilus edulis_": 0.5
+    },
+    "Natrix natrix": {
+      "UNDETECTED": 1.0
+    },
+    "Nematoda": {
+      "UNDETECTED": 1.0
+    },
+    "Neslia paniculata (L.) Desv. s.l.": {
+      "Euphorbia falcata": 0.2,
+      "Hypochaeris glabra": 0.2,
+      "Linaria arvensis": 0.2,
+      "Stachys annua": 0.2,
+      "UNDETECTED": 0.2
+    },
+    "Odonata": {
+      "UNDETECTED": 1.0
+    },
+    "Ophiostoma ulmi (Syn. Ceratocystis ulmi)": {
+      "Ceratocystis ulmi": 0.16666666666666666,
+      "Scolytus multistriatus": 0.16666666666666666,
+      "Scolytus scolytus": 0.16666666666666666,
+      "UNDETECTED": 0.16666666666666666,
+      "Ulmus glabra": 0.16666666666666666,
+      "Ulmus procera": 0.16666666666666666
+    },
+    "Oribatida": {
+      "Cylindroiulus caeruleocinctus": 0.1111111111111111,
+      "Eupelops occultus": 0.1111111111111111,
+      "Geophilus flavus": 0.1111111111111111,
+      "Isotoma viridis": 0.1111111111111111,
+      "Parasitidae": 0.1111111111111111,
+      "Schendyla nemorensis": 0.1111111111111111,
+      "Tectocepheus velatus": 0.1111111111111111,
+      "Trichoribates trimaculatus": 0.1111111111111111,
+      "UNDETECTED": 0.1111111111111111
+    },
+    "Orthoptera": {
+      "UNDETECTED": 2.0
+    },
+    "Oryza": {
+      "UNDETECTED": 1.0
+    },
+    "Perca fluviatilis": {
+      "Gasterosteus aculeatus": 0.5,
+      "UNDETECTED": 0.5
+    },
+    "Phaeocystis spp.": {
+      "Diatoms": 0.5,
+      "Dinoflagellates": 0.5,
+      "Nanoflagellates": 0.5,
+      "Phaeocystis spp.": 1.0,
+      "Picocyanobacteria": 0.5,
+      "Picoeukaryotes": 0.5
+    },
+    "Phaeophyceae": {
+      "Chlorophycota": 0.25,
+      "Phaeophycota": 0.25,
+      "Rhodophycota": 0.25,
+      "UNDETECTED": 0.25
+    },
+    "Phoca vitulina": {
+      "Phoca vitulina": 1.0
+    },
+    "Phocoena phocoena": {
+      "Phocoena phocoena": 1.0
+    },
+    "Picea": {
+      "Picea abies": 0.3333333333333333,
+      "Pinus sylvestris": 0.3333333333333333,
+      "UNDETECTED": 0.3333333333333333
+    },
+    "Pinus": {
+      "Picea abies": 0.3333333333333333,
+      "Pinus sylvestris": 0.3333333333333333,
+      "UNDETECTED": 0.3333333333333333
+    },
+    "Pisces": {
+      "Allotheuthis subulata": 0.25,
+      "Amphiura filiformis": 0.16666666666666666,
+      "Andere Gruppen": 0.16666666666666666,
+      "Annelida, Polychaeta": 0.16666666666666666,
+      "Loligo forbesi": 0.25,
+      "Nucula nitidosa": 0.16666666666666666,
+      "Petromyzon marinus": 0.5,
+      "Sepiola atlantica": 0.25,
+      "Tellina fabula": 0.16666666666666666,
+      "UNDETECTED": 3.916666666666667
+    },
+    "Plantae": {
+      "Apis mellifera": 0.3333333333333333,
+      "Bombus spp.": 0.3333333333333333,
+      "UNDETECTED": 2.333333333333333
+    },
+    "Platichthys flesus": {
+      "Platichthys flesus": 1.0
+    },
+    "Poaceae": {
+      "UNDETECTED": 1.0
+    },
+    "Polychaeta": {
+      "Amphiura filiformis": 0.16666666666666666,
+      "Andere Gruppen": 0.16666666666666666,
+      "Annelida, Polychaeta": 0.16666666666666666,
+      "Nucula nitidosa": 0.16666666666666666,
+      "Tellina fabula": 0.16666666666666666,
+      "UNDETECTED": 0.16666666666666666
+    },
+    "Pomatoschistus sp.": {
+      "Pomatoschistus microps": 0.5,
+      "UNDETECTED": 0.5
+    },
+    "Pseudocalanus  spp.": {
+      "UNDETECTED": 1.0
+    },
+    "Quercus spp": {
+      "Picea abies": 0.3333333333333333,
+      "Pinus sylvestris": 0.3333333333333333,
+      "UNDETECTED": 0.3333333333333333
+    },
+    "Reptilia": {
+      "Petromyzon marinus": 0.5,
+      "UNDETECTED": 0.5
+    },
+    "Rhodophyceae": {
+      "Chlorophycota": 0.25,
+      "Phaeophycota": 0.25,
+      "Rhodophycota": 0.25,
+      "UNDETECTED": 0.25
+    },
+    "Rotifera": {
+      "UNDETECTED": 1.0
+    },
+    "Rutilus rutilus": {
+      "Gasterosteus aculeatus": 0.5,
+      "UNDETECTED": 0.5
+    },
+    "Salmo trutta": {
+      "Gasterosteus aculeatus": 0.5,
+      "Pomatoschistus microps": 0.5,
+      "UNDETECTED": 1.0
+    },
+    "Salvelinus alpinus": {
+      "Gasterosteus aculeatus": 0.5,
+      "UNDETECTED": 0.5
+    },
+    "Sander lucioperca": {
+      "Sander lucioperca": 1.0
+    },
+    "Scandix pecten-veneris L.": {
+      "Euphorbia falcata": 0.2,
+      "Hypochaeris glabra": 0.2,
+      "Linaria arvensis": 0.2,
+      "Stachys annua": 0.2,
+      "UNDETECTED": 0.2
+    },
+    "Scheloribates laevigatus": {
+      "UNDETECTED": 1.0
+    },
+    "Schoenoplectus americanus": {
+      "Schoenoplectus americanus": 1.0
+    },
+    "Scomber scombrus": {
+      "Scomber scombrus": 1.0
+    },
+    "Spartina patens": {
+      "Spartina patens": 1.0
+    },
+    "Sprattus sprattus": {
+      "UNDETECTED": 2.0
+    },
+    "Stachys annua (L.) L.": {
+      "Euphorbia falcata": 0.2,
+      "Hypochaeris glabra": 0.2,
+      "Linaria arvensis": 0.2,
+      "Stachys annua": 0.2,
+      "UNDETECTED": 0.2
+    },
+    "Tracheophyta": {
+      "Acartia tonsa": 0.018518518518518517,
+      "Acipenser spp.": 0.018518518518518517,
+      "Ameira divagans": 0.018518518518518517,
+      "Amphibalanus improvisus": 0.018518518518518517,
+      "Anguillicoloides crassus": 0.018518518518518517,
+      "Aoroides semicurvatus": 0.018518518518518517,
+      "Arachnidium lacourti": 0.018518518518518517,
+      "Austrominius modestus": 0.018518518518518517,
+      "Botryllus schlosseri": 0.018518518518518517,
+      "Bugula neritina": 0.018518518518518517,
+      "Caprella mutica": 0.018518518518518517,
+      "Cercopagis pengoi": 0.018518518518518517,
+      "Chelicorophium curvispinum": 0.018518518518518517,
+      "Codium fragile ssp. fragile": 0.018518518518518517,
+      "Corambe obscura": 0.018518518518518517,
+      "Corella eumyota": 0.018518518518518517,
+      "Crepidula fornicata": 0.018518518518518517,
+      "Cryptorchestia cavimana": 0.018518518518518517,
+      "Diadumene lineata": 0.018518518518518517,
+      "Didemnum vexillum": 0.018518518518518517,
+      "Dikerogammarus haemobaphes": 0.018518518518518517,
+      "Dikerogammarus villosus": 0.018518518518518517,
+      "Diplosoma listerianum": 0.018518518518518517,
+      "Dreissena polymorpha": 0.018518518518518517,
+      "Echinogammarus ischnus": 0.018518518518518517,
+      "Echinogammarus trichiatus": 0.018518518518518517,
+      "Gonionemus vertens": 0.018518518518518517,
+      "Hemimysis anomala": 0.018518518518518517,
+      "Limnomysis benedeni": 0.018518518518518517,
+      "Limulus polyphemus": 0.018518518518518517,
+      "Mnemiopsis leidyi": 0.018518518518518517,
+      "Molgula manhattensis": 0.018518518518518517,
+      "Mya arenaria": 0.018518518518518517,
+      "Mytilicola intestinalis": 0.018518518518518517,
+      "Mytilicola orientalis": 0.018518518518518517,
+      "Neogobius melanostomus": 0.018518518518518517,
+      "Nippoleucon hinumensis": 0.018518518518518517,
+      "Oithona davisae": 0.018518518518518517,
+      "Paramysis lacustris": 0.018518518518518517,
+      "Perophora japonica": 0.018518518518518517,
+      "Potamopyrgus antipodarum": 0.018518518518518517,
+      "Proasellus coxalis": 0.018518518518518517,
+      "Pseudodiaptomus marinus": 0.018518518518518517,
+      "Sargassum muticum": 0.018518518518518517,
+      "Sinelobus vanhaareni": 0.018518518518518517,
+      "Streblospio benedicti": 0.018518518518518517,
+      "Styela clava": 0.018518518518518517,
+      "Synidotea laticauda": 0.018518518518518517,
+      "UNDETECTED": 1.0185185185185186,
+      "Ulva australis": 0.018518518518518517,
+      "Ulva californica": 0.018518518518518517,
+      "Undaria pinnatifida": 0.018518518518518517,
+      "Vaucheria cf. velutina": 0.018518518518518517,
+      "Vaucheria longicaulis": 0.018518518518518517
+    },
+    "Trichuris trichiura": {
+      "UNDETECTED": 1.0
+    },
+    "UNASSIGNABLE": {
+      "Acartia tonsa": 1.0,
+      "Acipenser spp.": 1.0,
+      "Aegopodium podagraria": 1.0,
+      "Alliaria petiolata": 1.0,
+      "Allotheuthis subulata": 1.0,
+      "Alopecurus geniculatus": 1.0,
+      "Ameira divagans": 1.0,
+      "Amphibalanus improvisus": 1.0,
+      "Amphiura filiformis": 0.2,
+      "Anas crecca": 1.0,
+      "Anchusa arvensis": 1.0,
+      "Ancylus fluviatilis": 1.0,
+      "Andere Gruppen": 0.2,
+      "Andrena": 1.0,
+      "Andrena curvungula": 1.0,
+      "Andrena lathyri": 1.0,
+      "Andrena oblongatum": 1.0,
+      "Andrena tscheki": 1.0,
+      "Andrena vaga": 1.0,
+      "Anemone nemorosa": 1.0,
+      "Anemone ranunculoides": 1.0,
+      "Anguillicoloides crassus": 1.0,
+      "Annelida, Polychaeta": 0.2,
+      "Anthidium": 1.0,
+      "Anthidium manicatum": 1.0,
+      "Anthophora plumipes": 1.0,
+      "Aoroides semicurvatus": 1.0,
+      "Apis mellifera": 3.0,
+      "Apodemus sylvaticus": 0.3333333333333333,
+      "Arachnidium lacourti": 1.0,
+      "Arrhenatherum elatius": 1.0,
+      "Austrominius modestus": 1.0,
+      "Bacillus subtilis": 1.0,
+      "Bombus": 1.0,
+      "Bombus gerstaeckeri": 1.0,
+      "Bombus hortorum": 1.0,
+      "Bombus hypnorum": 1.0,
+      "Bombus pascuorum": 1.0,
+      "Bombus pomorum": 1.0,
+      "Bombus pratorum": 1.0,
+      "Bombus spp.": 1.0,
+      "Bombus terrestris": 1.0,
+      "Bombus wurflenii": 1.0,
+      "Botryllus schlosseri": 1.0,
+      "Brachionus plicatilis": 1.0,
+      "Brachypodium sylvaticum": 1.0,
+      "Bradyrhizobium": 1.0,
+      "Branta bernicla": 1.0,
+      "Bugula neritina": 1.0,
+      "Bupleurum rotundifolium": 1.0,
+      "Bylgides sarsi": 0.5,
+      "Calanus finmarchicus": 1.0,
+      "Calanus helgolandicus": 1.0,
+      "Caprella mutica": 1.0,
+      "Cardamine impatiens": 1.0,
+      "Cardamine pratensis var. nemorosa": 1.0,
+      "Cardamine pratensis var. pratensis": 1.0,
+      "Carduus nutans": 1.0,
+      "Centaurea cyanus": 1.0,
+      "Ceratocystis ulmi": 1.0,
+      "Cercopagis pengoi": 1.0,
+      "Chaenorhinum minus": 1.0,
+      "Chelicorophium curvispinum": 1.0,
+      "Chelostoma campanularum": 1.0,
+      "Chelostoma florisomne": 1.0,
+      "Chlorophycota": 1.0,
+      "Cirsium oleraceum": 1.0,
+      "Codium fragile ssp. fragile": 1.0,
+      "Coelioxys conica": 1.0,
+      "Colletes": 1.0,
+      "Colletes cunicularius": 1.0,
+      "Colletes nasutus": 1.0,
+      "Consolida regalis": 1.0,
+      "Corambe obscura": 1.0,
+      "Corella eumyota": 1.0,
+      "Corophium volutator": 1.0,
+      "Crassostrea gigas": 2.0,
+      "Crepidula fornicata": 1.0,
+      "Crepis biennis": 1.0,
+      "Crepis mollis": 1.0,
+      "Cryptorchestia cavimana": 1.0,
+      "Cylindroiulus caeruleocinctus": 1.0,
+      "Cytisus scoparius": 1.0,
+      "Dasypoda": 1.0,
+      "Diadumene lineata": 1.0,
+      "Diatoms": 0.5,
+      "Didemnum vexillum": 1.0,
+      "Dikerogammarus haemobaphes": 1.0,
+      "Dikerogammarus villosus": 1.0,
+      "Dinoflagellates": 0.5,
+      "Diplosoma listerianum": 1.0,
+      "Dreissena polymorpha": 1.0,
+      "Dufourea halictula": 1.0,
+      "Dugesia gonocephala": 1.0,
+      "Echinocardium cordatum": 1.0,
+      "Echinogammarus ischnus": 1.0,
+      "Echinogammarus trichiatus": 1.0,
+      "Eisenia fetida": 1.0,
+      "Elymus repens": 1.0,
+      "Eucera alticincta": 1.0,
+      "Eupelops occultus": 1.0,
+      "Euphorbia falcata": 1.0,
+      "Euphorbia platyphyllos": 1.0,
+      "Evylaeus": 1.0,
+      "Festuca gigantea": 1.0,
+      "Festuca ovina": 1.0,
+      "Festuca rubra": 1.0,
+      "Fraxinus excelsior": 1.0,
+      "Fucus serratus": 1.0,
+      "Fucus vesiculosus": 1.0,
+      "Gadus morhua": 1.0,
+      "Galium album": 1.0,
+      "Gammarus fossarum": 1.0,
+      "Gasterosteus aculeatus": 0.2,
+      "Geophilus flavus": 1.0,
+      "Geranium robertianum": 1.0,
+      "Geranium sylvaticum": 1.0,
+      "Geum urbanum": 1.0,
+      "Goneplax rhomboides": 1.0,
+      "Gonionemus vertens": 1.0,
+      "Haematopus ostralegus": 1.0,
+      "Halictus": 1.0,
+      "Hemimysis anomala": 1.0,
+      "Heracleum mantegazzianum": 1.0,
+      "Heriades truncorum": 1.0,
+      "Hylaeus punctulatissimus": 1.0,
+      "Hypochaeris glabra": 1.0,
+      "Impatiens glandulifera": 1.0,
+      "Isotoma viridis": 1.0,
+      "Lamium galeobdolon": 1.0,
+      "Lamium maculatum": 1.0,
+      "Larus argentatus": 1.0,
+      "Lasioglossum": 1.0,
+      "Lasioglossum malachurum": 1.0,
+      "Lasioglossum subfulvicorne": 1.0,
+      "Legousia speculum-veneris": 1.0,
+      "Leucojum vernum": 1.0,
+      "Limnomysis benedeni": 1.0,
+      "Limulus polyphemus": 1.0,
+      "Linaria arvensis": 1.0,
+      "Lithospermum arvense": 1.0,
+      "Loligo forbesi": 1.0,
+      "Lolium perenne": 1.0,
+      "Lumbricidae": 1.0,
+      "Lumbricus terrestris": 1.0,
+      "Macoma balthica": 0.5,
+      "Megachile": 1.0,
+      "Megachile centuncularis": 1.0,
+      "Megachile ligniseca": 1.0,
+      "Megachile parietina": 1.0,
+      "Melitta haeorrhoidalis": 1.0,
+      "Milium effusum": 1.0,
+      "Mnemiopsis leidyi": 1.0,
+      "Molgula manhattensis": 1.0,
+      "Mullus surmuletus": 1.0,
+      "Mya arenaria": 1.0,
+      "Mytilicola intestinalis": 1.0,
+      "Mytilicola orientalis": 1.0,
+      "Mytilus edulis": 1.0,
+      "Mytilus galloprovincialis": 0.5,
+      "Nanoflagellates": 0.5,
+      "Neogobius melanostomus": 1.0,
+      "Nereis virens": 1.0,
+      "Nippoleucon hinumensis": 1.0,
+      "Nomada": 1.0,
+      "Nucula nitidosa": 0.2,
+      "Oithona davisae": 1.0,
+      "Orconectes immunis": 1.0,
+      "Oribatida": 1.0,
+      "Osmia": 1.0,
+      "Osmia adunca": 1.0,
+      "Osmia anthocopoides": 1.0,
+      "Osmia bicornis": 1.0,
+      "Osmia cerinthidis": 1.0,
+      "Osmia cornuta": 1.0,
+      "Osmia papaveris": 1.0,
+      "Panurgus calcaratus": 1.0,
+      "Papaver argemone": 1.0,
+      "Papaver rhoeas": 1.0,
+      "Paramysis lacustris": 1.0,
+      "Parasitidae": 1.0,
+      "Perophora japonica": 1.0,
+      "Petromyzon marinus": 1.0,
+      "Phaeophycota": 1.0,
+      "Philopotamus spec.": 1.0,
+      "Phoca vitulina": 1.0,
+      "Phyteuma nigrum": 1.0,
+      "Phyteuma spicatum": 1.0,
+      "Picea abies": 1.0,
+      "Picocyanobacteria": 0.5,
+      "Picoeukaryotes": 0.5,
+      "Pinus sylvestris": 1.0,
+      "Platalea leucorodia": 1.0,
+      "Platichthys flesus": 1.0,
+      "Poa chaixii": 1.0,
+      "Polygonum bistorta": 1.0,
+      "Pomatoschistus microps": 0.2,
+      "Potamopyrgus antipodarum": 1.0,
+      "Primula elatior": 1.0,
+      "Proasellus coxalis": 1.0,
+      "Pseudodiaptomus marinus": 1.0,
+      "Psithyrus bohemicus": 1.0,
+      "Psithyrus vestalis": 1.0,
+      "Pulmonaria obscura": 1.0,
+      "Ranunculus arvensis": 1.0,
+      "Ranunculus ficaria": 1.0,
+      "Recurvirostra avosetta": 1.0,
+      "Rhinocyllus conicus": 1.0,
+      "Rhitrogena semicolorata": 1.0,
+      "Rhodophycota": 1.0,
+      "Rubus caesius": 1.0,
+      "Rumex obtusifolius": 1.0,
+      "Sanguisorba officinalis": 1.0,
+      "Sargassum muticum": 1.0,
+      "Schendyla nemorensis": 1.0,
+      "Scolytus multistriatus": 1.0,
+      "Scolytus scolytus": 1.0,
+      "Senecio aquaticus": 1.0,
+      "Sepiola atlantica": 1.0,
+      "Sherardia arvensis": 1.0,
+      "Silaum silaus": 1.0,
+      "Silene noctiflora": 1.0,
+      "Sinelobus vanhaareni": 1.0,
+      "Somateria mollissima": 2.0,
+      "Sphecodes": 1.0,
+      "Stachys annua": 1.0,
+      "Stachys sylvatica": 1.0,
+      "Stelis signata": 1.0,
+      "Stellaria holostea": 1.0,
+      "Streblospio benedicti": 1.0,
+      "Styela clava": 1.0,
+      "Succisa pratensis": 1.0,
+      "Symphytum officinale": 1.0,
+      "Synidotea laticauda": 1.0,
+      "Systropha planidens": 1.0,
+      "Tadorna tadorna": 1.0,
+      "Tagetes": 1.0,
+      "Tectocepheus velatus": 1.0,
+      "Tellina fabula": 0.2,
+      "Tetrao urogallus": 1.0,
+      "Trichoderma": 1.0,
+      "Trichogramma": 1.0,
+      "Trichoribates trimaculatus": 1.0,
+      "Trigla lucerna": 1.0,
+      "Trollius europaeus": 1.0,
+      "Ulmus glabra": 1.0,
+      "Ulmus procera": 1.0,
+      "Ulva australis": 1.0,
+      "Ulva californica": 1.0,
+      "Undaria pinnatifida": 1.0,
+      "Uria aalge": 1.0,
+      "Urtica dioica": 1.0,
+      "Vaucheria cf. velutina": 1.0,
+      "Vaucheria longicaulis": 1.0,
+      "Vibrio cholerae": 0.25,
+      "Viola reichenbachiana": 1.0,
+      "Xylocopa": 1.0,
+      "Xylocopa frontalis": 1.0,
+      "Xylocopa valga": 1.0,
+      "Xylocopa violacea": 1.0,
+      "Zostera marina": 0.5,
+      "Zostera noltii": 0.5,
+      "_Acer campestre_": 1.0,
+      "_Acridotheres tristis_": 1.0,
+      "_Aeletes atomarius_": 1.0,
+      "_Alchemilla glaucescens_": 1.0,
+      "_Alopecurus pratensis_": 1.0,
+      "_Alopochen aegyptiaca_": 1.0,
+      "_Arrhenatherum elatius_": 1.0,
+      "_Batrisodes buqueti_": 1.0,
+      "_Campanula rotundifolia_": 1.0,
+      "_Cerambyx cerdo_": 1.0,
+      "_Colydium filiforme_": 1.0,
+      "_Corticeus bicoloroides_": 1.0,
+      "_Corticeus fasciatus_": 1.0,
+      "_Crepidophorus mutilatus_": 1.0,
+      "_Dermestoides sanguinicollis_": 1.0,
+      "_Elater ferrugineus_": 1.0,
+      "_Eriocheir sinensis_": 1.0,
+      "_Fallopia japonica_": 1.0,
+      "_Festuca ovina agg._": 1.0,
+      "_Gasterocercus depressirostris_": 1.0,
+      "_Helictotrichon pubescens_": 1.0,
+      "_Hieracium pilosella_": 1.0,
+      "_Leontodon hispidus_": 1.0,
+      "_Lepomis gibbosus_": 1.0,
+      "_Lithobates catesbeianus_": 1.0,
+      "_Lolium perenne_": 1.0,
+      "_Muntiacus reevesi_": 1.0,
+      "_Myocastor coypus_": 1.0,
+      "_Mytilus edulis_": 0.5,
+      "_Nasua nasua_": 1.0,
+      "_Nyctereutes procyonoides_": 1.0,
+      "_Ondatra zibethicus_": 1.0,
+      "_Orchis mascula_": 1.0,
+      "_Orconectes limosus_": 1.0,
+      "_Osmoderma eremita_": 1.0,
+      "_Oxyura jamaicensis_": 1.0,
+      "_Pacifastacus leniusculus_": 1.0,
+      "_Perccottus glenii_": 1.0,
+      "_Pimpinella saxifraga_": 1.0,
+      "_Plantago major_": 1.0,
+      "_Poa annua_": 1.0,
+      "_Poa trivialis_": 1.0,
+      "_Procambarus clarkii_": 1.0,
+      "_Procambarus fallax f. virginalis_": 1.0,
+      "_Procyon lotor_": 1.0,
+      "_Pseudorasbora parva_": 1.0,
+      "_Ranunculus acris_": 1.0,
+      "_Ropalocerus rondanii_": 1.0,
+      "_Rumex acetosa_": 1.0,
+      "_Salvinia biloba_ x _S. auriculata_": 1.0,
+      "_Sciurus carolinensis_": 1.0,
+      "_Tamias sibiricus_": 1.0,
+      "_Teredus cylindricus_": 1.0,
+      "_Threskiornis aethiopicus_": 1.0,
+      "_Thymus pulegioides_": 1.0,
+      "_Trachemys scripta_": 1.0,
+      "_Vespa velutina nigrithorax_": 1.0
+    },
+    "Vertebrata": {
+      "Acartia tonsa": 0.018518518518518517,
+      "Acipenser spp.": 0.018518518518518517,
+      "Ameira divagans": 0.018518518518518517,
+      "Amphibalanus improvisus": 0.018518518518518517,
+      "Anguillicoloides crassus": 0.018518518518518517,
+      "Aoroides semicurvatus": 0.018518518518518517,
+      "Arachnidium lacourti": 0.018518518518518517,
+      "Austrominius modestus": 0.018518518518518517,
+      "Botryllus schlosseri": 0.018518518518518517,
+      "Bugula neritina": 0.018518518518518517,
+      "Caprella mutica": 0.018518518518518517,
+      "Cercopagis pengoi": 0.018518518518518517,
+      "Chelicorophium curvispinum": 0.018518518518518517,
+      "Codium fragile ssp. fragile": 0.018518518518518517,
+      "Corambe obscura": 0.018518518518518517,
+      "Corella eumyota": 0.018518518518518517,
+      "Crepidula fornicata": 0.018518518518518517,
+      "Cryptorchestia cavimana": 0.018518518518518517,
+      "Diadumene lineata": 0.018518518518518517,
+      "Didemnum vexillum": 0.018518518518518517,
+      "Dikerogammarus haemobaphes": 0.018518518518518517,
+      "Dikerogammarus villosus": 0.018518518518518517,
+      "Diplosoma listerianum": 0.018518518518518517,
+      "Dreissena polymorpha": 0.018518518518518517,
+      "Echinogammarus ischnus": 0.018518518518518517,
+      "Echinogammarus trichiatus": 0.018518518518518517,
+      "Gonionemus vertens": 0.018518518518518517,
+      "Hemimysis anomala": 0.018518518518518517,
+      "Limnomysis benedeni": 0.018518518518518517,
+      "Limulus polyphemus": 0.018518518518518517,
+      "Mnemiopsis leidyi": 0.018518518518518517,
+      "Molgula manhattensis": 0.018518518518518517,
+      "Mya arenaria": 0.018518518518518517,
+      "Mytilicola intestinalis": 0.018518518518518517,
+      "Mytilicola orientalis": 0.018518518518518517,
+      "Neogobius melanostomus": 0.018518518518518517,
+      "Nippoleucon hinumensis": 0.018518518518518517,
+      "Oithona davisae": 0.018518518518518517,
+      "Paramysis lacustris": 0.018518518518518517,
+      "Perophora japonica": 0.018518518518518517,
+      "Potamopyrgus antipodarum": 0.018518518518518517,
+      "Proasellus coxalis": 0.018518518518518517,
+      "Pseudodiaptomus marinus": 0.018518518518518517,
+      "Sargassum muticum": 0.018518518518518517,
+      "Sinelobus vanhaareni": 0.018518518518518517,
+      "Streblospio benedicti": 0.018518518518518517,
+      "Styela clava": 0.018518518518518517,
+      "Synidotea laticauda": 0.018518518518518517,
+      "UNDETECTED": 0.018518518518518517,
+      "Ulva australis": 0.018518518518518517,
+      "Ulva californica": 0.018518518518518517,
+      "Undaria pinnatifida": 0.018518518518518517,
+      "Vaucheria cf. velutina": 0.018518518518518517,
+      "Vaucheria longicaulis": 0.018518518518518517
+    },
+    "Vibrio alginolyticus": {
+      "Vibrio alginolyticus": 1.0,
+      "Vibrio cholerae": 0.25
+    },
+    "Vibrio parahaemolyticus": {
+      "Vibrio cholerae": 0.25,
+      "Vibrio parahaemolyticus": 1.0
+    },
+    "Vibrio spp.": {
+      "UNDETECTED": 0.5,
+      "Vibrio cholerae": 0.5
+    },
+    "Vibrio vulnificus": {
+      "Vibrio cholerae": 0.25,
+      "Vibrio vulnificus": 1.0
+    },
+    "Zachvatkinibates quadrivertex": {
+      "Zachvatkinibates quadrivertex": 1.0
+    },
+    "Zostera marina": {
+      "Bylgides sarsi": 0.3333333333333333,
+      "Macoma balthica": 0.3333333333333333,
+      "Pomatoschistus microps": 0.5,
+      "UNDETECTED": 1.8333333333333333
+    },
+    "Zostera spp.": {
+      "Crassostrea gigas": 0.16666666666666666,
+      "Mytilus galloprovincialis": 0.16666666666666666,
+      "UNDETECTED": 2.166666666666667,
+      "Zostera marina": 0.16666666666666666,
+      "Zostera noltii": 0.16666666666666666,
+      "_Mytilus edulis_": 0.16666666666666666
+    }
+  },
+  "taxa.species_group": {
+    "Amphibien und Reptilien": {
+      "Amphibien und Reptilien": 1.0,
+      "Andere Wirbellose": 0.25,
+      "Gef\u00e4\u00dfpflanzen": 0.25,
+      "Insekten": 0.25,
+      "S\u00e4ugetiere": 0.25,
+      "UNDETECTED": 1.0
+    },
+    "Andere": {
+      "Andere": 3.0,
+      "Andere Pflanzen": 2.033333333333333,
+      "Andere Wirbellose": 1.0666666666666667,
+      "Fische": 0.2,
+      "Gef\u00e4\u00dfpflanzen": 1.5333333333333332,
+      "Insekten": 0.5333333333333333,
+      "Moose": 0.2,
+      "Protisten": 0.5,
+      "S\u00e4ugetiere": 0.5333333333333333,
+      "UNDETECTED": 8.066666666666666
+    },
+    "Andere Pflanzen": {
+      "Andere Pflanzen": 4.0,
+      "Andere Wirbellose": 0.5333333333333333,
+      "Gef\u00e4\u00dfpflanzen": 1.3666666666666665,
+      "Insekten": 0.2,
+      "S\u00e4ugetiere": 0.2,
+      "UNDETECTED": 3.7
+    },
+    "Andere Wirbellose": {
+      "Andere Pflanzen": 1.0833333333333333,
+      "Andere Wirbellose": 14.0,
+      "Gef\u00e4\u00dfpflanzen": 0.8333333333333333,
+      "Insekten": 0.25,
+      "S\u00e4ugetiere": 0.3333333333333333,
+      "UNDETECTED": 3.25,
+      "V\u00f6gel": 0.25
+    },
+    "Archaeen": {
+      "Archaeen": 2.0,
+      "Protisten": 0.3333333333333333,
+      "UNDETECTED": 1.0
+    },
+    "Bakterien": {
+      "Andere Pflanzen": 0.5,
+      "Bakterien": 4.0,
+      "Protisten": 0.3333333333333333,
+      "UNDETECTED": 2.0
+    },
+    "Fische": {
+      "Andere Pflanzen": 0.3333333333333333,
+      "Andere Wirbellose": 0.5833333333333333,
+      "Fische": 8.0,
+      "Gef\u00e4\u00dfpflanzen": 0.5833333333333333,
+      "Insekten": 0.25,
+      "S\u00e4ugetiere": 0.5833333333333333,
+      "UNDETECTED": 2.333333333333333
+    },
+    "Gef\u00e4\u00dfpflanzen": {
+      "Andere Pflanzen": 1.95,
+      "Andere Wirbellose": 0.2,
+      "Fische": 0.2,
+      "Gef\u00e4\u00dfpflanzen": 5.0,
+      "Insekten": 0.25,
+      "Moose": 0.2,
+      "UNDETECTED": 5.95,
+      "V\u00f6gel": 0.25
+    },
+    "Insekten": {
+      "Insekten": 7.0,
+      "UNDETECTED": 1.0
+    },
+    "Pilze": {
+      "Fische": 0.5,
+      "Gef\u00e4\u00dfpflanzen": 0.5,
+      "Insekten": 0.5,
+      "Pilze": 1.0
+    },
+    "Protisten": {
+      "Andere Pflanzen": 0.5,
+      "UNDETECTED": 0.5
+    },
+    "S\u00e4ugetiere": {
+      "S\u00e4ugetiere": 6.0,
+      "UNDETECTED": 3.0
+    },
+    "UNASSIGNABLE": {
+      "Amphibien und Reptilien": 5.0,
+      "Andere": 4.0,
+      "Andere Pflanzen": 13.333333333333332,
+      "Andere Wirbellose": 8.083333333333332,
+      "Archaeen": 1.0,
+      "Bakterien": 1.0,
+      "Fische": 5.0,
+      "Gef\u00e4\u00dfpflanzen": 7.916666666666666,
+      "Insekten": 12.75,
+      "Moose": 2.0,
+      "Pilze": 1.0,
+      "Protisten": 0.3333333333333333,
+      "Protozoen": 1.0,
+      "S\u00e4ugetiere": 7.083333333333333,
+      "V\u00f6gel": 9.0
+    },
+    "V\u00f6gel": {
+      "Andere Wirbellose": 0.75,
+      "Fische": 0.5,
+      "Gef\u00e4\u00dfpflanzen": 0.25,
+      "Insekten": 0.25,
+      "S\u00e4ugetiere": 0.75,
+      "UNDETECTED": 1.0,
+      "V\u00f6gel": 6.0
+    }
+  }
+}
+[2026-06-09 15:00:42,934][kibad_llm.hydra_callbacks.save_job_return_value.SaveJobReturnValueCallback][INFO] - Saving job_return in /home/arbi01/projects/kibad-llm/logs/514_faktencheck_core/evaluate/multiruns/2026-06-09_15-00-34/14/job_return_value.json
+[2026-06-09 15:00:42,944][kibad_llm.hydra_callbacks.save_job_return_value.SaveJobReturnValueCallback][INFO] - Saving job_return in /home/arbi01/projects/kibad-llm/logs/514_faktencheck_core/evaluate/multiruns/2026-06-09_15-00-34/14/job_return_value.md
