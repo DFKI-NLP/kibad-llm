@@ -43,8 +43,8 @@ class SingleExtractionResult(FieldDict):
         structured: Parsed version of response_content. Possibly validated against a schema. Possibly with metadata.
         structured_with_metadata: Parsed version of response_content, enriched with metadata.
         reasoning_content: Reasoning as text
-        messages: { "system": system_message, "user": user_message }
-        messages_formatted: TODO
+        messages: prompt messages without input text and schema description `{ "system": system_message, "user": user_message }` [`build_chat_messages`][..build_chat_messages]
+        messages_formatted: TODO: [`build_chat_messages`][..build_chat_messages]
         errors: list of strings "error_name: error_message"
         errors_long: list of strings "error_name: error_message_and_traceback"
     """
@@ -182,7 +182,11 @@ def build_chat_messages(
     Returns:
         A list of ChatMessage objects.
 
+    Raises:
+        ValueError: If no document placeholder is supplied. (no input text would be inserted)
+
     Warns:
+        UserWarning: If a schema description is supplied, but there is no schema description placeholder.
     """
 
     # return the prompt messages without input text and schema description
@@ -250,11 +254,11 @@ def _is_wrapper_dict(d: Mapping[str, Any], content_key: str) -> bool:
     """Heuristic to detect whether a dict is a metadata wrapper around content.
 
     Args:
-        d: TODO
-        content_key: TODO
+        d: TODO:
+        content_key: TODO:
 
     Returns:
-        TODO
+        TODO:
     """
     return content_key in d and len(d) >= 2
 
@@ -269,11 +273,11 @@ def strip_metadata(data: Any, *, content_key: str) -> Any:
     replacing the wrapper dict with its `<content_key>` value.
 
     Args:
-        data: TODO
-        content_key: TODO - must be passed by keyword
+        data: TODO:
+        content_key: TODO: - must be passed by keyword
 
     Returns:
-        TODO
+        TODO:
 
     Wrapper detection (heuristic):
       - a dict is treated as a wrapper if it has `content_key` AND at least one additional key.
@@ -580,9 +584,9 @@ def add_response_content_callback(
     Modifies `out` in place; does not return a value.
 
     Args:
-        out: TODO
-        response: TODO
-        llm: TODO - must be passed by keyword
+        out: TODO:
+        response: TODO:
+        llm: TODO: - must be passed by keyword
     """
     out.response_content = llm.get_response_content_from_chat_response(response=response)
 
@@ -598,9 +602,9 @@ def add_reasoning_content_callback(
     Modifies `out` in place; does not return a value.
 
     Args:
-        out: TODO
-        response: TODO
-        llm: TODO - must be passed by keyword
+        out: TODO:
+        response: TODO:
+        llm: TODO: - must be passed by keyword
     """
     out.reasoning_content = llm.get_reasoning_from_chat_response(response=response)
 
@@ -617,10 +621,10 @@ def add_structured_callback(
     Modifies `out` in place; does not return a value.
 
     Args:
-        out: TODO
-        response: TODO
-        schema: TODO - must be passed by keyword
-        validate_with_schema: TODO - must be passed by keyword
+        out: TODO:
+        response: TODO:
+        schema: TODO: - must be passed by keyword
+        validate_with_schema: TODO: - must be passed by keyword
     """
     # no-op if response content is None
     if out.response_content is not None:
@@ -645,7 +649,7 @@ def augment_and_strip_metadata_from_structured_callback(
     augment_metadata_kwargs: dict[str, Any] | None = None,
 ) -> None:
     """
-    TODO recheck!
+    TODO: recheck!
 
     Augment metadata in `structured` output and save it as `structured_with_metadata`.
     Then, strip metadata and save the cleaned version back to `structured`.
