@@ -105,7 +105,7 @@ Therefore, please:
 - Use `Modules:` in `__init__.py` for modules of a package. [ref](https://mkdocstrings.github.io/griffe/reference/docstrings/#google-section-modules)
 - Use `Raises:` for any errors that may be raised explicitly with the `raises` keyword. (Technically equivalent terms: Exceptions) [ref](https://mkdocstrings.github.io/griffe/reference/docstrings/#google-section-raises)
 - Use `Returns:` for return values [ref](https://mkdocstrings.github.io/griffe/reference/docstrings/#google-section-returns), or `Yields:` if they're yielded. [ref](https://mkdocstrings.github.io/griffe/reference/docstrings/#google-section-yields)
-- Use `Warns:` for any warnings that may be logged. This means warnings displayed at runtime. (Technically equivalent terms: Warnings) [ref](https://mkdocstrings.github.io/griffe/reference/docstrings/#google-section-warns)
+- Use `Warns:` for any warnings that may be logged. This means warnings displayed at runtime. Requires a warning type like `UserWarning: Description of the warning.`. (Technically equivalent terms: Warnings) [ref](https://mkdocstrings.github.io/griffe/reference/docstrings/#google-section-warns)
 - Use `Warning:` (singular is important here!) to warn the programmer about something when writing code. [ref](https://mkdocstrings.github.io/griffe/reference/docstrings/#google-section-warns)
 
 Beyond that, make sure you mention `Args:` and `Returns:`/`Yields:` before other keywords like `Warns:` or `Examples`.
