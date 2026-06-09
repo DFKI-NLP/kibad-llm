@@ -133,6 +133,10 @@ def build_chat_message(
     Returns:
         A tuple of ChatMessage and a metadata dictionary indicating whether schema description
         and text were inserted.
+
+    Raises:
+        ValueError: If a schema is required but not supplied.
+        ValueError: If a document is required but not supplied.
     """
     content = message
     formatting = {}
@@ -500,6 +504,9 @@ def augment_metadata_node_with_evidence(
 
     Returns:
         The augmented metadata wrapper dict with evidence metadata added where applicable.
+
+    Raises:
+        ValueError: If the snippet_margin is negative.
     """
     if snippet_margin < 0:
         raise ValueError("evidence snippet_margin must be >= 0")

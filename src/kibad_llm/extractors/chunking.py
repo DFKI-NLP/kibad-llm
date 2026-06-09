@@ -83,9 +83,7 @@ class ChunkingExtractor:
         """Processes a text in chunks.
 
         Args:
-            *args (Any):
-                text (str): Input document to process.\n
-                text_id (str): Id of input document.
+            *args (Any): Positional form of `text` and `text_id`, in that order.
 
         Keyword Args:
             text (str): Input document to process.
