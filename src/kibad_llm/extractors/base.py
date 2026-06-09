@@ -44,7 +44,7 @@ class SingleExtractionResult(FieldDict):
         structured_with_metadata: Parsed version of response_content, enriched with metadata.
         reasoning_content: Reasoning as text
         messages: prompt messages without input text and schema description `{ "system": system_message, "user": user_message }` [`build_chat_messages`][..build_chat_messages]
-        messages_formatted: TODO: [`build_chat_messages`][..build_chat_messages]
+        messages_formatted: prompt messages with input text and schema description `{ "system": system_message, "user": user_message }`  [`build_chat_messages`][..build_chat_messages]
         errors: list of strings "error_name: error_message"
         errors_long: list of strings "error_name: error_message_and_traceback"
     """
@@ -254,11 +254,11 @@ def _is_wrapper_dict(d: Mapping[str, Any], content_key: str) -> bool:
     """Heuristic to detect whether a dict is a metadata wrapper around content.
 
     Args:
-        d: TODO:
-        content_key: TODO:
+        d: Dict to determine whether it is a metadata wrapper.
+        content_key: If this string to check for whether its a key.
 
     Returns:
-        TODO:
+        Whether d is a metadata wrapper.
     """
     return content_key in d and len(d) >= 2
 
@@ -273,11 +273,11 @@ def strip_metadata(data: Any, *, content_key: str) -> Any:
     replacing the wrapper dict with its `<content_key>` value.
 
     Args:
-        data: TODO:
-        content_key: TODO: - must be passed by keyword
+        data: Parsed JSON with metadata wrappers.
+        content_key: Key whose metadata wrappers to remove. - must be passed by keyword
 
     Returns:
-        TODO:
+        Parsed JSON without metadata wrappers around content_key.
 
     Wrapper detection (heuristic):
       - a dict is treated as a wrapper if it has `content_key` AND at least one additional key.
@@ -584,9 +584,9 @@ def add_response_content_callback(
     Modifies `out` in place; does not return a value.
 
     Args:
-        out: TODO:
-        response: TODO:
-        llm: TODO: - must be passed by keyword
+        out: SingleExtractionResult to store the response_content in.
+        response: ChatResponse that contains the response_content.
+        llm: LLM object that extracts the response_content from response. - must be passed by keyword
     """
     out.response_content = llm.get_response_content_from_chat_response(response=response)
 
@@ -602,9 +602,9 @@ def add_reasoning_content_callback(
     Modifies `out` in place; does not return a value.
 
     Args:
-        out: TODO:
-        response: TODO:
-        llm: TODO: - must be passed by keyword
+        out: SingleExtractionResult to store the reasoning_content in.
+        response: ChatResponse that contains the reasoning_content.
+        llm: LLM object that extracts the reasoning_content from response. - must be passed by keyword
     """
     out.reasoning_content = llm.get_reasoning_from_chat_response(response=response)
 
@@ -619,12 +619,13 @@ def add_structured_callback(
     """Add `structured` output to output dictionary based on response content.
 
     Modifies `out` in place; does not return a value.
+    This structured output may or may not contain metadata to some extent.
 
     Args:
-        out: TODO:
-        response: TODO:
-        schema: TODO: - must be passed by keyword
-        validate_with_schema: TODO: - must be passed by keyword
+        out: SingleExtractionResult to store the structured output in.
+        response: Raw ChatResponse from the LLM call.
+        schema: Schema to validate the response against. - must be passed by keyword
+        validate_with_schema: Whether to validate response against schema. - must be passed by keyword
     """
     # no-op if response content is None
     if out.response_content is not None:
@@ -648,10 +649,7 @@ def augment_and_strip_metadata_from_structured_callback(
     validate_with_schema: bool,
     augment_metadata_kwargs: dict[str, Any] | None = None,
 ) -> None:
-    """
-    TODO: recheck!
-
-    Augment metadata in `structured` output and save it as `structured_with_metadata`.
+    """Augment metadata in `structured` output and save it as `structured_with_metadata`.
     Then, strip metadata and save the cleaned version back to `structured`.
 
     Modifies `out` in place; does not return a value.
