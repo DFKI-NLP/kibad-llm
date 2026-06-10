@@ -148,15 +148,17 @@ Configure the dashboard so the experiment hypothesis is easy to verify or reject
 data/prediction_results/logs/<name>/figures/
 ```
 
+> [!TIP]
+> Use subfolders in `figures/` when there are different experiment or evaluation setups that should be logically separated.
+
 ## Documentation
 
 Every committed experiment needs a self-contained result description.
 
-In `data/prediction_results/logs/<name>/readme.md`:
+As mentioned [above](#prepare-the-experiment-folder), you should have already documented the motivation, setup, commands, and result locations in `data/prediction_results/logs/<name>/readme.md`. Now, after inspecting the results, you should also:
 
-- document the motivation, setup, commands, and result locations,
 - add an `Outcome` section,
-- include relevant dashboard figures from `figures/`, and
+- include relevant dashboard figures from `figures/` (add subfolders, if appropriate), e.g. `![f1.png](figures/setup_a/f1.png)`, and
 - describe the outcome textually, including whether the hypothesis was supported.
 
 Then add a row to the table in [data/prediction_results/readme.md](https://github.com/DFKI-NLP/kibad-llm/tree/main/data/prediction_results/readme.md) with:
