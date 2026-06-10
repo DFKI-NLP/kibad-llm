@@ -1,20 +1,8 @@
-## Please describe any files/folders you add to results here!
+## Prediction Results
 
-IMPORTANT: Any prediction and evaluation runs should be created with a good `name` argument! 
-I.e., `name=[issue_or_pr_id]_[your_descriptive_name]`. 
+This folder contains committed prediction and evaluation results for reproducible experiments.
 
-1. Copy `logs/` for your runs from cluster into the local `logs/` (execute from this folder):
-   ```
-   scp -r <user>@<machine>:/netscratch/hennig/kiba-d/logs/<name> ./logs/
-   ```
-2. Copy `predictions/` for your runs from cluster to the local `predictions/` (execute from this folder):
-   ```
-   scp -r <user>@<machine>:/netscratch/hennig/kiba-d/predictions/<name> ./predictions/
-   ```
-3. Create `logs/<name>/readme.md` and describe the setup.
-4. Add a line to the table below with a link to the new log folder, the date, the issue or PR link, and any notes.
-5. See `159_core_schema_baseline_gpt5` for example folder structures for a single run and `159_core_schema_baseline_multirun` for example folder structures for a multi-run.
-6. If you follow the above structure, you can plot the evaluation results using the notebook `plot_multirun_evaluation.ipynb`.
+For instructions on naming, running, copying, evaluating, and documenting experiments, see [CONTRIBUTING_EXPERIMENTS.md](/CONTRIBUTING_EXPERIMENTS.md).
 
 ### Experiments
 
