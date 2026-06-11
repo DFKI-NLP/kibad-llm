@@ -1,0 +1,31 @@
+# Example configuration for using GPT-OSS-120B model with LlamaIndex
+#
+# This requires a local deployment of the GPT-OSS-120B model that is compatible with the OpenAI API.
+# See models/README.md for instructions.
+#
+# To use as an argument for `predict`, use `extractor/llm=gpt_oss_120b`.
+# Run VLLM with `./run_with_llm.sh -v "openai/gpt-oss-120b --max-model-len 131072"`
+# See https://huggingface.co/openai/gpt-oss-120b for VLLM options
+
+_target_: kibad_llm.llms.OpenAILikeVllm
+
+# get the API base URL from the environment variable LLM_API_BASE, defaulting to http://127.0.0.1:5001/v1
+api_base: ${oc.env:LLM_API_BASE,http://127.0.0.1:5001/v1}
+api_key: "dummy"
+model: "openai/gpt-oss-120b"
+temperature: 1.0 # recommended by OpenAI gpt-oss repo; see #320 for IE-specific discussion
+
+# enable to correctly handle (i.e. remove) reasoning traces in the output
+is_chat_model: true
+# See https://github.com/DFKI-NLP/kibad-llm/issues/440 for test results.
+context_window: 131072
+timeout: 360
+max_retries: 3
+
+# Specify additional parameters to the request body.
+additional_kwargs:
+  # the default is None, so we set it to 8192, to allow enough space for reasoning and output tokens
+  # see https://github.com/DFKI-NLP/kibad-llm/issues/198#issuecomment-3666155251
+  max_completion_tokens: 8192
+  seed: ${seed}
+  top_p: 1.0 # recommended by OpenAI gpt-oss repo

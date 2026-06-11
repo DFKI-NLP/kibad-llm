@@ -1,0 +1,66 @@
+# Example configuration for running Qwen/Qwen3.5-122B-A10B fully in-process via vLLM (Python API)
+#
+# Set the VLLM model download directory in your .env before running this config, e.g.
+# VLLM_DOWNLOAD_DIR=/path/to/download/dir
+#
+# - No OpenAI-compatible HTTP server is required; inference runs inside the current Python process.
+# - Uses vllm.LLM.chat(...), which formats the prompt with the model's chat template
+#   (important for chat/instruction-tuned models).
+# - The implementation optionally enables JSON-schema guided decoding via vLLM Structured Outputs
+#   (StructuredOutputsParams(json=...) inside SamplingParams).
+# - The adapter parses reasoning traces so that `response.message.content` contains only the
+#   final answer, while the thinking content (inside <think>...</think>) can be exposed separately.
+#
+# Notes:
+# - `vllm_kwargs` are engine/init-time settings applied once when the vLLM engine is created.
+# - Remaining parameters are separated into different generation arguments:
+#   1) vllm.SamplingParams values (temperature, top_p, max_tokens, etc.)
+#   2) parameters for the llm.chat(...) call.
+# - Generation parameters can also be overridden via the extractor's request_parameters,
+#   see configs/extractor/request_parameters/default.yaml for examples.
+
+_target_: kibad_llm.llms.VllmInProcess
+
+# HuggingFace model id (or local path)
+model: "Qwen/Qwen3.5-122B-A10B"
+
+# Initialization parameters for vLLM LLM engine.
+# See https://docs.vllm.ai/en/v0.12.0/api/vllm/entrypoints/llm/ for details.
+vllm_kwargs:
+  tensor_parallel_size: 4  # shard across N GPUs; HF recommends 8 for full 262K context
+  # Native context length is 262,144 tokens; use lower value to save memory and improve performance.
+  # HF recommends minimum 128K to preserve thinking capabilities.
+  # See https://github.com/DFKI-NLP/kibad-llm/issues/440 for test results.
+  max_model_len: 131072
+  # Qwen3.5-122B uses the qwen3 reasoning parser (not deepseek_r1).
+  reasoning_parser: "qwen3"
+  gpu_memory_utilization: 0.95 # fraction of GPU memory reserved (impacts KV cache size)
+  # dtype: "auto"
+  download_dir: ${oc.env:VLLM_DOWNLOAD_DIR}
+  seed: ${seed}  # needs to be set starting with vllm 0.13.0
+  # others, e.g., quantization / trust_remote_code / swap_space / cpu_offload_gb / ...
+
+
+# Generation parameters, can be either ...
+# 1) ... vllm.SamplingParams values ...
+# See https://docs.vllm.ai/en/v0.12.0/api/vllm/sampling_params/ for details.
+# See https://huggingface.co/Qwen/Qwen3.5-122B-A10B for recommended settings (thinking mode, general tasks):
+#   temperature=1.0, top_p=0.95, top_k=20, min_p=0.0, presence_penalty=1.5, repetition_penalty=1.0
+# See also https://muxup.com/2025q2/recommended-llm-parameter-quick-reference for recommendations
+temperature: 1.0
+max_tokens: 8192
+top_p: 0.95
+top_k: 20
+presence_penalty: 1.5
+repetition_penalty: 1.0  # HF model card says 1.0 for thinking mode
+
+# Other params maybe to consider
+# min_p: ...
+# frequency_penalty: ...
+# 2) ... or direct parameters for the llm.chat(...) call (should be rarely needed).
+# See https://docs.vllm.ai/en/v0.12.0/api/vllm/entrypoints/llm/#vllm.entrypoints.llm.LLM.chat
+# for details.
+
+# LlamaIndex-style request parameters (they get merged with the parameters above, but take lower precedence)
+# additional_kwargs:
+#   ...
