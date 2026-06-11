@@ -29,8 +29,10 @@ model: "openai/gpt-oss-120b"
 vllm_kwargs:
   # Post-trained with MXFP4 quantization — fits on a single 80GB GPU (H100/MI300X).
   tensor_parallel_size: 1
+  # 131072 requires ~5 GiB KV cache; available KV cache on cluster GPUs is ~3.3 GiB,
+  # limiting max_model_len to ~79K. 65536 confirmed working (serv-3341, 2026-06-11).
   # See https://github.com/DFKI-NLP/kibad-llm/issues/440 for test results.
-  max_model_len: 131072
+  max_model_len: 65536
   gpu_memory_utilization: 0.95 # fraction of GPU memory reserved (impacts KV cache size)
   # dtype: "auto"
   download_dir: ${oc.env:VLLM_DOWNLOAD_DIR}
