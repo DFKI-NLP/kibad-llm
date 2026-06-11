@@ -1,0 +1,6 @@
+- dataset.predictions.log=/netscratch/asafari/tmp/kiba-d_1d15e76b-c662-45a2-8489-12f42f1b99bc/repo/logs/251_nemotron_faktencheck_core/predict/multiruns/2026-05-30_02-33-58/0
+- name=251_nemotron_faktencheck_core
+- experiment/evaluate=faktencheck_core_f1_micro_flat
+- dataset.references.file=/netscratch/asafari/kibad-llm/data/interim/faktencheck-db/faktenscheck_core_corrected.jsonl
+- metric.fields=[habitat,biodiversity_level,ecosystem_type.term,ecosystem_type.category,taxa.species_group]
+- prediction_logs=[/netscratch/asafari/tmp/kiba-d_1d15e76b-c662-45a2-8489-12f42f1b99bc/repo/logs/251_nemotron_faktencheck_core/predict/]

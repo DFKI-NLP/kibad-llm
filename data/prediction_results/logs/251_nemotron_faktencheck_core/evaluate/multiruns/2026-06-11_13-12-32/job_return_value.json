@@ -1,0 +1,152 @@
+{
+  "dataset.predictions.log=logs/251_nemotron_faktencheck_core/predict/multiruns/2026-05-30_02-33-58/0": {
+    "biodiversity_level": {
+      "precision": 0.43523316062176165,
+      "recall": 0.6363636363636364,
+      "f1": 0.5169230769230769,
+      "support": 132
+    },
+    "ecosystem_type.category": {
+      "precision": 0.5238095238095238,
+      "recall": 0.7071428571428572,
+      "f1": 0.601823708206687,
+      "support": 140
+    },
+    "ecosystem_type.term": {
+      "precision": 0.33676975945017185,
+      "recall": 0.4083333333333333,
+      "f1": 0.3691148775894539,
+      "support": 240
+    },
+    "habitat": {
+      "precision": 0.7401960784313726,
+      "recall": 0.798941798941799,
+      "f1": 0.7684478371501272,
+      "support": 189
+    },
+    "taxa.species_group": {
+      "precision": 0.533678756476684,
+      "recall": 0.4835680751173709,
+      "f1": 0.5073891625615763,
+      "support": 213
+    },
+    "AVG": {
+      "precision": 0.5139374557579027,
+      "recall": 0.6068699401797993,
+      "f1": 0.5527397324861842,
+      "support": 182.8
+    },
+    "ALL": {
+      "precision": 0.5,
+      "recall": 0.5853391684901532,
+      "f1": 0.5393145161290323,
+      "support": 914
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/251_nemotron_faktencheck_core/2026-05-30_02-33-58/2026-05-30_02-33-59_363043/predictions.jsonl",
+        "output_file_absolute": "/netscratch/asafari/tmp/kiba-d_1d15e76b-c662-45a2-8489-12f42f1b99bc/repo/predictions/251_nemotron_faktencheck_core/2026-05-30_02-33-58/2026-05-30_02-33-59_363043/predictions.jsonl",
+        "time_pdf_conversion": 1.0375047059933422,
+        "time_extraction": 48439.273623067,
+        "time_start": 1780101239,
+        "time_end": 1780150123,
+        "commit_hash": "bbc92953c87d906cafe8d8288b714acad98b6723",
+        "branch": "commit/bbc92953c87d",
+        "is_dirty": false,
+        "slurm_job_id": "3009940"
+      },
+      "overrides": {
+        "name": "251_nemotron_faktencheck_core",
+        "experiment/predict": "faktencheck_core_fields_schema_with_chunking",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor/llm": "nemotron_nano_3_30b_in_process",
+        "extractor.llm.vllm_kwargs.tensor_parallel_size": "2",
+        "pdf_reader_num_proc": "200",
+        "seed": "42"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/251_nemotron_faktencheck_core/predict/multiruns/2026-05-30_02-33-58/0",
+      "name": "251_nemotron_faktencheck_core",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "dataset.references.file": "../interim/faktencheck-db/faktenscheck_core_corrected.jsonl",
+      "metric.fields": "[habitat,biodiversity_level,ecosystem_type.term,ecosystem_type.category,taxa.species_group]",
+      "prediction_logs": "[logs/251_nemotron_faktencheck_core/predict/multiruns/2026-05-30_02-33-58/0,logs/251_nemotron_faktencheck_core/predict/multiruns/2026-05-30_02-33-58/1]"
+    }
+  },
+  "dataset.predictions.log=logs/251_nemotron_faktencheck_core/predict/multiruns/2026-05-30_02-33-58/1": {
+    "biodiversity_level": {
+      "precision": 0.41304347826086957,
+      "recall": 0.5757575757575758,
+      "f1": 0.48101265822784817,
+      "support": 132
+    },
+    "ecosystem_type.category": {
+      "precision": 0.5659340659340659,
+      "recall": 0.7357142857142858,
+      "f1": 0.6397515527950312,
+      "support": 140
+    },
+    "ecosystem_type.term": {
+      "precision": 0.36054421768707484,
+      "recall": 0.44166666666666665,
+      "f1": 0.3970037453183521,
+      "support": 240
+    },
+    "habitat": {
+      "precision": 0.6816143497757847,
+      "recall": 0.8042328042328042,
+      "f1": 0.7378640776699029,
+      "support": 189
+    },
+    "taxa.species_group": {
+      "precision": 0.5392670157068062,
+      "recall": 0.4835680751173709,
+      "f1": 0.5099009900990098,
+      "support": 213
+    },
+    "AVG": {
+      "precision": 0.5120806254729203,
+      "recall": 0.6081878814977406,
+      "f1": 0.5531066048220288,
+      "support": 182.8
+    },
+    "ALL": {
+      "precision": 0.5027932960893855,
+      "recall": 0.5908096280087527,
+      "f1": 0.5432595573440644,
+      "support": 914
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/251_nemotron_faktencheck_core/2026-05-30_02-33-58/2026-05-30_16-08-43_498816/predictions.jsonl",
+        "output_file_absolute": "/netscratch/asafari/tmp/kiba-d_1d15e76b-c662-45a2-8489-12f42f1b99bc/repo/predictions/251_nemotron_faktencheck_core/2026-05-30_02-33-58/2026-05-30_16-08-43_498816/predictions.jsonl",
+        "time_pdf_conversion": 0.20689900900470093,
+        "time_extraction": 43244.24026229899,
+        "time_start": 1780150123,
+        "time_end": 1780193527,
+        "commit_hash": "bbc92953c87d906cafe8d8288b714acad98b6723",
+        "branch": "commit/bbc92953c87d",
+        "is_dirty": false,
+        "slurm_job_id": "3009940"
+      },
+      "overrides": {
+        "name": "251_nemotron_faktencheck_core",
+        "experiment/predict": "faktencheck_core_fields_schema_with_chunking",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor/llm": "nemotron_nano_3_30b_in_process",
+        "extractor.llm.vllm_kwargs.tensor_parallel_size": "2",
+        "pdf_reader_num_proc": "200",
+        "seed": "1337"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/251_nemotron_faktencheck_core/predict/multiruns/2026-05-30_02-33-58/1",
+      "name": "251_nemotron_faktencheck_core",
+      "experiment/evaluate": "faktencheck_core_f1_micro_flat",
+      "dataset.references.file": "../interim/faktencheck-db/faktenscheck_core_corrected.jsonl",
+      "metric.fields": "[habitat,biodiversity_level,ecosystem_type.term,ecosystem_type.category,taxa.species_group]",
+      "prediction_logs": "[logs/251_nemotron_faktencheck_core/predict/multiruns/2026-05-30_02-33-58/0,logs/251_nemotron_faktencheck_core/predict/multiruns/2026-05-30_02-33-58/1]"
+    }
+  }
+}
