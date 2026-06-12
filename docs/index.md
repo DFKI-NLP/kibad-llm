@@ -2,11 +2,24 @@
 
 Welcome to the [kibad-llm](https://github.com/DFKI-NLP/kibad-llm) docs.
 
-This is an information extraction project, focussed on supporting the extension of the [Literaturdtenbank Faktencheck Artenvielfalt](https://www.feda.bio/de/literaturdatenbank-faktencheck-artenvielfalt/).
+This is an information extraction project focused on supporting the extension of the
+[Literaturdatenbank Faktencheck Artenvielfalt](https://www.feda.bio/de/literaturdatenbank-faktencheck-artenvielfalt/).
+It uses LLMs to extract structured information from scientific literature PDFs.
 
-## Where to go from here
+## Using the project
 
-- Get a [General project overview](root-readme.md) here.
-- Find detailed instructions on how to use the project at [USAGE.md](/USAGE.md).
-- If you want to contribute, check [the guidelines](/CONTRIBUTING.md)
-- This is a shortcut to the [Evaluation dashboard](eval-dashboard-docs.md).
+- **[General project overview](root-readme.md)** — Project structure, quickstart, and setup
+- **[Usage instructions](usage.md)** — Step-by-step guide: PDF download, database conversion, prediction, and evaluation
+- **[LLM usage instructions](models-readme.md)** — How to host and run language models on the cluster
+- **[Faktencheck database instructions](podman-readme.md)** — Setting up the PostgreSQL database via Podman
+- **[Evaluation dashboard](eval-dashboard-docs.md)** — Interactive browser tool for visualizing and comparing prediction results
+
+## Contributing
+
+- **[Overview](contributing.md)** — PR workflow, branch conventions, and CI requirements
+- **[Source code guidelines](contributing-code.md)** — Coding standards, testing, and docstring conventions
+- **[Experiment guidelines](contributing-experiments.md)** — How to plan, run, and document experiments
+
+## Code reference
+
+Auto-generated documentation from Python docstrings is available in the [KIBA-D code reference](reference/kibad_llm/).
