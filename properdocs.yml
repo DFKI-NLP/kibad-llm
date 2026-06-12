@@ -55,7 +55,6 @@ plugins:
 - search
 - redirects:
     redirect_maps:
-      'README.md': 'root-readme.md'
       'USAGE.md': 'usage.md'
       'models/README.md': 'models-readme.md'
       'podman/faktencheck-db/README.md': 'podman-readme.md'
