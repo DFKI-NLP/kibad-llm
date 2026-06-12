@@ -1,36 +1,12 @@
 # Welcome
 
-## Description
+Welcome to the [kibad-llm](https://github.com/DFKI-NLP/kibad-llm) docs.
 
-A short description of the project.
+This is an information extraction project, focussed on supporting the extension of the [Literaturdtenbank Faktencheck Artenvielfalt](https://www.feda.bio/de/literaturdatenbank-faktencheck-artenvielfalt/).
 
-## Table of Contents
+## Where to go from here
 
-- [General project overview](root-readme.md)
-- [LLM usage instructions](models-readme.md)
-- [Faktencheck database instructions](podman-readme.md)
-- [Evaluation dashboard](eval-dashboard-docs.md)
-
-## Commands
-
-### Generating the docs
-
-Use [properdocs](https://properdocs.org/) structure to update the documentation.
-
-> properdocs is a drop-in replacement for the unmaintained MkDocs.
-
-Build locally with:
-
-```
-properdocs build
-```
-
-Serve locally with:
-
-```
-uv run properdocs serve
-```
-
-## Tools
-
-- [eval-dashboard](eval-dashboard-docs.md): view and compare evaluation results
+- Get a [General project overview](root-readme.md) here.
+- Find detailed instructions on how to use the project at [USAGE.md](/USAGE.md).
+- If you want to contribute, check [the guidelines](/CONTRIBUTING.md)
+- This is a shortcut to the [Evaluation dashboard](eval-dashboard-docs.md).
