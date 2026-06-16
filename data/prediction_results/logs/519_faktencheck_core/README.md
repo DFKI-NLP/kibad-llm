@@ -17,6 +17,40 @@ prediction_logs=[logs/397_faktencheck_core_v1_for_chunking/predict/multiruns/202
 
 result location: `logs/519_faktencheck_core/evaluate/multiruns/2026-06-16_15-19-32`
 
+![legend.svg](figures/faktencheck_core_f1_micro_flat-ALL/legend.svg)
+
+### F1
+
+![f1.svg](figures/faktencheck_core_f1_micro_flat-ALL/f1.svg)
+
+### Precision
+
+![precision.svg](figures/faktencheck_core_f1_micro_flat-ALL/precision.svg)
+
+### Recall
+
+![recall.svg](figures/faktencheck_core_f1_micro_flat-ALL/recall.svg)
+
+### F1 - biodiversity level
+
+![biodiversity_level.svg](figures/faktencheck_core_f1_micro_flat-f1/biodiversity_level.svg)
+
+### F1 - ecosystem type - category
+
+![ecosystem_type.category.svg](figures/faktencheck_core_f1_micro_flat-f1/ecosystem_type.category.svg)
+
+### F1 - ecosystem type - term
+
+![ecosystem_type.term.svg](figures/faktencheck_core_f1_micro_flat-f1/ecosystem_type.term.svg)
+
+### F1 - habitat
+
+![habitat.svg](figures/faktencheck_core_f1_micro_flat-f1/habitat.svg)
+
+### F1 - taxa - species group
+
+![taxa.species_group.svg](figures/faktencheck_core_f1_micro_flat-f1/taxa.species_group.svg)
+
 ## errors
 
 ```
@@ -30,4 +64,24 @@ prediction_logs=[logs/397_faktencheck_core_v1_for_chunking/predict/multiruns/202
 
 result location: `logs/519_faktencheck_core/evaluate/multiruns/2026-06-16_14-57-41`
 
-TODO: add figures to the readme
+![legend.svg](figures/prediction_errors-total/legend.svg)
+
+### no error
+
+![no_error.svg](figures/prediction_errors-total/no_error.svg)
+
+### with error
+
+![with_error.svg](figures/prediction_errors-total/with_error.svg)
+
+### details - JSONDecodeError
+
+![JSONDecodeError.svg](figures/prediction_errors-details/JSONDecodeError.svg)
+
+### details - MissingResponseContentError
+
+![MissingResponseContentError.svg](figures/prediction_errors-details/MissingResponseContentError.svg)
+
+### details - ReasoningExtractionError
+
+![ReasoningExtractionError.svg](figures/prediction_errors-details/ReasoningExtractionError.svg)
