@@ -38,7 +38,7 @@ def make_hashable_simple(value: Any) -> Any:
         The keys stay unchanged.
 
     Warning:
-        Unhashable types that are not `list`, `set`, or `dict` are not handled and will cause the result to 
+        Unhashable types that are not `list`, `set`, or `dict` are not handled and will cause the result to
         stay unhashable.
 
     Args:

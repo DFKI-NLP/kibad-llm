@@ -544,8 +544,8 @@ def augment_metadata(
     content_key: str,
     **kwargs: Any,
 ) -> Any:
-    """Recursively augment all metadata wrapper dicts in a JSON-parsed result. 
-    
+    """Recursively augment all metadata wrapper dicts in a JSON-parsed result.
+
     Currently, this does the following node processing:
     - evidence anchor handling using [augment_metadata_node_with_evidence][..augment_metadata_node_with_evidence]
 
