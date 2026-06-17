@@ -561,7 +561,7 @@ def augment_metadata(
         Example: evidence_snippet_margin=10 sets `snippet_margin=10` for evidence augmentation.
 
     Returns:
-        The data, augmented with the metadata. Currently only evidence.
+        The data with the augmented metadata.
         The returned structure mirrors the input but includes added evidence fields where applicable.
 
     Raises:
