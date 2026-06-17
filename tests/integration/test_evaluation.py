@@ -86,39 +86,33 @@ def test_evaluate(tmp_path, cfg_evaluate: DictConfig, metric_name: str) -> None:
     elif metric_name == "confusion_matrix":
         assert metric_type == "ConfusionMatrix"
         assert metric_scores == {
-            "Agrar- und Offenland": {"Agrar- und Offenland": 1.0, "Wald": 0.5},
-            "Küsten und Küstengewässer": {
-                "Binnengewässer und Auen": 1.0,
-                "Küsten und Küstengewässer": 2.0,
-            },
+            "Agrar- und Offenland": {"Agrar- und Offenland": 1.0},
+            "Küsten und Küstengewässer": {"Küsten und Küstengewässer": 2.0},
             "UNASSIGNABLE": {
                 "Agrar- und Offenland": 1.0,
-                "Binnengewässer und Auen": 1.0,
+                "Binnengewässer und Auen": 2.0,
                 "Boden": 1.0,
-                "Wald": 0.5,
+                "Wald": 1.0,
             },
         }
     elif metric_name == "confusion_matrix_multiple_fields":
         assert metric_type == "ConfusionMatrixCollection"
         assert metric_scores == {
             "habitat": {
-                "Agrar- und Offenland": {"Agrar- und Offenland": 1.0, "Wald": 0.5},
-                "Küsten und Küstengewässer": {
-                    "Binnengewässer und Auen": 1.0,
-                    "Küsten und Küstengewässer": 2.0,
-                },
+                "Agrar- und Offenland": {"Agrar- und Offenland": 1.0},
+                "Küsten und Küstengewässer": {"Küsten und Küstengewässer": 2.0},
                 "UNASSIGNABLE": {
                     "Agrar- und Offenland": 1.0,
-                    "Binnengewässer und Auen": 1.0,
+                    "Binnengewässer und Auen": 2.0,
                     "Boden": 1.0,
-                    "Wald": 0.5,
+                    "Wald": 1.0,
                 },
             },
             "landuse": {
                 "Naturnahe und natürliche Flächen, die nicht genutzt werden": {
-                    "Landwirtschaft": 0.3333333333333333,
+                    "Landwirtschaft": 0.8333333333333333,
                     "UNDETECTED": 0.3333333333333333,
-                    "Verkehr, Kommunikationsnetzwerke, Lagerung, Schutzwälle": 0.3333333333333333,
+                    "Verkehr, Kommunikationsnetzwerke, Lagerung, Schutzwälle": 0.8333333333333333,
                 },
                 "UNASSIGNABLE": {
                     "Bau": 1.0,
@@ -126,8 +120,8 @@ def test_evaluate(tmp_path, cfg_evaluate: DictConfig, metric_name: str) -> None:
                     "Erholung, Freizeit, Sport": 1.0,
                     "Fischerei und Aquakultur": 1.0,
                     "Industrie und Fertigung": 1.0,
-                    "Landwirtschaft": 2.0,
-                    "Verkehr, Kommunikationsnetzwerke, Lagerung, Schutzwälle": 1.0,
+                    "Landwirtschaft": 1.5,
+                    "Verkehr, Kommunikationsnetzwerke, Lagerung, Schutzwälle": 0.5,
                     "Wohngebiete": 1.0,
                 },
             },

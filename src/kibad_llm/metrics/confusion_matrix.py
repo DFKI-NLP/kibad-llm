@@ -94,7 +94,7 @@ class ConfusionMatrix(MetricWithTpFpFnEntries):
             for label in state["fp"]:
                 # each false positive could be either one of the false negatives ("shift")
                 # or unassignable ("real false positive")
-                other_labels = list(state["tp"]) + [self.unassignable_label]
+                other_labels = list(state["fn"]) + [self.unassignable_label]
                 for other_label in other_labels:
                     counts[(str(other_label), str(label))] += 1 / len(other_labels)
 
