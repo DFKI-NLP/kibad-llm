@@ -701,7 +701,7 @@ def augment_and_strip_metadata_from_structured_callback(
             original_schema - must be passed by keyword
         original_schema: original schema that was passed to [`..extract_from_text`][] - without metadata - must be
             passed by keyword
-        text: Original input text for evidence extraction - must be passed by keyword
+        text: Original input text for information extraction - must be passed by keyword
         validate_with_schema: Whether to validate `out.structured` against the `original_schema` - must be passed by
             keyword
         augment_metadata_kwargs: Refer to [`..augment_metadata`][] - must be passed by keyword
