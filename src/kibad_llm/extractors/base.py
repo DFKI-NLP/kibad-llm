@@ -549,7 +549,7 @@ def augment_metadata(
       - for each wrapper dict, calls `augment_metadata_node_with_evidence(...)`
 
     Args:
-        data: JSON-parsed result with evidence
+        data: JSON-parsed result with metadata
         text: Original input text to extract evidence snippets from - must be passed by keyword
         content_key: Key that must be in a mapping for it to be a wrapper_dict - must be passed by keyword
 
