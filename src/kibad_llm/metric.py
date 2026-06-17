@@ -25,6 +25,7 @@ class Metric:
         raise NotImplementedError("Subclasses should implement this method.")
 
     def compute(self, *args, reset: bool = True, **kwargs) -> dict[str, Any]:
+        """Wrapper for `_compute`. Uses [`..reset`][] to reset."""
         result = self._compute(*args, **kwargs)
         if reset:
             self.reset()

@@ -1,0 +1,84 @@
+##############################################################################
+# Since mkdocs is unmaintained, we are using the drop-in replacement
+# properdocs instead.
+##############################################################################
+
+
+site_name: kibad llm
+site_url: https://dfki-nlp.github.io/kibad-llm/
+#
+site_author: kiba-d project team
+#
+exclude_docs: |
+  eval-dashboard/benchmark/**
+
+theme:
+  name: material
+  font:
+    text: Merriweather Sans
+    code: Red Hat Mono
+  palette:
+    # Dark Mode
+    - scheme: slate
+      toggle:
+        icon: material/weather-sunny
+        name: Dark mode
+      primary: green
+      accent: deep purple
+
+    # Light Mode
+    - scheme: default
+      toggle:
+        icon: material/weather-night
+        name: Light mode
+      primary: blue
+      accent: deep orange
+
+nav:
+- Welcome: index.md
+- General project overview: root-readme.md
+- Usage instructions: usage.md
+- LLM usage instructions: models-readme.md
+- Faktencheck database instructions: podman-readme.md
+- Evaluation dashboard: eval-dashboard-docs.md
+- Contribution guidelines:
+  - Overview: contributing.md
+  - Source Code: contributing-code.md
+  - Experiments: contributing-experiments.md
+# defer to gen-files + literate-nav
+- KIBA-D code Reference: reference/kibad_llm/
+
+hooks:
+- scripts/docs_hooks.py
+
+plugins:
+- search
+- redirects:
+    redirect_maps:
+      'README.md': 'root-readme.md'
+      'USAGE.md': 'usage.md'
+      'models/README.md': 'models-readme.md'
+      'podman/faktencheck-db/README.md': 'podman-readme.md'
+      'CONTRIBUTING.md': 'contributing.md'
+      'CONTRIBUTING_CODE.md': 'contributing-code.md'
+      'CONTRIBUTING_EXPERIMENTS.md': 'contributing-experiments.md'
+- gen-files:
+    scripts:
+    - scripts/build_docs.py
+- literate-nav:
+    nav_file: SUMMARY.md
+- section-index
+- mkdocstrings:
+    handlers:
+      python:
+        options:
+          show_symbol_type_heading: true
+          show_symbol_type_toc: true
+          members_order: source
+          relative_crossrefs: true
+
+markdown_extensions:
+  - pymdownx.snippets:
+      check_paths: true
+  - pymdownx.highlight:
+      default_lang: python

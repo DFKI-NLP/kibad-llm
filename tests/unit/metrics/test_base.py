@@ -1,6 +1,6 @@
 import pytest
 
-from kibad_llm.metrics.base import MetricWithPrepareEntryAsSet
+from kibad_llm.metrics.base import MetricWithPrepareEntryAsSet, MetricWithTpFpFnEntries
 
 
 def test_prepare_entry_as_set_single_value():
@@ -80,3 +80,90 @@ def test_prepare_entry_as_set_with_field_and_ignore_subfields():
     }
     expected_output = {(("key1", "value1"),), (("key2", "value2"),)}
     assert m._prepare_entry_as_set(input_data) == expected_output
+
+
+def test_prepare_entry_as_set_with_flatten_dicts():
+    m = MetricWithPrepareEntryAsSet(field="items.label", flatten_dicts=True)
+    input_data = {
+        "items": [
+            {"label": "x", "ignored": None},
+            {"label": "y"},
+            {"label": "x"},
+        ],
+        "empty": "   ",
+    }
+    assert m._prepare_entry_as_set(input_data) == {"x", "y"}
+
+
+def test_metric_with_tpfpfn_entries_update_tracks_state_and_counts():
+    m = MetricWithTpFpFnEntries()
+
+    m.update(prediction=["A", "B"], reference=["A", "C"], record_id="record-1")
+    m.update(prediction=["A"], reference=["A"], record_id="record-2")
+
+    assert m.state == {
+        "tp": {("record-1", "A"), ("record-2", "A")},
+        "fp": {("record-1", "B")},
+        "fn": {("record-1", "C")},
+    }
+    assert m.state_count == {"tp": 2, "fp": 1, "fn": 1}
+
+
+def test_metric_with_tpfpfn_entries_ignore_missing_entries_skips_one_sided_updates():
+    m = MetricWithTpFpFnEntries(ignore_missing_entries=True)
+
+    m.update(prediction="A", reference=None, record_id="record-1")
+    m.update(prediction=None, reference="B", record_id="record-2")
+    m.update(prediction="C", reference="C", record_id="record-3")
+
+    assert m.state == {"tp": {("record-3", "C")}, "fp": set(), "fn": set()}
+    assert m.state_per_record == {"record-3": {"tp": {"C"}, "fp": set(), "fn": set()}}
+
+
+def test_metric_with_tpfpfn_entries_generates_record_ids(caplog):
+    m = MetricWithTpFpFnEntries()
+
+    with caplog.at_level("WARNING", logger="kibad_llm.metrics.base"):
+        m.update(prediction="A", reference="A")
+        m.update(prediction="B", reference="C")
+
+    assert m.state == {"tp": {(1, "A")}, "fp": {(2, "B")}, "fn": {(2, "C")}}
+    assert "generated record id: 1" in caplog.text
+    assert "generated record id: 2" in caplog.text
+
+
+def test_metric_with_tpfpfn_entries_state_per_record_groups_entries():
+    m = MetricWithTpFpFnEntries()
+
+    m.update(prediction=["A", "B"], reference=["A", "C"], record_id="record-1")
+    m.update(prediction=["A"], reference=["A", "D"], record_id="record-2")
+
+    assert m.state_per_record == {
+        "record-1": {"tp": {"A"}, "fp": {"B"}, "fn": {"C"}},
+        "record-2": {"tp": {"A"}, "fp": set(), "fn": {"D"}},
+    }
+
+
+def test_metric_with_tpfpfn_entries_reset_clears_state():
+    m = MetricWithTpFpFnEntries()
+
+    m.update(prediction=["A"], reference=["B"], record_id="record-1")
+    m.reset()
+
+    assert m.state == {"tp": set(), "fp": set(), "fn": set()}
+    assert m.state_count == {"tp": 0, "fp": 0, "fn": 0}
+    assert m.state_per_record == {}
+
+
+def test_metric_with_tpfpfn_entries_reset_restarts_generated_record_ids(caplog):
+    m = MetricWithTpFpFnEntries()
+
+    with caplog.at_level("WARNING", logger="kibad_llm.metrics.base"):
+        m.update(prediction="A", reference="A")
+        m.update(prediction="B", reference="C")
+        m.reset()
+        m.update(prediction="D", reference="D")
+
+    assert m.state == {"tp": {(1, "D")}, "fp": set(), "fn": set()}
+    assert caplog.text.count("generated record id: 1") == 2
+    assert "generated record id: 2" in caplog.text

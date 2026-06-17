@@ -1,0 +1,776 @@
+/**
+ * Browser-free logic tests for eval-dashboard control helpers.
+ */
+
+import test from "node:test";
+import assert from "node:assert/strict";
+
+import {
+  buildColumnOptions,
+  buildMissingDefaultControlModels,
+  buildOptionsPanelModels,
+  createGroupByToggleControl,
+  getToggleOnlyColumns,
+  renderCheckboxOptionList,
+  renderGroupByButtonState,
+  renderMissingDefaultControls,
+  renderOptionsPanel,
+  renderOptionsPanelControls,
+  renderPlotControls,
+  renderPlotGroupBarChips,
+  renderSortStatus,
+} from "../../../../docs/eval-dashboard/assets/js/ui/controls.js";
+
+/**
+ * Minimal classList stub for DOM-free control rendering tests.
+ */
+class FakeClassList {
+  /**
+   * Create one empty class list.
+   */
+  constructor() {
+    this.values = new Set();
+  }
+
+  /**
+   * Toggle one class name according to the provided force value.
+   *
+   * @param {string} name - Class name to update.
+   * @param {boolean} force - Whether the class should be present.
+   * @returns {void}
+   */
+  toggle(name, force) {
+    if (force) {
+      this.values.add(name);
+    } else {
+      this.values.delete(name);
+    }
+  }
+
+  /**
+   * Report whether the class list currently contains one class.
+   *
+   * @param {string} name - Class name to check.
+   * @returns {boolean} Whether the class is present.
+   */
+  contains(name) {
+    return this.values.has(name);
+  }
+}
+
+/**
+ * Minimal element stub used by the extracted control tests.
+ */
+class FakeElement {
+  /**
+   * Create one fake element instance with the properties used by the tests.
+   */
+  constructor() {
+    this.type = "";
+    this.checked = false;
+    this.disabled = false;
+    this.textContent = "";
+    this.title = "";
+    this.className = "";
+    this.children = [];
+    this.attributes = new Map();
+    this.listeners = new Map();
+    this.style = {};
+    this.value = "";
+    this.placeholder = "";
+    this.id = "";
+    this._innerHTML = "";
+    this.blurCallCount = 0;
+    this.classList = new FakeClassList();
+  }
+
+  /**
+   * Reset child nodes when the test clears innerHTML.
+   *
+   * @param {unknown} value - Assigned HTML value.
+   */
+  set innerHTML(value) {
+    this._innerHTML = String(value);
+    if (value === "") {
+      this.children = [];
+    }
+  }
+
+  /**
+   * Return the last assigned innerHTML value.
+   *
+   * @returns {string} Stored HTML content.
+   */
+  get innerHTML() {
+    return this._innerHTML;
+  }
+
+  /**
+   * Append one child element.
+   *
+   * @param {FakeElement} child - Child element to append.
+   * @returns {FakeElement} The appended child.
+   */
+  appendChild(child) {
+    this.children.push(child);
+    return child;
+  }
+
+  /**
+   * Store one attribute value.
+   *
+   * @param {string} name - Attribute name.
+   * @param {unknown} value - Attribute value.
+   * @returns {void}
+   */
+  setAttribute(name, value) {
+    this.attributes.set(name, String(value));
+  }
+
+  /**
+   * Read one stored attribute value.
+   *
+   * @param {string} name - Attribute name.
+   * @returns {string | undefined} Stored attribute value.
+   */
+  getAttribute(name) {
+    return this.attributes.get(name);
+  }
+
+  /**
+   * Register one event listener.
+   *
+   * @param {string} type - Event type.
+   * @param {Function} listener - Event callback.
+   * @returns {void}
+   */
+  addEventListener(type, listener) {
+    this.listeners.set(type, listener);
+  }
+
+  /**
+   * Track blur calls triggered by keyboard handling tests.
+   *
+   * @returns {void}
+   */
+  blur() {
+    this.blurCallCount += 1;
+  }
+}
+
+/**
+ * Build one document-like stub that can create fake elements.
+ *
+ * @returns {{createElement: (tagName: string) => FakeElement}} Document-like stub.
+ */
+function createDocumentStub() {
+  return {
+    createElement(tagName) {
+      return new FakeElement(tagName);
+    },
+  };
+}
+
+/**
+ * Verify that column-option models preserve order while applying display labels.
+ */
+test("buildColumnOptions preserves column order while applying display labels", () => {
+  assert.deepEqual(
+    buildColumnOptions(["prediction.run_dir", "prediction.title"], (column) => `label:${column}`),
+    [
+      { value: "prediction.run_dir", label: "label:prediction.run_dir" },
+      { value: "prediction.title", label: "label:prediction.title" },
+    ]
+  );
+});
+
+/**
+ * Verify that the toggle-only helper returns only currently inactive columns.
+ */
+test("getToggleOnlyColumns returns columns that are not currently active", () => {
+  assert.deepEqual(
+    getToggleOnlyColumns(["a", "b", "c"], ["b"]),
+    ["a", "c"]
+  );
+});
+
+/**
+ * Verify that missing-default control models combine labels, values, suggestions, and counts.
+ */
+test("buildMissingDefaultControlModels derives labels, values, suggestions, and missing counts", () => {
+  assert.deepEqual(
+    buildMissingDefaultControlModels({
+      columns: ["prediction.language"],
+      getLabel: (column) => `Label:${column}`,
+      getValue: () => "de",
+      getSuggestions: () => ["de", "en"],
+      getMissingCount: () => 3,
+    }),
+    [
+      {
+        column: "prediction.language",
+        label: "Label:prediction.language",
+        value: "de",
+        suggestions: ["de", "en"],
+        missingCount: 3,
+      },
+    ]
+  );
+});
+
+/**
+ * Verify that the shared options-panel model builder composes checkbox and default-control models together.
+ */
+test("buildOptionsPanelModels composes checkbox and missing-default models for one shared options panel", () => {
+  assert.deepEqual(
+    buildOptionsPanelModels({
+      checkboxColumns: ["prediction.run_dir", "prediction.title"],
+      getCheckboxLabel: (column) => `Checkbox:${column}`,
+      defaultColumns: ["prediction.language"],
+      getDefaultLabel: (column) => `Default:${column}`,
+      getDefaultValue: () => "de",
+      getDefaultSuggestions: () => ["de", "en"],
+      getDefaultMissingCount: () => 2,
+    }),
+    {
+      checkboxOptions: [
+        { value: "prediction.run_dir", label: "Checkbox:prediction.run_dir" },
+        { value: "prediction.title", label: "Checkbox:prediction.title" },
+      ],
+      defaultControlModels: [
+        {
+          column: "prediction.language",
+          label: "Default:prediction.language",
+          value: "de",
+          suggestions: ["de", "en"],
+          missingCount: 2,
+        },
+      ],
+    }
+  );
+});
+
+/**
+ * Verify that the three group-by action buttons are enabled and disabled as one surface.
+ */
+test("renderGroupByButtonState enables or disables all group-by action buttons together", () => {
+  const buttonRefs = {
+    allButton: new FakeElement("button"),
+    toggleButton: new FakeElement("button"),
+    noneButton: new FakeElement("button"),
+  };
+
+  renderGroupByButtonState(buttonRefs, []);
+  assert.equal(buttonRefs.allButton.disabled, true);
+  assert.equal(buttonRefs.toggleButton.disabled, true);
+  assert.equal(buttonRefs.noneButton.disabled, true);
+
+  renderGroupByButtonState(buttonRefs, ["prediction.title"]);
+  assert.equal(buttonRefs.allButton.disabled, false);
+  assert.equal(buttonRefs.toggleButton.disabled, false);
+  assert.equal(buttonRefs.noneButton.disabled, false);
+});
+
+/**
+ * Verify that the shared per-column group-by toggle renders correctly and forwards checked state.
+ */
+test("createGroupByToggleControl renders the shared header toggle and forwards checked state changes", () => {
+  const documentLike = createDocumentStub();
+  const toggles = [];
+
+  const toggle = createGroupByToggleControl({
+    documentLike,
+    checked: true,
+    ariaLabel: "Group by prediction title",
+    onToggle(checked) {
+      toggles.push(checked);
+    },
+  });
+
+  assert.equal(toggle.className, "group-toggle");
+  assert.equal(toggle.title, "Use this column for grouping");
+  assert.equal(toggle.children.length, 1);
+  const checkbox = toggle.children[0];
+  assert.equal(checkbox.type, "checkbox");
+  assert.equal(checkbox.checked, true);
+  assert.equal(checkbox.getAttribute("aria-label"), "Group by prediction title");
+
+  checkbox.checked = false;
+  checkbox.listeners.get("change")({ type: "change" });
+  assert.deepEqual(toggles, [false]);
+});
+
+/**
+ * Verify that sort-status rendering normalizes invalid columns and updates the status UI.
+ */
+test("renderSortStatus normalizes sort config and synchronizes the status label and reset button", () => {
+  const labelElement = new FakeElement("span");
+  const resetButton = new FakeElement("button");
+
+  const normalized = renderSortStatus({
+    labelElement,
+    resetButton,
+    sortConfig: [
+      { column: "group_size", direction: "desc" },
+      { column: "stale", direction: "asc" },
+    ],
+    validColumns: ["group_size", "prediction.title"],
+    displayColumnName: (column) => `Label:${column}`,
+  });
+
+  assert.deepEqual(normalized, [{ column: "group_size", direction: "desc" }]);
+  assert.equal(labelElement.textContent, "group size ↓");
+  assert.equal(resetButton.disabled, false);
+
+  const cleared = renderSortStatus({
+    labelElement,
+    resetButton,
+    sortConfig: [{ column: "stale", direction: "asc" }],
+    validColumns: ["prediction.title"],
+    displayColumnName: (column) => `Label:${column}`,
+  });
+
+  assert.deepEqual(cleared, []);
+  assert.equal(labelElement.textContent, "(none)");
+  assert.equal(resetButton.disabled, true);
+});
+
+/**
+ * Verify that checkbox-list rendering builds rows and emits toggle callbacks.
+ */
+test("renderCheckboxOptionList builds checkbox rows and emits toggle callbacks", () => {
+  const documentLike = createDocumentStub();
+  const listElement = new FakeElement("div");
+  const toggles = [];
+
+  renderCheckboxOptionList({
+    documentLike,
+    listElement,
+    options: buildColumnOptions(["prediction.run_dir"], (column) => `Label:${column}`),
+    checkedValues: new Set(["prediction.run_dir"]),
+    getAriaLabel: (option) => `Toggle ${option.label}`,
+    onToggle(value, checked) {
+      toggles.push({ value, checked });
+    },
+  });
+
+  assert.equal(listElement.children.length, 1);
+  const row = listElement.children[0];
+  const checkbox = row.children[0];
+  const text = row.children[1];
+  assert.equal(row.className, "truncate-item");
+  assert.equal(checkbox.checked, true);
+  assert.equal(checkbox.getAttribute("aria-label"), "Toggle Label:prediction.run_dir");
+  assert.equal(text.textContent, "Label:prediction.run_dir");
+
+  checkbox.checked = false;
+  checkbox.listeners.get("change")();
+  assert.deepEqual(toggles, [{ value: "prediction.run_dir", checked: false }]);
+});
+
+/**
+ * Verify that missing-default controls render inputs, suggestions, and commit behavior.
+ */
+test("renderMissingDefaultControls renders inputs, suggestions, and commit handlers", () => {
+  const documentLike = createDocumentStub();
+  const listElement = new FakeElement("div");
+  const panelElement = new FakeElement("section");
+  const commits = [];
+
+  renderMissingDefaultControls({
+    documentLike,
+    listElement,
+    panelElement,
+    controlModels: [
+      {
+        column: "prediction.language",
+        label: "Language",
+        value: "de",
+        suggestions: ["de", "en"],
+        missingCount: 2,
+      },
+    ],
+    onCommit(column, nextValue) {
+      commits.push({ column, nextValue });
+    },
+    inputIdPrefix: "prediction-default",
+  });
+
+  assert.equal(panelElement.style.display, "");
+  assert.equal(listElement.children.length, 1);
+
+  const row = listElement.children[0];
+  const labelWrap = row.children[0];
+  const input = row.children[1];
+  const datalist = row.children[2];
+  assert.equal(row.className, "missing-default-item");
+  assert.equal(labelWrap.children[0].textContent, "Language");
+  assert.equal(labelWrap.children[1].textContent, "2 missing values");
+  assert.equal(input.value, "de");
+  assert.equal(input.placeholder, "Leave empty to keep blanks");
+  assert.equal(input.getAttribute("list"), "prediction-default-prediction-language");
+  assert.equal(input.getAttribute("aria-label"), "Default value for missing entries in Language");
+  assert.equal(datalist.id, "prediction-default-prediction-language");
+  assert.deepEqual(
+    datalist.children.map((option) => option.value),
+    ["de", "en"]
+  );
+
+  input.value = "fr";
+  input.listeners.get("change")();
+  assert.deepEqual(commits, [{ column: "prediction.language", nextValue: "fr" }]);
+
+  let prevented = false;
+  input.listeners.get("keydown")({
+    key: "Enter",
+    preventDefault() {
+      prevented = true;
+    },
+  });
+  assert.equal(prevented, true);
+  assert.equal(input.blurCallCount, 1);
+});
+
+/**
+ * Verify that options-panel control rendering reuses the shared checkbox and default-control helpers.
+ */
+test("renderOptionsPanelControls renders checkbox and default sections through shared helpers", () => {
+  const documentLike = createDocumentStub();
+  const checkboxListElement = new FakeElement("div");
+  const defaultsListElement = new FakeElement("div");
+  const defaultsPanelElement = new FakeElement("section");
+  const toggles = [];
+  const commits = [];
+
+  renderOptionsPanelControls({
+    documentLike,
+    checkboxListElement,
+    checkboxOptions: buildColumnOptions(["prediction.run_dir"], (column) => `Label:${column}`),
+    checkedValues: [],
+    onCheckboxToggle(value, checked) {
+      toggles.push({ value, checked });
+    },
+    defaultsListElement,
+    defaultsPanelElement,
+    defaultControlModels: [
+      {
+        column: "prediction.language",
+        label: "Language",
+        value: "",
+        suggestions: ["de"],
+        missingCount: 1,
+      },
+    ],
+    onDefaultCommit(column, nextValue) {
+      commits.push({ column, nextValue });
+    },
+    inputIdPrefix: "prediction-default",
+  });
+
+  assert.equal(checkboxListElement.children.length, 1);
+  assert.equal(defaultsListElement.children.length, 1);
+  assert.equal(defaultsPanelElement.style.display, "");
+
+  const checkbox = checkboxListElement.children[0].children[0];
+  checkbox.checked = true;
+  checkbox.listeners.get("change")();
+  assert.deepEqual(toggles, [{ value: "prediction.run_dir", checked: true }]);
+
+  const defaultInput = defaultsListElement.children[0].children[1];
+  defaultInput.value = "fallback";
+  defaultInput.listeners.get("change")();
+  assert.deepEqual(commits, [{ column: "prediction.language", nextValue: "fallback" }]);
+});
+
+/**
+ * Verify that the full options-panel helper composes models and wiring in one call.
+ */
+test("renderOptionsPanel composes the shared options-panel models and wiring in one helper", () => {
+  const documentLike = createDocumentStub();
+  const checkboxListElement = new FakeElement("div");
+  const defaultsListElement = new FakeElement("div");
+  const defaultsPanelElement = new FakeElement("section");
+  const toggles = [];
+  const commits = [];
+
+  const panelModels = renderOptionsPanel({
+    documentLike,
+    checkboxListElement,
+    checkboxColumns: ["prediction.run_dir"],
+    checkedValues: [],
+    getCheckboxLabel: (column) => `Checkbox:${column}`,
+    onCheckboxToggle(value, checked) {
+      toggles.push({ value, checked });
+    },
+    defaultsListElement,
+    defaultsPanelElement,
+    defaultColumns: ["prediction.language"],
+    getDefaultLabel: (column) => `Default:${column}`,
+    getDefaultValue: () => "de",
+    getDefaultSuggestions: () => ["de", "en"],
+    getDefaultMissingCount: () => 2,
+    onDefaultCommit(column, nextValue) {
+      commits.push({ column, nextValue });
+    },
+    inputIdPrefix: "prediction-default",
+  });
+
+  assert.deepEqual(panelModels, {
+    checkboxOptions: [{ value: "prediction.run_dir", label: "Checkbox:prediction.run_dir" }],
+    defaultControlModels: [
+      {
+        column: "prediction.language",
+        label: "Default:prediction.language",
+        value: "de",
+        suggestions: ["de", "en"],
+        missingCount: 2,
+      },
+    ],
+  });
+  assert.equal(checkboxListElement.children.length, 1);
+  assert.equal(defaultsListElement.children.length, 1);
+  assert.equal(defaultsPanelElement.style.display, "");
+
+  const checkbox = checkboxListElement.children[0].children[0];
+  checkbox.checked = true;
+  checkbox.listeners.get("change")();
+
+  const defaultInput = defaultsListElement.children[0].children[1];
+  defaultInput.value = "fr";
+  defaultInput.listeners.get("change")();
+
+  assert.deepEqual(toggles, [{ value: "prediction.run_dir", checked: true }]);
+  assert.deepEqual(commits, [{ column: "prediction.language", nextValue: "fr" }]);
+});
+
+/**
+ * Verify that grouped-bar chip rendering falls back to the documented empty-state hint.
+ */
+test("renderPlotGroupBarChips renders an empty-state hint when no varying fields are available", () => {
+  const documentLike = createDocumentStub();
+  const listElement = new FakeElement("div");
+
+  renderPlotGroupBarChips({
+    documentLike,
+    listElement,
+    availableFields: [],
+    checkedValues: [],
+    onToggle() {},
+  });
+
+  assert.equal(listElement.children.length, 1);
+  assert.equal(listElement.children[0].className, "hint");
+  assert.equal(listElement.children[0].textContent, "No varying group-by columns available.");
+});
+
+/**
+ * Verify that grouped-bar chips render toggles and forward change events.
+ */
+test("renderPlotGroupBarChips renders toggle chips and forwards changes", () => {
+  const documentLike = createDocumentStub();
+  const listElement = new FakeElement("div");
+  const toggles = [];
+
+  renderPlotGroupBarChips({
+    documentLike,
+    listElement,
+    availableFields: ["prediction.run_dir", "prediction.language"],
+    checkedValues: new Set(["prediction.language"]),
+    getLabel: (field) => `Plot:${field}`,
+    onToggle(field, checked) {
+      toggles.push({ field, checked });
+    },
+  });
+
+  assert.equal(listElement.children.length, 2);
+  const firstCheckbox = listElement.children[0].children[0];
+  const firstText = listElement.children[0].children[1];
+  const secondCheckbox = listElement.children[1].children[0];
+  assert.equal(firstText.textContent, "Plot:prediction.run_dir");
+  assert.equal(firstCheckbox.checked, false);
+  assert.equal(secondCheckbox.checked, true);
+
+  firstCheckbox.checked = true;
+  firstCheckbox.listeners.get("change")();
+  assert.deepEqual(toggles, [{ field: "prediction.run_dir", checked: true }]);
+});
+
+/**
+ * Verify that thin plot-control rendering synchronizes button classes, values, and row visibility.
+ */
+test("renderPlotControls synchronizes button state, input values, and plot-control row visibility", () => {
+  const refs = {
+    plotTabsByPrefixButton: new FakeElement("button"),
+    plotTabsBySuffixButton: new FakeElement("button"),
+    confusionTabsByMetricFieldButton: new FakeElement("button"),
+    confusionTabsByPredictionGroupButton: new FakeElement("button"),
+    plotShortenLabelsInput: new FakeElement("input"),
+    plotRoundingPrecisionInput: new FakeElement("input"),
+    plotConfusionMinLabelTotalRow: new FakeElement("div"),
+    plotConfusionMinLabelTotalInput: new FakeElement("input"),
+    plotTpFpFnMinLabelTotalRow: new FakeElement("div"),
+    plotTpFpFnMinLabelTotalInput: new FakeElement("input"),
+    plotTpFpFnMinDocumentTotalRow: new FakeElement("div"),
+    plotTpFpFnMinDocumentTotalInput: new FakeElement("input"),
+    plotTabsByRow: new FakeElement("div"),
+    plotConfusionTabsByRow: new FakeElement("div"),
+    plotGroupBarsRow: new FakeElement("div"),
+    plotShowLegendOnceRow: new FakeElement("div"),
+    plotShowLegendOnceInput: new FakeElement("input"),
+    exportOpaqueBackgroundInput: new FakeElement("input"),
+  };
+
+  renderPlotControls({
+    metricType: "F1MicroMultipleFieldsMetric",
+    plotTabsBy: "suffix",
+    confusionTabsBy: "prediction_group",
+    plotShortenLabels: true,
+    plotRoundingPrecision: 4,
+    plotConfusionMinLabelTotal: 6,
+    plotTpFpFnMinLabelTotal: 7,
+    plotTpFpFnMinDocumentTotal: 8,
+    plotShowLegendOnce: true,
+    exportOpaqueBackground: true,
+    ...refs,
+  });
+
+  assert.equal(refs.plotTabsByPrefixButton.classList.contains("active"), false);
+  assert.equal(refs.plotTabsBySuffixButton.classList.contains("active"), true);
+  assert.equal(refs.confusionTabsByMetricFieldButton.classList.contains("active"), false);
+  assert.equal(refs.confusionTabsByPredictionGroupButton.classList.contains("active"), true);
+  assert.equal(refs.plotShortenLabelsInput.checked, true);
+  assert.equal(refs.plotRoundingPrecisionInput.value, "4");
+  assert.equal(refs.plotConfusionMinLabelTotalInput.value, "6");
+  assert.equal(refs.plotTpFpFnMinLabelTotalInput.value, "7");
+  assert.equal(refs.plotTpFpFnMinDocumentTotalInput.value, "8");
+  assert.equal(refs.plotShowLegendOnceInput.checked, true);
+  assert.equal(refs.exportOpaqueBackgroundInput.checked, true);
+  assert.equal(refs.plotTabsByRow.style.display, "");
+  assert.equal(refs.plotConfusionMinLabelTotalRow.style.display, "none");
+  assert.equal(refs.plotTpFpFnMinLabelTotalRow.style.display, "none");
+  assert.equal(refs.plotTpFpFnMinDocumentTotalRow.style.display, "none");
+  assert.equal(refs.plotConfusionTabsByRow.style.display, "none");
+  assert.equal(refs.plotGroupBarsRow.style.display, "");
+  assert.equal(refs.plotShowLegendOnceRow.style.display, "none");
+
+  renderPlotControls({
+    metricType: "ConfusionMatrixCollection",
+    plotTabsBy: "prefix",
+    confusionTabsBy: "metric_field",
+    plotShortenLabels: false,
+    plotRoundingPrecision: 2,
+    plotConfusionMinLabelTotal: 3,
+    plotTpFpFnMinLabelTotal: 4,
+    plotTpFpFnMinDocumentTotal: 5,
+    plotShowLegendOnce: false,
+    exportOpaqueBackground: false,
+    ...refs,
+  });
+
+  assert.equal(refs.plotTabsByPrefixButton.classList.contains("active"), true);
+  assert.equal(refs.plotTabsBySuffixButton.classList.contains("active"), false);
+  assert.equal(refs.confusionTabsByMetricFieldButton.classList.contains("active"), true);
+  assert.equal(refs.confusionTabsByPredictionGroupButton.classList.contains("active"), false);
+  assert.equal(refs.plotShortenLabelsInput.checked, false);
+  assert.equal(refs.exportOpaqueBackgroundInput.checked, false);
+  assert.equal(refs.plotTabsByRow.style.display, "none");
+  assert.equal(refs.plotConfusionMinLabelTotalRow.style.display, "");
+  assert.equal(refs.plotTpFpFnMinLabelTotalRow.style.display, "none");
+  assert.equal(refs.plotTpFpFnMinDocumentTotalRow.style.display, "none");
+  assert.equal(refs.plotConfusionTabsByRow.style.display, "");
+  assert.equal(refs.plotGroupBarsRow.style.display, "none");
+  assert.equal(refs.plotShowLegendOnceRow.style.display, "none");
+});
+
+/**
+ * Verify that TP/FP/FN plot controls expose only the threshold rows relevant to that metric family.
+ */
+test("renderPlotControls shows TP/FP/FN-specific threshold rows for that metric family", () => {
+  const refs = {
+    plotTabsByPrefixButton: new FakeElement("button"),
+    plotTabsBySuffixButton: new FakeElement("button"),
+    confusionTabsByMetricFieldButton: new FakeElement("button"),
+    confusionTabsByPredictionGroupButton: new FakeElement("button"),
+    plotShortenLabelsInput: new FakeElement("input"),
+    plotRoundingPrecisionInput: new FakeElement("input"),
+    plotConfusionMinLabelTotalRow: new FakeElement("div"),
+    plotConfusionMinLabelTotalInput: new FakeElement("input"),
+    plotTpFpFnMinLabelTotalRow: new FakeElement("div"),
+    plotTpFpFnMinLabelTotalInput: new FakeElement("input"),
+    plotTpFpFnMinDocumentTotalRow: new FakeElement("div"),
+    plotTpFpFnMinDocumentTotalInput: new FakeElement("input"),
+    plotTabsByRow: new FakeElement("div"),
+    plotConfusionTabsByRow: new FakeElement("div"),
+    plotGroupBarsRow: new FakeElement("div"),
+    plotShowLegendOnceRow: new FakeElement("div"),
+    plotShowLegendOnceInput: new FakeElement("input"),
+    exportOpaqueBackgroundInput: new FakeElement("input"),
+  };
+
+  renderPlotControls({
+    metricType: "TpFpFnCollector",
+    plotTabsBy: "prefix",
+    confusionTabsBy: "metric_field",
+    plotShortenLabels: false,
+    plotRoundingPrecision: 2,
+    plotConfusionMinLabelTotal: 3,
+    plotTpFpFnMinLabelTotal: 4,
+    plotTpFpFnMinDocumentTotal: 5,
+    plotShowLegendOnce: false,
+    exportOpaqueBackground: false,
+    ...refs,
+  });
+
+  assert.equal(refs.plotConfusionMinLabelTotalRow.style.display, "none");
+  assert.equal(refs.plotTpFpFnMinLabelTotalRow.style.display, "");
+  assert.equal(refs.plotTpFpFnMinDocumentTotalRow.style.display, "");
+  assert.equal(refs.plotConfusionTabsByRow.style.display, "");
+  assert.equal(refs.plotGroupBarsRow.style.display, "none");
+});
+
+/**
+ * Verify that the collection-style TP/FP/FN metric alias stays on the generic
+ * plot-control path under the current contract.
+ */
+test("renderPlotControls keeps TpFpFnCollectorCollection on the generic control path", () => {
+  const refs = {
+    plotTabsByPrefixButton: new FakeElement("button"),
+    plotTabsBySuffixButton: new FakeElement("button"),
+    confusionTabsByMetricFieldButton: new FakeElement("button"),
+    confusionTabsByPredictionGroupButton: new FakeElement("button"),
+    plotShortenLabelsInput: new FakeElement("input"),
+    plotRoundingPrecisionInput: new FakeElement("input"),
+    plotConfusionMinLabelTotalRow: new FakeElement("div"),
+    plotConfusionMinLabelTotalInput: new FakeElement("input"),
+    plotTpFpFnMinLabelTotalRow: new FakeElement("div"),
+    plotTpFpFnMinLabelTotalInput: new FakeElement("input"),
+    plotTpFpFnMinDocumentTotalRow: new FakeElement("div"),
+    plotTpFpFnMinDocumentTotalInput: new FakeElement("input"),
+    plotTabsByRow: new FakeElement("div"),
+    plotConfusionTabsByRow: new FakeElement("div"),
+    plotGroupBarsRow: new FakeElement("div"),
+    plotShowLegendOnceRow: new FakeElement("div"),
+    plotShowLegendOnceInput: new FakeElement("input"),
+    exportOpaqueBackgroundInput: new FakeElement("input"),
+  };
+
+  renderPlotControls({
+    metricType: "TpFpFnCollectorCollection",
+    plotTabsBy: "prefix",
+    confusionTabsBy: "metric_field",
+    plotShortenLabels: false,
+    plotRoundingPrecision: 2,
+    plotConfusionMinLabelTotal: 3,
+    plotTpFpFnMinLabelTotal: 4,
+    plotTpFpFnMinDocumentTotal: 5,
+    plotShowLegendOnce: false,
+    exportOpaqueBackground: false,
+    ...refs,
+  });
+
+  assert.equal(refs.plotConfusionMinLabelTotalRow.style.display, "none");
+  assert.equal(refs.plotTpFpFnMinLabelTotalRow.style.display, "none");
+  assert.equal(refs.plotTpFpFnMinDocumentTotalRow.style.display, "none");
+  assert.equal(refs.plotConfusionTabsByRow.style.display, "none");
+  assert.equal(refs.plotGroupBarsRow.style.display, "none");
+});

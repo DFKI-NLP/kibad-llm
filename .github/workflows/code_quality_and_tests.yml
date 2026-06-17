@@ -44,6 +44,20 @@ jobs:
         run: |
           uv run --group cicd prek run -a
         shell: bash
+  eval-dashboard-js:
+    name: Eval-dashboard JS logic tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Run eval-dashboard JS logic tests
+        run: |
+          node --test tests/unit/eval_dashboard/js/*.test.mjs
+        shell: bash
   pytest:
     name: Tests with Python ${{ matrix.python }} / ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
@@ -52,6 +66,9 @@ jobs:
       matrix:
         include:
           - { python: "3.10", os: "ubuntu-latest" }
+          - { python: "3.11", os: "ubuntu-latest" }
+          - { python: "3.12", os: "ubuntu-latest" }
+          - { python: "3.13", os: "ubuntu-latest" }
           # - { python: "3.10", os: "macos-latest" }
           # - { python: "3.10", os: "windows-latest" }
     steps:

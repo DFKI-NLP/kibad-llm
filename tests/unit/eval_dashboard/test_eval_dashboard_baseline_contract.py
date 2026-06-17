@@ -1,0 +1,602 @@
+"""Baseline artifact contract tests for the eval-dashboard baseline plus Phase 5 to Phase 12 JS contracts."""
+
+import json
+
+import yaml
+
+from kibad_llm.config import PROJ_ROOT
+from tests import FIXTURE_DATA_ROOT
+
+DASHBOARD_ENTRY = PROJ_ROOT / "docs" / "eval-dashboard" / "index.html"
+CSS_ROOT = PROJ_ROOT / "docs" / "eval-dashboard" / "assets" / "css"
+JS_ROOT = PROJ_ROOT / "docs" / "eval-dashboard" / "assets" / "js"
+CSS_ENTRY = CSS_ROOT / "index.css"
+MAIN_JS_ENTRY = JS_ROOT / "main.js"
+DATA_JS_ROOT = JS_ROOT / "data"
+STATE_JS_ROOT = JS_ROOT / "state"
+UI_JS_ROOT = JS_ROOT / "ui"
+UTILS_JS_ROOT = JS_ROOT / "utils"
+BROWSER_JS_ROOT = JS_ROOT / "browser"
+PLOTS_JS_ROOT = JS_ROOT / "plots"
+TOKENS_CSS = CSS_ROOT / "tokens.css"
+BASELINE_SUMMARY = FIXTURE_DATA_ROOT / "eval_dashboard" / "baseline" / "baseline-summary.json"
+FIXTURE_ROOT = FIXTURE_DATA_ROOT / "eval_dashboard"
+WORKFLOW_PATH = PROJ_ROOT / ".github" / "workflows" / "code_quality_and_tests.yml"
+JS_TEST_ROOT = PROJ_ROOT / "tests" / "unit" / "eval_dashboard" / "js"
+JS_PACKAGE_JSON = JS_ROOT / "package.json"
+JS_TEST_README = JS_TEST_ROOT / "README.md"
+LEGACY_JS_PYTEST_BRIDGE = JS_TEST_ROOT / "test_eval_dashboard_utils.py"
+INGEST_RUNS_MODULE = DATA_JS_ROOT / "ingest-runs.js"
+
+EXPECTED_FEATURE_KEYS = {
+    "supports_local_load",
+    "supports_github_url_load",
+    "supports_prediction_grouping",
+    "supports_experiment_tabs",
+    "supports_json_side_pane",
+    "supports_grouped_bar_plots",
+    "supports_error_plots",
+    "supports_confusion_matrix_plots",
+    "supports_tpfpfn_plots",
+    "supports_figure_export",
+    "supports_light_dark_styling",
+}
+
+
+def _baseline_summary() -> dict:
+    """Load the checked-in baseline summary artifact."""
+
+    return json.loads(BASELINE_SUMMARY.read_text(encoding="utf-8"))
+
+
+def _dashboard_html() -> str:
+    """Load the current dashboard entry HTML."""
+
+    return DASHBOARD_ENTRY.read_text(encoding="utf-8")
+
+
+def _workflow_definition() -> dict:
+    """Load the CI workflow that should run the dashboard JS logic tests explicitly."""
+
+    return yaml.safe_load(WORKFLOW_PATH.read_text(encoding="utf-8"))
+
+
+def _main_js_entry() -> str:
+    """Load the external dashboard JavaScript entry module."""
+
+    return MAIN_JS_ENTRY.read_text(encoding="utf-8")
+
+
+def _ingest_runs_module() -> str:
+    """Load the shared ingestion module that now owns Phase 7 parse/normalize wiring."""
+
+    return INGEST_RUNS_MODULE.read_text(encoding="utf-8")
+
+
+def _js_package_definition() -> dict:
+    """Load the dashboard JS package manifest that pins ESM semantics for Node tests."""
+
+    return json.loads(JS_PACKAGE_JSON.read_text(encoding="utf-8"))
+
+
+def _js_test_readme() -> str:
+    """Load the README that documents the long-term dashboard JS test harness."""
+
+    return JS_TEST_README.read_text(encoding="utf-8")
+
+
+def _css_entry() -> str:
+    """Load the Phase 3 CSS entry file."""
+
+    return CSS_ENTRY.read_text(encoding="utf-8")
+
+
+def _tokens_css() -> str:
+    """Load the dashboard theme tokens stylesheet."""
+
+    return TOKENS_CSS.read_text(encoding="utf-8")
+
+
+def test_baseline_summary_describes_phase_zero_reference_state() -> None:
+    """Ensure the checked-in baseline remains the original pre-Phase-3 reference artifact."""
+
+    summary = _baseline_summary()
+    implementation_shape = summary["implementation_shape"]
+
+    assert implementation_shape["runtime_entrypoint"] == "docs/eval-dashboard/index.html"
+    assert implementation_shape["compatibility_entrypoint"] is None
+    assert implementation_shape["css_extraction_started"] is False
+    assert implementation_shape["js_extraction_started"] is False
+    assert "inline CSS" in implementation_shape["page_style"]
+    assert "inline JavaScript" in implementation_shape["page_style"]
+
+
+def test_baseline_summary_includes_phase_three_inline_script_contract() -> None:
+    """Ensure the baseline artifact exposes the Phase 3 JS freeze contract."""
+
+    summary = _baseline_summary()
+    phase_three_contract = summary["phase_three_contract"]
+
+    assert phase_three_contract["inline_script_normalization"]
+    assert phase_three_contract["inline_script_line_count"] > 0
+    assert len(phase_three_contract["inline_script_sha256"]) == 64
+
+
+def test_baseline_summary_includes_phase_four_external_main_js_contract() -> None:
+    """Ensure the baseline artifact still records the Phase 4 external-main.js milestone."""
+
+    summary = _baseline_summary()
+    phase_four_contract = summary["phase_four_contract"]
+
+    assert phase_four_contract["main_js_path"] == "docs/eval-dashboard/assets/js/main.js"
+    assert phase_four_contract["entrypoint_contract"]
+
+
+def test_baseline_summary_includes_phase_five_utility_contract() -> None:
+    """Ensure the baseline artifact exposes the Phase 5 utility-extraction contract."""
+
+    summary = _baseline_summary()
+    phase_five_contract = summary["phase_five_contract"]
+
+    assert phase_five_contract["utility_module_root"] == "docs/eval-dashboard/assets/js/utils"
+    assert phase_five_contract["js_test_root"] == "tests/unit/eval_dashboard/js"
+    assert (
+        phase_five_contract["js_test_strategy"]
+        == "browser-free utility logic tests executed via the Node.js built-in test runner"
+    )
+    assert (
+        phase_five_contract["js_test_command"]
+        == "node --test tests/unit/eval_dashboard/js/*.test.mjs"
+    )
+    assert set(phase_five_contract["utility_modules"]) == {
+        "flatten.js",
+        "sort.js",
+        "text.js",
+        "values.js",
+    }
+    assert set(phase_five_contract["js_test_files"]) == {
+        "utils.flatten.test.mjs",
+        "utils.sort.test.mjs",
+        "utils.text.test.mjs",
+        "utils.values.test.mjs",
+    }
+
+
+def test_baseline_summary_includes_phase_six_state_contract() -> None:
+    """Ensure the baseline artifact exposes the Phase 6 state/store extraction contract."""
+
+    summary = _baseline_summary()
+    phase_six_contract = summary["phase_six_contract"]
+
+    assert phase_six_contract["state_module_root"] == "docs/eval-dashboard/assets/js/state"
+    assert set(phase_six_contract["state_modules"]) == {"selectors.js", "store.js"}
+    assert set(phase_six_contract["js_test_files"]) == {
+        "state.selectors.test.mjs",
+        "state.store.test.mjs",
+    }
+
+
+def test_baseline_summary_includes_phase_seven_data_contract() -> None:
+    """Ensure the baseline artifact exposes the Phase 7 parsing and normalization contract."""
+
+    summary = _baseline_summary()
+    phase_seven_contract = summary["phase_seven_contract"]
+
+    assert phase_seven_contract["data_module_root"] == "docs/eval-dashboard/assets/js/data"
+    assert set(phase_seven_contract["data_modules"]) == {"normalize.js", "parse-overrides.js"}
+    assert set(phase_seven_contract["js_test_files"]) == {
+        "data.normalize.test.mjs",
+        "data.parse-overrides.test.mjs",
+    }
+
+
+def test_baseline_summary_includes_phase_eight_loader_contract() -> None:
+    """Ensure the baseline artifact exposes the Phase 8 loader and ingestion contract."""
+
+    summary = _baseline_summary()
+    phase_eight_contract = summary["phase_eight_contract"]
+
+    assert phase_eight_contract["data_module_root"] == "docs/eval-dashboard/assets/js/data"
+    assert set(phase_eight_contract["data_modules"]) == {
+        "file-loader.js",
+        "git-loader.js",
+        "ingest-runs.js",
+    }
+    assert set(phase_eight_contract["js_test_files"]) == {
+        "data.file-loader.test.mjs",
+        "data.git-loader.test.mjs",
+        "data.ingest-runs.test.mjs",
+    }
+
+
+def test_baseline_summary_includes_phase_nine_ui_contract() -> None:
+    """Ensure the baseline artifact exposes the Phase 9 UI/browser helper contract."""
+
+    summary = _baseline_summary()
+    phase_nine_contract = summary["phase_nine_contract"]
+
+    assert phase_nine_contract["ui_module_root"] == "docs/eval-dashboard/assets/js/ui"
+    assert phase_nine_contract["browser_module_root"] == "docs/eval-dashboard/assets/js/browser"
+    assert set(phase_nine_contract["ui_modules"]) == {"dom.js", "status.js", "table-shared.js"}
+    assert set(phase_nine_contract["browser_modules"]) == {"session.js"}
+    assert set(phase_nine_contract["js_test_files"]) == {
+        "browser.session.test.mjs",
+        "ui.dom.test.mjs",
+        "ui.status.test.mjs",
+        "ui.table-shared.test.mjs",
+    }
+
+
+def test_baseline_summary_includes_phase_ten_a_ui_contract() -> None:
+    """Ensure the baseline artifact exposes the Phase 10A tabs/controls/JSON-pane contract."""
+
+    summary = _baseline_summary()
+    phase_ten_a_contract = summary["phase_ten_a_contract"]
+
+    assert phase_ten_a_contract["ui_module_root"] == "docs/eval-dashboard/assets/js/ui"
+    assert set(phase_ten_a_contract["ui_modules"]) == {
+        "controls.js",
+        "eval-json-pane.js",
+        "tabs.js",
+    }
+    assert set(phase_ten_a_contract["js_test_files"]) == {
+        "ui.controls.test.mjs",
+        "ui.eval-json-pane.test.mjs",
+        "ui.tabs.test.mjs",
+    }
+
+
+def test_baseline_summary_includes_phase_ten_b_table_contract() -> None:
+    """Ensure the baseline artifact exposes the Phase 10B prediction/evaluation table contract."""
+
+    summary = _baseline_summary()
+    phase_ten_b_contract = summary["phase_ten_b_contract"]
+
+    assert phase_ten_b_contract["ui_module_root"] == "docs/eval-dashboard/assets/js/ui"
+    assert set(phase_ten_b_contract["ui_modules"]) == {
+        "evaluation-table.js",
+        "prediction-table.js",
+    }
+    assert set(phase_ten_b_contract["js_test_files"]) == {
+        "ui.evaluation-table.test.mjs",
+        "ui.prediction-table.test.mjs",
+    }
+
+
+def test_baseline_summary_includes_phase_eleven_plot_contract() -> None:
+    """Ensure the baseline artifact exposes the Phase 11 plot/export module contract."""
+
+    summary = _baseline_summary()
+    phase_eleven_contract = summary["phase_eleven_contract"]
+
+    assert phase_eleven_contract["plot_module_root"] == "docs/eval-dashboard/assets/js/plots"
+    assert set(phase_eleven_contract["plot_modules"]) == {
+        "bars.js",
+        "confusion.js",
+        "export.js",
+        "legend.js",
+        "shared.js",
+        "tpfpfn.js",
+    }
+    assert set(phase_eleven_contract["js_test_files"]) == {
+        "plots.bars.test.mjs",
+        "plots.confusion.test.mjs",
+        "plots.export.test.mjs",
+        "plots.shared.test.mjs",
+        "plots.tpfpfn.test.mjs",
+    }
+
+
+def test_baseline_summary_includes_phase_twelve_orchestration_contract() -> None:
+    """Ensure the baseline artifact exposes the Phase 12 plot-dashboard adapter contract."""
+
+    summary = _baseline_summary()
+    phase_twelve_contract = summary["phase_twelve_contract"]
+
+    assert (
+        phase_twelve_contract["plot_dashboard_module"]
+        == "docs/eval-dashboard/assets/js/plots/dashboard.js"
+    )
+    assert phase_twelve_contract["main_js_role"] == "dashboard orchestration entrypoint"
+    assert set(phase_twelve_contract["js_test_files"]) == {
+        "plots.dashboard.test.mjs",
+    }
+    assert set(phase_twelve_contract["focus"]) == {
+        "main.js delegates dashboard plot rendering, plot-control synchronization, tooltip wiring, and figure export to plots/dashboard.js",
+        "plots/dashboard.js adapts the extracted Phase 11 plot modules to dashboard state and DOM refs",
+        "dashboard adapter seams are covered by Node.js unit tests",
+    }
+
+
+def test_current_runtime_matches_phase_six_state_contract() -> None:
+    """Ensure the extracted Phase 6 state modules and selector/store tests exist and are wired into main.js."""
+
+    summary = _baseline_summary()
+    phase_six_contract = summary["phase_six_contract"]
+    main_js = _main_js_entry()
+
+    for file_name in phase_six_contract["state_modules"]:
+        assert (STATE_JS_ROOT / file_name).is_file()
+    for import_path in ("./state/store.js", "./state/selectors.js"):
+        assert import_path in main_js
+    for file_name in phase_six_contract["js_test_files"]:
+        assert (JS_TEST_ROOT / file_name).is_file()
+    assert set(phase_six_contract["selector_focus"]) == {
+        "prediction grouping",
+        "evaluation context derivation",
+        "plot-group derivation",
+        "selection-state synchronization",
+    }
+
+
+def test_current_runtime_matches_phase_seven_data_contract() -> None:
+    """Ensure the extracted Phase 7 data modules and JS tests exist behind the shared ingestion boundary."""
+
+    summary = _baseline_summary()
+    phase_seven_contract = summary["phase_seven_contract"]
+    ingest_runs_js = _ingest_runs_module()
+
+    for file_name in phase_seven_contract["data_modules"]:
+        assert (DATA_JS_ROOT / file_name).is_file()
+    for import_path in ("./normalize.js", "./parse-overrides.js"):
+        assert import_path in ingest_runs_js
+    for file_name in phase_seven_contract["js_test_files"]:
+        assert (JS_TEST_ROOT / file_name).is_file()
+    assert set(phase_seven_contract["normalization_focus"]) == {
+        "supported version handling",
+        "override parsing semantics",
+        "missing prediction id handling",
+        "unsupported version rejection",
+    }
+
+
+def test_current_runtime_matches_phase_eight_loader_contract() -> None:
+    """Ensure the extracted Phase 8 loader modules and JS tests exist and are wired into main.js."""
+
+    summary = _baseline_summary()
+    phase_eight_contract = summary["phase_eight_contract"]
+    main_js = _main_js_entry()
+
+    for file_name in phase_eight_contract["data_modules"]:
+        assert (DATA_JS_ROOT / file_name).is_file()
+    for import_path in (
+        "./data/file-loader.js",
+        "./data/git-loader.js",
+        "./data/ingest-runs.js",
+    ):
+        assert import_path in main_js
+    for file_name in phase_eight_contract["js_test_files"]:
+        assert (JS_TEST_ROOT / file_name).is_file()
+    assert set(phase_eight_contract["loader_focus"]) == {
+        "local file path filtering, source-label derivation, and FileReader fallback",
+        "shared run ingestion and duplicate/conflict detection",
+        "shared ingestion summary accounting for invalid, unsupported-version, and missing-prediction-id runs",
+        "github tree URL parsing and recursive file loading",
+        "github ref resolution across branches, tags, and unresolved refs",
+        "github loader empty-input and no-files-found paths",
+    }
+
+
+def test_current_runtime_matches_phase_nine_ui_contract() -> None:
+    """Ensure the extracted Phase 9 UI/browser helper modules and JS tests exist and are wired into main.js."""
+
+    summary = _baseline_summary()
+    phase_nine_contract = summary["phase_nine_contract"]
+    main_js = _main_js_entry()
+
+    for file_name in phase_nine_contract["ui_modules"]:
+        assert (UI_JS_ROOT / file_name).is_file()
+    for file_name in phase_nine_contract["browser_modules"]:
+        assert (BROWSER_JS_ROOT / file_name).is_file()
+    for import_path in (
+        "./ui/dom.js",
+        "./ui/status.js",
+        "./ui/table-shared.js",
+        "./browser/session.js",
+    ):
+        assert import_path in main_js
+    for file_name in phase_nine_contract["js_test_files"]:
+        assert (JS_TEST_ROOT / file_name).is_file()
+    assert set(phase_nine_contract["focus"]) == {
+        "shared DOM reference capture",
+        "shared table sort/truncation/sticky helpers",
+        "status and progress DOM rendering",
+        "github token persistence and git_url query-parameter synchronization",
+    }
+
+
+def test_current_runtime_matches_phase_ten_a_ui_contract() -> None:
+    """Ensure the extracted Phase 10A UI modules and JS tests exist and are wired into main.js."""
+
+    summary = _baseline_summary()
+    phase_ten_a_contract = summary["phase_ten_a_contract"]
+    main_js = _main_js_entry()
+
+    for file_name in phase_ten_a_contract["ui_modules"]:
+        assert (UI_JS_ROOT / file_name).is_file()
+        assert f"./ui/{file_name}" in main_js
+    for file_name in phase_ten_a_contract["js_test_files"]:
+        assert (JS_TEST_ROOT / file_name).is_file()
+    assert set(phase_ten_a_contract["focus"]) == {
+        "experiment-tab active-state resolution and shared tab-button rendering",
+        "prediction and evaluation truncate/default/group-by control rendering",
+        "thin plot-control rendering",
+        "eval json pane highlighting and selected-content resolution",
+    }
+
+
+def test_current_runtime_matches_phase_ten_b_table_contract() -> None:
+    """Ensure the extracted Phase 10B table modules and JS tests exist and are wired into main.js."""
+
+    summary = _baseline_summary()
+    phase_ten_b_contract = summary["phase_ten_b_contract"]
+    main_js = _main_js_entry()
+
+    for file_name in phase_ten_b_contract["ui_modules"]:
+        assert (UI_JS_ROOT / file_name).is_file()
+        assert f"./ui/{file_name}" in main_js
+    for file_name in phase_ten_b_contract["js_test_files"]:
+        assert (JS_TEST_ROOT / file_name).is_file()
+    assert set(phase_ten_b_contract["focus"]) == {
+        "prediction table section-building and renderer integration",
+        "evaluation table section-building and renderer integration",
+        "shared select-all and static control-header rendering",
+    }
+
+
+def test_current_runtime_matches_phase_eleven_plot_contract() -> None:
+    """Ensure the extracted Phase 11 plot modules and JS tests exist and are wired into the plot runtime."""
+
+    summary = _baseline_summary()
+    phase_eleven_contract = summary["phase_eleven_contract"]
+    main_js = _main_js_entry()
+    plot_runtime_js = "\n".join(
+        path.read_text(encoding="utf-8") for path in PLOTS_JS_ROOT.glob("*.js")
+    )
+
+    for file_name in phase_eleven_contract["plot_modules"]:
+        assert (PLOTS_JS_ROOT / file_name).is_file()
+        assert f"./plots/{file_name}" in main_js or f"./{file_name}" in plot_runtime_js
+    for file_name in phase_eleven_contract["js_test_files"]:
+        assert (JS_TEST_ROOT / file_name).is_file()
+    assert set(phase_eleven_contract["focus"]) == {
+        "shared plot display, legend, metric-path, plot-entry, and tab-map helpers",
+        "bar/error plot-entry, SVG renderer, and tab-grid module boundaries",
+        "grouped legend-model module boundaries",
+        "confusion matrix collection expansion, aggregation, filtering, and tab maps",
+        "TP/FP/FN collection expansion, aggregation, filtering, tab maps, palettes, and copy summaries",
+        "figure filename derivation, SVG export helpers, CRC32, and ZIP archive creation",
+    }
+
+
+def test_current_runtime_matches_phase_twelve_orchestration_contract() -> None:
+    """Ensure Phase 12 keeps main.js at orchestration level and tests the plot-dashboard adapter."""
+
+    summary = _baseline_summary()
+    phase_twelve_contract = summary["phase_twelve_contract"]
+    main_js = _main_js_entry()
+    dashboard_js = (PLOTS_JS_ROOT / "dashboard.js").read_text(encoding="utf-8")
+
+    assert (PLOTS_JS_ROOT / "dashboard.js").is_file()
+    assert "./plots/dashboard.js" in main_js
+    assert "renderEvaluationPlotsForDashboard({" in main_js
+    assert "downloadVisiblePlotFigures({" in main_js
+    assert "renderDashboardPlotControls({" in main_js
+    assert "renderPlotControls," not in main_js
+    assert "renderPlotGroupBarChips," not in main_js
+    assert "renderPlotTabsAndGrid as renderSharedPlotTabsAndGrid" not in main_js
+    assert "function renderPlotTabsAndGrid(" not in main_js
+    assert "buildConfusionTabMap(" not in main_js
+    assert "createConfusionMatrixHeatmapSvg(" not in main_js
+    assert "createTpFpFnCombinedMatrixSvg(" not in main_js
+    assert "downloadVisibleFigures(" not in main_js
+
+    for imported_module in (
+        "./bars.js",
+        "./confusion.js",
+        "./export.js",
+        "./legend.js",
+        "./shared.js",
+        "./tpfpfn.js",
+    ):
+        assert imported_module in dashboard_js
+    for file_name in phase_twelve_contract["js_test_files"]:
+        assert (JS_TEST_ROOT / file_name).is_file()
+
+
+def test_current_runtime_matches_phase_five_utility_contract() -> None:
+    """Ensure the extracted Phase 5 utility modules and JS-native test assets exist."""
+
+    summary = _baseline_summary()
+    phase_five_contract = summary["phase_five_contract"]
+    runtime_js = "\n".join(path.read_text(encoding="utf-8") for path in JS_ROOT.rglob("*.js"))
+    js_package = _js_package_definition()
+    js_test_readme = _js_test_readme()
+
+    assert MAIN_JS_ENTRY.is_file()
+    for file_name in phase_five_contract["utility_modules"]:
+        assert (UTILS_JS_ROOT / file_name).is_file()
+        assert f"/utils/{file_name}" in runtime_js or f"../utils/{file_name}" in runtime_js
+    assert (PROJ_ROOT / phase_five_contract["js_test_root"]).is_dir()
+    for file_name in phase_five_contract["js_test_files"]:
+        assert (JS_TEST_ROOT / file_name).is_file()
+    assert set(phase_five_contract["js_test_files"]).issubset(
+        {path.name for path in JS_TEST_ROOT.glob("*.test.mjs")}
+    )
+    assert JS_PACKAGE_JSON.is_file()
+    assert js_package == {"type": "module"}
+    assert JS_TEST_README.is_file()
+    assert phase_five_contract["js_test_command"] in js_test_readme
+    assert "Node's built-in test runner" in js_test_readme
+    assert "Keep test files flat in this directory" in js_test_readme
+    assert not LEGACY_JS_PYTEST_BRIDGE.exists()
+    assert not any(JS_TEST_ROOT.glob("*.py"))
+
+
+def test_ci_workflow_runs_eval_dashboard_js_tests_explicitly() -> None:
+    """Ensure CI exposes the dashboard JS logic tests as their own explicit Node-based check."""
+
+    workflow = _workflow_definition()
+    js_job = workflow["jobs"]["eval-dashboard-js"]
+    steps = js_job["steps"]
+
+    assert js_job["runs-on"] == "ubuntu-latest"
+    assert any(step.get("uses") == "actions/setup-node@v4" for step in steps)
+    assert any(
+        "node --test tests/unit/eval_dashboard/js/*.test.mjs" in step.get("run", "")
+        for step in steps
+    )
+
+
+def test_baseline_feature_expectation_keys_match_current_contract() -> None:
+    """Ensure the baseline summary keeps the expected feature-expectation schema."""
+
+    summary = _baseline_summary()
+
+    assert set(summary["feature_expectations"]) == EXPECTED_FEATURE_KEYS
+
+
+def test_current_runtime_preserves_baseline_feature_expectations() -> None:
+    """Ensure each baseline feature claim is still grounded in current HTML, CSS, or fixture contracts."""
+
+    summary = _baseline_summary()
+    html = _dashboard_html()
+    css_entry = _css_entry()
+    tokens_css = _tokens_css()
+
+    contract_checks = {
+        "supports_local_load": lambda: 'id="folderInput"' in html,
+        "supports_github_url_load": lambda: 'id="gitUrlInput"' in html
+        and 'id="loadGitButton"' in html,
+        "supports_prediction_grouping": lambda: all(
+            snippet in html
+            for snippet in (
+                'id="groupByAllButton"',
+                'id="groupByNoneButton"',
+                'id="groupByToggleButton"',
+            )
+        ),
+        "supports_experiment_tabs": lambda: 'id="evalTabs"' in html,
+        "supports_json_side_pane": lambda: 'id="evalJsonPane"' in html,
+        "supports_grouped_bar_plots": lambda: (
+            FIXTURE_ROOT / "bars" / "job_return_value.json"
+        ).is_file(),
+        "supports_error_plots": lambda: (
+            FIXTURE_ROOT / "errors" / "job_return_value.json"
+        ).is_file(),
+        "supports_confusion_matrix_plots": lambda: (
+            FIXTURE_ROOT / "confusion_matrix" / "job_return_value.json"
+        ).is_file(),
+        "supports_tpfpfn_plots": lambda: (
+            FIXTURE_ROOT / "tpfpfn" / "job_return_value.json"
+        ).is_file(),
+        "supports_figure_export": lambda: 'id="downloadFiguresButton"' in html,
+        "supports_light_dark_styling": lambda: 'href="assets/css/index.css"' in html
+        and "tokens.css" in css_entry
+        and "prefers-color-scheme" in tokens_css
+        and "color-scheme:" in tokens_css,
+    }
+
+    for feature_name, expected in summary["feature_expectations"].items():
+        assert feature_name in contract_checks
+        assert contract_checks[feature_name]() is expected

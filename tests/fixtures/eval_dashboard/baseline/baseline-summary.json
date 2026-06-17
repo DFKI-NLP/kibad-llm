@@ -1,0 +1,221 @@
+{
+  "baseline_version": 12,
+  "captured_at": "2026-06-03",
+  "implementation_shape": {
+    "runtime_entrypoint": "docs/eval-dashboard/index.html",
+    "compatibility_entrypoint": null,
+    "page_style": "single static HTML page with inline CSS and inline JavaScript",
+    "css_extraction_started": false,
+    "js_extraction_started": false
+  },
+  "phase_three_contract": {
+    "inline_script_normalization": "extract the lone inline <script> block, normalize CRLF to LF, then strip outer whitespace",
+    "inline_script_line_count": 5333,
+    "inline_script_sha256": "620f3059deb6c8d5a61544cf9ded22c04edae09bf02c84c31b7daed7461f989a"
+  },
+  "phase_four_contract": {
+    "main_js_path": "docs/eval-dashboard/assets/js/main.js",
+    "entrypoint_contract": "docs/eval-dashboard/index.html loads assets/js/main.js as one external type=module runtime entry file"
+  },
+  "phase_five_contract": {
+    "utility_module_root": "docs/eval-dashboard/assets/js/utils",
+    "utility_modules": [
+      "flatten.js",
+      "sort.js",
+      "text.js",
+      "values.js"
+    ],
+    "js_test_files": [
+      "utils.flatten.test.mjs",
+      "utils.sort.test.mjs",
+      "utils.text.test.mjs",
+      "utils.values.test.mjs"
+    ],
+    "js_test_root": "tests/unit/eval_dashboard/js",
+    "js_test_strategy": "browser-free utility logic tests executed via the Node.js built-in test runner",
+    "js_test_command": "node --test tests/unit/eval_dashboard/js/*.test.mjs"
+  },
+  "phase_six_contract": {
+    "state_module_root": "docs/eval-dashboard/assets/js/state",
+    "state_modules": [
+      "selectors.js",
+      "store.js"
+    ],
+    "js_test_files": [
+      "state.selectors.test.mjs",
+      "state.store.test.mjs"
+    ],
+    "selector_focus": [
+      "prediction grouping",
+      "evaluation context derivation",
+      "plot-group derivation",
+      "selection-state synchronization"
+    ]
+  },
+  "phase_seven_contract": {
+    "data_module_root": "docs/eval-dashboard/assets/js/data",
+    "data_modules": [
+      "normalize.js",
+      "parse-overrides.js"
+    ],
+    "js_test_files": [
+      "data.normalize.test.mjs",
+      "data.parse-overrides.test.mjs"
+    ],
+    "normalization_focus": [
+      "supported version handling",
+      "override parsing semantics",
+      "missing prediction id handling",
+      "unsupported version rejection"
+    ]
+  },
+  "phase_eight_contract": {
+    "data_module_root": "docs/eval-dashboard/assets/js/data",
+    "data_modules": [
+      "file-loader.js",
+      "git-loader.js",
+      "ingest-runs.js"
+    ],
+    "js_test_files": [
+      "data.file-loader.test.mjs",
+      "data.git-loader.test.mjs",
+      "data.ingest-runs.test.mjs"
+    ],
+    "loader_focus": [
+      "local file path filtering, source-label derivation, and FileReader fallback",
+      "shared run ingestion and duplicate/conflict detection",
+      "shared ingestion summary accounting for invalid, unsupported-version, and missing-prediction-id runs",
+      "github tree URL parsing and recursive file loading",
+      "github ref resolution across branches, tags, and unresolved refs",
+      "github loader empty-input and no-files-found paths"
+    ]
+  },
+  "phase_nine_contract": {
+    "ui_module_root": "docs/eval-dashboard/assets/js/ui",
+    "browser_module_root": "docs/eval-dashboard/assets/js/browser",
+    "ui_modules": [
+      "dom.js",
+      "status.js",
+      "table-shared.js"
+    ],
+    "browser_modules": [
+      "session.js"
+    ],
+    "js_test_files": [
+      "browser.session.test.mjs",
+      "ui.dom.test.mjs",
+      "ui.status.test.mjs",
+      "ui.table-shared.test.mjs"
+    ],
+    "focus": [
+      "shared DOM reference capture",
+      "shared table sort/truncation/sticky helpers",
+      "status and progress DOM rendering",
+      "github token persistence and git_url query-parameter synchronization"
+    ]
+  },
+  "phase_ten_a_contract": {
+    "ui_module_root": "docs/eval-dashboard/assets/js/ui",
+    "ui_modules": [
+      "controls.js",
+      "eval-json-pane.js",
+      "tabs.js"
+    ],
+    "js_test_files": [
+      "ui.controls.test.mjs",
+      "ui.eval-json-pane.test.mjs",
+      "ui.tabs.test.mjs"
+    ],
+    "focus": [
+      "experiment-tab active-state resolution and shared tab-button rendering",
+      "prediction and evaluation truncate/default/group-by control rendering",
+      "thin plot-control rendering",
+      "eval json pane highlighting and selected-content resolution"
+    ]
+  },
+  "phase_ten_b_contract": {
+    "ui_module_root": "docs/eval-dashboard/assets/js/ui",
+    "ui_modules": [
+      "prediction-table.js",
+      "evaluation-table.js"
+    ],
+    "js_test_files": [
+      "ui.prediction-table.test.mjs",
+      "ui.evaluation-table.test.mjs"
+    ],
+    "focus": [
+      "prediction table section-building and renderer integration",
+      "evaluation table section-building and renderer integration",
+      "shared select-all and static control-header rendering"
+    ]
+  },
+  "phase_eleven_contract": {
+    "plot_module_root": "docs/eval-dashboard/assets/js/plots",
+    "plot_modules": [
+      "shared.js",
+      "bars.js",
+      "legend.js",
+      "confusion.js",
+      "tpfpfn.js",
+      "export.js"
+    ],
+    "js_test_files": [
+      "plots.shared.test.mjs",
+      "plots.bars.test.mjs",
+      "plots.confusion.test.mjs",
+      "plots.tpfpfn.test.mjs",
+      "plots.export.test.mjs"
+    ],
+    "focus": [
+      "shared plot display, legend, metric-path, plot-entry, and tab-map helpers",
+      "bar/error plot-entry, SVG renderer, and tab-grid module boundaries",
+      "grouped legend-model module boundaries",
+      "confusion matrix collection expansion, aggregation, filtering, and tab maps",
+      "TP/FP/FN collection expansion, aggregation, filtering, tab maps, palettes, and copy summaries",
+      "figure filename derivation, SVG export helpers, CRC32, and ZIP archive creation"
+    ]
+  },
+  "phase_twelve_contract": {
+    "plot_dashboard_module": "docs/eval-dashboard/assets/js/plots/dashboard.js",
+    "main_js_role": "dashboard orchestration entrypoint",
+    "js_test_files": [
+      "plots.dashboard.test.mjs"
+    ],
+    "focus": [
+      "main.js delegates dashboard plot rendering, plot-control synchronization, tooltip wiring, and figure export to plots/dashboard.js",
+      "plots/dashboard.js adapts the extracted Phase 11 plot modules to dashboard state and DOM refs",
+      "dashboard adapter seams are covered by Node.js unit tests"
+    ]
+  },
+  "feature_expectations": {
+    "supports_local_load": true,
+    "supports_github_url_load": true,
+    "supports_prediction_grouping": true,
+    "supports_experiment_tabs": true,
+    "supports_json_side_pane": true,
+    "supports_grouped_bar_plots": true,
+    "supports_error_plots": true,
+    "supports_confusion_matrix_plots": true,
+    "supports_tpfpfn_plots": true,
+    "supports_figure_export": true,
+    "supports_light_dark_styling": true
+  },
+  "fixture_source_candidates": [
+    "311_better_default_temperature",
+    "327_faktencheck_core_with_persona",
+    "333_organism_trends_with_persona",
+    "380_faktencheck_core",
+    "380_organism_trends",
+    "397_faktencheck_core_v1_for_chunking",
+    "422_organism_trends",
+    "428_organism_trends_with_chunking",
+    "454_faktencheck_core",
+    "477_faktencheck_core",
+    "477_organism_trends",
+    "481_faktencheck_core"
+  ],
+  "notes": [
+    "Prefer curated snapshots over direct runtime access to data/prediction_results/logs.",
+    "Use older runs only when needed to preserve compatibility with an earlier input shape."
+  ]
+}

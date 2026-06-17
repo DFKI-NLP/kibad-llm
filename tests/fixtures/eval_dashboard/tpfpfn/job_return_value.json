@@ -1,0 +1,47 @@
+{
+  "version": 2,
+  "type": "TpFpFnCollectorCollection",
+  "data": {
+    "habitat": {
+      "4YXRYRJC": {
+        "tp": [
+          "Agrar- und Offenland",
+          "Binnengewässer und Auen"
+        ],
+        "fp": [],
+        "fn": []
+      },
+      "7DSY6RMR": {
+        "tp": [
+          "Küsten und Küstengewässer"
+        ],
+        "fp": [
+          "Binnengewässer und Auen"
+        ],
+        "fn": []
+      }
+    }
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/397_faktencheck_core_v1_for_chunking/2026-04-02_15-50-22/2026-04-02_20-52-05_287896/predictions.jsonl",
+      "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/397_faktencheck_core_v1_for_chunking/2026-04-02_15-50-22/2026-04-02_20-52-05_287896/predictions.jsonl",
+      "time_pdf_conversion": 0.0038851649737916887,
+      "time_extraction": 3701.8832533429954,
+      "time_start": 1775151125,
+      "time_end": 1775155031,
+      "commit_hash": "e534df6798f703f101b10ec9e1294df86c8e1597",
+      "branch": "pull/477/head",
+      "is_dirty": false,
+      "slurm_job_id": "2674976"
+    },
+    "overrides": {
+      "name": "397_faktencheck_core_v1_for_chunking",
+      "experiment/predict": "faktencheck_core_v1_with_chunking_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "gpt_oss_20b_in_process",
+      "seed": "42"
+    }
+  }
+}
+

@@ -1,0 +1,17 @@
+[2026-06-16 14:57:44,087][__main__][INFO] - Loading dataset with predictions and references ...
+[2026-06-16 14:57:44,088][__main__][INFO] - Dataset config: {'predictions': {'_target_': 'kibad_llm.dataset.prediction.load_with_metadata', 'log': 'logs/397_faktencheck_core_v1_for_chunking/predict/multiruns/2026-04-08_19-06-32/2', 'file': None, 'id_key': 'file_name', 'process_id': {'_partial_': True, '_target_': 'kibad_llm.utils.path.strip_filename_extension'}, 'preprocess': None}, '_target_': 'kibad_llm.dataset.utils.merge_references_into_predictions', 'references': {}, 'allow_missing_references': True}
+[2026-06-16 14:57:44,089][kibad_llm.dataset.json][INFO] - Loading dataset from JSON file: predictions/397_faktencheck_core_v1_for_chunking/2026-04-08_19-06-32/2026-04-09_06-54-33_493619/predictions.jsonl ...
+[2026-06-16 14:57:44,141][__main__][INFO] - Instantiating metric ...
+[2026-06-16 14:57:44,141][__main__][INFO] - Metric config: {'_target_': 'kibad_llm.metrics.ErrorCollector', 'type_separator': ': ', 'show_errors': True}
+[2026-06-16 14:57:44,142][__main__][INFO] - Computing metric ...
+[2026-06-16 14:57:44,142][kibad_llm.metrics.errors][INFO] - Collected error (id=3E8X2AK3): JSONDecodeError: Unterminated string starting at: line 697 column 9 (char 22405)
+[2026-06-16 14:57:44,142][kibad_llm.metrics.errors][INFO] - Collected error (id=3LGPK6BL): JSONDecodeError: Unterminated string starting at: line 201 column 9 (char 14159)
+[2026-06-16 14:57:44,142][kibad_llm.metrics.errors][INFO] - Collected error (id=Z6CEAMK4): JSONDecodeError: Unterminated string starting at: line 665 column 28 (char 17543)
+[2026-06-16 14:57:44,143][kibad_llm.metric][INFO] - Evaluation results:
+{
+  "no_error": 1651,
+  "with_error": 3,
+  "JSONDecodeError": 3
+}
+[2026-06-16 14:57:44,146][kibad_llm.hydra_callbacks.save_job_return_value.SaveJobReturnValueCallback][INFO] - Saving job_return in /home/arbi01/projects/kibad-llm/logs/519_faktencheck_core/evaluate/multiruns/2026-06-16_14-57-41/10/job_return_value.json
+[2026-06-16 14:57:44,146][kibad_llm.hydra_callbacks.save_job_return_value.SaveJobReturnValueCallback][INFO] - Saving job_return in /home/arbi01/projects/kibad-llm/logs/519_faktencheck_core/evaluate/multiruns/2026-06-16_14-57-41/10/job_return_value.md

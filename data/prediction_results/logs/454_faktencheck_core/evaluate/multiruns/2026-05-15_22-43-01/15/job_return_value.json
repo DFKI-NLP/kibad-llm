@@ -1,0 +1,680 @@
+{
+  "4BAX6GKK": {
+    "tp": [
+      "Artenvielfalt"
+    ],
+    "fp": [],
+    "fn": []
+  },
+  "2NJD9Y9T": {
+    "tp": [
+      "Zusammensetzung der Artengemeinschaft"
+    ],
+    "fp": [],
+    "fn": [
+      "Artenvielfalt"
+    ]
+  },
+  "3Z5BFIBL": {
+    "tp": [
+      "Zusammensetzung der Artengemeinschaft"
+    ],
+    "fp": [
+      "Artenvielfalt",
+      "Habitatdiversität"
+    ],
+    "fn": []
+  },
+  "2FDHAHAR": {
+    "tp": [
+      "Zusammensetzung der Artengemeinschaft"
+    ],
+    "fp": [],
+    "fn": [
+      "Artenvielfalt"
+    ]
+  },
+  "DFWI5DCP": {
+    "tp": [
+      "Zusammensetzung der Artengemeinschaft"
+    ],
+    "fp": [],
+    "fn": [
+      "Habitatdiversität"
+    ]
+  },
+  "NZ7ETG2K": {
+    "tp": [
+      "Zusammensetzung der Artengemeinschaft"
+    ],
+    "fp": [],
+    "fn": []
+  },
+  "3TWLQG7F": {
+    "tp": [
+      "Artenvielfalt"
+    ],
+    "fp": [],
+    "fn": []
+  },
+  "8UVBVFHS": {
+    "tp": [
+      "Artenvielfalt"
+    ],
+    "fp": [],
+    "fn": [
+      "Habitatdiversität"
+    ]
+  },
+  "3LGPK6BL": {
+    "tp": [
+      "Zusammensetzung der Artengemeinschaft"
+    ],
+    "fp": [
+      "Artenvielfalt",
+      "Funktionelle Diversität"
+    ],
+    "fn": [
+      "Habitatdiversität"
+    ]
+  },
+  "6BKNRKUA": {
+    "tp": [
+      "Artenvielfalt"
+    ],
+    "fp": [
+      "Strukturelle Diversität"
+    ],
+    "fn": []
+  },
+  "46RX4AEN": {
+    "tp": [
+      "Artenvielfalt",
+      "Zusammensetzung der Artengemeinschaft"
+    ],
+    "fp": [],
+    "fn": [
+      "Funktionelle Diversität",
+      "Genetische Diversität",
+      "Habitatdiversität",
+      "Phylogenetische Diversität",
+      "Strukturelle Diversität"
+    ]
+  },
+  "SVXF36H4": {
+    "tp": [
+      "Artenvielfalt"
+    ],
+    "fp": [],
+    "fn": []
+  },
+  "6G2THNDX": {
+    "tp": [
+      "Artenvielfalt"
+    ],
+    "fp": [
+      "Strukturelle Diversität",
+      "Zusammensetzung der Artengemeinschaft"
+    ],
+    "fn": [
+      "Habitatdiversität"
+    ]
+  },
+  "Z6CEAMK4": {
+    "tp": [
+      "Artenvielfalt",
+      "Zusammensetzung der Artengemeinschaft"
+    ],
+    "fp": [],
+    "fn": []
+  },
+  "QR5QGMTI": {
+    "tp": [
+      "Artenvielfalt"
+    ],
+    "fp": [],
+    "fn": [
+      "Zusammensetzung der Artengemeinschaft"
+    ]
+  },
+  "885FDL5Z": {
+    "tp": [
+      "Artenvielfalt",
+      "Genetische Diversität"
+    ],
+    "fp": [
+      "Funktionelle Diversität",
+      "Strukturelle Diversität"
+    ],
+    "fn": []
+  },
+  "F582S9H8": {
+    "tp": [
+      "Artenvielfalt",
+      "Zusammensetzung der Artengemeinschaft"
+    ],
+    "fp": [],
+    "fn": []
+  },
+  "2P53UVJA": {
+    "tp": [
+      "Artenvielfalt"
+    ],
+    "fp": [],
+    "fn": [
+      "Funktionelle Diversität",
+      "Genetische Diversität",
+      "Habitatdiversität",
+      "Strukturelle Diversität",
+      "Zusammensetzung der Artengemeinschaft"
+    ]
+  },
+  "8ZESW42A": {
+    "tp": [
+      "Artenvielfalt"
+    ],
+    "fp": [],
+    "fn": [
+      "Zusammensetzung der Artengemeinschaft"
+    ]
+  },
+  "6RLMM8BQ": {
+    "tp": [
+      "Artenvielfalt"
+    ],
+    "fp": [],
+    "fn": []
+  },
+  "4Z67G9T5": {
+    "tp": [
+      "Artenvielfalt"
+    ],
+    "fp": [
+      "Funktionelle Diversität",
+      "Zusammensetzung der Artengemeinschaft"
+    ],
+    "fn": []
+  },
+  "5SIYLM9W": {
+    "tp": [],
+    "fp": [
+      "Artenvielfalt",
+      "Funktionelle Diversität",
+      "Zusammensetzung der Artengemeinschaft"
+    ],
+    "fn": []
+  },
+  "XMIP837H": {
+    "tp": [],
+    "fp": [
+      "Artenvielfalt"
+    ],
+    "fn": []
+  },
+  "7DSY6RMR": {
+    "tp": [],
+    "fp": [
+      "Artenvielfalt",
+      "Zusammensetzung der Artengemeinschaft"
+    ],
+    "fn": []
+  },
+  "6332SBW4": {
+    "tp": [],
+    "fp": [
+      "Artenvielfalt"
+    ],
+    "fn": [
+      "Habitatdiversität"
+    ]
+  },
+  "PMJGMLUG": {
+    "tp": [],
+    "fp": [
+      "Funktionelle Diversität",
+      "Zusammensetzung der Artengemeinschaft"
+    ],
+    "fn": []
+  },
+  "ASEHVK97": {
+    "tp": [],
+    "fp": [
+      "Zusammensetzung der Artengemeinschaft"
+    ],
+    "fn": [
+      "Genetische Diversität",
+      "Phylogenetische Diversität"
+    ]
+  },
+  "3WEEGFGW": {
+    "tp": [],
+    "fp": [
+      "Artenvielfalt",
+      "Genetische Diversität",
+      "Habitatdiversität",
+      "Zusammensetzung der Artengemeinschaft"
+    ],
+    "fn": []
+  },
+  "25ABQZIH": {
+    "tp": [],
+    "fp": [
+      "Artenvielfalt"
+    ],
+    "fn": []
+  },
+  "4YXRYRJC": {
+    "tp": [],
+    "fp": [
+      "Artenvielfalt",
+      "Genetische Diversität"
+    ],
+    "fn": []
+  },
+  "5I8A3W7U": {
+    "tp": [],
+    "fp": [
+      "Artenvielfalt",
+      "Habitatdiversität"
+    ],
+    "fn": []
+  },
+  "2RXMDX8I": {
+    "tp": [],
+    "fp": [
+      "Artenvielfalt",
+      "Zusammensetzung der Artengemeinschaft"
+    ],
+    "fn": []
+  },
+  "N82RZ7WL": {
+    "tp": [],
+    "fp": [
+      "Zusammensetzung der Artengemeinschaft"
+    ],
+    "fn": [
+      "Artenvielfalt"
+    ]
+  },
+  "84QQ9F5S": {
+    "tp": [],
+    "fp": [
+      "Zusammensetzung der Artengemeinschaft"
+    ],
+    "fn": []
+  },
+  "G7H698R6": {
+    "tp": [],
+    "fp": [
+      "Artenvielfalt",
+      "Zusammensetzung der Artengemeinschaft"
+    ],
+    "fn": []
+  },
+  "KXP8FP94": {
+    "tp": [],
+    "fp": [
+      "Artenvielfalt",
+      "Zusammensetzung der Artengemeinschaft"
+    ],
+    "fn": []
+  },
+  "64BS3HZ3": {
+    "tp": [],
+    "fp": [
+      "Artenvielfalt"
+    ],
+    "fn": []
+  },
+  "6CMGEZPD": {
+    "tp": [],
+    "fp": [
+      "Artenvielfalt",
+      "Zusammensetzung der Artengemeinschaft"
+    ],
+    "fn": []
+  },
+  "FG3YVDCZ": {
+    "tp": [],
+    "fp": [
+      "Artenvielfalt",
+      "Funktionelle Diversität"
+    ],
+    "fn": []
+  },
+  "2E9XWUUE": {
+    "tp": [],
+    "fp": [
+      "Artenvielfalt",
+      "Zusammensetzung der Artengemeinschaft"
+    ],
+    "fn": []
+  },
+  "42STMMQA": {
+    "tp": [],
+    "fp": [
+      "Habitatdiversität"
+    ],
+    "fn": []
+  },
+  "5LC5W7KF": {
+    "tp": [],
+    "fp": [
+      "Artenvielfalt"
+    ],
+    "fn": [
+      "Zusammensetzung der Artengemeinschaft"
+    ]
+  },
+  "25RIYD2C": {
+    "tp": [],
+    "fp": [
+      "Artenvielfalt"
+    ],
+    "fn": []
+  },
+  "3RSTTAEZ": {
+    "tp": [],
+    "fp": [
+      "Artenvielfalt"
+    ],
+    "fn": []
+  },
+  "HNT6RCEA": {
+    "tp": [],
+    "fp": [
+      "Funktionelle Diversität"
+    ],
+    "fn": [
+      "Artenvielfalt"
+    ]
+  },
+  "3439JHQD": {
+    "tp": [],
+    "fp": [
+      "Artenvielfalt"
+    ],
+    "fn": []
+  },
+  "6JGB9KZ2": {
+    "tp": [],
+    "fp": [
+      "Artenvielfalt"
+    ],
+    "fn": []
+  },
+  "XU5H8QJI": {
+    "tp": [],
+    "fp": [
+      "Zusammensetzung der Artengemeinschaft"
+    ],
+    "fn": []
+  },
+  "UGNPXL8B": {
+    "tp": [],
+    "fp": [
+      "Artenvielfalt",
+      "Funktionelle Diversität",
+      "Genetische Diversität"
+    ],
+    "fn": [
+      "Zusammensetzung der Artengemeinschaft"
+    ]
+  },
+  "DAI3VR9M": {
+    "tp": [],
+    "fp": [
+      "Zusammensetzung der Artengemeinschaft"
+    ],
+    "fn": []
+  },
+  "5XHDHCIQ": {
+    "tp": [],
+    "fp": [
+      "Artenvielfalt"
+    ],
+    "fn": []
+  },
+  "5TMUACTH": {
+    "tp": [],
+    "fp": [
+      "Artenvielfalt"
+    ],
+    "fn": []
+  },
+  "WW9EZUVE": {
+    "tp": [],
+    "fp": [
+      "Funktionelle Diversität"
+    ],
+    "fn": [
+      "Artenvielfalt"
+    ]
+  },
+  "2EUNPHDZ": {
+    "tp": [],
+    "fp": [
+      "Artenvielfalt"
+    ],
+    "fn": []
+  },
+  "4JF8F3WL": {
+    "tp": [],
+    "fp": [
+      "Zusammensetzung der Artengemeinschaft"
+    ],
+    "fn": []
+  },
+  "49Z7RPDP": {
+    "tp": [],
+    "fp": [
+      "Artenvielfalt"
+    ],
+    "fn": []
+  },
+  "ZS59ID9J": {
+    "tp": [],
+    "fp": [
+      "Zusammensetzung der Artengemeinschaft"
+    ],
+    "fn": []
+  },
+  "VQT78VA5": {
+    "tp": [],
+    "fp": [
+      "Artenvielfalt"
+    ],
+    "fn": [
+      "Zusammensetzung der Artengemeinschaft"
+    ]
+  },
+  "XQ7DW4VS": {
+    "tp": [],
+    "fp": [
+      "Artenvielfalt"
+    ],
+    "fn": [
+      "Zusammensetzung der Artengemeinschaft"
+    ]
+  },
+  "NGFBPJCG": {
+    "tp": [],
+    "fp": [
+      "Artenvielfalt"
+    ],
+    "fn": [
+      "Zusammensetzung der Artengemeinschaft"
+    ]
+  },
+  "6DCMK7GA": {
+    "tp": [],
+    "fp": [
+      "Artenvielfalt"
+    ],
+    "fn": []
+  },
+  "84P9CN4J": {
+    "tp": [],
+    "fp": [
+      "Artenvielfalt"
+    ],
+    "fn": []
+  },
+  "PBV2BUX6": {
+    "tp": [],
+    "fp": [
+      "Artenvielfalt"
+    ],
+    "fn": []
+  },
+  "29Q84X7V": {
+    "tp": [],
+    "fp": [
+      "Habitatdiversität"
+    ],
+    "fn": []
+  },
+  "8GEYSUXR": {
+    "tp": [],
+    "fp": [
+      "Artenvielfalt"
+    ],
+    "fn": [
+      "Zusammensetzung der Artengemeinschaft"
+    ]
+  },
+  "ZQ329JQ6": {
+    "tp": [],
+    "fp": [
+      "Artenvielfalt"
+    ],
+    "fn": []
+  },
+  "XG99Q5DJ": {
+    "tp": [],
+    "fp": [
+      "Artenvielfalt"
+    ],
+    "fn": []
+  },
+  "57CBE476": {
+    "tp": [],
+    "fp": [
+      "Artenvielfalt"
+    ],
+    "fn": [
+      "Habitatdiversität",
+      "Zusammensetzung der Artengemeinschaft"
+    ]
+  },
+  "KJ7JVAEW": {
+    "tp": [],
+    "fp": [
+      "Artenvielfalt"
+    ],
+    "fn": [
+      "Genetische Diversität",
+      "Zusammensetzung der Artengemeinschaft"
+    ]
+  },
+  "6792YBL7": {
+    "tp": [],
+    "fp": [
+      "Artenvielfalt"
+    ],
+    "fn": []
+  },
+  "3E8X2AK3": {
+    "tp": [],
+    "fp": [
+      "Artenvielfalt"
+    ],
+    "fn": []
+  },
+  "6D23L7B5": {
+    "tp": [],
+    "fp": [
+      "Zusammensetzung der Artengemeinschaft"
+    ],
+    "fn": []
+  },
+  "8HFL2MPL": {
+    "tp": [],
+    "fp": [
+      "Funktionelle Diversität"
+    ],
+    "fn": []
+  },
+  "BMTEN2FG": {
+    "tp": [],
+    "fp": [],
+    "fn": [
+      "Genetische Diversität"
+    ]
+  },
+  "V2BVMBPF": {
+    "tp": [],
+    "fp": [],
+    "fn": [
+      "Artenvielfalt",
+      "Habitatdiversität"
+    ]
+  },
+  "TAXBZ8G5": {
+    "tp": [],
+    "fp": [],
+    "fn": [
+      "Zusammensetzung der Artengemeinschaft"
+    ]
+  },
+  "8QKB2BJE": {
+    "tp": [],
+    "fp": [],
+    "fn": [
+      "Habitatdiversität"
+    ]
+  },
+  "V477VCE6": {
+    "tp": [],
+    "fp": [],
+    "fn": [
+      "Zusammensetzung der Artengemeinschaft"
+    ]
+  },
+  "LY4P94Q4": {
+    "tp": [],
+    "fp": [],
+    "fn": [
+      "Strukturelle Diversität"
+    ]
+  },
+  "V6SVVBUH": {
+    "tp": [],
+    "fp": [],
+    "fn": [
+      "Zusammensetzung der Artengemeinschaft"
+    ]
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/397_faktencheck_core_v1_for_chunking/2026-04-02_16-54-29/2026-04-02_19-55-08_833089/predictions.jsonl",
+      "output_file_absolute": "/netscratch/hmeinhof/tmp/kiba-d_57defed2-37c5-4b53-ba43-232dd518697f/repo/predictions/397_faktencheck_core_v1_for_chunking/2026-04-02_16-54-29/2026-04-02_19-55-08_833089/predictions.jsonl",
+      "time_pdf_conversion": 0.0054986049653962255,
+      "time_extraction": 10681.676698156982,
+      "time_start": 1775152508,
+      "time_end": 1775163263,
+      "commit_hash": "81d3de5422270e9a0394c3560def173b4373b2f2",
+      "branch": "commit/81d3de542227",
+      "is_dirty": false,
+      "slurm_job_id": "2737887"
+    },
+    "overrides": {
+      "name": "397_faktencheck_core_v1_for_chunking",
+      "experiment/predict": "faktencheck_core_fields_schema_with_chunking",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "qwen3_30b_in_process",
+      "seed": "1337",
+      "extractor.max_char_buffer": "175000"
+    }
+  }
+}

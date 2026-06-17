@@ -1,0 +1,5 @@
+# This is a simple default configuration for the extractors. Do not define any specific schema here,
+# but just referencing an existing one.
+
+defaults:
+  - faktencheck_core

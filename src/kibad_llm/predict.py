@@ -17,8 +17,14 @@ from llama_index.core import set_global_handler
 from omegaconf import DictConfig, OmegaConf
 from omegaconf.errors import OmegaConfBaseException
 
-from kibad_llm.config import PROJ_ROOT
+from kibad_llm.config import PROJ_ROOT, RESULT_FORMAT_VERSION_KEY
 from kibad_llm.utils.datasets import wrap_map_func
+
+# This needs to be incremented when the format of the prediction results changes in a non-backwards-compatible
+# way, e.g. if we change the structure of the output JSON lines or the expected metadata format. This allows
+# us to keep track of which version of the prediction results we are working with and handle them accordingly
+# in downstream processing.
+PREDICT_VERSION = 1
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +32,17 @@ logger = logging.getLogger(__name__)
 def _file_name_generator(file_names: list[str]):
     for file_name in file_names:
         yield {"file_name": file_name}
+
+
+def _get_git_branch_name(repo: git.Repo) -> str:
+    """Return the current branch name without crashing on detached HEAD checkouts."""
+    if repo.head.is_detached:
+        return os.getenv("GITHUB_HEAD_REF") or os.getenv("GITHUB_REF_NAME") or "detached"
+
+    try:
+        return repo.active_branch.name
+    except TypeError:
+        return os.getenv("GITHUB_HEAD_REF") or os.getenv("GITHUB_REF_NAME") or "detached"
 
 
 def get_git_info() -> dict[str, str | bool]:
@@ -38,7 +55,7 @@ def get_git_info() -> dict[str, str | bool]:
         repo = git.Repo(search_parent_directories=True)
         return {
             "commit_hash": repo.head.object.hexsha,
-            "branch": repo.active_branch.name,
+            "branch": _get_git_branch_name(repo),
             "is_dirty": repo.is_dirty(),
         }
     except (git.InvalidGitRepositoryError, git.GitCommandError) as e:
@@ -149,6 +166,7 @@ def predict(cfg: DictConfig) -> dict[str, Any]:
     logger.info(f"Writing results to {output_file} ...")
     dataset.to_json(output_file, force_ascii=False)
     result = {
+        RESULT_FORMAT_VERSION_KEY: PREDICT_VERSION,
         "output_file": os.path.relpath(output_file, start=os.getcwd()),
         "output_file_absolute": os.path.abspath(output_file),
         "time_pdf_conversion": t_delta_pdf_conversion,

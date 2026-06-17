@@ -1,0 +1,3406 @@
+{
+  "version": 2,
+  "type": "ConfusionMatrixCollection",
+  "data": {
+    "habitat": {
+      "Agrar- und Offenland": {
+        "Agrar- und Offenland": 33,
+        "UNDETECTED": 8
+      },
+      "Binnengewässer und Auen": {
+        "Binnengewässer und Auen": 19,
+        "UNDETECTED": 6
+      },
+      "Boden": {
+        "Boden": 5,
+        "UNDETECTED": 8
+      },
+      "Küsten und Küstengewässer": {
+        "Küsten und Küstengewässer": 33,
+        "UNDETECTED": 5
+      },
+      "UNASSIGNABLE": {
+        "Agrar- und Offenland": 7,
+        "Binnengewässer und Auen": 21,
+        "Boden": 9,
+        "Küsten und Küstengewässer": 3,
+        "Urbane Räume": 6,
+        "Wald": 14
+      },
+      "Urbane Räume": {
+        "UNDETECTED": 4,
+        "Urbane Räume": 3
+      },
+      "Wald": {
+        "UNDETECTED": 3,
+        "Wald": 11
+      }
+    },
+    "biodiversity_level": {
+      "Artenvielfalt": {
+        "Artenvielfalt": 19,
+        "UNDETECTED": 2
+      },
+      "Funktionelle Diversität": {
+        "Funktionelle Diversität": 1,
+        "UNDETECTED": 1
+      },
+      "Genetische Diversität": {
+        "Genetische Diversität": 5,
+        "UNDETECTED": 1
+      },
+      "Habitatdiversität": {
+        "Habitatdiversität": 4,
+        "UNDETECTED": 6
+      },
+      "Phylogenetische Diversität": {
+        "UNDETECTED": 2
+      },
+      "Strukturelle Diversität": {
+        "Strukturelle Diversität": 1,
+        "UNDETECTED": 2
+      },
+      "UNASSIGNABLE": {
+        "Artenvielfalt": 47,
+        "Funktionelle Diversität": 12,
+        "Genetische Diversität": 8,
+        "Habitatdiversität": 14,
+        "Phylogenetische Diversität": 2,
+        "Strukturelle Diversität": 6,
+        "Zusammensetzung der Artengemeinschaft": 40
+      },
+      "Zusammensetzung der Artengemeinschaft": {
+        "UNDETECTED": 5,
+        "Zusammensetzung der Artengemeinschaft": 18
+      }
+    },
+    "ecosystem_type.term": {
+      "Bauwerke": {
+        "UNDETECTED": 1
+      },
+      "Benthal der Nordsee": {
+        "Benthal der Nordsee": 3,
+        "UNDETECTED": 6
+      },
+      "Benthal der Ostsee": {
+        "Benthal der Ostsee": 1,
+        "UNDETECTED": 1
+      },
+      "Fließende Gewässer": {
+        "Fließende Gewässer": 7,
+        "UNDETECTED": 2
+      },
+      "Grundwasser und Höhlengewässer": {
+        "Grundwasser und Höhlengewässer": 1
+      },
+      "Hoch-, Zwischen- und Übergangsmoore": {
+        "Hoch-, Zwischen- und Übergangsmoore": 1
+      },
+      "Höhlen (einschließlich Stollen, Brunnenschächte etc.)": {
+        "Höhlen (einschließlich Stollen, Brunnenschächte etc.)": 1
+      },
+      "Küstendünen": {
+        "UNDETECTED": 1
+      },
+      "Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent)": {
+        "Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent)": 2
+      },
+      "Nadel(Misch)Wälder und -Forste": {
+        "Nadel(Misch)Wälder und -Forste": 1
+      },
+      "Pelagial der Nordsee": {
+        "Pelagial der Nordsee": 3,
+        "UNDETECTED": 1
+      },
+      "Pelagial der Ostsee": {
+        "Pelagial der Ostsee": 2,
+        "UNDETECTED": 6
+      },
+      "Quellen (inklusive Quellabfluss (Krenal))": {
+        "Quellen (inklusive Quellabfluss (Krenal))": 1
+      },
+      "Salzgrünland der Nordseeküste (Supralitoral)": {
+        "Salzgrünland der Nordseeküste (Supralitoral)": 1
+      },
+      "Stehende Gewässer": {
+        "Stehende Gewässer": 4
+      },
+      "Sände, Sand-, Geröll- und Blockstrände": {
+        "Sände, Sand-, Geröll- und Blockstrände": 1
+      },
+      "Trockenrasen sowie Grünland trockener bis frischer Standorte": {
+        "Trockenrasen sowie Grünland trockener bis frischer Standorte": 1
+      },
+      "UNASSIGNABLE": {
+        "Anthropogene Rohbodenstandorte und Ruderalfluren": 2,
+        "Bauwerke": 3,
+        "Benthal der Nordsee": 9,
+        "Benthal der Ostsee": 5,
+        "Feldgehölze, Gebüsche, Hecken und Gehölzkulturen": 4,
+        "Fels- und Steilküsten": 2,
+        "Felsen, Block- und Schutthalden, Geröllfelder, offene Bereiche mit sandigem oder bindigem Substrat": 2,
+        "Fließende Gewässer": 14,
+        "Gebirgsrasen (subalpine bis alpine Stufe)": 3,
+        "Großseggenriede": 2,
+        "Grün- und Freiflächen": 10,
+        "Hoch-, Zwischen- und Übergangsmoore": 5,
+        "Kleine, unbefestigte Freiflächen des besiedelten Bereiches": 1,
+        "Küstendünen": 11,
+        "Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent)": 17,
+        "Nadel(Misch)Wälder und -Forste": 8,
+        "Pelagial der Nordsee": 5,
+        "Pelagial der Ostsee": 3,
+        "Quellen (inklusive Quellabfluss (Krenal))": 1,
+        "Röhrichte (ohne Brackwasserröhrichte)": 12,
+        "Salzgrünland der Nordseeküste (Supralitoral)": 11,
+        "Salzgrünland, Brackwasserröhrichte und -Hochstaudenfluren des Geolitorals der Ostseeküste": 3,
+        "Stehende Gewässer": 13,
+        "Sände, Sand-, Geröll- und Blockstrände": 9,
+        "Trockenrasen sowie Grünland trockener bis frischer Standorte": 13,
+        "Wald- und Ufersäume, Staudenfluren": 8,
+        "Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte": 9,
+        "Waldmäntel und Vorwälder, spezielle Waldnutzungsformen": 2,
+        "Zwergstrauchheiden": 3,
+        "Äcker und Ackerbrachen": 25
+      },
+      "Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte": {
+        "UNDETECTED": 1,
+        "Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte": 2
+      },
+      "Äcker und Ackerbrachen": {
+        "UNDETECTED": 1,
+        "Äcker und Ackerbrachen": 1
+      }
+    },
+    "ecosystem_type.category": {
+      "I Biotoptypengruppen der Meere und Küsten": {
+        "I Biotoptypengruppen der Meere und Küsten": 17,
+        "UNDETECTED": 5
+      },
+      "II Biotoptypengruppen der Binnengewässer": {
+        "II Biotoptypengruppen der Binnengewässer": 11,
+        "UNDETECTED": 2
+      },
+      "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes": {
+        "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes": 9,
+        "UNDETECTED": 1
+      },
+      "IV Technische Biotoptypengruppen": {
+        "UNDETECTED": 1
+      },
+      "UNASSIGNABLE": {
+        "I Biotoptypengruppen der Meere und Küsten": 15,
+        "II Biotoptypengruppen der Binnengewässer": 18,
+        "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes": 48,
+        "IV Technische Biotoptypengruppen": 3,
+        "V Biotoptypengruppen mit Schwerpunkt in den Alpen": 3,
+        "VI Weitere": 11
+      }
+    },
+    "taxa.german_name": {
+      "Acker-Hasenohr, Rundblättriges Hasenohr": {
+        "UNDETECTED": 1
+      },
+      "Acker-Kleinling": {
+        "Acker-Kleinling": 1
+      },
+      "Acker-Leinkraut": {
+        "Acker-Leinkraut": 1
+      },
+      "Ackerunkraut": {
+        "UNDETECTED": 1
+      },
+      "Algen": {
+        "UNDETECTED": 1
+      },
+      "Amerikanische Teichsimse": {
+        "UNDETECTED": 1
+      },
+      "Ameronothrus schneideri": {
+        "Ameronothrus schneideri": 1
+      },
+      "Amphibien": {
+        "UNDETECTED": 1
+      },
+      "Aquatische Makrophyten": {
+        "UNDETECTED": 2
+      },
+      "Archaeen": {
+        "Archaeen": 3
+      },
+      "Asseln": {
+        "UNDETECTED": 1
+      },
+      "Atlantische Makrele": {
+        "UNDETECTED": 1
+      },
+      "Atlantischer Hering": {
+        "UNDETECTED": 4
+      },
+      "Atlantischer Kabeljau": {
+        "UNDETECTED": 3
+      },
+      "Auenvegetation": {
+        "UNDETECTED": 1
+      },
+      "Bakterien": {
+        "Bakterien": 3,
+        "UNDETECTED": 1
+      },
+      "Baltische Plattmuschel": {
+        "UNDETECTED": 2
+      },
+      "Barsch": {
+        "Barsch": 1
+      },
+      "Benthische Invertebraten": {
+        "UNDETECTED": 1
+      },
+      "Betaproteobakterien": {
+        "UNDETECTED": 1
+      },
+      "Blasentang": {
+        "UNDETECTED": 3
+      },
+      "Blaufelchen": {
+        "UNDETECTED": 1
+      },
+      "Brachse": {
+        "UNDETECTED": 1
+      },
+      "Brackwasser-Seepocke": {
+        "UNDETECTED": 1
+      },
+      "Brandmaus": {
+        "UNDETECTED": 1
+      },
+      "Braunalgen": {
+        "UNDETECTED": 1
+      },
+      "Brutvögel": {
+        "UNDETECTED": 1
+      },
+      "Buche": {
+        "UNDETECTED": 1
+      },
+      "Bäume": {
+        "UNDETECTED": 1
+      },
+      "Calanus finmarchicus": {
+        "UNDETECTED": 1
+      },
+      "Chordata": {
+        "UNDETECTED": 1
+      },
+      "Coccolithophyceae": {
+        "UNDETECTED": 1
+      },
+      "Cryptophyceae": {
+        "UNDETECTED": 1
+      },
+      "Cyanobakterien": {
+        "UNDETECTED": 2
+      },
+      "Cyanophyceae": {
+        "UNDETECTED": 1
+      },
+      "Dinoflagellaten": {
+        "UNDETECTED": 1
+      },
+      "Dinophyceae": {
+        "UNDETECTED": 1
+      },
+      "Doppelfüßer": {
+        "UNDETECTED": 2
+      },
+      "Dreihörniges Labkraut": {
+        "Dreihörniges Labkraut": 1
+      },
+      "Dreistachliger Stichling": {
+        "UNDETECTED": 1
+      },
+      "Echtes Seegras": {
+        "UNDETECTED": 3
+      },
+      "Eichen": {
+        "UNDETECTED": 1
+      },
+      "Einjähriger Ziest": {
+        "Einjähriger Ziest": 1
+      },
+      "Endofauna": {
+        "UNDETECTED": 1
+      },
+      "Epifauna": {
+        "UNDETECTED": 1
+      },
+      "Europäische Sprotte": {
+        "UNDETECTED": 2
+      },
+      "Europäische Sumpfschildkröte": {
+        "UNDETECTED": 1
+      },
+      "Fadenwürmer": {
+        "UNDETECTED": 1
+      },
+      "Feldmaus": {
+        "UNDETECTED": 1
+      },
+      "Fichte": {
+        "UNDETECTED": 1
+      },
+      "Finkensame": {
+        "Finkensame": 1
+      },
+      "Fische": {
+        "Fische": 2,
+        "UNDETECTED": 4
+      },
+      "Flechten, Moose und Gefäßpflanzen": {
+        "UNDETECTED": 1
+      },
+      "Flunder": {
+        "Flunder": 1
+      },
+      "Gangfisch": {
+        "UNDETECTED": 1
+      },
+      "Gefäßpflanzen": {
+        "UNDETECTED": 2
+      },
+      "Gemeine Miesmuschel": {
+        "UNDETECTED": 4
+      },
+      "Gemeiner Blasentang": {
+        "UNDETECTED": 1
+      },
+      "Gemeiner Seestern": {
+        "UNDETECTED": 1
+      },
+      "Gewöhnlicher Frauenspiegel": {
+        "Gewöhnlicher Frauenspiegel": 1
+      },
+      "Gewöhnlicher Schweinswal": {
+        "UNDETECTED": 1
+      },
+      "Gliederfüßer": {
+        "UNDETECTED": 2
+      },
+      "Gliederwürmer": {
+        "UNDETECTED": 1
+      },
+      "Goldalgen": {
+        "UNDETECTED": 1
+      },
+      "Großes Mausohr": {
+        "Großes Mausohr": 1
+      },
+      "Grundeln": {
+        "UNDETECTED": 1
+      },
+      "Grünalgen": {
+        "UNDETECTED": 1
+      },
+      "Gürtelwürmer": {
+        "UNDETECTED": 1
+      },
+      "Hackenwürmer": {
+        "UNDETECTED": 1
+      },
+      "Hecht": {
+        "Hecht": 1
+      },
+      "Hermannia pulchella": {
+        "Hermannia pulchella": 1
+      },
+      "Heuschrecken": {
+        "UNDETECTED": 2
+      },
+      "Hornmilben": {
+        "UNDETECTED": 1
+      },
+      "Hundertfüßer": {
+        "UNDETECTED": 2
+      },
+      "Insekten": {
+        "UNDETECTED": 1
+      },
+      "Kahles Ferkelkraut": {
+        "Kahles Ferkelkraut": 1
+      },
+      "Kalikokrebs": {
+        "Kalikokrebs": 1
+      },
+      "Kiefer": {
+        "UNDETECTED": 1
+      },
+      "Kieselalgen": {
+        "UNDETECTED": 1
+      },
+      "Kilch": {
+        "UNDETECTED": 1
+      },
+      "Kleinblütiger Erdrauch": {
+        "Kleinblütiger Erdrauch": 1
+      },
+      "Kleiner Frauenspiegel": {
+        "Kleiner Frauenspiegel": 1
+      },
+      "Kliesche": {
+        "UNDETECTED": 1
+      },
+      "Kopffüßer": {
+        "UNDETECTED": 1
+      },
+      "Krebstiere": {
+        "UNDETECTED": 2
+      },
+      "Kriechtiere": {
+        "UNDETECTED": 1
+      },
+      "Kuh": {
+        "UNDETECTED": 1
+      },
+      "Käfer": {
+        "UNDETECTED": 1
+      },
+      "Küsten-Salzgras": {
+        "UNDETECTED": 1
+      },
+      "Laufkäfer": {
+        "Laufkäfer": 1
+      },
+      "Libellen": {
+        "UNDETECTED": 1
+      },
+      "Lurche": {
+        "UNDETECTED": 1
+      },
+      "Makroalgen": {
+        "UNDETECTED": 4
+      },
+      "Makrofauna": {
+        "UNDETECTED": 1
+      },
+      "Makrozoobenthos": {
+        "Makrozoobenthos": 3,
+        "UNDETECTED": 3
+      },
+      "Mangroven": {
+        "UNDETECTED": 1
+      },
+      "Marine Säugetiere": {
+        "Marine Säugetiere": 1
+      },
+      "Mensch": {
+        "UNDETECTED": 1
+      },
+      "Mikroben": {
+        "UNDETECTED": 1
+      },
+      "Mikrofauna": {
+        "UNDETECTED": 1
+      },
+      "Mikrophytobenthos": {
+        "UNDETECTED": 1
+      },
+      "Monoporeia affinis": {
+        "UNDETECTED": 1
+      },
+      "Moostierchen": {
+        "UNDETECTED": 1
+      },
+      "Multioppia neglecta": {
+        "UNDETECTED": 1
+      },
+      "Muscheln": {
+        "UNDETECTED": 1
+      },
+      "Möhren-Haftdolde": {
+        "Möhren-Haftdolde": 1
+      },
+      "Nanoflagellaten": {
+        "UNDETECTED": 1
+      },
+      "Nesseltiere": {
+        "UNDETECTED": 2
+      },
+      "Pazifische Auster": {
+        "UNDETECTED": 1
+      },
+      "Peitschenwurm": {
+        "UNDETECTED": 1
+      },
+      "Pflanzen": {
+        "UNDETECTED": 3
+      },
+      "Phaeocystis spp.": {
+        "UNDETECTED": 1
+      },
+      "Phytobenthos": {
+        "UNDETECTED": 1
+      },
+      "Phytoplankton": {
+        "Phytoplankton": 3,
+        "UNDETECTED": 5
+      },
+      "Pseudocalanus spp.": {
+        "UNDETECTED": 1
+      },
+      "Raubmilben": {
+        "UNDETECTED": 1
+      },
+      "Regenwürmer": {
+        "UNDETECTED": 2
+      },
+      "Reis": {
+        "UNDETECTED": 1
+      },
+      "Ringelnatter": {
+        "UNDETECTED": 1
+      },
+      "Rotalgen": {
+        "UNDETECTED": 1
+      },
+      "Rotauge": {
+        "UNDETECTED": 1
+      },
+      "Ruderfußkrebse": {
+        "UNDETECTED": 1
+      },
+      "Rädertierchen": {
+        "UNDETECTED": 1
+      },
+      "Salzwiesen": {
+        "UNDETECTED": 1
+      },
+      "Salzwiesen-Kordelgras": {
+        "UNDETECTED": 1
+      },
+      "Sandfelchen": {
+        "UNDETECTED": 1
+      },
+      "Sauergrasgewächse": {
+        "UNDETECTED": 1
+      },
+      "Scheloribates laevigatus": {
+        "Scheloribates laevigatus": 1
+      },
+      "Schmetterlinge": {
+        "UNDETECTED": 1
+      },
+      "Schnecken": {
+        "UNDETECTED": 1
+      },
+      "Schwarzerle": {
+        "Schwarzerle": 1
+      },
+      "Schwarzgrundel": {
+        "UNDETECTED": 1
+      },
+      "Seeforelle": {
+        "UNDETECTED": 2
+      },
+      "Seegras": {
+        "UNDETECTED": 3
+      },
+      "Seehunde": {
+        "UNDETECTED": 1
+      },
+      "Seesaibling": {
+        "UNDETECTED": 1
+      },
+      "Seevögel": {
+        "Seevögel": 1
+      },
+      "Sichel-Wolfsmilch": {
+        "Sichel-Wolfsmilch": 1
+      },
+      "Sommer-Adonisröschen": {
+        "Sommer-Adonisröschen": 1
+      },
+      "Spelz-Trespe": {
+        "UNDETECTED": 1
+      },
+      "Springschwänze": {
+        "UNDETECTED": 2
+      },
+      "Spulwurm": {
+        "UNDETECTED": 1
+      },
+      "Stachelhäuter": {
+        "UNDETECTED": 1
+      },
+      "Stinkende Hundskamille": {
+        "UNDETECTED": 1
+      },
+      "Säugetiere": {
+        "UNDETECTED": 2
+      },
+      "Süßgrässer": {
+        "UNDETECTED": 1
+      },
+      "UNASSIGNABLE": {
+        "(Tüten-) Kalkröhrenwurm": 1,
+        "Aal": 2,
+        "Aale": 1,
+        "Abführlinde": 1,
+        "Acidobakterien": 1,
+        "Acker-Filzkraut": 1,
+        "Acker-Hasenohr": 1,
+        "Acker-Hundskamille": 1,
+        "Acker-Klettenkerbel": 1,
+        "Acker-Labkraut": 1,
+        "Acker-Leimkraut": 1,
+        "Acker-Löwenmaul": 2,
+        "Acker-Rittersporn": 1,
+        "Acker-Steinsame": 1,
+        "Acker-Wachtelweizen": 1,
+        "Ackerhummel": 1,
+        "Ackerröte": 2,
+        "Ackerwildkräuter": 1,
+        "Afrikanisches Lampenputzergras": 1,
+        "Allgemeiner Grashalm": 1,
+        "Alpenstrandläufer": 2,
+        "Ameisen": 1,
+        "Amerikanische Auster": 1,
+        "Amerikanische Bohrmuschel, Engelsflügel": 1,
+        "Amerikanische Schwertmuschel": 1,
+        "Amerikanische Trogmuschel": 1,
+        "Amerikanische Trogmuschel, Brackwasser-Trogmuschel": 1,
+        "Amerikanischer Flusskrebs, Kamberkrebs": 1,
+        "Amerikanischer Hummer": 1,
+        "Amphibien": 2,
+        "Amphibien und Reptilien": 2,
+        "Amphibien- und Reptilienarten": 1,
+        "Amphipode": 1,
+        "Amphipoden": 1,
+        "Amsel": 1,
+        "Amurgrundel": 1,
+        "Andere Laubbäume mit hoher Lebensdauer": 1,
+        "Andere Laubbäume mit niedriger Lebensdauer": 1,
+        "Andere Pflanzen": 1,
+        "Andere Wirbellose": 3,
+        "Arbuskuläre Mykorrhizapilze": 1,
+        "Archaea": 1,
+        "Archaeen": 1,
+        "Aschgraue Sandbiene": 1,
+        "Asiatische Hornisse": 1,
+        "Asiatische Mörtelbiene": 1,
+        "Asiatische Scherenkrebs": 1,
+        "Asiatischer Gespensterkrebs": 1,
+        "Assel": 1,
+        "Asseln": 1,
+        "Atlantischer Lachs": 1,
+        "Auen-Schenkelbiene": 1,
+        "Auen-Wollbiene": 1,
+        "Auerhuhn": 1,
+        "Aufrecht-Stechgras": 1,
+        "Aufrechte Flockenblume": 1,
+        "Auster": 1,
+        "Austerndieb": 1,
+        "Austernfischer": 2,
+        "Australische Seepocke": 1,
+        "Bachflohkrebs": 1,
+        "Bachstelze": 1,
+        "Bakterien": 1,
+        "Balsampappel": 1,
+        "Barbe": 2,
+        "Barben": 1,
+        "Barsch": 1,
+        "Bastard-Pappel": 1,
+        "Bauernklee": 1,
+        "Baumhummel": 1,
+        "Baumpieper": 1,
+        "Bayerisches Löffelkraut": 1,
+        "Becher-/Stielqualle": 1,
+        "Behaarter Löwenzahn": 1,
+        "Beifußblättrige Ambrosie": 1,
+        "Beinwell-Sandbiene": 1,
+        "Benthische Wirbellose": 1,
+        "Benthosarten": 1,
+        "Berg-Ahorn": 1,
+        "Berg-Wollbiene": 1,
+        "Berg-Zottelbiene": 1,
+        "Bergahorn": 1,
+        "Bergbeere": 1,
+        "Bergente": 1,
+        "Bergwaldhummel": 1,
+        "Bergwohlverleih": 1,
+        "Bergwurz": 1,
+        "Biber": 1,
+        "Bienen": 2,
+        "Bisam": 2,
+        "Bitterblume": 1,
+        "Bitterkraut": 1,
+        "Blasenalge": 1,
+        "Blasenalgen": 1,
+        "Blasenschnecke": 1,
+        "Blattschneiderbiene": 1,
+        "Blau muschel": 1,
+        "Blau-Muschel": 5,
+        "Blau-Muscheln": 1,
+        "Blaubandbärbling": 1,
+        "Blaubeere": 2,
+        "Blaue Muschel": 1,
+        "Blauer Gauchheil": 1,
+        "Blaukrabbe": 1,
+        "Blaumuschel": 4,
+        "Blauschwarze Holzbiene": 1,
+        "Blei": 1,
+        "Blumentiere": 1,
+        "Blutbiene": 1,
+        "Blutbienen": 1,
+        "Blutweiderich-Langhornbiene": 1,
+        "Bohrmuschel": 1,
+        "Borstenbart": 1,
+        "Borstgras": 1,
+        "Brachsen": 1,
+        "Brackwasser Dreiecksmuschel": 1,
+        "Brackwasser Ringelwurm": 1,
+        "Brackwasser Seepocke, Ostsee-Seepocke": 1,
+        "Brackwasserkrabbe": 1,
+        "Brandgans": 1,
+        "Brandseeschwalbe": 1,
+        "Brasilianisches Tausendblatt": 1,
+        "Brassen": 1,
+        "Braunalgen": 1,
+        "Braunkehlente": 1,
+        "Braunschuppige Sandbiene": 1,
+        "Breitblättrige Wolfsmilch": 1,
+        "Bruchwasserläufer": 1,
+        "Brut- und Gastvogel": 1,
+        "Bryozoen": 1,
+        "Buche": 2,
+        "Buchfink": 1,
+        "Buchstaben-Schmuckschildkröte": 1,
+        "Bunthummel": 1,
+        "Butterfisch": 1,
+        "Bärenklau": 1,
+        "Bärlauch": 1,
+        "Büschelhafer": 1,
+        "Carabiden": 1,
+        "Cephalopoden": 1,
+        "Chaix-Hafer": 1,
+        "Chinesische Wollhandkrabbe": 2,
+        "Chinesischer Krabbenspecht": 1,
+        "Chinesischer Muntjak": 1,
+        "Chloroflexi": 1,
+        "Chlorophyceen": 1,
+        "Chrysophyceen": 1,
+        "Cnidarien": 1,
+        "Colorado-Kartoffelkäfer": 1,
+        "Cornish-Ulme": 1,
+        "Cyanobakterien": 3,
+        "Dabbe": 1,
+        "Deutscher Pilzwurm": 1,
+        "Diademanemone, Zwergseerosen, Gürtelanemone": 1,
+        "Diatomeen": 2,
+        "Diatomeen/Dinoflagellaten": 1,
+        "Dickfuß-Lauskäfer": 1,
+        "Dickkopf-Furchenbiene": 1,
+        "Diebskäfer": 1,
+        "Dinoflagellaten": 1,
+        "Distel-Wollbiene": 1,
+        "Dobel": 1,
+        "Doppelter Blutwurz": 1,
+        "Dornige Segge": 1,
+        "Dornrüssler": 1,
+        "Dorsch": 1,
+        "Dorsch-West": 1,
+        "Dotterblume": 1,
+        "Douglasie": 1,
+        "Douglasien": 1,
+        "Dreiblättriger Ehrenpreis": 1,
+        "Dreieckskopfstrudelwurm": 1,
+        "Dreikantmuschel": 1,
+        "Dreistachliger Stichling": 1,
+        "Dreizahniger Hornklee": 1,
+        "Dreizehenmöwe": 1,
+        "Drüsiges Springkraut": 1,
+        "Dunkle Erdhummel": 1,
+        "Dunkle Wasserläufer": 1,
+        "Dunkler Wasserläufer": 1,
+        "Durchwachsene Silphie": 1,
+        "Durchwachsener Knöterich": 1,
+        "Dwarf eelgrass": 1,
+        "Dünen-Seidenbiene": 1,
+        "Düsterbienen": 1,
+        "Echinodermen": 1,
+        "Echte Walnuss": 1,
+        "Echter Frauenspiegel": 1,
+        "Echter Goldnessel": 1,
+        "Echter Thymian": 1,
+        "Eckkrabbe": 1,
+        "Edelmuschel": 1,
+        "Eelgrass": 1,
+        "Efeu": 1,
+        "Efeu-Seidenbiene": 1,
+        "Efeubiene": 1,
+        "Ehrenpreis-Sandbiene": 1,
+        "Eiblättriges Tännelkraut": 1,
+        "Eiche": 1,
+        "Eider": 1,
+        "Eiderente": 3,
+        "Einsiedlerkrebs": 1,
+        "Eintagsfliege": 1,
+        "Eintagsfliegen": 3,
+        "Eisente": 1,
+        "Englische Ulme": 1,
+        "Englisches Schlickgras": 1,
+        "Equiden": 1,
+        "Erdhummel": 1,
+        "Erdwürmer": 2,
+        "Eremit": 1,
+        "Erle": 1,
+        "Erlenzeisig": 1,
+        "Esche": 2,
+        "Europäische Edelmuschel": 1,
+        "Europäischer Aal": 1,
+        "Europäischer Eisenhut": 1,
+        "Europäischer Flussbarsch": 1,
+        "Europäischer Stör": 1,
+        "Eustigmatophyten": 1,
+        "Falscher Wasserfreund": 1,
+        "Feingestreifte/-gerippte Körbchenmuschel/Grobgerippte Körbchenmuschel": 1,
+        "Felchen": 1,
+        "Feld-Ahorn": 1,
+        "Feld-Mannstreu": 1,
+        "Feld-Rittersporn": 1,
+        "Feld-Ulme": 1,
+        "Feldahorn": 1,
+        "Feldhamster": 1,
+        "Feldmannstreu-Seidenbiene": 1,
+        "Feldsperling": 1,
+        "Felsen-Mauerbiene": 1,
+        "Feuersalamander": 1,
+        "Fhilikahnschnecke": 1,
+        "Fichte": 1,
+        "Filz-Furchenbiene": 1,
+        "Filzige Furchenbiene": 1,
+        "Finte": 1,
+        "Fische": 2,
+        "Fischfauna": 2,
+        "Fischreiher": 1,
+        "Fitis": 1,
+        "Flatter-Ulme": 1,
+        "Fledermäuse": 1,
+        "Fleshy-Algen, Teppichalgen": 1,
+        "Flockenblumen-Langhornbiene": 1,
+        "Flohkraut-Langhornbiene": 1,
+        "Flohkrebse": 1,
+        "Flunder": 2,
+        "Flussnapfschnecke": 1,
+        "Flutendes Heusenkraut": 1,
+        "Flußdeckelschnecke": 1,
+        "Flußkahnschnecke": 1,
+        "Flußseeschwalbe": 1,
+        "Flügelschwanz": 1,
+        "Foraminiferen": 1,
+        "Frühe Schlürfbiene": 1,
+        "Frühlings-Pelzbiene": 1,
+        "Frühlings-Trauerbiene": 1,
+        "Frühlingsgeißblatt": 1,
+        "Fuchs-Segge": 1,
+        "Fuchshörnchen": 1,
+        "Fuchsrote Sandbiene": 1,
+        "Furchenbiene": 1,
+        "Furchenbienen": 1,
+        "Garten-Blattschneiderbiene": 1,
+        "Garten-Wollbiene": 1,
+        "Geblümte Wasserheuschrecke": 1,
+        "Gebogene Armleuchteralge": 1,
+        "Gefleckte Kuckucks-Hummel": 1,
+        "Gefleckter Flussflohkrebs, Getigerter Bachflohkrebs": 1,
+        "Geflügel": 1,
+        "Gefurchter Feldsalat": 1,
+        "Gefäßpflanzen": 1,
+        "Gehörnte Mauerbiene": 1,
+        "Gelbe Scheincalla": 1,
+        "Gelber Hohlzahn": 1,
+        "Gelbgrunalgen": 1,
+        "Gelbhörner Harpali": 1,
+        "Gelenkige Hafergras": 1,
+        "Gemeine Esche": 1,
+        "Gemeine Flußmuschel": 1,
+        "Gemeine Homblatt": 1,
+        "Gemeiner Eider": 1,
+        "Gemeiner Feldmaus": 1,
+        "Gesner-Tulpe": 1,
+        "Gestreifter Korallenwels": 1,
+        "Gewöhnliche Acker-Trespe": 1,
+        "Gewöhnliche Filzbiene": 1,
+        "Gewöhnliche Frauenmantel": 1,
+        "Gewöhnliche Keulhornbiene": 1,
+        "Gewöhnliche Kratzdistel": 1,
+        "Gewöhnliche Maskenbiene": 1,
+        "Gewöhnliche Ochsenzunge": 1,
+        "Gewöhnliche Seidenpflanze": 1,
+        "Gewöhnlicher Acker-Stein-same": 1,
+        "Gewöhnlicher Goby": 1,
+        "Gewöhnlicher Holzlaus": 1,
+        "Gezähnter Feldsalat": 1,
+        "Giersch": 1,
+        "Gimpel": 1,
+        "Glansbiene": 1,
+        "Glanzkrähe": 1,
+        "Glattbutt": 1,
+        "Glatthafer": 1,
+        "Glänzende Seescheide": 1,
+        "Glänzender Ringelwurm": 1,
+        "Goldammer": 1,
+        "Goldkäfer": 1,
+        "Goldraute": 1,
+        "Goldregenpfeifer": 1,
+        "Granulierte Tausendfüßer": 1,
+        "Grau-Stern": 1,
+        "Graue Schwalbe": 1,
+        "Graue Seeschwalbe": 1,
+        "Graugans": 1,
+        "Grauhörnchen": 1,
+        "Graureiher": 1,
+        "Grauschnäpper": 1,
+        "Graustörch": 1,
+        "Greifvogel- und Limikolenarten": 1,
+        "Großblatt-Bembidion": 1,
+        "Großblütiges Heusenkraut": 1,
+        "Großdommel": 1,
+        "Große Harzbiene": 1,
+        "Große Keulhornbiene": 1,
+        "Große Langfühlerschnecke": 1,
+        "Große Wachsmotte": 1,
+        "Großen Libelle": 1,
+        "Großer Brachvogel": 1,
+        "Großer Höckerflohkrebs": 1,
+        "Großer Wassernabel": 1,
+        "Großes Petermännchen": 1,
+        "Gräuliche Schmalbiene": 1,
+        "Grünalgen": 1,
+        "Grüne Gabelalge": 1,
+        "Grünfink": 1,
+        "Gänsesäger": 1,
+        "Götterbaum": 1,
+        "Haarige Schlauchalge": 1,
+        "Haariges Seggen": 1,
+        "Hafenrose, Strandrose": 1,
+        "Hainbuche": 1,
+        "Harzbien": 1,
+        "Hasel": 1,
+        "Haubentaucher": 1,
+        "Hecht": 2,
+        "Hechte": 1,
+        "Heckenbraunelle": 1,
+        "Heide-Filzbiene": 1,
+        "Heidekraut": 1,
+        "Heidekraut-Sandbiene": 1,
+        "Heiliger Ibis": 1,
+        "Heldbock": 1,
+        "Heller Wasserläufer": 1,
+        "Hering": 3,
+        "Heringsgans": 1,
+        "Heringsmöwe": 3,
+        "Heuschrecken und Grillen": 1,
+        "Hirtenmaina": 1,
+        "Holländische Ulme": 1,
+        "Holzbiene": 1,
+        "Holzbienen": 1,
+        "Holzlaus": 1,
+        "Holzschneiderbiene": 1,
+        "Honigbiene": 2,
+        "Hopfen": 1,
+        "Hornhecht": 1,
+        "Hornmilben": 1,
+        "Hosenbienen": 1,
+        "Hummel": 1,
+        "Hummelfliege": 1,
+        "Hummeln": 1,
+        "Huntingdon-Ulme": 1,
+        "Hühner": 1,
+        "Immenkäfer": 1,
+        "Insekten": 5,
+        "Insektiziden": 1,
+        "Japanische Felsenkrabbe": 1,
+        "Japanische Teppichmuschel": 1,
+        "Japanischer Beerentang": 1,
+        "Japanischer Hopfen": 1,
+        "Japanischer Kletterfarn": 1,
+        "Japanischer Staudenknöterich": 1,
+        "Japanisches Stelzengras": 1,
+        "Juni-Langhornbiene": 1,
+        "Kabeljau": 2,
+        "Kahle Ferkelkraut": 1,
+        "Kalanoide Krebse": 1,
+        "Kamberkrebs": 2,
+        "Kampfläufer": 2,
+        "Kanadische Wasserpest": 1,
+        "Karolina-Haarnixe": 1,
+        "Karottenkraut": 1,
+        "Kaspischer Wasserfloh": 1,
+        "Kegelbiene": 1,
+        "Kegelbienen": 1,
+        "Kegelrobbe": 1,
+        "Kernbeißer": 1,
+        "Kerzengras": 1,
+        "Keulenascidie, Faltenascidie, Warzige Seescheide": 1,
+        "Keulenpolyp, Affenhaar": 1,
+        "Keulenwespe": 1,
+        "Keulhornbiene": 1,
+        "Kiebitz": 1,
+        "Kiebitzregenpfeifer": 1,
+        "Kiefer": 1,
+        "Klauentang": 1,
+        "Kleinblütiges Springkraut": 1,
+        "Kleine Felsengarnele": 1,
+        "Kleine Fleckenbiene": 1,
+        "Kleine Harzbiene": 1,
+        "Kleine Holzbiene": 1,
+        "Kleiner Distel": 1,
+        "Kleiner Höckerflohkrebs": 1,
+        "Kleiner Mungo": 1,
+        "Kleines Holunderkraut": 1,
+        "Kleinwale": 1,
+        "Kliesche": 1,
+        "Knautien-Hosenbiene": 1,
+        "Knoblauchsrauke": 1,
+        "Knollenkümmel": 1,
+        "Knolliger Hahnenfuß": 1,
+        "Knutt": 2,
+        "Knäkente": 1,
+        "Kocherfliegenlarve": 1,
+        "Kohldistel": 1,
+        "Kolbenente": 1,
+        "Kommakrebse": 1,
+        "Kormoran": 3,
+        "Kornweihe": 1,
+        "Kotkäfer": 1,
+        "Kreisblume": 1,
+        "Kreuzotter": 1,
+        "Krickente": 1,
+        "Krustaceen": 1,
+        "Krusten-Seescheide": 1,
+        "Krähenfußblättrige Laugenblume": 1,
+        "Kuckucksbiene": 1,
+        "Kudzu": 1,
+        "Kurzflügelkäfer": 1,
+        "Kurzfühlerschrecken": 1,
+        "Kurzrüsselige Sandbiene": 1,
+        "Köcherfliege": 1,
+        "Köcherfliegen": 3,
+        "Königsente": 1,
+        "Kümmelblütige Sichelwurz": 1,
+        "Küsten-Holzschneiderbiene": 1,
+        "Küstenseeschwalbe": 1,
+        "Lachmöwe": 2,
+        "Lachs": 2,
+        "Lachseeschwalbe": 1,
+        "Langhornbiene": 1,
+        "Langstängelige Schlauchalge": 1,
+        "Lanzettfischchen": 1,
+        "Laubfrosch, Würfelnatter": 1,
+        "Laufkäfer": 1,
+        "Leguminosen": 1,
+        "Lepidopteren": 1,
+        "Linde": 1,
+        "Luzerne-Blattschneiderbiene": 1,
+        "Luzerne-Graubiene": 1,
+        "Luzerne-Schwebebiene": 1,
+        "Lärche": 1,
+        "Lästiger Schwimmfarn": 1,
+        "Löcherbiene": 1,
+        "Löffelente": 1,
+        "Löffler": 1,
+        "Löwenzahn": 1,
+        "Mai-Langhornbiene": 1,
+        "Makrele": 1,
+        "Makrophyten": 2,
+        "Malven-Langhornbiene": 1,
+        "Mantelmöwe": 1,
+        "Manteltiere": 1,
+        "Marderhund": 1,
+        "Marmorkrebs": 2,
+        "Maskenbiene": 1,
+        "Matschblasenwurm": 1,
+        "Mauer-Gipskraut": 1,
+        "Mauerbiene": 1,
+        "Mauerbienen": 1,
+        "Mausohr": 1,
+        "Meeresspritzmücke": 1,
+        "Meeressäugetiere": 1,
+        "Meerforelle": 1,
+        "Meerneunauge": 2,
+        "Meertraube": 1,
+        "Meerwalnuss": 1,
+        "Microphytobenthos": 1,
+        "Miesmuschel": 2,
+        "Mikroorganismen": 2,
+        "Milben": 1,
+        "Mink": 1,
+        "Misteldrossel": 1,
+        "Mittelgroße Spitzgras": 1,
+        "Mittelmeer-Möwe": 1,
+        "Mittelsäger": 1,
+        "Mohn-Mauerbiene": 1,
+        "Mohnbiene": 1,
+        "Mollusken": 2,
+        "Moorente": 1,
+        "Moos- und Flechtenspringer": 1,
+        "Moosbeere": 1,
+        "Moostierchen": 1,
+        "Multioptier-Milbe": 1,
+        "Muschel": 2,
+        "Muschel-, Schnecken- und Insektenarten": 1,
+        "Muscheldarmkrebs": 1,
+        "Muschelhäher": 1,
+        "Muschelkaufer": 1,
+        "Muscheln": 4,
+        "Muschelrabe": 1,
+        "Muschelräuber": 1,
+        "Mykorrhizapilze": 1,
+        "Mäusewicke": 1,
+        "Mönchsgrasmücke": 1,
+        "Mörtelbiene": 1,
+        "Nachtreiher": 1,
+        "Nadeltang": 1,
+        "Nase": 1,
+        "Natterkopf-Mauerbiene": 1,
+        "Nematoden": 1,
+        "Neuseelandplattwurm": 1,
+        "Neuseeländische (Zwerg-) Deckelschnecke": 1,
+        "Niederliegender Krähenfuß": 1,
+        "Niedriges Goldhafer": 1,
+        "Nilgans": 2,
+        "Nordamerikanischer Ochsenfrosch": 1,
+        "Nordische Gastvögel": 1,
+        "Norwegische Fichte": 1,
+        "Nutria": 2,
+        "Nutztierrassen": 1,
+        "Ochsenzungen-Seidenbiene": 1,
+        "Odinswassertreter": 1,
+        "Ohrenlerche": 1,
+        "Ohrentaucher": 1,
+        "Oligochaet": 1,
+        "Oribatiden": 2,
+        "Orientalischer Garnelenkrebs": 1,
+        "Ortolan": 1,
+        "Ostanglisches glattblättriges Ulmen": 1,
+        "Ostseestör": 1,
+        "Otter": 1,
+        "Pallas-Schönhörnchen": 1,
+        "Pantoffelschnecke": 1,
+        "Pazifik-Auster": 1,
+        "Pazifik-Austern": 2,
+        "Pazifische Auster": 1,
+        "Pazifischer Austern": 1,
+        "Pelzbienen": 1,
+        "Pelzbienenart": 1,
+        "Persischer Bärenklau": 1,
+        "Pfaffenhutchen": 1,
+        "Pfaffenhütchen": 1,
+        "Pfeifente": 2,
+        "Pfeilschwanzkrebs": 1,
+        "Pferde": 1,
+        "Pflanzen": 3,
+        "Pflanzenpathogene": 1,
+        "Pfuhlschnepfe": 1,
+        "Phytobenthos": 1,
+        "Pilze": 2,
+        "Pinsel-Scherenkrabbe": 1,
+        "Plankton": 1,
+        "Platterbsen-Mörtelbiene": 1,
+        "Plattrüssler": 1,
+        "Plotze": 1,
+        "Plötze": 1,
+        "Polychaeten": 1,
+        "Portugiesische Auster": 1,
+        "Potwürmer": 1,
+        "Pracht-Trauerbiene": 1,
+        "Prachttaucher": 1,
+        "Prosobranch-Schnecken": 1,
+        "Protisten": 1,
+        "Prächtige Milbe": 1,
+        "Pyreneen-Blattschneiderbiene": 1,
+        "Pyrenäen-Blattschneiderbiene": 1,
+        "Quadrivertexe Milbe": 1,
+        "Quagga-Muschel": 2,
+        "Quagga-Muschel, Quagga Dreikantmuschel": 1,
+        "Quirlblattriges Tausendblatt": 1,
+        "Rainfarn-Maskenbiene": 1,
+        "Rankenfüßer": 1,
+        "Raubseeschwalbe": 2,
+        "Regenwurm": 2,
+        "Regenwürmer": 1,
+        "Regenwürmer und Springflöhe": 1,
+        "Reiherente": 1,
+        "Reptilien": 1,
+        "Rhizobien": 1,
+        "Riesen-Bärenklaus": 1,
+        "Riesenbärenklau": 1,
+        "Rinder": 1,
+        "Ringelgans": 1,
+        "Ringelwürmer": 1,
+        "Robben": 1,
+        "Robertskraut": 1,
+        "Roggen-Trespe": 1,
+        "Rosskastanie": 1,
+        "Rostrote Mauerbiene": 1,
+        "Rot-Buche": 1,
+        "Rotalge": 1,
+        "Rotalgen": 1,
+        "Rotauge": 1,
+        "Rotaugen": 1,
+        "Rotbarsch": 1,
+        "Rotbeinige Furchenbiene": 1,
+        "Rotbrauner Regenwurm": 1,
+        "Rotbrauner Schützenkäfer": 1,
+        "Rotbürstige Pelzbiene": 1,
+        "Roter Amerikanischer Sumpfkrebs": 1,
+        "Roter Eichen": 1,
+        "Roter Nasenbär": 1,
+        "Rotflecken-Schwebegarnele": 1,
+        "Rotfransige Steinbiene": 1,
+        "Rothalsiger Blüten-Walzenkäfer": 1,
+        "Rothalstaucher": 1,
+        "Rotkehlchen": 1,
+        "Rotklee": 1,
+        "Rotmilan": 1,
+        "Rotschenkel": 2,
+        "Rotwurm": 1,
+        "Ruderfüßer": 1,
+        "Saatwicke": 1,
+        "Salzaster-Seidenbiene": 1,
+        "Samtente": 1,
+        "Sand-Mohn": 1,
+        "Sandbiene": 1,
+        "Sandbienen": 1,
+        "Sandeding": 1,
+        "Sandgängerbiene": 1,
+        "Sandhummel": 1,
+        "Sandklaffmuschel": 1,
+        "Sandrasen-Furchenbiene": 1,
+        "Sandregenpfeifer": 1,
+        "Schafe": 2,
+        "Schafgras": 1,
+        "Scharbe": 1,
+        "Schellente": 2,
+        "Schenkelbiene": 1,
+        "Schenkelbienen": 1,
+        "Scherenasseln": 1,
+        "Scherenbiene": 1,
+        "Schiffsbohrwurm": 1,
+        "Schimmelkäfer": 1,
+        "Schlammröhrenwurm (Kiemenwurm)": 1,
+        "Schlangensterne": 1,
+        "Schlauchalge": 1,
+        "Schlickmuschel": 1,
+        "Schmalbiene": 1,
+        "Schmalbienen": 1,
+        "Schmalblättrige Wasserpest": 1,
+        "Schmalflügeliger Pelzbienenölkäfer": 1,
+        "Schmarotzerraubmöwe": 1,
+        "Schmetterlinge": 2,
+        "Schmuckbiene": 1,
+        "Schnatterente": 1,
+        "Schnecke": 1,
+        "Schnecken": 2,
+        "Schneeammer": 1,
+        "Schneiders Milbe": 1,
+        "Scholle": 1,
+        "Schottische Kiefer": 1,
+        "Schuppen-Pelzbiene": 1,
+        "Schwamme, Strudelwürmer, Egel und Moostierchen": 1,
+        "Schwanenblume": 1,
+        "Schwarzbeinige Filzbiene": 1,
+        "Schwarzbürstige Blattschneiderbiene": 1,
+        "Schwarze Blattschneiderbiene": 1,
+        "Schwarze Kreisblume": 1,
+        "Schwarze Mörtelbiene": 1,
+        "Schwarzer Akazien": 1,
+        "Schwarzer Gobi": 1,
+        "Schwarzer Holunder": 1,
+        "Schwarzer Spitzwegerich": 1,
+        "Schwarzer Ölkäfer": 1,
+        "Schwarzglänzende Keulhornbiene": 1,
+        "Schwarzhalstaucher": 1,
+        "Schwarzkopf-Ruderente": 1,
+        "Schwarzkopfmöwe": 2,
+        "Schwarzmantel": 1,
+        "Schwarzmaulgrundel": 1,
+        "Schwarzmäuse": 1,
+        "Schwarzpappel": 1,
+        "Schwebebiene": 1,
+        "Schwebegarnele": 1,
+        "Schwebgarnelen": 1,
+        "Schweine": 2,
+        "Schweinswal": 1,
+        "Schwert-Ameisenheuschrecke": 1,
+        "Schwimmblasenwurm": 1,
+        "Schöterich-Mauerbiene": 1,
+        "See- und Küstenvögel": 1,
+        "Seeadler": 1,
+        "Seegras": 2,
+        "Seehase": 1,
+        "Seehecht": 3,
+        "Seehund": 3,
+        "Seehunde": 1,
+        "Seekanne": 1,
+        "Seekresse": 1,
+        "Seeregenpfeifer": 1,
+        "Seeringelwurm": 1,
+        "Seeschwalbe": 1,
+        "Seidenbiene": 1,
+        "Seidenbienen": 1,
+        "Seidenbienen-Ölkäfer": 1,
+        "Sibirisches Streifenhörnchen": 1,
+        "Sichelstrandläufer": 1,
+        "Signalkrebs": 2,
+        "Silbermöwe": 3,
+        "Silberreiher": 2,
+        "Singdrossel": 1,
+        "Skabiosen-Hosenbiene": 1,
+        "Sommergoldhähnchen": 1,
+        "Sonnenbarsch": 1,
+        "Sonnenrose, Seemaßliebchen": 1,
+        "Sosnowskyi Bärenklau": 1,
+        "Spalten-Wollbiene": 1,
+        "Spanische Fliege": 1,
+        "Spargel": 1,
+        "Sparrel-Sandbiene": 1,
+        "Spieß-Tännelkraut": 1,
+        "Spießente": 1,
+        "Spitz-Ahorn": 1,
+        "Spitzige Kreisblume": 1,
+        "Spitzschwanz-Schlangenstachelrücken": 1,
+        "Spitzwegerich": 1,
+        "Spitzzähnige Zottelbiene": 1,
+        "Springerlinien": 1,
+        "Springfrosch": 1,
+        "Springschwänze": 1,
+        "Springtiere": 2,
+        "Spätblühende Traubenkirsche": 1,
+        "Späte Schlürfbiene": 1,
+        "Stahlblaue Mauerbiene": 1,
+        "Star": 1,
+        "Stechmücken": 1,
+        "Stein-Schmalblatt": 1,
+        "Steinbienen": 1,
+        "Steinbrech": 1,
+        "Steinbutt": 1,
+        "Steinfliege": 1,
+        "Steinfliegen": 2,
+        "Steingoby": 1,
+        "Steinhummel": 1,
+        "Steinwälzer": 1,
+        "Stelzenläufer": 1,
+        "Steppen-Buntbiene": 1,
+        "Steppen-Filzbiene": 1,
+        "Steppenbiene": 1,
+        "Steppenglanzbiene": 1,
+        "Stern-Seescheide": 1,
+        "Sterntaucher": 1,
+        "Stichling": 1,
+        "Stiel-Eiche": 1,
+        "Stieleiche": 1,
+        "Stockente": 1,
+        "Stor": 1,
+        "Strandpieper": 1,
+        "Strauch-Lavendel": 1,
+        "Streifenfeldmaus": 1,
+        "Stumpfzähnige Zottelbiene": 1,
+        "Sturmmöwe": 2,
+        "Stör": 1,
+        "Sumpf-Viola": 1,
+        "Sumpf-Wacholder": 1,
+        "Sumpfgoldraute": 1,
+        "Sumpfohreule": 1,
+        "Säbelschnäbler": 1,
+        "Sägehornbiene": 1,
+        "Säugetiere": 3,
+        "Säugetierfauna": 1,
+        "Südliche Holzbiene": 1,
+        "Süßwasser-Röhren-/Schlickkrebs": 1,
+        "Süßwasser-Strandfloh": 1,
+        "Tafelente": 1,
+        "Tanne": 1,
+        "Tarda-Tulpe": 1,
+        "Taubnessel": 1,
+        "Tauchenten, Blaßhuhn": 1,
+        "Tausendfüßer": 1,
+        "Tauwurm": 1,
+        "Teichfaden": 1,
+        "Teichfledermaus": 1,
+        "Teichfrosch": 1,
+        "Teichwasserläufer": 1,
+        "Temminckstrandläufer": 1,
+        "Termiten": 1,
+        "Train-Tausendfüßer": 1,
+        "Trauerente": 1,
+        "Trauerseeschwalbe": 1,
+        "Trinervitermes-Arten": 1,
+        "Turbellar": 1,
+        "Uferläufer": 1,
+        "Uferschnepfe": 2,
+        "Ukelei": 1,
+        "Ulmen": 1,
+        "Untergetauchte Wasserpflanzen": 1,
+        "Varroa-Milbe": 1,
+        "Veilchenfarbener Ölkäfer": 1,
+        "Verschiedenblättriges Tausendblatt": 1,
+        "Vierbindige Furchenbiene": 1,
+        "Vierbärtelige Seequappe": 1,
+        "Vierfleck-Pelzbiene": 1,
+        "Viril-Flusskrebs": 1,
+        "Vögel": 6,
+        "Vögel der Feldflur": 1,
+        "Wachsblumen-Mauerbiene": 1,
+        "Wachsblumenbiene": 1,
+        "Wakame": 1,
+        "Wald-Gleithaut": 1,
+        "Wald-Kuckucks-Hummel": 1,
+        "Wald-Pelzbiene": 1,
+        "Wald-Schenkelbiene": 1,
+        "Wald-Storchschnabel": 1,
+        "Waldblaumeile": 1,
+        "Waldfeldmaus": 1,
+        "Waldfreundin": 1,
+        "Waldwasserläufer": 1,
+        "Walnuss": 1,
+        "Wand-Pelzbiene": 1,
+        "Wander-Felsengarnele": 1,
+        "Wanderfalke": 2,
+        "Waschbär": 2,
+        "Wasserfledermaus": 1,
+        "Wassergreiskraut": 1,
+        "Wasserhyazinthe": 1,
+        "Wasserkafer": 1,
+        "Wasserspitzmaus": 1,
+        "Wechselblatt-Wasserpest": 1,
+        "Wegwarten-Hosenbiene": 1,
+        "Weichhaariges Löwenzahn": 1,
+        "Weichtiere": 1,
+        "Weide": 1,
+        "Weiden-Sandbiene": 1,
+        "Weidenröschen-Blattschneiderbiene": 1,
+        "Weißbartseeschwalbe": 1,
+        "Weiße Blattheuschrecke": 1,
+        "Weißer Klee": 1,
+        "Weißflügelseeschwalbe": 1,
+        "Weißgefleckte Wollbiene": 1,
+        "Weißwangengans": 1,
+        "Wellen-Segge": 1,
+        "Wespenbienen": 1,
+        "Westliche Honigbiene": 1,
+        "Wheatley-Ulme": 1,
+        "Wicken-Langhornbiene": 1,
+        "Wiesen-Mädesüß": 1,
+        "Wiesenhummel": 1,
+        "Wiesenvogel": 1,
+        "Wildbienen": 1,
+        "Wildbirne": 1,
+        "Wildkarpfen": 1,
+        "Wildkatze": 1,
+        "Wildknoblauch": 1,
+        "Wildkräuter": 1,
+        "Wildobstarten": 1,
+        "Winter-Linde": 1,
+        "Wirbeltiere": 1,
+        "Wolf": 1,
+        "Wollbiene": 1,
+        "Würfelnatter": 1,
+        "Zander": 2,
+        "Zandern": 1,
+        "Zaunkönig": 1,
+        "Zebramuschel": 1,
+        "Zebramuschel, Dreikant/Dreiecks-Muschel, Wandermuschel": 1,
+        "Zeckenmilben": 1,
+        "Zehnfußkrebse": 1,
+        "Ziegen": 2,
+        "Zitter-Pappel": 1,
+        "Zitternde Seerinde": 1,
+        "Zuckmücken": 1,
+        "Zugvögel": 1,
+        "Zwergdommel": 1,
+        "Zwergmöwe": 2,
+        "Zwergseeschwalbe": 1,
+        "Zwergstrandläufer": 1,
+        "Zwergsäger": 1,
+        "Zwergtaucher": 1,
+        "andere Laubbäume mit hoher Lebensdauer (ALH)": 1,
+        "andere Laubbäume mit niedriger Lebensdauer (ALN)": 1,
+        "blaue Muscheln": 1,
+        "höhere Krebstiere": 1,
+        "kleine Nacktschnecke": 1,
+        "marine Säugetiere": 1,
+        "rope-grass-hydroid": 1,
+        "rote Alge": 1
+      },
+      "Ulmenwelkpilz": {
+        "UNDETECTED": 1
+      },
+      "Venuskamm": {
+        "Venuskamm": 1
+      },
+      "Vibrio alginolyticus": {
+        "UNDETECTED": 1
+      },
+      "Vibrio parahaemolyticus": {
+        "UNDETECTED": 1
+      },
+      "Vibrio spp.": {
+        "UNDETECTED": 1
+      },
+      "Vibrio vulnificus": {
+        "UNDETECTED": 1
+      },
+      "Vielborster": {
+        "UNDETECTED": 1
+      },
+      "Vögel": {
+        "UNDETECTED": 2,
+        "Vögel": 2
+      },
+      "Wanzen": {
+        "UNDETECTED": 1
+      },
+      "Wasserflöhe": {
+        "UNDETECTED": 1
+      },
+      "Wasservögel": {
+        "UNDETECTED": 1
+      },
+      "Weichtiere": {
+        "UNDETECTED": 1
+      },
+      "Wildbestäuber": {
+        "UNDETECTED": 1
+      },
+      "Wildbienen": {
+        "UNDETECTED": 1
+      },
+      "Wirbellose": {
+        "UNDETECTED": 2
+      },
+      "Wirbeltiere": {
+        "UNDETECTED": 1
+      },
+      "Zachvatkinibates quadrivertex": {
+        "Zachvatkinibates quadrivertex": 1
+      },
+      "Zander": {
+        "Zander": 1
+      },
+      "Zikaden": {
+        "UNDETECTED": 1
+      },
+      "Zoobenthos": {
+        "UNDETECTED": 1
+      },
+      "Zooplankton": {
+        "UNDETECTED": 2,
+        "Zooplankton": 1
+      },
+      "Zweiflügler": {
+        "UNDETECTED": 1
+      },
+      "xylobionte Käfer": {
+        "UNDETECTED": 1
+      }
+    },
+    "taxa.scientific_name": {
+      "-": {
+        "UNDETECTED": 11
+      },
+      "Abramis brama": {
+        "UNDETECTED": 1
+      },
+      "Adonis aestivalis L.": {
+        "UNDETECTED": 1
+      },
+      "Alnus glutinosa": {
+        "Alnus glutinosa": 1
+      },
+      "Ameronothrus schneideri": {
+        "Ameronothrus schneideri": 1
+      },
+      "Amphibalanus improvisus": {
+        "UNDETECTED": 1
+      },
+      "Amphibia": {
+        "UNDETECTED": 2
+      },
+      "Anagallis minima (L.) E. H. L. Krause": {
+        "UNDETECTED": 1
+      },
+      "Ancylostomatidae": {
+        "UNDETECTED": 1
+      },
+      "Annelida": {
+        "UNDETECTED": 1
+      },
+      "Anthemis cotula L.": {
+        "UNDETECTED": 1
+      },
+      "Apodemus agrarius": {
+        "Apodemus agrarius": 1
+      },
+      "Archaea": {
+        "UNDETECTED": 3
+      },
+      "Arthropoda": {
+        "UNDETECTED": 2
+      },
+      "Ascaris lumbricoides": {
+        "Ascaris lumbricoides": 1
+      },
+      "Asterias rubens": {
+        "UNDETECTED": 1
+      },
+      "Auchenorrhyncha": {
+        "UNDETECTED": 1
+      },
+      "Aves": {
+        "UNDETECTED": 4
+      },
+      "Bacteria": {
+        "UNDETECTED": 4
+      },
+      "Betaproteobacteria": {
+        "UNDETECTED": 1
+      },
+      "Bivalvia": {
+        "UNDETECTED": 1
+      },
+      "Bos taurus": {
+        "UNDETECTED": 1
+      },
+      "Bromus grossus A. P. de Candolle 1805": {
+        "UNDETECTED": 1
+      },
+      "Bryozoa": {
+        "Bryozoa": 1
+      },
+      "Bupleurum rotundifolium L.": {
+        "UNDETECTED": 1
+      },
+      "Bäume": {
+        "UNDETECTED": 1
+      },
+      "Calanus finmarchicus": {
+        "UNDETECTED": 1
+      },
+      "Carabidae": {
+        "Carabidae": 1
+      },
+      "Caucalis platycarpos L.": {
+        "UNDETECTED": 1
+      },
+      "Cephalopoda": {
+        "UNDETECTED": 1
+      },
+      "Chilopoda": {
+        "UNDETECTED": 2
+      },
+      "Chlorophyceae": {
+        "UNDETECTED": 1
+      },
+      "Chordata": {
+        "Chordata": 1
+      },
+      "Chrysophyceae": {
+        "Chrysophyceae": 1
+      },
+      "Cladocera": {
+        "UNDETECTED": 1
+      },
+      "Clitellata": {
+        "UNDETECTED": 1
+      },
+      "Clupea harengus": {
+        "Clupea harengus": 2,
+        "UNDETECTED": 2
+      },
+      "Cnidaria": {
+        "Cnidaria": 1,
+        "UNDETECTED": 1
+      },
+      "Coccolithophyceae": {
+        "UNDETECTED": 1
+      },
+      "Coleoptera": {
+        "UNDETECTED": 1
+      },
+      "Collembola": {
+        "Collembola": 1,
+        "UNDETECTED": 1
+      },
+      "Copepoda": {
+        "UNDETECTED": 1
+      },
+      "Coregonus arenicolus": {
+        "UNDETECTED": 1
+      },
+      "Coregonus gutturosus": {
+        "UNDETECTED": 1
+      },
+      "Coregonus macrophthalmus": {
+        "UNDETECTED": 1
+      },
+      "Coregonus wartmanni": {
+        "UNDETECTED": 1
+      },
+      "Crustacea": {
+        "Crustacea": 1,
+        "UNDETECTED": 1
+      },
+      "Cryptophyceae": {
+        "Cryptophyceae": 1
+      },
+      "Cyanobacteria": {
+        "UNDETECTED": 2
+      },
+      "Cyanophyceae": {
+        "Cyanophyceae": 1
+      },
+      "Cyperaceae": {
+        "UNDETECTED": 1
+      },
+      "Diatomeen": {
+        "UNDETECTED": 1
+      },
+      "Dinophyceae": {
+        "Dinophyceae": 1
+      },
+      "Dinophyta": {
+        "UNDETECTED": 1
+      },
+      "Diplopoda": {
+        "UNDETECTED": 2
+      },
+      "Diptera": {
+        "UNDETECTED": 1
+      },
+      "Distichlis spicata": {
+        "Distichlis spicata": 1
+      },
+      "Echinodermata": {
+        "Echinodermata": 1
+      },
+      "Emys orbicularis": {
+        "UNDETECTED": 1
+      },
+      "Esox lucius": {
+        "UNDETECTED": 1
+      },
+      "Euphorbia falcata L.": {
+        "UNDETECTED": 1
+      },
+      "Fagus": {
+        "UNDETECTED": 1
+      },
+      "Faxonius immunis (Syn. Orconectes immunis)": {
+        "UNDETECTED": 1
+      },
+      "Fucus spp": {
+        "UNDETECTED": 3
+      },
+      "Fucus vesiculosus": {
+        "Fucus vesiculosus": 1
+      },
+      "Fumaria parviflora Lam.": {
+        "UNDETECTED": 1
+      },
+      "Gadus morhua": {
+        "Gadus morhua": 3
+      },
+      "Galium tricornutum Dandy": {
+        "UNDETECTED": 1
+      },
+      "Gasterosteus aculeatus": {
+        "Gasterosteus aculeatus": 1
+      },
+      "Gastropoda": {
+        "UNDETECTED": 1
+      },
+      "Gobius niger": {
+        "Gobius niger": 1
+      },
+      "Hermannia pulchella": {
+        "Hermannia pulchella": 1
+      },
+      "Heteroptera": {
+        "UNDETECTED": 1
+      },
+      "Homo sapiens": {
+        "UNDETECTED": 1
+      },
+      "Hypochaeris glabra L.": {
+        "UNDETECTED": 1
+      },
+      "Insecta": {
+        "UNDETECTED": 1
+      },
+      "Invertebraten": {
+        "UNDETECTED": 2
+      },
+      "Isopoda": {
+        "UNDETECTED": 1
+      },
+      "Legousia hybrida (L.) Delarbre": {
+        "UNDETECTED": 1
+      },
+      "Legousia speculum-veneris (L.) Chaix": {
+        "UNDETECTED": 1
+      },
+      "Lepidoptera": {
+        "UNDETECTED": 1
+      },
+      "Limanda limanda": {
+        "Limanda limanda": 1
+      },
+      "Linaria arvensis (L.) Desf.": {
+        "UNDETECTED": 1
+      },
+      "Lumbricidae": {
+        "UNDETECTED": 2
+      },
+      "Macoma baltica": {
+        "UNDETECTED": 2
+      },
+      "Magallana (Crassostrea) gigas": {
+        "UNDETECTED": 1
+      },
+      "Mammalia": {
+        "UNDETECTED": 2
+      },
+      "Mesostigmata": {
+        "UNDETECTED": 1
+      },
+      "Microtus arvalis": {
+        "Microtus arvalis": 1
+      },
+      "Mikroben": {
+        "UNDETECTED": 1
+      },
+      "Mollusca": {
+        "Mollusca": 1
+      },
+      "Monoporeia affinis": {
+        "Monoporeia affinis": 1
+      },
+      "Multioppia neglecta": {
+        "Multioppia neglecta": 1
+      },
+      "Myotis myotis": {
+        "Myotis myotis": 1
+      },
+      "Mytilus edulis": {
+        "Mytilus edulis": 4
+      },
+      "Natrix natrix": {
+        "UNDETECTED": 1
+      },
+      "Nematoda": {
+        "UNDETECTED": 1
+      },
+      "Neslia paniculata (L.) Desv. s.l.": {
+        "UNDETECTED": 1
+      },
+      "Odonata": {
+        "UNDETECTED": 1
+      },
+      "Ophiostoma ulmi (Syn. Ceratocystis ulmi)": {
+        "UNDETECTED": 1
+      },
+      "Oribatida": {
+        "UNDETECTED": 1
+      },
+      "Orthoptera": {
+        "Orthoptera": 1,
+        "UNDETECTED": 1
+      },
+      "Oryza": {
+        "UNDETECTED": 1
+      },
+      "Perca fluviatilis": {
+        "UNDETECTED": 1
+      },
+      "Phaeocystis spp.": {
+        "UNDETECTED": 1
+      },
+      "Phaeophyceae": {
+        "UNDETECTED": 1
+      },
+      "Phoca vitulina": {
+        "Phoca vitulina": 1
+      },
+      "Phocoena phocoena": {
+        "Phocoena phocoena": 1
+      },
+      "Picea": {
+        "UNDETECTED": 1
+      },
+      "Pinus": {
+        "UNDETECTED": 1
+      },
+      "Pisces": {
+        "UNDETECTED": 6
+      },
+      "Plantae": {
+        "UNDETECTED": 3
+      },
+      "Platichthys flesus": {
+        "Platichthys flesus": 1
+      },
+      "Poaceae": {
+        "UNDETECTED": 1
+      },
+      "Polychaeta": {
+        "Polychaeta": 1
+      },
+      "Pomatoschistus sp.": {
+        "UNDETECTED": 1
+      },
+      "Pseudocalanus  spp.": {
+        "UNDETECTED": 1
+      },
+      "Quercus spp": {
+        "UNDETECTED": 1
+      },
+      "Reptilia": {
+        "UNDETECTED": 1
+      },
+      "Rhodophyceae": {
+        "UNDETECTED": 1
+      },
+      "Rotifera": {
+        "UNDETECTED": 1
+      },
+      "Rutilus rutilus": {
+        "UNDETECTED": 1
+      },
+      "Salmo trutta": {
+        "UNDETECTED": 2
+      },
+      "Salvelinus alpinus": {
+        "UNDETECTED": 1
+      },
+      "Sander lucioperca": {
+        "Sander lucioperca": 1
+      },
+      "Scandix pecten-veneris L.": {
+        "UNDETECTED": 1
+      },
+      "Scheloribates laevigatus": {
+        "Scheloribates laevigatus": 1
+      },
+      "Schoenoplectus americanus": {
+        "Schoenoplectus americanus": 1
+      },
+      "Scomber scombrus": {
+        "Scomber scombrus": 1
+      },
+      "Spartina patens": {
+        "Spartina patens": 1
+      },
+      "Sprattus sprattus": {
+        "UNDETECTED": 2
+      },
+      "Stachys annua (L.) L.": {
+        "UNDETECTED": 1
+      },
+      "Tracheophyta": {
+        "UNDETECTED": 2
+      },
+      "Trichuris trichiura": {
+        "Trichuris trichiura": 1
+      },
+      "UNASSIGNABLE": {
+        "Abramis brama": 2,
+        "Acari": 1,
+        "Acartia": 1,
+        "Acartia tonsa": 1,
+        "Acer campestre": 2,
+        "Acer platanoides": 1,
+        "Acer pseudoplatanus": 2,
+        "Achillea millefolium": 1,
+        "Achillea ptarmica": 1,
+        "Acidobacteria": 1,
+        "Acipenser oxyrinchus": 1,
+        "Acipenser sturio": 2,
+        "Acridotheres tristis": 1,
+        "Actitis hypoleucos": 1,
+        "Adenanthera pavonia": 1,
+        "Adonis aestivalis": 1,
+        "Aegopodium podagraria": 1,
+        "Aesculus hippocastanum": 1,
+        "Agapetus ochripes": 1,
+        "Agarophyton vermiculophyllum": 1,
+        "Aglaothamnion halliae": 1,
+        "Agonum marginatum": 1,
+        "Agrostis capillaris": 2,
+        "Ailanthus altissima": 1,
+        "Ajuga reptans": 1,
+        "Alchemilla \"vulgaris\"": 1,
+        "Alchemilla vulgaris": 1,
+        "Alitta succinea": 1,
+        "Alitta virens": 1,
+        "Alkmaria romijni": 1,
+        "Alliaria petiolata": 1,
+        "Allium ursinum": 1,
+        "Alnus glutinosa": 1,
+        "Alopecurus geniculatus": 1,
+        "Alopecurus pratensis": 1,
+        "Alopochen aegyptiaca": 1,
+        "Alosa fallax": 1,
+        "Amara bifrons": 1,
+        "Amathia (Bowerbankia) gracilis": 1,
+        "Amathia (Bowerbankia) imbricata": 1,
+        "Ambrosia artemisiifolia": 1,
+        "Ameira divagans ssp. divagans": 1,
+        "Ammobates punctatus": 1,
+        "Ammobatoides abdominalis": 1,
+        "Ampharetidae indet.": 1,
+        "Amphibalanus improvisus": 1,
+        "Amphiura brachiata": 1,
+        "Amphiura filiformis": 1,
+        "Anagallis foemina": 1,
+        "Anagallis minima": 1,
+        "Anas acuta": 1,
+        "Anas crecca": 1,
+        "Anas penelope": 1,
+        "Anas platyrhynchos": 1,
+        "Anas querquedula": 1,
+        "Anas strepera": 1,
+        "Anchusa officinalis": 1,
+        "Ancylus fluviatilis": 1,
+        "Andrena aberrans": 1,
+        "Andrena agilissima": 1,
+        "Andrena argentata": 1,
+        "Andrena barbilabris": 1,
+        "Andrena bicolor": 1,
+        "Andrena chrysopus": 1,
+        "Andrena chrysopyga": 1,
+        "Andrena chrysosceles": 1,
+        "Andrena cineraria": 1,
+        "Andrena clarkella": 1,
+        "Andrena coitana": 1,
+        "Andrena combinata": 1,
+        "Andrena congruens": 1,
+        "Andrena curvana": 1,
+        "Andrena curvungula": 1,
+        "Andrena florea": 1,
+        "Andrena florivaga": 1,
+        "Andrena forsterella": 1,
+        "Andrena fucata": 1,
+        "Andrena fulva": 1,
+        "Andrena fulvago": 1,
+        "Andrena fulvata": 1,
+        "Andrena fulvicornis": 1,
+        "Andrena fulvida": 1,
+        "Andrena fuscipes": 1,
+        "Andrena gallica": 1,
+        "Andrena gelriae": 1,
+        "Andrena granulosa": 1,
+        "Andrena gravida": 1,
+        "Andrena haemorrhoa": 1,
+        "Andrena hattorfiana": 1,
+        "Andrena lagopus": 1,
+        "Andrena lapponica": 1,
+        "Andrena lathyri": 1,
+        "Andrena marginata": 1,
+        "Andrena nasuta": 1,
+        "Andrena nigriceps": 1,
+        "Andrena nigroaenea": 1,
+        "Andrena nigroolivacea": 1,
+        "Andrena nigrospina": 1,
+        "Andrena nitida": 1,
+        "Andrena nitidiuscula": 1,
+        "Andrena nitidula": 1,
+        "Andrena niveata": 1,
+        "Andrena nuptialis": 1,
+        "Andrena nycthemera": 1,
+        "Andrena ovatula": 1,
+        "Andrena pallitarsis": 1,
+        "Andrena polita": 1,
+        "Andrena pontica": 1,
+        "Andrena probata": 1,
+        "Andrena proxima": 1,
+        "Andrena ranunculorum": 1,
+        "Andrena rosae": 1,
+        "Andrena sardoa": 1,
+        "Andrena saxonica": 1,
+        "Andrena simillima": 1,
+        "Andrena stragulata": 1,
+        "Andrena suerinensis": 1,
+        "Andrena susterai": 1,
+        "Andrena symphyti": 1,
+        "Andrena vaga": 1,
+        "Andrena viridescens": 1,
+        "Andrena wilkella": 1,
+        "Anemone nemorosa": 2,
+        "Anemone x seemenii": 1,
+        "Anguilla anguilla": 2,
+        "Anguillicoloides crassus": 1,
+        "Annelida": 1,
+        "Anoplolepis gracilipes": 1,
+        "Antennaria dioica": 1,
+        "Anthemis arvensis": 1,
+        "Anthemis cotula": 1,
+        "Antherophagus nigricornis": 1,
+        "Anthidium byssinum": 1,
+        "Anthidium florentinum": 1,
+        "Anthidium manicatum": 1,
+        "Anthidium melanurum": 1,
+        "Anthidium montanum": 1,
+        "Anthidium nanum": 1,
+        "Anthidium oblongatum": 1,
+        "Anthidium punctatum": 1,
+        "Anthidium septemspinosum": 1,
+        "Anthidium strigatum": 1,
+        "Anthidium tenellum": 1,
+        "Anthophora bimaculata": 1,
+        "Anthophora crinipes": 1,
+        "Anthophora fulvitarsis": 1,
+        "Anthophora furcata": 1,
+        "Anthophora plagiata": 1,
+        "Anthophora plumipes": 1,
+        "Anthophora pubescens": 1,
+        "Anthophora quadrifasciata": 1,
+        "Anthophora quadrimaculata": 1,
+        "Anthoxanthum odoratum": 1,
+        "Anthus petrosus": 1,
+        "Anthus trivialis": 1,
+        "Antithamnion hubbsii": 1,
+        "Antithamnionella spirographidis": 1,
+        "Antithamnionella ternifolia": 1,
+        "Aonides paucibranchiata": 1,
+        "Aoroides semicurvatus": 1,
+        "Aphanizomenon flos-aquae": 1,
+        "Aphelochaeta marioni": 1,
+        "Apiaceae": 1,
+        "Apis dorsata": 1,
+        "Apis mellifera": 3,
+        "Aplidium glabrum": 1,
+        "Apodemus sylvaticus": 1,
+        "Aporrectodea caliginosa": 1,
+        "Arachnidium lacourti": 1,
+        "Archaea": 1,
+        "Arctica islandica": 1,
+        "Ardea cinerea": 1,
+        "Armadillidium vulgare": 1,
+        "Arnica montana": 1,
+        "Arrhenatherum elatius": 1,
+        "Artemisia vulgaris": 1,
+        "Arthropoda": 1,
+        "Arthurdendyus triangulatus": 1,
+        "Asclepias syriaca": 1,
+        "Asio flammeus": 1,
+        "Asparagus officinalis": 1,
+        "Aspergillus niger": 1,
+        "Athripsodes cinereus": 1,
+        "Athyrium felix-femina": 1,
+        "Austrominius modestus": 1,
+        "Aythya ferina": 1,
+        "Aythya fuligula": 1,
+        "Aythya marila": 1,
+        "Aythya nyroca": 1,
+        "Aythya, Bucephala, Fulica atra": 1,
+        "B. neritina": 1,
+        "Bacillariophyta": 1,
+        "Bacillus": 1,
+        "Bacillus megaterium": 1,
+        "Bacillus thuringiensis": 1,
+        "Bacteria": 1,
+        "Barbus barbus": 1,
+        "Bathyporeia elegans": 1,
+        "Belone belone": 1,
+        "Bembidion biguttatum": 1,
+        "Bembidion lampros": 1,
+        "Bembidion quadrimaculatum": 1,
+        "Bithynia tentaculata": 1,
+        "Blackfordia virginica": 1,
+        "Boccardia proboscidea": 1,
+        "Boccardiella ligerica": 1,
+        "Bombus": 1,
+        "Bombus confusus": 1,
+        "Bombus distinguendus": 1,
+        "Bombus gerstaeckeri": 1,
+        "Bombus humilis": 1,
+        "Bombus hypnorum": 1,
+        "Bombus lapidarius": 1,
+        "Bombus mendax": 1,
+        "Bombus muscorum": 1,
+        "Bombus pascuorum": 1,
+        "Bombus pratorum": 1,
+        "Bombus ruderarius": 1,
+        "Bombus subterraneus": 1,
+        "Bombus sylvarum": 1,
+        "Bombus sylvestris": 1,
+        "Bombus terrestris": 1,
+        "Bombus vestalis": 1,
+        "Bombus veteranus": 1,
+        "Bombus wurflenii": 1,
+        "Bonnemaisonia hamifera": 2,
+        "Botaurus stellaris": 1,
+        "Botrydium sp.": 1,
+        "Bougainvillia macloviana": 1,
+        "Brachionus plicatilis": 1,
+        "Brachycentrus subnubilis": 1,
+        "Brachycoma devia": 1,
+        "Brachydanio reno": 1,
+        "Brachypodium sylvaticum": 1,
+        "Brachyptera trifasciata": 1,
+        "Brachythecium albicans": 1,
+        "Branchiostoma lanceolatum": 1,
+        "Branchiura sowerbyi": 1,
+        "Branta bernicla": 2,
+        "Briza media": 1,
+        "Bromus arvensis": 1,
+        "Bromus erectus": 1,
+        "Bromus grossus": 1,
+        "Bromus hordeaceus": 1,
+        "Bromus secalinus": 1,
+        "Bucephala clangula": 1,
+        "Buglossoides arvensis": 1,
+        "Bugula neritina": 1,
+        "Bugulina stolonifera": 1,
+        "Bumilleriopsis sp.": 1,
+        "Bunium bulbocastanum": 1,
+        "Bupleurum rotundifolium": 1,
+        "Butomus umbellatus": 1,
+        "Cabomba caroliniana": 1,
+        "Cacoxenus indagator": 1,
+        "Calamagrostis epigejos": 2,
+        "Calanus finmarchicus": 1,
+        "Calcarius nivalis": 1,
+        "Calidris alpina": 1,
+        "Calidris canutus": 1,
+        "Calidris ferruginea": 1,
+        "Calidris minuta": 1,
+        "Calidris temminckii": 1,
+        "Callinectes sapidus": 1,
+        "Callithamnion tetragonum": 1,
+        "Callosciurus erythraeus": 1,
+        "Calluna vulgaris": 1,
+        "Caltha palustris": 1,
+        "Calyptospadix cerulea": 1,
+        "Campanula rotundifolia": 1,
+        "Camptopoeum frontale": 1,
+        "Canis lupus": 1,
+        "Caprella mutica": 1,
+        "Carabidae": 2,
+        "Carabus purpurascens": 1,
+        "Cardamine pratensis": 1,
+        "Cardamine pratensis var. nemorosa": 1,
+        "Carduelis chloris": 1,
+        "Carduelis spinus": 1,
+        "Carex": 1,
+        "Carex acuta": 1,
+        "Carex acutiformis": 1,
+        "Carex caryophyllea": 1,
+        "Carex echinata": 1,
+        "Carex nigra": 1,
+        "Carex remota": 1,
+        "Carex sylvatica": 1,
+        "Carex vulpina": 1,
+        "Carpinus betulus": 2,
+        "Casmerodius albus": 1,
+        "Castor fiber albicus": 1,
+        "Caucalis platycarpos": 1,
+        "Centaurea jacea": 1,
+        "Cerambyx cerdo": 1,
+        "Ceramium cimbricum": 1,
+        "Ceramium sungminbooi": 1,
+        "Ceratina chalybea": 1,
+        "Ceratina cucurbitina": 1,
+        "Ceratina cyanea": 1,
+        "Ceratophyllum demersum": 1,
+        "Cercopagis pengoi": 1,
+        "Cereus pedunculatus": 1,
+        "Chaetopteryx villosa": 1,
+        "Chalinula (Haliclona) loosanoffi": 1,
+        "Charadrius hiaticula": 1,
+        "Chelicorophium curvispinum": 1,
+        "Chelostoma campanularum": 1,
+        "Chelostoma distinctum": 1,
+        "Chelostoma florisomne": 1,
+        "Chelostoma foveolatum": 1,
+        "Chelostoma rapunculi": 1,
+        "Cheumatopsyche lepida": 1,
+        "Chimarra marginata": 1,
+        "Chironomidae": 1,
+        "Chlidonias hybrida": 1,
+        "Chlidonias leucopterus": 1,
+        "Chlidonias niger": 1,
+        "Chloroflexi": 1,
+        "Chloroperla tripunctata": 1,
+        "Chlorophyllum rhacodes": 1,
+        "Chlorophyta": 1,
+        "Chrysoperla carnea": 1,
+        "Chrysophyta": 1,
+        "Chrysura austriaca": 1,
+        "Circaea lutetiana": 1,
+        "Circus cyaneus": 1,
+        "Cirripedia": 1,
+        "Cirsium acaule": 1,
+        "Cirsium oleraceum": 1,
+        "Cirsium vulgar": 1,
+        "Cladonia rei": 1,
+        "Clangula hyemalis": 1,
+        "Clausena excavata": 1,
+        "Clupea harengus": 1,
+        "Clytus tropicus": 1,
+        "Coccothraustes coccothraustes": 1,
+        "Cochlearia bavarica": 1,
+        "Coelioxys afra": 1,
+        "Coelioxys aurolimbata": 1,
+        "Coelioxys conica": 1,
+        "Coelioxys elongata": 1,
+        "Coelioxys mandibularis": 1,
+        "Coelioxys quadridentata": 1,
+        "Coelioxys quadrimaculata": 1,
+        "Collembola": 1,
+        "Collembolans": 1,
+        "Colletes cunicularius": 1,
+        "Colletes daviesanus": 1,
+        "Colletes fodiens": 1,
+        "Colletes graeffei": 1,
+        "Colletes halophilus": 1,
+        "Colletes hederae": 1,
+        "Colletes hylaeiformis": 1,
+        "Colletes marginatus": 1,
+        "Colletes nasutus": 1,
+        "Colletes sierrensis": 1,
+        "Colletes similis": 1,
+        "Colletes succinctus": 1,
+        "Colpomenia peregrina": 1,
+        "Consolida regalis": 2,
+        "Copepoda": 1,
+        "Corambe obscura": 1,
+        "Corbicula fluminalis": 1,
+        "Cordylophora caspia": 1,
+        "Coregonus spp.": 1,
+        "Corella eumyota": 1,
+        "Corophium sp.": 1,
+        "Corophium volutator": 1,
+        "Corvus brachyrynchus": 1,
+        "Corvus splendens": 1,
+        "Corylus avellana": 1,
+        "Cotula coronopifolia": 1,
+        "Crassostrea gigas": 3,
+        "Crassostrea ilis": 1,
+        "Crassostrea virginica": 1,
+        "Crepidula fornicata": 1,
+        "Crepis biennis": 1,
+        "Crepis mollis": 1,
+        "Cricetus cricetus": 1,
+        "Crocethia alba": 1,
+        "Cryptorchestia cavimana": 1,
+        "Cumacea": 1,
+        "Cyanobacteria": 1,
+        "Cyclopterus lumpus": 1,
+        "Cylindroiulus caeruleocinctus": 1,
+        "Cylindroiulus nitidus": 1,
+        "Cynoscion guatucupa": 1,
+        "Cynosurus cristatus": 1,
+        "Dactylis glomerata": 1,
+        "Dafila acuta": 1,
+        "Danthonia decumbens": 1,
+        "Daphnia magna": 1,
+        "Dasya baillouviana": 1,
+        "Dasypoda argentata": 1,
+        "Dasypoda hirtipes": 1,
+        "Dasypoda morawitzi": 1,
+        "Dasypoda suripes": 1,
+        "Dasysiphonia japonica": 1,
+        "Daucus carota": 1,
+        "Dendrodrilus rubidus": 1,
+        "Dermestoides sanguinicollis": 1,
+        "Deschampsia cespitosa": 1,
+        "Deschampsia flexuosa": 1,
+        "Diadumene cincta": 1,
+        "Diadumene lineata": 1,
+        "Dictyogenus imhoffi": 1,
+        "Dictyota dichotoma": 1,
+        "Didemnum vexillum": 1,
+        "Dikerogammarus haemobaphes": 1,
+        "Dikerogammarus villosus": 1,
+        "Dinocras cephalotes": 1,
+        "Diplopoda": 1,
+        "Diplosoma listerianum": 1,
+        "Dreissena (Pontodreissena) bugensis": 1,
+        "Dreissena bugensis": 1,
+        "Dreissena polymorpha": 4,
+        "Dreissena rostriformis bugensis": 1,
+        "Dryopteris dilatata": 1,
+        "Dryopteris filix-mas": 1,
+        "Dufourea": 1,
+        "Dufourea halictula": 1,
+        "Dufourea inermis": 1,
+        "Dufourea minuta": 1,
+        "Dufourea paradoxa": 1,
+        "Dugesia gonocephala": 1,
+        "Echinocardium": 1,
+        "Echinocardium cordatum": 2,
+        "Echinogammarus ischnus": 1,
+        "Echinogammarus trichiatus": 2,
+        "Eichhornia crassipes": 1,
+        "Eisenia fetida": 2,
+        "Elodea canadensis": 1,
+        "Elodea nuttallii": 1,
+        "Elymus repens": 1,
+        "Emberiza citrinella": 1,
+        "Emberiza hortulana": 1,
+        "Emericellopsis alkalina": 1,
+        "Encheliopus cimbrius": 1,
+        "Enchytraeidae": 1,
+        "Ensis leei": 1,
+        "Enteromorpha intestinalis": 1,
+        "Enteromorpha intestinialis": 1,
+        "Epeoloides coecutiens": 1,
+        "Epeolus alpinus": 1,
+        "Epeolus cruciger": 1,
+        "Epeolus fallax": 1,
+        "Epeolus schummeli": 1,
+        "Epeolus variegatus": 1,
+        "Ephemeroptera": 1,
+        "Ephialtes manifestator": 1,
+        "Ephoron virgo": 1,
+        "Epilobium palustre": 1,
+        "Eremophila alpestris": 1,
+        "Eriocheir sinensis": 2,
+        "Erithacus rubecula": 1,
+        "Eryngium campestre": 1,
+        "Escherichia coli": 1,
+        "Eschscholzia californica": 1,
+        "Esox lucius": 2,
+        "Eubosmina": 1,
+        "Eucera alticincta": 1,
+        "Eucera dentata": 1,
+        "Eucera dentata patrouillii": 1,
+        "Eucera interrupta": 1,
+        "Eucera longicornis": 1,
+        "Eucera macroglossa": 1,
+        "Eucera nigrescens": 1,
+        "Eucera salicariae": 1,
+        "Euglypha cf. rotunda": 1,
+        "Euleuctra geniculata": 1,
+        "Euonymus europaea": 2,
+        "Euonymus europaeus": 1,
+        "Eupelops occultus": 1,
+        "Euphorbia falcata": 1,
+        "Euphorbia platyphyllos": 1,
+        "Eurytemora": 1,
+        "Euthystira brachyptera": 1,
+        "Evadne": 1,
+        "F. serratus": 1,
+        "Fabaceae": 1,
+        "Fagus sylvatica": 1,
+        "Falco peregrinus": 3,
+        "Fallopia japonica": 1,
+        "Faxonius (Orconectes) limosus": 1,
+        "Felis silvestris": 1,
+        "Fenestrulina delicia": 1,
+        "Festuca altissima": 2,
+        "Festuca arundinacea": 1,
+        "Festuca ovina agg": 1,
+        "Festuca pratensis": 1,
+        "Festuca rubra agg.": 1,
+        "Ficopomatus enigmaticus": 1,
+        "Filago arvensis": 1,
+        "Formicidae": 1,
+        "Fraxinus excelsior": 2,
+        "Fringilla coelebs": 1,
+        "Fucus ceranoides": 1,
+        "Fucus distichus subsp. edentatus": 1,
+        "Fucus spp.": 1,
+        "Fucus vesiculosus": 1,
+        "Fumaria parviflora": 1,
+        "Fungi": 1,
+        "Gadus morhua": 3,
+        "Galeopsis segetum": 1,
+        "Galium album": 1,
+        "Galium odoratum": 1,
+        "Galium pumilum": 1,
+        "Galium spurium": 1,
+        "Galium tricornutum": 1,
+        "Galium uliginosum": 1,
+        "Galium verum agg": 1,
+        "Galium verum agg.": 1,
+        "Galleria mellonella": 1,
+        "Gammarus fossarum": 1,
+        "Gammarus tigrinus": 1,
+        "Gasterocercus depressirostris": 1,
+        "Gasterosteus aculeatus": 1,
+        "Gasteruption assectator": 1,
+        "Gastropoda": 1,
+        "Gavia arctica": 1,
+        "Gavia stellata": 1,
+        "Gecarcoidea natalis": 1,
+        "Gefäßpflanzen": 1,
+        "Geophilus flavus": 1,
+        "Geranium pratense": 1,
+        "Geranium robertianum": 1,
+        "Geranium sylvaticum": 1,
+        "Geum urbanum": 1,
+        "Glomus aggregatum": 1,
+        "Glossosoma boltoni": 1,
+        "Glyceria fluitans": 1,
+        "Glyceria maxima": 1,
+        "Glyphiulus granulatus": 1,
+        "Gobiosoma bosc": 1,
+        "Gobius paganellus": 1,
+        "Gomphus vulgatissimus": 1,
+        "Goneplax rhomboides": 1,
+        "Goniadella bobretzkii": 1,
+        "Gonionemus vertens": 1,
+        "Gracilaria vermiculophylla": 1,
+        "Grandidierella japonica": 1,
+        "Grateloupia turuturu": 1,
+        "Gymnocoronis spilanthoides": 1,
+        "Gypsophila muralis": 1,
+        "Haematopus ostralegus": 1,
+        "Haliaeetus albicilla": 1,
+        "Halichoerus grypus": 1,
+        "Haliclona (Soestella) xena": 1,
+        "Haliclystus tenuis": 1,
+        "Halictus": 1,
+        "Halictus confusus": 1,
+        "Halictus eurygnathus": 1,
+        "Halictus gavarnicus": 1,
+        "Halictus langobardicus": 1,
+        "Halictus leucaheneus": 1,
+        "Halictus maculatus": 1,
+        "Halictus pollinosus": 1,
+        "Halictus quadricinctus": 1,
+        "Halictus rubicundus": 1,
+        "Halictus scabiosae": 1,
+        "Haminella solitaria": 1,
+        "Haminoea solitaria": 1,
+        "Harmonia axyridis": 1,
+        "Harpalus luteicornis": 1,
+        "Harpalus rufipes": 1,
+        "Harpalus smaragdinus": 1,
+        "Hedera helix": 1,
+        "Helictotrichon pubescens": 1,
+        "Hemigrapsus sanguineus": 1,
+        "Hemigrapsus takanoi": 1,
+        "Hemimysis anomala": 1,
+        "Heracleum mantegazzianum": 1,
+        "Heracleum persicum": 1,
+        "Heracleum sosnowskyi": 1,
+        "Heriades truncorum": 1,
+        "Herpestes javanicus": 1,
+        "Hieracium cf. laevigatum": 1,
+        "Hieracium pilosella": 1,
+        "Himantopus himantopus": 1,
+        "Holcus lanatus": 1,
+        "Homarus americanus": 1,
+        "Hookworm": 1,
+        "Humulus scandens": 1,
+        "Hydrocoloeus minutus": 1,
+        "Hydrocotyle ranunculoides": 1,
+        "Hydroprogne caspia": 1,
+        "Hydropsyche angustipennis": 1,
+        "Hydropsyche contubemalis": 1,
+        "Hydropsyche pellucidula": 1,
+        "Hydroptila forcipata": 1,
+        "Hylaeus alpinus": 1,
+        "Hylaeus angustatus": 1,
+        "Hylaeus annularis": 1,
+        "Hylaeus annulatus": 1,
+        "Hylaeus brevicornis": 1,
+        "Hylaeus cardioscapus": 1,
+        "Hylaeus clypearis": 1,
+        "Hylaeus communis": 1,
+        "Hylaeus leptocephalus": 1,
+        "Hylaeus nigritus": 1,
+        "Hylaeus pectoralis": 1,
+        "Hylaeus punctulatissimus": 1,
+        "Hylaeus signatus": 1,
+        "Hylaeus variegatus": 1,
+        "Hypania invalida": 1,
+        "Hypereteone lighti / Hypereteone heteropoda": 1,
+        "Hypochaeris glabra": 1,
+        "Hypochaeris radicata": 1,
+        "Impatiens glandulifera": 1,
+        "Impatiens parviflora": 1,
+        "Incisocalliope aestuarius": 1,
+        "Iris pseudacorus": 1,
+        "Isogenus nubeluca": 1,
+        "Isoperla grammatica": 1,
+        "Isoperla obscura": 1,
+        "Isotoma viridis": 2,
+        "Isotomurus palustris": 1,
+        "Ithytrichia lamellaris": 1,
+        "Ixobrychus minutus": 1,
+        "Jassa marmorata": 1,
+        "Juglans regia": 1,
+        "Juncus": 1,
+        "Juncus effusus": 2,
+        "Juncus filiformis": 1,
+        "Keratella": 1,
+        "Lagarosiphon major": 1,
+        "Lamium galeobdolon": 1,
+        "Laonome xeprovala": 1,
+        "Larus argentatus": 3,
+        "Larus canus": 2,
+        "Larus fuscus": 2,
+        "Larus marinus": 1,
+        "Larus melanocephalus": 1,
+        "Larus minutus": 1,
+        "Larus ridibundus": 2,
+        "Lasioglossum": 1,
+        "Lasioglossum calceatum": 1,
+        "Lasioglossum fratellum": 1,
+        "Lasioglossum glabriusculum": 1,
+        "Lasioglossum griseolum": 1,
+        "Lasioglossum lineare": 1,
+        "Lasioglossum malachurum": 1,
+        "Lasioglossum marginatum": 1,
+        "Lasioglossum marginellum": 1,
+        "Lasioglossum minutissimum": 1,
+        "Lasioglossum minutulum": 1,
+        "Lasioglossum monstrificum": 1,
+        "Lasioglossum morio": 1,
+        "Lasioglossum nigripes": 1,
+        "Lasioglossum nitidiusculum": 1,
+        "Lasioglossum nitidulum": 1,
+        "Lasioglossum pallens": 1,
+        "Lasioglossum parvulum": 1,
+        "Lasioglossum pauperatum": 1,
+        "Lasioglossum pauxillum": 1,
+        "Lasioglossum pleurospeculum": 1,
+        "Lasioglossum politum": 1,
+        "Lasioglossum prasinum": 1,
+        "Lasioglossum punctatissimum": 1,
+        "Lasioglossum puncticolle": 1,
+        "Lasioglossum pygmaeum": 1,
+        "Lasioglossum quadrinotatulum": 1,
+        "Lasioglossum quadrinotatum": 1,
+        "Lasioglossum quadrisignatum": 1,
+        "Lasioglossum quadrisingatum": 1,
+        "Lasioglossum rufitarse": 1,
+        "Lasioglossum sexnotatum": 1,
+        "Lasioglossum subfasciatum": 1,
+        "Lasioglossum villosulum": 1,
+        "Lasioglossum xanthopus": 1,
+        "Lathyrus pratensis": 1,
+        "Legousia hybrida": 1,
+        "Legousia speculum-veneris": 2,
+        "Leontodon hispidus": 1,
+        "Lepidium squamatum": 1,
+        "Lepidochirus plumulosus": 1,
+        "Lepidoteirus plumulosus": 1,
+        "Lepomis gibbosus": 1,
+        "Leptinotarsa decemlineata": 1,
+        "Leptocheirus plumulosus": 1,
+        "Leptophyes punctatissima": 1,
+        "Lespedeza juncea": 1,
+        "Leucaena leucocephala": 1,
+        "Leucojum vernum": 1,
+        "Leucosolenia somesii": 1,
+        "Leucospis dorsigera": 1,
+        "Leuctra jusca": 1,
+        "Limanda limanda": 1,
+        "Limax cinereoniger": 1,
+        "Limnomysis benedeni": 1,
+        "Limosa limosa": 1,
+        "Limulus polyphemus": 1,
+        "Linaria arvensis": 1,
+        "Linepithema humile": 1,
+        "Linum catharticum": 1,
+        "Lithobates catesbeianus": 1,
+        "Lithobius crassipes": 1,
+        "Lithobius curtiosus": 1,
+        "Lithospermum arvense": 1,
+        "Lithurgus chrysurus": 1,
+        "Lobaria pulmonaria": 1,
+        "Loimia ramzega": 1,
+        "Lolium perenne": 1,
+        "Ludwigia grandiflora": 1,
+        "Ludwigia peploides": 1,
+        "Lumbricus castaneus": 1,
+        "Lumbricus terrestris": 2,
+        "Lumpenus lampretaeformis": 1,
+        "Lutra lutra": 1,
+        "Luzula campestris": 1,
+        "Lygodium japonicum": 1,
+        "Lysichiton americanus": 1,
+        "Lysobacter": 1,
+        "Lythrum salicaria": 1,
+        "Lytta vesicatoria": 1,
+        "Macoma balthica": 2,
+        "Macropis europaea": 1,
+        "Macropis fulvipes": 1,
+        "Magallana (Crassostrea) angulata": 1,
+        "Magallana gigas": 1,
+        "Malacolimax tenellus": 1,
+        "Malus sylvestris": 1,
+        "Marasmius elegans": 1,
+        "Marasmius oreades": 1,
+        "Marenzelleria neglecta": 1,
+        "Marenzelleria viridis": 1,
+        "Mastocarpus stellatus": 2,
+        "Medicago lupulina": 1,
+        "Megachile": 1,
+        "Megachile (Chalicodoma) parietina": 1,
+        "Megachile circumcincta": 1,
+        "Megachile ericetorum": 1,
+        "Megachile genalis": 1,
+        "Megachile lagopoda": 1,
+        "Megachile lapponica": 1,
+        "Megachile leachella": 1,
+        "Megachile ligniseca": 1,
+        "Megachile maritima": 1,
+        "Megachile melanopyga": 1,
+        "Megachile nigriventris": 1,
+        "Megachile parietina": 1,
+        "Megachile pilidens": 1,
+        "Megachile pyrenaea": 1,
+        "Megachile pyrenaica": 1,
+        "Megachile rotundata": 1,
+        "Megachile sculpturalis": 1,
+        "Megachile versicolor": 1,
+        "Megachile willughbiella": 1,
+        "Melampyrum arvense": 1,
+        "Melanitta fusca": 1,
+        "Melanitta nigra": 1,
+        "Melanothamnus harveyi": 1,
+        "Melecta albifrons": 1,
+        "Melecta luctuosa": 1,
+        "Melica uniflora": 1,
+        "Melita nitida": 1,
+        "Melitta dimidiata": 1,
+        "Melitta haemorrhoidalis": 1,
+        "Melitta leporina": 1,
+        "Melitta nigricans": 1,
+        "Melitta tricincta": 1,
+        "Melittobia acasta": 1,
+        "Melitturga clavicornis": 1,
+        "Meloe proscarabaeus": 1,
+        "Meloe violaceus": 1,
+        "Mergus albellus": 1,
+        "Mergus merganser": 1,
+        "Mergus serrator": 1,
+        "Micrasema setiferum": 1,
+        "Micrococcus luteus": 1,
+        "Microphthalmus similis": 1,
+        "Micropterous salmoides": 1,
+        "Microstegium vimineum": 1,
+        "Milium effusum": 1,
+        "Miltogramma oestraceum": 1,
+        "Miltogramma punctatum": 1,
+        "Milvus milvus": 1,
+        "Misopates orontium": 1,
+        "Mnemiopsis leidyi": 1,
+        "Moerisia inkermanica": 1,
+        "Molanna angustata": 1,
+        "Molgula manhattensis": 1,
+        "Mollusca: Gastropoda": 1,
+        "Monocorophium sextonae": 1,
+        "Monodontomerus obsoletus": 1,
+        "Motacilla alba": 1,
+        "Mulinia lateralis": 1,
+        "Mullus surmuletus": 1,
+        "Muntiacus reevesi": 1,
+        "Muntingia calabura": 1,
+        "Muscicapa striata": 1,
+        "Mustela vison": 1,
+        "Mya arenaria": 1,
+        "Mycobacterium smegmatis": 1,
+        "Mycogona germanicum": 1,
+        "Myocastor coypus": 2,
+        "Myosotis palustris agg.": 1,
+        "Myotis dasycneme": 1,
+        "Myotis daubentoni": 1,
+        "Myriophyllum aquaticum": 1,
+        "Myriophyllum heterophyllum": 1,
+        "Myriophyllum verticillatum": 1,
+        "Mytilicola intestinalis": 1,
+        "Mytilicola orientalis": 1,
+        "Mytilopsis leucophaeata": 1,
+        "Mytilus edulis": 3,
+        "Mytilus galloprovincialis": 1,
+        "Mytilus trossulus": 1,
+        "Nardus stricta": 1,
+        "Nasua nasua": 1,
+        "Natrix tessellata": 1,
+        "Nebria brevicollis": 1,
+        "Nemalion helminthoides": 1,
+        "Nemopsis bachei": 1,
+        "Neodexiospira brasiliensis": 1,
+        "Neogobius melanostomus": 1,
+        "Neomys fodiens": 1,
+        "Nereis virens": 1,
+        "Neslia paniculata": 1,
+        "Netta rufina": 1,
+        "Nippoleucon hinumensis": 1,
+        "Nomada alboguttata": 1,
+        "Nomada argentata": 1,
+        "Nomada armata": 1,
+        "Nomada atroscutellaris": 1,
+        "Nomada baccata": 1,
+        "Nomada bifasciata": 1,
+        "Nomada bispinosa": 1,
+        "Nomada bluethgeni": 1,
+        "Nomada braunsiana": 1,
+        "Nomada castellana": 1,
+        "Nomada conjungens": 1,
+        "Nomada discedens": 1,
+        "Nomada distinguenda": 1,
+        "Nomada emarginata": 1,
+        "Nomada errans": 1,
+        "Nomada fabriciana": 1,
+        "Nomada facilis": 1,
+        "Nomada femoralis": 1,
+        "Nomada ferruginata": 1,
+        "Nomada flava": 1,
+        "Nomada flavoguttata": 1,
+        "Nomada flavopicta": 1,
+        "Nomada fucata": 1,
+        "Nomada fulvicornis": 1,
+        "Nomada furva": 1,
+        "Nomada fuscicornis": 1,
+        "Nomada goodeniana": 1,
+        "Nomada guttulata": 1,
+        "Nomada hirtipes": 1,
+        "Nomada integra": 1,
+        "Nomada lathburiana": 1,
+        "Nomada leucophthalma": 1,
+        "Nomada marshamella": 1,
+        "Nomada melathoracica": 1,
+        "Nomada minuscula": 1,
+        "Nomada moeschleri": 1,
+        "Nomada mutabilis": 1,
+        "Nomada mutica": 1,
+        "Nomada nobilis": 1,
+        "Nomada numida": 1,
+        "Nomada obscura": 1,
+        "Nomada obtusifrons": 1,
+        "Nomada opaca": 1,
+        "Nomada panzeri": 1,
+        "Nomada pleurosticta": 1,
+        "Nomada stoeckherti": 1,
+        "Nomia femoralis": 1,
+        "Nomioides minutissimus": 1,
+        "Nucula nitidosa": 1,
+        "Nyctereutes procyonoides": 1,
+        "Nycticorax nycticorax": 1,
+        "Nymphoides peltata": 1,
+        "Obesogammarus crassus": 1,
+        "Oithona davisae": 1,
+        "Oligoneuriella rhenana": 1,
+        "Oligoplectrum maculatum": 1,
+        "Ondatra zibethicus": 2,
+        "Onobrychis vicifolia": 1,
+        "Onobrychis viciifolia": 1,
+        "Ophelia limacina": 1,
+        "Ophonus ardosiacus": 1,
+        "Orchesella villosa": 1,
+        "Orchis tridentata": 1,
+        "Orconectes immunis": 1,
+        "Orconectes limosus": 2,
+        "Orconectes virilis": 1,
+        "Oribatida": 1,
+        "Orius insidiosus": 1,
+        "Ornithopus perpusillus": 1,
+        "Osmea cerinthidis": 1,
+        "Osmia": 1,
+        "Osmia acuticornis": 1,
+        "Osmia adunca": 1,
+        "Osmia andrenoides": 1,
+        "Osmia anthocopoides": 1,
+        "Osmia aurulenta": 1,
+        "Osmia bicolor": 1,
+        "Osmia bicornis": 1,
+        "Osmia brevicornis": 1,
+        "Osmia caerulescens": 1,
+        "Osmia cerinthidis": 1,
+        "Osmia claviventris": 1,
+        "Osmia cornuta": 1,
+        "Osmia gallarum": 1,
+        "Osmia inermis": 1,
+        "Osmia laticeps": 1,
+        "Osmia leaiana": 1,
+        "Osmia leucomelana": 1,
+        "Osmia loti": 1,
+        "Osmia maritima": 1,
+        "Osmia mitis": 1,
+        "Osmia mustelina": 1,
+        "Osmia nigriventris": 1,
+        "Osmia niveata": 1,
+        "Osmia papaveris": 1,
+        "Osmia parietina": 1,
+        "Osmia rufohirta": 1,
+        "Osmia tridentata": 1,
+        "Osmia versicolor": 1,
+        "Osmia villosa": 1,
+        "Osmia viridana": 1,
+        "Osmia xanthomelana": 1,
+        "Osmoderma eremita": 1,
+        "Ostrea edulis": 2,
+        "Oxyura jamaicensis": 1,
+        "Pachycordyle michaeli": 1,
+        "Pacifastacus leniusculus": 2,
+        "Pagurus longicarpus": 1,
+        "Palaemon elegans": 1,
+        "Palaemon macrodactylus": 1,
+        "Panurgus banksianus": 1,
+        "Panurgus calcaratus": 1,
+        "Panurgus dentipes": 1,
+        "Papaver argemone": 1,
+        "Parafontaria laminate": 1,
+        "Paramysis lacustris": 1,
+        "Parasitidae": 1,
+        "Parthenium hysterophorus": 1,
+        "Passer montanus": 1,
+        "Penicillium": 1,
+        "Pennisetum setaceum": 1,
+        "Perca fluviatilis": 1,
+        "Perccottus glenii": 1,
+        "Perophora japonica": 1,
+        "Persicaria perfoliata": 1,
+        "Petricolaria pholadiformis": 1,
+        "Petromyzon marinus": 2,
+        "Phalacrocorax carbo": 1,
+        "Phalacrocorax carbo sinensis": 1,
+        "Phalaris arundinacea": 1,
+        "Phaleropus lobatus": 1,
+        "Phaneroptera falcata": 1,
+        "Philomachus pugnax": 1,
+        "Philopotamus": 1,
+        "Phoca vitulina": 2,
+        "Phocoena phocoena": 1,
+        "Pholis gunnellus": 1,
+        "Phragmites australis": 1,
+        "Phylloscopus trochilus": 1,
+        "Phyteuma nigrum": 1,
+        "Phyteuma orbiculare": 1,
+        "Phyteuma spicatum": 1,
+        "Picea abies": 1,
+        "Picris hieracioides": 1,
+        "Pileolaria berkeleyana": 1,
+        "Pimpinella saxifraga": 1,
+        "Pinus sylvestris": 1,
+        "Plantago lanceolata": 1,
+        "Plantago major": 1,
+        "Plantago media": 1,
+        "Platichthys flesus": 2,
+        "Platorchestia platensis": 1,
+        "Platycleis albopunctata": 1,
+        "Plecoptera": 1,
+        "Pleuronectes platessa": 1,
+        "Plotosus lineatus": 1,
+        "Poa annua": 1,
+        "Poa chaixii": 1,
+        "Poa nemoralis": 1,
+        "Poa palustris": 1,
+        "Poa pratensis": 1,
+        "Poa trivialis": 2,
+        "Podiceps auritus": 1,
+        "Podiceps cristatus": 1,
+        "Podiceps griseigena": 1,
+        "Podiceps nigricollis": 1,
+        "Podiceps ruficollis": 1,
+        "Podon": 1,
+        "Podura aquatica": 1,
+        "Poecilia reticulata": 1,
+        "Poecilus cupreus": 1,
+        "Polydora websteri": 1,
+        "Polygala amara agg.": 1,
+        "Polygonum bistorta": 1,
+        "Pomatoschistus microps": 1,
+        "Pontogammarus robustoides": 1,
+        "Populus balsamica": 1,
+        "Populus nigra": 1,
+        "Populus tremula": 1,
+        "Populus × canadensis": 1,
+        "Porcellio scaber": 1,
+        "Posidonia oceanica": 1,
+        "Potamanthus luteus": 1,
+        "Potamopyrgus antipodarum": 1,
+        "Potamothrix spp.": 1,
+        "Potentilla anserina": 1,
+        "Potentilla erecta": 1,
+        "Potentilla neumanniana": 1,
+        "Primavelans glabricollaris": 1,
+        "Primula elatior": 1,
+        "Primula veris": 1,
+        "Proasellus coxalis": 1,
+        "Procambarus clarkii": 1,
+        "Procambarus fallax f. virginalis": 1,
+        "Procyon lotor": 2,
+        "Prunella modularis": 1,
+        "Prunus serotina": 1,
+        "Prymnesiophyceae": 1,
+        "Pseudodiaptomus marinus": 1,
+        "Pseudomonas aeruginosa": 1,
+        "Pseudomonas putida": 1,
+        "Pseudorasbora parva": 1,
+        "Psithyrus rupestris": 1,
+        "Psithyrus vestalis": 1,
+        "Psychomyia pusilla": 1,
+        "Pterostichus anthracinus": 1,
+        "Pterostichus melanarius": 1,
+        "Pterostichus nigrita": 1,
+        "Ptinus sexpunctatus": 1,
+        "Pueraria montana var. lobata": 1,
+        "Pulmonaria obscura": 1,
+        "Pyrrhula pyrrhula": 1,
+        "Pyrus pyraster": 1,
+        "Quercus robur": 2,
+        "Quercus rubra": 1,
+        "Ralstonia metallidurans": 1,
+        "Rana catesbeiana": 1,
+        "Rana esculenta": 1,
+        "Rangia cuneata": 1,
+        "Ranunculus acris": 1,
+        "Ranunculus bulbosus": 1,
+        "Ranunculus repens": 1,
+        "Recurvirostra avosetta": 1,
+        "Regulus ignicapilla": 1,
+        "Rhagium sycophanta": 1,
+        "Rhithrogena diaphana": 1,
+        "Rhithropanopeus harrisii": 1,
+        "Rhitrogena semicolorata": 1,
+        "Rhizobia": 1,
+        "Rhizobium spp.": 1,
+        "Rhizophagus intraradices": 1,
+        "Rhophitoides canus": 1,
+        "Rhyacophila nubila": 1,
+        "Rhyacophila pascoei": 1,
+        "Rhyacophila tristis": 1,
+        "Rissa tridactyla": 1,
+        "Robinia pseudoacacia": 1,
+        "Rophites algirus": 1,
+        "Rophites quinquespinosus": 1,
+        "Rubus idaeus": 1,
+        "Ruditapes philippinarum": 1,
+        "Rumex acetosa": 1,
+        "Rumex obtusifolius": 1,
+        "Rutilus rutilus": 2,
+        "Saccharomyces cerevisiae": 1,
+        "Salamandra salamandra terrestris": 1,
+        "Salix sp.": 1,
+        "Salmo salar": 2,
+        "Salmo trutta": 1,
+        "Salvinia molesta": 1,
+        "Sambucus nigra": 1,
+        "Sander lucioperca": 2,
+        "Sanguisorba minor": 1,
+        "Sanguisorba officinalis": 1,
+        "Sapium sebiferum": 1,
+        "Sapyga clavicornis": 1,
+        "Sapyga quinquepunctata": 1,
+        "Sapygina decemguttata": 1,
+        "Sargassum muticum": 2,
+        "Scabiosa columbaria": 1,
+        "Scandix pecten-veneris": 1,
+        "Scarabaeus auratus": 1,
+        "Scenedesmus subspicatus": 1,
+        "Schendyla nemorensis": 1,
+        "Schizobrachiella verrilli": 1,
+        "Schizoporella japonica": 1,
+        "Scinaia furcellata": 1,
+        "Sciurus carolinensis": 2,
+        "Sciurus niger": 1,
+        "Scolytus multistriatus": 1,
+        "Scolytus scolytus": 1,
+        "Scophthalmus maximus": 1,
+        "Scophthalmus rhombus": 1,
+        "Scybalophagus sp.": 1,
+        "Selinum carvifolia": 1,
+        "Senecio aquaticus": 1,
+        "Sherardia arvensis": 1,
+        "Silaum silaus": 1,
+        "Silene noctiflora": 1,
+        "Silo pallipes": 1,
+        "Silo piceus": 1,
+        "Sinelobus vanhaareni": 1,
+        "Sitaris muralis": 1,
+        "Skeletonema costatum": 1,
+        "Sminthurides aquaticus": 1,
+        "Smittoidea prolifica": 1,
+        "Solenopsis invicta": 1,
+        "Somateria mollissima": 3,
+        "Sonstige": 1,
+        "Spartina anglica": 1,
+        "Spatula clypeata": 1,
+        "Speotyto cunicularia": 1,
+        "Sphaerium solidum": 1,
+        "Sphaerotilus": 1,
+        "Sphecodes albilabris": 1,
+        "Sphecodes majalis": 1,
+        "Sphecodes monilicornis": 1,
+        "Sphecodes pseudofasciatus": 1,
+        "Sphecodes rubicundus": 1,
+        "Sphecodes spinulosus": 1,
+        "Sphenodon punctatus": 1,
+        "Spio filicornis": 1,
+        "Spisula solida": 1,
+        "Squamarina lentigera": 1,
+        "Stachys annua": 1,
+        "Stachys sylvatica": 1,
+        "Staphylinidae": 1,
+        "Staphylococcus aureus": 1,
+        "Stelis": 1,
+        "Stelis breviuscula": 1,
+        "Stelis franconica": 1,
+        "Stelis minima": 1,
+        "Stelis minuta": 1,
+        "Stelis nasuta": 1,
+        "Stelis odontopyga": 1,
+        "Stelis ornatula": 1,
+        "Stelis phaeoptera": 1,
+        "Stelis punctulatissima": 1,
+        "Stelis signata": 1,
+        "Stelis simillima": 1,
+        "Stellaria holostea": 2,
+        "Stellaria nemorum": 1,
+        "Stenoria analis": 1,
+        "Stercorarius parasiticus": 1,
+        "Sterkiella tricirrata": 1,
+        "Sterna hirundo": 2,
+        "Sterna sandvicensis": 1,
+        "Stizostedion lucioperca": 1,
+        "Streblospio benedicti": 1,
+        "Sturnus vulgaris": 1,
+        "Styela clava": 1,
+        "Succisa pratensis": 1,
+        "Sylvia atricapilla": 1,
+        "Symphytum officinale": 1,
+        "Synidotea laticauda": 1,
+        "Systropha curvicornis": 1,
+        "Systropha planidens": 1,
+        "Tadorna tadorna": 1,
+        "Talpa europaea": 1,
+        "Tamias sibiricus": 1,
+        "Tanacetum vulgare": 1,
+        "Taraxacum sectio Ruderalia": 1,
+        "Tectocepheus velatus": 1,
+        "Tellina fabula": 1,
+        "Telmatogeton japonicus": 1,
+        "Teredo navalis": 1,
+        "Tetrao tetrix": 1,
+        "Tetrao urogallus": 1,
+        "Tetrigidae": 1,
+        "Tetrix": 1,
+        "Tharyx killariensis": 1,
+        "Tharyx maryae": 1,
+        "Theodoxus fluviatilis": 1,
+        "Thesium pyrenaicum": 1,
+        "Thomomys bottae": 1,
+        "Thracia villosiuscula": 1,
+        "Threskiornis aethiopicus": 1,
+        "Thymus pulegioides": 1,
+        "Thyreus orbatus": 1,
+        "Tilia cordata": 1,
+        "Torilis arvensis": 1,
+        "Trachemys scripta": 1,
+        "Trachinus draco": 1,
+        "Trailliella intricata": 1,
+        "Trebouxia aggregata": 1,
+        "Tricellaria inopinata": 1,
+        "Trichodes alvearius": 1,
+        "Trichodes apiarius": 1,
+        "Trichoferus pallidus": 1,
+        "Trichogramma": 1,
+        "Trichoptera": 1,
+        "Trichoribates trimaculatus": 1,
+        "Tricoribates trimaculatus": 1,
+        "Trifolium dubium": 1,
+        "Trifolium pratense": 1,
+        "Trifolium repens": 1,
+        "Trinervitermes": 1,
+        "Tringa erythropus": 1,
+        "Tringa glareola": 1,
+        "Tringa nebularia": 1,
+        "Tringa ochropus": 1,
+        "Tringa stagnatilis": 1,
+        "Tringa totanus": 1,
+        "Troglodytes troglodytes": 1,
+        "Trollius europaeus": 1,
+        "Tubificoides heterochaetus": 1,
+        "Tulipa gesneriana": 1,
+        "Tulipa tarda": 1,
+        "Tunicata": 1,
+        "Turdus merula": 1,
+        "Turdus philomelos": 1,
+        "Turdus viscivorus": 1,
+        "U. carpinifolia var. cornubiensis": 1,
+        "U. carpinifolia var. sarniensis": 1,
+        "U. × hollandica": 1,
+        "Ulmus carpinifolia": 1,
+        "Ulmus glabra": 2,
+        "Ulmus japonica": 1,
+        "Ulmus laciniata": 1,
+        "Ulmus laevis": 2,
+        "Ulmus minor": 1,
+        "Ulmus procera": 1,
+        "Ulmus pumila": 1,
+        "Ulmus spec.": 1,
+        "Ulmus villosa": 1,
+        "Ulmus wallichiana": 1,
+        "Ulmus wilsoniana": 1,
+        "Undaria pinnatifida": 1,
+        "Unio crassus": 1,
+        "Uria aalge": 1,
+        "Urtica dioica": 1,
+        "Vaccinium myrtillus": 2,
+        "Vaccinium vitis-idaea": 1,
+        "Valerianella dentata": 1,
+        "Valerianella rimosa": 1,
+        "Various": 1,
+        "Varroa destructor": 1,
+        "Veronica chamaedrys": 1,
+        "Veronica officinalis": 1,
+        "Veronica triphyllos": 1,
+        "Vespa velutina nigrithorax": 1,
+        "Vicia cracca": 1,
+        "Vicia sativa": 1,
+        "Victorella pavida": 1,
+        "Viola palustris": 1,
+        "Vipera berus": 1,
+        "Vischeria magna": 1,
+        "Viviparus viviparus": 1,
+        "Volucella bombylans": 1,
+        "Watersipora subatra": 1,
+        "Xanthonema montanum": 1,
+        "Xylocopa iris": 1,
+        "Xylocopa valga": 1,
+        "Xylocopa violacea": 1,
+        "Zanichellia palustris": 1,
+        "Zostera": 1,
+        "Zostera marina": 1,
+        "Zostera noltii": 1,
+        "_Aplidium glabrum_": 1,
+        "_Botrylloides violaceus": 1,
+        "_Botryllus schlosseri": 1,
+        "_Chara connivens_": 1,
+        "_Codium fragile_ ssp. _fragile_": 1,
+        "_Corella eumyota": 1,
+        "_Cotula coronopifolia_": 1,
+        "_Ulva australis": 1,
+        "_Ulva californica": 1,
+        "_Vaucheria longicaulis": 1,
+        "_Vaucheria longicaulis_": 1,
+        "_Vaucheria_ cf. _velutina_": 1
+      },
+      "Vertebrata": {
+        "UNDETECTED": 1
+      },
+      "Vibrio alginolyticus": {
+        "UNDETECTED": 1
+      },
+      "Vibrio parahaemolyticus": {
+        "Vibrio parahaemolyticus": 1
+      },
+      "Vibrio spp.": {
+        "UNDETECTED": 1
+      },
+      "Vibrio vulnificus": {
+        "Vibrio vulnificus": 1
+      },
+      "Zachvatkinibates quadrivertex": {
+        "Zachvatkinibates quadrivertex": 1
+      },
+      "Zostera marina": {
+        "UNDETECTED": 2,
+        "Zostera marina": 1
+      },
+      "Zostera spp.": {
+        "UNDETECTED": 3
+      }
+    },
+    "taxa.species_group": {
+      "Amphibien und Reptilien": {
+        "Amphibien und Reptilien": 1,
+        "UNDETECTED": 1
+      },
+      "Andere": {
+        "Andere": 10,
+        "UNDETECTED": 7
+      },
+      "Andere Pflanzen": {
+        "Andere Pflanzen": 6,
+        "UNDETECTED": 3
+      },
+      "Andere Wirbellose": {
+        "Andere Wirbellose": 17,
+        "UNDETECTED": 1
+      },
+      "Archaeen": {
+        "Archaeen": 3
+      },
+      "Bakterien": {
+        "Bakterien": 4,
+        "UNDETECTED": 2
+      },
+      "Fische": {
+        "Fische": 9,
+        "UNDETECTED": 2
+      },
+      "Gefäßpflanzen": {
+        "Gefäßpflanzen": 11,
+        "UNDETECTED": 3
+      },
+      "Insekten": {
+        "Insekten": 6,
+        "UNDETECTED": 2
+      },
+      "Pilze": {
+        "UNDETECTED": 1
+      },
+      "Protisten": {
+        "Protisten": 1
+      },
+      "Säugetiere": {
+        "Säugetiere": 6,
+        "UNDETECTED": 3
+      },
+      "UNASSIGNABLE": {
+        "Amphibien und Reptilien": 10,
+        "Andere": 6,
+        "Andere Pflanzen": 28,
+        "Andere Wirbellose": 20,
+        "Archaeen": 1,
+        "Bakterien": 5,
+        "Fische": 12,
+        "Flechten": 5,
+        "Gefäßpflanzen": 19,
+        "Insekten": 18,
+        "Moose": 6,
+        "Pilze": 5,
+        "Protisten": 10,
+        "Protozoen": 1,
+        "Säugetiere": 8,
+        "Vögel": 14
+      },
+      "Vögel": {
+        "UNDETECTED": 1,
+        "Vögel": 6
+      }
+    }
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/397_faktencheck_core_v1_for_chunking/2026-04-02_15-50-22/2026-04-03_07-31-20_376042/predictions.jsonl",
+      "output_file_absolute": "/netscratch/hmeinhof/tmp/kiba-d_d4a27f3a-153c-48da-9ccb-ac9aeed76b0a/repo/predictions/397_faktencheck_core_v1_for_chunking/2026-04-02_15-50-22/2026-04-03_07-31-20_376042/predictions.jsonl",
+      "time_pdf_conversion": 0.007112983148545027,
+      "time_extraction": 57300.32762061618,
+      "time_start": 1775194280,
+      "time_end": 1775251683,
+      "commit_hash": "81d3de5422270e9a0394c3560def173b4373b2f2",
+      "branch": "commit/81d3de542227",
+      "is_dirty": false,
+      "slurm_job_id": "2736825"
+    },
+    "overrides": {
+      "name": "397_faktencheck_core_v1_for_chunking",
+      "experiment/predict": "faktencheck_core_fields_schema_with_chunking",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "qwen3_30b_in_process",
+      "seed": "1337"
+    }
+  }
+}

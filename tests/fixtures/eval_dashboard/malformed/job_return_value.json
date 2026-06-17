@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "type": "ConfusionMatrixCollection",
+  "data": {
+    "broken": true
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/malformed/predictions.jsonl"
+    }
+  }
+

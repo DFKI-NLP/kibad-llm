@@ -10,6 +10,8 @@ import pytest
 from kibad_llm.config import PROJ_ROOT
 from tests.conftest import WRITE_FIXTURE_DATA, cfg_global
 
+pytestmark = pytest.mark.usefixtures("llm_chat_replay")
+
 # strip extension to have nicer logging output, e.g. tests/test_extractors.py::test_extractor[simple]
 # and exclude folders (without extension) and helper configs starting with "_"
 AVAILABLE_EXTRACTORS = [
@@ -27,6 +29,9 @@ def extractor_name(request) -> str:
 @pytest.fixture(scope="function")
 def cfg_predict_extractor(tmp_path, extractor_name) -> DictConfig:  # type: ignore
     overrides = [f"extractor={extractor_name}"]
+
+    # use the gpt_oss_20b llm for testing since we monkeypatch its self.model.chat method
+    overrides.append("extractor/llm=gpt_oss_20b")
 
     if extractor_name in ["union", "conditional_union"]:
         # For union extractors, we need to define extractor overrides. Use two simple
@@ -47,7 +52,6 @@ def cfg_predict_extractor(tmp_path, extractor_name) -> DictConfig:  # type: igno
     GlobalHydra.instance().clear()
 
 
-@pytest.mark.slow
 def test_extractor(tmp_path, cfg_predict_extractor, extractor_name):
 
     HydraConfig().set_config(cfg_predict_extractor)
@@ -71,7 +75,7 @@ def test_extractor(tmp_path, cfg_predict_extractor, extractor_name):
         expected_result_path.parent.mkdir(parents=True, exist_ok=True)
         # write fixture data
         with open(expected_result_path, "w") as f:
-            json.dump(result, f, indent=2)
+            json.dump(result, f, indent=2, ensure_ascii=False)
 
     with open(expected_result_path) as f:
         expected_result = json.load(f)

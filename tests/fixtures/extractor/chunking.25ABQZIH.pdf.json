@@ -1,29 +1,142 @@
 {
   "structured": {
-    "climate": [
-      "maritim",
-      "niederschlagsnormal"
-    ],
     "habitat": [
       "Agrar- und Offenland",
       "Boden"
     ],
-    "landuse": [
-      "Bau",
-      "Energieproduktion",
-      "Landwirtschaft"
+    "ecosystem_type": [
+      {
+        "category": "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes",
+        "term": "Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte"
+      }
     ],
-    "natural_region": [
-      "Alpenvorland",
-      "Norddeutsches Tiefland"
+    "taxa": [
+      {
+        "species_group": "Amphibien und Reptilien"
+      },
+      {
+        "species_group": "Insekten"
+      },
+      {
+        "species_group": "Vögel"
+      }
+    ],
+    "biodiversity_level": [
+      "Artenvielfalt"
     ]
   },
+  "structured_with_metadata_list": [
+    {
+      "habitat": [
+        {
+          "content": "Agrar- und Offenland",
+          "evidence_anchor": "landwirtschaftlich genutzte Moorböden",
+          "evidence_num_matches": 2,
+          "first_evidence_start": 6536,
+          "first_evidence_end": 6573,
+          "first_evidence_snippet": "Suche nach für PVA geeignete Flächen sollte sich auf\ndegradierte, landwirtschaftlich genutzte Moorböden ohne naturschutzrechtlich einschränkende\nSchutzauflagen konzentrieren. Für eine erste Eingrenzung des"
+        },
+        {
+          "content": "Boden",
+          "evidence_anchor": "entwässerten Moorböden",
+          "evidence_num_matches": 2,
+          "first_evidence_start": 369,
+          "first_evidence_end": 391,
+          "first_evidence_snippet": "verringern. Dafür wird auch die\nErrichtung von Photovoltaik-Anlagen (PVA) auf entwässerten Moorböden in den Blick genommen und\nim Eckpunktepapier der Bundesregierung [2]"
+        }
+      ],
+      "taxa": [
+        {
+          "species_group": {
+            "content": "Insekten",
+            "evidence_anchor": "Biodiversität insbesondere von Insekten, Amphibien und Vögeln",
+            "evidence_num_matches": 1,
+            "first_evidence_start": 12065,
+            "first_evidence_end": 12126,
+            "first_evidence_snippet": "des Lebensraums\ndurch PVA ist hinsichtlich ihrer Wirkung auf die Biodiversität insbesondere von Insekten, Amphibien\nund Vögeln zu untersuchen. Zudem gilt es, mögliche Risiken der PVA auf"
+          }
+        },
+        {
+          "species_group": {
+            "content": "Amphibien und Reptilien",
+            "evidence_anchor": "Biodiversität insbesondere von Insekten, Amphibien und Vögeln",
+            "evidence_num_matches": 1,
+            "first_evidence_start": 12065,
+            "first_evidence_end": 12126,
+            "first_evidence_snippet": "des Lebensraums\ndurch PVA ist hinsichtlich ihrer Wirkung auf die Biodiversität insbesondere von Insekten, Amphibien\nund Vögeln zu untersuchen. Zudem gilt es, mögliche Risiken der PVA auf"
+          }
+        },
+        {
+          "species_group": {
+            "content": "Vögel",
+            "evidence_anchor": "Biodiversität insbesondere von Insekten, Amphibien und Vögeln",
+            "evidence_num_matches": 1,
+            "first_evidence_start": 12065,
+            "first_evidence_end": 12126,
+            "first_evidence_snippet": "des Lebensraums\ndurch PVA ist hinsichtlich ihrer Wirkung auf die Biodiversität insbesondere von Insekten, Amphibien\nund Vögeln zu untersuchen. Zudem gilt es, mögliche Risiken der PVA auf"
+          }
+        }
+      ],
+      "biodiversity_level": [
+        {
+          "content": "Artenvielfalt",
+          "evidence_anchor": "Die Veränderung des Lebensraums durch PVA ist hinsichtlich ihrer Wirkung auf die Biodiversität insbesondere von Insekten, Amphibien und Vögeln zu untersuchen.",
+          "evidence_num_matches": 1,
+          "first_evidence_start": 11984,
+          "first_evidence_end": 12142,
+          "first_evidence_snippet": "auf den Moorstandort (Gasflüsse,\nWasserhaushalt und Biodiversität) langfristig überwacht werden. Die Veränderung des Lebensraums\ndurch PVA ist hinsichtlich ihrer Wirkung auf die Biodiversität insbesondere von Insekten, Amphibien\nund Vögeln zu untersuchen. Zudem gilt es, mögliche Risiken der PVA auf die Wiedervernässung"
+        }
+      ]
+    },
+    {
+      "habitat": [
+        {
+          "content": "Boden",
+          "evidence_anchor": "\"Niedermoorböden\"",
+          "evidence_num_matches": 1,
+          "first_evidence_start": 20569,
+          "first_evidence_end": 20584,
+          "first_evidence_snippet": "Zeitz J. & Tanneberger, F. (Hg.): Klimaschonende, biodiversitätsfördernde](https://www.bfn.de/sites/default/files/2021-11/Skript616.pdf)\n[Bewirtschaftung von Niedermoorböden. BfN-Skripten 616, Bundesamt für Naturschutz, Bonn-Bad Godesberg, 342 S.](https://www.bfn.de/sites/default/files/2021-11/Skript616.pdf)\n13"
+        }
+      ],
+      "taxa": [],
+      "biodiversity_level": [],
+      "ecosystem_type": [
+        {
+          "category": {
+            "content": "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes",
+            "evidence_anchor": "\"Niedermoorböden\"",
+            "evidence_num_matches": 1,
+            "first_evidence_start": 20569,
+            "first_evidence_end": 20584,
+            "first_evidence_snippet": "Zeitz J. & Tanneberger, F. (Hg.): Klimaschonende, biodiversitätsfördernde](https://www.bfn.de/sites/default/files/2021-11/Skript616.pdf)\n[Bewirtschaftung von Niedermoorböden. BfN-Skripten 616, Bundesamt für Naturschutz, Bonn-Bad Godesberg, 342 S.](https://www.bfn.de/sites/default/files/2021-11/Skript616.pdf)\n13"
+          },
+          "term": {
+            "content": "Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte",
+            "evidence_anchor": "\"Niedermoorböden\"",
+            "evidence_num_matches": 1,
+            "first_evidence_start": 20569,
+            "first_evidence_end": 20584,
+            "first_evidence_snippet": "Zeitz J. & Tanneberger, F. (Hg.): Klimaschonende, biodiversitätsfördernde](https://www.bfn.de/sites/default/files/2021-11/Skript616.pdf)\n[Bewirtschaftung von Niedermoorböden. BfN-Skripten 616, Bundesamt für Naturschutz, Bonn-Bad Godesberg, 342 S.](https://www.bfn.de/sites/default/files/2021-11/Skript616.pdf)\n13"
+          }
+        }
+      ]
+    }
+  ],
   "errors_list": [
     [],
     []
   ],
   "reasoning_content_list": [
-    "We need to extract info about ecosystem-related study characteristics from the given markdown. We need to output JSON with fields according to specified schema:\n\n- habitat: zero to many strings; values from given allowed. Allowed: Agrar- und Offenland; Binnengew\u00e4sser und Auen; Boden; K\u00fcsten und K\u00fcstengew\u00e4sser; Urbane R\u00e4ume; Wald\n\n- natural_region: zero..*; allowed: Alpen; Alpenvorland; Mittelgebirgsschwelle; Nord- und Ostsee; Norddeutsches Tiefland; Schichtstufenland beidseits des Oberrheingrabens\n\n- climate: zero..*; allowed: Atlantisches Klima; Gebirgsklima; kontinental; maritim; niederschlagsbenachteiligt; niederschlagsnormal; niederschlagsbeg\u00fcnstigt; subkontinental; submaritim\n\n- landuse: zero..*; allowed: various categories.\n\nWe must parse document for these characteristics. The document describes Moorb\u00f6den in northern Germany, particularly Mecklenburg-Vorpommern, Niedersachsen, Brandenburg, Schleswig-Holstein. We must identify habitats, natural regions, climates, land uses described.\n\nObservations:\n\nHabitat:\n\n- Moorb\u00f6den: which habitat category? Moorb\u00f6den are soils/landscape. \"Boden\" is appropriate (soil). Also \"Agrar- und Offenland\" because they are agricultural land. The text states \"Moorb\u00f6den in der norddeutschen Tiefebene und im Alpenvorland... landwirtschaftlich genutzt\". Also \"Gr\u00fcnland\". So habitats: \"Boden\"; \"Agrar- und Offenland\". Probably not \"Urbane R\u00e4ume\" or \"Wald\u201d etc.\n\nBut also \"innengew\u00e4sser\"? Not. So we guess those two.\n\nNatural_region:\n\nWhich natural region? The document mentions \"Norddeutsches Tiefland\" (northern lowlands). Also \"Alpenvorland\" (in alps foreland). So maybe two.\n\nWe should confirm if natural region appears multiple times: The abstract says \"Moorb\u00f6den ... in der norddeutschen Tiefebene und im Alpenvorland\". Yes.\n\nClimate:\n\nWhich climate? The document not explicitly states climate type but we can infer: northern Germany: perhaps \"niederschlagsnormal\" or \"kontinental\" or \"subkontinental\" or \"maritim\"? Northern Germany has maritime climate: mild, moderate rainfall. Usually \"maritim\". Also \"kontinental\" at some distances. But we can infer \"maritim\" maybe. Also \"niederschlagsbenachteiligt\"? Not; likely normal rainfall. So choose \"maritim\" and maybe \"niederschlagsnormal\".\n\nLanduse:\n\nLand use categories described: agricultural (landwirtschaftlich genutzt), energy production via PV, construction \"Bau\", \"Erholung, Freizeit, Sport\"? not. \"Brachliegende Fl\u00e4chen\" not. \"Industrie\"? no. \"Fischerei\"? no. \"Baum\u00f6 den\"? \"Forstwirtschaft\"? not. \"Verkehr\"? no. \"Wohngebiete\"? no. \"Keine Nutzung\"? Not.\n\nAlso 'Energieproduktion' by PV.\n\nAlso \"Bau\" via structures.\n\nAlso \"Betrieb von Photovoltaik\". Also \"Bau\" may be included.\n\nSo we mention:\n\n- Landwirtschaft (agriculture)\n- Energieproduktion\n- Bau (construction)\n- Paludikultur maybe considered 'Landwirtschaft' or 'Naturnahe, nicht genutzt'? But Paludicultur is a form of land use; it involves some agriculture; maybe 'Landwirtschaft' still.\n\nBut allowed categories: we can include multiple values.\n\nI think we include \"Landwirtschaft\" (Agriculture), \"Energieproduktion\" (Energy production), and \"Bau\" (Construction). Possibly \"Naturnahe und nat\u00fcrliche Fl\u00e4chen, die nicht genutzt werden\" -> but Moorb\u00f6den originally not used? But they are used for agriculture, but plan to restore. Discussion of 'pod' triggers. I think best to include agriculture and energy production (PV) and Bau.\n\nAlso 'Betrieb der PVA' as Energieproduktion.\n\nOk.\n\nThen we produce JSON with arrays for each field; use allowed values. For the allowed values we need to match exactly as given. Let's do that:\n\nHabitat: choose \"Boden\", \"Agrar- und Offenland\"\n\nNatural_region: choose \"Norddeutsches Tiefland\", \"Alpenvorland\"\n\nClimate: choose \"maritim\", \"niederschlagsnormal\" maybe.\n\nLanduse: choose \"Landwirtschaft\", \"Energieproduktion\", \"Bau\".\n\nAll arrays are string values. We need to produce a JSON with only these fields, no other fields.\n\nAlso check case, values must match allowed list case exactly. Provided list: \"Agrar- und Offenland\", \"Binnengew\u00e4sser und Auen\", \"Boden\", \"K\u00fcsten und K\u00fcstengew\u00e4sser\", \"Urbane R\u00e4ume\", \"Wald\". So \"Boden\" is correct; \"Agrar- und Offenland\" direct.\n\nNatural_regions: list as given: \"Alpen\", \"Alpenvorland\", \"Mittelgebirgsschwelle\", \"Nord- und Ostsee\", \"Norddeutsches Tiefland\", \"Schichtstufenland beidseits des Oberrheingrabens\".\n\nSo \"Alpenvorland\" correct; \"Norddeutsches Tiefland\" correct; there is no \"Nord- und Ostsee\" though. So fine.\n\nClimate: list: \"Atlantisches Klima\", \"Gebirgsklima\", \"kontinental\", \"maritim\", \"niederschlagsbenachteiligt\", \"niederschlagsnormal\", \"niederschlagsbeg\u00fcnstigt\", \"subkontinental\", \"submaritim\".\n\nSo choose \"maritim\", \"niederschlagsnormal\".\n\nLanduse: list between \"Bau\", \"Bergbau und Steinbruch\", \"Brachliegende Fl\u00e4chen\", \"Energieproduktion\", \"Erholung, Freizeit, Sport\", \"Fischerei und Aquakultur\", \"Forstwirtschaft\", \"Handels-, Finanz-, Berufs- und Informationsdienstleistungen\", \"Industrie und Fertigung\", \"Landwirtschaft\", \"Naturnahe und nat\u00fcrliche Fl\u00e4chen, die nicht genutzt werden\", \"Verkehr, Kommunikationsnetzwerke, Lagerung, Schutzw\u00e4lle\", \"Wasser- und Abfallbehandlung\", \"Wohngebiete\", \"andere Leistung des Prim\u00e4rsektors\", \"\u00d6ffentliche Einrichtungen\".\n\nSo we choose \"Bau\", \"Landwirtschaft\", \"Energieproduktion\".\n\nOk produce JSON.\n\n",
-    "We need to extract info about ecosystem-related study characteristics from the given markdown. We need to output JSON with fields according to specified schema.\n\nWe need to identify relevant habitat, natural_region, climate, landuse.\n\nWe read text: It discusses PVA solar on agricultural peatlands, groundwater levels, paludiculture, etc. It mentions \"Moorb\u00f6den\" (peatlands). What habitat? Moorland? Not in list: the allowed habitat values: Agrar- und Offenland; Binnengew\u00e4sser und Auen; Boden; K\u00fcsten und K\u00fcstengew\u00e4sser; Urbane R\u00e4ume; Wald. Moorlands is soil/boden? \"Boden\" refers to soil, maybe includes peat?\n\nWe have natural_region: mentions Mecklenburg-Vorpommern (state) but not natural region. \"Norddeutsches Tiefland\" maybe, \"Schichtstufenland beidseits des Oberrheingrabens\" maybe. Also mentions \"Moor\" in Mecklenburg-Vorpommern. The natural region list: Alpen; Alpenvorland; Mittelgebirgsschwelle; Nord- und Ostsee; Norddeutsches Tiefland; Schichtstufenland beidseits des Oberrheingrabens. The location Greifswald (Mecklenburg-Vorpommern) lies in \"Norddeutsches Tiefland\"? I think Northern Lowland. We can assign \"Norddeutsches Tiefland\".\n\nClimate: The region in northern Germany has \"niederschlagsnormal\" maybe? Also \"maritim\" maybe. The description refers to climate? There's no explicit climate description. Might be \"maritim\" or \"niederschlagsnormal\". Since it's northern coastal area (Greifswald, Mecklenburg). The climate there is \"maritim\" (Baltic Sea influence). So \"maritim\" is allowed. Also \"niederschlagsnormal\" maybe. Use \"maritim\".\n\nLanduse: It mentions: \"agricultural use of peatlands\", \"agri-PV\", \"PALUDIKULTUR\", \"landwirtschaftlich genutzte Moorb\u00f6den\". So landuse includes \"Landwirtschaft\". Also includes \"Erholung, Freizeit, Sport\"? Not relevant. \"Bau\" maybe due to photovoltaic installation which is \"Bau\" (construction). Also \"Landwirtschaft\". \"Paludikultur\" is a land use type under agriculture. I think \"Landwirtschaft\" and \"Bau\" maybe. Also \"Naturnahe und nat\u00fcrliche Fl\u00e4chen, die nicht genutzt werden\" not. \"Industrie und Fertigung\" no. So we include \"Landwirtschaft\". Also perhaps \"Bau\" because PV installations. But the schema shows \"Bau\" as a category. It might apply.\n\nAlso \"Forstwirtschaft\"? Not mentioned. \"Boden\"? Land use \"Boden\" considered maybe in \"Kemfeld\". The system is \"peatland\" used for agriculture. So maybe \"Boden\" is habitat not landuse. Landuse: \"Landwirtschaft\" and \"Bau\" for solar installation.\n\nMust output JSON with fields: habitat array, natural_region array, climate array, landuse array. Each field cardinality 0..*.\n\nNow careful: Habitat. Allowed values: \"Boden\" stands for soil. The study includes peatland which is \"Boden\". Also \"Agrar- und Offenland\" might apply because agricultural use. But \"Moorb\u00f6den\" are not open land? They are wetlands. \"Binnengew\u00e4sser und Auen\" for rivers. Not this.\n\n\"Boden\" seems appropriate. Also \"Agrar- und Offenland\" maybe because it's used for agriculture. But we can include both? Let's examine. The text says: \"agriculturally used peat soils\", \"vegetation\" etc. So yes it is two categories: \"Boden\" and \"Agrar- und Offenland\". Possibly we include both.\n\nOk.\n\nLet\u2019s craft JSON:\n\n{\n  \"habitat\": [\"Boden\", \"Agrar- und Offenland\"],\n  \"natural_region\": [\"Norddeutsches Tiefland\"],\n  \"climate\": [\"maritim\"],\n  \"landuse\": [\"Landwirtschaft\", \"Bau\"]\n}\n\nBut double-check allowed climate values: \"maritim\" allowed. Good.\n\nCheck landuse allowed values: includes \"Bau\" and \"Landwirtschaft\". Yes.\n\nNow final output."
+    "We need to extract info per schema: habitats, taxa, biodiversity_level, ecosystem_type. The text is about photovoltaic panels on moor soils, references re: moorland (Landwirtschaftlich genutzte Moorböden). So habitats: \"Moore\" is \"Moore\"? In allowed list: Habitats could be 'Binnengewässer und Auen', 'Boden', 'Küsten und Küstengewässer', 'Urbane Räume', 'Wald', 'Agrar- und Offenland'. Moorböden are farmland used. Agro- and open land; Bod? 'Boden' maybe for soil. They mention 'Moorböden', i.e., peat soils. But allowed content list includes 'Boden' which is 'soil' or 'Ground'. So choose 'Boden' maybe, and 'Agrar- und Offenland' because farmland. They mention 'Landwirtschaftlich genutzte Moorböden' -> farmland. So include both.\n\nTaxa: They mention insect, amphibians, reptiles? The biodiversity section mentions: \"Besonders von Insekten, Amphibien und Vögeln\". So species group: Insekten; Amphibien und Reptilien; Vögel. No specific species names. So species_group for each of these three groups? But taxon object requires species_group content a single taxonomic group. Could have multiple taxa objects: one for Insekten, one for Amphibien und Reptilien, one for Vögel. No scientific names.\n\nEvidence anchor: quote from text: \"Biodiversität insbesondere von Insekten, Amphibien und Vögeln\" or \"Biodiversität insbesondere von Insekten, Amphibien und Vögeln\" maybe earlier: let's find phrase: In paragraph \"Erprobungs- und Forschungsbedarf\", \"Daten zu ... Biodiversität insbesondere von Insekten, Amphibien und Vögeln zu untersuchen\". The excerpt: \"Die Veränderung des Lebensraums durch PVA ist hinsichtlich ihrer Wirkung auf die Biodiversität insbesondere von Insekten, Amphibien und Vögeln zu untersuchen.\"\n\nSo we use that quote.\n\nBiodiversity_level: It mentions \"Biodiversität\" measured: need to indicate level. What level? \"Artenvielfalt\" likely. So content: \"Artenvielfalt\". Evidence: same quote.\n\nEcosystem_type: If it's moorland as 'Boden', but perhaps specific category: \"VB 3: 'Boden', 'Moore' not listed. But the categories for ecosystem_type are many; but in categories there is 'III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes'. But we'd choose term 'Moore' maybe not allowed. The list includes 'Moore' within the categories of 'terr. und semiterrestrische Biotoptypengruppen'. The allowed terms list: includes \"Hoch-, Zwischen- und Übergangsmoore\" etc. \"Wald\", etc. But not \"Moore\" alone. The content of term must be one of the options. The proper term could be \"Hoch-, Zwischen- und Übergangsmoore\"? Unclear. Maybe we choose 'Boden' as habitat and skip ecosystem_type.\n\nBut the schema requires ecosystem_type optional. But if we can't find direct? The document not specify ecosystem type explicitly except moor soils were \"landwirtschaftlich genutzte Moorböden\" located in \"Mecklenburg-Vorpommern\", \"Bayern\" etc. But not named categories with allowed terms.\n\nThus we can omit ecosystem_type property entirely. But schema says 0..* so can omit (empty array) or not include. Must include field? The JSON must only contain defined fields. I think we must include habitat, taxa, biodiversity_level, ecosystem_type but ecosystem_type can be empty array? But schema maybe not mandatory. It's optional cardinality 0..*. So we can omit. I think best to include habitat, taxa, biodiversity_level only. In JSON, fields with array of objects. If none, still array may be empty. But clearer to omit if empty.\n\nWe must use evidence_anchor. Quote the exact text.\n\nWe need to fill evidence_anchor field strings. Use text that exactly matches from document, including punctuation. Should we include full sentence or fragment? It states a literal quote from original text which produced content. So we can use same sentence: \"Die Veränderung des Lebensraums durch PVA ist hinsichtlich ihrer Wirkung auf die Biodiversität insbesondere von Insekten, Amphibien und Vögeln zu untersuchen.\" Yes.\n\nAlso for biodiversity_level, same evidence.\n\nHabitat evidence_anchor: maybe use sentence referencing, e.g., \"Landwirtschaftlich genutzte Moorböden\" phrase. Use that.\n\nQuote: \"Landwirtschaftlich genutzte Moorböden\" also earlier \"entwässerten Moorböden\" or \"Moorböden\" etc. Use the phrase \"landwirtschaftlich genutzte Moorböden\". Maybe also mention \"entwässerten Moorböden\". Use that.\n\nHabitat content: \"Agrar- und Offenland\" and \"Boden\". Two habitat objects.\n\nWhich evidence: For \"Agrar- und Offenland\": use quote \"landwirtschaftlich genutzte Moorböden\" probably qualifies terrain. For \"Boden\": use \"Moore\" (soil). Perhaps we can use the phrase \"Moorböden\". Quote: \"entwässerten Moorböden\". So use.\n\nThus we create JSON.\n\nStructure:\n\n{\n \"habitat\": [\n   {\n    \"content\": \"Agrar- und Offenland\",\n    \"evidence_anchor\": \"landwirtschaftlich genutzte Moorböden\"\n   },\n   {\n    \"content\": \"Boden\",\n    \"evidence_anchor\": \"entwässerten Moorböden\"\n   }\n ],\n \"taxa\": [\n   {\n     \"scientific_name\": null,\n     \"german_name\": null,\n     \"species_group\": {\n       \"content\": \"Insekten\",\n       \"evidence_anchor\": \"Biodiversität insbesondere von Insekten, Amphibien und Vögeln\"\n     }\n   },\n   {\n     \"species_group\": {\n       \"content\": \"Amphibien und Reptilien\",\n       \"evidence_anchor\": \"Biodiversität insbesondere von Insekten, Amphibien und Vögeln\"\n     }\n   },\n   {\n     \"species_group\": {\n       \"content\": \"Vögel\",\n       \"evidence_anchor\": \"Biodiversität insbesondere von Insekten, Amphibien und Vögeln\"\n     }\n   }\n ],\n \"biodiversity_level\": [\n   {\n     \"content\": \"Artenvielfalt\",\n     \"evidence_anchor\": \"Die Veränderung des Lebensraums durch PVA ist hinsichtlich ihrer Wirkung auf die Biodiversität insbesondere von Insekten, Amphibien und Vögeln zu untersuchen.\"\n   }\n ]\n}\n\nBut the scientific_name and german_name are optional if not provided? The schema has each as object with content and evidence_anchor. But says cardinality 0..1. If not provided, we can omit that nested object entirely. So easiest to omit scientific_name and german_name objects entirely. As per schema, it's optional? \"scientific_name\" type: object with content and evidence_anchor. Cardinality 0..1. It's optional. So we can omit for taxa.\n\nBut the taxa object requires at least species_group: content and evidence_anchor. So leave that.\n\nThus arrays of taxa each with species_group.\n\nAlternatively, combine into one taxa object with species_group among three groups? But species_group requires single content but we can have multiple taxa entries each with one group. Fine.\n\nNow ensure we format JSON valid. Use proper quoting. Let's produce final.",
+    "We are to extract info from the markdown document. It's a list of references. The question: \"Du extrahierst Informationen aus einem Markdown-Dokument. Gib ausschließlich gültiges JSON ... Schema...\" We need to extract the biodiversity-related characteristics: habitats, taxon, biodiversity level, ecosystem types. The references may mention Paludiculture, Moorböden, etc. However, these are bibliographic references. They may not provide content about the study beyond titles. We have limited actual content. We should see if any description is provided: e.g., reference 15: \"Saving soil carbon, greenhouse gas emissions, biodiversity, and the economy: Paludiculture as sustainable land use option in German fen peatlands. Regional Environmental Change.\" The title indicates biodiversity context. Another: 12: \"Klimaschonende, biodiversitätsfördernde Bewirtschaftung von Niedermoorböden.\" So likely we have habitat: \"Niedermoorböden\" i.e., fen peatlands, lower moor soils. Possibly \"Boden\" (soil). Also \"Agrar- und Offenland\" as studied? Paludiculture is a land use. Might be \"Agrar- und Offenland\" and \"Boden\". And \"Boden\" is allowed value.\n\nHabitat list allowed: Agrar- und Offenland; Binnengewässer und Auen; Boden; Küsten und Küstengewässer; Urbane Räume; Wald.\n\nSo we can include \"Boden\" and maybe \"Agrar- und Offenland\".\n\nTaxa: maybe none specified.\n\nBiodiversity_level: \"Artenvielfalt\" maybe implied. Or \"Funktionelle Diversität\"? The papers mention biodiversity, but no explicit measure.\n\nBut we should be careful: The instruction says extract from the document. There's no explicit mention of biodiversity levels. So we might leave empty arrays for those where not mentioned.\n\nWe can still analyze each reference:\n\n1. \"Freiflächensolaranlagen (PV-FFA)\". Is about free-stand solar panels. Might be habitats: \"Agrar- und Offenland\" (since solar farms on farmland). Biodiversity maybe.\n\n2. Reference 11: \"Klimaschutz im Agrar- und Ernährungssystem Deutschlands\". Might not specify habitats.\n\n3. Reference 12: \"Klimaschonende, biodiversitätsfördernde Bewirtschaftung von Niedermoorböden.\" Habitat: \"Niedermoorböden\". Allowed \"Boden\".\n\n4. Reference 13: \"Evaluierung von Moor-Wiedervernässung in Deutschland.\" Habitat: Moor, so \"Boden\". Also perhaps \"Niedermoorböden\".\n\n5. Reference 14: \"Umsetzung von Paludikultur auf landwirtschaftlich genutzten Flächen...\" Habitat: \"Paludikultur\" farmland.\n\n6. Reference 15: \"Saving soil carbon, greenhouse gas emissions, biodiversity, and the economy: Paludiculture as sustainable land use option in German fen peatlands.\" Habitat: fen peatlands. \"Boden\".\n\n7. Reference 16: generic.\n\n8. 17: \"Faktenpapier Torfmoos-Anbau in Niedersachsen.\" \"Torfmoos\" (peat bog). \"Boden\".\n\n9. 18: \"Potenziale und Hemmnisse von Paludikultur.\"\n\n10. 19: \"Stellungnahme des Greifswald Moor Centrum zur Berücksichtigung der Bedeutung der Moore für den Klimaschutz im Regionalen Raumentwicklung...\"\n\n11. 20: German law no content.\n\n12. 21,22,23: policy documents.\n\n13. 24:..\n\nThus relevant info: habitats: \"Boden\" (peatlands), maybe \"Agrar- und Offenland\". Taxa: no specific species. Biodiversity_level: none explicit. So only habitat. Use \"Boden\". Maybe \"Agrar- und Offenland\" due to agricultural context.\n\nWe need to produce JSON following schema. Must have objects for habitat (list). Each habitat object has content and evidence_anchor strings. evidence_anchor must be a literal quote from the text. In this case, we can quote the phrase \"Niedermoorböden\" or \"Moor-Wiedervernässung\".\n\nBut the document doesn't contain body text beyond references. The quotes must come from original text. We can use the titles as quotes: e.g., \"Niedermoorböden\" is present. For example, reference 12 title: \"Klimaschonende, biodiversitätsfördernde Bewirtschaftung von Niedermoorböden.\" That contains the phrase. Evidence anchor: that quote. Also for habitat \"Boden\": the titles refer to \"Moor\" implies soil. But maybe better to use \"Moorböden\" as evidence. But allowed content values are \"Boden\". We can quote \"Moorböden\" as evidence. That is fine.\n\nHabitat entries:\n- content: \"Boden\"; evidence_anchor: \"Niedermoorböden\" or \"Moor\". Acceptable.\n\n- content: \"Agrar- und Offenland\"; evidence_anchor: \"Agrar- und Ernährungssystem\". That appears in title.\n\nBut \"Agrar- und Ernährungssystem\" is phrase; we can quote it.\n\nHowever, check if \"Agrar- und Offenland\" appears? In the reference 11: \"Klimaschutz im Agrar- und Ernährungssystem Deutschlands\". That mentions \"Agrar- und\" but not \"Offenland\". But allowed habitat includes \"Agrar- und Offenland\". Possibly combine them; but the text just mentions \"Agrar-\". Might be acceptable to include just \"Agrar- und Offenland\" with evidence_anchor: \"Agrar-\". However might be too forced.\n\nBetter to include only one habitat \"Boden\" referencing \"Niedermoorböden\" etc. Maybe include also \"Niedermoorböden\" between \"Boden\" and \"Moor\".\n\nThe schema only allows certain content values for habitat. So we can have multiple objects.\n\nWe must produce JSON with keys for each field. The arrays should include objects.\n\nTaxa: none. So empty array.\n\nBiodiversity_level: none.\n\nEcosystem_type: maybe \"Moor\" is type \"Boden\". But the categories are for ecosystem types: many categories. \"Moor\" under: \"Boden\" or \"Terrestrische\"? Actually moor is a land type? The allowed categories are \"I Biotoptypengruppen der Meere und Küsten; II Biotoptypengruppen der Binnengewässer; III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes; IV Technische Biotoptypengruppen; V Biotoptypengruppen mit Schwerpunkt in den Alpen; VI Weitere\". I think moor is terrestrial. So category III. term: maybe \"Grünland nasser bis feuchter Standorte\" or \"Waldfreie Niedermoore\" etc. But the title says \"Niedermoorböden\". That is \"Niedermoore\". Term: \"Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte\" maybe too specific.\n\nBut maybe we include ecosystem_type with category III and term \"Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte\". But I'm not sure if it's allowed. Allowed term list includes that phrase \"Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte\". Yes it's there.\n\nSo we include an ecosystem_type object:\n- category content: \"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes\"; evidence_anchor: maybe \"Niedermoorböden\".\n\n- term content: \"Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte\"; evidence_anchor: \"Niedermoorböden\".\n\nWe need to provide evidence anchors for both category and term. Use quotes from original text \"Niedermoorböden\".\n\nWe need to produce a JSON object with top-level keys: habitat, taxa, biodiversity_level, ecosystem_type.\n\nSchema objects: all arrays may be empty. Provide JSON accordingly.\n\nLet's produce:\n\n{\n  \"habitat\": [\n    {\n      \"content\": \"Boden\",\n      \"evidence_anchor\": \"\\\"Niedermoorböden\\\"\"\n    }\n  ],\n  \"taxa\": [],\n  \"biodiversity_level\": [],\n  \"ecosystem_type\": [\n    {\n      \"category\": {\n        \"content\": \"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes\",\n        \"evidence_anchor\": \"\\\"Niedermoorböden\\\"\"\n      },\n      \"term\": {\n        \"content\": \"Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte\",\n        \"evidence_anchor\": \"\\\"Niedermoorböden\\\"\"\n      }\n    }\n  ]\n}\n\nBut must follow exactly \"content\" keys inside each nested object. Ensure no extra fields.\n\nAlso note that \"content\" inside term \"content\" must be of type string. Yes.\n\nLet's produce final JSON."
+  ],
+  "character_start_list": [
+    0,
+    19986
+  ],
+  "character_end_list": [
+    19985,
+    24439
   ]
 }

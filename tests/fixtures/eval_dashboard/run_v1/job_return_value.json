@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "biodiversity_level": {
+    "precision": 0.4845360824742268,
+    "recall": 0.47959183673469385,
+    "f1": 0.482051282051282,
+    "support": 98
+  },
+  "ecosystem_type.category": {
+    "precision": 0.5657894736842105,
+    "recall": 0.40186915887850466,
+    "f1": 0.46994535519125674,
+    "support": 107
+  },
+  "AVG": {
+    "precision": 0.5251627780792187,
+    "recall": 0.4407304978065993,
+    "f1": 0.4759983186212694,
+    "support": 102.5
+  },
+  "ALL": {
+    "precision": 0.5210727969348659,
+    "recall": 0.42566510172143973,
+    "f1": 0.4685615848406546,
+    "support": 639
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/380_faktencheck_core/2026-03-11_16-30-57/2026-03-12_00-23-58_016877/predictions.jsonl",
+      "output_file_absolute": "/netscratch/binder/tmp/kiba-d/repo/predictions/380_faktencheck_core/2026-03-11_16-30-57/2026-03-12_00-23-58_016877/predictions.jsonl",
+      "time_pdf_conversion": 0.003658283967524767,
+      "time_extraction": 4809.623311639996,
+      "time_start": 1773271438,
+      "time_end": 1773276426,
+      "commit_hash": "ba4177888275db7c8dc2ddf46678dde450aa11f4",
+      "branch": "commit/ba4177888275",
+      "is_dirty": false,
+      "slurm_job_id": "2616389"
+    },
+    "overrides": {
+      "name": "380_faktencheck_core",
+      "experiment/predict": "faktencheck_core_fields_schema_with_evidence",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor/llm": "mistral_small_3_24b_in_process",
+      "seed": "42"
+    }
+  }
+}
+

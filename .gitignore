@@ -11,6 +11,12 @@
 # Run logs
 /logs/
 
+# Prediction outputs
+/predictions/
+
+# Node dependencies, currently used by the eval-dashboard benchmark package.
+node_modules/
+
 # Mac OS-specific storage files
 .DS_Store
 
@@ -202,6 +208,10 @@ cython_debug/
 #  you could uncomment the following to ignore the entire vscode folder
 # .vscode/
 
+# Zed
+#  Zed specific config files, like debuggers
+.zed/
+
 # Ruff stuff:
 .ruff_cache/
 
@@ -222,3 +232,9 @@ __marimo__/
 
 # Personal vscode configuration
 .vscode/settings.json
+
+# Personal notes
+NOTES.md
+
+# Codex
+/.codex

@@ -1,0 +1,172 @@
+[2026-05-26 10:52:24,153][__main__][INFO] - Loading dataset with predictions and references ...
+[2026-05-26 10:52:24,154][__main__][INFO] - Dataset config: {'predictions': {'_target_': 'kibad_llm.dataset.prediction.load_with_metadata', 'log': 'logs/380_organism_trends/predict/multiruns/2026-02-24_22-06-17/0', 'file': None, 'id_key': 'file_name', 'process_id': {'_partial_': True, '_target_': 'kibad_llm.utils.path.strip_filename_extension'}, 'preprocess': {'_target_': 'kibad_llm.utils.dictionary.get', '_partial_': True, 'key': 'structured'}}, 'references': {'_target_': 'kibad_llm.dataset.csv.read_organism_trends', 'file': '/home/arbi01/projects/kibad-llm/data/external/organism_trends/Weighted Vote Count Wald Literatur - Sheet1.csv', 'columns': ['Hauptgruppe_RoteListen', 'Untergruppe_RoteListen', 'Lebensraum', 'Antwortvariable', 'Trend']}, '_target_': 'kibad_llm.dataset.utils.merge_references_into_predictions', 'allow_missing_references': True}
+[2026-05-26 10:52:24,167][kibad_llm.dataset.json][INFO] - Loading dataset from JSON file: predictions/380_organism_trends/2026-02-24_22-06-17/2026-02-24_22-06-18_939465/predictions.jsonl ...
+[2026-05-26 10:52:24,182][kibad_llm.dataset.json][INFO] - Apply preprocessing function to dataset: functools.partial(<function get at 0x7e3ad9f9b400>, key='structured') ...
+[2026-05-26 10:52:24,249][__main__][INFO] - Instantiating metric ...
+[2026-05-26 10:52:24,250][__main__][INFO] - Metric config: {'_target_': 'kibad_llm.metrics.ConfusionMatrixCollection', 'fields': ['organism_trends'], 'subfield_keys': {'organism_trends': ['Hauptgruppe_RoteListen', 'Lebensraum']}, 'subfield_values': {'organism_trends': ['Antwortvariable', 'Trend']}, 'ignore_missing_entries': True, 'sort_fields': True}
+[2026-05-26 10:52:24,253][__main__][INFO] - Computing metric ...
+[2026-05-26 10:52:24,263][kibad_llm.metric][INFO] - Evaluation results:
+{
+  "organism_trends.Makrofauna&Boden": {},
+  "organism_trends.Makrofauna&Wald": {},
+  "organism_trends.Mesofauna&Wald": {},
+  "organism_trends.Mikrofauna&Binnengewaesser": {},
+  "organism_trends.Mikrofauna&Wald": {},
+  "organism_trends.Pflanzen&AgrarOffen": {},
+  "organism_trends.Pflanzen&Boden": {},
+  "organism_trends.Pflanzen&Urban": {},
+  "organism_trends.Pflanzen&Wald": {
+    "(('Antwortvariable', 'Abundanz'), ('Trend', 'negative to positive'))": {
+      "UNDETECTED": 1
+    },
+    "(('Antwortvariable', 'Abundanz'), ('Trend', 'negative'))": {
+      "(('Antwortvariable', 'Abundanz'), ('Trend', 'negative'))": 5,
+      "UNDETECTED": 3
+    },
+    "(('Antwortvariable', 'Abundanz'), ('Trend', 'no'))": {
+      "(('Antwortvariable', 'Abundanz'), ('Trend', 'no'))": 1,
+      "UNDETECTED": 4
+    },
+    "(('Antwortvariable', 'Abundanz'), ('Trend', 'positive to negative'))": {
+      "UNDETECTED": 2
+    },
+    "(('Antwortvariable', 'Abundanz'), ('Trend', 'positive'))": {
+      "(('Antwortvariable', 'Abundanz'), ('Trend', 'positive'))": 7,
+      "UNDETECTED": 8
+    },
+    "(('Antwortvariable', 'Artenzahl'), ('Trend', 'negative'))": {
+      "(('Antwortvariable', 'Artenzahl'), ('Trend', 'negative'))": 12,
+      "UNDETECTED": 1
+    },
+    "(('Antwortvariable', 'Artenzahl'), ('Trend', 'no'))": {
+      "(('Antwortvariable', 'Artenzahl'), ('Trend', 'no'))": 1,
+      "UNDETECTED": 6
+    },
+    "(('Antwortvariable', 'Artenzahl'), ('Trend', 'positive to negative'))": {
+      "(('Antwortvariable', 'Artenzahl'), ('Trend', 'positive to negative'))": 1
+    },
+    "(('Antwortvariable', 'Artenzahl'), ('Trend', 'positive'))": {
+      "(('Antwortvariable', 'Artenzahl'), ('Trend', 'positive'))": 9,
+      "UNDETECTED": 2
+    },
+    "(('Antwortvariable', 'ENS'), ('Trend', 'negative'))": {
+      "UNDETECTED": 1
+    },
+    "(('Antwortvariable', 'ENS'), ('Trend', 'positive'))": {
+      "UNDETECTED": 2
+    },
+    "UNASSIGNABLE": {
+      "(('Antwortvariable', 'Abundanz'), ('Trend', 'negative'))": 7,
+      "(('Antwortvariable', 'Abundanz'), ('Trend', 'no'))": 1,
+      "(('Antwortvariable', 'Abundanz'), ('Trend', 'positive'))": 6,
+      "(('Antwortvariable', 'Artenzahl'), ('Trend', 'negative'))": 6,
+      "(('Antwortvariable', 'Artenzahl'), ('Trend', 'no'))": 2,
+      "(('Antwortvariable', 'Artenzahl'), ('Trend', 'positive'))": 9
+    }
+  },
+  "organism_trends.Pilze_Flechten&Wald": {
+    "(('Antwortvariable', 'Abundanz'), ('Trend', 'negative'))": {
+      "UNDETECTED": 1
+    },
+    "(('Antwortvariable', 'Abundanz'), ('Trend', 'positive'))": {
+      "(('Antwortvariable', 'Abundanz'), ('Trend', 'positive'))": 1
+    },
+    "(('Antwortvariable', 'Artenzahl'), ('Trend', 'negative'))": {
+      "(('Antwortvariable', 'Artenzahl'), ('Trend', 'negative'))": 1
+    },
+    "(('Antwortvariable', 'Artenzahl'), ('Trend', 'no'))": {
+      "UNDETECTED": 1
+    },
+    "(('Antwortvariable', 'Artenzahl'), ('Trend', 'positive to negative'))": {
+      "(('Antwortvariable', 'Artenzahl'), ('Trend', 'positive to negative'))": 1
+    },
+    "(('Antwortvariable', 'Artenzahl'), ('Trend', 'positive'))": {
+      "UNDETECTED": 1
+    },
+    "UNASSIGNABLE": {
+      "(('Antwortvariable', 'Abundanz'), ('Trend', 'negative'))": 1,
+      "(('Antwortvariable', 'Artenzahl'), ('Trend', 'negative'))": 1
+    }
+  },
+  "organism_trends.Wirbellose&AgrarOffen": {},
+  "organism_trends.Wirbellose&Binnengewaesser": {},
+  "organism_trends.Wirbellose&Boden": {},
+  "organism_trends.Wirbellose&Wald": {
+    "(('Antwortvariable', 'Abundanz'), ('Trend', 'negative'))": {
+      "(('Antwortvariable', 'Abundanz'), ('Trend', 'negative'))": 2,
+      "UNDETECTED": 1
+    },
+    "(('Antwortvariable', 'Abundanz'), ('Trend', 'no'))": {
+      "(('Antwortvariable', 'Abundanz'), ('Trend', 'no'))": 2,
+      "UNDETECTED": 2
+    },
+    "(('Antwortvariable', 'Abundanz'), ('Trend', 'positive'))": {
+      "(('Antwortvariable', 'Abundanz'), ('Trend', 'positive'))": 1,
+      "UNDETECTED": 1
+    },
+    "(('Antwortvariable', 'Artenzahl'), ('Trend', 'negative to positive'))": {
+      "UNDETECTED": 1
+    },
+    "(('Antwortvariable', 'Artenzahl'), ('Trend', 'negative'))": {
+      "(('Antwortvariable', 'Artenzahl'), ('Trend', 'negative'))": 2,
+      "UNDETECTED": 1
+    },
+    "(('Antwortvariable', 'Artenzahl'), ('Trend', 'no'))": {
+      "(('Antwortvariable', 'Artenzahl'), ('Trend', 'no'))": 1,
+      "UNDETECTED": 2
+    },
+    "(('Antwortvariable', 'Artenzahl'), ('Trend', 'positive to negative'))": {
+      "(('Antwortvariable', 'Artenzahl'), ('Trend', 'positive to negative'))": 1
+    },
+    "(('Antwortvariable', 'Artenzahl'), ('Trend', 'positive'))": {
+      "(('Antwortvariable', 'Artenzahl'), ('Trend', 'positive'))": 1
+    },
+    "(('Antwortvariable', 'ENS'), ('Trend', 'negative'))": {
+      "UNDETECTED": 1
+    },
+    "UNASSIGNABLE": {
+      "(('Antwortvariable', 'Abundanz'), ('Trend', 'negative to positive'))": 1,
+      "(('Antwortvariable', 'Abundanz'), ('Trend', 'negative'))": 5,
+      "(('Antwortvariable', 'Abundanz'), ('Trend', 'no'))": 1,
+      "(('Antwortvariable', 'Abundanz'), ('Trend', 'positive to negative'))": 1,
+      "(('Antwortvariable', 'Abundanz'), ('Trend', 'positive'))": 4,
+      "(('Antwortvariable', 'Artenzahl'), ('Trend', 'negative'))": 3,
+      "(('Antwortvariable', 'Artenzahl'), ('Trend', 'no'))": 1,
+      "(('Antwortvariable', 'Artenzahl'), ('Trend', 'positive'))": 4
+    }
+  },
+  "organism_trends.Wirbeltiere&AgrarOffen": {},
+  "organism_trends.Wirbeltiere&Binnengewaesser": {},
+  "organism_trends.Wirbeltiere&Boden": {},
+  "organism_trends.Wirbeltiere&Urban": {},
+  "organism_trends.Wirbeltiere&Wald": {
+    "(('Antwortvariable', 'Abundanz'), ('Trend', 'negative to positive'))": {
+      "UNDETECTED": 6
+    },
+    "(('Antwortvariable', 'Abundanz'), ('Trend', 'negative'))": {
+      "(('Antwortvariable', 'Abundanz'), ('Trend', 'negative'))": 3,
+      "UNDETECTED": 1
+    },
+    "(('Antwortvariable', 'Abundanz'), ('Trend', 'no'))": {
+      "(('Antwortvariable', 'Abundanz'), ('Trend', 'no'))": 2,
+      "UNDETECTED": 4
+    },
+    "(('Antwortvariable', 'Abundanz'), ('Trend', 'positive'))": {
+      "(('Antwortvariable', 'Abundanz'), ('Trend', 'positive'))": 6,
+      "UNDETECTED": 3
+    },
+    "(('Antwortvariable', 'Artenzahl'), ('Trend', 'negative to positive'))": {
+      "UNDETECTED": 1
+    },
+    "UNASSIGNABLE": {
+      "(('Antwortvariable', 'Abundanz'), ('Trend', 'negative'))": 3,
+      "(('Antwortvariable', 'Abundanz'), ('Trend', 'positive to negative'))": 2,
+      "(('Antwortvariable', 'Abundanz'), ('Trend', 'positive'))": 9,
+      "(('Antwortvariable', 'Artenzahl'), ('Trend', 'negative'))": 1,
+      "(('Antwortvariable', 'Artenzahl'), ('Trend', 'no'))": 2,
+      "(('Antwortvariable', 'Artenzahl'), ('Trend', 'positive'))": 3
+    }
+  }
+}
+[2026-05-26 10:52:24,263][kibad_llm.hydra_callbacks.save_job_return_value.SaveJobReturnValueCallback][INFO] - Saving job_return in /home/arbi01/projects/kibad-llm/logs/477_organism_trends/evaluate/multiruns/2026-05-26_10-52-23/0/job_return_value.json
+[2026-05-26 10:52:24,264][kibad_llm.hydra_callbacks.save_job_return_value.SaveJobReturnValueCallback][INFO] - Saving job_return in /home/arbi01/projects/kibad-llm/logs/477_organism_trends/evaluate/multiruns/2026-05-26_10-52-23/0/job_return_value.md

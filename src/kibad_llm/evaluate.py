@@ -8,10 +8,16 @@ import hydra
 from hydra.utils import instantiate
 from omegaconf import DictConfig, OmegaConf
 
-from kibad_llm.config import PROJ_ROOT
+from kibad_llm.config import PROJ_ROOT, RESULT_FORMAT_VERSION_KEY
 from kibad_llm.dataset.prediction import DictWithMetadata
 from kibad_llm.metric import Metric
 from kibad_llm.utils.path import get_directories_with_file
+
+# This needs to be incremented when the format of the evaluation results changes in a non-backwards-compatible
+# way, e.g. if we change the structure of the metric_dict returned by evaluate() or the expected metadata
+# format. This allows us to keep track of which version of the evaluation results we are working with and
+# handle them accordingly in downstream processing.
+EVALUATE_VERSION = 2
 
 logger = logging.getLogger(__name__)
 
@@ -50,15 +56,16 @@ def evaluate(cfg: DictConfig) -> dict[str, Any]:
 
     metric.show_result(metric_dict)
 
-    if isinstance(dataset, DictWithMetadata):
-        if "prediction" in metric_dict:
-            raise ValueError(
-                "Cannot attach metadata to 'prediction' key in metric_dict because it already "
-                "exists as output from the metric computation. Please adjust the metric computation."
-            )
-        metric_dict["prediction"] = dataset.metadata
+    result = {
+        RESULT_FORMAT_VERSION_KEY: EVALUATE_VERSION,
+        "type": metric.__class__.__name__,
+        "data": metric_dict,
+    }
 
-    return metric_dict
+    if isinstance(dataset, DictWithMetadata):
+        result["prediction"] = dataset.metadata
+
+    return result
 
 
 @hydra.main(
