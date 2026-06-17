@@ -9,9 +9,6 @@ faktencheck core benchmark to compare its extraction quality against existing mo
 gpt_oss_20b, etc.). Part of PR [#399](https://github.com/DFKI-NLP/kibad-llm/pull/399) /
 issue [#251](https://github.com/DFKI-NLP/kibad-llm/issues/251).
 
-**Note on reasoning parser**: Nemotron uses `<think>`/`</think>` tags identical to DeepSeek R1,
-so the built-in `deepseek_r1` vLLM parser is used — no custom plugin required.
-
 ## Prediction
 
 ```sh
