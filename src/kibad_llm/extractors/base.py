@@ -658,7 +658,7 @@ def add_structured_callback(
 
     Args:
         out: SingleExtractionResult to store the structured output in.
-        response: Raw ChatResponse from the LLM call.
+        response: Raw ChatResponse from the LLM call. - This exists for compatibility reasons and is not used here.
         schema: Schema to validate the response against. - must be passed by keyword
         validate_with_schema: Whether to validate response against schema. - must be passed by keyword
     """
