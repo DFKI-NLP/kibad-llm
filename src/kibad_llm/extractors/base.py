@@ -67,7 +67,7 @@ class SingleExtractionResult(FieldDict):
         character_end: End index of the chunk of text that has been processed (exclusive)
         response_content: Response formatted as json
         structured: Parsed version of response_content. Possibly validated against a schema. Possibly with metadata.
-        structured_with_metadata: Parsed version of response_content, enriched with metadata.
+        structured_with_metadata: Parsed version of response_content, with enriched metadata.
         reasoning_content: The LLMs reasoning output, as parsed by the api endpoint. 
             (Usually output between <think> and </think> tokens)
         messages: prompt messages with placeholders for input text and schema description
