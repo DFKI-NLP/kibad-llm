@@ -556,7 +556,7 @@ def augment_metadata(
 
     Args:
         data: JSON-parsed result with metadata
-        text: Original input text to extract evidence snippets from - must be passed by keyword
+        text: Original input text to extract further information from - must be passed by keyword
         content_key: Key that must be in a mapping for it to be a wrapper_dict - must be passed by keyword
 
     Keyword Args:
@@ -568,7 +568,7 @@ def augment_metadata(
 
     Returns:
         The data with the augmented metadata.
-        The returned structure mirrors the input but includes added evidence fields where applicable.
+        The returned structure mirrors the input but includes added metadata fields where applicable.
 
     Raises:
       ValueError: unknown kwargs raise ValueError (fail fast).
