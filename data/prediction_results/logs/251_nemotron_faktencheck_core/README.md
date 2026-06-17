@@ -51,13 +51,6 @@ dataset.references.file=../interim/faktencheck-db/faktenscheck_core_corrected.js
 
 Result location: `logs/251_nemotron_faktencheck_core/evaluate/multiruns/2026-06-11_13-12-32`
 
-## Outcome
-
-Nemotron-Nano-30B-A3B-FP8 achieves **ALL F1 ≈ 0.54** (mean over seeds 42 and 1337), with very low
-variance across seeds (std ≈ 0.002).
-
-Per-field breakdown (mean over 2 seeds):
-
 | field                   | precision | recall |  f1  |
 |:------------------------|----------:|-------:|-----:|
 | habitat                 |      0.71 |   0.80 | 0.75 |
@@ -68,9 +61,20 @@ Per-field breakdown (mean over 2 seeds):
 | **AVG**                 |  **0.51** |**0.61**|**0.55**|
 | **ALL**                 |  **0.50** |**0.59**|**0.54**|
 
+### Comparison with other models
+
+![legend.svg](figures/faktencheck_core_f1_micro_flat-ALL/legend.svg)
+#### F1
 ![f1](figures/faktencheck_core_f1_micro_flat-ALL/f1.svg)
+#### Precision
 ![precision](figures/faktencheck_core_f1_micro_flat-ALL/precision.svg)
+#### Recall
 ![recall](figures/faktencheck_core_f1_micro_flat-ALL/recall.svg)
+
+## Outcome
+
+Nemotron-Nano-30B-A3B-FP8 achieves **ALL F1 ≈ 0.54** (mean over seeds 42 and 1337), with very low
+variance across seeds (std ≈ 0.002).
 
 Nemotron-Nano-30B performs competitively on `habitat` and `ecosystem_type.category`, but struggles
 with `ecosystem_type.term`. Overall F1
