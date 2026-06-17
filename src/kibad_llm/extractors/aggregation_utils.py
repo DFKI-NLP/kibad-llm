@@ -30,12 +30,16 @@ class AggregationError(ValueError):
 
 
 def make_hashable_simple(value: Any) -> Any:
-    """Takes any pyObj and recursively makes it hashable.
+    """Takes any pyObj and recursively tries to make it hashable.
 
     list/ set: Are converted to sorted tuples, with their elements processed recursively.
     tuples: Stay tuples, with their elements processed recursively.
     dicts: Are converted to sorted tuples of (key, value) tuples, with the values processed recursively.
         The keys stay unchanged.
+
+    Warning:
+        Unhashable types that are not `list`, `set`, or `dict` are not handled and will cause the result to 
+        stay unhashable.
 
     Args:
         value: Obj to make hashable.
