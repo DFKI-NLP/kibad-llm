@@ -27,6 +27,13 @@ issue [#251](https://github.com/DFKI-NLP/kibad-llm/issues/251).
 
 Result location: `logs/251_nemotron_faktencheck_core/predict/multiruns/2026-05-30_02-33-58`
 
+Non-default parameters:
+- `extractor.llm.vllm_kwargs.tensor_parallel_size=2`: overrides the config default (`1`) to shard
+  the model across 2 GPUs (`-ng 2`). Required because the 30 B-parameter FP8 model with
+  `max_model_len: 131072` exceeds single-GPU memory on the available H100 nodes.
+- `pdf_reader_num_proc=200`: overrides the default (`null`, sequential) to parallelise PDF-to-
+  markdown conversion across 200 processes, reducing preprocessing time for the 100-PDF dev set.
+
 Seeds 42 and 1337 completed successfully (~13h and ~12h respectively). Seed 7331 failed with an
 `EngineDeadError` (vLLM engine core crash after ~5 min of the third seed — transient GPU fault after
 ~25h of continuous operation, not a config issue). A standalone rerun of seed 7331 hit a separate
@@ -106,6 +113,16 @@ result location: `logs/251_nemotron_faktencheck_core/evaluate/multiruns/2026-06-
 Nemotron-Nano-30B-A3B-FP8 achieves **ALL F1 ≈ 0.54** (mean over seeds 42 and 1337), with very low
 variance across seeds (std ≈ 0.002).
 
-Nemotron-Nano-30B performs competitively on `habitat` and `ecosystem_type.category`, but struggles
-with `ecosystem_type.term`. Overall F1
-of ~0.54 is in a similar range to other open-weight models tested with the chunking extractor.
+As shown in the per-field table and comparison figures above, the model performs best on `habitat`
+(F1 0.75) and `ecosystem_type.category` (F1 0.62), but struggles most with `ecosystem_type.term`
+(F1 0.38). Among all open-weights models evaluated with the chunking extractor, Nemotron-Nano-30B
+is the lowest-performing: the best open-weights model achieves ALL F1 ≈ 0.64, approximately 18%
+higher in relative terms.
+
+The error evaluation (see figures above) shows a high error rate of ~22–23% of chunks across both
+seeds. The dominant error type is `MissingResponseContentError` (~340 occurrences per seed, ~91%
+of all errors), meaning the model frequently returned empty or null output for a chunk.
+`JSONDecodeError` accounts for the remaining ~9% (~35 per seed), where the model returned
+malformed JSON. `ReasoningExtractionError` was not observed. The elevated error rate combined with
+the low overall F1 suggests that Nemotron-Nano-30B-A3B-FP8 underperforms compared to other
+open-weights models tested in this setup.
