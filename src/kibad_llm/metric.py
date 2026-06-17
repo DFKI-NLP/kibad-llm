@@ -29,7 +29,7 @@ class Metric:
         Raises:
             NotImplementedError: Subclasses must implement this method.
         """
-        raise NotImplementedError("Subclasses should implement this method.")
+        raise NotImplementedError("Subclasses must implement this method.")
 
     def _update(self, prediction: Any, reference: Any, record_id: Hashable | None = None) -> None:
         """Update internal states with new data.
@@ -42,7 +42,7 @@ class Metric:
         Raises:
             NotImplementedError: Subclasses must implement this method.
         """
-        raise NotImplementedError("Subclasses should implement this method.")
+        raise NotImplementedError("Subclasses must implement this method.")
 
     def update(self, prediction: Any, reference: Any, record_id: Hashable | None = None) -> None:
         """Calls the private _update method to update internal states with new data.
@@ -60,7 +60,7 @@ class Metric:
         Raises:
             NotImplementedError: Subclasses must implement this method.
         """
-        raise NotImplementedError("Subclasses should implement this method.")
+        raise NotImplementedError("Subclasses must implement this method.")
 
     def compute(self, *args, reset: bool = True, **kwargs) -> dict[str, Any]:
         """Wrapper for `_compute`.
