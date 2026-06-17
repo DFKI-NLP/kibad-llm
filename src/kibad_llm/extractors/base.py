@@ -12,7 +12,7 @@ Functions:
         inserting document text and schema description where needed, using [`build_chat_message`][.build_chat_message].
     build_chat_message: Build a single chat message from a template.
     strip_metadata: Strip metadata wrappers from a JSON-parsed result.
-    augment_metadata: Recursively augment metadata wrapper dicts with evidence location info.
+    augment_metadata: Recursively augment metadata wrapper dicts. Uses just [`augment_metadata_node_with_evidence`][.augment_metadata_node_with_evidence] for now.
     augment_metadata_node_with_evidence: Augment a single metadata wrapper dict with
         evidence location info.
     add_response_content_callback: Postprocessing callback to add response content to output.
