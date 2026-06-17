@@ -68,7 +68,8 @@ class SingleExtractionResult(FieldDict):
         response_content: Response formatted as json
         structured: Parsed version of response_content. Possibly validated against a schema. Possibly with metadata.
         structured_with_metadata: Parsed version of response_content, enriched with metadata.
-        reasoning_content: Reasoning as text
+        reasoning_content: The LLMs reasoning output, as parsed by the api endpoint. 
+            (Usually output between <think> and </think> tokens)
         messages: prompt messages with placeholders for input text and schema description
             `{ "system": system_message, "user": user_message }` [`build_chat_messages`][..build_chat_messages]
         messages_formatted: prompt messages with inserted input text and schema description
