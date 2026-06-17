@@ -92,7 +92,7 @@ class ChunkingExtractor:
 
         Returns:
             Dict with the key `structured` that holds the aggregated structured outputs.
-            Additionally there can be lists for fields at the keys `"{field}_list"`.
+            Additionally, there can be lists for fields at the keys `"{field}_list"`.
         """
         text = kwargs.pop("text", None)
         if text is None:
