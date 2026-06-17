@@ -29,10 +29,10 @@ Result location: `logs/251_nemotron_faktencheck_core/predict/multiruns/2026-05-3
 
 Non-default parameters:
 - `extractor.llm.vllm_kwargs.tensor_parallel_size=2`: overrides the config default (`1`) to shard
-  the model across 2 GPUs (`-ng 2`). Required because the 30 B-parameter FP8 model with
-  `max_model_len: 131072` exceeds single-GPU memory on the available H100 nodes.
+  the model across 2 GPUs (`-ng 2`), improving throughput for the 30 B-parameter model.
 - `pdf_reader_num_proc=200`: overrides the default (`null`, sequential) to parallelise PDF-to-
-  markdown conversion across 200 processes, reducing preprocessing time for the 100-PDF dev set.
+  markdown conversion; the HuggingFace datasets library automatically caps this to the dataset size
+  (100 processes for the 100-PDF dev set, as shown in the run logs).
 
 Seeds 42 and 1337 completed successfully (~13h and ~12h respectively). Seed 7331 failed with an
 `EngineDeadError` (vLLM engine core crash after ~5 min of the third seed — transient GPU fault after
