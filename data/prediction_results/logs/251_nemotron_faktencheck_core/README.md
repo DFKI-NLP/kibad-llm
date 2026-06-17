@@ -86,10 +86,10 @@ result location: `logs/251_nemotron_faktencheck_core/evaluate/multiruns/2026-06-
 
 ![legend.svg](figures/prediction_errors-total/legend.svg)
 
-#### no errors
+#### total - no errors
 ![no_error.svg](figures/prediction_errors-total/no_error.svg)
 
-#### with errors
+#### total - with errors
 ![with_error.svg](figures/prediction_errors-total/with_error.svg)
 
 #### details - JSONDecodeError
