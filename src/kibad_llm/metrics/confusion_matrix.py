@@ -7,8 +7,9 @@ Classes:
 """
 
 from collections import defaultdict
-from collections.abc import Hashable
+from functools import cache
 import logging
+from math import comb, factorial
 from typing import Any
 
 import pandas as pd
@@ -19,15 +20,52 @@ from kibad_llm.metrics.collection import MetricCollectionWithFieldDiscoveryAndGr
 logger = logging.getLogger(__name__)
 
 
-class ConfusionMatrix(MetricWithTpFpFnEntries):
-    """Build a confusion matrix from inherited tp/fp/fn entry state for one field.
+@cache
+def num_partial_matchings(m: int, n: int) -> int:
+    """Return the number of partial one-to-one alignments between two item sets.
 
-    Predictions that have no matching gold label are counted under `unassignable_label`.
-    Gold labels with no matching prediction are counted under `undetected_label`.
+    A partial alignment links `k` of `m` gold-only items to `k` of `n` prediction-only
+    items, for any `k` from 0 to `min(m, n)`. The selected items are matched
+    bijectively.
+
+    The number of such alignments is:
+
+        sum_k binom(m, k) * binom(n, k) * k!
+
+    where `k = 0` corresponds to the alignment in which no gold-only item is paired
+    with a prediction-only item.
+    """
+    return sum(comb(m, k) * comb(n, k) * factorial(k) for k in range(min(m, n) + 1))
+
+
+class ConfusionMatrix(MetricWithTpFpFnEntries):
+    """Build an expected confusion matrix from inherited tp/fp/fn entry state.
+
+    Exact true-positive labels are counted on the diagonal. For unmatched labels in
+    multi-label records, the metric distinguishes three possible cases:
+
+    - a false-negative gold label may correspond to a false-positive predicted label
+      (a label shift);
+    - a false-negative gold label may be genuinely undetected;
+    - a false-positive predicted label may be genuinely unassignable.
+
+    Since the tp/fp/fn set representation does not identify which false-positive label,
+    if any, corresponds to which false-negative label, this metric averages over all
+    possible partial one-to-one alignments between false negatives and false positives
+    within each record. All such alignments are assumed to be equally likely.
+
+    Consequently, the resulting confusion matrix may contain fractional expected
+    counts. The placeholders `undetected_label` and `unassignable_label` are used for
+    unmatched gold and prediction labels, respectively.
 
     Warning:
-        Because the metric operates on sets, duplicate predicted labels are collapsed in
-        multi-label settings (per record).
+        Because the metric operates on sets, duplicate predicted or gold labels are
+        collapsed in multi-label settings per record.
+
+    Warning:
+        The uniform alignment assumption is a neutral modeling choice under missing
+        alignment information. It is not evidence that a particular label shift actually
+        occurred.
     """
 
     def __init__(
@@ -40,15 +78,19 @@ class ConfusionMatrix(MetricWithTpFpFnEntries):
         """Initialize the confusion-matrix metric.
 
         Args:
-            show_as_markdown: Whether `compute()` should log the resulting confusion matrix as a
-                markdown table.
-            unassignable_label: Label used on the gold axis for false positives.
-            undetected_label: Label used on the prediction axis for false negatives.
+            show_as_markdown: Whether `compute()` should log the resulting confusion
+                matrix as a markdown table.
+            unassignable_label: Label used on the gold axis for prediction labels that
+                cannot be assigned to any gold label.
+            undetected_label: Label used on the prediction axis for gold labels that
+                were not detected by any prediction.
 
         Keyword Args:
             field: Optional field to extract from dictionary inputs.
-            flatten_dicts: Whether nested dictionaries should be flattened before comparison.
-            ignore_subfields: Optional subfields to ignore when hashing dictionary values.
+            flatten_dicts: Whether nested dictionaries should be flattened before
+                comparison.
+            ignore_subfields: Optional subfields to ignore when hashing dictionary
+                values.
             ignore_missing_entries: Whether one-sided empty entries should be skipped.
         """
         super().__init__(**kwargs)
@@ -57,14 +99,31 @@ class ConfusionMatrix(MetricWithTpFpFnEntries):
         self.show_as_markdown = show_as_markdown
 
     def _build_counts(self) -> dict[tuple[str, str], float]:
-        """Convert shared tp/fp/fn entry state into confusion-matrix cell counts.
+        """Convert shared tp/fp/fn entry state into expected confusion-matrix counts.
+
+        For each record, true positives are counted deterministically on the diagonal.
+        False negatives and false positives are treated as ambiguous: a false-negative
+        gold label may either be aligned to one false-positive predicted label or remain
+        undetected; similarly, a false-positive predicted label may either be aligned to
+        one false-negative gold label or remain unassignable.
+
+        Let `m = len(fn)`, `n = len(fp)`, and `T(m, n)` be the number of partial
+        one-to-one alignments between the false negatives and false positives. Under a
+        uniform distribution over these alignments, the expected contributions are:
+
+        - `gold_i -> pred_j`: `T(m - 1, n - 1) / T(m, n)`
+        - `gold_i -> undetected_label`: `T(m - 1, n) / T(m, n)`
+        - `unassignable_label -> pred_j`: `T(m, n - 1) / T(m, n)`
+
+        If either side is empty, the result is deterministic: false negatives are fully
+        counted as undetected, and false positives are fully counted as unassignable.
 
         Returns:
-            A mapping from `(gold_label, predicted_label)` cells to their counts.
+            A mapping from `(gold_label, predicted_label)` cells to expected counts.
 
         Raises:
-            ValueError: If predictions or references already use one of the reserved placeholder
-                labels.
+            ValueError: If predictions or references already use one of the reserved
+                placeholder labels.
         """
         counts: dict[tuple[str, str], float] = defaultdict(float)
 
@@ -72,43 +131,82 @@ class ConfusionMatrix(MetricWithTpFpFnEntries):
             label == self.unassignable_label for _, label in self.state["tp"] | self.state["fn"]
         ):
             raise ValueError(
-                f"The gold reference has the label '{self.unassignable_label}' for unassignable instances. "
-                f"Set a different unassignable_label."
+                f"The gold reference has the label '{self.unassignable_label}' for "
+                f"unassignable instances. Set a different unassignable_label."
             )
         if any(label == self.undetected_label for _, label in self.state["tp"] | self.state["fp"]):
             raise ValueError(
-                f"The prediction has the label '{self.undetected_label}' for undetected instances. "
-                f"Set a different undetected_label."
+                f"The prediction has the label '{self.undetected_label}' for "
+                f"undetected instances. Set a different undetected_label."
             )
 
-        # calculate for each document independently
+        # Calculate the expected confusion-matrix contribution independently per record.
         for state in self.state_per_record.values():
-            for label in state["tp"]:
-                counts[(str(label), str(label))] += 1
-            for label in state["fn"]:
-                # each false negative could be either one of the false positives ("shift")
-                # or undetected ("real false negative")
-                other_labels = list(state["fp"]) + [self.undetected_label]
-                for other_label in other_labels:
-                    counts[(str(label), str(other_label))] += 1 / len(other_labels)
-            for label in state["fp"]:
-                # each false positive could be either one of the false negatives ("shift")
-                # or unassignable ("real false positive")
-                other_labels = list(state["fn"]) + [self.unassignable_label]
-                for other_label in other_labels:
-                    counts[(str(other_label), str(label))] += 1 / len(other_labels)
+            tp = list(state["tp"])
+            fn = list(state["fn"])
+            fp = list(state["fp"])
+
+            # Exact label matches are unambiguous and therefore contribute to the diagonal.
+            for label in tp:
+                counts[(str(label), str(label))] += 1.0
+
+            m = len(fn)
+            n = len(fp)
+
+            # If there are no missed gold labels, all extra predictions are unassignable.
+            if m == 0:
+                for pred_label in fp:
+                    counts[(self.unassignable_label, str(pred_label))] += 1.0
+                continue
+
+            # If there are no extra predictions, all missed gold labels are undetected.
+            if n == 0:
+                for gold_label in fn:
+                    counts[(str(gold_label), self.undetected_label)] += 1.0
+                continue
+
+            # Otherwise, the relation between false negatives and false positives is
+            # ambiguous. We average uniformly over all partial one-to-one alignments.
+            total = num_partial_matchings(m, n)
+
+            # Probability that a specific false-negative label is aligned to a specific
+            # false-positive label, i.e. interpreted as a label shift.
+            p_shift = num_partial_matchings(m - 1, n - 1) / total
+
+            # Probability that a specific false-negative label is not aligned to any
+            # false-positive label and is therefore genuinely undetected.
+            p_undetected = num_partial_matchings(m - 1, n) / total
+
+            # Probability that a specific false-positive label is not aligned to any
+            # false-negative label and is therefore genuinely unassignable.
+            p_unassignable = num_partial_matchings(m, n - 1) / total
+
+            for gold_label in fn:
+                # Add expected mass for all possible label shifts from this gold label.
+                for pred_label in fp:
+                    counts[(str(gold_label), str(pred_label))] += p_shift
+
+                # Add expected mass for the case where this gold label was missed.
+                counts[(str(gold_label), self.undetected_label)] += p_undetected
+
+            # Add expected mass for predicted labels that are not explained by any
+            # false-negative gold label.
+            for pred_label in fp:
+                counts[(self.unassignable_label, str(pred_label))] += p_unassignable
 
         return counts
 
     def _compute(self) -> dict[str, dict[str, float]]:
-        """Compute the confusion matrix from the accumulated tp/fp/fn entry state.
+        """Compute the expected confusion matrix from accumulated tp/fp/fn state.
 
         Returns:
-            A nested dictionary mapping gold labels to prediction-label counts.
+            A nested dictionary mapping gold labels to predicted-label expected counts.
+            Counts may be fractional because ambiguous false-positive/false-negative
+            cases are averaged over all possible partial one-to-one alignments.
 
         Raises:
-            ValueError: If predictions or references already use one of the reserved placeholder
-                labels.
+            ValueError: If predictions or references already use one of the reserved
+                placeholder labels.
         """
         counts = self._build_counts()
 
