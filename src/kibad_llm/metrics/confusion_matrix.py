@@ -59,9 +59,6 @@ class ConfusionMatrix(MetricWithTpFpFnEntries):
     def _build_counts(self) -> dict[tuple[str, str], float]:
         """Convert shared tp/fp/fn entry state into confusion-matrix cell counts.
 
-        Args:
-            state: Mapping of `tp`, `fp`, and `fn` to tracked `(record_id, label)` pairs.
-
         Returns:
             A mapping from `(gold_label, predicted_label)` cells to their counts.
 
