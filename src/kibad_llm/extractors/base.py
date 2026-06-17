@@ -288,7 +288,7 @@ def _is_wrapper_dict(d: Mapping[str, Any], content_key: str) -> bool:
 
     Args:
         d: Dict to determine whether it is a metadata wrapper.
-        content_key: If this string to check for whether its a key.
+        content_key: String to check for whether its a key d.
 
     Returns:
         Whether d is a metadata wrapper.
