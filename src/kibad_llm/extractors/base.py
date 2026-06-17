@@ -69,9 +69,9 @@ class SingleExtractionResult(FieldDict):
         structured: Parsed version of response_content. Possibly validated against a schema. Possibly with metadata.
         structured_with_metadata: Parsed version of response_content, enriched with metadata.
         reasoning_content: Reasoning as text
-        messages: prompt messages without input text and schema description
+        messages: prompt messages with placeholders for input text and schema description
             `{ "system": system_message, "user": user_message }` [`build_chat_messages`][..build_chat_messages]
-        messages_formatted: prompt messages with input text and schema description
+        messages_formatted: prompt messages with inserted input text and schema description
             `{ "system": system_message, "user": user_message }`  [`build_chat_messages`][..build_chat_messages]
         errors: list of strings "error_name: error_message"
         errors_long: list of strings "error_name: error_message_and_traceback"
