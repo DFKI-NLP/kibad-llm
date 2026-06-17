@@ -12,7 +12,8 @@ Functions:
         inserting document text and schema description where needed, using [`build_chat_message`][.build_chat_message].
     build_chat_message: Build a single chat message from a template.
     strip_metadata: Strip metadata wrappers from a JSON-parsed result.
-    augment_metadata: Recursively augment metadata wrapper dicts. Uses just [`augment_metadata_node_with_evidence`][.augment_metadata_node_with_evidence] for now.
+    augment_metadata: Recursively augment metadata wrapper dicts.
+        Uses just [`augment_metadata_node_with_evidence`][.augment_metadata_node_with_evidence] for now.
     augment_metadata_node_with_evidence: Augment a single metadata wrapper dict with
         evidence location info.
     add_response_content_callback: Postprocessing callback to add response content to output.
@@ -68,8 +69,10 @@ class SingleExtractionResult(FieldDict):
         structured: Parsed version of response_content. Possibly validated against a schema. Possibly with metadata.
         structured_with_metadata: Parsed version of response_content, enriched with metadata.
         reasoning_content: Reasoning as text
-        messages: prompt messages without input text and schema description `{ "system": system_message, "user": user_message }` [`build_chat_messages`][..build_chat_messages]
-        messages_formatted: prompt messages with input text and schema description `{ "system": system_message, "user": user_message }`  [`build_chat_messages`][..build_chat_messages]
+        messages: prompt messages without input text and schema description
+            `{ "system": system_message, "user": user_message }` [`build_chat_messages`][..build_chat_messages]
+        messages_formatted: prompt messages with input text and schema description
+            `{ "system": system_message, "user": user_message }`  [`build_chat_messages`][..build_chat_messages]
         errors: list of strings "error_name: error_message"
         errors_long: list of strings "error_name: error_message_and_traceback"
     """
@@ -546,7 +549,7 @@ def augment_metadata(
     Traversal:
       - walks `data` through nested dicts/lists
       - detects wrapper dicts via `_is_wrapper_dict(..., content_key=...)`
-      - for each wrapper dict, calls metadata node augmentation methods     
+      - for each wrapper dict, calls metadata node augmentation methods
 
     Args:
         data: JSON-parsed result with metadata
@@ -688,11 +691,15 @@ def augment_and_strip_metadata_from_structured_callback(
 
     Args:
         out: An extraction result with `out.structured` populated with metadata
-        response: Placeholder, because it gets passed to all functions in `postprocessing_callbacks`, but this one doesn't use it.
-        schema: schema used in [`..extract_from_text`][] - may be modified for metadata - used to check against original_schema - must be passed by keyword
-        original_schema: original schema that was passed to [`..extract_from_text`][] - without metadata - must be passed by keyword
+        response: Placeholder, because it gets passed to all functions in `postprocessing_callbacks`,
+            but this one doesn't use it.
+        schema: schema used in [`..extract_from_text`][] - may be modified for metadata - used to check against
+            original_schema - must be passed by keyword
+        original_schema: original schema that was passed to [`..extract_from_text`][] - without metadata - must be
+            passed by keyword
         text: Original input text for evidence extraction - must be passed by keyword
-        validate_with_schema: Whether to validate `out.structured` against the `original_schema` - must be passed by keyword
+        validate_with_schema: Whether to validate `out.structured` against the `original_schema` - must be passed by
+            keyword
         augment_metadata_kwargs: Refer to [`..augment_metadata`][] - must be passed by keyword
 
     Warning:
@@ -837,7 +844,8 @@ def extract_from_text(
         )
     if character_end is not None and not (character_start <= character_end):
         raise TextOffsetValueError(
-            f"character_end must be greater than or equal to character_start ({character_start}), but is {character_end}"
+            f"character_end must be greater than or equal to character_start ({character_start}), "
+            + f"but is {character_end}"
         )
 
     out = SingleExtractionResult(

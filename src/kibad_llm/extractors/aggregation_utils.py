@@ -34,7 +34,8 @@ def make_hashable_simple(value: Any) -> Any:
 
     list/ set: Are converted to sorted tuples, with their elements processed recursively.
     tuples: Stay tuples, with their elements processed recursively.
-    dicts: Are converted to sorted tuples of (key, value) tuples, with the values processed recursively. The keys stay unchanged.
+    dicts: Are converted to sorted tuples of (key, value) tuples, with the values processed recursively.
+        The keys stay unchanged.
 
     Args:
         value: Obj to make hashable.

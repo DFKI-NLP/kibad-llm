@@ -45,7 +45,8 @@ class UnionExtractor:
         """Process singular text in multiple passes with different overrides.
 
         Args:
-            *args (Any): Are forwarded unchanged: [`extract_from_text_lenient`][kibad_llm.extractors.base.extract_from_text_lenient]
+            *args (Any): Are forwarded unchanged:
+                [`extract_from_text_lenient`][kibad_llm.extractors.base.extract_from_text_lenient]
 
         Keyword Args:
             * (Any): Refer to [`extract_from_text_lenient`][kibad_llm.extractors.base.extract_from_text_lenient]
