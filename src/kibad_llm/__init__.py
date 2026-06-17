@@ -13,7 +13,7 @@ Modules:
     dataset: Dataset I/O helpers for CSV, JSON, and prediction files.
     extractors: Structured-output extractors for parsing LLM responses.
     llms: LLM provider integrations (OpenAI, vLLM).
-    metrics: Concrete metric implementations (F1, confusion matrix, error collection).
+    metrics: Concrete metric implementations (e.g., F1, confusion matrix, error collection).
     schema: Shared type definitions and schema utilities.
     hydra_callbacks: Hydra lifecycle callbacks.
     utils: General-purpose helpers.
