@@ -1,0 +1,45 @@
+[2026-06-16 14:57:43,627][__main__][INFO] - Loading dataset with predictions and references ...
+[2026-06-16 14:57:43,628][__main__][INFO] - Dataset config: {'predictions': {'_target_': 'kibad_llm.dataset.prediction.load_with_metadata', 'log': 'logs/397_faktencheck_core_v1_for_chunking/predict/multiruns/2026-04-08_19-02-33/2', 'file': None, 'id_key': 'file_name', 'process_id': {'_partial_': True, '_target_': 'kibad_llm.utils.path.strip_filename_extension'}, 'preprocess': None}, '_target_': 'kibad_llm.dataset.utils.merge_references_into_predictions', 'references': {}, 'allow_missing_references': True}
+[2026-06-16 14:57:43,629][kibad_llm.dataset.json][INFO] - Loading dataset from JSON file: predictions/397_faktencheck_core_v1_for_chunking/2026-04-08_19-02-33/2026-04-09_20-13-17_745882/predictions.jsonl ...
+[2026-06-16 14:57:43,664][__main__][INFO] - Instantiating metric ...
+[2026-06-16 14:57:43,664][__main__][INFO] - Metric config: {'_target_': 'kibad_llm.metrics.ErrorCollector', 'type_separator': ': ', 'show_errors': True}
+[2026-06-16 14:57:43,665][__main__][INFO] - Computing metric ...
+[2026-06-16 14:57:43,665][kibad_llm.metrics.errors][INFO] - Collected error (id=2EUNPHDZ): JSONDecodeError: Expecting ',' delimiter: line 662 column 466 (char 220370)
+[2026-06-16 14:57:43,665][kibad_llm.metrics.errors][INFO] - Collected error (id=3WEEGFGW): JSONDecodeError: Expecting value: line 1 column 113733 (char 113732)
+[2026-06-16 14:57:43,665][kibad_llm.metrics.errors][INFO] - Collected error (id=3WEEGFGW): JSONDecodeError: Expecting value: line 1 column 55359 (char 55358)
+[2026-06-16 14:57:43,665][kibad_llm.metrics.errors][INFO] - Collected error (id=3WEEGFGW): JSONDecodeError: Expecting value: line 1 column 12470 (char 12469)
+[2026-06-16 14:57:43,665][kibad_llm.metrics.errors][INFO] - Collected error (id=3WEEGFGW): JSONDecodeError: Expecting value: line 1 column 65807 (char 65806)
+[2026-06-16 14:57:43,665][kibad_llm.metrics.errors][INFO] - Collected error (id=3WEEGFGW): JSONDecodeError: Expecting value: line 16 column 74697 (char 75064)
+[2026-06-16 14:57:43,665][kibad_llm.metrics.errors][INFO] - Collected error (id=3WEEGFGW): JSONDecodeError: Expecting value: line 16 column 16044 (char 16466)
+[2026-06-16 14:57:43,665][kibad_llm.metrics.errors][INFO] - Collected error (id=46RX4AEN): JSONDecodeError: Expecting value: line 1 column 128943 (char 128942)
+[2026-06-16 14:57:43,665][kibad_llm.metrics.errors][INFO] - Collected error (id=46RX4AEN): JSONDecodeError: Expecting value: line 1 column 55454 (char 55453)
+[2026-06-16 14:57:43,665][kibad_llm.metrics.errors][INFO] - Collected error (id=46RX4AEN): JSONDecodeError: Expecting value: line 1 column 16480 (char 16479)
+[2026-06-16 14:57:43,665][kibad_llm.metrics.errors][INFO] - Collected error (id=46RX4AEN): JSONDecodeError: Expecting value: line 16 column 84776 (char 85167)
+[2026-06-16 14:57:43,665][kibad_llm.metrics.errors][INFO] - Collected error (id=4YXRYRJC): JSONDecodeError: Expecting value: line 1 column 22869 (char 22868)
+[2026-06-16 14:57:43,665][kibad_llm.metrics.errors][INFO] - Collected error (id=4YXRYRJC): JSONDecodeError: Expecting value: line 1 column 12498 (char 12497)
+[2026-06-16 14:57:43,665][kibad_llm.metrics.errors][INFO] - Collected error (id=4YXRYRJC): JSONDecodeError: Expecting value: line 1 column 111180 (char 111179)
+[2026-06-16 14:57:43,665][kibad_llm.metrics.errors][INFO] - Collected error (id=4Z67G9T5): JSONDecodeError: Expecting value: line 1 column 69077 (char 69076)
+[2026-06-16 14:57:43,666][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Unterminated string starting at: line 1 column 26469 (char 26468)
+[2026-06-16 14:57:43,666][kibad_llm.metrics.errors][INFO] - Collected error (id=5TMUACTH): JSONDecodeError: Expecting value: line 1 column 73698 (char 73697)
+[2026-06-16 14:57:43,666][kibad_llm.metrics.errors][INFO] - Collected error (id=5TMUACTH): JSONDecodeError: Expecting value: line 1 column 117366 (char 117365)
+[2026-06-16 14:57:43,666][kibad_llm.metrics.errors][INFO] - Collected error (id=64BS3HZ3): JSONDecodeError: Expecting value: line 1 column 19739 (char 19738)
+[2026-06-16 14:57:43,666][kibad_llm.metrics.errors][INFO] - Collected error (id=6CMGEZPD): JSONDecodeError: Expecting value: line 1 column 66773 (char 66772)
+[2026-06-16 14:57:43,666][kibad_llm.metrics.errors][INFO] - Collected error (id=6D23L7B5): JSONDecodeError: Expecting value: line 1 column 138027 (char 138026)
+[2026-06-16 14:57:43,666][kibad_llm.metrics.errors][INFO] - Collected error (id=6D23L7B5): JSONDecodeError: Expecting value: line 1 column 31786 (char 31785)
+[2026-06-16 14:57:43,666][kibad_llm.metrics.errors][INFO] - Collected error (id=6G2THNDX): JSONDecodeError: Expecting value: line 1 column 48019 (char 48018)
+[2026-06-16 14:57:43,666][kibad_llm.metrics.errors][INFO] - Collected error (id=7DSY6RMR): JSONDecodeError: Expecting value: line 1 column 24181 (char 24180)
+[2026-06-16 14:57:43,666][kibad_llm.metrics.errors][INFO] - Collected error (id=7DSY6RMR): JSONDecodeError: Expecting value: line 1 column 98080 (char 98079)
+[2026-06-16 14:57:43,666][kibad_llm.metrics.errors][INFO] - Collected error (id=7EUNQX3Z): JSONDecodeError: Expecting ',' delimiter: line 3987 column 1 (char 16705)
+[2026-06-16 14:57:43,666][kibad_llm.metrics.errors][INFO] - Collected error (id=84QQ9F5S): JSONDecodeError: Expecting value: line 1 column 97510 (char 97509)
+[2026-06-16 14:57:43,666][kibad_llm.metrics.errors][INFO] - Collected error (id=BBDCY7DW): JSONDecodeError: Expecting value: line 1 column 90166 (char 90165)
+[2026-06-16 14:57:43,666][kibad_llm.metrics.errors][INFO] - Collected error (id=DFWI5DCP): JSONDecodeError: Expecting value: line 1 column 12705 (char 12704)
+[2026-06-16 14:57:43,666][kibad_llm.metrics.errors][INFO] - Collected error (id=KJ7JVAEW): JSONDecodeError: Expecting value: line 1 column 12426 (char 12425)
+[2026-06-16 14:57:43,666][kibad_llm.metrics.errors][INFO] - Collected error (id=ZQ329JQ6): JSONDecodeError: Expecting value: line 1 column 22324 (char 22323)
+[2026-06-16 14:57:43,666][kibad_llm.metric][INFO] - Evaluation results:
+{
+  "no_error": 1623,
+  "with_error": 31,
+  "JSONDecodeError": 31
+}
+[2026-06-16 14:57:43,670][kibad_llm.hydra_callbacks.save_job_return_value.SaveJobReturnValueCallback][INFO] - Saving job_return in /home/arbi01/projects/kibad-llm/logs/519_faktencheck_core/evaluate/multiruns/2026-06-16_14-57-41/7/job_return_value.json
+[2026-06-16 14:57:43,670][kibad_llm.hydra_callbacks.save_job_return_value.SaveJobReturnValueCallback][INFO] - Saving job_return in /home/arbi01/projects/kibad-llm/logs/519_faktencheck_core/evaluate/multiruns/2026-06-16_14-57-41/7/job_return_value.md

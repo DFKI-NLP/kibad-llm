@@ -1,0 +1,368 @@
+[2026-06-16 14:57:43,175][__main__][INFO] - Loading dataset with predictions and references ...
+[2026-06-16 14:57:43,175][__main__][INFO] - Dataset config: {'predictions': {'_target_': 'kibad_llm.dataset.prediction.load_with_metadata', 'log': 'logs/397_faktencheck_core_v1_for_chunking/predict/multiruns/2026-04-02_16-41-44/1', 'file': None, 'id_key': 'file_name', 'process_id': {'_partial_': True, '_target_': 'kibad_llm.utils.path.strip_filename_extension'}, 'preprocess': None}, '_target_': 'kibad_llm.dataset.utils.merge_references_into_predictions', 'references': {}, 'allow_missing_references': True}
+[2026-06-16 14:57:43,176][kibad_llm.dataset.json][INFO] - Loading dataset from JSON file: predictions/397_faktencheck_core_v1_for_chunking/2026-04-02_16-41-44/2026-04-04_07-58-07_131168/predictions.jsonl ...
+[2026-06-16 14:57:43,225][__main__][INFO] - Instantiating metric ...
+[2026-06-16 14:57:43,225][__main__][INFO] - Metric config: {'_target_': 'kibad_llm.metrics.ErrorCollector', 'type_separator': ': ', 'show_errors': True}
+[2026-06-16 14:57:43,226][__main__][INFO] - Computing metric ...
+[2026-06-16 14:57:43,226][kibad_llm.metrics.errors][INFO] - Collected error (id=2E9XWUUE): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,226][kibad_llm.metrics.errors][INFO] - Collected error (id=2E9XWUUE): JSONDecodeError: Unterminated string starting at: line 4 column 18 (char 40)
+[2026-06-16 14:57:43,226][kibad_llm.metrics.errors][INFO] - Collected error (id=2E9XWUUE): JSONDecodeError: Expecting ',' delimiter: line 99 column 19 (char 3434)
+[2026-06-16 14:57:43,226][kibad_llm.metrics.errors][INFO] - Collected error (id=2E9XWUUE): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,226][kibad_llm.metrics.errors][INFO] - Collected error (id=2E9XWUUE): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,227][kibad_llm.metrics.errors][INFO] - Collected error (id=2E9XWUUE): JSONDecodeError: Expecting ',' delimiter: line 930 column 4 (char 6303)
+[2026-06-16 14:57:43,227][kibad_llm.metrics.errors][INFO] - Collected error (id=2E9XWUUE): JSONDecodeError: Expecting ',' delimiter: line 89 column 1403 (char 4503)
+[2026-06-16 14:57:43,227][kibad_llm.metrics.errors][INFO] - Collected error (id=2E9XWUUE): JSONDecodeError: Unterminated string starting at: line 43 column 28 (char 1336)
+[2026-06-16 14:57:43,227][kibad_llm.metrics.errors][INFO] - Collected error (id=2E9XWUUE): JSONDecodeError: Unterminated string starting at: line 1 column 24 (char 23)
+[2026-06-16 14:57:43,227][kibad_llm.metrics.errors][INFO] - Collected error (id=2E9XWUUE): JSONDecodeError: Unterminated string starting at: line 66 column 20 (char 2289)
+[2026-06-16 14:57:43,227][kibad_llm.metrics.errors][INFO] - Collected error (id=2E9XWUUE): JSONDecodeError: Expecting ',' delimiter: line 58 column 2909 (char 4722)
+[2026-06-16 14:57:43,227][kibad_llm.metrics.errors][INFO] - Collected error (id=2E9XWUUE): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,227][kibad_llm.metrics.errors][INFO] - Collected error (id=2E9XWUUE): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,227][kibad_llm.metrics.errors][INFO] - Collected error (id=2E9XWUUE): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,227][kibad_llm.metrics.errors][INFO] - Collected error (id=2E9XWUUE): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,227][kibad_llm.metrics.errors][INFO] - Collected error (id=2E9XWUUE): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,227][kibad_llm.metrics.errors][INFO] - Collected error (id=2E9XWUUE): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,227][kibad_llm.metrics.errors][INFO] - Collected error (id=2E9XWUUE): JSONDecodeError: Unterminated string starting at: line 88 column 20 (char 2646)
+[2026-06-16 14:57:43,227][kibad_llm.metrics.errors][INFO] - Collected error (id=2E9XWUUE): JSONDecodeError: Unterminated string starting at: line 1 column 70 (char 69)
+[2026-06-16 14:57:43,227][kibad_llm.metrics.errors][INFO] - Collected error (id=2E9XWUUE): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,227][kibad_llm.metrics.errors][INFO] - Collected error (id=2E9XWUUE): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,227][kibad_llm.metrics.errors][INFO] - Collected error (id=2E9XWUUE): JSONDecodeError: Expecting value: line 3 column 4 (char 20)
+[2026-06-16 14:57:43,227][kibad_llm.metrics.errors][INFO] - Collected error (id=2E9XWUUE): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,227][kibad_llm.metrics.errors][INFO] - Collected error (id=2EUNPHDZ): JSONDecodeError: Expecting ',' delimiter: line 28 column 4302 (char 5002)
+[2026-06-16 14:57:43,227][kibad_llm.metrics.errors][INFO] - Collected error (id=2EUNPHDZ): JSONDecodeError: Expecting ',' delimiter: line 2884 column 2 (char 7957)
+[2026-06-16 14:57:43,227][kibad_llm.metrics.errors][INFO] - Collected error (id=2EUNPHDZ): JSONDecodeError: Expecting ',' delimiter: line 41 column 2996 (char 3992)
+[2026-06-16 14:57:43,227][kibad_llm.metrics.errors][INFO] - Collected error (id=2EUNPHDZ): JSONDecodeError: Expecting ',' delimiter: line 68 column 269 (char 4289)
+[2026-06-16 14:57:43,227][kibad_llm.metrics.errors][INFO] - Collected error (id=2EUNPHDZ): JSONDecodeError: Expecting ',' delimiter: line 50 column 575 (char 1860)
+[2026-06-16 14:57:43,227][kibad_llm.metrics.errors][INFO] - Collected error (id=2FDHAHAR): JSONDecodeError: Expecting property name enclosed in double quotes: line 52 column 6 (char 2064)
+[2026-06-16 14:57:43,227][kibad_llm.metrics.errors][INFO] - Collected error (id=2P53UVJA): JSONDecodeError: Unterminated string starting at: line 1 column 3796 (char 3795)
+[2026-06-16 14:57:43,227][kibad_llm.metrics.errors][INFO] - Collected error (id=2P53UVJA): JSONDecodeError: Expecting ',' delimiter: line 48 column 2446 (char 3605)
+[2026-06-16 14:57:43,227][kibad_llm.metrics.errors][INFO] - Collected error (id=2P53UVJA): JSONDecodeError: Unterminated string starting at: line 93 column 28 (char 2473)
+[2026-06-16 14:57:43,227][kibad_llm.metrics.errors][INFO] - Collected error (id=2P53UVJA): JSONDecodeError: Unterminated string starting at: line 96 column 20 (char 2966)
+[2026-06-16 14:57:43,227][kibad_llm.metrics.errors][INFO] - Collected error (id=2P53UVJA): JSONDecodeError: Unterminated string starting at: line 59 column 28 (char 1551)
+[2026-06-16 14:57:43,227][kibad_llm.metrics.errors][INFO] - Collected error (id=2P53UVJA): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,227][kibad_llm.metrics.errors][INFO] - Collected error (id=2P53UVJA): JSONDecodeError: Unterminated string starting at: line 1 column 2733 (char 2732)
+[2026-06-16 14:57:43,227][kibad_llm.metrics.errors][INFO] - Collected error (id=2P53UVJA): JSONDecodeError: Unterminated string starting at: line 254 column 28 (char 7278)
+[2026-06-16 14:57:43,227][kibad_llm.metrics.errors][INFO] - Collected error (id=2P53UVJA): JSONDecodeError: Unterminated string starting at: line 34 column 20 (char 1201)
+[2026-06-16 14:57:43,228][kibad_llm.metrics.errors][INFO] - Collected error (id=2P53UVJA): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,228][kibad_llm.metrics.errors][INFO] - Collected error (id=2P53UVJA): JSONDecodeError: Unterminated string starting at: line 73 column 20 (char 2147)
+[2026-06-16 14:57:43,228][kibad_llm.metrics.errors][INFO] - Collected error (id=2P53UVJA): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,228][kibad_llm.metrics.errors][INFO] - Collected error (id=2P53UVJA): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,228][kibad_llm.metrics.errors][INFO] - Collected error (id=2P53UVJA): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,228][kibad_llm.metrics.errors][INFO] - Collected error (id=2P53UVJA): JSONDecodeError: Unterminated string starting at: line 71 column 28 (char 1812)
+[2026-06-16 14:57:43,228][kibad_llm.metrics.errors][INFO] - Collected error (id=2RXMDX8I): JSONDecodeError: Unterminated string starting at: line 83 column 20 (char 3415)
+[2026-06-16 14:57:43,228][kibad_llm.metrics.errors][INFO] - Collected error (id=2RXMDX8I): JSONDecodeError: Unterminated string starting at: line 103 column 20 (char 3108)
+[2026-06-16 14:57:43,228][kibad_llm.metrics.errors][INFO] - Collected error (id=2RXMDX8I): JSONDecodeError: Unterminated string starting at: line 137 column 20 (char 4771)
+[2026-06-16 14:57:43,228][kibad_llm.metrics.errors][INFO] - Collected error (id=2RXMDX8I): JSONDecodeError: Expecting property name enclosed in double quotes: line 92 column 1 (char 2806)
+[2026-06-16 14:57:43,228][kibad_llm.metrics.errors][INFO] - Collected error (id=2RXMDX8I): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,228][kibad_llm.metrics.errors][INFO] - Collected error (id=2RXMDX8I): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,228][kibad_llm.metrics.errors][INFO] - Collected error (id=2RXMDX8I): JSONDecodeError: Unterminated string starting at: line 1 column 1862 (char 1861)
+[2026-06-16 14:57:43,228][kibad_llm.metrics.errors][INFO] - Collected error (id=2RXMDX8I): JSONDecodeError: Unterminated string starting at: line 152 column 28 (char 6100)
+[2026-06-16 14:57:43,228][kibad_llm.metrics.errors][INFO] - Collected error (id=2RXMDX8I): JSONDecodeError: Unterminated string starting at: line 155 column 28 (char 5833)
+[2026-06-16 14:57:43,228][kibad_llm.metrics.errors][INFO] - Collected error (id=2RXMDX8I): JSONDecodeError: Unterminated string starting at: line 87 column 26 (char 3389)
+[2026-06-16 14:57:43,228][kibad_llm.metrics.errors][INFO] - Collected error (id=2RXMDX8I): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,228][kibad_llm.metrics.errors][INFO] - Collected error (id=2RXMDX8I): JSONDecodeError: Unterminated string starting at: line 224 column 9 (char 7614)
+[2026-06-16 14:57:43,228][kibad_llm.metrics.errors][INFO] - Collected error (id=2RXMDX8I): JSONDecodeError: Unterminated string starting at: line 146 column 28 (char 5200)
+[2026-06-16 14:57:43,228][kibad_llm.metrics.errors][INFO] - Collected error (id=2RXMDX8I): JSONDecodeError: Unterminated string starting at: line 43 column 9 (char 1401)
+[2026-06-16 14:57:43,228][kibad_llm.metrics.errors][INFO] - Collected error (id=2RXMDX8I): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,228][kibad_llm.metrics.errors][INFO] - Collected error (id=3E8X2AK3): JSONDecodeError: Unterminated string starting at: line 12 column 28 (char 248)
+[2026-06-16 14:57:43,228][kibad_llm.metrics.errors][INFO] - Collected error (id=3E8X2AK3): ReasoningExtractionError: Could not find any ThinkingBlock content in chat response. Did you enable reasoning summaries via OpenAI Responses API, e.g. `extractor.llm.reasoning_options.summary=auto`?
+[2026-06-16 14:57:43,228][kibad_llm.metrics.errors][INFO] - Collected error (id=3E8X2AK3): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,228][kibad_llm.metrics.errors][INFO] - Collected error (id=3E8X2AK3): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,228][kibad_llm.metrics.errors][INFO] - Collected error (id=3LGPK6BL): JSONDecodeError: Unterminated string starting at: line 1 column 3081 (char 3080)
+[2026-06-16 14:57:43,228][kibad_llm.metrics.errors][INFO] - Collected error (id=3LGPK6BL): JSONDecodeError: Unterminated string starting at: line 90 column 28 (char 3439)
+[2026-06-16 14:57:43,228][kibad_llm.metrics.errors][INFO] - Collected error (id=3LGPK6BL): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,228][kibad_llm.metrics.errors][INFO] - Collected error (id=3LGPK6BL): JSONDecodeError: Unterminated string starting at: line 197 column 9 (char 5883)
+[2026-06-16 14:57:43,228][kibad_llm.metrics.errors][INFO] - Collected error (id=3LGPK6BL): JSONDecodeError: Unterminated string starting at: line 117 column 20 (char 4655)
+[2026-06-16 14:57:43,228][kibad_llm.metrics.errors][INFO] - Collected error (id=3LGPK6BL): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,229][kibad_llm.metrics.errors][INFO] - Collected error (id=3LGPK6BL): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,229][kibad_llm.metrics.errors][INFO] - Collected error (id=3LGPK6BL): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,229][kibad_llm.metrics.errors][INFO] - Collected error (id=3LGPK6BL): JSONDecodeError: Expecting ',' delimiter: line 43 column 1572 (char 2865)
+[2026-06-16 14:57:43,229][kibad_llm.metrics.errors][INFO] - Collected error (id=3WEEGFGW): ReasoningExtractionError: Could not find any ThinkingBlock content in chat response. Did you enable reasoning summaries via OpenAI Responses API, e.g. `extractor.llm.reasoning_options.summary=auto`?
+[2026-06-16 14:57:43,229][kibad_llm.metrics.errors][INFO] - Collected error (id=3WEEGFGW): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,229][kibad_llm.metrics.errors][INFO] - Collected error (id=3WEEGFGW): JSONDecodeError: Unterminated string starting at: line 46 column 28 (char 1377)
+[2026-06-16 14:57:43,229][kibad_llm.metrics.errors][INFO] - Collected error (id=3WEEGFGW): ReasoningExtractionError: Could not find any ThinkingBlock content in chat response. Did you enable reasoning summaries via OpenAI Responses API, e.g. `extractor.llm.reasoning_options.summary=auto`?
+[2026-06-16 14:57:43,229][kibad_llm.metrics.errors][INFO] - Collected error (id=3WEEGFGW): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,229][kibad_llm.metrics.errors][INFO] - Collected error (id=3WEEGFGW): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,229][kibad_llm.metrics.errors][INFO] - Collected error (id=3WEEGFGW): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,229][kibad_llm.metrics.errors][INFO] - Collected error (id=3WEEGFGW): ReasoningExtractionError: Could not find any ThinkingBlock content in chat response. Did you enable reasoning summaries via OpenAI Responses API, e.g. `extractor.llm.reasoning_options.summary=auto`?
+[2026-06-16 14:57:43,229][kibad_llm.metrics.errors][INFO] - Collected error (id=3WEEGFGW): JSONDecodeError: Expecting ',' delimiter: line 54 column 38 (char 3535)
+[2026-06-16 14:57:43,229][kibad_llm.metrics.errors][INFO] - Collected error (id=3WEEGFGW): JSONDecodeError: Expecting ',' delimiter: line 30 column 4705 (char 5870)
+[2026-06-16 14:57:43,229][kibad_llm.metrics.errors][INFO] - Collected error (id=3WEEGFGW): JSONDecodeError: Unterminated string starting at: line 1 column 3473 (char 3472)
+[2026-06-16 14:57:43,229][kibad_llm.metrics.errors][INFO] - Collected error (id=3WEEGFGW): JSONDecodeError: Unterminated string starting at: line 137 column 28 (char 4278)
+[2026-06-16 14:57:43,229][kibad_llm.metrics.errors][INFO] - Collected error (id=3WEEGFGW): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,229][kibad_llm.metrics.errors][INFO] - Collected error (id=3WEEGFGW): JSONDecodeError: Unterminated string starting at: line 72 column 28 (char 2065)
+[2026-06-16 14:57:43,229][kibad_llm.metrics.errors][INFO] - Collected error (id=3WEEGFGW): JSONDecodeError: Unterminated string starting at: line 98 column 20 (char 5172)
+[2026-06-16 14:57:43,229][kibad_llm.metrics.errors][INFO] - Collected error (id=3WEEGFGW): JSONDecodeError: Expecting property name enclosed in double quotes: line 80 column 1 (char 2277)
+[2026-06-16 14:57:43,229][kibad_llm.metrics.errors][INFO] - Collected error (id=3WEEGFGW): ReasoningExtractionError: Could not find any ThinkingBlock content in chat response. Did you enable reasoning summaries via OpenAI Responses API, e.g. `extractor.llm.reasoning_options.summary=auto`?
+[2026-06-16 14:57:43,229][kibad_llm.metrics.errors][INFO] - Collected error (id=3WEEGFGW): JSONDecodeError: Expecting ',' delimiter: line 41 column 2547 (char 3803)
+[2026-06-16 14:57:43,229][kibad_llm.metrics.errors][INFO] - Collected error (id=3WEEGFGW): ReasoningExtractionError: Could not find any ThinkingBlock content in chat response. Did you enable reasoning summaries via OpenAI Responses API, e.g. `extractor.llm.reasoning_options.summary=auto`?
+[2026-06-16 14:57:43,229][kibad_llm.metrics.errors][INFO] - Collected error (id=3WEEGFGW): JSONDecodeError: Expecting ',' delimiter: line 46 column 8 (char 4530)
+[2026-06-16 14:57:43,229][kibad_llm.metrics.errors][INFO] - Collected error (id=3WEEGFGW): JSONDecodeError: Expecting ',' delimiter: line 54 column 544 (char 2032)
+[2026-06-16 14:57:43,229][kibad_llm.metrics.errors][INFO] - Collected error (id=3WEEGFGW): JSONDecodeError: Expecting ',' delimiter: line 1332 column 5 (char 8612)
+[2026-06-16 14:57:43,229][kibad_llm.metrics.errors][INFO] - Collected error (id=3WEEGFGW): ReasoningExtractionError: Could not find any ThinkingBlock content in chat response. Did you enable reasoning summaries via OpenAI Responses API, e.g. `extractor.llm.reasoning_options.summary=auto`?
+[2026-06-16 14:57:43,229][kibad_llm.metrics.errors][INFO] - Collected error (id=3WEEGFGW): ReasoningExtractionError: Could not find any ThinkingBlock content in chat response. Did you enable reasoning summaries via OpenAI Responses API, e.g. `extractor.llm.reasoning_options.summary=auto`?
+[2026-06-16 14:57:43,229][kibad_llm.metrics.errors][INFO] - Collected error (id=3WEEGFGW): ReasoningExtractionError: Could not find any ThinkingBlock content in chat response. Did you enable reasoning summaries via OpenAI Responses API, e.g. `extractor.llm.reasoning_options.summary=auto`?
+[2026-06-16 14:57:43,229][kibad_llm.metrics.errors][INFO] - Collected error (id=3WEEGFGW): ReasoningExtractionError: Could not find any ThinkingBlock content in chat response. Did you enable reasoning summaries via OpenAI Responses API, e.g. `extractor.llm.reasoning_options.summary=auto`?
+[2026-06-16 14:57:43,229][kibad_llm.metrics.errors][INFO] - Collected error (id=3WEEGFGW): ReasoningExtractionError: Could not find any ThinkingBlock content in chat response. Did you enable reasoning summaries via OpenAI Responses API, e.g. `extractor.llm.reasoning_options.summary=auto`?
+[2026-06-16 14:57:43,229][kibad_llm.metrics.errors][INFO] - Collected error (id=3WEEGFGW): ReasoningExtractionError: Could not find any ThinkingBlock content in chat response. Did you enable reasoning summaries via OpenAI Responses API, e.g. `extractor.llm.reasoning_options.summary=auto`?
+[2026-06-16 14:57:43,229][kibad_llm.metrics.errors][INFO] - Collected error (id=3WEEGFGW): JSONDecodeError: Unterminated string starting at: line 76 column 28 (char 2372)
+[2026-06-16 14:57:43,229][kibad_llm.metrics.errors][INFO] - Collected error (id=3WEEGFGW): ReasoningExtractionError: Could not find any ThinkingBlock content in chat response. Did you enable reasoning summaries via OpenAI Responses API, e.g. `extractor.llm.reasoning_options.summary=auto`?
+[2026-06-16 14:57:43,230][kibad_llm.metrics.errors][INFO] - Collected error (id=3Z5BFIBL): JSONDecodeError: Expecting property name enclosed in double quotes: line 58 column 6 (char 1331)
+[2026-06-16 14:57:43,230][kibad_llm.metrics.errors][INFO] - Collected error (id=3Z5BFIBL): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,230][kibad_llm.metrics.errors][INFO] - Collected error (id=3Z5BFIBL): JSONDecodeError: Expecting property name enclosed in double quotes: line 56 column 6 (char 1647)
+[2026-06-16 14:57:43,230][kibad_llm.metrics.errors][INFO] - Collected error (id=3Z5BFIBL): JSONDecodeError: Expecting ',' delimiter: line 42 column 2969 (char 4209)
+[2026-06-16 14:57:43,230][kibad_llm.metrics.errors][INFO] - Collected error (id=46RX4AEN): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,230][kibad_llm.metrics.errors][INFO] - Collected error (id=46RX4AEN): JSONDecodeError: Expecting value: line 99 column 27 (char 3904)
+[2026-06-16 14:57:43,230][kibad_llm.metrics.errors][INFO] - Collected error (id=46RX4AEN): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,230][kibad_llm.metrics.errors][INFO] - Collected error (id=46RX4AEN): JSONDecodeError: Expecting value: line 33 column 4 (char 892)
+[2026-06-16 14:57:43,230][kibad_llm.metrics.errors][INFO] - Collected error (id=4YXRYRJC): JSONDecodeError: Expecting ',' delimiter: line 1622 column 3 (char 5257)
+[2026-06-16 14:57:43,230][kibad_llm.metrics.errors][INFO] - Collected error (id=4YXRYRJC): ReasoningExtractionError: Could not find any ThinkingBlock content in chat response. Did you enable reasoning summaries via OpenAI Responses API, e.g. `extractor.llm.reasoning_options.summary=auto`?
+[2026-06-16 14:57:43,230][kibad_llm.metrics.errors][INFO] - Collected error (id=4YXRYRJC): ReasoningExtractionError: Could not find any ThinkingBlock content in chat response. Did you enable reasoning summaries via OpenAI Responses API, e.g. `extractor.llm.reasoning_options.summary=auto`?
+[2026-06-16 14:57:43,230][kibad_llm.metrics.errors][INFO] - Collected error (id=4YXRYRJC): JSONDecodeError: Expecting ',' delimiter: line 65 column 2212 (char 4917)
+[2026-06-16 14:57:43,230][kibad_llm.metrics.errors][INFO] - Collected error (id=4YXRYRJC): ReasoningExtractionError: Could not find any ThinkingBlock content in chat response. Did you enable reasoning summaries via OpenAI Responses API, e.g. `extractor.llm.reasoning_options.summary=auto`?
+[2026-06-16 14:57:43,230][kibad_llm.metrics.errors][INFO] - Collected error (id=4YXRYRJC): ReasoningExtractionError: Could not find any ThinkingBlock content in chat response. Did you enable reasoning summaries via OpenAI Responses API, e.g. `extractor.llm.reasoning_options.summary=auto`?
+[2026-06-16 14:57:43,230][kibad_llm.metrics.errors][INFO] - Collected error (id=4YXRYRJC): ReasoningExtractionError: Could not find any ThinkingBlock content in chat response. Did you enable reasoning summaries via OpenAI Responses API, e.g. `extractor.llm.reasoning_options.summary=auto`?
+[2026-06-16 14:57:43,230][kibad_llm.metrics.errors][INFO] - Collected error (id=4YXRYRJC): ReasoningExtractionError: Could not find any ThinkingBlock content in chat response. Did you enable reasoning summaries via OpenAI Responses API, e.g. `extractor.llm.reasoning_options.summary=auto`?
+[2026-06-16 14:57:43,230][kibad_llm.metrics.errors][INFO] - Collected error (id=4YXRYRJC): ReasoningExtractionError: Could not find any ThinkingBlock content in chat response. Did you enable reasoning summaries via OpenAI Responses API, e.g. `extractor.llm.reasoning_options.summary=auto`?
+[2026-06-16 14:57:43,230][kibad_llm.metrics.errors][INFO] - Collected error (id=4YXRYRJC): ReasoningExtractionError: Could not find any ThinkingBlock content in chat response. Did you enable reasoning summaries via OpenAI Responses API, e.g. `extractor.llm.reasoning_options.summary=auto`?
+[2026-06-16 14:57:43,230][kibad_llm.metrics.errors][INFO] - Collected error (id=4Z67G9T5): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,230][kibad_llm.metrics.errors][INFO] - Collected error (id=4Z67G9T5): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,230][kibad_llm.metrics.errors][INFO] - Collected error (id=4Z67G9T5): ReasoningExtractionError: Could not find any ThinkingBlock content in chat response. Did you enable reasoning summaries via OpenAI Responses API, e.g. `extractor.llm.reasoning_options.summary=auto`?
+[2026-06-16 14:57:43,230][kibad_llm.metrics.errors][INFO] - Collected error (id=4Z67G9T5): JSONDecodeError: Expecting ',' delimiter: line 106 column 75 (char 5119)
+[2026-06-16 14:57:43,230][kibad_llm.metrics.errors][INFO] - Collected error (id=4Z67G9T5): JSONDecodeError: Expecting property name enclosed in double quotes: line 192 column 8 (char 5675)
+[2026-06-16 14:57:43,230][kibad_llm.metrics.errors][INFO] - Collected error (id=4Z67G9T5): JSONDecodeError: Expecting ',' delimiter: line 49 column 3714 (char 4905)
+[2026-06-16 14:57:43,230][kibad_llm.metrics.errors][INFO] - Collected error (id=57CBE476): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,230][kibad_llm.metrics.errors][INFO] - Collected error (id=57CBE476): JSONDecodeError: Unterminated string starting at: line 89 column 20 (char 2451)
+[2026-06-16 14:57:43,230][kibad_llm.metrics.errors][INFO] - Collected error (id=5CZNRP7X): JSONDecodeError: Expecting ',' delimiter: line 1904 column 1 (char 6218)
+[2026-06-16 14:57:43,230][kibad_llm.metrics.errors][INFO] - Collected error (id=5LC5W7KF): JSONDecodeError: Expecting ',' delimiter: line 1000 column 3 (char 5031)
+[2026-06-16 14:57:43,230][kibad_llm.metrics.errors][INFO] - Collected error (id=5LC5W7KF): JSONDecodeError: Expecting property name enclosed in double quotes: line 57 column 8 (char 1548)
+[2026-06-16 14:57:43,230][kibad_llm.metrics.errors][INFO] - Collected error (id=5LC5W7KF): JSONDecodeError: Expecting value: line 151 column 4 (char 5514)
+[2026-06-16 14:57:43,230][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,231][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Unterminated string starting at: line 56 column 9 (char 1677)
+[2026-06-16 14:57:43,231][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,231][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Unterminated string starting at: line 84 column 28 (char 2689)
+[2026-06-16 14:57:43,231][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Unterminated string starting at: line 27 column 9 (char 887)
+[2026-06-16 14:57:43,231][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,231][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Unterminated string starting at: line 93 column 9 (char 3510)
+[2026-06-16 14:57:43,231][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,231][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,231][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,231][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,231][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Unterminated string starting at: line 117 column 28 (char 4495)
+[2026-06-16 14:57:43,231][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Unterminated string starting at: line 1 column 2717 (char 2716)
+[2026-06-16 14:57:43,231][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,231][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Unterminated string starting at: line 75 column 28 (char 2133)
+[2026-06-16 14:57:43,231][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Expecting value: line 48 column 25 (char 1365)
+[2026-06-16 14:57:43,231][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Expecting value: line 201 column 27 (char 5592)
+[2026-06-16 14:57:43,231][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,231][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,231][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,231][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,231][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Unterminated string starting at: line 4 column 18 (char 40)
+[2026-06-16 14:57:43,231][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Unterminated string starting at: line 92 column 20 (char 2764)
+[2026-06-16 14:57:43,231][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,231][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Unterminated string starting at: line 111 column 9 (char 4377)
+[2026-06-16 14:57:43,231][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,231][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,231][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Unterminated string starting at: line 55 column 7 (char 1738)
+[2026-06-16 14:57:43,231][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Unterminated string starting at: line 81 column 20 (char 2561)
+[2026-06-16 14:57:43,231][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Unterminated string starting at: line 149 column 20 (char 5166)
+[2026-06-16 14:57:43,231][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,231][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Unterminated string starting at: line 1 column 469 (char 468)
+[2026-06-16 14:57:43,231][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Expecting value: line 49 column 27 (char 1252)
+[2026-06-16 14:57:43,231][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Unterminated string starting at: line 90 column 28 (char 2966)
+[2026-06-16 14:57:43,232][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Unterminated string starting at: line 161 column 28 (char 4802)
+[2026-06-16 14:57:43,232][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,232][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,232][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,232][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Expecting ',' delimiter: line 148 column 1 (char 4944)
+[2026-06-16 14:57:43,232][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Expecting property name enclosed in double quotes: line 199 column 1 (char 6024)
+[2026-06-16 14:57:43,232][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,232][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Unterminated string starting at: line 28 column 28 (char 1198)
+[2026-06-16 14:57:43,232][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Expecting property name enclosed in double quotes: line 15 column 1 (char 398)
+[2026-06-16 14:57:43,232][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Unterminated string starting at: line 123 column 28 (char 4658)
+[2026-06-16 14:57:43,232][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,232][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,232][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Unterminated string starting at: line 194 column 28 (char 6094)
+[2026-06-16 14:57:43,232][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,232][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Unterminated string starting at: line 4 column 18 (char 40)
+[2026-06-16 14:57:43,232][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,232][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Unterminated string starting at: line 31 column 9 (char 1043)
+[2026-06-16 14:57:43,232][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Unterminated string starting at: line 1 column 1319 (char 1318)
+[2026-06-16 14:57:43,232][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Unterminated string starting at: line 1 column 2906 (char 2905)
+[2026-06-16 14:57:43,232][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,232][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,232][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Unterminated string starting at: line 48 column 20 (char 1503)
+[2026-06-16 14:57:43,232][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,232][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,232][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Unterminated string starting at: line 83 column 7 (char 2186)
+[2026-06-16 14:57:43,232][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,232][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,232][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,232][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Expecting value: line 52 column 27 (char 1465)
+[2026-06-16 14:57:43,232][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,232][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Unterminated string starting at: line 1 column 968 (char 967)
+[2026-06-16 14:57:43,232][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Unterminated string starting at: line 132 column 20 (char 4023)
+[2026-06-16 14:57:43,232][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,232][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,232][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Unterminated string starting at: line 30 column 20 (char 926)
+[2026-06-16 14:57:43,233][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Unterminated string starting at: line 145 column 28 (char 3681)
+[2026-06-16 14:57:43,233][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Expecting property name enclosed in double quotes: line 79 column 8 (char 2220)
+[2026-06-16 14:57:43,233][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Unterminated string starting at: line 126 column 20 (char 3562)
+[2026-06-16 14:57:43,233][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Unterminated string starting at: line 111 column 28 (char 3472)
+[2026-06-16 14:57:43,233][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Unterminated string starting at: line 55 column 28 (char 1768)
+[2026-06-16 14:57:43,233][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Unterminated string starting at: line 4 column 18 (char 40)
+[2026-06-16 14:57:43,233][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,233][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Expecting value: line 16 column 17 (char 531)
+[2026-06-16 14:57:43,233][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Unterminated string starting at: line 5 column 7 (char 70)
+[2026-06-16 14:57:43,233][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,233][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Unterminated string starting at: line 1 column 754 (char 753)
+[2026-06-16 14:57:43,233][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,233][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Unterminated string starting at: line 144 column 20 (char 4112)
+[2026-06-16 14:57:43,233][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,233][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Unterminated string starting at: line 13 column 26 (char 327)
+[2026-06-16 14:57:43,233][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,233][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,233][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,233][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,233][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): ReasoningExtractionError: Could not find any ThinkingBlock content in chat response. Did you enable reasoning summaries via OpenAI Responses API, e.g. `extractor.llm.reasoning_options.summary=auto`?
+[2026-06-16 14:57:43,233][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Expecting ',' delimiter: line 124 column 1 (char 3666)
+[2026-06-16 14:57:43,233][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,233][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Unterminated string starting at: line 131 column 9 (char 4034)
+[2026-06-16 14:57:43,233][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Expecting property name enclosed in double quotes: line 17 column 6 (char 437)
+[2026-06-16 14:57:43,233][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,233][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,233][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,233][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,233][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,233][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,233][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,233][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,233][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,233][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,233][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Expecting ',' delimiter: line 52 column 4 (char 1601)
+[2026-06-16 14:57:43,234][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Unterminated string starting at: line 121 column 20 (char 4491)
+[2026-06-16 14:57:43,234][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,234][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,234][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): JSONDecodeError: Unterminated string starting at: line 56 column 28 (char 2397)
+[2026-06-16 14:57:43,234][kibad_llm.metrics.errors][INFO] - Collected error (id=5SIYLM9W): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,234][kibad_llm.metrics.errors][INFO] - Collected error (id=5TMUACTH): JSONDecodeError: Unterminated string starting at: line 69 column 28 (char 1966)
+[2026-06-16 14:57:43,234][kibad_llm.metrics.errors][INFO] - Collected error (id=5XHDHCIQ): JSONDecodeError: Expecting ',' delimiter: line 166 column 205 (char 4947)
+[2026-06-16 14:57:43,234][kibad_llm.metrics.errors][INFO] - Collected error (id=64BS3HZ3): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,234][kibad_llm.metrics.errors][INFO] - Collected error (id=6792YBL7): JSONDecodeError: Unterminated string starting at: line 229 column 20 (char 10037)
+[2026-06-16 14:57:43,234][kibad_llm.metrics.errors][INFO] - Collected error (id=6792YBL7): JSONDecodeError: Expecting ',' delimiter: line 247 column 173 (char 8568)
+[2026-06-16 14:57:43,234][kibad_llm.metrics.errors][INFO] - Collected error (id=6BKNRKUA): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,234][kibad_llm.metrics.errors][INFO] - Collected error (id=6BKNRKUA): JSONDecodeError: Expecting property name enclosed in double quotes: line 131 column 1 (char 4781)
+[2026-06-16 14:57:43,234][kibad_llm.metrics.errors][INFO] - Collected error (id=6CMGEZPD): JSONDecodeError: Expecting ',' delimiter: line 70 column 1992 (char 3919)
+[2026-06-16 14:57:43,234][kibad_llm.metrics.errors][INFO] - Collected error (id=6CMGEZPD): JSONDecodeError: Unterminated string starting at: line 107 column 9 (char 3831)
+[2026-06-16 14:57:43,234][kibad_llm.metrics.errors][INFO] - Collected error (id=6CMGEZPD): JSONDecodeError: Unterminated string starting at: line 45 column 20 (char 1259)
+[2026-06-16 14:57:43,234][kibad_llm.metrics.errors][INFO] - Collected error (id=6D23L7B5): JSONDecodeError: Unterminated string starting at: line 1 column 2278 (char 2277)
+[2026-06-16 14:57:43,234][kibad_llm.metrics.errors][INFO] - Collected error (id=6D23L7B5): ReasoningExtractionError: Could not find any ThinkingBlock content in chat response. Did you enable reasoning summaries via OpenAI Responses API, e.g. `extractor.llm.reasoning_options.summary=auto`?
+[2026-06-16 14:57:43,234][kibad_llm.metrics.errors][INFO] - Collected error (id=6D23L7B5): JSONDecodeError: Expecting ',' delimiter: line 1601 column 1 (char 8650)
+[2026-06-16 14:57:43,234][kibad_llm.metrics.errors][INFO] - Collected error (id=6D23L7B5): ReasoningExtractionError: Could not find any ThinkingBlock content in chat response. Did you enable reasoning summaries via OpenAI Responses API, e.g. `extractor.llm.reasoning_options.summary=auto`?
+[2026-06-16 14:57:43,234][kibad_llm.metrics.errors][INFO] - Collected error (id=6G2THNDX): JSONDecodeError: Expecting property name enclosed in double quotes: line 47 column 8 (char 1305)
+[2026-06-16 14:57:43,234][kibad_llm.metrics.errors][INFO] - Collected error (id=6G2THNDX): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,234][kibad_llm.metrics.errors][INFO] - Collected error (id=6G2THNDX): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,234][kibad_llm.metrics.errors][INFO] - Collected error (id=6G2THNDX): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,234][kibad_llm.metrics.errors][INFO] - Collected error (id=6G2THNDX): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,234][kibad_llm.metrics.errors][INFO] - Collected error (id=6G2THNDX): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,234][kibad_llm.metrics.errors][INFO] - Collected error (id=6G2THNDX): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,234][kibad_llm.metrics.errors][INFO] - Collected error (id=6G2THNDX): JSONDecodeError: Unterminated string starting at: line 143 column 28 (char 4743)
+[2026-06-16 14:57:43,234][kibad_llm.metrics.errors][INFO] - Collected error (id=6G2THNDX): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,234][kibad_llm.metrics.errors][INFO] - Collected error (id=6G2THNDX): ReasoningExtractionError: Could not find any ThinkingBlock content in chat response. Did you enable reasoning summaries via OpenAI Responses API, e.g. `extractor.llm.reasoning_options.summary=auto`?
+[2026-06-16 14:57:43,234][kibad_llm.metrics.errors][INFO] - Collected error (id=6G2THNDX): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,234][kibad_llm.metrics.errors][INFO] - Collected error (id=6G2THNDX): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,235][kibad_llm.metrics.errors][INFO] - Collected error (id=6G2THNDX): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,235][kibad_llm.metrics.errors][INFO] - Collected error (id=6G2THNDX): JSONDecodeError: Unterminated string starting at: line 20 column 20 (char 519)
+[2026-06-16 14:57:43,235][kibad_llm.metrics.errors][INFO] - Collected error (id=6G2THNDX): JSONDecodeError: Unterminated string starting at: line 44 column 9 (char 1324)
+[2026-06-16 14:57:43,235][kibad_llm.metrics.errors][INFO] - Collected error (id=6G2THNDX): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,235][kibad_llm.metrics.errors][INFO] - Collected error (id=6G2THNDX): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,235][kibad_llm.metrics.errors][INFO] - Collected error (id=6G2THNDX): JSONDecodeError: Unterminated string starting at: line 51 column 28 (char 2253)
+[2026-06-16 14:57:43,235][kibad_llm.metrics.errors][INFO] - Collected error (id=6G2THNDX): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,235][kibad_llm.metrics.errors][INFO] - Collected error (id=6G2THNDX): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,235][kibad_llm.metrics.errors][INFO] - Collected error (id=6G2THNDX): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,235][kibad_llm.metrics.errors][INFO] - Collected error (id=6G2THNDX): JSONDecodeError: Unterminated string starting at: line 120 column 7 (char 2837)
+[2026-06-16 14:57:43,235][kibad_llm.metrics.errors][INFO] - Collected error (id=7AYVH7FI): JSONDecodeError: Expecting ',' delimiter: line 64 column 78 (char 4122)
+[2026-06-16 14:57:43,235][kibad_llm.metrics.errors][INFO] - Collected error (id=7DSY6RMR): JSONDecodeError: Expecting ',' delimiter: line 893 column 1 (char 3772)
+[2026-06-16 14:57:43,235][kibad_llm.metrics.errors][INFO] - Collected error (id=7DSY6RMR): JSONDecodeError: Expecting ',' delimiter: line 86 column 1684 (char 3601)
+[2026-06-16 14:57:43,235][kibad_llm.metrics.errors][INFO] - Collected error (id=7DSY6RMR): JSONDecodeError: Expecting ',' delimiter: line 34 column 4029 (char 5042)
+[2026-06-16 14:57:43,235][kibad_llm.metrics.errors][INFO] - Collected error (id=7DSY6RMR): JSONDecodeError: Unterminated string starting at: line 28 column 28 (char 919)
+[2026-06-16 14:57:43,235][kibad_llm.metrics.errors][INFO] - Collected error (id=7DSY6RMR): JSONDecodeError: Expecting ',' delimiter: line 51 column 3139 (char 4136)
+[2026-06-16 14:57:43,235][kibad_llm.metrics.errors][INFO] - Collected error (id=7DSY6RMR): ReasoningExtractionError: Could not find any ThinkingBlock content in chat response. Did you enable reasoning summaries via OpenAI Responses API, e.g. `extractor.llm.reasoning_options.summary=auto`?
+[2026-06-16 14:57:43,235][kibad_llm.metrics.errors][INFO] - Collected error (id=7DSY6RMR): JSONDecodeError: Expecting ',' delimiter: line 2 column 5197 (char 5491)
+[2026-06-16 14:57:43,235][kibad_llm.metrics.errors][INFO] - Collected error (id=7EUNQX3Z): JSONDecodeError: Unterminated string starting at: line 65 column 28 (char 2443)
+[2026-06-16 14:57:43,235][kibad_llm.metrics.errors][INFO] - Collected error (id=7EUNQX3Z): JSONDecodeError: Unterminated string starting at: line 53 column 28 (char 2405)
+[2026-06-16 14:57:43,235][kibad_llm.metrics.errors][INFO] - Collected error (id=7EUNQX3Z): JSONDecodeError: Unterminated string starting at: line 43 column 28 (char 1395)
+[2026-06-16 14:57:43,235][kibad_llm.metrics.errors][INFO] - Collected error (id=7EUNQX3Z): JSONDecodeError: Expecting value: line 35 column 1 (char 940)
+[2026-06-16 14:57:43,235][kibad_llm.metrics.errors][INFO] - Collected error (id=7EUNQX3Z): JSONDecodeError: Unterminated string starting at: line 64 column 28 (char 2150)
+[2026-06-16 14:57:43,235][kibad_llm.metrics.errors][INFO] - Collected error (id=84QQ9F5S): JSONDecodeError: Expecting ',' delimiter: line 30 column 4284 (char 4972)
+[2026-06-16 14:57:43,235][kibad_llm.metrics.errors][INFO] - Collected error (id=84QQ9F5S): JSONDecodeError: Expecting ',' delimiter: line 17 column 6443 (char 6786)
+[2026-06-16 14:57:43,235][kibad_llm.metrics.errors][INFO] - Collected error (id=84QQ9F5S): ReasoningExtractionError: Could not find any ThinkingBlock content in chat response. Did you enable reasoning summaries via OpenAI Responses API, e.g. `extractor.llm.reasoning_options.summary=auto`?
+[2026-06-16 14:57:43,235][kibad_llm.metrics.errors][INFO] - Collected error (id=84QQ9F5S): JSONDecodeError: Expecting ',' delimiter: line 1 column 6146 (char 6145)
+[2026-06-16 14:57:43,235][kibad_llm.metrics.errors][INFO] - Collected error (id=84QQ9F5S): JSONDecodeError: Expecting ',' delimiter: line 41 column 4873 (char 5813)
+[2026-06-16 14:57:43,235][kibad_llm.metrics.errors][INFO] - Collected error (id=84QQ9F5S): JSONDecodeError: Expecting ',' delimiter: line 74 column 3808 (char 5931)
+[2026-06-16 14:57:43,235][kibad_llm.metrics.errors][INFO] - Collected error (id=84QQ9F5S): JSONDecodeError: Expecting ',' delimiter: line 1685 column 1 (char 5525)
+[2026-06-16 14:57:43,235][kibad_llm.metrics.errors][INFO] - Collected error (id=84QQ9F5S): JSONDecodeError: Expecting ',' delimiter: line 1731 column 2 (char 6115)
+[2026-06-16 14:57:43,235][kibad_llm.metrics.errors][INFO] - Collected error (id=84QQ9F5S): JSONDecodeError: Expecting ',' delimiter: line 54 column 418 (char 5317)
+[2026-06-16 14:57:43,235][kibad_llm.metrics.errors][INFO] - Collected error (id=84QQ9F5S): JSONDecodeError: Expecting ',' delimiter: line 46 column 4231 (char 5385)
+[2026-06-16 14:57:43,235][kibad_llm.metrics.errors][INFO] - Collected error (id=84QQ9F5S): JSONDecodeError: Expecting ',' delimiter: line 34 column 4427 (char 5171)
+[2026-06-16 14:57:43,236][kibad_llm.metrics.errors][INFO] - Collected error (id=84QQ9F5S): JSONDecodeError: Expecting property name enclosed in double quotes: line 38 column 8 (char 1006)
+[2026-06-16 14:57:43,236][kibad_llm.metrics.errors][INFO] - Collected error (id=885FDL5Z): JSONDecodeError: Expecting property name enclosed in double quotes: line 77 column 1 (char 2532)
+[2026-06-16 14:57:43,236][kibad_llm.metrics.errors][INFO] - Collected error (id=885FDL5Z): JSONDecodeError: Unterminated string starting at: line 200 column 18 (char 7183)
+[2026-06-16 14:57:43,236][kibad_llm.metrics.errors][INFO] - Collected error (id=885FDL5Z): JSONDecodeError: Expecting value: line 1 column 734 (char 733)
+[2026-06-16 14:57:43,236][kibad_llm.metrics.errors][INFO] - Collected error (id=885FDL5Z): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,236][kibad_llm.metrics.errors][INFO] - Collected error (id=885FDL5Z): JSONDecodeError: Unterminated string starting at: line 37 column 28 (char 1018)
+[2026-06-16 14:57:43,236][kibad_llm.metrics.errors][INFO] - Collected error (id=885FDL5Z): JSONDecodeError: Unterminated string starting at: line 63 column 20 (char 2931)
+[2026-06-16 14:57:43,236][kibad_llm.metrics.errors][INFO] - Collected error (id=885FDL5Z): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,236][kibad_llm.metrics.errors][INFO] - Collected error (id=885FDL5Z): JSONDecodeError: Unterminated string starting at: line 1 column 350 (char 349)
+[2026-06-16 14:57:43,236][kibad_llm.metrics.errors][INFO] - Collected error (id=885FDL5Z): JSONDecodeError: Expecting value: line 124 column 27 (char 3122)
+[2026-06-16 14:57:43,236][kibad_llm.metrics.errors][INFO] - Collected error (id=885FDL5Z): JSONDecodeError: Expecting ',' delimiter: line 88 column 1 (char 3073)
+[2026-06-16 14:57:43,236][kibad_llm.metrics.errors][INFO] - Collected error (id=885FDL5Z): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,236][kibad_llm.metrics.errors][INFO] - Collected error (id=885FDL5Z): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,236][kibad_llm.metrics.errors][INFO] - Collected error (id=885FDL5Z): JSONDecodeError: Expecting ',' delimiter: line 141 column 1687 (char 5777)
+[2026-06-16 14:57:43,236][kibad_llm.metrics.errors][INFO] - Collected error (id=885FDL5Z): JSONDecodeError: Unterminated string starting at: line 1 column 1730 (char 1729)
+[2026-06-16 14:57:43,236][kibad_llm.metrics.errors][INFO] - Collected error (id=885FDL5Z): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,236][kibad_llm.metrics.errors][INFO] - Collected error (id=885FDL5Z): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,236][kibad_llm.metrics.errors][INFO] - Collected error (id=885FDL5Z): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,236][kibad_llm.metrics.errors][INFO] - Collected error (id=885FDL5Z): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,236][kibad_llm.metrics.errors][INFO] - Collected error (id=885FDL5Z): JSONDecodeError: Unterminated string starting at: line 66 column 28 (char 1587)
+[2026-06-16 14:57:43,236][kibad_llm.metrics.errors][INFO] - Collected error (id=885FDL5Z): JSONDecodeError: Expecting value: line 86 column 23 (char 2464)
+[2026-06-16 14:57:43,236][kibad_llm.metrics.errors][INFO] - Collected error (id=885FDL5Z): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,236][kibad_llm.metrics.errors][INFO] - Collected error (id=885FDL5Z): JSONDecodeError: Unterminated string starting at: line 1 column 1856 (char 1855)
+[2026-06-16 14:57:43,236][kibad_llm.metrics.errors][INFO] - Collected error (id=885FDL5Z): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,236][kibad_llm.metrics.errors][INFO] - Collected error (id=885FDL5Z): JSONDecodeError: Expecting ',' delimiter: line 77 column 1 (char 2512)
+[2026-06-16 14:57:43,236][kibad_llm.metrics.errors][INFO] - Collected error (id=8GEYSUXR): JSONDecodeError: Expecting ',' delimiter: line 62 column 2312 (char 4295)
+[2026-06-16 14:57:43,236][kibad_llm.metrics.errors][INFO] - Collected error (id=8Q86MQJE): ReasoningExtractionError: Could not find any ThinkingBlock content in chat response. Did you enable reasoning summaries via OpenAI Responses API, e.g. `extractor.llm.reasoning_options.summary=auto`?
+[2026-06-16 14:57:43,236][kibad_llm.metrics.errors][INFO] - Collected error (id=8UVBVFHS): JSONDecodeError: Unterminated string starting at: line 100 column 9 (char 2946)
+[2026-06-16 14:57:43,236][kibad_llm.metrics.errors][INFO] - Collected error (id=8UVBVFHS): JSONDecodeError: Unterminated string starting at: line 1 column 945 (char 944)
+[2026-06-16 14:57:43,236][kibad_llm.metrics.errors][INFO] - Collected error (id=8UVBVFHS): JSONDecodeError: Unterminated string starting at: line 1 column 1511 (char 1510)
+[2026-06-16 14:57:43,236][kibad_llm.metrics.errors][INFO] - Collected error (id=8UVBVFHS): JSONDecodeError: Unterminated string starting at: line 69 column 20 (char 2420)
+[2026-06-16 14:57:43,236][kibad_llm.metrics.errors][INFO] - Collected error (id=8ZESW42A): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,236][kibad_llm.metrics.errors][INFO] - Collected error (id=8ZESW42A): JSONDecodeError: Unterminated string starting at: line 60 column 9 (char 1838)
+[2026-06-16 14:57:43,236][kibad_llm.metrics.errors][INFO] - Collected error (id=8ZESW42A): JSONDecodeError: Unterminated string starting at: line 26 column 7 (char 837)
+[2026-06-16 14:57:43,236][kibad_llm.metrics.errors][INFO] - Collected error (id=8ZESW42A): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,237][kibad_llm.metrics.errors][INFO] - Collected error (id=8ZESW42A): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,237][kibad_llm.metrics.errors][INFO] - Collected error (id=ASEHVK97): JSONDecodeError: Expecting ',' delimiter: line 66 column 1358 (char 3279)
+[2026-06-16 14:57:43,237][kibad_llm.metrics.errors][INFO] - Collected error (id=F582S9H8): JSONDecodeError: Unterminated string starting at: line 1 column 2512 (char 2511)
+[2026-06-16 14:57:43,237][kibad_llm.metrics.errors][INFO] - Collected error (id=FG3YVDCZ): JSONDecodeError: Unterminated string starting at: line 46 column 28 (char 1948)
+[2026-06-16 14:57:43,237][kibad_llm.metrics.errors][INFO] - Collected error (id=KXP8FP94): JSONDecodeError: Unterminated string starting at: line 20 column 28 (char 545)
+[2026-06-16 14:57:43,237][kibad_llm.metrics.errors][INFO] - Collected error (id=QR5QGMTI): JSONDecodeError: Expecting ',' delimiter: line 152 column 6 (char 4610)
+[2026-06-16 14:57:43,237][kibad_llm.metrics.errors][INFO] - Collected error (id=QR5QGMTI): JSONDecodeError: Unterminated string starting at: line 1 column 1241 (char 1240)
+[2026-06-16 14:57:43,237][kibad_llm.metrics.errors][INFO] - Collected error (id=QR5QGMTI): JSONDecodeError: Unterminated string starting at: line 197 column 20 (char 5690)
+[2026-06-16 14:57:43,237][kibad_llm.metrics.errors][INFO] - Collected error (id=QR5QGMTI): JSONDecodeError: Unterminated string starting at: line 109 column 28 (char 3346)
+[2026-06-16 14:57:43,237][kibad_llm.metrics.errors][INFO] - Collected error (id=SVXF36H4): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,237][kibad_llm.metrics.errors][INFO] - Collected error (id=TTJ3S6P9): JSONDecodeError: Expecting ',' delimiter: line 17 column 3219 (char 3842)
+[2026-06-16 14:57:43,237][kibad_llm.metrics.errors][INFO] - Collected error (id=VQT78VA5): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,237][kibad_llm.metrics.errors][INFO] - Collected error (id=VQT78VA5): MissingResponseContentError: LLM response is missing content.
+[2026-06-16 14:57:43,237][kibad_llm.metrics.errors][INFO] - Collected error (id=XQ7DW4VS): ReasoningExtractionError: Could not find any ThinkingBlock content in chat response. Did you enable reasoning summaries via OpenAI Responses API, e.g. `extractor.llm.reasoning_options.summary=auto`?
+[2026-06-16 14:57:43,237][kibad_llm.metrics.errors][INFO] - Collected error (id=ZQ329JQ6): JSONDecodeError: Unterminated string starting at: line 1 column 2032 (char 2031)
+[2026-06-16 14:57:43,237][kibad_llm.metrics.errors][INFO] - Collected error (id=ZS59ID9J): JSONDecodeError: Unterminated string starting at: line 127 column 20 (char 3938)
+[2026-06-16 14:57:43,237][kibad_llm.metric][INFO] - Evaluation results:
+{
+  "no_error": 1304,
+  "with_error": 350,
+  "MissingResponseContentError": 127,
+  "JSONDecodeError": 195,
+  "ReasoningExtractionError": 30
+}
+[2026-06-16 14:57:43,240][kibad_llm.hydra_callbacks.save_job_return_value.SaveJobReturnValueCallback][INFO] - Saving job_return in /home/arbi01/projects/kibad-llm/logs/519_faktencheck_core/evaluate/multiruns/2026-06-16_14-57-41/4/job_return_value.json
+[2026-06-16 14:57:43,241][kibad_llm.hydra_callbacks.save_job_return_value.SaveJobReturnValueCallback][INFO] - Saving job_return in /home/arbi01/projects/kibad-llm/logs/519_faktencheck_core/evaluate/multiruns/2026-06-16_14-57-41/4/job_return_value.md
