@@ -546,7 +546,7 @@ def augment_metadata(
     Traversal:
       - walks `data` through nested dicts/lists
       - detects wrapper dicts via `_is_wrapper_dict(..., content_key=...)`
-      - for each wrapper dict, calls `augment_metadata_node_with_evidence(...)`
+      - for each wrapper dict, calls metadata node augmentation methods     
 
     Args:
         data: JSON-parsed result with metadata
