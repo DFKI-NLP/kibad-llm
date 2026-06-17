@@ -16,6 +16,6 @@ hydra.callbacks.save_job_return.multirun_show_file_contents=null \
 --multirun
 ```
 
-result location: `TODO`
+result location: `logs/514_faktencheck_core/evaluate/multiruns/2026-06-17_12-36-29`
 
-See [figures/](figures/) for generated confusion matrices for gpt-oss-20b and qwen-3-30b.
+See [figures/](figures/) for generated confusion matrices for gpt-oss-20b, qwen-3-30b and gpt5.
