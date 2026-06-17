@@ -1,3 +1,9 @@
+"""Preprocessing functions for converting input documents to markdown.
+
+Functions:
+    read_pdf_as_markdown_via_pymupdf4llm: Read a PDF file and convert it to markdown using pymupdf4llm.
+"""
+
 from __future__ import annotations
 
 import logging
@@ -14,6 +20,7 @@ def read_pdf_as_markdown_via_pymupdf4llm(file_name: str, base_path: Path) -> str
     Args:
         file_name: The name of the PDF file to read.
         base_path: The base path where the PDF file is located.
+
     Returns:
         The Markdown text.
     """
