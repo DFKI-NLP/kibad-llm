@@ -71,6 +71,36 @@ Result location: `logs/251_nemotron_faktencheck_core/evaluate/multiruns/2026-06-
 #### Recall
 ![recall](figures/faktencheck_core_f1_micro_flat-ALL/recall.svg)
 
+### Errors
+
+```
+uv run -m kibad_llm.evaluate \
+name=251_nemotron_faktencheck_core \
+experiment/evaluate=prediction_errors \
+hydra.callbacks.save_job_return.multirun_show_file_contents=null \
+prediction_logs=logs/251_nemotron_faktencheck_core/predict \
+--multirun
+```
+
+result location: `logs/251_nemotron_faktencheck_core/evaluate/multiruns/2026-06-17_17-12-07`
+
+![legend.svg](figures/prediction_errors-total/legend.svg)
+
+#### no errors
+![no_error.svg](figures/prediction_errors-total/no_error.svg)
+
+#### with errors
+![with_error.svg](figures/prediction_errors-total/with_error.svg)
+
+#### details - JSONDecodeError
+![JSONDecodeError.svg](figures/prediction_errors-details/JSONDecodeError.svg)
+
+#### details - MissingResponseContentError
+![MissingResponseContentError.svg](figures/prediction_errors-details/MissingResponseContentError.svg)
+
+#### details - ReasoningExtractionError
+![ReasoningExtractionError.svg](figures/prediction_errors-details/ReasoningExtractionError.svg)
+
 ## Outcome
 
 Nemotron-Nano-30B-A3B-FP8 achieves **ALL F1 ≈ 0.54** (mean over seeds 42 and 1337), with very low
