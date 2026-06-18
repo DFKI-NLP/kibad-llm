@@ -11,13 +11,13 @@ logging.basicConfig(level=logging.INFO)
 
 # ---------- CONFIGURATION ----------
 NEXTCLOUD_BASE_URL = "https://cloud.dfki.de/owncloud/"  # Your Nextcloud domain
-SHARE_TOKEN = "dPc2BSDDEAT4R2W"  # nosec # Share token from your public link
+SHARE_TOKEN = "AC2XCHfDoza2rkb"  # nosec # Share token from your public link
 LOCAL_DIR = "/ds/text/kiba-d/zotero_literaturdatenbank/"
 NEXTCLOUD_BASE_FOLDER = "PDFs%20Literaturdatenbank/"
 # ----------------------------------
 
 # Derived URL
-NEXTCLOUD_WEBDAV_URL = f"{NEXTCLOUD_BASE_URL}/public.php/webdav/{NEXTCLOUD_BASE_FOLDER}"
+NEXTCLOUD_WEBDAV_URL = f"{NEXTCLOUD_BASE_URL}/public.php/webdav/"
 
 # Auth for public share: (share_token, password) if password protected; else just token
 # if SHARE_PASSWORD:
@@ -135,9 +135,9 @@ def upload_file(filename):
 
 
 def sync_nextcloud():
-    logging.info("Listing Nextcloud files...")
+    logging.info(f"Listing Nextcloud files from {NEXTCLOUD_WEBDAV_URL}, share token {SHARE_TOKEN} ...")
     nc_files = set(list_nextcloud_files())
-    logging.info("Listing local files...")
+    logging.info(f"Listing local files from {LOCAL_DIR} ...")
     local_files = set(list_local_files())
 
     to_download = nc_files - local_files
