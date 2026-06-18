@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import argparse
 import logging
 import os
 from urllib.parse import quote, unquote, urlparse
@@ -9,21 +10,13 @@ from tqdm import tqdm
 
 logging.basicConfig(level=logging.INFO)
 
-# ---------- CONFIGURATION ----------
-NEXTCLOUD_BASE_URL = "https://cloud.dfki.de/owncloud/"  # Your Nextcloud domain
+# ---------- DEFAULT CONFIGURATION ----------
+NEXTCLOUD_BASE_URL = "https://cloud.dfki.de/owncloud"  # Your Nextcloud domain
+NEXTCLOUD_WEBDAV_ENDPOINT = "public.php/webdav/"  # WebDAV endpoint for public shares
 SHARE_TOKEN = "AC2XCHfDoza2rkb"  # nosec # Share token from your public link
 LOCAL_DIR = "/ds/text/kiba-d/zotero_literaturdatenbank/"
 # ----------------------------------
 
-# Derived URL
-NEXTCLOUD_WEBDAV_URL = f"{NEXTCLOUD_BASE_URL}/public.php/webdav/"
-
-# Auth for public share: (share_token, password) if password protected; else just token
-# if SHARE_PASSWORD:
-#    AUTH = (SHARE_TOKEN, SHARE_PASSWORD)
-# else:
-#    AUTH = (SHARE_TOKEN, "")
-AUTH = (SHARE_TOKEN, "")
 
 # A small PROPFIND body asking for resource type so we can detect collections
 PROPFIND_BODY = """<?xml version="1.0" encoding="utf-8"?>
@@ -37,7 +30,7 @@ PROPFIND_BODY = """<?xml version="1.0" encoding="utf-8"?>
 """
 
 
-def list_nextcloud_files():
+def list_nextcloud_files(nextcloud_webdev_url: str, auth: tuple[str, str]) -> list[str]:
     """
     Returns a list of filenames that are direct (non-directory) children
     of the public share root. Uses PROPFIND with Depth: 1 and parses XML.
@@ -46,10 +39,10 @@ def list_nextcloud_files():
 
     resp = requests.request(
         "PROPFIND",
-        NEXTCLOUD_WEBDAV_URL,
+        nextcloud_webdev_url,
         data=PROPFIND_BODY.encode("utf-8"),
         headers=headers,
-        auth=AUTH,
+        auth=auth,
         timeout=30,
     )
     if resp.status_code not in (207, 200):
@@ -64,7 +57,7 @@ def list_nextcloud_files():
 
     files = []
     # canonicalize root path (so we can skip the entry for the folder itself)
-    requested_path = urlparse(NEXTCLOUD_WEBDAV_URL).path.rstrip("/")
+    requested_path = urlparse(nextcloud_webdev_url).path.rstrip("/")
 
     # Iterate over all <d:response> entries
     for response_elem in root.findall(".//{DAV:}response"):
@@ -72,7 +65,7 @@ def list_nextcloud_files():
         if href_elem is None or (href_elem.text or "") == "":
             continue
         href_text = href_elem.text
-        href_path = urlparse(href_text).path  # path part only
+        href_path = str(urlparse(href_text).path)  # path part only
         # skip the entry for the folder itself
         if href_path.rstrip("/") == requested_path:
             continue
@@ -98,18 +91,20 @@ def list_nextcloud_files():
     return files
 
 
-def list_local_files():
+def list_local_files(local_dir: str) -> list[str]:
     """Non-recursive listing of files in LOCAL_DIR (files only)."""
-    return [f for f in os.listdir(LOCAL_DIR) if os.path.isfile(os.path.join(LOCAL_DIR, f))]
+    return [f for f in os.listdir(local_dir) if os.path.isfile(os.path.join(local_dir, f))]
 
 
-def download_file(filename):
-    url = NEXTCLOUD_WEBDAV_URL + quote(filename, safe="")
-    local_path = os.path.join(LOCAL_DIR, filename)
+def download_file(
+    filename: str, local_dir: str, nextcloud_webdev_url: str, auth: tuple[str, str]
+) -> None:
+    url = nextcloud_webdev_url + quote(filename, safe="")
+    local_path = os.path.join(local_dir, filename)
     logging.info(f"Downloading {url} to {local_path}")
     os.makedirs(os.path.dirname(local_path), exist_ok=True)
 
-    with requests.get(url, auth=AUTH, stream=True, timeout=30) as r:
+    with requests.get(url, auth=auth, stream=True, timeout=30) as r:
         if r.status_code == 200:
             with open(local_path, "wb") as fh:
                 for chunk in tqdm(
@@ -123,23 +118,34 @@ def download_file(filename):
             raise RuntimeError(f"Failed to download {url}: {r.status_code} {r.text[:200]}")
 
 
-def upload_file(filename):
-    url = NEXTCLOUD_WEBDAV_URL + quote(filename, safe="")
-    local_path = os.path.join(LOCAL_DIR, filename)
+def upload_file(
+    filename: str, local_dir: str, nextcloud_webdev_url: str, auth=tuple[str, str]
+) -> None:
+    url = nextcloud_webdev_url + quote(filename, safe="")
+    local_path = os.path.join(local_dir, filename)
     logging.info(f"Uploading {local_path} to {url}")
     with open(local_path, "rb") as fh:
-        resp = requests.put(url, auth=AUTH, data=fh, timeout=30)
+        resp = requests.put(url, auth=auth, data=fh, timeout=30)
     if resp.status_code not in (200, 201, 204):
         raise RuntimeError(f"Failed to upload {local_path}: {resp.status_code} {resp.text[:500]}")
 
 
-def sync_nextcloud():
+def sync_nextcloud(
+    local_dir: str, share_token: str, share_password: str, base_url: str, webdav_endpoint: str
+) -> None:
+    # quick sanity checks
+    if not os.path.isdir(local_dir):
+        raise SystemExit(f"Local folder does not exist: {local_dir}")
+
+    auth = (share_token, share_password)
+
+    nextcloud_webdev_url = f'{base_url.rstrip("/")}/{webdav_endpoint}'
     logging.info(
-        f"Listing Nextcloud files from {NEXTCLOUD_WEBDAV_URL}, share token {SHARE_TOKEN} ..."
+        f"Listing Nextcloud files from {nextcloud_webdev_url}, share token {share_token} ..."
     )
-    nc_files = set(list_nextcloud_files())
-    logging.info(f"Listing local files from {LOCAL_DIR} ...")
-    local_files = set(list_local_files())
+    nc_files = set(list_nextcloud_files(nextcloud_webdev_url, auth=auth))
+    logging.info(f"Listing local files from {local_dir} ...")
+    local_files = set(list_local_files(local_dir))
 
     to_download = nc_files - local_files
     to_upload = local_files - nc_files
@@ -151,18 +157,51 @@ def sync_nextcloud():
     if to_download:
         logging.info(f"Downloading {len(to_download)} file(s) from Nextcloud...")
         for f in sorted(to_download):
-            download_file(f)
+            download_file(
+                f, local_dir=local_dir, nextcloud_webdev_url=nextcloud_webdev_url, auth=auth
+            )
 
     if to_upload:
         logging.info(f"Uploading {len(to_upload)} file(s) to Nextcloud...")
         for f in sorted(to_upload):
-            upload_file(f)
+            upload_file(
+                f, local_dir=local_dir, nextcloud_webdev_url=nextcloud_webdev_url, auth=auth
+            )
 
     logging.info("Sync complete.")
 
 
 if __name__ == "__main__":
-    # quick sanity checks
-    if not os.path.isdir(LOCAL_DIR):
-        raise SystemExit(f"Local folder does not exist: {LOCAL_DIR}")
-    sync_nextcloud()
+    parser = argparse.ArgumentParser(
+        description="Sync with Nextcloud public share. Downloads files that are in the share but not locally, "
+        "and uploads files that are local but not in the share.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    parser.add_argument(
+        "--local-dir", type=str, default=LOCAL_DIR, help="Local directory to sync with Nextcloud"
+    )
+    parser.add_argument(
+        "--share-token", type=str, default=SHARE_TOKEN, help="Nextcloud share token"
+    )
+    parser.add_argument(
+        "--share-password",
+        type=str,
+        default="",
+        help="Password for the Nextcloud share (if it is password protected)",
+    )
+    parser.add_argument(
+        "--base-url",
+        type=str,
+        default=NEXTCLOUD_BASE_URL,
+        help="Base URL of the Nextcloud instance",
+    )
+    parser.add_argument(
+        "--webdav-endpoint",
+        type=str,
+        default=NEXTCLOUD_WEBDAV_ENDPOINT,
+        help="WebDAV endpoint for public shares (relative to base URL)",
+    )
+    args = parser.parse_args()
+
+    kwargs = vars(parser.parse_args())
+    sync_nextcloud(**kwargs)
