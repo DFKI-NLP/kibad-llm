@@ -135,7 +135,9 @@ def upload_file(filename):
 
 
 def sync_nextcloud():
-    logging.info(f"Listing Nextcloud files from {NEXTCLOUD_WEBDAV_URL}, share token {SHARE_TOKEN} ...")
+    logging.info(
+        f"Listing Nextcloud files from {NEXTCLOUD_WEBDAV_URL}, share token {SHARE_TOKEN} ..."
+    )
     nc_files = set(list_nextcloud_files())
     logging.info(f"Listing local files from {LOCAL_DIR} ...")
     local_files = set(list_local_files())
