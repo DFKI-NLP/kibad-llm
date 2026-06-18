@@ -13,7 +13,6 @@ logging.basicConfig(level=logging.INFO)
 NEXTCLOUD_BASE_URL = "https://cloud.dfki.de/owncloud/"  # Your Nextcloud domain
 SHARE_TOKEN = "AC2XCHfDoza2rkb"  # nosec # Share token from your public link
 LOCAL_DIR = "/ds/text/kiba-d/zotero_literaturdatenbank/"
-NEXTCLOUD_BASE_FOLDER = "PDFs%20Literaturdatenbank/"
 # ----------------------------------
 
 # Derived URL
