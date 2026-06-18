@@ -14,6 +14,7 @@ logging.basicConfig(level=logging.INFO)
 NEXTCLOUD_BASE_URL = "https://cloud.dfki.de/owncloud"  # Your Nextcloud domain
 NEXTCLOUD_WEBDAV_ENDPOINT = "public.php/webdav/"  # WebDAV endpoint for public shares
 SHARE_TOKEN = "AC2XCHfDoza2rkb"  # nosec # Share token from your public link
+SHARE_PASSWORD = os.getenv("NEXTCLOUD_SHARE_PASSWORD", "")  # password for the share (if set)
 LOCAL_DIR = "/ds/text/kiba-d/zotero_literaturdatenbank/"
 # ----------------------------------
 
@@ -186,8 +187,9 @@ if __name__ == "__main__":
     parser.add_argument(
         "--share-password",
         type=str,
-        default="",
-        help="Password for the Nextcloud share (if it is password protected)",
+        default=SHARE_PASSWORD,
+        help="Password for the Nextcloud share (if it is password protected), loaded from .env file "
+        "(key: NEXTCLOUD_SHARE_PASSWORD) per default",
     )
     parser.add_argument(
         "--base-url",
