@@ -15,6 +15,7 @@
     - [Evaluation](#evaluation)
     - [Multirun](#multirun)
     - [A/B Testing with Multiple Seeds](#ab-testing-with-multiple-seeds)
+- [Datasets][#datasets]
 
 > [!WARNING]
 > All commands below assume that you are in the root directory of this project (where this `USAGE.md` is located).
@@ -106,7 +107,7 @@ uv run -m kibad_llm.predict \
 pdf_directory=path/to/pdf/files
 ```
 
-This will process all PDF files in `pdf_directory` and save the result in a JSON line file.
+This will process all PDF files in `pdf_directory` and save the result in a JSON line file. See [data/readme.md](data/readme.md) for a description of the various PDF datasets available, and their storage locations.
 
 See [configs/predict](./configs/predict.yaml) for further information and options.
 
@@ -151,7 +152,7 @@ dataset.predictions.file=path/to/predictions.jsonl
 
 Per default, this uses `dataset=faktencheck` with `data/interim/faktencheck-db/faktencheck-db-converted_2025-11-05.jsonl` as reference data and calculates micro averaged precision, recall and F1-score for all fields in the Faktencheck database (i.e., `metric=f1_micro`, see [configs/metric/f1_micro.yaml](./configs/metric/f1_micro.yaml) for details). See [configs/metric](./configs/metric) for other available metrics.
 
-To evaluate against a different dataset, set the `dataset` parameter. For instance, to evaluate organism trends for the forest habitat, use `dataset=organism_trends_forest`. See [configs/dataset](./configs/dataset) for available datasets.
+To evaluate against a different dataset, set the `dataset` parameter. For instance, to evaluate organism trends for the forest habitat, use `dataset=organism_trends_forest`. See [configs/dataset](./configs/dataset) for available datasets, and [data/readme.md](data/readme.md) for a description of the ground truth dataset files available.
 
 See [configs/evaluate.yaml](./configs/evaluate.yaml) for further information and options.
 
@@ -234,3 +235,8 @@ uv run -m kibad_llm.evaluate \
   +hydra.callbacks.save_job_return.multirun_markdown_group_by=my_variable \
   --multirun
 ```
+
+### Datasets
+
+See [data/readme.md](data/readme.md) for an in-depth documentation of the various datasets and ground truth reference files available, as well as other potentially
+relevant data sources.
