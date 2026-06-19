@@ -4,27 +4,11 @@
     <img src="https://img.shields.io/badge/CCDS-Project%20template-328F97?logo=cookiecutter" />
 </a>
 
-TODO: A short description of the project.
+This is an information extraction project focused on supporting the extension of the
+[Literaturdatenbank Faktencheck Artenvielfalt](https://www.feda.bio/de/literaturdatenbank-faktencheck-artenvielfalt/).
+It uses LLMs to extract structured information from scientific literature PDFs.
 
 For our documentation, please refer to [github-pages](https://dfki-nlp.github.io/kibad-llm/).
-
-## Quickstart
-
-### Setup
-
-This project requires [uv](https://docs.astral.sh/uv/). If it is not already installed, please see the [installation guide](https://docs.astral.sh/uv/getting-started/installation/).
-
-```bash
-# clone project
-git clone https://github.com/DFKI-NLP/kibad-llm
-cd kibad-llm
-
-# create a Python environment and install dependencies
-uv sync
-
-# (optional) copy the .env.example file to .env and adjust environment variables as needed
-cp .env.example .env
-```
 
 ## Usage
 

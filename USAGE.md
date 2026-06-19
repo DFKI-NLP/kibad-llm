@@ -2,6 +2,7 @@
 
 ## Table of Contents
 
+- [Setup](#setup)
 - [PDF Download Based on Zotero Groups](#pdf-download-based-on-zotero-groups)
     - [Prerequisites](#prerequisites-pdf-download)
     - [Downloading Papers](#downloading-papers)
@@ -24,17 +25,33 @@
 > In places where you used to use `python`, with `uv` you tend to write `uv run` instead.
 > What used to be `source .venv/bin/activate` and then `python your-script.py first-arg second-arg` now is reduced to `uv run your-script.py first-arg second-arg`.
 
-### PDF Download Based on Zotero Groups
+## Setup
+
+This project requires [uv](https://docs.astral.sh/uv/). If it is not already installed, please see the [installation guide](https://docs.astral.sh/uv/getting-started/installation/).
+
+```bash
+# clone project
+git clone https://github.com/DFKI-NLP/kibad-llm
+cd kibad-llm
+
+# create a Python environment and install dependencies
+uv sync
+
+# (optional) copy the .env.example file to .env and adjust environment variables as needed
+cp .env.example .env
+```
+
+## PDF Download Based on Zotero Groups
 
 It is possible to download papers using the open access url from Semantic Scholar.
 
 <a id="prerequisites-pdf-download"></a>
 
-#### Prerequisites
+### Prerequisites
 
 An export of a Zotero group as CSV file, see [data/external/zotero](data/external/zotero) for the "Faktencheck Artenvielfalt" groups. Information how to export a Zotero group can be found in the [Zotero documentation](https://www.zotero.org/support/kb/exporting).
 
-#### Downloading Papers
+### Downloading Papers
 
 The script `zotero_download` uses a CSV file with an exported Zotero
 group. It can search the open-access url using the DOI of the paper, the title
@@ -53,11 +70,11 @@ To start the download of open-access papers with default parameters, call:
 uv run -m kibad_llm.data_integration.zotero_download
 ```
 
-### Faktencheck Postgres to Json Conversion
+## Faktencheck Postgres to Json Conversion
 
 <a id="prerequisites-json-conversion"></a>
 
-#### Prerequisites
+### Prerequisites
 
 The following environment variables need to be set in a `.env` file in the root directory:
 
@@ -69,7 +86,7 @@ DB_PASSWORD=<password-here>
 
 Then, run the faktencheck database with podman (see [podman/faktencheck-db/README.md](/podman/faktencheck-db/README.md) for instructions).
 
-#### DB conversion
+### DB conversion
 
 Run the following command to convert the faktencheck database to json files:
 
@@ -81,7 +98,7 @@ This will create a `data/interim/faktencheck-db` directory with json files.
 
 Call `uv run -m kibad_llm.data_integration.db_converter --help` for more options.
 
-#### Syncing Nextcloud PDFs with the cluster storage
+### Syncing Nextcloud PDFs with the cluster storage
 
 Run the following command to synch the Nextcloud folder at
 https://cloud.dfki.de/owncloud/index.php/s/dPc2BSDDEAT4R2W?path=%2FPDFs%20Literaturdatenbank with the PDF directory
@@ -91,13 +108,13 @@ on the cluster at /ds/text/kiba-d/zotero_literaturdatenbank/ .
 uv run -m kibad_llm.data_integration.synch_nextcloud_with_cluster
 ```
 
-### Information Extraction from PDFs
+## Information Extraction from PDFs
 
-#### Prerequisite: LLM Hosting
+### Prerequisite: LLM Hosting
 
 Follow the instructions [here for a quickstart](/models/README.md#quickstart), [here for an all-in-one script](/models/README.md#all-in-one-run-script) or [here for general instructions on uv and the cluster](/models/README.md#the-two-ways-to-use-uv-on-pegasus).
 
-#### Inference
+### Inference
 
 The information extraction pipeline can be run with:
 
@@ -140,7 +157,7 @@ Use this to send more than one simultaneous request to vLLM.
 
 </details>
 
-#### Evaluation
+### Evaluation
 
 To evaluate the information extraction results against gold reference data, run:
 
@@ -167,7 +184,7 @@ experiment/evaluate=faktencheck_f1_micro_flat
 
 See [configs/experiment/evaluate](configs/experiment/evaluate) for available experiment configs.
 
-#### Multirun
+### Multirun
 
 Hydra multirun can be used with both inference and evaluation to systematically explore multiple configurations in one go. It is enabled by passing comma-separated values to one or more parameters and adding `--multirun` (or `-m`) to the command line. Hydra will then execute one run for each resulting parameter combination (see the [Hydra multirun docs](https://hydra.cc/docs/tutorials/basic/running_your_app/multi-run/)).
 
@@ -215,7 +232,7 @@ uv run -m kibad_llm.evaluate \
 
 See [configs/hydra/default.yaml](./configs/hydra/default.yaml) for further configuration options and details on the Hydra callback to create the combined output (`save_job_return`).
 
-#### A/B Testing with Multiple Seeds
+### A/B Testing with Multiple Seeds
 
 We can perform a multirun with three different random seeds and A/B testing (see `my_variable`, don't forget to prepend `+` to any variable *not* yet set in the config) like so:
 
