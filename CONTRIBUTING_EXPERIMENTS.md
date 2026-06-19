@@ -5,6 +5,7 @@ Use this guide when you create, run, evaluate, or document reproducible experime
 ## Table of contents
 
 - [Setup](#setup)
+- [Datasets](#datasets)
 - [Planning](#planning)
 - [Execution](#execution)
     - [Choose a name](#choose-a-name)
@@ -23,12 +24,18 @@ For prediction runs, also follow [models/README.md](/models/README.md). Cluster 
 
 If a prediction run needs API keys or model-download credentials, create `.env` from `.env.example` and set the required variables there. Do not commit secrets.
 
+## Datasets
+
+See [data/readme.md](data/readme.md) for a description of the various PDF datasets and ground truth reference files that are currently available, as well as their
+storage locations.
+
 ## Planning
 
 Before starting a new experiment:
 
 - Check the existing overview table in [data/prediction_results/readme.md](https://github.com/DFKI-NLP/kibad-llm/tree/main/data/prediction_results/readme.md). Use the latest related experiments as references for naming, command structure, folder layout, and result documentation.
 - Prefer a dedicated config under `configs/experiment/` when the setup is not trivial.
+- Decide which input datasets (pdf directory) and ground truth files you need
 - Keep predictions and evaluations scoped to the research question you want to answer.
 - Decide which prediction and evaluation commands are needed before creating result artefacts.
 
