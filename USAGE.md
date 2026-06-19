@@ -2,6 +2,7 @@
 
 ## Table of Contents
 
+- [Setup](#setup)
 - [PDF Download Based on Zotero Groups](#pdf-download-based-on-zotero-groups)
     - [Prerequisites](#prerequisites-pdf-download)
     - [Downloading Papers](#downloading-papers)
@@ -24,7 +25,7 @@
 > In places where you used to use `python`, with `uv` you tend to write `uv run` instead.
 > What used to be `source .venv/bin/activate` and then `python your-script.py first-arg second-arg` now is reduced to `uv run your-script.py first-arg second-arg`.
 
-## Quickstart - Setup
+## Setup
 
 This project requires [uv](https://docs.astral.sh/uv/). If it is not already installed, please see the [installation guide](https://docs.astral.sh/uv/getting-started/installation/).
 
