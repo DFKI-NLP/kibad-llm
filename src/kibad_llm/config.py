@@ -1,3 +1,18 @@
+"""Configuration of constants and packages for package-wide use.
+
+Attributes:
+    PROJ_ROOT: Absolute path to the repository root.
+    DATA_DIR: Path to the top-level data directory.
+    RAW_DATA_DIR: Path to raw (unprocessed) input data.
+    INTERIM_DATA_DIR: Path to intermediate, partially processed data.
+    PROCESSED_DATA_DIR: Path to fully processed, analysis-ready data.
+    EXTERNAL_DATA_DIR: Path to third-party or externally sourced data.
+    MODELS_DIR: Path to serialised model artefacts.
+    REPORTS_DIR: Path to generated reports.
+    FIGURES_DIR: Path to generated figures within the reports directory.
+    RESULT_FORMAT_VERSION_KEY: Key used to store the result-format version in output dicts.
+"""
+
 from pathlib import Path
 
 from dotenv import load_dotenv

@@ -20,12 +20,12 @@ def test_update_and_compute_accumulates_and_structures_result() -> None:
 
     res = cm.compute()
     # res is a mapping: gold_label -> {pred_label -> count}
-    assert res["A"]["A"] == 1
-    # FN(B) counted under prediction side as UNDETECTED
-    assert res["B"][cm.undetected_label] == 2
-    # FP(C) counted under gold side as UNASSIGNABLE
-    assert res[cm.unassignable_label]["C"] == 1
-    assert res["D"]["D"] == 1
+    assert res == {
+        "A": {"A": 1.0},
+        "B": {"C": 0.5, "UNDETECTED": 1.5},
+        "D": {"D": 1.0},
+        "UNASSIGNABLE": {"C": 0.5},
+    }
 
 
 def test_errors_on_reserved_labels_in_inputs_are_raised_on_compute() -> None:
@@ -57,9 +57,9 @@ def test_compute_uses_custom_reserved_labels_and_stringifies_labels() -> None:
     cm.update(prediction=[1, 3], reference=[1, 2], record_id="record-1")
 
     assert cm.compute(reset=False) == {
-        "1": {"1": 1},
-        "2": {"MISSING": 1},
-        "OTHER": {"3": 1},
+        "1": {"1": 1.0},
+        "2": {"3": 0.5, "MISSING": 0.5},
+        "OTHER": {"3": 0.5},
     }
 
 
@@ -84,8 +84,8 @@ def test_show_as_markdown_logs_with_field_header_and_reserved_labels_last(
     assert lines[1:] == [
         "|       |   A |   C |   MISSING |",
         "|:------|----:|----:|----------:|",
-        "| B     |   0 |   0 |         1 |",
-        "| OTHER |   1 |   1 |         0 |",
+        "| B     | 0.5 |   0 |       0.5 |",
+        "| OTHER | 0.5 |   1 |       0   |",
     ]
 
 
@@ -101,13 +101,13 @@ def test_confusion_matrix_collection_computes_one_matrix_per_explicit_field() ->
 
     assert cm.compute(reset=False) == {
         "labels": {
-            "A": {"A": 1},
-            "B": {"UNDETECTED": 1},
-            "UNASSIGNABLE": {"C": 1},
+            "A": {"A": 1.0},
+            "B": {"C": 0.5, "UNDETECTED": 0.5},
+            "UNASSIGNABLE": {"C": 0.5},
         },
         "status": {
-            "UNASSIGNABLE": {"predicted": 1},
-            "gold": {"UNDETECTED": 1},
+            "UNASSIGNABLE": {"predicted": 0.5},
+            "gold": {"UNDETECTED": 0.5, "predicted": 0.5},
         },
     }
 
@@ -144,9 +144,9 @@ def test_confusion_matrix_collection_supports_grouped_subfields() -> None:
     )
 
     assert cm.compute(reset=False) == {
-        "label.A": {"(('value', 'foo'),)": {"(('value', 'foo'),)": 1}},
+        "label.A": {"(('value', 'foo'),)": {"(('value', 'foo'),)": 1.0}},
         "label.B": {
-            "(('value', 'baz'),)": {"UNDETECTED": 1},
-            "UNASSIGNABLE": {"(('value', 'bar'),)": 1},
+            "(('value', 'baz'),)": {"(('value', 'bar'),)": 0.5, "UNDETECTED": 0.5},
+            "UNASSIGNABLE": {"(('value', 'bar'),)": 0.5},
         },
     }
