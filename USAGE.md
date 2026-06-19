@@ -3,6 +3,7 @@
 ## Table of Contents
 
 - [Setup](#setup)
+- [Datasets](#datasets)
 - [PDF Download Based on Zotero Groups](#pdf-download-based-on-zotero-groups)
     - [Prerequisites](#prerequisites-pdf-download)
     - [Downloading Papers](#downloading-papers)
@@ -16,7 +17,6 @@
     - [Evaluation](#evaluation)
     - [Multirun](#multirun)
     - [A/B Testing with Multiple Seeds](#ab-testing-with-multiple-seeds)
-- [Datasets](#datasets)
 
 > [!WARNING]
 > All commands below assume that you are in the root directory of this project (where this `USAGE.md` is located).
@@ -41,6 +41,10 @@ uv sync
 # (optional) copy the .env.example file to .env and adjust environment variables as needed
 cp .env.example .env
 ```
+
+## Datasets
+
+See [data/readme.md](data/readme.md) for an in-depth documentation of the various datasets and ground truth reference files available, as well as other potentially relevant data sources.
 
 ## PDF Download Based on Zotero Groups
 
@@ -252,7 +256,3 @@ uv run -m kibad_llm.evaluate \
   +hydra.callbacks.save_job_return.multirun_markdown_group_by=my_variable \
   --multirun
 ```
-
-## Datasets
-
-See [data/readme.md](data/readme.md) for an in-depth documentation of the various datasets and ground truth reference files available, as well as other potentially relevant data sources.
