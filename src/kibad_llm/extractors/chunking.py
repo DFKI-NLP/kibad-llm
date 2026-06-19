@@ -1,3 +1,10 @@
+"""[`ChunkingExtractor`][.ChunkingExtractor] for running
+extraction over bounded chunks of a document.
+
+Classes:
+    ChunkingExtractor: Splits a document into chunks and aggregates per-chunk extraction results.
+"""
+
 import logging
 from typing import Any
 
@@ -16,20 +23,15 @@ def _document_chunk_iterator(
     max_char_buffer: int,
     tokenizer: tokenizer_lib.Tokenizer | None = None,
 ) -> tuple[core.TextChunk, ...]:
-    """Iterates over documents to return text chunks along with the document ID.
+    """Iterates over a document to return it in text chunks
 
     Args:
-        document: A sequence of Document objects.
+        document: An input text as str.
         max_char_buffer: The maximum character buffer size for the ChunkIterator.
         tokenizer: Optional tokenizer instance.
 
     Returns:
-        TextChunk containing document ID for a corresponding document.
-
-    Raises:
-        InvalidDocumentError: If restrict_repeats is True and the same document ID
-            is visited more than once. Valid documents prior to the error will be
-            returned.
+        Tuple of TextChunks.
     """
     return tuple(
         core.ChunkIterator(
@@ -44,21 +46,21 @@ class ChunkingExtractor:
     """Extractor that chunks extraction and aggregates results per key.
     This extractor calls the base extraction function multiple times
     (for each chunk in the document) on the same input text,
-    passing some previous context to each subsequent call.
+    passing no previous context to each subsequent call.
 
     Pass llm=None with verbose=True to get the number of chunks per document without inference.
 
-    WARNING:
-    If a Token that is greater than max_char_buffer is encountered, it becomes its own chunk.
-    This edge case can produce chunks that are larger than max_char_buffer would allow.
-
-    Args:
+    Attributes:
         aggregator: Method to aggregate the llm output for the individual chunks before returning
         return_as_list: List of field names to return as lists of all extracted values
         tokenizer: tokenizer to use for chunking
         max_char_buffer: Max chunk size in characters
         verbose: Adds verbose logging
-        **kwargs: Additional keyword arguments passed to the base extraction function.
+        default_kwargs: Additional keyword arguments passed to the base extraction function.
+
+    Warning:
+        If a Token that is greater than max_char_buffer is encountered, it becomes its own chunk.
+        This edge case can produce chunks that are larger than max_char_buffer would allow.
     """
 
     def __init__(
@@ -78,6 +80,20 @@ class ChunkingExtractor:
         self.verbose = verbose
 
     def __call__(self, *args, **kwargs) -> dict[str, Any]:
+        """Processes a text in chunks.
+
+        Args:
+            *args (Any): Positional form of `text` and `text_id`, in that order.
+
+        Keyword Args:
+            text (str): Input document to process.
+            text_id (str): Id of input document.
+            * (Any): Refer to [`extract_from_text_lenient`][kibad_llm.extractors.base.extract_from_text_lenient]
+
+        Returns:
+            Dict with the key `structured` that holds the aggregated structured outputs.
+            Additionally, there can be lists for fields at the keys `"{field}_list"`.
+        """
         text = kwargs.pop("text", None)
         if text is None:
             text = args[0]

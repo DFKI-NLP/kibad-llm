@@ -168,8 +168,7 @@ def get_token_interval_text(
 
     Raises:
       ValueError: If the token indices are invalid.
-      TokenUtilError: If tokenizer_lib.tokens_text returns an empty
-      string.
+      TokenUtilError: If tokenizer_lib.tokens_text returns an empty string.
     """
     if token_interval.start_index >= token_interval.end_index:
         raise ValueError(

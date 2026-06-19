@@ -230,10 +230,10 @@ def build_schema_description(
     Build a human‑readable summary for a JSON Schema.
 
     Output format:
-    - Optional first line: "<type_description_prefix><schema.description>" if include_type_descriptions and the description exists
+    - Optional first line: `<type_description_prefix><schema.description>` if include_type_descriptions and the description exists
     - Optional header line (only at top level if header is not None)
     - One line per property with format depending on which prefix parameters are not None:
-      "<indent>- <name>[: <description>][<separator><cardinality_prefix><cardinality>][<separator><type_prefix><type>][<separator><enum_prefix><values>]"
+      `<indent>- <name>[: <description>][<separator><cardinality_prefix><cardinality>][<separator><type_prefix><type>][<separator><enum_prefix><values>]`
     - For nested objects, recursively includes their properties with increased indentation
 
     Cardinality rules:
