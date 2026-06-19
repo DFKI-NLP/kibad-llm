@@ -10,24 +10,6 @@ It uses LLMs to extract structured information from scientific literature PDFs.
 
 For our documentation, please refer to [github-pages](https://dfki-nlp.github.io/kibad-llm/).
 
-## Quickstart
-
-### Setup
-
-This project requires [uv](https://docs.astral.sh/uv/). If it is not already installed, please see the [installation guide](https://docs.astral.sh/uv/getting-started/installation/).
-
-```bash
-# clone project
-git clone https://github.com/DFKI-NLP/kibad-llm
-cd kibad-llm
-
-# create a Python environment and install dependencies
-uv sync
-
-# (optional) copy the .env.example file to .env and adjust environment variables as needed
-cp .env.example .env
-```
-
 ## Usage
 
 See [USAGE.md](/USAGE.md) for detailed instructions on how to use the project.
