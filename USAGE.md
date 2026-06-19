@@ -16,7 +16,7 @@
     - [Evaluation](#evaluation)
     - [Multirun](#multirun)
     - [A/B Testing with Multiple Seeds](#ab-testing-with-multiple-seeds)
-- [Datasets][#datasets]
+- [Datasets](#datasets)
 
 > [!WARNING]
 > All commands below assume that you are in the root directory of this project (where this `USAGE.md` is located).
@@ -253,7 +253,6 @@ uv run -m kibad_llm.evaluate \
   --multirun
 ```
 
-### Datasets
+## Datasets
 
-See [data/readme.md](data/readme.md) for an in-depth documentation of the various datasets and ground truth reference files available, as well as other potentially
-relevant data sources.
+See [data/readme.md](data/readme.md) for an in-depth documentation of the various datasets and ground truth reference files available, as well as other potentially relevant data sources.
