@@ -19,6 +19,7 @@ The following guidelines ensure consistency across the project, so please read t
     - [Links and redirects](#links-and-redirects)
     - [Building and hosting locally](#building-and-hosting-locally)
 - [Local checks and CI commands](#local-checks-and-ci-commands)
+- [Submodules](#submodules)
 - [Misc](#misc)
 
 ## Project Organization
@@ -307,6 +308,27 @@ node --test tests/unit/eval_dashboard/js/*.test.mjs
 ```
 
 For test design, layout, and fixture regeneration guidance, see [CONTRIBUTING-CODE.md](CONTRIBUTING-CODE.md).
+
+## Submodules
+
+- Normal cloning ignores submodules: A normal `git clone git@github.com:DFKI-NLP/kibad-llm.git` does not clone any submodules and is hence much faster.
+
+- To clone with submodules run: `git clone -j8 --recurse-submodules git@github.com:DFKI-NLP/kibad-llm.git` with `-j` specifying the number of submodules fetched simultaneously.
+
+- To update submodules, or clone submodules in a repo that was cloned without the submodules `git submodule update --init --recursive`
+
+- You can also do this for one specific submodule by appending `-- <path to submodule>`
+
+- The `kibad-llm` repo stores the exact commit to check out for each submodule.
+
+    - If you want to clone the submodules repo with the latest commit instead of the stored one, use `git clone -j8 --recurse-submodules --remote-submodules git@github.com:DFKI-NLP/kibad-llm.git`
+    - If you want to update/ clone submodules with the latest commit instead of the stored one, use `git submodule update --init --recursive --remote`
+
+- The flow for changing data in a submodule
+
+    1. change the files in the submodule on a branch you want
+    1. commit the changes in the submodule
+    1. then commit that commit of the submodule in kibad-llm
 
 ## Misc
 
