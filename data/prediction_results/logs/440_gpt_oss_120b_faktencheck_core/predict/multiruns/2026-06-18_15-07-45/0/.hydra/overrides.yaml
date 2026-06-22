@@ -1,0 +1,6 @@
+- name=440_gpt_oss_120b_faktencheck_core
+- experiment/predict=faktencheck_core_fields_schema_with_chunking
+- extractor/llm=gpt_oss_120b_in_process
+- pdf_directory=/ds/text/kiba-d/dev-set-100
+- extractor.max_char_buffer=100000
+- seed=42

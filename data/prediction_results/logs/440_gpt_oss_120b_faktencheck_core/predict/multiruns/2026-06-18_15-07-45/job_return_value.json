@@ -1,0 +1,65 @@
+{
+  "seed=42": {
+    "version": 1,
+    "output_file": "predictions/440_gpt_oss_120b_faktencheck_core/2026-06-18_15-07-45/2026-06-18_15-07-47_884715/predictions.jsonl",
+    "output_file_absolute": "/netscratch/asafari/kibad-llm/predictions/440_gpt_oss_120b_faktencheck_core/2026-06-18_15-07-45/2026-06-18_15-07-47_884715/predictions.jsonl",
+    "time_pdf_conversion": 0.03096293518319726,
+    "time_extraction": 8251.668606878025,
+    "time_start": 1781788067,
+    "time_end": 1781797980,
+    "commit_hash": "da67db9ea1ea59ad86cc130e62843cff097e1b0c",
+    "branch": "issue-440-model-configs",
+    "is_dirty": false,
+    "slurm_job_id": "3096918",
+    "overrides": {
+      "name": "440_gpt_oss_120b_faktencheck_core",
+      "experiment/predict": "faktencheck_core_fields_schema_with_chunking",
+      "extractor/llm": "gpt_oss_120b_in_process",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor.max_char_buffer": "100000",
+      "seed": "42"
+    }
+  },
+  "seed=1337": {
+    "version": 1,
+    "output_file": "predictions/440_gpt_oss_120b_faktencheck_core/2026-06-18_15-07-45/2026-06-18_17-53-00_514691/predictions.jsonl",
+    "output_file_absolute": "/netscratch/asafari/kibad-llm/predictions/440_gpt_oss_120b_faktencheck_core/2026-06-18_15-07-45/2026-06-18_17-53-00_514691/predictions.jsonl",
+    "time_pdf_conversion": 0.006796448025852442,
+    "time_extraction": 7889.928973014001,
+    "time_start": 1781797980,
+    "time_end": 1781805969,
+    "commit_hash": "da67db9ea1ea59ad86cc130e62843cff097e1b0c",
+    "branch": "issue-440-model-configs",
+    "is_dirty": false,
+    "slurm_job_id": "3096918",
+    "overrides": {
+      "name": "440_gpt_oss_120b_faktencheck_core",
+      "experiment/predict": "faktencheck_core_fields_schema_with_chunking",
+      "extractor/llm": "gpt_oss_120b_in_process",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor.max_char_buffer": "100000",
+      "seed": "1337"
+    }
+  },
+  "seed=7331": {
+    "version": 1,
+    "output_file": "predictions/440_gpt_oss_120b_faktencheck_core/2026-06-18_15-07-45/2026-06-18_20-06-10_237102/predictions.jsonl",
+    "output_file_absolute": "/netscratch/asafari/kibad-llm/predictions/440_gpt_oss_120b_faktencheck_core/2026-06-18_15-07-45/2026-06-18_20-06-10_237102/predictions.jsonl",
+    "time_pdf_conversion": 0.004044753964990377,
+    "time_extraction": 7899.205520825926,
+    "time_start": 1781805970,
+    "time_end": 1781813977,
+    "commit_hash": "da67db9ea1ea59ad86cc130e62843cff097e1b0c",
+    "branch": "issue-440-model-configs",
+    "is_dirty": false,
+    "slurm_job_id": "3096918",
+    "overrides": {
+      "name": "440_gpt_oss_120b_faktencheck_core",
+      "experiment/predict": "faktencheck_core_fields_schema_with_chunking",
+      "extractor/llm": "gpt_oss_120b_in_process",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "extractor.max_char_buffer": "100000",
+      "seed": "7331"
+    }
+  }
+}

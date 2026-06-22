@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "output_file": "predictions/440_gpt_oss_120b_faktencheck_core/2026-06-18_15-07-45/2026-06-18_17-53-00_514691/predictions.jsonl",
+  "output_file_absolute": "/netscratch/asafari/kibad-llm/predictions/440_gpt_oss_120b_faktencheck_core/2026-06-18_15-07-45/2026-06-18_17-53-00_514691/predictions.jsonl",
+  "time_pdf_conversion": 0.006796448025852442,
+  "time_extraction": 7889.928973014001,
+  "time_start": 1781797980,
+  "time_end": 1781805969,
+  "commit_hash": "da67db9ea1ea59ad86cc130e62843cff097e1b0c",
+  "branch": "issue-440-model-configs",
+  "is_dirty": false,
+  "slurm_job_id": "3096918"
+}

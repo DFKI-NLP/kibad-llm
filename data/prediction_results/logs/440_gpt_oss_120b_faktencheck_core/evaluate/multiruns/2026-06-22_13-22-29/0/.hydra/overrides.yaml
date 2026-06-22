@@ -1,0 +1,4 @@
+- dataset.predictions.log=logs/440_gpt_oss_120b_faktencheck_core/predict/multiruns/2026-06-18_15-07-45/0
+- name=440_gpt_oss_120b_faktencheck_core
+- experiment/evaluate=prediction_errors
+- prediction_logs=logs/440_gpt_oss_120b_faktencheck_core/predict/multiruns/2026-06-18_15-07-45
