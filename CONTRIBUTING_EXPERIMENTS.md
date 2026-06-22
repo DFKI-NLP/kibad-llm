@@ -164,7 +164,7 @@ Every committed experiment needs a self-contained result description.
 
 As mentioned [above](#prepare-the-experiment-folder), you should have already documented the motivation, setup, commands, and result locations in `data/prediction_results/logs/<name>/readme.md`. Now, after inspecting the results, you should also:
 
-- add an `Outcome` section,
+- add an `Outcome` section (result analysis, hypothesis evaluation and recommendations for the project, e.g. "the model / feature provides the best results, so we should enable it per default for future experiments"), and
 - include relevant dashboard figures from `figures/` (add subfolders, if appropriate), e.g. `![f1.png](figures/setup_a/f1.png)`, and
 - describe the outcome textually, including whether the hypothesis was supported.
 
