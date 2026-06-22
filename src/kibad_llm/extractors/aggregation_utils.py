@@ -1,3 +1,17 @@
+"""Aggregation functions for combining structured outputs from multiple extractions.
+
+Classes:
+    AggregationError: Raised when aggregation fails due to conflicts or type inconsistencies.
+
+Functions:
+    aggregate_majority_vote: Aggregate outputs by majority vote per key.
+    aggregate_unanimous: Aggregate outputs by requiring unanimous agreement per key.
+    aggregate_single_majority_vote_multi_union: Aggregate outputs with majority vote for
+        single-valued fields and union for list fields.
+    collect_values_and_type_per_key: Collect values and type per key across a list of outputs.
+    make_hashable_simple: Recursively convert a value to a hashable representation.
+"""
+
 from collections import Counter, defaultdict
 from collections.abc import Callable
 from typing import Any, TypeAlias
@@ -16,6 +30,23 @@ class AggregationError(ValueError):
 
 
 def make_hashable_simple(value: Any) -> Any:
+    """Takes any pyObj and recursively tries to make it hashable.
+
+    list/ set: Are converted to sorted tuples, with their elements processed recursively.
+    tuples: Stay tuples, with their elements processed recursively.
+    dicts: Are converted to sorted tuples of (key, value) tuples, with the values processed recursively.
+        The keys stay unchanged.
+
+    Warning:
+        Unhashable types that are not `list`, `set`, or `dict` are not handled and will cause the result to
+        stay unhashable.
+
+    Args:
+        value: Obj to make hashable.
+
+    Returns:
+        Hashable version of the input value.
+    """
     if isinstance(value, (list, set)):
         # sort and remove None values
         return tuple(sorted(make_hashable_simple(v) for v in value if v is not None))
@@ -31,18 +62,21 @@ def make_hashable_simple(value: Any) -> Any:
 
 
 def collect_values_and_type_per_key(
-    structured_outputs: list[dict | None], skip_type_mismatches: bool = False
-) -> tuple[dict[str, list], dict[str, type | None]]:
+    structured_outputs: list[dict[str, Any] | None], skip_type_mismatches: bool = False
+) -> tuple[dict[str, list[Any]], dict[str, type | None]]:
     """Collect values and types per key from structured outputs.
 
     Args:
         structured_outputs: list of structured outputs from multiple extractions
         skip_type_mismatches: If True, skips keys with inconsistent types across extractions
             instead of raising an error (default: False)
+
     Returns:
         tuple of:
             - dict mapping keys to list of values
             - dict mapping keys to their consistent type (or None if all values are None)
+    Raises:
+        AggregationError: If a key has inconsistent types and skip_type_mismatches is False.
     """
     # collect all keys to correctly handle missing entries
     all_keys: set[str] = set()
@@ -73,8 +107,19 @@ def collect_values_and_type_per_key(
     return values_per_key, type_per_key
 
 
-def _majority_vote(values: list, exclude_none: bool = False) -> Any:
-    """Return the majority value from a list of values. Returns None on ties."""
+def _majority_vote(values: list[Any], exclude_none: bool = False) -> Any:
+    """Return the majority value from a list of values. Returns None on ties.
+
+    Args:
+        values: List of values from which to return the most common one. None on a tie.
+        exclude_none: Whether to exclude None values before voting.
+
+    Returns:
+        The most common value found in list or None on a tie.
+
+    Raises:
+        AggregationError: If values is an empty list.
+    """
     if len(values) == 0:
         raise AggregationError("Cannot perform majority vote on empty list")
     if exclude_none:
@@ -90,7 +135,7 @@ def _majority_vote(values: list, exclude_none: bool = False) -> Any:
     return top_value
 
 
-def _multi_entry_majority_vote(values: list[list | None]) -> list:
+def _multi_entry_majority_vote(values: list[list[Any] | None]) -> list[Any]:
     """Return the majority items from a list of lists.
 
     An item is included in the result if it appears in more than half of the lists.
@@ -98,9 +143,10 @@ def _multi_entry_majority_vote(values: list[list | None]) -> list:
     Works with lists of primitive types, and lists of dicts. Items that are None are ignored.
 
     Args:
-        values: list of lists (or None)
+        values: List of lists (or None).
+
     Returns:
-        list of majority items
+        List of majority items.
     """
     n = len(values)
     item_counts: Counter = Counter()
@@ -137,8 +183,12 @@ def aggregate_majority_vote(
         structured_outputs: list of structured outputs from multiple extractions
         skip_type_mismatches: If True, skips keys with inconsistent types across extractions
             instead of raising an error (default: False)
+
     Returns:
         aggregated structured output or None if all entries are None
+
+    Raises:
+        NotImplementedError: If a value type is encountered that has not been listed above.
     """
     if all(res is None for res in structured_outputs):
         return None
@@ -254,7 +304,8 @@ def aggregate_unanimous(
         aggregated structured output or None if all entries are None
 
     Raises:
-        AggregationError: If the same key has non-None values in multiple extractions
+        AggregationError: If the same key has non-None values in multiple extractions. (Through `_aggregate_unanimous`)
+        NotImplementedError: If the encountered value is not in (str, int, float, bool, dict, list).
     """
 
     if all(res is None for res in structured_outputs):
@@ -323,6 +374,9 @@ def aggregate_single_majority_vote_multi_union(
 
     Returns:
         aggregated structured output or None if all entries are None
+
+    Raises:
+        NotImplementedError: If the encountered value type is not in (str, int, float, bool, dict, list).
     """
 
     if all(res is None for res in structured_outputs):

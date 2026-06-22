@@ -1,3 +1,29 @@
+"""Core extraction function and supporting types for LLM-based structured extraction.
+
+Classes:
+    SingleExtractionResult: Result container for a single extraction call.
+    TextOffsetValueError: Raised when character offset arguments are invalid.
+
+Functions:
+    extract_from_text: Extract structured output from text using an LLM.
+    extract_from_text_lenient: Wrapper around [`extract_from_text`][.extract_from_text]
+        that catches and records all exceptions instead of raising.
+    build_chat_messages: Build a list of chat messages from system/user templates,
+        inserting document text and schema description where needed, using [`build_chat_message`][.build_chat_message].
+    build_chat_message: Build a single chat message from a template.
+    strip_metadata: Strip metadata wrappers from a JSON-parsed result.
+    augment_metadata: Recursively augment metadata wrapper dicts.
+        Uses just [`augment_metadata_node_with_evidence`][.augment_metadata_node_with_evidence] for now.
+    augment_metadata_node_with_evidence: Augment a single metadata wrapper dict with
+        evidence location info.
+    add_response_content_callback: Postprocessing callback to add response content to output.
+    add_reasoning_content_callback: Postprocessing callback to add reasoning content to output.
+    add_structured_callback: Postprocessing callback to parse and validate structured output.
+    augment_and_strip_metadata_from_structured_callback: Postprocessing callback to augment
+        metadata and strip it from structured output.
+    exception2error_msg: Format an exception into short and long error message strings.
+"""
+
 from __future__ import annotations
 
 from collections import defaultdict
@@ -34,6 +60,24 @@ class TextOffsetValueError(ValueError):
 
 @dataclasses.dataclass
 class SingleExtractionResult(FieldDict):
+    """Stores one extraction result
+
+    Attributes:
+        character_start: Start index of the chunk of text that has been processed
+        character_end: End index of the chunk of text that has been processed (exclusive)
+        response_content: Response formatted as json
+        structured: Parsed version of response_content. Possibly validated against a schema. - Internally may come with metadata.
+        structured_with_metadata: Parsed version of response_content, with enriched metadata.
+        reasoning_content: The LLMs reasoning output, as parsed by the api endpoint.
+            (Usually output between <think> and </think> tokens)
+        messages: prompt messages with placeholders for input text and schema description
+            `{ "system": system_message, "user": user_message }` [`build_chat_messages`][..build_chat_messages]
+        messages_formatted: prompt messages with inserted input text and schema description
+            `{ "system": system_message, "user": user_message }`  [`build_chat_messages`][..build_chat_messages]
+        errors: list of strings "error_name: error_message"
+        errors_long: list of strings "error_name: error_message_and_traceback"
+    """
+
     character_start: int
     character_end: int
     response_content: str | None = None
@@ -47,9 +91,22 @@ class SingleExtractionResult(FieldDict):
 
 
 def exception2error_msg(e: BaseException) -> tuple[str, str]:
-    """Return short and long (including traceback) error messages for an exception."""
+    """Return short and long (including traceback) error messages for an exception.
+
+    Args:
+        e: Python exception object
+
+    Returns:
+        Tuple containing a short and a long version of the exception.
+        The short version has the exception name and message,
+        whilst the long version also comes with the entire traceback.
+
+    """
     e_with_traceback = "".join(traceback.format_exception(type(e), e, e.__traceback__))
-    return f"{type(e).__name__}: {str(e)}", f"{type(e).__name__}: {e_with_traceback}"
+    return (
+        f"{type(e).__name__}: {str(e)}",
+        f"{type(e).__name__}: {e_with_traceback}",
+    )
 
 
 def build_chat_message(
@@ -80,6 +137,10 @@ def build_chat_message(
     Returns:
         A tuple of ChatMessage and a metadata dictionary indicating whether schema description
         and text were inserted.
+
+    Raises:
+        ValueError: If a schema is required but not supplied.
+        ValueError: If a document is required but not supplied.
     """
     content = message
     formatting = {}
@@ -146,11 +207,20 @@ def build_chat_messages(
             input text and schema description.
         truncate_user_message_formatted: If return_messages_formatted is True, truncate the user message
             content to this many characters (to avoid huge outputs). Set to None to disable truncation.
-        _out: Optional output dictionary to store messages in (used internally).
+        _out: Optional output [`..SingleExtractionResult`][] to store messages in (used internally).
+
+    Keyword Args:
         **build_messages_kwargs: Additional keyword arguments for build_chat_message.
 
     Returns:
         A list of ChatMessage objects.
+
+    Raises:
+        ValueError: If neither a system_message nor user_message are provided.
+        ValueError: If no document placeholder is supplied and history is false. (no input text would be inserted)
+
+    Warns:
+        UserWarning: If a schema description is supplied, but there is no schema description placeholder.
     """
 
     # return the prompt messages without input text and schema description
@@ -215,19 +285,33 @@ def build_chat_messages(
 
 
 def _is_wrapper_dict(d: Mapping[str, Any], content_key: str) -> bool:
-    """Heuristic to detect whether a dict is a metadata wrapper around content."""
+    """Heuristic to detect whether a dict is a metadata wrapper around content.
+
+    Args:
+        d: Dict to determine whether it is a metadata wrapper.
+        content_key: String to check for whether its a key d.
+
+    Returns:
+        Whether d is a metadata wrapper.
+    """
     return content_key in d and len(d) >= 2
 
 
 def strip_metadata(data: Any, *, content_key: str) -> Any:
-    """
-    Strip metadata wrappers from a JSON-parsed result produced by `wrap_terminals_with_metadata`.
+    """Strip metadata wrappers from a JSON-parsed result produced by `wrap_terminals_with_metadata`.
 
     The wrapped output encodes terminal values as objects like:
-        {"<content_key>": <value>, "evidence_anchor": "...", ...}
+        `{"<content_key>": <value>, "evidence_anchor": "...", ...}`
 
     This function walks the parsed JSON (dict/list/scalars) and removes such wrappers by
     replacing the wrapper dict with its `<content_key>` value.
+
+    Args:
+        data: Parsed JSON with metadata wrappers.
+        content_key: Key whose metadata wrappers to remove. - must be passed by keyword
+
+    Returns:
+        Parsed JSON without metadata wrappers around content_key.
 
     Wrapper detection (heuristic):
       - a dict is treated as a wrapper if it has `content_key` AND at least one additional key.
@@ -268,6 +352,16 @@ def _snippet_for_span(
 ) -> str:
     """Extract a text snippet from `text` that spans `start` to `end` character offsets,
     extending `token_margin` tokens before and after the span.
+
+    Args:
+        start: Character index to get first token whose end is after the `start`.
+        end: Character index to get last token whose start is before the `end`.
+        text: Full text, from which the snippet is to be extracted.
+        token_spans: Maps from tuple index to character boundaries of tokens.
+        token_margin: Number of tokens of context to pad the snippet with.
+
+    Returns:
+        Text snippet with context padding.
     """
     if not token_spans:
         return ""
@@ -301,7 +395,14 @@ def _snippet_for_span(
 
 
 def _strip_wrapping_quotes(s: str) -> str:
-    """Strip common wrapping quotes from the beginning and end of a string."""
+    """Strip common wrapping quotes from the beginning and end of a string.
+
+    Args:
+        s: Text to strip wrapping quotes of.
+
+    Returns:
+        Text with the quotes stripped.
+    """
     # Common quote pairs: ASCII, German/typographic, and apostrophe-like quotes
     quote_pairs = [
         ('"', '"'),
@@ -324,13 +425,14 @@ def _strip_wrapping_quotes(s: str) -> str:
 
 
 def _find_anchor_match_spans(text: str, anchor: str) -> list[tuple[int, int]]:
-    """
-    Find all character spans in `text` that match the given `anchor` string.
+    """Find all character spans in `text` that match the given `anchor` string.
     The matching is whitespace-insensitive, meaning that any whitespace in the anchor
     can match any whitespace in the text (including different kinds of whitespace).
+
     Args:
         text: The original text to search within.
         anchor: The anchor string to search for.
+
     Returns:
         A list of (start_offset_in_text, end_offset_in_text) tuples for each match of the anchor.
     """
@@ -375,8 +477,7 @@ def augment_metadata_node_with_evidence(
     snippet_margin: int = 10,
     character_offset: int = 0,
 ) -> dict[str, Any]:
-    """
-    Augment a single metadata wrapper dict with evidence location information.
+    """Augment a single metadata wrapper dict with evidence location information.
 
     Given a wrapper object like:
         {"content": ..., "evidence_anchor": "...", ...}
@@ -404,8 +505,12 @@ def augment_metadata_node_with_evidence(
             in the snippet.
         character_offset: An optional offset to add to the start/end character positions
             (useful if the text is a chunk of a larger document).
+
     Returns:
         The augmented metadata wrapper dict with evidence metadata added where applicable.
+
+    Raises:
+        ValueError: If the snippet_margin is negative.
     """
     if snippet_margin < 0:
         raise ValueError("evidence snippet_margin must be >= 0")
@@ -440,21 +545,34 @@ def augment_metadata(
     content_key: str,
     **kwargs: Any,
 ) -> Any:
-    """
-    Recursively augment all metadata wrapper dicts in a JSON-parsed result with evidence info.
+    """Recursively augment all metadata wrapper dicts in a JSON-parsed result.
+
+    Currently, this does the following node processing:
+    - evidence anchor handling using [augment_metadata_node_with_evidence][..augment_metadata_node_with_evidence]
 
     Traversal:
       - walks `data` through nested dicts/lists
       - detects wrapper dicts via `_is_wrapper_dict(..., content_key=...)`
-      - for each wrapper dict, calls `augment_metadata_node_with_evidence(...)`
+      - for each wrapper dict, calls metadata node augmentation methods
 
-    Keyword arguments:
-      - kwargs are namespaced by prefix. Currently supported:
-          * evidence_*  -> forwarded to `augment_metadata_node_with_evidence` (prefix stripped)
+    Args:
+        data: JSON-parsed result with metadata
+        text: Original input text to extract further information from - must be passed by keyword
+        content_key: Key that must be in a mapping for it to be a wrapper_dict - must be passed by keyword
+
+    Keyword Args:
+        evidence_ (Any): `* evidence_*` -> forwarded to `augment_metadata_node_with_evidence` (prefix stripped)
+
+    Keyword Args Notes:
+      - kwargs are namespaced by prefix.
         Example: evidence_snippet_margin=10 sets `snippet_margin=10` for evidence augmentation.
-      - unknown kwargs raise ValueError (fail fast).
 
-    The returned structure mirrors the input but includes added evidence fields where applicable.
+    Returns:
+        The data with the augmented metadata.
+        The returned structure mirrors the input but includes added metadata fields where applicable.
+
+    Raises:
+      ValueError: unknown kwargs raise ValueError (fail fast).
     """
 
     # split augmentation kwargs into those for evidence and others (future use)
@@ -500,7 +618,15 @@ def add_response_content_callback(
     *,
     llm: LLM,
 ) -> None:
-    """Add `response_content` to output dictionary."""
+    """Add `response_content` to output dictionary.
+
+    Modifies `out` in place; does not return a value.
+
+    Args:
+        out: SingleExtractionResult to store the response_content in.
+        response: ChatResponse that contains the response_content.
+        llm: LLM object that extracts the response_content from response. - must be passed by keyword
+    """
     out.response_content = llm.get_response_content_from_chat_response(response=response)
 
 
@@ -510,7 +636,15 @@ def add_reasoning_content_callback(
     *,
     llm: LLM,
 ) -> None:
-    """Add `reasoning_content` to output dictionary."""
+    """Add `reasoning_content` to output dictionary.
+
+    Modifies `out` in place; does not return a value.
+
+    Args:
+        out: SingleExtractionResult to store the reasoning_content in.
+        response: ChatResponse that contains the reasoning_content.
+        llm: LLM object that extracts the reasoning_content from response. - must be passed by keyword
+    """
     out.reasoning_content = llm.get_reasoning_from_chat_response(response=response)
 
 
@@ -521,7 +655,17 @@ def add_structured_callback(
     schema: dict[str, Any] | None,
     validate_with_schema: bool,
 ) -> None:
-    """Add `structured` output to output dictionary based on response content."""
+    """Add `structured` output to output dictionary based on response content.
+
+    Modifies `out` in place; does not return a value.
+    This structured output may or may not contain metadata to some extent.
+
+    Args:
+        out: SingleExtractionResult to store the structured output in.
+        response: Raw ChatResponse from the LLM call. - This exists for compatibility reasons and is not used here.
+        schema: Schema to validate the response against. - must be passed by keyword
+        validate_with_schema: Whether to validate response against schema. - must be passed by keyword
+    """
     # no-op if response content is None
     if out.response_content is not None:
         parsed = json.loads(out.response_content)
@@ -546,6 +690,24 @@ def augment_and_strip_metadata_from_structured_callback(
 ) -> None:
     """Augment metadata in `structured` output and save it as `structured_with_metadata`.
     Then, strip metadata and save the cleaned version back to `structured`.
+
+    Modifies `out` in place; does not return a value.
+
+    Args:
+        out: An extraction result with `out.structured` populated with metadata
+        response: Placeholder, because it gets passed to all functions in `postprocessing_callbacks`,
+            but this one doesn't use it.
+        schema: schema used in [`..extract_from_text`][] - may be modified for metadata - used to check against
+            original_schema - must be passed by keyword
+        original_schema: original schema that was passed to [`..extract_from_text`][] - without metadata - must be
+            passed by keyword
+        text: Original input text for information extraction - must be passed by keyword
+        validate_with_schema: Whether to validate `out.structured` against the `original_schema` - must be passed by
+            keyword
+        augment_metadata_kwargs: Refer to [`..augment_metadata`][] - must be passed by keyword
+
+    Warning:
+        requires `out` to have `structured`, so run [`..add_structured_callback`][] first
     """
     # no-op if structured is None
     if out.structured is not None:
@@ -647,10 +809,20 @@ def extract_from_text(
             Defaults to 0 (process from the beginning of the text).
         character_end: Optional character offsets to specify a substring of `text` to process.
             If None (default), processes until the end of the text.
+
+    Keyword Args:
         **build_messages_kwargs: Additional keyword arguments for build_chat_messages.
 
     Returns:
         A SingleExtractionResult object with the extraction result.
+
+    Warns:
+        UserWarning: When there is no LLM provided, the call to it is skipped.
+
+    Raises:
+        DeprecationWarning: If deprecated args are used, the extraction exits early.
+        TextOffsetValueError: If character_start and/or character_end are set erroneously.
+        ValueError: If schema is None and use_guided_decoding or adjust_schema_for_evidence_detection is True.
     """
     # setting the log level on every query is suboptimal, but the simplest solution in our current architecture
     logging.getLogger("httpx").setLevel(logging.WARNING)
@@ -676,11 +848,13 @@ def extract_from_text(
         )
     if character_end is not None and not (character_start <= character_end):
         raise TextOffsetValueError(
-            f"character_end must be greater than or equal to character_start ({character_start}), but is {character_end}"
+            f"character_end must be greater than or equal to character_start ({character_start}), "
+            + f"but is {character_end}"
         )
 
     out = SingleExtractionResult(
-        character_start=character_start, character_end=character_end or len(text)
+        character_start=character_start,
+        character_end=character_end or len(text),
     )
 
     original_schema = schema
@@ -743,7 +917,9 @@ def extract_from_text(
         # 3) get structured output
         postprocessing_callbacks.append(
             partial(
-                add_structured_callback, schema=schema, validate_with_schema=validate_with_schema
+                add_structured_callback,
+                schema=schema,
+                validate_with_schema=validate_with_schema,
             )
         )
         # 4) handle structured with metadata if requested
@@ -790,7 +966,11 @@ def extract_from_text(
 
 
 def extract_from_text_lenient(
-    text: str, text_id: str, character_start: int = 0, character_end: int | None = None, **kwargs
+    text: str,
+    text_id: str,
+    character_start: int = 0,
+    character_end: int | None = None,
+    **kwargs,
 ) -> SingleExtractionResult:
     """Wrapper around extract_from_text that catches all exceptions.
 
@@ -804,7 +984,10 @@ def extract_from_text_lenient(
             Defaults to 0 (process from the beginning of the text).
         character_end: Optional character offsets to specify a substring of `text` to process.
             If None (default), processes until the end of the text.
-        **kwargs: Keyword arguments for extract_from_text.
+
+    Keyword Args:
+        **kwargs (Any): Keyword arguments for [`extract_from_text`][..extract_from_text].
+
     Returns:
         A SingleExtractionResult object with the extraction result or error message.
     """
