@@ -4,7 +4,7 @@
 # See models/README.md for instructions.
 #
 # To use as an argument for `predict`, use `extractor/llm=gpt_oss_120b`.
-# Run VLLM with `./run_with_llm.sh -v "openai/gpt-oss-120b --max-model-len 131072"`
+# Run VLLM with `./run_with_llm.sh -v "openai/gpt-oss-120b --max-model-len 65536"`
 # See https://huggingface.co/openai/gpt-oss-120b for VLLM options
 
 _target_: kibad_llm.llms.OpenAILikeVllm
@@ -17,8 +17,8 @@ temperature: 1.0 # recommended by OpenAI gpt-oss repo; see #320 for IE-specific 
 
 # enable to correctly handle (i.e. remove) reasoning traces in the output
 is_chat_model: true
-# See https://github.com/DFKI-NLP/kibad-llm/issues/440 for test results.
-context_window: 131072
+# See data/prediction_results/logs/440_gpt_oss_120b_faktencheck_core/readme.md for test results.
+context_window: 65536
 timeout: 360
 max_retries: 3
 
