@@ -14,7 +14,6 @@ Config file: `configs/extractor/llm/gpt_oss_120b_in_process.yaml`
 - `vllm_kwargs.max_model_len=65536`: overrides the vLLM default to cap the context window.
   `131072` requires ~5 GiB KV cache but only ~3.3 GiB is available on cluster GPUs, causing
   vLLM to refuse to start. `65536` was confirmed working on serv-3341 (2026-06-11).
-  See [issue #440](https://github.com/DFKI-NLP/kibad-llm/issues/440) for test details.
 
 ## Prediction
 
