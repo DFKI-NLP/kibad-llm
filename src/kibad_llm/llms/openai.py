@@ -31,84 +31,76 @@ def make_openai_strict_json_schema(schema: dict[str, Any]) -> dict[str, Any]:
 
     (or the equivalent `response_format` shape in other clients).
 
-    Why this exists
-    ---------------
-    OpenAI Structured Outputs validates schemas using a restricted subset of JSON Schema
-    plus additional strict-mode constraints. A schema produced by
-    `BaseModel.model_json_schema()` is typically valid JSON Schema, but can still be rejected
-    by OpenAI for reasons such as:
+    Args:
+        schema: A JSON Schema dictionary (e.g., from `BaseModel.model_json_schema()`).
 
-    1) Object strictness:
-       - Every object schema must forbid undeclared keys via `additionalProperties: false`.
-       - Every object schema must provide `required`, and in strict mode OpenAI expects
-         `required` to include *every* key in `properties` (even if fields have defaults).
-         Pydantic usually omits defaulted fields from `required` (e.g., `default_factory=list`).
-
-    2) `$ref` limitations:
-       OpenAI rejects schemas where a `$ref` appears alongside sibling keywords (e.g. a
-       property defined as `{"$ref": "...", "description": "..."}`), even though this is
-       permitted in full JSON Schema drafts. This commonly happens in Pydantic output when
-       a referenced definition is annotated with `title`/`description`.
-
-    3) Unsupported annotation keywords:
-       In strict mode, OpenAI rejects `default` in the schema. In JSON Schema, `default`
-       is an annotation (not used for validation), but OpenAI treats it as invalid input
-       for strict Structured Outputs.
-
-    What the function does
-    ----------------------
-    This helper walks the entire schema (including nested objects and `$defs`) and applies
-    the minimal transformations needed to satisfy OpenAI strict-mode requirements:
-
-    - For every node that looks like an object schema
-      (`{"type": "object", "properties": {...}}`):
-        1. Set `required = list(properties.keys())`
-        2. Set `additionalProperties = false`
-
-    - Remove all `default` keys anywhere in the schema.
-
-    - For any dict node that contains `$ref` *and* other keys, rewrite it so that `$ref`
-      is placed inside an `anyOf`:
-        {"$ref": "...", "description": "..."}  ->  {"anyOf": [{"$ref": "..."}], "description": "..."}
-      This preserves the validation meaning (a single-entry `anyOf`) while avoiding the
-      OpenAI restriction on `$ref` siblings.
-
-    Parameters
-    ----------
-    schema:
-        A JSON Schema dictionary (e.g., from `BaseModel.model_json_schema()`).
-
-    Returns
-    -------
-    dict[str, Any]
+    Returns:
         A patched schema dictionary. The returned schema is a deep copy of the input, so
         the original schema object is not mutated.
 
-    Notes
-    -----
-    - The `required` + `additionalProperties: false` changes do tighten validation compared
-      to permissive JSON Schema, but match OpenAI strict-mode expectations and are usually
-      aligned with "always emit all keys" extraction-style outputs.
-    - If you want a field to be effectively optional while still being listed in `required`,
-      model it as nullable (e.g., via `anyOf: [{"type": "string"}, {"type": "null"}]`) or
-      use empty arrays as the "unknown" value for list fields.
-    - This function does not guarantee that the resulting schema is accepted by every
-      guided-decoding backend (e.g., vLLM/outlines/xgrammar). Consider keeping a separate
-      "raw" Pydantic schema for self-hosted decoding and using this transformer only for
-      OpenAI strict Structured Outputs.
+    Why this exists:
+        OpenAI Structured Outputs validates schemas using a restricted subset of JSON Schema
+        plus additional strict-mode constraints. A schema produced by
+        `BaseModel.model_json_schema()` is typically valid JSON Schema, but can still be rejected
+        by OpenAI for reasons such as:
 
-    Example
-    -------
-    >>> raw = MyModel.model_json_schema(by_alias=False)
-    >>> strict_schema = make_openai_strict_json_schema(raw)
-    >>> request_kwargs["text"] = {
-    ...     "format": {
-    ...         "type": "json_schema",
-    ...         "name": "my_model",
-    ...         "strict": True,
-    ...         "schema": strict_schema,
-    ...     }
-    ... }
+        1) Object strictness:
+           - Every object schema must forbid undeclared keys via `additionalProperties: false`.
+           - Every object schema must provide `required`, and in strict mode OpenAI expects
+             `required` to include *every* key in `properties` (even if fields have defaults).
+             Pydantic usually omits defaulted fields from `required` (e.g., `default_factory=list`).
+
+        2) `$ref` limitations:
+           OpenAI rejects schemas where a `$ref` appears alongside sibling keywords (e.g. a
+           property defined as `{"$ref": "...", "description": "..."}`), even though this is
+           permitted in full JSON Schema drafts. This commonly happens in Pydantic output when
+           a referenced definition is annotated with `title`/`description`.
+
+        3) Unsupported annotation keywords:
+           In strict mode, OpenAI rejects `default` in the schema. In JSON Schema, `default`
+           is an annotation (not used for validation), but OpenAI treats it as invalid input
+           for strict Structured Outputs.
+
+    What the function does:
+        This helper walks the entire schema (including nested objects and `$defs`) and applies
+        the minimal transformations needed to satisfy OpenAI strict-mode requirements:
+
+        - For every node that looks like an object schema
+          (`{"type": "object", "properties": {...}}`):
+            1. Set `required = list(properties.keys())`
+            2. Set `additionalProperties = false`
+
+        - Remove all `default` keys anywhere in the schema.
+
+        - For any dict node that contains `$ref` *and* other keys, rewrite it so that `$ref`
+          is placed inside an `anyOf`:
+            {"$ref": "...", "description": "..."}  ->  {"anyOf": [{"$ref": "..."}], "description": "..."}
+          This preserves the validation meaning (a single-entry `anyOf`) while avoiding the
+          OpenAI restriction on `$ref` siblings.
+
+    Notes:
+        - The `required` + `additionalProperties: false` changes do tighten validation compared
+          to permissive JSON Schema, but match OpenAI strict-mode expectations and are usually
+          aligned with "always emit all keys" extraction-style outputs.
+        - If you want a field to be effectively optional while still being listed in `required`,
+          model it as nullable (e.g., via `anyOf: [{"type": "string"}, {"type": "null"}]`) or
+          use empty arrays as the "unknown" value for list fields.
+        - This function does not guarantee that the resulting schema is accepted by every
+          guided-decoding backend (e.g., vLLM/outlines/xgrammar). Consider keeping a separate
+          "raw" Pydantic schema for self-hosted decoding and using this transformer only for
+          OpenAI strict Structured Outputs.
+
+    Examples:
+        >>> raw = MyModel.model_json_schema(by_alias=False)
+        >>> strict_schema = make_openai_strict_json_schema(raw)
+        >>> request_kwargs["text"] = {
+        ...     "format": {
+        ...         "type": "json_schema",
+        ...         "name": "my_model",
+        ...         "strict": True,
+        ...         "schema": strict_schema,
+        ...     }
+        ... }
     """
 
     schema = copy.deepcopy(schema)

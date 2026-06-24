@@ -1,0 +1,80 @@
+{
+  "dataset.predictions.log=logs/251_nemotron_faktencheck_core/predict/multiruns/2026-05-30_02-33-58/0": {
+    "version": 2,
+    "type": "ErrorCollector",
+    "data": {
+      "no_error": 1284,
+      "with_error": 371,
+      "MissingResponseContentError": 339,
+      "JSONDecodeError": 32
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/251_nemotron_faktencheck_core/2026-05-30_02-33-58/2026-05-30_02-33-59_363043/predictions.jsonl",
+        "output_file_absolute": "/netscratch/asafari/tmp/kiba-d_1d15e76b-c662-45a2-8489-12f42f1b99bc/repo/predictions/251_nemotron_faktencheck_core/2026-05-30_02-33-58/2026-05-30_02-33-59_363043/predictions.jsonl",
+        "time_pdf_conversion": 1.0375047059933422,
+        "time_extraction": 48439.273623067,
+        "time_start": 1780101239,
+        "time_end": 1780150123,
+        "commit_hash": "bbc92953c87d906cafe8d8288b714acad98b6723",
+        "branch": "commit/bbc92953c87d",
+        "is_dirty": false,
+        "slurm_job_id": "3009940"
+      },
+      "overrides": {
+        "name": "251_nemotron_faktencheck_core",
+        "experiment/predict": "faktencheck_core_fields_schema_with_chunking",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor/llm": "nemotron_nano_3_30b_in_process",
+        "extractor.llm.vllm_kwargs.tensor_parallel_size": "2",
+        "pdf_reader_num_proc": "200",
+        "seed": "42"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/251_nemotron_faktencheck_core/predict/multiruns/2026-05-30_02-33-58/0",
+      "name": "251_nemotron_faktencheck_core",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "logs/251_nemotron_faktencheck_core/predict"
+    }
+  },
+  "dataset.predictions.log=logs/251_nemotron_faktencheck_core/predict/multiruns/2026-05-30_02-33-58/1": {
+    "version": 2,
+    "type": "ErrorCollector",
+    "data": {
+      "no_error": 1271,
+      "with_error": 384,
+      "MissingResponseContentError": 345,
+      "JSONDecodeError": 39
+    },
+    "prediction": {
+      "job_return_value": {
+        "output_file": "predictions/251_nemotron_faktencheck_core/2026-05-30_02-33-58/2026-05-30_16-08-43_498816/predictions.jsonl",
+        "output_file_absolute": "/netscratch/asafari/tmp/kiba-d_1d15e76b-c662-45a2-8489-12f42f1b99bc/repo/predictions/251_nemotron_faktencheck_core/2026-05-30_02-33-58/2026-05-30_16-08-43_498816/predictions.jsonl",
+        "time_pdf_conversion": 0.20689900900470093,
+        "time_extraction": 43244.24026229899,
+        "time_start": 1780150123,
+        "time_end": 1780193527,
+        "commit_hash": "bbc92953c87d906cafe8d8288b714acad98b6723",
+        "branch": "commit/bbc92953c87d",
+        "is_dirty": false,
+        "slurm_job_id": "3009940"
+      },
+      "overrides": {
+        "name": "251_nemotron_faktencheck_core",
+        "experiment/predict": "faktencheck_core_fields_schema_with_chunking",
+        "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+        "extractor/llm": "nemotron_nano_3_30b_in_process",
+        "extractor.llm.vllm_kwargs.tensor_parallel_size": "2",
+        "pdf_reader_num_proc": "200",
+        "seed": "1337"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/251_nemotron_faktencheck_core/predict/multiruns/2026-05-30_02-33-58/1",
+      "name": "251_nemotron_faktencheck_core",
+      "experiment/evaluate": "prediction_errors",
+      "prediction_logs": "logs/251_nemotron_faktencheck_core/predict"
+    }
+  }
+}

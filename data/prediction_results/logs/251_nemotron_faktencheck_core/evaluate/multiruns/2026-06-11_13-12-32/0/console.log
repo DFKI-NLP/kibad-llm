@@ -1,0 +1,20 @@
+[2026-06-11 13:12:32,880][__main__][INFO] - Loading dataset with predictions and references ...
+[2026-06-11 13:12:32,880][__main__][INFO] - Dataset config: {'predictions': {'_target_': 'kibad_llm.dataset.prediction.load_with_metadata', 'log': 'logs/251_nemotron_faktencheck_core/predict/multiruns/2026-05-30_02-33-58/0', 'file': None, 'id_key': 'file_name', 'process_id': {'_partial_': True, '_target_': 'kibad_llm.utils.path.strip_filename_extension'}, 'preprocess': {'_target_': 'kibad_llm.utils.dictionary.get', '_partial_': True, 'key': 'structured'}}, 'references': {'_target_': 'kibad_llm.dataset.json.read_and_preprocess', 'file': '../interim/faktencheck-db/faktenscheck_core_corrected.jsonl', 'id_key': 'zotitem_ptr_id'}, '_target_': 'kibad_llm.dataset.utils.merge_references_into_predictions'}
+[2026-06-11 13:12:32,882][kibad_llm.dataset.json][INFO] - Loading dataset from JSON file: predictions/251_nemotron_faktencheck_core/2026-05-30_02-33-58/2026-05-30_02-33-59_363043/predictions.jsonl ...
+[2026-06-11 13:12:33,110][kibad_llm.dataset.json][INFO] - Apply preprocessing function to dataset: functools.partial(<function get at 0x753346818ea0>, key='structured') ...
+[2026-06-11 13:12:33,112][kibad_llm.dataset.json][INFO] - Loading dataset from JSON file: ../interim/faktencheck-db/faktenscheck_core_corrected.jsonl ...
+[2026-06-11 13:12:33,114][__main__][INFO] - Instantiating metric ...
+[2026-06-11 13:12:33,114][__main__][INFO] - Metric config: {'_target_': 'kibad_llm.metrics.F1MicroMultipleFieldsMetric', 'fields': ['habitat', 'biodiversity_level', 'ecosystem_type.term', 'ecosystem_type.category', 'taxa.species_group'], 'format_as_markdown': True, 'sort_fields': True, 'flatten_dicts': True}
+[2026-06-11 13:12:33,116][__main__][INFO] - Computing metric ...
+[2026-06-11 13:12:33,139][kibad_llm.metric][INFO] - Evaluation results:
+| field                   |   precision |   recall |    f1 |   support |
+|:------------------------|------------:|---------:|------:|----------:|
+| biodiversity_level      |       0.435 |    0.636 | 0.517 |     132   |
+| ecosystem_type.category |       0.524 |    0.707 | 0.602 |     140   |
+| ecosystem_type.term     |       0.337 |    0.408 | 0.369 |     240   |
+| habitat                 |       0.74  |    0.799 | 0.768 |     189   |
+| taxa.species_group      |       0.534 |    0.484 | 0.507 |     213   |
+| AVG                     |       0.514 |    0.607 | 0.553 |     182.8 |
+| ALL                     |       0.5   |    0.585 | 0.539 |     914   |
+[2026-06-11 13:12:33,140][kibad_llm.hydra_callbacks.save_job_return_value.SaveJobReturnValueCallback][INFO] - Saving job_return in /home/amir/DFKI/kibad-llm/logs/251_nemotron_faktencheck_core/evaluate/multiruns/2026-06-11_13-12-32/0/job_return_value.json
+[2026-06-11 13:12:33,140][kibad_llm.hydra_callbacks.save_job_return_value.SaveJobReturnValueCallback][INFO] - Saving job_return in /home/amir/DFKI/kibad-llm/logs/251_nemotron_faktencheck_core/evaluate/multiruns/2026-06-11_13-12-32/0/job_return_value.md

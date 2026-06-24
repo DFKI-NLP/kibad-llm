@@ -1,3 +1,11 @@
+"""Package entrypoint for dataset evaluation.
+
+Functions:
+    evaluate: Evaluates a dataset containing predictions and references using a specified metric.
+    main: Helper function to inject the hydra config into [`evaluate`][.evaluate].
+
+"""
+
 from __future__ import annotations
 
 import logging
@@ -36,6 +44,7 @@ def evaluate(cfg: DictConfig) -> dict[str, Any]:
 
     Args:
         cfg: OmegaConf configuration. See configs/evaluate.yaml for details.
+
     Returns:
         A dictionary with evaluation results.
     """
@@ -72,6 +81,14 @@ def evaluate(cfg: DictConfig) -> dict[str, Any]:
     version_base="1.3", config_path=str(PROJ_ROOT / "configs"), config_name="evaluate.yaml"
 )
 def main(cfg: DictConfig) -> dict[str, Any]:
+    """Helper function to inject the hydra config into [`evaluate`][..evaluate].
+
+    Args:
+        cfg: Evaluation config provided through hydra.
+
+    Returns:
+        The unchanged output of [`evaluate`][..evaluate]
+    """
     return evaluate(cfg)
 
 

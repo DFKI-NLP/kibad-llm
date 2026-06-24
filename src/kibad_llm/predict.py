@@ -1,3 +1,13 @@
+"""Package entrypoint for prediction runs.
+
+Functions:
+    get_git_info: Get current git commit hash, branch name, and dirty status.
+    get_run_log_dir: Get the Hydra run log directory from the HydraConfig.
+    predict: Run classification based information extraction on PDF files.
+    main: Helper function to inject the hydra config into [`predict`][.predict].
+
+"""
+
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -30,12 +40,27 @@ logger = logging.getLogger(__name__)
 
 
 def _file_name_generator(file_names: list[str]):
+    """Yield each filename wrapped in a dict with key `"file_name"`.
+
+    Args:
+        file_names: List of filenames as strings.
+
+    Yields:
+        Each file name wrapped in a dict like `{"file_name": file_name}`.
+    """
     for file_name in file_names:
         yield {"file_name": file_name}
 
 
 def _get_git_branch_name(repo: git.Repo) -> str:
-    """Return the current branch name without crashing on detached HEAD checkouts."""
+    """Return the current branch name without crashing on detached HEAD checkouts.
+
+    Args:
+        repo: Repo object to perform check on (this one).
+
+    Returns:
+        Name of the current branch, or ref or name of the currently checked out commit, or "detached".
+    """
     if repo.head.is_detached:
         return os.getenv("GITHUB_HEAD_REF") or os.getenv("GITHUB_REF_NAME") or "detached"
 
@@ -50,6 +75,9 @@ def get_git_info() -> dict[str, str | bool]:
 
     Returns:
         Dictionary with 'commit_hash', 'branch', and 'is_dirty' keys.
+
+    Warns:
+        UserWarning: If the git info couldn't be retrieved.
     """
     try:
         repo = git.Repo(search_parent_directories=True)
@@ -72,7 +100,10 @@ def get_run_log_dir() -> str | None:
     If not possible (e.g. during integration tests), returns None.
 
     Returns:
-        The Hydra run log directory as a string.
+        The Hydra run log directory as a string, or `None` if unavailable.
+
+    Warns:
+        UserWarning: If the Hydra run log dir couldn't be retrieved.
     """
     try:
         return HydraConfig.get().runtime.output_dir
@@ -82,7 +113,7 @@ def get_run_log_dir() -> str | None:
 
 
 def predict(cfg: DictConfig) -> dict[str, Any]:
-    """Run classification based information extraction on PDF files.
+    """Run classification-based information extraction on PDF files.
 
     Reads all PDF files from cfg.pdf_directory, converts them to markdown,
     extracts structured information using an LLM model and a prompt template,
@@ -91,6 +122,13 @@ def predict(cfg: DictConfig) -> dict[str, Any]:
 
     Args:
         cfg: OmegaConf configuration. See configs/predict.yaml for details.
+
+    Returns:
+        Metadata about the prediction process, but no prediction results.
+
+    Warns:
+        UserWarning: If the git repo has uncommitted changes.
+        UserWarning: If the fast_dev_run option is set.
     """
     # use start time as part of output folder to avoid overwriting previous results
     formatted_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S_%f")
@@ -184,6 +222,14 @@ def predict(cfg: DictConfig) -> dict[str, Any]:
 
 @hydra.main(version_base="1.3", config_path=str(PROJ_ROOT / "configs"), config_name="predict.yaml")
 def main(cfg: DictConfig) -> dict[str, Any]:
+    """Helper function to inject the hydra config into [`predict`][..predict].
+
+    Args:
+        cfg: Prediction config provided through hydra.
+
+    Returns:
+        The unchanged output of [`predict`][..predict]
+    """
     return predict(cfg)
 
 
