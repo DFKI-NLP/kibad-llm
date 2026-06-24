@@ -29,7 +29,7 @@ Config file: `configs/extractor/llm/gpt_oss_120b_in_process.yaml`
        --multirun"
 ```
 
-Result location: `logs/440_gpt_oss_120b_faktencheck_core/predict/multiruns/<timestamp>`
+Result location: `logs/440_gpt_oss_120b_faktencheck_core/predict/multiruns/2026-06-23_16-45-33`
 
 ## Evaluation
 
@@ -41,15 +41,23 @@ Run from within `data/prediction_results/`:
 uv run -m kibad_llm.evaluate \
   name=440_gpt_oss_120b_faktencheck_core \
   experiment/evaluate=faktencheck_core_f1_micro_flat \
-  prediction_logs=logs/440_gpt_oss_120b_faktencheck_core/predict/multiruns/<timestamp> \
+  prediction_logs=logs/440_gpt_oss_120b_faktencheck_core/predict/multiruns/2026-06-23_16-45-33 \
   dataset.references.file=../interim/faktencheck-db/faktenscheck_core_corrected.jsonl \
   "metric.fields=[habitat,biodiversity_level,ecosystem_type.term,ecosystem_type.category,taxa.species_group]" \
   --multirun
 ```
 
-Result location: `logs/440_gpt_oss_120b_faktencheck_core/evaluate/multiruns/<timestamp>`
+Result location: `logs/440_gpt_oss_120b_faktencheck_core/evaluate/multiruns/2026-06-24_15-16-42`
 
-### Comparison with other models
+| field | seed=42 | seed=1337 | seed=7331 |
+|---|---|---|---|
+| habitat | 0.842 | 0.808 | 0.836 |
+| ecosystem_type.category | 0.785 | 0.819 | 0.806 |
+| ecosystem_type.term | 0.585 | 0.585 | 0.592 |
+| biodiversity_level | 0.622 | 0.613 | 0.621 |
+| taxa.species_group | 0.604 | 0.621 | 0.611 |
+| **ALL** | **0.674** | **0.675** | **0.678** |
+| **AVG** | **0.688** | **0.689** | **0.693** |
 
 ### Errors
 
@@ -58,10 +66,39 @@ uv run -m kibad_llm.evaluate \
   name=440_gpt_oss_120b_faktencheck_core \
   experiment/evaluate=prediction_errors \
   hydra.callbacks.save_job_return.multirun_show_file_contents=null \
-  prediction_logs=logs/440_gpt_oss_120b_faktencheck_core/predict/multiruns/<timestamp> \
+  prediction_logs=logs/440_gpt_oss_120b_faktencheck_core/predict/multiruns/2026-06-23_16-45-33 \
   --multirun
 ```
 
-Result location: `logs/440_gpt_oss_120b_faktencheck_core/evaluate/multiruns/<timestamp>`
+Result location: `logs/440_gpt_oss_120b_faktencheck_core/evaluate/multiruns/2026-06-24_15-17-01`
+
+| seed | no_error | with_error | error type |
+|---|---|---|---|
+| 42 | 1650 | 4 | JSONDecodeError |
+| 1337 | 1653 | 1 | JSONDecodeError |
+| 7331 | 1650 | 4 | JSONDecodeError |
 
 ## Outcome
+
+The error rate is very low: 1–4 `JSONDecodeError`s per seed out of ~1654 total chunks (~0.06–0.24%).
+All errors are malformed JSON in the model output. No context-length errors were observed, confirming
+that the default chunk size (20k characters) fits comfortably within `max_model_len=65536`.
+
+gpt-oss-120b achieves the highest ALL F1 among all models evaluated on this experiment, with a mean
+ALL F1 of **0.676** (5-field subset, corrected reference data). It leads on `habitat` (~0.84) and
+`ecosystem_type.category` (~0.80), and is competitive on all other fields.
+
+![legend.svg](figures/faktencheck_core_f1_micro_flat-ALL/legend.svg)
+
+#### F1
+![f1.svg](figures/faktencheck_core_f1_micro_flat-ALL/f1.svg)
+
+#### Precision
+![precision.svg](figures/faktencheck_core_f1_micro_flat-ALL/precision.svg)
+
+#### Recall
+![recall.svg](figures/faktencheck_core_f1_micro_flat-ALL/recall.svg)
+
+#### Errors
+![no_error.svg](figures/prediction_errors-total/no_error.svg)
+![with_error.svg](figures/prediction_errors-total/with_error.svg)
