@@ -1,0 +1,20 @@
+[2026-06-29 14:39:37,245][__main__][INFO] - Loading dataset with predictions and references ...
+[2026-06-29 14:39:37,246][__main__][INFO] - Dataset config: {'predictions': {'_target_': 'kibad_llm.dataset.prediction.load_with_metadata', 'log': 'logs/525_faktencheck_core_bestconfig_testset/predict/multiruns/2026-06-23_13-25-01/0', 'file': None, 'id_key': 'file_name', 'process_id': {'_partial_': True, '_target_': 'kibad_llm.utils.path.strip_filename_extension'}, 'preprocess': {'_target_': 'kibad_llm.utils.dictionary.get', '_partial_': True, 'key': 'structured'}}, 'references': {'_target_': 'kibad_llm.dataset.json.read_and_preprocess', 'file': '/home/leonhard/Dokumente/code/dfki/kiba-d/kibad-llm/data/interim/faktencheck-db/faktencheck-db-converted_2025-11-05.jsonl', 'id_key': 'zotitem_ptr_id'}, '_target_': 'kibad_llm.dataset.utils.merge_references_into_predictions'}
+[2026-06-29 14:39:37,249][kibad_llm.dataset.json][INFO] - Loading dataset from JSON file: predictions/525_faktencheck_core_bestconfig_testset/2026-06-23_13-25-01/2026-06-23_13-25-02_261703/predictions.jsonl ...
+[2026-06-29 14:39:37,403][kibad_llm.dataset.json][INFO] - Apply preprocessing function to dataset: functools.partial(<function get at 0x77ba28775bc0>, key='structured') ...
+[2026-06-29 14:39:37,417][kibad_llm.dataset.json][INFO] - Loading dataset from JSON file: /home/leonhard/Dokumente/code/dfki/kiba-d/kibad-llm/data/interim/faktencheck-db/faktencheck-db-converted_2025-11-05.jsonl ...
+[2026-06-29 14:39:37,489][__main__][INFO] - Instantiating metric ...
+[2026-06-29 14:39:37,490][__main__][INFO] - Metric config: {'_target_': 'kibad_llm.metrics.F1MicroMultipleFieldsMetric', 'fields': ['habitat', 'biodiversity_level', 'ecosystem_type.term', 'ecosystem_type.category', 'taxa.species_group'], 'format_as_markdown': True, 'sort_fields': True, 'flatten_dicts': True}
+[2026-06-29 14:39:37,491][__main__][INFO] - Computing metric ...
+[2026-06-29 14:39:37,602][kibad_llm.metric][INFO] - Evaluation results:
+| field                   |   precision |   recall |    f1 |   support |
+|:------------------------|------------:|---------:|------:|----------:|
+| biodiversity_level      |       0.316 |    0.652 | 0.426 |     399   |
+| ecosystem_type.category |       0.317 |    0.934 | 0.473 |     243   |
+| ecosystem_type.term     |       0.189 |    0.75  | 0.301 |     280   |
+| habitat                 |       0.524 |    0.899 | 0.662 |     564   |
+| taxa.species_group      |       0.357 |    0.757 | 0.485 |     555   |
+| AVG                     |       0.34  |    0.798 | 0.469 |     408.2 |
+| ALL                     |       0.338 |    0.796 | 0.475 |    2041   |
+[2026-06-29 14:39:37,607][kibad_llm.hydra_callbacks.save_job_return_value.SaveJobReturnValueCallback][INFO] - Saving job_return in /home/leonhard/Dokumente/code/dfki/kiba-d/kibad-llm/logs/525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-06-29_14-39-29/12/job_return_value.json
+[2026-06-29 14:39:37,607][kibad_llm.hydra_callbacks.save_job_return_value.SaveJobReturnValueCallback][INFO] - Saving job_return in /home/leonhard/Dokumente/code/dfki/kiba-d/kibad-llm/logs/525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-06-29_14-39-29/12/job_return_value.md

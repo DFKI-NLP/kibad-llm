@@ -21,10 +21,17 @@ seed=42,1337,7331 \
 ```
 
 ```sh
-
+=============================================
+>>> USING PARTITION H100-SLT,H100-Trails,H100,H200,B200,A100-80GB
+>>> MAX TIME 2-00:00:00
+>>> SUBMITTED Mon Jun 22 01:22:26 PM CEST 2026
+>>> UV_ARGS --cache-dir /netscratch/hennig/cache/uv -m kibad_llm.predict name=525_faktencheck_core_bestconfig_testset experiment/predict=faktencheck_core_fields_schema_with_chunking pdf_directory=/ds/text/kiba-d/splits/test extractor/llm=gpt_oss_20b_in_process seed=42,1337,7331 --multirun
+>>> JOB_NAME kiba-d_ddaff36f-7799-4709-a477-9faccf1c7566
+>>> GIT_REF (none; using current working tree)
+=============================================
 ```
 
-Saved to ``
+Saved to `logs/525_faktencheck_core_bestconfig_testset/predict/multiruns/2026-06-23_00-38-05/`
 
 ### gemma3_27b
 
@@ -42,10 +49,17 @@ seed=42,1337,7331 \
 ```
 
 ```sh
-
+=============================================
+>>> USING PARTITION H100-SLT,H100-Trails,H100,H200,B200,A100-80GB
+>>> MAX TIME 2-00:00:00
+>>> SUBMITTED Tue Jun 23 08:48:10 AM CEST 2026
+>>> UV_ARGS --cache-dir /netscratch/hennig/cache/uv -m kibad_llm.predict name=525_faktencheck_core_bestconfig_testset experiment/predict=faktencheck_core_fields_schema_with_chunking pdf_directory=/ds/text/kiba-d/splits/test extractor/llm=gemma3_27b_in_process seed=42,1337,7331 --multirun
+>>> JOB_NAME kiba-d_256e87a8-2fb8-4dbe-b753-7613ff8afbe2
+>>> GIT_REF (none; using current working tree)
+=============================================
 ```
 
-Saved to ``
+Saved to `logs/525_faktencheck_core_bestconfig_testset/predict/multiruns/2026-06-23_10-23-46/`
 
 ### qwen3_30b
 
@@ -61,10 +75,17 @@ seed=42,1337,7331 \
 ```
 
 ```sh
-
+=============================================
+>>> USING PARTITION H100-SLT,H100-Trails,H100,H200,B200,A100-80GB
+>>> MAX TIME 2-00:00:00
+>>> SUBMITTED Tue Jun 23 08:48:56 AM CEST 2026
+>>> UV_ARGS --cache-dir /netscratch/hennig/cache/uv -m kibad_llm.predict name=525_faktencheck_core_bestconfig_testset experiment/predict=faktencheck_core_fields_schema_with_chunking pdf_directory=/ds/text/kiba-d/splits/test extractor/llm=qwen3_30b_in_process seed=42,1337,7331 --multirun
+>>> JOB_NAME kiba-d_007b3ab8-a95d-4845-8dad-74fcad788840
+>>> GIT_REF (none; using current working tree)
+=============================================
 ```
 
-Saved to ``
+Saved to `logs/525_faktencheck_core_bestconfig_testset/predict/multiruns/2026-06-23_10-24-03/`
 
 ### mistral_small_3_24b
 
@@ -80,10 +101,17 @@ seed=42,1337,7331 \
 ```
 
 ```sh
-
+=============================================
+>>> USING PARTITION H100-SLT,H100-Trails,H100,H200,B200,A100-80GB
+>>> MAX TIME 3-00:00:00
+>>> SUBMITTED Tue Jun 23 08:49:23 AM CEST 2026
+>>> UV_ARGS --cache-dir /netscratch/hennig/cache/uv -m kibad_llm.predict name=525_faktencheck_core_bestconfig_testset experiment/predict=faktencheck_core_fields_schema_with_chunking pdf_directory=/ds/text/kiba-d/splits/test extractor/llm=mistral_small_3_24b_in_process seed=42,1337,7331 --multirun
+>>> JOB_NAME kiba-d_9f5c1acb-8734-413d-98c9-ea3f764d37d8
+>>> GIT_REF (none; using current working tree)
+=============================================
 ```
 
-Saved to ``
+Saved to `logs/525_faktencheck_core_bestconfig_testset/predict/multiruns/2026-06-23_10-25-16/`
 
 ### gpt_5
 
@@ -96,16 +124,25 @@ This run does not need a gpu and is hence run with `-ng 0.
 name=525_faktencheck_core_bestconfig_testset \
 experiment/predict=faktencheck_core_fields_schema_with_chunking \
 pdf_directory=/ds/text/kiba-d/splits/test \
-extractor/llm=gpt_5_in_process \
-seed=42,1337,7331 \
+extractor/llm=gpt_5 \
+seed=42 \
 --multirun"
 ```
 
 ```sh
-
+=============================================
+>>> USING PARTITION H100-SLT,H100-Trails,H100,H200,B200,A100-80GB,batch
+>>> MAX TIME 3-00:00:00
+>>> SUBMITTED Tue Jun 23 01:24:16 PM CEST 2026
+>>> UV_ARGS --cache-dir /netscratch/hennig/cache/uv -m kibad_llm.predict name=525_faktencheck_core_bestconfig_testset experiment/predict=faktencheck_core_fields_schema_with_chunking pdf_directory=/ds/text/kiba-d/splits/test extractor/llm=gpt_5 seed=42,1337,7331 --multirun
+>>> JOB_NAME kiba-d_f6567664-5b6a-4808-91e2-90e133299fb5
+>>> GIT_REF (none; using current working tree)
+=============================================
 ```
 
-Saved to ``
+**Note:** Stopped after first seed due to costs (USD ) and time constraints (pass through 500 docs took XX hrs)
+
+Saved to `logs/525_faktencheck_core_bestconfig_testset/predict/multiruns/2026-06-23_13-25-01/`
 
 ## Evaluation
 
@@ -123,8 +160,5 @@ logs/525_faktencheck_core_bestconfig_testset/\
 --multirun
 ```
 
-```sh
-```
-
-Saved to ``
+Saved to `logs/525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-06-29_14-39-29`
 
