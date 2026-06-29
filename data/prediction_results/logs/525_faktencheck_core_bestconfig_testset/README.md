@@ -162,3 +162,18 @@ logs/525_faktencheck_core_bestconfig_testset/\
 
 Saved to `logs/525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-06-29_14-39-29`
 
+## Outcome
+
+The results in this folder can serve as a basis for the [Journal experiments](https://github.com/DFKI-NLP/kibad-llm/issues/521),
+namely for the Faktencheck core schema plots:
+
+- [Figure/Table 1 "main pipeline results": F1 scores for the best configuration (prompt+chunking+...)](figures/faktencheck_core_f1_micro_flat-ALL/f1.svg) 
+- [Figure/Table 2: "detail results - precision and recall" - same plots as above, but with precision scores instead of F1](figures/faktencheck_core_f1_micro_flat-ALL/precision.svg)
+- [Figure/Table 2: "detail results - precision and recall" - same plots as above, but with recall scores instead of F1](figures/faktencheck_core_f1_micro_flat-ALL/recall.svg)
+- [Figure/Table 3: "detail results - schema elements" for all models and the best configuration - Biodiversity Level](figures/faktencheck_core_f1_micro_flat-biodiversity_level/f1.svg)
+- [Figure/Table 3: "detail results - schema elements" for all models and the best configuration - Ecosystem type category](figures/faktencheck_core_f1_micro_flat-ecosystem_type.category/f1.svg)
+- [Figure/Table 3: "detail results - schema elements" for all models and the best configuration - Ecosystem type term](figures/faktencheck_core_f1_micro_flat-ecosystem_type.term/f1.svg)
+- [Figure/Table 3: "detail results - schema elements" for all models and the best configuration - Habitat](figures/faktencheck_core_f1_micro_flat-habitat/f1.svg)
+- [Figure/Table 3: "detail results - schema elements" for all models and the best configuration - Taxa species group](figures/faktencheck_core_f1_micro_flat-taxa.species_group/f1.svg)
+
+Todo: Discuss/interpret results
