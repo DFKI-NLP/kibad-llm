@@ -34,7 +34,7 @@ storage locations.
 
 Before starting a new experiment:
 
-- Check the existing overview table in [kibad-prediction-results/readme.md](https://github.com/DFKI-NLP/kibad-prediction-results/blob/main/readme.md). Use the latest related experiments as references for naming, command structure, folder layout, and result documentation.
+- Check the existing overview table in [kibad-llm-results/readme.md](https://github.com/DFKI-NLP/kibad-llm-results/blob/main/readme.md). Use the latest related experiments as references for naming, command structure, folder layout, and result documentation.
 - Prefer a dedicated config under `configs/experiment/` when the setup is not trivial.
 - Decide which input datasets (pdf directory) and ground truth files you need
 - Keep predictions and evaluations scoped to the research question you want to answer.
