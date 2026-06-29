@@ -47,7 +47,7 @@ High-level overview of contributor-relevant paths (local caches and other genera
 ├── data/                       <- Local data area for source inputs and derived datasets.
 │   ├── external/               <- Third-party inputs such as exported Zotero data.
 │   ├── interim/                <- Intermediate converted data such as DB-to-JSON exports used for evaluation.
-│   ├── prediction_results/     <- Checked-in experiment artefacts and derived result bundles that are meant to live
+│   ├── results/                <- Checked-in experiment artefacts and derived result bundles that are meant to live
 │   │                              in Git.
 │   ├── processed/              <- Versioned processed datasets kept in Git when useful for reproducibility.
 │   └── raw/                    <- Immutable source data dumps (not yet used).
@@ -68,7 +68,7 @@ High-level overview of contributor-relevant paths (local caches and other genera
 ├── references/                 <- Data dictionaries, manuals, and all other explanatory materials (not yet used).
 ├── reports/
 │   └── figures/                <- Legacy/outdated location for generated figures; current checked-in result artefacts
-│                                  are kept under `data/prediction_results/` instead.
+│                                  are kept under `data/results/` instead.
 │
 ├── src/
 │   └── kibad_llm/              <- Main Python package.
@@ -98,7 +98,7 @@ High-level overview of contributor-relevant paths (local caches and other genera
 │                                  values to run locally.
 ├── .gitignore                  <- Git ignore rules for local/generated data, logs, virtual environments, caches,
 │                                  editor settings, and other machine-specific artefacts, while explicitly keeping
-│                                  versioned directories such as `data/prediction_results/` and `data/processed/`.
+│                                  versioned directories such as `data/results/` and `data/processed/`.
 ├── .pre-commit-config.yaml     <- `prek`/pre-commit hook configuration used locally and in CI.
 ├── LICENSE                     <- AGPL-v3 license text for the project.
 ├── lychee.toml                 <- Documentation link validation configuration.

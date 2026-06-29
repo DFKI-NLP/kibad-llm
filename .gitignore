@@ -1,9 +1,9 @@
 # Data: ignore everything under /data by default
 /data/*
 
-# ...but keep prediction results
-!/data/prediction_results/
-!/data/prediction_results/**
+# ...but keep results
+!/data/results/
+!/data/results/**
 # ... and processed data
 !/data/processed/
 !/data/processed/**

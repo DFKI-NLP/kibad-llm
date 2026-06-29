@@ -19,8 +19,8 @@ const __dirname = path.dirname(__filename);
 const DASHBOARD_ROOT = path.resolve(__dirname, "..");
 const REPO_ROOT = path.resolve(DASHBOARD_ROOT, "../..");
 const DEFAULT_FOLDERS = [
-  "data/prediction_results/logs/477_faktencheck_core",
-  "data/prediction_results/logs/481_faktencheck_core",
+  "data/results/logs/477_faktencheck_core",
+  "data/results/logs/481_faktencheck_core",
 ];
 const DEFAULT_TIMEOUT_MS = 180000;
 

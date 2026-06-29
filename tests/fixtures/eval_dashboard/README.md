@@ -4,7 +4,7 @@ These fixtures support the early smoke and regression checks for the eval-dashbo
 
 ## Fixture policy
 
-- Fixtures are curated snapshots, not live references into `data/prediction_results/logs/`.
+- Fixtures are curated snapshots, not live references into `data/results/logs/`.results
 - Prefer representative source experiments added later than `2026-01-16`.
 - Keep fixtures intentionally small and reviewable while preserving valid dashboard input shapes.
 - `run_v1` is synthetic because no natural `job_return_value.json` with `"version": 1` is currently available in the repository logs.
@@ -23,19 +23,19 @@ The fixtures below provide explicit examples for each of those plot families.
 ### `bars`
 
 - purpose: explicit grouped/standard bar-plot example for future dashboard tests
-- source basis: `data/prediction_results/logs/422_organism_trends/evaluate/multiruns/2026-04-28_18-21-06/0`
+- source basis: `data/results/logs/422_organism_trends/evaluate/multiruns/2026-04-28_18-21-06/0`
 - notes: version-0 style F1-micro snapshot that exercises the generic bar-plot path
 
 ### `errors`
 
 - purpose: explicit error-plot example for future dashboard tests
-- source basis: `data/prediction_results/logs/428_organism_trends_with_chunking/evaluate/multiruns/2026-05-04_13-01-11/8`
+- source basis: `data/results/logs/428_organism_trends_with_chunking/evaluate/multiruns/2026-05-04_13-01-11/8`
 - notes: version-0 style error collector snapshot with both `total` and `details` tabs
 
 ### `run_v0`
 
 - purpose: valid version-0 style evaluation fixture
-- source basis: `data/prediction_results/logs/397_faktencheck_core_v1_for_chunking/evaluate/multiruns/2026-04-10_16-12-49/11`
+- source basis: `data/results/logs/397_faktencheck_core_v1_for_chunking/evaluate/multiruns/2026-04-10_16-12-49/11`
 - notes: curated down to a smaller but shape-compatible snapshot
 
 ### `run_v1`
@@ -47,19 +47,19 @@ The fixtures below provide explicit examples for each of those plot families.
 ### `run_v2`
 
 - purpose: valid version-2 style evaluation fixture
-- source basis: `data/prediction_results/logs/477_organism_trends/evaluate/multiruns/2026-05-26_10-57-22/0`
+- source basis: `data/results/logs/477_organism_trends/evaluate/multiruns/2026-05-26_10-57-22/0`
 - notes: curated version-2 confusion-matrix snapshot
 
 ### `confusion_matrix`
 
 - purpose: explicit confusion-matrix example for future dashboard tests
-- source basis: `data/prediction_results/logs/477_organism_trends/evaluate/multiruns/2026-05-26_10-57-22/0`
+- source basis: `data/results/logs/477_organism_trends/evaluate/multiruns/2026-05-26_10-57-22/0`
 - notes: small version-2 confusion-matrix sample
 
 ### `tpfpfn`
 
 - purpose: explicit TP/FP/FN example for future dashboard tests
-- source basis: `data/prediction_results/logs/481_faktencheck_core/evaluate/multiruns/2026-05-26_14-21-18/0`
+- source basis: `data/results/logs/481_faktencheck_core/evaluate/multiruns/2026-05-26_14-21-18/0`
 - notes: curated version-2 TP/FP/FN collection snapshot
 
 ### `malformed`
