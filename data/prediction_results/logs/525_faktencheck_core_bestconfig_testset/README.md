@@ -146,6 +146,7 @@ Saved to `logs/525_faktencheck_core_bestconfig_testset/predict/multiruns/2026-06
 
 ## Evaluation
 
+### F1, P, R
 Base for the command is https://github.com/DFKI-NLP/kibad-llm/tree/main/data/prediction_results/logs/519_faktencheck_core
 
 ```sh
@@ -155,7 +156,22 @@ experiment/evaluate=faktencheck_core_f1_micro_flat \
 hydra.callbacks.save_job_return.multirun_show_file_contents=null \
 metric.fields=[habitat,biodiversity_level,ecosystem_type.term,ecosystem_type.category,taxa.species_group] \
 prediction_logs=[\
-logs/525_faktencheck_core_bestconfig_testset/\
+logs/525_faktencheck_core_bestconfig_testset/predict \
+] \
+--multirun
+```
+
+Saved to `logs/525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-06-29_14-39-29`
+
+### Errors
+
+```sh
+uv run -m kibad_llm.evaluate \
+name=525_faktencheck_core_bestconfig_testset \
+experiment/evaluate=prediction_errors \
+hydra.callbacks.save_job_return.multirun_show_file_contents=null \
+prediction_logs=[\
+logs/525_faktencheck_core_bestconfig_testset/predict \
 ] \
 --multirun
 ```
@@ -164,6 +180,7 @@ Saved to `logs/525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-0
 
 ## Outcome
 
+### F1, P, R
 The results in this folder can serve as a basis for the [Journal experiments](https://github.com/DFKI-NLP/kibad-llm/issues/521),
 namely for the Faktencheck core schema plots:
 
@@ -177,3 +194,9 @@ namely for the Faktencheck core schema plots:
 - [Figure/Table 3: "detail results - schema elements" for all models and the best configuration - Taxa species group](figures/faktencheck_core_f1_micro_flat-taxa.species_group/f1.svg)
 
 Todo: Discuss/interpret results
+
+### Errors
+- [No errors, vs Run 519](figures/prediction_errors-total/no_error.svg)
+- [Total errors, vs Run 519](figures/prediction_errors-total/with_error.svg)
+- [JSONDecode errors, vs Run 519](figures/prediction_errors-details/JSONDecodeError.svg)
+- [MissingResponseContent errors, vs Run 519](figures/prediction_errors-details/MissingResponseContentError.svg)

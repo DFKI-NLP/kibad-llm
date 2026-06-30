@@ -1,0 +1,34 @@
+{
+  "version": 2,
+  "type": "ErrorCollector",
+  "data": {
+    "with_error": 449,
+    "JSONDecodeError": 293,
+    "no_error": 2274,
+    "MissingResponseContentError": 120,
+    "ReasoningExtractionError": 30,
+    "APITimeoutError": 6
+  },
+  "prediction": {
+    "job_return_value": {
+      "version": 1,
+      "output_file": "predictions/525_faktencheck_core_bestconfig_testset/2026-06-23_13-25-01/2026-06-23_13-25-02_261703/predictions.jsonl",
+      "output_file_absolute": "/netscratch/hennig/code/kibad-llm/predictions/525_faktencheck_core_bestconfig_testset/2026-06-23_13-25-01/2026-06-23_13-25-02_261703/predictions.jsonl",
+      "time_pdf_conversion": 0.007233103271573782,
+      "time_extraction": 211557.57528096344,
+      "time_start": 1782213902,
+      "time_end": 1782425557,
+      "commit_hash": "11e74f3bab8ceed36682b9148d2169a24c9ed34a",
+      "branch": "exp/521_journal_publication",
+      "is_dirty": false,
+      "slurm_job_id": "3118386"
+    },
+    "overrides": {
+      "name": "525_faktencheck_core_bestconfig_testset",
+      "experiment/predict": "faktencheck_core_fields_schema_with_chunking",
+      "pdf_directory": "/ds/text/kiba-d/splits/test",
+      "extractor/llm": "gpt_5",
+      "seed": "42"
+    }
+  }
+}
