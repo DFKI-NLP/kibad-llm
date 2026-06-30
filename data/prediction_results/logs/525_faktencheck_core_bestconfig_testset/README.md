@@ -176,7 +176,7 @@ logs/525_faktencheck_core_bestconfig_testset/predict \
 --multirun
 ```
 
-Saved to `logs/525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-06-29_14-39-29`
+Saved to `logs/525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-06-30_15-39-52`
 
 ## Outcome
 
