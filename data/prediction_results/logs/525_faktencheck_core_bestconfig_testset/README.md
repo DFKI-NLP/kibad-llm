@@ -140,7 +140,7 @@ seed=42 \
 =============================================
 ```
 
-**Note:** Stopped after first seed due to costs (USD ) and time constraints (pass through 500 docs took XX hrs)
+**Note:** Stopped after first seed due to costs (USD  $195) and time constraints (pass through 500 docs took 59 hrs)
 
 Saved to `logs/525_faktencheck_core_bestconfig_testset/predict/multiruns/2026-06-23_13-25-01/`
 
