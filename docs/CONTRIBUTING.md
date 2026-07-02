@@ -253,7 +253,7 @@ uv run prek run -a
 uv run --group cicd prek run -a
 ```
 
-This runs all configured [prek](https://prek.j178.dev/) hooks (see [pre-commit-config.yaml](.pre-commit-config.yaml)) on all files. Some hooks may fix issues automatically, others will report issues that need to be fixed manually.
+This runs all configured [prek](https://prek.j178.dev/) hooks (see [pre-commit-config.yaml](/.pre-commit-config.yaml)) on all files. Some hooks may fix issues automatically, others will report issues that need to be fixed manually.
 
 To run all Python tests with `pytest`:
 
@@ -271,7 +271,7 @@ node --test tests/unit/eval_dashboard/js/*.test.mjs
 
 This requires a working Node.js installation. The dashboard runtime modules in `docs/eval-dashboard/assets/js/` are treated as ES modules via the colocated `package.json` file.
 
-The following commands run on GitHub CI (see [code_quality_and_tests.yml](.github/workflows/code_quality_and_tests.yml)), but can also be run locally:
+The following commands run on GitHub CI (see [code_quality_and_tests.yml](/.github/workflows/code_quality_and_tests.yml)), but can also be run locally:
 
 Use this exact command set before claiming local CI readiness or `CONTRIBUTING.md` test compliance. Running only the checks for the files you touched is often fine while iterating, but do not present that as a full CI-equivalent run.
 
