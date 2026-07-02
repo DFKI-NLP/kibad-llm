@@ -20,3 +20,14 @@ accept = [200, 206, 429]
 
 # Anchors on external pages can't be reliably verified.
 include_fragments = false
+
+# mkdocs-material's generated 404 page uses site-absolute (/kibad-llm/...)
+# links by design, since it may be served from any URL depth. Those don't
+# resolve as local files, so skip that page.
+exclude_path = ["site/404.html"]
+
+# Skip self-references to the deployed site: every page carries a canonical
+# <link> pointing at the production URL, which 404s for pages that only exist
+# on this branch and aren't deployed yet. Page-to-page integrity is already
+# covered by the relative links lychee resolves on disk.
+exclude = ['^https://dfki-nlp\.github\.io/kibad-llm']
