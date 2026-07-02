@@ -10,25 +10,29 @@ import re
 
 # Maps href patterns (GitHub paths) to properdocs page directories
 _REWRITES = [
-    (re.compile(r'href="/README\.md(#[^"]*)?'), "root-readme/"),
-    (re.compile(r'href="/models/README\.md(#[^"]*)?'), "models-readme/"),
-    (re.compile(r'href="/podman/faktencheck-db/README\.md(#[^"]*)?'), "podman-readme/"),
-    (re.compile(r'href="/CONTRIBUTING\.md(#[^"]*)?'), "contributing/"),
-    (re.compile(r'href="/CONTRIBUTING_CODE\.md(#[^"]*)?'), "contributing-code/"),
-    (re.compile(r'href="/CONTRIBUTING_EXPERIMENTS\.md(#[^"]*)?'), "contributing-experiments/"),
-    (re.compile(r'href="/USAGE\.md(#[^"]*)?'), "usage/"),
+    (re.compile(r'href="/models/README\.md(#[^"]*)?'), "models-readme/", "local"),
+    (re.compile(r'href="/podman/faktencheck-db/README\.md(#[^"]*)?'), "podman-readme/", "local"),
+    (re.compile(r'href="/data/readme\.md(#[^"]*)?'), "data-readme/", "local"),
+    (re.compile(r'href="\.\./docs/USAGE\.md(#[^"]*)?'), "USAGE/", "local"),
+    (re.compile(r'href="/data/([^"]*)?'), "data/", "github"),
 ]
 
 
 def on_page_content(html, page, config, files):
-    # Number of levels deep the page sits (e.g. 'root-readme/' → 0, 'a/b/' → 1)
+    # Number of levels deep the page sits (e.g. 'models-readme/' → 0, 'a/b/' → 1)
     depth = page.url.strip("/").count("/") + 1
     prefix = "../" * depth
 
-    for pattern, target in _REWRITES:
+    for pattern, target, location in _REWRITES:
 
-        def _repl(m, prefix=prefix, target=target):
+        def _repl(m, prefix=prefix, target=target, location=location):
             anchor = m.group(1) or ""
+            if location == "local":
+                pass
+            elif location == "github":
+                prefix = "https://github.com/DFKI-NLP/kibad-llm/tree/main/"
+            else:
+                prefix = location
             return f'href="{prefix}{target}{anchor}'
 
         html = pattern.sub(_repl, html)

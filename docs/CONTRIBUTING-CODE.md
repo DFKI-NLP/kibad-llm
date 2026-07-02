@@ -21,13 +21,13 @@
 
 - Do not hide unexpected behaviour or data mismatches. Handle the cases covered by the relevant code contract, but if inputs or state violate that contract, fail early and communicate that clearly, for example by raising an appropriate exception.
 - Do not hesitate to refactor code that is related to the feature or fix you are working on. Reducing duplication and clarifying responsibilities is encouraged, but every refactor should provide a concrete benefit and stay scoped to the current change.
-- Tests and code quality checks must pass before committing code or merging PRs. To ensure this, you can run them locally before pushing your code. For more info, check section [Local checks and CI commands](/CONTRIBUTING.md#local-checks-and-ci-commands).
+- Tests and code quality checks must pass before committing code or merging PRs. To ensure this, you can run them locally before pushing your code. For more info, check section [Local checks and CI commands](CONTRIBUTING.md#local-checks-and-ci-commands).
 
 ## Test design and layout
 
 Every code change should come with tests that match its scope.
 
-Use the commands in [Local checks and CI commands](/CONTRIBUTING.md#local-checks-and-ci-commands) to run the relevant unit, integration, and JavaScript logic tests locally.
+Use the commands in [Local checks and CI commands](CONTRIBUTING.md#local-checks-and-ci-commands) to run the relevant unit, integration, and JavaScript logic tests locally.
 
 ### Unit tests
 
@@ -79,7 +79,7 @@ Never run the full test suite with `WRITE_FIXTURE_DATA=1` or `WRITE_LLM_CHAT_FIX
 
 ## Documentation
 
-This section covers source-code documentation and API reference conventions. For documentation website structure, navigation, and local hosting, see [Documentation](/CONTRIBUTING.md#documentation).
+This section covers source-code documentation and API reference conventions. For documentation website structure, navigation, and local hosting, see [Documentation](CONTRIBUTING.md#documentation).
 
 ### Guidelines
 
