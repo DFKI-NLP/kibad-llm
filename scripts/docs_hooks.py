@@ -15,6 +15,7 @@ _REWRITES = [
     (re.compile(r'href="/data/readme\.md(#[^"]*)?'), "data-readme/", "local"),
     (re.compile(r'href="\.\./docs/USAGE\.md(#[^"]*)?'), "USAGE/", "local"),
     (re.compile(r'href="/data/([^"]*)?'), "data/", "github"),
+    (re.compile(r'href="/configs/([^"]*)?'), "configs/", "github"),
 ]
 
 
