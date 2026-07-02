@@ -223,7 +223,7 @@ The API reference is generated from Python source files by `scripts/build_docs.p
 
 ### Links and redirects
 
-TODO: 
+TODO:
 
 Use repository-root links such as `/CONTRIBUTING-CODE.md` when linking to root-level files from snippet-included content. If that link needs to work on the generated website, add or update the corresponding rewrite in `scripts/docs_hooks.py`.
 
