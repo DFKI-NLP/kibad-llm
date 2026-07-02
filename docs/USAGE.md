@@ -187,7 +187,7 @@ dataset.predictions.file=path/to/predictions.jsonl \
 experiment/evaluate=faktencheck_f1_micro_flat
 ```
 
-See [configs/experiment/evaluate](configs/experiment/evaluate) for available experiment configs.
+See [configs/experiment/evaluate](/configs/experiment/evaluate) for available experiment configs.
 
 ### Multirun
 

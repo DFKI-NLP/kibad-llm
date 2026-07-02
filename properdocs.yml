@@ -79,3 +79,10 @@ markdown_extensions:
       check_paths: true
   - pymdownx.highlight:
       default_lang: python
+
+
+validation:
+  links:
+    absolute_links: ignore  # our conversion script handles these
+    unrecognized_links: warn
+    anchors: warn
