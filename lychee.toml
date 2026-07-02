@@ -1,0 +1,22 @@
+# Configuration for the lychee link checker.
+#
+# This validates the *built* docs (the `site/` directory produced by
+# `properdocs build`), i.e. after scripts/docs_hooks.py has rewritten the
+# GitHub-style repository links. Checking the rendered HTML — rather than the
+# markdown source — is the only stage at which every link is in its final,
+# correct form. See https://lychee.cli.rs / https://github.com/lycheeverse/lychee
+
+# Don't spam CI logs with a live progress bar.
+no_progress = true
+
+# Cache results between runs so we don't re-hit every external host each time.
+cache = true
+max_cache_age = "1d"
+
+# Be forgiving of flaky / rate-limited external hosts (e.g. github.com).
+max_retries = 3
+retry_wait_time = 2
+accept = [200, 206, 429]
+
+# Anchors on external pages can't be reliably verified.
+include_fragments = false

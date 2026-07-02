@@ -58,6 +58,33 @@ jobs:
         run: |
           node --test tests/unit/eval_dashboard/js/*.test.mjs
         shell: bash
+  docs-linkcheck:
+    name: Docs link validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+      - name: Set up python & uv
+        uses: ./.github/actions/init-env
+        with:
+          os: "ubuntu-latest"
+          python: "3.10"
+      - name: Build the docs site
+        # Non-strict for now: link false-positives are already silenced via the
+        # `validation:` block in properdocs.yml, but unresolved griffe warnings
+        # (missing type annotations) still trip --strict. Switch to
+        # `properdocs build --strict` once those are cleaned up. Link
+        # correctness is validated against the built output by lychee below.
+        run: uv run --group cicd properdocs build
+        shell: bash
+      - name: Check links in the built site
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: --config lychee.toml --root-dir ${{ github.workspace }}/site "site/**/*.html"
+          fail: true
+        env:
+          # Lets lychee authenticate to github.com and avoid rate limiting.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   pytest:
     name: Tests with Python ${{ matrix.python }} / ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
