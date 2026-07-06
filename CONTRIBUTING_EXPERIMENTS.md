@@ -164,9 +164,8 @@ Every committed experiment needs a self-contained result description.
 
 As mentioned [above](#prepare-the-experiment-folder), you should have already documented the motivation, setup, commands, and result locations in `data/prediction_results/logs/<name>/readme.md`. Now, after inspecting the results, you should also:
 
-- add an `Outcome` section (result analysis, hypothesis evaluation and recommendations for the project, e.g. "the model / feature provides the best results, so we should enable it per default for future experiments"), and
-- include relevant dashboard figures from `figures/` (add subfolders, if appropriate), e.g. `![f1.png](figures/setup_a/f1.png)`, and
-- describe the outcome textually, including whether the hypothesis was supported.
+- include relevant dashboard figures from `figures/` (add subfolders, if appropriate), e.g. `![f1.png](figures/setup_a/f1.png)`, to the respective sections, and
+- add an `Outcome` section describing the outcome textually. This should include a result analysis, the hypothesis evaluation, naming any unexpected outcome and, finally, derived recommendations wrt. the project, e.g. "the model / feature provides the best results, so we should enable it per default for future experiments".
 
 Then add a row to the table in [data/prediction_results/readme.md](https://github.com/DFKI-NLP/kibad-llm/tree/main/data/prediction_results/readme.md) with:
 
