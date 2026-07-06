@@ -14,7 +14,7 @@ Use this guide when you create, run, evaluate, or document reproducible experime
     - [Run evaluations](#run-evaluations)
     - [Inspect results in the eval dashboard](#inspect-results-in-the-eval-dashboard)
 - [Describe and interpret results](#describe-and-interpret-results)
-- [Finalizing the documentation](#finalizing-the-documentation)
+- [Finalize the documentation](#finalize-the-documentation)
 - [Result locations](#result-locations)
 
 ## Setup
