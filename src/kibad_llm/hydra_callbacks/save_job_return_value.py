@@ -1,3 +1,9 @@
+"""TODO:
+
+
+"""
+
+
 from collections.abc import Hashable, Iterable
 import json
 import logging
@@ -21,10 +27,18 @@ from kibad_llm.utils.job_return import (
 )
 
 
-def to_py_obj(obj: Any) -> Any:
-    """Convert a PyTorch tensor, Numpy array or python list to a python list.
+def to_py_obj(obj: Any) -> list[Any]:
+    """Recursively convert numpay arrays to python lists.
+
+    Recurses dictionaries, lists, tuples.
 
     Modified version of transformers.utils.generic.to_py_obj.
+
+    Args:
+        obj: A sequence of objects as PyTorch tensor, Numpy array or python list.
+
+    Returns:
+        The input sequence converted to a python list.
     """
     if isinstance(obj, dict):
         return {k: to_py_obj(v) for k, v in obj.items()}
@@ -36,7 +50,7 @@ def to_py_obj(obj: Any) -> Any:
         return obj
 
 
-def list_of_dicts_to_dict_of_lists_recursive(list_of_dicts):
+def list_of_dicts_to_dict_of_lists_recursive(list_of_dicts: list[dict]) -> dict[Any, Any] | list[Any]:
     """Convert a list of dicts to a dict of lists recursively.
 
     Examples:
@@ -56,10 +70,10 @@ def list_of_dicts_to_dict_of_lists_recursive(list_of_dicts):
         {'a': [1, None], 'b': {'c': [2, None]}}
 
     Args:
-        list_of_dicts (list[dict]): A list of dicts.
+        list_of_dicts: A list of dicts.
 
     Returns:
-        dict: An arbitrarily nested dict of lists.
+        An arbitrarily nested dict of lists.
     """
     if not list_of_dicts:
         return {}
@@ -202,67 +216,70 @@ class SaveJobReturnValueCallback(Callback):
     additionally in a common file in the multi-run log directory. If integrate_multirun_result=True, the
     job return-values are also aggregated (e.g. mean, min, max) and saved in another file.
 
-    params:
-    -------
-    filenames: str or list[str] (default: "job_return_value.json")
-        The filename(s) of the file(s) to save the job return-value to. If it ends with ".json",
-        the return-value will be saved as a json file. If it ends with ".md", the return-value will be
-        saved as a markdown file.
-    integrate_multirun_result: bool (default: True)
-        If True, the job return-values of all jobs from a multi-run will be rearranged into a dict of lists (maybe
-        nested), where the keys are the keys of the job return-values and the values are lists of the corresponding
-        values of all jobs. This is useful if you want to access specific values of all jobs in a multi-run all at once.
-        Also, aggregated values (e.g. mean, min, max) are created for all numeric values and saved in another file.
-    multirun_aggregator_blacklist: list[str] (default: None)
-        A list of keys to exclude from the aggregation (of multirun results), such as "count" or "25%". If None,
-        all keys are included. See pd.DataFrame.describe() for possible aggregation keys.
-        For numeric values, it is recommended to use ["min", "25%", "50%", "75%", "max"]
-        which will result in keeping only the count, mean and std values.
-    sort_markdown_columns: bool (default: False)
-        If True, the columns of the markdown table are sorted alphabetically.
-    markdown_round_digits: int (default: 3)
-        The number of digits to round the values in the markdown file. If None, no rounding is applied.
-    markdown_data_key: str (default: None)
-        If povided, use only the value at this key when saving single job results to markdown. This is useful
-        to strip metadata from the job result and, thus, allowing for correct table formatting of metric results,
-        for instance.
-    multirun_create_ids_from_overrides: bool (default: False)
-        Create job identifiers from the overrides of the jobs in a multi-run. If False, the job index is used as
-        identifier.
-    handle_previous_result: str (default: None)
-        If provided, assume that the job return-value contains a field with the given name (e.g. "prediction") that itself
-        contains an "overrides" field, the overrides from this field are either used to replace the existing overrides
-        in the job return object (if replace_existing_overrides is True) or simply converted to a dictionary and added
-        back to the job return-value (if replace_existing_overrides is False). Furthermore, the field is removed from
-        the job return-value before saving it as markdown to avoid destroying the table structure.
-    replace_existing_overrides: bool (default: False)
-        If True, replace existing overrides in the job return-value with the overrides from the job return
-        object if available. If False, the overrides are just converted to a dictionary, if available.
-    add_overrides_as_dict: bool (default: False)
-        If True, add the overrides as a dictionary to each job return-value under the key "overrides".
-    multirun_job_id_key: str (default: "job_id")
-        The key to use for the job identifiers in the integrated multi-run result.
-    multirun_convert_job_ids: bool (default: False)
-        If True, convert job ids to dictionaries. Works only if integrate_multirun_result is True.
-    multirun_show_file_contents: list[str] (default: None)
-        A list of filenames (from the filenames parameter or aggregated files) to log the contents
-        to the console after saving the multi-run results.
-    multirun_overrides_separator: str (default: "-")
-        The separator to use when creating job identifiers from overrides.
-    multirun_markdown_group_by: str or list[str] (default: None)
-        The column(s) to group by when saving the multi-run result as markdown file. For numeric columns,
-        the mean and std are calculated. For non-numeric columns, a list of values is created. If None,
-        no grouping is applied.
-    multirun_markdown_transpose: bool (default: False)
-        If True, transpose the markdown table for multi-run results.
-    paths_file: str (default: None)
-        The file to save the paths of the log directories to. If None, the paths are not saved.
-    path_id: str (default: None)
-        A prefix to add to each line in the paths_file separated by a colon. If None, no prefix is added.
-    multirun_paths_file: str (default: None)
-        The file to save the paths of the multi-run log directories to. If None, the paths are not saved.
-    multirun_path_id: str (default: None)
-        A prefix to add to each line in the multirun_paths_file separated by a colon. If None, no prefix is added.
+    Attributes:
+        filenames: str or list[str] (default: "job_return_value.json")
+            The filename(s) of the file(s) to save the job return-value to. If it ends with ".json",
+            the return-value will be saved as a json file. If it ends with ".md", the return-value will be
+            saved as a markdown file.
+        integrate_multirun_result: bool (default: True)
+            If True, the job return-values of all jobs from a multi-run will be rearranged into a dict of lists (maybe
+            nested), where the keys are the keys of the job return-values and the values are lists of the corresponding
+            values of all jobs. This is useful if you want to access specific values of all jobs in a multi-run all at once.
+            Also, aggregated values (e.g. mean, min, max) are created for all numeric values and saved in another file.
+        multirun_aggregator_blacklist: list[str] (default: None)
+            A list of keys to exclude from the aggregation (of multirun results), such as "count" or "25%". If None,
+            all keys are included. See pd.DataFrame.describe() for possible aggregation keys.
+            For numeric values, it is recommended to use ["min", "25%", "50%", "75%", "max"]
+            which will result in keeping only the count, mean and std values.
+        sort_markdown_columns: bool (default: False)
+            If True, the columns of the markdown table are sorted alphabetically.
+        markdown_round_digits: int (default: 3)
+            The number of digits to round the values in the markdown file. If None, no rounding is applied.
+        markdown_data_key: str (default: None)
+            If povided, use only the value at this key when saving single job results to markdown. This is useful
+            to strip metadata from the job result and, thus, allowing for correct table formatting of metric results,
+            for instance.
+        multirun_create_ids_from_overrides: bool (default: False)
+            Create job identifiers from the overrides of the jobs in a multi-run. If False, the job index is used as
+            identifier.
+        handle_previous_result: str (default: None)
+            If provided, assume that the job return-value contains a field with the given name (e.g. "prediction") that itself
+            contains an "overrides" field, the overrides from this field are either used to replace the existing overrides
+            in the job return object (if replace_existing_overrides is True) or simply converted to a dictionary and added
+            back to the job return-value (if replace_existing_overrides is False). Furthermore, the field is removed from
+            the job return-value before saving it as markdown to avoid destroying the table structure.
+        replace_existing_overrides: bool (default: False)
+            If True, replace existing overrides in the job return-value with the overrides from the job return
+            object if available. If False, the overrides are just converted to a dictionary, if available.
+        add_overrides_as_dict: bool (default: False)
+            If True, add the overrides as a dictionary to each job return-value under the key "overrides".
+        multirun_job_id_key: str (default: "job_id")
+            The key to use for the job identifiers in the integrated multi-run result.
+        multirun_convert_job_ids: bool (default: False)
+            If True, convert job ids to dictionaries. Works only if integrate_multirun_result is True.
+        multirun_show_file_contents: list[str] (default: None)
+            A list of filenames (from the filenames parameter or aggregated files) to log the contents
+            to the console after saving the multi-run results.
+        multirun_overrides_separator: str (default: "-")
+            The separator to use when creating job identifiers from overrides.
+        multirun_markdown_group_by: str or list[str] (default: None)
+            The column(s) to group by when saving the multi-run result as markdown file. For numeric columns,
+            the mean and std are calculated. For non-numeric columns, a list of values is created. If None,
+            no grouping is applied.
+        multirun_markdown_transpose: bool (default: False)
+            If True, transpose the markdown table for multi-run results.
+        paths_file: str (default: None)
+            The file to save the paths of the log directories to. If None, the paths are not saved.
+        path_id: str (default: None)
+            A prefix to add to each line in the paths_file separated by a colon. If None, no prefix is added.
+        multirun_paths_file: str (default: None)
+            The file to save the paths of the multi-run log directories to. If None, the paths are not saved.
+        multirun_path_id: str (default: None)
+            A prefix to add to each line in the multirun_paths_file separated by a colon. If None, no prefix is added.
+
+    Methods:
+        on_job_end: TODO:
+        on_multirun_end: TODO:
     """
 
     def __init__(
@@ -314,6 +331,15 @@ class SaveJobReturnValueCallback(Callback):
         self.path_id = path_id
 
     def on_job_end(self, config: DictConfig, job_return: JobReturn, **kwargs: Any) -> None:
+        """Collate a jobs config and logs to save with internal _save method.
+
+        Args:
+            config: Hydra config of the given job.
+            job_return: The Hydra jobs output logs.
+
+        Keyword Args:
+            Any: All kwargs are discarded.
+        """
         if self.handle_previous_result is not None:
             handle_previous_overrides(
                 job_return,
@@ -321,7 +347,7 @@ class SaveJobReturnValueCallback(Callback):
                 replace_existing=self.replace_existing_overrides,
             )
         self.job_returns.append(job_return)
-        output_dir = Path(config.hydra.runtime.output_dir)  # / Path(config.hydra.output_subdir)
+        output_dir = Path(config.hydra.runtime.output_dir)  # / Path(config.hydra.output_subdir) <- remove old code?
         if self.paths_file is not None:
             # append the output_dir to the file
             with open(self.paths_file, "a") as file:
@@ -348,6 +374,14 @@ class SaveJobReturnValueCallback(Callback):
             self._save(obj=obj, filename=filename, output_dir=output_dir)
 
     def on_multirun_end(self, config: DictConfig, **kwargs: Any) -> None:
+        """TODO:
+
+        Args:
+            config: The multiruns Hydra config.
+
+        Keyword Args:
+            Any: All kwargs are discarded.
+        """
         job_ids: list[str] | list[int] | None = None
         if self.multirun_create_ids_from_overrides:
             overrides_per_result = [jr.overrides or [] for jr in self.job_returns]
@@ -474,6 +508,19 @@ class SaveJobReturnValueCallback(Callback):
         unstack_last_index_level: bool = False,
         markdown_group_by: list[str] | None = None,
     ) -> None:
+        """TODO:
+
+        Args:
+            obj: 
+            filename: 
+            output_dir: 
+            is_tabular_data: 
+            unstack_last_index_level: 
+            markdown_group_by: 
+
+        Raises:
+            ValueError: 
+        """
         self.log.info(f"Saving job_return in {output_dir / filename}")
         output_dir.mkdir(parents=True, exist_ok=True)
         assert output_dir is not None
