@@ -44,7 +44,7 @@ cp .env.example .env
 
 ## Datasets
 
-See [data/readme.md](data/readme.md) for an in-depth documentation of the various datasets and ground truth reference files available, as well as other potentially relevant data sources.
+See [data/readme.md](/data/readme.md) for an in-depth documentation of the various datasets and ground truth reference files available, as well as other potentially relevant data sources.
 
 ## PDF Download Based on Zotero Groups
 
@@ -54,7 +54,7 @@ It is possible to download papers using the open access url from Semantic Schola
 
 ### Prerequisites
 
-An export of a Zotero group as CSV file, see [data/external/zotero](data/external/zotero) for the "Faktencheck Artenvielfalt" groups. Information how to export a Zotero group can be found in the [Zotero documentation](https://www.zotero.org/support/kb/exporting).
+An export of a Zotero group as CSV file, see [data/external/zotero](/data/external/zotero) for the "Faktencheck Artenvielfalt" groups. Information how to export a Zotero group can be found in the [Zotero documentation](https://www.zotero.org/support/kb/exporting).
 
 ### Downloading Papers
 
@@ -128,15 +128,15 @@ uv run -m kibad_llm.predict \
 pdf_directory=path/to/pdf/files
 ```
 
-This will process all PDF files in `pdf_directory` and save the result in a JSON line file. See [data/readme.md](data/readme.md) for a description of the various PDF datasets available, and their storage locations.
+This will process all PDF files in `pdf_directory` and save the result in a JSON line file. See [data/readme.md](/data/readme.md) for a description of the various PDF datasets available, and their storage locations.
 
-See [configs/predict](./configs/predict.yaml) for further information and options.
+See [configs/predict](/configs/predict.yaml) for further information and options.
 
 **NOTE:** If you plan on using OpenAI API models such as 'gpt_5' or access-restricted Huggingface models such as
 'gemma3_27b', you need to set the environment variables `OPENAI_API_KEY` and/or `HF_TOKEN` in your `.env` file.
 You can create an Open AI key at https://platform.openai.com/api-keys and Huggingface access tokens at https://huggingface.co/settings/tokens.
 
-IMPORTANT: Relevant inference setups should be defined in their own `experiment/predict` config. This allows to easily reproduce results later on by adding `experiment/predict=<experiment_config>` to the command line call. For example, to run the experiment with two schemata ([configs/experiment/predict/faktencheck_two_schemata.yaml](./configs/experiment/predict/faktencheck_two_schemata.yaml)), use:
+IMPORTANT: Relevant inference setups should be defined in their own `experiment/predict` config. This allows to easily reproduce results later on by adding `experiment/predict=<experiment_config>` to the command line call. For example, to run the experiment with two schemata ([configs/experiment/predict/faktencheck_two_schemata.yaml](/configs/experiment/predict/faktencheck_two_schemata.yaml)), use:
 
 ```bash
 uv run -m kibad_llm.predict \
@@ -144,9 +144,9 @@ pdf_directory=path/to/pdf/files \
 experiment/predict=faktencheck_two_schemata
 ```
 
-See [configs/experiment/predict](./configs/experiment/predict) for available experiment configs.
+See [configs/experiment/predict](/configs/experiment/predict) for available experiment configs.
 
-There are inference options in [configs/predict](./configs/predict.yaml) that may significantly speed up the process. Those are disabled per default because they have the potential to overwhelm the provided hardware.
+There are inference options in [configs/predict](/configs/predict.yaml) that may significantly speed up the process. Those are disabled per default because they have the potential to overwhelm the provided hardware.
 
 <details>
 <summary>Click for more info.</summary>
@@ -171,15 +171,15 @@ uv run -m kibad_llm.evaluate \
 dataset.predictions.file=path/to/predictions.jsonl
 ```
 
-Per default, this uses `dataset=faktencheck` with `data/interim/faktencheck-db/faktencheck-db-converted_2025-11-05.jsonl` as reference data and calculates micro averaged precision, recall and F1-score for all fields in the Faktencheck database (i.e., `metric=f1_micro`, see [configs/metric/f1_micro.yaml](./configs/metric/f1_micro.yaml) for details). See [configs/metric](./configs/metric) for other available metrics.
+Per default, this uses `dataset=faktencheck` with `data/interim/faktencheck-db/faktencheck-db-converted_2025-11-05.jsonl` as reference data and calculates micro averaged precision, recall and F1-score for all fields in the Faktencheck database (i.e., `metric=f1_micro`, see [configs/metric/f1_micro.yaml](/configs/metric/f1_micro.yaml) for details). See [configs/metric](/configs/metric) for other available metrics.
 
-To evaluate against a different dataset, set the `dataset` parameter. For instance, to evaluate organism trends for the forest habitat, use `dataset=organism_trends_forest`. See [configs/dataset](./configs/dataset) for available datasets, and [data/readme.md](data/readme.md) for a description of the ground truth dataset files available.
+To evaluate against a different dataset, set the `dataset` parameter. For instance, to evaluate organism trends for the forest habitat, use `dataset=organism_trends_forest`. See [configs/dataset](/configs/dataset) for available datasets, and [data/readme.md](/data/readme.md) for a description of the ground truth dataset files available.
 
-See [configs/evaluate.yaml](./configs/evaluate.yaml) for further information and options.
+See [configs/evaluate.yaml](/configs/evaluate.yaml) for further information and options.
 
 Note: The `confusion_matrix` metric calculates the confusion matrix just for a single field, which needs to be specified (`metric.field=<field>`). To evaluate multiple fields at once, use multirun below.
 
-Similar as for inference, relevant evaluation setups should be defined in their own `experiment/evaluate` config. For example, to run the evaluation with the F1 scores on the flattened Faktencheck predictions ([configs/experiment/evaluate/faktencheck_f1_micro_flat.yaml](./configs/experiment/evaluate/faktencheck_f1_micro_flat.yaml)), use:
+Similar as for inference, relevant evaluation setups should be defined in their own `experiment/evaluate` config. For example, to run the evaluation with the F1 scores on the flattened Faktencheck predictions ([configs/experiment/evaluate/faktencheck_f1_micro_flat.yaml](/configs/experiment/evaluate/faktencheck_f1_micro_flat.yaml)), use:
 
 ```bash
 uv run -m kibad_llm.evaluate \
@@ -187,7 +187,7 @@ dataset.predictions.file=path/to/predictions.jsonl \
 experiment/evaluate=faktencheck_f1_micro_flat
 ```
 
-See [configs/experiment/evaluate](configs/experiment/evaluate) for available experiment configs.
+See [configs/experiment/evaluate](/configs/experiment/evaluate) for available experiment configs.
 
 ### Multirun
 
@@ -235,7 +235,7 @@ uv run -m kibad_llm.evaluate \
   --multirun
 ```
 
-See [configs/hydra/default.yaml](./configs/hydra/default.yaml) for further configuration options and details on the Hydra callback to create the combined output (`save_job_return`).
+See [configs/hydra/default.yaml](/configs/hydra/default.yaml) for further configuration options and details on the Hydra callback to create the combined output (`save_job_return`).
 
 ### A/B Testing with Multiple Seeds
 
