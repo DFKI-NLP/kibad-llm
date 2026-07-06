@@ -99,9 +99,6 @@ High-level overview of contributor-relevant paths (local caches and other genera
 │                                  editor settings, and other machine-specific artefacts, while explicitly keeping
 │                                  versioned directories such as `data/prediction_results/` and `data/processed/`.
 ├── .pre-commit-config.yaml     <- `prek`/pre-commit hook configuration used locally and in CI.
-├── CONTRIBUTING.md             <- Contribution workflow and repository-level contribution guidelines.
-├── CONTRIBUTING-CODE.md        <- Source-code, test, documentation, and dependency guidelines.
-├── CONTRIBUTING-EXPERIMENTS.md <- Experiment planning, execution, result tracking, and documentation guidelines.
 ├── LICENSE                     <- AGPL-v3 license text for the project.
 ├── Makefile                    <- Legacy helper targets. TODO: clarify which targets are still maintained now that
 │                                  the project uses `uv` instead of `poetry` in most docs.
@@ -114,7 +111,6 @@ High-level overview of contributor-relevant paths (local caches and other genera
 │                                  against it.
 ├── run_with_llm_login_node_exec.sh <- Variant of the previous helper that keeps the `uv` side on the login node.
 │                                  TODO: Since this is not used so far, should we remove it?
-├── USAGE.md                    <- Detailed usage instructions for data integration, prediction, and evaluation.
 └── uv.lock                     <- Locked dependency set managed by `uv`. Do not touch!
 ```
 
