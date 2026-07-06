@@ -13,7 +13,7 @@ Use this guide when you create, run, evaluate, or document reproducible experime
     - [Run predictions](#run-predictions)
     - [Run evaluations](#run-evaluations)
     - [Inspect results in the eval dashboard](#inspect-results-in-the-eval-dashboard)
-- [Describing and interpreting results](#describing-and-interpreting-results)
+- [Describe and interpret results](#describe-and-interpret-results)
 - [Finalizing the documentation](#finalizing-the-documentation)
 - [Result locations](#result-locations)
 
@@ -162,13 +162,13 @@ data/prediction_results/logs/<name>/figures/
 > [!IMPORTANT]
 > You should include relevant dashboard figures from `figures/` (add subfolders, if appropriate), e.g. `![f1.png](figures/setup_a/f1.png)`, in the respective sections of the experiment readme.
 
-## Describing and interpreting results
+## Describe and interpret results
 
 As mentioned [above](#prepare-the-experiment-folder), you should have already documented the motivation, setup, commands, and result locations in the experiment readme. Now, after inspecting the results, you should also add an `Outcome` section describing the outcome of this experiment textually. This should include a result analysis, the hypothesis evaluation, but also naming any *unexpected* outcome and, finally, derived recommendations wrt. the project, e.g. "the model / feature provides the best results, so we should enable it per default for future experiments".
 
-## Finalizing the documentation
+## Finalize the documentation
 
-Add a row to the table in [data/prediction_results/readme.md](https://github.com/DFKI-NLP/kibad-llm/tree/main/data/prediction_results/readme.md) with:
+Add a row to the overview table in [data/prediction_results/readme.md](https://github.com/DFKI-NLP/kibad-llm/tree/main/data/prediction_results/readme.md) with:
 
 - the log folder link,
 - the date,
