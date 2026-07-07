@@ -1,6 +1,6 @@
 # 542_faktencheck_core
 
-evaluation on only the best setup (with chunking, corrected gold data, full dev set) from [397_faktencheck_core_v1_for_chunking](../397_faktencheck_core_v1_for_chunking), but against the old (not corrected) reference file `faktencheck-db-converted_2025-11-05.jsonl`
+evaluation on only the best setup (with chunking, full dev set) from [397_faktencheck_core_v1_for_chunking](../397_faktencheck_core_v1_for_chunking), but against the old (not corrected) reference file `faktencheck-db-converted_2025-11-05.jsonl`
 
 ## f1
 
