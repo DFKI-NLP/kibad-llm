@@ -19,7 +19,7 @@ Use this guide when you create, run, evaluate, or document reproducible experime
 
 ## Setup
 
-Follow the general setup instructions in the [README.md](/README.md) and [CONTRIBUTING.md](/CONTRIBUTING.md#setup).
+Follow the general setup instructions in the [USAGE.md](USAGE.md) and [CONTRIBUTING.md](CONTRIBUTING.md#setup).
 
 For prediction runs, also follow [models/README.md](/models/README.md). Cluster prediction experiments usually should use the `in_process` LLM variants and the `run_in_process.sh` helper.
 
@@ -27,7 +27,7 @@ If a prediction run needs API keys or model-download credentials, create `.env` 
 
 ## Datasets
 
-See [data/readme.md](data/readme.md) for a description of the various PDF datasets and ground truth reference files that are currently available, as well as their
+See [data/readme.md](/data/readme.md) for a description of the various PDF datasets and ground truth reference files that are currently available, as well as their
 storage locations.
 
 ## Planning

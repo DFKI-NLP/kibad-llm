@@ -99,9 +99,6 @@ High-level overview of contributor-relevant paths (local caches and other genera
 │                                  editor settings, and other machine-specific artefacts, while explicitly keeping
 │                                  versioned directories such as `data/prediction_results/` and `data/processed/`.
 ├── .pre-commit-config.yaml     <- `prek`/pre-commit hook configuration used locally and in CI.
-├── CONTRIBUTING.md             <- Contribution workflow and repository-level contribution guidelines.
-├── CONTRIBUTING_CODE.md        <- Source-code, test, documentation, and dependency guidelines.
-├── CONTRIBUTING_EXPERIMENTS.md <- Experiment planning, execution, result tracking, and documentation guidelines.
 ├── LICENSE                     <- AGPL-v3 license text for the project.
 ├── Makefile                    <- Legacy helper targets. TODO: clarify which targets are still maintained now that
 │                                  the project uses `uv` instead of `poetry` in most docs.
@@ -114,7 +111,6 @@ High-level overview of contributor-relevant paths (local caches and other genera
 │                                  against it.
 ├── run_with_llm_login_node_exec.sh <- Variant of the previous helper that keeps the `uv` side on the login node.
 │                                  TODO: Since this is not used so far, should we remove it?
-├── USAGE.md                    <- Detailed usage instructions for data integration, prediction, and evaluation.
 └── uv.lock                     <- Locked dependency set managed by `uv`. Do not touch!
 ```
 
@@ -185,13 +181,13 @@ The name should be descriptive and concise, ideally reflecting the work done on 
 
 ## Source Code
 
-The source-code guidelines live in [CONTRIBUTING_CODE.md](/CONTRIBUTING_CODE.md).
+The source-code guidelines live in [CONTRIBUTING-CODE.md](CONTRIBUTING-CODE.md).
 
 They cover general implementation principles, test layout, source-code documentation standards, fixture regeneration, and dependency changes.
 
 ## Experiments
 
-The experiment guidelines live in [CONTRIBUTING_EXPERIMENTS.md](/CONTRIBUTING_EXPERIMENTS.md).
+The experiment guidelines live in [CONTRIBUTING-EXPERIMENTS.md](CONTRIBUTING-EXPERIMENTS.md).
 
 They cover how to plan, configure, run, track, and document reproducible experiments for this project.
 
@@ -199,7 +195,7 @@ They cover how to plan, configure, run, track, and document reproducible experim
 
 This project uses [ProperDocs](https://properdocs.org/) for the documentation website, which is hosted on [GitHub Pages](https://dfki-nlp.github.io/kibad-llm/).
 
-Documentation changes should be part of the same PR as the code or workflow changes they describe. For source-code docstring and API reference rules, see [CONTRIBUTING_CODE.md](/CONTRIBUTING_CODE.md#documentation).
+Documentation changes should be part of the same PR as the code or workflow changes they describe. For source-code docstring and API reference rules, see [CONTRIBUTING-CODE.md](CONTRIBUTING-CODE.md#documentation).
 
 ### Documentation sources
 
@@ -223,7 +219,9 @@ The API reference is generated from Python source files by `scripts/build_docs.p
 
 ### Links and redirects
 
-Use repository-root links such as `/CONTRIBUTING_CODE.md` when linking to root-level files from snippet-included content. If that link needs to work on the generated website, add or update the corresponding rewrite in `scripts/docs_hooks.py`.
+TODO:
+
+Use repository-root links such as `/CONTRIBUTING-CODE.md` when linking to root-level files from snippet-included content. If that link needs to work on the generated website, add or update the corresponding rewrite in `scripts/docs_hooks.py`.
 
 If a public documentation URL changes, add a redirect in `properdocs.yml` so existing links keep working.
 
@@ -251,7 +249,7 @@ uv run prek run -a
 uv run --group cicd prek run -a
 ```
 
-This runs all configured [prek](https://prek.j178.dev/) hooks (see [pre-commit-config.yaml](.pre-commit-config.yaml)) on all files. Some hooks may fix issues automatically, others will report issues that need to be fixed manually.
+This runs all configured [prek](https://prek.j178.dev/) hooks (see [pre-commit-config.yaml](/.pre-commit-config.yaml)) on all files. Some hooks may fix issues automatically, others will report issues that need to be fixed manually.
 
 To run all Python tests with `pytest`:
 
@@ -269,7 +267,7 @@ node --test tests/unit/eval_dashboard/js/*.test.mjs
 
 This requires a working Node.js installation. The dashboard runtime modules in `docs/eval-dashboard/assets/js/` are treated as ES modules via the colocated `package.json` file.
 
-The following commands run on GitHub CI (see [code_quality_and_tests.yml](.github/workflows/code_quality_and_tests.yml)), but can also be run locally:
+The following commands run on GitHub CI (see [code_quality_and_tests.yml](/.github/workflows/code_quality_and_tests.yml)), but can also be run locally:
 
 Use this exact command set before claiming local CI readiness or `CONTRIBUTING.md` test compliance. Running only the checks for the files you touched is often fine while iterating, but do not present that as a full CI-equivalent run.
 
@@ -280,7 +278,7 @@ uv run --group cicd pytest -m "not slow"
 node --test tests/unit/eval_dashboard/js/*.test.mjs
 ```
 
-For test design, layout, and fixture regeneration guidance, see [CONTRIBUTING_CODE.md](/CONTRIBUTING_CODE.md).
+For test design, layout, and fixture regeneration guidance, see [CONTRIBUTING-CODE.md](CONTRIBUTING-CODE.md).
 
 ## Misc
 
