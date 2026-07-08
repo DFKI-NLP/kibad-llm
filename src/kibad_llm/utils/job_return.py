@@ -227,55 +227,50 @@ def mixed_group_by(
     force_list_col_regex: str | None = None,
     columns_name: str | None = None,
 ) -> pd.DataFrame:
-    """
-    Group a DataFrame by one or more columns and aggregate numeric vs. non-numeric
+    """Group a DataFrame by one or more columns and aggregate numeric vs. non-numeric
     columns differently.
 
     This helper is meant for "mixed" tables where you want summary statistics for
     numeric columns (e.g., mean/std/min/max) while keeping all values for
     non-numeric columns as lists.
 
-    Behavior
-    --------
-    - ``by`` is normalized to a list of column names.
-    - Dtypes are tightened via ``DataFrame.convert_dtypes()`` (helps separate
-      numeric vs. non-numeric columns reliably).
-    - Missing values in grouping columns are filled with the empty string ``""``
-      so rows with NA keys still participate in grouping.
-    - Numeric columns (``np.number``) are aggregated with ``numeric_agg_func``.
-      If multiple functions are used, the resulting MultiIndex columns are
-      flattened via ``multi_index_to_single(..., sep=".")``.
-    - All remaining columns are aggregated using ``list`` (one list per group).
-    - Columns that are entirely NA after aggregation are dropped.
+    Behavior:
+        - `by` is normalized to a list of column names.
+        - Dtypes are tightened via `DataFrame.convert_dtypes()` (helps separate
+          numeric vs. non-numeric columns reliably).
+        - Missing values in grouping columns are filled with the empty string `""`
+          so rows with NA keys still participate in grouping.
+        - Numeric columns (`np.number`) are aggregated with `numeric_agg_func`.
+          If multiple functions are used, the resulting MultiIndex columns are
+          flattened via `multi_index_to_single(..., sep=".")`.
+        - All remaining columns are aggregated using `list` (one list per group).
+        - Columns that are entirely NA after aggregation are dropped.
 
-    Parameters
-    ----------
-    data:
-        Input DataFrame to group and aggregate.
-    by:
-        Column name or list of column names to group by.
-    numeric_agg_func:
-        Aggregation function(s) for numeric columns, passed to
-        ``DataFrameGroupBy.agg``. Can be a pandas agg string (e.g. ``"mean"``),
-        a callable, or a list mixing both (e.g. ``["mean", "std"]``).
-    numeric_fill_na:
-        If not ``None``, fill NA values in the aggregated numeric result with
-        this value (applied after aggregation).
-    force_list_col_regex:
-        Optional regex. Columns whose names match this pattern are treated as
-        non-numeric (i.e., aggregated as ``list``) even if their dtype is numeric.
-        Useful for numeric-coded identifiers that should not be summarized.
-    columns_name:
-        Optional name for the resulting DataFrame columns.
+    Args:
+        data:
+            Input DataFrame to group and aggregate.
+        by:
+            Column name or list of column names to group by.
+        numeric_agg_func:
+            Aggregation function(s) for numeric columns, passed to
+            `DataFrameGroupBy.agg`. Can be a pandas agg string (e.g. `"mean"`),
+            a callable, or a list mixing both (e.g. `["mean", "std"]`).
+        numeric_fill_na:
+            If not `None`, fill NA values in the aggregated numeric result with
+            this value (applied after aggregation).
+        force_list_col_regex:
+            Optional regex. Columns whose names match this pattern are treated as
+            non-numeric (i.e., aggregated as `list`) even if their dtype is numeric.
+            Useful for numeric-coded identifiers that should not be summarized.
+        columns_name:
+            Optional name for the resulting DataFrame columns.
 
-    Returns
-    -------
-    pd.DataFrame
-        Aggregated DataFrame with:
-        - one row per group,
-        - flattened numeric aggregation columns (e.g., ``"score.mean"``),
-        - list-aggregated non-numeric columns,
-        - and no all-NA columns.
+    Returns:
+        Aggregated DataFrame with:<br>
+            - one row per group,<br>
+            - flattened numeric aggregation columns (e.g., `"score.mean"`),<br>
+            - list-aggregated non-numeric columns,<br>
+            - and no all-NA columns.
     """
 
     # make a copy to not modify the original data
