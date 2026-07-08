@@ -58,6 +58,17 @@ Result location: `logs/440_gpt_oss_120b_faktencheck_core/evaluate/multiruns/2026
 | **ALL** | **0.674** | **0.675** | **0.678** |
 | **AVG** | **0.688** | **0.689** | **0.693** |
 
+![legend.svg](figures/faktencheck_core_f1_micro_flat-ALL/legend.svg)
+
+#### F1
+![f1.svg](figures/faktencheck_core_f1_micro_flat-ALL/f1.svg)
+
+#### Precision
+![precision.svg](figures/faktencheck_core_f1_micro_flat-ALL/precision.svg)
+
+#### Recall
+![recall.svg](figures/faktencheck_core_f1_micro_flat-ALL/recall.svg)
+
 ### Errors
 
 ```bash
@@ -77,6 +88,9 @@ Result location: `logs/440_gpt_oss_120b_faktencheck_core/evaluate/multiruns/2026
 | 1337 | 1653 | 1 | JSONDecodeError |
 | 7331 | 1650 | 4 | JSONDecodeError |
 
+![no_error.svg](figures/prediction_errors-total/no_error.svg)
+![with_error.svg](figures/prediction_errors-total/with_error.svg)
+
 ## Outcome
 
 The error rate is very low: 1–4 `JSONDecodeError`s per seed out of ~1654 total chunks (~0.06–0.24%).
@@ -86,18 +100,3 @@ that the default chunk size (20k characters) fits comfortably within `max_model_
 gpt-oss-120b achieves the highest ALL F1 among all models evaluated on this experiment, with a mean
 ALL F1 of **0.676** (5-field subset, corrected reference data). It leads on `habitat` (~0.84) and
 `ecosystem_type.category` (~0.80), and is competitive on all other fields.
-
-![legend.svg](figures/faktencheck_core_f1_micro_flat-ALL/legend.svg)
-
-#### F1
-![f1.svg](figures/faktencheck_core_f1_micro_flat-ALL/f1.svg)
-
-#### Precision
-![precision.svg](figures/faktencheck_core_f1_micro_flat-ALL/precision.svg)
-
-#### Recall
-![recall.svg](figures/faktencheck_core_f1_micro_flat-ALL/recall.svg)
-
-#### Errors
-![no_error.svg](figures/prediction_errors-total/no_error.svg)
-![with_error.svg](figures/prediction_errors-total/with_error.svg)
