@@ -1,8 +1,17 @@
-"""TODO:
+"""This File handles the saving of Hydra jobs' and multiruns' outputs.
 
+Classes:
+    SaveJobReturnValueCallback: Handles the saving of logs, configs, and other data at the ends of jobs and multiruns.
+
+Functions:
+    to_py_obj: Tecursively converts numpy arrays to python lists.
+    list_of_dicts_to_dict_of_lists_recursive: Recursively converts a list of dicts to a dict of lists.
+    remove_common_overrides: Removes the common overrides from a list of lists of overrides.
+    overrides_to_identifiers: Converts a list of lists of overrides to a list of identifiers.
+    identifier_to_dict: Converts an identifier string back to a dictionary of overrides.
+    handle_previous_overrides: Handles previous result overrides in the job return object.
 
 """
-
 
 from collections.abc import Hashable, Iterable
 import json
@@ -28,17 +37,17 @@ from kibad_llm.utils.job_return import (
 
 
 def to_py_obj(obj: Any) -> list[Any]:
-    """Recursively convert numpay arrays to python lists.
+    """Recursively convert numpy arrays to python lists.
 
-    Recurses dictionaries, lists, tuples.
+    Recurses dictionaries (value only), lists, tuples.
 
     Modified version of transformers.utils.generic.to_py_obj.
 
     Args:
-        obj: A sequence of objects as PyTorch tensor, Numpy array or python list.
+        obj: A py_obj possibly holding a numpy array.
 
     Returns:
-        The input sequence converted to a python list.
+        The py_obj but all numpy arrays are python lists now.
     """
     if isinstance(obj, dict):
         return {k: to_py_obj(v) for k, v in obj.items()}
@@ -50,7 +59,9 @@ def to_py_obj(obj: Any) -> list[Any]:
         return obj
 
 
-def list_of_dicts_to_dict_of_lists_recursive(list_of_dicts: list[dict]) -> dict[Any, Any] | list[Any]:
+def list_of_dicts_to_dict_of_lists_recursive(
+    list_of_dicts: list[dict],
+) -> dict[Any, Any] | list[Any]:
     """Convert a list of dicts to a dict of lists recursively.
 
     Examples:
@@ -70,7 +81,7 @@ def list_of_dicts_to_dict_of_lists_recursive(list_of_dicts: list[dict]) -> dict[
         {'a': [1, None], 'b': {'c': [2, None]}}
 
     Args:
-        list_of_dicts: A list of dicts.
+        list_of_dicts: A list of dicts (optionally nested).
 
     Returns:
         An arbitrarily nested dict of lists.
@@ -111,8 +122,10 @@ def remove_common_overrides(
         ]
         >>> remove_common_overrides(overrides_per_result)
         [['b=2', 'c=3'], ['b=2', 'c=4'], ['b=3', 'c=3']]
+
     Args:
         overrides_per_result (list[list[str]]): A list of lists of overrides.
+
     Returns:
         list[list[str]]: A list of lists of overrides with common overrides removed.
     """
@@ -183,8 +196,10 @@ def identifier_to_dict(identifier: str, sep: str = "-") -> dict[str, str]:
 def handle_previous_overrides(
     job_return: JobReturn, key: str, replace_existing: bool = False
 ) -> None:
-    """Handle previous result overrides in the job return object. If the job return value contains a
-    <key>> field with an "overrides" field, the overrides are either used to replace the existing
+    """Handle previous result overrides in the job return object.
+
+    If the job return value contains a
+    `<key>>` field with an `"overrides"` field, the overrides are either used to replace the existing
     overrides in the job return object (if replace_existing is True) or simply converted to a dictionary.
 
     Args:
@@ -210,7 +225,7 @@ def handle_previous_overrides(
 
 
 class SaveJobReturnValueCallback(Callback):
-    """Save the job return-value in ${output_dir}/{job_return_value_filename}.
+    """Save the job return-value in `${output_dir}/{job_return_value_filename}`.
 
     This also works for multi-runs (e.g. sweeps for hyperparameter search). In this case, the result will be saved
     additionally in a common file in the multi-run log directory. If integrate_multirun_result=True, the
@@ -347,7 +362,9 @@ class SaveJobReturnValueCallback(Callback):
                 replace_existing=self.replace_existing_overrides,
             )
         self.job_returns.append(job_return)
-        output_dir = Path(config.hydra.runtime.output_dir)  # / Path(config.hydra.output_subdir) <- remove old code?
+        output_dir = Path(
+            config.hydra.runtime.output_dir
+        )  # / Path(config.hydra.output_subdir) <- remove old code?
         if self.paths_file is not None:
             # append the output_dir to the file
             with open(self.paths_file, "a") as file:
@@ -374,7 +391,7 @@ class SaveJobReturnValueCallback(Callback):
             self._save(obj=obj, filename=filename, output_dir=output_dir)
 
     def on_multirun_end(self, config: DictConfig, **kwargs: Any) -> None:
-        """TODO:
+        """Collates a multirun and all its jobs data, then saves it.
 
         Args:
             config: The multiruns Hydra config.
@@ -511,15 +528,17 @@ class SaveJobReturnValueCallback(Callback):
         """TODO:
 
         Args:
-            obj: 
-            filename: 
-            output_dir: 
-            is_tabular_data: 
-            unstack_last_index_level: 
-            markdown_group_by: 
+            obj: Data to save to file.
+            filename: Output file name.
+            output_dir: Directory to save to.
+            is_tabular_data: Whether it's just a Series, or a whole table of data.
+            unstack_last_index_level: Only if is_tabular_data is True and filename endswith ".md"
+            markdown_group_by: Uses [`mixed_group_by`][kibad_llm.utils.job_return.mixed_group_by] to group the columns
+                of the DataFrame produced from obj.
 
         Raises:
-            ValueError: 
+            ValueError: If obj needs to be flattened, but can't.
+            ValueError: If filename has an unknown extension.
         """
         self.log.info(f"Saving job_return in {output_dir / filename}")
         output_dir.mkdir(parents=True, exist_ok=True)
