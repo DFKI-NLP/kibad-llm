@@ -18,7 +18,7 @@ import json
 import logging
 import os
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from hydra.core.utils import JobReturn
 from hydra.experimental.callback import Callback
@@ -36,7 +36,7 @@ from kibad_llm.utils.job_return import (
 )
 
 
-def to_py_obj(obj: Any) -> list[Any]:
+def to_py_obj(obj: Any) -> list[Any] | dict[Any, Any] | tuple[Any, ...]:
     """Recursively convert numpy arrays to python lists.
 
     Recurses dictionaries (value only), lists, tuples.
@@ -54,14 +54,14 @@ def to_py_obj(obj: Any) -> list[Any]:
     elif isinstance(obj, (list, tuple)):
         return type(obj)(to_py_obj(o) for o in obj)
     elif isinstance(obj, (np.ndarray, np.number)):  # tolist also works on 0d np arrays
-        return obj.tolist()
+        return cast(list, obj.tolist())
     else:
         return obj
 
 
 def list_of_dicts_to_dict_of_lists_recursive(
-    list_of_dicts: list[dict],
-) -> dict[Any, Any] | list[Any]:
+    list_of_dicts: list[dict[Any, Any] | None],
+) -> dict[Any, Any] | list[Any | None]:
     """Convert a list of dicts to a dict of lists recursively.
 
     Examples:
@@ -100,7 +100,7 @@ def list_of_dicts_to_dict_of_lists_recursive(
         # Build up the result recursively
         return {
             k: list_of_dicts_to_dict_of_lists_recursive(
-                [(d[k] if d is not None and k in d else None) for d in list_of_dicts]
+                [(d[k] if d is not None and k in d else None) for d in list_of_dicts],
             )
             for k in keys
         }
@@ -433,7 +433,7 @@ class SaveJobReturnValueCallback(Callback):
             # also create an aggregated result
             # convert to python object to allow selecting numeric columns
             obj_py = to_py_obj(obj)
-            obj_flat = flatten_dict(obj_py)
+            obj_flat = flatten_dict(cast(dict[str | int, Any], obj_py))
             # create dataframe from flattened dict
             df_flat = pd.DataFrame(obj_flat)
             # select only the numeric values
