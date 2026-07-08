@@ -76,3 +76,64 @@ hydra.callbacks.save_job_return.multirun_show_file_contents=null \
 ```
 
 result location: `logs/544_organism_trends_wald_corrected/evaluate/multiruns/2026-07-08_17-15-29`
+
+## Comparison with old (not corrected) reference data
+
+- comparison data from [428_organism_trends_with_chunking](../428_organism_trends_with_chunking)
+
+![legend.svg](figures/organism_trends_f1_micro-ALL/legend.svg)
+
+### organism_trends_f1_micro-ALL
+
+#### f1
+
+![f1.svg](figures/organism_trends_f1_micro-ALL/f1.svg)
+
+#### precision
+
+![precision.svg](figures/organism_trends_f1_micro-ALL/precision.svg)
+
+#### recall
+
+![recall.svg](figures/organism_trends_f1_micro-ALL/recall.svg)
+
+#### support
+
+![support.svg](figures/organism_trends_f1_micro-ALL/support.svg)
+
+### organism_trends_f1_micro_base_entries-ALL
+
+#### f1
+
+![f1.svg](figures/organism_trends_f1_micro_base_entries-ALL/f1.svg)
+
+#### precision
+
+![precision.svg](figures/organism_trends_f1_micro_base_entries-ALL/precision.svg)
+
+#### recall
+
+![recall.svg](figures/organism_trends_f1_micro_base_entries-ALL/recall.svg)
+
+#### support
+
+![support.svg](figures/organism_trends_f1_micro_base_entries-ALL/support.svg)
+
+### organism_trends_f1_micro_conditional_variable_and_trend-ALL
+
+#### f1
+
+![f1.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-ALL/f1.svg)
+
+#### precision
+
+![precision.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-ALL/precision.svg)
+
+#### recall
+
+![recall.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-ALL/recall.svg)
+
+#### support
+
+![support.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-ALL/support.svg)
+
