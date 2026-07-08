@@ -59,7 +59,9 @@ vllm_kwargs:
 #   temperature=1.0 / top_p=1.0 for reasoning tasks
 # See also https://muxup.com/2025q2/recommended-llm-parameter-quick-reference for recommendations
 temperature: 1.0
-max_tokens: 8192
+# Increased from 8192: the model spends ~8k-9k tokens on <think> reasoning before producing JSON,
+# exhausting the old budget and causing ~22% MissingResponseContentError. See #523.
+max_tokens: 32768
 top_p: 1.0
 repetition_penalty: 1.1 # suggested by ChatGPT, see #320
 
