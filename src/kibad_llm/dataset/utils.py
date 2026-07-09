@@ -1,12 +1,16 @@
 from collections.abc import Hashable
+import logging
 
 from kibad_llm.dataset.prediction import DictWithMetadata
+
+logger = logging.getLogger(__name__)
 
 
 def merge_references_into_predictions(
     predictions: dict,
     references: dict,
     allow_missing_references: bool = False,
+    verbose: bool = False,
 ) -> dict[Hashable, dict[str, dict]]:
     """Create a new Dataset with entries "prediction" and "reference" by merging references
     into predictions based on matching IDs.
@@ -17,13 +21,20 @@ def merge_references_into_predictions(
         allow_missing_references: If True, allows predictions without corresponding references.
             This will fill missing references with empty dictionaries. If False, raises an error
             if any prediction is missing a reference.
+        verbose: If True, logs warnings for any missing references.
     Returns:
         A new Dataset where each entry contains a "prediction" and its corresponding "reference".
     """
-    if not allow_missing_references:
-        missing_keys = set(predictions) - set(references)
-        if missing_keys:
-            raise ValueError(f"Missing references for the following keys: {missing_keys}")
+
+    missing_references = set(predictions) - set(references)
+    if missing_references:
+        if not allow_missing_references:
+            raise ValueError(f"Missing references for the following keys: {missing_references}")
+        elif verbose:
+            logger.warning(
+                f"Missing references for the following keys: {missing_references}. "
+                "Filling missing references with empty dictionaries."
+            )
 
     merged_dataset = {
         k: {"prediction": predictions[k], "reference": references.get(k, {})} for k in predictions

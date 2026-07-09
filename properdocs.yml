@@ -36,14 +36,14 @@ theme:
 
 nav:
 - Welcome: index.md
-- Usage instructions: usage.md
+- Usage instructions: USAGE.md
 - LLM usage instructions: models-readme.md
 - Faktencheck database instructions: podman-readme.md
 - Evaluation dashboard: eval-dashboard-docs.md
 - Contribution guidelines:
-  - Overview: contributing.md
-  - Source Code: contributing-code.md
-  - Experiments: contributing-experiments.md
+  - Overview: CONTRIBUTING.md
+  - Source Code: CONTRIBUTING-CODE.md
+  - Experiments: CONTRIBUTING-EXPERIMENTS.md
 # defer to gen-files + literate-nav
 - KIBA-D code Reference: reference/kibad_llm/
 
@@ -54,12 +54,11 @@ plugins:
 - search
 - redirects:
     redirect_maps:
-      'USAGE.md': 'usage.md'
       'models/README.md': 'models-readme.md'
       'podman/faktencheck-db/README.md': 'podman-readme.md'
-      'CONTRIBUTING.md': 'contributing.md'
-      'CONTRIBUTING_CODE.md': 'contributing-code.md'
-      'CONTRIBUTING_EXPERIMENTS.md': 'contributing-experiments.md'
+      'data/readme.md': 'data-readme.md'
+      '../data/readme.md': 'data-readme.md'
+      '../docs/USAGE.md': 'USAGE.md'
 - gen-files:
     scripts:
     - scripts/build_docs.py
@@ -80,3 +79,10 @@ markdown_extensions:
       check_paths: true
   - pymdownx.highlight:
       default_lang: python
+
+
+validation:
+  links:
+    absolute_links: ignore  # our conversion script handles these
+    unrecognized_links: warn
+    anchors: warn
