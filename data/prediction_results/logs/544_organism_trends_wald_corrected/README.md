@@ -79,7 +79,7 @@ result location: `logs/544_organism_trends_wald_corrected/evaluate/multiruns/202
 
 ## Comparison with old (not corrected) reference data
 
-- comparison data from [428_organism_trends_with_chunking](../428_organism_trends_with_chunking)
+- comparison data from [428_organism_trends_with_chunking](../428_organism_trends_with_chunking) (`file=`)
 
 ![legend.svg](figures/organism_trends_f1_micro-ALL/legend.svg)
 
