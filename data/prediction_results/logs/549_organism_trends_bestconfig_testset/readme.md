@@ -21,8 +21,14 @@ seed=42,1337,7331 \
 ```
 
 ```sh
-
-
+=============================================
+>>> USING PARTITION H100-SLT,H100-Trails,H100,H200,B200,A100-80GB
+>>> MAX TIME 3-00:00:00
+>>> SUBMITTED Thu Jul  9 02:48:54 PM CEST 2026
+>>> UV_ARGS --cache-dir /netscratch/hennig/cache/uv -m kibad_llm.predict name=549_organism_trends_bestconfig_testset experiment/predict=organism_trends_with_chunking pdf_directory=/ds/text/kiba-d/test-set-AuO-WVC extractor/llm=gpt_oss_20b_in_process seed=42,1337,7331 --multirun
+>>> JOB_NAME kiba-d_3a6a2839-f1be-4e9b-b8a7-e03cd63986d7
+>>> GIT_REF (none; using current working tree)
+=============================================
 ```
 
 Saved to `logs/549_organism_trends_bestconfig_testset/predict/multiruns/...`
@@ -43,8 +49,14 @@ seed=42,1337,7331 \
 ```
 
 ```sh
-
-
+=============================================
+>>> USING PARTITION H100-SLT,H100-Trails,H100,H200,B200,A100-80GB
+>>> MAX TIME 3-00:00:00
+>>> SUBMITTED Thu Jul  9 02:49:18 PM CEST 2026
+>>> UV_ARGS --cache-dir /netscratch/hennig/cache/uv -m kibad_llm.predict name=549_organism_trends_bestconfig_testset experiment/predict=organism_trends_with_chunking pdf_directory=/ds/text/kiba-d/test-set-AuO-WVC extractor/llm=gemma3_27b_in_process seed=42,1337,7331 --multirun
+>>> JOB_NAME kiba-d_333c7f52-7f3e-4d88-a76a-49a1235ffcba
+>>> GIT_REF (none; using current working tree)
+=============================================
 ```
 
 Saved to `logs/549_organism_trends_bestconfig_testset/predict/multiruns/...`
@@ -63,8 +75,14 @@ seed=42,1337,7331 \
 ```
 
 ```sh
-
-
+=============================================
+>>> USING PARTITION H100-SLT,H100-Trails,H100,H200,B200,A100-80GB
+>>> MAX TIME 3-00:00:00
+>>> SUBMITTED Thu Jul  9 02:49:30 PM CEST 2026
+>>> UV_ARGS --cache-dir /netscratch/hennig/cache/uv -m kibad_llm.predict name=549_organism_trends_bestconfig_testset experiment/predict=organism_trends_with_chunking pdf_directory=/ds/text/kiba-d/test-set-AuO-WVC extractor/llm=qwen3_30b_in_process seed=42,1337,7331 --multirun
+>>> JOB_NAME kiba-d_63ec886f-3c9c-450a-97bc-5330eb3d8684
+>>> GIT_REF (none; using current working tree)
+=============================================
 ```
 
 Saved to `logs/549_organism_trends_bestconfig_testset/predict/multiruns/...`
@@ -83,8 +101,14 @@ seed=42,1337,7331 \
 ```
 
 ```sh
-
-
+=============================================
+>>> USING PARTITION H100-SLT,H100-Trails,H100,H200,B200,A100-80GB
+>>> MAX TIME 3-00:00:00
+>>> SUBMITTED Thu Jul  9 02:49:41 PM CEST 2026
+>>> UV_ARGS --cache-dir /netscratch/hennig/cache/uv -m kibad_llm.predict name=549_organism_trends_bestconfig_testset experiment/predict=organism_trends_with_chunking pdf_directory=/ds/text/kiba-d/test-set-AuO-WVC extractor/llm=mistral_small_3_24b_in_process seed=42,1337,7331 --multirun
+>>> JOB_NAME kiba-d_365175c4-6fbc-47a5-96b2-b22a598a5888
+>>> GIT_REF (none; using current working tree)
+=============================================
 ```
 
 Saved to `logs/549_organism_trends_bestconfig_testset/predict/multiruns/...`
@@ -107,8 +131,14 @@ seed=42 \
 ```
 
 ```sh
-
-
+=============================================
+>>> USING PARTITION H100-SLT,H100-Trails,H100,H200,B200,A100-80GB,batch
+>>> MAX TIME 3-00:00:00
+>>> SUBMITTED Thu Jul  9 02:49:56 PM CEST 2026
+>>> UV_ARGS --cache-dir /netscratch/hennig/cache/uv -m kibad_llm.predict name=549_organism_trends_bestconfig_testset experiment/predict=organism_trends_with_chunking pdf_directory=/ds/text/kiba-d/test-set-AuO-WVC extractor/llm=gpt_5 seed=42 --multirun
+>>> JOB_NAME kiba-d_7f1f9ea7-ec26-4766-ad58-f8aaca8fff19
+>>> GIT_REF (none; using current working tree)
+=============================================
 ```
 
 Saved to `logs/549_organism_trends_bestconfig_testset/predict/multiruns/....`
