@@ -193,15 +193,19 @@ Micro-F1, All.F1
 ![Figure/Table 1 "main pipeline results": F1 scores for the best configuration (prompt+chunking+...)](figures/faktencheck_core_f1_micro_flat-ALL/f1.svg) 
 
 Precision, ALL.F1
+
 ![Figure/Table 2: "detail results - precision and recall" - same plots as above, but with precision scores instead of F1](figures/faktencheck_core_f1_micro_flat-ALL/precision.svg)
 
 Recall, ALL.F1
+
 ![Figure/Table 2: "detail results - precision and recall" - same plots as above, but with recall scores instead of F1](figures/faktencheck_core_f1_micro_flat-ALL/recall.svg)
 
 Biodiversity Level
+
 ![Figure/Table 3: "detail results - schema elements" for all models and the best configuration - Biodiversity Level](figures/faktencheck_core_f1_micro_flat-biodiversity_level/f1.svg)
 
 Ecosystem Type Category
+
 ![Figure/Table 3: "detail results - schema elements" for all models and the best configuration - Ecosystem type category](figures/faktencheck_core_f1_micro_flat-ecosystem_type.category/f1.svg)
 
 Ecosystem Type Term
@@ -234,12 +238,15 @@ between 0.43 and 0.5, ecosytem_type.term at 0.23-0.33, habitat at 0.65-0.71 and 
 ### Errors
 
 Legend
+
 ![Legend](figures/prediction_errors-total/legend.svg)
 
 No errors
+
 ![No errors, vs Run 519](figures/prediction_errors-total/no_error.svg)
 
 Total errors
+
 ![Total errors, vs Run 519](figures/prediction_errors-total/with_error.svg)
 
 JSONDecode Errors
