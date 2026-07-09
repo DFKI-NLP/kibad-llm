@@ -184,14 +184,36 @@ Saved to `logs/525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-0
 The results in this folder can serve as a basis for the [Journal experiments](https://github.com/DFKI-NLP/kibad-llm/issues/521),
 namely for the Faktencheck core schema plots:
 
-- ![Figure/Table 1 "main pipeline results": F1 scores for the best configuration (prompt+chunking+...)](figures/faktencheck_core_f1_micro_flat-ALL/f1.svg) 
-- ![Figure/Table 2: "detail results - precision and recall" - same plots as above, but with precision scores instead of F1](figures/faktencheck_core_f1_micro_flat-ALL/precision.svg)
-- ![Figure/Table 2: "detail results - precision and recall" - same plots as above, but with recall scores instead of F1](figures/faktencheck_core_f1_micro_flat-ALL/recall.svg)
-- ![Figure/Table 3: "detail results - schema elements" for all models and the best configuration - Biodiversity Level](figures/faktencheck_core_f1_micro_flat-biodiversity_level/f1.svg)
-- ![Figure/Table 3: "detail results - schema elements" for all models and the best configuration - Ecosystem type category](figures/faktencheck_core_f1_micro_flat-ecosystem_type.category/f1.svg)
-- ![Figure/Table 3: "detail results - schema elements" for all models and the best configuration - Ecosystem type term](figures/faktencheck_core_f1_micro_flat-ecosystem_type.term/f1.svg)
-- ![Figure/Table 3: "detail results - schema elements" for all models and the best configuration - Habitat](figures/faktencheck_core_f1_micro_flat-habitat/f1.svg)
-- ![Figure/Table 3: "detail results - schema elements" for all models and the best configuration - Taxa species group](figures/faktencheck_core_f1_micro_flat-taxa.species_group/f1.svg)
+Legend
+![Legend](faktencheck_core_f1_micro_flat-ALL/legend.svg)
+
+Micro-F1, All.F1
+
+![Figure/Table 1 "main pipeline results": F1 scores for the best configuration (prompt+chunking+...)](figures/faktencheck_core_f1_micro_flat-ALL/f1.svg) 
+
+Precision, ALL.F1
+![Figure/Table 2: "detail results - precision and recall" - same plots as above, but with precision scores instead of F1](figures/faktencheck_core_f1_micro_flat-ALL/precision.svg)
+
+Recall, ALL.F1
+![Figure/Table 2: "detail results - precision and recall" - same plots as above, but with recall scores instead of F1](figures/faktencheck_core_f1_micro_flat-ALL/recall.svg)
+
+Biodiversity Level
+![Figure/Table 3: "detail results - schema elements" for all models and the best configuration - Biodiversity Level](figures/faktencheck_core_f1_micro_flat-biodiversity_level/f1.svg)
+
+Ecosystem Type Category
+![Figure/Table 3: "detail results - schema elements" for all models and the best configuration - Ecosystem type category](figures/faktencheck_core_f1_micro_flat-ecosystem_type.category/f1.svg)
+
+Ecosystem Type Term
+
+![Figure/Table 3: "detail results - schema elements" for all models and the best configuration - Ecosystem type term](figures/faktencheck_core_f1_micro_flat-ecosystem_type.term/f1.svg)
+
+Habitat
+
+![Figure/Table 3: "detail results - schema elements" for all models and the best configuration - Habitat](figures/faktencheck_core_f1_micro_flat-habitat/f1.svg)
+
+Taxa Species Group
+
+![Figure/Table 3: "detail results - schema elements" for all models and the best configuration - Taxa species group](figures/faktencheck_core_f1_micro_flat-taxa.species_group/f1.svg)
 
 Micro-averaged F1 scores on the test set range from 0.43 (Mistral, Gemma) to 0.50 (GPT OSS, Qwen), with GPT5 performing slightly
 worse than the top two models at F1=0.47. This is most likely due to the large amount of MissingResponseContent errors (449 chunks
@@ -209,10 +231,23 @@ between 0.43 and 0.5, ecosytem_type.term at 0.23-0.33, habitat at 0.65-0.71 and 
 
 
 ### Errors
-- ![No errors, vs Run 519](figures/prediction_errors-total/no_error.svg)
-- ![Total errors, vs Run 519](figures/prediction_errors-total/with_error.svg)
-- ![JSONDecode errors, vs Run 519](figures/prediction_errors-details/JSONDecodeError.svg)
-- ![MissingResponseContent errors, vs Run 519](figures/prediction_errors-details/MissingResponseContentError.svg)
+
+Legend
+![Legend](figures/prediction_errors-total/legend.svg)
+
+No errors
+![No errors, vs Run 519](figures/prediction_errors-total/no_error.svg)
+
+Total errors
+![Total errors, vs Run 519](figures/prediction_errors-total/with_error.svg)
+
+JSONDecode Errors
+
+![JSONDecode errors, vs Run 519](figures/prediction_errors-details/JSONDecodeError.svg)
+
+MissingResponseContent errors
+
+![MissingResponseContent errors, vs Run 519](figures/prediction_errors-details/MissingResponseContentError.svg)
 
 GPT5 has a significant amount of MissingResponseContent errors, 449 out of 2723 chunks failed with this error. Thse
 are 16.5% of the total chunks.
