@@ -200,23 +200,23 @@ Recall, ALL.F1
 
 ![Figure/Table 2: "detail results - precision and recall" - same plots as above, but with recall scores instead of F1](figures/faktencheck_core_f1_micro_flat-ALL/recall.svg)
 
-Biodiversity Level
+Biodiversity Level F1
 
 ![Figure/Table 3: "detail results - schema elements" for all models and the best configuration - Biodiversity Level](figures/faktencheck_core_f1_micro_flat-biodiversity_level/f1.svg)
 
-Ecosystem Type Category
+Ecosystem Type Category F1
 
 ![Figure/Table 3: "detail results - schema elements" for all models and the best configuration - Ecosystem type category](figures/faktencheck_core_f1_micro_flat-ecosystem_type.category/f1.svg)
 
-Ecosystem Type Term
+Ecosystem Type Term F1
 
 ![Figure/Table 3: "detail results - schema elements" for all models and the best configuration - Ecosystem type term](figures/faktencheck_core_f1_micro_flat-ecosystem_type.term/f1.svg)
 
-Habitat
+Habitat F1
 
 ![Figure/Table 3: "detail results - schema elements" for all models and the best configuration - Habitat](figures/faktencheck_core_f1_micro_flat-habitat/f1.svg)
 
-Taxa Species Group
+Taxa Species Group F1
 
 ![Figure/Table 3: "detail results - schema elements" for all models and the best configuration - Taxa species group](figures/faktencheck_core_f1_micro_flat-taxa.species_group/f1.svg)
 
