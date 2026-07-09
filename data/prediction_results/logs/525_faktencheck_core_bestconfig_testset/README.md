@@ -257,5 +257,5 @@ MissingResponseContent errors
 
 ![MissingResponseContent errors, vs Run 519](figures/prediction_errors-details/MissingResponseContentError.svg)
 
-GPT5 has a significant amount of MissingResponseContent errors, 449 out of 2723 chunks failed with this error. Thse
+GPT5 has a significant amount of MissingResponseContent errors, 449 out of 2723 chunks failed with this error. These
 are 16.5% of the total chunks.
