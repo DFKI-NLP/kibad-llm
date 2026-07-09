@@ -185,7 +185,8 @@ The results in this folder can serve as a basis for the [Journal experiments](ht
 namely for the Faktencheck core schema plots:
 
 Legend
-![Legend](faktencheck_core_f1_micro_flat-ALL/legend.svg)
+
+![Legend](figures/faktencheck_core_f1_micro_flat-ALL/legend.svg)
 
 Micro-F1, All.F1
 
