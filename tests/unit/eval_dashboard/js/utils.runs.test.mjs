@@ -125,4 +125,3 @@ test("run id hashing reports missing TextEncoder and Web Crypto support", async 
     /requires Web Crypto digest support/
   );
 });
-
