@@ -77,4 +77,3 @@ export async function getRunIdFromImportedSources(
   const digest = await cryptoLike.subtle.digest("SHA-256", encoded);
   return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
 }
-
