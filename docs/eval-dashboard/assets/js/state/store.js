@@ -146,7 +146,7 @@ export function ensureEvalTabState(
   }
   tabState.selectedEvalRunId = typeof tabState.selectedEvalRunId === "string"
     ? tabState.selectedEvalRunId
-    : (typeof tabState.selectedEvalRunDir === "string" ? tabState.selectedEvalRunDir : null);
+    : null;
 
   for (const column of evalColumns) {
     if (!known.has(column)) {
@@ -179,7 +179,7 @@ export function ensureEvalTabState(
  *
  * @param {object} evalTabState - Per-experiment evaluation tab state.
  * @param {Array<{groupId: string}>} evaluationGroups - Current evaluation groups.
- * @param {Array<{runId?: string, runDir?: string}>} experimentEvaluations - Current experiment evaluations.
+ * @param {Array<{runId?: string}>} experimentEvaluations - Current experiment evaluations.
  */
 export function syncEvaluationGroupUiState(evalTabState, evaluationGroups, experimentEvaluations) {
   const validEvalGroupIds = new Set((evaluationGroups || []).map((group) => group.groupId));

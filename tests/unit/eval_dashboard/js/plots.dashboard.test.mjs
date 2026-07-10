@@ -600,12 +600,14 @@ test("dashboard prepares confusion data only for the active tab", () => {
     plotConfusionMinLabelTotal: 1,
   });
   const activeEvaluation = {
+    runId: "run-active-id",
     runDir: "run-active",
     overrides: { experiment: "experiment/a", "metric.field": "active_field" },
     jobReturnValue: { type: "ConfusionMatrix" },
     data: { actual: { predicted: 2 } },
   };
   const inactiveEvaluation = {
+    runId: "run-inactive-id",
     runDir: "run-inactive",
     overrides: { experiment: "experiment/a", "metric.field": "inactive_field" },
     jobReturnValue: { type: "ConfusionMatrix" },
@@ -778,6 +780,7 @@ test("dashboard render adapter renders confusion-matrix plot cards", () => {
   const state = createPlotState({ plotConfusionMinLabelTotal: 1 });
   const evaluations = [
     {
+      runId: "run-a-id",
       runDir: "run-a",
       overrides: { experiment: "experiment/a", "metric.field": "field_a" },
       jobReturnValue: { type: "ConfusionMatrix" },

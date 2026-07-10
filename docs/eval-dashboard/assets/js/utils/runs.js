@@ -8,19 +8,14 @@ import { getStableObjectSignature, normalizeValue } from "./values.js";
 /**
  * Resolve the canonical semantic run id for one evaluation-like record.
  *
- * Newer evaluation records carry a content-derived `runId`. Older state may
- * still only have `runDir`, so this helper keeps semantic callers compatible
- * while the state model migrates.
+ * Evaluation records must carry a content-derived `runId`. `runDir` is source
+ * provenance only and must never be used as a semantic identity fallback.
  *
  * @param {object | null | undefined} evaluation - Evaluation or collection-view record.
  * @returns {string} Canonical run id, or an empty string when unavailable.
  */
 export function getEvaluationRunId(evaluation) {
-  const runId = normalizeValue(evaluation?.runId).trim();
-  if (runId) {
-    return runId;
-  }
-  return normalizeValue(evaluation?.runDir).trim();
+  return normalizeValue(evaluation?.runId).trim();
 }
 
 /**
