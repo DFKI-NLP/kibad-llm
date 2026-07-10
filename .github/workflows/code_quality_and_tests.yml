@@ -80,6 +80,11 @@ jobs:
       - name: Check links in the built site
         uses: lycheeverse/lychee-action@v2
         with:
+          # Pin lychee itself so the tool version is decoupled from the action
+          # tag: the config schema is version-specific (see lychee.toml), and an
+          # action release that bundles a newer lychee could otherwise break the
+          # build with no change on our side. Keep in sync with local runs.
+          lycheeVersion: v0.24.2
           args: --config lychee.toml --root-dir ${{ github.workspace }}/site "site/**/*.html"
           fail: true
         env:

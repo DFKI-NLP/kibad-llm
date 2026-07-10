@@ -19,7 +19,7 @@ retry_wait_time = 2
 accept = [200, 206, 429]
 
 # Anchors on external pages can't be reliably verified.
-include_fragments = false
+include_fragments = "none"
 
 # mkdocs-material's generated 404 page uses site-absolute (/kibad-llm/...)
 # links by design, since it may be served from any URL depth. Those don't
