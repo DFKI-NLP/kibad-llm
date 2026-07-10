@@ -380,6 +380,8 @@ export function buildNumericDownloadMetadata(plotEntry = {}) {
  * Numeric input entries are already sample-only before rendering adds mean/std.
  * Downloads expose those raw sample values directly, keeping metric identity in
  * `plotEntry` and leaving UI grouping helpers out of the public JSON schema.
+ * The serialized `run_dirs` values identify source provenance only; semantic
+ * `runIds` remain an internal alignment key and are not public payload fields.
  *
  * @param {object} plotEntry - Numeric plot input entry.
  * @returns {object} JSON-safe numeric plotting data.

@@ -33,7 +33,9 @@ The dashboard loads single evaluation runs. A run directory is loadable when it 
 
 Runs inside `predict` directories are ignored. Prediction payloads are canonicalized separately and linked to evaluations through the prediction id extracted from the normalized run payload.
 
-Imported evaluation runs are deduplicated by their normalized source content, not by the folder path. Concretely, the dashboard parses `job_return_value.json` and `.hydra/overrides.yaml`, canonicalizes their content, derives a semantic `runId`, and skips later imports whose normalized content matches a run that is already loaded. The original `runDir` path is still shown as provenance metadata in the evaluation table and error messages, but it no longer decides whether two runs are considered the same.
+Imported evaluation runs are deduplicated by normalized content, not by folder path. The dashboard parses `job_return_value.json` and `.hydra/overrides.yaml`, derives a content-based `runId`, and skips later imports with matching content. The original `runDir` path remains visible in the evaluation table and error messages, but it does not determine run identity.
+
+Downloaded plot-data JSON includes `run_dirs` alongside per-run samples or sparse matrix cells so users can identify each value's source folder. These paths are provenance only, not semantic identifiers: the same path can contain different runs, and matching paths do not imply matching content. The dashboard uses the content-derived `runId` internally to align and deduplicate evaluations, but intentionally omits it from public download payloads.
 
 The checked-in dashboard fixtures under `tests/fixtures/eval_dashboard/` cover the currently supported fixture versions and metric families, including bars, errors, confusion matrices, and TP/FP/FN outputs. They are intended for tests and development rather than as the main user data source.
 
