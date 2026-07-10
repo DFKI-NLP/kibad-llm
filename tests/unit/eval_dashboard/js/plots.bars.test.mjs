@@ -169,8 +169,52 @@ test("bar plot helpers reject missing required numeric values", () => {
   });
 
   assert.throws(
-    () => buildInput("F1MicroMultipleFieldsMetric"),
-    /Numeric metric "score\.mean" is missing from evaluation "run-b".*"F1MicroMultipleFieldsMetric" has no missing-value default\./
+    () => buildInput("UnknownNumericMetric"),
+    /Numeric metric "score\.mean" is missing from evaluation "run-b".*"UnknownNumericMetric" has no missing-value default\./
+  );
+});
+
+/**
+ * Verify suffix tabs tolerate fields absent from one multi-field F1 evaluation.
+ */
+test("bar plot helpers default absent multi-field F1 values to zero", () => {
+  const plotGroups = [{
+    values: {},
+    evaluations: [
+      {
+        runId: "issue-548-old",
+        runDir: "issue_548/428_organism_trends_with_chunking/2026-05-04_13-00-12/0",
+        data: {
+          "organism_trends.Pilze_Flechten&Wald": { f1: 0.6666666666666666 },
+        },
+      },
+      {
+        runId: "issue-548-new",
+        runDir: "issue_548/544_organism_trends_wald_corrected/2026-07-08_17-15-07/0",
+        data: {
+          "organism_trends.Pflanzen&Wald": { f1: 0.8301886792452831 },
+        },
+      },
+    ],
+  }];
+
+  const definitions = buildNumericPlotDefinitions(plotGroups);
+  const suffixTabs = buildBarsTabMap(definitions, "suffix");
+  const f1Definitions = suffixTabs.get("f1").plots;
+  const f1Entries = buildNumericPlotEntriesInput({
+    metricType: "F1MicroMultipleFieldsMetric",
+    plotDefinitions: f1Definitions,
+    plotGroups,
+    groupBarFields: [],
+    categoryFields: [],
+  });
+
+  assert.deepEqual(
+    f1Entries.map((entry) => [entry.metricLabel, entry.points[0].samples]),
+    [
+      ["organism_trends.Pflanzen&Wald.f1", [0, 0.8301886792452831]],
+      ["organism_trends.Pilze_Flechten&Wald.f1", [0.6666666666666666, 0]],
+    ]
   );
 });
 
