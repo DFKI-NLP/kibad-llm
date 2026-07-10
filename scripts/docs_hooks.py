@@ -14,12 +14,7 @@ _REWRITES = [
     (re.compile(r'href="/podman/faktencheck-db/README\.md(#[^"]*)?'), "podman-readme/", "local"),
     (re.compile(r'href="/data/readme\.md(#[^"]*)?'), "data-readme/", "local"),
     (re.compile(r'href="/docs/USAGE\.md(#[^"]*)?'), "USAGE/", "local"),
-    (re.compile(r'href="/data/([^"]*)?'), "data/", "github"),
-    (re.compile(r'href="/(configs/[^"]*)?'), "", "github"),
-    (re.compile(r'href="/(scripts/[^"]*)?'), "", "github"),
-    (re.compile(r'href="/(tests/[^"]*)?'), "", "github"),
-    (re.compile(r'href="/(\.pre-commit-config\.yaml)'), "", "github"),
-    (re.compile(r'href="/(\.github/[^"]*)?'), "", "github"),
+    (re.compile(r'href="/([^"]*)?'), "", "github"),
 ]
 
 
