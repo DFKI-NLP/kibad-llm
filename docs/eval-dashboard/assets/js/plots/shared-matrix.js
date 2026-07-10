@@ -73,8 +73,16 @@ export function buildMatrixDownloadMetadata(plotEntry = {}) {
  * @returns {object} JSON-safe matrix plotting data.
  */
 export function buildJsonSafeMatrixPlottingData(aggregationInput) {
+  const runIds = aggregationInput?.runIds || [];
   const runDirs = aggregationInput?.runDirs || [];
   const cells = aggregationInput?.cells || [];
+  assertAlignedArrayLengths(
+    "Matrix download data",
+    "runIds",
+    runIds,
+    "cells",
+    cells
+  );
   assertAlignedArrayLengths(
     "Matrix download data",
     "runDirs",

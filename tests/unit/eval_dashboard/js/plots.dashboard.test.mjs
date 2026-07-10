@@ -200,6 +200,7 @@ test("dashboard data download helper exports active plot data as JSON", async ()
           displayCategory: "Model A",
           series: "__single__",
           displaySeries: "__single__",
+          runIds: ["run-a-id"],
           runDirs: ["run-a"],
           samples: [0.75],
         }],
@@ -363,7 +364,7 @@ test("dashboard render adapter renders bar-like plot cards", () => {
   const documentLike = createDocumentStub();
   const dom = createPlotDom(documentLike);
   const state = createPlotState();
-  const evaluation = { runDir: "run-a", data: { score: { mean: 0.75 } } };
+  const evaluation = { runId: "run-a-id", runDir: "run-a", data: { score: { mean: 0.75 } } };
   const evaluationContext = {
     experimentEvaluations: [evaluation],
     evalTabState: { groupByFields: [] },
@@ -410,7 +411,8 @@ test("dashboard render adapter renders bar-like plot cards", () => {
     displayCategory: "group 1",
     series: "__single__",
     displaySeries: "__single__",
-    runDirs: ["run-a"],
+           runIds: ["run-a-id"],
+           runDirs: ["run-a"],
     samples: [0.75],
   }]);
   const downloadPayload = buildJsonSafeActivePlotDownloadData(state.activePlotDownloadData);
@@ -450,10 +452,10 @@ test("dashboard renders grouped numeric legends and export legend state", () => 
       plotShowLegendOnce,
     });
     const evaluations = [
-      { runDir: "run-a-1", data: { score: { mean: 0.5 } } },
-      { runDir: "run-a-2", data: { score: { mean: 0.6 } } },
-      { runDir: "run-b-1", data: { score: { mean: 0.7 } } },
-      { runDir: "run-b-2", data: { score: { mean: 0.8 } } },
+      { runId: "run-a-1-id", runDir: "run-a-1", data: { score: { mean: 0.5 } } },
+      { runId: "run-a-2-id", runDir: "run-a-2", data: { score: { mean: 0.6 } } },
+      { runId: "run-b-1-id", runDir: "run-b-1", data: { score: { mean: 0.7 } } },
+      { runId: "run-b-2-id", runDir: "run-b-2", data: { score: { mean: 0.8 } } },
     ];
     const plotGroups = [
       {
@@ -541,10 +543,12 @@ test("dashboard prepares numeric plot data only for the active tab", () => {
   const state = createPlotState({ activeEvalPlotTab: "active" });
   const evaluations = [
     {
+      runId: "run-a-id",
       runDir: "run-a",
       data: { active: { value: 0.5 }, inactive: { value: 0.7 } },
     },
     {
+      runId: "run-b-id",
       runDir: "run-b",
       data: { active: { value: 0.9 } },
     },
@@ -664,12 +668,14 @@ test("dashboard prepares TP/FP/FN data only for the active tab", () => {
     plotTpFpFnMinLabelTotal: 1,
   });
   const activeEvaluation = {
+    runId: "run-active-id",
     runDir: "run-active",
     overrides: { "metric.field": "active_field" },
     jobReturnValue: { type: "TpFpFnCollector" },
     data: { doc1: { tp: ["label"], fp: [], fn: [] } },
   };
   const inactiveEvaluation = {
+    runId: "run-inactive-id",
     runDir: "run-inactive",
     overrides: { "metric.field": "inactive_field" },
     jobReturnValue: { type: "TpFpFnCollector" },
@@ -726,10 +732,12 @@ test("dashboard numeric plots discover metrics only from selected plot groups", 
   const dom = createPlotDom(documentLike);
   const state = createPlotState();
   const selectedEvaluation = {
+    runId: "run-a-id",
     runDir: "run-a",
     data: { no_error: 100 },
   };
   const unselectedEvaluation = {
+    runId: "run-b-id",
     runDir: "run-b",
     data: { no_error: 90, ValueError: 10 },
   };
@@ -853,6 +861,7 @@ test("dashboard confusion download data keeps unfiltered sparse matrix input", (
   const state = createPlotState({ plotConfusionMinLabelTotal: 2 });
   const evaluations = [
     {
+      runId: "run-a-id",
       runDir: "run-a",
       overrides: { experiment: "experiment/a", "metric.field": "field_a" },
       jobReturnValue: { type: "ConfusionMatrix" },
@@ -916,6 +925,7 @@ test("dashboard render adapter renders TP/FP/FN plot cards", () => {
   });
   const evaluations = [
     {
+      runId: "run-a-id",
       runDir: "run-a",
       overrides: { "metric.field": "field_a" },
       jobReturnValue: { type: "TpFpFnCollector" },
@@ -998,6 +1008,7 @@ test("dashboard TP/FP/FN download data keeps unfiltered sparse matrix input", ()
   });
   const evaluations = [
     {
+      runId: "run-a-id",
       runDir: "run-a",
       overrides: { "metric.field": "field_a" },
       jobReturnValue: { type: "TpFpFnCollector" },
@@ -1007,6 +1018,7 @@ test("dashboard TP/FP/FN download data keeps unfiltered sparse matrix input", ()
       },
     },
     {
+      runId: "run-b-id",
       runDir: "run-b",
       overrides: { "metric.field": "field_a" },
       jobReturnValue: { type: "TpFpFnCollector" },

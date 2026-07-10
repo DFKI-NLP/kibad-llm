@@ -142,13 +142,13 @@ test("tpfpfn helpers build reusable aligned aggregation inputs", () => {
     {
       runId: "run-a-id",
       runDir: "run-a",
-      sourceRunDir: "source-a",
+      sourceRunId: "source-a-id",
       fields: new Map([["field_a", { doc1: { tp: ["A"], fp: ["B"], fn: [] }, filtered: { fn: ["hidden"] } }]]),
     },
     {
       runId: "run-b-id",
       runDir: "run-b",
-      sourceRunDir: "source-b",
+      sourceRunId: "source-b-id",
       fields: new Map([["field_a", { doc1: { tp: [], fp: [], fn: ["A"] } }]]),
     },
   ];
@@ -157,7 +157,8 @@ test("tpfpfn helpers build reusable aligned aggregation inputs", () => {
 
   assert.deepEqual(input.rows, ["doc1", "filtered"]);
   assert.deepEqual(input.cols, ["A", "B", "hidden"]);
-  assert.deepEqual(input.runDirs, ["source-a", "source-b"]);
+  assert.deepEqual(input.runIds, ["source-a-id", "source-b-id"]);
+  assert.deepEqual(input.runDirs, ["run-a", "run-b"]);
   assert.equal(input.cells[0].get("doc1|#|A"), "tp");
   assert.equal(input.cells[1].get("doc1|#|A"), "fn");
   assert.deepEqual(aggregation.cells.get("doc1|#|A").counts, { tp: 1, fp: 0, fn: 1, empty: 0 });
@@ -169,6 +170,7 @@ test("tpfpfn helpers build reusable aligned aggregation inputs", () => {
     () => getTpFpFnAggregationFromInput({
       rows: [],
       cols: [],
+      runIds: [],
       runDirs: ["source-a"],
       cells: [],
     }),

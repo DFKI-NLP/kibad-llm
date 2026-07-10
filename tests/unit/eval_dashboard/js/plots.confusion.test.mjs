@@ -133,13 +133,13 @@ test("confusion helpers build reusable aligned aggregation inputs", () => {
     {
       runId: "run-a-id",
       runDir: "run-a",
-      sourceRunDir: "source-a",
+      sourceRunId: "source-a-id",
       fields: new Map([["field_a", { actual: { predicted: 2 }, filtered: { hidden: 5 } }]]),
     },
     {
       runId: "run-b-id",
       runDir: "run-b",
-      sourceRunDir: "source-b",
+      sourceRunId: "source-b-id",
       fields: new Map([["field_a", { actual: { predicted: 4 } }]]),
     },
   ];
@@ -148,7 +148,8 @@ test("confusion helpers build reusable aligned aggregation inputs", () => {
 
   assert.deepEqual(input.rows, ["actual", "filtered"]);
   assert.deepEqual(input.cols, ["hidden", "predicted"]);
-  assert.deepEqual(input.runDirs, ["source-a", "source-b"]);
+  assert.deepEqual(input.runIds, ["source-a-id", "source-b-id"]);
+  assert.deepEqual(input.runDirs, ["run-a", "run-b"]);
   assert.equal(input.cells[0].get("actual|#|predicted"), 2);
   assert.equal(input.cells[1].get("actual|#|predicted"), 4);
   assert.equal(aggregation.cells.get("actual|#|predicted").mean, 3);
@@ -158,6 +159,7 @@ test("confusion helpers build reusable aligned aggregation inputs", () => {
     () => getConfusionMatrixAggregationFromInput({
       rows: [],
       cols: [],
+      runIds: [],
       runDirs: ["source-a"],
       cells: [],
     }),
