@@ -1,0 +1,51 @@
+name: 428_organism_trends_with_chunking
+prediction_logs: logs/428_organism_trends_with_chunking/predict
+paths:
+  root_dir: ${oc.env:PROJECT_ROOT}
+  data_dir: ${paths.root_dir}/data
+  timestamp: ${now:%Y-%m-%d_%H-%M-%S}
+  run_subdir: ${paths.timestamp}
+  output_dir: ${hydra:runtime.output_dir}
+  save_dir: ${paths.root_dir}
+  log_dir: ${paths.save_dir}/logs/${name}/evaluate
+  work_dir: ${hydra:runtime.cwd}
+  prediction_save_dir: ${paths.save_dir}/predictions/${name}/${paths.timestamp}
+dataset:
+  predictions:
+    _target_: kibad_llm.dataset.prediction.load_with_metadata
+    log: logs/428_organism_trends_with_chunking/predict/multiruns/2026-04-30_15-10-47/0
+    file: null
+    id_key: file_name
+    process_id:
+      _partial_: true
+      _target_: kibad_llm.utils.path.strip_filename_extension
+    preprocess:
+      _target_: kibad_llm.utils.dictionary.get
+      _partial_: true
+      key: structured
+  references:
+    _target_: kibad_llm.dataset.csv.read_organism_trends
+    file: ${paths.root_dir}/data/external/organism_trends/Weighted Vote Count Wald
+      Literatur - Sheet1.csv
+    columns:
+    - Hauptgruppe_RoteListen
+    - Untergruppe_RoteListen
+    - Lebensraum
+    - Antwortvariable
+    - Trend
+  _target_: kibad_llm.dataset.utils.merge_references_into_predictions
+  allow_missing_references: true
+metric:
+  _target_: kibad_llm.metrics.F1MicroMultipleFieldsMetric
+  fields:
+  - organism_trends
+  format_as_markdown: true
+  sort_fields: true
+  subfield_keys:
+    organism_trends:
+    - Hauptgruppe_RoteListen
+    - Lebensraum
+  subfield_values:
+    organism_trends:
+    - Antwortvariable
+  ignore_missing_entries: true
