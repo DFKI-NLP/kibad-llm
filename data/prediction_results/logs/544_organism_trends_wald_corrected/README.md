@@ -125,15 +125,98 @@ result location: `logs/544_organism_trends_wald_corrected/evaluate/multiruns/202
 
 ![f1.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-ALL/f1.svg)
 
+<details>
+<summary>click to see plots per `Hauptgruppe_RoteListen` & `Habitat`</summary>
+
+##### Pflanzen&Wald
+
+![organism_trends.Pflanzen&Wald.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-f1/organism_trends.Pflanzen%26Wald.svg)
+
+#### Pilze_Flechten&Wald
+
+![organism_trends.Pilze_Flechten&Wald.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-f1/organism_trends.Pilze_Flechten%26Wald.svg)
+
+#### Wirbellose&Wald
+
+![organism_trends.Wirbellose&Wald.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-f1/organism_trends.Wirbellose%26Wald.svg)
+
+#### Wirbeltiere&Wald
+
+![organism_trends.Wirbeltiere&Wald.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-f1/organism_trends.Wirbeltiere%26Wald.svg)
+
+</details>
+
 #### precision
 
 ![precision.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-ALL/precision.svg)
+
+<details>
+<summary>click to see plots per `Hauptgruppe_RoteListen` & `Habitat`</summary>
+
+#### Pflanzen&Wald
+
+![organism_trends.Pflanzen&Wald.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-precision/organism_trends.Pflanzen%26Wald.svg)
+
+#### Pilze_Flechten&Wald
+
+![organism_trends.Pilze_Flechten&Wald.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-precision/organism_trends.Pilze_Flechten%26Wald.svg)
+
+#### Wirbellose&Wald
+
+![organism_trends.Wirbellose&Wald.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-precision/organism_trends.Wirbellose%26Wald.svg)
+
+#### Wirbeltiere&Wald
+
+![organism_trends.Wirbeltiere&Wald.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-precision/organism_trends.Wirbeltiere%26Wald.svg)
+
+</details>
 
 #### recall
 
 ![recall.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-ALL/recall.svg)
 
+<details>
+<summary>click to see plots per `Hauptgruppe_RoteListen` & `Habitat`</summary>
+
+#### Pflanzen&Wald
+
+![organism_trends.Pflanzen&Wald.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-recall/organism_trends.Pflanzen%26Wald.svg)
+
+#### Pilze_Flechten&Wald
+
+![organism_trends.Pilze_Flechten&Wald.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-recall/organism_trends.Pilze_Flechten%26Wald.svg)
+
+#### Wirbellose&Wald
+
+![organism_trends.Wirbellose&Wald.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-recall/organism_trends.Wirbellose%26Wald.svg)
+
+#### Wirbeltiere&Wald
+
+![organism_trends.Wirbeltiere&Wald.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-recall/organism_trends.Wirbeltiere%26Wald.svg)
+
+</details>
+
 #### support
 
 ![support.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-ALL/support.svg)
 
+<details>
+<summary>click to see plots per `Hauptgruppe_RoteListen` & `Habitat`</summary>
+
+#### Pflanzen&Wald
+
+![organism_trends.Pflanzen&Wald.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-support/organism_trends.Pflanzen%26Wald.svg)
+
+#### Pilze_Flechten&Wald
+
+![organism_trends.Pilze_Flechten&Wald.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-support/organism_trends.Pilze_Flechten%26Wald.svg)
+
+#### Wirbellose&Wald
+
+![organism_trends.Wirbellose&Wald.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-support/organism_trends.Wirbellose%26Wald.svg)
+
+#### Wirbeltiere&Wald
+
+![organism_trends.Wirbeltiere&Wald.svg](figures/organism_trends_f1_micro_conditional_variable_and_trend-support/organism_trends.Wirbeltiere%26Wald.svg)
+
+</details>
