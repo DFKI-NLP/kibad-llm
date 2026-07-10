@@ -244,6 +244,15 @@ Those files need to have a regex to fix their links in [`/scripts/docs_hooks.py`
 
 If a public documentation URL changes, add a redirect in `properdocs.yml` so existing links keep working. (This is currently not implemented. Requires the package `mkdocs-redirects`.)
 
+All links in the docs end up being checked by [lychee](https://github.com/lycheeverse/lychee). If any link is broken, CI will fail and block the PR until you fix the link.
+
+You can run the lychee test locally by first installing lychee on the same version as the CI (currently 0.24.2), and then running from the repo root:
+
+```
+uv run --group cicd properdocs build
+lychee --config lychee.toml --root-dir ./site "site/**/*.html"
+```
+
 ### Building and hosting locally
 
 You can build the documentation locally with:
