@@ -221,8 +221,8 @@ Taxa Species Group F1
 ![Figure/Table 3: "detail results - schema elements" for all models and the best configuration - Taxa species group](figures/faktencheck_core_f1_micro_flat-taxa.species_group/f1.svg)
 
 Micro-averaged F1 scores on the test set range from 0.43 (Mistral, Gemma) to 0.50 (GPT OSS, Qwen), with GPT5 performing slightly
-worse than the top two models at F1=0.47. This is most likely due to the large amount of MissingResponseContent errors (449 chunks
-out of 2723, 16.5%), which might have lowered recall considerably. Compared to the dev set with the correct reference
+worse than the top two models at F1=0.47. This is mainly due to much lower precision, whereas recall is slightly higher
+compared to GPT OSS and Qwen. Compared to the dev set with the correct reference
 data, F1 scores are significantly lower. GPT5 achieved 0.71 on the dev set, the other models approx from 0.56 - 0.63 (See 
 https://github.com/DFKI-NLP/kibad-llm/tree/main/data/prediction_results/logs/519_faktencheck_core) 
 Compared to the dev set with the original, uncorrected reference data (see 
@@ -257,5 +257,5 @@ MissingResponseContent errors
 
 ![MissingResponseContent errors, vs Run 519](figures/prediction_errors-details/MissingResponseContentError.svg)
 
-GPT5 has a significant amount of MissingResponseContent errors, 449 out of 2723 chunks failed with this error. These
-are 16.5% of the total chunks.
+GPT5 has a significant amount of MissingResponseContent errors, 449 out of 2723 chunks failed with this error. 
+These are 16.5% of the total chunks. This is investigated in [#533](https://github.com/DFKI-NLP/kibad-llm/issues/533).
