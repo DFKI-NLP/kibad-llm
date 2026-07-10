@@ -3,6 +3,7 @@
  */
 
 import { normalizeValue } from "../utils/values.js";
+import { getEvaluationRunId } from "../utils/runs.js";
 import { createGroupByToggleControl } from "./controls.js";
 import {
   buildSelectionState,
@@ -81,7 +82,7 @@ export function buildEvaluationGroupRowModel({
  * @param {object} options.evalTabState - Active evaluation-tab state.
  * @param {boolean} [options.isSelected=false] - Whether the member row is selected.
  * @param {(evaluation: object, column: string, evalTabState: object) => string} options.getEvaluationEffectiveValue - Effective-value formatter.
- * @returns {{runDir: string, runDirValue: string, isSelected: boolean, groupSizeLabel: string, valueCells: Array<{column: string, content: string}>}} Plain member-row model.
+ * @returns {{runId: string, runDirValue: string, isSelected: boolean, groupSizeLabel: string, valueCells: Array<{column: string, content: string}>}} Plain member-row model.
  */
 export function buildEvaluationMemberRowModel({
   evaluation,
@@ -91,7 +92,7 @@ export function buildEvaluationMemberRowModel({
   getEvaluationEffectiveValue,
 }) {
   return {
-    runDir: evaluation.runDir,
+    runId: getEvaluationRunId(evaluation),
     runDirValue: normalizeValue(evaluation.runDir),
     isSelected,
     groupSizeLabel: "member",
@@ -288,7 +289,7 @@ function renderEvaluationTableHead({
  * @param {(groupId: string) => void} options.onGroupRowSelect - Group-row selection callback.
  * @param {(groupId: string) => void} options.onToggleGroupExpansion - Expand-toggle callback.
  * @param {(groupId: string, checked: boolean) => void} options.onToggleGroupSelection - Group-selection callback.
- * @param {(runDir: string) => void} options.onMemberRowSelect - Member-row selection callback.
+ * @param {(runId: string) => void} options.onMemberRowSelect - Member-row selection callback.
  * @param {(evaluations: Array<object>, getter: (evaluation: object) => string) => string} options.getGroupValueDisplayFromEvaluations - Group-value formatter.
  * @param {(evaluation: object, column: string, evalTabState: object) => string} options.getEvaluationEffectiveValue - Effective-value formatter.
  * @param {(evaluations: Array<object>, evalTabState: object) => Array<object>} options.getSortedEvaluations - Evaluation sorter.
@@ -382,7 +383,7 @@ function renderEvaluationTableBody({
         evaluation,
         orderedColumns: orderedEvalColumns,
         evalTabState,
-        isSelected: evaluation.runDir === evalTabState.selectedEvalRunDir,
+        isSelected: getEvaluationRunId(evaluation) === evalTabState.selectedEvalRunId,
         getEvaluationEffectiveValue,
       });
       const memberRow = documentLike.createElement("tr");
@@ -391,7 +392,7 @@ function renderEvaluationTableBody({
       if (memberModel.isSelected) {
         memberRow.classList.add("eval-row-selected");
       }
-      memberRow.addEventListener("click", () => onMemberRowSelect(memberModel.runDir));
+      memberRow.addEventListener("click", () => onMemberRowSelect(memberModel.runId));
       memberRow.appendChild(createTruncatingCell({ documentLike, content: "" }));
       memberRow.appendChild(createTruncatingCell({ documentLike, content: "" }));
       memberRow.appendChild(
@@ -440,7 +441,7 @@ function renderEvaluationTableBody({
  * @param {(groupId: string) => void} options.onGroupRowSelect - Group-row selection callback.
  * @param {(groupId: string) => void} options.onToggleGroupExpansion - Expand-toggle callback.
  * @param {(groupId: string, checked: boolean) => void} options.onToggleGroupSelection - Group-selection callback.
- * @param {(runDir: string) => void} options.onMemberRowSelect - Member-row selection callback.
+ * @param {(runId: string) => void} options.onMemberRowSelect - Member-row selection callback.
  * @param {(evaluations: Array<object>, getter: (evaluation: object) => string) => string} options.getGroupValueDisplayFromEvaluations - Group-value formatter.
  * @param {(evaluation: object, column: string, evalTabState: object) => string} options.getEvaluationEffectiveValue - Effective-value formatter.
  * @param {(evaluations: Array<object>, evalTabState: object) => Array<object>} options.getSortedEvaluations - Evaluation sorter.

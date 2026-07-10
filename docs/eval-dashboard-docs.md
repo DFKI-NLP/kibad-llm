@@ -33,6 +33,10 @@ The dashboard loads single evaluation runs. A run directory is loadable when it 
 
 Runs inside `predict` directories are ignored. Prediction payloads are canonicalized separately and linked to evaluations through the prediction id extracted from the normalized run payload.
 
+Imported evaluation runs are deduplicated by normalized content, not by folder path. The dashboard parses `job_return_value.json` and `.hydra/overrides.yaml`, derives a content-based `runId`, and skips later imports with matching content. The original `runDir` path remains visible in the evaluation table and error messages, but it does not determine run identity.
+
+Downloaded plot-data JSON includes `run_dirs` alongside per-run samples or sparse matrix cells so users can identify each value's source folder. These paths are provenance only, not semantic identifiers: the same path can contain different runs, and matching paths do not imply matching content. The dashboard uses the content-derived `runId` internally to align and deduplicate evaluations, but intentionally omits it from public download payloads.
+
 The checked-in dashboard fixtures under `tests/fixtures/eval_dashboard/` cover the currently supported fixture versions and metric families, including bars, errors, confusion matrices, and TP/FP/FN outputs. They are intended for tests and development rather than as the main user data source.
 
 ## Architecture
@@ -59,7 +63,7 @@ docs/
             ├── data/
             │   ├── file-loader.js            <- Local folder/file filtering and text extraction.
             │   ├── git-loader.js             <- GitHub tree URL parsing plus GitHub content listing/fetching.
-            │   ├── ingest-runs.js            <- Shared raw-entry ingestion, run discovery, duplicate/conflict handling.
+            │   ├── ingest-runs.js            <- Shared raw-entry ingestion, run discovery, content-based duplicate/conflict handling.
             │   ├── normalize.js              <- Supported `job_return_value.json` version normalization.
             │   └── parse-overrides.js        <- Lightweight parser for Hydra `.hydra/overrides.yaml` list entries.
             ├── plots/
@@ -84,6 +88,7 @@ docs/
             │   └── tabs.js                   <- Shared tab button models, rendering, and delegated tab selection.
             └── utils/
                 ├── flatten.js                <- Object flattening and nested path lookup helpers.
+                ├── runs.js                   <- Semantic run-id derivation and evaluation identity helpers.
                 ├── sort.js                   <- Sort config normalization and stable compare helpers.
                 ├── text.js                   <- Display text, plot-title, and filename helpers.
                 └── values.js                 <- Value normalization, signatures, numeric guards, and defaults.

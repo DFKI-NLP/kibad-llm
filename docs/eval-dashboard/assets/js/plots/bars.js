@@ -12,7 +12,7 @@ import {
   getGroupLabelForFields,
   getMetricPreparedDataContainer,
   getPlotDisplayLabel,
-  getRequiredPlotRunDir,
+  getRequiredPlotRunId,
   scheduleAdaptiveSvgFit,
 } from "./shared.js";
 import {
@@ -261,8 +261,18 @@ function buildNumericPlotEntriesForDefinitions({
       const samples = evaluations.map((evaluation) =>
         getNumericMetricSampleValue(evaluation, metricPath, metricType)
       );
+      const runIds = evaluations.map((evaluation) =>
+        getRequiredPlotRunId(evaluation, `Numeric metric ${JSON.stringify(metricPath.label)}`)
+      );
       const runDirs = evaluations.map((evaluation) =>
-        getRequiredPlotRunDir(evaluation, `Numeric metric ${JSON.stringify(metricPath.label)}`)
+        evaluation?.runDir || ""
+      );
+      assertAlignedArrayLengths(
+        `Numeric metric ${JSON.stringify(metricPath.label)}`,
+        "runIds",
+        runIds,
+        "samples",
+        samples
       );
       assertAlignedArrayLengths(
         `Numeric metric ${JSON.stringify(metricPath.label)}`,
@@ -293,6 +303,7 @@ function buildNumericPlotEntriesForDefinitions({
         displayCategory: displayCategoryLabel,
         series: seriesLabel,
         displaySeries: displaySeriesLabel,
+        runIds,
         runDirs,
         samples,
       });
@@ -369,6 +380,8 @@ export function buildNumericDownloadMetadata(plotEntry = {}) {
  * Numeric input entries are already sample-only before rendering adds mean/std.
  * Downloads expose those raw sample values directly, keeping metric identity in
  * `plotEntry` and leaving UI grouping helpers out of the public JSON schema.
+ * The serialized `run_dirs` values identify source provenance only; semantic
+ * `runIds` remain an internal alignment key and are not public payload fields.
  *
  * @param {object} plotEntry - Numeric plot input entry.
  * @returns {object} JSON-safe numeric plotting data.
@@ -377,7 +390,15 @@ export function buildJsonSafeNumericPlottingData(plotEntry) {
   return {
     points: (plotEntry?.points || []).map((point, index) => {
       const runDirs = point?.runDirs || [];
+      const runIds = point?.runIds || [];
       const samples = point?.samples || [];
+      assertAlignedArrayLengths(
+        `Numeric download point ${index}`,
+        "runIds",
+        runIds,
+        "samples",
+        samples
+      );
       assertAlignedArrayLengths(
         `Numeric download point ${index}`,
         "runDirs",

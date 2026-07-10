@@ -68,13 +68,23 @@ export function buildMatrixDownloadMetadata(plotEntry = {}) {
  * Confusion and TP/FP/FN rendering both consume aggregation input objects with
  * the same sparse matrix structure. This helper preserves that pre-aggregation
  * plotting shape and only replaces `Map` cells with JSON-safe entry arrays.
+ * Serialized `run_dirs` values are provenance metadata; semantic `runIds` are
+ * intentionally validated for alignment internally but are not public payload fields.
  *
  * @param {object} aggregationInput - Matrix aggregation input.
  * @returns {object} JSON-safe matrix plotting data.
  */
 export function buildJsonSafeMatrixPlottingData(aggregationInput) {
+  const runIds = aggregationInput?.runIds || [];
   const runDirs = aggregationInput?.runDirs || [];
   const cells = aggregationInput?.cells || [];
+  assertAlignedArrayLengths(
+    "Matrix download data",
+    "runIds",
+    runIds,
+    "cells",
+    cells
+  );
   assertAlignedArrayLengths(
     "Matrix download data",
     "runDirs",
