@@ -13,7 +13,6 @@ _REWRITES = [
     (re.compile(r'href="/models/README\.md(#[^"]*)?'), "models-readme/", "local"),
     (re.compile(r'href="/podman/faktencheck-db/README\.md(#[^"]*)?'), "podman-readme/", "local"),
     (re.compile(r'href="/data/readme\.md(#[^"]*)?'), "data-readme/", "local"),
-    (re.compile(r'href="/docs/USAGE\.md(#[^"]*)?'), "USAGE/", "local"),
     (re.compile(r'href="/([^"]*)?'), "", "github"),
 ]
 
