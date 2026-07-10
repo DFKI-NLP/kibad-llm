@@ -13,7 +13,8 @@ Use this guide when you create, run, evaluate, or document reproducible experime
     - [Run predictions](#run-predictions)
     - [Run evaluations](#run-evaluations)
     - [Inspect results in the eval dashboard](#inspect-results-in-the-eval-dashboard)
-- [Documentation](#documentation)
+- [Describe and interpret results](#describe-and-interpret-results)
+- [Finalize the documentation](#finalize-the-documentation)
 - [Result locations](#result-locations)
 
 ## Setup
@@ -69,13 +70,13 @@ Create the committed result folder:
 mkdir -p data/prediction_results/logs/<name>
 ```
 
-Create `data/prediction_results/logs/<name>/readme.md` with:
+Create the experiment readme `data/prediction_results/logs/<name>/readme.md` with:
 
 - a first-level heading with the experiment name, for example `# 481_faktencheck_core`,
 - a short description of the goal, motivation, and hypothesis,
 - a `Prediction` section when prediction commands were run,
 - an `Evaluation` section when evaluation commands were run, and
-- each executed command together with its printed result location.
+- each executed command together with its printed result location (use repo-relative paths, if possible, to ease reproducibility).
 
 Use result locations as printed by the command, for example:
 
@@ -158,17 +159,16 @@ data/prediction_results/logs/<name>/figures/
 > [!TIP]
 > Use subfolders in `figures/` when there are different experiment or evaluation setups that should be logically separated.
 
-## Documentation
+> [!IMPORTANT]
+> You should include relevant dashboard figures from `figures/` (add subfolders, if appropriate), e.g. `![f1.png](figures/setup_a/f1.png)`, in the respective sections of the experiment readme.
 
-Every committed experiment needs a self-contained result description.
+## Describe and interpret results
 
-As mentioned [above](#prepare-the-experiment-folder), you should have already documented the motivation, setup, commands, and result locations in `data/prediction_results/logs/<name>/readme.md`. Now, after inspecting the results, you should also:
+As mentioned [above](#prepare-the-experiment-folder), you should have already documented the motivation, setup, commands, and result locations in the experiment readme. Now, after inspecting the results, you should also add an `Outcome` section describing the outcome of this experiment textually. This should include a result analysis, the hypothesis evaluation, but also naming any *unexpected* outcome and, finally, derived recommendations wrt. the project, e.g. "the model / feature provides the best results, so we should enable it per default for future experiments" or "this model does not outperform our current top model, but ranks second best overall and improves on the previous model we evaluated, so it's a viable alternative worth keeping in mind".
 
-- add an `Outcome` section,
-- include relevant dashboard figures from `figures/` (add subfolders, if appropriate), e.g. `![f1.png](figures/setup_a/f1.png)`, and
-- describe the outcome textually, including whether the hypothesis was supported.
+## Finalize the documentation
 
-Then add a row to the table in [data/prediction_results/readme.md](https://github.com/DFKI-NLP/kibad-llm/tree/main/data/prediction_results/readme.md) with:
+Add a row to the overview table in [data/prediction_results/readme.md](https://github.com/DFKI-NLP/kibad-llm/tree/main/data/prediction_results/readme.md) with:
 
 - the log folder link,
 - the date,
