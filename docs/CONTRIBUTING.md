@@ -220,9 +220,29 @@ The API reference is generated from Python source files by `scripts/build_docs.p
 
 ### Links and redirects
 
-Use repository-root links such as `/docs/CONTRIBUTING-CODE.md` when linking to files and directories to be included in the docs. If that link needs to work on the generated website, add or update the corresponding rewrite in [`/scripts/docs_hooks.py`](/scripts/docs_hooks.py).
+All links outside the `docs` directory are supposed to work on GitHub first:
 
-If a public documentation URL changes, add a redirect in `properdocs.yml` so existing links keep working. (This is currently not implemented.)
+- Make sure that links that point to files or directories of the repo start with a `/`, e.g. `/docs/CONTRIBUTING-CODE.md` or `/scripts/docs_hooks.py`.
+
+All links inside the `docs` directory are supposed to work in the docs first:
+
+- Make sure that links that point to files or directories _within_ the `docs` do _not_ start with a `/` and are absolute paths to the `/docs/` directory as root, e.g. `reference/kibad_llm/index.md` or `USAGE.md`.<br>
+- Make sure that links that point to files or directories _within_ the repo, but _outside_ the `/docs/` are absolute to the repo root and start with a `/`, e.g. `/properdocs.yml`.
+
+All links that live inside the `/docs/` directory and that start with `/` are altered by the [`docs_hooks`](/scripts/docs_hooks.py) script.
+
+Some files live outside the `/docs/` directory, but are hooked into the `/docs/` by use of a linking file like [`/docs/data-readme.md`](https://github.com/DFKI-NLP/kibad-llm/blob/main/docs/data-readme.md).
+Those files need to have a regex to fix their links in [`/scripts/docs_hooks.py`](/scripts/docs_hooks.py). Those regexes are built like so:
+
+```
+                    Path to source file in repo.
+                    |                             Path to destination in the docs.
+                    |                             |               Keyword for links that point into the docs website.
+                    V                             V               V
+(re.compile(r'href="/data/readme\.md(#[^"]*)?'), "data-readme/", "local"),
+```
+
+If a public documentation URL changes, add a redirect in `properdocs.yml` so existing links keep working. (This is currently not implemented. Requires the package `mkdocs-redirects`.)
 
 ### Building and hosting locally
 
