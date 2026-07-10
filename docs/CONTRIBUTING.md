@@ -100,6 +100,7 @@ High-level overview of contributor-relevant paths (local caches and other genera
 │                                  versioned directories such as `data/prediction_results/` and `data/processed/`.
 ├── .pre-commit-config.yaml     <- `prek`/pre-commit hook configuration used locally and in CI.
 ├── LICENSE                     <- AGPL-v3 license text for the project.
+├── lychee.toml                 <- Documentation link validation configuration.
 ├── Makefile                    <- Legacy helper targets. TODO: clarify which targets are still maintained now that
 │                                  the project uses `uv` instead of `poetry` in most docs.
 ├── properdocs.yml              <- ProperDocs site configuration and navigation.
