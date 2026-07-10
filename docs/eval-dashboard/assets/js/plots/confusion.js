@@ -9,9 +9,9 @@
  */
 
 import { formatRounded, interpolateColor, meanAndStd, normalizeValue } from "../utils/values.js";
+import { getEvaluationRunId } from "../utils/runs.js";
 import {
   assertAlignedArrayLengths,
-  getMetricCollectionSourceRunDir,
   getMetricCollectionView,
   getMetricPreparedDataContainer,
   getRequiredPlotRunDir,
@@ -52,12 +52,12 @@ export function getConfusionMatrixCollectionViews(evaluations, options = {}) {
  * collection metric and its wrapped view still represent one evaluation run.
  *
  * @param {Array<object>} evaluations - Evaluation records.
- * @returns {number} Number of unique non-empty source run directories.
+ * @returns {number} Number of unique semantic run ids.
  */
 export function countDistinctConfusionMatrixRuns(evaluations) {
   return new Set(
     (evaluations || [])
-      .map((evaluation) => evaluation?.sourceRunDir || getMetricCollectionSourceRunDir(evaluation?.evaluation || evaluation))
+      .map((evaluation) => getEvaluationRunId(evaluation?.evaluation || evaluation))
       .filter(Boolean)
   ).size;
 }

@@ -79,7 +79,7 @@ export function renderLoadProgress(
  * @param {number} summaryView.totalEvaluations - Total evaluations in canonical state.
  * @param {number} summaryView.candidateRunDirs - Candidate run count.
  * @param {number} summaryView.loadedCount - Newly loaded run count.
- * @param {number} summaryView.skippedDuplicate - Duplicate-run skip count.
+ * @param {number} summaryView.skippedSameContent - Same-content skip count.
  * @param {number} summaryView.skippedPredictRuns - Predict-run skip count.
  * @param {number} summaryView.skippedMissingJob - Missing-job skip count.
  * @param {number} summaryView.skippedUnsupportedVersion - Unsupported-version skip count.
@@ -95,7 +95,7 @@ export function renderLoadStatusSummary(
     totalEvaluations,
     candidateRunDirs,
     loadedCount,
-    skippedDuplicate,
+    skippedSameContent,
     skippedPredictRuns,
     skippedMissingJob,
     skippedUnsupportedVersion,
@@ -109,7 +109,7 @@ export function renderLoadStatusSummary(
     `Skipped (is predict run): ${skippedPredictRuns}`,
     `Candidate evaluation runs: ${candidateRunDirs}`,
     `New evaluation runs loaded: ${loadedCount}`,
-    `Skipped (already loaded): ${skippedDuplicate}`,
+    `Skipped (same run content already loaded): ${skippedSameContent}`,
     `Evaluation runs loaded: ${totalEvaluations}`,
     `Skipped (missing job_return_value.json): ${skippedMissingJob}`,
     `Skipped (missing prediction.job_return_value.output_file): ${skippedMissingPredictionId}`,

@@ -56,6 +56,7 @@ import {
   renderLoadStatusSummary,
   setDownloadFiguresButtonBusy,
 } from "./ui/status.js";
+import { getEvaluationRunId } from "./utils/runs.js";
 import {
   getPlotDisplayLabel as getSharedPlotDisplayLabel,
 } from "./plots/shared.js";
@@ -410,13 +411,13 @@ function resetDerivedUiStateAfterLoad(timing = createTimingCollector({ enabled: 
   });
 }
 
-function updateLoadStatusSummary({ candidateRunDirs, loadedCount, skippedDuplicate, skippedPredictRuns, skippedMissingJob, skippedUnsupportedVersion, skippedInvalid, skippedMissingPredictionId, skippedConflictingPredictionId }) {
+function updateLoadStatusSummary({ candidateRunDirs, loadedCount, skippedSameContent, skippedPredictRuns, skippedMissingJob, skippedUnsupportedVersion, skippedInvalid, skippedMissingPredictionId, skippedConflictingPredictionId }) {
   renderLoadStatusSummary(dom, {
     loadedSources: Array.from(state.loadedFolders).sort(),
     totalEvaluations: state.evaluations.length,
     candidateRunDirs,
     loadedCount,
-    skippedDuplicate,
+    skippedSameContent,
     skippedPredictRuns,
     skippedMissingJob,
     skippedUnsupportedVersion,
@@ -457,7 +458,7 @@ async function loadEvaluationsFromEntries(entries, rootLabel, timing = createTim
     return;
   }
 
-  const ingestionResult = timing.time(
+  const ingestionResult = await timing.timeAsync(
     "load ingest run entries",
     () => ingestRunEntries(entries, {
       existingPredictions: state.predictions,
@@ -1254,7 +1255,7 @@ function renderEvaluations() {
           evalTabState.selectedEvalGroupId = null;
         } else {
           evalTabState.selectedEvalGroupId = groupId;
-          evalTabState.selectedEvalRunDir = null;
+          evalTabState.selectedEvalRunId = null;
           state.activeEvalJsonTab = "evaluation";
         }
         renderEvaluations();
@@ -1275,11 +1276,11 @@ function renderEvaluations() {
         }
         renderEvaluations();
       },
-      onMemberRowSelect: (runDir) => {
-        if (evalTabState.selectedEvalRunDir === runDir) {
-          evalTabState.selectedEvalRunDir = null;
+      onMemberRowSelect: (runId) => {
+        if (evalTabState.selectedEvalRunId === runId) {
+          evalTabState.selectedEvalRunId = null;
         } else {
-          evalTabState.selectedEvalRunDir = runDir;
+          evalTabState.selectedEvalRunId = runId;
           evalTabState.selectedEvalGroupId = null;
           state.activeEvalJsonTab = "evaluation";
         }
@@ -1293,7 +1294,7 @@ function renderEvaluations() {
   });
 
   const selectedEvaluation = experimentEvaluations.find(
-    (evaluation) => evaluation.runDir === evalTabState.selectedEvalRunDir
+    (evaluation) => getEvaluationRunId(evaluation) === evalTabState.selectedEvalRunId
   ) || null;
   const selectedGroup = displayedEvalGroups.find(
     (group) => group.groupId === evalTabState.selectedEvalGroupId

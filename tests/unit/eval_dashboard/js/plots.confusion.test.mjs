@@ -34,6 +34,7 @@ test("confusion helpers wrap collection metrics and aggregate aligned cells", ()
   };
   const collections = getConfusionMatrixCollectionViews([
     {
+      runId: "run-a-id",
       runDir: "run-a",
       jobReturnValue: { type: "ConfusionMatrixCollection" },
       overrides: { experiment: "exp" },
@@ -47,8 +48,8 @@ test("confusion helpers wrap collection metrics and aggregate aligned cells", ()
   assert.equal(countDistinctConfusionMatrixRuns(collections), 1);
 
   const aggregation = aggregateConfusionMatrix([
-    { runDir: "r1", fields: new Map([["field_a", { b: { x: 2 }, UNASSIGNABLE: { UNDETECTED: 1 } }]]) },
-    { runDir: "r2", fields: new Map([["field_a", { b: { x: 4 }, a: { x: 2 } }]]) },
+    { runId: "r1-id", runDir: "r1", fields: new Map([["field_a", { b: { x: 2 }, UNASSIGNABLE: { UNDETECTED: 1 } }]]) },
+    { runId: "r2-id", runDir: "r2", fields: new Map([["field_a", { b: { x: 4 }, a: { x: 2 } }]]) },
   ], "field_a");
   assert.deepEqual(aggregation.rows, ["a", "b", "UNASSIGNABLE"]);
   assert.deepEqual(aggregation.cols, ["x", "UNDETECTED"]);
@@ -65,6 +66,7 @@ test("confusion helpers wrap collection metrics and aggregate aligned cells", ()
  */
 test("confusion aggregation stores prepared field data on the source evaluation", () => {
   const evaluation = {
+    runId: "r1-id",
     runDir: "r1",
     jobReturnValue: { type: "ConfusionMatrixCollection" },
     data: { field_a: { gold: { pred: 2 } } },
@@ -75,7 +77,7 @@ test("confusion aggregation stores prepared field data on the source evaluation"
 
   assert.equal(aggregation.cells.get("gold|#|pred").mean, 2);
   assert.ok(evaluation.dataPrepared.field_a);
-  assert.deepEqual(Object.keys(evaluation), ["runDir", "jobReturnValue", "data"]);
+  assert.deepEqual(Object.keys(evaluation), ["runId", "runDir", "jobReturnValue", "data"]);
   assert.equal(evaluation.dataPrepared.field_a.cells.get("gold|#|pred"), 2);
 });
 
@@ -84,6 +86,7 @@ test("confusion aggregation stores prepared field data on the source evaluation"
  */
 test("confusion aggregation caches prototype-named metric fields safely", () => {
   const evaluation = {
+    runId: "r1-id",
     runDir: "r1",
     jobReturnValue: { type: "ConfusionMatrixCollection" },
     data: { toString: { gold: { pred: 3 } } },
@@ -107,6 +110,7 @@ test("confusion aggregation normalizes existing prepared containers for prototyp
     configurable: true,
   });
   const evaluation = {
+    runId: "r1-id",
     runDir: "r1",
     jobReturnValue: { type: "ConfusionMatrixCollection" },
     dataPrepared: {},
@@ -127,11 +131,13 @@ test("confusion aggregation normalizes existing prepared containers for prototyp
 test("confusion helpers build reusable aligned aggregation inputs", () => {
   const collections = [
     {
+      runId: "run-a-id",
       runDir: "run-a",
       sourceRunDir: "source-a",
       fields: new Map([["field_a", { actual: { predicted: 2 }, filtered: { hidden: 5 } }]]),
     },
     {
+      runId: "run-b-id",
       runDir: "run-b",
       sourceRunDir: "source-b",
       fields: new Map([["field_a", { actual: { predicted: 4 } }]]),
@@ -164,8 +170,8 @@ test("confusion helpers build reusable aligned aggregation inputs", () => {
  */
 test("confusion helpers build tab maps for metric-field and group-tab modes", () => {
   const evaluations = [
-    { runDir: "r1", overrides: { "metric.field": "field_a", experiment: "exp" }, jobReturnValue: { type: "ConfusionMatrix" }, data: {} },
-    { runDir: "r2", overrides: { "metric.field": "field_b", experiment: "exp" }, jobReturnValue: { type: "ConfusionMatrix" }, data: {} },
+    { runId: "r1-id", runDir: "r1", overrides: { "metric.field": "field_a", experiment: "exp" }, jobReturnValue: { type: "ConfusionMatrix" }, data: {} },
+    { runId: "r2-id", runDir: "r2", overrides: { "metric.field": "field_b", experiment: "exp" }, jobReturnValue: { type: "ConfusionMatrix" }, data: {} },
   ];
   const plotGroups = [
     { groupId: "g1", values: { model: "a" }, evaluations },
@@ -228,14 +234,14 @@ test("confusion helpers build tab maps for metric-field and group-tab modes", ()
 test("confusion collection views reject missing fields and malformed collection data", () => {
   assert.throws(
     () => getConfusionMatrixCollectionViews([
-      { runDir: "r1", overrides: {}, jobReturnValue: { type: "ConfusionMatrix" }, data: {} },
+      { runId: "r1-id", runDir: "r1", overrides: {}, jobReturnValue: { type: "ConfusionMatrix" }, data: {} },
     ], { evalTabState: {}, getEvaluationEffectiveValue }),
     /ConfusionMatrix evaluation must define a non-empty metric\.field\./
   );
 
   assert.throws(
     () => getConfusionMatrixCollectionViews([
-      { runDir: "r1", jobReturnValue: { type: "ConfusionMatrixCollection" }, data: [] },
+      { runId: "r1-id", runDir: "r1", jobReturnValue: { type: "ConfusionMatrixCollection" }, data: [] },
     ]),
     /ConfusionMatrixCollection data must be an object mapping metric fields to metric data\./
   );
@@ -243,6 +249,7 @@ test("confusion collection views reject missing fields and malformed collection 
   assert.throws(
     () => getConfusionMatrixCollectionViews([
       {
+        runId: "r1-id",
         runDir: "r1",
         jobReturnValue: { type: "ConfusionMatrixCollection" },
         data: { " field_a ": {}, field_a: {} },
@@ -253,21 +260,21 @@ test("confusion collection views reject missing fields and malformed collection 
 
   assert.throws(
     () => aggregateConfusionMatrix([
-      { runDir: "r1", fields: new Map([["field_b", {}]]) },
+      { runId: "r1-id", runDir: "r1", fields: new Map([["field_b", {}]]) },
     ], "field_a"),
     /ConfusionMatrix collection view is missing metric field "field_a"\./
   );
 
   assert.throws(
     () => aggregateConfusionMatrix([
-      { runDir: "r1", fields: new Map([["field_a", { actual: [] }]]) },
+      { runId: "r1-id", runDir: "r1", fields: new Map([["field_a", { actual: [] }]]) },
     ], "field_a"),
     /ConfusionMatrix field "field_a" actual label "actual" must map to object predicted-label data\./
   );
 
   assert.throws(
     () => aggregateConfusionMatrix([
-      { runDir: "r1", fields: new Map([["field_a", { actual: { predicted: "1" } }]]) },
+      { runId: "r1-id", runDir: "r1", fields: new Map([["field_a", { actual: { predicted: "1" } }]]) },
     ], "field_a"),
     /ConfusionMatrix field "field_a" cell "actual" -> "predicted" must be a finite number\./
   );
@@ -275,6 +282,7 @@ test("confusion collection views reject missing fields and malformed collection 
   assert.throws(
     () => aggregateConfusionMatrix([
       {
+        runId: "r1-id",
         runDir: "r1",
         fields: new Map([["field_a", { actual: { "predicted|#|label": 1 } }]]),
       },

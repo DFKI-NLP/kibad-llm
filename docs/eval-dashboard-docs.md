@@ -33,6 +33,8 @@ The dashboard loads single evaluation runs. A run directory is loadable when it 
 
 Runs inside `predict` directories are ignored. Prediction payloads are canonicalized separately and linked to evaluations through the prediction id extracted from the normalized run payload.
 
+Imported evaluation runs are deduplicated by their normalized source content, not by the folder path. Concretely, the dashboard parses `job_return_value.json` and `.hydra/overrides.yaml`, canonicalizes their content, derives a semantic `runId`, and skips later imports whose normalized content matches a run that is already loaded. The original `runDir` path is still shown as provenance metadata in the evaluation table and error messages, but it no longer decides whether two runs are considered the same.
+
 The checked-in dashboard fixtures under `tests/fixtures/eval_dashboard/` cover the currently supported fixture versions and metric families, including bars, errors, confusion matrices, and TP/FP/FN outputs. They are intended for tests and development rather than as the main user data source.
 
 ## Architecture
@@ -59,7 +61,7 @@ docs/
             ├── data/
             │   ├── file-loader.js            <- Local folder/file filtering and text extraction.
             │   ├── git-loader.js             <- GitHub tree URL parsing plus GitHub content listing/fetching.
-            │   ├── ingest-runs.js            <- Shared raw-entry ingestion, run discovery, duplicate/conflict handling.
+            │   ├── ingest-runs.js            <- Shared raw-entry ingestion, run discovery, content-based duplicate/conflict handling.
             │   ├── normalize.js              <- Supported `job_return_value.json` version normalization.
             │   └── parse-overrides.js        <- Lightweight parser for Hydra `.hydra/overrides.yaml` list entries.
             ├── plots/
@@ -84,6 +86,7 @@ docs/
             │   └── tabs.js                   <- Shared tab button models, rendering, and delegated tab selection.
             └── utils/
                 ├── flatten.js                <- Object flattening and nested path lookup helpers.
+                ├── runs.js                   <- Semantic run-id derivation and evaluation identity helpers.
                 ├── sort.js                   <- Sort config normalization and stable compare helpers.
                 ├── text.js                   <- Display text, plot-title, and filename helpers.
                 └── values.js                 <- Value normalization, signatures, numeric guards, and defaults.
