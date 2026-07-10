@@ -74,10 +74,13 @@ function getNumericMetricPathKey(parts) {
  * Defaults that are semantically valid when a numeric metric path is absent.
  *
  * ErrorCollector output is sparse: counters with zero occurrences are omitted.
+ * F1MicroMultipleFieldsMetric output is also sparse: fields with no observations
+ * are omitted and its per-field scores would otherwise be zero.
  * Other numeric metric types must provide every discovered path explicitly.
  */
 const NUMERIC_METRIC_MISSING_DEFAULTS = new Map([
   ["ErrorCollector", 0],
+  ["F1MicroMultipleFieldsMetric", 0],
 ]);
 
 /**
