@@ -188,35 +188,35 @@ Legend
 
 ![Legend](figures/faktencheck_core_f1_micro_flat-ALL/legend.svg)
 
-Micro-F1, All.F1
+Micro-F1 (ALL.f1)
 
 ![Figure/Table 1 "main pipeline results": F1 scores for the best configuration (prompt+chunking+...)](figures/faktencheck_core_f1_micro_flat-ALL/f1.svg) 
 
-Precision, ALL.F1
+Micro-Precision (ALL.precision)
 
 ![Figure/Table 2: "detail results - precision and recall" - same plots as above, but with precision scores instead of F1](figures/faktencheck_core_f1_micro_flat-ALL/precision.svg)
 
-Recall, ALL.F1
+Micro-Recall (ALL.recall)
 
 ![Figure/Table 2: "detail results - precision and recall" - same plots as above, but with recall scores instead of F1](figures/faktencheck_core_f1_micro_flat-ALL/recall.svg)
 
-Biodiversity Level F1
+Biodiversity Level Micro-F1
 
 ![Figure/Table 3: "detail results - schema elements" for all models and the best configuration - Biodiversity Level](figures/faktencheck_core_f1_micro_flat-biodiversity_level/f1.svg)
 
-Ecosystem Type Category F1
+Ecosystem Type Category Micro-F1
 
 ![Figure/Table 3: "detail results - schema elements" for all models and the best configuration - Ecosystem type category](figures/faktencheck_core_f1_micro_flat-ecosystem_type.category/f1.svg)
 
-Ecosystem Type Term F1
+Ecosystem Type Term Micro-F1
 
 ![Figure/Table 3: "detail results - schema elements" for all models and the best configuration - Ecosystem type term](figures/faktencheck_core_f1_micro_flat-ecosystem_type.term/f1.svg)
 
-Habitat F1
+Habitat Micro-F1
 
 ![Figure/Table 3: "detail results - schema elements" for all models and the best configuration - Habitat](figures/faktencheck_core_f1_micro_flat-habitat/f1.svg)
 
-Taxa Species Group F1
+Taxa Species Group Micro-F1
 
 ![Figure/Table 3: "detail results - schema elements" for all models and the best configuration - Taxa species group](figures/faktencheck_core_f1_micro_flat-taxa.species_group/f1.svg)
 
