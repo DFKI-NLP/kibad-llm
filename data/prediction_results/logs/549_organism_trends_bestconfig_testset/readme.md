@@ -187,7 +187,7 @@ dataset.references.file="../external/organism_trends/Weighted Vote Count Agrar- 
 --multirun
 ```
 
-Saved to `logs/549_organism_trends_bestconfig_testset/evaluate/multiruns/....`
+Saved to `logs/549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_11-03-50/`
 
 ##### `Antwortvariable` conditioned on base elements
 
@@ -201,7 +201,7 @@ dataset.references.file="../external/organism_trends/Weighted Vote Count Agrar- 
 --multirun
 ```
 
-Saved to `logs/549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_11-03-50/`
+Saved to `logs/549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_11-46-09/`
 
 ##### `Antwortvariable` & `Trend` conditioned on base elements
 
