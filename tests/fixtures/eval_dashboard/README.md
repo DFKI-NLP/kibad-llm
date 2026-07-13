@@ -4,7 +4,7 @@ These fixtures support the early smoke and regression checks for the eval-dashbo
 
 ## Fixture policy
 
-- Fixtures are curated snapshots, not live references into `data/results/logs/`.results
+- Fixtures are curated snapshots, not live references into `data/results/logs/`.
 - Prefer representative source experiments added later than `2026-01-16`.
 - Keep fixtures intentionally small and reviewable while preserving valid dashboard input shapes.
 - `run_v1` is synthetic because no natural `job_return_value.json` with `"version": 1` is currently available in the repository logs.

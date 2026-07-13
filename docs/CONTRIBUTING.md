@@ -311,6 +311,8 @@ For test design, layout, and fixture regeneration guidance, see [CONTRIBUTING-CO
 
 ## Submodules
 
+This repo has a single submodule, `data/results`, which points at the [`kibad-llm-results`](https://github.com/DFKI-NLP/kibad-llm-results) repository. Its tracked branch is recorded as `branch = main` in the `.gitmodules` file, so the `--remote` commands below follow the `main` branch of `kibad-llm-results`.
+
 - Normal cloning ignores submodules: A normal `git clone git@github.com:DFKI-NLP/kibad-llm.git` does not clone any submodules and is hence much faster.
 
 - To clone with submodules run: `git clone -j8 --recurse-submodules git@github.com:DFKI-NLP/kibad-llm.git` with `-j` specifying the number of submodules fetched simultaneously.
@@ -321,14 +323,14 @@ For test design, layout, and fixture regeneration guidance, see [CONTRIBUTING-CO
 
 - The `kibad-llm` repo stores the exact commit to check out for each submodule.
 
-    - If you want to clone the submodules repo with the latest commit instead of the stored one, use `git clone -j8 --recurse-submodules --remote-submodules git@github.com:DFKI-NLP/kibad-llm.git`
+    - If you want to clone the `kibad-llm` repo with all submodule repos with the latest commit instead of the stored one, use `git clone -j8 --recurse-submodules --remote-submodules git@github.com:DFKI-NLP/kibad-llm.git`
     - If you want to update/ clone submodules with the latest commit instead of the stored one, use `git submodule update --init --recursive --remote`
 
 - The flow for changing data in a submodule
 
-    1. change the files in the submodule on a branch you want
-    1. commit the changes in the submodule
-    1. then commit that commit of the submodule in kibad-llm
+    1. enter the submodule and check out a branch to work on: `cd data/results && git switch -c <branch>`. A fresh clone leaves the submodule in detached `HEAD` at the stored commit, so this step is required before you can commit.
+    1. change the files in the submodule, commit them there, and push the branch to `kibad-llm-results` (`git push -u origin <branch>`) so the commit is reachable for others and CI.
+    1. back in `kibad-llm`, stage and commit the updated submodule pointer and push, so the superproject records your new submodule commit.
 
 ## Misc
 
