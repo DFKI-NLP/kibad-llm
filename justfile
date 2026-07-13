@@ -1,5 +1,9 @@
+# `just` is a command runner.
+# Install it by running: `uv tool install rust-just`.
+# List available commands by running: `just -l`
+# Get help from: `just --help`
 
-# The first recipe is the default one, if just is run without a specific recipe `$ just`
+# run the pr recipe. (The first recipe is the default one if `just` is run without a specific recipe: `$ just`)
 default: pr
 
 # SERVING
@@ -16,16 +20,16 @@ prek:
 
 # TESTING
 
+# run python tests
 pytest:
-    @echo "run python tests"
     uv run --group cicd pytest
 
+# run dashboard js tests
 node-test:
-    @echo "run dashboard js tests"
     node --test tests/unit/eval_dashboard/js/*.test.mjs
 
+# check links of the docs
 lychee:
-    @echo "check links of the docs"
     uv run --group cicd properdocs build
     lychee --config lychee.toml --root-dir ./site "site/**/*.html"
 
