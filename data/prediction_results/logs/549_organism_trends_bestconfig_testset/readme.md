@@ -31,7 +31,7 @@ seed=42,1337,7331 \
 =============================================
 ```
 
-Saved to `logs/549_organism_trends_bestconfig_testset/predict/multiruns/...`
+Saved to `logs/549_organism_trends_bestconfig_testset/predict/multiruns/2026-07-09_15-18-29/`
 
 ### gemma3_27b
 
@@ -59,7 +59,7 @@ seed=42,1337,7331 \
 =============================================
 ```
 
-Saved to `logs/549_organism_trends_bestconfig_testset/predict/multiruns/...`
+Saved to `logs/549_organism_trends_bestconfig_testset/predict/multiruns/2026-07-09_15-31-12/`
 
 ### qwen3_30b
 
@@ -85,7 +85,7 @@ seed=42,1337,7331 \
 =============================================
 ```
 
-Saved to `logs/549_organism_trends_bestconfig_testset/predict/multiruns/...`
+Saved to `logs/549_organism_trends_bestconfig_testset/predict/multiruns/2026-07-09_15-31-13/`
 
 ### mistral_small_3_24b
 
@@ -111,7 +111,7 @@ seed=42,1337,7331 \
 =============================================
 ```
 
-Saved to `logs/549_organism_trends_bestconfig_testset/predict/multiruns/...`
+Saved to `logs/549_organism_trends_bestconfig_testset/predict/multiruns/2026-07-09_16-29-00/`
 
 ### gpt_5
 
@@ -141,7 +141,7 @@ seed=42 \
 =============================================
 ```
 
-Saved to `logs/549_organism_trends_bestconfig_testset/predict/multiruns/....`
+Saved to `logs/549_organism_trends_bestconfig_testset/predict/multiruns/2026-07-09_14-51-33/`
 
 ## Evaluation
 
@@ -155,10 +155,11 @@ name=549_organism_trends_bestconfig_testset \
 experiment/evaluate=organism_trends_f1_micro_flat \
 prediction_logs=logs/549_organism_trends_bestconfig_testset/predict \
 hydra.callbacks.save_job_return.multirun_show_file_contents=null \
+dataset.references.file="../external/organism_trends/Weighted Vote Count Agrar- und Offenland Literatur - Sheet1.csv" \
 --multirun
 ```
 
-Saved to `logs/549_organism_trends_bestconfig_testset/evaluate/multiruns/....`
+Saved to `logs/549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_11-02-03/12/`
 
 ##### full compounds
 
@@ -168,10 +169,11 @@ name=549_organism_trends_bestconfig_testset \
 experiment/evaluate=organism_trends_f1_micro \
 prediction_logs=logs/549_organism_trends_bestconfig_testset/predict \
 hydra.callbacks.save_job_return.multirun_show_file_contents=null \
+dataset.references.file="../external/organism_trends/Weighted Vote Count Agrar- und Offenland Literatur - Sheet1.csv" \
 --multirun
 ```
 
-Saved to `logs/549_organism_trends_bestconfig_testset/evaluate/multiruns/....`
+Saved to `logs/549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_11-03-11/`
 
 ##### base elements
 
@@ -181,6 +183,7 @@ name=549_organism_trends_bestconfig_testset \
 experiment/evaluate=organism_trends_f1_micro_base_entries \
 prediction_logs=logs/549_organism_trends_bestconfig_testset/predict \
 hydra.callbacks.save_job_return.multirun_show_file_contents=null \
+dataset.references.file="../external/organism_trends/Weighted Vote Count Agrar- und Offenland Literatur - Sheet1.csv" \
 --multirun
 ```
 
@@ -194,10 +197,11 @@ name=549_organism_trends_bestconfig_testset \
 experiment/evaluate=organism_trends_f1_micro_conditional_variable_only \
 prediction_logs=logs/549_organism_trends_bestconfig_testset/predict \
 hydra.callbacks.save_job_return.multirun_show_file_contents=null \
+dataset.references.file="../external/organism_trends/Weighted Vote Count Agrar- und Offenland Literatur - Sheet1.csv" \
 --multirun
 ```
 
-Saved to `logs/549_organism_trends_bestconfig_testset/evaluate/multiruns/....`
+Saved to `logs/549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_11-03-50/`
 
 ##### `Antwortvariable` & `Trend` conditioned on base elements
 
@@ -207,10 +211,11 @@ name=549_organism_trends_bestconfig_testset \
 experiment/evaluate=organism_trends_f1_micro_conditional_variable_and_trend \
 prediction_logs=logs/549_organism_trends_bestconfig_testset/predict \
 hydra.callbacks.save_job_return.multirun_show_file_contents=null \
+dataset.references.file="../external/organism_trends/Weighted Vote Count Agrar- und Offenland Literatur - Sheet1.csv" \
 --multirun
 ```
 
-Saved to `logs/549_organism_trends_bestconfig_testset/evaluate/multiruns/....`
+Saved to `logs/549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_11-04-21/`
 
 ### Errors
 
@@ -225,7 +230,7 @@ logs/549_organism_trends_bestconfig_testset/predict \
 --multirun
 ```
 
-Saved to `logs/549_organism_trends_bestconfig_testset/evaluate/multiruns/.....`
+Saved to `logs/549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_11-05-06/`
 
 ## Outcome
 

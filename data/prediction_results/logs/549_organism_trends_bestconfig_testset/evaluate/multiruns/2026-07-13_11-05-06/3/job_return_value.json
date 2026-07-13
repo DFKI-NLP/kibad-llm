@@ -1,0 +1,29 @@
+{
+  "version": 2,
+  "type": "ErrorCollector",
+  "data": {
+    "no_error": 2546
+  },
+  "prediction": {
+    "job_return_value": {
+      "version": 1,
+      "output_file": "predictions/549_organism_trends_bestconfig_testset/2026-07-09_15-18-29/2026-07-10_03-19-38_001675/predictions.jsonl",
+      "output_file_absolute": "/netscratch/hennig/code/kibad-llm/predictions/549_organism_trends_bestconfig_testset/2026-07-09_15-18-29/2026-07-10_03-19-38_001675/predictions.jsonl",
+      "time_pdf_conversion": 0.007066886988468468,
+      "time_extraction": 17251.99155367003,
+      "time_start": 1783646378,
+      "time_end": 1783663707,
+      "commit_hash": "50d38a1b00c4ded08378832e625a7f73bde099de",
+      "branch": "exp/548_organism_trends_bestconfig_testset",
+      "is_dirty": false,
+      "slurm_job_id": "3157298"
+    },
+    "overrides": {
+      "name": "549_organism_trends_bestconfig_testset",
+      "experiment/predict": "organism_trends_with_chunking",
+      "pdf_directory": "/ds/text/kiba-d/test-set-AuO-WVC",
+      "extractor/llm": "gpt_oss_20b_in_process",
+      "seed": "7331"
+    }
+  }
+}
