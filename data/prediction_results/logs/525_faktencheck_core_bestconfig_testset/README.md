@@ -113,7 +113,7 @@ seed=42,1337,7331 \
 
 Saved to `logs/525_faktencheck_core_bestconfig_testset/predict/multiruns/2026-06-23_10-25-16/`
 
-### gpt_5
+### ~~gpt_5~~ (Deleted, too many errors, see https://github.com/DFKI-NLP/kibad-llm/issues/533)
 
 **IMPORTANT: Running this requires an openai token**  
 This run does not need a gpu and is hence run with `-ng 0.
@@ -142,7 +142,7 @@ seed=42 \
 
 **Note:** Stopped after first seed due to costs (USD  $195) and time constraints (pass through 500 docs took 59 hrs)
 
-Saved to `logs/525_faktencheck_core_bestconfig_testset/predict/multiruns/2026-06-23_13-25-01/`
+~~Saved to `logs/525_faktencheck_core_bestconfig_testset/predict/multiruns/2026-06-23_13-25-01/`~~
 
 ## Evaluation
 
@@ -161,7 +161,7 @@ logs/525_faktencheck_core_bestconfig_testset/predict \
 --multirun
 ```
 
-Saved to `logs/525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-06-29_14-39-29`
+Saved to `logs/525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10`
 
 ### Errors
 
@@ -176,7 +176,7 @@ logs/525_faktencheck_core_bestconfig_testset/predict \
 --multirun
 ```
 
-Saved to `logs/525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-06-30_15-39-52`
+Saved to `logs/525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-46`
 
 ## Outcome
 

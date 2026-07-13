@@ -1,5 +1,0 @@
-- name=525_faktencheck_core_bestconfig_testset
-- experiment/predict=faktencheck_core_fields_schema_with_chunking
-- pdf_directory=/ds/text/kiba-d/splits/test
-- extractor/llm=gpt_5
-- seed=42

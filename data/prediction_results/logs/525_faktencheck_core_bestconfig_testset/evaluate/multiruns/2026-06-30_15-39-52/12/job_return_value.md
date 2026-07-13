@@ -1,3 +1,0 @@
-|    |   APITimeoutError |   JSONDecodeError |   MissingResponseContentError |   ReasoningExtractionError |   no_error |   with_error |
-|---:|------------------:|------------------:|------------------------------:|---------------------------:|-----------:|-------------:|
-|  0 |                 6 |               293 |                           120 |                         30 |       2274 |          449 |
