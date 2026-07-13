@@ -16,21 +16,23 @@ prek:
 
 # TESTING
 
-# run python tests
 pytest:
+    @echo "run python tests"
     uv run --group cicd pytest
 
-# run dashboard js tests
 node-test:
+    @echo "run dashboard js tests"
     node --test tests/unit/eval_dashboard/js/*.test.mjs
 
-# check links of the docs
 lychee:
+    @echo "check links of the docs"
     uv run --group cicd properdocs build
     lychee --config lychee.toml --root-dir ./site "site/**/*.html"
 
 # run all testing suites
 test: pytest node-test lychee
+    @echo "===All tests passed==="
 
 # run tests and formatters
 pr: prek test
+    @echo "===The PR is clean==="
