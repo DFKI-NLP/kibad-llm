@@ -102,6 +102,7 @@ High-level overview of contributor-relevant paths (local caches and other genera
 │                                  editor settings, and other machine-specific artefacts, while explicitly keeping
 │                                  versioned directories such as `data/results/` and `data/processed/`.
 ├── .pre-commit-config.yaml     <- `prek`/pre-commit hook configuration used locally and in CI.
+├── justfile                    <- Config file for `just` command runner
 ├── LICENSE                     <- AGPL-v3 license text for the project.
 ├── lychee.toml                 <- Documentation link validation configuration.
 ├── Makefile                    <- Legacy helper targets. TODO: clarify which targets are still maintained now that
@@ -125,6 +126,14 @@ Install the project with development dependencies:
 ```bash
 uv sync --group cicd
 ```
+
+Optionally install [`just`](https://github.com/casey/just) for less verbose dev commands.
+
+```
+uv tool install rust-just
+```
+
+Run `just -l` to see what commands are available.
 
 ## Contribution requirements
 
@@ -263,6 +272,8 @@ You can build and serve the documentation locally with:
 
 ```bash
 uv run --group cicd properdocs serve -w .
+# or
+just prop
 ```
 
 ## Local checks and CI commands
@@ -273,6 +284,8 @@ To run code quality checks, static type checking and link validation of the docs
 uv run prek run -a
 # if you have not run 'uv sync --group cicd' previously, use instead
 uv run --group cicd prek run -a
+# or
+just prek
 ```
 
 This runs all configured [prek](https://prek.j178.dev/) hooks (see [pre-commit-config.yaml](/.pre-commit-config.yaml)) on all files. Some hooks may fix issues automatically, others will report issues that need to be fixed manually.
@@ -283,15 +296,30 @@ To run all Python tests with `pytest`:
 uv run pytest
 # if you have not run 'uv sync --group cicd' previously, use instead
 uv run --group cicd pytest
+# or
+just pytest
 ```
 
 To run the eval-dashboard JavaScript logic tests:
 
 ```bash
 node --test tests/unit/eval_dashboard/js/*.test.mjs
+# or
+just node-test
 ```
 
 This requires a working Node.js installation. The dashboard runtime modules in `docs/eval-dashboard/assets/js/` are treated as ES modules via the colocated `package.json` file.
+
+To run link checking on the docs:
+
+```bash
+uv run --group cicd properdocs build
+lychee --config lychee.toml --root-dir ./site "site/**/*.html"
+# or in just one line
+just lychee
+```
+
+This requires a working lychee installation.
 
 The following commands run on GitHub CI (see [code_quality_and_tests.yml](/.github/workflows/code_quality_and_tests.yml)), but can also be run locally:
 
@@ -302,6 +330,10 @@ uv run --group cicd prek run -a
 # the '-m "not slow"' bit is residue, to be cleaned up by a future polishing pr
 uv run --group cicd pytest -m "not slow"
 node --test tests/unit/eval_dashboard/js/*.test.mjs
+uv run --group cicd properdocs build
+lychee --config lychee.toml --root-dir ./site "site/**/*.html"
+# or run all of the above with just one line
+just pr
 ```
 
 For test design, layout, and fixture regeneration guidance, see [CONTRIBUTING-CODE.md](CONTRIBUTING-CODE.md).
