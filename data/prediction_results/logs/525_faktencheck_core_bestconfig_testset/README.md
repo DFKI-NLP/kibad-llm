@@ -220,16 +220,14 @@ Taxa Species Group F1
 
 ![Figure/Table 3: "detail results - schema elements" for all models and the best configuration - Taxa species group](figures/faktencheck_core_f1_micro_flat-taxa.species_group/f1.svg)
 
-Micro-averaged F1 scores on the test set range from 0.43 (Mistral, Gemma) to 0.50 (GPT OSS, Qwen), with GPT5 performing slightly
-worse than the top two models at F1=0.47. This is mainly due to much lower precision, whereas recall is slightly higher
-compared to GPT OSS and Qwen. Compared to the dev set with the correct reference
-data, F1 scores are significantly lower. GPT5 achieved 0.71 on the dev set, the other models approx from 0.56 - 0.63 (See 
-https://github.com/DFKI-NLP/kibad-llm/tree/main/data/prediction_results/logs/519_faktencheck_core) 
+Micro-averaged F1 scores on the test set range from 0.43 (Mistral, Gemma) to 0.50 (GPT OSS, Qwen). Compared to the dev set with the correct reference
+data, F1 scores are significantly lower. The models achieved approx from 0.56 - 0.63 micro-F1 on the dev set, see 
+https://github.com/DFKI-NLP/kibad-llm/tree/main/data/prediction_results/logs/519_faktencheck_core. 
 Compared to the dev set with the original, uncorrected reference data (see 
 https://github.com/DFKI-NLP/kibad-llm/tree/main/data/prediction_results/logs/542_faktencheck_core), which range
-from 0.34 (Mistral, Gemma) to 0.42 (GPT OSS, Qwen), the results are slightly better. 
+from 0.34 (Mistral, Gemma) to 0.42 (GPT OSS, Qwen), the results are slightly better here. 
 
-Precision is quite low at 0.39 for GPT OSS and Qwen, and 0.28 for Mistral, recall is high at 0.8 for Mistral and GPT5,
+Precision is quite low at 0.39 for GPT OSS and Qwen, and 0.28 for Mistral, recall is high at 0.8 for Mistral,
 and around 0.71 for the other models.
 Regarding individual fields, biodiversity level was identified with an F1 between 0.41 and 0.45, ecosystem_type.category
 between 0.43 and 0.5, ecosytem_type.term at 0.23-0.33, habitat at 0.65-0.71 and taxa.species_group at 0.41-0.53.
@@ -256,6 +254,3 @@ JSONDecode Errors
 MissingResponseContent errors
 
 ![MissingResponseContent errors, vs Run 519](figures/prediction_errors-details/MissingResponseContentError.svg)
-
-GPT5 has a significant amount of MissingResponseContent errors, 449 out of 2723 chunks failed with this error. 
-These are 16.5% of the total chunks. This is investigated in [#533](https://github.com/DFKI-NLP/kibad-llm/issues/533).
