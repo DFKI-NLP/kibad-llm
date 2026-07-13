@@ -43,7 +43,7 @@ Before starting a new experiment:
 ## Preparation
 
 Make sure that the `/data/results` submodule is cloned and checked out on a new branch for the experiment.
-Refer to the [Submodules](/CONTRIBUTING.md#submodules) section for instructions.
+Refer to the [Submodules](CONTRIBUTING.md#submodules) section for instructions.
 
 ## Execution
 
@@ -173,7 +173,7 @@ As mentioned [above](#prepare-the-experiment-folder), you should have already do
 
 ## Finalize the documentation
 
-Add a row to the overview table in [data/results/readme.md](https://github.com/DFKI-NLP/kibad-llm/tree/main/data/results/readme.md) with:
+Add a row to the overview table in [data/results/readme.md](https://github.com/DFKI-NLP/kibad-llm-results/blob/main/readme.md) with:
 
 - the log folder link,
 - the date,
