@@ -235,50 +235,67 @@ Saved to `logs/549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07
 ## Outcome
 
 ### F1, P, R
+
 The results in this folder can serve as a basis for the [Journal experiments](https://github.com/DFKI-NLP/kibad-llm/issues/521),
 namely for the Organism Trend schema plots:
 
+#### flattened
+
 Legend
 
-![Legend](figures/faktencheck_core_f1_micro_flat-ALL/legend.svg)
+![legend.svg](figures/organism_trends_f1_micro_flat-ALL/legend.svg)
 
-Micro-F1, All.F1
+Micro-F1 (ALL.f1)
 
-![Figure/Table 1 "main pipeline results": F1 scores for the best configuration (prompt+chunking+...)](figures/faktencheck_core_f1_micro_flat-ALL/f1.svg) 
+![Figure/Table 1 "main pipeline results": F1 scores for the best configuration (prompt+chunking+...)](figures/organism_trends_f1_micro_flat-ALL/f1.svg) 
 
-Precision, ALL.F1
+Micro-Precision (ALL.precision)
 
-![Figure/Table 2: "detail results - precision and recall" - same plots as above, but with precision scores instead of F1](figures/faktencheck_core_f1_micro_flat-ALL/precision.svg)
+![Figure/Table 2: "detail results - precision and recall" - same plots as above, but with precision scores instead of F1](figures/organism_trends_f1_micro_flat-ALL/precision.svg)
 
-Recall, ALL.F1
+Micro-Recall (ALL.recall)
 
-![Figure/Table 2: "detail results - precision and recall" - same plots as above, but with recall scores instead of F1](figures/faktencheck_core_f1_micro_flat-ALL/recall.svg)
+![Figure/Table 2: "detail results - precision and recall" - same plots as above, but with recall scores instead of F1](figures/organism_trends_f1_micro_flat-ALL/recall.svg)
 
-Habitat F1
+Notes
+- Micro-F1 on the flatted schema (per-field evaluation)  - Qwen best with 0.436
+- Qwen has very good precision at 0.447, all other models much lower
+- Recall is similar across models (0.53-0.56), except for Qwen (0.43)
+- Flattened results are approx 7-15% (Gemma) lower than the results on the core schema, which had a best 0.504 F1 for GPT OSS 20B and Qwen3, and a low of 0.438 for Gemma and Mistral
+- Compared to dev set results [428_organism_trends_with_chunking](../428_organism_trends_with_chunking), F1 is better for
+  GPT OSS at 0.378 (vs 0.33), worse for Qwen3 (0.436 now vs approx 0.47 then), and better for Mistral (0.308 vs 0.23) and Gemma (0.271 vs 0.24)
 
-![Figure/Table 3: "detail results - schema elements" for all models and the best configuration - Habitat](figures/faktencheck_core_f1_micro_flat-habitat/f1.svg)
+#### full compounds
 
 
+Legend
+
+![legend.svg](figures/organism_trends_f1_micro-ALL/legend.svg)
+
+Micro-F1 (ALL.f1)
+
+![Figure/Table 1 "main pipeline results": F1 scores for the best configuration (prompt+chunking+...)](figures/organism_trends_f1_micro-ALL/f1.svg) 
+
+Micro-Precision (ALL.precision)
+
+![Figure/Table 2: "detail results - precision and recall" - same plots as above, but with precision scores instead of F1](figures/organism_trends_f1_micro-ALL/precision.svg)
+
+Micro-Recall (ALL.recall)
+
+![Figure/Table 2: "detail results - precision and recall" - same plots as above, but with recall scores instead of F1](figures/organism_trends_f1_micro-ALL/recall.svg)
+
+Notes
+- F1 scores range from 0.209 (GPT5) to 0.018 (Gemma)
+- Only Qwen3 comes close to GPT5 with F1=0.172, due to better recall than GPT5 (but note that GPT5 has many errors)
+- Compared to the dev set results, results are worse by 2-7% - GPT OSS (0.111 vs 0.135), Qwen (0.172 vs 0.24), Mistral (0.06 vs 0.06), Gemma (0.018 vs 0.075)
+
+
+#### base elements
+
+#### `Antwortvariable` conditioned on base elements
+
+#### `Antwortvariable` & `Trend` conditioned on base elements
 
 ### Errors
 
-Legend
-
-![Legend](figures/prediction_errors-total/legend.svg)
-
-No errors
-
-![No errors, vs Run 519](figures/prediction_errors-total/no_error.svg)
-
-Total errors
-
-![Total errors, vs Run 519](figures/prediction_errors-total/with_error.svg)
-
-JSONDecode Errors
-
-![JSONDecode errors, vs Run 519](figures/prediction_errors-details/JSONDecodeError.svg)
-
-MissingResponseContent errors
-
-![MissingResponseContent errors, vs Run 519](figures/prediction_errors-details/MissingResponseContentError.svg)
 
