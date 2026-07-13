@@ -1,5 +1,0 @@
-- name=549_organism_trends_bestconfig_testset
-- experiment/predict=organism_trends_with_chunking
-- pdf_directory=/ds/text/kiba-d/test-set-AuO-WVC
-- extractor/llm=gpt_5
-- seed=42

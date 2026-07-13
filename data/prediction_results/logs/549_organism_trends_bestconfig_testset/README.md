@@ -113,7 +113,7 @@ seed=42,1337,7331 \
 
 Saved to `logs/549_organism_trends_bestconfig_testset/predict/multiruns/2026-07-09_16-29-00/`
 
-### gpt_5
+### ~~gpt_5~~ (too many errors, deleted)
 
 **IMPORTANT: Running this requires an openai token**  
 This run does not need a gpu and is hence run with `-ng 0. It is also run with only a single seed to limit costs, and 
@@ -141,7 +141,7 @@ seed=42 \
 =============================================
 ```
 
-Saved to `logs/549_organism_trends_bestconfig_testset/predict/multiruns/2026-07-09_14-51-33/`
+~~Saved to `logs/549_organism_trends_bestconfig_testset/predict/multiruns/2026-07-09_14-51-33/`~~
 
 ## Evaluation
 
@@ -159,7 +159,7 @@ dataset.references.file="../external/organism_trends/Weighted Vote Count Agrar- 
 --multirun
 ```
 
-Saved to `logs/549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_11-02-03/12/`
+Saved to `logs/549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-58-27/`
 
 ##### full compounds
 
@@ -173,7 +173,7 @@ dataset.references.file="../external/organism_trends/Weighted Vote Count Agrar- 
 --multirun
 ```
 
-Saved to `logs/549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_11-03-11/`
+Saved to `logs/549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-0/`
 
 ##### base elements
 
@@ -187,7 +187,7 @@ dataset.references.file="../external/organism_trends/Weighted Vote Count Agrar- 
 --multirun
 ```
 
-Saved to `logs/549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_11-03-50/`
+Saved to `logs/549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-18/`
 
 ##### `Antwortvariable` conditioned on base elements
 
@@ -201,7 +201,7 @@ dataset.references.file="../external/organism_trends/Weighted Vote Count Agrar- 
 --multirun
 ```
 
-Saved to `logs/549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_11-46-09/`
+Saved to `logs/549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-36/`
 
 ##### `Antwortvariable` & `Trend` conditioned on base elements
 
@@ -215,7 +215,7 @@ dataset.references.file="../external/organism_trends/Weighted Vote Count Agrar- 
 --multirun
 ```
 
-Saved to `logs/549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_11-04-21/`
+Saved to `logs/549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/`
 
 ### Errors
 
@@ -230,7 +230,7 @@ logs/549_organism_trends_bestconfig_testset/predict \
 --multirun
 ```
 
-Saved to `logs/549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_11-05-06/`
+Saved to `logs/549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_15-00-08/`
 
 ## Outcome
 
