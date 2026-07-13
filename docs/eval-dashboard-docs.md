@@ -20,7 +20,7 @@ The dashboard is a static docs asset. It runs entirely in the browser and does n
 
 The dashboard can load evaluation outputs from:
 
-- **Repository data:** start with [`data/results`](/data/results). Its [`readme.md`](https://github.com/DFKI-NLP/kibad-llm-results/blob/main/readme.md) contains an overview table of available experiment log folders, and the `logs/` subfolders contain evaluation outputs that can be loaded with the dashboard.
+- **Repository data:** start with [`data/results`](https://github.com/DFKI-NLP/kibad-llm-results/tree/main/). Its [`readme.md`](https://github.com/DFKI-NLP/kibad-llm-results/blob/main/readme.md) contains an overview table of available experiment log folders, and the `logs/` subfolders contain evaluation outputs that can be loaded with the dashboard.
 - **Local folder:** select a logs directory with the browser directory picker.
 - **GitHub tree URL:** enter a GitHub `tree` URL that points at a folder containing run outputs. An optional token can be stored in the browser for private repositories.
 
