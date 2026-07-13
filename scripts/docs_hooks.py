@@ -6,7 +6,37 @@ are relative to the GitHub repo root and can't be resolved by properdocs. This
 hook fixes them in the rendered HTML, after snippets have been expanded.
 """
 
+import os
 import re
+
+import git
+
+
+def _get_git_branch_name(repo: git.Repo) -> str:
+    """Return the current branch name without crashing on detached HEAD checkouts.
+
+    Args:
+        repo: Repo object to perform check on (this one).
+
+    Returns:
+        Name of the current branch, or ref or name of the currently checked out commit, or "detached".
+    """
+    if repo.head.is_detached:
+        return os.getenv("GITHUB_HEAD_REF") or os.getenv("GITHUB_REF_NAME") or "detached"
+
+    try:
+        return repo.active_branch.name
+    except TypeError:
+        return os.getenv("GITHUB_HEAD_REF") or os.getenv("GITHUB_REF_NAME") or "detached"
+
+
+try:
+    GIT_BRANCH_NAME: str = _get_git_branch_name(git.Repo(search_parent_directories=True)).replace(
+        " ", "-"
+    )
+except (git.InvalidGitRepositoryError, git.GitCommandError):
+    # This fallback will most probably be wrong, but the safest bet.
+    GIT_BRANCH_NAME: str = "main"
 
 # Maps href patterns (GitHub paths) to properdocs page directories
 _REWRITES = [
@@ -36,7 +66,7 @@ def on_page_content(html, page, config, files):
                 pass
             elif location == "github":
                 # "github" paths go from the docs to the github repo and thus need the github link prepended
-                prefix = "https://github.com/DFKI-NLP/kibad-llm/tree/main/"
+                prefix = f"https://github.com/DFKI-NLP/kibad-llm/tree/{GIT_BRANCH_NAME}/"
             else:
                 prefix = location
             return f'href="{prefix}{target}{anchor}'
