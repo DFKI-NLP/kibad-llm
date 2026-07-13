@@ -1,4 +1,7 @@
 
+# The first recipe is the default one, if just is run without a specific recipe `$ just`
+default: pr
+
 # SERVING
 
 # locally serve the docs
