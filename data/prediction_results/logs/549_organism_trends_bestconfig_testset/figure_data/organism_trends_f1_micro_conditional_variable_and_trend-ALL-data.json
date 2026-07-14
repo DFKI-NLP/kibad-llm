@@ -1,0 +1,299 @@
+{
+  "metric_family": "numeric",
+  "plot_tab": "ALL",
+  "plot_tab_variant": "prefix",
+  "plots": [
+    {
+      "metadata": {
+        "metric_label": "ALL.f1"
+      },
+      "data": {
+        "points": [
+          {
+            "category": "prediction.extractor/llm=gpt_oss_20b_in_process",
+            "display_category": "extractor/llm=gpt_oss_20b_in_process",
+            "series": "__single__",
+            "display_series": "__single__",
+            "run_dirs": [
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/0",
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/1",
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/2"
+            ],
+            "samples": [
+              0.4657534246575343,
+              0.4838709677419355,
+              0.4743083003952569
+            ]
+          },
+          {
+            "category": "prediction.extractor/llm=mistral_small_3_24b_in_process",
+            "display_category": "extractor/llm=mistral_small_3_24b_in_process",
+            "series": "__single__",
+            "display_series": "__single__",
+            "run_dirs": [
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/10",
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/11",
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/9"
+            ],
+            "samples": [
+              0.4,
+              0.4195804195804196,
+              0.43508771929824563
+            ]
+          },
+          {
+            "category": "prediction.extractor/llm=gemma3_27b_in_process",
+            "display_category": "extractor/llm=gemma3_27b_in_process",
+            "series": "__single__",
+            "display_series": "__single__",
+            "run_dirs": [
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/3",
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/4",
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/5"
+            ],
+            "samples": [
+              0.38961038961038963,
+              0.4086021505376344,
+              0.5142857142857143
+            ]
+          },
+          {
+            "category": "prediction.extractor/llm=qwen3_30b_in_process",
+            "display_category": "extractor/llm=qwen3_30b_in_process",
+            "series": "__single__",
+            "display_series": "__single__",
+            "run_dirs": [
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/6",
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/7",
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/8"
+            ],
+            "samples": [
+              0.4834123222748815,
+              0.5271966527196653,
+              0.49166666666666664
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "metadata": {
+        "metric_label": "ALL.precision"
+      },
+      "data": {
+        "points": [
+          {
+            "category": "prediction.extractor/llm=gpt_oss_20b_in_process",
+            "display_category": "extractor/llm=gpt_oss_20b_in_process",
+            "series": "__single__",
+            "display_series": "__single__",
+            "run_dirs": [
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/0",
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/1",
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/2"
+            ],
+            "samples": [
+              0.38636363636363635,
+              0.4143646408839779,
+              0.40816326530612246
+            ]
+          },
+          {
+            "category": "prediction.extractor/llm=mistral_small_3_24b_in_process",
+            "display_category": "extractor/llm=mistral_small_3_24b_in_process",
+            "series": "__single__",
+            "display_series": "__single__",
+            "run_dirs": [
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/10",
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/11",
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/9"
+            ],
+            "samples": [
+              0.32298136645962733,
+              0.33519553072625696,
+              0.34444444444444444
+            ]
+          },
+          {
+            "category": "prediction.extractor/llm=gemma3_27b_in_process",
+            "display_category": "extractor/llm=gemma3_27b_in_process",
+            "series": "__single__",
+            "display_series": "__single__",
+            "run_dirs": [
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/3",
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/4",
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/5"
+            ],
+            "samples": [
+              0.39473684210526316,
+              0.3877551020408163,
+              0.5
+            ]
+          },
+          {
+            "category": "prediction.extractor/llm=qwen3_30b_in_process",
+            "display_category": "extractor/llm=qwen3_30b_in_process",
+            "series": "__single__",
+            "display_series": "__single__",
+            "run_dirs": [
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/6",
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/7",
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/8"
+            ],
+            "samples": [
+              0.4636363636363636,
+              0.5,
+              0.44696969696969696
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "metadata": {
+        "metric_label": "ALL.recall"
+      },
+      "data": {
+        "points": [
+          {
+            "category": "prediction.extractor/llm=gpt_oss_20b_in_process",
+            "display_category": "extractor/llm=gpt_oss_20b_in_process",
+            "series": "__single__",
+            "display_series": "__single__",
+            "run_dirs": [
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/0",
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/1",
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/2"
+            ],
+            "samples": [
+              0.5862068965517241,
+              0.5813953488372093,
+              0.5660377358490566
+            ]
+          },
+          {
+            "category": "prediction.extractor/llm=mistral_small_3_24b_in_process",
+            "display_category": "extractor/llm=mistral_small_3_24b_in_process",
+            "series": "__single__",
+            "display_series": "__single__",
+            "run_dirs": [
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/10",
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/11",
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/9"
+            ],
+            "samples": [
+              0.5252525252525253,
+              0.5607476635514018,
+              0.5904761904761905
+            ]
+          },
+          {
+            "category": "prediction.extractor/llm=gemma3_27b_in_process",
+            "display_category": "extractor/llm=gemma3_27b_in_process",
+            "series": "__single__",
+            "display_series": "__single__",
+            "run_dirs": [
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/3",
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/4",
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/5"
+            ],
+            "samples": [
+              0.38461538461538464,
+              0.4318181818181818,
+              0.5294117647058824
+            ]
+          },
+          {
+            "category": "prediction.extractor/llm=qwen3_30b_in_process",
+            "display_category": "extractor/llm=qwen3_30b_in_process",
+            "series": "__single__",
+            "display_series": "__single__",
+            "run_dirs": [
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/6",
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/7",
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/8"
+            ],
+            "samples": [
+              0.504950495049505,
+              0.5575221238938053,
+              0.5462962962962963
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "metadata": {
+        "metric_label": "ALL.support"
+      },
+      "data": {
+        "points": [
+          {
+            "category": "prediction.extractor/llm=gpt_oss_20b_in_process",
+            "display_category": "extractor/llm=gpt_oss_20b_in_process",
+            "series": "__single__",
+            "display_series": "__single__",
+            "run_dirs": [
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/0",
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/1",
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/2"
+            ],
+            "samples": [
+              116,
+              129,
+              106
+            ]
+          },
+          {
+            "category": "prediction.extractor/llm=mistral_small_3_24b_in_process",
+            "display_category": "extractor/llm=mistral_small_3_24b_in_process",
+            "series": "__single__",
+            "display_series": "__single__",
+            "run_dirs": [
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/10",
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/11",
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/9"
+            ],
+            "samples": [
+              99,
+              107,
+              105
+            ]
+          },
+          {
+            "category": "prediction.extractor/llm=gemma3_27b_in_process",
+            "display_category": "extractor/llm=gemma3_27b_in_process",
+            "series": "__single__",
+            "display_series": "__single__",
+            "run_dirs": [
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/3",
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/4",
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/5"
+            ],
+            "samples": [
+              39,
+              44,
+              34
+            ]
+          },
+          {
+            "category": "prediction.extractor/llm=qwen3_30b_in_process",
+            "display_category": "extractor/llm=qwen3_30b_in_process",
+            "series": "__single__",
+            "display_series": "__single__",
+            "run_dirs": [
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/6",
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/7",
+              "549_organism_trends_bestconfig_testset/evaluate/multiruns/2026-07-13_14-59-52/8"
+            ],
+            "samples": [
+              101,
+              113,
+              108
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

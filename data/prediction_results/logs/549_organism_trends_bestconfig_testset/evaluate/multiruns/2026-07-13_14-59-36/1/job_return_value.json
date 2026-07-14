@@ -1,0 +1,58 @@
+{
+  "version": 2,
+  "type": "F1MicroMultipleFieldsMetric",
+  "data": {
+    "organism_trends.Pflanzen&AgrarOffen": {
+      "precision": 0.7027027027027027,
+      "recall": 0.7027027027027027,
+      "f1": 0.7027027027027027,
+      "support": 74
+    },
+    "organism_trends.Wirbellose&AgrarOffen": {
+      "precision": 0.8484848484848485,
+      "recall": 0.9333333333333333,
+      "f1": 0.888888888888889,
+      "support": 30
+    },
+    "organism_trends.Wirbeltiere&AgrarOffen": {
+      "precision": 0.6666666666666666,
+      "recall": 0.7272727272727273,
+      "f1": 0.6956521739130435,
+      "support": 11
+    },
+    "AVG": {
+      "precision": 0.7392847392847393,
+      "recall": 0.7877695877695877,
+      "f1": 0.762414588501545,
+      "support": 38.333333333333336
+    },
+    "ALL": {
+      "precision": 0.7394957983193278,
+      "recall": 0.7652173913043478,
+      "f1": 0.7521367521367521,
+      "support": 115
+    }
+  },
+  "prediction": {
+    "job_return_value": {
+      "version": 1,
+      "output_file": "predictions/549_organism_trends_bestconfig_testset/2026-07-09_15-18-29/2026-07-09_22-25-59_122523/predictions.jsonl",
+      "output_file_absolute": "/netscratch/hennig/code/kibad-llm/predictions/549_organism_trends_bestconfig_testset/2026-07-09_15-18-29/2026-07-09_22-25-59_122523/predictions.jsonl",
+      "time_pdf_conversion": 0.007113666040822864,
+      "time_extraction": 17537.290680331993,
+      "time_start": 1783628759,
+      "time_end": 1783646377,
+      "commit_hash": "50d38a1b00c4ded08378832e625a7f73bde099de",
+      "branch": "exp/548_organism_trends_bestconfig_testset",
+      "is_dirty": false,
+      "slurm_job_id": "3157298"
+    },
+    "overrides": {
+      "name": "549_organism_trends_bestconfig_testset",
+      "experiment/predict": "organism_trends_with_chunking",
+      "pdf_directory": "/ds/text/kiba-d/test-set-AuO-WVC",
+      "extractor/llm": "gpt_oss_20b_in_process",
+      "seed": "1337"
+    }
+  }
+}

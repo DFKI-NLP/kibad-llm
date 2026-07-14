@@ -1,0 +1,4 @@
+- dataset.predictions.log=logs/549_organism_trends_bestconfig_testset/predict/multiruns/2026-07-09_16-29-00/1
+- name=549_organism_trends_bestconfig_testset
+- experiment/evaluate=prediction_errors
+- prediction_logs=[logs/549_organism_trends_bestconfig_testset/predict]
