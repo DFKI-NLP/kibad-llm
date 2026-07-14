@@ -180,6 +180,9 @@ venv.bak/
 # mkdocs documentation
 /site
 
+# lychee link-checker result cache
+.lycheecache
+
 # mypy
 .mypy_cache/
 .dmypy.json

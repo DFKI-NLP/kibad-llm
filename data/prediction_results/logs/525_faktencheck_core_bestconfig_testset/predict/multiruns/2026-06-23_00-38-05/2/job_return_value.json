@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "output_file": "predictions/525_faktencheck_core_bestconfig_testset/2026-06-23_00-38-05/2026-06-24_00-29-48_972813/predictions.jsonl",
+  "output_file_absolute": "/netscratch/hennig/code/kibad-llm/predictions/525_faktencheck_core_bestconfig_testset/2026-06-23_00-38-05/2026-06-24_00-29-48_972813/predictions.jsonl",
+  "time_pdf_conversion": 0.006438906770199537,
+  "time_extraction": 38139.74682080001,
+  "time_start": 1782253788,
+  "time_end": 1782292034,
+  "commit_hash": "11e74f3bab8ceed36682b9148d2169a24c9ed34a",
+  "branch": "exp/521_journal_publication",
+  "is_dirty": false,
+  "slurm_job_id": "3112047"
+}

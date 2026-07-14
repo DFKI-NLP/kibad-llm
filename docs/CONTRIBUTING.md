@@ -100,6 +100,7 @@ High-level overview of contributor-relevant paths (local caches and other genera
 │                                  versioned directories such as `data/prediction_results/` and `data/processed/`.
 ├── .pre-commit-config.yaml     <- `prek`/pre-commit hook configuration used locally and in CI.
 ├── LICENSE                     <- AGPL-v3 license text for the project.
+├── lychee.toml                 <- Documentation link validation configuration.
 ├── Makefile                    <- Legacy helper targets. TODO: clarify which targets are still maintained now that
 │                                  the project uses `uv` instead of `poetry` in most docs.
 ├── properdocs.yml              <- ProperDocs site configuration and navigation.
@@ -219,11 +220,38 @@ The API reference is generated from Python source files by `scripts/build_docs.p
 
 ### Links and redirects
 
-TODO:
+All links outside the `docs` directory are supposed to work on GitHub first:
 
-Use repository-root links such as `/CONTRIBUTING-CODE.md` when linking to root-level files from snippet-included content. If that link needs to work on the generated website, add or update the corresponding rewrite in `scripts/docs_hooks.py`.
+- Make sure that links that point to files or directories of the repo start with a `/`, e.g. `/docs/CONTRIBUTING-CODE.md` or `/scripts/docs_hooks.py`.
 
-If a public documentation URL changes, add a redirect in `properdocs.yml` so existing links keep working.
+All links inside the `docs` directory are supposed to work in the docs first:
+
+- Make sure that links that point to files or directories _within_ the `docs` do _not_ start with a `/` and are absolute paths to the `/docs/` directory as root, e.g. `reference/kibad_llm/index.md` or `USAGE.md`.<br>
+- Make sure that links that point to files or directories _within_ the repo, but _outside_ the `/docs/` are absolute to the repo root and start with a `/`, e.g. `/properdocs.yml`.
+
+All links that live inside the `/docs/` directory and that start with `/` are altered by the [`docs_hooks`](/scripts/docs_hooks.py) script.
+
+Some files live outside the `/docs/` directory, but are hooked into the `/docs/` by use of a linking file like [`/docs/data-readme.md`](https://github.com/DFKI-NLP/kibad-llm/blob/main/docs/data-readme.md).
+Those files need to have a regex to fix their links in [`/scripts/docs_hooks.py`](/scripts/docs_hooks.py). Those regexes are built like so:
+
+```
+                    Path to source file in repo.
+                    |                             Path to destination in the docs.
+                    |                             |               Keyword for links that point into the docs website.
+                    V                             V               V
+(re.compile(r'href="/data/readme\.md(#[^"]*)?'), "data-readme/", "local"),
+```
+
+If a public documentation URL changes, add a redirect in `properdocs.yml` so existing links keep working. (This is currently not implemented. Requires the package `mkdocs-redirects`.)
+
+All links in the docs end up being checked by [lychee](https://github.com/lycheeverse/lychee). If any link is broken, CI will fail and block the PR until you fix the link.
+
+You can run the lychee test locally by first installing lychee on the same version as the CI (currently 0.24.2), and then running from the repo root:
+
+```
+uv run --group cicd properdocs build
+lychee --config lychee.toml --root-dir ./site "site/**/*.html"
+```
 
 ### Building and hosting locally
 

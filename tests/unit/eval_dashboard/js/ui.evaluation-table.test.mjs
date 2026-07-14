@@ -191,8 +191,8 @@ test("buildEvaluationGroupRowModel derives stable grouped-row models", () => {
   const group = {
     groupId: "eval-group-1",
     evaluations: [
-      { runDir: "logs/run-a", values: { "metric.field": "title", "metric.score": "0.70" } },
-      { runDir: "logs/run-b", values: { "metric.field": "title", "metric.score": "0.80" } },
+      { runId: "run-a-id", runDir: "logs/run-a", values: { "metric.field": "title", "metric.score": "0.70" } },
+      { runId: "run-b-id", runDir: "logs/run-b", values: { "metric.field": "title", "metric.score": "0.80" } },
     ],
   };
   const evalTabState = {
@@ -234,6 +234,7 @@ test("buildEvaluationGroupRowModel derives stable grouped-row models", () => {
  */
 test("buildEvaluationMemberRowModel derives stable expanded-member models", () => {
   const evaluation = {
+    runId: "run-c-id",
     runDir: " logs/run-c ",
     values: {
       "metric.field": "summary",
@@ -253,7 +254,7 @@ test("buildEvaluationMemberRowModel derives stable expanded-member models", () =
   });
 
   assert.deepEqual(model, {
-    runDir: " logs/run-c ",
+    runId: "run-c-id",
     runDirValue: " logs/run-c ",
     isSelected: true,
     groupSizeLabel: "member",
@@ -292,13 +293,13 @@ test("renderEvaluationTable renders extracted headers and forwards interaction c
     selectedGroupIds: new Set(["eval-group-1"]),
     expandedGroupIds: new Set(["eval-group-1"]),
     selectedEvalGroupId: "eval-group-1",
-    selectedEvalRunDir: "logs/run-a",
+    selectedEvalRunId: "run-a-id",
   };
   const displayedGroups = [
     {
       groupId: "eval-group-1",
       evaluations: [
-        { runDir: "logs/run-a", values: { "metric.field": "title", "metric.score": "0.70" } },
+        { runId: "run-a-id", runDir: "logs/run-a", values: { "metric.field": "title", "metric.score": "0.70" } },
       ],
     },
   ];
@@ -329,8 +330,8 @@ test("renderEvaluationTable renders extracted headers and forwards interaction c
     onToggleGroupSelection(groupId, checked) {
       callbackLog.select.push({ groupId, checked });
     },
-    onMemberRowSelect(runDir) {
-      callbackLog.memberRow.push(runDir);
+    onMemberRowSelect(runId) {
+      callbackLog.memberRow.push(runId);
     },
     getGroupValueDisplayFromEvaluations(evaluations, getter) {
       return evaluations.map((evaluation) => getter(evaluation)).join(" | ");
@@ -417,7 +418,7 @@ test("renderEvaluationTable renders extracted headers and forwards interaction c
   assert.equal(memberRow.className, "member-row");
   assert.equal(memberRow.classList.contains("eval-row-selected"), true);
   memberRow.listeners.get("click")({ type: "click" });
-  assert.deepEqual(callbackLog.memberRow, ["logs/run-a"]);
+  assert.deepEqual(callbackLog.memberRow, ["run-a-id"]);
   assert.equal(memberRow.children[2].textContent, "member");
   assert.equal(memberRow.children[4].classList.contains("truncate-enabled"), true);
 });
@@ -437,7 +438,7 @@ test("renderEvaluationTable preserves the no-evaluation-columns fallback path", 
     displayedGroups: [
       {
         groupId: "eval-group-empty",
-        evaluations: [{ runDir: "logs/run-empty", values: {} }],
+        evaluations: [{ runId: "run-empty-id", runDir: "logs/run-empty", values: {} }],
       },
     ],
     evalTabState: {
@@ -447,7 +448,7 @@ test("renderEvaluationTable preserves the no-evaluation-columns fallback path", 
       selectedGroupIds: new Set(),
       expandedGroupIds: new Set(),
       selectedEvalGroupId: null,
-      selectedEvalRunDir: null,
+      selectedEvalRunId: null,
     },
     displayColumnName: (column) => column,
     onSortToggle() {},

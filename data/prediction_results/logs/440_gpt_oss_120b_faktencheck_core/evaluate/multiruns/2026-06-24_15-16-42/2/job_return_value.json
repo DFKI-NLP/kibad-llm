@@ -1,0 +1,70 @@
+{
+  "version": 2,
+  "type": "F1MicroMultipleFieldsMetric",
+  "data": {
+    "biodiversity_level": {
+      "precision": 0.5294117647058824,
+      "recall": 0.75,
+      "f1": 0.6206896551724139,
+      "support": 132
+    },
+    "ecosystem_type.category": {
+      "precision": 0.7837837837837838,
+      "recall": 0.8285714285714286,
+      "f1": 0.8055555555555555,
+      "support": 140
+    },
+    "ecosystem_type.term": {
+      "precision": 0.5617977528089888,
+      "recall": 0.625,
+      "f1": 0.591715976331361,
+      "support": 240
+    },
+    "habitat": {
+      "precision": 0.7980769230769231,
+      "recall": 0.8783068783068783,
+      "f1": 0.836272040302267,
+      "support": 189
+    },
+    "taxa.species_group": {
+      "precision": 0.49279538904899134,
+      "recall": 0.8028169014084507,
+      "f1": 0.6107142857142857,
+      "support": 213
+    },
+    "AVG": {
+      "precision": 0.6331731226849139,
+      "recall": 0.7769390416573515,
+      "f1": 0.6929895026151767,
+      "support": 182.8
+    },
+    "ALL": {
+      "precision": 0.6067415730337079,
+      "recall": 0.7680525164113785,
+      "f1": 0.6779333655239015,
+      "support": 914
+    }
+  },
+  "prediction": {
+    "job_return_value": {
+      "version": 1,
+      "output_file": "predictions/440_gpt_oss_120b_faktencheck_core/2026-06-23_16-45-33/2026-06-24_07-35-40_426740/predictions.jsonl",
+      "output_file_absolute": "/netscratch/asafari/kibad-llm/predictions/440_gpt_oss_120b_faktencheck_core/2026-06-23_16-45-33/2026-06-24_07-35-40_426740/predictions.jsonl",
+      "time_pdf_conversion": 0.004146109102293849,
+      "time_extraction": 26085.38463731995,
+      "time_start": 1782279340,
+      "time_end": 1782305524,
+      "commit_hash": "8ca670a8e79b3883d61c93eeab9bdb499e64a9e0",
+      "branch": "issue-440-model-configs",
+      "is_dirty": false,
+      "slurm_job_id": "3118624"
+    },
+    "overrides": {
+      "name": "440_gpt_oss_120b_faktencheck_core",
+      "experiment/predict": "faktencheck_core_fields_schema_with_chunking",
+      "extractor/llm": "gpt_oss_120b_in_process",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-100",
+      "seed": "7331"
+    }
+  }
+}

@@ -52,13 +52,6 @@ hooks:
 
 plugins:
 - search
-- redirects:
-    redirect_maps:
-      'models/README.md': 'models-readme.md'
-      'podman/faktencheck-db/README.md': 'podman-readme.md'
-      'data/readme.md': 'data-readme.md'
-      '../data/readme.md': 'data-readme.md'
-      '../docs/USAGE.md': 'USAGE.md'
 - gen-files:
     scripts:
     - scripts/build_docs.py

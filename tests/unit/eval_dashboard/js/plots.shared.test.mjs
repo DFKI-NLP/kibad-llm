@@ -58,13 +58,14 @@ test("shared matrix helpers build download metadata", () => {
 });
 
 /**
- * Verify matrix download serialization preserves and validates run alignment.
+ * Verify matrix download serialization preserves semantic alignment and provenance.
  */
 test("shared matrix helpers serialize aligned run directories", () => {
   assert.deepEqual(
     buildJsonSafeMatrixPlottingData({
       rows: ["actual"],
       cols: ["predicted"],
+      runIds: ["run-a-id"],
       runDirs: ["run-a"],
       cells: [new Map([["actual|#|predicted", 2]])],
     }),
@@ -78,6 +79,7 @@ test("shared matrix helpers serialize aligned run directories", () => {
 
   assert.throws(
     () => buildJsonSafeMatrixPlottingData({
+      runIds: [],
       runDirs: ["run-a"],
       cells: [],
     }),

@@ -7,41 +7,42 @@
  */
 
 import { splitLabelByLastDot } from "../utils/text.js";
+import { getEvaluationRunId } from "../utils/runs.js";
 import { normalizeValue } from "../utils/values.js";
 
 /**
- * Resolves the stable source run directory for a metric collection evaluation.
+ * Resolves the stable source run id for a metric collection evaluation.
  *
- * Collection views may wrap a raw evaluation and carry their own `runDir`.
+ * Collection views may wrap a raw evaluation and carry their own `sourceRunId`.
  * Source-run identity keeps counts and labels tied to the original run rather
  * than to temporary wrappers rebuilt during plotting.
  *
  * @param {object} evaluation - Evaluation record.
- * @returns {string} Normalized source run directory.
+ * @returns {string} Normalized source run id.
  */
-export function getMetricCollectionSourceRunDir(evaluation) {
-  const sourceRunDir = normalizeValue(evaluation?.sourceRunDir).trim();
-  return sourceRunDir || normalizeValue(evaluation?.runDir).trim();
+export function getMetricCollectionSourceRunId(evaluation) {
+  const sourceRunId = normalizeValue(evaluation?.sourceRunId).trim();
+  return sourceRunId || getEvaluationRunId(evaluation);
 }
 
 /**
- * Resolves the required source run directory for aligned plot data.
+ * Resolves the required source run id for aligned plot data.
  *
  * Numeric inputs use raw evaluations while matrix inputs use collection views.
- * Both must expose the same source-run identity before values are detached from
+ * Both must expose the same source-run id before values are detached from
  * their evaluation records for aggregation and download.
  *
  * @param {object} evaluation - Raw evaluation or metric collection view.
  * @param {string} context - Plot-data context used in validation errors.
- * @returns {string} Non-empty normalized source run directory.
- * @throws {Error} If source-run identity is unavailable.
+ * @returns {string} Non-empty normalized source run id.
+ * @throws {Error} If source-run id is unavailable.
  */
-export function getRequiredPlotRunDir(evaluation, context = "Plot data") {
-  const runDir = getMetricCollectionSourceRunDir(evaluation);
-  if (!runDir) {
-    throw new Error(`${context} requires every evaluation to define a run directory.`);
+export function getRequiredPlotRunId(evaluation, context = "Plot data") {
+  const runId = getMetricCollectionSourceRunId(evaluation);
+  if (!runId) {
+    throw new Error(`${context} requires every evaluation to define a run id.`);
   }
-  return runDir;
+  return runId;
 }
 
 /**
@@ -146,7 +147,7 @@ export function getMetricCollectionView(
   }
 
   const metricType = normalizeValue(evaluation?.jobReturnValue?.type).trim();
-  const sourceRunDir = getMetricCollectionSourceRunDir(evaluation);
+  const sourceRunId = getMetricCollectionSourceRunId(evaluation);
   if (metricType === collectionType) {
     const fieldEntries = evaluation.data;
     if (!isMetricDataRecord(fieldEntries)) {
@@ -173,8 +174,9 @@ export function getMetricCollectionView(
 
     return {
       evaluation,
-      runDir: normalizeValue(evaluation?.runDir) || sourceRunDir,
-      sourceRunDir,
+      runId: getEvaluationRunId(evaluation) || sourceRunId,
+      sourceRunId,
+      runDir: normalizeValue(evaluation?.runDir),
       fields,
     };
   }
@@ -192,8 +194,9 @@ export function getMetricCollectionView(
     }
     return {
       evaluation,
-      runDir: normalizeValue(evaluation?.runDir) || sourceRunDir,
-      sourceRunDir,
+      runId: getEvaluationRunId(evaluation) || sourceRunId,
+      sourceRunId,
+      runDir: normalizeValue(evaluation?.runDir),
       fields: new Map([[fieldLabel, evaluation.data]]),
     };
   }

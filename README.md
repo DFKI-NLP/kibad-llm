@@ -12,11 +12,11 @@ For our documentation, please refer to [github-pages](https://dfki-nlp.github.io
 
 ## Usage
 
-See [USAGE.md](/USAGE.md) for detailed instructions on how to use the project.
+See [USAGE.md](/docs/USAGE.md) for detailed instructions on how to use the project.
 
 ## Contributing
 
-For project development and contribution guidelines, please refer to [CONTRIBUTING.md](/CONTRIBUTING.md)
+For project development and contribution guidelines, please refer to [CONTRIBUTING.md](/docs/CONTRIBUTING.md)
 
 ## License
 

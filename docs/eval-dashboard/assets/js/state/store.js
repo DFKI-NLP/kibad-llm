@@ -3,6 +3,7 @@
  */
 
 import { normalizeSortConfig } from "../utils/sort.js";
+import { getEvaluationRunId } from "../utils/runs.js";
 
 /**
  * Synthetic control columns that stay sortable across prediction and evaluation tables.
@@ -122,7 +123,7 @@ export function ensureEvalTabState(
       availableGroupIds: new Set(),
       expandedGroupIds: new Set(),
       selectedEvalGroupId: null,
-      selectedEvalRunDir: null,
+      selectedEvalRunId: null,
     };
     return state.evalTabStates[experiment];
   }
@@ -143,6 +144,9 @@ export function ensureEvalTabState(
   if (!(tabState.expandedGroupIds instanceof Set)) {
     tabState.expandedGroupIds = new Set();
   }
+  tabState.selectedEvalRunId = typeof tabState.selectedEvalRunId === "string"
+    ? tabState.selectedEvalRunId
+    : null;
 
   for (const column of evalColumns) {
     if (!known.has(column)) {
@@ -175,7 +179,7 @@ export function ensureEvalTabState(
  *
  * @param {object} evalTabState - Per-experiment evaluation tab state.
  * @param {Array<{groupId: string}>} evaluationGroups - Current evaluation groups.
- * @param {Array<{runDir: string}>} experimentEvaluations - Current experiment evaluations.
+ * @param {Array<{runId?: string}>} experimentEvaluations - Current experiment evaluations.
  */
 export function syncEvaluationGroupUiState(evalTabState, evaluationGroups, experimentEvaluations) {
   const validEvalGroupIds = new Set((evaluationGroups || []).map((group) => group.groupId));
@@ -186,11 +190,11 @@ export function syncEvaluationGroupUiState(evalTabState, evaluationGroups, exper
   if (!validEvalGroupIds.has(evalTabState.selectedEvalGroupId)) {
     evalTabState.selectedEvalGroupId = null;
   }
-  const validRunDirs = new Set(
-    (experimentEvaluations || []).map((evaluation) => evaluation.runDir)
+  const validRunIds = new Set(
+    (experimentEvaluations || []).map((evaluation) => getEvaluationRunId(evaluation)).filter(Boolean)
   );
-  if (!validRunDirs.has(evalTabState.selectedEvalRunDir)) {
-    evalTabState.selectedEvalRunDir = null;
+  if (!validRunIds.has(evalTabState.selectedEvalRunId)) {
+    evalTabState.selectedEvalRunId = null;
   }
 }
 

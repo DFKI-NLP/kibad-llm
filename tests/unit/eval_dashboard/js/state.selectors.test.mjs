@@ -41,6 +41,7 @@ function buildState() {
   };
   state.evaluations = [
     {
+      runId: "eval-a1-id",
       runDir: "runs/eval-a1",
       predictionId: "pred-a",
       overrides: { "experiment/evaluate": "f1_micro", split: "dev", metric_variant: "macro" },
@@ -48,6 +49,7 @@ function buildState() {
       data: { overall: 0.8 },
     },
     {
+      runId: "eval-a2-id",
       runDir: "runs/eval-a2",
       predictionId: "pred-a",
       overrides: { "experiment/evaluate": "f1_micro", split: "test", metric_variant: "macro" },
@@ -55,6 +57,7 @@ function buildState() {
       data: { overall: 0.82 },
     },
     {
+      runId: "eval-b1-id",
       runDir: "runs/eval-b1",
       predictionId: "pred-b",
       overrides: { "experiment/evaluate": "f1_micro", split: "dev", metric_variant: "macro" },
@@ -375,10 +378,10 @@ test("selectors derive empty evaluation contexts without crashing", () => {
 });
 
 /**
- * Ensure plot-group derivation falls back to evaluation run dirs when neither prediction
+ * Ensure plot-group derivation falls back to evaluation run ids when neither prediction
  * nor evaluation grouping contributes any plot-group fields.
  */
-test("selectors fall back to runDir when plot groups have no grouping fields", () => {
+test("selectors fall back to runId when plot groups have no grouping fields", () => {
   const state = buildState();
   const selectedEvalGroups = [{ evaluations: state.evaluations.slice(0, 2) }];
 
@@ -387,7 +390,7 @@ test("selectors fall back to runDir when plot groups have no grouping fields", (
   assert.deepEqual(plotGroups.fields, []);
   assert.deepEqual(
     plotGroups.groups.map((group) => group.groupId).sort(),
-    ["runs/eval-a1", "runs/eval-a2"]
+    ["eval-a1-id", "eval-a2-id"]
   );
 });
 

@@ -13,7 +13,7 @@ import {
   assertAlignedArrayLengths,
   getMetricCollectionView,
   getMetricPreparedDataContainer,
-  getRequiredPlotRunDir,
+  getRequiredPlotRunId,
   isMetricDataRecord,
   scheduleAdaptiveSvgFit,
 } from "./shared.js";
@@ -281,7 +281,7 @@ function prepareTpFpFnEvaluationData(evaluation, normalizedFieldLabel) {
  *
  * @param {Array<object>} experimentEvaluations - TP/FP/FN collection views.
  * @param {string} fieldLabel - Metric field to align.
- * @returns {{rows: Array<string>, cols: Array<string>, runDirs: Array<string>, cells: Array<Map<string, string>>}} Aligned aggregation inputs.
+ * @returns {{rows: Array<string>, cols: Array<string>, runIds: Array<string>, runDirs: Array<string>, cells: Array<Map<string, string>>}} Aligned aggregation inputs.
  */
 export function getTpFpFnAggregationInput(experimentEvaluations, fieldLabel) {
   const normalizedFieldLabel = normalizeValue(fieldLabel).trim();
@@ -290,6 +290,7 @@ export function getTpFpFnAggregationInput(experimentEvaluations, fieldLabel) {
   }
   const rowLabels = new Set();
   const colLabels = new Set();
+  const runIds = [];
   const runDirs = [];
   const cells = [];
 
@@ -301,9 +302,17 @@ export function getTpFpFnAggregationInput(experimentEvaluations, fieldLabel) {
     for (const label of prepared.colLabels) {
       colLabels.add(label);
     }
-    runDirs.push(getRequiredPlotRunDir(evaluation, "TpFpFnCollector aggregation"));
+    runIds.push(getRequiredPlotRunId(evaluation, "TpFpFnCollector aggregation"));
+    runDirs.push(evaluation?.runDir || "");
     cells.push(prepared.cells);
   }
+  assertAlignedArrayLengths(
+    "TpFpFnCollector aggregation",
+    "runIds",
+    runIds,
+    "cells",
+    cells
+  );
   assertAlignedArrayLengths(
     "TpFpFnCollector aggregation",
     "runDirs",
@@ -314,7 +323,7 @@ export function getTpFpFnAggregationInput(experimentEvaluations, fieldLabel) {
 
   const rows = Array.from(rowLabels).sort((a, b) => plotSortCollator.compare(a, b));
   const cols = Array.from(colLabels).sort((a, b) => plotSortCollator.compare(a, b));
-  return { rows, cols, runDirs, cells };
+  return { rows, cols, runIds, runDirs, cells };
 }
 
 /**
@@ -329,7 +338,14 @@ export function getTpFpFnAggregationInput(experimentEvaluations, fieldLabel) {
  * @returns {object} Aggregated rows, columns, counts, and aligned source data.
  */
 export function getTpFpFnAggregationFromInput(aggregationInput) {
-  const { rows, cols, runDirs, cells: inputCells } = aggregationInput;
+  const { rows, cols, runIds, runDirs, cells: inputCells } = aggregationInput;
+  assertAlignedArrayLengths(
+    "TpFpFnCollector aggregation input",
+    "runIds",
+    runIds,
+    "cells",
+    inputCells
+  );
   assertAlignedArrayLengths(
     "TpFpFnCollector aggregation input",
     "runDirs",

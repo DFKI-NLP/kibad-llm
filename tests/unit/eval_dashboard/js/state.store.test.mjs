@@ -141,20 +141,20 @@ test("store clears stale evaluation selections and run targets after regrouping"
     availableGroupIds: new Set(["old-group"]),
     expandedGroupIds: new Set(["stale-group", "group-b"]),
     selectedEvalGroupId: "stale-group",
-    selectedEvalRunDir: "runs/stale",
+    selectedEvalRunId: "run-stale",
   };
 
   syncEvaluationGroupUiState(
     evalTabState,
     [{ groupId: "group-a" }, { groupId: "group-b" }],
-    [{ runDir: "runs/a" }, { runDir: "runs/b" }]
+    [{ runId: "run-a", runDir: "runs/a" }, { runId: "run-b", runDir: "runs/b" }]
   );
 
   assert.deepEqual([...evalTabState.selectedGroupIds].sort(), ["group-a", "group-b"]);
   assert.deepEqual([...evalTabState.availableGroupIds].sort(), ["group-a", "group-b"]);
   assert.deepEqual([...evalTabState.expandedGroupIds], ["group-b"]);
   assert.equal(evalTabState.selectedEvalGroupId, null);
-  assert.equal(evalTabState.selectedEvalRunDir, null);
+  assert.equal(evalTabState.selectedEvalRunId, null);
 });
 
 /**

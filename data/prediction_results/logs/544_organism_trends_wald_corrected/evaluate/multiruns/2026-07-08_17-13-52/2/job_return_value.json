@@ -1,0 +1,63 @@
+{
+  "version": 2,
+  "type": "F1MicroMultipleFieldsMetric",
+  "data": {
+    "organism_trends.Antwortvariable": {
+      "precision": 0.22195121951219512,
+      "recall": 0.7109375,
+      "f1": 0.33828996282527884,
+      "support": 128
+    },
+    "organism_trends.Hauptgruppe_RoteListen": {
+      "precision": 0.1909307875894988,
+      "recall": 0.7476635514018691,
+      "f1": 0.30418250950570347,
+      "support": 107
+    },
+    "organism_trends.Lebensraum": {
+      "precision": 0.21705426356589147,
+      "recall": 0.8235294117647058,
+      "f1": 0.34355828220858897,
+      "support": 102
+    },
+    "organism_trends.Trend": {
+      "precision": 0.17782026768642448,
+      "recall": 0.7045454545454546,
+      "f1": 0.28396946564885495,
+      "support": 132
+    },
+    "AVG": {
+      "precision": 0.20193913458850246,
+      "recall": 0.7466689794280074,
+      "f1": 0.31750005504710654,
+      "support": 117.25
+    },
+    "ALL": {
+      "precision": 0.20011500862564693,
+      "recall": 0.7420042643923241,
+      "f1": 0.31521739130434784,
+      "support": 469
+    }
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/428_organism_trends_with_chunking/2026-04-30_15-10-47/2026-05-01_00-52-23_188169/predictions.jsonl",
+      "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/428_organism_trends_with_chunking/2026-04-30_15-10-47/2026-05-01_00-52-23_188169/predictions.jsonl",
+      "time_pdf_conversion": 0.0029465164989233017,
+      "time_extraction": 16873.283164427616,
+      "time_start": 1777589543,
+      "time_end": 1777606469,
+      "commit_hash": "096090bf929c361a9164f099a077d2621612fdca",
+      "branch": "prediction_results/add-organism_trends_with_chunking",
+      "is_dirty": false,
+      "slurm_job_id": "2869103"
+    },
+    "overrides": {
+      "name": "428_organism_trends_with_chunking",
+      "experiment/predict": "organism_trends_with_chunking",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-Wald-WVC",
+      "extractor/llm": "gpt_oss_20b_in_process",
+      "seed": "7331"
+    }
+  }
+}

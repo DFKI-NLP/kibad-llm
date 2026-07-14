@@ -3,6 +3,7 @@
  */
 
 import { flattenObject } from "../utils/flatten.js";
+import { getEvaluationRunId, getRunIdFromImportedSources } from "../utils/runs.js";
 import { getStableObjectSignature } from "../utils/values.js";
 import { parseOverridesYaml } from "./parse-overrides.js";
 import {
@@ -121,10 +122,10 @@ export function discoverRunDirectories(entries) {
  * Ingest raw `{ path, text }` entries into canonical prediction and evaluation additions.
  *
  * @param {Array<{path?: unknown, text?: unknown}>} entries - Raw source entries.
- * @param {{existingPredictions?: Record<string, {overrides?: object, jobReturnValue?: object}> | Map<string, {overrides?: object, jobReturnValue?: object}>, existingEvaluations?: Array<{runDir?: unknown}>}} [options={}] - Existing dashboard data used for duplicate detection.
- * @returns {{candidateRunDirs: string[], predictionAdditions: Record<string, {jobReturnValue: Record<string, unknown>, overrides: Record<string, unknown>}>, evaluationAdditions: Array<{runDir: string, predictionId: string, jobReturnValue: Record<string, unknown>, overrides: Record<string, string>, data: unknown}>, failures: Array<{runDir: string, error: Error}>, summary: {candidateRunDirs: number, loadedCount: number, skippedDuplicate: number, skippedPredictRuns: number, skippedMissingJob: number, skippedUnsupportedVersion: number, skippedInvalid: number, skippedMissingPredictionId: number, skippedConflictingPredictionId: number}}} Ingestion result.
+ * @param {{existingPredictions?: Record<string, {overrides?: object, jobReturnValue?: object}> | Map<string, {overrides?: object, jobReturnValue?: object}>, existingEvaluations?: Array<{runId?: unknown, runDir?: unknown}>}} [options={}] - Existing dashboard data used for duplicate detection.
+ * @returns {Promise<{candidateRunDirs: string[], predictionAdditions: Record<string, {jobReturnValue: Record<string, unknown>, overrides: Record<string, unknown>}>, evaluationAdditions: Array<{runId: string, runDir: string, predictionId: string, jobReturnValue: Record<string, unknown>, overrides: Record<string, string>, data: unknown}>, failures: Array<{runDir: string, error: Error}>, summary: {candidateRunDirs: number, loadedCount: number, skippedSameContent: number, skippedPredictRuns: number, skippedMissingJob: number, skippedUnsupportedVersion: number, skippedInvalid: number, skippedMissingPredictionId: number, skippedConflictingPredictionId: number}}>} Ingestion result.
  */
-export function ingestRunEntries(entries, options = {}) {
+export async function ingestRunEntries(entries, options = {}) {
   const normalizedEntries = Array.isArray(entries) ? entries : [];
   const { candidateRunDirs, skippedPredictRuns, skippedMissingJob } = discoverRunDirectories(normalizedEntries);
   const byPath = new Map();
@@ -139,27 +140,22 @@ export function ingestRunEntries(entries, options = {}) {
   const existingPredictions = options.existingPredictions instanceof Map
     ? new Map(options.existingPredictions)
     : new Map(Object.entries(options.existingPredictions || {}));
-  const knownRunDirs = new Set(
+  const knownRunIds = new Set(
     (options.existingEvaluations || [])
-      .map((evaluation) => String(evaluation?.runDir || ""))
+      .map((evaluation) => getEvaluationRunId(evaluation))
       .filter(Boolean)
   );
   const predictionAdditions = new Map();
   const evaluationAdditions = [];
   const failures = [];
   let loadedCount = 0;
-  let skippedDuplicate = 0;
+  let skippedSameContent = 0;
   let skippedUnsupportedVersion = 0;
   let skippedInvalid = 0;
   let skippedMissingPredictionId = 0;
   let skippedConflictingPredictionId = 0;
 
   for (const runDir of candidateRunDirs) {
-    if (knownRunDirs.has(runDir)) {
-      skippedDuplicate += 1;
-      continue;
-    }
-
     const jobText = byPath.get(`${runDir}${JOB_RETURN_VALUE_SUFFIX}`);
     const overridesText = byPath.get(`${runDir}${OVERRIDES_SUFFIX}`);
     if (!jobText || !overridesText) {
@@ -169,6 +165,11 @@ export function ingestRunEntries(entries, options = {}) {
     try {
       const job_return_value = JSON.parse(jobText);
       const evaluationOverrides = parseOverridesYaml(overridesText);
+      const runId = await getRunIdFromImportedSources(job_return_value, evaluationOverrides);
+      if (knownRunIds.has(runId)) {
+        skippedSameContent += 1;
+        continue;
+      }
       const normalizedRun = normalizeImportedJobReturnValue(job_return_value, evaluationOverrides);
       const predictionId = getPredictionIdFromNormalizedPrediction(normalizedRun.prediction);
       const knownPrediction = predictionAdditions.get(predictionId) || existingPredictions.get(predictionId);
@@ -186,13 +187,14 @@ export function ingestRunEntries(entries, options = {}) {
       }
 
       evaluationAdditions.push({
+        runId,
         runDir,
         predictionId,
         jobReturnValue: normalizedRun.evaluation.jobReturnValue,
         overrides: normalizedRun.evaluation.overrides,
         data: normalizedRun.evaluation.data,
       });
-      knownRunDirs.add(runDir);
+      knownRunIds.add(runId);
       loadedCount += 1;
     } catch (error) {
       if (error?.name === "UnsupportedJobReturnValueVersionError") {
@@ -214,7 +216,7 @@ export function ingestRunEntries(entries, options = {}) {
     summary: {
       candidateRunDirs: candidateRunDirs.length,
       loadedCount,
-      skippedDuplicate,
+      skippedSameContent,
       skippedPredictRuns,
       skippedMissingJob,
       skippedUnsupportedVersion,
