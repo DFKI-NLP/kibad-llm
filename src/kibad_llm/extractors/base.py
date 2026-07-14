@@ -3,6 +3,7 @@
 Classes:
     SingleExtractionResult: Result container for a single extraction call.
     TextOffsetValueError: Raised when character offset arguments are invalid.
+    LoneSurrogateError: Raised when a string contains an unpaired UTF-16 surrogate.
 
 Functions:
     extract_from_text: Extract structured output from text using an LLM.
@@ -22,6 +23,7 @@ Functions:
     augment_and_strip_metadata_from_structured_callback: Postprocessing callback to augment
         metadata and strip it from structured output.
     exception2error_msg: Format an exception into short and long error message strings.
+    check_no_lone_surrogates: Recursively check nested data for lone surrogate characters.
 """
 
 from __future__ import annotations
@@ -54,6 +56,19 @@ logger = logging.getLogger(__name__)
 
 class TextOffsetValueError(ValueError):
     """Raised when text offset is invalid."""
+
+    pass
+
+
+class LoneSurrogateError(ValueError):
+    """Raised when a string contains an unpaired (lone) UTF-16 surrogate character.
+
+    Lone surrogates can end up in a Python string when `json.loads` parses a
+    `\\uXXXX` escape without validating surrogate pairing. Such a string is valid
+    Python but cannot be encoded to UTF-8, which crashes downstream serialization
+    (e.g. `datasets`/`pyarrow`) hours later and far away from where the string
+    actually originated.
+    """
 
     pass
 
@@ -107,6 +122,38 @@ def exception2error_msg(e: BaseException) -> tuple[str, str]:
         f"{type(e).__name__}: {str(e)}",
         f"{type(e).__name__}: {e_with_traceback}",
     )
+
+
+def check_no_lone_surrogates(data: Any) -> None:
+    """Recursively check that no string in `data` contains a lone surrogate character.
+
+    Walks nested dicts/lists/tuples and checks every string leaf. A lone (unpaired)
+    surrogate is valid in a Python `str` but cannot be encoded to UTF-8, which is
+    the reason `datasets`/`pyarrow` crash with an unhandled `UnicodeEncodeError`
+    when writing out a batch that contains one. Catching it here, right when the
+    offending string is produced, lets us attribute the failure to a single
+    document instead of losing an entire batch's results.
+
+    Args:
+        data: Arbitrary nested data (e.g. a `SingleExtractionResult`) to check.
+
+    Raises:
+        LoneSurrogateError: If any string in `data` contains a lone surrogate.
+    """
+    if isinstance(data, str):
+        try:
+            data.encode("utf-8")
+        except UnicodeEncodeError as e:
+            raise LoneSurrogateError(
+                f"String contains a lone surrogate character that cannot be encoded to "
+                f"UTF-8: {e}. data={data[:1500]!r}"
+            ) from e
+    elif isinstance(data, Mapping):
+        for value in data.values():
+            check_no_lone_surrogates(value)
+    elif isinstance(data, (list, tuple)):
+        for value in data:
+            check_no_lone_surrogates(value)
 
 
 def build_chat_message(
@@ -961,6 +1008,8 @@ def extract_from_text(
 
     else:
         warn_once("No LLM provided for extraction, skipping LLM call.")
+
+    check_no_lone_surrogates(out)
 
     return out
 
