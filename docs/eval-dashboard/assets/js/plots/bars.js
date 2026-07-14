@@ -12,7 +12,7 @@ import {
   getGroupLabelForFields,
   getMetricPreparedDataContainer,
   getPlotDisplayLabel,
-  getRequiredPlotRunDir,
+  getRequiredPlotRunId,
   scheduleAdaptiveSvgFit,
 } from "./shared.js";
 import {
@@ -74,10 +74,13 @@ function getNumericMetricPathKey(parts) {
  * Defaults that are semantically valid when a numeric metric path is absent.
  *
  * ErrorCollector output is sparse: counters with zero occurrences are omitted.
+ * F1MicroMultipleFieldsMetric output is also sparse: fields with no observations
+ * are omitted and its per-field scores would otherwise be zero.
  * Other numeric metric types must provide every discovered path explicitly.
  */
 const NUMERIC_METRIC_MISSING_DEFAULTS = new Map([
   ["ErrorCollector", 0],
+  ["F1MicroMultipleFieldsMetric", 0],
 ]);
 
 /**
@@ -261,8 +264,18 @@ function buildNumericPlotEntriesForDefinitions({
       const samples = evaluations.map((evaluation) =>
         getNumericMetricSampleValue(evaluation, metricPath, metricType)
       );
+      const runIds = evaluations.map((evaluation) =>
+        getRequiredPlotRunId(evaluation, `Numeric metric ${JSON.stringify(metricPath.label)}`)
+      );
       const runDirs = evaluations.map((evaluation) =>
-        getRequiredPlotRunDir(evaluation, `Numeric metric ${JSON.stringify(metricPath.label)}`)
+        evaluation?.runDir || ""
+      );
+      assertAlignedArrayLengths(
+        `Numeric metric ${JSON.stringify(metricPath.label)}`,
+        "runIds",
+        runIds,
+        "samples",
+        samples
       );
       assertAlignedArrayLengths(
         `Numeric metric ${JSON.stringify(metricPath.label)}`,
@@ -293,6 +306,7 @@ function buildNumericPlotEntriesForDefinitions({
         displayCategory: displayCategoryLabel,
         series: seriesLabel,
         displaySeries: displaySeriesLabel,
+        runIds,
         runDirs,
         samples,
       });
@@ -369,6 +383,8 @@ export function buildNumericDownloadMetadata(plotEntry = {}) {
  * Numeric input entries are already sample-only before rendering adds mean/std.
  * Downloads expose those raw sample values directly, keeping metric identity in
  * `plotEntry` and leaving UI grouping helpers out of the public JSON schema.
+ * The serialized `run_dirs` values identify source provenance only; semantic
+ * `runIds` remain an internal alignment key and are not public payload fields.
  *
  * @param {object} plotEntry - Numeric plot input entry.
  * @returns {object} JSON-safe numeric plotting data.
@@ -377,7 +393,15 @@ export function buildJsonSafeNumericPlottingData(plotEntry) {
   return {
     points: (plotEntry?.points || []).map((point, index) => {
       const runDirs = point?.runDirs || [];
+      const runIds = point?.runIds || [];
       const samples = point?.samples || [];
+      assertAlignedArrayLengths(
+        `Numeric download point ${index}`,
+        "runIds",
+        runIds,
+        "samples",
+        samples
+      );
       assertAlignedArrayLengths(
         `Numeric download point ${index}`,
         "runDirs",

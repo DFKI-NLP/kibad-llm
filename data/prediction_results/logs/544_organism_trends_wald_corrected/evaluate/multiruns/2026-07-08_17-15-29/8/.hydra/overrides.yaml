@@ -1,0 +1,5 @@
+- dataset.predictions.log=logs/428_organism_trends_with_chunking/predict/multiruns/2026-04-30_15-51-30/2
+- name=544_organism_trends_wald_corrected
+- experiment/evaluate=organism_trends_f1_micro_conditional_variable_and_trend
+- prediction_logs=logs/428_organism_trends_with_chunking/predict
+- dataset.references.file=../external/organism_trends/Referenz_Wald_korrigiert_mit_IDs_ohne_deleted.csv

@@ -57,8 +57,8 @@ test("tpfpfn helpers normalize collector data and aggregate outcomes", () => {
   );
 
   const aggregation = aggregateTpFpFn([
-    { runDir: "r1", fields: new Map([["field_a", { doc1: { tp: ["A"], fp: [], fn: ["B"] } }]]) },
-    { runDir: "r2", fields: new Map([["field_a", { doc1: { tp: [], fp: ["A"], fn: [] }, doc2: { tp: ["C"], fp: [], fn: [] } }]]) },
+    { runId: "r1-id", runDir: "r1", fields: new Map([["field_a", { doc1: { tp: ["A"], fp: [], fn: ["B"] } }]]) },
+    { runId: "r2-id", runDir: "r2", fields: new Map([["field_a", { doc1: { tp: [], fp: ["A"], fn: [] }, doc2: { tp: ["C"], fp: [], fn: [] } }]]) },
   ], "field_a");
   assert.deepEqual(aggregation.rows, ["doc1", "doc2"]);
   assert.deepEqual(aggregation.cols, ["A", "B", "C"]);
@@ -75,6 +75,7 @@ test("tpfpfn helpers normalize collector data and aggregate outcomes", () => {
  */
 test("tpfpfn aggregation stores prepared field data on the source evaluation", () => {
   const evaluation = {
+    runId: "r1-id",
     runDir: "r1",
     jobReturnValue: { type: "TpFpFnCollectorCollection" },
     data: { field_a: { doc: { tp: ["A"], fp: [], fn: [] } } },
@@ -85,7 +86,7 @@ test("tpfpfn aggregation stores prepared field data on the source evaluation", (
 
   assert.deepEqual(aggregation.cells.get("doc|#|A").counts, { tp: 1, fp: 0, fn: 0, empty: 0 });
   assert.ok(evaluation.dataPrepared.field_a);
-  assert.deepEqual(Object.keys(evaluation), ["runDir", "jobReturnValue", "data"]);
+  assert.deepEqual(Object.keys(evaluation), ["runId", "runDir", "jobReturnValue", "data"]);
   assert.equal(evaluation.dataPrepared.field_a.cells.get("doc|#|A"), "tp");
 });
 
@@ -94,6 +95,7 @@ test("tpfpfn aggregation stores prepared field data on the source evaluation", (
  */
 test("tpfpfn aggregation caches prototype-named metric fields safely", () => {
   const evaluation = {
+    runId: "r1-id",
     runDir: "r1",
     jobReturnValue: { type: "TpFpFnCollectorCollection" },
     data: { toString: { doc: { tp: ["A"], fp: [], fn: [] } } },
@@ -117,6 +119,7 @@ test("tpfpfn aggregation normalizes existing prepared containers for prototype k
     configurable: true,
   });
   const evaluation = {
+    runId: "r1-id",
     runDir: "r1",
     jobReturnValue: { type: "TpFpFnCollectorCollection" },
     dataPrepared: {},
@@ -137,13 +140,15 @@ test("tpfpfn aggregation normalizes existing prepared containers for prototype k
 test("tpfpfn helpers build reusable aligned aggregation inputs", () => {
   const collections = [
     {
+      runId: "run-a-id",
       runDir: "run-a",
-      sourceRunDir: "source-a",
+      sourceRunId: "source-a-id",
       fields: new Map([["field_a", { doc1: { tp: ["A"], fp: ["B"], fn: [] }, filtered: { fn: ["hidden"] } }]]),
     },
     {
+      runId: "run-b-id",
       runDir: "run-b",
-      sourceRunDir: "source-b",
+      sourceRunId: "source-b-id",
       fields: new Map([["field_a", { doc1: { tp: [], fp: [], fn: ["A"] } }]]),
     },
   ];
@@ -152,7 +157,8 @@ test("tpfpfn helpers build reusable aligned aggregation inputs", () => {
 
   assert.deepEqual(input.rows, ["doc1", "filtered"]);
   assert.deepEqual(input.cols, ["A", "B", "hidden"]);
-  assert.deepEqual(input.runDirs, ["source-a", "source-b"]);
+  assert.deepEqual(input.runIds, ["source-a-id", "source-b-id"]);
+  assert.deepEqual(input.runDirs, ["run-a", "run-b"]);
   assert.equal(input.cells[0].get("doc1|#|A"), "tp");
   assert.equal(input.cells[1].get("doc1|#|A"), "fn");
   assert.deepEqual(aggregation.cells.get("doc1|#|A").counts, { tp: 1, fp: 0, fn: 1, empty: 0 });
@@ -164,6 +170,7 @@ test("tpfpfn helpers build reusable aligned aggregation inputs", () => {
     () => getTpFpFnAggregationFromInput({
       rows: [],
       cols: [],
+      runIds: [],
       runDirs: ["source-a"],
       cells: [],
     }),
@@ -181,6 +188,7 @@ test("tpfpfn helpers wrap collection metrics, build tab maps, and summarize cell
   };
   const collections = getTpFpFnCollectionViews([
     {
+      runId: "run-a-id",
       runDir: "run-a",
       jobReturnValue: { type: "TpFpFnCollectorCollection" },
       data: collectionData,
@@ -191,6 +199,7 @@ test("tpfpfn helpers wrap collection metrics, build tab maps, and summarize cell
   assert.equal(collections[0].fields.get("outer.field_a"), collectionData["outer.field_a"]);
 
   const evaluations = [{
+    runId: "run-a-id",
     runDir: "run-a",
     jobReturnValue: { type: "TpFpFnCollectorCollection" },
     overrides: { experiment: "exp" },
@@ -256,14 +265,14 @@ test("tpfpfn helpers wrap collection metrics, build tab maps, and summarize cell
 test("tpfpfn collection views reject missing fields and malformed collection data", () => {
   assert.throws(
     () => getTpFpFnCollectionViews([
-      { runDir: "r1", overrides: {}, jobReturnValue: { type: "TpFpFnCollector" }, data: {} },
+      { runId: "r1-id", runDir: "r1", overrides: {}, jobReturnValue: { type: "TpFpFnCollector" }, data: {} },
     ], { evalTabState: {}, getEvaluationEffectiveValue }),
     /TpFpFnCollector evaluation must define a non-empty metric\.field\./
   );
 
   assert.throws(
     () => getTpFpFnCollectionViews([
-      { runDir: "r1", jobReturnValue: { type: "TpFpFnCollectorCollection" }, data: [] },
+      { runId: "r1-id", runDir: "r1", jobReturnValue: { type: "TpFpFnCollectorCollection" }, data: [] },
     ]),
     /TpFpFnCollectorCollection data must be an object mapping metric fields to metric data\./
   );
@@ -271,6 +280,7 @@ test("tpfpfn collection views reject missing fields and malformed collection dat
   assert.throws(
     () => getTpFpFnCollectionViews([
       {
+        runId: "r1-id",
         runDir: "r1",
         jobReturnValue: { type: "TpFpFnCollectorCollection" },
         data: { " field_a ": {}, field_a: {} },
@@ -281,7 +291,7 @@ test("tpfpfn collection views reject missing fields and malformed collection dat
 
   assert.throws(
     () => aggregateTpFpFn([
-      { runDir: "r1", fields: new Map([["field_b", {}]]) },
+      { runId: "r1-id", runDir: "r1", fields: new Map([["field_b", {}]]) },
     ], "field_a"),
     /TpFpFnCollector collection view is missing metric field "field_a"\./
   );
@@ -293,12 +303,12 @@ test("tpfpfn collection views reject missing fields and malformed collection dat
 
   assert.throws(
     () => normalizeTpFpFnCollectorData({ tp: [["doc1"]] }),
-    /TpFpFnCollector global bucket "tp" entry 0 must be a \[record_id, label\] array\./
+    /TpFpFnCollector global bucket "tp" entry 0 must be a \[record_id, label] array\./
   );
 
   assert.throws(
     () => normalizeTpFpFnCollectorData({ tp: [["doc1", "label", "extra"]] }),
-    /TpFpFnCollector global bucket "tp" entry 0 must be a \[record_id, label\] array\./
+    /TpFpFnCollector global bucket "tp" entry 0 must be a \[record_id, label] array\./
   );
 
   assert.throws(
@@ -324,6 +334,7 @@ test("tpfpfn collection views reject missing fields and malformed collection dat
   assert.throws(
     () => aggregateTpFpFn([
       {
+        runId: "r1-id",
         runDir: "r1",
         fields: new Map([[
           "field_a",
@@ -337,6 +348,7 @@ test("tpfpfn collection views reject missing fields and malformed collection dat
   assert.throws(
     () => aggregateTpFpFn([
       {
+        runId: "r1-id",
         runDir: "r1",
         fields: new Map([[
           "field_a",
@@ -371,8 +383,8 @@ test("tpfpfn renderer creates interactive combined matrix cells", async () => {
   const shown = [];
   let copied = "";
   const aggregationInput = getTpFpFnAggregationInput([
-    { runDir: "r1", fields: new Map([["field_a", { doc1: { tp: ["outer.label"], fp: [], fn: [] } }]]) },
-    { runDir: "r2", fields: new Map([["field_a", { doc1: { tp: [], fp: ["outer.label"], fn: [] } }]]) },
+    { runId: "r1-id", runDir: "r1", fields: new Map([["field_a", { doc1: { tp: ["outer.label"], fp: [], fn: [] } }]]) },
+    { runId: "r2-id", runDir: "r2", fields: new Map([["field_a", { doc1: { tp: [], fp: ["outer.label"], fn: [] } }]]) },
   ], "field_a");
   const aggregation = getTpFpFnAggregationFromInput(aggregationInput);
 
@@ -410,7 +422,7 @@ test("tpfpfn renderer reports clipboard copy failures", async () => {
   const shown = [];
   const warnings = [];
   const aggregationInput = getTpFpFnAggregationInput([
-    { runDir: "r1", fields: new Map([["field_a", { doc1: { tp: ["label"], fp: [], fn: [] } }]]) },
+    { runId: "r1-id", runDir: "r1", fields: new Map([["field_a", { doc1: { tp: ["label"], fp: [], fn: [] } }]]) },
   ], "field_a");
   const aggregation = getTpFpFnAggregationFromInput(aggregationInput);
   const svg = createTpFpFnCombinedMatrixSvg({

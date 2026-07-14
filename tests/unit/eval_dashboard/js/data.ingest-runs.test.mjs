@@ -42,8 +42,8 @@ test("ingest-runs discovers candidate run directories and excludes predict trees
  * Ensure the shared ingestion boundary produces canonical additions and summary counts for valid
  * curated fixture inputs.
  */
-test("ingest-runs converts valid entries into canonical prediction and evaluation additions", () => {
-  const result = ingestRunEntries([
+test("ingest-runs converts valid entries into canonical prediction and evaluation additions", async () => {
+  const result = await ingestRunEntries([
     {
       path: "fixture/run_v2/job_return_value.json",
       text: readFixtureText("run_v2/job_return_value.json"),
@@ -56,6 +56,7 @@ test("ingest-runs converts valid entries into canonical prediction and evaluatio
 
   assert.equal(result.summary.candidateRunDirs, 1);
   assert.equal(result.summary.loadedCount, 1);
+  assert.match(result.evaluationAdditions[0].runId, /^[a-f0-9]{64}$/);
   assert.equal(result.failures.length, 0);
   assert.equal(result.evaluationAdditions.length, 1);
   assert.deepEqual(Object.keys(result.predictionAdditions), [
@@ -66,7 +67,7 @@ test("ingest-runs converts valid entries into canonical prediction and evaluatio
 /**
  * Ensure duplicate run detection remains part of the shared ingestion boundary.
  */
-test("ingest-runs skips already loaded run directories", () => {
+test("ingest-runs skips already loaded same-content runs", async () => {
   const entries = [
     {
       path: "fixture/run_v0/job_return_value.json",
@@ -78,21 +79,61 @@ test("ingest-runs skips already loaded run directories", () => {
     },
   ];
 
-  const result = ingestRunEntries(entries, {
-    existingEvaluations: [{ runDir: "fixture/run_v0" }],
+  const firstLoad = await ingestRunEntries(entries);
+  const result = await ingestRunEntries(entries, {
+    existingEvaluations: firstLoad.evaluationAdditions,
   });
 
   assert.equal(result.summary.loadedCount, 0);
-  assert.equal(result.summary.skippedDuplicate, 1);
+  assert.equal(result.summary.skippedSameContent, 1);
   assert.equal(result.evaluationAdditions.length, 0);
+});
+
+/**
+ * Ensure same-path imports with different content remain loadable because semantic identity now
+ * depends on normalized source content rather than the source path string.
+ */
+test("ingest-runs loads same runDir path when the normalized source content differs", async () => {
+  const firstEntries = [
+    {
+      path: "fixture/shared_run/job_return_value.json",
+      text: readFixtureText("run_v0/job_return_value.json"),
+    },
+    {
+      path: "fixture/shared_run/.hydra/overrides.yaml",
+      text: readFixtureText("run_v0/.hydra/overrides.yaml"),
+    },
+  ];
+  const secondEntries = [
+    {
+      path: "fixture/shared_run/job_return_value.json",
+      text: readFixtureText("run_v2/job_return_value.json"),
+    },
+    {
+      path: "fixture/shared_run/.hydra/overrides.yaml",
+      text: readFixtureText("run_v2/.hydra/overrides.yaml"),
+    },
+  ];
+
+  const firstLoad = await ingestRunEntries(firstEntries);
+  const secondLoad = await ingestRunEntries(secondEntries, {
+    existingPredictions: firstLoad.predictionAdditions,
+    existingEvaluations: firstLoad.evaluationAdditions,
+  });
+
+  assert.equal(firstLoad.summary.loadedCount, 1);
+  assert.equal(secondLoad.summary.loadedCount, 1);
+  assert.equal(secondLoad.summary.skippedSameContent, 0);
+  assert.equal(firstLoad.evaluationAdditions[0].runDir, secondLoad.evaluationAdditions[0].runDir);
+  assert.notEqual(firstLoad.evaluationAdditions[0].runId, secondLoad.evaluationAdditions[0].runId);
 });
 
 /**
  * Ensure conflicting prediction ids remain rejected at the shared ingestion boundary rather than in
  * the single-run normalization helper.
  */
-test("ingest-runs rejects conflicting prediction payloads for the same prediction id", () => {
-  const result = ingestRunEntries([
+test("ingest-runs rejects conflicting prediction payloads for the same prediction id", async () => {
+  const result = await ingestRunEntries([
     {
       path: "fixture/run_a/job_return_value.json",
       text: readFixtureText("conflicting_prediction_ids/run_a/job_return_value.json"),
@@ -154,8 +195,8 @@ test("ingest-runs exposes the named conflicting prediction id error", () => {
  * Ensure the shared ingestion boundary keeps the Phase 8 summary accounting for unsupported,
  * missing-prediction-id, and invalid fixtures rather than leaving those counts in `main.js`.
  */
-test("ingest-runs classifies unsupported, missing-prediction-id, and invalid fixtures in summary counts", () => {
-  const result = ingestRunEntries([
+test("ingest-runs classifies unsupported, missing-prediction-id, and invalid fixtures in summary counts", async () => {
+  const result = await ingestRunEntries([
     {
       path: "fixture/unsupported_version/job_return_value.json",
       text: readFixtureText("unsupported_version/job_return_value.json"),
