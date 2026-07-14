@@ -285,8 +285,7 @@ Micro-Recall (ALL.recall)
 ![Figure/Table 2: "detail results - precision and recall" - same plots as above, but with recall scores instead of F1](figures/organism_trends_f1_micro-ALL/recall.svg)
 
 Notes
-- F1 scores range from 0.209 (GPT5) to 0.018 (Gemma)
-- Only Qwen3 comes close to GPT5 with F1=0.172, due to better recall than GPT5 (but note that GPT5 has many errors)
+- F1 scores range from 0.17 (Qwen3) to 0.018 (Gemma)
 - Compared to the dev set results, results are worse by 2-7% - GPT OSS (0.111 vs 0.135), Qwen (0.172 vs 0.24), Mistral (0.06 vs 0.06), Gemma (0.018 vs 0.075)
 
 #### base elements
@@ -309,7 +308,8 @@ Micro-Recall (ALL.recall)
 
 Notes
 - Gemma3 performs much worse than the other models on detecting base elements, not sure why this happens since in the core schema, 
-  it performs much better for the 2 variables habitat and species group ()
+  it performs much better for the 2 variables habitat and species group (0.67 F1 for habitat, 0.57 for species group, 
+  see https://github.com/DFKI-NLP/kibad-llm/blob/main/data/prediction_results/logs/397_faktencheck_core_v1_for_chunking/f1_per_class.png)
 - Compared to the dev set results, where Gemma achieved about 0.2 F1, the 0.06 here are a 14% drop
 - For Qwen and GPT OSS, the drop from the dev set is approx 14% (Qwen) and 5% (GPT OSS)
 
