@@ -1,0 +1,299 @@
+{
+  "metric_family": "numeric",
+  "plot_tab": "ALL",
+  "plot_tab_variant": "prefix",
+  "plots": [
+    {
+      "metadata": {
+        "metric_label": "ALL.f1"
+      },
+      "data": {
+        "points": [
+          {
+            "category": "prediction.extractor/llm=gpt_oss_20b_in_process",
+            "display_category": "extractor/llm=gpt_oss_20b_in_process",
+            "series": "__single__",
+            "display_series": "__single__",
+            "run_dirs": [
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/0",
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/1",
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/2"
+            ],
+            "samples": [
+              0.5011892626571526,
+              0.5035775127768313,
+              0.5066299293955571
+            ]
+          },
+          {
+            "category": "prediction.extractor/llm=mistral_small_3_24b_in_process",
+            "display_category": "extractor/llm=mistral_small_3_24b_in_process",
+            "series": "__single__",
+            "display_series": "__single__",
+            "run_dirs": [
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/10",
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/11",
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/9"
+            ],
+            "samples": [
+              0.43164321741438816,
+              0.42793030623020056,
+              0.4233823720869679
+            ]
+          },
+          {
+            "category": "prediction.extractor/llm=gemma3_27b_in_process",
+            "display_category": "extractor/llm=gemma3_27b_in_process",
+            "series": "__single__",
+            "display_series": "__single__",
+            "run_dirs": [
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/3",
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/4",
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/5"
+            ],
+            "samples": [
+              0.42715419501133783,
+              0.42341574310883767,
+              0.4337314721542668
+            ]
+          },
+          {
+            "category": "prediction.extractor/llm=qwen3_30b_in_process",
+            "display_category": "extractor/llm=qwen3_30b_in_process",
+            "series": "__single__",
+            "display_series": "__single__",
+            "run_dirs": [
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/6",
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/7",
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/8"
+            ],
+            "samples": [
+              0.5053293727066225,
+              0.5039751123401314,
+              0.49544438714113814
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "metadata": {
+        "metric_label": "ALL.precision"
+      },
+      "data": {
+        "points": [
+          {
+            "category": "prediction.extractor/llm=gpt_oss_20b_in_process",
+            "display_category": "extractor/llm=gpt_oss_20b_in_process",
+            "series": "__single__",
+            "display_series": "__single__",
+            "run_dirs": [
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/0",
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/1",
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/2"
+            ],
+            "samples": [
+              0.3836150845253576,
+              0.3860015669887699,
+              0.3906001062134891
+            ]
+          },
+          {
+            "category": "prediction.extractor/llm=mistral_small_3_24b_in_process",
+            "display_category": "extractor/llm=mistral_small_3_24b_in_process",
+            "series": "__single__",
+            "display_series": "__single__",
+            "run_dirs": [
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/10",
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/11",
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/9"
+            ],
+            "samples": [
+              0.2960131075914801,
+              0.2928635953026197,
+              0.28829787234042553
+            ]
+          },
+          {
+            "category": "prediction.extractor/llm=gemma3_27b_in_process",
+            "display_category": "extractor/llm=gemma3_27b_in_process",
+            "series": "__single__",
+            "display_series": "__single__",
+            "run_dirs": [
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/3",
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/4",
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/5"
+            ],
+            "samples": [
+              0.30049850448654036,
+              0.29817890734440666,
+              0.30704971475142623
+            ]
+          },
+          {
+            "category": "prediction.extractor/llm=qwen3_30b_in_process",
+            "display_category": "extractor/llm=qwen3_30b_in_process",
+            "series": "__single__",
+            "display_series": "__single__",
+            "run_dirs": [
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/6",
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/7",
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/8"
+            ],
+            "samples": [
+              0.39272134709397066,
+              0.38931909212283045,
+              0.3816207627118644
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "metadata": {
+        "metric_label": "ALL.recall"
+      },
+      "data": {
+        "points": [
+          {
+            "category": "prediction.extractor/llm=gpt_oss_20b_in_process",
+            "display_category": "extractor/llm=gpt_oss_20b_in_process",
+            "series": "__single__",
+            "display_series": "__single__",
+            "run_dirs": [
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/0",
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/1",
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/2"
+            ],
+            "samples": [
+              0.7226849583537481,
+              0.7241548260656541,
+              0.7207251347378736
+            ]
+          },
+          {
+            "category": "prediction.extractor/llm=mistral_small_3_24b_in_process",
+            "display_category": "extractor/llm=mistral_small_3_24b_in_process",
+            "series": "__single__",
+            "display_series": "__single__",
+            "run_dirs": [
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/10",
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/11",
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/9"
+            ],
+            "samples": [
+              0.7966682998530132,
+              0.79421852033317,
+              0.7966682998530132
+            ]
+          },
+          {
+            "category": "prediction.extractor/llm=gemma3_27b_in_process",
+            "display_category": "extractor/llm=gemma3_27b_in_process",
+            "series": "__single__",
+            "display_series": "__single__",
+            "run_dirs": [
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/3",
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/4",
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/5"
+            ],
+            "samples": [
+              0.7383635472807447,
+              0.7300342969132778,
+              0.7383635472807447
+            ]
+          },
+          {
+            "category": "prediction.extractor/llm=qwen3_30b_in_process",
+            "display_category": "extractor/llm=qwen3_30b_in_process",
+            "series": "__single__",
+            "display_series": "__single__",
+            "run_dirs": [
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/6",
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/7",
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/8"
+            ],
+            "samples": [
+              0.7084762371386575,
+              0.7143557079862812,
+              0.7060264576188143
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "metadata": {
+        "metric_label": "ALL.support"
+      },
+      "data": {
+        "points": [
+          {
+            "category": "prediction.extractor/llm=gpt_oss_20b_in_process",
+            "display_category": "extractor/llm=gpt_oss_20b_in_process",
+            "series": "__single__",
+            "display_series": "__single__",
+            "run_dirs": [
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/0",
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/1",
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/2"
+            ],
+            "samples": [
+              2041,
+              2041,
+              2041
+            ]
+          },
+          {
+            "category": "prediction.extractor/llm=mistral_small_3_24b_in_process",
+            "display_category": "extractor/llm=mistral_small_3_24b_in_process",
+            "series": "__single__",
+            "display_series": "__single__",
+            "run_dirs": [
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/10",
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/11",
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/9"
+            ],
+            "samples": [
+              2041,
+              2041,
+              2041
+            ]
+          },
+          {
+            "category": "prediction.extractor/llm=gemma3_27b_in_process",
+            "display_category": "extractor/llm=gemma3_27b_in_process",
+            "series": "__single__",
+            "display_series": "__single__",
+            "run_dirs": [
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/3",
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/4",
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/5"
+            ],
+            "samples": [
+              2041,
+              2041,
+              2041
+            ]
+          },
+          {
+            "category": "prediction.extractor/llm=qwen3_30b_in_process",
+            "display_category": "extractor/llm=qwen3_30b_in_process",
+            "series": "__single__",
+            "display_series": "__single__",
+            "run_dirs": [
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/6",
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/7",
+              "525_faktencheck_core_bestconfig_testset/evaluate/multiruns/2026-07-13_15-08-10/8"
+            ],
+            "samples": [
+              2041,
+              2041,
+              2041
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
