@@ -1,0 +1,638 @@
+{
+  "dataset.predictions.log=logs/549_organism_trends_bestconfig_testset/predict/multiruns/2026-07-09_15-18-29/0": {
+    "version": 2,
+    "type": "F1MicroMultipleFieldsMetric",
+    "data": {
+      "organism_trends": {
+        "precision": 0.07188160676532769,
+        "recall": 0.24199288256227758,
+        "f1": 0.11083944580277098,
+        "support": 281
+      },
+      "AVG": {
+        "precision": 0.07188160676532769,
+        "recall": 0.24199288256227758,
+        "f1": 0.11083944580277098,
+        "support": 281.0
+      },
+      "ALL": {
+        "precision": 0.07188160676532769,
+        "recall": 0.24199288256227758,
+        "f1": 0.11083944580277098,
+        "support": 281
+      }
+    },
+    "prediction": {
+      "job_return_value": {
+        "version": 1,
+        "output_file": "predictions/549_organism_trends_bestconfig_testset/2026-07-09_15-18-29/2026-07-09_15-18-30_085033/predictions.jsonl",
+        "output_file_absolute": "/netscratch/hennig/code/kibad-llm/predictions/549_organism_trends_bestconfig_testset/2026-07-09_15-18-29/2026-07-09_15-18-30_085033/predictions.jsonl",
+        "time_pdf_conversion": 8202.663563710987,
+        "time_extraction": 17258.308879827964,
+        "time_start": 1783603110,
+        "time_end": 1783628758,
+        "commit_hash": "50d38a1b00c4ded08378832e625a7f73bde099de",
+        "branch": "exp/548_organism_trends_bestconfig_testset",
+        "is_dirty": false,
+        "slurm_job_id": "3157298"
+      },
+      "overrides": {
+        "name": "549_organism_trends_bestconfig_testset",
+        "experiment/predict": "organism_trends_with_chunking",
+        "pdf_directory": "/ds/text/kiba-d/test-set-AuO-WVC",
+        "extractor/llm": "gpt_oss_20b_in_process",
+        "seed": "42"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/549_organism_trends_bestconfig_testset/predict/multiruns/2026-07-09_15-18-29/0",
+      "name": "549_organism_trends_bestconfig_testset",
+      "experiment/evaluate": "organism_trends_f1_micro",
+      "prediction_logs": "logs/549_organism_trends_bestconfig_testset/predict",
+      "dataset.references.file": "../external/organism_trends/Weighted\\ Vote\\ Count\\ Agrar-\\ und\\ Offenland\\ Literatur\\ -\\ Sheet1.csv"
+    }
+  },
+  "dataset.predictions.log=logs/549_organism_trends_bestconfig_testset/predict/multiruns/2026-07-09_15-18-29/1": {
+    "version": 2,
+    "type": "F1MicroMultipleFieldsMetric",
+    "data": {
+      "organism_trends": {
+        "precision": 0.07970244420828905,
+        "recall": 0.2669039145907473,
+        "f1": 0.12274959083469722,
+        "support": 281
+      },
+      "AVG": {
+        "precision": 0.07970244420828905,
+        "recall": 0.2669039145907473,
+        "f1": 0.12274959083469722,
+        "support": 281.0
+      },
+      "ALL": {
+        "precision": 0.07970244420828905,
+        "recall": 0.2669039145907473,
+        "f1": 0.12274959083469722,
+        "support": 281
+      }
+    },
+    "prediction": {
+      "job_return_value": {
+        "version": 1,
+        "output_file": "predictions/549_organism_trends_bestconfig_testset/2026-07-09_15-18-29/2026-07-09_22-25-59_122523/predictions.jsonl",
+        "output_file_absolute": "/netscratch/hennig/code/kibad-llm/predictions/549_organism_trends_bestconfig_testset/2026-07-09_15-18-29/2026-07-09_22-25-59_122523/predictions.jsonl",
+        "time_pdf_conversion": 0.007113666040822864,
+        "time_extraction": 17537.290680331993,
+        "time_start": 1783628759,
+        "time_end": 1783646377,
+        "commit_hash": "50d38a1b00c4ded08378832e625a7f73bde099de",
+        "branch": "exp/548_organism_trends_bestconfig_testset",
+        "is_dirty": false,
+        "slurm_job_id": "3157298"
+      },
+      "overrides": {
+        "name": "549_organism_trends_bestconfig_testset",
+        "experiment/predict": "organism_trends_with_chunking",
+        "pdf_directory": "/ds/text/kiba-d/test-set-AuO-WVC",
+        "extractor/llm": "gpt_oss_20b_in_process",
+        "seed": "1337"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/549_organism_trends_bestconfig_testset/predict/multiruns/2026-07-09_15-18-29/1",
+      "name": "549_organism_trends_bestconfig_testset",
+      "experiment/evaluate": "organism_trends_f1_micro",
+      "prediction_logs": "logs/549_organism_trends_bestconfig_testset/predict",
+      "dataset.references.file": "../external/organism_trends/Weighted\\ Vote\\ Count\\ Agrar-\\ und\\ Offenland\\ Literatur\\ -\\ Sheet1.csv"
+    }
+  },
+  "dataset.predictions.log=logs/549_organism_trends_bestconfig_testset/predict/multiruns/2026-07-09_15-18-29/2": {
+    "version": 2,
+    "type": "F1MicroMultipleFieldsMetric",
+    "data": {
+      "organism_trends": {
+        "precision": 0.06550218340611354,
+        "recall": 0.21352313167259787,
+        "f1": 0.10025062656641603,
+        "support": 281
+      },
+      "AVG": {
+        "precision": 0.06550218340611354,
+        "recall": 0.21352313167259787,
+        "f1": 0.10025062656641603,
+        "support": 281.0
+      },
+      "ALL": {
+        "precision": 0.06550218340611354,
+        "recall": 0.21352313167259787,
+        "f1": 0.10025062656641603,
+        "support": 281
+      }
+    },
+    "prediction": {
+      "job_return_value": {
+        "version": 1,
+        "output_file": "predictions/549_organism_trends_bestconfig_testset/2026-07-09_15-18-29/2026-07-10_03-19-38_001675/predictions.jsonl",
+        "output_file_absolute": "/netscratch/hennig/code/kibad-llm/predictions/549_organism_trends_bestconfig_testset/2026-07-09_15-18-29/2026-07-10_03-19-38_001675/predictions.jsonl",
+        "time_pdf_conversion": 0.007066886988468468,
+        "time_extraction": 17251.99155367003,
+        "time_start": 1783646378,
+        "time_end": 1783663707,
+        "commit_hash": "50d38a1b00c4ded08378832e625a7f73bde099de",
+        "branch": "exp/548_organism_trends_bestconfig_testset",
+        "is_dirty": false,
+        "slurm_job_id": "3157298"
+      },
+      "overrides": {
+        "name": "549_organism_trends_bestconfig_testset",
+        "experiment/predict": "organism_trends_with_chunking",
+        "pdf_directory": "/ds/text/kiba-d/test-set-AuO-WVC",
+        "extractor/llm": "gpt_oss_20b_in_process",
+        "seed": "7331"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/549_organism_trends_bestconfig_testset/predict/multiruns/2026-07-09_15-18-29/2",
+      "name": "549_organism_trends_bestconfig_testset",
+      "experiment/evaluate": "organism_trends_f1_micro",
+      "prediction_logs": "logs/549_organism_trends_bestconfig_testset/predict",
+      "dataset.references.file": "../external/organism_trends/Weighted\\ Vote\\ Count\\ Agrar-\\ und\\ Offenland\\ Literatur\\ -\\ Sheet1.csv"
+    }
+  },
+  "dataset.predictions.log=logs/549_organism_trends_bestconfig_testset/predict/multiruns/2026-07-09_15-31-12/0": {
+    "version": 2,
+    "type": "F1MicroMultipleFieldsMetric",
+    "data": {
+      "organism_trends": {
+        "precision": 0.009151921903599756,
+        "recall": 0.05338078291814947,
+        "f1": 0.015625,
+        "support": 281
+      },
+      "AVG": {
+        "precision": 0.009151921903599756,
+        "recall": 0.05338078291814947,
+        "f1": 0.015625,
+        "support": 281.0
+      },
+      "ALL": {
+        "precision": 0.009151921903599756,
+        "recall": 0.05338078291814947,
+        "f1": 0.015625,
+        "support": 281
+      }
+    },
+    "prediction": {
+      "job_return_value": {
+        "version": 1,
+        "output_file": "predictions/549_organism_trends_bestconfig_testset/2026-07-09_15-31-12/2026-07-09_15-31-12_905800/predictions.jsonl",
+        "output_file_absolute": "/netscratch/hennig/code/kibad-llm/predictions/549_organism_trends_bestconfig_testset/2026-07-09_15-31-12/2026-07-09_15-31-12_905800/predictions.jsonl",
+        "time_pdf_conversion": 5846.243578149937,
+        "time_extraction": 27326.00881113799,
+        "time_start": 1783603872,
+        "time_end": 1783637377,
+        "commit_hash": "50d38a1b00c4ded08378832e625a7f73bde099de",
+        "branch": "exp/548_organism_trends_bestconfig_testset",
+        "is_dirty": false,
+        "slurm_job_id": "3157300"
+      },
+      "overrides": {
+        "name": "549_organism_trends_bestconfig_testset",
+        "experiment/predict": "organism_trends_with_chunking",
+        "pdf_directory": "/ds/text/kiba-d/test-set-AuO-WVC",
+        "extractor/llm": "gemma3_27b_in_process",
+        "seed": "42"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/549_organism_trends_bestconfig_testset/predict/multiruns/2026-07-09_15-31-12/0",
+      "name": "549_organism_trends_bestconfig_testset",
+      "experiment/evaluate": "organism_trends_f1_micro",
+      "prediction_logs": "logs/549_organism_trends_bestconfig_testset/predict",
+      "dataset.references.file": "../external/organism_trends/Weighted\\ Vote\\ Count\\ Agrar-\\ und\\ Offenland\\ Literatur\\ -\\ Sheet1.csv"
+    }
+  },
+  "dataset.predictions.log=logs/549_organism_trends_bestconfig_testset/predict/multiruns/2026-07-09_15-31-12/1": {
+    "version": 2,
+    "type": "F1MicroMultipleFieldsMetric",
+    "data": {
+      "organism_trends": {
+        "precision": 0.011343283582089553,
+        "recall": 0.06761565836298933,
+        "f1": 0.019427402862985686,
+        "support": 281
+      },
+      "AVG": {
+        "precision": 0.011343283582089553,
+        "recall": 0.06761565836298933,
+        "f1": 0.019427402862985686,
+        "support": 281.0
+      },
+      "ALL": {
+        "precision": 0.011343283582089553,
+        "recall": 0.06761565836298933,
+        "f1": 0.019427402862985686,
+        "support": 281
+      }
+    },
+    "prediction": {
+      "job_return_value": {
+        "version": 1,
+        "output_file": "predictions/549_organism_trends_bestconfig_testset/2026-07-09_15-31-12/2026-07-10_00-49-38_256165/predictions.jsonl",
+        "output_file_absolute": "/netscratch/hennig/code/kibad-llm/predictions/549_organism_trends_bestconfig_testset/2026-07-09_15-31-12/2026-07-10_00-49-38_256165/predictions.jsonl",
+        "time_pdf_conversion": 0.03432817698922008,
+        "time_extraction": 27926.33720973204,
+        "time_start": 1783637378,
+        "time_end": 1783665411,
+        "commit_hash": "50d38a1b00c4ded08378832e625a7f73bde099de",
+        "branch": "exp/548_organism_trends_bestconfig_testset",
+        "is_dirty": false,
+        "slurm_job_id": "3157300"
+      },
+      "overrides": {
+        "name": "549_organism_trends_bestconfig_testset",
+        "experiment/predict": "organism_trends_with_chunking",
+        "pdf_directory": "/ds/text/kiba-d/test-set-AuO-WVC",
+        "extractor/llm": "gemma3_27b_in_process",
+        "seed": "1337"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/549_organism_trends_bestconfig_testset/predict/multiruns/2026-07-09_15-31-12/1",
+      "name": "549_organism_trends_bestconfig_testset",
+      "experiment/evaluate": "organism_trends_f1_micro",
+      "prediction_logs": "logs/549_organism_trends_bestconfig_testset/predict",
+      "dataset.references.file": "../external/organism_trends/Weighted\\ Vote\\ Count\\ Agrar-\\ und\\ Offenland\\ Literatur\\ -\\ Sheet1.csv"
+    }
+  },
+  "dataset.predictions.log=logs/549_organism_trends_bestconfig_testset/predict/multiruns/2026-07-09_15-31-12/2": {
+    "version": 2,
+    "type": "F1MicroMultipleFieldsMetric",
+    "data": {
+      "organism_trends": {
+        "precision": 0.010804321728691477,
+        "recall": 0.06405693950177936,
+        "f1": 0.01848998459167951,
+        "support": 281
+      },
+      "AVG": {
+        "precision": 0.010804321728691477,
+        "recall": 0.06405693950177936,
+        "f1": 0.01848998459167951,
+        "support": 281.0
+      },
+      "ALL": {
+        "precision": 0.010804321728691477,
+        "recall": 0.06405693950177936,
+        "f1": 0.01848998459167951,
+        "support": 281
+      }
+    },
+    "prediction": {
+      "job_return_value": {
+        "version": 1,
+        "output_file": "predictions/549_organism_trends_bestconfig_testset/2026-07-09_15-31-12/2026-07-10_08-36-52_285888/predictions.jsonl",
+        "output_file_absolute": "/netscratch/hennig/code/kibad-llm/predictions/549_organism_trends_bestconfig_testset/2026-07-09_15-31-12/2026-07-10_08-36-52_285888/predictions.jsonl",
+        "time_pdf_conversion": 0.0075010310392826796,
+        "time_extraction": 27460.027530272957,
+        "time_start": 1783665412,
+        "time_end": 1783692990,
+        "commit_hash": "50d38a1b00c4ded08378832e625a7f73bde099de",
+        "branch": "exp/548_organism_trends_bestconfig_testset",
+        "is_dirty": false,
+        "slurm_job_id": "3157300"
+      },
+      "overrides": {
+        "name": "549_organism_trends_bestconfig_testset",
+        "experiment/predict": "organism_trends_with_chunking",
+        "pdf_directory": "/ds/text/kiba-d/test-set-AuO-WVC",
+        "extractor/llm": "gemma3_27b_in_process",
+        "seed": "7331"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/549_organism_trends_bestconfig_testset/predict/multiruns/2026-07-09_15-31-12/2",
+      "name": "549_organism_trends_bestconfig_testset",
+      "experiment/evaluate": "organism_trends_f1_micro",
+      "prediction_logs": "logs/549_organism_trends_bestconfig_testset/predict",
+      "dataset.references.file": "../external/organism_trends/Weighted\\ Vote\\ Count\\ Agrar-\\ und\\ Offenland\\ Literatur\\ -\\ Sheet1.csv"
+    }
+  },
+  "dataset.predictions.log=logs/549_organism_trends_bestconfig_testset/predict/multiruns/2026-07-09_15-31-13/0": {
+    "version": 2,
+    "type": "F1MicroMultipleFieldsMetric",
+    "data": {
+      "organism_trends": {
+        "precision": 0.13350785340314136,
+        "recall": 0.18149466192170818,
+        "f1": 0.15384615384615383,
+        "support": 281
+      },
+      "AVG": {
+        "precision": 0.13350785340314136,
+        "recall": 0.18149466192170818,
+        "f1": 0.15384615384615383,
+        "support": 281.0
+      },
+      "ALL": {
+        "precision": 0.13350785340314136,
+        "recall": 0.18149466192170818,
+        "f1": 0.15384615384615383,
+        "support": 281
+      }
+    },
+    "prediction": {
+      "job_return_value": {
+        "version": 1,
+        "output_file": "predictions/549_organism_trends_bestconfig_testset/2026-07-09_15-31-13/2026-07-09_15-31-14_284231/predictions.jsonl",
+        "output_file_absolute": "/netscratch/hennig/code/kibad-llm/predictions/549_organism_trends_bestconfig_testset/2026-07-09_15-31-13/2026-07-09_15-31-14_284231/predictions.jsonl",
+        "time_pdf_conversion": 5855.1373441170435,
+        "time_extraction": 30267.413685568958,
+        "time_start": 1783603874,
+        "time_end": 1783640311,
+        "commit_hash": "50d38a1b00c4ded08378832e625a7f73bde099de",
+        "branch": "exp/548_organism_trends_bestconfig_testset",
+        "is_dirty": false,
+        "slurm_job_id": "3157301"
+      },
+      "overrides": {
+        "name": "549_organism_trends_bestconfig_testset",
+        "experiment/predict": "organism_trends_with_chunking",
+        "pdf_directory": "/ds/text/kiba-d/test-set-AuO-WVC",
+        "extractor/llm": "qwen3_30b_in_process",
+        "seed": "42"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/549_organism_trends_bestconfig_testset/predict/multiruns/2026-07-09_15-31-13/0",
+      "name": "549_organism_trends_bestconfig_testset",
+      "experiment/evaluate": "organism_trends_f1_micro",
+      "prediction_logs": "logs/549_organism_trends_bestconfig_testset/predict",
+      "dataset.references.file": "../external/organism_trends/Weighted\\ Vote\\ Count\\ Agrar-\\ und\\ Offenland\\ Literatur\\ -\\ Sheet1.csv"
+    }
+  },
+  "dataset.predictions.log=logs/549_organism_trends_bestconfig_testset/predict/multiruns/2026-07-09_15-31-13/1": {
+    "version": 2,
+    "type": "F1MicroMultipleFieldsMetric",
+    "data": {
+      "organism_trends": {
+        "precision": 0.16449086161879894,
+        "recall": 0.22419928825622776,
+        "f1": 0.1897590361445783,
+        "support": 281
+      },
+      "AVG": {
+        "precision": 0.16449086161879894,
+        "recall": 0.22419928825622776,
+        "f1": 0.1897590361445783,
+        "support": 281.0
+      },
+      "ALL": {
+        "precision": 0.16449086161879894,
+        "recall": 0.22419928825622776,
+        "f1": 0.1897590361445783,
+        "support": 281
+      }
+    },
+    "prediction": {
+      "job_return_value": {
+        "version": 1,
+        "output_file": "predictions/549_organism_trends_bestconfig_testset/2026-07-09_15-31-13/2026-07-10_01-38-32_323771/predictions.jsonl",
+        "output_file_absolute": "/netscratch/hennig/code/kibad-llm/predictions/549_organism_trends_bestconfig_testset/2026-07-09_15-31-13/2026-07-10_01-38-32_323771/predictions.jsonl",
+        "time_pdf_conversion": 0.007076450041495264,
+        "time_extraction": 30096.358620203915,
+        "time_start": 1783640312,
+        "time_end": 1783670487,
+        "commit_hash": "50d38a1b00c4ded08378832e625a7f73bde099de",
+        "branch": "exp/548_organism_trends_bestconfig_testset",
+        "is_dirty": false,
+        "slurm_job_id": "3157301"
+      },
+      "overrides": {
+        "name": "549_organism_trends_bestconfig_testset",
+        "experiment/predict": "organism_trends_with_chunking",
+        "pdf_directory": "/ds/text/kiba-d/test-set-AuO-WVC",
+        "extractor/llm": "qwen3_30b_in_process",
+        "seed": "1337"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/549_organism_trends_bestconfig_testset/predict/multiruns/2026-07-09_15-31-13/1",
+      "name": "549_organism_trends_bestconfig_testset",
+      "experiment/evaluate": "organism_trends_f1_micro",
+      "prediction_logs": "logs/549_organism_trends_bestconfig_testset/predict",
+      "dataset.references.file": "../external/organism_trends/Weighted\\ Vote\\ Count\\ Agrar-\\ und\\ Offenland\\ Literatur\\ -\\ Sheet1.csv"
+    }
+  },
+  "dataset.predictions.log=logs/549_organism_trends_bestconfig_testset/predict/multiruns/2026-07-09_15-31-13/2": {
+    "version": 2,
+    "type": "F1MicroMultipleFieldsMetric",
+    "data": {
+      "organism_trends": {
+        "precision": 0.14532019704433496,
+        "recall": 0.2099644128113879,
+        "f1": 0.1717612809315866,
+        "support": 281
+      },
+      "AVG": {
+        "precision": 0.14532019704433496,
+        "recall": 0.2099644128113879,
+        "f1": 0.1717612809315866,
+        "support": 281.0
+      },
+      "ALL": {
+        "precision": 0.14532019704433496,
+        "recall": 0.2099644128113879,
+        "f1": 0.1717612809315866,
+        "support": 281
+      }
+    },
+    "prediction": {
+      "job_return_value": {
+        "version": 1,
+        "output_file": "predictions/549_organism_trends_bestconfig_testset/2026-07-09_15-31-13/2026-07-10_10-01-27_747483/predictions.jsonl",
+        "output_file_absolute": "/netscratch/hennig/code/kibad-llm/predictions/549_organism_trends_bestconfig_testset/2026-07-09_15-31-13/2026-07-10_10-01-27_747483/predictions.jsonl",
+        "time_pdf_conversion": 0.009354442008771002,
+        "time_extraction": 29962.764045457006,
+        "time_start": 1783670487,
+        "time_end": 1783700551,
+        "commit_hash": "50d38a1b00c4ded08378832e625a7f73bde099de",
+        "branch": "exp/548_organism_trends_bestconfig_testset",
+        "is_dirty": false,
+        "slurm_job_id": "3157301"
+      },
+      "overrides": {
+        "name": "549_organism_trends_bestconfig_testset",
+        "experiment/predict": "organism_trends_with_chunking",
+        "pdf_directory": "/ds/text/kiba-d/test-set-AuO-WVC",
+        "extractor/llm": "qwen3_30b_in_process",
+        "seed": "7331"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/549_organism_trends_bestconfig_testset/predict/multiruns/2026-07-09_15-31-13/2",
+      "name": "549_organism_trends_bestconfig_testset",
+      "experiment/evaluate": "organism_trends_f1_micro",
+      "prediction_logs": "logs/549_organism_trends_bestconfig_testset/predict",
+      "dataset.references.file": "../external/organism_trends/Weighted\\ Vote\\ Count\\ Agrar-\\ und\\ Offenland\\ Literatur\\ -\\ Sheet1.csv"
+    }
+  },
+  "dataset.predictions.log=logs/549_organism_trends_bestconfig_testset/predict/multiruns/2026-07-09_16-29-00/0": {
+    "version": 2,
+    "type": "F1MicroMultipleFieldsMetric",
+    "data": {
+      "organism_trends": {
+        "precision": 0.03889585947302384,
+        "recall": 0.2206405693950178,
+        "f1": 0.06613333333333334,
+        "support": 281
+      },
+      "AVG": {
+        "precision": 0.03889585947302384,
+        "recall": 0.2206405693950178,
+        "f1": 0.06613333333333334,
+        "support": 281.0
+      },
+      "ALL": {
+        "precision": 0.03889585947302384,
+        "recall": 0.2206405693950178,
+        "f1": 0.06613333333333334,
+        "support": 281
+      }
+    },
+    "prediction": {
+      "job_return_value": {
+        "version": 1,
+        "output_file": "predictions/549_organism_trends_bestconfig_testset/2026-07-09_16-29-00/2026-07-09_16-29-01_763902/predictions.jsonl",
+        "output_file_absolute": "/netscratch/hennig/code/kibad-llm/predictions/549_organism_trends_bestconfig_testset/2026-07-09_16-29-00/2026-07-09_16-29-01_763902/predictions.jsonl",
+        "time_pdf_conversion": 8393.91414984304,
+        "time_extraction": 64970.33416502096,
+        "time_start": 1783607341,
+        "time_end": 1783680982,
+        "commit_hash": "50d38a1b00c4ded08378832e625a7f73bde099de",
+        "branch": "exp/548_organism_trends_bestconfig_testset",
+        "is_dirty": false,
+        "slurm_job_id": "3157302"
+      },
+      "overrides": {
+        "name": "549_organism_trends_bestconfig_testset",
+        "experiment/predict": "organism_trends_with_chunking",
+        "pdf_directory": "/ds/text/kiba-d/test-set-AuO-WVC",
+        "extractor/llm": "mistral_small_3_24b_in_process",
+        "seed": "42"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/549_organism_trends_bestconfig_testset/predict/multiruns/2026-07-09_16-29-00/0",
+      "name": "549_organism_trends_bestconfig_testset",
+      "experiment/evaluate": "organism_trends_f1_micro",
+      "prediction_logs": "logs/549_organism_trends_bestconfig_testset/predict",
+      "dataset.references.file": "../external/organism_trends/Weighted\\ Vote\\ Count\\ Agrar-\\ und\\ Offenland\\ Literatur\\ -\\ Sheet1.csv"
+    }
+  },
+  "dataset.predictions.log=logs/549_organism_trends_bestconfig_testset/predict/multiruns/2026-07-09_16-29-00/1": {
+    "version": 2,
+    "type": "F1MicroMultipleFieldsMetric",
+    "data": {
+      "organism_trends": {
+        "precision": 0.032953105196451206,
+        "recall": 0.18505338078291814,
+        "f1": 0.05594405594405595,
+        "support": 281
+      },
+      "AVG": {
+        "precision": 0.032953105196451206,
+        "recall": 0.18505338078291814,
+        "f1": 0.05594405594405595,
+        "support": 281.0
+      },
+      "ALL": {
+        "precision": 0.032953105196451206,
+        "recall": 0.18505338078291814,
+        "f1": 0.05594405594405595,
+        "support": 281
+      }
+    },
+    "prediction": {
+      "job_return_value": {
+        "version": 1,
+        "output_file": "predictions/549_organism_trends_bestconfig_testset/2026-07-09_16-29-00/2026-07-10_12-56-22_951841/predictions.jsonl",
+        "output_file_absolute": "/netscratch/hennig/code/kibad-llm/predictions/549_organism_trends_bestconfig_testset/2026-07-09_16-29-00/2026-07-10_12-56-22_951841/predictions.jsonl",
+        "time_pdf_conversion": 0.006295165978372097,
+        "time_extraction": 63146.46440580103,
+        "time_start": 1783680982,
+        "time_end": 1783744241,
+        "commit_hash": "50d38a1b00c4ded08378832e625a7f73bde099de",
+        "branch": "exp/548_organism_trends_bestconfig_testset",
+        "is_dirty": false,
+        "slurm_job_id": "3157302"
+      },
+      "overrides": {
+        "name": "549_organism_trends_bestconfig_testset",
+        "experiment/predict": "organism_trends_with_chunking",
+        "pdf_directory": "/ds/text/kiba-d/test-set-AuO-WVC",
+        "extractor/llm": "mistral_small_3_24b_in_process",
+        "seed": "1337"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/549_organism_trends_bestconfig_testset/predict/multiruns/2026-07-09_16-29-00/1",
+      "name": "549_organism_trends_bestconfig_testset",
+      "experiment/evaluate": "organism_trends_f1_micro",
+      "prediction_logs": "logs/549_organism_trends_bestconfig_testset/predict",
+      "dataset.references.file": "../external/organism_trends/Weighted\\ Vote\\ Count\\ Agrar-\\ und\\ Offenland\\ Literatur\\ -\\ Sheet1.csv"
+    }
+  },
+  "dataset.predictions.log=logs/549_organism_trends_bestconfig_testset/predict/multiruns/2026-07-09_16-29-00/2": {
+    "version": 2,
+    "type": "F1MicroMultipleFieldsMetric",
+    "data": {
+      "organism_trends": {
+        "precision": 0.03799873337555415,
+        "recall": 0.21352313167259787,
+        "f1": 0.06451612903225808,
+        "support": 281
+      },
+      "AVG": {
+        "precision": 0.03799873337555415,
+        "recall": 0.21352313167259787,
+        "f1": 0.06451612903225808,
+        "support": 281.0
+      },
+      "ALL": {
+        "precision": 0.03799873337555415,
+        "recall": 0.21352313167259787,
+        "f1": 0.06451612903225808,
+        "support": 281
+      }
+    },
+    "prediction": {
+      "job_return_value": {
+        "version": 1,
+        "output_file": "predictions/549_organism_trends_bestconfig_testset/2026-07-09_16-29-00/2026-07-11_06-30-42_036967/predictions.jsonl",
+        "output_file_absolute": "/netscratch/hennig/code/kibad-llm/predictions/549_organism_trends_bestconfig_testset/2026-07-09_16-29-00/2026-07-11_06-30-42_036967/predictions.jsonl",
+        "time_pdf_conversion": 0.00853046402335167,
+        "time_extraction": 63358.52819295088,
+        "time_start": 1783744242,
+        "time_end": 1783807730,
+        "commit_hash": "50d38a1b00c4ded08378832e625a7f73bde099de",
+        "branch": "exp/548_organism_trends_bestconfig_testset",
+        "is_dirty": false,
+        "slurm_job_id": "3157302"
+      },
+      "overrides": {
+        "name": "549_organism_trends_bestconfig_testset",
+        "experiment/predict": "organism_trends_with_chunking",
+        "pdf_directory": "/ds/text/kiba-d/test-set-AuO-WVC",
+        "extractor/llm": "mistral_small_3_24b_in_process",
+        "seed": "7331"
+      }
+    },
+    "overrides": {
+      "dataset.predictions.log": "logs/549_organism_trends_bestconfig_testset/predict/multiruns/2026-07-09_16-29-00/2",
+      "name": "549_organism_trends_bestconfig_testset",
+      "experiment/evaluate": "organism_trends_f1_micro",
+      "prediction_logs": "logs/549_organism_trends_bestconfig_testset/predict",
+      "dataset.references.file": "../external/organism_trends/Weighted\\ Vote\\ Count\\ Agrar-\\ und\\ Offenland\\ Literatur\\ -\\ Sheet1.csv"
+    }
+  }
+}

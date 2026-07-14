@@ -36,13 +36,13 @@ test("bar plot helpers collect numeric metric paths and derive plot entries", ()
     {
       values: { model: "a", seed: "1" },
       evaluations: [
-        { runDir: "run-a1", data: { score: { mean: 0.5 } } },
-        { runDir: "run-a2", data: { score: { mean: 0.7 } } },
+        { runId: "run-a1-id", runDir: "run-a1", data: { score: { mean: 0.5 } } },
+        { runId: "run-a2-id", runDir: "run-a2", data: { score: { mean: 0.7 } } },
       ],
     },
     {
       values: { model: "b", seed: "1" },
-      evaluations: [{ runDir: "run-b1", data: { score: { mean: 0.9 } } }],
+      evaluations: [{ runId: "run-b1-id", runDir: "run-b1", data: { score: { mean: 0.9 } } }],
     },
   ];
 
@@ -111,7 +111,7 @@ test("bar plot helpers separate sample input from mean/std render entries", () =
     metricType: "F1MicroMultipleFieldsMetric",
     plotGroups: [{
       values: { model: "a" },
-      evaluations: [{ runDir: "run-a", data: { score: 0 } }, { runDir: "run-b", data: { score: 0.7 } }],
+      evaluations: [{ runId: "run-a-id", runDir: "run-a", data: { score: 0 } }, { runId: "run-b-id", runDir: "run-b", data: { score: 0.7 } }],
     }],
     groupBarFields: [],
     categoryFields: ["model"],
@@ -134,8 +134,8 @@ test("bar plot helpers default missing ErrorCollector counters to zero", () => {
     plotGroups: [{
       values: { model: "a" },
       evaluations: [
-        { runDir: "run-a", data: { no_error: 90, with_error: 10, MissingResponseContentError: 10 } },
-        { runDir: "run-b", data: { no_error: 100 } },
+        { runId: "run-a-id", runDir: "run-a", data: { no_error: 90, with_error: 10, MissingResponseContentError: 10 } },
+        { runId: "run-b-id", runDir: "run-b", data: { no_error: 100 } },
       ],
     }],
     groupBarFields: [],
@@ -160,8 +160,8 @@ test("bar plot helpers reject missing required numeric values", () => {
     plotGroups: [{
       values: {},
       evaluations: [
-        { runDir: "run-a", data: { score: { mean: 0.75 } } },
-        { runDir: "run-b", data: { score: {} } },
+        { runId: "run-a-id", runDir: "run-a", data: { score: { mean: 0.75 } } },
+        { runId: "run-b-id", runDir: "run-b", data: { score: {} } },
       ],
     }],
     groupBarFields: [],
@@ -169,8 +169,52 @@ test("bar plot helpers reject missing required numeric values", () => {
   });
 
   assert.throws(
-    () => buildInput("F1MicroMultipleFieldsMetric"),
-    /Numeric metric "score\.mean" is missing from evaluation "run-b".*"F1MicroMultipleFieldsMetric" has no missing-value default\./
+    () => buildInput("UnknownNumericMetric"),
+    /Numeric metric "score\.mean" is missing from evaluation "run-b".*"UnknownNumericMetric" has no missing-value default\./
+  );
+});
+
+/**
+ * Verify suffix tabs tolerate fields absent from one multi-field F1 evaluation.
+ */
+test("bar plot helpers default absent multi-field F1 values to zero", () => {
+  const plotGroups = [{
+    values: {},
+    evaluations: [
+      {
+        runId: "issue-548-old",
+        runDir: "issue_548/428_organism_trends_with_chunking/2026-05-04_13-00-12/0",
+        data: {
+          "organism_trends.Pilze_Flechten&Wald": { f1: 0.6666666666666666 },
+        },
+      },
+      {
+        runId: "issue-548-new",
+        runDir: "issue_548/544_organism_trends_wald_corrected/2026-07-08_17-15-07/0",
+        data: {
+          "organism_trends.Pflanzen&Wald": { f1: 0.8301886792452831 },
+        },
+      },
+    ],
+  }];
+
+  const definitions = buildNumericPlotDefinitions(plotGroups);
+  const suffixTabs = buildBarsTabMap(definitions, "suffix");
+  const f1Definitions = suffixTabs.get("f1").plots;
+  const f1Entries = buildNumericPlotEntriesInput({
+    metricType: "F1MicroMultipleFieldsMetric",
+    plotDefinitions: f1Definitions,
+    plotGroups,
+    groupBarFields: [],
+    categoryFields: [],
+  });
+
+  assert.deepEqual(
+    f1Entries.map((entry) => [entry.metricLabel, entry.points[0].samples]),
+    [
+      ["organism_trends.Pflanzen&Wald.f1", [0, 0.8301886792452831]],
+      ["organism_trends.Pilze_Flechten&Wald.f1", [0.6666666666666666, 0]],
+    ]
   );
 });
 
@@ -183,8 +227,8 @@ test("bar plot helpers discover metrics from selected plot groups", () => {
     plotGroups: [{
       values: {},
       evaluations: [
-        { runDir: "run-a", data: { no_error: 100 } },
-        { runDir: "run-b", data: { no_error: 90, ValueError: 10 } },
+        { runId: "run-a-id", runDir: "run-a", data: { no_error: 100 } },
+        { runId: "run-b-id", runDir: "run-b", data: { no_error: 90, ValueError: 10 } },
       ],
     }],
     groupBarFields: [],
@@ -207,6 +251,7 @@ test("bar plot helpers build compact JSON-safe numeric plotting data", () => {
         displaySeries: "Seed 1",
         label: "model=a",
         displayLabel: "Model A",
+        runIds: ["run-a-id", "run-b-id"],
         runDirs: ["run-a", "run-b"],
         samples: [0.75, 0.81],
       }],
@@ -225,7 +270,7 @@ test("bar plot helpers build compact JSON-safe numeric plotting data", () => {
 
   assert.throws(
     () => buildJsonSafeNumericPlottingData({
-      points: [{ runDirs: ["run-a"], samples: [0.75, 0.81] }],
+      points: [{ runIds: ["run-a-id", "run-b-id"], runDirs: ["run-a"], samples: [0.75, 0.81] }],
     }),
     /runDirs\.length \(1\) to equal samples\.length \(2\)/
   );
@@ -255,6 +300,7 @@ test("bar plot helpers build numeric download metadata", () => {
  */
 test("bar plot helpers lazily prepare numeric metric data for bars and errors", () => {
   const evaluation = {
+    runId: "run-a-id",
     runDir: "run-a",
     data: {
       score: { mean: 0.75 },
@@ -275,7 +321,7 @@ test("bar plot helpers lazily prepare numeric metric data for bars and errors", 
   );
   assert.equal(prepared.values.get("score|#|mean"), 0.75);
   assert.equal(prepareNumericMetricEvaluationData(evaluation), prepared);
-  assert.deepEqual(Object.keys(evaluation), ["runDir", "data"]);
+  assert.deepEqual(Object.keys(evaluation), ["runId", "runDir", "data"]);
   const entries = buildPlotEntries({
     metricType: "F1MicroMultipleFieldsMetric",
     plotGroups: [{ values: {}, evaluations: [evaluation] }],

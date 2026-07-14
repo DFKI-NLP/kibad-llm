@@ -12,6 +12,7 @@ import {
   isMissingValue,
   normalizeValue,
 } from "../utils/values.js";
+import { getEvaluationRunId } from "../utils/runs.js";
 import {
   SORTABLE_CONTROL_COLUMNS,
   ensureEvalTabState,
@@ -736,7 +737,7 @@ export function getEvaluationGroups(
     for (const field of groupByFields || []) {
       keyParts.push(`eval.${field}=${getEvaluationEffectiveValue(evaluation, field, resolvedEvalTabState)}`);
     }
-    const groupId = keyParts.length ? keyParts.join(" | ") : evaluation.runDir;
+    const groupId = keyParts.length ? keyParts.join(" | ") : getEvaluationRunId(evaluation);
     if (!map.has(groupId)) {
       map.set(groupId, {
         groupId,
@@ -935,7 +936,7 @@ export function getPlotGroups(state, activeExperiment, selectedEvalGroups, evalG
       }
       const groupId = allFields.length
         ? allFields.map((field) => `${field}=${normalizeValue(values[field])}`).join(" | ")
-        : evaluation.runDir;
+        : getEvaluationRunId(evaluation);
       if (!map.has(groupId)) {
         map.set(groupId, { groupId, values, evaluations: [] });
       }

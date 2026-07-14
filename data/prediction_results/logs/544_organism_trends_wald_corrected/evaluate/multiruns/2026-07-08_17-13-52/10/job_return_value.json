@@ -1,0 +1,63 @@
+{
+  "version": 2,
+  "type": "F1MicroMultipleFieldsMetric",
+  "data": {
+    "organism_trends.Antwortvariable": {
+      "precision": 0.12666666666666668,
+      "recall": 0.59375,
+      "f1": 0.2087912087912088,
+      "support": 128
+    },
+    "organism_trends.Hauptgruppe_RoteListen": {
+      "precision": 0.12790697674418605,
+      "recall": 0.822429906542056,
+      "f1": 0.22138364779874214,
+      "support": 107
+    },
+    "organism_trends.Lebensraum": {
+      "precision": 0.182,
+      "recall": 0.8921568627450981,
+      "f1": 0.3023255813953488,
+      "support": 102
+    },
+    "organism_trends.Trend": {
+      "precision": 0.10374331550802139,
+      "recall": 0.7348484848484849,
+      "f1": 0.18181818181818182,
+      "support": 132
+    },
+    "AVG": {
+      "precision": 0.13507923972971853,
+      "recall": 0.7607963135339098,
+      "f1": 0.2285796549508704,
+      "support": 117.25
+    },
+    "ALL": {
+      "precision": 0.12926918839515242,
+      "recall": 0.7505330490405118,
+      "f1": 0.2205513784461153,
+      "support": 469
+    }
+  },
+  "prediction": {
+    "job_return_value": {
+      "output_file": "predictions/428_organism_trends_with_chunking/2026-04-30_15-59-49/2026-05-01_08-26-53_886051/predictions.jsonl",
+      "output_file_absolute": "/netscratch/binder/projects/kibad-llm/predictions/428_organism_trends_with_chunking/2026-04-30_15-59-49/2026-05-01_08-26-53_886051/predictions.jsonl",
+      "time_pdf_conversion": 0.010931771015748382,
+      "time_extraction": 59304.155060219055,
+      "time_start": 1777616813,
+      "time_end": 1777676206,
+      "commit_hash": "096090bf929c361a9164f099a077d2621612fdca",
+      "branch": "prediction_results/add-organism_trends_with_chunking",
+      "is_dirty": false,
+      "slurm_job_id": "2869107"
+    },
+    "overrides": {
+      "name": "428_organism_trends_with_chunking",
+      "experiment/predict": "organism_trends_with_chunking",
+      "pdf_directory": "/ds/text/kiba-d/dev-set-Wald-WVC",
+      "extractor/llm": "mistral_small_3_24b_in_process",
+      "seed": "1337"
+    }
+  }
+}

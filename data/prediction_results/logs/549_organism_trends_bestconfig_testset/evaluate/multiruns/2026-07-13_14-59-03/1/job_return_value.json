@@ -1,0 +1,46 @@
+{
+  "version": 2,
+  "type": "F1MicroMultipleFieldsMetric",
+  "data": {
+    "organism_trends": {
+      "precision": 0.07970244420828905,
+      "recall": 0.2669039145907473,
+      "f1": 0.12274959083469722,
+      "support": 281
+    },
+    "AVG": {
+      "precision": 0.07970244420828905,
+      "recall": 0.2669039145907473,
+      "f1": 0.12274959083469722,
+      "support": 281.0
+    },
+    "ALL": {
+      "precision": 0.07970244420828905,
+      "recall": 0.2669039145907473,
+      "f1": 0.12274959083469722,
+      "support": 281
+    }
+  },
+  "prediction": {
+    "job_return_value": {
+      "version": 1,
+      "output_file": "predictions/549_organism_trends_bestconfig_testset/2026-07-09_15-18-29/2026-07-09_22-25-59_122523/predictions.jsonl",
+      "output_file_absolute": "/netscratch/hennig/code/kibad-llm/predictions/549_organism_trends_bestconfig_testset/2026-07-09_15-18-29/2026-07-09_22-25-59_122523/predictions.jsonl",
+      "time_pdf_conversion": 0.007113666040822864,
+      "time_extraction": 17537.290680331993,
+      "time_start": 1783628759,
+      "time_end": 1783646377,
+      "commit_hash": "50d38a1b00c4ded08378832e625a7f73bde099de",
+      "branch": "exp/548_organism_trends_bestconfig_testset",
+      "is_dirty": false,
+      "slurm_job_id": "3157298"
+    },
+    "overrides": {
+      "name": "549_organism_trends_bestconfig_testset",
+      "experiment/predict": "organism_trends_with_chunking",
+      "pdf_directory": "/ds/text/kiba-d/test-set-AuO-WVC",
+      "extractor/llm": "gpt_oss_20b_in_process",
+      "seed": "1337"
+    }
+  }
+}

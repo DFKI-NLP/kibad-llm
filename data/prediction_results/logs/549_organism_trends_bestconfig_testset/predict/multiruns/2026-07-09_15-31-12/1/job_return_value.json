@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "output_file": "predictions/549_organism_trends_bestconfig_testset/2026-07-09_15-31-12/2026-07-10_00-49-38_256165/predictions.jsonl",
+  "output_file_absolute": "/netscratch/hennig/code/kibad-llm/predictions/549_organism_trends_bestconfig_testset/2026-07-09_15-31-12/2026-07-10_00-49-38_256165/predictions.jsonl",
+  "time_pdf_conversion": 0.03432817698922008,
+  "time_extraction": 27926.33720973204,
+  "time_start": 1783637378,
+  "time_end": 1783665411,
+  "commit_hash": "50d38a1b00c4ded08378832e625a7f73bde099de",
+  "branch": "exp/548_organism_trends_bestconfig_testset",
+  "is_dirty": false,
+  "slurm_job_id": "3157300"
+}
