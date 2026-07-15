@@ -47,7 +47,7 @@ High-level overview of contributor-relevant paths (local caches and other genera
 ├── data/                       <- Local data area for source inputs and derived datasets.
 │   ├── external/               <- Third-party inputs such as exported Zotero data.
 │   ├── interim/                <- Intermediate converted data such as DB-to-JSON exports used for evaluation.
-│   ├── results/                <- Checked-in experiment artefacts and derived result bundles that are meant to live
+│   ├── results/                <- Git submodule of Checked-in experiment artefacts and derived result bundles that are meant to live
 │   │                              in Git.
 │   ├── processed/              <- Versioned processed datasets kept in Git when useful for reproducibility.
 │   └── raw/                    <- Immutable source data dumps (not yet used).
