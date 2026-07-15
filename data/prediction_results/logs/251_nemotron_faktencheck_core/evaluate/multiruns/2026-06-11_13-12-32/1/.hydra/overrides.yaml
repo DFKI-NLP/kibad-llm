@@ -1,6 +1,0 @@
-- dataset.predictions.log=logs/251_nemotron_faktencheck_core/predict/multiruns/2026-05-30_02-33-58/1
-- name=251_nemotron_faktencheck_core
-- experiment/evaluate=faktencheck_core_f1_micro_flat
-- dataset.references.file=../interim/faktencheck-db/faktenscheck_core_corrected.jsonl
-- metric.fields=[habitat,biodiversity_level,ecosystem_type.term,ecosystem_type.category,taxa.species_group]
-- prediction_logs=[logs/251_nemotron_faktencheck_core/predict/multiruns/2026-05-30_02-33-58/0,logs/251_nemotron_faktencheck_core/predict/multiruns/2026-05-30_02-33-58/1]
