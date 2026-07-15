@@ -43,7 +43,7 @@ Before starting a new experiment:
 ## Preparation
 
 Make sure that the `/data/results` submodule is cloned and checked out on a new branch for the experiment.
-Refer to the [Submodules](CONTRIBUTING.md#submodules) section for instructions.
+See [submodules](CONTRIBUTING.md#submodules) for general instructions and refer to this section for the [submodule data changing flow](CONTRIBUTING.md#submodule-data-changing-flow).
 
 ## Execution
 

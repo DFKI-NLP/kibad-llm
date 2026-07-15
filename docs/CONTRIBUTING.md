@@ -20,6 +20,7 @@ The following guidelines ensure consistency across the project, so please read t
     - [Building and hosting locally](#building-and-hosting-locally)
 - [Local checks and CI commands](#local-checks-and-ci-commands)
 - [Submodules](#submodules)
+    - [Submodule data changing flow](#submodule-data-changing-flow)
 - [Misc](#misc)
 
 ## Project Organization
@@ -350,11 +351,11 @@ git clone --depth 1 git@github.com:DFKI-NLP/kibad-llm.git
     - If you want to clone the `kibad-llm` repo with all submodule repos with the latest commit instead of the stored one, use `git clone -j8 --recurse-submodules --remote-submodules git@github.com:DFKI-NLP/kibad-llm.git`
     - If you want to update/ clone submodules with the latest commit instead of the stored one, use `git submodule update --init --recursive --remote`
 
-- The flow for changing data in a submodule
+### Submodule data changing flow
 
-    1. enter the submodule and check out a branch to work on: `cd data/results && git switch -c <branch>`. A fresh clone leaves the submodule in detached `HEAD` at the stored commit, so this step is required before you can commit.
-    1. change the files in the submodule, commit them there, and push the branch to `kibad-llm-results` (`git push -u origin <branch>`) so the commit is reachable for others and CI.
-    1. back in `kibad-llm`, stage and commit the updated submodule pointer and push, so the superproject records your new submodule commit.
+1. enter the submodule and check out a branch to work on: `cd data/results && git switch -c <branch>`. A fresh clone leaves the submodule in detached `HEAD` at the stored commit, so this step is required before you can commit.
+1. change the files in the submodule, commit them there, and push the branch to `kibad-llm-results` (`git push -u origin <branch>`) so the commit is reachable for others and CI.
+1. back in `kibad-llm`, stage and commit the updated submodule pointer and push, so the superproject records your new submodule commit.
 
 ## Misc
 
