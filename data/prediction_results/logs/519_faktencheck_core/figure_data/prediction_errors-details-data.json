@@ -1,0 +1,153 @@
+{
+  "metric_family": "numeric",
+  "plot_tab": "details",
+  "plot_tab_variant": "error_section",
+  "plots": [
+    {
+      "metadata": {
+        "metric_label": "JSONDecodeError"
+      },
+      "data": {
+        "points": [
+          {
+            "category": "prediction.extractor/llm=qwen3_30b_in_process",
+            "display_category": "extractor/llm=qwen3_30b_in_process",
+            "series": "__single__",
+            "display_series": "__single__",
+            "run_dirs": [
+              "519_faktencheck_core/evaluate/multiruns/2026-06-16_14-57-41/0",
+              "519_faktencheck_core/evaluate/multiruns/2026-06-16_14-57-41/1",
+              "519_faktencheck_core/evaluate/multiruns/2026-06-16_14-57-41/2"
+            ],
+            "samples": [
+              28,
+              22,
+              28
+            ]
+          },
+          {
+            "category": "prediction.extractor/llm=gpt_oss_20b_in_process",
+            "display_category": "extractor/llm=gpt_oss_20b_in_process",
+            "series": "__single__",
+            "display_series": "__single__",
+            "run_dirs": [
+              "519_faktencheck_core/evaluate/multiruns/2026-06-16_14-57-41/10",
+              "519_faktencheck_core/evaluate/multiruns/2026-06-16_14-57-41/8",
+              "519_faktencheck_core/evaluate/multiruns/2026-06-16_14-57-41/9"
+            ],
+            "samples": [
+              3,
+              0,
+              1
+            ]
+          },
+          {
+            "category": "prediction.extractor/llm=mistral_small_3_24b_in_process",
+            "display_category": "extractor/llm=mistral_small_3_24b_in_process",
+            "series": "__single__",
+            "display_series": "__single__",
+            "run_dirs": [
+              "519_faktencheck_core/evaluate/multiruns/2026-06-16_14-57-41/11",
+              "519_faktencheck_core/evaluate/multiruns/2026-06-16_14-57-41/12",
+              "519_faktencheck_core/evaluate/multiruns/2026-06-16_14-57-41/13"
+            ],
+            "samples": [
+              84,
+              78,
+              86
+            ]
+          },
+          {
+            "category": "prediction.extractor/llm=gemma3_27b_in_process",
+            "display_category": "extractor/llm=gemma3_27b_in_process",
+            "series": "__single__",
+            "display_series": "__single__",
+            "run_dirs": [
+              "519_faktencheck_core/evaluate/multiruns/2026-06-16_14-57-41/5",
+              "519_faktencheck_core/evaluate/multiruns/2026-06-16_14-57-41/6",
+              "519_faktencheck_core/evaluate/multiruns/2026-06-16_14-57-41/7"
+            ],
+            "samples": [
+              27,
+              29,
+              31
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "metadata": {
+        "metric_label": "MissingResponseContentError"
+      },
+      "data": {
+        "points": [
+          {
+            "category": "prediction.extractor/llm=qwen3_30b_in_process",
+            "display_category": "extractor/llm=qwen3_30b_in_process",
+            "series": "__single__",
+            "display_series": "__single__",
+            "run_dirs": [
+              "519_faktencheck_core/evaluate/multiruns/2026-06-16_14-57-41/0",
+              "519_faktencheck_core/evaluate/multiruns/2026-06-16_14-57-41/1",
+              "519_faktencheck_core/evaluate/multiruns/2026-06-16_14-57-41/2"
+            ],
+            "samples": [
+              6,
+              6,
+              2
+            ]
+          },
+          {
+            "category": "prediction.extractor/llm=gpt_oss_20b_in_process",
+            "display_category": "extractor/llm=gpt_oss_20b_in_process",
+            "series": "__single__",
+            "display_series": "__single__",
+            "run_dirs": [
+              "519_faktencheck_core/evaluate/multiruns/2026-06-16_14-57-41/10",
+              "519_faktencheck_core/evaluate/multiruns/2026-06-16_14-57-41/8",
+              "519_faktencheck_core/evaluate/multiruns/2026-06-16_14-57-41/9"
+            ],
+            "samples": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "category": "prediction.extractor/llm=mistral_small_3_24b_in_process",
+            "display_category": "extractor/llm=mistral_small_3_24b_in_process",
+            "series": "__single__",
+            "display_series": "__single__",
+            "run_dirs": [
+              "519_faktencheck_core/evaluate/multiruns/2026-06-16_14-57-41/11",
+              "519_faktencheck_core/evaluate/multiruns/2026-06-16_14-57-41/12",
+              "519_faktencheck_core/evaluate/multiruns/2026-06-16_14-57-41/13"
+            ],
+            "samples": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "category": "prediction.extractor/llm=gemma3_27b_in_process",
+            "display_category": "extractor/llm=gemma3_27b_in_process",
+            "series": "__single__",
+            "display_series": "__single__",
+            "run_dirs": [
+              "519_faktencheck_core/evaluate/multiruns/2026-06-16_14-57-41/5",
+              "519_faktencheck_core/evaluate/multiruns/2026-06-16_14-57-41/6",
+              "519_faktencheck_core/evaluate/multiruns/2026-06-16_14-57-41/7"
+            ],
+            "samples": [
+              0,
+              0,
+              0
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
