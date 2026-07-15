@@ -1,7 +1,0 @@
-- name=251_nemotron_faktencheck_core
-- experiment/predict=faktencheck_core_fields_schema_with_chunking
-- pdf_directory=/ds/text/kiba-d/dev-set-100
-- extractor/llm=nemotron_nano_3_30b_in_process
-- extractor.llm.vllm_kwargs.tensor_parallel_size=2
-- pdf_reader_num_proc=200
-- seed=1337
