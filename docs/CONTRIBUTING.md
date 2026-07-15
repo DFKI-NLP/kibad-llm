@@ -311,9 +311,33 @@ For test design, layout, and fixture regeneration guidance, see [CONTRIBUTING-CO
 
 ## Submodules
 
+> [!IMPORTANT]
+> This repo uses submodules to reduce its footprint. The history, however, still
+> carries a lot of removed files, so a plain `git clone` downloads all of them.
+> To avoid that, pick a lightweight clone strategy — see the two snippets below.
+
 This repo has a single submodule, `data/results`, which points at the [`kibad-llm-results`](https://github.com/DFKI-NLP/kibad-llm-results) repository. Its tracked branch is recorded as `branch = main` in the `.gitmodules` file, so the `--remote` commands below follow the `main` branch of `kibad-llm-results`.
 
-- Normal cloning ignores submodules: A normal `git clone git@github.com:DFKI-NLP/kibad-llm.git` does not clone any submodules and is hence much faster.
+**`--filter=blob:none` — recommended for development.** A blobless clone keeps the
+full commit history and directory tree, but fetches file contents lazily on
+demand instead of all at once. History tools (`git log`, `git blame`,
+`git bisect`) work normally, and you never download the removed result files
+unless you explicitly inspect their old contents.
+
+```bash
+git clone --filter=blob:none git@github.com:DFKI-NLP/kibad-llm.git
+```
+
+**`--depth 1` — lightest, for consuming only.** A shallow clone fetches just the
+latest commit, so it is the fastest and smallest option. It has no history
+(`git log`/`blame`/`bisect` cannot reach back) and only the default branch. Use
+it when you just want to build or run the latest state, not develop against it.
+
+```bash
+git clone --depth 1 git@github.com:DFKI-NLP/kibad-llm.git
+```
+
+- Normal cloning ignores submodules: A normal `git clone git@github.com:DFKI-NLP/kibad-llm.git` does not clone any submodules and is hence much faster. (Combine with `--filter=blob:none` or `--depth 1` from above as needed.)
 
 - To clone with submodules run: `git clone -j8 --recurse-submodules git@github.com:DFKI-NLP/kibad-llm.git` with `-j` specifying the number of submodules fetched simultaneously.
 
