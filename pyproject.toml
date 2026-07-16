@@ -184,7 +184,7 @@ validate = true
 
 [tool.nbqa.addopts]
 flake8 = [
-    "--extend-ignore=E501"
+    "--extend-ignore=E501,E203"
 ]
 
 [tool.mypy]
