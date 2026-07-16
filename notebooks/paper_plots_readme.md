@@ -5,7 +5,7 @@ SCHEMA = "Faktencheck Core"
 EXPERIMENT_FILENAME = "test"
 EXPERIMENTS = [
     {
-        "path": Path("../data/prediction_results/logs/525_faktencheck_core_bestconfig_testset/figure_data/faktencheck_core_f1_micro_flat-ALL-data.json"),
+        "path": Path("../../kibad-llm-results/logs/525_faktencheck_core_bestconfig_testset/figure_data/faktencheck_core_f1_micro_flat-ALL-data.json"),
     },
 ]
 SERIES_NAME_MAP = {
@@ -28,7 +28,7 @@ SCHEMA = "Faktencheck Core"
 EXPERIMENT_FILENAME = "test"
 EXPERIMENTS = [
     {
-        "path": Path("../data/prediction_results/logs/525_faktencheck_core_bestconfig_testset/figure_data/faktencheck_core_f1_micro_flat-biodiversity_level-data.json"),
+        "path": Path("../../kibad-llm-results/logs/525_faktencheck_core_bestconfig_testset/figure_data/faktencheck_core_f1_micro_flat-biodiversity_level-data.json"),
     },
 ]
 SERIES_NAME_MAP = {
@@ -48,7 +48,7 @@ SCHEMA = "Organism Trends"
 EXPERIMENT_FILENAME = "test"
 EXPERIMENTS = [
     {
-        "path": Path("../data/prediction_results/logs/549_organism_trends_bestconfig_testset/figure_data/organism_trends_f1_micro-ALL-data.json"),
+        "path": Path("../../kibad-llm-results/logs/549_organism_trends_bestconfig_testset/figure_data/organism_trends_f1_micro-ALL-data.json"),
     },
 ]
 SERIES_NAME_MAP = {
@@ -68,7 +68,7 @@ SCHEMA = "Organism Trends (habitat and species group)"
 EXPERIMENT_FILENAME = "test"
 EXPERIMENTS = [
     {
-        "path": Path("../data/prediction_results/logs/549_organism_trends_bestconfig_testset/figure_data/organism_trends_f1_micro_base_entries-ALL-data.json"),
+        "path": Path("../../kibad-llm-results/logs/549_organism_trends_bestconfig_testset/figure_data/organism_trends_f1_micro_base_entries-ALL-data.json"),
     },
 ]
 SERIES_NAME_MAP = {
@@ -88,7 +88,7 @@ SCHEMA = "Organism Trends (biodiversity variable given habitat and species group
 EXPERIMENT_FILENAME = "test"
 EXPERIMENTS = [
     {
-        "path": Path("../data/prediction_results/logs/549_organism_trends_bestconfig_testset/figure_data/organism_trends_f1_micro_conditional_variable_only-ALL-data.json"),
+        "path": Path("../../kibad-llm-results/logs/549_organism_trends_bestconfig_testset/figure_data/organism_trends_f1_micro_conditional_variable_only-ALL-data.json"),
     },
 ]
 SERIES_NAME_MAP = {
@@ -108,7 +108,7 @@ SCHEMA = "Organism Trends (biodiversity variable and trend given habitat and spe
 EXPERIMENT_FILENAME = "test"
 EXPERIMENTS = [
     {
-        "path": Path("../data/prediction_results/logs/549_organism_trends_bestconfig_testset/figure_data/organism_trends_f1_micro_conditional_variable_and_trend-ALL-data.json"),
+        "path": Path("../../kibad-llm-results/logs/549_organism_trends_bestconfig_testset/figure_data/organism_trends_f1_micro_conditional_variable_and_trend-ALL-data.json"),
     },
 ]
 SERIES_NAME_MAP = {
