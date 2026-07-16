@@ -215,7 +215,7 @@
     "481_faktencheck_core"
   ],
   "notes": [
-    "Prefer curated snapshots over direct runtime access to data/prediction_results/logs.",
+    "Prefer curated snapshots over direct runtime access to data/results/logs.",
     "Use older runs only when needed to preserve compatibility with an earlier input shape."
   ]
 }

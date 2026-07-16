@@ -19,6 +19,8 @@ The following guidelines ensure consistency across the project, so please read t
     - [Links and redirects](#links-and-redirects)
     - [Building and hosting locally](#building-and-hosting-locally)
 - [Local checks and CI commands](#local-checks-and-ci-commands)
+- [Submodules](#submodules)
+    - [Submodule data changing flow](#submodule-data-changing-flow)
 - [Misc](#misc)
 
 ## Project Organization
@@ -46,7 +48,7 @@ High-level overview of contributor-relevant paths (local caches and other genera
 ├── data/                       <- Local data area for source inputs and derived datasets.
 │   ├── external/               <- Third-party inputs such as exported Zotero data.
 │   ├── interim/                <- Intermediate converted data such as DB-to-JSON exports used for evaluation.
-│   ├── prediction_results/     <- Checked-in experiment artefacts and derived result bundles that are meant to live
+│   ├── results/                <- Git submodule of Checked-in experiment artefacts and derived result bundles that are meant to live
 │   │                              in Git.
 │   ├── processed/              <- Versioned processed datasets kept in Git when useful for reproducibility.
 │   └── raw/                    <- Immutable source data dumps (not yet used).
@@ -67,7 +69,7 @@ High-level overview of contributor-relevant paths (local caches and other genera
 ├── references/                 <- Data dictionaries, manuals, and all other explanatory materials (not yet used).
 ├── reports/
 │   └── figures/                <- Legacy/outdated location for generated figures; current checked-in result artefacts
-│                                  are kept under `data/prediction_results/` instead.
+│                                  are kept under `data/results/` instead.
 │
 ├── src/
 │   └── kibad_llm/              <- Main Python package.
@@ -97,7 +99,7 @@ High-level overview of contributor-relevant paths (local caches and other genera
 │                                  values to run locally.
 ├── .gitignore                  <- Git ignore rules for local/generated data, logs, virtual environments, caches,
 │                                  editor settings, and other machine-specific artefacts, while explicitly keeping
-│                                  versioned directories such as `data/prediction_results/` and `data/processed/`.
+│                                  versioned directories such as `data/results/` and `data/processed/`.
 ├── .pre-commit-config.yaml     <- `prek`/pre-commit hook configuration used locally and in CI.
 ├── LICENSE                     <- AGPL-v3 license text for the project.
 ├── lychee.toml                 <- Documentation link validation configuration.
@@ -307,6 +309,53 @@ node --test tests/unit/eval_dashboard/js/*.test.mjs
 ```
 
 For test design, layout, and fixture regeneration guidance, see [CONTRIBUTING-CODE.md](CONTRIBUTING-CODE.md).
+
+## Submodules
+
+> [!IMPORTANT]
+> This repo uses submodules to reduce its footprint. The history, however, still
+> carries a lot of removed files, so a plain `git clone` downloads all of them.
+> To avoid that, pick a lightweight clone strategy — see the two snippets below.
+
+This repo has a single submodule, `data/results`, which points at the [`kibad-llm-results`](https://github.com/DFKI-NLP/kibad-llm-results) repository. Its tracked branch is recorded as `branch = main` in the `.gitmodules` file, so the `--remote` commands below follow the `main` branch of `kibad-llm-results`.
+
+**`--filter=blob:none` — recommended for development.** A blobless clone keeps the
+full commit history and directory tree, but fetches file contents lazily on
+demand instead of all at once. History tools (`git log`, `git blame`,
+`git bisect`) work normally, and you never download the removed result files
+unless you explicitly inspect their old contents.
+
+```bash
+git clone --filter=blob:none git@github.com:DFKI-NLP/kibad-llm.git
+```
+
+**`--depth 1` — lightest, for consuming only.** A shallow clone fetches just the
+latest commit, so it is the fastest and smallest option. It has no history
+(`git log`/`blame`/`bisect` cannot reach back) and only the default branch. Use
+it when you just want to build or run the latest state, not develop against it.
+
+```bash
+git clone --depth 1 git@github.com:DFKI-NLP/kibad-llm.git
+```
+
+- Normal cloning ignores submodules: A normal `git clone git@github.com:DFKI-NLP/kibad-llm.git` does not clone any submodules and is hence much faster. (Combine with `--filter=blob:none` or `--depth 1` from above as needed.)
+
+- To clone with submodules run: `git clone -j8 --recurse-submodules git@github.com:DFKI-NLP/kibad-llm.git` with `-j` specifying the number of submodules fetched simultaneously.
+
+- To update submodules, or clone submodules in a repo that was cloned without the submodules `git submodule update --init --recursive`
+
+- You can also do this for one specific submodule by appending `-- <path to submodule>`
+
+- The `kibad-llm` repo stores the exact commit to check out for each submodule.
+
+    - If you want to clone the `kibad-llm` repo with all submodule repos with the latest commit instead of the stored one, use `git clone -j8 --recurse-submodules --remote-submodules git@github.com:DFKI-NLP/kibad-llm.git`
+    - If you want to update/ clone submodules with the latest commit instead of the stored one, use `git submodule update --init --recursive --remote`
+
+### Submodule data changing flow
+
+1. enter the submodule and check out a branch to work on: `cd data/results && git switch -c <branch>`. A fresh clone leaves the submodule in detached `HEAD` at the stored commit, so this step is required before you can commit.
+1. change the files in the submodule, commit them there, and push the branch to `kibad-llm-results` (`git push -u origin <branch>`) so the commit is reachable for others and CI.
+1. back in `kibad-llm`, stage and commit the updated submodule pointer and push, so the superproject records your new submodule commit.
 
 ## Misc
 

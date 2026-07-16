@@ -20,7 +20,7 @@ The dashboard is a static docs asset. It runs entirely in the browser and does n
 
 The dashboard can load evaluation outputs from:
 
-- **Repository data:** start with [`data/prediction_results`](https://github.com/DFKI-NLP/kibad-llm/tree/main/data/prediction_results). Its [`readme.md`](https://github.com/DFKI-NLP/kibad-llm/blob/main/data/prediction_results/readme.md) contains an overview table of available experiment log folders, and the `logs/` subfolders contain evaluation outputs that can be loaded with the dashboard.
+- **Repository data:** start with [`data/results`](https://github.com/DFKI-NLP/kibad-llm-results/tree/main/). Its [`readme.md`](https://github.com/DFKI-NLP/kibad-llm-results/blob/main/readme.md) contains an overview table of available experiment log folders, and the `logs/` subfolders contain evaluation outputs that can be loaded with the dashboard.
 - **Local folder:** select a logs directory with the browser directory picker.
 - **GitHub tree URL:** enter a GitHub `tree` URL that points at a folder containing run outputs. An optional token can be stored in the browser for private repositories.
 
@@ -143,8 +143,8 @@ npm run benchmark
 
 By default, the benchmark loads the complete local folders:
 
-- `data/prediction_results/logs/477_faktencheck_core`
-- `data/prediction_results/logs/481_faktencheck_core`
+- `data/results/logs/477_faktencheck_core`
+- `data/results/logs/481_faktencheck_core`
 
 Both folders contain evaluations over predictions from `397_faktencheck_core_v1_for_chunking` on flattened data. `477_faktencheck_core` uses `faktencheck_core_confusion_matrix_multiple_fields_flat` and produces `ConfusionMatrixCollection` data. It stresses confusion-matrix collection handling, label-union alignment, tab-map construction, aggregation, and matrix SVG rendering. `481_faktencheck_core` uses `faktencheck_core_tpfpfn_multiple_fields_flat` and produces `TpFpFnCollectorCollection` data. It stresses TP/FP/FN collection handling, per-document normalization, tab-map construction, aggregation, and matrix SVG rendering.
 
@@ -155,7 +155,7 @@ Useful options:
 ```bash
 npm run benchmark -- --headed
 npm run benchmark -- --output /tmp/dashboard-benchmark.json
-npm run benchmark -- ../../../data/prediction_results/logs/477_faktencheck_core
+npm run benchmark -- ../../../data/results/logs/477_faktencheck_core
 ```
 
 The benchmark currently measures:
@@ -197,7 +197,7 @@ Timing instrumentation is disabled in normal dashboard use. Add `debugTiming=1` 
 - Prefer DOM-free helpers and plain data models for code that needs tests.
 - Update curated fixtures and baseline contracts when the supported run payload shape changes.
 - Keep the dashboard runtime entrypoint `docs/eval-dashboard/index.html` covered by tests.
-- Do not make tests depend on mutable live experiment folders such as `data/prediction_results/logs/`; use curated snapshots under `tests/fixtures/eval_dashboard/`.
+- Do not make tests depend on mutable live experiment folders such as `data/results/logs/`; use curated snapshots under `tests/fixtures/eval_dashboard/`.
 
 ## Future Work
 
