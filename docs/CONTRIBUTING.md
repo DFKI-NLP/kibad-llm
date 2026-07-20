@@ -248,12 +248,7 @@ If a public documentation URL changes, add a redirect in `properdocs.yml` so exi
 
 All links in the docs end up being checked by [lychee](https://github.com/lycheeverse/lychee). If any link is broken, CI will fail and block the PR until you fix the link.
 
-You can run the lychee test locally by first installing lychee on the same version as the CI (currently 0.24.2), and then running from the repo root:
-
-```
-uv run --group cicd properdocs build
-lychee --config lychee.toml --root-dir ./site "site/**/*.html"
-```
+You can run the lychee test locally through the normal prek run `uv run --group cicd prek run -a`
 
 ### Building and hosting locally
 
@@ -285,6 +280,12 @@ To avoid the GitHub rate-limits:
 1. Go to the GitHub [settings](https://github.com/settings/personal-access-tokens) and click `Generate new token`
 1. Give it a name and add the permission `Interaction limits` (read-only is enough)
 1. Add the token as `GITHUB_TOKEN=...` to your .env
+
+If your c standard library (e.g. glibc) is too old, you can't run lychee locally. Therefore you need to tell prek to skip the lychee check:
+
+```
+SKIP=lychee uv run prek run -a
+```
 
 To run all Python tests with `pytest`:
 
