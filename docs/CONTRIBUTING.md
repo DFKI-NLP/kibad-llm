@@ -271,7 +271,7 @@ uv run --group cicd properdocs serve -w .
 
 ## Local checks and CI commands
 
-To run code quality checks and static type checking, call:
+To run code quality checks, static type checking and link validation of the docs, call:
 
 ```bash
 uv run prek run -a
@@ -279,7 +279,12 @@ uv run prek run -a
 uv run --group cicd prek run -a
 ```
 
-This runs all configured [prek](https://prek.j178.dev/) hooks (see [pre-commit-config.yaml](/.pre-commit-config.yaml)) on all files. Some hooks may fix issues automatically, others will report issues that need to be fixed manually.
+This runs all configured [prek](https://prek.j178.dev/) hooks (see [pre-commit-config.yaml](/.pre-commit-config.yaml)) on all files. Some hooks may fix issues automatically, others will report issues that need to be fixed manually. The link checking done by lychee may be erroring due to rate-limits put in place by GitHub.<br>
+To avoid the GitHub rate-limits:
+
+1. Go to the GitHub [settings](https://github.com/settings/personal-access-tokens) and click `Generate new token`
+1. Give it a name and add the permission `Interaction limits` (read-only is enough)
+1. Add the token as `GITHUB_TOKEN=...` to your .env
 
 To run all Python tests with `pytest`:
 
