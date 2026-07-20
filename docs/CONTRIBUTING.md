@@ -19,6 +19,7 @@ The following guidelines ensure consistency across the project, so please read t
     - [Links and redirects](#links-and-redirects)
     - [Building and hosting locally](#building-and-hosting-locally)
 - [Local checks and CI commands](#local-checks-and-ci-commands)
+    - [Troubleshooting](#troubleshooting)
 - [Submodules](#submodules)
     - [Submodule data changing flow](#submodule-data-changing-flow)
 - [Misc](#misc)
@@ -274,18 +275,7 @@ uv run prek run -a
 uv run --group cicd prek run -a
 ```
 
-This runs all configured [prek](https://prek.j178.dev/) hooks (see [pre-commit-config.yaml](/.pre-commit-config.yaml)) on all files. Some hooks may fix issues automatically, others will report issues that need to be fixed manually. The link checking done by lychee may be erroring due to rate-limits put in place by GitHub.<br>
-To avoid the GitHub rate-limits:
-
-1. Go to the GitHub [settings](https://github.com/settings/personal-access-tokens) and click `Generate new token`
-1. Give it a name and add the permission `Interaction limits` (read-only is enough)
-1. Add the token as `GITHUB_TOKEN=...` to your .env
-
-If your c standard library (e.g. glibc) is too old, you can't run lychee locally. Therefore you need to tell prek to skip the lychee check:
-
-```
-SKIP=lychee uv run prek run -a
-```
+This runs all configured [prek](https://prek.j178.dev/) hooks (see [pre-commit-config.yaml](/.pre-commit-config.yaml)) on all files. Some hooks may fix issues automatically, others will report issues that need to be fixed manually.
 
 To run all Python tests with `pytest`:
 
@@ -315,6 +305,25 @@ node --test tests/unit/eval_dashboard/js/*.test.mjs
 ```
 
 For test design, layout, and fixture regeneration guidance, see [CONTRIBUTING-CODE.md](CONTRIBUTING-CODE.md).
+
+### Troubleshooting
+
+**GitHub rate-limiting lychee:**<br>
+The link checking done by lychee may be erroring due to rate-limits put in place by GitHub.<br>
+Re-running the command a little later tends to work fine, but is a band-aid fix.<br>
+To avoid the GitHub rate-limits altogether:
+
+1. Go to the GitHub [settings](https://github.com/settings/personal-access-tokens) and click `Generate new token`
+1. Give it a name and add the permission `Interaction limits` (read-only is enough)
+1. Add the token as `GITHUB_TOKEN=...` to your .env
+
+**No lychee with old glibc:**<br>
+
+If your c standard library (e.g. glibc) is too old, you can't run lychee locally. Therefore you need to tell prek to skip the lychee check:
+
+```
+SKIP=lychee uv run prek run -a
+```
 
 ## Submodules
 
