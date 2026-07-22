@@ -9,13 +9,15 @@ import requests
 
 GBIF_SPECIES_MATCH_URL = "https://api.gbif.org/v1/species/match"
 GBIF_SPECIES_BATCH_MATCH_URL = "https://api.gbif.org/v2/species/match"
+DEFAULT_QUERY_PARAM = "scientificName"
+DEFAULT_RESPONSE_FIELD = "canonicalName"
 
 
 def normalize_spezies(
     name: str,
     min_confidence: float | None = None,
-    query_param: str = "scientificName",
-    response_field: str = "canonicalName",
+    query_param: str = DEFAULT_QUERY_PARAM,
+    response_field: str = DEFAULT_RESPONSE_FIELD,
 ) -> str | None:
     """Resolve a species name to GBIF's canonical name.
 
@@ -51,8 +53,8 @@ def normalize_spezies(
 def normalize_spezies_batch(
     names: list[str],
     min_confidence: float | None = None,
-    query_param: str = "scientificName",
-    response_field: str = "canonicalName",
+    query_param: str = DEFAULT_QUERY_PARAM,
+    response_field: str = DEFAULT_RESPONSE_FIELD,
 ) -> list[str | None]:
     """Resolve scientific names to GBIF's canonical names in one request.
 
