@@ -151,7 +151,7 @@ class MetricWithPrepareEntryAsSet(SingleFieldMetric):
             result = set(self.process_entry_batch_func(list(result)))
 
             # process_entry_batch_func may return None entries, so we remove them
-            result = {e for e in result if e is not None}
+            result.discard(None)
 
         return result
 
