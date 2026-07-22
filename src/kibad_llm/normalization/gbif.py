@@ -33,6 +33,7 @@ def normalize_spezies(
         ValueError: If `min_confidence` is not between 0 and 100, inclusive.
         ValueError: If GBIF returns an invalid match response.
         requests.RequestException: If the GBIF Species Match API request fails.
+        requests.HTTPError: If the GBIF Species Match API returns a non-200 status code.
     """
     _validate_min_confidence(min_confidence)
 
@@ -69,7 +70,13 @@ def normalize_spezies_batch(
         ValueError: If `min_confidence` is not between 0 and 100, inclusive.
         ValueError: If GBIF returns an invalid batch match response.
         requests.RequestException: If the GBIF Species Match API request fails.
+        requests.HTTPError: If the GBIF Species Match API returns a non-200 status code.
     """
+    if len(names) > 1000:
+        raise ValueError(
+            f"Too many Scientific names to resolve ({len(names)}). GBIF accepts up to 1,000 names per request."
+        )
+
     _validate_min_confidence(min_confidence)
 
     response = requests.post(
@@ -87,7 +94,15 @@ def normalize_spezies_batch(
 
 
 def _validate_min_confidence(min_confidence: float | None) -> None:
-    """Validate an optional GBIF confidence percentage."""
+    """Validate an optional GBIF confidence percentage.
+
+    Args:
+        min_confidence: Minimum acceptable GBIF match confidence percentage, or `None` to
+            disable confidence filtering.
+
+    Raises:
+        ValueError: If `min_confidence` is outside the inclusive range from 0 to 100.
+    """
     if min_confidence is not None and not 0 <= min_confidence <= 100:
         raise ValueError("min_confidence must be between 0 and 100")
 
@@ -97,7 +112,22 @@ def _normalize_match_result(
     min_confidence: float | None,
     response_field: str,
 ) -> str | None:
-    """Normalize one GBIF Species Match API result."""
+    """Extract a normalized name from one GBIF Species Match API result.
+
+    Args:
+        result: Response object returned for a single GBIF name-match request.
+        min_confidence: Minimum acceptable GBIF match confidence percentage, or `None` to
+            disable confidence filtering.
+        response_field: Name of the response field containing the normalized scientific name.
+
+    Returns:
+        The normalized scientific name, or `None` when GBIF reports no match or the result
+        does not meet `min_confidence`.
+
+    Raises:
+        ValueError: If `result` is not a valid GBIF match response, does not contain a string
+            in `response_field`, or lacks a numeric confidence required for filtering.
+    """
     if not isinstance(result, dict):
         raise ValueError("GBIF returned an invalid match response")
 
