@@ -31,6 +31,12 @@ def test_prepare_entry_as_set_multi_value():
     }
 
 
+def test_prepare_entry_as_set_processes_entries_with_configured_function():
+    m = MetricWithPrepareEntryAsSet(process_entry_func=str.lower)
+
+    assert m._prepare_entry_as_set(["Alpha", "BETA", "Alpha", None]) == {"alpha", "beta"}
+
+
 def test_prepare_entry_as_set_with_list_of_dicts():
     m = MetricWithPrepareEntryAsSet()
     input_data = [{"key1": "value1"}, {"key2": "value2"}, {"key1": "value1"}]
