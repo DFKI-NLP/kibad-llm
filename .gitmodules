@@ -1,0 +1,4 @@
+[submodule "data/results"]
+	path = data/results
+	url = git@github.com:DFKI-NLP/kibad-llm-results.git
+	branch = main

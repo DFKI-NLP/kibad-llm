@@ -33,7 +33,7 @@ The dashboard should continue to support these feature families during refactori
 
 ## Recommended source experiments for fixture curation
 
-Prefer curated snapshots derived from representative runs documented in `data/prediction_results/readme.md`, especially runs added later than `2026-01-16`.
+Prefer curated snapshots derived from representative runs documented in `data/results/readme.md`, especially runs added later than `2026-01-16`.
 
 Recommended candidates:
 

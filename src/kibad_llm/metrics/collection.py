@@ -164,6 +164,7 @@ class MetricCollectionWithFieldDiscoveryAndGrouping(MetricCollection[T2], Generi
         subfield_keys: dict[str, list[str]] | None = None,
         subfield_values: dict[str, list[str]] | None = None,
         sort_fields: bool = False,
+        field_overrides: dict[str, dict[str, Any]] | None = None,
         **kwargs,
     ) -> None:
         """Initialize the field-discovering metric collection.
@@ -177,18 +178,22 @@ class MetricCollectionWithFieldDiscoveryAndGrouping(MetricCollection[T2], Generi
             subfield_values: Optional mapping restricting which nested values are kept after field
                 expansion.
             sort_fields: Whether computed results should be emitted in sorted field order.
+            field_overrides: Optional mapping of field names to keyword arguments for each per-field metric.
             **kwargs: Additional keyword arguments forwarded to each created metric instance.
         """
         self.metric_class = metric_class
         self.fields = fields
         self.subfield_keys = subfield_keys
         self.subfield_values = subfield_values
+        self.field_overrides = field_overrides or {}
         self.metric_kwargs = kwargs
         super().__init__(sort_fields=sort_fields)
 
     def _make_metric(self, field: str) -> T2:
         """Create a new per-field metric instance for `field`."""
-        return self.metric_class(field=field, **self.metric_kwargs)
+        metric_kwargs = self.metric_kwargs.copy()
+        metric_kwargs.update(self.field_overrides.get(field, {}))
+        return self.metric_class(field=field, **metric_kwargs)
 
     def _update(self, prediction: Any, reference: Any, record_id: Hashable | None = None) -> None:
         """Normalize entries, discover or expand fields, and update all per-field metrics.

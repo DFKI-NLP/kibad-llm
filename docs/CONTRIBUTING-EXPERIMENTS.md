@@ -34,11 +34,16 @@ storage locations.
 
 Before starting a new experiment:
 
-- Check the existing overview table in [data/prediction_results/readme.md](https://github.com/DFKI-NLP/kibad-llm/tree/main/data/prediction_results/readme.md). Use the latest related experiments as references for naming, command structure, folder layout, and result documentation.
+- Check the existing overview table in [kibad-llm-results/readme.md](https://github.com/DFKI-NLP/kibad-llm-results/blob/main/readme.md). Use the latest related experiments as references for naming, command structure, folder layout, and result documentation.
 - Prefer a dedicated config under `configs/experiment/` when the setup is not trivial.
 - Decide which input datasets (pdf directory) and ground truth files you need
 - Keep predictions and evaluations scoped to the research question you want to answer.
 - Decide which prediction and evaluation commands are needed before creating result artefacts.
+
+## Preparation
+
+Make sure that the `/data/results` submodule is cloned and checked out on a new branch for the experiment.
+See [submodules](CONTRIBUTING.md#submodules) for general instructions and refer to this section for the [submodule data changing flow](CONTRIBUTING.md#submodule-data-changing-flow).
 
 ## Execution
 
@@ -60,17 +65,17 @@ The name determines the experiment subfolders under:
 
 - `logs/<name>` for run logs,
 - `predictions/<name>` for generated prediction outputs, and
-- `data/prediction_results/logs/<name>` and `data/prediction_results/predictions/<name>` for committed result artefacts.
+- `data/results/logs/<name>` and `data/results/predictions/<name>` for committed result artefacts.
 
 ### Prepare the experiment folder
 
 Create the committed result folder:
 
 ```bash
-mkdir -p data/prediction_results/logs/<name>
+mkdir -p data/results/logs/<name>
 ```
 
-Create the experiment readme `data/prediction_results/logs/<name>/readme.md` with:
+Create the experiment readme `data/results/logs/<name>/readme.md` with:
 
 - a first-level heading with the experiment name, for example `# 481_faktencheck_core`,
 - a short description of the goal, motivation, and hypothesis,
@@ -105,7 +110,7 @@ Always pass the shared experiment name:
 > [!NOTE]
 > We want relieble evaluation results, so always set a random seed for prediction runs. Use multiple seeds when possible to get a better estimate of the true performance.
 
-If the run used cluster-local `logs/` and `predictions/`, copy the relevant artefacts into `data/prediction_results` from within that directory:
+If the run used cluster-local `logs/` and `predictions/`, copy the relevant artefacts into `data/results` from within that directory:
 
 ```bash
 # copy predictions
@@ -119,10 +124,10 @@ scp -r <username>@<host>:path/to/kibad-llm/logs/<name> logs/
 
 ### Run evaluations
 
-Run evaluation commands locally from within `data/prediction_results` so they only use committed predictions:
+Run evaluation commands locally from within `data/results` so they only use committed predictions:
 
 ```bash
-cd data/prediction_results
+cd data/results
 uv run -m kibad_llm.evaluate \
 name=<name> \
 experiment/evaluate=<evaluate_experiment_config> \
@@ -136,7 +141,7 @@ To evaluate selected prediction runs instead of every run under `logs/<name>/pre
 prediction_logs=[logs/<name>/predict/multiruns/<timestamp-1>,logs/<name>/predict/multiruns/<timestamp-2>]
 ```
 
-Copy local evaluation outputs to the committed result folder (execute from `data/prediction_results`):
+Copy local evaluation outputs to the committed result folder (execute from `data/results`):
 
 ```text
 cp -r ../../logs/<name>/evaluate logs/<name>/evaluate
@@ -147,13 +152,13 @@ cp -r ../../logs/<name>/evaluate logs/<name>/evaluate
 Open the [eval dashboard](https://dfki-nlp.github.io/kibad-llm/eval-dashboard-docs/) and load the new evaluation data, usually:
 
 ```text
-data/prediction_results/logs/<name>/evaluate
+data/results/logs/<name>/evaluate
 ```
 
 Configure the dashboard so the experiment hypothesis is easy to verify or reject. Download selected figures into:
 
 ```text
-data/prediction_results/logs/<name>/figures/
+data/results/logs/<name>/figures/
 ```
 
 > [!TIP]
@@ -168,7 +173,7 @@ As mentioned [above](#prepare-the-experiment-folder), you should have already do
 
 ## Finalize the documentation
 
-Add a row to the overview table in [data/prediction_results/readme.md](https://github.com/DFKI-NLP/kibad-llm/tree/main/data/prediction_results/readme.md) with:
+Add a row to the overview table in [data/results/readme.md](https://github.com/DFKI-NLP/kibad-llm-results/blob/main/readme.md) with:
 
 - the log folder link,
 - the date,
@@ -181,5 +186,5 @@ Top-level `logs/` and `predictions/` are local or cluster run locations. They sh
 
 Committed experiment artefacts belong under:
 
-- `data/prediction_results/logs/<name>` for logs, evaluation outputs, experiment documentation, and figures,
-- `data/prediction_results/predictions/<name>` for copied prediction outputs, when prediction was part of the experiment.
+- `data/results/logs/<name>` for logs, evaluation outputs, experiment documentation, and figures,
+- `data/results/predictions/<name>` for copied prediction outputs, when prediction was part of the experiment.

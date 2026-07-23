@@ -1,6 +1,0 @@
-- dataset.predictions.log=logs/440_gpt_oss_120b_faktencheck_core/predict/multiruns/2026-06-23_16-45-33/0
-- name=440_gpt_oss_120b_faktencheck_core
-- experiment/evaluate=faktencheck_core_f1_micro_flat
-- prediction_logs=logs/440_gpt_oss_120b_faktencheck_core/predict/multiruns/2026-06-23_16-45-33
-- dataset.references.file=../interim/faktencheck-db/faktenscheck_core_corrected.jsonl
-- metric.fields=[habitat,biodiversity_level,ecosystem_type.term,ecosystem_type.category,taxa.species_group]
