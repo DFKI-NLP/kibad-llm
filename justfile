@@ -18,6 +18,10 @@ prop:
 prek:
     uv run --group cicd prek run -a
 
+# run the default prek suite with everything but lychee
+prekl:
+    PREK_SKIP=lychee uv run --group cicd prek run -a
+
 # TESTING
 
 # run python tests
@@ -28,15 +32,21 @@ pytest:
 node-test:
     node --test tests/unit/eval_dashboard/js/*.test.mjs
 
-# check links of the docs
+# Use if you know what you're doing. For most cases it is recommended to use `just prek` instead.
+# ###
+# check links of the docs. This needs lychee to be installed separately.
 lychee:
     uv run --group cicd properdocs build
     lychee --config lychee.toml --root-dir ./site "site/**/*.html"
 
 # run all testing suites
-test: pytest node-test lychee
+test: pytest node-test
     @echo "===All tests passed==="
 
 # run tests and formatters
 pr: prek test
+    @echo "===The PR is clean==="
+
+# run tests and formatters but not lychee
+prl: prek test
     @echo "===The PR is clean==="
