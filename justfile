@@ -18,10 +18,6 @@ prop:
 prek:
     uv run --group cicd prek run -a
 
-# run the default prek suite with everything but lychee
-prekl:
-    PREK_SKIP=lychee uv run --group cicd prek run -a
-
 # TESTING
 
 # run python tests
@@ -45,8 +41,4 @@ test: pytest node-test
 
 # run tests and formatters
 pr: prek test
-    @echo "===The PR is clean==="
-
-# run tests and formatters but not lychee
-prl: prek test
     @echo "===The PR is clean==="
