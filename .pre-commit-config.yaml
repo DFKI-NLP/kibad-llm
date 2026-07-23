@@ -129,3 +129,21 @@ repos:
         language: system
         pass_filenames: false
         priority: 90
+
+  # Build docs so lychee can check the generated site
+  - repo: local
+    hooks:
+      - id: properdocs-build
+        name: properdocs build (uv)
+        entry: uv run --group cicd properdocs build
+        language: system
+        pass_filenames: false
+        priority: 100  # run after check-mkdocs, before lychee
+
+  - repo: https://github.com/lycheeverse/lychee.git
+    rev: lychee-v0.24.2
+    hooks:
+      - id: lychee
+        args: ["--no-progress", "--config", "lychee.toml", "--root-dir", "./site", "site/**/*.html"]
+        pass_filenames: false
+        priority: 101

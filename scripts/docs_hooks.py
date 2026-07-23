@@ -12,6 +12,10 @@ import re
 import git
 
 
+def _is_file(path) -> bool:
+    return "." in path
+
+
 def _get_git_branch_name(repo: git.Repo) -> str:
     """Return the current branch name without crashing on detached HEAD checkouts.
 
@@ -66,7 +70,7 @@ def on_page_content(html, page, config, files):
                 pass
             elif location == "github":
                 # "github" paths go from the docs to the github repo and thus need the github link prepended
-                prefix = f"https://github.com/DFKI-NLP/kibad-llm/tree/{GIT_BRANCH_NAME}/"
+                prefix = f"https://github.com/DFKI-NLP/kibad-llm/{'blob' if _is_file(anchor) else 'tree'}/{GIT_BRANCH_NAME}/"
             else:
                 prefix = location
             return f'href="{prefix}{target}{anchor}'
