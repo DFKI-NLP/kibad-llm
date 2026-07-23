@@ -10,7 +10,7 @@ Classes:
     MetricWithTpFpFnEntries: Track tp/fp/fn entries per record for downstream metrics.
 """
 
-from collections.abc import Hashable
+from collections.abc import Callable, Hashable
 import logging
 from typing import Any, cast
 
@@ -67,6 +67,8 @@ class MetricWithPrepareEntryAsSet(SingleFieldMetric):
         self,
         flatten_dicts: bool = False,
         ignore_subfields: dict[str, list] | None = None,
+        process_entry_func: Callable[[Hashable], Hashable] | None = None,
+        process_entry_batch_func: Callable[[list[Hashable]], list[Hashable]] | None = None,
         **kwargs,
     ) -> None:
         """Initialize the shared entry-normalization settings.
@@ -75,11 +77,26 @@ class MetricWithPrepareEntryAsSet(SingleFieldMetric):
             flatten_dicts: Whether to flatten nested dictionaries before further processing.
             ignore_subfields: Optional mapping from field names to subfield names that should be
                 ignored when converting dictionaries into tuples.
+            process_entry_func: Optional method to process each entry before normalization (e.g., for
+                lowercasing or using an entity linking service). Has no effect if `process_entry_batch_func`
+                is provided.
+            process_entry_batch_func: Optional method to process a batch of entries before normalization. This
+                is only effective for list entries. Takes precedence over process_entry_func.
 
         Keyword Args:
             field: Optional field to extract from dictionary inputs.
         """
         super().__init__(**kwargs)
+        if process_entry_func is not None:
+            if process_entry_batch_func is not None:
+                logger.warning(
+                    "Both process_entry_func and process_entry_batch_func are provided. "
+                    "process_entry_batch_func will take precedence."
+                )
+            else:
+                process_entry_batch_func = lambda batch: [process_entry_func(e) for e in batch]
+
+        self.process_entry_batch_func = process_entry_batch_func
         self.ignore_subfields = []
         self.flatten_dicts = flatten_dicts
         if ignore_subfields is not None and self.field is not None:
@@ -129,6 +146,12 @@ class MetricWithPrepareEntryAsSet(SingleFieldMetric):
             result = {_convert_dict_to_tuple(entry, ignore_keys=self.ignore_subfields)}
         else:
             result = {cast(Hashable, entry)}
+
+        if self.process_entry_batch_func is not None:
+            result = set(self.process_entry_batch_func(list(result)))
+
+            # process_entry_batch_func may return None entries, so we remove them
+            result.discard(None)
 
         return result
 

@@ -1,6 +1,7 @@
 import pytest
 
 from kibad_llm.metrics.base import MetricWithPrepareEntryAsSet, MetricWithTpFpFnEntries
+from kibad_llm.metrics.collection import MetricCollectionWithFieldDiscoveryAndGrouping
 
 
 def test_prepare_entry_as_set_single_value():
@@ -28,6 +29,12 @@ def test_prepare_entry_as_set_multi_value():
         (("a", 1),),
         (("b", 2), ("c", 3)),
     }
+
+
+def test_prepare_entry_as_set_processes_entries_with_configured_function():
+    m = MetricWithPrepareEntryAsSet(process_entry_func=str.lower)
+
+    assert m._prepare_entry_as_set(["Alpha", "BETA", "Alpha", None]) == {"alpha", "beta"}
 
 
 def test_prepare_entry_as_set_with_list_of_dicts():
@@ -118,6 +125,23 @@ def test_metric_with_tpfpfn_entries_ignore_missing_entries_skips_one_sided_updat
 
     assert m.state == {"tp": {("record-3", "C")}, "fp": set(), "fn": set()}
     assert m.state_per_record == {"record-3": {"tp": {"C"}, "fp": set(), "fn": set()}}
+
+
+def test_metric_collection_field_overrides_replace_default_metric_kwargs_for_one_field():
+    """Field overrides should take precedence without affecting other created metrics."""
+    m = MetricCollectionWithFieldDiscoveryAndGrouping(
+        metric_class=MetricWithTpFpFnEntries,
+        fields=["overridden", "default"],
+        ignore_missing_entries=True,
+        field_overrides={"overridden": {"ignore_missing_entries": False}},
+    )
+
+    m.update({"overridden": "A", "default": "B"}, {}, record_id="record-1")
+
+    assert m.metrics["overridden"].ignore_missing_entries is False
+    assert m.metrics["overridden"].state_count == {"tp": 0, "fp": 1, "fn": 0}
+    assert m.metrics["default"].ignore_missing_entries is True
+    assert m.metrics["default"].state_count == {"tp": 0, "fp": 0, "fn": 0}
 
 
 def test_metric_with_tpfpfn_entries_generates_record_ids(caplog):
