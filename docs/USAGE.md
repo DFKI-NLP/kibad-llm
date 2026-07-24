@@ -110,7 +110,7 @@ Normalize the scientific names in the converted Faktencheck database with the GB
 API:
 
 ```bash
-uv run -m kibad_llm.normalization.cli \
+uv run -m kibad_llm.normalization.cli gbif \
   --input-path data/interim/faktencheck-db/faktencheck-db-converted_2025-11-05.jsonl \
   --read-key scientific_name \
   --parent-keys taxa
@@ -118,7 +118,8 @@ uv run -m kibad_llm.normalization.cli \
 
 The command writes `faktencheck-db-converted_2025-11-05_normalized_names.jsonl` beside the input
 file. By default, normalized values are written to `scientific_name_normalized`. Use
-`--output-path` and `--write-key` to override these paths and names.
+`--output-path` and `--write-key` to override these paths and names. The first positional argument
+selects the normalization service; currently, `gbif` is available.
 
 The value at `--read-key` must be a string or a list of strings. The command logs the number of
 records read and names successfully normalized. See `uv run -m kibad_llm.normalization.cli --help` for more options.

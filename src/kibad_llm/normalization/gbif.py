@@ -5,6 +5,10 @@ Functions:
     normalize_spezies_batch: Resolve multiple scientific names in one GBIF request.
 """
 
+import argparse
+from collections.abc import Callable
+from functools import partial
+
 import requests
 
 GBIF_SPECIES_MATCH_URL = "https://api.gbif.org/v1/species/match"
@@ -15,7 +19,7 @@ DEFAULT_RESPONSE_FIELD = "canonicalName"
 
 def normalize_spezies(
     name: str,
-    min_confidence: float | None = None,
+    min_confidence: int | None = None,
     query_param: str = DEFAULT_QUERY_PARAM,
     response_field: str = DEFAULT_RESPONSE_FIELD,
 ) -> str | None:
@@ -52,7 +56,7 @@ def normalize_spezies(
 
 def normalize_spezies_batch(
     names: list[str],
-    min_confidence: float | None = None,
+    min_confidence: int | None = None,
     query_param: str = DEFAULT_QUERY_PARAM,
     response_field: str = DEFAULT_RESPONSE_FIELD,
 ) -> list[str | None]:
@@ -95,7 +99,7 @@ def normalize_spezies_batch(
     return [_normalize_match_result(result, min_confidence, response_field) for result in results]
 
 
-def _validate_min_confidence(min_confidence: float | None) -> None:
+def _validate_min_confidence(min_confidence: int | None) -> None:
     """Validate an optional GBIF confidence percentage.
 
     Args:
@@ -148,3 +152,33 @@ def _normalize_match_result(
             return None
 
     return canonical_name
+
+
+def add_arguments(parser: argparse.ArgumentParser) -> None:
+    """Add GBIF Species Match API options to a command-line parser."""
+    parser.add_argument(
+        "--min-confidence",
+        type=int,
+        default=None,
+        help="Minimum GBIF match confidence percentage required to return a name.",
+    )
+    parser.add_argument(
+        "--query-param",
+        default=DEFAULT_QUERY_PARAM,
+        help="Query parameter name used to send the species name to GBIF.",
+    )
+    parser.add_argument(
+        "--response-field",
+        default=DEFAULT_RESPONSE_FIELD,
+        help="Response field containing the normalized species name.",
+    )
+
+
+def create_normalizer(arguments: argparse.Namespace) -> Callable[[str], str | None]:
+    """Create a GBIF normalizer from parsed command-line arguments."""
+    return partial(
+        normalize_spezies,
+        min_confidence=arguments.min_confidence,
+        query_param=arguments.query_param,
+        response_field=arguments.response_field,
+    )

@@ -1,22 +1,52 @@
+"""Command-line helpers for normalizing scientific names in JSON Lines files.
+
+Functions:
+    process_json_lines_file: Normalize names in a JSON Lines file with a normalizer.
+    main: Run the command-line interface.
+"""
+
 import argparse
 from collections.abc import Callable
+from dataclasses import dataclass
 import json
 import logging
 from pathlib import Path
 
-from kibad_llm.normalization import normalize_spezies
+from .gbif import add_arguments as add_gbif_arguments
+from .gbif import create_normalizer as create_gbif_normalizer
 
 logger = logging.getLogger(__name__)
 
+Normalizer = Callable[[str], str | None]
+
+
+@dataclass(frozen=True)
+class NormalizationMethod:
+    """Configure a normalization method for the command-line interface.
+
+    Args:
+        add_arguments: Function that adds method-specific command-line arguments.
+        create_normalizer: Function that creates a normalizer from parsed command-line arguments.
+    """
+
+    add_arguments: Callable[[argparse.ArgumentParser], None]
+    create_normalizer: Callable[[argparse.Namespace], Normalizer]
+
+
+NORMALIZATION_METHODS: dict[str, NormalizationMethod] = {
+    "gbif": NormalizationMethod(add_gbif_arguments, create_gbif_normalizer),
+}
+
 
 def _normalize_names(
-    name: str | list[str], func: Callable[..., str | None], **kwargs
+    name: str | list[str],
+    normalizer: Normalizer,
 ) -> tuple[str | None | list[str | None], int, int]:
     """Normalize a scientific name or a homogeneous list of scientific names.
 
     Args:
         name: A scientific name or a list of scientific names.
-        kwargs: Additional keyword arguments to pass to normalize_spezies function.
+        normalizer: Function used to normalize one scientific name.
 
     Returns:
         A tuple consisting of:
@@ -27,19 +57,23 @@ def _normalize_names(
     if isinstance(name, list):
         if not all(isinstance(item, str) for item in name):
             raise TypeError("Species name lists must contain only strings")
-        normalized_names = [func(item, **kwargs) for item in name]
+        normalized_names = [normalizer(item) for item in name]
         return (
             normalized_names,
             len(name),
             len([item for item in normalized_names if item is not None]),
         )
 
-    normalized_name = func(name, **kwargs)
+    normalized_name = normalizer(name)
     return normalized_name, 1, 1 if normalized_name is not None else 0
 
 
 def _process_json_object(
-    json_value: object, parent_keys: list[str], read_key: str, write_key: str, **kwargs
+    json_value: object,
+    parent_keys: list[str],
+    read_key: str,
+    write_key: str,
+    normalizer: Normalizer,
 ) -> tuple[int, int]:
     """Find JSON objects through nested dictionaries and lists, then write normalized names.
 
@@ -48,7 +82,7 @@ def _process_json_object(
         parent_keys: Remaining dictionary keys to navigate before reading a name.
         read_key: Key containing the name or list of names to normalize.
         write_key: Key receiving the normalized name or list of normalized names.
-        kwargs: Additional keyword arguments to pass to normalize_spezies function.
+        normalizer: Function used to normalize one scientific name.
 
     Returns:
         A tuple consisting of:
@@ -59,7 +93,11 @@ def _process_json_object(
     if isinstance(json_value, list):
         for item in json_value:
             new_processed, new_normalized = _process_json_object(
-                item, parent_keys, read_key, write_key, **kwargs
+                item,
+                parent_keys,
+                read_key,
+                write_key,
+                normalizer,
             )
             num_processed += new_processed
             num_normalized += new_normalized
@@ -72,7 +110,11 @@ def _process_json_object(
         child = json_value.get(parent_keys[0])
         if child is not None:
             new_processed, new_normalized = _process_json_object(
-                child, parent_keys[1:], read_key, write_key, **kwargs
+                child,
+                parent_keys[1:],
+                read_key,
+                write_key,
+                normalizer,
             )
             return new_processed, new_normalized
         return 0, 0
@@ -82,7 +124,10 @@ def _process_json_object(
         return num_processed, num_normalized
     if not isinstance(name, (str, list)):
         raise TypeError("Species names must be a string or a list of strings")
-    json_value[write_key], new_processed, new_normalized = _normalize_names(name, **kwargs)
+    json_value[write_key], new_processed, new_normalized = _normalize_names(
+        name,
+        normalizer,
+    )
 
     return new_processed, new_normalized
 
@@ -90,10 +135,10 @@ def _process_json_object(
 def process_json_lines_file(
     input_path: str,
     read_key: str,
+    normalizer: Normalizer,
     output_path: str | None = None,
     write_key: str | None = None,
     parent_keys: list[str] | None = None,
-    **kwargs,
 ) -> None:
     """Normalize names in a JSON Lines file.
 
@@ -101,15 +146,20 @@ def process_json_lines_file(
         input_path: Path to the input JSON Lines file.
         read_key: Key to extract the species name or list of names from each JSON object.
         output_path: Path to the normalized JSON Lines file. If not provided,
-            the output file will be named "{input_path.stem}_normalized_names.json".
+            the output file will be written beside the input as
+            "{input_path.stem}_normalized_names.jsonl".
         write_key: Key to write the normalized species name or list of normalized names to.
-            If not provided, the result will be written to "{read_key}_normalized.json".
+            If not provided, the result will be written to "{read_key}_normalized".
         parent_keys: Parent keys to navigate before reading a name. Each level may contain a
             nested dictionary or a list of nested dictionaries.
-        kwargs: Additional keyword arguments to pass to normalize_spezies function.
+        normalizer: Function used to normalize one scientific name.
+
     """
     logger.info(f"Normalizing species names in JSON Lines file: {input_path}")
-    _output_file = output_path or f"{Path(input_path).stem}_normalized_names.json"
+    input_file_path = Path(input_path)
+    _output_file = output_path or str(
+        input_file_path.with_name(f"{input_file_path.stem}_normalized_names.jsonl")
+    )
     write_key = write_key or f"{read_key}_normalized"
     num_processed, num_normalized, num_lines = 0, 0, 0
     with open(input_path) as input_file:
@@ -117,7 +167,11 @@ def process_json_lines_file(
             for line in input_file:
                 json_obj = json.loads(line)
                 new_processed, new_normalized = _process_json_object(
-                    json_obj, parent_keys or [], read_key, write_key, **kwargs
+                    json_obj,
+                    parent_keys or [],
+                    read_key,
+                    write_key,
+                    normalizer,
                 )
                 num_processed += new_processed
                 num_normalized += new_normalized
@@ -129,13 +183,8 @@ def process_json_lines_file(
     logger.info(f"Result was written to: {_output_file}")
 
 
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
-
-    parser = argparse.ArgumentParser(
-        description="Normalize species names in a JSON Lines file using GBIF's Species Match API.",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-    )
+def _add_common_arguments(parser: argparse.ArgumentParser) -> None:
+    """Add JSON Lines processing options to a command-line parser."""
     parser.add_argument("--input-path", required=True, help="Path to the input JSON Lines file.")
     parser.add_argument(
         "--read-key",
@@ -146,7 +195,8 @@ if __name__ == "__main__":
         "--output-path",
         default=None,
         help="Path to the output JSON Lines file. If not provided, the "
-        "output file will be named '{input_path.stem}_normalized_names.json'.",
+        "output file will be written beside the input as "
+        "'{input_path.stem}_normalized_names.jsonl'.",
     )
     parser.add_argument(
         "--write-key",
@@ -158,24 +208,38 @@ if __name__ == "__main__":
         "--parent-keys",
         nargs="*",
         default=[],
-        help="Parent keys to navigate before reading a name. Each level may contain a nested dictionary "
-        "or a list of nested dictionaries.",
+        help="Parent keys to navigate before reading a name. Each level may contain a nested "
+        "dictionary or a list of nested dictionaries.",
     )
-    parser.add_argument(
-        "--min-confidence",
-        type=float,
-        default=None,
-        help="Minimum GBIF match confidence percentage required to return a name.",
-    )
-    parser.add_argument(
-        "--query-param",
-        help="Query parameter name used to send the species name to GBIF.",
-    )
-    parser.add_argument(
-        "--response-field",
-        help="Response field containing the normalized species name.",
-    )
-    args = parser.parse_args()
 
-    kwargs = vars(args)
-    process_json_lines_file(func=normalize_spezies, **kwargs)
+
+def main() -> None:
+    """Parse command-line arguments and normalize names in a JSON Lines file."""
+    parser = argparse.ArgumentParser(
+        description="Normalize scientific names in a JSON Lines file.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    method_parsers = parser.add_subparsers(dest="method", required=True)
+    for method_name, method in NORMALIZATION_METHODS.items():
+        method_parser = method_parsers.add_parser(
+            method_name,
+            help=f"Normalize names with {method_name.upper()}.",
+        )
+        _add_common_arguments(method_parser)
+        method.add_arguments(method_parser)
+
+    args = parser.parse_args()
+    method = NORMALIZATION_METHODS[args.method]
+    process_json_lines_file(
+        input_path=args.input_path,
+        read_key=args.read_key,
+        output_path=args.output_path,
+        write_key=args.write_key,
+        parent_keys=args.parent_keys,
+        normalizer=method.create_normalizer(args),
+    )
+
+
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+    main()
