@@ -12,6 +12,8 @@ import json
 import logging
 from pathlib import Path
 
+from tqdm import tqdm
+
 from .gbif import add_arguments as add_gbif_arguments
 from .gbif import create_normalizer as create_gbif_normalizer
 
@@ -219,8 +221,8 @@ def process_json_lines_file(
         f"Unique values found for key={read_key} and parent_keys={parent_keys}: {len(all_unique_values)}"
     )
 
-    # then, normalize all unique values
-    value2normalized = {value: normalizer(value) for value in all_unique_values}
+    # then, normalize all unique values (show progress bar since this may take some time)
+    value2normalized = {value: normalizer(value) for value in tqdm(sorted(all_unique_values))}
     logger.info(
         f"Normalized values found: {len([v for v in value2normalized.values() if v is not None])}"
     )
