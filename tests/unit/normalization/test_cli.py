@@ -5,7 +5,7 @@ from unittest.mock import Mock, call
 import pytest
 
 from kibad_llm.normalization.cli import (
-    _normalize_names,
+    _normalize_values,
     _process_json_object,
     main,
     process_json_lines_file,
@@ -13,7 +13,7 @@ from kibad_llm.normalization.cli import (
 
 
 @pytest.mark.parametrize(
-    ("name", "expected"),
+    ("value", "expected"),
     [
         (
             "Fagus sylvatica L.",
@@ -25,26 +25,26 @@ from kibad_llm.normalization.cli import (
         ),
     ],
 )
-def test_normalize_names_returns_normalized_names_and_statistics(
-    name: str | list[str],
+def test_normalize_values_returns_normalized_values_and_statistics(
+    value: str | list[str],
     expected: tuple[str | list[str | None], int, int],
 ) -> None:
-    normalize = lambda name: (None if name == "Pinus sylvestris L." else f"normalized: {name}")
-    assert _normalize_names(name, normalizer=normalize) == expected
+    normalize = lambda value: (None if value == "Pinus sylvestris L." else f"normalized: {value}")
+    assert _normalize_values(value, normalizer=normalize) == expected
 
 
 def test_process_json_object_rejects_non_string_list_entries() -> None:
-    with pytest.raises(TypeError, match="Species name lists must contain only strings"):
+    with pytest.raises(TypeError, match="Values lists must contain only strings"):
         _process_json_object(
             {"species": ["Abies alba Mill.", {"species": "Pinus sylvestris L."}]},
             [],
             "species",
             "normalized_species",
-            normalizer=lambda name: name,
+            normalizer=lambda value: value,
         )
 
 
-def test_process_json_object_normalizes_names_in_nested_dicts_and_lists() -> None:
+def test_process_json_object_normalizes_values_in_nested_dicts_and_lists() -> None:
     json_object = {
         "groups": [
             {
@@ -58,8 +58,8 @@ def test_process_json_object_normalizes_names_in_nested_dicts_and_lists() -> Non
         ]
     }
     normalize = Mock(
-        side_effect=lambda name, **_: (
-            None if name == "Pinus sylvestris L." else f"normalized: {name}"
+        side_effect=lambda value, **_: (
+            None if value == "Pinus sylvestris L." else f"normalized: {value}"
         )
     )
 
@@ -112,14 +112,14 @@ def test_process_json_lines_file_writes_normalized_json_line_and_statistics(
         read_key="species",
         output_path=str(output_path),
         write_key="normalized_species",
-        normalizer=lambda name: "Abies alba",
+        normalizer=lambda value: "Abies alba",
     )
 
     assert (
         output_path.read_text()
         == '{"species": "Abies alba Mill.", "normalized_species": "Abies alba"}\n'
     )
-    assert "Processed 1 lines, normalized 1 names out of 1 processed." in caplog.messages
+    assert "Processed 1 lines, normalized 1 values out of 1 processed." in caplog.messages
 
 
 def test_process_json_lines_file_writes_default_jsonl_beside_input(tmp_path) -> None:
@@ -129,10 +129,10 @@ def test_process_json_lines_file_writes_default_jsonl_beside_input(tmp_path) -> 
     process_json_lines_file(
         input_path=str(input_path),
         read_key="species",
-        normalizer=lambda name: "Abies alba",
+        normalizer=lambda value: "Abies alba",
     )
 
-    assert (tmp_path / "input_normalized_names.jsonl").read_text() == (
+    assert (tmp_path / "input_normalized.jsonl").read_text() == (
         '{"species": "Abies alba Mill.", "species_normalized": "Abies alba"}\n'
     )
 
