@@ -3,18 +3,9 @@
 Functions:
     normalize_spezies: Resolve a scientific name to GBIF's canonical name.
     normalize_spezies_batch: Resolve multiple scientific names in one GBIF request.
-    process_json_lines_file: Normalize names in a JSON Lines file.
 """
 
-import argparse
-import json
-import logging
-from pathlib import Path
-
 import requests
-
-logger = logging.getLogger(__name__)
-
 
 GBIF_SPECIES_MATCH_URL = "https://api.gbif.org/v1/species/match"
 GBIF_SPECIES_BATCH_MATCH_URL = "https://api.gbif.org/v2/species/match"
