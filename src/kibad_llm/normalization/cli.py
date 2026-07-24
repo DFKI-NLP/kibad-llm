@@ -179,12 +179,14 @@ def process_json_lines_file(
     output_path: str | None = None,
     write_key: str | None = None,
     parent_keys: list[str] | None = None,
+    encoding: str = "utf-8",
 ) -> None:
     """Normalize values in a JSON Lines file.
 
     Args:
         input_path: Path to the input JSON Lines file.
         read_key: Key to extract the value or list of values from each JSON object.
+        normalizer: Function used to normalize one value.
         output_path: Path to the normalized JSON Lines file. If not provided,
             the output file will be written beside the input as
             "{input_path.stem}_normalized.jsonl".
@@ -192,19 +194,20 @@ def process_json_lines_file(
             If not provided, the result will be written to "{read_key}_normalized".
         parent_keys: Parent keys to navigate before reading a value. Each level may contain a
             nested dictionary or a list of nested dictionaries.
-        normalizer: Function used to normalize one value.
+        encoding: Encoding to use for reading and writing JSON Lines files.
 
     """
     logger.info(f"Normalizing values in JSON Lines file: {input_path}")
     input_file_path = Path(input_path)
+    write_key = write_key or f"{read_key}_normalized"
     _output_file = output_path or str(
-        input_file_path.with_name(f"{input_file_path.stem}_normalized.jsonl")
+        input_file_path.with_name(f"{input_file_path.stem}_{write_key}.jsonl")
     )
     if Path(_output_file).is_file():
         logger.warning(f"Output file {_output_file} already exists. It will be overwritten.")
 
     # first, collect all unique values
-    with open(input_file_path) as input_file:
+    with open(input_file_path, encoding=encoding) as input_file:
         all_values = []
         for line in input_file:
             json_obj = json.loads(line)
@@ -223,11 +226,9 @@ def process_json_lines_file(
     )
 
     # finally, process the file again and write normalized values
-
-    write_key = write_key or f"{read_key}_normalized"
     num_processed, num_normalized, num_lines = 0, 0, 0
-    with open(input_path) as input_file:
-        with open(_output_file, "w") as output_file:
+    with open(input_path, encoding=encoding) as input_file:
+        with open(_output_file, "w", encoding=encoding) as output_file:
             for line in input_file:
                 json_obj = json.loads(line)
                 new_processed, new_normalized = _process_json_object(
@@ -260,7 +261,7 @@ def _add_common_arguments(parser: argparse.ArgumentParser) -> None:
         default=None,
         help="Path to the output JSON Lines file. If not provided, the "
         "output file will be written beside the input as "
-        "'{input_path.stem}_normalized.jsonl'.",
+        "'{input_path.stem}_{write_key}.jsonl'.",
     )
     parser.add_argument(
         "--write-key",
@@ -274,6 +275,11 @@ def _add_common_arguments(parser: argparse.ArgumentParser) -> None:
         default=[],
         help="Parent keys to navigate before reading a value. Each level may contain a nested "
         "dictionary or a list of nested dictionaries.",
+    )
+    parser.add_argument(
+        "--encoding",
+        default="utf-8",
+        help="Encoding of the input and output JSON Lines files.",
     )
 
 
