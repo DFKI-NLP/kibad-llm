@@ -1,4 +1,4 @@
-"""Command-line helpers for normalizing scientific names in JSON Lines files.
+"""Command-line helpers for normalizing names in JSON Lines files.
 
 Functions:
     process_json_lines_file: Normalize names in a JSON Lines file with a normalizer.
@@ -42,11 +42,11 @@ def _normalize_names(
     name: str | list[str],
     normalizer: Normalizer,
 ) -> tuple[str | None | list[str | None], int, int]:
-    """Normalize a scientific name or a homogeneous list of scientific names.
+    """Normalize a name or a homogeneous list of names.
 
     Args:
-        name: A scientific name or a list of scientific names.
-        normalizer: Function used to normalize one scientific name.
+        name: A name or a list of names.
+        normalizer: Function used to normalize one name.
 
     Returns:
         A tuple consisting of:
@@ -82,7 +82,7 @@ def _process_json_object(
         parent_keys: Remaining dictionary keys to navigate before reading a name.
         read_key: Key containing the name or list of names to normalize.
         write_key: Key receiving the normalized name or list of normalized names.
-        normalizer: Function used to normalize one scientific name.
+        normalizer: Function used to normalize one name.
 
     Returns:
         A tuple consisting of:
@@ -132,6 +132,46 @@ def _process_json_object(
     return new_processed, new_normalized
 
 
+def _collect_names_json_object(
+    json_value: object,
+    parent_keys: list[str],
+    read_key: str,
+) -> list[str]:
+    """Collect names from a JSON object through nested dictionaries and lists.
+
+    Args:
+        json_value: Current JSON value to process.
+        parent_keys: Remaining dictionary keys to navigate before reading a name.
+        read_key: Key containing the name or list of names to collect.
+
+    Returns:
+        A list of names found in the JSON object.
+    """
+    names = []
+    if isinstance(json_value, list):
+        for item in json_value:
+            names.extend(_collect_names_json_object(item, parent_keys, read_key))
+        return names
+
+    if not isinstance(json_value, dict):
+        return []
+
+    if parent_keys:
+        child = json_value.get(parent_keys[0])
+        if child is not None:
+            names.extend(_collect_names_json_object(child, parent_keys[1:], read_key))
+        return names
+
+    name = json_value.get(read_key)
+    if name is None:
+        return []
+    if isinstance(name, str):
+        return [name]
+    if isinstance(name, list) and all(isinstance(item, str) for item in name):
+        return name
+    raise TypeError("Species names must be a string or a list of strings")
+
+
 def process_json_lines_file(
     input_path: str,
     read_key: str,
@@ -144,15 +184,15 @@ def process_json_lines_file(
 
     Args:
         input_path: Path to the input JSON Lines file.
-        read_key: Key to extract the species name or list of names from each JSON object.
+        read_key: Key to extract the name or list of names from each JSON object.
         output_path: Path to the normalized JSON Lines file. If not provided,
             the output file will be written beside the input as
             "{input_path.stem}_normalized_names.jsonl".
-        write_key: Key to write the normalized species name or list of normalized names to.
+        write_key: Key to write the normalized name or list of normalized names to.
             If not provided, the result will be written to "{read_key}_normalized".
         parent_keys: Parent keys to navigate before reading a name. Each level may contain a
             nested dictionary or a list of nested dictionaries.
-        normalizer: Function used to normalize one scientific name.
+        normalizer: Function used to normalize one name.
 
     """
     logger.info(f"Normalizing species names in JSON Lines file: {input_path}")
@@ -160,6 +200,30 @@ def process_json_lines_file(
     _output_file = output_path or str(
         input_file_path.with_name(f"{input_file_path.stem}_normalized_names.jsonl")
     )
+    if Path(_output_file).is_file():
+        logger.warning(f"Output file {_output_file} already exists. It will be overwritten.")
+
+    # first, collect all unique names
+    with open(input_file_path) as input_file:
+        all_names = []
+        for line in input_file:
+            json_obj = json.loads(line)
+            names = _collect_names_json_object(json_obj, parent_keys or [], read_key)
+            all_names.extend(names)
+
+    all_unique_names = set(all_names)
+    logger.info(
+        f"Unique names found for key={read_key} and parent_keys={parent_keys}: {len(all_unique_names)}"
+    )
+
+    # then, normalize all unique names
+    name2normalized = {name: normalizer(name) for name in all_unique_names}
+    logger.info(
+        f"Normalized names found: {len([n for n in name2normalized.values() if n is not None])}"
+    )
+
+    # finally, process the file again and write normalized names
+
     write_key = write_key or f"{read_key}_normalized"
     num_processed, num_normalized, num_lines = 0, 0, 0
     with open(input_path) as input_file:
@@ -171,7 +235,7 @@ def process_json_lines_file(
                     parent_keys or [],
                     read_key,
                     write_key,
-                    normalizer,
+                    lambda name: name2normalized.get(name),
                 )
                 num_processed += new_processed
                 num_normalized += new_normalized
@@ -216,7 +280,7 @@ def _add_common_arguments(parser: argparse.ArgumentParser) -> None:
 def main() -> None:
     """Parse command-line arguments and normalize names in a JSON Lines file."""
     parser = argparse.ArgumentParser(
-        description="Normalize scientific names in a JSON Lines file.",
+        description="Normalize names in a JSON Lines file.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     method_parsers = parser.add_subparsers(dest="method", required=True)

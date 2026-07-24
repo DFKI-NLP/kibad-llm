@@ -8,6 +8,7 @@ Functions:
 import argparse
 from collections.abc import Callable
 from functools import partial
+import logging
 
 import requests
 
@@ -15,6 +16,8 @@ GBIF_SPECIES_MATCH_URL = "https://api.gbif.org/v1/species/match"
 GBIF_SPECIES_BATCH_MATCH_URL = "https://api.gbif.org/v2/species/match"
 DEFAULT_QUERY_PARAM = "scientificName"
 DEFAULT_RESPONSE_FIELD = "canonicalName"
+
+logger = logging.getLogger(__name__)
 
 
 def normalize_spezies(
@@ -176,6 +179,10 @@ def add_arguments(parser: argparse.ArgumentParser) -> None:
 
 def create_normalizer(arguments: argparse.Namespace) -> Callable[[str], str | None]:
     """Create a GBIF normalizer from parsed command-line arguments."""
+    logger.info(
+        f"Creating GBIF normalizer with query_param={arguments.query_param}, "
+        f"response_field={arguments.response_field}, and min_confidence={arguments.min_confidence}"
+    )
     return partial(
         normalize_spezies,
         min_confidence=arguments.min_confidence,
