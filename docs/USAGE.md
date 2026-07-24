@@ -106,7 +106,7 @@ Call `uv run -m kibad_llm.data_integration.db_converter --help` for more options
 
 ### Scientific-name normalization
 
-Normalize the scientific names in the converted Faktencheck database with the GBIF Species Match
+Normalize the scientific species names in the converted Faktencheck database with the GBIF Species Match
 API:
 
 ```bash
@@ -116,13 +116,16 @@ uv run -m kibad_llm.normalization.cli gbif \
   --parent-keys taxa
 ```
 
-The command writes `faktencheck-db-converted_2025-11-05_normalized_names.jsonl` beside the input
-file. By default, normalized values are written to `scientific_name_normalized`. Use
-`--output-path` and `--write-key` to override these paths and names. The first positional argument
-selects the normalization service; currently, `gbif` is available.
+This will read the `scientific_name` values from the `taxa` field in the input file `data/interim/faktencheck-db/faktencheck-db-converted_2025-11-05.jsonl` and write the normalized values to
+a new file `faktencheck-db-converted_2025-11-05_scientific_name_normalized.jsonl`. By default, normalized values
+are written to `scientific_name_normalized`. The first positional argument
+selects the normalization service; currently, `gbif` is available. The command logs the number of records read
+and values successfully normalized.
 
-The value at `--read-key` must be a string or a list of strings. The command logs the number of
-records read and names successfully normalized. See `uv run -m kibad_llm.normalization.cli --help` for more options.
+See `uv run -m kibad_llm.normalization.cli gbif --help` for available options.
+
+> [TIP]
+> This works also on the inference results, e.g., to normalize scientific names extracted from PDFs.
 
 ### Syncing Nextcloud PDFs with the cluster storage
 
