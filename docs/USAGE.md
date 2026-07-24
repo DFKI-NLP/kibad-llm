@@ -10,6 +10,7 @@
 - [Faktencheck Postgres to Json Conversion](#faktencheck-postgres-to-json-conversion)
     - [Prerequisites](#prerequisites-json-conversion)
     - [DB conversion](#db-conversion)
+    - [Scientific-name normalization](#scientific-name-normalization)
     - [Syncing Nextcloud PDFs with the cluster storage](#syncing-nextcloud-pdfs-with-the-cluster-storage)
 - [Information Extraction from PDFs](#information-extraction-from-pdfs)
     - [Prerequisite: LLM Hosting](#prerequisite-llm-hosting)
@@ -102,6 +103,25 @@ uv run -m kibad_llm.data_integration.db_converter
 This will create a `data/interim/faktencheck-db` directory with json files.
 
 Call `uv run -m kibad_llm.data_integration.db_converter --help` for more options.
+
+### Scientific-name normalization
+
+Normalize the scientific names in the converted Faktencheck database with the GBIF Species Match
+API:
+
+```bash
+uv run -m kibad_llm.normalization.cli \
+  --input-path data/interim/faktencheck-db/faktencheck-db-converted_2025-11-05.jsonl \
+  --read-key scientific_name \
+  --parent-keys taxa
+```
+
+The command writes `faktencheck-db-converted_2025-11-05_normalized_names.jsonl` beside the input
+file. By default, normalized values are written to `scientific_name_normalized`. Use
+`--output-path` and `--write-key` to override these paths and names.
+
+The value at `--read-key` must be a string or a list of strings. The command logs the number of
+records read and names successfully normalized. See `uv run -m kibad_llm.normalization.cli --help` for more options.
 
 ### Syncing Nextcloud PDFs with the cluster storage
 
