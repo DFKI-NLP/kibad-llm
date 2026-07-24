@@ -141,13 +141,7 @@ def check_no_lone_surrogates(data: Any) -> None:
         LoneSurrogateError: If any string in `data` contains a lone surrogate.
     """
     if isinstance(data, str):
-        try:
-            data.encode("utf-8")
-        except UnicodeEncodeError as e:
-            raise LoneSurrogateError(
-                f"String contains a lone surrogate character that cannot be encoded to "
-                f"UTF-8: {e}. data={data[:1500]!r}"
-            ) from e
+        data.encode("utf-8")
     elif isinstance(data, Mapping):
         for value in data.values():
             check_no_lone_surrogates(value)
