@@ -105,19 +105,19 @@ def test_process_json_lines_file_writes_normalized_json_line_and_statistics(
 ) -> None:
     input_path = tmp_path / "input.jsonl"
     output_path = tmp_path / "output.jsonl"
-    input_path.write_text('{"species": "Abies alba Mill."}\n')
+    input_path.write_text('{"species": "Dörjes"}\n', encoding="utf-8")
     caplog.set_level(logging.INFO, logger="kibad_llm.normalization.cli")
     process_json_lines_file(
         input_path=str(input_path),
         read_key="species",
         output_path=str(output_path),
         write_key="normalized_species",
-        normalizer=lambda value: "Abies alba",
+        normalizer=lambda value: "Dörjes normalized",
     )
 
     assert (
-        output_path.read_text()
-        == '{"species": "Abies alba Mill.", "normalized_species": "Abies alba"}\n'
+        output_path.read_text(encoding="utf-8")
+        == '{"species": "Dörjes", "normalized_species": "Dörjes normalized"}\n'
     )
     assert "Processed 1 lines, normalized 1 values out of 1 processed." in caplog.messages
 
@@ -132,7 +132,7 @@ def test_process_json_lines_file_writes_default_jsonl_beside_input(tmp_path) -> 
         normalizer=lambda value: "Abies alba",
     )
 
-    assert (tmp_path / "input_normalized.jsonl").read_text() == (
+    assert (tmp_path / "input_species_normalized.jsonl").read_text() == (
         '{"species": "Abies alba Mill.", "species_normalized": "Abies alba"}\n'
     )
 

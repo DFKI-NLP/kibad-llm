@@ -240,7 +240,7 @@ def process_json_lines_file(
                 )
                 num_processed += new_processed
                 num_normalized += new_normalized
-                output_file.write(json.dumps(json_obj) + "\n")
+                output_file.write(json.dumps(json_obj, ensure_ascii=False) + "\n")
                 num_lines += 1
     logger.info(
         f"Processed {num_lines} lines, normalized {num_normalized} values out of {num_processed} processed."
