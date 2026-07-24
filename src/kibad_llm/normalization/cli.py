@@ -33,10 +33,15 @@ class NormalizationMethod:
 
     add_arguments: Callable[[argparse.ArgumentParser], None]
     create_normalizer: Callable[[argparse.Namespace], Normalizer]
+    description: str
 
 
 NORMALIZATION_METHODS: dict[str, NormalizationMethod] = {
-    "gbif": NormalizationMethod(add_gbif_arguments, create_gbif_normalizer),
+    "gbif": NormalizationMethod(
+        add_gbif_arguments,
+        create_gbif_normalizer,
+        "Normalize species names with the GBIF Species Match API.",
+    ),
 }
 
 
@@ -291,11 +296,14 @@ def main() -> None:
         description="Normalize values in a JSON Lines file.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    method_parsers = parser.add_subparsers(dest="method", required=True)
+    method_parsers = parser.add_subparsers(
+        dest="method", required=True, help="Normalization method to use."
+    )
     for method_name, method in NORMALIZATION_METHODS.items():
         method_parser = method_parsers.add_parser(
             method_name,
-            help=f"Normalize values with {method_name.upper()}.",
+            help=method.description,
+            formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
         _add_common_arguments(method_parser)
         method.add_arguments(method_parser)

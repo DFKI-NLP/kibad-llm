@@ -173,7 +173,7 @@ def add_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--response-field",
         default=DEFAULT_RESPONSE_FIELD,
-        help="Response field containing the normalized species name.",
+        help="GBIF response field used as the normalized species name.",
     )
 
 
