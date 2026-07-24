@@ -124,7 +124,7 @@ and values successfully normalized.
 
 See `uv run -m kibad_llm.normalization.cli gbif --help` for available options.
 
-> [TIP]
+> [!TIP]
 > This works also on the inference results, e.g., to normalize scientific names extracted from PDFs.
 
 ### Syncing Nextcloud PDFs with the cluster storage
