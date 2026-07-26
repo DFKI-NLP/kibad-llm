@@ -3,8 +3,7 @@ import copy
 import pytest
 
 from kibad_llm.extractors.base import (
-    LoneSurrogateError,
-    check_no_lone_surrogates,
+    check_utf8_encodable,
     strip_metadata,
 )
 
@@ -60,37 +59,27 @@ def test_strip_metadata_custom_content_key() -> None:
     assert out == {"name": "Alice"}
 
 
-def test_check_no_lone_surrogates_passes_for_well_formed_data() -> None:
+def test_check_utf8_encodable_passes_for_well_formed_data() -> None:
     data = {
         "response_content": "some ordinary text, including umlauts like ä ö ü",
         "structured": {"habitat": "Wald", "species": ["Rotfuchs", "Wildschwein"]},
         "errors": [],
     }
     # should not raise
-    check_no_lone_surrogates(data)
+    check_utf8_encodable(data)
 
 
-def test_check_no_lone_surrogates_raises_for_lone_surrogate_in_plain_string() -> None:
-    with pytest.raises(LoneSurrogateError):
-        check_no_lone_surrogates("some text with a lone surrogate \udd7a in it")
+def test_check_utf8_encodable_raises_for_lone_surrogate_in_plain_string() -> None:
+    with pytest.raises(UnicodeEncodeError):
+        check_utf8_encodable("some text with a lone surrogate \udd7a in it")
 
 
-def test_check_no_lone_surrogates_raises_for_lone_surrogate_nested_in_dict_and_list() -> None:
+def test_check_utf8_encodable_raises_for_lone_surrogate_nested_in_dict_and_list() -> None:
     data = {
         "structured": {
             "habitat": "Wald",
             "species": ["Rotfuchs", "Wild\udd7aschwein"],
         }
     }
-    with pytest.raises(LoneSurrogateError):
-        check_no_lone_surrogates(data)
-
-
-def test_check_no_lone_surrogates_error_message_contains_truncated_repr() -> None:
-    bad_string = "x" * 3000 + "\udd7a"
-    with pytest.raises(LoneSurrogateError) as excinfo:
-        check_no_lone_surrogates(bad_string)
-    message = str(excinfo.value)
-    assert "data=" in message
-    # the full 3000+ character string should not be dumped into the message
-    assert len(message) < 2000
+    with pytest.raises(UnicodeEncodeError):
+        check_utf8_encodable(data)
