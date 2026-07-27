@@ -70,8 +70,12 @@ def test_check_utf8_encodable_passes_for_well_formed_data() -> None:
 
 
 def test_check_utf8_encodable_raises_for_lone_surrogate_in_plain_string() -> None:
-    with pytest.raises(UnicodeEncodeError):
+    with pytest.raises(UnicodeEncodeError) as excinfo:
         check_utf8_encodable("some text with a lone surrogate \udd7a in it")
+    assert str(excinfo.value) == (
+        "'utf-8' codec can't encode character '\\udd7a' in position 32: surrogates "
+        "not allowed (string: 'some text with a lone surrogate \\udd7a in it')"
+    )
 
 
 def test_check_utf8_encodable_raises_for_lone_surrogate_nested_in_dict_and_list() -> None:
@@ -84,7 +88,7 @@ def test_check_utf8_encodable_raises_for_lone_surrogate_nested_in_dict_and_list(
     with pytest.raises(UnicodeEncodeError) as excinfo:
         check_utf8_encodable(data)
 
-    assert (
-        str(excinfo.value)
-        == "'utf-8' codec can't encode character '\\udd7a' in position 4: surrogates not allowed (string: 'Wild\\udd7aschwein')"
+    assert str(excinfo.value) == (
+        "'utf-8' codec can't encode character '\\udd7a' in position 4: surrogates "
+        "not allowed (string: 'Wild\\udd7aschwein')"
     )
