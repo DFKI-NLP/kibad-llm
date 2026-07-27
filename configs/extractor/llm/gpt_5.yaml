@@ -14,7 +14,9 @@ api_base: "https://api.openai.com/v1"
 # environment variable OPENAI_API_KEY. This will prevent the API key from being logged to console or files.
 # Uses the token provided in /.env
 
-model: "gpt-5"
+# Pinned to the dated snapshot for reproducibility (the `gpt-5` alias resolves to
+# this snapshot as of 2026-07, but can be repointed by OpenAI at any time). See #533.
+model: "gpt-5-2025-08-07"
 
 # try to be as deterministic as possible.
 # Note on temperature: As of 2026/01/05 has no effect since
@@ -22,7 +24,11 @@ model: "gpt-5"
 # See https://github.com/run-llama/llama_index/blob/220e3603dba28c4261f0d618f1672768018fb52e/llama-index-integrations/llms/llama-index-llms-openai/llama_index/llms/openai/responses.py#L318
 # temperature: 0.0
 # OpenAI recommends to use `max_completion_tokens`, however, `llama_index.llms.openai.OpenAIResponses` does only support `max_output_tokens` for now
-max_output_tokens: 8192
+# For reasoning models this budget is shared between reasoning tokens and the visible
+# answer. At 8192 a large share of failures were MissingResponseContent/JSONDecode
+# errors from truncation (~16-20% of chunks). Raised to 32768 (same 4x that fixed
+# Nemotron); a higher cap does not increase cost as long as responses are not truncated. See #533.
+max_output_tokens: 32768
 context_window: 131072
 
 reasoning_options:
