@@ -81,5 +81,10 @@ def test_check_utf8_encodable_raises_for_lone_surrogate_nested_in_dict_and_list(
             "species": ["Rotfuchs", "Wild\udd7aschwein"],
         }
     }
-    with pytest.raises(UnicodeEncodeError):
+    with pytest.raises(UnicodeEncodeError) as excinfo:
         check_utf8_encodable(data)
+
+    assert (
+        str(excinfo.value)
+        == "'utf-8' codec can't encode character '\\udd7a' in position 4: surrogates not allowed (string: 'Wild\\udd7aschwein')"
+    )

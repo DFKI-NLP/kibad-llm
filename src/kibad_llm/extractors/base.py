@@ -127,7 +127,16 @@ def check_utf8_encodable(data: Any) -> None:
         UnicodeEncodeError: If any string in `data` cannot be encoded to UTF-8.
     """
     if isinstance(data, str):
-        data.encode("utf-8")
+        try:
+            data.encode("utf-8")
+        except UnicodeEncodeError as e:
+            raise UnicodeEncodeError(
+                e.encoding,
+                e.object,
+                e.start,
+                e.end,
+                f"{e.reason} (string: {repr(data)})",
+            ) from e
     elif isinstance(data, Mapping):
         for value in data.values():
             check_utf8_encodable(value)
