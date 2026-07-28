@@ -56,7 +56,7 @@ def _normalize_values(
         normalizer: Function used to normalize one value.
 
     Returns:
-        A tuple consisting of:
+        A tuple consisting of:\n
             - The normalized value, or a list of normalized values in the original order.
             - The number of values processed.
             - The number of values successfully normalized.
