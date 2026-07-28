@@ -92,7 +92,7 @@ def _process_json_object(
         normalizer: Function used to normalize one value.
 
     Returns:
-        A tuple consisting of:
+        A tuple consisting of:\n
          - The number of values processed.
          - The number of values successfully normalized.
     """
