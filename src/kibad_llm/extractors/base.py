@@ -22,6 +22,7 @@ Functions:
     augment_and_strip_metadata_from_structured_callback: Postprocessing callback to augment
         metadata and strip it from structured output.
     exception2error_msg: Format an exception into short and long error message strings.
+    check_utf8_encodable: Recursively check that all nested strings can be encoded to UTF-8.
 """
 
 from __future__ import annotations
@@ -107,6 +108,41 @@ def exception2error_msg(e: BaseException) -> tuple[str, str]:
         f"{type(e).__name__}: {str(e)}",
         f"{type(e).__name__}: {e_with_traceback}",
     )
+
+
+def check_utf8_encodable(data: Any) -> None:
+    """Recursively check that every string in `data` can be encoded to UTF-8.
+
+    Walks nested dicts/lists/tuples and encodes every string leaf. A lone (unpaired)
+    surrogate is valid in a Python `str` but cannot be encoded to UTF-8, which is
+    the reason `datasets`/`pyarrow` crash with an unhandled `UnicodeEncodeError`
+    when writing out a batch that contains one. Encoding here, right when the
+    offending string is produced, lets us attribute the failure to a single
+    document instead of losing an entire batch's results.
+
+    Args:
+        data: Arbitrary nested data (e.g. a `SingleExtractionResult`) to check.
+
+    Raises:
+        UnicodeEncodeError: If any string in `data` cannot be encoded to UTF-8.
+    """
+    if isinstance(data, str):
+        try:
+            data.encode("utf-8")
+        except UnicodeEncodeError as e:
+            raise UnicodeEncodeError(
+                e.encoding,
+                e.object,
+                e.start,
+                e.end,
+                f"{e.reason} (string: {repr(data)})",
+            ) from e
+    elif isinstance(data, Mapping):
+        for value in data.values():
+            check_utf8_encodable(value)
+    elif isinstance(data, (list, tuple)):
+        for value in data:
+            check_utf8_encodable(value)
 
 
 def build_chat_message(
@@ -961,6 +997,8 @@ def extract_from_text(
 
     else:
         warn_once("No LLM provided for extraction, skipping LLM call.")
+
+    check_utf8_encodable(out)
 
     return out
 
