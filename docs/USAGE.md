@@ -10,6 +10,7 @@
 - [Faktencheck Postgres to Json Conversion](#faktencheck-postgres-to-json-conversion)
     - [Prerequisites](#prerequisites-json-conversion)
     - [DB conversion](#db-conversion)
+    - [Scientific-name normalization](#scientific-name-normalization)
     - [Syncing Nextcloud PDFs with the cluster storage](#syncing-nextcloud-pdfs-with-the-cluster-storage)
 - [Information Extraction from PDFs](#information-extraction-from-pdfs)
     - [Prerequisite: LLM Hosting](#prerequisite-llm-hosting)
@@ -102,6 +103,29 @@ uv run -m kibad_llm.data_integration.db_converter
 This will create a `data/interim/faktencheck-db` directory with json files.
 
 Call `uv run -m kibad_llm.data_integration.db_converter --help` for more options.
+
+### Scientific-name normalization
+
+Normalize the scientific species names in the converted Faktencheck database with the GBIF Species Match
+API:
+
+```bash
+uv run -m kibad_llm.normalization.cli gbif \
+  --input-path data/interim/faktencheck-db/faktencheck-db-converted_2025-11-05.jsonl \
+  --read-key scientific_name \
+  --parent-keys taxa
+```
+
+This will read the `scientific_name` values from the `taxa` field in the input file `data/interim/faktencheck-db/faktencheck-db-converted_2025-11-05.jsonl` and write the normalized values to
+a new file `faktencheck-db-converted_2025-11-05_scientific_name_normalized.jsonl`. By default, normalized values
+are written to `scientific_name_normalized`. The first positional argument
+selects the normalization service; currently, `gbif` is available. The command logs the number of records read
+and values successfully normalized.
+
+See `uv run -m kibad_llm.normalization.cli gbif --help` for available options.
+
+> [!TIP]
+> This works also on the inference results, e.g., to normalize scientific names extracted from PDFs.
 
 ### Syncing Nextcloud PDFs with the cluster storage
 

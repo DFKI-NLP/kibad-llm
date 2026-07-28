@@ -88,9 +88,9 @@ def test_normalize_spezies_batch_returns_normalized_names_in_input_order(monkeyp
     response.raise_for_status.assert_called_once_with()
 
 
-@pytest.mark.parametrize("min_confidence", [-0.1, 100.1])
+@pytest.mark.parametrize("min_confidence", [-1, 101])
 def test_normalize_spezies_rejects_out_of_range_minimum_confidence(
-    min_confidence: float,
+    min_confidence: int,
 ) -> None:
     with pytest.raises(ValueError, match="min_confidence must be between 0 and 100"):
         normalize_spezies("Abies alba Mill.", min_confidence=min_confidence)
