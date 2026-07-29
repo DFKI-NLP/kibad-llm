@@ -71,20 +71,21 @@ def list_of_dicts_to_dict_of_lists_recursive(
         An arbitrarily nested dict of lists.
 
     Examples:
-        # works with nested dicts
+        works with nested dicts
         >>> list_of_dicts_to_dict_of_lists_recursive([{"a": 1, "b": {"c": 2}}, {"a": 3, "b": {"c": 4}}])
         {'a': [1, 3], 'b': {'c': [2, 4]}}
         # works with incomplete dicts
         >>> list_of_dicts_to_dict_of_lists_recursive([{"a": 1, "b": 2}, {"a": 3}])
         {'a': [1, 3], 'b': [2, None]}
 
-        # works with nested incomplete dicts
+        works with nested incomplete dicts
         >>> list_of_dicts_to_dict_of_lists_recursive([{"a": 1, "b": {"c": 2}}, {"a": 3}])
         {'a': [1, 3], 'b': {'c': [2, None]}}
 
-        # works with nested incomplete dicts with None values
+        works with nested incomplete dicts with None values
         >>> list_of_dicts_to_dict_of_lists_recursive([{"a": 1, "b": {"c": 2}}, {"a": None}])
         {'a': [1, None], 'b': {'c': [2, None]}}
+
     """
     if not list_of_dicts:
         return {}
@@ -233,20 +234,13 @@ class SaveJobReturnValueCallback(Callback):
 
     This class exists to postprocess job and multirun outputs, by overwriting [hydras no-op callback hooks](https://hydra.cc/docs/experimental/callbacks/).
 
-    YYY: I worry that other pieces of code rely on the defaults of this class, because there are _so many decisions_ in here.
-
-    XXX: What are the assumptions of this class and its methods?
-            - integrate_multirun_result assumes there are dicts with numeric values as job_return_value
-            - multirun_aggregator_blacklist assumes there are these keys somewhere: ["min", "25%", "50%", "75%", "max"]
-            - sort_markdown_columns assumes there is a markdown table
-            - markdown_round_digits assumes there is a markdown file
+    Outputs can be saved as json and markdown. The markdown output is just a table with no text around it.
 
     Attributes:
         filenames (str | list[str]): The filename(s) of the file(s) to save the job return-value to. If it ends
             with ".json", the return-value is saved as a json file. If it ends with ".md", the return-value is
-            saved as a markdown file. Defaults to "job_return_value.json".
-            XXX: why multiple? in case i wanna have the same data in multiple places?
-            LLL: on_job_end, on_multirun_end
+            saved as a markdown file. Json files are more complete data wise, whilst markdown files have more settings
+            that can be applied for readability. Defaults to "job_return_value.json".
         ###############
         ### JOB_END ###
         ###############
@@ -256,19 +250,14 @@ class SaveJobReturnValueCallback(Callback):
             True) or simply converted to a dictionary and added back to the job return-value (if
             replace_existing_overrides is False). Furthermore, the field is removed from the job return-value before
             saving it as markdown to avoid destroying the table structure. Defaults to None.
-            XXX: complicated as heck...
-            LLL: on_job_end
         replace_existing_overrides (bool): If True, replace existing overrides in the job return-value with the
             overrides from the job return object if available. If False, the overrides are just converted to a
             dictionary, if available. Defaults to False.
-            LLL: on_job_end
         paths_file (str | None): The file to append the paths of the log directories to. If None, the paths are not
             saved. Defaults to None.
-            LLL: on_job_end
         markdown_data_key (str | None): If provided, use only the value at this key when saving single job results to
             markdown. This is useful to strip metadata from the job result and, thus, allow for correct table
             formatting of metric results, for instance. Defaults to None.
-            LLL: on_job_end
         ####################
         ### MULTIRUN_END ###
         ####################
@@ -277,64 +266,47 @@ class SaveJobReturnValueCallback(Callback):
             are lists of the corresponding values of all jobs. This is useful if you want to access specific values
             of all jobs in a multi-run all at once. Also, aggregated values (e.g. mean, min, max) are created for all
             numeric values and saved in another file. Defaults to False.
-            XXX: maybe nested? what does this depend on?
-            LLL: on_multirun_end
         multirun_aggregator_blacklist (list[str] | None): A list of keys to exclude from the aggregation (of multirun
             results), such as "count" or "25%". If None, all keys are included. See `pd.DataFrame.describe()` for
             possible aggregation keys. For numeric values, it is recommended to use `["min", "25%", "50%", "75%",
             "max"]` which will result in keeping only the count, mean and std values. Defaults to None.
-            XXX: This description depends on something unnamed.
-            LLL: on_multirun_end
         multirun_create_ids_from_overrides (bool): If True, create job identifiers from the overrides of the jobs in a
             multi-run. If False, the job index is used as identifier. Defaults to True.
-            LLL: on_multirun_end
         multirun_job_id_key (str): The key to use for the job identifiers in the integrated multi-run result.
             Defaults to "job_id".
-            LLL: on_multirun_end, _save
         multirun_convert_job_ids (bool): If True, convert job ids to dictionaries. Works only if
             integrate_multirun_result is True. Defaults to False.
-            LLL: on_multirun_end
         multirun_add_overrides_as_dict (bool): If True, add the overrides as a dictionary to each job return-value
             under the key "overrides". Defaults to False.
-            LLL: on_multirun_end
         multirun_show_file_contents (list[str] | None): A list of filenames (from the filenames attribute or
             aggregated files) whose contents are logged to the console after saving the multi-run results.
             Defaults to None.
-            LLL: on_multirun_end
         multirun_overrides_separator (str): The separator to use when creating job identifiers from overrides.
             Defaults to "-".
-            LLL: on_multirun_end
         multirun_markdown_group_by (list[str] | None): The column(s) to group by when saving the multi-run result as
             a markdown file. For numeric columns, the mean and std are calculated. For non-numeric columns, a list of
             values is created. If None, no grouping is applied. A single string is wrapped into a list.
             Defaults to None.
-            LLL: on_multirun_end
         multirun_paths_file (str | None): The file to save the paths of the multi-run log directories to. If None,
             the paths are not saved. Defaults to None.
-            LLL: on_multirun_end
         multirun_path_id (str | None): A prefix to add to each line in the multirun_paths_file, separated by a colon.
             If None, no prefix is added. Defaults to None.
-            LLL: on_multirun_end
         #############
         ### _SAVE ###
         #############
         sort_markdown_columns (bool): If True, the columns of the markdown table are sorted alphabetically.
             Defaults to True.
-            TODO: which table? specify somehow somewhere
-            LLL: _save
         markdown_round_digits (int | None): The number of digits to round the values in the markdown file to. If None,
             no rounding is applied. Defaults to 3.
-            LLL: _save
         multirun_markdown_transpose (bool): If True, transpose the markdown table for multi-run results.
             Defaults to False.
-            LLL: _save
 
         ################
         ### NOT USED ###
         ################
         path_id (str | None): A prefix to add to each line in the paths_file, separated by a colon. If None, no prefix
             is added. Defaults to None.
-            LLL: This is dead actually?
+            XXX: This is dead actually?
 
     Methods:
         on_job_end: Save a single job's return-value once the job finishes.
@@ -394,7 +366,7 @@ class SaveJobReturnValueCallback(Callback):
 
         Args:
             config: Hydra config of the given job.
-            job_return: The Hydra job's output logs, e.g. the output of [`predict()`][kibad_llm.predict.predict].
+            job_return: The Hydra job's output object, e.g. the output of [`predict()`][kibad_llm.predict.predict].
 
         Keyword Args:
             **kwargs: Ignored; accepted for Hydra callback interface compatibility.
@@ -465,6 +437,9 @@ class SaveJobReturnValueCallback(Callback):
                 )
 
         if self.integrate_multirun_result:
+            # WARN: list_of_dicts may return lists. There is a safety backup (the {"value": obj} wrapper),
+            #   but this is very sketchy.
+            #
             # rearrange the job return-values of all jobs from a multi-run into a dict of lists (maybe nested),
             obj = list_of_dicts_to_dict_of_lists_recursive(
                 [jr.return_value for jr in self.job_returns]
