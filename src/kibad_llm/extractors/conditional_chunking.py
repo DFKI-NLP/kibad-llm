@@ -14,41 +14,20 @@ from kibad_llm.llms.base import SimpleChatMessage
 
 from .aggregation_utils import Aggregator
 from .base import extract_from_text_lenient
-from .chunking_utils import core
+from .chunking import _document_chunk_iterator
 from .chunking_utils import tokenizers as tokenizer_lib
-from .conditional import ConditionalUnionExtractor
 
 
-def _document_chunk_iterator(
-    document: str,
-    max_char_buffer: int,
-    tokenizer: tokenizer_lib.Tokenizer | None = None,
-) -> tuple[core.TextChunk, ...]:
-    """Iterates over a document to return it in text chunks
-
-    Args:
-        document: An input text as str.
-        max_char_buffer: The maximum character buffer size for the ChunkIterator.
-        tokenizer: Optional tokenizer instance.
-
-    Returns:
-        Tuple of TextChunks.
-    """
-    return tuple(
-        core.ChunkIterator(
-            document,
-            max_char_buffer=max_char_buffer,
-            tokenizer_impl=tokenizer or tokenizer_lib.RegexTokenizer(),
-        )
-    )
-
-
-class ConditionalUnionChunkingExtractor(ConditionalUnionExtractor):
+class ConditionalUnionChunkingExtractor:
     """Extractor that repeats extraction multiple times on text chunks, with history and aggregates results per key.
     This extractor calls the base extraction function multiple times (for each entry in overrides)
     on the same input chunk, for each chunk in the input text, passing the history of previous messages (of a given chunk)
     to each subsequent call.
 
+    TODO:
+    Attributes:
+
+    TODO:
     See ConditionalUnionExtractor as well as ChunkingExtractor for accepted parameters and details about the aggregation logic.
     """
 
@@ -62,6 +41,7 @@ class ConditionalUnionChunkingExtractor(ConditionalUnionExtractor):
         max_char_buffer: int = 20000,
         **kwargs,
     ):
+        # TODO: add verbose tqdm?
         if len(overrides) < 1:
             raise ValueError("overrides must contain at least one set of parameters")
         if isinstance(overrides, list):
@@ -77,6 +57,7 @@ class ConditionalUnionChunkingExtractor(ConditionalUnionExtractor):
     def __call__(self, *args, **kwargs) -> dict[str, Any]:
         """Process singular text in multiple passes with chat history.
 
+        TODO: wrong
         Args:
             *args (Any): Are forwarded unchanged:
                 [`extract_from_text_lenient`][kibad_llm.extractors.base.extract_from_text_lenient]
@@ -84,6 +65,7 @@ class ConditionalUnionChunkingExtractor(ConditionalUnionExtractor):
         Keyword Args:
             * (Any): Refer to [`extract_from_text_lenient`][kibad_llm.extractors.base.extract_from_text_lenient]
 
+        TODO: {field}_list is per chunk not per override
         Returns:
             Dict with the key `structured` that holds the aggregated structured outputs.
             Additionally there can be lists for fields at the keys `"{field}_list"`.
@@ -106,7 +88,6 @@ class ConditionalUnionChunkingExtractor(ConditionalUnionExtractor):
         )
         results = []
         for i, chunk in enumerate(chunks):
-            combined_kwargs = {**self.default_kwargs, **kwargs}
             chunk_results = []
             history: list[SimpleChatMessage] = []
             for override_name, override_params in self.overrides.items():
@@ -133,6 +114,7 @@ class ConditionalUnionChunkingExtractor(ConditionalUnionExtractor):
                     character_end=chunk.char_interval.end_pos,
                 )
 
+                # TODO: this .items() call is potentially crashing
                 # collect messages for history
                 for role_str, content in current_result["messages_formatted"].items():
                     role = MessageRole(role_str)
@@ -158,7 +140,7 @@ class ConditionalUnionChunkingExtractor(ConditionalUnionExtractor):
             results.append(chunk_result)
 
         structured_outputs = [v.get("structured", None) for v in results]
-        aggregated_structured = self.aggregator(structured_outputs)
+        aggregated_structured = self.chunking_aggregator(structured_outputs)
 
         result: dict[str, Any] = {
             "structured": aggregated_structured,
@@ -166,4 +148,3 @@ class ConditionalUnionChunkingExtractor(ConditionalUnionExtractor):
         for field in self.return_as_list:
             result[f"{field}_list"] = [v.get(field, None) for v in results]
         return result
-
