@@ -22,3 +22,4 @@ from .chunking import ChunkingExtractor
 from .conditional import ConditionalUnionExtractor
 from .repeat import RepeatingExtractor
 from .union import UnionExtractor
+from .conditional_chunking import ConditionalUnionChunkingExtractor
