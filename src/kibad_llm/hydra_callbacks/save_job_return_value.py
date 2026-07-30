@@ -1,7 +1,7 @@
 """Save Hydra jobs' and multiruns' outputs to disk.
 
 Classes:
-    SaveJobReturnValueCallback: Handles the saving of logs, configs, and other data at the ends of jobs and multiruns.
+    SaveJobReturnValueCallback: Handles the saving of job return-values at the ends of jobs and multiruns.
 
 Functions:
     to_py_obj: Recursively converts numpy arrays to python lists.
@@ -47,7 +47,7 @@ def to_py_obj(obj: Any) -> Any:
         obj: A py_obj possibly holding a numpy array.
 
     Returns:
-        The py_obj but all numpy arrays are python lists now.
+        The py_obj, but with numpy arrays converted to python lists and numpy scalars to python scalars.
     """
     if isinstance(obj, dict):
         return {k: to_py_obj(v) for k, v in obj.items()}
@@ -74,7 +74,8 @@ def list_of_dicts_to_dict_of_lists_recursive(
         works with nested dicts
         >>> list_of_dicts_to_dict_of_lists_recursive([{"a": 1, "b": {"c": 2}}, {"a": 3, "b": {"c": 4}}])
         {'a': [1, 3], 'b': {'c': [2, 4]}}
-        # works with incomplete dicts
+
+        works with incomplete dicts
         >>> list_of_dicts_to_dict_of_lists_recursive([{"a": 1, "b": 2}, {"a": 3}])
         {'a': [1, 3], 'b': [2, None]}
 
@@ -203,6 +204,9 @@ def handle_previous_overrides(
     `<key>` field with an `"overrides"` field, the overrides are either used to replace the existing
     overrides in the job return object (if replace_existing is True) or simply converted to a dictionary.
 
+    The `"overrides"` field is popped from the job return-value in either case. It is only added back, converted to
+    a dictionary, when replace_existing is False and the field was non-empty. `job_return` is modified in place.
+
     Args:
         job_return: The job return object.
         key: The key to look for in the job return value (e.g. "prediction").
@@ -226,21 +230,25 @@ def handle_previous_overrides(
 
 
 class SaveJobReturnValueCallback(Callback):
-    """Save the job return-value in `${output_dir}/{job_return_value_filename}`.
+    """Save each job's return-value in `${output_dir}/${filename}`, for every entry in `filenames`.
 
     This also works for multi-runs (e.g. sweeps for hyperparameter search). In this case, the result will be saved
     additionally in a common file in the multi-run log directory. If integrate_multirun_result=True, the
     job return-values are also aggregated (e.g. mean, min, max) and saved in another file.
 
-    This class exists to postprocess job and multirun outputs, by overwriting [hydras no-op callback hooks](https://hydra.cc/docs/experimental/callbacks/).
+    This class exists to postprocess job and multirun outputs, by overwriting [Hydra's no-op callback hooks](https://hydra.cc/docs/experimental/callbacks/).
 
     Outputs can be saved as json and markdown. The markdown output is just a table with no text around it.
 
     Attributes:
-        filenames (str | list[str]): The filename(s) of the file(s) to save the job return-value to. If it ends
-            with ".json", the return-value is saved as a json file. If it ends with ".md", the return-value is
-            saved as a markdown file. Json files are more complete data wise, whilst markdown files have more settings
-            that can be applied for readability. Defaults to "job_return_value.json".
+        filenames (list[str]): The filename(s) of the file(s) to save the job return-value to. A single string is
+            wrapped into a list. If an entry ends with ".json", the return-value is saved as a json file. If it ends
+            with ".md", the return-value is saved as a markdown file. Json files are more complete data wise, whilst
+            markdown files have more settings that can be applied for readability.
+            Defaults to "job_return_value.json".
+        log (logging.Logger): The logger of this callback.
+        job_returns (list[JobReturn]): The return objects of all jobs seen by on_job_end so far. Consumed by
+            on_multirun_end.
         ###############
         ### JOB_END ###
         ###############
@@ -248,16 +256,19 @@ class SaveJobReturnValueCallback(Callback):
             name (e.g. "prediction") that itself contains an "overrides" field. The overrides from this field are
             either used to replace the existing overrides in the job return object (if replace_existing_overrides is
             True) or simply converted to a dictionary and added back to the job return-value (if
-            replace_existing_overrides is False). Furthermore, the field is removed from the job return-value before
-            saving it as markdown to avoid destroying the table structure. Defaults to None.
+            replace_existing_overrides is False). Furthermore, on the legacy markdown path (see markdown_data_key),
+            the field is removed from the job return-value before saving it as markdown to avoid destroying the
+            table structure. Defaults to None.
         replace_existing_overrides (bool): If True, replace existing overrides in the job return-value with the
             overrides from the job return object if available. If False, the overrides are just converted to a
             dictionary, if available. Defaults to False.
         paths_file (str | None): The file to append the paths of the log directories to. If None, the paths are not
             saved. Defaults to None.
-        markdown_data_key (str | None): If provided, use only the value at this key when saving single job results to
-            markdown. This is useful to strip metadata from the job result and, thus, allow for correct table
-            formatting of metric results, for instance. Defaults to None.
+        markdown_data_key (str | None): If provided and present in the job return-value, save only the value at this
+            key when saving single job results to markdown. This is useful to strip metadata from the job result and,
+            thus, allow for correct table formatting of metric results, for instance. If the key is absent (or None),
+            a legacy path is used instead, which drops the handle_previous_result field and the result format version
+            key from the markdown output. Defaults to None.
         ####################
         ### MULTIRUN_END ###
         ####################
@@ -278,9 +289,9 @@ class SaveJobReturnValueCallback(Callback):
             integrate_multirun_result is True. Defaults to False.
         multirun_add_overrides_as_dict (bool): If True, add the overrides as a dictionary to each job return-value
             under the key "overrides". Defaults to False.
-        multirun_show_file_contents (list[str] | None): A list of filenames (from the filenames attribute or
+        multirun_show_file_contents (list[str]): A list of filenames (from the filenames attribute or
             aggregated files) whose contents are logged to the console after saving the multi-run results.
-            Defaults to None.
+            Defaults to None, which is stored as an empty list.
         multirun_overrides_separator (str): The separator to use when creating job identifiers from overrides.
             Defaults to "-".
         multirun_markdown_group_by (list[str] | None): The column(s) to group by when saving the multi-run result as
@@ -304,9 +315,8 @@ class SaveJobReturnValueCallback(Callback):
         ################
         ### NOT USED ###
         ################
-        path_id (str | None): A prefix to add to each line in the paths_file, separated by a colon. If None, no prefix
-            is added. Defaults to None.
-            XXX: This is dead actually?
+        path_id (str | None): This is currently not in use. A prefix to add to each line in the paths_file,
+            separated by a colon. If None, no prefix is added. Defaults to None.
 
     Methods:
         on_job_end: Save a single job's return-value once the job finishes.
@@ -362,10 +372,16 @@ class SaveJobReturnValueCallback(Callback):
         self.path_id = path_id
 
     def on_job_end(self, config: DictConfig, job_return: JobReturn, **kwargs: Any) -> None:
-        """Collate a job's config and logs and save them via the internal `_save` method.
+        """Save a single job's return-value to each of the configured filenames via the internal `_save` method.
+
+        Also appends the job to `job_returns` for later use by
+        [`on_multirun_end`][kibad_llm.hydra_callbacks.save_job_return_value.SaveJobReturnValueCallback.on_multirun_end],
+        and appends the job's output directory to `paths_file` if one is configured. For markdown output, metadata
+        fields are stripped from the return-value first (see `markdown_data_key` and `handle_previous_result`) to
+        keep the table structure intact.
 
         Args:
-            config: Hydra config of the given job.
+            config: Hydra config of the given job. Only `hydra.runtime.output_dir` is read.
             job_return: The Hydra job's output object, e.g. the output of [`predict()`][kibad_llm.predict.predict].
 
         Keyword Args:
