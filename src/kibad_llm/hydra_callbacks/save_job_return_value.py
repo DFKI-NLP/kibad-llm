@@ -396,7 +396,7 @@ class SaveJobReturnValueCallback(Callback):
         self._job_returns.append(job_return)
         output_dir = Path(
             config.hydra.runtime.output_dir
-        )  # / Path(config.hydra.output_subdir) <- remove old code?
+        )
         if self.paths_file is not None:
             # append the output_dir to the file
             with open(self.paths_file, "a") as file:
