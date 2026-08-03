@@ -241,8 +241,8 @@ class SaveJobReturnValueCallback(Callback):
     Outputs can be saved as json and markdown. The markdown output is just a table with no text around it.
 
     Attributes:
-        filenames (list[str]): The filename(s) of the file(s) to save the job return-value to. A single string is
-            wrapped into a list. If an entry ends with ".json", the return-value is saved as a json file. If it ends
+        filenames (list[str]): The filename(s) of the file(s) to save the job return-value to. The type is always a list of strings.
+            If an entry ends with ".json", the return-value is saved as a json file. If it ends
             with ".md", the return-value is saved as a markdown file. Json files are more complete data wise, whilst
             markdown files have more settings that can be applied for readability.
             Defaults to "job_return_value.json".
@@ -346,6 +346,31 @@ class SaveJobReturnValueCallback(Callback):
         multirun_paths_file: str | None = None,
         multirun_path_id: str | None = None,
     ) -> None:
+        """Assign args to attributes and do some safety conversions beforehand.
+        For more info on the args, check their respective attributes in the class docstring.
+
+        Args:
+            filenames: If a string is passed, it will be wrapped in a list.
+            integrate_multirun_result:
+            multirun_aggregator_blacklist:
+            sort_markdown_columns:
+            markdown_round_digits:
+            markdown_data_key:
+            multirun_create_ids_from_overrides:
+            multirun_job_id_key:
+            multirun_convert_job_ids:
+            handle_previous_result:
+            replace_existing_overrides:
+            multirun_add_overrides_as_dict:
+            multirun_show_file_contents: If None is passed, saves [] instead.
+            multirun_overrides_separator:
+            multirun_markdown_group_by: If a string is passed, it will be wrapped in a list.
+            multirun_markdown_transpose:
+            paths_file:
+            path_id:
+            multirun_paths_file:
+            multirun_path_id:
+        """
         self._log = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
         self.filenames = [filenames] if isinstance(filenames, str) else filenames
         self.multirun_show_file_contents = multirun_show_file_contents or []
