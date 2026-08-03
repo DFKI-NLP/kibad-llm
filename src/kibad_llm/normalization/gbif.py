@@ -8,7 +8,7 @@ Functions:
 import argparse
 from collections.abc import Callable
 from copy import copy
-from functools import partial
+from functools import cache, partial
 import logging
 from typing import Any, TypeAlias, TypeGuard
 

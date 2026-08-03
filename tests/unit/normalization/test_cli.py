@@ -107,9 +107,9 @@ def test_process_json_lines_file_writes_normalized_json_line_and_statistics(
     input_path.write_text('{"species": "Dörjes"}\n', encoding="utf-8")
     caplog.set_level(logging.INFO, logger="kibad_llm.normalization.cli")
     process_json_lines_file(
-        input_path=str(input_path),
+        input_path=input_path,
+        output_path=output_path,
         read_key="species",
-        output_path=str(output_path),
         write_key="normalized_species",
         normalizer=lambda value: {"normalized": value},
     )
@@ -124,15 +124,17 @@ def test_process_json_lines_file_writes_normalized_json_line_and_statistics(
 def test_process_json_lines_file_writes_default_jsonl_beside_input(tmp_path) -> None:
     input_path = tmp_path / "input.jsonl"
     input_path.write_text('{"species": "Abies alba Mill."}\n')
+    output_path = tmp_path / "input_species_normalized.jsonl"
 
     process_json_lines_file(
-        input_path=str(input_path),
+        input_path=input_path,
+        output_path=output_path,
         read_key="species",
         write_key="species_normalized",
         normalizer=lambda value: {"normalized": "Abies alba"},
     )
 
-    assert (tmp_path / "input_species_normalized.jsonl").read_text() == (
+    assert output_path.read_text() == (
         '{"species": "Abies alba Mill.", "species_normalized": {"normalized": "Abies alba"}}\n'
     )
 
@@ -161,9 +163,9 @@ def test_main_creates_gbif_normalizer_with_default_options(monkeypatch, tmp_path
     process_arguments = dict(process.call_args.kwargs)
     normalizer = process_arguments.pop("normalizer")
     assert process_arguments == {
-        "input_path": str(tmp_path / "input.jsonl"),
+        "input_path": tmp_path / "input.jsonl",
         "read_key": "species",
-        "output_path": None,
+        "output_path": tmp_path / "input_gbif_normalized.jsonl",
         "write_key": "gbif_normalized",
         "parent_keys": [],
     }
