@@ -165,7 +165,7 @@ def test_main_creates_gbif_normalizer_with_default_options(monkeypatch, tmp_path
     assert process_arguments == {
         "input_path": tmp_path / "input.jsonl",
         "read_key": "species",
-        "output_path": tmp_path / "input_gbif_normalized.jsonl",
+        "output_path": tmp_path / "input_species_normalized.jsonl",
         "write_key": "gbif_normalized",
         "parent_keys": [],
     }

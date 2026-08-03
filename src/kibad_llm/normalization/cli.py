@@ -342,7 +342,7 @@ def main() -> None:
         output_path = args.output_path
     else:
         output_path = [
-            input_path.with_name(f"{input_path.stem}_{write_key}.jsonl")
+            input_path.with_name(f"{input_path.stem}_{args.read_key}_normalized.jsonl")
             for input_path in args.input_path
         ]
 
