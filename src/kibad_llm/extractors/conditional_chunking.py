@@ -55,14 +55,17 @@ class ConditionalUnionChunkingExtractor:
         self.max_char_buffer = max_char_buffer
 
     def __call__(self, *args, **kwargs) -> dict[str, Any]:
-        """Process singular text in multiple passes with chat history.
+        """Process singular text in chunks with multiple passes with chat history.
 
-        TODO: wrong
         Args:
-            *args (Any): Are forwarded unchanged:
+            *args (Any): Positional form of `text` and `text_id`, in that order.
+                Other args are forwarded unchanged:
                 [`extract_from_text_lenient`][kibad_llm.extractors.base.extract_from_text_lenient]
 
+
         Keyword Args:
+            text (str): Input document to process.
+            text_id (str): Id of input document.
             * (Any): Refer to [`extract_from_text_lenient`][kibad_llm.extractors.base.extract_from_text_lenient]
 
         TODO: {field}_list is per chunk not per override
@@ -71,6 +74,7 @@ class ConditionalUnionChunkingExtractor:
             Additionally there can be lists for fields at the keys `"{field}_list"`.
         """
 
+        # extract text and id in most compatible way
         text = kwargs.pop("text", None)
         if text is None:
             text = args[0]
@@ -81,6 +85,7 @@ class ConditionalUnionChunkingExtractor:
 
         combined_kwargs = {**self.default_kwargs, **kwargs}
 
+        # chunk the input text first
         chunks = _document_chunk_iterator(
             document=text,
             max_char_buffer=self.max_char_buffer,
@@ -88,6 +93,7 @@ class ConditionalUnionChunkingExtractor:
         )
         results = []
         for i, chunk in enumerate(chunks):
+            # for each chunk, run the ConditionalUnionExtractor loop, extracting with overrides and history
             chunk_results = []
             history: list[SimpleChatMessage] = []
             for override_name, override_params in self.overrides.items():
@@ -129,6 +135,7 @@ class ConditionalUnionChunkingExtractor:
 
                 chunk_results.append(current_result)
 
+            # aggregate results for the current chunks extraction passes
             chunk_structured_outputs = [v.get("structured", None) for v in chunk_results]
             chunk_aggregated_structured = self.union_aggregator(chunk_structured_outputs)
 
@@ -139,6 +146,7 @@ class ConditionalUnionChunkingExtractor:
                 chunk_result[f"{field}_list"] = [v.get(field, None) for v in chunk_results]
             results.append(chunk_result)
 
+        # aggregate the previously aggregated results, but now for the entire text, to get a single result.
         structured_outputs = [v.get("structured", None) for v in results]
         aggregated_structured = self.chunking_aggregator(structured_outputs)
 
