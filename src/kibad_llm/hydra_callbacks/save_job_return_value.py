@@ -346,11 +346,11 @@ class SaveJobReturnValueCallback(Callback):
         multirun_paths_file: str | None = None,
         multirun_path_id: str | None = None,
     ) -> None:
-        self.log = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
+        self._log = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
         self.filenames = [filenames] if isinstance(filenames, str) else filenames
         self.multirun_show_file_contents = multirun_show_file_contents or []
         self.integrate_multirun_result = integrate_multirun_result
-        self.job_returns: list[JobReturn] = []
+        self._job_returns: list[JobReturn] = []
         self.multirun_aggregator_blacklist = multirun_aggregator_blacklist
         self.sort_markdown_columns = sort_markdown_columns
         self.multirun_create_ids_from_overrides = multirun_create_ids_from_overrides
@@ -393,7 +393,7 @@ class SaveJobReturnValueCallback(Callback):
                 key=self.handle_previous_result,
                 replace_existing=self.replace_existing_overrides,
             )
-        self.job_returns.append(job_return)
+        self._job_returns.append(job_return)
         output_dir = Path(
             config.hydra.runtime.output_dir
         )  # / Path(config.hydra.output_subdir) <- remove old code?
@@ -433,21 +433,21 @@ class SaveJobReturnValueCallback(Callback):
         """
         job_ids: list[str] | list[int] | None = None
         if self.multirun_create_ids_from_overrides:
-            overrides_per_result = [jr.overrides or [] for jr in self.job_returns]
+            overrides_per_result = [jr.overrides or [] for jr in self._job_returns]
             job_ids = overrides_to_identifiers(
                 overrides_per_result, sep=self.multirun_overrides_separator, remove_common=True
             )
             if job_ids is None:
-                self.log.warning(
+                self._log.warning(
                     "Job identifiers created from overrides are not unique! "
                     "Use the job indexes instead."
                 )
 
         if job_ids is None:
-            job_ids = list[int](range(len(self.job_returns)))
+            job_ids = list[int](range(len(self._job_returns)))
 
         if self.multirun_add_overrides_as_dict:
-            for jr in self.job_returns:
+            for jr in self._job_returns:
                 jr.return_value["overrides"] = overrides_to_dict(
                     jr.overrides or [], remove_plus_prefix=True
                 )
@@ -458,7 +458,7 @@ class SaveJobReturnValueCallback(Callback):
             #
             # rearrange the job return-values of all jobs from a multi-run into a dict of lists (maybe nested),
             obj = list_of_dicts_to_dict_of_lists_recursive(
-                [jr.return_value for jr in self.job_returns]
+                [jr.return_value for jr in self._job_returns]
             )
             if not isinstance(obj, dict):
                 obj = {"value": obj}
@@ -477,7 +477,7 @@ class SaveJobReturnValueCallback(Callback):
                 set(df_flat.columns) - set(df_numbers_only.columns) - {(self.multirun_job_id_key,)}  # type: ignore
             )
             if len(cols_removed) > 0:
-                self.log.warning(
+                self._log.warning(
                     f"Removed the following columns from the aggregated result because they are not numeric: "
                     f"{cols_removed}"
                 )
@@ -510,7 +510,7 @@ class SaveJobReturnValueCallback(Callback):
             # create a dict of the job return-values of all jobs from a multi-run
             # (_save() works better with nested dicts)
             obj = {
-                identifier: jr.return_value for identifier, jr in zip(job_ids, self.job_returns)
+                identifier: jr.return_value for identifier, jr in zip(job_ids, self._job_returns)
             }
             obj_aggregated = None
         output_dir = Path(config.hydra.sweep.dir)
@@ -549,7 +549,7 @@ class SaveJobReturnValueCallback(Callback):
             if fn in saved_files:
                 with open(str(output_dir / fn)) as file:
                     contents = file.read()
-                self.log.info(f"Contents of {output_dir / fn}:\n{contents}")
+                self._log.info(f"Contents of {output_dir / fn}:\n{contents}")
 
     def _save(
         self,
@@ -580,7 +580,7 @@ class SaveJobReturnValueCallback(Callback):
             ValueError: If obj needs to be flattened, but can't.
             ValueError: If filename has an unknown extension.
         """
-        self.log.info(f"Saving job_return in {output_dir / filename}")
+        self._log.info(f"Saving job_return in {output_dir / filename}")
         output_dir.mkdir(parents=True, exist_ok=True)
         assert output_dir is not None
         if filename.endswith(".json"):
