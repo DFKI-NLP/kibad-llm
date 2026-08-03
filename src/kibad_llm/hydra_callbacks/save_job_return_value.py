@@ -47,7 +47,7 @@ def to_py_obj(obj: Any) -> Any:
         obj: A py_obj possibly holding a numpy array.
 
     Returns:
-        The py_obj, but with numpy arrays converted to python lists and numpy scalars to python scalars.
+        The obj, but with numpy arrays converted to python lists and numpy scalars to python scalars.
     """
     if isinstance(obj, dict):
         return {k: to_py_obj(v) for k, v in obj.items()}
