@@ -11,6 +11,7 @@ from dataclasses import dataclass
 import json
 import logging
 from pathlib import Path
+from typing import Any, overload
 
 from tqdm import tqdm
 
@@ -19,7 +20,7 @@ from .gbif import create_normalizer as create_gbif_normalizer
 
 logger = logging.getLogger(__name__)
 
-Normalizer = Callable[[str], str | None]
+Normalizer = Callable[[str], dict[str, Any] | None]
 
 
 @dataclass(frozen=True)
@@ -45,10 +46,24 @@ NORMALIZATION_METHODS: dict[str, NormalizationMethod] = {
 }
 
 
+@overload
+def _normalize_values(
+    value: str,
+    normalizer: Normalizer,
+) -> tuple[dict[str, Any] | None, int, int]: ...
+
+
+@overload
+def _normalize_values(
+    value: list[str],
+    normalizer: Normalizer,
+) -> tuple[list[dict[str, Any] | None], int, int]: ...
+
+
 def _normalize_values(
     value: str | list[str],
     normalizer: Normalizer,
-) -> tuple[str | None | list[str | None], int, int]:
+) -> tuple[dict[str, Any] | None | list[dict[str, Any] | None], int, int]:
     """Normalize a value or a homogeneous list of values.
 
     Args:
@@ -182,9 +197,9 @@ def _collect_values_json_object(
 def process_json_lines_file(
     input_path: str,
     read_key: str,
+    write_key: str,
     normalizer: Normalizer,
     output_path: str | None = None,
-    write_key: str | None = None,
     parent_keys: list[str] | None = None,
     encoding: str = "utf-8",
 ) -> None:
@@ -193,12 +208,11 @@ def process_json_lines_file(
     Args:
         input_path: Path to the input JSON Lines file.
         read_key: Key to extract the value or list of values from each JSON object.
+        write_key: Key to write the normalized value or list of normalized values to.
         normalizer: Function used to normalize one value.
         output_path: Path to the normalized JSON Lines file. If not provided,
             the output file will be written beside the input as
             "{input_path.stem}_normalized.jsonl".
-        write_key: Key to write the normalized value or list of normalized values to.
-            If not provided, the result will be written to "{read_key}_normalized".
         parent_keys: Parent keys to navigate before reading a value. Each level may contain a
             nested dictionary or a list of nested dictionaries.
         encoding: Encoding to use for reading and writing JSON Lines files.
@@ -206,7 +220,6 @@ def process_json_lines_file(
     """
     logger.info(f"Normalizing values in JSON Lines file: {input_path}")
     input_file_path = Path(input_path)
-    write_key = write_key or f"{read_key}_normalized"
     _output_file = output_path or str(
         input_file_path.with_name(f"{input_file_path.stem}_{write_key}.jsonl")
     )
@@ -274,7 +287,7 @@ def _add_common_arguments(parser: argparse.ArgumentParser) -> None:
         "--write-key",
         default=None,
         help="Key to write the normalized value or list of normalized values to. "
-        "If not provided, the result will be written to '{read_key}_normalized'.",
+        "If not provided, the result will be written to '{method}_normalized'.",
     )
     parser.add_argument(
         "--parent-keys",
@@ -314,7 +327,7 @@ def main() -> None:
         input_path=args.input_path,
         read_key=args.read_key,
         output_path=args.output_path,
-        write_key=args.write_key,
+        write_key=args.write_key or f"{args.method}_normalized",
         parent_keys=args.parent_keys,
         normalizer=method.create_normalizer(args),
     )
