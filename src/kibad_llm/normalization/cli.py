@@ -8,6 +8,7 @@ Functions:
 import argparse
 from collections.abc import Callable
 from dataclasses import dataclass
+from functools import lru_cache
 import json
 import logging
 from pathlib import Path
@@ -302,6 +303,12 @@ def _add_common_arguments(parser: argparse.ArgumentParser) -> None:
         default="utf-8",
         help="Encoding of the input and output JSON Lines files.",
     )
+    parser.add_argument(
+        "--cache-size",
+        type=int,
+        default=10_000,
+        help="Maximum size of the LRU cache for the normalizer.",
+    )
 
 
 def main() -> None:
@@ -325,7 +332,7 @@ def main() -> None:
     args = parser.parse_args()
     method = NORMALIZATION_METHODS[args.method]
     write_key = args.write_key or f"{args.method}_normalized"
-    normalizer = method.create_normalizer(args)
+    normalizer = lru_cache(maxsize=args.cache_size)(method.create_normalizer(args))
 
     if args.output_path is not None:
         if len(args.input_path) != len(args.output_path):
