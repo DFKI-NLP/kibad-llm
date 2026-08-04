@@ -189,6 +189,7 @@ def test_main_creates_gbif_normalizer_with_default_options(monkeypatch, tmp_path
         "output_path": tmp_path / "input_species_normalized.jsonl",
         "write_key": "gbif_normalized",
         "parent_keys": [],
+        "encoding": "utf-8",
         "replace_input": False,
     }
     assert normalizer("Abies alba Mill.") == {"usage": {"canonicalName": "Abies alba"}}
@@ -228,5 +229,6 @@ def test_main_replaces_input_and_uses_default_backup_path(monkeypatch, tmp_path)
         "output_path": tmp_path / "input_species_backup.jsonl",
         "write_key": "gbif_normalized",
         "parent_keys": [],
+        "encoding": "utf-8",
         "replace_input": True,
     }

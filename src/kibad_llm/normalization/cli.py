@@ -294,6 +294,7 @@ def _add_common_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--output-path",
         default=None,
+        type=Path,
         nargs="+",
         help="Path(s) to the output JSON Lines files. If provided, has to have the same number "
         "of paths as input files. If not provided, the output files will be written beside "
@@ -387,6 +388,7 @@ def main() -> None:
             write_key=write_key,
             parent_keys=args.parent_keys,
             normalizer=normalizer,
+            encoding=args.encoding,
             replace_input=args.replace_input,
         )
 
