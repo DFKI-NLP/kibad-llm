@@ -203,6 +203,7 @@ def process_json_lines_file(
     normalizer: Normalizer,
     parent_keys: list[str] | None = None,
     encoding: str = "utf-8",
+    replace_input: bool = False,
 ) -> None:
     """Normalize values in a JSON Lines file.
 
@@ -215,11 +216,25 @@ def process_json_lines_file(
         parent_keys: Parent keys to navigate before reading a value. Each level may contain a
             nested dictionary or a list of nested dictionaries.
         encoding: Encoding to use for reading and writing JSON Lines files.
+        replace_input: If True, the input file will be replaced with the normalized output.
+            A backup of the original input file will be saved to output_path.
 
     """
     logger.info(f"Normalizing values in JSON Lines file: {input_path}")
+    if input_path == output_path:
+        raise ValueError("Input and output paths must be different.")
     if output_path.is_file():
         logger.warning(f"Output file {output_path} already exists. It will be overwritten.")
+
+    if replace_input:
+        # in the case of when we want to replace the input file, we first save a backup of
+        # the original input file to the output path and then swap the input and output paths
+        # so that the normalized values are written to the original input file
+        backup_path = output_path
+        input_path.replace(backup_path)
+        logger.info(f"Backup of the original input file was saved to: {backup_path}")
+        output_path = input_path
+        input_path = backup_path
 
     # first, collect all unique values
     with open(input_path, encoding=encoding) as input_file:
@@ -273,17 +288,24 @@ def _add_common_arguments(parser: argparse.ArgumentParser) -> None:
         help="One or multiple paths to the input JSON Lines files.",
     )
     parser.add_argument(
-        "--read-key",
-        required=True,
-        help="Key to read the value or list of values from each JSON object.",
-    )
-    parser.add_argument(
         "--output-path",
         default=None,
         nargs="+",
         help="Path(s) to the output JSON Lines files. If provided, has to have the same number "
         "of paths as input files. If not provided, the output files will be written beside "
-        "the input files as '{input_path.stem}_{read_key}_normalized.jsonl'.",
+        "the input files as '{input_path.stem}_{read_key}_normalized.jsonl' or "
+        "'{input_path.stem}_{read_key}_backup.jsonl' if --replace-input is enabled.",
+    )
+    parser.add_argument(
+        "--replace-input",
+        action="store_true",
+        help="Replace the input files with the normalized output. If enabled, --output-path is used "
+        "to save a backup of the original input files.",
+    )
+    parser.add_argument(
+        "--read-key",
+        required=True,
+        help="Key to read the value or list of values from each JSON object.",
     )
     parser.add_argument(
         "--write-key",
@@ -341,10 +363,16 @@ def main() -> None:
             )
         output_path = args.output_path
     else:
-        output_path = [
-            input_path.with_name(f"{input_path.stem}_{args.read_key}_normalized.jsonl")
-            for input_path in args.input_path
-        ]
+        if args.replace_input:
+            output_path = [
+                input_path.with_name(f"{input_path.stem}_{args.read_key}_backup.jsonl")
+                for input_path in args.input_path
+            ]
+        else:
+            output_path = [
+                input_path.with_name(f"{input_path.stem}_{args.read_key}_normalized.jsonl")
+                for input_path in args.input_path
+            ]
 
     for input_path, output_path in zip(args.input_path, output_path):
         process_json_lines_file(
@@ -354,6 +382,7 @@ def main() -> None:
             write_key=write_key,
             parent_keys=args.parent_keys,
             normalizer=normalizer,
+            replace_input=args.replace_input,
         )
 
 

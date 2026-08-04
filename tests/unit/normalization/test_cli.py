@@ -139,6 +139,27 @@ def test_process_json_lines_file_writes_default_jsonl_beside_input(tmp_path) -> 
     )
 
 
+def test_process_json_lines_file_replaces_input_and_writes_backup(tmp_path) -> None:
+    input_path = tmp_path / "input.jsonl"
+    backup_path = tmp_path / "input_species_backup.jsonl"
+    original_content = '{"species": "Abies alba Mill."}\n'
+    input_path.write_text(original_content)
+
+    process_json_lines_file(
+        input_path=input_path,
+        output_path=backup_path,
+        read_key="species",
+        write_key="species_normalized",
+        normalizer=lambda value: {"normalized": "Abies alba"},
+        replace_input=True,
+    )
+
+    assert backup_path.read_text() == original_content
+    assert input_path.read_text() == (
+        '{"species": "Abies alba Mill.", "species_normalized": {"normalized": "Abies alba"}}\n'
+    )
+
+
 def test_main_creates_gbif_normalizer_with_default_options(monkeypatch, tmp_path) -> None:
     process = Mock()
     normalize = Mock(return_value={"usage": {"canonicalName": "Abies alba"}})
@@ -168,6 +189,7 @@ def test_main_creates_gbif_normalizer_with_default_options(monkeypatch, tmp_path
         "output_path": tmp_path / "input_species_normalized.jsonl",
         "write_key": "gbif_normalized",
         "parent_keys": [],
+        "replace_input": False,
     }
     assert normalizer("Abies alba Mill.") == {"usage": {"canonicalName": "Abies alba"}}
     normalize.assert_called_once_with(
@@ -176,3 +198,35 @@ def test_main_creates_gbif_normalizer_with_default_options(monkeypatch, tmp_path
         query_param="scientificName",
         response_fields=None,
     )
+
+
+def test_main_replaces_input_and_uses_default_backup_path(monkeypatch, tmp_path) -> None:
+    process = Mock()
+    monkeypatch.setattr("kibad_llm.normalization.cli.process_json_lines_file", process)
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "normalization",
+            "gbif",
+            "--input-path",
+            str(tmp_path / "input.jsonl"),
+            "--read-key",
+            "species",
+            "--replace-input",
+        ],
+    )
+
+    main()
+
+    process.assert_called_once()
+    process_arguments = dict(process.call_args.kwargs)
+    process_arguments.pop("normalizer")
+    assert process_arguments == {
+        "input_path": tmp_path / "input.jsonl",
+        "read_key": "species",
+        "output_path": tmp_path / "input_species_backup.jsonl",
+        "write_key": "gbif_normalized",
+        "parent_keys": [],
+        "replace_input": True,
+    }
