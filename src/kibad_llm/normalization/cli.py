@@ -16,6 +16,8 @@ from typing import Any, overload
 
 from tqdm import tqdm
 
+from .gbif import CLI_DESCRIPTION_TEXT as GBIF_DESCRIPTION_TEXT
+from .gbif import CLI_HELP_TEXT as GBIF_HELP_TEXT
 from .gbif import add_arguments as add_gbif_arguments
 from .gbif import create_normalizer as create_gbif_normalizer
 
@@ -35,6 +37,7 @@ class NormalizationMethod:
 
     add_arguments: Callable[[argparse.ArgumentParser], None]
     create_normalizer: Callable[[argparse.Namespace], Normalizer]
+    help: str
     description: str
 
 
@@ -42,7 +45,8 @@ NORMALIZATION_METHODS: dict[str, NormalizationMethod] = {
     "gbif": NormalizationMethod(
         add_gbif_arguments,
         create_gbif_normalizer,
-        "Normalize species names with the GBIF Species Match API.",
+        GBIF_HELP_TEXT,
+        GBIF_DESCRIPTION_TEXT,
     ),
 }
 
@@ -345,7 +349,8 @@ def main() -> None:
     for method_name, method in NORMALIZATION_METHODS.items():
         method_parser = method_parsers.add_parser(
             method_name,
-            help=method.description,
+            description=method.description,
+            help=method.help,
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
         _add_common_arguments(method_parser)

@@ -8,7 +8,7 @@ Functions:
 import argparse
 from collections.abc import Callable
 from copy import copy
-from functools import cache, partial
+from functools import partial
 import logging
 from typing import Any, TypeAlias, TypeGuard
 
@@ -194,7 +194,7 @@ def _normalize_match_result(
         min_confidence: Minimum acceptable GBIF match confidence percentage, or `None` to
             disable confidence filtering.
         response_fields: List of GBIF response fields to return. If not provided, all fields will be returned.
-            Entries can contain "." to access nested fields, e.g. "classification.KINGDOM".
+            Entries can contain "." to access nested fields, e.g. "classification.GENUS".
 
     Returns:
         A dictionary containing the requested GBIF response fields, or `None` if no match is found or the result
@@ -211,11 +211,11 @@ def _normalize_match_result(
         return None
 
     # entries in "classification" have this format:
-    # {
-    #   "key": "6",
-    #   "name": "Plantae",
-    #   "rank": "KINGDOM"
-    # },
+    #     {
+    #       "key": "2668958",
+    #       "name": "Sphagnum",
+    #       "rank": "GENUS"
+    #     },
     classification_as_dict = {
         value["rank"]: value["name"] for value in response.get("classification", [])
     }
@@ -237,6 +237,13 @@ def _normalize_match_result(
     return result
 
 
+CLI_HELP_TEXT = "Normalize species names with the GBIF Species Match API."
+CLI_DESCRIPTION_TEXT = (
+    "Match scientific names against GBIF's taxonomy. The returned classification is converted "
+    "from GBIF's list of records to a mapping keyed by taxonomic rank, such as 'GENUS': 'Sphagnum'."
+)
+
+
 def add_arguments(parser: argparse.ArgumentParser) -> None:
     """Add GBIF Species Match API options to a command-line parser."""
     parser.add_argument(
@@ -256,7 +263,7 @@ def add_arguments(parser: argparse.ArgumentParser) -> None:
         nargs="+",
         help="GBIF response fields returned from the GBIF Species Match API. If not provided, "
         "all fields will be returned. Entries can contain '.' to access nested fields, "
-        "e.g. 'classification.KINGDOM'.",
+        "e.g. 'classification.GENUS'.",
     )
 
 
