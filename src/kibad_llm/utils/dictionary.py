@@ -1,10 +1,15 @@
 from __future__ import annotations
 
-from collections.abc import Generator, Mapping
+from collections import defaultdict
+from collections.abc import Generator, Mapping, Sequence
 import dataclasses
 import logging
 import math
-from typing import Any
+from typing import Any, TypeAlias
+
+Primitive: TypeAlias = str | int | float | bool
+
+_PRIMITIVE_TYPES = (str, int, float, bool)
 
 logger = logging.getLogger(__name__)
 
@@ -51,6 +56,86 @@ def flatten_dict_simple(d: Mapping[str, Any], sep: str = ".") -> dict[str, Any]:
                 raise ValueError(f"Cannot flatten list with mixed types: {v}")
 
     return result
+
+
+def flatten_to_value_lists(
+    data: Mapping[str, Any] | Sequence[Mapping[str, Any]],
+    sep: str = ".",
+    sort_lists: bool = False,
+) -> dict[str, list[Primitive]]:
+    """Flatten nested mappings into lists of primitive leaf values.
+
+    Mapping keys are joined with ``sep``. Lists are treated as transparent
+    containers: their elements retain the path of the list, while mapping keys
+    inside them extend that path. Consequently, lists may be nested to arbitrary
+    depth and every value in the returned dictionary is a list, even when the
+    corresponding input value is a scalar.
+
+    ``None``, blank strings, empty lists, and empty mappings are omitted.
+    Duplicate values are preserved. Without sorting, values retain their
+    depth-first traversal order.
+
+    Args:
+        data: One mapping or an ordered sequence of mappings to flatten.
+        sep: Separator used to join nested mapping keys.
+        sort_lists: Whether to sort every list in the result.
+
+    Returns:
+        A dictionary mapping flattened key paths to lists of primitive values.
+
+    Raises:
+        TypeError: If ``data`` has an invalid top-level structure, a mapping has
+            a non-string key, a nested value has an unsupported type, or values
+            at the same path are not mutually comparable when sorting.
+    """
+    result: defaultdict[str, list[Primitive]] = defaultdict(list)
+
+    def visit(value: Any, path: str) -> None:
+        if value is None or (isinstance(value, str) and not value.strip()):
+            return
+
+        if isinstance(value, _PRIMITIVE_TYPES):
+            result[path].append(value)
+            return
+
+        if isinstance(value, Mapping):
+            for key, child in value.items():
+                if not isinstance(key, str):
+                    raise TypeError(
+                        f"Expected a string key at {path or '<root>'!r}, "
+                        f"got {type(key).__name__}"
+                    )
+                child_path = f"{path}{sep}{key}" if path else key
+                visit(child, child_path)
+            return
+
+        if isinstance(value, list):
+            for item in value:
+                visit(item, path)
+            return
+
+        raise TypeError(f"Unsupported value of type {type(value).__name__} at {path!r}")
+
+    if isinstance(data, Mapping):
+        records: Sequence[Mapping[str, Any]] = (data,)
+    elif isinstance(data, Sequence) and not isinstance(data, (str, bytes, bytearray)):
+        records = data
+    else:
+        raise TypeError("data must be a mapping or an ordered sequence of mappings")
+
+    for index, record in enumerate(records):
+        if not isinstance(record, Mapping):
+            raise TypeError(
+                "Expected a mapping at top-level sequence index "
+                f"{index}, got {type(record).__name__}"
+            )
+        visit(record, "")
+
+    if sort_lists:
+        for values in result.values():
+            values.sort()
+
+    return dict(result)
 
 
 KEYS_PAD = math.nan
