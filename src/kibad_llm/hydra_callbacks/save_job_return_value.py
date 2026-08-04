@@ -244,8 +244,8 @@ class SaveJobReturnValueCallback(Callback):
             If an entry ends with ".json", the return-value is saved as a json file. If it ends
             with ".md", the return-value is saved as a markdown file. Json files are more complete data wise, whilst
             markdown files have more settings that can be applied for readability.
-        log (logging.Logger): The logger of this callback.
-        job_returns (list[JobReturn]): The return objects of all jobs seen by on_job_end so far. Consumed by
+        _log (logging.Logger): The logger of this callback.
+        _job_returns (list[JobReturn]): The return objects of all jobs seen by on_job_end so far. Consumed by
             on_multirun_end.
         ###############
         ### JOB_END ###
