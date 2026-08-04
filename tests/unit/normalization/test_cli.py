@@ -171,7 +171,7 @@ def test_main_creates_gbif_normalizer_with_default_options(monkeypatch, tmp_path
         [
             "normalization",
             "gbif",
-            "--input-path",
+            "--input-paths",
             str(tmp_path / "input.jsonl"),
             "--read-key",
             "species",
@@ -210,7 +210,7 @@ def test_main_replaces_input_and_uses_default_backup_path(monkeypatch, tmp_path)
         [
             "normalization",
             "gbif",
-            "--input-path",
+            "--input-paths",
             str(tmp_path / "input.jsonl"),
             "--read-key",
             "species",

@@ -285,14 +285,14 @@ def process_json_lines_file(
 def _add_common_arguments(parser: argparse.ArgumentParser) -> None:
     """Add JSON Lines processing options to a command-line parser."""
     parser.add_argument(
-        "--input-path",
+        "--input-paths",
         required=True,
         type=Path,
         nargs="+",
         help="One or multiple paths to the input JSON Lines files.",
     )
     parser.add_argument(
-        "--output-path",
+        "--output-paths",
         default=None,
         type=Path,
         nargs="+",
@@ -304,7 +304,7 @@ def _add_common_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--replace-input",
         action="store_true",
-        help="Replace the input files with the normalized output. If enabled, --output-path is used "
+        help="Replace the input files with the normalized output. If enabled, --output-paths is used "
         "to save a backup of the original input files.",
     )
     parser.add_argument(
@@ -362,25 +362,25 @@ def main() -> None:
     write_key = args.write_key or f"{args.method}_normalized"
     normalizer = lru_cache(maxsize=args.cache_size)(method.create_normalizer(args))
 
-    if args.output_path is not None:
-        if len(args.input_path) != len(args.output_path):
+    if args.output_paths is not None:
+        if len(args.input_paths) != len(args.output_paths):
             raise ValueError(
                 "Number of input paths must match number of output paths if both are provided."
             )
-        output_path = args.output_path
+        output_paths = args.output_paths
     else:
         if args.replace_input:
-            output_path = [
+            output_paths = [
                 input_path.with_name(f"{input_path.stem}_{args.read_key}_backup.jsonl")
-                for input_path in args.input_path
+                for input_path in args.input_paths
             ]
         else:
-            output_path = [
+            output_paths = [
                 input_path.with_name(f"{input_path.stem}_{args.read_key}_normalized.jsonl")
-                for input_path in args.input_path
+                for input_path in args.input_paths
             ]
 
-    for input_path, output_path in zip(args.input_path, output_path):
+    for input_path, output_path in zip(args.input_paths, output_paths):
         process_json_lines_file(
             input_path=input_path,
             read_key=args.read_key,

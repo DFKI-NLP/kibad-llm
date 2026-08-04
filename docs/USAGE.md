@@ -111,7 +111,7 @@ API:
 
 ```bash
 uv run -m kibad_llm.normalization.cli gbif \
-  --input-path data/interim/faktencheck-db/faktencheck-db-converted_2025-11-05.jsonl \
+  --input-paths data/interim/faktencheck-db/faktencheck-db-converted_2025-11-05.jsonl \
   --read-key scientific_name \
   --parent-keys taxa
 ```
