@@ -247,9 +247,10 @@ class SaveJobReturnValueCallback(Callback):
         _log (logging.Logger): The logger of this callback.
         _job_returns (list[JobReturn]): The return objects of all jobs seen by on_job_end so far. Consumed by
             on_multirun_end.
-        ###############
-        ### JOB_END ###
-        ###############
+
+    **Used by `on_job_end`:**
+
+    Attributes:
         handle_previous_result (str | None): If provided, assume the job return-value contains a field with the given
             name (e.g. "prediction") that itself contains an "overrides" field. The overrides from this field are
             either used to replace the existing overrides in the job return object (if replace_existing_overrides is
@@ -267,9 +268,10 @@ class SaveJobReturnValueCallback(Callback):
             thus, allow for correct table formatting of metric results, for instance. If the key is absent (or None),
             a legacy path is used instead, which drops the handle_previous_result field and the result format version
             key from the markdown output.
-        ####################
-        ### MULTIRUN_END ###
-        ####################
+
+    **Used by `on_multirun_end`:**
+
+    Attributes:
         integrate_multirun_result (bool): If True, the job return-values of all jobs from a multi-run are rearranged
             into a dict of lists (maybe nested), where the keys are the keys of the job return-values and the values
             are lists of the corresponding values of all jobs. This is useful if you want to access specific values
@@ -296,17 +298,18 @@ class SaveJobReturnValueCallback(Callback):
             the paths are not saved.
         multirun_path_id (str | None): A prefix to add to each line in the multirun_paths_file, separated by a colon.
             If None, no prefix is added.
-        #############
-        ### _SAVE ###
-        #############
+
+    **Used by `_save`:**
+
+    Attributes:
         sort_markdown_columns (bool): If True, the columns of the markdown table are sorted alphabetically.
         markdown_round_digits (int | None): The number of digits to round the values in the markdown file to. If None,
             no rounding is applied.
         multirun_markdown_transpose (bool): If True, transpose the markdown table for multi-run results.
 
-        ################
-        ### NOT USED ###
-        ################
+    **Not used:**
+
+    Attributes:
         path_id (str | None): This is currently not in use. A prefix to add to each line in the paths_file,
             separated by a colon. If None, no prefix is added.
 
