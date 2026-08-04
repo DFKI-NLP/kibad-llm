@@ -111,14 +111,14 @@ API:
 
 ```bash
 uv run -m kibad_llm.normalization.cli gbif \
-  --input-path data/interim/faktencheck-db/faktencheck-db-converted_2025-11-05.jsonl \
+  --input-paths data/interim/faktencheck-db/faktencheck-db-converted_2025-11-05.jsonl \
   --read-key scientific_name \
   --parent-keys taxa
 ```
 
 This will read the `scientific_name` values from the `taxa` field in the input file `data/interim/faktencheck-db/faktencheck-db-converted_2025-11-05.jsonl` and write the normalized values to
 a new file `faktencheck-db-converted_2025-11-05_scientific_name_normalized.jsonl`. By default, normalized values
-are written to `scientific_name_normalized`. The first positional argument
+are written to `gbif_normalized` in `taxa`. The first positional argument
 selects the normalization service; currently, `gbif` is available. The command logs the number of records read
 and values successfully normalized.
 
