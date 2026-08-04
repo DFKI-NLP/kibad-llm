@@ -15,7 +15,7 @@ import logging
 from typing import Any, cast
 
 from kibad_llm.metric import Metric
-from kibad_llm.utils.dictionary import flatten_dict_simple
+from kibad_llm.utils.dictionary import flatten_to_value_lists
 
 logger = logging.getLogger(__name__)
 
@@ -119,7 +119,7 @@ class MetricWithPrepareEntryAsSet(SingleFieldMetric):
             ValueError: If `self.field` is configured but `entry` is not a dictionary.
         """
         if entry is not None and isinstance(entry, dict) and self.flatten_dicts:
-            entry = flatten_dict_simple(entry)
+            entry = flatten_to_value_lists(entry)
 
         if self.field is not None and entry is not None:
             if not isinstance(entry, dict):
