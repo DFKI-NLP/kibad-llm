@@ -209,7 +209,9 @@ def test_filter_nested_dict_preserves_selected_common_prefixes_and_ignores_inval
 
 
 @pytest.mark.slow
-def test_normalize_spezies_queries_gbif_api_full_result() -> None:
+def test_normalize_spezies_live_gbif_endpoint() -> None:
+    # set response_fields=None to get all available fields from the GBIF API
+    # (remember that we restructure the classification field)
     result = normalize_spezies("Abies albaa", response_fields=None)
     assert result is not None
     # drop time related values since they are not deterministic
