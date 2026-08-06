@@ -113,12 +113,17 @@ repos:
     hooks:
       - id: zuban-mypy
         name: zuban mypy
-        language: python
-        entry: zuban
+        # `language: system` + `uv run` so zuban always resolves to the project
+        # venv: zuban reads its site-packages from the tree its own binary lives
+        # in, so a zuban picked up from anywhere else sees no dependencies and
+        # reports every import as missing.
+        language: system
+        entry: uv run --group cicd zuban
         args: [mypy, --config-file=pyproject.toml]
         types: [python]
         pass_filenames: false
         priority: 80  # run when bandit runs
+
 
   - repo: local
     hooks:
