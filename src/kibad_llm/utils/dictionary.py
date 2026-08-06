@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from collections.abc import Generator, Mapping, Sequence
+from collections.abc import Generator, Mapping
 import dataclasses
 import logging
 import math
