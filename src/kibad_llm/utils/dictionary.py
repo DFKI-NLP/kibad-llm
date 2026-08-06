@@ -84,7 +84,7 @@ def flatten_to_value_lists(
         A dictionary mapping flattened key paths to lists of primitive values.
 
     Raises:
-        TypeError: If `data` has an invalid top-level structure, a mapping has
+        TypeError: If `data` has an invalid top-level structure, a dictionary has
             a non-string key or the key contains the separator, a nested value
             has an unsupported type, or values at the same path are not mutually
             comparable when sorting.
@@ -122,19 +122,9 @@ def flatten_to_value_lists(
 
         raise TypeError(f"Unsupported value of type {type(value).__name__} at {sep.join(path)!r}")
 
-    if isinstance(data, dict):
-        records: list[dict[str, Any]] = [data]
-    elif isinstance(data, list):
-        records = data
-    else:
-        raise TypeError("data must be a dictionary or a list of dictionaries")
+    records: list[dict[str, Any]] = [data] if not isinstance(data, list) else data
 
     for index, record in enumerate(records):
-        if not isinstance(record, dict):
-            raise TypeError(
-                "Expected a dictionary at top-level list index "
-                f"{index}, got {type(record).__name__}"
-            )
         visit(record, [])
 
     if sort_lists:
