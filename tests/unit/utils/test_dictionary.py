@@ -104,7 +104,7 @@ def test_rejects_non_string_keys_in_nested_mappings() -> None:
         TypeError,
         match="Expected a string key at 'nested', got int",
     ):
-        flatten_to_value_lists({"nested": {1: "value"}})  # type: ignore[dict-item]
+        flatten_to_value_lists({"nested": {1: "value"}})
 
 
 def test_rejects_unsupported_nested_values_with_their_path() -> None:
@@ -113,6 +113,11 @@ def test_rejects_unsupported_nested_values_with_their_path() -> None:
         match="Unsupported value of type tuple at 'nested.value'",
     ):
         flatten_to_value_lists({"nested": {"value": (1, 2)}})
+
+
+def test_rejects_incomparable_values_when_sorting() -> None:
+    with pytest.raises(TypeError, match="not supported between instances of 'str' and 'int'"):
+        flatten_to_value_lists({"values": [1, "value"]}, sort_lists=True)
 
 
 def test_empty_keys() -> None:

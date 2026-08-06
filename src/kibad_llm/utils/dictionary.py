@@ -123,7 +123,7 @@ def flatten_to_value_lists(
         raise TypeError(f"Unsupported value of type {type(value).__name__} at {sep.join(path)!r}")
 
     if isinstance(data, Mapping):
-        records: Sequence[Mapping[str, Any]] = (data,)
+        records: Sequence[Mapping[str, Any]] = [data]
     elif isinstance(data, Sequence) and not isinstance(data, (str, bytes, bytearray)):
         records = data
     else:
