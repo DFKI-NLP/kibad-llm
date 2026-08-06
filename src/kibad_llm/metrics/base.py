@@ -121,7 +121,7 @@ class MetricWithPrepareEntryAsSet(SingleFieldMetric):
                 See [`flatten_to_value_lists`][kibad_llm.utils.dictionary.flatten_to_value_lists].
         """
         if entry is not None and isinstance(entry, dict) and self.flatten_dicts:
-            entry = flatten_to_value_lists(entry)
+            entry = flatten_to_value_lists(entry, remove_empty_values=True)
 
         if self.field is not None and entry is not None:
             if not isinstance(entry, dict):

@@ -96,7 +96,9 @@ def test_omits_empty_values_and_containers() -> None:
         "retained": [0, False, "value"],
     }
 
-    assert flatten_to_value_lists(data) == {"retained": [0, False, "value"]}
+    assert flatten_to_value_lists(data, remove_empty_values=True) == {
+        "retained": [0, False, "value"]
+    }
 
 
 def test_rejects_non_string_keys_in_nested_dictionary() -> None:
@@ -146,12 +148,12 @@ def test_empty_keys() -> None:
 def test_sep_in_keys() -> None:
     with pytest.raises(
         ValueError,
-        match="Key '.' at '<root>' contains the separator '.', which is not allowed",
+        match="Key '.' at '<root>' contains the separator '.'",
     ):
         flatten_to_value_lists({".": 1})
 
     with pytest.raises(
         ValueError,
-        match="Key 'b.c' at 'a' contains the separator '.', which is not allowed",
+        match="Key 'b.c' at 'a' contains the separator '.'",
     ):
         flatten_to_value_lists({"a": {"b.c": 2}, "a.b": {"c": 3}}, sep=".")

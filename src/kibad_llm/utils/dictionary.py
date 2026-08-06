@@ -5,11 +5,9 @@ from collections.abc import Generator, Mapping, Sequence
 import dataclasses
 import logging
 import math
-from typing import Any, TypeAlias
+from typing import Any, TypeAlias, cast
 
-Primitive: TypeAlias = str | int | float | bool
-
-_PRIMITIVE_TYPES = (str, int, float, bool)
+LeafValue: TypeAlias = str | int | float | bool | None
 
 logger = logging.getLogger(__name__)
 
@@ -61,58 +59,103 @@ def flatten_dict_simple(d: Mapping[str, Any], sep: str = ".") -> dict[str, Any]:
 def flatten_to_value_lists(
     data: dict[str, Any] | list[dict[str, Any]],
     sep: str = ".",
+    remove_empty_values: bool = False,
     sort_lists: bool = False,
-) -> dict[str, list[Primitive]]:
-    """Flatten nested dictionary into lists of primitive leaf values.
+) -> dict[str, list[LeafValue]]:
+    """Flatten one or more nested dictionaries into lists of primitive values.
 
-    Dictionary keys are joined with `sep`. Lists are treated as transparent
+    Nested dictionary keys are joined using `sep`. Lists are treated as transparent
     containers: their elements retain the path of the list, while dictionary keys
-    inside them extend that path. Consequently, lists may be nested to arbitrary
-    depth and every value in the returned dictionary is a list, even when the
-    corresponding input value is a scalar.
+    inside them extend that path. Lists and dictionaries may be nested to arbitrary
+    depth. A top-level list is handled in the same way, aggregating values from all
+    of its dictionaries.
 
-    `None`, blank strings, empty lists, and empty dictionaries are omitted.
-    Duplicate values are preserved. Without sorting, values retain their
-    depth-first traversal order.
+    Accepted leaf values are strings, integers, floats, booleans and None. Every
+    output value is a list, including values originating from scalar input values.
+    List boundaries are not preserved; primitive values encountered at the same
+    flattened path are collected into a single list.
+
+    Empty lists and dictionaries never produce output entries. When
+    `remove_empty_values` is enabled, `None` and blank strings are also omitted.
+    Otherwise, they are retained as leaf values. Nonblank strings are retained
+    unchanged rather than stripped. Zero and `False` are never considered empty.
+    Duplicates are preserved. Without sorting, values retain their depth-first
+    traversal order, determined by dictionary insertion order and list element
+    order.
+
+    When `sort_lists` is enabled, every output list is sorted using Python's default
+    ordering. Consequently, all values collected at the same path must be mutually
+    comparable.
 
     Args:
-        data: One dictionary or a list of dictionaries to flatten.
-        sep: Separator used to join nested mapping keys.
-        sort_lists: Whether to sort every list in the result.
+        data: A nested dictionary or a list of nested dictionaries to flatten.
+            Values may contain arbitrarily nested dictionaries and lists.
+        sep: Nonempty separator used to join dictionary keys. Dictionary keys must
+            not contain this separator.
+        remove_empty_values: Whether to omit `None` and blank strings from the output.
+        sort_lists: Whether to sort every output list. Duplicates are preserved
+            regardless of this setting.
 
     Returns:
-        A dictionary mapping flattened key paths to lists of primitive values.
+        A dictionary mapping each flattened path containing at least one retained
+        primitive value to its collected list of values.
 
     Raises:
-        TypeError: If `data` has an invalid top-level structure, a dictionary has
-            a non-string key or the key contains the separator, a nested value
-            has an unsupported type, or values at the same path are not mutually
-            comparable when sorting.
+        TypeError: If a dictionary contains a non-string key, a nested value has an
+            unsupported type, or values at the same path are not mutually comparable
+            when `sort_lists` is enabled.
+        ValueError: If `sep` is empty or a dictionary key contains `sep`.
+
+    Examples:
+        >>> flatten_to_value_lists(
+        ...     {
+        ...         "study": {
+        ...             "sites": [
+        ...                 {"country": "DE", "score": 2},
+        ...                 {"country": "AT", "score": 1},
+        ...             ]
+        ...         }
+        ...     }
+        ... )
+        {
+            "study.sites.country": ["DE", "AT"],
+            "study.sites.score": [2, 1],
+        }
+
+        >>> flatten_to_value_lists(
+        ...     {"values": [3, [1, 3], 2]},
+        ...     sort_lists=True,
+        ... )
+        {"values": [1, 2, 3, 3]}
     """
-    result: defaultdict[str, list[Primitive]] = defaultdict(list)
+    if not sep:
+        raise ValueError("sep must not be empty")
+
+    result: defaultdict[str, list[LeafValue]] = defaultdict(list)
 
     def visit(value: Any, path: list[str]) -> None:
-        if value is None or (isinstance(value, str) and not value.strip()):
+        current_path = sep.join(path)
+        location = current_path or "<root>"
+
+        if remove_empty_values and (
+            value is None or (isinstance(value, str) and not value.strip())
+        ):
             return
 
-        if isinstance(value, _PRIMITIVE_TYPES):
-            result[sep.join(path)].append(value)
+        # append accepted primitives to the list
+        if isinstance(value, (str, int, float, bool, type(None))):
+            result[current_path].append(value)
             return
 
         if isinstance(value, dict):
             for key, child in value.items():
                 if not isinstance(key, str):
                     raise TypeError(
-                        f"Expected a string key at {sep.join(path) or '<root>'!r}, "
-                        f"got {type(key).__name__}"
+                        f"Expected a string key at {location!r}, got {type(key).__name__}"
                     )
                 if sep in key:
-                    raise ValueError(
-                        f"Key {key!r} at {sep.join(path) or '<root>'!r} contains the separator {sep!r}, "
-                        f"which is not allowed"
-                    )
-                child_path = path + [key]
-                visit(child, child_path)
+                    raise ValueError(f"Key {key!r} at {location!r} contains the separator {sep!r}")
+                visit(child, path + [key])
             return
 
         if isinstance(value, list):
@@ -120,16 +163,14 @@ def flatten_to_value_lists(
                 visit(item, path)
             return
 
-        raise TypeError(f"Unsupported value of type {type(value).__name__} at {sep.join(path)!r}")
+        raise TypeError(f"Unsupported value of type {type(value).__name__} at {location!r}")
 
-    records: list[dict[str, Any]] = [data] if not isinstance(data, list) else data
-
-    for index, record in enumerate(records):
-        visit(record, [])
+    visit(data, [])
 
     if sort_lists:
         for values in result.values():
-            values.sort()
+            # Comparability is intentionally checked at runtime.
+            cast(list[Any], values).sort()
 
     return dict(result)
 
