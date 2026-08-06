@@ -113,3 +113,26 @@ def test_rejects_unsupported_nested_values_with_their_path() -> None:
         match="Unsupported value of type tuple at 'nested.value'",
     ):
         flatten_to_value_lists({"nested": {"value": (1, 2)}})
+
+
+def test_empty_keys() -> None:
+    assert flatten_to_value_lists({"a": {"": 2}}) == {"a.": [2]}
+
+    assert flatten_to_value_lists({"": {"": 2}}) == {".": [2]}
+
+    data = {
+        "": {
+            "": 2,
+            "1": 1,
+        },
+        "1": 1,
+        "a": {
+            "b": "c",
+        },
+    }
+    assert flatten_to_value_lists(data) == {
+        ".": [2],
+        ".1": [1],
+        "1": [1],
+        "a.b": ["c"],
+    }

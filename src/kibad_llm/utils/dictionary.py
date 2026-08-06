@@ -90,22 +90,22 @@ def flatten_to_value_lists(
     """
     result: defaultdict[str, list[Primitive]] = defaultdict(list)
 
-    def visit(value: Any, path: str) -> None:
+    def visit(value: Any, path: list[str]) -> None:
         if value is None or (isinstance(value, str) and not value.strip()):
             return
 
         if isinstance(value, _PRIMITIVE_TYPES):
-            result[path].append(value)
+            result[sep.join(path)].append(value)
             return
 
         if isinstance(value, Mapping):
             for key, child in value.items():
                 if not isinstance(key, str):
                     raise TypeError(
-                        f"Expected a string key at {path or '<root>'!r}, "
+                        f"Expected a string key at {sep.join(path) or '<root>'!r}, "
                         f"got {type(key).__name__}"
                     )
-                child_path = f"{path}{sep}{key}" if path else key
+                child_path = path + [key]
                 visit(child, child_path)
             return
 
@@ -114,7 +114,7 @@ def flatten_to_value_lists(
                 visit(item, path)
             return
 
-        raise TypeError(f"Unsupported value of type {type(value).__name__} at {path!r}")
+        raise TypeError(f"Unsupported value of type {type(value).__name__} at {sep.join(path)!r}")
 
     if isinstance(data, Mapping):
         records: Sequence[Mapping[str, Any]] = (data,)
@@ -129,7 +129,7 @@ def flatten_to_value_lists(
                 "Expected a mapping at top-level sequence index "
                 f"{index}, got {type(record).__name__}"
             )
-        visit(record, "")
+        visit(record, [])
 
     if sort_lists:
         for values in result.values():
