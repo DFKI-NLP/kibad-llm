@@ -85,8 +85,9 @@ def flatten_to_value_lists(
 
     Raises:
         TypeError: If `data` has an invalid top-level structure, a mapping has
-            a non-string key, a nested value has an unsupported type, or values
-            at the same path are not mutually comparable when sorting.
+            a non-string key or the key contains the separator, a nested value
+            has an unsupported type, or values at the same path are not mutually
+            comparable when sorting.
     """
     result: defaultdict[str, list[Primitive]] = defaultdict(list)
 

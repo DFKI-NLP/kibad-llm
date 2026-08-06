@@ -117,6 +117,8 @@ class MetricWithPrepareEntryAsSet(SingleFieldMetric):
 
         Raises:
             ValueError: If `self.field` is configured but `entry` is not a dictionary.
+            TypeError: If `flatten_dicts` is enabled and `entry` has an invalid structure.
+                See [`flatten_to_value_lists`][kibad_llm.utils.dictionary.flatten_to_value_lists].
         """
         if entry is not None and isinstance(entry, dict) and self.flatten_dicts:
             entry = flatten_to_value_lists(entry)
