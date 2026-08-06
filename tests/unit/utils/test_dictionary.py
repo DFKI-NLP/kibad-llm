@@ -81,7 +81,7 @@ def test_optional_empty_value_removal(
     remove_empty_values: bool,
     expected: dict[str, list[Any]],
 ) -> None:
-    data = {
+    data: dict[str, Any] = {
         "values": [None, "", " \t", " value ", 0, False],
         "only_empty_values": [None, "", " \t"],
         "empty_list": [],
