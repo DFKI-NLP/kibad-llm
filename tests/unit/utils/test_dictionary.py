@@ -21,7 +21,7 @@ def test_wraps_flat_primitive_values_in_lists() -> None:
     }
 
 
-def test_flattens_nested_mappings_with_custom_separator() -> None:
+def test_flattens_nested_dictionary_with_custom_separator() -> None:
     data = {"study": {"location": {"country": "DE"}}}
 
     assert flatten_to_value_lists(data, sep="__") == {"study__location__country": ["DE"]}
@@ -33,7 +33,7 @@ def test_flattens_arbitrarily_nested_lists_and_preserves_duplicates() -> None:
     assert flatten_to_value_lists(data) == {"values": [3, 1, 3, 2, 1]}
 
 
-def test_aggregates_values_from_nested_mappings_in_lists() -> None:
+def test_aggregates_values_from_nested_dictionaries_in_lists() -> None:
     data = {
         "study": {
             "sites": [
@@ -55,11 +55,11 @@ def test_aggregates_values_from_nested_mappings_in_lists() -> None:
     }
 
 
-def test_accepts_a_top_level_sequence_of_mappings() -> None:
-    data = (
+def test_accepts_a_top_level_list_of_dictionaries() -> None:
+    data = [
         {"name": "first", "score": 2},
         {"name": "second", "score": 1},
-    )
+    ]
 
     assert flatten_to_value_lists(data) == {
         "name": ["first", "second"],
@@ -99,7 +99,7 @@ def test_omits_empty_values_and_containers() -> None:
     assert flatten_to_value_lists(data) == {"retained": [0, False, "value"]}
 
 
-def test_rejects_non_string_keys_in_nested_mappings() -> None:
+def test_rejects_non_string_keys_in_nested_dictionary() -> None:
     with pytest.raises(
         TypeError,
         match="Expected a string key at 'nested', got int",

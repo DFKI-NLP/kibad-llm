@@ -59,24 +59,24 @@ def flatten_dict_simple(d: Mapping[str, Any], sep: str = ".") -> dict[str, Any]:
 
 
 def flatten_to_value_lists(
-    data: Mapping[str, Any] | Sequence[Mapping[str, Any]],
+    data: dict[str, Any] | list[dict[str, Any]],
     sep: str = ".",
     sort_lists: bool = False,
 ) -> dict[str, list[Primitive]]:
-    """Flatten nested mappings into lists of primitive leaf values.
+    """Flatten nested dictionary into lists of primitive leaf values.
 
-    Mapping keys are joined with `sep`. Lists are treated as transparent
-    containers: their elements retain the path of the list, while mapping keys
+    Dictionary keys are joined with `sep`. Lists are treated as transparent
+    containers: their elements retain the path of the list, while dictionary keys
     inside them extend that path. Consequently, lists may be nested to arbitrary
     depth and every value in the returned dictionary is a list, even when the
     corresponding input value is a scalar.
 
-    `None`, blank strings, empty lists, and empty mappings are omitted.
+    `None`, blank strings, empty lists, and empty dictionaries are omitted.
     Duplicate values are preserved. Without sorting, values retain their
     depth-first traversal order.
 
     Args:
-        data: One mapping or an ordered sequence of mappings to flatten.
+        data: One dictionary or a list of dictionaries to flatten.
         sep: Separator used to join nested mapping keys.
         sort_lists: Whether to sort every list in the result.
 
@@ -99,7 +99,7 @@ def flatten_to_value_lists(
             result[sep.join(path)].append(value)
             return
 
-        if isinstance(value, Mapping):
+        if isinstance(value, dict):
             for key, child in value.items():
                 if not isinstance(key, str):
                     raise TypeError(
@@ -122,17 +122,17 @@ def flatten_to_value_lists(
 
         raise TypeError(f"Unsupported value of type {type(value).__name__} at {sep.join(path)!r}")
 
-    if isinstance(data, Mapping):
-        records: Sequence[Mapping[str, Any]] = [data]
-    elif isinstance(data, Sequence) and not isinstance(data, (str, bytes, bytearray)):
+    if isinstance(data, dict):
+        records: list[dict[str, Any]] = [data]
+    elif isinstance(data, list):
         records = data
     else:
-        raise TypeError("data must be a mapping or an ordered sequence of mappings")
+        raise TypeError("data must be a dictionary or a list of dictionaries")
 
     for index, record in enumerate(records):
-        if not isinstance(record, Mapping):
+        if not isinstance(record, dict):
             raise TypeError(
-                "Expected a mapping at top-level sequence index "
+                "Expected a dictionary at top-level list index "
                 f"{index}, got {type(record).__name__}"
             )
         visit(record, [])
