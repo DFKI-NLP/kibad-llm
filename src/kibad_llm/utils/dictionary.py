@@ -65,13 +65,13 @@ def flatten_to_value_lists(
 ) -> dict[str, list[Primitive]]:
     """Flatten nested mappings into lists of primitive leaf values.
 
-    Mapping keys are joined with ``sep``. Lists are treated as transparent
+    Mapping keys are joined with `sep`. Lists are treated as transparent
     containers: their elements retain the path of the list, while mapping keys
     inside them extend that path. Consequently, lists may be nested to arbitrary
     depth and every value in the returned dictionary is a list, even when the
     corresponding input value is a scalar.
 
-    ``None``, blank strings, empty lists, and empty mappings are omitted.
+    `None`, blank strings, empty lists, and empty mappings are omitted.
     Duplicate values are preserved. Without sorting, values retain their
     depth-first traversal order.
 
@@ -84,7 +84,7 @@ def flatten_to_value_lists(
         A dictionary mapping flattened key paths to lists of primitive values.
 
     Raises:
-        TypeError: If ``data`` has an invalid top-level structure, a mapping has
+        TypeError: If `data` has an invalid top-level structure, a mapping has
             a non-string key, a nested value has an unsupported type, or values
             at the same path are not mutually comparable when sorting.
     """
