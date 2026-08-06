@@ -105,6 +105,11 @@ def flatten_to_value_lists(
                         f"Expected a string key at {sep.join(path) or '<root>'!r}, "
                         f"got {type(key).__name__}"
                     )
+                if sep in key:
+                    raise ValueError(
+                        f"Key {key!r} at {sep.join(path) or '<root>'!r} contains the separator {sep!r}, "
+                        f"which is not allowed"
+                    )
                 child_path = path + [key]
                 visit(child, child_path)
             return
