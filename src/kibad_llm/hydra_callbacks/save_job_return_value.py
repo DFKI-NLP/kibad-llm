@@ -1,9 +1,24 @@
+"""Save Hydra jobs' and multiruns' outputs to disk.
+
+Classes:
+    SaveJobReturnValueCallback: Handles the saving of job return-values at the ends of jobs and multiruns.
+
+Functions:
+    to_py_obj: Recursively converts numpy arrays to python lists.
+    list_of_dicts_to_dict_of_lists_recursive: Recursively converts a list of dicts to a dict of lists.
+    remove_common_overrides: Removes the common overrides from a list of lists of overrides.
+    overrides_to_identifiers: Converts a list of lists of overrides to a list of identifiers.
+    identifier_to_dict: Converts an identifier string back to a dictionary of overrides.
+    handle_previous_overrides: Handles previous result overrides in the job return object.
+
+"""
+
 from collections.abc import Hashable, Iterable
 import json
 import logging
 import os
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from hydra.core.utils import JobReturn
 from hydra.experimental.callback import Callback
@@ -22,44 +37,56 @@ from kibad_llm.utils.job_return import (
 
 
 def to_py_obj(obj: Any) -> Any:
-    """Convert a PyTorch tensor, Numpy array or python list to a python list.
+    """Recursively convert numpy arrays to python lists.
+
+    Recurses dictionaries (value only), lists, tuples.
 
     Modified version of transformers.utils.generic.to_py_obj.
+
+    Args:
+        obj: A py_obj possibly holding a numpy array.
+
+    Returns:
+        The obj, but with numpy arrays converted to python lists and numpy scalars to python scalars.
     """
     if isinstance(obj, dict):
         return {k: to_py_obj(v) for k, v in obj.items()}
     elif isinstance(obj, (list, tuple)):
         return type(obj)(to_py_obj(o) for o in obj)
     elif isinstance(obj, (np.ndarray, np.number)):  # tolist also works on 0d np arrays
-        return obj.tolist()
+        return cast(list, obj.tolist())
     else:
         return obj
 
 
-def list_of_dicts_to_dict_of_lists_recursive(list_of_dicts):
+def list_of_dicts_to_dict_of_lists_recursive(
+    list_of_dicts: list[Any],
+) -> dict[Any, Any] | list[Any]:
     """Convert a list of dicts to a dict of lists recursively.
 
+    Args:
+        list_of_dicts: A list of dicts (optionally nested).
+
+    Returns:
+        An arbitrarily nested dict of lists.
+
     Examples:
-        # works with nested dicts
+        works with nested dicts
         >>> list_of_dicts_to_dict_of_lists_recursive([{"a": 1, "b": {"c": 2}}, {"a": 3, "b": {"c": 4}}])
         {'a': [1, 3], 'b': {'c': [2, 4]}}
-        # works with incomplete dicts
+
+        works with incomplete dicts
         >>> list_of_dicts_to_dict_of_lists_recursive([{"a": 1, "b": 2}, {"a": 3}])
         {'a': [1, 3], 'b': [2, None]}
 
-        # works with nested incomplete dicts
+        works with nested incomplete dicts
         >>> list_of_dicts_to_dict_of_lists_recursive([{"a": 1, "b": {"c": 2}}, {"a": 3}])
         {'a': [1, 3], 'b': {'c': [2, None]}}
 
-        # works with nested incomplete dicts with None values
+        works with nested incomplete dicts with None values
         >>> list_of_dicts_to_dict_of_lists_recursive([{"a": 1, "b": {"c": 2}}, {"a": None}])
         {'a': [1, None], 'b': {'c': [2, None]}}
 
-    Args:
-        list_of_dicts (list[dict]): A list of dicts.
-
-    Returns:
-        dict: An arbitrarily nested dict of lists.
     """
     if not list_of_dicts:
         return {}
@@ -75,7 +102,7 @@ def list_of_dicts_to_dict_of_lists_recursive(list_of_dicts):
         # Build up the result recursively
         return {
             k: list_of_dicts_to_dict_of_lists_recursive(
-                [(d[k] if d is not None and k in d else None) for d in list_of_dicts]
+                [(d[k] if d is not None and k in d else None) for d in list_of_dicts],
             )
             for k in keys
         }
@@ -87,20 +114,22 @@ def list_of_dicts_to_dict_of_lists_recursive(list_of_dicts):
 def remove_common_overrides(
     overrides_per_result: Iterable[Iterable[str]],
 ) -> list[list[str]]:
-    """Removes the common overrides from a list of lists of overrides.
+    """Remove the common overrides from a list of lists of overrides.
 
-    Example:
+    Args:
+        overrides_per_result: A list of lists of overrides.
+
+    Returns:
+        A list of lists of overrides with common overrides removed.
+
+    Examples:
         >>> overrides_per_result = [
         ...     ["a=1", "b=2", "c=3"],
         ...     ["a=1", "b=2", "c=4"],
         ...     ["a=1", "b=3", "c=3"],
-        ]
+        ... ]
         >>> remove_common_overrides(overrides_per_result)
         [['b=2', 'c=3'], ['b=2', 'c=4'], ['b=3', 'c=3']]
-    Args:
-        overrides_per_result (list[list[str]]): A list of lists of overrides.
-    Returns:
-        list[list[str]]: A list of lists of overrides with common overrides removed.
     """
     as_dicts = [overrides_to_dict(overrides) for overrides in overrides_per_result]
     as_df = pd.DataFrame(as_dicts)
@@ -116,24 +145,24 @@ def remove_common_overrides(
 def overrides_to_identifiers(
     overrides_per_result: Iterable[Iterable[str]], sep: str = "-", remove_common: bool = True
 ) -> list[str] | None:
-    """Converts a list of lists of overrides to a list of identifiers.
+    """Convert a list of lists of overrides to a list of identifiers.
 
-    Example:
+    Args:
+        overrides_per_result: A list of lists of overrides.
+        sep: The separator to use between the overrides.
+        remove_common: If True, remove common overrides.
+
+    Returns:
+        A list of identifiers or None if the identifiers are not unique.
+
+    Examples:
         >>> overrides_per_result = [
         ...     ["a=1", "b=2", "c=3"],
         ...     ["a=1", "b=2", "c=4"],
         ...     ["a=1", "b=3", "c=3"],
-        ]
+        ... ]
         >>> overrides_to_identifiers(overrides_per_result)
         ['b=2-c=3', 'b=2-c=4', 'b=3-c=3']
-
-    Args:
-        overrides_per_result (list[list[str]]): A list of lists of overrides.
-        sep (str, optional): The separator to use between the overrides. Defaults to "-".
-        remove_common (bool, optional): If True, remove common overrides. Defaults to True.
-
-    Returns:
-        list[str] | None: A list of identifiers or None if the identifiers are not unique.
     """
 
     if remove_common:
@@ -149,17 +178,17 @@ def overrides_to_identifiers(
 def identifier_to_dict(identifier: str, sep: str = "-") -> dict[str, str]:
     """Convert an identifier string back to a dictionary of overrides.
 
-    Example:
+    Args:
+        identifier: The identifier string.
+        sep: The separator used between the overrides.
+
+    Returns:
+        The dictionary of overrides.
+
+    Examples:
         >>> identifier = "b=2-c=3"
         >>> identifier_to_dict(identifier)
         {'b': '2', 'c': '3'}
-
-    Args:
-        identifier (str): The identifier string.
-        sep (str, optional): The separator used between the overrides. Defaults to "-".
-
-    Returns:
-        dict[str, str]: The dictionary of overrides.
     """
     overrides = identifier.split(sep)
     as_dict = overrides_to_dict(overrides)
@@ -169,15 +198,19 @@ def identifier_to_dict(identifier: str, sep: str = "-") -> dict[str, str]:
 def handle_previous_overrides(
     job_return: JobReturn, key: str, replace_existing: bool = False
 ) -> None:
-    """Handle previous result overrides in the job return object. If the job return value contains a
-    <key>> field with an "overrides" field, the overrides are either used to replace the existing
+    """Handle previous result overrides in the job return object.
+
+    If the job return value contains a
+    `<key>` field with an `"overrides"` field, the overrides are either used to replace the existing
     overrides in the job return object (if replace_existing is True) or simply converted to a dictionary.
 
+    The `"overrides"` field is popped from the job return-value in either case. It is only added back, converted to
+    a dictionary, when replace_existing is False and the field was non-empty. `job_return` is modified in place.
+
     Args:
-        job_return (JobReturn): The job return object.
-        key (str): The key to look for in the job return value (e.g. "prediction").
-        replace_existing (bool, optional): If True, replace existing overrides by the prediction overrides.
-            Defaults to False.
+        job_return: The job return object.
+        key: The key to look for in the job return value (e.g. "prediction").
+        replace_existing: If True, replace existing overrides by the previous result's overrides.
     """
     if (
         isinstance(job_return.return_value, dict)
@@ -196,73 +229,62 @@ def handle_previous_overrides(
 
 
 class SaveJobReturnValueCallback(Callback):
-    """Save the job return-value in ${output_dir}/{job_return_value_filename}.
+    """Save each job's return-value in `${output_dir}/${filename}`, for every entry in `filenames`.
 
     This also works for multi-runs (e.g. sweeps for hyperparameter search). In this case, the result will be saved
     additionally in a common file in the multi-run log directory. If integrate_multirun_result=True, the
     job return-values are also aggregated (e.g. mean, min, max) and saved in another file.
 
-    params:
-    -------
-    filenames: str or list[str] (default: "job_return_value.json")
-        The filename(s) of the file(s) to save the job return-value to. If it ends with ".json",
-        the return-value will be saved as a json file. If it ends with ".md", the return-value will be
-        saved as a markdown file.
-    integrate_multirun_result: bool (default: True)
-        If True, the job return-values of all jobs from a multi-run will be rearranged into a dict of lists (maybe
-        nested), where the keys are the keys of the job return-values and the values are lists of the corresponding
-        values of all jobs. This is useful if you want to access specific values of all jobs in a multi-run all at once.
-        Also, aggregated values (e.g. mean, min, max) are created for all numeric values and saved in another file.
-    multirun_aggregator_blacklist: list[str] (default: None)
-        A list of keys to exclude from the aggregation (of multirun results), such as "count" or "25%". If None,
-        all keys are included. See pd.DataFrame.describe() for possible aggregation keys.
-        For numeric values, it is recommended to use ["min", "25%", "50%", "75%", "max"]
-        which will result in keeping only the count, mean and std values.
-    sort_markdown_columns: bool (default: False)
-        If True, the columns of the markdown table are sorted alphabetically.
-    markdown_round_digits: int (default: 3)
-        The number of digits to round the values in the markdown file. If None, no rounding is applied.
-    markdown_data_key: str (default: None)
-        If povided, use only the value at this key when saving single job results to markdown. This is useful
-        to strip metadata from the job result and, thus, allowing for correct table formatting of metric results,
-        for instance.
-    multirun_create_ids_from_overrides: bool (default: False)
-        Create job identifiers from the overrides of the jobs in a multi-run. If False, the job index is used as
-        identifier.
-    handle_previous_result: str (default: None)
-        If provided, assume that the job return-value contains a field with the given name (e.g. "prediction") that itself
-        contains an "overrides" field, the overrides from this field are either used to replace the existing overrides
-        in the job return object (if replace_existing_overrides is True) or simply converted to a dictionary and added
-        back to the job return-value (if replace_existing_overrides is False). Furthermore, the field is removed from
-        the job return-value before saving it as markdown to avoid destroying the table structure.
-    replace_existing_overrides: bool (default: False)
-        If True, replace existing overrides in the job return-value with the overrides from the job return
-        object if available. If False, the overrides are just converted to a dictionary, if available.
-    add_overrides_as_dict: bool (default: False)
-        If True, add the overrides as a dictionary to each job return-value under the key "overrides".
-    multirun_job_id_key: str (default: "job_id")
-        The key to use for the job identifiers in the integrated multi-run result.
-    multirun_convert_job_ids: bool (default: False)
-        If True, convert job ids to dictionaries. Works only if integrate_multirun_result is True.
-    multirun_show_file_contents: list[str] (default: None)
-        A list of filenames (from the filenames parameter or aggregated files) to log the contents
-        to the console after saving the multi-run results.
-    multirun_overrides_separator: str (default: "-")
-        The separator to use when creating job identifiers from overrides.
-    multirun_markdown_group_by: str or list[str] (default: None)
-        The column(s) to group by when saving the multi-run result as markdown file. For numeric columns,
-        the mean and std are calculated. For non-numeric columns, a list of values is created. If None,
-        no grouping is applied.
-    multirun_markdown_transpose: bool (default: False)
-        If True, transpose the markdown table for multi-run results.
-    paths_file: str (default: None)
-        The file to save the paths of the log directories to. If None, the paths are not saved.
-    path_id: str (default: None)
-        A prefix to add to each line in the paths_file separated by a colon. If None, no prefix is added.
-    multirun_paths_file: str (default: None)
-        The file to save the paths of the multi-run log directories to. If None, the paths are not saved.
-    multirun_path_id: str (default: None)
-        A prefix to add to each line in the multirun_paths_file separated by a colon. If None, no prefix is added.
+    This class exists to postprocess job and multirun outputs, by overwriting [Hydra's no-op callback hooks](https://hydra.cc/docs/experimental/callbacks/).
+
+    Outputs can be saved as json and markdown. The markdown output is just a table with no text around it.
+
+    For more info on the Attributes, refer to their `__init__` args counterparts.
+
+    Attributes:
+        _log (logging.Logger): The logger of this callback.
+        _job_returns (list[JobReturn]): The return objects of all jobs seen by on_job_end so far. Consumed by
+            on_multirun_end.
+        filenames (list[str]):
+
+    **Used by `on_job_end`:**
+
+    Attributes:
+        handle_previous_result (str | None):
+        replace_existing_overrides (bool):
+        paths_file (str | None):
+        markdown_data_key (str | None):
+
+    **Used by `on_multirun_end`:**
+
+    Attributes:
+        integrate_multirun_result (bool):
+        multirun_aggregator_blacklist (list[str] | None):
+        multirun_create_ids_from_overrides (bool):
+        multirun_job_id_key (str):
+        multirun_convert_job_ids (bool):
+        multirun_add_overrides_as_dict (bool):
+        multirun_show_file_contents (list[str]):
+        multirun_overrides_separator (str):
+        multirun_markdown_group_by (list[str] | None):
+        multirun_paths_file (str | None):
+        multirun_path_id (str | None):
+
+    **Used by `_save`:**
+
+    Attributes:
+        sort_markdown_columns (bool):
+        markdown_round_digits (int | None):
+        multirun_markdown_transpose (bool):
+
+    **Not used:**
+
+    Attributes:
+        path_id (str | None):
+
+    Methods:
+        on_job_end: Save a single job's return-value once the job finishes.
+        on_multirun_end: Collate and save all jobs' return-values once the multi-run finishes.
     """
 
     def __init__(
@@ -288,11 +310,71 @@ class SaveJobReturnValueCallback(Callback):
         multirun_paths_file: str | None = None,
         multirun_path_id: str | None = None,
     ) -> None:
-        self.log = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
+        """Assign args to attributes and do some safety conversions beforehand.
+
+        Args:
+            filenames: The filename(s) of the file(s) to save the job return-value to. If a string is passed, it will
+                be wrapped in a list. The internal type hence is always a list of strings.
+                If an entry ends with ".json", the return-value is saved as a json file. If it ends
+                with ".md", the return-value is saved as a markdown file. Json files are more complete data wise, whilst
+                markdown files have more settings that can be applied for readability.
+            integrate_multirun_result: If True, the job return-values of all jobs from a multi-run are rearranged
+                into a dict of lists (maybe nested), where the keys are the keys of the job return-values and the values
+                are lists of the corresponding values of all jobs. This is useful if you want to access specific values
+                of all jobs in a multi-run all at once. Also, aggregated values (e.g. mean, min, max) are created for all
+                numeric values and saved in another file.
+            multirun_aggregator_blacklist: A list of keys to exclude from the aggregation (of multirun
+                results), such as "count" or "25%". If None, all keys are included. See `pd.DataFrame.describe()` for
+                possible aggregation keys. For numeric values, it is recommended to use `["min", "25%", "50%", "75%",
+                "max"]` which will result in keeping only the count, mean and std values.
+            sort_markdown_columns: If True, the columns of the markdown table are sorted alphabetically.
+            markdown_round_digits: The number of digits to round the values in the markdown file to. If None,
+                no rounding is applied.
+            markdown_data_key: If provided and present in the job return-value, save only the value at this
+                key when saving single job results to markdown. This is useful to strip metadata from the job result and,
+                thus, allow for correct table formatting of metric results, for instance. If the key is absent (or None),
+                a legacy path is used instead, which drops the handle_previous_result field and the result format version
+                key from the markdown output.
+            multirun_create_ids_from_overrides: If True, create job identifiers from the overrides of the jobs in a
+                multi-run. If False, the job index is used as identifier.
+            multirun_job_id_key: The key to use for the job identifiers in the integrated multi-run result.
+            multirun_convert_job_ids: If True, convert job ids to dictionaries. Works only if
+                integrate_multirun_result is True.
+            handle_previous_result: If provided, assume the job return-value contains a field with the given
+                name (e.g. "prediction") that itself contains an "overrides" field. The overrides from this field are
+                either used to replace the existing overrides in the job return object (if replace_existing_overrides is
+                True) or simply converted to a dictionary and added back to the job return-value (if
+                replace_existing_overrides is False). Furthermore, on the legacy markdown path (see markdown_data_key),
+                the field is removed from the job return-value before saving it as markdown to avoid destroying the
+                table structure.
+            replace_existing_overrides: If True, replace existing overrides in the job return-value with the
+                overrides from the job return object if available. If False, the overrides are just converted to a
+                dictionary, if available.
+            multirun_add_overrides_as_dict: If True, add the overrides as a dictionary to each job return-value
+                under the key "overrides".
+            multirun_show_file_contents:  A list of filenames (from the filenames attribute or
+                aggregated files) whose contents are logged to the console after saving the multi-run results.
+                If None is passed, saves [] instead.
+            multirun_overrides_separator: The separator to use when creating job identifiers from overrides.
+            multirun_markdown_group_by:  The column(s) to group by when saving the multi-run result as
+                a markdown file. For numeric columns, the mean and std are calculated. For non-numeric columns, a list of
+                values is created. If None, no grouping is applied. A single string is wrapped into a list.
+                If a string is passed, it will be wrapped in a list.
+            multirun_markdown_transpose: If True, transpose the markdown table for multi-run results.
+            paths_file: The file to append the paths of the log directories to. If None, the paths are not
+                saved.
+            path_id: This is currently not in use. A prefix to add to each line in the paths_file,
+                separated by a colon. If None, no prefix is added.
+            multirun_paths_file: The file to save the paths of the multi-run log directories to. If None,
+                the paths are not saved.
+            multirun_path_id: A prefix to add to each line in the multirun_paths_file, separated by a colon.
+                If None, no prefix is added.
+        """
+        self._log = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
         self.filenames = [filenames] if isinstance(filenames, str) else filenames
         self.multirun_show_file_contents = multirun_show_file_contents or []
         self.integrate_multirun_result = integrate_multirun_result
-        self.job_returns: list[JobReturn] = []
+        self._job_returns: list[JobReturn] = []
         self.multirun_aggregator_blacklist = multirun_aggregator_blacklist
         self.sort_markdown_columns = sort_markdown_columns
         self.multirun_create_ids_from_overrides = multirun_create_ids_from_overrides
@@ -314,14 +396,29 @@ class SaveJobReturnValueCallback(Callback):
         self.path_id = path_id
 
     def on_job_end(self, config: DictConfig, job_return: JobReturn, **kwargs: Any) -> None:
+        """Save a single job's return-value to each of the configured filenames via the internal `_save` method.
+
+        Also appends the job to `job_returns` for later use by
+        [`on_multirun_end`][kibad_llm.hydra_callbacks.save_job_return_value.SaveJobReturnValueCallback.on_multirun_end],
+        and appends the job's output directory to `paths_file` if one is configured. For markdown output, metadata
+        fields are stripped from the return-value first (see `markdown_data_key` and `handle_previous_result`) to
+        keep the table structure intact.
+
+        Args:
+            config: Hydra config of the given job. Only `hydra.runtime.output_dir` is read.
+            job_return: The Hydra job's output object, e.g. the output of [`predict()`][kibad_llm.predict.predict].
+
+        Keyword Args:
+            **kwargs: Ignored; accepted for Hydra callback interface compatibility.
+        """
         if self.handle_previous_result is not None:
             handle_previous_overrides(
                 job_return,
                 key=self.handle_previous_result,
                 replace_existing=self.replace_existing_overrides,
             )
-        self.job_returns.append(job_return)
-        output_dir = Path(config.hydra.runtime.output_dir)  # / Path(config.hydra.output_subdir)
+        self._job_returns.append(job_return)
+        output_dir = Path(config.hydra.runtime.output_dir)
         if self.paths_file is not None:
             # append the output_dir to the file
             with open(self.paths_file, "a") as file:
@@ -348,31 +445,42 @@ class SaveJobReturnValueCallback(Callback):
             self._save(obj=obj, filename=filename, output_dir=output_dir)
 
     def on_multirun_end(self, config: DictConfig, **kwargs: Any) -> None:
+        """Collate a multi-run and all its jobs' data, then save it.
+
+        Args:
+            config: The multi-run's Hydra config.
+
+        Keyword Args:
+            **kwargs: Ignored; accepted for Hydra callback interface compatibility.
+        """
         job_ids: list[str] | list[int] | None = None
         if self.multirun_create_ids_from_overrides:
-            overrides_per_result = [jr.overrides or [] for jr in self.job_returns]
+            overrides_per_result = [jr.overrides or [] for jr in self._job_returns]
             job_ids = overrides_to_identifiers(
                 overrides_per_result, sep=self.multirun_overrides_separator, remove_common=True
             )
             if job_ids is None:
-                self.log.warning(
+                self._log.warning(
                     "Job identifiers created from overrides are not unique! "
                     "Use the job indexes instead."
                 )
 
         if job_ids is None:
-            job_ids = list[int](range(len(self.job_returns)))
+            job_ids = list[int](range(len(self._job_returns)))
 
         if self.multirun_add_overrides_as_dict:
-            for jr in self.job_returns:
+            for jr in self._job_returns:
                 jr.return_value["overrides"] = overrides_to_dict(
                     jr.overrides or [], remove_plus_prefix=True
                 )
 
         if self.integrate_multirun_result:
+            # WARN: list_of_dicts may return lists. There is a safety backup (the {"value": obj} wrapper),
+            #   but this is very sketchy.
+            #
             # rearrange the job return-values of all jobs from a multi-run into a dict of lists (maybe nested),
             obj = list_of_dicts_to_dict_of_lists_recursive(
-                [jr.return_value for jr in self.job_returns]
+                [jr.return_value for jr in self._job_returns]
             )
             if not isinstance(obj, dict):
                 obj = {"value": obj}
@@ -382,7 +490,7 @@ class SaveJobReturnValueCallback(Callback):
             # also create an aggregated result
             # convert to python object to allow selecting numeric columns
             obj_py = to_py_obj(obj)
-            obj_flat = flatten_dict(obj_py)
+            obj_flat = flatten_dict(cast(dict[str | int, Any], obj_py))
             # create dataframe from flattened dict
             df_flat = pd.DataFrame(obj_flat)
             # select only the numeric values
@@ -391,7 +499,7 @@ class SaveJobReturnValueCallback(Callback):
                 set(df_flat.columns) - set(df_numbers_only.columns) - {(self.multirun_job_id_key,)}  # type: ignore
             )
             if len(cols_removed) > 0:
-                self.log.warning(
+                self._log.warning(
                     f"Removed the following columns from the aggregated result because they are not numeric: "
                     f"{cols_removed}"
                 )
@@ -424,7 +532,7 @@ class SaveJobReturnValueCallback(Callback):
             # create a dict of the job return-values of all jobs from a multi-run
             # (_save() works better with nested dicts)
             obj = {
-                identifier: jr.return_value for identifier, jr in zip(job_ids, self.job_returns)
+                identifier: jr.return_value for identifier, jr in zip(job_ids, self._job_returns)
             }
             obj_aggregated = None
         output_dir = Path(config.hydra.sweep.dir)
@@ -463,7 +571,7 @@ class SaveJobReturnValueCallback(Callback):
             if fn in saved_files:
                 with open(str(output_dir / fn)) as file:
                     contents = file.read()
-                self.log.info(f"Contents of {output_dir / fn}:\n{contents}")
+                self._log.info(f"Contents of {output_dir / fn}:\n{contents}")
 
     def _save(
         self,
@@ -474,7 +582,27 @@ class SaveJobReturnValueCallback(Callback):
         unstack_last_index_level: bool = False,
         markdown_group_by: list[str] | None = None,
     ) -> None:
-        self.log.info(f"Saving job_return in {output_dir / filename}")
+        """Save `obj` to `output_dir / filename` as JSON or markdown.
+
+        The output format is chosen from the filename extension: ".json" writes the data as JSON, ".md" writes it as
+        a markdown table. Any other extension raises. numpy arrays are converted to native python types beforehand.
+
+        Args:
+            obj: Data to save to file.
+            filename: Output file name. Must end with ".json" or ".md".
+            output_dir: Directory to save to. Created if it does not exist.
+            is_tabular_data: Whether `obj` holds a whole table of data (a value per key per job) rather than a single
+                Series (one value per key). Only affects markdown output.
+            unstack_last_index_level: If True, unstack the last index level (the aggregation key) instead of the first
+                when building the markdown table. Only relevant for markdown output of aggregated multi-run results.
+            markdown_group_by: Column(s) to group the markdown table by via
+                [`mixed_group_by`][kibad_llm.utils.job_return.mixed_group_by]. If None, no grouping is applied.
+
+        Raises:
+            ValueError: If obj needs to be flattened, but can't.
+            ValueError: If filename has an unknown extension.
+        """
+        self._log.info(f"Saving job_return in {output_dir / filename}")
         output_dir.mkdir(parents=True, exist_ok=True)
         assert output_dir is not None
         if filename.endswith(".json"):
