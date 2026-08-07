@@ -7,7 +7,9 @@ import logging
 import math
 from typing import Any, TypeAlias, cast
 
+# append accepted primitives here
 LeafValue: TypeAlias = str | int | float | bool | None
+_LEAF_TYPES = (str, int, float, bool, type(None))
 
 logger = logging.getLogger(__name__)
 
@@ -142,8 +144,7 @@ def flatten_to_value_lists(
         ):
             return
 
-        # append accepted primitives to the list
-        if isinstance(value, (str, int, float, bool, type(None))):
+        if isinstance(value, _LEAF_TYPES):
             result[current_path].append(value)
             return
 
