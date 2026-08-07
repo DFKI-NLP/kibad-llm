@@ -92,11 +92,6 @@ class MetricWithPrepareEntryAsSet(SingleFieldMetric):
 
         """
         super().__init__(**kwargs)
-        if self.field is None and self.flatten_dicts:
-            raise ValueError(
-                "flatten_dicts is enabled, but no field is specified. "
-                "Please provide a field to extract from the flattened dictionary."
-            )
         if process_entry_func is not None:
             if process_entry_batch_func is not None:
                 logger.warning(
@@ -111,6 +106,11 @@ class MetricWithPrepareEntryAsSet(SingleFieldMetric):
         self.flatten_dicts = flatten_dicts
         if ignore_subfields is not None and self.field is not None:
             self.ignore_subfields = ignore_subfields.get(self.field, [])
+        if self.field is None and self.flatten_dicts:
+            raise ValueError(
+                "flatten_dicts is enabled, but no field is specified. "
+                "Please provide a field to extract from the flattened dictionary."
+            )
 
     def _prepare_entry_as_set(self, entry: Any) -> set:
         """Convert one prediction or reference entry into a comparable set.
