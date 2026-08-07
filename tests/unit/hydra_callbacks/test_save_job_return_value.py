@@ -135,7 +135,7 @@ class TestSaveJobReturnValueCallback:
         # Simulate multiple jobs
         for accuracy, lr in [(0.90, "0.001"), (0.92, "0.01"), (0.88, "0.1")]:
             jr = _construct_job_return(overrides=[f"lr={lr}"], return_value={"accuracy": accuracy})
-            callback.job_returns.append(jr)
+            callback._job_returns.append(jr)
 
         callback.on_multirun_end(config=mock_config)
 
@@ -172,7 +172,7 @@ class TestSaveJobReturnValueCallback:
 
         for accuracy in [0.90, 0.92, 0.88]:
             jr = _construct_job_return(overrides=[], return_value={"accuracy": accuracy})
-            callback.job_returns.append(jr)
+            callback._job_returns.append(jr)
 
         callback.on_multirun_end(config=mock_config)
 
@@ -236,7 +236,7 @@ class TestSaveJobReturnValueCallback:
             jr = _construct_job_return(
                 overrides=[f"lr={lr}", "bs=32"], return_value={"accuracy": accuracy}
             )
-            callback.job_returns.append(jr)
+            callback._job_returns.append(jr)
         callback.on_multirun_end(config=mock_config)
 
         multirun_dir = temp_output_dir / "multirun"
@@ -314,7 +314,7 @@ class TestSaveJobReturnValueCallback:
             jr = _construct_job_return(
                 overrides=[f"lr={lr}", f"bs={bs}"], return_value={"accuracy": accuracy}
             )
-            callback.job_returns.append(jr)
+            callback._job_returns.append(jr)
         callback.on_multirun_end(config=mock_config)
 
         multirun_dir = temp_output_dir / "multirun"
@@ -381,7 +381,7 @@ class TestSaveJobReturnValueCallback:
                 overrides=[f"lr={lr}", f"bs={bs}"],
                 return_value={"metrics": {"accuracy": accuracy}, "loss": loss},
             )
-            callback.job_returns.append(jr)
+            callback._job_returns.append(jr)
 
         callback.on_multirun_end(config=mock_config)
 
@@ -469,7 +469,7 @@ class TestSaveJobReturnValueCallback:
                 overrides=[f"lr={lr}", f"bs={bs}"],
                 return_value={"metrics": {"accuracy": accuracy}, "loss": loss},
             )
-            callback.job_returns.append(jr)
+            callback._job_returns.append(jr)
 
         callback.on_multirun_end(config=mock_config)
 

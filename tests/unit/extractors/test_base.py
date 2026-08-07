@@ -1,6 +1,11 @@
 import copy
 
-from kibad_llm.extractors.base import strip_metadata
+import pytest
+
+from kibad_llm.extractors.base import (
+    check_utf8_encodable,
+    strip_metadata,
+)
 
 
 def test_strip_metadata_unwraps_simple_wrapper() -> None:
@@ -52,3 +57,38 @@ def test_strip_metadata_custom_content_key() -> None:
     data = {"name": {"value": "Alice", "evidence_anchor": "…"}}
     out = strip_metadata(data, content_key="value")
     assert out == {"name": "Alice"}
+
+
+def test_check_utf8_encodable_passes_for_well_formed_data() -> None:
+    data = {
+        "response_content": "some ordinary text, including umlauts like ä ö ü",
+        "structured": {"habitat": "Wald", "species": ["Rotfuchs", "Wildschwein"]},
+        "errors": [],
+    }
+    # should not raise
+    check_utf8_encodable(data)
+
+
+def test_check_utf8_encodable_raises_for_lone_surrogate_in_plain_string() -> None:
+    with pytest.raises(UnicodeEncodeError) as excinfo:
+        check_utf8_encodable("some text with a lone surrogate \udd7a in it")
+    assert str(excinfo.value) == (
+        "'utf-8' codec can't encode character '\\udd7a' in position 32: surrogates "
+        "not allowed (string: 'some text with a lone surrogate \\udd7a in it')"
+    )
+
+
+def test_check_utf8_encodable_raises_for_lone_surrogate_nested_in_dict_and_list() -> None:
+    data = {
+        "structured": {
+            "habitat": "Wald",
+            "species": ["Rotfuchs", "Wild\udd7aschwein"],
+        }
+    }
+    with pytest.raises(UnicodeEncodeError) as excinfo:
+        check_utf8_encodable(data)
+
+    assert str(excinfo.value) == (
+        "'utf-8' codec can't encode character '\\udd7a' in position 4: surrogates "
+        "not allowed (string: 'Wild\\udd7aschwein')"
+    )
