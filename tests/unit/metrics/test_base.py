@@ -102,6 +102,53 @@ def test_prepare_entry_as_set_with_flatten_dicts():
     assert m._prepare_entry_as_set(input_data) == {"x", "y"}
 
 
+def test_prepare_entry_as_set_with_flatten_dicts_beyond_one_level():
+    m = MetricWithPrepareEntryAsSet(field="taxa.gbif.genus", flatten_dicts=True)
+    input_data = {
+        "taxa": [
+            {"name": "Bee", "gbif": {"genus": "Apis", "rank": "SPECIES"}},
+            {"gbif": {"genus": "Bombus"}},
+            {"gbif": {"genus": "Apis"}},
+            {"name": "Ant"},  # no gbif subtree at all
+        ]
+    }
+    assert m._prepare_entry_as_set(input_data) == {"Apis", "Bombus"}
+    # nothing on the requested path at all
+    assert m._prepare_entry_as_set({"taxa": [{"name": "Ant"}]}) == set()
+
+
+def test_flatten_dicts_without_field_is_rejected_at_construction():
+    with pytest.raises(ValueError, match="no field is specified"):
+        MetricWithPrepareEntryAsSet(flatten_dicts=True)
+
+    # the guard must not fire for either half of the combination on its own
+    assert MetricWithPrepareEntryAsSet(flatten_dicts=False).field is None
+    assert MetricWithPrepareEntryAsSet(field="items", flatten_dicts=True).field == "items"
+
+
+@pytest.mark.parametrize(
+    ("field", "entry", "expected"),
+    [
+        # a plain dict value was silently dropped by flatten_dict_simple -> empty set
+        ("ecosystem_type.term", {"ecosystem_type": {"term": "Wald"}}, {"Wald"}),
+        # blank strings inside primitive lists are now removed
+        ("x", {"x": ["a", "", "  ", "b"]}, {"a", "b"}),
+        # mixed-type lists used to raise ValueError("Cannot flatten list with mixed types")
+        ("x", {"x": [1, {"a": 2}]}, {1}),
+    ],
+    ids=["plain-dict-value", "blank-strings", "mixed-type-list"],
+)
+def test_prepare_entry_as_set_flatten_dicts_result_changes(field, entry, expected):
+    m = MetricWithPrepareEntryAsSet(field=field, flatten_dicts=True)
+    assert m._prepare_entry_as_set(entry) == expected
+
+
+def test_prepare_entry_as_set_flatten_dicts_rejects_unsupported_leaf():
+    m = MetricWithPrepareEntryAsSet(field="x", flatten_dicts=True)
+    with pytest.raises(TypeError, match="Unsupported value of type tuple"):
+        m._prepare_entry_as_set({"x": (1, 2)})
+
+
 def test_metric_with_tpfpfn_entries_update_tracks_state_and_counts():
     m = MetricWithTpFpFnEntries()
 
@@ -142,6 +189,24 @@ def test_metric_collection_field_overrides_replace_default_metric_kwargs_for_one
     assert m.metrics["overridden"].state_count == {"tp": 0, "fp": 1, "fn": 0}
     assert m.metrics["default"].ignore_missing_entries is True
     assert m.metrics["default"].state_count == {"tp": 0, "fp": 0, "fn": 0}
+
+
+def test_metric_collection_flattens_nested_fields_for_lazily_created_metrics():
+    m = MetricCollectionWithFieldDiscoveryAndGrouping(
+        metric_class=MetricWithTpFpFnEntries,
+        fields=["taxa.gbif.genus"],
+        flatten_dicts=True,
+    )
+    prediction = {"taxa": [{"gbif": {"genus": "Apis"}}, {"gbif": {"genus": "Bombus"}}]}
+    reference = {"taxa": [{"gbif": {"genus": "Apis"}}, {"gbif": {"genus": "Vespa"}}]}
+
+    m.update(prediction, reference, record_id="r1")
+
+    assert m.metrics["taxa.gbif.genus"].state == {
+        "tp": {("r1", "Apis")},
+        "fp": {("r1", "Bombus")},
+        "fn": {("r1", "Vespa")},
+    }
 
 
 def test_metric_with_tpfpfn_entries_generates_record_ids(caplog):

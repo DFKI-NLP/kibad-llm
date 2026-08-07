@@ -15,7 +15,7 @@ import logging
 from typing import Any, cast
 
 from kibad_llm.metric import Metric
-from kibad_llm.utils.dictionary import flatten_dict_simple
+from kibad_llm.utils.dictionary import flatten_to_value_lists
 
 logger = logging.getLogger(__name__)
 
@@ -85,6 +85,11 @@ class MetricWithPrepareEntryAsSet(SingleFieldMetric):
 
         Keyword Args:
             field: Optional field to extract from dictionary inputs.
+
+        Raises:
+            ValueError: If `field` is not provided, but `flatten_dicts` is enabled (because the flattened
+                dictionary has lists as values which cannot be converted to a set).
+
         """
         super().__init__(**kwargs)
         if process_entry_func is not None:
@@ -101,6 +106,11 @@ class MetricWithPrepareEntryAsSet(SingleFieldMetric):
         self.flatten_dicts = flatten_dicts
         if ignore_subfields is not None and self.field is not None:
             self.ignore_subfields = ignore_subfields.get(self.field, [])
+        if self.field is None and self.flatten_dicts:
+            raise ValueError(
+                "flatten_dicts is enabled, but no field is specified. "
+                "Please provide a field to extract from the flattened dictionary."
+            )
 
     def _prepare_entry_as_set(self, entry: Any) -> set:
         """Convert one prediction or reference entry into a comparable set.
@@ -117,9 +127,11 @@ class MetricWithPrepareEntryAsSet(SingleFieldMetric):
 
         Raises:
             ValueError: If `self.field` is configured but `entry` is not a dictionary.
+            TypeError: If `flatten_dicts` is enabled and `entry` has an invalid structure.
+                See [`flatten_to_value_lists`][kibad_llm.utils.dictionary.flatten_to_value_lists].
         """
         if entry is not None and isinstance(entry, dict) and self.flatten_dicts:
-            entry = flatten_dict_simple(entry)
+            entry = flatten_to_value_lists(entry, remove_empty_values=True)
 
         if self.field is not None and entry is not None:
             if not isinstance(entry, dict):
