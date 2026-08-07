@@ -85,8 +85,18 @@ class MetricWithPrepareEntryAsSet(SingleFieldMetric):
 
         Keyword Args:
             field: Optional field to extract from dictionary inputs.
+
+        Raises:
+            ValueError: If `field` is not provided, but `flatten_dicts` is enabled (because the flattened
+                dictionary has lists as values which cannot be converted to a set).
+
         """
         super().__init__(**kwargs)
+        if self.field is None and self.flatten_dicts:
+            raise ValueError(
+                "flatten_dicts is enabled, but no field is specified. "
+                "Please provide a field to extract from the flattened dictionary."
+            )
         if process_entry_func is not None:
             if process_entry_batch_func is not None:
                 logger.warning(
@@ -119,16 +129,9 @@ class MetricWithPrepareEntryAsSet(SingleFieldMetric):
             ValueError: If `self.field` is configured but `entry` is not a dictionary.
             TypeError: If `flatten_dicts` is enabled and `entry` has an invalid structure.
                 See [`flatten_to_value_lists`][kibad_llm.utils.dictionary.flatten_to_value_lists].
-                If `field` is not provided, but `flatten_dicts` is enabled (because the flattened
-                dictionary has lists as values which cannot be converted to a set).
         """
         if entry is not None and isinstance(entry, dict) and self.flatten_dicts:
             entry = flatten_to_value_lists(entry, remove_empty_values=True)
-            if self.field is None:
-                raise TypeError(
-                    "flatten_dicts is enabled, but no field is specified. "
-                    "Please provide a field to extract from the flattened dictionary."
-                )
 
         if self.field is not None and entry is not None:
             if not isinstance(entry, dict):
