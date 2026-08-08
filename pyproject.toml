@@ -40,6 +40,7 @@ dependencies = [
     "jupyter>=1.1.1,<2.0.0", # to run jupyter notebooks
     "matplotlib>=3.10.8,<4.0.0", # to run eval notebook (create plots)
     "types-regex>=2026.1.15.20260116",
+    "scienceplots>=2.2.2",
 ]
 
 [dependency-groups]
@@ -183,7 +184,7 @@ validate = true
 
 [tool.nbqa.addopts]
 flake8 = [
-    "--extend-ignore=E501"
+    "--extend-ignore=E501,E203"
 ]
 
 [tool.mypy]
