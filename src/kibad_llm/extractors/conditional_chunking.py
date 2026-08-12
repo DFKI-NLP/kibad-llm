@@ -68,10 +68,13 @@ class ConditionalUnionChunkingExtractor:
             text_id (str): Id of input document.
             * (Any): Refer to [`extract_from_text_lenient`][kibad_llm.extractors.base.extract_from_text_lenient]
 
-        TODO: {field}_list is per chunk not per override
         Returns:
             Dict with the key `structured` that holds the aggregated structured outputs.
-            Additionally there can be lists for fields at the keys `"{field}_list"`.
+            Additionally there can be lists for fields at the keys `"{field}_list"`. These hold
+            one entry per extraction call, i.e. one per (chunk, override) pair in chunk-major
+            order, matching the flat per-call layout of
+            [`ChunkingExtractor`][kibad_llm.extractors.chunking.ChunkingExtractor] and
+            [`ConditionalUnionExtractor`][kibad_llm.extractors.conditional.ConditionalUnionExtractor].
         """
 
         # extract text and id in most compatible way
@@ -91,7 +94,10 @@ class ConditionalUnionChunkingExtractor:
             max_char_buffer=self.max_char_buffer,
             tokenizer=self.tokenizer,
         )
-        results = []
+        # aggregated structured output per chunk, and the raw results of every single extraction
+        # call (one per chunk and override) to build the "{field}_list" entries from
+        chunk_structured = []
+        all_results = []
         for i, chunk in enumerate(chunks):
             # for each chunk, run the ConditionalUnionExtractor loop, extracting with overrides and history
             chunk_results = []
@@ -135,24 +141,18 @@ class ConditionalUnionChunkingExtractor:
 
                 chunk_results.append(current_result)
 
+            all_results.extend(chunk_results)
+
             # aggregate results for the current chunks extraction passes
             chunk_structured_outputs = [v.get("structured", None) for v in chunk_results]
-            chunk_aggregated_structured = self.union_aggregator(chunk_structured_outputs)
-
-            chunk_result: dict[str, Any] = {
-                "structured": chunk_aggregated_structured,
-            }
-            for field in self.return_as_list:
-                chunk_result[f"{field}_list"] = [v.get(field, None) for v in chunk_results]
-            results.append(chunk_result)
+            chunk_structured.append(self.union_aggregator(chunk_structured_outputs))
 
         # aggregate the previously aggregated results, but now for the entire text, to get a single result.
-        structured_outputs = [v.get("structured", None) for v in results]
-        aggregated_structured = self.chunking_aggregator(structured_outputs)
+        aggregated_structured = self.chunking_aggregator(chunk_structured)
 
         result: dict[str, Any] = {
             "structured": aggregated_structured,
         }
         for field in self.return_as_list:
-            result[f"{field}_list"] = [v.get(field, None) for v in results]
+            result[f"{field}_list"] = [v.get(field, None) for v in all_results]
         return result
