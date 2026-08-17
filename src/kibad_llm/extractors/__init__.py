@@ -15,6 +15,7 @@ Modules:
         repeated extraction with majority-vote aggregation.
     union: [`UnionExtractor`][kibad_llm.extractors.union.UnionExtractor] for multi-pass
         extraction with per-pass parameter overrides.
+    union_chunking: TODO
 """
 
 from .base import extract_from_text, extract_from_text_lenient
@@ -22,3 +23,4 @@ from .chunking import ChunkingExtractor
 from .conditional import ConditionalUnionExtractor
 from .repeat import RepeatingExtractor
 from .union import UnionExtractor
+from .union_chunking import UnionChunkingExtractor
