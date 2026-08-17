@@ -1,0 +1,67 @@
+{
+  "$defs": {
+    "MethodEnum": {
+      "enum": [
+        "Citizen Science",
+        "Experiment",
+        "Feldbeobachtung",
+        "Modellierung",
+        "Remote Sensing",
+        "Review",
+        "Synthese",
+        "Umfrage"
+      ],
+      "title": "MethodEnum",
+      "type": "string"
+    },
+    "StudyTypeEnum": {
+      "enum": [
+        "Gutachten",
+        "Meta-Studie",
+        "Nicht Peer-Reviewed",
+        "Originalstudie",
+        "Peer-Reviewed",
+        "Position Paper",
+        "Text Review",
+        "Vote Count"
+      ],
+      "title": "StudyTypeEnum",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Das Schema sammelt Angaben zur Art der Studie: Methoden der Datenaufnahme,\nStudienart und zugehöriges Projekt bzw. Programm.",
+  "properties": {
+    "method": {
+      "description": "Mit welcher/welchen Methode(n) wurden die Daten erhoben?",
+      "items": {
+        "$ref": "#/$defs/MethodEnum"
+      },
+      "title": "Method",
+      "type": "array"
+    },
+    "study_type": {
+      "description": "Um welche Form der wissenschaftlichen Studie handelt es sich?",
+      "items": {
+        "$ref": "#/$defs/StudyTypeEnum"
+      },
+      "title": "Study Type",
+      "type": "array"
+    },
+    "project": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Gehört die Studie zu einem größeren Programm oder Projekt? Wenn ja, zu welchem?",
+      "title": "Project"
+    }
+  },
+  "title": "EcosystemStudyFeaturesStudy",
+  "type": "object"
+}

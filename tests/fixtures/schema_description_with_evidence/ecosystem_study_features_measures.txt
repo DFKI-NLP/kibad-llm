@@ -1,0 +1,37 @@
+Beschreibung: Das Schema sammelt Angaben zu den untersuchten Maßnahmen für die Biodiversität: Schutzgebiete, Bewirtschaftungsmaßnahmen, einmalige Maßnahmen sowie das Transformationspotenzial.
+Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
+- conservation_area: Welche Schutzgebiete werden in der Studie untersucht? | Kardinalität: 0..* | Typ: object
+  Beschreibung: Schutzgebiet mit Name, Beschreibung und Erfolg.
+  - name: Name des Schutzgebiets | Kardinalität: 0..1 | Typ: object
+    - content: | Kardinalität: 1 | Typ: string
+    - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
+  - description: Charakterisierung des Schutzgebiets | Kardinalität: 0..1 | Typ: object
+    - content: | Kardinalität: 1 | Typ: string
+    - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
+  - success: Hatte das Schutzgebiet einen messbaren Effekt auf die Biodiversität? | Kardinalität: 1 | Typ: object
+    Beschreibung: Hatte das Schutzgebiet einen messbaren Effekt auf die Biodiversität?
+    - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: ja; nein; teilweise; unbekannt
+    - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
+- management_measure: Wurden Formen der Bewirtschaftung als Maßnahmen für die Biodiversität untersucht? | Kardinalität: 0..* | Typ: object
+  Beschreibung: Bewirtschaftungsmaßnahme mit Beschreibung und Erfolg.
+  - description: Beschreibung der Bewirtschaftungsmaßnahme | Kardinalität: 1 | Typ: object
+    Beschreibung: Beschreibung der Bewirtschaftungsmaßnahme
+    - content: | Kardinalität: 1 | Typ: string
+    - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
+  - success: Hatte die Bewirtschaftung als Maßnahme für die Biodiversität einen messbaren Effekt? | Kardinalität: 1 | Typ: object
+    Beschreibung: Hatte die Bewirtschaftung als Maßnahme für die Biodiversität einen messbaren Effekt?
+    - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: ja; nein; teilweise; unbekannt
+    - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
+- impulse_measure: Wurden einmalige Maßnahmen für die Biodiversität untersucht? | Kardinalität: 0..* | Typ: object
+  Beschreibung: Einmalige Maßnahme mit Beschreibung und Erfolg.
+  - description: Beschreibung der einmaligen Maßnahme | Kardinalität: 1 | Typ: object
+    Beschreibung: Beschreibung der einmaligen Maßnahme
+    - content: | Kardinalität: 1 | Typ: string
+    - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
+  - success: Hatte die einmalige Maßnahme für die Biodiversität einen messbaren Effekt? | Kardinalität: 1 | Typ: object
+    Beschreibung: Hatte die einmalige Maßnahme für die Biodiversität einen messbaren Effekt?
+    - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: ja; nein; teilweise; unbekannt
+    - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
+- transformation_potential: In welche der folgenden Kategorien lässt sich die im Text behandelte Transformation einordnen? | Kardinalität: 0..* | Typ: object
+  - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Lebensraumspezifischer Wandlungsprozess; Lebensraumunabhängiger Wandlungsprozess; Lebensraumübergreifender Wandlungsprozess
+  - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
