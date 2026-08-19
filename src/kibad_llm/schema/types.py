@@ -1180,11 +1180,6 @@ class EcosystemStudyFeaturesCoreFields(BaseEcosystemStudyFeatures):
 class EcosystemStudyFeaturesCoreFieldsHalfOne(BaseEcosystemStudyFeatures):
     """Das Schema sammelt Angaben zu den wichtigsten biodiversitätsbezogenen Merkmalen der Studie:
     Lebensräume und Arten bzw. Artengruppen.
-
-    Dieses Schema ist die erste Hälfte von [`EcosystemStudyFeaturesCoreFields`][..EcosystemStudyFeaturesCoreFields].
-    In kombination mit [`EcosystemStudyFeaturesCoreFieldsHalfTwo`][..EcosystemStudyFeaturesCoreFieldsHalfTwo]
-    erlaubt es das Schema [`EcosystemStudyFeaturesCoreFields`][..EcosystemStudyFeaturesCoreFields] in
-    zwei Durchläufen zu extrahieren.
     """
 
     habitat: list[HabitatEnum] = Field(
@@ -1209,11 +1204,6 @@ class EcosystemStudyFeaturesCoreFieldsHalfOne(BaseEcosystemStudyFeatures):
 class EcosystemStudyFeaturesCoreFieldsHalfTwo(BaseEcosystemStudyFeatures):
     """Das Schema sammelt Angaben zu den wichtigsten biodiversitätsbezogenen Merkmalen der Studie:
     Ökosystemtypen und die untersuchte Biodiversitätsebene.
-
-    Dieses Schema ist die zweite Hälfte von [`EcosystemStudyFeaturesCoreFields`][..EcosystemStudyFeaturesCoreFields].
-    In kombination mit [`EcosystemStudyFeaturesCoreFieldsHalfOne`][..EcosystemStudyFeaturesCoreFieldsHalfOne]
-    erlaubt es das Schema [`EcosystemStudyFeaturesCoreFields`][..EcosystemStudyFeaturesCoreFields] in
-    zwei Durchläufen zu extrahieren.
     """
 
     biodiversity_level: list[BiodiversityLevelEnum] = Field(
