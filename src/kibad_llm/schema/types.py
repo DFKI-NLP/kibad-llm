@@ -1175,3 +1175,54 @@ class EcosystemStudyFeaturesCoreFields(BaseEcosystemStudyFeatures):
         alias="Ökosystemtyp",
         description="Welche Ökosystemtypen werden betrachtet?",
     )
+
+
+class EcosystemStudyFeaturesCoreFieldsHalfOne(BaseEcosystemStudyFeatures):
+    """Das Schema sammelt Angaben zu den wichtigsten biodiversitätsbezogenen Merkmalen der Studie:
+    Lebensräume und Arten bzw. Artengruppen.
+
+    Dieses Schema ist die erste Hälfte von [`EcosystemStudyFeaturesCoreFields`][..EcosystemStudyFeaturesCoreFields].
+    In kombination mit [`EcosystemStudyFeaturesCoreFieldsHalfTwo`][..EcosystemStudyFeaturesCoreFieldsHalfTwo]
+    erlaubt es das Schema [`EcosystemStudyFeaturesCoreFields`][..EcosystemStudyFeaturesCoreFields] in
+    zwei Durchläufen zu extrahieren.
+    """
+
+    habitat: list[HabitatEnum] = Field(
+        default_factory=list,
+        alias="Lebensräume",
+        description="Um welchen der folgenden Lebensräume oder um welche Kombination "
+        "der folgenden Lebensräume geht es in dem Text?",
+    )
+    taxa: list[Taxa] = Field(
+        default_factory=list,
+        alias="Arten",
+        description="Welche Arten bzw. Artengruppen werden in der Studie untersucht? Verwende die kleinste "
+        "machbare Ebene: Wenn eine Studie nur wenige Arten behandelt, sollten diese auf Artebene mit ihrem "
+        "wissenschaftlichen und deutschen Namen angegeben werden. Werden jedoch sehr viele Arten "
+        "behandelt oder eine Artengruppe besprochen, wird die Artengruppe als 'Sammelbegriff' angegeben. "
+        "Falls die Studie auf englisch ist, übersetze Art- bzw. Artengruppennamen ins Deutsche. "
+        "Ergänze, wenn nicht angegeben, die wissenschaftlichen Artennamen, und umgekehrt die "
+        "deutschen Namen, wenn nur die wissenschaftlichen Artennamen verwendet wurden. ",
+    )
+
+
+class EcosystemStudyFeaturesCoreFieldsHalfTwo(BaseEcosystemStudyFeatures):
+    """Das Schema sammelt Angaben zu den wichtigsten biodiversitätsbezogenen Merkmalen der Studie:
+    Ökosystemtypen und die untersuchte Biodiversitätsebene.
+
+    Dieses Schema ist die zweite Hälfte von [`EcosystemStudyFeaturesCoreFields`][..EcosystemStudyFeaturesCoreFields].
+    In kombination mit [`EcosystemStudyFeaturesCoreFieldsHalfOne`][..EcosystemStudyFeaturesCoreFieldsHalfOne]
+    erlaubt es das Schema [`EcosystemStudyFeaturesCoreFields`][..EcosystemStudyFeaturesCoreFields] in
+    zwei Durchläufen zu extrahieren.
+    """
+
+    biodiversity_level: list[BiodiversityLevelEnum] = Field(
+        default_factory=list,
+        alias="Biodiversitätsebene",
+        description="Auf welche der folgenden Ebenen wird Biodiversität in der Studie gemessen? ",
+    )
+    ecosystem_type: list[EcosystemTypeSimple] = Field(
+        default_factory=list,
+        alias="Ökosystemtyp",
+        description="Welche Ökosystemtypen werden betrachtet?",
+    )
