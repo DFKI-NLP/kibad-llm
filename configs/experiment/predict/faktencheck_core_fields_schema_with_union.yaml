@@ -13,8 +13,8 @@
 # uv run -m kibad_llm.predict experiment/predict=faktencheck_core_fields_schema_with_chunking pdf_directory=path/to/pdf/files
 
 defaults:
-  - override /extractor: union_chunking
   # use two override setups (setup_a and setup_b) to extract with two different schemas separately
   - /extractor/schema@extractor.overrides.setup_a.schema: faktencheck_core_half_one
   - /extractor/schema@extractor.overrides.setup_b.schema: faktencheck_core_half_two
+  - override /extractor: union_chunking
   - override /extractor/prompt_template: faktencheck_core_v1_with_chunking
