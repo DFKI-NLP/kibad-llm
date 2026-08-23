@@ -1,0 +1,308 @@
+{
+  "structured": {
+    "landuse": [
+      "Energieproduktion",
+      "Landwirtschaft"
+    ],
+    "habitat": [
+      "Boden"
+    ],
+    "location": [
+      {
+        "country": "Deutschland"
+      },
+      {
+        "country": "Deutschland",
+        "federal_state": "Bayern",
+        "name": "Bayern"
+      },
+      {
+        "country": "Deutschland",
+        "federal_state": "Brandenburg",
+        "name": "Brandenburg"
+      },
+      {
+        "country": "Deutschland",
+        "federal_state": "Mecklenburg-Vorpommern",
+        "name": "Niedersachsen"
+      },
+      {
+        "country": "Deutschland",
+        "federal_state": "Niedersachsen",
+        "name": "Niedersachsen"
+      },
+      {
+        "country": "Deutschland",
+        "federal_state": "Schleswig-Holstein",
+        "name": "Schleswig-Holstein"
+      },
+      {
+        "federal_state": "Brandenburg"
+      },
+      {
+        "federal_state": "Mecklenburg-Vorpommern"
+      },
+      {
+        "federal_state": "Niedersachsen"
+      }
+    ],
+    "natural_region": [
+      "Alpenvorland",
+      "Norddeutsches Tiefland"
+    ],
+    "ecosystem_type": [
+      {
+        "category": "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes",
+        "term": "Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte"
+      }
+    ]
+  },
+  "structured_with_metadata_list": [
+    {
+      "habitat": [
+        {
+          "content": "Boden",
+          "evidence_anchor": "Moorböden sind v.a. in der norddeutschen Tiefebene und im Alpenvorland verbreitet",
+          "evidence_num_matches": 1,
+          "first_evidence_start": 834,
+          "first_evidence_end": 915,
+          "first_evidence_snippet": "Moorböden), die bundesweit\nnur einen Flächenanteil von 5 % einnehmen. Moorböden sind v.a. in der norddeutschen Tiefebene und\nim Alpenvorland verbreitet und werden überwiegend (rd. 70 %) landwirtschaftlich genutzt.\nMoorböden nehmen"
+        }
+      ],
+      "natural_region": [
+        {
+          "content": "Norddeutsches Tiefland",
+          "evidence_anchor": "in der norddeutschen Tiefebene",
+          "evidence_num_matches": 1,
+          "first_evidence_start": 854,
+          "first_evidence_end": 884,
+          "first_evidence_snippet": "nur einen Flächenanteil von 5 % einnehmen. Moorböden sind v.a. in der norddeutschen Tiefebene und\nim Alpenvorland verbreitet und werden überwiegend (rd. 70 %)"
+        },
+        {
+          "content": "Alpenvorland",
+          "evidence_anchor": "im Alpenvorland",
+          "evidence_num_matches": 1,
+          "first_evidence_start": 889,
+          "first_evidence_end": 904,
+          "first_evidence_snippet": "% einnehmen. Moorböden sind v.a. in der norddeutschen Tiefebene und\nim Alpenvorland verbreitet und werden überwiegend (rd. 70 %) landwirtschaftlich genutzt.\nMoorböden"
+        }
+      ],
+      "landuse": [
+        {
+          "content": "Landwirtschaft",
+          "evidence_anchor": "Moorböden ... wurden in Bayern und Schleswig-Holstein mit dem Ziel errichtet, stark degradierten, zuvor landwirtschaftlich genutzten Moorböden aufzuwerten",
+          "evidence_num_matches": 0
+        },
+        {
+          "content": "Energieproduktion",
+          "evidence_anchor": "PVA auf Moorböden ... Nutzung von Sonnenenergie statt fossiler Energieträger",
+          "evidence_num_matches": 0
+        }
+      ]
+    },
+    {
+      "ecosystem_type": [],
+      "location": [
+        {
+          "country": {
+            "content": "Deutschland",
+            "evidence_anchor": "In Deutschland stammen derzeit knapp 7 % der Treibhausgasemissionen (THG‑Emissionen, 53 Mio. Tonnen CO₂‑Äq.) [3] von entwässerten organischen Böden (im Folgenden: Moorböden)",
+            "evidence_num_matches": 0
+          },
+          "federal_state": {
+            "content": "Mecklenburg-Vorpommern",
+            "evidence_anchor": "Moorböden nehmen in Mecklenburg‑Vorpommern 12 %, und in Niedersachsen 14 % der Landesfläche ein [4]",
+            "evidence_num_matches": 0
+          },
+          "name": {
+            "content": "Niedersachsen",
+            "evidence_anchor": "In Niedersachsen sind die THG–Emissionen aus Mooren mehr als doppelt so hoch …",
+            "evidence_num_matches": 0
+          }
+        },
+        {
+          "country": {
+            "content": "Deutschland",
+            "evidence_anchor": "In Deutschland stammen derzeit knapp 7 % der Treibhausgasemissionen …",
+            "evidence_num_matches": 0
+          },
+          "federal_state": {
+            "content": "Niedersachsen",
+            "evidence_anchor": "In Niedersachsen sind die THG–Emissionen aus Mooren mehr als doppelt so hoch und stehen hinter dem Sektor Energie auf Platz 2, …",
+            "evidence_num_matches": 0
+          },
+          "name": {
+            "content": "Niedersachsen",
+            "evidence_anchor": "In Niedersachsen…",
+            "evidence_num_matches": 0
+          }
+        },
+        {
+          "country": {
+            "content": "Deutschland",
+            "evidence_anchor": "In Deutschland stammen derzeit knapp 7 % …",
+            "evidence_num_matches": 0
+          },
+          "federal_state": {
+            "content": "Bayern",
+            "evidence_anchor": "Erste Anlagen wurden in den Jahren 2020 – 2021 in Bayern und Schleswig-Holstein …",
+            "evidence_num_matches": 0
+          },
+          "name": {
+            "content": "Bayern",
+            "evidence_anchor": "Erste Anlagen wurden in den Jahren 2020 – 2021 in Bayern…",
+            "evidence_num_matches": 0
+          }
+        },
+        {
+          "country": {
+            "content": "Deutschland",
+            "evidence_anchor": "In Deutschland stammen derzeit knapp 7 % …",
+            "evidence_num_matches": 0
+          },
+          "federal_state": {
+            "content": "Schleswig-Holstein",
+            "evidence_anchor": "Erste Anlagen wurden in den Jahren 2020 – 2021 in Bayern und Schleswig-Holstein …",
+            "evidence_num_matches": 0
+          },
+          "name": {
+            "content": "Schleswig-Holstein",
+            "evidence_anchor": "Erste Anlagen wurden in den Jahren 2020 – 2021…",
+            "evidence_num_matches": 0
+          }
+        },
+        {
+          "country": {
+            "content": "Deutschland",
+            "evidence_anchor": "In Deutschland stammen derzeit knapp 7 % …",
+            "evidence_num_matches": 0
+          },
+          "federal_state": {
+            "content": "Brandenburg",
+            "evidence_anchor": "In Brandenburg gibt die vorläufige Handlungsempfehlung des Ministeriums für Landwirtschaft …",
+            "evidence_num_matches": 0
+          },
+          "name": {
+            "content": "Brandenburg",
+            "evidence_anchor": "In Brandenburg gibt die vorläufige Handlungsempfehlung des Ministeriums …",
+            "evidence_num_matches": 0
+          }
+        }
+      ]
+    },
+    {
+      "habitat": [
+        {
+          "content": "Boden",
+          "evidence_anchor": "landwirtschaftlich genutzten Moorböden",
+          "evidence_num_matches": 1,
+          "first_evidence_start": 21659,
+          "first_evidence_end": 21697,
+          "first_evidence_snippet": "2. Auflage Juni 2021. Demnach müssen jährlich 5 % der landwirtschaftlich genutzten Moorböden vernässt werden, das entspricht 50.000 ha\npro Jahr.\n17 GMC"
+        }
+      ],
+      "natural_region": [
+        {
+          "content": "Norddeutsches Tiefland",
+          "evidence_anchor": "Mecklenburg-Vorpommern",
+          "evidence_num_matches": 1,
+          "first_evidence_start": 21035,
+          "first_evidence_end": 21057,
+          "first_evidence_snippet": "M-V (2017): Umsetzung von Paludikultur auf landwirtschaftlich genutzten Flächen in Mecklenburg-Vorpommern. Fachstrategie zur\nUmsetzung der nutzungsbezogenen Vorschläge des Moorschutzkonzeptes. Ministerium für"
+        }
+      ],
+      "landuse": [
+        {
+          "content": "Landwirtschaft",
+          "evidence_anchor": "landwirtschaftlich genutzten Moorböden",
+          "evidence_num_matches": 1,
+          "first_evidence_start": 21659,
+          "first_evidence_end": 21697,
+          "first_evidence_snippet": "2. Auflage Juni 2021. Demnach müssen jährlich 5 % der landwirtschaftlich genutzten Moorböden vernässt werden, das entspricht 50.000 ha\npro Jahr.\n17 GMC"
+        }
+      ]
+    },
+    {
+      "ecosystem_type": [
+        {
+          "category": {
+            "content": "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes",
+            "evidence_anchor": "Klimaschonende, biodiversitätsfördernde Bewirtschaftung von Niedermoorböden",
+            "evidence_num_matches": 0
+          },
+          "term": {
+            "content": "Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte",
+            "evidence_anchor": "Evaluierung von Moor-Wiedervernässung in Deutschland",
+            "evidence_num_matches": 1,
+            "first_evidence_start": 20841,
+            "first_evidence_end": 20893,
+            "first_evidence_snippet": "Kaiser M., Reichelt F., Tanneberger F. & H. Joosten (2021): Evaluierung von\nMoor-Wiedervernässung in Deutschland. Naturschutz und Biologische Vielfalt 171: 121-148.\n14 LM M-V (2017):"
+          }
+        }
+      ],
+      "location": [
+        {
+          "country": {
+            "content": "Deutschland",
+            "evidence_anchor": "Klimaschutz im Agrar- und Ernährungssystem Deutschlands",
+            "evidence_num_matches": 1,
+            "first_evidence_start": 20178,
+            "first_evidence_end": 20233,
+            "first_evidence_snippet": "Martinez, J., Osterburg, B., Taube, F. & Thom, F. (2021): Klimaschutz im Agrar- und Ernährungssystem Deutschlands: Die drei\nzentralen Handlungsfelder auf dem Weg zur Klimaneutralität. Stiftung"
+          }
+        },
+        {
+          "federal_state": {
+            "content": "Niedersachsen",
+            "evidence_anchor": "Factsheet Torfmoos-Anbau in Niedersachsen",
+            "evidence_num_matches": 0
+          }
+        },
+        {
+          "federal_state": {
+            "content": "Mecklenburg-Vorpommern",
+            "evidence_anchor": "Umsetzung von Paludikultur auf landwirtschaftlich genutzten Flächen in Mecklenburg-Vorpommern",
+            "evidence_num_matches": 1,
+            "first_evidence_start": 20964,
+            "first_evidence_end": 21057,
+            "first_evidence_snippet": "Naturschutz und Biologische Vielfalt 171: 121-148.\n14 LM M-V (2017): Umsetzung von Paludikultur auf landwirtschaftlich genutzten Flächen in Mecklenburg-Vorpommern. Fachstrategie zur\nUmsetzung der nutzungsbezogenen Vorschläge des Moorschutzkonzeptes. Ministerium für"
+          }
+        },
+        {
+          "federal_state": {
+            "content": "Brandenburg",
+            "evidence_anchor": "Freiflächensolaranlagen (PV-FFA)",
+            "evidence_num_matches": 1,
+            "first_evidence_start": 19987,
+            "first_evidence_end": 20019,
+            "first_evidence_snippet": "[Freiflächensolaranlagen (PV-FFA)](https://mluk.brandenburg.de/sixcms/media.php/9/MLUK-Handlungsempfehlung-PV-FFA.pdf)\n11 Grethe, H., Martinez, J., Osterburg, B., Taube, F. &"
+          }
+        }
+      ]
+    }
+  ],
+  "errors_list": [
+    [],
+    [],
+    [],
+    []
+  ],
+  "reasoning_content_list": [
+    "We need to extract info based on schema. We must find habitat, natural_region, climate, landuse from document.\n\nWe look for habitat content references. Document mentions: \"moor\" as land. habitats: Bode: \"Boden\", \"Wald\"? Moor is \"Boden\". Also references to \"Wald\" maybe? Actually no forests. \"Boden\" for peatland. Also \"Urbane Räume\"? Not applicable. \"Boden\" is an allowed value. Additionally \"Binnengewässer und Auen\" no. \"Küsten\" no. \"Urbane Räume\" no. \"Wald\" no. So habitat: \"Boden\".\n\nWe need evidence anchor: a literal quote that shows we extracted.\n\nIn context: \"Moorböden\" paragraphs.\n\nWhere do we see explicit statement? Example: \"Im Deutschen, nur 5% Flächenanteil\" etc. But need a quote with mention of habitat \"Boden\". Maybe a sentence like \"Moorböden sind v.a. in der norddeutschen Tiefebene ...\". That indicates \"Boden\". We can use quote: \"Moorböden…\". The exact quote: \"Moorböden sind v.a. in der norddeutschen Tiefebene und im Alpenvorland verbreitet\". Use that as evidence anchor. But we need a quote that indicates \"Boden\". We might use: \"Moorböden im Norddeutschen Tiefebene\" shows habitat Boden. But habitat reference may need to mention \"Boden\". Could just quote \"Moorböden\" as evidence.\n\nLet's search for explicit mention of \"Boden\" as habitat. Also \"Boden\" is itself an allowed value.\n\nFind any quote: \"Moorböden ...\". The word \"Moorböden\" is the habitat.\n\nNow natural region: Which natural region is referenced? Several: \"Norddeutsches Tiefland\", \"Alpenvorland\", \"Nord- und Ostsee\", \"Alpen\", \"Mittelgebirgsschwelle\", \"Schichtstufenland beidseits des Oberrheingrabens\". In text, mention \"norddeutschen Tiefebene\" and \"Alpenvorland\". So natural_region includes \"Norddeutsches Tiefland\" and \"Alpenvorland\".\n\nEvidence anchors: quotes that indicate region: \"in der norddeutschen Tiefebene\" and \"im Alpenvorland\". Use those.\n\nClimate: the climate descriptions: For the region, may mention \"maritim\" or \"kontinental\" etc. The document does not give explicit climate literal descriptors. Check text: \"in der norddeutschen Tiefebene…\". That's typically \"maritim\". But not explicitly in text. The question: \"Welche Umschreibung trifft auf das Klima des Untersuchungsgebiets zu?\" Must find sentence that includes climate description. Search for e.g., \"maritim\" or \"kontinental\". Possibly none.\n\nLet's search: The text may not contain climate terms. I will scan mentally. I don't see any of given climate descriptors. So maybe no climate field.\n\nThus we omit climate entry.\n\nLanduse: Which land use categories? It mentions \"landwirtschaftlich genutzt\" – agriculture. Also \"Bau\" maybe? \"PVA\" energy production. But landuse refers to what is being used or near the area. For PVA on moors that are farmland. So \"Landwirtschaft\". Also \"Energieproduktion\" for the PVA itself. Also \"Brachliegende Flächen\" maybe if drained? There's mention of \"pregen\" etc.\n\nWe could include \"Landwirtschaft\". Also \"Energieproduktion\". It's an extract of landuse categories. The example says can be multiple. So we need at least \"Landwirtschaft\" because moors are drained agricultural land. And \"Energieproduktion\" due to solar PV.\n\nEvidence anchor: quote referencing \"Landwirtschaftlich genutzte Moorböden\" and \"PVA ...\". Quoting: \"PVA auf dafür wiedervernässten Moorböden ... Energiesektor durch die Nutzung von Sonnenenergie ...\". Also \"Moorböden … wurden in Bayern und Schleswig-Holstein ... errichtet ...\".\n\nWe need to supply JSON with arrays of objects for each property. For habitat: array with one object. For natural_region: array two objects. For landuse: array two objects.\n\nClimate not included.\n\nEverything must be JSON. No additional fields.\n\nLet's craft.\n\nFirst habitat object:\n\n{\n  \"content\": \"Boden\",\n  \"evidence_anchor\": \"Moorböden sind v.a. in der norddeutschen Tiefebene und im Alpenvorland verbreitet\"\n}\n\nSecond natural_region objects:\n\nobject1: content \"Norddeutsches Tiefland\", evidence \"in der norddeutschen Tiefebene\"\nobject2: content \"Alpenvorland\", evidence \"im Alpenvorland\"\n\nThird landuse objects:\n\nobject1: content \"Landwirtschaft\", evidence \"Moorböden … wurden in Bayern ... landwirtschaftlich genutzte Moorböden\"\nobject2: content \"Energieproduktion\", evidence \"PVA auf Moorböden ... Nutzung von Sonnenenergie\"\n\nMake sure quotes valid. Use properly escaped.\n\nAlso we might include \"Brachliegende Flächen\" maybe but not necessary.\n\nWe should maintain lower-case or as given? The schema expects exact allowed values. They are capitalized: \"Landwirtschaft\". Good.\n\nWe need JSON top-level containing fields: habitat, natural_region, climate, landuse. Climate omitted? But field must be present? The schema says * optional. Only if setting. For JSON, we probably omit climate field entirely. But ensure fields present for those we have.\n\nThus final JSON:\n\n{\n  \"habitat\": [...],\n  \"natural_region\": [...],\n  \"landuse\": [...]\n}\n\nNow produce final answer.",
+    "We need to extract ecosystem types studied in the study and locations. The document includes mention of various biotopes and mentions of Moorböden, measurements etc. We need to identify ecosystem types. Allowed values for term: long list includes \"Waldfreie Niedermoore\" etc. In the document: \"Waldfreie Niedermoore\" appears? The text says \"Waldfreie Niedermoore\" maybe. It mentions \"Hoch-, Zwischen- und Übergangsmoore\" (in description of category). Also \"Moore der subalpinen bis alpinen Stufe\" not exactly. Let's search: We have \"Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte\" but not in text? The term \"Waldfreie Niedermoore\" appears? Let's scan: The document contains text \"Waldfreie Niedermoore\". Actually earlier: \"Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte\". I think that's present in the list but not in our text? Wait, in the list of allowed values for term includes \"Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte\". But we need to find evidence in the original text. In the document, we have: \"Waldfreie Niedermoore\" maybe not. There is mention: \"Waldfreie Niedermoore\". Let's search mentally: There's no explicit mention of \"Waldfreie Niedermoore\" in the body. The text does mention \"Moorböden\". Also \"Niedermoor\" and \"Hochmoore\". We should extract ecosystem types present. The document mentions: \"Moorböden\" (which is \"Moore der subalpinen bis alpinen Stufe\"? Not exactly). There's \"Niedermoor\" (low moor). The allowed value for term includes \"Waldfreie Niedermoore\" but I don't see in the text.\n\nThere is mention: \"Hochmoore\". Let's check: \"Hochmoore und andere organische Böden\". Indeed: \"Hochmoore und andere organische Böden\". So \"Hochmoore\" is a term. That is in the allowed list? There's \"Waldfreie Niedermoore\" but not \"Hochmoore\"? In list of allowed values: \"Waldfreie Niedermoore und Sümpfe\". No \"Hochmoore\" on the list. But there is \"Waldfreie Niedermoore\". but no \"Hochmoore\"? Check further: \"Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte\" is present. But \"Hochmoore\" not.\n\nBut maybe the categories include \"Waldfreie Niedermoore\". So we could use \"Waldfreie Niedermoore\" as term. But evidence anchor: we need a quote from the original text. The text does not include that term. So we cannot.\n\nAlternatively use \"Moorböden\" but is that a term? The allowed term list includes many specific names of biotopes; \"Moorböden\" is not listed. But maybe \"Waldfreie Niedermoore\" or \"Niedermoore\" appears. There's \"Niedermoor\" maybe that is \"Waldfreie Niedermoore\"? The text says: \"Waldfreie Niedermoore\" not present. However \"Niedermoor\" is in categories with \"Waldfreie Niedermoore\"? Actually there's \"Waldfreie Niedermoore und Sümpfe\". So \"Niedermoor\" alone might not be allowed.\n\nAlso \"Waldfreie Niedermoore\" not present. But \"Niedermoore\" alone might be within \"Waldfreie Niedermoore\". So we might not be able to produce.\n\nAlternatively we could classify ecosystem types as \"Moorböden (Niedermoore, Hochmoore)\". But the field \"term\" expects a value from the list. The term may not be in the list? The spec says the allowed values are the long list. We need to provide only those allowed. So we cannot invent \"Moore\".\n\nWhat's the best we can do? The document states: \"Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte\" maybe that phrase appears in the list of allowed values but not in doc. Let's search in doc: There's \"Waldfreie Niedermoore\" partially? I glance: It's maybe in other parts not shown? There's mention: \"Waldfreie Niedermoore\". I think earlier there is \"Waldfreie Niedermoore\". Let's quickly scan the doc again. In the part: \"Paludi-PV: Torfmoose sind niedrigwüchsige Pflanzen, die in Paludikultur auf Hochmooren angebaut werden können.\" No \"Waldfreie\". In \"Erweiterung\" there might be \"Waldfreie\". I don't recall seeing such. But there might be: \"Waldfreie Niedermoore\" appears after \"Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte\" maybe it's not in doc. So we cannot use evidence.\n\nThus we might not provide any ecosystem types. But we still need to provide a JSON with empty array for ecosystem_type? The system says no additional fields. For reason, we can return empty array. And location? We can extract sites: Study examines \"Mecklenburg-Vorpommern\", \"Niedersachsen\", \"Bayern\", \"Schleswig-Holstein\", \"Bundesrepublik Deutschland\" in general. Also mentions \"Entwässerte Moorböden\", \"Moorflächen\". That's location but not specific. We should list each with country Germany, federal_state values where present. Provide evidence anchor from original text.\n\nThus for ecosystem_type, we might set it empty.\n\nLocation objects: need country, federal_state, maybe name. Provide country \"Deutschland\" (German). Acceptable value: \"Deutschland\" not in list? The list has only \"Baden-Württemberg; Bayern; Berlin; Brandenburg; Bremen; Hamburg; Hessen; Mecklenburg-Vorpommern; Niedersachsen; Nordrhein-Westfalen; Rheinland-Pfalz; Saarland; Sachsen; Sachsen-Anhalt; Schleswig-Holstein; Thüringen\". So country must be within list? Wait country field: \"country: Land des Untersuchungsgebietes\". Probably we can use \"Deutschland\". But not in allowed values list. But specification does not restrict content. So we can set \"Deutschland\". Provide evidence anchor from text: \"In Deutschland stammen derzeit knapp 7 % der Treibhausgasemissionen (THG-Emissionen, 53 Mio. Tonnen CO2-Äq.) [3] von entwässerten organischen Böden (im Folgenden: Moorböden)\".\n\nAlso for federal_state: each mention. Provide evidence.\n\nExample: Mecklenburg-Vorpommern: text: \"Moorböden nehmen in Mecklenburg-Vorpommern 12 %, und in Niedersachsen 14 % der Landesfläche ein [4]\". Also \"In Mecklenburg-Vorpommern sind sie die größte Einzelquelle von THG-Emissionen und emittieren mehr als die Sektoren Energie und Industrie zusammen [5] .\" So we can list Mecklenburg-Vorpommern.\n\nProvide name: maybe \"Länderfläche\" not necessary. We could leave name null.\n\nSimilarly Niedersachsen: text: \"In Niedersachsen sind die THGEmissionen aus Mooren mehr als doppelt so hoch und stehen hinter dem Sektor Energie auf Platz 2, noch vor den Sektoren Verkehr und Gebäude [6] .\".\n\nBayern: \"Erste Anlagen wurden in den Jahren 2020 - 2021 in Bayern und Schleswig-Holstein mit dem Ziel errichtet\". So deit.\n\nSchleswig-Holstein: same.\n\nAlso Brandenburg: mention \"In Brandenburg gibt die vorläufige Handlungsempfehlung des Ministeriums für Landwirtschaft...\". So add.\n\nAlso Hamburg or Lower states may not be mentioned.\n\nThus create location entries for: Mecklenburg-Vorpommern, Niedersachsen, Bayern, Schleswig-Holstein, Brandenburg. Country: Deutschland each.\n\nProvide evidence anchor: quote lines.\n\nEcosystem_type: empty array.\n\nReturn JSON.\n\nLet's craft.\n\n",
+    "We need to extract info from the given Markdown doc. The doc appears to be a list of references (#11-24). The sample extracted content likely refers to biodiveristy. The last question: \"Extrahiere die folgenden Informationen aus dem gegebenen Markdown-Dokument.\" The schema describes fields: habitat, natural_region, climate, landuse. For each, there may be multiple objects (0..*) each with content from allowed values and a evidence_anchor of literal quote. Need to parse the document to find sentences that mention habitat types etc. The document is just references, many mentions of \"Moor\", \"Fenn\", \"Boden\", \"Boden\", \"Grasland\", maybe?\n\nLet's review the document.\n\nDocument content:\n\n[Freiflächensolaranlagen (PV-FFA)](link) \n11 Grethe, H., Martinez, J., Osterburg, B., Taube, F. & Thom, F. (2021): Klimaschutz im Agrar- und Ernährungssystem Deutschlands: Die drei zentralen Handlungsfelder...\n12 [Närmann, F., Birr, F., Kaiser, M., Nerger, M., Luthardt, V., Zeitz J. & Tanneberger, F. (Hg.): Klimaschonende, biodiversitätsfördernde]\n[Bewirtschaftung von Niedermoorböden. BfN-Skripten 616, Bundesamt für Naturschutz, Bonn-Bad Godesberg, 342 S.]\n13 Barthelmes A., Abel S., Barthelmes K.-D., Couwenberg J., Kaiser M., Reichelt F., Tanneberger F. & H. Joosten (2021): Evaluierung von Moor-Wiedervernässung in Deutschland. Naturschutz und Biologische Vielfalt 171: 121-148.\n14 LM M-V (2017): Umsetzung von Paludikultur auf landwirtschaftlich genutzten Flächen in Mecklenburg-Vorpommern. Fachstrategie zur Umsetzung der nutzungsbezogenen Vorschläge des Moorschutzkonzeptes. Ministerium für Landwirtschaft und Umwelt Mecklenburg-Vorpommern, Schwerin.\n15 Tanneberger, F., Birr, F., Couwenberg, J., […] & Närmann, F. (accepted) Saving soil carbon, greenhouse gas emissions, biodiversity, and the economy: Paludiculture as sustainable land use option in German fen peatlands. Regional Environmental Change.\n16 UBA (2021): Wege in eine ressourcenschonende Treibhausgasneutralität. RESCUE-Studie. Hg. v. Umweltbundesamt. Dessau-Roßlau. 2. Auflage Juni 2021. Demnach müssen jährlich 5 % der landwirtschaftlich genutzten Moorböden vernässt werden, das entspricht 50.000 ha pro Jahr.\n17 GMC (2021): Faktenpapier Torfmoos-Anbau in Niedersachsen. 2 S.\n18 Nordt, A., Wichmann, S., Risse, J., Peters, J. & Schäfer, A. (2022): Potenziale und Hemmnisse von Paludikultur. Hintergrundpapier zur Studie „Anreize für Paludikultur zur Umsetzung der Klimaschutzziele 2030 und 2050“. Hg. v. Deutsche Emissionshandelsstelle im Umweltbundesamt (DEHSt). Berlin\n19 GMC (2020): Stellungnahme des Greifswald Moor Centrum zur Berücksichtigung der Bedeutung der Moore...\n20 ROG vom 22.12.2008, Bgbl. I S. 2986, welches in §2 Abs. 2 Nr. 6 die Zielvorgabe setzt: „ … die räumlichen Voraussetzungen für … die Entwicklung von natürlichen Senken für klimaschädliche Stoffe … zu schaffen“.\n21 BMWK 2022: Referentenentwurf...\n22 Niedersächsisches Ministerium für Umwelt, Energie, Bauen und Klimaschutz (2022): Länderanhörung zum Entwurf eines Gesetzes zu (Sofortmaßnahmen für einen beschleunigten Ausbau der erneuerbaren Energien ...).\n23 BLZV (2021): Bund-Länder-Zielvereinbarung zum Klimaschutz durch Moorbodenschutz. Berlin, 20.10.2021. 13 S.\n24 Ministerium für Energiewende, Landwirtschaft, Umwelt, Natur und Digitalisierung Schleswig-Holstein 2022: Stellungnahme des MELUND ... SH zum Entwurf des BMWK für die EEG-Novelle 2023 ...\nwww.greifswaldmoor.de\n\nThus the text includes multiple references mention \"Moorböden\" (bogs), \"Moore\" (bogs), \"fen peatlands\" etc. We need to identify habitats: the allowable values: Agrar- und Offenland; Binnengewässer und Auen; Boden; Küsten und Küstengewässer; Urbane Räume; Wald. Which habitat? \"Moor\" is essentially bog (Boden: soil). So \"Boden\". Also \"Binnengewässer\" maybe not present. \"Moor\" also maybe \"Gam\" but let's see. There's no mention of \"Wald\" or \"Urban\". So might only have \"Boden\". Also \"Agro\" maybe. but texts talk about \"landwirtschaftlich genutzten Moorböden\" - agricultural use.\n\nSo habitat \"Boden\" probably.\n\nNatural region: allowed values: Alpen; Alpenvorland; Mittelgebirgsschwelle; Nord- und Ostsee; Norddeutsches Tiefland; Schichtstufenland beidseits des Oberrheingrabens. Moorland region setting? The references mention Mecklenburg-Vorpommern (Mid-eastern Germany), northern region. There's also \"Norddeutsches Tiefland\" maybe. The text \"Mecklenburg-Vorpommern\" is part of Norddeutsches Tiefland. So natural region: Norddeutsches Tiefland.\n\nClimate: Allowed: Atlantisches Klima; Gebirgsklima; kontinental; maritim; niederschlagsbenachteiligt; niederschlagsnormal; niederschlagsbegünstigt; subkontinental; submaritim. Mecklenburg-Vorpommern (north) - climate is likely \"maritim\" (North German Lowlands have maritime climate). So climate: maritim.\n\nLanduse: allowed list includes agriculture; it refers to \"landwirtschaftlich genutzten Moorböden\" i.e., farmland; also \"Paludikultur\" i.e., farmland; \"Agri\" thus \"Landwirtschaft\". Also might be \"Energieproduktion\" due to solar? But the references mention \"Freiflächensolaranlagen (PV-FFA)\" at start - but that's climate? The PV? The document references funding.\n\nThus the landuse: \"Landwirtschaft\". I think primarily that.\n\nNow evidence_anchor: We need to provide literal quote from original text that supports the extraction. We need to take quotes from the Markdown text e.g.:\n\nFrom line: \"Demnach müssen jährlich 5 % der landwirtschaftlich genutzten Moorböden vernässt werden, das entspricht 50.000 ha pro Jahr.\" This mentions \"landwirtschaftlich genutzten Moorböden\" so that's a good anchor for habitat \"Boden\" and landuse \"Landwirtschaft\", natural region? not mentioned.\n\nFrom earlier references mention \"Moor-Wiedervernässung\" maybe.\n\nFrom line: \"Evaluierung von Moor-Wiedervernässung in Deutschland.\" Based on that you can anchor \"Boden\" or \"Moor\".\n\nBut natural region mention: \"Mecklenburg-Vorpommern\" near line 14: \"Umsetzung von Paludikultur auf landwirtschaftlich genutzten Flächen in Mecklenburg-Vorpommern.\" That indicates region.\n\nThus evidence anchors: Provide quotes for each extraction.\n\nAlso we might need to provide only one object per category? We can produce multiple objects for each category, but cardinality 0..* allowed. But likely only one each. Provide evidence anchor string exactly as appears.\n\nExample for habitat: \"Moorböden\" but quotes must be within the text. The actual original text: \"Moorböden\" appears in many references. For example: \"Evaluierung von Moor-Wiedervernässung in Deutschland.\" Is okay.\n\nBetter to quote: \"Moorböden\" or \"Moor-Wiedervernässung\" The quotes not to include parentheses.\n\nGiven our constraints, we must ensure evidence_anchor is a literal string from the original text. For habitat \"Boden\" we need a quote that supports \"Boden\". For example: the phrase \"Moorböden\" appears, but not \"Boden\" exactly. The allowed values: \"Boden\" is considered habitat. The word \"Boden\" appears in the phrase \"Moorböden\" and \"Boden\", might use \"Moorböden\" referencing soils.\n\nAlso \"Landwirtschaftlich genutzten Moorböden\" in reference 16.\n\nThus evidence anchor: \"landwirtschaftlich genutzten Moorböden\" Or \"Moorböden\" from the title \"Evaluierung von Moor-Wiedervernässung\". We must match the exact case? The text \"Moorböden\" appears exactly as in reference? Yes.\n\nLet's search each line.\n\nLine 12: \"Bewirtschaftung von Niedermoorböden.\" includes \"Niedermoorböden\". That contains \"Böden\".\n\nLine 13: \"Evaluierung von Moor-Wiedervernässung\" also includes \"Moor\". The rest reference.\n\nLine 14: \"Umsetzung von Paludikultur auf landwirtschaftlich genutzten Flächen in Mecklenburg-Vorpommern.\" no \"Moor\".\n\nLine 15: \"Paludiculture as sustainable land use option in German fen peatlands.\" That includes \"fen peatlands\".\n\nLine 16: \"landwirtschaftlich genutzten Moorböden\".\n\nLine 17: \"Faktenpapier Torfmoos-Anbau in Niedersachsen.\" Contains \"Torfmoos\" (bogs).\n\nLine 18: No specifics.\n\nLine 19: \"Stellungnahme des Greifswald Moor Centrum\" includes \"Moore\".\n\nHence we can use multiple quotes.\n\nWe need to attach each evidence_anchor only once per object field.\n\nFor natural_region: Quote: \"Mecklenburg-Vorpommern.\" Good.\n\nFor climate: There's no explicit mention of climate in the references. But we somewhat know region. If we must have evidence anchor for climate, we might need to find a quote referencing \"maritim\" or \"kontinental\". The document does not contain such word, except maybe the categories of climate... Not present. We may include no entry for climate because cardinality 0..*.\n\nIf we want to include climate, we might need to infer from region but not allowed cause no evidence. So we should not include climate object. Only others.\n\nThus answer: we will produce JSON with keys: habitat, natural_region, landuse. Each is array of objects. Provide each object with content and evidence_anchor.\n\nFor habitat: maybe two objects: one \"Boden\" with quote \"Moorböden\" or \"Moorböden\" could be used but the content of quote is \"Moorböden.\" Another? But cardinality is 0..* meaning multiple allowed. We can provide just one. Provide evidence anchor: \"Moorböden\" (found in reference 12). Also mention \"Boden\" more explicit: \"Moorböden\" includes \"Boden\".\n\nThus habitat array: [{content: \"Boden\", evidence_anchor: \"Moorböden\"}]. Note: The quote must be literal, but need to be the exact text. The word \"Moorböden\" appears with a final period maybe. In doc: \"[Bewirtschaftung von Niedermoorböden.\" Usually includes 'Niedermoorböden.' So get as string \"Niedermoorböden.\" but we can take \"Niedermoorböden\" no period. But must include as in original text; If \"Moorböden\" appears as part of title \"Bewirtschaftung von Niedermoorböden.\" includes period. Use \"Niedermoorböden.\" Or \"Niedermoorböden\" may be fine. We'll provide with period.\n\nBut the schema: evidence_anchor: string. Should contain the literal quoted text, likely includes the final period? The original shows some lines: \"Bewirtschaftung von Niedermoorböden.\" That's all. So \"Niedermoorböden.\" we can use. Good.\n\nAlternatively \"landwirtschaftlich genutzten Moorböden\" from reference 16. That also qualifies. Provide that quote.\n\nBut choose one.\n\nBetter: Use \"landwirtschaftlich genutzten Moorböden\" because it provides both habitat and landuse info. Then we may include same as evidence for habitat and landuse? But separate objects: each has evidence_anchor; we can use same string.\n\nThus:\n\nHabitat:\n{content: \"Boden\", evidence_anchor: \"landwirtschaftlich genutzten Moorböden\"} maybe includes verb phrase but good.\n\nBut the capacity: evidence anchor needs to be exactly as in original text. The sentence: \"Demnach müssen jährlich 5 % der landwirtschaftlich genutzten Moorböden vernässt werden, das entspricht 50.000 ha pro Jahr.\" The phrasing includes \"landwirtschaftlich genutzten Moorböden\". We'll use that.\n\nSo for habitat evidence anchor: \"landwirtschaftlich genutzten Moorböden\"\n\nSame for landuse evidence anchor: same phrase but maybe include \"landwirtschaftlich\" etc. Good.\n\nNow natural_region: reference 14 includes \"Mecklenburg-Vorpommern.\" So evidence anchor: \"Mecklenburg-Vorpommern\". Good.\n\nThus JSON:\n\n{\n  \"habitat\": [\n    {\n      \"content\": \"Boden\",\n      \"evidence_anchor\": \"landwirtschaftlich genutzten Moorböden\"\n    }\n  ],\n  \"natural_region\": [\n    {\n      \"content\": \"Norddeutsches Tiefland\",\n      \"evidence_anchor\": \"Mecklenburg-Vorpommern\"\n    }\n  ],\n  \"landuse\": [\n    {\n      \"content\": \"Landwirtschaft\",\n      \"evidence_anchor\": \"landwirtschaftlich genutzten Moorböden\"\n    }\n  ]\n}\n\nBut natural_region mention \"Mecklenburg-Vorpommern\". Allowed values: Norddeutsches Tiefland. So we have to map. Since the text does not contain \"Norddeutsches Tiefland\" explicitly, but \"Mecklenburg-Vorpommern\" is a region. But the allowed values include a specific subregion. The schema's natural_region values are only those 6. \"Mecklenburg-Vorpommern\" is not one of them, but it's within \"Norddeutsches Tiefland\". We can provide content: \"Norddeutsches Tiefland\". Evidence anchor: \"Mecklenburg-Vorpommern\".\n\nWe must provide valid value for content. So set \"Norddeutsches Tiefland\".\n\nClimate not included due to no evidence.\n\nBut maybe also \"Urbane Räume\" from \"Freiflächensolaranlagen\" but that is about solar, but not necessarily the habitat.\n\nBut we might want to include habitat \"Wald\"? There's no mention of forest.\n\nThus final.\n\nCheck that fields exist: habitat, natural_region, climate, landuse. Provide keys for each. Provide value arrays.\n\nMake sure no raw quotes in JSON field escape them accordingly. Need to escape. Provide as proper JSON string with double quotes. The evidence_anchor string contains possibly free of backslashes. We will escape any internal quotes. The evidence_anchor text contains \"landwirtschaftlich genutzten Moorböden\" no quotes inside. Good. Provide.\n\nNow produce final.",
+    "We need to extract ecosystem types and locations from the Markdown document. The document includes citations, references to studies about paludiculture (wetland agricultural practices), peatlands, etc. It probably refers to \"Waldfreie Niedermoore\", \"Waldfreie Sümpfe\", \"Waldfreie\". Let's parse the text.\n\nThe markdown appears to be a reference list with titles and URLs. But the bios relevant content: It mentions \"Niedermoorböden\" (peat soils), \"Vorbereitung am national level\", etc. Let's scan the references for mentions of ecosystem types:\n\nReference 12 mentions \"Klimaschonende, biodiversitätsfördernde Bewirtschaftung von Niedermoorböden\" – that's \"lowland peatlands / fen\". That refers to \"Waldfreie Niedermoore\" maybe, but we need the explicit ecosystem type names from the allowed values.\n\nAllowed terms: There's a huge list including \"Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte\" – that's a possible term.\n\nAlso \"Waldfreie Sümpfe\" maybe.\n\nAlso \"Waldfreie Niedermoore\" within that term. So we can include that.\n\nAnother reference (13) is about Moor-Wiedervernässung – \"Moor-Wiedervernässung\": \"Moore\" – lowland bogs. So \"Waldfreie Niedermoore und Sümpfe\" maybe.\n\nAlso there is mention of \"fen peatlands\" in the accepted paper: \"Paludiculture as sustainable land use option in German fen peatlands\" – again \"Waldfreie Niedermoore\" would cover that.\n\nAlso reference \"17 GMC factsheet Fur Torfmoos-Anbau in Niedersachsen\" – \"Torfmoos\" is fen peatland, again.\n\nThus the ecosystem types are: Waldfreie Niedermoore und Sümpfe (or maybe Waldfreie Niedermoore). For safety we include exactly \"Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte\" or maybe pick the term that matches.\n\nBut from the allowed values, the term \"Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte\" appears? Actually the allowed list: \"Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte\". Yes that's an allowed term.\n\nThus ecosystem_type category: \"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes\" likely. Keller: Actually categories are groups: I Biotoptypen groups of seas and coasts, etc. For terrestrial peatland falls under \"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes.\" So category content: \"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes\".\n\nThus ecosystem_type:\n\n- category: {content: \"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes\", evidence_anchor: \"Niedermoorböden\" from text? The reference says \"Niedermoorböden\". We can quote phrase: \"Niedermoorböden\" or \"Klimaschonende, biodiversitätsfördernde Bewirtschaftung von Niedermoorböden\". That is an evidence anchor.\n\nTerm: content: \"Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte\" with evidence anchor: phrase from reference 12 or 13. For instance \"Niedermoorböden\" or \"Moor-Wiedervernässung\" -> \"Moor\" is part of \"Waldfreie Niedermoore und Sümpfe\".\n\nDescription: maybe not needed; we can leave omitted.\n\nThus maybe include one ecosystem_type.\n\nLocations: The references mention the location \"Niedersachsen\" (Lower Saxony), \"Mecklenburg-Vorpommern\" (MV), \"Brandenburg\" (Brandenburg). Let's see.\n\nReference 17: factsheet for torfmoos-anbau in Niedersachsen. So location: Germany, Niedersachsen.\n\nReference 14: Paludikultur in Mecklenburg-Vorpommern. So location: Germany, Mecklenburg-Vorpommern.\n\nReference 12: maybe generic. But include.\n\nReference 15: accepted paper: no location.\n\nReference 16: UBA study (Germany). It mentions \"5% der landwirtschaftlich genutzten Moorböden\". Maybe Germany.\n\nWe must list the locations under which the studies are investigated. It's unclear if each reference is a study; but the user demands, \"Angaben zu den ökosystembezogenen Studienmerkmalen\" - basically, which ecosystems and which locations in the document. So compile all distinct locations referenced: Niedersachsen, Mecklenburg-Vorpommern, Brandenburg, Germany.\n\nAlso \"Gesellschaft: Bundes\"like \"Niedersachsen\" or \"Mecklenburg-Vorpommern\".\n\nAlso \"Niedersächsisches Ministerium\" reference from 22: \"Niedersachsen\". Location: Niedersachsen.\n\nAlso might be \"Bundesland\" check. The document includes \"Mecklenburg-Vorpommern, Schwerin\" - we can use that.\n\nThus include following location objects:\n\n1. country: Germany (content maybe \"Deutschland\") – evidence: any line referencing Germany; there are many like \"Klimaschutz im Agrar- und Ernährungssystem Deutschlands\", etc.\n\n2. federal_state: Niedersachsen – evidence: \"Factsheet Torfmoos-Anbau in Niedersachsen\".\n\n3. federal_state: Mecklenburg-Vorpommern – evidence: \"Umsetzung von Paludikultur auf landwirtschaftlich genutzten Flächen in Mecklenburg-Vorpommern\".\n\n4. federal_state: Brandenburg? Reference 1? Actually reference 1 is \"Freiflächensolaranlagen (PV-FFA)\" from Brandenburg. Yes link to Brandenburg.\n\nAlso maybe \"Niedersachsen\" appears in reference for southwestern Germany? The dataset includes just those.\n\nThus location list: We can include just \"country\" for each. However each object requires country, federal_state, name optionally.\n\nWe likely need to supply at least country. The user says \"Beschreibung: Angaben zu den ökosystembezogenen Studienmerkmalen.\" So we will produce JSON with two arrays: ecosystem_type and location.\n\nLet's produce:\n\n{\n  \"ecosystem_type\": [...],\n  \"location\": [...]\n}\n\nFor each\n\necosystem_type:\n- object with category, term maybe, description optional.\n\nWe'll include:\n\n{\n  \"category\": {\"content\":\"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes\",\"evidence_anchor\":\"Niedermoorböden\"},\n  \"term\": {\"content\":\"Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte\",\"evidence_anchor\":\"Moor-Wiedervernässung\"},\n  \"description\": {\"content\":\"Biotoptyp der Waldfreien Niedermoore und Sümpfe im Binnenland, fördernd für Biodiversität und Kohlenstoffsenken.\",\"evidence_anchor\":\"Das Paludikulturprojekt\"} \n} but we need evidence anchor from text. The document: For description we could quote phrase such as \"Klimaschutz im Agrar- und Ernährungssystem Deutschlands\" not relevant. Maybe we skip description if no direct evidence.\n\nThus we can provide without description.\n\nLocations:\n\n1. country: \"Deutschland\", evidence: \"Klimaschutz im Agrar- und Ernährungssystem Deutschlands\".\n\n2. federal_state: \"Niedersachsen\", evidence: \"Factsheet Torfmoos-Anbau in Niedersachsen\".\n\n3. federal_state: \"Mecklenburg-Vorpommern\", evidence: \"Umsetzung von Paludikultur auf landwirtschaftlich genutzten Flächen in Mecklenburg-Vorpommern\".\n\n4. federal_state: \"Brandenburg\", evidence: \"Freiflächensolaranlagen (PV-FFA)\", plus link from Brandenburg.\n\nThus produce location objects accordingly. Provide country for each? For some we can only provide federal_state. So each location object may include only the provided fields.\n\nThus let's craft JSON.\n\nWe should also look at evidence anchor strings: we can use quotes from the text.\n\nE.g., for category: \"Niedermoorböden\" or \"Klimaschutz im Agrar- und Ernährungssystem Deutschlands\" not fit. But \"Niedermoorböden\" appears in reference 12 and 13.\n\nIn reference 12: \"Klimaschonende, biodiversitätsfördernde Bewirtschaftung von Niedermoorböden.\" So evidence_anchor: \"Klimaschonende, biodiversitätsfördernde Bewirtschaftung von Niedermoorböden.\"\n\nFor term evidence anchor: maybe \"Moor-Wiedervernässung\" referencing \"Moor\". In reference 13: \"Evaluierung von Moor-Wiedervernässung in Deutschland.\" So evidence anchor: \"Evaluierung von Moor-Wiedervernässung\".\n\nFor description: We can skip.\n\nLocations:\n\ncountry evidence: \"Klimaschutz im Agrar- und Ernährungssystem Deutschlands\".\n\nfederal_state evidence: \"Factsheet Torfmoos-Anbau in Niedersachsen\" or \"Haupt\"? Provide.\n\nLet's produce JSON accordingly."
+  ],
+  "character_start_list": [
+    0,
+    0,
+    19986,
+    19986
+  ],
+  "character_end_list": [
+    19985,
+    19985,
+    24439,
+    24439
+  ]
+}

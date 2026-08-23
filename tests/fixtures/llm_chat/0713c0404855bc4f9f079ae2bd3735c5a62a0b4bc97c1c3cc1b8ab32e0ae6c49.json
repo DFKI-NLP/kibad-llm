@@ -1,0 +1,340 @@
+{
+  "fixture_format_version": 1,
+  "fixture_hash": "0713c0404855bc4f9f079ae2bd3735c5a62a0b4bc97c1c3cc1b8ab32e0ae6c49",
+  "request": {
+    "backend_type": "llama_index.llms.openai_like.base.OpenAILike",
+    "backend_config": {
+      "system_prompt": null,
+      "pydantic_program_mode": "default",
+      "model": "openai/gpt-oss-20b",
+      "temperature": 1.0,
+      "max_tokens": null,
+      "logprobs": null,
+      "top_logprobs": 0,
+      "additional_kwargs": {
+        "max_completion_tokens": 8192,
+        "seed": 1337,
+        "top_p": 1.0
+      },
+      "api_base": "http://127.0.0.1:5001/v1",
+      "api_version": "",
+      "strict": false,
+      "reasoning_effort": null,
+      "modalities": null,
+      "audio_config": null,
+      "context_window": 131072,
+      "is_chat_model": true,
+      "is_function_calling_model": false,
+      "should_use_structured_outputs": false
+    },
+    "messages": [
+      {
+        "role": "system",
+        "content": "Lies das folgende Markdown-Dokument sorgfältig durch, damit du die darin enthaltenen\nbiodiversitätsbezogenen Informationen extrahieren kannst.\n\nDocument in Markdown Format:\n\n[Freiflächensolaranlagen (PV-FFA)](https://mluk.brandenburg.de/sixcms/media.php/9/MLUK-Handlungsempfehlung-PV-FFA.pdf)\n11 Grethe, H., Martinez, J., Osterburg, B., Taube, F. & Thom, F. (2021): Klimaschutz im Agrar- und Ernährungssystem Deutschlands: Die drei\nzentralen Handlungsfelder auf dem Weg zur Klimaneutralität. Stiftung Klimaneutralität, Berlin. 103 S.\n12 [Närmann, F., Birr, F., Kaiser, M., Nerger, M., Luthardt, V., Zeitz J. & Tanneberger, F. (Hg.): Klimaschonende, biodiversitätsfördernde](https://www.bfn.de/sites/default/files/2021-11/Skript616.pdf)\n[Bewirtschaftung von Niedermoorböden. BfN-Skripten 616, Bundesamt für Naturschutz, Bonn-Bad Godesberg, 342 S.](https://www.bfn.de/sites/default/files/2021-11/Skript616.pdf)\n13 Barthelmes A., Abel S., Barthelmes K.-D., Couwenberg J., Kaiser M., Reichelt F., Tanneberger F. & H. Joosten (2021): Evaluierung von\nMoor-Wiedervernässung in Deutschland. Naturschutz und Biologische Vielfalt 171: 121-148.\n14 LM M-V (2017): Umsetzung von Paludikultur auf landwirtschaftlich genutzten Flächen in Mecklenburg-Vorpommern. Fachstrategie zur\nUmsetzung der nutzungsbezogenen Vorschläge des Moorschutzkonzeptes. Ministerium für Landwirtschaft und Umwelt MecklenburgVorpommern, Schwerin.\n15 Tanneberger, F., Birr, F., Couwenberg, J., […] & Närmann, F. (accepted) Saving soil carbon, greenhouse gas emissions, biodiversity, and\nthe economy: Paludiculture as sustainable land use option in German fen peatlands. Regional Environmental Change.\n16 Vgl. UBA (2021): Wege in eine ressourcenschonende Treibhausgasneutralität. RESCUE-Studie. Hg. v. Umweltbundesamt. Dessau-Roßlau.\n2. Auflage Juni 2021. Demnach müssen jährlich 5 % der landwirtschaftlich genutzten Moorböden vernässt werden, das entspricht 50.000 ha\npro Jahr.\n17 GMC (2021): [Faktenpapier Torfmoos-Anbau in Niedersachsen. 2 S.](https://greifswaldmoor.de/files/dokumente/Infopapiere_Briefings/202101_Faktenpapier_Torfmoosanbau.pdf)\n18 Nordt, A., Wichmann, S., Risse, J., Peters, J. & Schäfer, A. (2022): Potenziale und Hemmnisse von Paludikultur. Hintergrundpapier zur\nStudie „Anreize für Paludikultur zur Umsetzung der Klimaschutzziele 2030 und 2050“. Hg. v. Deutsche Emissionshandelsstelle im Umweltbundesamt (DEHSt). Berlin\n19 GMC (2020): Stellungnahme des Greifswald Moor Centrum zur Berücksichtigung der Bedeutung der Moore für den Klimaschutz im\nRegionalen Raumentwicklungsprogramm Vorpommern 2020. Greifswald, 17 S., unveröffentlicht\n20 ROG vom 22.12.2008, Bgbl. I S. 2986, welches in §2 Abs. 2 Nr. 6 die Zielvorgabe setzt: „ […] die räumlichen Voraussetzungen für […] die\nEntwicklung von natürlichen Senken für klimaschädliche Stoffe […] zu schaffen“.\n21 BMWK 2022: [Referentenentwurf, Stand 04.03.2022.](https://www.bmwi.de/Redaktion/DE/Downloads/E/referentenentwurf-erneuerbaren-energien-und-weiteren-massnahmen-im-stromsektor.pdf?__blob=publicationFile&v=6)\n22 Niedersächsisches Ministerium für Umwelt, Energie, Bauen und Klimaschutz (2022): [Länderanhörung zum Entwurf eines Gesetzes zu](https://www.bmwi.de/Redaktion/DE/Downloads/Stellungnahmen/Stellungnahmen-referentenentwurf-erneuerbaren-energien-und-weiteren-massnahmen-im-stromsektor/niedersachsen.pdf?__blob=publicationFile&v=4)\n[Sofortmaßnahmen für einen beschleunigten Ausbau der erneuerbaren Energien und weiteren Maßnahmen im Stromsektor. Hannover, 9 S.](https://www.bmwi.de/Redaktion/DE/Downloads/Stellungnahmen/Stellungnahmen-referentenentwurf-erneuerbaren-energien-und-weiteren-massnahmen-im-stromsektor/niedersachsen.pdf?__blob=publicationFile&v=4)\n23 BLZV (2021): [Bund-Länder-Zielvereinbarung zum Klimaschutz durch Moorbodenschutz. Berlin, 20.10.2021. 13 S.](https://www.bmel.de/SharedDocs/Downloads/DE/_Landwirtschaft/Klimaschutz/moorbodenschutz-blzv.pdf;jsessionid=89F9EE84DDBD67F3DA94F6464591DAED.live841?)\n[24 Ministerium für Energiewende, Landwirtschaft, Umwelt, Natur und Digitalisierung Schleswig-Holstein 2022: Stellungnahme des MELUND](https://www.bmwi.de/Redaktion/DE/Downloads/Stellungnahmen/Stellungnahmen-referentenentwurf-erneuerbaren-energien-und-weiteren-massnahmen-im-stromsektor/melund-sh.pdf?__blob=publicationFile&v=2)\n[SH zum Entwurf des BMWK für die EEG-Novelle 2023 im Rahmen des Sofortprogramms. Kiel, 3 S.](https://www.bmwi.de/Redaktion/DE/Downloads/Stellungnahmen/Stellungnahmen-referentenentwurf-erneuerbaren-energien-und-weiteren-massnahmen-im-stromsektor/melund-sh.pdf?__blob=publicationFile&v=2)\n\n\nwww.greifswaldmoor.de www.greifswaldmoor.de\n"
+      },
+      {
+        "role": "user",
+        "content": "Extrahiere die folgenden Informationen aus dem gegebenen Markdown-Dokument.\nWenn bereits Informationen extrahiert wurden, kannst du diese als Kontext für die aktuelle Extraktion nutzen.\nGib **ausschließlich** gültiges JSON nach dem folgendem Schema zurück.\nKeine zusätzlichen Felder, keine Erklärungen.\n\nBeschreibung: Angaben zu den ökosystembezogenen Studienmerkmalen.\nFeldhinweise und erlaubte Werte (getrennt durch Semikolons):\n- ecosystem_type: Welche Ökosystemtypen werden in der Studie untersucht? | Kardinalität: 0..* | Typ: object\n  Beschreibung: Ökosystemtyp mit Kategorie, Name und Beschreibung.\n  - category: Kategorie des Ökosystemtyps | Kardinalität: 1 | Typ: object\n    Beschreibung: Kategorie des Ökosystemtyps\n    - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: I Biotoptypengruppen der Meere und Küsten; II Biotoptypengruppen der Binnengewässer; III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes; IV Technische Biotoptypengruppen; V Biotoptypengruppen mit Schwerpunkt in den Alpen; VI Weitere\n    - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string\n  - term: Name des Ökosystemtyps | Kardinalität: 0..1 | Typ: object\n    - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Anthropogene Rohbodenstandorte und Ruderalfluren; Bauwerke; Benthal der Nordsee; Benthal der Ostsee; Deponien und Rieselfelder; Feldgehölze, Gebüsche, Hecken und Gehölzkulturen; Fels- und Steilküsten; Felsen, Block- und Schutthalden, Geröllfelder, offene Bereiche mit sandigem oder bindigem Substrat; Felsen der subalpinen bis nivalen Stufe; Firn, permanente Schneefelder und Gletscher; Fließende Gewässer; Gebirgsrasen (subalpine bis alpine Stufe); Gebüsche der hochmontanen bis subalpinen Stufe; Gewässer der subalpinen bis alpinen Stufe; Großseggenriede; Grundwasser und Höhlengewässer; Grün- und Freiflächen; Hoch-, Zwischen- und Übergangsmoore; Höhlen (einschließlich Stollen, Brunnenschächte etc.); Kleine, unbefestigte Freiflächen des besiedelten Bereiches; Küstendünen; Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent); Moore der subalpinen bis alpinen Stufe; Nadel(Misch)Wälder und -Forste; Pelagial der Nordsee; Pelagial der Ostsee; Quellen (inklusive Quellabfluss (Krenal)); Röhrichte (ohne Brackwasserröhrichte); Saisonales Meereis der Nordsee; Saisonales Meereis der Ostsee; Salzgrünland der Nordseeküste (Supralitoral); Salzgrünland, Brackwasserröhrichte und -Hochstaudenfluren des Geolitorals der Ostseeküste; Schneeböden, Schneetälchen; Stehende Gewässer; Steinschutthalden und Schotterflächen der subalpinen bis alpinen Stufe; Sände, Sand-, Geröll- und Blockstrände; Stauden- und Lägerfluren der hochmontanen bis alpinen Stufe; Subalpine Wälder; Trockenrasen sowie Grünland trockener bis frischer Standorte; Verkehrsanlagen und Plätze; Wald- und Ufersäume, Staudenfluren; Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte; Waldmäntel und Vorwälder, spezielle Waldnutzungsformen; Zwergstrauchheiden; Zwergstrauchheiden der subalpinen bis alpinen Stufe; Äcker und Ackerbrachen\n    - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string\n  - description: Beschreibung des Ökosystemtyps | Kardinalität: 0..1 | Typ: object\n    - content: | Kardinalität: 1 | Typ: string\n    - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string\n- location: Welche Standorte werden in der Studie untersucht? | Kardinalität: 0..* | Typ: object\n  Beschreibung: Untersuchungsgebiet mit Land, Bundesland und Ort.\n  - country: Land des Untersuchungsgebietes | Kardinalität: 0..1 | Typ: object\n    - content: | Kardinalität: 1 | Typ: string\n    - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string\n  - federal_state: Bundesland des Untersuchungsgebietes | Kardinalität: 0..1 | Typ: object\n    - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Baden-Württemberg; Bayern; Berlin; Brandenburg; Bremen; Hamburg; Hessen; Mecklenburg-Vorpommern; Niedersachsen; Nordrhein-Westfalen; Rheinland-Pfalz; Saarland; Sachsen; Sachsen-Anhalt; Schleswig-Holstein; Thüringen\n    - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string\n  - name: Ort (z.B. Stadt, Gemeinde, Region) des Untersuchungsgebietes | Kardinalität: 0..1 | Typ: object\n    - content: | Kardinalität: 1 | Typ: string\n    - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string\n"
+      }
+    ],
+    "request_kwargs": {
+      "extra_body": {
+        "structured_outputs": {
+          "json": {
+            "$defs": {
+              "EcosystemType": {
+                "additionalProperties": false,
+                "description": "Ökosystemtyp mit Kategorie, Name und Beschreibung.",
+                "properties": {
+                  "category": {
+                    "type": "object",
+                    "properties": {
+                      "content": {
+                        "$ref": "#/$defs/EcosystemTypeCategoryEnum"
+                      },
+                      "evidence_anchor": {
+                        "type": "string",
+                        "description": "Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt."
+                      }
+                    },
+                    "required": [
+                      "content",
+                      "evidence_anchor"
+                    ],
+                    "additionalProperties": false,
+                    "description": "Kategorie des Ökosystemtyps"
+                  },
+                  "term": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "content": {
+                            "$ref": "#/$defs/EcosystemTypeTermEnum"
+                          },
+                          "evidence_anchor": {
+                            "type": "string",
+                            "description": "Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt."
+                          }
+                        },
+                        "required": [
+                          "content",
+                          "evidence_anchor"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "description": "Name des Ökosystemtyps"
+                  },
+                  "description": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "content": {
+                            "type": "string"
+                          },
+                          "evidence_anchor": {
+                            "type": "string",
+                            "description": "Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt."
+                          }
+                        },
+                        "required": [
+                          "content",
+                          "evidence_anchor"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "description": "Beschreibung des Ökosystemtyps",
+                    "title": "Description"
+                  }
+                },
+                "required": [
+                  "category"
+                ],
+                "title": "EcosystemType",
+                "type": "object"
+              },
+              "EcosystemTypeCategoryEnum": {
+                "enum": [
+                  "I Biotoptypengruppen der Meere und Küsten",
+                  "II Biotoptypengruppen der Binnengewässer",
+                  "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes",
+                  "IV Technische Biotoptypengruppen",
+                  "V Biotoptypengruppen mit Schwerpunkt in den Alpen",
+                  "VI Weitere"
+                ],
+                "title": "EcosystemTypeCategoryEnum",
+                "type": "string"
+              },
+              "EcosystemTypeTermEnum": {
+                "enum": [
+                  "Anthropogene Rohbodenstandorte und Ruderalfluren",
+                  "Bauwerke",
+                  "Benthal der Nordsee",
+                  "Benthal der Ostsee",
+                  "Deponien und Rieselfelder",
+                  "Feldgehölze, Gebüsche, Hecken und Gehölzkulturen",
+                  "Fels- und Steilküsten",
+                  "Felsen, Block- und Schutthalden, Geröllfelder, offene Bereiche mit sandigem oder bindigem Substrat",
+                  "Felsen der subalpinen bis nivalen Stufe",
+                  "Firn, permanente Schneefelder und Gletscher",
+                  "Fließende Gewässer",
+                  "Gebirgsrasen (subalpine bis alpine Stufe)",
+                  "Gebüsche der hochmontanen bis subalpinen Stufe",
+                  "Gewässer der subalpinen bis alpinen Stufe",
+                  "Großseggenriede",
+                  "Grundwasser und Höhlengewässer",
+                  "Grün- und Freiflächen",
+                  "Hoch-, Zwischen- und Übergangsmoore",
+                  "Höhlen (einschließlich Stollen, Brunnenschächte etc.)",
+                  "Kleine, unbefestigte Freiflächen des besiedelten Bereiches",
+                  "Küstendünen",
+                  "Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent)",
+                  "Moore der subalpinen bis alpinen Stufe",
+                  "Nadel(Misch)Wälder und -Forste",
+                  "Pelagial der Nordsee",
+                  "Pelagial der Ostsee",
+                  "Quellen (inklusive Quellabfluss (Krenal))",
+                  "Röhrichte (ohne Brackwasserröhrichte)",
+                  "Saisonales Meereis der Nordsee",
+                  "Saisonales Meereis der Ostsee",
+                  "Salzgrünland der Nordseeküste (Supralitoral)",
+                  "Salzgrünland, Brackwasserröhrichte und -Hochstaudenfluren des Geolitorals der Ostseeküste",
+                  "Schneeböden, Schneetälchen",
+                  "Stehende Gewässer",
+                  "Steinschutthalden und Schotterflächen der subalpinen bis alpinen Stufe",
+                  "Sände, Sand-, Geröll- und Blockstrände",
+                  "Stauden- und Lägerfluren der hochmontanen bis alpinen Stufe",
+                  "Subalpine Wälder",
+                  "Trockenrasen sowie Grünland trockener bis frischer Standorte",
+                  "Verkehrsanlagen und Plätze",
+                  "Wald- und Ufersäume, Staudenfluren",
+                  "Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte",
+                  "Waldmäntel und Vorwälder, spezielle Waldnutzungsformen",
+                  "Zwergstrauchheiden",
+                  "Zwergstrauchheiden der subalpinen bis alpinen Stufe",
+                  "Äcker und Ackerbrachen"
+                ],
+                "title": "EcosystemTypeTermEnum",
+                "type": "string"
+              },
+              "Location": {
+                "additionalProperties": false,
+                "description": "Untersuchungsgebiet mit Land, Bundesland und Ort.",
+                "properties": {
+                  "country": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "content": {
+                            "type": "string"
+                          },
+                          "evidence_anchor": {
+                            "type": "string",
+                            "description": "Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt."
+                          }
+                        },
+                        "required": [
+                          "content",
+                          "evidence_anchor"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "description": "Land des Untersuchungsgebietes",
+                    "title": "Country"
+                  },
+                  "federal_state": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "content": {
+                            "$ref": "#/$defs/LocationFederalStateEnum"
+                          },
+                          "evidence_anchor": {
+                            "type": "string",
+                            "description": "Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt."
+                          }
+                        },
+                        "required": [
+                          "content",
+                          "evidence_anchor"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "description": "Bundesland des Untersuchungsgebietes"
+                  },
+                  "name": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "content": {
+                            "type": "string"
+                          },
+                          "evidence_anchor": {
+                            "type": "string",
+                            "description": "Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt."
+                          }
+                        },
+                        "required": [
+                          "content",
+                          "evidence_anchor"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "description": "Ort (z.B. Stadt, Gemeinde, Region) des Untersuchungsgebietes",
+                    "title": "Name"
+                  }
+                },
+                "title": "Location",
+                "type": "object"
+              },
+              "LocationFederalStateEnum": {
+                "enum": [
+                  "Baden-Württemberg",
+                  "Bayern",
+                  "Berlin",
+                  "Brandenburg",
+                  "Bremen",
+                  "Hamburg",
+                  "Hessen",
+                  "Mecklenburg-Vorpommern",
+                  "Niedersachsen",
+                  "Nordrhein-Westfalen",
+                  "Rheinland-Pfalz",
+                  "Saarland",
+                  "Sachsen",
+                  "Sachsen-Anhalt",
+                  "Schleswig-Holstein",
+                  "Thüringen"
+                ],
+                "title": "LocationFederalStateEnum",
+                "type": "string"
+              }
+            },
+            "additionalProperties": false,
+            "description": "Angaben zu den ökosystembezogenen Studienmerkmalen.",
+            "properties": {
+              "ecosystem_type": {
+                "description": "Welche Ökosystemtypen werden in der Studie untersucht?",
+                "items": {
+                  "$ref": "#/$defs/EcosystemType"
+                },
+                "title": "Ecosystem Type",
+                "type": "array"
+              },
+              "location": {
+                "description": "Welche Standorte werden in der Studie untersucht?",
+                "items": {
+                  "$ref": "#/$defs/Location"
+                },
+                "title": "Location",
+                "type": "array"
+              }
+            },
+            "title": "EcosystemStudyFeaturesCompoundsSimple",
+            "type": "object"
+          }
+        }
+      }
+    }
+  },
+  "response": {
+    "message": {
+      "role": "assistant",
+      "content": "{\n  \"ecosystem_type\": [\n    {\n      \"category\": {\n        \"content\": \"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes\",\n        \"evidence_anchor\": \"Klimaschonende, biodiversitätsfördernde Bewirtschaftung von Niedermoorböden\"\n      },\n      \"term\": {\n        \"content\": \"Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte\",\n        \"evidence_anchor\": \"Evaluierung von Moor-Wiedervernässung in Deutschland\"\n      }\n    }\n  ],\n  \"location\": [\n    {\n      \"country\": {\n        \"content\": \"Deutschland\",\n        \"evidence_anchor\": \"Klimaschutz im Agrar- und Ernährungssystem Deutschlands\"\n      }\n    },\n    {\n      \"federal_state\": {\n        \"content\": \"Niedersachsen\",\n        \"evidence_anchor\": \"Factsheet Torfmoos-Anbau in Niedersachsen\"\n      }\n    },\n    {\n      \"federal_state\": {\n        \"content\": \"Mecklenburg-Vorpommern\",\n        \"evidence_anchor\": \"Umsetzung von Paludikultur auf landwirtschaftlich genutzten Flächen in Mecklenburg-Vorpommern\"\n      }\n    },\n    {\n      \"federal_state\": {\n        \"content\": \"Brandenburg\",\n        \"evidence_anchor\": \"Freiflächensolaranlagen (PV-FFA)\"\n      }\n    }\n  ]\n}"
+    },
+    "raw_message": {
+      "reasoning": "We need to extract ecosystem types and locations from the Markdown document. The document includes citations, references to studies about paludiculture (wetland agricultural practices), peatlands, etc. It probably refers to \"Waldfreie Niedermoore\", \"Waldfreie Sümpfe\", \"Waldfreie\". Let's parse the text.\n\nThe markdown appears to be a reference list with titles and URLs. But the bios relevant content: It mentions \"Niedermoorböden\" (peat soils), \"Vorbereitung am national level\", etc. Let's scan the references for mentions of ecosystem types:\n\nReference 12 mentions \"Klimaschonende, biodiversitätsfördernde Bewirtschaftung von Niedermoorböden\" – that's \"lowland peatlands / fen\". That refers to \"Waldfreie Niedermoore\" maybe, but we need the explicit ecosystem type names from the allowed values.\n\nAllowed terms: There's a huge list including \"Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte\" – that's a possible term.\n\nAlso \"Waldfreie Sümpfe\" maybe.\n\nAlso \"Waldfreie Niedermoore\" within that term. So we can include that.\n\nAnother reference (13) is about Moor-Wiedervernässung – \"Moor-Wiedervernässung\": \"Moore\" – lowland bogs. So \"Waldfreie Niedermoore und Sümpfe\" maybe.\n\nAlso there is mention of \"fen peatlands\" in the accepted paper: \"Paludiculture as sustainable land use option in German fen peatlands\" – again \"Waldfreie Niedermoore\" would cover that.\n\nAlso reference \"17 GMC factsheet Fur Torfmoos-Anbau in Niedersachsen\" – \"Torfmoos\" is fen peatland, again.\n\nThus the ecosystem types are: Waldfreie Niedermoore und Sümpfe (or maybe Waldfreie Niedermoore). For safety we include exactly \"Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte\" or maybe pick the term that matches.\n\nBut from the allowed values, the term \"Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte\" appears? Actually the allowed list: \"Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte\". Yes that's an allowed term.\n\nThus ecosystem_type category: \"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes\" likely. Keller: Actually categories are groups: I Biotoptypen groups of seas and coasts, etc. For terrestrial peatland falls under \"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes.\" So category content: \"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes\".\n\nThus ecosystem_type:\n\n- category: {content: \"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes\", evidence_anchor: \"Niedermoorböden\" from text? The reference says \"Niedermoorböden\". We can quote phrase: \"Niedermoorböden\" or \"Klimaschonende, biodiversitätsfördernde Bewirtschaftung von Niedermoorböden\". That is an evidence anchor.\n\nTerm: content: \"Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte\" with evidence anchor: phrase from reference 12 or 13. For instance \"Niedermoorböden\" or \"Moor-Wiedervernässung\" -> \"Moor\" is part of \"Waldfreie Niedermoore und Sümpfe\".\n\nDescription: maybe not needed; we can leave omitted.\n\nThus maybe include one ecosystem_type.\n\nLocations: The references mention the location \"Niedersachsen\" (Lower Saxony), \"Mecklenburg-Vorpommern\" (MV), \"Brandenburg\" (Brandenburg). Let's see.\n\nReference 17: factsheet for torfmoos-anbau in Niedersachsen. So location: Germany, Niedersachsen.\n\nReference 14: Paludikultur in Mecklenburg-Vorpommern. So location: Germany, Mecklenburg-Vorpommern.\n\nReference 12: maybe generic. But include.\n\nReference 15: accepted paper: no location.\n\nReference 16: UBA study (Germany). It mentions \"5% der landwirtschaftlich genutzten Moorböden\". Maybe Germany.\n\nWe must list the locations under which the studies are investigated. It's unclear if each reference is a study; but the user demands, \"Angaben zu den ökosystembezogenen Studienmerkmalen\" - basically, which ecosystems and which locations in the document. So compile all distinct locations referenced: Niedersachsen, Mecklenburg-Vorpommern, Brandenburg, Germany.\n\nAlso \"Gesellschaft: Bundes\"like \"Niedersachsen\" or \"Mecklenburg-Vorpommern\".\n\nAlso \"Niedersächsisches Ministerium\" reference from 22: \"Niedersachsen\". Location: Niedersachsen.\n\nAlso might be \"Bundesland\" check. The document includes \"Mecklenburg-Vorpommern, Schwerin\" - we can use that.\n\nThus include following location objects:\n\n1. country: Germany (content maybe \"Deutschland\") – evidence: any line referencing Germany; there are many like \"Klimaschutz im Agrar- und Ernährungssystem Deutschlands\", etc.\n\n2. federal_state: Niedersachsen – evidence: \"Factsheet Torfmoos-Anbau in Niedersachsen\".\n\n3. federal_state: Mecklenburg-Vorpommern – evidence: \"Umsetzung von Paludikultur auf landwirtschaftlich genutzten Flächen in Mecklenburg-Vorpommern\".\n\n4. federal_state: Brandenburg? Reference 1? Actually reference 1 is \"Freiflächensolaranlagen (PV-FFA)\" from Brandenburg. Yes link to Brandenburg.\n\nAlso maybe \"Niedersachsen\" appears in reference for southwestern Germany? The dataset includes just those.\n\nThus location list: We can include just \"country\" for each. However each object requires country, federal_state, name optionally.\n\nWe likely need to supply at least country. The user says \"Beschreibung: Angaben zu den ökosystembezogenen Studienmerkmalen.\" So we will produce JSON with two arrays: ecosystem_type and location.\n\nLet's produce:\n\n{\n  \"ecosystem_type\": [...],\n  \"location\": [...]\n}\n\nFor each\n\necosystem_type:\n- object with category, term maybe, description optional.\n\nWe'll include:\n\n{\n  \"category\": {\"content\":\"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes\",\"evidence_anchor\":\"Niedermoorböden\"},\n  \"term\": {\"content\":\"Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte\",\"evidence_anchor\":\"Moor-Wiedervernässung\"},\n  \"description\": {\"content\":\"Biotoptyp der Waldfreien Niedermoore und Sümpfe im Binnenland, fördernd für Biodiversität und Kohlenstoffsenken.\",\"evidence_anchor\":\"Das Paludikulturprojekt\"} \n} but we need evidence anchor from text. The document: For description we could quote phrase such as \"Klimaschutz im Agrar- und Ernährungssystem Deutschlands\" not relevant. Maybe we skip description if no direct evidence.\n\nThus we can provide without description.\n\nLocations:\n\n1. country: \"Deutschland\", evidence: \"Klimaschutz im Agrar- und Ernährungssystem Deutschlands\".\n\n2. federal_state: \"Niedersachsen\", evidence: \"Factsheet Torfmoos-Anbau in Niedersachsen\".\n\n3. federal_state: \"Mecklenburg-Vorpommern\", evidence: \"Umsetzung von Paludikultur auf landwirtschaftlich genutzten Flächen in Mecklenburg-Vorpommern\".\n\n4. federal_state: \"Brandenburg\", evidence: \"Freiflächensolaranlagen (PV-FFA)\", plus link from Brandenburg.\n\nThus produce location objects accordingly. Provide country for each? For some we can only provide federal_state. So each location object may include only the provided fields.\n\nThus let's craft JSON.\n\nWe should also look at evidence anchor strings: we can use quotes from the text.\n\nE.g., for category: \"Niedermoorböden\" or \"Klimaschutz im Agrar- und Ernährungssystem Deutschlands\" not fit. But \"Niedermoorböden\" appears in reference 12 and 13.\n\nIn reference 12: \"Klimaschonende, biodiversitätsfördernde Bewirtschaftung von Niedermoorböden.\" So evidence_anchor: \"Klimaschonende, biodiversitätsfördernde Bewirtschaftung von Niedermoorböden.\"\n\nFor term evidence anchor: maybe \"Moor-Wiedervernässung\" referencing \"Moor\". In reference 13: \"Evaluierung von Moor-Wiedervernässung in Deutschland.\" So evidence anchor: \"Evaluierung von Moor-Wiedervernässung\".\n\nFor description: We can skip.\n\nLocations:\n\ncountry evidence: \"Klimaschutz im Agrar- und Ernährungssystem Deutschlands\".\n\nfederal_state evidence: \"Factsheet Torfmoos-Anbau in Niedersachsen\" or \"Haupt\"? Provide.\n\nLet's produce JSON accordingly.",
+      "reasoning_content": "We need to extract ecosystem types and locations from the Markdown document. The document includes citations, references to studies about paludiculture (wetland agricultural practices), peatlands, etc. It probably refers to \"Waldfreie Niedermoore\", \"Waldfreie Sümpfe\", \"Waldfreie\". Let's parse the text.\n\nThe markdown appears to be a reference list with titles and URLs. But the bios relevant content: It mentions \"Niedermoorböden\" (peat soils), \"Vorbereitung am national level\", etc. Let's scan the references for mentions of ecosystem types:\n\nReference 12 mentions \"Klimaschonende, biodiversitätsfördernde Bewirtschaftung von Niedermoorböden\" – that's \"lowland peatlands / fen\". That refers to \"Waldfreie Niedermoore\" maybe, but we need the explicit ecosystem type names from the allowed values.\n\nAllowed terms: There's a huge list including \"Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte\" – that's a possible term.\n\nAlso \"Waldfreie Sümpfe\" maybe.\n\nAlso \"Waldfreie Niedermoore\" within that term. So we can include that.\n\nAnother reference (13) is about Moor-Wiedervernässung – \"Moor-Wiedervernässung\": \"Moore\" – lowland bogs. So \"Waldfreie Niedermoore und Sümpfe\" maybe.\n\nAlso there is mention of \"fen peatlands\" in the accepted paper: \"Paludiculture as sustainable land use option in German fen peatlands\" – again \"Waldfreie Niedermoore\" would cover that.\n\nAlso reference \"17 GMC factsheet Fur Torfmoos-Anbau in Niedersachsen\" – \"Torfmoos\" is fen peatland, again.\n\nThus the ecosystem types are: Waldfreie Niedermoore und Sümpfe (or maybe Waldfreie Niedermoore). For safety we include exactly \"Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte\" or maybe pick the term that matches.\n\nBut from the allowed values, the term \"Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte\" appears? Actually the allowed list: \"Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte\". Yes that's an allowed term.\n\nThus ecosystem_type category: \"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes\" likely. Keller: Actually categories are groups: I Biotoptypen groups of seas and coasts, etc. For terrestrial peatland falls under \"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes.\" So category content: \"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes\".\n\nThus ecosystem_type:\n\n- category: {content: \"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes\", evidence_anchor: \"Niedermoorböden\" from text? The reference says \"Niedermoorböden\". We can quote phrase: \"Niedermoorböden\" or \"Klimaschonende, biodiversitätsfördernde Bewirtschaftung von Niedermoorböden\". That is an evidence anchor.\n\nTerm: content: \"Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte\" with evidence anchor: phrase from reference 12 or 13. For instance \"Niedermoorböden\" or \"Moor-Wiedervernässung\" -> \"Moor\" is part of \"Waldfreie Niedermoore und Sümpfe\".\n\nDescription: maybe not needed; we can leave omitted.\n\nThus maybe include one ecosystem_type.\n\nLocations: The references mention the location \"Niedersachsen\" (Lower Saxony), \"Mecklenburg-Vorpommern\" (MV), \"Brandenburg\" (Brandenburg). Let's see.\n\nReference 17: factsheet for torfmoos-anbau in Niedersachsen. So location: Germany, Niedersachsen.\n\nReference 14: Paludikultur in Mecklenburg-Vorpommern. So location: Germany, Mecklenburg-Vorpommern.\n\nReference 12: maybe generic. But include.\n\nReference 15: accepted paper: no location.\n\nReference 16: UBA study (Germany). It mentions \"5% der landwirtschaftlich genutzten Moorböden\". Maybe Germany.\n\nWe must list the locations under which the studies are investigated. It's unclear if each reference is a study; but the user demands, \"Angaben zu den ökosystembezogenen Studienmerkmalen\" - basically, which ecosystems and which locations in the document. So compile all distinct locations referenced: Niedersachsen, Mecklenburg-Vorpommern, Brandenburg, Germany.\n\nAlso \"Gesellschaft: Bundes\"like \"Niedersachsen\" or \"Mecklenburg-Vorpommern\".\n\nAlso \"Niedersächsisches Ministerium\" reference from 22: \"Niedersachsen\". Location: Niedersachsen.\n\nAlso might be \"Bundesland\" check. The document includes \"Mecklenburg-Vorpommern, Schwerin\" - we can use that.\n\nThus include following location objects:\n\n1. country: Germany (content maybe \"Deutschland\") – evidence: any line referencing Germany; there are many like \"Klimaschutz im Agrar- und Ernährungssystem Deutschlands\", etc.\n\n2. federal_state: Niedersachsen – evidence: \"Factsheet Torfmoos-Anbau in Niedersachsen\".\n\n3. federal_state: Mecklenburg-Vorpommern – evidence: \"Umsetzung von Paludikultur auf landwirtschaftlich genutzten Flächen in Mecklenburg-Vorpommern\".\n\n4. federal_state: Brandenburg? Reference 1? Actually reference 1 is \"Freiflächensolaranlagen (PV-FFA)\" from Brandenburg. Yes link to Brandenburg.\n\nAlso maybe \"Niedersachsen\" appears in reference for southwestern Germany? The dataset includes just those.\n\nThus location list: We can include just \"country\" for each. However each object requires country, federal_state, name optionally.\n\nWe likely need to supply at least country. The user says \"Beschreibung: Angaben zu den ökosystembezogenen Studienmerkmalen.\" So we will produce JSON with two arrays: ecosystem_type and location.\n\nLet's produce:\n\n{\n  \"ecosystem_type\": [...],\n  \"location\": [...]\n}\n\nFor each\n\necosystem_type:\n- object with category, term maybe, description optional.\n\nWe'll include:\n\n{\n  \"category\": {\"content\":\"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes\",\"evidence_anchor\":\"Niedermoorböden\"},\n  \"term\": {\"content\":\"Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte\",\"evidence_anchor\":\"Moor-Wiedervernässung\"},\n  \"description\": {\"content\":\"Biotoptyp der Waldfreien Niedermoore und Sümpfe im Binnenland, fördernd für Biodiversität und Kohlenstoffsenken.\",\"evidence_anchor\":\"Das Paludikulturprojekt\"} \n} but we need evidence anchor from text. The document: For description we could quote phrase such as \"Klimaschutz im Agrar- und Ernährungssystem Deutschlands\" not relevant. Maybe we skip description if no direct evidence.\n\nThus we can provide without description.\n\nLocations:\n\n1. country: \"Deutschland\", evidence: \"Klimaschutz im Agrar- und Ernährungssystem Deutschlands\".\n\n2. federal_state: \"Niedersachsen\", evidence: \"Factsheet Torfmoos-Anbau in Niedersachsen\".\n\n3. federal_state: \"Mecklenburg-Vorpommern\", evidence: \"Umsetzung von Paludikultur auf landwirtschaftlich genutzten Flächen in Mecklenburg-Vorpommern\".\n\n4. federal_state: \"Brandenburg\", evidence: \"Freiflächensolaranlagen (PV-FFA)\", plus link from Brandenburg.\n\nThus produce location objects accordingly. Provide country for each? For some we can only provide federal_state. So each location object may include only the provided fields.\n\nThus let's craft JSON.\n\nWe should also look at evidence anchor strings: we can use quotes from the text.\n\nE.g., for category: \"Niedermoorböden\" or \"Klimaschutz im Agrar- und Ernährungssystem Deutschlands\" not fit. But \"Niedermoorböden\" appears in reference 12 and 13.\n\nIn reference 12: \"Klimaschonende, biodiversitätsfördernde Bewirtschaftung von Niedermoorböden.\" So evidence_anchor: \"Klimaschonende, biodiversitätsfördernde Bewirtschaftung von Niedermoorböden.\"\n\nFor term evidence anchor: maybe \"Moor-Wiedervernässung\" referencing \"Moor\". In reference 13: \"Evaluierung von Moor-Wiedervernässung in Deutschland.\" So evidence anchor: \"Evaluierung von Moor-Wiedervernässung\".\n\nFor description: We can skip.\n\nLocations:\n\ncountry evidence: \"Klimaschutz im Agrar- und Ernährungssystem Deutschlands\".\n\nfederal_state evidence: \"Factsheet Torfmoos-Anbau in Niedersachsen\" or \"Haupt\"? Provide.\n\nLet's produce JSON accordingly."
+    }
+  },
+  "error": null
+}
