@@ -15,7 +15,8 @@ Modules:
         repeated extraction with majority-vote aggregation.
     union: [`UnionExtractor`][kibad_llm.extractors.union.UnionExtractor] for multi-pass
         extraction with per-pass parameter overrides.
-    union_chunking: TODO
+    union_chunking: [`UnionChunkingExtractor`][kibad_llm.extractors.union_chunking.UnionChunkingExtractor]
+        for multi-pass extraction with per-pass parameter overrides on document chunks.
 """
 
 from .base import extract_from_text, extract_from_text_lenient

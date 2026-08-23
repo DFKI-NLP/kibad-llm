@@ -53,3 +53,4 @@ return_as_list:
 # general return options (see simple extractor for details)
 return_reasoning: True
 return_messages: False
+return_messages_formatted: False
