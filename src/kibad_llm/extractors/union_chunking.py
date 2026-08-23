@@ -2,15 +2,12 @@
 on text chunks.
 
 Classes:
-    UnionChunkingExtractor: Extends [`UnionExtractor`][kibad_llm.extractors.union.UnionExtractor]
-        by chunking the text before feeding it into the extractor.
+    UnionChunkingExtractor: Combines [`UnionExtractor`][kibad_llm.extractors.union.UnionExtractor] and
+        [`ChunkingExtractor`][kibad_llm.extractors.chunking.ChunkingExtractor] by chunking the text and running
+        the UnionExtractor for each chunk.
 """
 
 from typing import Any
-
-from llama_index.core.base.llms.types import MessageRole
-
-from kibad_llm.llms.base import SimpleChatMessage
 
 from .aggregation_utils import Aggregator
 from .base import extract_from_text_lenient
@@ -23,11 +20,20 @@ class UnionChunkingExtractor:
     This extractor calls the base extraction function multiple times (for each entry in overrides)
     on the same input chunk, for each chunk in the input text and aggregates the structured outputs.
 
-    TODO:
     Attributes:
+        overrides: A list of dictionaries containing parameter overrides for each extraction.
+        chunking_aggregator: Aggregator function to use across chunks.
+        union_aggregator: Aggregator function to use across overrides.
+        return_as_list: List of field names to return as lists of all extracted values
+        tokenizer: Tokenizer to use for chunking.
+        max_char_buffer: Max chunk size in characters.
+        default_kwargs: Additional keyword arguments passed to the base extraction function.
 
-    TODO:
-    See UnionExtractor as well as ChunkingExtractor for accepted parameters and details about the aggregation logic.
+    Warning:
+        If a Token that is greater than max_char_buffer is encountered, it becomes its own chunk.
+        This edge case can produce chunks that are larger than max_char_buffer would allow.
+
+    See [`UnionExtractor`][kibad_llm.extractors.union.UnionExtractor] as well as [`ChunkingExtractor`][kibad_llm.extractors.chunking.ChunkingExtractor] for accepted parameters and details about the aggregation logic.
     """
 
     def __init__(
@@ -40,6 +46,22 @@ class UnionChunkingExtractor:
         max_char_buffer: int = 20000,
         **kwargs,
     ):
+        """Assign args to attributes with safety checks and conversions
+
+        Args:
+            overrides: A list of dictionaries containing parameter overrides for each extraction.
+            chunking_aggregator: Aggregator function to use across chunks.
+            union_aggregator: Aggregator function to use across overrides.
+            return_as_list: List of field names to return as lists of all extracted values
+            tokenizer: Tokenizer to use for chunking.
+            max_char_buffer: Max chunk size in characters.
+
+        Keyword Args:
+            *: Additional keyword arguments passed to the base extraction function.
+
+        Raises:
+            ValueError: If no overrides are supplied, there can't be an extraction.
+        """
         # TODO: add verbose tqdm?
         if len(overrides) < 1:
             raise ValueError("overrides must contain at least one set of parameters")
@@ -54,12 +76,10 @@ class UnionChunkingExtractor:
         self.max_char_buffer = max_char_buffer
 
     def __call__(self, *args, **kwargs) -> dict[str, Any]:
-        """Process singular text in chunks with multiple passes with chat history.
+        """Process singular text in chunks with multiple passes.
 
         Args:
             *args (Any): Positional form of `text` and `text_id`, in that order.
-                Other args are forwarded unchanged:
-                [`extract_from_text_lenient`][kibad_llm.extractors.base.extract_from_text_lenient]
 
 
         Keyword Args:
@@ -73,7 +93,7 @@ class UnionChunkingExtractor:
             one entry per extraction call, i.e. one per (chunk, override) pair in chunk-major
             order, matching the flat per-call layout of
             [`ChunkingExtractor`][kibad_llm.extractors.chunking.ChunkingExtractor] and
-            [`ConditionalUnionExtractor`][kibad_llm.extractors.conditional.ConditionalUnionExtractor].
+            [`UnionExtractor`][kibad_llm.extractors.union.UnionExtractor].
         """
 
         # extract text and id in most compatible way
@@ -98,9 +118,8 @@ class UnionChunkingExtractor:
         chunk_structured = []
         all_results = []
         for i, chunk in enumerate(chunks):
-            # for each chunk, run the ConditionalUnionExtractor loop, extracting with overrides and history
+            # for each chunk, run the UnionExtractor loop, extracting with overrides
             chunk_results = []
-            history: list[SimpleChatMessage] = []
             for override_name, override_params in self.overrides.items():
                 current_kwargs = {**combined_kwargs, **override_params}
                 current_result = extract_from_text_lenient(
