@@ -14,7 +14,17 @@
 
 defaults:
   # use two override setups (setup_a and setup_b) to extract with two different schemas separately
-  - /extractor/schema@extractor.overrides.setup_a.schema: faktencheck_core_half_one
-  - /extractor/schema@extractor.overrides.setup_b.schema: faktencheck_core_half_two
   - override /extractor: union_chunking
   - override /extractor/prompt_template: faktencheck_core_v1_with_chunking
+
+extractor:
+  # use two override setups (first_half and second_half) to extract with two different schemas separately
+  overrides:
+    first_half:
+      schema:
+        _target_: kibad_llm.schema.types.EcosystemStudyFeaturesCoreFieldsHalfOne.model_json_schema
+        by_alias: false
+    second_half:
+      schema:
+        _target_: kibad_llm.schema.types.EcosystemStudyFeaturesCoreFieldsHalfTwo.model_json_schema
+        by_alias: false
