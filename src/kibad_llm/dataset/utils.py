@@ -49,8 +49,8 @@ def merge_references_into_predictions(
             logger.warning(
                 f"Missing predictions for the following keys: {missing_predictions}. "
                 "IMPORTANT: Evaluation is only performed if the prediction is present, "
-                "so missing predictions will not be evaluated. However, support (=TP+FN) "
-                "calculation will be affected."
+                "so missing predictions will not be evaluated. This means that support (=TP+FN) "
+                "is computed without the corresponding references."
             )
 
     merged_dataset = {
