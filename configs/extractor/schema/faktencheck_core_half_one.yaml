@@ -1,3 +1,0 @@
-  # create the schema from the pydantic model of EcosystemStudyFeaturesCoreFieldsHalfOne
-  _target_: kibad_llm.schema.types.EcosystemStudyFeaturesCoreFieldsHalfOne.model_json_schema
-  by_alias: false
