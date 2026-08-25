@@ -1,8 +1,8 @@
-"""[`UnionChunkingExtractor`][.UnionChunkingExtractor] for multi-pass extraction
+"""[`MultiPassExtractorWithChunking`][.MultiPassExtractorWithChunking] for multi-pass extraction
 on text chunks.
 
 Classes:
-    UnionChunkingExtractor: Combines [`UnionExtractor`][kibad_llm.extractors.union.UnionExtractor] and
+    MultiPassExtractorWithChunking: Combines [`UnionExtractor`][kibad_llm.extractors.union.UnionExtractor] and
         [`ChunkingExtractor`][kibad_llm.extractors.chunking.ChunkingExtractor] by chunking the text and running
         the UnionExtractor for each chunk.
 """
@@ -15,7 +15,7 @@ from .chunking import _document_chunk_iterator
 from .chunking_utils import tokenizers as tokenizer_lib
 
 
-class UnionChunkingExtractor:
+class MultiPassExtractorWithChunking:
     """Extractor that repeats extraction multiple times on text chunks and aggregates results per key.
     This extractor calls the base extraction function multiple times (for each entry in overrides)
     on the same input chunk, for each chunk in the input text and aggregates the structured outputs.

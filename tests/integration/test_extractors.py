@@ -33,7 +33,7 @@ def cfg_predict_extractor(tmp_path, extractor_name) -> DictConfig:  # type: igno
     # use the gpt_oss_20b llm for testing since we monkeypatch its self.model.chat method
     overrides.append("extractor/llm=gpt_oss_20b")
 
-    if extractor_name in ["union", "union_chunking", "conditional_union"]:
+    if extractor_name in ["union", "multi_pass", "conditional_union"]:
         # For union extractors, we need to define extractor overrides. Use two simple
         # setups (setup_a and setup_b) with different schemas.
         overrides.append("+extractor/schema@extractor.overrides.setup_a.schema=faktencheck_simple")
