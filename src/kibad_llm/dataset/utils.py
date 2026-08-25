@@ -25,7 +25,7 @@ def merge_references_into_predictions(
         allow_missing_predictions: If True, allows references without corresponding predictions.
             If False, raises an error if any reference is missing a prediction.
             IMPORTANT: In either case, evaluation is only performed if the prediction is
-            present, so missing predictions will not be evaluated. However, support (=TP+FN)
+            present, so missing predictions will never be evaluated. However, support (=TP+FN)
             calculation will be affected.
         verbose: If True, logs warnings for any missing references.
     Returns:
