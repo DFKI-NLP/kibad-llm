@@ -23,11 +23,10 @@ def merge_references_into_predictions(
             This will fill missing references with empty dictionaries. If False, raises an error
             if any prediction is missing a reference.
         allow_missing_predictions: If True, allows references without corresponding predictions.
-            This will fill missing predictions with empty dictionaries. If False, raises an error
-            if any reference is missing a prediction.
-            IMPORTANT: This should never be enabled in a real evaluation scenario, as predictions
-            should always be generated for all references. Otherwise, this would undermine the
-            evaluation results.
+            If False, raises an error if any reference is missing a prediction.
+            IMPORTANT: In either case, evaluation is only performed if the prediction is
+            present, so missing predictions will not be evaluated. However, support (=TP+FN)
+            calculation will be affected.
         verbose: If True, logs warnings for any missing references.
     Returns:
         A new Dataset where each entry contains a "prediction" and its corresponding "reference".
@@ -49,15 +48,14 @@ def merge_references_into_predictions(
         elif verbose:
             logger.warning(
                 f"Missing predictions for the following keys: {missing_predictions}. "
-                "Filling missing predictions with empty dictionaries. "
-                "IMPORTANT: This should never happen in a real evaluation scenario, as predictions "
-                "should always be generated for all references. Otherwise, this would undermine the "
-                "evaluation results. Please check your prediction generation process."
+                "IMPORTANT: Evaluation is only performed if the prediction is present, "
+                "so missing predictions will not be evaluated. However, support (=TP+FN) "
+                "calculation will be affected."
             )
 
     merged_dataset = {
-        k: {"prediction": predictions.get(k, {}), "reference": references.get(k, {})}
-        for k in set(predictions) | set(references)
+        k: {"prediction": predictions[k], "reference": references.get(k, {})}
+        for k in set(predictions)
     }
 
     if isinstance(predictions, DictWithMetadata):
