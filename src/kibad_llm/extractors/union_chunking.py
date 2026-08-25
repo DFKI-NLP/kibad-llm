@@ -24,7 +24,8 @@ class UnionChunkingExtractor:
         overrides: A list of dictionaries containing parameter overrides for each extraction.
         chunk_aggregator: Aggregator function to combine results from multiple chunks.
         union_aggregator: Aggregator function to use across overrides.
-        return_as_list: List of field names to return as lists of all extracted values
+        return_as_list: List of field names to return as lists of all extracted values.
+            Length will be the number of extraction passes (override entries x chunks).
         tokenizer: Tokenizer to use for chunking.
         max_char_buffer: Max chunk size in characters.
         default_kwargs: Additional keyword arguments passed to the base extraction function.
