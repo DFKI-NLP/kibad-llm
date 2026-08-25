@@ -10,11 +10,11 @@
 # is accompanied by a text snippet from the original document that supports the extraction.
 
 # To execute this experiment run:
-# uv run -m kibad_llm.predict experiment/predict=faktencheck_core_fields_schema_with_chunking pdf_directory=path/to/pdf/files
+# uv run -m kibad_llm.predict experiment/predict=faktencheck_core_fields_schema_with_multi_pass pdf_directory=path/to/pdf/files
 
 defaults:
   # use two override setups (setup_a and setup_b) to extract with two different schemas separately
-  - override /extractor: union_chunking
+  - override /extractor: multi_pass
   - override /extractor/prompt_template: faktencheck_core_v1_with_chunking
 
 extractor:
