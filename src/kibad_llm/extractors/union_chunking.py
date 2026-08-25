@@ -22,7 +22,7 @@ class UnionChunkingExtractor:
 
     Attributes:
         overrides: A list of dictionaries containing parameter overrides for each extraction.
-        chunking_aggregator: Aggregator function to use across chunks.
+        chunk_aggregator: Aggregator function to combine results from multiple chunks.
         union_aggregator: Aggregator function to use across overrides.
         return_as_list: List of field names to return as lists of all extracted values
         tokenizer: Tokenizer to use for chunking.
