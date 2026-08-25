@@ -10,6 +10,7 @@ def merge_references_into_predictions(
     predictions: dict,
     references: dict,
     allow_missing_references: bool = False,
+    allow_missing_predictions: bool = False,
     verbose: bool = False,
 ) -> dict[Hashable, dict[str, dict]]:
     """Create a new Dataset with entries "prediction" and "reference" by merging references
@@ -21,6 +22,12 @@ def merge_references_into_predictions(
         allow_missing_references: If True, allows predictions without corresponding references.
             This will fill missing references with empty dictionaries. If False, raises an error
             if any prediction is missing a reference.
+        allow_missing_predictions: If True, allows references without corresponding predictions.
+            This will fill missing predictions with empty dictionaries. If False, raises an error
+            if any reference is missing a prediction.
+            IMPORTANT: This should never be enabled in a real evaluation scenario, as predictions
+            should always be generated for all references. Otherwise, this would undermine the
+            evaluation results.
         verbose: If True, logs warnings for any missing references.
     Returns:
         A new Dataset where each entry contains a "prediction" and its corresponding "reference".
@@ -35,9 +42,22 @@ def merge_references_into_predictions(
                 f"Missing references for the following keys: {missing_references}. "
                 "Filling missing references with empty dictionaries."
             )
+    missing_predictions = set(references) - set(predictions)
+    if missing_predictions:
+        if not allow_missing_predictions:
+            raise ValueError(f"Missing predictions for the following keys: {missing_predictions}")
+        elif verbose:
+            logger.warning(
+                f"Missing predictions for the following keys: {missing_predictions}. "
+                "Filling missing predictions with empty dictionaries. "
+                "IMPORTANT: This should never happen in a real evaluation scenario, as predictions "
+                "should always be generated for all references. Otherwise, this would undermine the "
+                "evaluation results. Please check your prediction generation process."
+            )
 
     merged_dataset = {
-        k: {"prediction": predictions[k], "reference": references.get(k, {})} for k in predictions
+        k: {"prediction": predictions.get(k, {}), "reference": references.get(k, {})}
+        for k in set(predictions) | set(references)
     }
 
     if isinstance(predictions, DictWithMetadata):
