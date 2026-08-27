@@ -1145,7 +1145,7 @@ class EcosystemStudyOrganismTrendsV1(BaseEcosystemStudyFeatures):
 
 class EcosystemStudyFeaturesCoreFieldsHabitat(BaseEcosystemStudyFeatures):
     """Das Schema sammelt Angaben zu den wichtigsten biodiversitätsbezogenen Merkmalen der Studie:
-    Lebensräume, Ökosystemtypen, Arten bzw. Artengruppen, sowie die untersuchte Biodiversitätsebene.
+    Lebensräume.
     """
 
     habitat: list[HabitatEnum] = Field(
@@ -1158,7 +1158,7 @@ class EcosystemStudyFeaturesCoreFieldsHabitat(BaseEcosystemStudyFeatures):
 
 class EcosystemStudyFeaturesCoreFieldsTaxa(BaseEcosystemStudyFeatures):
     """Das Schema sammelt Angaben zu den wichtigsten biodiversitätsbezogenen Merkmalen der Studie:
-    Lebensräume, Ökosystemtypen, Arten bzw. Artengruppen, sowie die untersuchte Biodiversitätsebene.
+    Arten bzw. Artengruppen.
     """
 
     taxa: list[Taxa] = Field(
@@ -1176,7 +1176,7 @@ class EcosystemStudyFeaturesCoreFieldsTaxa(BaseEcosystemStudyFeatures):
 
 class EcosystemStudyFeaturesCoreFieldsBiodiversityLevel(BaseEcosystemStudyFeatures):
     """Das Schema sammelt Angaben zu den wichtigsten biodiversitätsbezogenen Merkmalen der Studie:
-    Lebensräume, Ökosystemtypen, Arten bzw. Artengruppen, sowie die untersuchte Biodiversitätsebene.
+    Biodiversitätsebene.
     """
 
     biodiversity_level: list[BiodiversityLevelEnum] = Field(
@@ -1188,7 +1188,7 @@ class EcosystemStudyFeaturesCoreFieldsBiodiversityLevel(BaseEcosystemStudyFeatur
 
 class EcosystemStudyFeaturesCoreFieldsEcosystemType(BaseEcosystemStudyFeatures):
     """Das Schema sammelt Angaben zu den wichtigsten biodiversitätsbezogenen Merkmalen der Studie:
-    Lebensräume, Ökosystemtypen, Arten bzw. Artengruppen, sowie die untersuchte Biodiversitätsebene.
+    Ökosystemtypen.
     """
 
     ecosystem_type: list[EcosystemTypeSimple] = Field(
