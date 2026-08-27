@@ -35,6 +35,8 @@ def metric_name(request: pytest.FixtureRequest) -> str:
 def cfg_evaluate(tmp_path, metric_name) -> Iterator[DictConfig]:
     """Build an evaluation config tailored to the parametrized metric under test."""
     overrides = [f"metric={metric_name}"]
+    # we need to allow missing predictions since the predictions file does not contain all references
+    overrides.append("+dataset.allow_missing_predictions=true")
     if metric_name == "prediction_errors":
         # for this metric, we need to set a specific dataset that does not strip errors
         overrides.append("dataset=predictions_only")
