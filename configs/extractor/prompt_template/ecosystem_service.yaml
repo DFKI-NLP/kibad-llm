@@ -1,0 +1,59 @@
+# This prompt template is a first version, based on the organism_trends_v1 template but with
+# https://cloud.dfki.de/owncloud/index.php/f/113186494
+# See issue https://github.com/DFKI-NLP/kibad-llm/issues/443
+
+defaults:
+  - default
+
+system_message: |
+  Bitte lies den folgenden Text vollständig.
+
+  Der Text ist eine Biodiversitätsstudie oder ein Bericht zum Stand der Biodiversität und/oder von Ökosystemleistungen
+  für den Lebensraum 'Wald', und bezieht sich meist auf eine Gegend in Deutschland oder auf Gesamtdeutschland. Prüfe, ob
+  der Text wissenschaftliche Erkenntnisse zum Zusammenhang zwischen Biodiversität und Ökosystemleistungen enthält.
+  Analysiere dafür zunächst den Rahmen der Studie / des Berichts: Geht es
+  um den Lebensraum 'Wald' ? Welche Ökosystemleistungen oder Ökosystemleistungs-Komplexe wurden untersucht?
+  Welche Biodiversitätsfacetten, Arten oder Artengruppen wurden untersucht?
+  Enthält der Text Angaben zur betrachteten Biodiversitätsfacette - z.B. Artenvielfalt, genetische Diversität,
+  funktionelle Diversität, Artenzusammensetzung, Artidentität oder Habitatdiversität? Falls ja, enthält der Text Angaben
+  zu positiven, negativen oder neutralen Einflüssen der genannten Biodiversitätsfacetten auf Ökosystemleistungen?
+  Für kategoriale Biodiversitätsfacetten wie Artenzusammensetzung oder Artidentität können Einflüsse auch als vorhanden
+  oder nicht vorhanden beschrieben sein. Sammle diese und weitere Informationen entsprechend dem nachfolgenden Schema.
+  Zusammenhänge zwischen Biodiversität und Ökosystemleistungen sind nur dann gültig, wenn alle Informationen bis auf
+  optionale Unterkategorien vorhanden sind.
+  Wenn die Studie zum Beispiel ein Überblicks-, Positions- oder Reviewpapier ist, kann es sein, dass keine
+  vollständigen Aussagen zu Zusammenhängen zwischen Biodiversität und Ökosystemleistungen vorhanden sind.
+
+  Berücksichtige insbesondere Ökosystemleistungen aus den folgenden drei Themenkomplexen:
+
+  Produktivität & Kohlenstoffkreislauf:
+  Dieser Komplex beinhaltet alle Leistungen und Funktionen, die relevant sind, damit der Kohlenstoffkreislauf des
+  Ökosystems funktioniert, das Ökosystem langfristig Kohlenstoff speichern kann oder Produkte generiert, die zur
+  Kohlenstoffspeicherung oder dem Ersatz von fossilen Energieträgern beitragen.
+
+  Stabilität & Resilienz im Klimawandel:
+  Bei diesem Komplex geht es darum, wie empfindlich Ökosysteme auf den Klimawandel und mit dem Klimawandel verbundene
+  Extremereignisse und Störungen reagieren und wie die Leistungen von Ökosystemen in Bezug auf den Strahlungs-, Energie-
+  und Wasserhaushalt dazu beitragen, die Auswirkungen des Klimawandels zu mildern oder dem Klimawandel entgegenwirken.
+
+  Kulturelle Leistungen:
+  Hier geht es um die kulturelle und freizeitliche Nutzung von Ökosystemen, einschließlich Erholung, Naturerleben,
+  ästhetischer, gesundheitlicher, bildungsbezogener oder spiritueller Werte.
+
+  Der Text ist als Markdown formatiert.
+  Gib die Antworten auf Deutsch, auch wenn der Text auf Englisch ist.
+  Wenn Antwortmöglichkeiten nach einer Frage gegeben sind, wähle nur aus den durch Semikolon getrennten
+  Antwortmöglichkeiten. Extrahiere dabei nur, was auch im Text steht, konzentriere dich daher auf die
+  Informationen, die du sicher identifizieren und auch belegen kannst. Für nicht im Text vorhandene
+  Informationen lasse die entsprechenden Antwortfelder leer. Wenn eine Antwortmöglichkeit zutrifft, genügt es,
+  sie einmal zu nennen, wiederhole sie also nicht mehrfach.
+  Beachte jedoch auch die Angaben zur Kardinalität jedes Feldes.
+
+  Erzeuge die Antwort in validem JSON-Format (nicht embedded Markdown!). Keine zusätzlichen Felder, keine Erklärungen.
+  Gib **ausschließlich** gültiges JSON nach dem folgendem Schema zurück.Allerdings besteht jedes Feld aus einem
+  "content"-Unterfeld, in dem du die eigentliche Antwort einträgst und einem "evidence_anchor"-Unterfeld, in dem
+  du die Textstelle (als exaktes Zitat) angibst, die deine Antwort am besten belegt.
+  
+  {schema_description}
+
+# user_message: ... (not modified from default.yaml)
