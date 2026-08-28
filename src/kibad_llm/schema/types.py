@@ -1257,7 +1257,7 @@ class EcosystemServiceFields(CompoundFeature):
         default_factory=list,
         alias="Einfluss",
         description="Was ist der gemessene Einfluss der Ökosystemleistung in der Studie auf Biodiversität von den "
-                    "folgenden Optionen?", # needs explanation of the terms
+        "folgenden Optionen?",  # needs explanation of the terms
     )
     theme_complex: list[ThemenkomplexEnum] = Field(
         default_factory=list,
@@ -1265,7 +1265,7 @@ class EcosystemServiceFields(CompoundFeature):
         description="Welcher dieser Themenkomplexe wird in der Studie betrachtet?",
     )
     ecosystem_service: str | None = Field(
-        default_factory=list,
+        default=None,
         alias="Ökosystemleistung",
         description="Welche Ökosystemleistung wird in der Studie betrachtet?",
     )
@@ -1281,7 +1281,7 @@ class EcosystemServiceFields(CompoundFeature):
         "der folgenden Lebensräume geht es in dem Text?",
     )
     taxa: str | None = Field(
-        default_factory=list,
+        default=None,
         alias="Art(en)",
         description="Welche Arten bzw. Artengruppen werden in der Studie untersucht? Verwende die kleinste "
         "machbare Ebene: Wenn eine Studie nur wenige Arten behandelt, sollten diese auf Artebene mit ihrem "

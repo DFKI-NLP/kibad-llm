@@ -53,7 +53,7 @@ system_message: |
   Gib **ausschließlich** gültiges JSON nach dem folgendem Schema zurück.Allerdings besteht jedes Feld aus einem
   "content"-Unterfeld, in dem du die eigentliche Antwort einträgst und einem "evidence_anchor"-Unterfeld, in dem
   du die Textstelle (als exaktes Zitat) angibst, die deine Antwort am besten belegt.
-  
+
   {schema_description}
 
 # user_message: ... (not modified from default.yaml)
