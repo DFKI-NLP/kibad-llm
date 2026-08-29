@@ -1200,7 +1200,7 @@ class EcosystemStudyFeaturesCoreFieldsEcosystemType(BaseEcosystemStudyFeatures):
 
 # The following class should be replaced by this in the future.
 # However, we don't do it now since this is not 100% backwards compatible and would need testing:
-# The fields in the derived JOSN schema and, thus, schema description text have a different order.
+# The fields in the derived JSON schema and, thus, schema description text have a different order.
 # This should not matter much, but could we should rule out any effects before doing so.
 #
 # EcosystemStudyFeaturesCoreFields = create_model(
