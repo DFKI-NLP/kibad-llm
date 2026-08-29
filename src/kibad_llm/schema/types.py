@@ -1,6 +1,6 @@
 from enum import Enum
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, create_model
 
 
 class BaseEcosystemStudyFeatures(BaseModel):
@@ -1143,6 +1143,77 @@ class EcosystemStudyOrganismTrendsV1(BaseEcosystemStudyFeatures):
     )
 
 
+class EcosystemStudyFeaturesCoreFieldsHabitat(BaseEcosystemStudyFeatures):
+    """Das Schema sammelt Angaben zu den wichtigsten biodiversitätsbezogenen Merkmalen der Studie:
+    Lebensräume.
+    """
+
+    habitat: list[HabitatEnum] = Field(
+        default_factory=list,
+        alias="Lebensräume",
+        description="Um welchen der folgenden Lebensräume oder um welche Kombination "
+        "der folgenden Lebensräume geht es in dem Text?",
+    )
+
+
+class EcosystemStudyFeaturesCoreFieldsTaxa(BaseEcosystemStudyFeatures):
+    """Das Schema sammelt Angaben zu den wichtigsten biodiversitätsbezogenen Merkmalen der Studie:
+    Arten bzw. Artengruppen.
+    """
+
+    taxa: list[Taxa] = Field(
+        default_factory=list,
+        alias="Arten",
+        description="Welche Arten bzw. Artengruppen werden in der Studie untersucht? Verwende die kleinste "
+        "machbare Ebene: Wenn eine Studie nur wenige Arten behandelt, sollten diese auf Artebene mit ihrem "
+        "wissenschaftlichen und deutschen Namen angegeben werden. Werden jedoch sehr viele Arten "
+        "behandelt oder eine Artengruppe besprochen, wird die Artengruppe als 'Sammelbegriff' angegeben. "
+        "Falls die Studie auf englisch ist, übersetze Art- bzw. Artengruppennamen ins Deutsche. "
+        "Ergänze, wenn nicht angegeben, die wissenschaftlichen Artennamen, und umgekehrt die "
+        "deutschen Namen, wenn nur die wissenschaftlichen Artennamen verwendet wurden. ",
+    )
+
+
+class EcosystemStudyFeaturesCoreFieldsBiodiversityLevel(BaseEcosystemStudyFeatures):
+    """Das Schema sammelt Angaben zu den wichtigsten biodiversitätsbezogenen Merkmalen der Studie:
+    Biodiversitätsebene.
+    """
+
+    biodiversity_level: list[BiodiversityLevelEnum] = Field(
+        default_factory=list,
+        alias="Biodiversitätsebene",
+        description="Auf welche der folgenden Ebenen wird Biodiversität in der Studie gemessen? ",
+    )
+
+
+class EcosystemStudyFeaturesCoreFieldsEcosystemType(BaseEcosystemStudyFeatures):
+    """Das Schema sammelt Angaben zu den wichtigsten biodiversitätsbezogenen Merkmalen der Studie:
+    Ökosystemtypen.
+    """
+
+    ecosystem_type: list[EcosystemTypeSimple] = Field(
+        default_factory=list,
+        alias="Ökosystemtyp",
+        description="Welche Ökosystemtypen werden betrachtet?",
+    )
+
+
+# The following class should be replaced by this in the future.
+# However, we don't do it now since this is not 100% backwards compatible and would need testing:
+# The fields in the derived JSON schema and, thus, schema description text have a different order.
+# This should not matter much, but could we should rule out any effects before doing so.
+#
+# EcosystemStudyFeaturesCoreFields = create_model(
+#     "EcosystemStudyFeaturesCoreFields",
+#     __base__=(
+#         EcosystemStudyFeaturesCoreFieldsHabitat,
+#         EcosystemStudyFeaturesCoreFieldsTaxa,
+#         EcosystemStudyFeaturesCoreFieldsBiodiversityLevel,
+#         EcosystemStudyFeaturesCoreFieldsEcosystemType,
+#     ),
+#     __doc__="Das Schema sammelt Angaben zu den wichtigsten biodiversitätsbezogenen Merkmalen der Studie:\nLebensräume, Ökosystemtypen, Arten bzw. Artengruppen, sowie die untersuchte Biodiversitätsebene.",
+# )
+#
 class EcosystemStudyFeaturesCoreFields(BaseEcosystemStudyFeatures):
     """Das Schema sammelt Angaben zu den wichtigsten biodiversitätsbezogenen Merkmalen der Studie:
     Lebensräume, Ökosystemtypen, Arten bzw. Artengruppen, sowie die untersuchte Biodiversitätsebene.
@@ -1165,47 +1236,6 @@ class EcosystemStudyFeaturesCoreFields(BaseEcosystemStudyFeatures):
         "Ergänze, wenn nicht angegeben, die wissenschaftlichen Artennamen, und umgekehrt die "
         "deutschen Namen, wenn nur die wissenschaftlichen Artennamen verwendet wurden. ",
     )
-    biodiversity_level: list[BiodiversityLevelEnum] = Field(
-        default_factory=list,
-        alias="Biodiversitätsebene",
-        description="Auf welche der folgenden Ebenen wird Biodiversität in der Studie gemessen? ",
-    )
-    ecosystem_type: list[EcosystemTypeSimple] = Field(
-        default_factory=list,
-        alias="Ökosystemtyp",
-        description="Welche Ökosystemtypen werden betrachtet?",
-    )
-
-
-class EcosystemStudyFeaturesCoreFieldsHalfOne(BaseEcosystemStudyFeatures):
-    """Das Schema sammelt Angaben zu den wichtigsten biodiversitätsbezogenen Merkmalen der Studie:
-    Lebensräume und Arten bzw. Artengruppen.
-    """
-
-    habitat: list[HabitatEnum] = Field(
-        default_factory=list,
-        alias="Lebensräume",
-        description="Um welchen der folgenden Lebensräume oder um welche Kombination "
-        "der folgenden Lebensräume geht es in dem Text?",
-    )
-    taxa: list[Taxa] = Field(
-        default_factory=list,
-        alias="Arten",
-        description="Welche Arten bzw. Artengruppen werden in der Studie untersucht? Verwende die kleinste "
-        "machbare Ebene: Wenn eine Studie nur wenige Arten behandelt, sollten diese auf Artebene mit ihrem "
-        "wissenschaftlichen und deutschen Namen angegeben werden. Werden jedoch sehr viele Arten "
-        "behandelt oder eine Artengruppe besprochen, wird die Artengruppe als 'Sammelbegriff' angegeben. "
-        "Falls die Studie auf englisch ist, übersetze Art- bzw. Artengruppennamen ins Deutsche. "
-        "Ergänze, wenn nicht angegeben, die wissenschaftlichen Artennamen, und umgekehrt die "
-        "deutschen Namen, wenn nur die wissenschaftlichen Artennamen verwendet wurden. ",
-    )
-
-
-class EcosystemStudyFeaturesCoreFieldsHalfTwo(BaseEcosystemStudyFeatures):
-    """Das Schema sammelt Angaben zu den wichtigsten biodiversitätsbezogenen Merkmalen der Studie:
-    Ökosystemtypen und die untersuchte Biodiversitätsebene.
-    """
-
     biodiversity_level: list[BiodiversityLevelEnum] = Field(
         default_factory=list,
         alias="Biodiversitätsebene",
