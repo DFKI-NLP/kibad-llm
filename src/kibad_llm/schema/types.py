@@ -1356,7 +1356,7 @@ class EcosystemStudyFeaturesDrivers(BaseEcosystemStudyFeatures):
 
 class EcosystemStudyFeaturesMeasures(BaseEcosystemStudyFeatures):
     """Das Schema sammelt Angaben zu den untersuchten Maßnahmen für die Biodiversität:
-    Schutzgebiete, Bewirtschaftungsmaßnahmen, einmalige Maßnahmen sowie das
+    Schutzgebiete, Managementmaßnahmen, Impulsmaßnahmen sowie das
     Transformationspotenzial.
     """
 
