@@ -100,17 +100,22 @@ your PR ID max(issue_ids,pull_request_ids) + 1 (Github issue and PR ids use the 
 
 ```bash
 cd <path/to/kibad-llm>
+
+# Get clean, up-to-date copy of main
 git checkout main
 git pull
 cd data/results
 git checkout main
 git pull
 cd ../..
+# Create branches
+# <your_descriptive_experiment_name> = [pr_id]_[descriptive_text]
+# new_pr_id = max(open_or_closed_issue_id_in_kibad_llm OR open_or_closed_pr_id_in_kibad_llm) + 1
 git switch -c experiment/<your_descriptive_experiment_name>
 cd data/results
 git switch -c experiment/<your_descriptive_experiment_name>
 
-# new_pr_id = max(open_or_closed_issue_id_in_kibad_llm OR open_or_closed_pr_id_in_kibad_llm) + 1
+# Add empty readme.md and push branches upstream
 mkdir -p logs/<your_descriptive_experiment_name>
 touch logs/<your_descriptive_experiment_name>/README.md
 git add logs/<your_descriptive_experiment_name>/README.md
@@ -123,10 +128,26 @@ git push --set-upstream origin experiment/<your_descriptive_experiment_name>
 ```
 
 - Go to https://github.com/DFKI-NLP/kibad-llm -> Create new draft PR
+
 - Go to https://github.com/DFKI-NLP/kibad-llm-results/ -> Create new draft PR that references the kibad-llm PR in the description
-- Then continue with editing logs/experiment/\<your_descriptive_experiment_name>/README.md
-- And add a line to data/results/readme.md
+
+- Edit logs/experiment/\<your_descriptive_experiment_name>/README.md as described [above](https://github.com/DFKI-NLP/kibad-llm/blob/main/docs/CONTRIBUTING-EXPERIMENTS.md#prepare-the-experiment-folder)
+
+- Add a line to [data/results/readme.md](https://github.com/DFKI-NLP/kibad-llm-results/blob/main/readme.md):
     `| [<your_descriptive_experiment_name>](logs/<your_descriptive_experiment_name>) | <current_date> | https://github.com/DFKI-NLP/kibad-llm/pull/<new_pr_id> | <your_descriptive_text> |`
+
+```bash
+# Add updated readme's
+cd data/results
+git add logs/<your_descriptive_experiment_name>/README.md
+git add readme.md
+git commit -m "update readme"
+git push
+cd ../..
+git add data/results
+git commit -m "update readme"
+git push
+```
 
 ### Run predictions
 
