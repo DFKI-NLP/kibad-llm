@@ -1255,7 +1255,7 @@ class EcosystemStudyFeaturesCoreFields(BaseEcosystemStudyFeatures):
 
 
 class EcosystemStudyFeaturesEnvironment(BaseEcosystemStudyFeatures):
-    """Das Schema sammelt Angaben zur Umwelt des Untersuchungsgebietes:
+    """Das Schema sammelt Angaben zu Umweltbedingungen des Untersuchungsgebietes:
     Lebensräume, Naturgroßräume, Ökosystemtypen, Klima, Landnutzung und Böden.
     """
 
@@ -1426,9 +1426,9 @@ class EcosystemStudyFeaturesDrivers(BaseEcosystemStudyFeatures):
 
 
 class EcosystemStudyFeaturesMeasures(BaseEcosystemStudyFeatures):
-    """Das Schema sammelt Angaben zu den untersuchten Maßnahmen für die Biodiversität:
-    Schutzgebiete, Managementmaßnahmen, Impulsmaßnahmen sowie das
-    Transformationspotenzial.
+    """Das Schema sammelt Angaben zu den untersuchten Maßnahmen für die Förderung der
+    Biodiversität: Schutzgebiete, Managementmaßnahmen, Impulsmaßnahmen sowie das
+    gesellschaftliche Transformationspotenzial.
     """
 
     conservation_area: list[ConservationArea] = Field(

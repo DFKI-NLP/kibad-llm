@@ -1,4 +1,4 @@
-Beschreibung: Das Schema sammelt Angaben zu den untersuchten Maßnahmen für die Biodiversität: Schutzgebiete, Managementmaßnahmen, Impulsmaßnahmen sowie das Transformationspotenzial.
+Beschreibung: Das Schema sammelt Angaben zu den untersuchten Maßnahmen für die Förderung der Biodiversität: Schutzgebiete, Managementmaßnahmen, Impulsmaßnahmen sowie das gesellschaftliche Transformationspotenzial.
 Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
 - conservation_area: Welche Schutzgebiete werden in der Studie untersucht? | Kardinalität: 0..* | Typ: object
   Beschreibung: Schutzgebiet mit Name, Beschreibung und Erfolg.

@@ -236,7 +236,7 @@
     }
   },
   "additionalProperties": false,
-  "description": "Das Schema sammelt Angaben zur Umwelt des Untersuchungsgebietes:\nLebensräume, Naturgroßräume, Ökosystemtypen, Klima, Landnutzung und Böden.",
+  "description": "Das Schema sammelt Angaben zu Umweltbedingungen des Untersuchungsgebietes:\nLebensräume, Naturgroßräume, Ökosystemtypen, Klima, Landnutzung und Böden.",
   "properties": {
     "habitat": {
       "description": "Um welchen der folgenden Lebensräume oder um welche Kombinationen der folgenden Lebensräume geht es in dem Text?",
