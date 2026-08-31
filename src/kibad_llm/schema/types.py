@@ -1223,7 +1223,7 @@ class EcosystemStudyFeaturesEnvironment(BaseEcosystemStudyFeatures):
 
 
 class EcosystemStudyFeaturesSpatial(BaseEcosystemStudyFeatures):
-    """Das Schema sammelt räumliche Angaben zur Studie: Untersuchungsgebiete
+    """Das Schema sammelt räumliche Angaben zur Studie: Untersuchungsgebiete (Land, Bundesland, Orte)
     sowie räumliche Ausdehnung, Auflösung und Anzahl der Messungen.
     """
 
