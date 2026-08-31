@@ -1179,7 +1179,7 @@ class EcosystemStudyFeaturesCoreFields(BaseEcosystemStudyFeatures):
 
 # Note: The following subgroup models process the full schema in independent,
 #  semantically coherent groups (issue #92). The grouping follows the column
-#  "Subgroup for promt simplification" in the Fragenkatalog google table. All
+#  "Subgroup for prompt simplification" in the Fragenkatalog google table. All
 #  field definitions are taken verbatim from EcosystemStudyFeaturesAll.
 
 
