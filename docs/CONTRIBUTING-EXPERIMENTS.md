@@ -90,10 +90,11 @@ result location: logs/481_faktencheck_core/evaluate/multiruns/2026-05-26_14-21-1
 ```
 
 ### Step-by-step Guide
+
 Since the process for preparing the branches in the main repo and submodule is a bit tricky, here is a step-by-step
 guide of bash commands, up to and including the creation of experiment readme.
-We assume that you name the branch `experiment/your_descriptive_experiment_name` as selected above, i.e. `[pr_id]_[descriptive_text]`. 
-To get the 'correct' PR ID early on, have a look at the **open and closed** [Issues](https://github.com/DFKI-NLP/kibad-llm/issues) 
+We assume that you name the branch `experiment/your_descriptive_experiment_name` as selected above, i.e. `[pr_id]_[descriptive_text]`.
+To get the 'correct' PR ID early on, have a look at the **open and closed** [Issues](https://github.com/DFKI-NLP/kibad-llm/issues)
 and [Pull Request](https://github.com/DFKI-NLP/kibad-llm/pulls), and use as
 your PR ID max(issue_ids,pull_request_ids) + 1 (Github issue and PR ids use the same counter).
 
@@ -101,7 +102,7 @@ your PR ID max(issue_ids,pull_request_ids) + 1 (Github issue and PR ids use the 
 cd <path/to/kibad-llm>
 git checkout main
 git pull
-cd data/results 
+cd data/results
 git checkout main
 git pull
 cd ../..
@@ -121,12 +122,11 @@ git commit -m "initial commit of experiment branch"
 git push --set-upstream origin experiment/<your_descriptive_experiment_name>
 ```
 
-- Go to https://github.com/DFKI-NLP/kibad-llm   -> Create new draft PR
+- Go to https://github.com/DFKI-NLP/kibad-llm -> Create new draft PR
 - Go to https://github.com/DFKI-NLP/kibad-llm-results/ -> Create new draft PR that references the kibad-llm PR in the description
-- Then continue with editing logs/experiment/<your_descriptive_experiment_name>/README.md
+- Then continue with editing logs/experiment/\<your_descriptive_experiment_name>/README.md
 - And add a line to data/results/readme.md
-  `| [<your_descriptive_experiment_name>](logs/<your_descriptive_experiment_name>) | <current_date> | https://github.com/DFKI-NLP/kibad-llm/pull/<new_pr_id> | <your_descriptive_text> |`
-
+    `| [<your_descriptive_experiment_name>](logs/<your_descriptive_experiment_name>) | <current_date> | https://github.com/DFKI-NLP/kibad-llm/pull/<new_pr_id> | <your_descriptive_text> |`
 
 ### Run predictions
 
