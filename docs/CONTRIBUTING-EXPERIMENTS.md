@@ -131,10 +131,10 @@ git push --set-upstream origin experiment/<your_descriptive_experiment_name>
 
 - Go to https://github.com/DFKI-NLP/kibad-llm-results/ -> Create new draft PR that references the kibad-llm PR in the description
 
-- Edit logs/experiment/\<your_descriptive_experiment_name>/README.md as described [above](https://github.com/DFKI-NLP/kibad-llm/blob/main/docs/CONTRIBUTING-EXPERIMENTS.md#prepare-the-experiment-folder)
+- Edit `data/results/logs/experiment/\<your_descriptive_experiment_name>/README.md as described [above](https://github.com/DFKI-NLP/kibad-llm/blob/main/docs/CONTRIBUTING-EXPERIMENTS.md#prepare-the-experiment-folder)
 
 - Add a line to [data/results/readme.md](https://github.com/DFKI-NLP/kibad-llm-results/blob/main/readme.md):
-    `| [<your_descriptive_experiment_name>](logs/<your_descriptive_experiment_name>) | <current_date> | https://github.com/DFKI-NLP/kibad-llm/pull/<new_pr_id> | <your_descriptive_text> |`
+    `| [<your_descriptive_experiment_name>](logs/<your_descriptive_experiment_name>) | <yyyy-MM-dd> | https://github.com/DFKI-NLP/kibad-llm/pull/<new_pr_id> | <your_descriptive_text> |`
 
 ```bash
 # Add updated readme's
