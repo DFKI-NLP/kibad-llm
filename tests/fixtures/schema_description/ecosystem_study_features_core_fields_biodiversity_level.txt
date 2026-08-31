@@ -1,0 +1,3 @@
+Beschreibung: Das Schema sammelt Angaben zu den wichtigsten biodiversitätsbezogenen Merkmalen der Studie: Biodiversitätsebene.
+Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
+- biodiversity_level: Auf welche der folgenden Ebenen wird Biodiversität in der Studie gemessen? | Kardinalität: 0..* | Typ: string | Zulässige Werte: Artenvielfalt; Funktionelle Diversität; Genetische Diversität; Habitatdiversität; Phylogenetische Diversität; Strukturelle Diversität; Zusammensetzung der Artengemeinschaft

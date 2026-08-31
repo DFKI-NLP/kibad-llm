@@ -1,0 +1,3 @@
+Beschreibung: Das Schema sammelt Angaben zu den wichtigsten biodiversitätsbezogenen Merkmalen der Studie: Lebensräume.
+Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
+- habitat: Um welchen der folgenden Lebensräume oder um welche Kombination der folgenden Lebensräume geht es in dem Text? | Kardinalität: 0..* | Typ: string | Zulässige Werte: Agrar- und Offenland; Binnengewässer und Auen; Boden; Küsten und Küstengewässer; Urbane Räume; Wald
