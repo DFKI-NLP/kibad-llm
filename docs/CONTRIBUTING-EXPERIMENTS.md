@@ -89,6 +89,45 @@ Use result locations as printed by the command, for example:
 result location: logs/481_faktencheck_core/evaluate/multiruns/2026-05-26_14-21-18
 ```
 
+### Step-by-step Guide
+Since the process for preparing the branches in the main repo and submodule is a bit tricky, here is a step-by-step
+guide of bash commands, up to and including the creation of experiment readme.
+We assume that you name the branch `experiment/your_descriptive_experiment_name` as selected above, i.e. `[pr_id]_[descriptive_text]`. 
+To get the 'correct' PR ID early on, have a look at the **open and closed** [Issues](https://github.com/DFKI-NLP/kibad-llm/issues) 
+and [Pull Request](https://github.com/DFKI-NLP/kibad-llm/pulls), and use as
+your PR ID max(issue_ids,pull_request_ids) + 1 (Github issue and PR ids use the same counter).
+
+```bash
+cd <path/to/kibad-llm>
+git checkout main
+git pull
+cd data/results 
+git checkout main
+git pull
+cd ../..
+git switch -c experiment/<your_descriptive_experiment_name>
+cd data/results
+git switch -c experiment/<your_descriptive_experiment_name>
+
+# new_pr_id = max(open_or_closed_issue_id_in_kibad_llm OR open_or_closed_pr_id_in_kibad_llm) + 1
+mkdir -p logs/<your_descriptive_experiment_name>
+touch logs/<your_descriptive_experiment_name>/README.md
+git add logs/<your_descriptive_experiment_name>/README.md
+git commit -m "initial commit of experiment branch"
+git push --set-upstream origin experiment/<your_descriptive_experiment_name>
+cd ../..
+git add data/results
+git commit -m "initial commit of experiment branch"
+git push --set-upstream origin experiment/<your_descriptive_experiment_name>
+```
+
+- Go to https://github.com/DFKI-NLP/kibad-llm   -> Create new draft PR
+- Go to https://github.com/DFKI-NLP/kibad-llm-results/ -> Create new draft PR that references the kibad-llm PR in the description
+- Then continue with editing logs/experiment/<your_descriptive_experiment_name>/README.md
+- And add a line to data/results/readme.md
+  `| [<your_descriptive_experiment_name>](logs/<your_descriptive_experiment_name>) | <current_date> | https://github.com/DFKI-NLP/kibad-llm/pull/<new_pr_id> | <your_descriptive_text> |`
+
+
 ### Run predictions
 
 Run prediction experiments according to [models/README.md](/models/README.md), usually with `run_in_process.sh` and `in_process` LLM configs on the cluster.
