@@ -3,8 +3,8 @@ on text chunks.
 
 Classes:
     MultiPassExtractorWithChunking: Combines [`UnionExtractor`][kibad_llm.extractors.union.UnionExtractor] and
-        [`ChunkingExtractor`][kibad_llm.extractors.chunking.ChunkingExtractor] by chunking the text and running
-        the UnionExtractor for each chunk.
+        [`ChunkingExtractor`][kibad_llm.extractors.chunking.ChunkingExtractor] by running one pass per
+        override and, within each pass, the ChunkingExtractor loop over the chunks of the text.
 """
 
 from typing import Any
@@ -17,13 +17,15 @@ from .chunking_utils import tokenizers as tokenizer_lib
 
 class MultiPassExtractorWithChunking:
     """Extractor that repeats extraction multiple times on text chunks and aggregates results per key.
-    This extractor calls the base extraction function multiple times (for each entry in overrides)
-    on the same input chunk, for each chunk in the input text and aggregates the structured outputs.
+    This extractor calls the base extraction function once per chunk of the input text, for each
+    entry in overrides, and aggregates the structured outputs in two steps: first across the chunks
+    of a single override, then across the overrides.
 
     Attributes:
         overrides: A list of dictionaries containing parameter overrides for each extraction.
-        chunk_aggregator: Aggregator function to combine results from multiple chunks.
-        union_aggregator: Aggregator function to use across overrides.
+        override_aggregator: Aggregator function to combine the results of the overrides (outer loop).
+        chunking_aggregator: Aggregator function to combine the results of the chunks of a single
+            override (inner loop).
         return_as_list: List of field names to return as lists of all extracted values.
             Length will be the number of extraction passes (override entries x chunks).
         tokenizer: Tokenizer to use for chunking.
@@ -40,8 +42,8 @@ class MultiPassExtractorWithChunking:
     def __init__(
         self,
         overrides: list[dict] | dict[str, dict],
+        override_aggregator: Aggregator,
         chunking_aggregator: Aggregator,
-        union_aggregator: Aggregator,
         return_as_list: list[str] | None = None,
         tokenizer: tokenizer_lib.Tokenizer | None = None,
         max_char_buffer: int = 20000,
@@ -51,8 +53,8 @@ class MultiPassExtractorWithChunking:
 
         Args:
             overrides: A list of dictionaries containing parameter overrides for each extraction.
-            chunking_aggregator: Aggregator function to use across chunks.
-            union_aggregator: Aggregator function to use across overrides.
+            override_aggregator: Aggregator function to use across overrides (outer loop).
+            chunking_aggregator: Aggregator function to use across chunks (inner loop).
             return_as_list: List of field names to return as lists of all extracted values
             tokenizer: Tokenizer to use for chunking.
             max_char_buffer: Max chunk size in characters.
@@ -69,8 +71,8 @@ class MultiPassExtractorWithChunking:
         if isinstance(overrides, list):
             overrides = {str(i): override for i, override in enumerate(overrides)}
         self.overrides = overrides
+        self.override_aggregator = override_aggregator
         self.chunking_aggregator = chunking_aggregator
-        self.union_aggregator = union_aggregator
         self.return_as_list = return_as_list or []
         self.default_kwargs = kwargs
         self.tokenizer = tokenizer
@@ -91,10 +93,11 @@ class MultiPassExtractorWithChunking:
         Returns:
             Dict with the key `structured` that holds the aggregated structured outputs.
             Additionally there can be lists for fields at the keys `"{field}_list"`. These hold
-            one entry per extraction call, i.e. one per (chunk, override) pair in chunk-major
-            order, matching the flat per-call layout of
-            [`ChunkingExtractor`][kibad_llm.extractors.chunking.ChunkingExtractor] and
-            [`UnionExtractor`][kibad_llm.extractors.union.UnionExtractor].
+            one entry per extraction call, i.e. one per (override, chunk) pair in override-major
+            order: all chunks of the first override, then all chunks of the second, and so on.
+            This flattens the per-call layout of
+            [`UnionExtractor`][kibad_llm.extractors.union.UnionExtractor] on the outside and
+            [`ChunkingExtractor`][kibad_llm.extractors.chunking.ChunkingExtractor] on the inside.
         """
 
         # extract text and id in most compatible way
@@ -108,24 +111,25 @@ class MultiPassExtractorWithChunking:
 
         combined_kwargs = {**self.default_kwargs, **kwargs}
 
-        # chunk the input text first
+        # chunk the input text first so that we don't have to do it for every override
         chunks = _document_chunk_iterator(
             document=text,
             max_char_buffer=self.max_char_buffer,
             tokenizer=self.tokenizer,
         )
-        # aggregated structured output per chunk, and the raw results of every single extraction
+
+        # aggregated structured output per override, and the raw results of every single extraction
         # call (one per chunk and override) to build the "{field}_list" entries from
-        chunk_structured = []
+        override_structured = []
         all_results = []
-        for i, chunk in enumerate(chunks):
-            # for each chunk, run the UnionExtractor loop, extracting with overrides
-            chunk_results = []
-            for override_name, override_params in self.overrides.items():
-                current_kwargs = {**combined_kwargs, **override_params}
+        for override_name, override_params in self.overrides.items():
+            override_results = []
+            current_kwargs = {**combined_kwargs, **override_params}
+            for i, chunk in enumerate(chunks):
+                # for each override, run the ChunkingExtractor loop over all chunks of the text
                 current_result = extract_from_text_lenient(
                     text=text,
-                    text_id=f"{text_id}_chunk_{i}",
+                    text_id=f"{text_id}_{override_name}_chunk_{i}",
                     **current_kwargs,
                     # This may raise an error if character_start or character_end is already provided via kwargs,
                     # but we want to be strict about not allowing that since it would interfere with the chunking logic.
@@ -133,16 +137,16 @@ class MultiPassExtractorWithChunking:
                     character_end=chunk.char_interval.end_pos,
                 )
 
-                chunk_results.append(current_result)
+                override_results.append(current_result)
 
-            all_results.extend(chunk_results)
+            all_results.extend(override_results)
 
-            # aggregate results for the current chunks extraction passes
-            chunk_structured_outputs = [v.get("structured", None) for v in chunk_results]
-            chunk_structured.append(self.union_aggregator(chunk_structured_outputs))
+            # aggregate the results of the current override's extraction passes over all chunks
+            override_structured_outputs = [v.get("structured", None) for v in override_results]
+            override_structured.append(self.chunking_aggregator(override_structured_outputs))
 
-        # aggregate the previously aggregated results, but now for the entire text, to get a single result.
-        aggregated_structured = self.chunking_aggregator(chunk_structured)
+        # aggregate the previously aggregated results, but now across the overrides, to get a single result.
+        aggregated_structured = self.override_aggregator(override_structured)
 
         result: dict[str, Any] = {
             "structured": aggregated_structured,

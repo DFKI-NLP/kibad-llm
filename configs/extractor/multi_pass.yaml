@@ -8,7 +8,7 @@ defaults:
   # - schema@overrides.setup_b.schema: faktencheck_compounds_simple
   # both aggregators come from the shared `aggregator` config group; the `@<package>`
   # suffix decides which kwarg of the extractor they end up in.
-  - aggregator@union_aggregator: unanimous
+  - aggregator@override_aggregator: unanimous
   - aggregator@chunking_aggregator: single_majority_vote_multi_union
   - llm: gpt_oss_20b
   - prompt_template: schema_in_user_message  # TODO: adjust prompt_template
