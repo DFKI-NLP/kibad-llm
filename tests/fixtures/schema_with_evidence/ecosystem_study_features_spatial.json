@@ -138,7 +138,7 @@
     }
   },
   "additionalProperties": false,
-  "description": "Das Schema sammelt räumliche Angaben zur Studie: Untersuchungsgebiete\nsowie räumliche Ausdehnung, Auflösung und Anzahl der Messungen.",
+  "description": "Das Schema sammelt räumliche Angaben zur Studie: Untersuchungsgebiete (Land, Bundesland, Orte)\nsowie räumliche Ausdehnung, Auflösung und Anzahl der Messungen.",
   "properties": {
     "location": {
       "description": "Welche Untersuchungsgebiete werden in der Studie untersucht?",

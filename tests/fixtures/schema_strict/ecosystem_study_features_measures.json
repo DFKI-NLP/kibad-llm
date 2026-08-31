@@ -116,7 +116,7 @@
     }
   },
   "additionalProperties": false,
-  "description": "Das Schema sammelt Angaben zu den untersuchten Maßnahmen für die Biodiversität:\nSchutzgebiete, Bewirtschaftungsmaßnahmen, einmalige Maßnahmen sowie das\nTransformationspotenzial.",
+  "description": "Das Schema sammelt Angaben zu den untersuchten Maßnahmen für die Biodiversität:\nSchutzgebiete, Managementmaßnahmen, Impulsmaßnahmen sowie das\nTransformationspotenzial.",
   "properties": {
     "conservation_area": {
       "description": "Welche Schutzgebiete werden in der Studie untersucht?",

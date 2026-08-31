@@ -1,4 +1,4 @@
-Beschreibung: Das Schema sammelt räumliche Angaben zur Studie: Untersuchungsgebiete sowie räumliche Ausdehnung, Auflösung und Anzahl der Messungen.
+Beschreibung: Das Schema sammelt räumliche Angaben zur Studie: Untersuchungsgebiete (Land, Bundesland, Orte) sowie räumliche Ausdehnung, Auflösung und Anzahl der Messungen.
 Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
 - location: Welche Untersuchungsgebiete werden in der Studie untersucht? | Kardinalität: 0..* | Typ: object
   Beschreibung: Untersuchungsgebiet mit Land, Bundesland und Ort.
