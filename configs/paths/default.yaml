@@ -6,7 +6,10 @@ root_dir: ${oc.env:PROJECT_ROOT}
 # path to data directory
 data_dir: ${paths.root_dir}/data
 
-timestamp: ${now:%Y-%m-%d_%H-%M-%S}
+# this is quite fine-grained (including micro seconds via %f),
+# but it is to mitigate the risk of overwriting previous runs,
+# especially when running multiple experiments in parallel
+timestamp: ${now:%Y-%m-%d_%H-%M-%S-%f}
 
 # subdirectory for the current run, used in output_dir
 # (indirectly via hydra.run.dir, see hydra/default.yaml)
