@@ -13,7 +13,6 @@
 # uv run -m kibad_llm.predict experiment/predict=faktencheck_core_fields_schema_with_multi_pass pdf_directory=path/to/pdf/files
 
 defaults:
-  # use two override setups (setup_a and setup_b) to extract with two different schemas separately
   - override /extractor: multi_pass
   - override /extractor/prompt_template: faktencheck_core_v1_with_chunking
 
@@ -21,18 +20,18 @@ extractor:
   # use four override setups to extract with different schemas separately
   overrides:
     first:
-      schema:
+      habitat:
         _target_: kibad_llm.schema.types.EcosystemStudyFeaturesCoreFieldsHabitat.model_json_schema
         by_alias: false
-    second:
+    taxa:
       schema:
         _target_: kibad_llm.schema.types.EcosystemStudyFeaturesCoreFieldsTaxa.model_json_schema
         by_alias: false
-    third:
+    biodiversity_level:
       schema:
         _target_: kibad_llm.schema.types.EcosystemStudyFeaturesCoreFieldsBiodiversityLevel.model_json_schema
         by_alias: false
-    fourth:
+    ecosystem_type:
       schema:
         _target_: kibad_llm.schema.types.EcosystemStudyFeaturesCoreFieldsEcosystemType.model_json_schema
         by_alias: false
