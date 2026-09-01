@@ -1,0 +1,35 @@
+{
+  "additionalProperties": false,
+  "description": "Das Schema sammelt räumliche Angaben zur Studie:\nAnzahl räumlicher Messungen.",
+  "properties": {
+    "spatial_measurements": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "content": {
+              "type": "integer"
+            },
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "An wie vielen Stellen wurde gemessen?",
+      "title": "Spatial Measurements"
+    }
+  },
+  "title": "EcosystemStudyFeaturesSpatialSpatialMeasurements",
+  "type": "object"
+}

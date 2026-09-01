@@ -1,0 +1,59 @@
+{
+  "$defs": {
+    "DirectDriver": {
+      "additionalProperties": false,
+      "description": "Direkter Treiber mit Kategorie und Details.",
+      "properties": {
+        "category": {
+          "$ref": "#/$defs/DirectDriverEnum",
+          "description": "Zu welcher der folgenden Kategorien lässt sich der direkte Treiber zuordnen?"
+        },
+        "details": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Details zum direkten Treiber",
+          "title": "Details"
+        }
+      },
+      "required": [
+        "category"
+      ],
+      "title": "DirectDriver",
+      "type": "object"
+    },
+    "DirectDriverEnum": {
+      "enum": [
+        "Andere direkte Treiber",
+        "Direkte Ressourcenentnahme",
+        "Invasive gebietsfremde Arten",
+        "Klimawandel",
+        "Verschmutzung",
+        "Veränderte Land-/Meeresnutzung",
+        "Veränderung der Struktur der Landschaft"
+      ],
+      "title": "DirectDriverEnum",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Das Schema sammelt Angaben zu den untersuchten Treibern von\nBiodiversitätsveränderungen: direkte Treiber.",
+  "properties": {
+    "direct_driver": {
+      "description": "Welche Vorgänge mit direktem Einfluss auf Biodiversität wurden untersucht?",
+      "items": {
+        "$ref": "#/$defs/DirectDriver"
+      },
+      "title": "Direct Driver",
+      "type": "array"
+    }
+  },
+  "title": "EcosystemStudyFeaturesDriversDirectDriver",
+  "type": "object"
+}

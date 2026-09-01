@@ -1,0 +1,3 @@
+Beschreibung: Das Schema sammelt zeitliche Angaben zur Studie: Zeiteinheit.
+Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
+- temporal_extent_unit: In welcher der folgenden Zeiteinheiten ist der Zeitraum angegeben? | Kardinalität: 0..1 | Typ: string | Zulässige Werte: jahre; jahrzehnte; minuten; monate; stunden; tage; wochen

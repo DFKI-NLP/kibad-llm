@@ -1,0 +1,35 @@
+{
+  "$defs": {
+    "TemporalResolutionEnum": {
+      "enum": [
+        "jahre",
+        "jahrzehnte",
+        "minuten",
+        "monate",
+        "stunden",
+        "tage",
+        "wochen"
+      ],
+      "title": "TemporalResolutionEnum",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Das Schema sammelt zeitliche Angaben zur Studie:\nZeitliche Auflösung.",
+  "properties": {
+    "temporal_resolution": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/TemporalResolutionEnum"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Mit welcher zeitlichen Auflösung wurden die einzelnen Messungen in der Studie durchgeführt?"
+    }
+  },
+  "title": "EcosystemStudyFeaturesTemporalTemporalResolution",
+  "type": "object"
+}

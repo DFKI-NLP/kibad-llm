@@ -1,0 +1,35 @@
+{
+  "additionalProperties": false,
+  "description": "Das Schema sammelt zeitliche Angaben zur Studie:\nZeitraum.",
+  "properties": {
+    "temporal_extent": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "content": {
+              "type": "integer"
+            },
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "In welchem Zeitraum fanden die Messungen statt?",
+      "title": "Temporal Extent"
+    }
+  },
+  "title": "EcosystemStudyFeaturesTemporalTemporalExtent",
+  "type": "object"
+}

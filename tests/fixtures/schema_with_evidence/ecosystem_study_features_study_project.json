@@ -1,0 +1,35 @@
+{
+  "additionalProperties": false,
+  "description": "Das Schema sammelt Angaben zur Art der Studie:\nZugehöriges Projekt bzw. Programm.",
+  "properties": {
+    "project": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "content": {
+              "type": "string"
+            },
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Gehört die Studie zu einem größeren Programm oder Projekt? Wenn ja, zu welchem?",
+      "title": "Project"
+    }
+  },
+  "title": "EcosystemStudyFeaturesStudyProject",
+  "type": "object"
+}

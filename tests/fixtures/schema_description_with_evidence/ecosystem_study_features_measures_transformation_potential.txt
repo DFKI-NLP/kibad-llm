@@ -1,0 +1,5 @@
+Beschreibung: Das Schema sammelt Angaben zu den untersuchten Maßnahmen für die Förderung der Biodiversität: gesellschaftliches Transformationspotenzial.
+Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
+- transformation_potential: In welche der folgenden Kategorien lässt sich die im Text behandelte Transformation einordnen? | Kardinalität: 0..* | Typ: object
+  - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Lebensraumspezifischer Wandlungsprozess; Lebensraumunabhängiger Wandlungsprozess; Lebensraumübergreifender Wandlungsprozess
+  - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string

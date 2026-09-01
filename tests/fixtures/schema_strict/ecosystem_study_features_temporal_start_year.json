@@ -1,0 +1,23 @@
+{
+  "additionalProperties": false,
+  "description": "Das Schema sammelt zeitliche Angaben zur Studie:\nStartjahr.",
+  "properties": {
+    "start_year": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "In welchem Jahr fand die erste Messung statt?",
+      "title": "Start Year"
+    }
+  },
+  "title": "EcosystemStudyFeaturesTemporalStartYear",
+  "type": "object",
+  "required": [
+    "start_year"
+  ]
+}

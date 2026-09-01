@@ -1,0 +1,33 @@
+{
+  "$defs": {
+    "ClimateEnum": {
+      "enum": [
+        "Atlantisches Klima",
+        "Gebirgsklima",
+        "kontinental",
+        "maritim",
+        "niederschlagsbenachteiligt",
+        "niederschlagsnormal",
+        "niederschlagsbegünstigt",
+        "subkontinental",
+        "submaritim"
+      ],
+      "title": "ClimateEnum",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Das Schema sammelt Angaben zu Umweltbedingungen des Untersuchungsgebietes:\nKlima.",
+  "properties": {
+    "climate": {
+      "description": "Welche Umschreibung trifft auf das Klima des Untersuchungsgebiets zu?",
+      "items": {
+        "$ref": "#/$defs/ClimateEnum"
+      },
+      "title": "Climate",
+      "type": "array"
+    }
+  },
+  "title": "EcosystemStudyFeaturesEnvironmentClimate",
+  "type": "object"
+}

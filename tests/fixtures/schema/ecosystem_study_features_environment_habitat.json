@@ -1,0 +1,30 @@
+{
+  "$defs": {
+    "HabitatEnum": {
+      "enum": [
+        "Agrar- und Offenland",
+        "Binnengewässer und Auen",
+        "Boden",
+        "Küsten und Küstengewässer",
+        "Urbane Räume",
+        "Wald"
+      ],
+      "title": "HabitatEnum",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Das Schema sammelt Angaben zu Umweltbedingungen des Untersuchungsgebietes:\nLebensräume.",
+  "properties": {
+    "habitat": {
+      "description": "Um welchen der folgenden Lebensräume oder um welche Kombinationen der folgenden Lebensräume geht es in dem Text?",
+      "items": {
+        "$ref": "#/$defs/HabitatEnum"
+      },
+      "title": "Habitat",
+      "type": "array"
+    }
+  },
+  "title": "EcosystemStudyFeaturesEnvironmentHabitat",
+  "type": "object"
+}

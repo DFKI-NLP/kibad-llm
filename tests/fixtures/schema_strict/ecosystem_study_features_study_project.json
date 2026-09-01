@@ -1,0 +1,23 @@
+{
+  "additionalProperties": false,
+  "description": "Das Schema sammelt Angaben zur Art der Studie:\nZugehöriges Projekt bzw. Programm.",
+  "properties": {
+    "project": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Gehört die Studie zu einem größeren Programm oder Projekt? Wenn ja, zu welchem?",
+      "title": "Project"
+    }
+  },
+  "title": "EcosystemStudyFeaturesStudyProject",
+  "type": "object",
+  "required": [
+    "project"
+  ]
+}

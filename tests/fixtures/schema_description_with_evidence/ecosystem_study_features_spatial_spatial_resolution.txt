@@ -1,0 +1,5 @@
+Beschreibung: Das Schema sammelt räumliche Angaben zur Studie: Räumliche Auflösung.
+Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
+- spatial_resolution: Mit welcher räumlichen Auflösung wurden die einzelnen Messungen in der Studie durchgeführt? | Kardinalität: 0..1 | Typ: object
+  - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: bundesweit; global; kontinent; landschaft; plot; punkt; region
+  - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string

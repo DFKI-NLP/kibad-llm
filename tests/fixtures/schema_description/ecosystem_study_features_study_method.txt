@@ -1,0 +1,3 @@
+Beschreibung: Das Schema sammelt Angaben zur Art der Studie: Methoden der Datenaufnahme.
+Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
+- method: Mit welcher/welchen Methode(n) wurden die Daten erhoben? | Kardinalität: 0..* | Typ: string | Zulässige Werte: Citizen Science; Experiment; Feldbeobachtung; Modellierung; Remote Sensing; Review; Synthese; Umfrage

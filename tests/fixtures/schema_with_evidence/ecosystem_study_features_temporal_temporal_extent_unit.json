@@ -1,0 +1,49 @@
+{
+  "$defs": {
+    "TemporalExtentUnit": {
+      "enum": [
+        "jahre",
+        "jahrzehnte",
+        "minuten",
+        "monate",
+        "stunden",
+        "tage",
+        "wochen"
+      ],
+      "title": "TemporalExtentUnit",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Das Schema sammelt zeitliche Angaben zur Studie:\nZeiteinheit.",
+  "properties": {
+    "temporal_extent_unit": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "content": {
+              "$ref": "#/$defs/TemporalExtentUnit"
+            },
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "In welcher der folgenden Zeiteinheiten ist der Zeitraum angegeben?"
+    }
+  },
+  "title": "EcosystemStudyFeaturesTemporalTemporalExtentUnit",
+  "type": "object"
+}

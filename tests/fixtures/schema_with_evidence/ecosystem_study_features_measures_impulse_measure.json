@@ -1,0 +1,77 @@
+{
+  "$defs": {
+    "ImpulseMeasure": {
+      "additionalProperties": false,
+      "description": "Einmalige Maßnahme mit Beschreibung und Erfolg.",
+      "properties": {
+        "description": {
+          "type": "object",
+          "properties": {
+            "content": {
+              "type": "string"
+            },
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
+          ],
+          "additionalProperties": false,
+          "title": "Description",
+          "description": "Beschreibung der einmaligen Maßnahme"
+        },
+        "success": {
+          "type": "object",
+          "properties": {
+            "content": {
+              "$ref": "#/$defs/SuccessEnum"
+            },
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
+          ],
+          "additionalProperties": false,
+          "description": "Hatte die einmalige Maßnahme für die Biodiversität einen messbaren Effekt? "
+        }
+      },
+      "required": [
+        "description",
+        "success"
+      ],
+      "title": "ImpulseMeasure",
+      "type": "object"
+    },
+    "SuccessEnum": {
+      "enum": [
+        "ja",
+        "nein",
+        "teilweise",
+        "unbekannt"
+      ],
+      "title": "SuccessEnum",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Das Schema sammelt Angaben zu den untersuchten Maßnahmen für die Förderung der\nBiodiversität: Impulsmaßnahmen.",
+  "properties": {
+    "impulse_measure": {
+      "description": "Wurden einmalige Maßnahmen für die Biodiversität untersucht?",
+      "items": {
+        "$ref": "#/$defs/ImpulseMeasure"
+      },
+      "title": "Impulse Measure",
+      "type": "array"
+    }
+  },
+  "title": "EcosystemStudyFeaturesMeasuresImpulseMeasure",
+  "type": "object"
+}

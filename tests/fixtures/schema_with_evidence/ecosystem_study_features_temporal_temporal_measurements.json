@@ -1,0 +1,35 @@
+{
+  "additionalProperties": false,
+  "description": "Das Schema sammelt zeitliche Angaben zur Studie:\nAnzahl zeitlicher Messungen.",
+  "properties": {
+    "temporal_measurements": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "content": {
+              "type": "integer"
+            },
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Zu wie vielen unterschiedlichen Zeitpunkten wurde gemessen?",
+      "title": "Temporal Measurements"
+    }
+  },
+  "title": "EcosystemStudyFeaturesTemporalTemporalMeasurements",
+  "type": "object"
+}

@@ -1,0 +1,5 @@
+Beschreibung: Das Schema sammelt Angaben zur untersuchten Biodiversität: Biodiversitätsebene.
+Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
+- biodiversity_level: Auf welche der folgenden Ebenen wird Biodiversität in der Studie gemessen? | Kardinalität: 0..* | Typ: object
+  - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Artenvielfalt; Funktionelle Diversität; Genetische Diversität; Habitatdiversität; Phylogenetische Diversität; Strukturelle Diversität; Zusammensetzung der Artengemeinschaft
+  - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string

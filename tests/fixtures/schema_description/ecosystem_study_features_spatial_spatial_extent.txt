@@ -1,0 +1,3 @@
+Beschreibung: Das Schema sammelt räumliche Angaben zur Studie: Räumliche Ausdehnung.
+Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
+- spatial_extent: Wie ist insgesamt die räumliche Ausdehnung der Studie? | Kardinalität: 0..1 | Typ: string | Zulässige Werte: bundesweit; global; kontinent; landschaft; plot; punkt; region

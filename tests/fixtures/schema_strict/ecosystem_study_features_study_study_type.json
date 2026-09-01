@@ -1,0 +1,35 @@
+{
+  "$defs": {
+    "StudyTypeEnum": {
+      "enum": [
+        "Gutachten",
+        "Meta-Studie",
+        "Nicht Peer-Reviewed",
+        "Originalstudie",
+        "Peer-Reviewed",
+        "Position Paper",
+        "Text Review",
+        "Vote Count"
+      ],
+      "title": "StudyTypeEnum",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Das Schema sammelt Angaben zur Art der Studie:\nStudienart.",
+  "properties": {
+    "study_type": {
+      "description": "Um welche Form der wissenschaftlichen Studie handelt es sich?",
+      "items": {
+        "$ref": "#/$defs/StudyTypeEnum"
+      },
+      "title": "Study Type",
+      "type": "array"
+    }
+  },
+  "title": "EcosystemStudyFeaturesStudyStudyType",
+  "type": "object",
+  "required": [
+    "study_type"
+  ]
+}

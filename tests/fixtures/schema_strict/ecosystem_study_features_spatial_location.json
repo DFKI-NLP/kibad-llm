@@ -1,0 +1,91 @@
+{
+  "$defs": {
+    "Location": {
+      "additionalProperties": false,
+      "description": "Untersuchungsgebiet mit Land, Bundesland und Ort.",
+      "properties": {
+        "country": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Land des Untersuchungsgebietes",
+          "title": "Country"
+        },
+        "federal_state": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/LocationFederalStateEnum"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Bundesland des Untersuchungsgebietes"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Ort (z.B. Stadt, Gemeinde, Region) des Untersuchungsgebietes",
+          "title": "Name"
+        }
+      },
+      "title": "Location",
+      "type": "object",
+      "required": [
+        "country",
+        "federal_state",
+        "name"
+      ]
+    },
+    "LocationFederalStateEnum": {
+      "enum": [
+        "Baden-Württemberg",
+        "Bayern",
+        "Berlin",
+        "Brandenburg",
+        "Bremen",
+        "Hamburg",
+        "Hessen",
+        "Mecklenburg-Vorpommern",
+        "Niedersachsen",
+        "Nordrhein-Westfalen",
+        "Rheinland-Pfalz",
+        "Saarland",
+        "Sachsen",
+        "Sachsen-Anhalt",
+        "Schleswig-Holstein",
+        "Thüringen"
+      ],
+      "title": "LocationFederalStateEnum",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Das Schema sammelt räumliche Angaben zur Studie:\nUntersuchungsgebiete (Land, Bundesland, Orte).",
+  "properties": {
+    "location": {
+      "description": "Welche Untersuchungsgebiete werden in der Studie untersucht?",
+      "items": {
+        "$ref": "#/$defs/Location"
+      },
+      "title": "Location",
+      "type": "array"
+    }
+  },
+  "title": "EcosystemStudyFeaturesSpatialLocation",
+  "type": "object",
+  "required": [
+    "location"
+  ]
+}

@@ -1,0 +1,3 @@
+Beschreibung: Das Schema sammelt Angaben zur untersuchten Biodiversität: Biodiversitätsvariablen.
+Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
+- biodiversity_variable: In welchen Variablen wird die Biodiversität gemessen? | Kardinalität: 0..* | Typ: string

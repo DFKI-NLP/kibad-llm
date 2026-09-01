@@ -1,0 +1,27 @@
+{
+  "$defs": {
+    "TransformationPotentialEnum": {
+      "enum": [
+        "Lebensraumspezifischer Wandlungsprozess",
+        "Lebensraumunabhängiger Wandlungsprozess",
+        "Lebensraumübergreifender Wandlungsprozess"
+      ],
+      "title": "TransformationPotentialEnum",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Das Schema sammelt Angaben zu den untersuchten Maßnahmen für die Förderung der\nBiodiversität: gesellschaftliches Transformationspotenzial.",
+  "properties": {
+    "transformation_potential": {
+      "description": "In welche der folgenden Kategorien lässt sich die im Text behandelte Transformation einordnen? ",
+      "items": {
+        "$ref": "#/$defs/TransformationPotentialEnum"
+      },
+      "title": "Transformation Potential",
+      "type": "array"
+    }
+  },
+  "title": "EcosystemStudyFeaturesMeasuresTransformationPotential",
+  "type": "object"
+}

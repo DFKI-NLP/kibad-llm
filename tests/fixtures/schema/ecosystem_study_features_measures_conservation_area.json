@@ -1,0 +1,69 @@
+{
+  "$defs": {
+    "ConservationArea": {
+      "additionalProperties": false,
+      "description": "Schutzgebiet mit Name, Beschreibung und Erfolg.",
+      "properties": {
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Name des Schutzgebiets",
+          "title": "Name"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Charakterisierung des Schutzgebiets",
+          "title": "Description"
+        },
+        "success": {
+          "$ref": "#/$defs/SuccessEnum",
+          "description": "Hatte das Schutzgebiet einen messbaren Effekt auf die Biodiversität?"
+        }
+      },
+      "required": [
+        "success"
+      ],
+      "title": "ConservationArea",
+      "type": "object"
+    },
+    "SuccessEnum": {
+      "enum": [
+        "ja",
+        "nein",
+        "teilweise",
+        "unbekannt"
+      ],
+      "title": "SuccessEnum",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Das Schema sammelt Angaben zu den untersuchten Maßnahmen für die Förderung der\nBiodiversität: Schutzgebiete.",
+  "properties": {
+    "conservation_area": {
+      "description": "Welche Schutzgebiete werden in der Studie untersucht?",
+      "items": {
+        "$ref": "#/$defs/ConservationArea"
+      },
+      "title": "Conservation Area",
+      "type": "array"
+    }
+  },
+  "title": "EcosystemStudyFeaturesMeasuresConservationArea",
+  "type": "object"
+}
