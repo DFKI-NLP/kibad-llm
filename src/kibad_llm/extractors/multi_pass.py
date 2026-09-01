@@ -1,5 +1,4 @@
-"""[`MultiPassExtractorWithChunking`][.MultiPassExtractorWithChunking] for multi-pass extraction
-on text chunks.
+"""[`MultiPassExtractorWithChunking`][.MultiPassExtractorWithChunking] chunking based extraction in multiple passes.
 
 Classes:
     MultiPassExtractorWithChunking: Combines [`UnionExtractor`][kibad_llm.extractors.union.UnionExtractor] and
@@ -16,10 +15,10 @@ from .chunking_utils import tokenizers as tokenizer_lib
 
 
 class MultiPassExtractorWithChunking:
-    """Extractor that repeats extraction multiple times on text chunks and aggregates results per key.
-    This extractor calls the base extraction function once per chunk of the input text, for each
-    entry in overrides, and aggregates the structured outputs in two steps: first across the chunks
-    of a single override, then across the overrides.
+    """Extractor that repeats extraction for a list of overrides over chunked text and aggregates results per key
+    This extractor chunks the incoming text and then, for each override, extracts from all chunks.
+    First it aggregates across the chunks for each override, to create one result per override.
+    Then it aggregates those results into one.
 
     Attributes:
         overrides: A list of dictionaries containing parameter overrides for each extraction.
@@ -65,7 +64,6 @@ class MultiPassExtractorWithChunking:
         Raises:
             ValueError: If no overrides are supplied, there can't be an extraction.
         """
-        # TODO: add verbose tqdm?
         if len(overrides) < 1:
             raise ValueError("overrides must contain at least one set of parameters")
         if isinstance(overrides, list):
