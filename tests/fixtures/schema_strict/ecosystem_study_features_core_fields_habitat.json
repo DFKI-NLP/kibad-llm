@@ -1,0 +1,33 @@
+{
+  "$defs": {
+    "HabitatEnum": {
+      "enum": [
+        "Agrar- und Offenland",
+        "Binnengewässer und Auen",
+        "Boden",
+        "Küsten und Küstengewässer",
+        "Urbane Räume",
+        "Wald"
+      ],
+      "title": "HabitatEnum",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Das Schema sammelt Angaben zu den wichtigsten biodiversitätsbezogenen Merkmalen der Studie:\nLebensräume.",
+  "properties": {
+    "habitat": {
+      "description": "Um welchen der folgenden Lebensräume oder um welche Kombination der folgenden Lebensräume geht es in dem Text?",
+      "items": {
+        "$ref": "#/$defs/HabitatEnum"
+      },
+      "title": "Habitat",
+      "type": "array"
+    }
+  },
+  "title": "EcosystemStudyFeaturesCoreFieldsHabitat",
+  "type": "object",
+  "required": [
+    "habitat"
+  ]
+}

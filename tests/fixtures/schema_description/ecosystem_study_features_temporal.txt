@@ -1,0 +1,8 @@
+Beschreibung: Das Schema sammelt zeitliche Angaben zur Studie: Zeitraum, Zeiteinheit, zeitliche Auflösung, Anzahl der Messungen sowie Start- und Endjahr.
+Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
+- temporal_extent: In welchem Zeitraum fanden die Messungen statt? | Kardinalität: 0..1 | Typ: integer
+- temporal_extent_unit: In welcher der folgenden Zeiteinheiten ist der Zeitraum angegeben? | Kardinalität: 0..1 | Typ: string | Zulässige Werte: jahre; jahrzehnte; minuten; monate; stunden; tage; wochen
+- temporal_resolution: Mit welcher zeitlichen Auflösung wurden die einzelnen Messungen in der Studie durchgeführt? | Kardinalität: 0..1 | Typ: string | Zulässige Werte: jahre; jahrzehnte; minuten; monate; stunden; tage; wochen
+- temporal_measurements: Zu wie vielen unterschiedlichen Zeitpunkten wurde gemessen? | Kardinalität: 0..1 | Typ: integer
+- start_year: In welchem Jahr fand die erste Messung statt? | Kardinalität: 0..1 | Typ: integer
+- end_year: In welchem Jahr fand die letzte Messung statt? | Kardinalität: 0..1 | Typ: integer

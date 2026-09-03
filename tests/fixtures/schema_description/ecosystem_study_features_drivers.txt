@@ -1,0 +1,10 @@
+Beschreibung: Das Schema sammelt Angaben zu den untersuchten Treibern von Biodiversitätsveränderungen: direkte und indirekte Treiber.
+Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
+- direct_driver: Welche Vorgänge mit direktem Einfluss auf Biodiversität wurden untersucht? | Kardinalität: 0..* | Typ: object
+  Beschreibung: Direkter Treiber mit Kategorie und Details.
+  - category: Zu welcher der folgenden Kategorien lässt sich der direkte Treiber zuordnen? | Kardinalität: 1 | Typ: string | Zulässige Werte: Andere direkte Treiber; Direkte Ressourcenentnahme; Invasive gebietsfremde Arten; Klimawandel; Verschmutzung; Veränderte Land-/Meeresnutzung; Veränderung der Struktur der Landschaft
+  - details: Details zum direkten Treiber | Kardinalität: 0..1 | Typ: string
+- indirect_driver: Welche Vorgänge mit indirektem Einfluss auf Biodiversität wurden untersucht? | Kardinalität: 0..* | Typ: object
+  Beschreibung: Indirekter Treiber mit Kategorie und Details.
+  - category: Zu welcher der folgenden Kategorien lässt sich der indirekte Treiber zuordnen? | Kardinalität: 1 | Typ: string | Zulässige Werte: Gesellschaftliche Treiber; Politische und rechtliche Treiber - rechtlich-regulativ; Politische und rechtliche Treiber - sozial-informationell; Politische und rechtliche Treiber - ökonomisch-anreizbasiert; Wirtschaftliche und technologische Treiber
+  - details: Details zum indirekten Treiber | Kardinalität: 0..1 | Typ: string
