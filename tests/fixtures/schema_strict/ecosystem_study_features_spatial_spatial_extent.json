@@ -1,0 +1,37 @@
+{
+  "$defs": {
+    "SpatialExtentEnum": {
+      "enum": [
+        "bundesweit",
+        "global",
+        "kontinent",
+        "landschaft",
+        "plot",
+        "punkt",
+        "region"
+      ],
+      "title": "SpatialExtentEnum",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Das Schema sammelt räumliche Angaben zur Studie:\nRäumliche Ausdehnung.",
+  "properties": {
+    "spatial_extent": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/SpatialExtentEnum"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Wie ist insgesamt die räumliche Ausdehnung der Studie?"
+    }
+  },
+  "title": "EcosystemStudyFeaturesSpatialSpatialExtent",
+  "type": "object",
+  "required": [
+    "spatial_extent"
+  ]
+}

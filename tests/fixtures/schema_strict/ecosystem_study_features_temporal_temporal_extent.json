@@ -1,0 +1,23 @@
+{
+  "additionalProperties": false,
+  "description": "Das Schema sammelt zeitliche Angaben zur Studie:\nZeitraum.",
+  "properties": {
+    "temporal_extent": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "In welchem Zeitraum fanden die Messungen statt?",
+      "title": "Temporal Extent"
+    }
+  },
+  "title": "EcosystemStudyFeaturesTemporalTemporalExtent",
+  "type": "object",
+  "required": [
+    "temporal_extent"
+  ]
+}

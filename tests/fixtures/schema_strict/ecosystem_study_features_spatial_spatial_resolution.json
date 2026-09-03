@@ -1,0 +1,37 @@
+{
+  "$defs": {
+    "SpatialResolutionEnum": {
+      "enum": [
+        "bundesweit",
+        "global",
+        "kontinent",
+        "landschaft",
+        "plot",
+        "punkt",
+        "region"
+      ],
+      "title": "SpatialResolutionEnum",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Das Schema sammelt räumliche Angaben zur Studie:\nRäumliche Auflösung.",
+  "properties": {
+    "spatial_resolution": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/SpatialResolutionEnum"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Mit welcher räumlichen Auflösung wurden die einzelnen Messungen in der Studie durchgeführt?"
+    }
+  },
+  "title": "EcosystemStudyFeaturesSpatialSpatialResolution",
+  "type": "object",
+  "required": [
+    "spatial_resolution"
+  ]
+}

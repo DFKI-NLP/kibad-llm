@@ -1,0 +1,54 @@
+{
+  "$defs": {
+    "LanduseEnum": {
+      "enum": [
+        "Bau",
+        "Bergbau und Steinbruch",
+        "Brachliegende Flächen",
+        "Energieproduktion",
+        "Erholung, Freizeit, Sport",
+        "Fischerei und Aquakultur",
+        "Forstwirtschaft",
+        "Handels-, Finanz-, Berufs- und Informationsdienstleistungen",
+        "Industrie und Fertigung",
+        "Landwirtschaft",
+        "Naturnahe und natürliche Flächen, die nicht genutzt werden",
+        "Verkehr, Kommunikationsnetzwerke, Lagerung, Schutzwälle",
+        "Wasser- und Abfallbehandlung",
+        "Wohngebiete",
+        "andere Leistung des Primärsektors",
+        "Öffentliche Einrichtungen"
+      ],
+      "title": "LanduseEnum",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Das Schema sammelt Angaben zu Umweltbedingungen des Untersuchungsgebietes:\nLandnutzung.",
+  "properties": {
+    "landuse": {
+      "description": "Welche Landnutzung wird im oder nahe des Untersuchungsgebietes betrieben? In welche der folgenden Kategorien fällt die Nutzung?",
+      "items": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "$ref": "#/$defs/LanduseEnum"
+          },
+          "evidence_anchor": {
+            "type": "string",
+            "description": "Verbatim excerpt from the source text supporting the extracted content."
+          }
+        },
+        "required": [
+          "content",
+          "evidence_anchor"
+        ],
+        "additionalProperties": false
+      },
+      "title": "Landuse",
+      "type": "array"
+    }
+  },
+  "title": "EcosystemStudyFeaturesEnvironmentLanduse",
+  "type": "object"
+}

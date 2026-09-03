@@ -1,0 +1,49 @@
+{
+  "$defs": {
+    "ManagementMeasure": {
+      "additionalProperties": false,
+      "description": "Bewirtschaftungsmaßnahme mit Beschreibung und Erfolg.",
+      "properties": {
+        "description": {
+          "description": "Beschreibung der Bewirtschaftungsmaßnahme",
+          "title": "Description",
+          "type": "string"
+        },
+        "success": {
+          "$ref": "#/$defs/SuccessEnum",
+          "description": "Hatte die Bewirtschaftung als Maßnahme für die Biodiversität einen messbaren Effekt? "
+        }
+      },
+      "required": [
+        "description",
+        "success"
+      ],
+      "title": "ManagementMeasure",
+      "type": "object"
+    },
+    "SuccessEnum": {
+      "enum": [
+        "ja",
+        "nein",
+        "teilweise",
+        "unbekannt"
+      ],
+      "title": "SuccessEnum",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Das Schema sammelt Angaben zu den untersuchten Maßnahmen für die Förderung der\nBiodiversität: Managementmaßnahmen.",
+  "properties": {
+    "management_measure": {
+      "description": "Wurden Formen der Bewirtschaftung als Maßnahmen für die Biodiversität untersucht?",
+      "items": {
+        "$ref": "#/$defs/ManagementMeasure"
+      },
+      "title": "Management Measure",
+      "type": "array"
+    }
+  },
+  "title": "EcosystemStudyFeaturesMeasuresManagementMeasure",
+  "type": "object"
+}

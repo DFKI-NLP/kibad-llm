@@ -1,0 +1,123 @@
+{
+  "$defs": {
+    "SpeciesGroupEnum": {
+      "enum": [
+        "Amphibien und Reptilien",
+        "Andere",
+        "Andere Pflanzen",
+        "Andere Wirbellose",
+        "Archaeen",
+        "Bakterien",
+        "Fische",
+        "Flechten",
+        "Gefäßpflanzen",
+        "Insekten",
+        "Moose",
+        "Pilze",
+        "Protisten",
+        "Protozoen",
+        "Säugetiere",
+        "Vögel"
+      ],
+      "title": "SpeciesGroupEnum",
+      "type": "string"
+    },
+    "Taxa": {
+      "additionalProperties": false,
+      "description": "Art mit wissenschaftlichem und deutschem Namen sowie taxonomischer Gruppe.",
+      "properties": {
+        "scientific_name": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "content": {
+                  "type": "string"
+                },
+                "evidence_anchor": {
+                  "type": "string",
+                  "description": "Verbatim excerpt from the source text supporting the extracted content."
+                }
+              },
+              "required": [
+                "content",
+                "evidence_anchor"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Wissenschaftlicher Name der Art",
+          "title": "Scientific Name"
+        },
+        "german_name": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "content": {
+                  "type": "string"
+                },
+                "evidence_anchor": {
+                  "type": "string",
+                  "description": "Verbatim excerpt from the source text supporting the extracted content."
+                }
+              },
+              "required": [
+                "content",
+                "evidence_anchor"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Deutscher Name der Art",
+          "title": "German Name"
+        },
+        "species_group": {
+          "type": "object",
+          "properties": {
+            "content": {
+              "$ref": "#/$defs/SpeciesGroupEnum"
+            },
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
+          ],
+          "additionalProperties": false,
+          "description": "Taxonomische Gruppe der Art"
+        }
+      },
+      "required": [
+        "species_group"
+      ],
+      "title": "Taxa",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Das Schema sammelt Angaben zur untersuchten Biodiversität:\nArten bzw. Artengruppen.",
+  "properties": {
+    "taxa": {
+      "description": "Welche Arten werden in der Studie untersucht?",
+      "items": {
+        "$ref": "#/$defs/Taxa"
+      },
+      "title": "Taxa",
+      "type": "array"
+    }
+  },
+  "title": "EcosystemStudyFeaturesBiodiversityTaxa",
+  "type": "object"
+}

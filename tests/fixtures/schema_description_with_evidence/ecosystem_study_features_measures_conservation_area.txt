@@ -1,0 +1,14 @@
+Beschreibung: Das Schema sammelt Angaben zu den untersuchten Maßnahmen für die Förderung der Biodiversität: Schutzgebiete.
+Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
+- conservation_area: Welche Schutzgebiete werden in der Studie untersucht? | Kardinalität: 0..* | Typ: object
+  Beschreibung: Schutzgebiet mit Name, Beschreibung und Erfolg.
+  - name: Name des Schutzgebiets | Kardinalität: 0..1 | Typ: object
+    - content: | Kardinalität: 1 | Typ: string
+    - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
+  - description: Charakterisierung des Schutzgebiets | Kardinalität: 0..1 | Typ: object
+    - content: | Kardinalität: 1 | Typ: string
+    - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
+  - success: Hatte das Schutzgebiet einen messbaren Effekt auf die Biodiversität? | Kardinalität: 1 | Typ: object
+    Beschreibung: Hatte das Schutzgebiet einen messbaren Effekt auf die Biodiversität?
+    - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: ja; nein; teilweise; unbekannt
+    - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string

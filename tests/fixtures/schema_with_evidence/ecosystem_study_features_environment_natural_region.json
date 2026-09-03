@@ -1,0 +1,44 @@
+{
+  "$defs": {
+    "NaturalRegionEnum": {
+      "enum": [
+        "Alpen",
+        "Alpenvorland",
+        "Mittelgebirgsschwelle",
+        "Nord- und Ostsee",
+        "Norddeutsches Tiefland",
+        "Schichtstufenland beidseits des Oberrheingrabens"
+      ],
+      "title": "NaturalRegionEnum",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Das Schema sammelt Angaben zu Umweltbedingungen des Untersuchungsgebietes:\nNaturgroßräume.",
+  "properties": {
+    "natural_region": {
+      "description": "Um welchen der folgenden Naturgroßräume geht es in dem Text?",
+      "items": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "$ref": "#/$defs/NaturalRegionEnum"
+          },
+          "evidence_anchor": {
+            "type": "string",
+            "description": "Verbatim excerpt from the source text supporting the extracted content."
+          }
+        },
+        "required": [
+          "content",
+          "evidence_anchor"
+        ],
+        "additionalProperties": false
+      },
+      "title": "Natural Region",
+      "type": "array"
+    }
+  },
+  "title": "EcosystemStudyFeaturesEnvironmentNaturalRegion",
+  "type": "object"
+}

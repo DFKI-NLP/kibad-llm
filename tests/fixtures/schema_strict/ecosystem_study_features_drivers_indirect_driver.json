@@ -1,0 +1,64 @@
+{
+  "$defs": {
+    "IndirectDriver": {
+      "additionalProperties": false,
+      "description": "Indirekter Treiber mit Kategorie und Details.",
+      "properties": {
+        "category": {
+          "description": "Zu welcher der folgenden Kategorien lässt sich der indirekte Treiber zuordnen?",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/IndirectDriverEnum"
+            }
+          ]
+        },
+        "details": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Details zum indirekten Treiber",
+          "title": "Details"
+        }
+      },
+      "required": [
+        "category",
+        "details"
+      ],
+      "title": "IndirectDriver",
+      "type": "object"
+    },
+    "IndirectDriverEnum": {
+      "enum": [
+        "Gesellschaftliche Treiber",
+        "Politische und rechtliche Treiber - rechtlich-regulativ",
+        "Politische und rechtliche Treiber - sozial-informationell",
+        "Politische und rechtliche Treiber - ökonomisch-anreizbasiert",
+        "Wirtschaftliche und technologische Treiber"
+      ],
+      "title": "IndirectDriverEnum",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Das Schema sammelt Angaben zu den untersuchten Treibern von\nBiodiversitätsveränderungen: indirekte Treiber.",
+  "properties": {
+    "indirect_driver": {
+      "description": "Welche Vorgänge mit indirektem Einfluss auf Biodiversität wurden untersucht?",
+      "items": {
+        "$ref": "#/$defs/IndirectDriver"
+      },
+      "title": "Indirect Driver",
+      "type": "array"
+    }
+  },
+  "title": "EcosystemStudyFeaturesDriversIndirectDriver",
+  "type": "object",
+  "required": [
+    "indirect_driver"
+  ]
+}

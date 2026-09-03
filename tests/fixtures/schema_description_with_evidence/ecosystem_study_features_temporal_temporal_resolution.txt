@@ -1,0 +1,5 @@
+Beschreibung: Das Schema sammelt zeitliche Angaben zur Studie: Zeitliche Auflösung.
+Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
+- temporal_resolution: Mit welcher zeitlichen Auflösung wurden die einzelnen Messungen in der Studie durchgeführt? | Kardinalität: 0..1 | Typ: object
+  - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: jahre; jahrzehnte; minuten; monate; stunden; tage; wochen
+  - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string

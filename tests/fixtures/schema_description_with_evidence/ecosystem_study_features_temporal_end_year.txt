@@ -1,0 +1,5 @@
+Beschreibung: Das Schema sammelt zeitliche Angaben zur Studie: Endjahr.
+Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
+- end_year: In welchem Jahr fand die letzte Messung statt? | Kardinalität: 0..1 | Typ: object
+  - content: | Kardinalität: 1 | Typ: integer
+  - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string

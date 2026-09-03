@@ -1,0 +1,21 @@
+{
+  "additionalProperties": false,
+  "description": "Das Schema sammelt zeitliche Angaben zur Studie:\nAnzahl zeitlicher Messungen.",
+  "properties": {
+    "temporal_measurements": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Zu wie vielen unterschiedlichen Zeitpunkten wurde gemessen?",
+      "title": "Temporal Measurements"
+    }
+  },
+  "title": "EcosystemStudyFeaturesTemporalTemporalMeasurements",
+  "type": "object"
+}

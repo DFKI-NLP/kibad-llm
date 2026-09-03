@@ -1,0 +1,31 @@
+{
+  "$defs": {
+    "BiodiversityLevelEnum": {
+      "enum": [
+        "Artenvielfalt",
+        "Funktionelle Diversität",
+        "Genetische Diversität",
+        "Habitatdiversität",
+        "Phylogenetische Diversität",
+        "Strukturelle Diversität",
+        "Zusammensetzung der Artengemeinschaft"
+      ],
+      "title": "BiodiversityLevelEnum",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Das Schema sammelt Angaben zur untersuchten Biodiversität:\nBiodiversitätsebene.",
+  "properties": {
+    "biodiversity_level": {
+      "description": "Auf welche der folgenden Ebenen wird Biodiversität in der Studie gemessen?",
+      "items": {
+        "$ref": "#/$defs/BiodiversityLevelEnum"
+      },
+      "title": "Biodiversity Level",
+      "type": "array"
+    }
+  },
+  "title": "EcosystemStudyFeaturesBiodiversityBiodiversityLevel",
+  "type": "object"
+}

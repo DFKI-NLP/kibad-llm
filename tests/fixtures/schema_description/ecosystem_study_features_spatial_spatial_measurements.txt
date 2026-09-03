@@ -1,0 +1,3 @@
+Beschreibung: Das Schema sammelt räumliche Angaben zur Studie: Anzahl räumlicher Messungen.
+Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
+- spatial_measurements: An wie vielen Stellen wurde gemessen? | Kardinalität: 0..1 | Typ: integer

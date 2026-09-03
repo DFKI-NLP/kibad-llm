@@ -1,0 +1,32 @@
+{
+  "$defs": {
+    "MethodEnum": {
+      "enum": [
+        "Citizen Science",
+        "Experiment",
+        "Feldbeobachtung",
+        "Modellierung",
+        "Remote Sensing",
+        "Review",
+        "Synthese",
+        "Umfrage"
+      ],
+      "title": "MethodEnum",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Das Schema sammelt Angaben zur Art der Studie:\nMethoden der Datenaufnahme.",
+  "properties": {
+    "method": {
+      "description": "Mit welcher/welchen Methode(n) wurden die Daten erhoben?",
+      "items": {
+        "$ref": "#/$defs/MethodEnum"
+      },
+      "title": "Method",
+      "type": "array"
+    }
+  },
+  "title": "EcosystemStudyFeaturesStudyMethod",
+  "type": "object"
+}

@@ -1,0 +1,19 @@
+{
+  "additionalProperties": false,
+  "description": "Das Schema sammelt Angaben zur untersuchten Biodiversität:\nBiodiversitätsvariablen.",
+  "properties": {
+    "biodiversity_variable": {
+      "description": "In welchen Variablen wird die Biodiversität gemessen?",
+      "items": {
+        "type": "string"
+      },
+      "title": "Biodiversity Variable",
+      "type": "array"
+    }
+  },
+  "title": "EcosystemStudyFeaturesBiodiversityBiodiversityVariable",
+  "type": "object",
+  "required": [
+    "biodiversity_variable"
+  ]
+}

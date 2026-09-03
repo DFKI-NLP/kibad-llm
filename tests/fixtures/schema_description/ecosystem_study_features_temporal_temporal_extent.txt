@@ -1,0 +1,3 @@
+Beschreibung: Das Schema sammelt zeitliche Angaben zur Studie: Zeitraum.
+Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
+- temporal_extent: In welchem Zeitraum fanden die Messungen statt? | Kardinalität: 0..1 | Typ: integer
