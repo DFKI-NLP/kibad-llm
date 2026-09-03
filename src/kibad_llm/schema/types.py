@@ -1258,7 +1258,7 @@ class EcosystemStudyFeaturesCoreFields(BaseEcosystemStudyFeatures):
 #  derived JSON schema.
 
 
-class EcosystemStudyFeaturesEnvironmentHabitat(BaseEcosystemStudyFeatures):
+class EcosystemStudyFeaturesHabitat(BaseEcosystemStudyFeatures):
     """Das Schema sammelt Angaben zu Umweltbedingungen des Untersuchungsgebietes:
     Lebensräume.
     """
@@ -1271,7 +1271,7 @@ class EcosystemStudyFeaturesEnvironmentHabitat(BaseEcosystemStudyFeatures):
     )
 
 
-class EcosystemStudyFeaturesEnvironmentNaturalRegion(BaseEcosystemStudyFeatures):
+class EcosystemStudyFeaturesNaturalRegion(BaseEcosystemStudyFeatures):
     """Das Schema sammelt Angaben zu Umweltbedingungen des Untersuchungsgebietes:
     Naturgroßräume.
     """
@@ -1283,7 +1283,7 @@ class EcosystemStudyFeaturesEnvironmentNaturalRegion(BaseEcosystemStudyFeatures)
     )
 
 
-class EcosystemStudyFeaturesEnvironmentEcosystemType(BaseEcosystemStudyFeatures):
+class EcosystemStudyFeaturesEcosystemType(BaseEcosystemStudyFeatures):
     """Das Schema sammelt Angaben zu Umweltbedingungen des Untersuchungsgebietes:
     Ökosystemtypen.
     """
@@ -1295,7 +1295,7 @@ class EcosystemStudyFeaturesEnvironmentEcosystemType(BaseEcosystemStudyFeatures)
     )
 
 
-class EcosystemStudyFeaturesEnvironmentClimate(BaseEcosystemStudyFeatures):
+class EcosystemStudyFeaturesClimate(BaseEcosystemStudyFeatures):
     """Das Schema sammelt Angaben zu Umweltbedingungen des Untersuchungsgebietes:
     Klima.
     """
@@ -1307,7 +1307,7 @@ class EcosystemStudyFeaturesEnvironmentClimate(BaseEcosystemStudyFeatures):
     )
 
 
-class EcosystemStudyFeaturesEnvironmentLanduse(BaseEcosystemStudyFeatures):
+class EcosystemStudyFeaturesLanduse(BaseEcosystemStudyFeatures):
     """Das Schema sammelt Angaben zu Umweltbedingungen des Untersuchungsgebietes:
     Landnutzung.
     """
@@ -1320,7 +1320,7 @@ class EcosystemStudyFeaturesEnvironmentLanduse(BaseEcosystemStudyFeatures):
     )
 
 
-class EcosystemStudyFeaturesEnvironmentSoil(BaseEcosystemStudyFeatures):
+class EcosystemStudyFeaturesSoil(BaseEcosystemStudyFeatures):
     """Das Schema sammelt Angaben zu Umweltbedingungen des Untersuchungsgebietes:
     Böden.
     """
@@ -1335,18 +1335,18 @@ class EcosystemStudyFeaturesEnvironmentSoil(BaseEcosystemStudyFeatures):
 EcosystemStudyFeaturesEnvironment = create_model(
     "EcosystemStudyFeaturesEnvironment",
     __base__=(
-        EcosystemStudyFeaturesEnvironmentSoil,
-        EcosystemStudyFeaturesEnvironmentLanduse,
-        EcosystemStudyFeaturesEnvironmentClimate,
-        EcosystemStudyFeaturesEnvironmentEcosystemType,
-        EcosystemStudyFeaturesEnvironmentNaturalRegion,
-        EcosystemStudyFeaturesEnvironmentHabitat,
+        EcosystemStudyFeaturesSoil,
+        EcosystemStudyFeaturesLanduse,
+        EcosystemStudyFeaturesClimate,
+        EcosystemStudyFeaturesEcosystemType,
+        EcosystemStudyFeaturesNaturalRegion,
+        EcosystemStudyFeaturesHabitat,
     ),
     __doc__="Das Schema sammelt Angaben zu Umweltbedingungen des Untersuchungsgebietes:\nLebensräume, Naturgroßräume, Ökosystemtypen, Klima, Landnutzung und Böden.",
 )
 
 
-class EcosystemStudyFeaturesSpatialLocation(BaseEcosystemStudyFeatures):
+class EcosystemStudyFeaturesLocation(BaseEcosystemStudyFeatures):
     """Das Schema sammelt räumliche Angaben zur Studie:
     Untersuchungsgebiete (Land, Bundesland, Orte).
     """
@@ -1358,7 +1358,7 @@ class EcosystemStudyFeaturesSpatialLocation(BaseEcosystemStudyFeatures):
     )
 
 
-class EcosystemStudyFeaturesSpatialSpatialExtent(BaseEcosystemStudyFeatures):
+class EcosystemStudyFeaturesSpatialExtent(BaseEcosystemStudyFeatures):
     """Das Schema sammelt räumliche Angaben zur Studie:
     Räumliche Ausdehnung.
     """
@@ -1370,7 +1370,7 @@ class EcosystemStudyFeaturesSpatialSpatialExtent(BaseEcosystemStudyFeatures):
     )
 
 
-class EcosystemStudyFeaturesSpatialSpatialResolution(BaseEcosystemStudyFeatures):
+class EcosystemStudyFeaturesSpatialResolution(BaseEcosystemStudyFeatures):
     """Das Schema sammelt räumliche Angaben zur Studie:
     Räumliche Auflösung.
     """
@@ -1383,7 +1383,7 @@ class EcosystemStudyFeaturesSpatialSpatialResolution(BaseEcosystemStudyFeatures)
     )
 
 
-class EcosystemStudyFeaturesSpatialSpatialMeasurements(BaseEcosystemStudyFeatures):
+class EcosystemStudyFeaturesSpatialMeasurements(BaseEcosystemStudyFeatures):
     """Das Schema sammelt räumliche Angaben zur Studie:
     Anzahl räumlicher Messungen.
     """
@@ -1398,16 +1398,16 @@ class EcosystemStudyFeaturesSpatialSpatialMeasurements(BaseEcosystemStudyFeature
 EcosystemStudyFeaturesSpatial = create_model(
     "EcosystemStudyFeaturesSpatial",
     __base__=(
-        EcosystemStudyFeaturesSpatialSpatialMeasurements,
-        EcosystemStudyFeaturesSpatialSpatialResolution,
-        EcosystemStudyFeaturesSpatialSpatialExtent,
-        EcosystemStudyFeaturesSpatialLocation,
+        EcosystemStudyFeaturesSpatialMeasurements,
+        EcosystemStudyFeaturesSpatialResolution,
+        EcosystemStudyFeaturesSpatialExtent,
+        EcosystemStudyFeaturesLocation,
     ),
     __doc__="Das Schema sammelt räumliche Angaben zur Studie: Untersuchungsgebiete (Land, Bundesland, Orte)\nsowie räumliche Ausdehnung, Auflösung und Anzahl der Messungen.",
 )
 
 
-class EcosystemStudyFeaturesTemporalTemporalExtent(BaseEcosystemStudyFeatures):
+class EcosystemStudyFeaturesTemporalExtent(BaseEcosystemStudyFeatures):
     """Das Schema sammelt zeitliche Angaben zur Studie:
     Zeitraum.
     """
@@ -1419,7 +1419,7 @@ class EcosystemStudyFeaturesTemporalTemporalExtent(BaseEcosystemStudyFeatures):
     )
 
 
-class EcosystemStudyFeaturesTemporalTemporalExtentUnit(BaseEcosystemStudyFeatures):
+class EcosystemStudyFeaturesTemporalExtentUnit(BaseEcosystemStudyFeatures):
     """Das Schema sammelt zeitliche Angaben zur Studie:
     Zeiteinheit.
     """
@@ -1431,7 +1431,7 @@ class EcosystemStudyFeaturesTemporalTemporalExtentUnit(BaseEcosystemStudyFeature
     )
 
 
-class EcosystemStudyFeaturesTemporalTemporalResolution(BaseEcosystemStudyFeatures):
+class EcosystemStudyFeaturesTemporalResolution(BaseEcosystemStudyFeatures):
     """Das Schema sammelt zeitliche Angaben zur Studie:
     Zeitliche Auflösung.
     """
@@ -1444,7 +1444,7 @@ class EcosystemStudyFeaturesTemporalTemporalResolution(BaseEcosystemStudyFeature
     )
 
 
-class EcosystemStudyFeaturesTemporalTemporalMeasurements(BaseEcosystemStudyFeatures):
+class EcosystemStudyFeaturesTemporalMeasurements(BaseEcosystemStudyFeatures):
     """Das Schema sammelt zeitliche Angaben zur Studie:
     Anzahl zeitlicher Messungen.
     """
@@ -1456,7 +1456,7 @@ class EcosystemStudyFeaturesTemporalTemporalMeasurements(BaseEcosystemStudyFeatu
     )
 
 
-class EcosystemStudyFeaturesTemporalStartYear(BaseEcosystemStudyFeatures):
+class EcosystemStudyFeaturesStartYear(BaseEcosystemStudyFeatures):
     """Das Schema sammelt zeitliche Angaben zur Studie:
     Startjahr.
     """
@@ -1468,7 +1468,7 @@ class EcosystemStudyFeaturesTemporalStartYear(BaseEcosystemStudyFeatures):
     )
 
 
-class EcosystemStudyFeaturesTemporalEndYear(BaseEcosystemStudyFeatures):
+class EcosystemStudyFeaturesEndYear(BaseEcosystemStudyFeatures):
     """Das Schema sammelt zeitliche Angaben zur Studie:
     Endjahr.
     """
@@ -1483,18 +1483,18 @@ class EcosystemStudyFeaturesTemporalEndYear(BaseEcosystemStudyFeatures):
 EcosystemStudyFeaturesTemporal = create_model(
     "EcosystemStudyFeaturesTemporal",
     __base__=(
-        EcosystemStudyFeaturesTemporalEndYear,
-        EcosystemStudyFeaturesTemporalStartYear,
-        EcosystemStudyFeaturesTemporalTemporalMeasurements,
-        EcosystemStudyFeaturesTemporalTemporalResolution,
-        EcosystemStudyFeaturesTemporalTemporalExtentUnit,
-        EcosystemStudyFeaturesTemporalTemporalExtent,
+        EcosystemStudyFeaturesEndYear,
+        EcosystemStudyFeaturesStartYear,
+        EcosystemStudyFeaturesTemporalMeasurements,
+        EcosystemStudyFeaturesTemporalResolution,
+        EcosystemStudyFeaturesTemporalExtentUnit,
+        EcosystemStudyFeaturesTemporalExtent,
     ),
     __doc__="Das Schema sammelt zeitliche Angaben zur Studie: Zeitraum, Zeiteinheit,\nzeitliche Auflösung, Anzahl der Messungen sowie Start- und Endjahr.",
 )
 
 
-class EcosystemStudyFeaturesStudyMethod(BaseEcosystemStudyFeatures):
+class EcosystemStudyFeaturesMethod(BaseEcosystemStudyFeatures):
     """Das Schema sammelt Angaben zur Art der Studie:
     Methoden der Datenaufnahme.
     """
@@ -1506,7 +1506,7 @@ class EcosystemStudyFeaturesStudyMethod(BaseEcosystemStudyFeatures):
     )
 
 
-class EcosystemStudyFeaturesStudyStudyType(BaseEcosystemStudyFeatures):
+class EcosystemStudyFeaturesStudyType(BaseEcosystemStudyFeatures):
     """Das Schema sammelt Angaben zur Art der Studie:
     Studienart.
     """
@@ -1518,7 +1518,7 @@ class EcosystemStudyFeaturesStudyStudyType(BaseEcosystemStudyFeatures):
     )
 
 
-class EcosystemStudyFeaturesStudyProject(BaseEcosystemStudyFeatures):
+class EcosystemStudyFeaturesProject(BaseEcosystemStudyFeatures):
     """Das Schema sammelt Angaben zur Art der Studie:
     Zugehöriges Projekt bzw. Programm.
     """
@@ -1533,15 +1533,15 @@ class EcosystemStudyFeaturesStudyProject(BaseEcosystemStudyFeatures):
 EcosystemStudyFeaturesStudy = create_model(
     "EcosystemStudyFeaturesStudy",
     __base__=(
-        EcosystemStudyFeaturesStudyProject,
-        EcosystemStudyFeaturesStudyStudyType,
-        EcosystemStudyFeaturesStudyMethod,
+        EcosystemStudyFeaturesProject,
+        EcosystemStudyFeaturesStudyType,
+        EcosystemStudyFeaturesMethod,
     ),
     __doc__="Das Schema sammelt Angaben zur Art der Studie: Methoden der Datenaufnahme,\nStudienart und zugehöriges Projekt bzw. Programm.",
 )
 
 
-class EcosystemStudyFeaturesBiodiversityTaxa(BaseEcosystemStudyFeatures):
+class EcosystemStudyFeaturesTaxa(BaseEcosystemStudyFeatures):
     """Das Schema sammelt Angaben zur untersuchten Biodiversität:
     Arten bzw. Artengruppen.
     """
@@ -1553,7 +1553,7 @@ class EcosystemStudyFeaturesBiodiversityTaxa(BaseEcosystemStudyFeatures):
     )
 
 
-class EcosystemStudyFeaturesBiodiversityBiodiversityLevel(BaseEcosystemStudyFeatures):
+class EcosystemStudyFeaturesBiodiversityLevel(BaseEcosystemStudyFeatures):
     """Das Schema sammelt Angaben zur untersuchten Biodiversität:
     Biodiversitätsebene.
     """
@@ -1565,7 +1565,7 @@ class EcosystemStudyFeaturesBiodiversityBiodiversityLevel(BaseEcosystemStudyFeat
     )
 
 
-class EcosystemStudyFeaturesBiodiversityBiodiversityVariable(BaseEcosystemStudyFeatures):
+class EcosystemStudyFeaturesBiodiversityVariable(BaseEcosystemStudyFeatures):
     """Das Schema sammelt Angaben zur untersuchten Biodiversität:
     Biodiversitätsvariablen.
     """
@@ -1577,7 +1577,7 @@ class EcosystemStudyFeaturesBiodiversityBiodiversityVariable(BaseEcosystemStudyF
     )
 
 
-class EcosystemStudyFeaturesBiodiversityEcosystemService(BaseEcosystemStudyFeatures):
+class EcosystemStudyFeaturesEcosystemService(BaseEcosystemStudyFeatures):
     """Das Schema sammelt Angaben zur untersuchten Biodiversität:
     Ökosystemleistungen.
     """
@@ -1592,16 +1592,16 @@ class EcosystemStudyFeaturesBiodiversityEcosystemService(BaseEcosystemStudyFeatu
 EcosystemStudyFeaturesBiodiversity = create_model(
     "EcosystemStudyFeaturesBiodiversity",
     __base__=(
-        EcosystemStudyFeaturesBiodiversityEcosystemService,
-        EcosystemStudyFeaturesBiodiversityBiodiversityVariable,
-        EcosystemStudyFeaturesBiodiversityBiodiversityLevel,
-        EcosystemStudyFeaturesBiodiversityTaxa,
+        EcosystemStudyFeaturesEcosystemService,
+        EcosystemStudyFeaturesBiodiversityVariable,
+        EcosystemStudyFeaturesBiodiversityLevel,
+        EcosystemStudyFeaturesTaxa,
     ),
     __doc__="Das Schema sammelt Angaben zur untersuchten Biodiversität: Arten bzw. Artengruppen,\nBiodiversitätsebene und -variablen sowie Ökosystemleistungen.",
 )
 
 
-class EcosystemStudyFeaturesDriversDirectDriver(BaseEcosystemStudyFeatures):
+class EcosystemStudyFeaturesDirectDriver(BaseEcosystemStudyFeatures):
     """Das Schema sammelt Angaben zu den untersuchten Treibern von
     Biodiversitätsveränderungen: direkte Treiber.
     """
@@ -1613,7 +1613,7 @@ class EcosystemStudyFeaturesDriversDirectDriver(BaseEcosystemStudyFeatures):
     )
 
 
-class EcosystemStudyFeaturesDriversIndirectDriver(BaseEcosystemStudyFeatures):
+class EcosystemStudyFeaturesIndirectDriver(BaseEcosystemStudyFeatures):
     """Das Schema sammelt Angaben zu den untersuchten Treibern von
     Biodiversitätsveränderungen: indirekte Treiber.
     """
@@ -1628,14 +1628,14 @@ class EcosystemStudyFeaturesDriversIndirectDriver(BaseEcosystemStudyFeatures):
 EcosystemStudyFeaturesDrivers = create_model(
     "EcosystemStudyFeaturesDrivers",
     __base__=(
-        EcosystemStudyFeaturesDriversIndirectDriver,
-        EcosystemStudyFeaturesDriversDirectDriver,
+        EcosystemStudyFeaturesIndirectDriver,
+        EcosystemStudyFeaturesDirectDriver,
     ),
     __doc__="Das Schema sammelt Angaben zu den untersuchten Treibern von\nBiodiversitätsveränderungen: direkte und indirekte Treiber.",
 )
 
 
-class EcosystemStudyFeaturesMeasuresConservationArea(BaseEcosystemStudyFeatures):
+class EcosystemStudyFeaturesConservationArea(BaseEcosystemStudyFeatures):
     """Das Schema sammelt Angaben zu den untersuchten Maßnahmen für die Förderung der
     Biodiversität: Schutzgebiete.
     """
@@ -1647,7 +1647,7 @@ class EcosystemStudyFeaturesMeasuresConservationArea(BaseEcosystemStudyFeatures)
     )
 
 
-class EcosystemStudyFeaturesMeasuresManagementMeasure(BaseEcosystemStudyFeatures):
+class EcosystemStudyFeaturesManagementMeasure(BaseEcosystemStudyFeatures):
     """Das Schema sammelt Angaben zu den untersuchten Maßnahmen für die Förderung der
     Biodiversität: Managementmaßnahmen.
     """
@@ -1659,7 +1659,7 @@ class EcosystemStudyFeaturesMeasuresManagementMeasure(BaseEcosystemStudyFeatures
     )
 
 
-class EcosystemStudyFeaturesMeasuresImpulseMeasure(BaseEcosystemStudyFeatures):
+class EcosystemStudyFeaturesImpulseMeasure(BaseEcosystemStudyFeatures):
     """Das Schema sammelt Angaben zu den untersuchten Maßnahmen für die Förderung der
     Biodiversität: Impulsmaßnahmen.
     """
@@ -1671,7 +1671,7 @@ class EcosystemStudyFeaturesMeasuresImpulseMeasure(BaseEcosystemStudyFeatures):
     )
 
 
-class EcosystemStudyFeaturesMeasuresTransformationPotential(BaseEcosystemStudyFeatures):
+class EcosystemStudyFeaturesTransformationPotential(BaseEcosystemStudyFeatures):
     """Das Schema sammelt Angaben zu den untersuchten Maßnahmen für die Förderung der
     Biodiversität: gesellschaftliches Transformationspotenzial.
     """
@@ -1686,10 +1686,10 @@ class EcosystemStudyFeaturesMeasuresTransformationPotential(BaseEcosystemStudyFe
 EcosystemStudyFeaturesMeasures = create_model(
     "EcosystemStudyFeaturesMeasures",
     __base__=(
-        EcosystemStudyFeaturesMeasuresTransformationPotential,
-        EcosystemStudyFeaturesMeasuresImpulseMeasure,
-        EcosystemStudyFeaturesMeasuresManagementMeasure,
-        EcosystemStudyFeaturesMeasuresConservationArea,
+        EcosystemStudyFeaturesTransformationPotential,
+        EcosystemStudyFeaturesImpulseMeasure,
+        EcosystemStudyFeaturesManagementMeasure,
+        EcosystemStudyFeaturesConservationArea,
     ),
     __doc__="Das Schema sammelt Angaben zu den untersuchten Maßnahmen für die Förderung der\nBiodiversität: Schutzgebiete, Managementmaßnahmen, Impulsmaßnahmen sowie das\ngesellschaftliche Transformationspotenzial.",
 )
