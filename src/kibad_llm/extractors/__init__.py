@@ -16,7 +16,7 @@ Modules:
     union: [`UnionExtractor`][kibad_llm.extractors.union.UnionExtractor] for multi-pass
         extraction with per-pass parameter overrides.
     multi_pass: [`MultiPassExtractorWithChunking`][kibad_llm.extractors.multi_pass.MultiPassExtractorWithChunking]
-        for multi-pass extraction with per-pass parameter overrides on document chunks.
+        for multi-pass extraction with per-pass parameter overrides on document chunking.
 """
 
 from .base import extract_from_text, extract_from_text_lenient
