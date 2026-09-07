@@ -1,0 +1,5 @@
+Beschreibung: Das Schema sammelt Angaben zur Art der Studie: Zugehöriges Projekt bzw. Programm.
+Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
+- project: Gehört die Studie zu einem größeren Programm oder Projekt? Wenn ja, zu welchem? | Kardinalität: 0..1 | Typ: object
+  - content: | Kardinalität: 1 | Typ: string
+  - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string

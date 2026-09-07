@@ -1,0 +1,5 @@
+Beschreibung: Das Schema sammelt zeitliche Angaben zur Studie: Anzahl zeitlicher Messungen.
+Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
+- temporal_measurements: Zu wie vielen unterschiedlichen Zeitpunkten wurde gemessen? | Kardinalität: 0..1 | Typ: object
+  - content: | Kardinalität: 1 | Typ: integer
+  - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
