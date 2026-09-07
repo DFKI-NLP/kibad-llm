@@ -25,7 +25,7 @@ class MultiPassExtractorWithChunking:
             The number of entries defines the number of passes. Can also be a dictionary in
             the format {"pass id" -> "override parameters"} to improve config readability
             (the pass id is not used for anything else).
-        override_aggregator: Aggregator function to combine the results of the passes (outer loop).
+        aggregator: Aggregator function to combine the results of the passes (outer loop).
         chunking_aggregator: Aggregator function to combine the results of the chunks within a single
             pass (inner loop).
         return_as_list: List of field names to return as lists of all extracted values.
@@ -46,7 +46,7 @@ class MultiPassExtractorWithChunking:
     def __init__(
         self,
         overrides: list[dict] | dict[str, dict],
-        override_aggregator: Aggregator,
+        aggregator: Aggregator,
         chunking_aggregator: Aggregator,
         return_as_list: list[str] | None = None,
         tokenizer: tokenizer_lib.Tokenizer | None = None,
@@ -59,7 +59,7 @@ class MultiPassExtractorWithChunking:
             overrides: A list of dictionaries containing parameter overrides for each extraction pass.
                 Can also be a dictionary in the format {"pass id" -> "override parameters"} to improve
                 config readability (the pass id is not used for anything else).
-            override_aggregator: Aggregator function to use across passes (outer loop).
+            aggregator: Aggregator function to use across passes (outer loop).
             chunking_aggregator: Aggregator function to use across chunks (inner loop).
             return_as_list: List of field names to return as lists of all extracted values
             tokenizer: Tokenizer to use for chunking.
@@ -76,7 +76,7 @@ class MultiPassExtractorWithChunking:
         if isinstance(overrides, list):
             overrides = {str(i): override for i, override in enumerate(overrides)}
         self.overrides = overrides
-        self.override_aggregator = override_aggregator
+        self.aggregator = aggregator
         self.chunking_aggregator = chunking_aggregator
         self.return_as_list = return_as_list or []
         self.default_kwargs = kwargs
@@ -155,7 +155,7 @@ class MultiPassExtractorWithChunking:
             all_passes_results.append(self.chunking_aggregator(current_pass_structured_outputs))
 
         # aggregate the previously aggregated results, but now across the overrides, to get a single result.
-        aggregated_structured = self.override_aggregator(all_passes_results)
+        aggregated_structured = self.aggregator(all_passes_results)
 
         result: dict[str, Any] = {
             "structured": aggregated_structured,
