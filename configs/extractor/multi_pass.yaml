@@ -25,19 +25,19 @@ _target_: kibad_llm.extractors.MultiPassExtractorWithChunking
 #   overrides:
 #     habitat:
 #       schema:
-#         _target_: kibad_llm.schema.types.EcosystemStudyFeaturesCoreFieldsHabitat.model_json_schema
+#         _target_: kibad_llm.schema.types.EcosystemStudyFeaturesHabitat.model_json_schema
 #         by_alias: false
 #     taxa:
 #       schema:
-#         _target_: kibad_llm.schema.types.EcosystemStudyFeaturesCoreFieldsTaxa.model_json_schema
+#         _target_: kibad_llm.schema.types.EcosystemStudyFeaturesTaxa.model_json_schema
 #         by_alias: false
 #     biodiversity_level:
 #       schema:
-#         _target_: kibad_llm.schema.types.EcosystemStudyFeaturesCoreFieldsBiodiversityLevel.model_json_schema
+#         _target_: kibad_llm.schema.types.EcosystemStudyFeaturesBiodiversityLevel.model_json_schema
 #         by_alias: false
 #     ecosystem_type:
 #       schema:
-#         _target_: kibad_llm.schema.types.EcosystemStudyFeaturesCoreFieldsEcosystemType.model_json_schema
+#         _target_: kibad_llm.schema.types.EcosystemStudyFeaturesEcosystemType.model_json_schema
 #         by_alias: false
 #
 # The same can be passed on the command line as a dict literal. Mind the single quotes:
@@ -46,7 +46,7 @@ _target_: kibad_llm.extractors.MultiPassExtractorWithChunking
 #   uv run -m kibad_llm.predict pdf_directory=path/to/pdf/files \
 #     extractor=multi_pass \
 #     extractor/prompt_template=faktencheck_core_v1_with_chunking \
-#     'extractor.overrides={habitat:{schema:{_target_:kibad_llm.schema.types.EcosystemStudyFeaturesCoreFieldsHabitat.model_json_schema,by_alias:false}},taxa:{...}}'
+#     'extractor.overrides={habitat:{schema:{_target_:kibad_llm.schema.types.EcosystemStudyFeaturesHabitat.model_json_schema,by_alias:false}},taxa:{...}}'
 overrides: ???
 
 # these values are based on ChatGPT suggestions as gathered by Leo in pr #282:
