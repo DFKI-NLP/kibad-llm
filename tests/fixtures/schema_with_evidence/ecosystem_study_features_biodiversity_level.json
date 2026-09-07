@@ -15,10 +15,10 @@
     }
   },
   "additionalProperties": false,
-  "description": "Das Schema sammelt Angaben zur untersuchten Biodiversität:\nBiodiversitätsebene.",
+  "description": "Das Schema sammelt Angaben zu den wichtigsten biodiversitätsbezogenen Merkmalen der Studie:\nBiodiversitätsebene.",
   "properties": {
     "biodiversity_level": {
-      "description": "Auf welche der folgenden Ebenen wird Biodiversität in der Studie gemessen?",
+      "description": "Auf welche der folgenden Ebenen wird Biodiversität in der Studie gemessen? ",
       "items": {
         "type": "object",
         "properties": {

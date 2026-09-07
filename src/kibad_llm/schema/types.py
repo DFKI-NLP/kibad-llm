@@ -1143,7 +1143,7 @@ class EcosystemStudyOrganismTrendsV1(BaseEcosystemStudyFeatures):
     )
 
 
-class EcosystemStudyFeaturesCoreFieldsHabitat(BaseEcosystemStudyFeatures):
+class EcosystemStudyFeaturesHabitat(BaseEcosystemStudyFeatures):
     """Das Schema sammelt Angaben zu den wichtigsten biodiversitätsbezogenen Merkmalen der Studie:
     Lebensräume.
     """
@@ -1156,7 +1156,7 @@ class EcosystemStudyFeaturesCoreFieldsHabitat(BaseEcosystemStudyFeatures):
     )
 
 
-class EcosystemStudyFeaturesCoreFieldsTaxa(BaseEcosystemStudyFeatures):
+class EcosystemStudyFeaturesTaxa(BaseEcosystemStudyFeatures):
     """Das Schema sammelt Angaben zu den wichtigsten biodiversitätsbezogenen Merkmalen der Studie:
     Arten bzw. Artengruppen.
     """
@@ -1174,7 +1174,7 @@ class EcosystemStudyFeaturesCoreFieldsTaxa(BaseEcosystemStudyFeatures):
     )
 
 
-class EcosystemStudyFeaturesCoreFieldsBiodiversityLevel(BaseEcosystemStudyFeatures):
+class EcosystemStudyFeaturesBiodiversityLevel(BaseEcosystemStudyFeatures):
     """Das Schema sammelt Angaben zu den wichtigsten biodiversitätsbezogenen Merkmalen der Studie:
     Biodiversitätsebene.
     """
@@ -1186,7 +1186,7 @@ class EcosystemStudyFeaturesCoreFieldsBiodiversityLevel(BaseEcosystemStudyFeatur
     )
 
 
-class EcosystemStudyFeaturesCoreFieldsEcosystemType(BaseEcosystemStudyFeatures):
+class EcosystemStudyFeaturesEcosystemType(BaseEcosystemStudyFeatures):
     """Das Schema sammelt Angaben zu den wichtigsten biodiversitätsbezogenen Merkmalen der Studie:
     Ökosystemtypen.
     """
@@ -1201,10 +1201,10 @@ class EcosystemStudyFeaturesCoreFieldsEcosystemType(BaseEcosystemStudyFeatures):
 EcosystemStudyFeaturesCoreFields = create_model(
     "EcosystemStudyFeaturesCoreFields",
     __base__=(
-        EcosystemStudyFeaturesCoreFieldsEcosystemType,
-        EcosystemStudyFeaturesCoreFieldsBiodiversityLevel,
-        EcosystemStudyFeaturesCoreFieldsTaxa,
-        EcosystemStudyFeaturesCoreFieldsHabitat,
+        EcosystemStudyFeaturesEcosystemType,
+        EcosystemStudyFeaturesBiodiversityLevel,
+        EcosystemStudyFeaturesTaxa,
+        EcosystemStudyFeaturesHabitat,
     ),
     __doc__="Das Schema sammelt Angaben zu den wichtigsten biodiversitätsbezogenen Merkmalen der Studie:\nLebensräume, Ökosystemtypen, Arten bzw. Artengruppen, sowie die untersuchte Biodiversitätsebene.",
 )
@@ -1275,9 +1275,9 @@ EcosystemStudyFeaturesEnvironment = create_model(
         EcosystemStudyFeaturesSoil,
         EcosystemStudyFeaturesLanduse,
         EcosystemStudyFeaturesClimate,
-        EcosystemStudyFeaturesCoreFieldsEcosystemType,
+        EcosystemStudyFeaturesEcosystemType,
         EcosystemStudyFeaturesNaturalRegion,
-        EcosystemStudyFeaturesCoreFieldsHabitat,
+        EcosystemStudyFeaturesHabitat,
     ),
     __doc__="Das Schema sammelt Angaben zu Umweltbedingungen des Untersuchungsgebietes:\nLebensräume, Naturgroßräume, Ökosystemtypen, Klima, Landnutzung und Böden.",
 )
@@ -1507,8 +1507,8 @@ EcosystemStudyFeaturesBiodiversity = create_model(
     __base__=(
         EcosystemStudyFeaturesEcosystemService,
         EcosystemStudyFeaturesBiodiversityVariable,
-        EcosystemStudyFeaturesCoreFieldsBiodiversityLevel,
-        EcosystemStudyFeaturesCoreFieldsTaxa,
+        EcosystemStudyFeaturesBiodiversityLevel,
+        EcosystemStudyFeaturesTaxa,
     ),
     __doc__="Das Schema sammelt Angaben zur untersuchten Biodiversität: Arten bzw. Artengruppen,\nBiodiversitätsebene und -variablen sowie Ökosystemleistungen.",
 )

@@ -14,10 +14,10 @@
     }
   },
   "additionalProperties": false,
-  "description": "Das Schema sammelt Angaben zu Umweltbedingungen des Untersuchungsgebietes:\nLebensräume.",
+  "description": "Das Schema sammelt Angaben zu den wichtigsten biodiversitätsbezogenen Merkmalen der Studie:\nLebensräume.",
   "properties": {
     "habitat": {
-      "description": "Um welchen der folgenden Lebensräume oder um welche Kombinationen der folgenden Lebensräume geht es in dem Text?",
+      "description": "Um welchen der folgenden Lebensräume oder um welche Kombination der folgenden Lebensräume geht es in dem Text?",
       "items": {
         "$ref": "#/$defs/HabitatEnum"
       },
