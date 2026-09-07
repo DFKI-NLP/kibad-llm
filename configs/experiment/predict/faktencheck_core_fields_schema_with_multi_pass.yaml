@@ -17,8 +17,8 @@ defaults:
 extractor:
   # use four override setups to extract with different schemas separately
   overrides:
-    first:
-      habitat:
+    habitat:
+      schema:
         _target_: kibad_llm.schema.types.EcosystemStudyFeaturesCoreFieldsHabitat.model_json_schema
         by_alias: false
     taxa:
