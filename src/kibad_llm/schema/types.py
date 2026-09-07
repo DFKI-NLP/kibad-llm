@@ -1220,19 +1220,6 @@ EcosystemStudyFeaturesCoreFields = create_model(
 #  derived JSON schema.
 
 
-class EcosystemStudyFeaturesHabitat(BaseEcosystemStudyFeatures):
-    """Das Schema sammelt Angaben zu Umweltbedingungen des Untersuchungsgebietes:
-    Lebensräume.
-    """
-
-    habitat: list[HabitatEnum] = Field(
-        default_factory=list,
-        alias="Lebensräume",
-        description="Um welchen der folgenden Lebensräume oder um welche Kombinationen "
-        "der folgenden Lebensräume geht es in dem Text?",
-    )
-
-
 class EcosystemStudyFeaturesNaturalRegion(BaseEcosystemStudyFeatures):
     """Das Schema sammelt Angaben zu Umweltbedingungen des Untersuchungsgebietes:
     Naturgroßräume.
@@ -1242,18 +1229,6 @@ class EcosystemStudyFeaturesNaturalRegion(BaseEcosystemStudyFeatures):
         default_factory=list,
         alias="Naturgroßräume",
         description="Um welchen der folgenden Naturgroßräume geht es in dem Text?",
-    )
-
-
-class EcosystemStudyFeaturesEcosystemType(BaseEcosystemStudyFeatures):
-    """Das Schema sammelt Angaben zu Umweltbedingungen des Untersuchungsgebietes:
-    Ökosystemtypen.
-    """
-
-    ecosystem_type: list[EcosystemType] = Field(
-        default_factory=list,
-        alias="Ökosystemtypen",
-        description="Welche Ökosystemtypen werden in der Studie untersucht?",
     )
 
 
@@ -1300,9 +1275,9 @@ EcosystemStudyFeaturesEnvironment = create_model(
         EcosystemStudyFeaturesSoil,
         EcosystemStudyFeaturesLanduse,
         EcosystemStudyFeaturesClimate,
-        EcosystemStudyFeaturesEcosystemType,
+        EcosystemStudyFeaturesCoreFieldsEcosystemType,
         EcosystemStudyFeaturesNaturalRegion,
-        EcosystemStudyFeaturesHabitat,
+        EcosystemStudyFeaturesCoreFieldsHabitat,
     ),
     __doc__="Das Schema sammelt Angaben zu Umweltbedingungen des Untersuchungsgebietes:\nLebensräume, Naturgroßräume, Ökosystemtypen, Klima, Landnutzung und Böden.",
 )
@@ -1503,30 +1478,6 @@ EcosystemStudyFeaturesStudy = create_model(
 )
 
 
-class EcosystemStudyFeaturesTaxa(BaseEcosystemStudyFeatures):
-    """Das Schema sammelt Angaben zur untersuchten Biodiversität:
-    Arten bzw. Artengruppen.
-    """
-
-    taxa: list[Taxa] = Field(
-        default_factory=list,
-        alias="Arten",
-        description="Welche Arten werden in der Studie untersucht?",
-    )
-
-
-class EcosystemStudyFeaturesBiodiversityLevel(BaseEcosystemStudyFeatures):
-    """Das Schema sammelt Angaben zur untersuchten Biodiversität:
-    Biodiversitätsebene.
-    """
-
-    biodiversity_level: list[BiodiversityLevelEnum] = Field(
-        default_factory=list,
-        alias="Biodiversitätsebene",
-        description="Auf welche der folgenden Ebenen wird Biodiversität in der Studie gemessen?",
-    )
-
-
 class EcosystemStudyFeaturesBiodiversityVariable(BaseEcosystemStudyFeatures):
     """Das Schema sammelt Angaben zur untersuchten Biodiversität:
     Biodiversitätsvariablen.
@@ -1556,8 +1507,8 @@ EcosystemStudyFeaturesBiodiversity = create_model(
     __base__=(
         EcosystemStudyFeaturesEcosystemService,
         EcosystemStudyFeaturesBiodiversityVariable,
-        EcosystemStudyFeaturesBiodiversityLevel,
-        EcosystemStudyFeaturesTaxa,
+        EcosystemStudyFeaturesCoreFieldsBiodiversityLevel,
+        EcosystemStudyFeaturesCoreFieldsTaxa,
     ),
     __doc__="Das Schema sammelt Angaben zur untersuchten Biodiversität: Arten bzw. Artengruppen,\nBiodiversitätsebene und -variablen sowie Ökosystemleistungen.",
 )
