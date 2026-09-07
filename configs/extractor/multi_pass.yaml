@@ -3,7 +3,6 @@
 # on the same value, otherwise an error is raised)
 
 defaults:
-  # for an example with multiple schemas, refer to `faktencheck_core_fields_schema_with_multi_pass.yaml`
   # both aggregators come from the shared `aggregator` config group; the `@<package>`
   # suffix decides which kwarg of the extractor they end up in.
   - aggregator@aggregator: unanimous
@@ -18,6 +17,36 @@ _target_: kibad_llm.extractors.MultiPassExtractorWithChunking
 # Overrides need to be a list (or dictionary) containing dictionaries that will get
 # instantiated and then passed as kwargs to the respective base extractor. Thus,
 # no hydra-like merging for individual kwargs is possible.
+#
+# Example: split the core fields schema (see https://github.com/DFKI-NLP/kibad-llm/issues/158)
+# into four sub-schemas and extract each one in its own pass. Pair it with
+# `extractor/prompt_template=faktencheck_core_v1_with_chunking`:
+#
+#   overrides:
+#     habitat:
+#       schema:
+#         _target_: kibad_llm.schema.types.EcosystemStudyFeaturesCoreFieldsHabitat.model_json_schema
+#         by_alias: false
+#     taxa:
+#       schema:
+#         _target_: kibad_llm.schema.types.EcosystemStudyFeaturesCoreFieldsTaxa.model_json_schema
+#         by_alias: false
+#     biodiversity_level:
+#       schema:
+#         _target_: kibad_llm.schema.types.EcosystemStudyFeaturesCoreFieldsBiodiversityLevel.model_json_schema
+#         by_alias: false
+#     ecosystem_type:
+#       schema:
+#         _target_: kibad_llm.schema.types.EcosystemStudyFeaturesCoreFieldsEcosystemType.model_json_schema
+#         by_alias: false
+#
+# The same can be passed on the command line as a dict literal. Mind the single quotes:
+# they keep the shell from applying brace expansion to it.
+#
+#   uv run -m kibad_llm.predict pdf_directory=path/to/pdf/files \
+#     extractor=multi_pass \
+#     extractor/prompt_template=faktencheck_core_v1_with_chunking \
+#     'extractor.overrides={habitat:{schema:{_target_:kibad_llm.schema.types.EcosystemStudyFeaturesCoreFieldsHabitat.model_json_schema,by_alias:false}},taxa:{...}}'
 overrides: ???
 
 # these values are based on ChatGPT suggestions as gathered by Leo in pr #282:
