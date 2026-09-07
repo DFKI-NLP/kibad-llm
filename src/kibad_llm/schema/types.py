@@ -235,31 +235,6 @@ class TransformationPotentialEnum(str, Enum):
     LEBENSRAUMUEBERGREIFENDER_WANDLUNGSPROZESS = "Lebensraumübergreifender Wandlungsprozess"
 
 
-class EcosystemStudyFeaturesSimple(BaseEcosystemStudyFeatures):
-    """Angaben zu den ökosystembezogenen Studienmerkmalen."""
-
-    habitat: list[HabitatEnum] = Field(
-        default_factory=list,
-        alias="Lebensräume",
-        description="Um welchen der folgenden Lebensräume oder in welcher Kombination der folgenden Lebensräume geht es in dem Text?",
-    )
-    natural_region: list[NaturalRegionEnum] = Field(
-        default_factory=list,
-        alias="Naturgroßräume",
-        description="Um welchen der folgenden Naturgroßräume geht es in dem Text?",
-    )
-    climate: list[ClimateEnum] = Field(
-        default_factory=list,
-        alias="Klima",
-        description="Welche Umschreibung trifft auf das Klima des Untersuchungsgebiets zu?",
-    )
-    landuse: list[LanduseEnum] = Field(
-        default_factory=list,
-        alias="Landnutzung",
-        description="Welche Landnutzung wird im oder nahe des Untersuchungsgebietes betrieben? In welche der folgenden Kategorien fällt die Nutzung?",
-    )
-
-
 class EcosystemType(CompoundFeature):
     """Ökosystemtyp mit Kategorie, Name und Beschreibung."""
 
@@ -664,21 +639,6 @@ class EcosystemService(CompoundFeature):
         default=None,
         alias="Details",
         description="Details zur Ökosystemleistung",
-    )
-
-
-class EcosystemStudyFeaturesCompoundsSimple(BaseEcosystemStudyFeatures):
-    """Angaben zu den ökosystembezogenen Studienmerkmalen."""
-
-    ecosystem_type: list[EcosystemType] = Field(
-        default_factory=list,
-        alias="Ökosystemtypen",
-        description="Welche Ökosystemtypen werden in der Studie untersucht?",
-    )
-    location: list[Location] = Field(
-        default_factory=list,
-        alias="Standorte",
-        description="Welche Standorte werden in der Studie untersucht?",
     )
 
 
@@ -1334,7 +1294,8 @@ EcosystemStudyFeaturesAll = create_model(
     __doc__="Angaben zu den ökosystembezogenen Studienmerkmalen.",
 )
 
-# the following two schemata are currently just used in tests
+# === the following four schemata are currently just used in tests ===
+# TODO: move to tests (also remove the respective schema configs, if possible)
 
 EcosystemStudyFeaturesWithoutCompounds = create_model(
     "EcosystemStudyFeaturesWithoutCompounds",
@@ -1378,3 +1339,46 @@ EcosystemStudyFeaturesCompoundsOnly = create_model(
     ),
     __doc__="Angaben zu den ökosystembezogenen Studienmerkmalen.",
 )
+
+
+class EcosystemStudyFeaturesSimple(BaseEcosystemStudyFeatures):
+    """Angaben zu den ökosystembezogenen Studienmerkmalen."""
+
+    habitat: list[HabitatEnum] = Field(
+        default_factory=list,
+        alias="Lebensräume",
+        description="Um welchen der folgenden Lebensräume oder in welcher Kombination der folgenden Lebensräume geht es in dem Text?",
+    )
+    natural_region: list[NaturalRegionEnum] = Field(
+        default_factory=list,
+        alias="Naturgroßräume",
+        description="Um welchen der folgenden Naturgroßräume geht es in dem Text?",
+    )
+    climate: list[ClimateEnum] = Field(
+        default_factory=list,
+        alias="Klima",
+        description="Welche Umschreibung trifft auf das Klima des Untersuchungsgebiets zu?",
+    )
+    landuse: list[LanduseEnum] = Field(
+        default_factory=list,
+        alias="Landnutzung",
+        description="Welche Landnutzung wird im oder nahe des Untersuchungsgebietes betrieben? In welche der folgenden Kategorien fällt die Nutzung?",
+    )
+
+
+class EcosystemStudyFeaturesCompoundsSimple(BaseEcosystemStudyFeatures):
+    """Angaben zu den ökosystembezogenen Studienmerkmalen."""
+
+    ecosystem_type: list[EcosystemType] = Field(
+        default_factory=list,
+        alias="Ökosystemtypen",
+        description="Welche Ökosystemtypen werden in der Studie untersucht?",
+    )
+    location: list[Location] = Field(
+        default_factory=list,
+        alias="Standorte",
+        description="Welche Standorte werden in der Studie untersucht?",
+    )
+
+
+# ==========================================================================
