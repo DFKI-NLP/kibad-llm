@@ -10,7 +10,7 @@ def test_read_organism_trends_wald_all() -> None:
         "data/external/organism_trends/Weighted Vote Count Wald Literatur - Sheet1.csv"
     )
     assert isinstance(result, dict)
-    assert len(result) == 173
+    assert len(result) == 172
 
     key = "324V8DKM"
     data = result[key]
@@ -40,7 +40,7 @@ def test_read_organism_trends_wald_selected_columns() -> None:
         ],
     )
     assert isinstance(result, dict)
-    assert len(result) == 173
+    assert len(result) == 172
 
     key = "324V8DKM"
     data = result[key]

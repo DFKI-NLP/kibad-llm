@@ -177,6 +177,7 @@ Use
 - `docs/description-here` for documentation work. (other branches, e.g. `feat/` are expected to document their features too.)
 - `fix/description-here` for (bug)fixes.
 - `hotfix/description-here` for urgent fixes.
+- `experiment/description-here` for experiments (see [CONTRIBUTING-EXPERIMENTS.md](CONTRIBUTING-EXPERIMENTS.md))
 
 These prefixes don't just make branch names easier to read, but also allow for colour coding in tools like [lazy git](https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md#custom-branch-color).
 

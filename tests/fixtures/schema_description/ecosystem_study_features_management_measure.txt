@@ -1,0 +1,6 @@
+Beschreibung: Das Schema sammelt Angaben zu den untersuchten Maßnahmen für die Förderung der Biodiversität: Managementmaßnahmen.
+Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
+- management_measure: Wurden Formen der Bewirtschaftung als Maßnahmen für die Biodiversität untersucht? | Kardinalität: 0..* | Typ: object
+  Beschreibung: Bewirtschaftungsmaßnahme mit Beschreibung und Erfolg.
+  - description: Beschreibung der Bewirtschaftungsmaßnahme | Kardinalität: 1 | Typ: string
+  - success: Hatte die Bewirtschaftung als Maßnahme für die Biodiversität einen messbaren Effekt? | Kardinalität: 1 | Typ: string | Zulässige Werte: ja; nein; teilweise; unbekannt

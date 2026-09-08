@@ -168,7 +168,7 @@
   "description": "Angaben zu den ökosystembezogenen Studienmerkmalen.",
   "properties": {
     "habitat": {
-      "description": "Um welchen der folgenden Lebensräume oder um welche Kombinationen der folgenden Lebensräume geht es in dem Text?",
+      "description": "Um welchen der folgenden Lebensräume oder um welche Kombination der folgenden Lebensräume geht es in dem Text?",
       "items": {
         "$ref": "#/$defs/HabitatEnum"
       },
@@ -332,7 +332,7 @@
       "title": "Project"
     },
     "biodiversity_level": {
-      "description": "Auf welche der folgenden Ebenen wird Biodiversität in der Studie gemessen?",
+      "description": "Auf welche der folgenden Ebenen wird Biodiversität in der Studie gemessen? ",
       "items": {
         "$ref": "#/$defs/BiodiversityLevelEnum"
       },

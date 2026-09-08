@@ -1,0 +1,3 @@
+Beschreibung: Das Schema sammelt zeitliche Angaben zur Studie: Endjahr.
+Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
+- end_year: In welchem Jahr fand die letzte Messung statt? | Kardinalität: 0..1 | Typ: integer
