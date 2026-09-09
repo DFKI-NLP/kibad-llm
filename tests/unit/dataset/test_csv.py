@@ -1,13 +1,14 @@
 import json
 
 from kibad_llm.config import PROJ_ROOT
-from kibad_llm.dataset.csv import read_organism_trends
+from kibad_llm.dataset.csv import read_grouped_csv_records
 from tests.conftest import WRITE_FIXTURE_DATA
 
 
-def test_read_organism_trends_wald_all() -> None:
-    result = read_organism_trends(
-        "data/external/organism_trends/Weighted Vote Count Wald Literatur - Sheet1.csv"
+def test_read_grouped_csv_records_organism_trends_wald_all() -> None:
+    result = read_grouped_csv_records(
+        "data/external/organism_trends/Weighted Vote Count Wald Literatur - Sheet1.csv",
+        output_key="organism_trends",
     )
     assert isinstance(result, dict)
     assert len(result) == 172
@@ -28,9 +29,20 @@ def test_read_organism_trends_wald_all() -> None:
     assert data == expected
 
 
-def test_read_organism_trends_wald_selected_columns() -> None:
-    result = read_organism_trends(
+def test_read_grouped_csv_records_custom_output_key() -> None:
+    result = read_grouped_csv_records(
         "data/external/organism_trends/Weighted Vote Count Wald Literatur - Sheet1.csv",
+        columns=["Hauptgruppe_RoteListen"],
+        output_key="ecosystem_service_trends",
+    )
+    key = "324V8DKM"
+    assert list(result[key].keys()) == ["ecosystem_service_trends"]
+
+
+def test_read_grouped_csv_records_organism_trends_wald_selected_columns() -> None:
+    result = read_grouped_csv_records(
+        "data/external/organism_trends/Weighted Vote Count Wald Literatur - Sheet1.csv",
+        output_key="organism_trends",
         columns=[
             "Hauptgruppe_RoteListen",
             "Untergruppe_RoteListen",
