@@ -1,0 +1,203 @@
+{
+  "$defs": {
+    "BiodiversityFacetEnum": {
+      "enum": [
+        "Artenvielfalt",
+        "Artenzusammensetzung",
+        "Artidentität",
+        "Artzusammensetzung",
+        "Funktionelle Diversität",
+        "Genetische Diversität",
+        "Kompositindikator",
+        "Landschaftsdiversität",
+        "Landschaftstyp",
+        "Strukturelle Diversität"
+      ],
+      "title": "BiodiversityFacetEnum",
+      "type": "string"
+    },
+    "EcosystemServiceFields": {
+      "additionalProperties": false,
+      "description": "Ein einzelner Zusammenhang zwischen Biodiversität und Ökosystemleistung, bestehend aus\nEinfluss (influence), Themenkomplex (theme_complex), Ökosystemleistung (ecosystem_service),\nBiodiv-Facette (biodiversity_facet), Lebensraum (habitat), Art(en) (taxa). Ein Text kann mehrere\nsolcher Zusammenhänge beschreiben; jede Instanz bildet genau einen davon ab, analog zu einer\neinzelnen Zeile in der ÖSL-VoteCount-Vollständig.csv-Datei.",
+      "properties": {
+        "influence": {
+          "type": "object",
+          "properties": {
+            "content": {
+              "$ref": "#/$defs/EinflussEnum"
+            },
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
+          ],
+          "additionalProperties": false,
+          "description": "Was ist der gemessene Einfluss der Ökosystemleistung in der Studie auf Biodiversität von den folgenden Optionen?"
+        },
+        "theme_complex": {
+          "type": "object",
+          "properties": {
+            "content": {
+              "$ref": "#/$defs/ThemenkomplexEnum"
+            },
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
+          ],
+          "additionalProperties": false,
+          "description": "Welcher dieser Themenkomplexe wird in der Studie betrachtet?"
+        },
+        "ecosystem_service": {
+          "type": "object",
+          "properties": {
+            "content": {
+              "type": "string"
+            },
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
+          ],
+          "additionalProperties": false,
+          "title": "Ecosystem Service",
+          "description": "Welche Ökosystemleistung wird in der Studie betrachtet?"
+        },
+        "biodiversity_facet": {
+          "type": "object",
+          "properties": {
+            "content": {
+              "$ref": "#/$defs/BiodiversityFacetEnum"
+            },
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
+          ],
+          "additionalProperties": false,
+          "description": "Welche dieser Biodiversitätsfacetten wird in der Studie betrachtet?"
+        },
+        "habitat": {
+          "description": "Um welchen der folgenden Lebensräume oder um welche Kombination der folgenden Lebensräume geht es in dem Text?",
+          "items": {
+            "type": "object",
+            "properties": {
+              "content": {
+                "$ref": "#/$defs/HabitatEnum"
+              },
+              "evidence_anchor": {
+                "type": "string",
+                "description": "Verbatim excerpt from the source text supporting the extracted content."
+              }
+            },
+            "required": [
+              "content",
+              "evidence_anchor"
+            ],
+            "additionalProperties": false
+          },
+          "title": "Habitat",
+          "type": "array"
+        },
+        "taxa": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "content": {
+                  "type": "string"
+                },
+                "evidence_anchor": {
+                  "type": "string",
+                  "description": "Verbatim excerpt from the source text supporting the extracted content."
+                }
+              },
+              "required": [
+                "content",
+                "evidence_anchor"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Welche Arten bzw. Artengruppen werden in der Studie untersucht? Verwende die kleinste machbare Ebene: Wenn eine Studie nur wenige Arten behandelt, sollten diese auf Artebene mit ihrem wissenschaftlichen und deutschen Namen angegeben werden. Werden jedoch sehr viele Arten behandelt oder eine Artengruppe besprochen, wird die Artengruppe als 'Sammelbegriff' angegeben. Falls die Studie auf englisch ist, übersetze Art- bzw. Artengruppennamen ins Deutsche. Ergänze, wenn nicht angegeben, die wissenschaftlichen Artennamen, und umgekehrt die deutschen Namen, wenn nur die wissenschaftlichen Artennamen verwendet wurden. ",
+          "title": "Taxa"
+        }
+      },
+      "required": [
+        "influence",
+        "theme_complex",
+        "ecosystem_service",
+        "biodiversity_facet"
+      ],
+      "title": "EcosystemServiceFields",
+      "type": "object"
+    },
+    "EinflussEnum": {
+      "enum": [
+        "ja",
+        "neg",
+        "nein",
+        "neu",
+        "nicht linear",
+        "pos"
+      ],
+      "title": "EinflussEnum",
+      "type": "string"
+    },
+    "HabitatEnum": {
+      "enum": [
+        "Agrar- und Offenland",
+        "Binnengewässer und Auen",
+        "Boden",
+        "Küsten und Küstengewässer",
+        "Urbane Räume",
+        "Wald"
+      ],
+      "title": "HabitatEnum",
+      "type": "string"
+    },
+    "ThemenkomplexEnum": {
+      "enum": [
+        "Kohlenstoffkreislauf",
+        "Kulturelle Leistungen",
+        "Stabilität und Resilienz"
+      ],
+      "title": "ThemenkomplexEnum",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Angaben zu den im Text beschriebenen Zusammenhängen zwischen Biodiversität und\nÖkosystemleistungen.",
+  "properties": {
+    "ecosystem_service_trends": {
+      "description": "Liste der im Text beschriebenen Zusammenhänge zwischen Biodiversität und Ökosystemleistungen.",
+      "items": {
+        "$ref": "#/$defs/EcosystemServiceFields"
+      },
+      "title": "Ecosystem Service Trends",
+      "type": "array"
+    }
+  },
+  "title": "EcosystemStudyEcosystemServiceTrends",
+  "type": "object"
+}
