@@ -1,18 +1,19 @@
 # @package _global_
 
-# F1 score metric for single- or multi-label classification for organism trend predictions,
-# scoring each `organism_trends` compound as one entry while ignoring `Untergruppe_RoteListen`.
+# F1 score metric for single- or multi-label classification for ecosystem-service/biodiversity
+# trend predictions, scoring each `ecosystem_service_trends` compound as one entry.
+#
+# TODO (not yet functional): this relies on the `ecosystem_service_forest` dataset, which is
+# itself not yet functional - see the TODOs in
+# configs/dataset/references/ecosystem_service_oesl_vote_count.yaml.
 
 defaults:
- - override /dataset: organism_trends_forest
+ - override /dataset: ecosystem_service_forest
  - override /metric: f1_micro
 
 metric:
   # the fields in the prediction and reference to compute the F1 score on
   fields:
-   - organism_trends
-  # for compound entries, we may ignore certain subfields during evaluation
-  ignore_subfields:
-    organism_trends: [ "Untergruppe_RoteListen" ]
+   - ecosystem_service_trends
   format_as_markdown: true
   sort_fields: true
