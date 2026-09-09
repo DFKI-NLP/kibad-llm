@@ -1,0 +1,5 @@
+Beschreibung: Das Schema sammelt Angaben zu Umweltbedingungen des Untersuchungsgebietes: Klima.
+Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
+- climate: Welche Umschreibung trifft auf das Klima des Untersuchungsgebiets zu? | Kardinalität: 0..* | Typ: object
+  - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Atlantisches Klima; Gebirgsklima; kontinental; maritim; niederschlagsbenachteiligt; niederschlagsnormal; niederschlagsbegünstigt; subkontinental; submaritim
+  - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string

@@ -1,0 +1,5 @@
+Beschreibung: Das Schema sammelt räumliche Angaben zur Studie: Anzahl räumlicher Messungen.
+Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
+- spatial_measurements: An wie vielen Stellen wurde gemessen? | Kardinalität: 0..1 | Typ: object
+  - content: | Kardinalität: 1 | Typ: integer
+  - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string

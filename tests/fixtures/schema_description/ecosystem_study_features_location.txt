@@ -1,0 +1,7 @@
+Beschreibung: Das Schema sammelt räumliche Angaben zur Studie: Untersuchungsgebiete (Land, Bundesland, Orte).
+Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
+- location: Welche Untersuchungsgebiete werden in der Studie untersucht? | Kardinalität: 0..* | Typ: object
+  Beschreibung: Untersuchungsgebiet mit Land, Bundesland und Ort.
+  - country: Land des Untersuchungsgebietes | Kardinalität: 0..1 | Typ: string
+  - federal_state: Bundesland des Untersuchungsgebietes | Kardinalität: 0..1 | Typ: string | Zulässige Werte: Baden-Württemberg; Bayern; Berlin; Brandenburg; Bremen; Hamburg; Hessen; Mecklenburg-Vorpommern; Niedersachsen; Nordrhein-Westfalen; Rheinland-Pfalz; Saarland; Sachsen; Sachsen-Anhalt; Schleswig-Holstein; Thüringen
+  - name: Ort (z.B. Stadt, Gemeinde, Region) des Untersuchungsgebietes | Kardinalität: 0..1 | Typ: string

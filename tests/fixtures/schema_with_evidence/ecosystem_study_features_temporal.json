@@ -1,0 +1,196 @@
+{
+  "$defs": {
+    "TemporalExtentUnit": {
+      "enum": [
+        "jahre",
+        "jahrzehnte",
+        "minuten",
+        "monate",
+        "stunden",
+        "tage",
+        "wochen"
+      ],
+      "title": "TemporalExtentUnit",
+      "type": "string"
+    },
+    "TemporalResolutionEnum": {
+      "enum": [
+        "jahre",
+        "jahrzehnte",
+        "minuten",
+        "monate",
+        "stunden",
+        "tage",
+        "wochen"
+      ],
+      "title": "TemporalResolutionEnum",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Das Schema sammelt zeitliche Angaben zur Studie: Zeitraum, Zeiteinheit,\nzeitliche Auflösung, Anzahl der Messungen sowie Start- und Endjahr.",
+  "properties": {
+    "temporal_extent": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "content": {
+              "type": "integer"
+            },
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "In welchem Zeitraum fanden die Messungen statt?",
+      "title": "Temporal Extent"
+    },
+    "temporal_extent_unit": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "content": {
+              "$ref": "#/$defs/TemporalExtentUnit"
+            },
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "In welcher der folgenden Zeiteinheiten ist der Zeitraum angegeben?"
+    },
+    "temporal_resolution": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "content": {
+              "$ref": "#/$defs/TemporalResolutionEnum"
+            },
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Mit welcher zeitlichen Auflösung wurden die einzelnen Messungen in der Studie durchgeführt?"
+    },
+    "temporal_measurements": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "content": {
+              "type": "integer"
+            },
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Zu wie vielen unterschiedlichen Zeitpunkten wurde gemessen?",
+      "title": "Temporal Measurements"
+    },
+    "start_year": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "content": {
+              "type": "integer"
+            },
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "In welchem Jahr fand die erste Messung statt?",
+      "title": "Start Year"
+    },
+    "end_year": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "content": {
+              "type": "integer"
+            },
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "In welchem Jahr fand die letzte Messung statt?",
+      "title": "End Year"
+    }
+  },
+  "title": "EcosystemStudyFeaturesTemporal",
+  "type": "object"
+}

@@ -1,0 +1,5 @@
+Beschreibung: Das Schema sammelt Angaben zu Umweltbedingungen des Untersuchungsgebietes: Naturgroßräume.
+Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
+- natural_region: Um welchen der folgenden Naturgroßräume geht es in dem Text? | Kardinalität: 0..* | Typ: object
+  - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Alpen; Alpenvorland; Mittelgebirgsschwelle; Nord- und Ostsee; Norddeutsches Tiefland; Schichtstufenland beidseits des Oberrheingrabens
+  - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string

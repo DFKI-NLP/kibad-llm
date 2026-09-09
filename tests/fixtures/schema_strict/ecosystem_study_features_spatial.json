@@ -1,0 +1,154 @@
+{
+  "$defs": {
+    "Location": {
+      "additionalProperties": false,
+      "description": "Untersuchungsgebiet mit Land, Bundesland und Ort.",
+      "properties": {
+        "country": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Land des Untersuchungsgebietes",
+          "title": "Country"
+        },
+        "federal_state": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/LocationFederalStateEnum"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Bundesland des Untersuchungsgebietes"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Ort (z.B. Stadt, Gemeinde, Region) des Untersuchungsgebietes",
+          "title": "Name"
+        }
+      },
+      "title": "Location",
+      "type": "object",
+      "required": [
+        "country",
+        "federal_state",
+        "name"
+      ]
+    },
+    "LocationFederalStateEnum": {
+      "enum": [
+        "Baden-Württemberg",
+        "Bayern",
+        "Berlin",
+        "Brandenburg",
+        "Bremen",
+        "Hamburg",
+        "Hessen",
+        "Mecklenburg-Vorpommern",
+        "Niedersachsen",
+        "Nordrhein-Westfalen",
+        "Rheinland-Pfalz",
+        "Saarland",
+        "Sachsen",
+        "Sachsen-Anhalt",
+        "Schleswig-Holstein",
+        "Thüringen"
+      ],
+      "title": "LocationFederalStateEnum",
+      "type": "string"
+    },
+    "SpatialExtentEnum": {
+      "enum": [
+        "bundesweit",
+        "global",
+        "kontinent",
+        "landschaft",
+        "plot",
+        "punkt",
+        "region"
+      ],
+      "title": "SpatialExtentEnum",
+      "type": "string"
+    },
+    "SpatialResolutionEnum": {
+      "enum": [
+        "bundesweit",
+        "global",
+        "kontinent",
+        "landschaft",
+        "plot",
+        "punkt",
+        "region"
+      ],
+      "title": "SpatialResolutionEnum",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Das Schema sammelt räumliche Angaben zur Studie: Untersuchungsgebiete (Land, Bundesland, Orte)\nsowie räumliche Ausdehnung, Auflösung und Anzahl der Messungen.",
+  "properties": {
+    "location": {
+      "description": "Welche Untersuchungsgebiete werden in der Studie untersucht?",
+      "items": {
+        "$ref": "#/$defs/Location"
+      },
+      "title": "Location",
+      "type": "array"
+    },
+    "spatial_extent": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/SpatialExtentEnum"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Wie ist insgesamt die räumliche Ausdehnung der Studie?"
+    },
+    "spatial_resolution": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/SpatialResolutionEnum"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Mit welcher räumlichen Auflösung wurden die einzelnen Messungen in der Studie durchgeführt?"
+    },
+    "spatial_measurements": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "An wie vielen Stellen wurde gemessen?",
+      "title": "Spatial Measurements"
+    }
+  },
+  "title": "EcosystemStudyFeaturesSpatial",
+  "type": "object",
+  "required": [
+    "location",
+    "spatial_extent",
+    "spatial_resolution",
+    "spatial_measurements"
+  ]
+}

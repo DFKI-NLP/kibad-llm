@@ -1,6 +1,6 @@
 from enum import Enum
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, create_model
 
 
 class BaseEcosystemStudyFeatures(BaseModel):
@@ -261,131 +261,6 @@ class BiodiversityFacetEnum(str, Enum):
     LANDSCHAFTSDIVERSITAET = "Landschaftsdiversität"
     LANDSCHAFTSTYP = "Landschaftstyp"
     STRUKTURELLE_DIVERSITAET = "Strukturelle Diversität"
-
-
-class EcosystemStudyFeaturesWithoutCompounds(BaseEcosystemStudyFeatures):
-    """Angaben zu den ökosystembezogenen Studienmerkmalen."""
-
-    habitat: list[HabitatEnum] = Field(
-        default_factory=list,
-        alias="Lebensräume",
-        description="Um welchen der folgenden Lebensräume oder um welche Kombinationen der folgenden Lebensräume geht es in dem Text?",
-    )
-    natural_region: list[NaturalRegionEnum] = Field(
-        default_factory=list,
-        alias="Naturgroßräume",
-        description="Um welchen der folgenden Naturgroßräume geht es in dem Text?",
-    )
-    climate: list[ClimateEnum] = Field(
-        default_factory=list,
-        alias="Klima",
-        description="Welche Umschreibung trifft auf das Klima des Untersuchungsgebiets zu?",
-    )
-    landuse: list[LanduseEnum] = Field(
-        default_factory=list,
-        alias="Landnutzung",
-        description="Welche Landnutzung wird im oder nahe des Untersuchungsgebietes betrieben? In welche der folgenden Kategorien fällt die Nutzung?",
-    )
-    spatial_extent: SpatialExtentEnum | None = Field(
-        default=None,
-        alias="Räumliche Ausdehnung",
-        description="Wie ist insgesamt die räumliche Ausdehnung der Studie?",
-    )
-    spatial_resolution: SpatialResolutionEnum | None = Field(
-        default=None,
-        alias="Räumliche Auflösung",
-        description="Mit welcher räumlichen Auflösung wurden die einzelnen Messungen in der Studie durchgeführt?",
-    )
-    spatial_measurements: int | None = Field(
-        default=None,
-        alias="Anzahl räumlicher Messungen",
-        description="An wie vielen Stellen wurde gemessen?",
-    )
-    temporal_extent: int | None = Field(
-        default=None,
-        alias="Zeitraum",
-        description="In welchem Zeitraum fanden die Messungen statt?",
-    )
-    temporal_extent_unit: TemporalExtentUnit | None = Field(
-        default=None,
-        alias="Zeiteinheit",
-        description="In welcher der folgenden Zeiteinheiten ist der Zeitraum angegeben?",
-    )
-    temporal_resolution: TemporalResolutionEnum | None = Field(
-        default=None,
-        alias="Zeitliche Auflösung",
-        description="Mit welcher zeitlichen Auflösung wurden die einzelnen Messungen in der Studie durchgeführt?",
-    )
-    temporal_measurements: int | None = Field(
-        default=None,
-        alias="Anzahl zeitlicher Messungen",
-        description="Zu wie vielen unterschiedlichen Zeitpunkten wurde gemessen?",
-    )
-    start_year: int | None = Field(
-        default=None,
-        alias="Startjahr",
-        description="In welchem Jahr fand die erste Messung statt?",
-    )
-    end_year: int | None = Field(
-        default=None,
-        alias="Endjahr",
-        description="In welchem Jahr fand die letzte Messung statt?",
-    )
-    method: list[MethodEnum] = Field(
-        default_factory=list,
-        alias="Methoden der Datenaufnahme",
-        description="Mit welcher/welchen Methode(n) wurden die Daten erhoben?",
-    )
-    study_type: list[StudyTypeEnum] = Field(
-        default_factory=list,
-        alias="Studienart",
-        description="Um welche Form der wissenschaftlichen Studie handelt es sich?",
-    )
-    project: str | None = Field(
-        default=None,
-        alias="Projekt/Programm",
-        description="Gehört die Studie zu einem größeren Programm oder Projekt? Wenn ja, zu welchem?",
-    )
-    biodiversity_level: list[BiodiversityLevelEnum] = Field(
-        default_factory=list,
-        alias="Biodiversitätsebene",
-        description="Auf welche der folgenden Ebenen wird Biodiversität in der Studie gemessen?",
-    )
-    biodiversity_variable: list[str] = Field(
-        default_factory=list,
-        alias="Biodiversitätsvariable",
-        description="In welchen Variablen wird die Biodiversität gemessen?",
-    )
-    transformation_potential: list[TransformationPotentialEnum] = Field(
-        default_factory=list,
-        alias="Transformationspotenzial",
-        description="In welche der folgenden Kategorien lässt sich die im Text behandelte Transformation einordnen? ",
-    )
-
-
-class EcosystemStudyFeaturesSimple(BaseEcosystemStudyFeatures):
-    """Angaben zu den ökosystembezogenen Studienmerkmalen."""
-
-    habitat: list[HabitatEnum] = Field(
-        default_factory=list,
-        alias="Lebensräume",
-        description="Um welchen der folgenden Lebensräume oder in welcher Kombination der folgenden Lebensräume geht es in dem Text?",
-    )
-    natural_region: list[NaturalRegionEnum] = Field(
-        default_factory=list,
-        alias="Naturgroßräume",
-        description="Um welchen der folgenden Naturgroßräume geht es in dem Text?",
-    )
-    climate: list[ClimateEnum] = Field(
-        default_factory=list,
-        alias="Klima",
-        description="Welche Umschreibung trifft auf das Klima des Untersuchungsgebiets zu?",
-    )
-    landuse: list[LanduseEnum] = Field(
-        default_factory=list,
-        alias="Landnutzung",
-        description="Welche Landnutzung wird im oder nahe des Untersuchungsgebietes betrieben? In welche der folgenden Kategorien fällt die Nutzung?",
-    )
 
 
 class EcosystemType(CompoundFeature):
@@ -795,230 +670,6 @@ class EcosystemService(CompoundFeature):
     )
 
 
-class EcosystemStudyFeaturesCompoundsSimple(BaseEcosystemStudyFeatures):
-    """Angaben zu den ökosystembezogenen Studienmerkmalen."""
-
-    ecosystem_type: list[EcosystemType] = Field(
-        default_factory=list,
-        alias="Ökosystemtypen",
-        description="Welche Ökosystemtypen werden in der Studie untersucht?",
-    )
-    location: list[Location] = Field(
-        default_factory=list,
-        alias="Standorte",
-        description="Welche Standorte werden in der Studie untersucht?",
-    )
-
-
-class EcosystemStudyFeaturesCompoundsOnly(BaseEcosystemStudyFeatures):
-    """Angaben zu den ökosystembezogenen Studienmerkmalen."""
-
-    ecosystem_type: list[EcosystemType] = Field(
-        default_factory=list,
-        alias="Ökosystemtypen",
-        description="Welche Ökosystemtypen werden in der Studie untersucht?",
-    )
-    location: list[Location] = Field(
-        default_factory=list,
-        alias="Untersuchungsgebiete",
-        description="Welche Untersuchungsgebiete werden in der Studie untersucht?",
-    )
-    taxa: list[Taxa] = Field(
-        default_factory=list,
-        alias="Arten",
-        description="Welche Arten werden in der Studie untersucht?",
-    )
-    soil: list[Soil] = Field(
-        default_factory=list,
-        alias="Böden",
-        description="Welche Bodentypen werden in der Studie untersucht?",
-    )
-    conservation_area: list[ConservationArea] = Field(
-        default_factory=list,
-        alias="Schutzgebiete",
-        description="Welche Schutzgebiete werden in der Studie untersucht?",
-    )
-    management_measure: list[ManagementMeasure] = Field(
-        default_factory=list,
-        alias="Bewirtschaftungsmaßnahmen",
-        description="Wurden Formen der Bewirtschaftung als Maßnahmen für die Biodiversität untersucht?",
-    )
-    impulse_measure: list[ImpulseMeasure] = Field(
-        default_factory=list,
-        alias="Einmalige Maßnahmen",
-        description="Wurden einmalige Maßnahmen für die Biodiversität untersucht?",
-    )
-    direct_driver: list[DirectDriver] = Field(
-        default_factory=list,
-        alias="Direkte Treiber",
-        description="Welche Vorgänge mit direktem Einfluss auf Biodiversität wurden untersucht?",
-    )
-    indirect_driver: list[IndirectDriver] = Field(
-        default_factory=list,
-        alias="Indirekte Treiber",
-        description="Welche Vorgänge mit indirektem Einfluss auf Biodiversität wurden untersucht?",
-    )
-    ecosystem_service: list[EcosystemService] = Field(
-        default_factory=list,
-        alias="Ökosystemleistungen",
-        description="Welche Ökosystemleistungen wurden in der Studie untersucht?",
-    )
-
-
-class EcosystemStudyFeaturesAll(BaseEcosystemStudyFeatures):
-    """Angaben zu den ökosystembezogenen Studienmerkmalen."""
-
-    habitat: list[HabitatEnum] = Field(
-        default_factory=list,
-        alias="Lebensräume",
-        description="Um welchen der folgenden Lebensräume oder um welche Kombinationen "
-        "der folgenden Lebensräume geht es in dem Text?",
-    )
-    natural_region: list[NaturalRegionEnum] = Field(
-        default_factory=list,
-        alias="Naturgroßräume",
-        description="Um welchen der folgenden Naturgroßräume geht es in dem Text?",
-    )
-    climate: list[ClimateEnum] = Field(
-        default_factory=list,
-        alias="Klima",
-        description="Welche Umschreibung trifft auf das Klima des Untersuchungsgebiets zu?",
-    )
-    landuse: list[LanduseEnum] = Field(
-        default_factory=list,
-        alias="Landnutzung",
-        description="Welche Landnutzung wird im oder nahe des Untersuchungsgebietes betrieben? "
-        "In welche der folgenden Kategorien fällt die Nutzung?",
-    )
-    spatial_extent: SpatialExtentEnum | None = Field(
-        default=None,
-        alias="Räumliche Ausdehnung",
-        description="Wie ist insgesamt die räumliche Ausdehnung der Studie?",
-    )
-    spatial_resolution: SpatialResolutionEnum | None = Field(
-        default=None,
-        alias="Räumliche Auflösung",
-        description="Mit welcher räumlichen Auflösung wurden die einzelnen Messungen "
-        "in der Studie durchgeführt?",
-    )
-    spatial_measurements: int | None = Field(
-        default=None,
-        alias="Anzahl räumlicher Messungen",
-        description="An wie vielen Stellen wurde gemessen?",
-    )
-    temporal_extent: int | None = Field(
-        default=None,
-        alias="Zeitraum",
-        description="In welchem Zeitraum fanden die Messungen statt?",
-    )
-    temporal_extent_unit: TemporalExtentUnit | None = Field(
-        default=None,
-        alias="Zeiteinheit",
-        description="In welcher der folgenden Zeiteinheiten ist der Zeitraum angegeben?",
-    )
-    temporal_resolution: TemporalResolutionEnum | None = Field(
-        default=None,
-        alias="Zeitliche Auflösung",
-        description="Mit welcher zeitlichen Auflösung wurden die einzelnen Messungen in "
-        "der Studie durchgeführt?",
-    )
-    temporal_measurements: int | None = Field(
-        default=None,
-        alias="Anzahl zeitlicher Messungen",
-        description="Zu wie vielen unterschiedlichen Zeitpunkten wurde gemessen?",
-    )
-    start_year: int | None = Field(
-        default=None,
-        alias="Startjahr",
-        description="In welchem Jahr fand die erste Messung statt?",
-    )
-    end_year: int | None = Field(
-        default=None,
-        alias="Endjahr",
-        description="In welchem Jahr fand die letzte Messung statt?",
-    )
-    method: list[MethodEnum] = Field(
-        default_factory=list,
-        alias="Methoden der Datenaufnahme",
-        description="Mit welcher/welchen Methode(n) wurden die Daten erhoben?",
-    )
-    study_type: list[StudyTypeEnum] = Field(
-        default_factory=list,
-        alias="Studienart",
-        description="Um welche Form der wissenschaftlichen Studie handelt es sich?",
-    )
-    project: str | None = Field(
-        default=None,
-        alias="Projekt/Programm",
-        description="Gehört die Studie zu einem größeren Programm oder Projekt? Wenn ja, zu welchem?",
-    )
-    biodiversity_level: list[BiodiversityLevelEnum] = Field(
-        default_factory=list,
-        alias="Biodiversitätsebene",
-        description="Auf welche der folgenden Ebenen wird Biodiversität in der Studie gemessen?",
-    )
-    biodiversity_variable: list[str] = Field(
-        default_factory=list,
-        alias="Biodiversitätsvariable",
-        description="In welchen Variablen wird die Biodiversität gemessen?",
-    )
-    transformation_potential: list[TransformationPotentialEnum] = Field(
-        default_factory=list,
-        alias="Transformationspotenzial",
-        description="In welche der folgenden Kategorien lässt sich die im Text behandelte Transformation einordnen? ",
-    )
-    ecosystem_type: list[EcosystemType] = Field(
-        default_factory=list,
-        alias="Ökosystemtypen",
-        description="Welche Ökosystemtypen werden in der Studie untersucht?",
-    )
-    location: list[Location] = Field(
-        default_factory=list,
-        alias="Untersuchungsgebiete",
-        description="Welche Untersuchungsgebiete werden in der Studie untersucht?",
-    )
-    taxa: list[Taxa] = Field(
-        default_factory=list,
-        alias="Arten",
-        description="Welche Arten werden in der Studie untersucht?",
-    )
-    soil: list[Soil] = Field(
-        default_factory=list,
-        alias="Böden",
-        description="Welche Bodentypen werden in der Studie untersucht?",
-    )
-    conservation_area: list[ConservationArea] = Field(
-        default_factory=list,
-        alias="Schutzgebiete",
-        description="Welche Schutzgebiete werden in der Studie untersucht?",
-    )
-    management_measure: list[ManagementMeasure] = Field(
-        default_factory=list,
-        alias="Bewirtschaftungsmaßnahmen",
-        description="Wurden Formen der Bewirtschaftung als Maßnahmen für die Biodiversität untersucht?",
-    )
-    impulse_measure: list[ImpulseMeasure] = Field(
-        default_factory=list,
-        alias="Einmalige Maßnahmen",
-        description="Wurden einmalige Maßnahmen für die Biodiversität untersucht?",
-    )
-    direct_driver: list[DirectDriver] = Field(
-        default_factory=list,
-        alias="Direkte Treiber",
-        description="Welche Vorgänge mit direktem Einfluss auf Biodiversität wurden untersucht?",
-    )
-    indirect_driver: list[IndirectDriver] = Field(
-        default_factory=list,
-        alias="Indirekte Treiber",
-        description="Welche Vorgänge mit indirektem Einfluss auf Biodiversität wurden untersucht?",
-    )
-    ecosystem_service: list[EcosystemService] = Field(
-        default_factory=list,
-        alias="Ökosystemleistungen",
-        description="Welche Ökosystemleistungen wurden in der Studie untersucht?",
-    )
-
-
 class HauptgruppeRoteListenEnum(str, Enum):
     MAKROFAUNA = "Makrofauna"
     MESOFAUNA = "Mesofauna"
@@ -1171,9 +822,9 @@ class EcosystemStudyOrganismTrendsV1(BaseEcosystemStudyFeatures):
     )
 
 
-class EcosystemStudyFeaturesCoreFields(BaseEcosystemStudyFeatures):
+class EcosystemStudyFeaturesHabitat(BaseEcosystemStudyFeatures):
     """Das Schema sammelt Angaben zu den wichtigsten biodiversitätsbezogenen Merkmalen der Studie:
-    Lebensräume, Ökosystemtypen, Arten bzw. Artengruppen, sowie die untersuchte Biodiversitätsebene.
+    Lebensräume.
     """
 
     habitat: list[HabitatEnum] = Field(
@@ -1182,40 +833,13 @@ class EcosystemStudyFeaturesCoreFields(BaseEcosystemStudyFeatures):
         description="Um welchen der folgenden Lebensräume oder um welche Kombination "
         "der folgenden Lebensräume geht es in dem Text?",
     )
-    taxa: list[Taxa] = Field(
-        default_factory=list,
-        alias="Arten",
-        description="Welche Arten bzw. Artengruppen werden in der Studie untersucht? Verwende die kleinste "
-        "machbare Ebene: Wenn eine Studie nur wenige Arten behandelt, sollten diese auf Artebene mit ihrem "
-        "wissenschaftlichen und deutschen Namen angegeben werden. Werden jedoch sehr viele Arten "
-        "behandelt oder eine Artengruppe besprochen, wird die Artengruppe als 'Sammelbegriff' angegeben. "
-        "Falls die Studie auf englisch ist, übersetze Art- bzw. Artengruppennamen ins Deutsche. "
-        "Ergänze, wenn nicht angegeben, die wissenschaftlichen Artennamen, und umgekehrt die "
-        "deutschen Namen, wenn nur die wissenschaftlichen Artennamen verwendet wurden. ",
-    )
-    biodiversity_level: list[BiodiversityLevelEnum] = Field(
-        default_factory=list,
-        alias="Biodiversitätsebene",
-        description="Auf welche der folgenden Ebenen wird Biodiversität in der Studie gemessen? ",
-    )
-    ecosystem_type: list[EcosystemTypeSimple] = Field(
-        default_factory=list,
-        alias="Ökosystemtyp",
-        description="Welche Ökosystemtypen werden betrachtet?",
-    )
 
 
-class EcosystemStudyFeaturesCoreFieldsHalfOne(BaseEcosystemStudyFeatures):
+class EcosystemStudyFeaturesTaxa(BaseEcosystemStudyFeatures):
     """Das Schema sammelt Angaben zu den wichtigsten biodiversitätsbezogenen Merkmalen der Studie:
-    Lebensräume und Arten bzw. Artengruppen.
+    Arten bzw. Artengruppen.
     """
 
-    habitat: list[HabitatEnum] = Field(
-        default_factory=list,
-        alias="Lebensräume",
-        description="Um welchen der folgenden Lebensräume oder um welche Kombination "
-        "der folgenden Lebensräume geht es in dem Text?",
-    )
     taxa: list[Taxa] = Field(
         default_factory=list,
         alias="Arten",
@@ -1229,9 +853,9 @@ class EcosystemStudyFeaturesCoreFieldsHalfOne(BaseEcosystemStudyFeatures):
     )
 
 
-class EcosystemStudyFeaturesCoreFieldsHalfTwo(BaseEcosystemStudyFeatures):
+class EcosystemStudyFeaturesBiodiversityLevel(BaseEcosystemStudyFeatures):
     """Das Schema sammelt Angaben zu den wichtigsten biodiversitätsbezogenen Merkmalen der Studie:
-    Ökosystemtypen und die untersuchte Biodiversitätsebene.
+    Biodiversitätsebene.
     """
 
     biodiversity_level: list[BiodiversityLevelEnum] = Field(
@@ -1239,10 +863,549 @@ class EcosystemStudyFeaturesCoreFieldsHalfTwo(BaseEcosystemStudyFeatures):
         alias="Biodiversitätsebene",
         description="Auf welche der folgenden Ebenen wird Biodiversität in der Studie gemessen? ",
     )
+
+
+class EcosystemStudyFeaturesEcosystemType(BaseEcosystemStudyFeatures):
+    """Das Schema sammelt Angaben zu den wichtigsten biodiversitätsbezogenen Merkmalen der Studie:
+    Ökosystemtypen.
+    """
+
     ecosystem_type: list[EcosystemTypeSimple] = Field(
         default_factory=list,
         alias="Ökosystemtyp",
         description="Welche Ökosystemtypen werden betrachtet?",
+    )
+
+
+EcosystemStudyFeaturesCoreFields = create_model(
+    "EcosystemStudyFeaturesCoreFields",
+    __base__=(
+        EcosystemStudyFeaturesEcosystemType,
+        EcosystemStudyFeaturesBiodiversityLevel,
+        EcosystemStudyFeaturesTaxa,
+        EcosystemStudyFeaturesHabitat,
+    ),
+    __doc__="Das Schema sammelt Angaben zu den wichtigsten biodiversitätsbezogenen Merkmalen der Studie:\nLebensräume, Ökosystemtypen, Arten bzw. Artengruppen, sowie die untersuchte Biodiversitätsebene.",
+)
+
+
+# Note: The following subgroup models process the full schema in independent,
+#  semantically coherent groups (issue #92). The grouping follows the column
+#  "Subgroup for prompt simplification" in the Fragenkatalog google table. All
+#  field definitions are taken verbatim from EcosystemStudyFeaturesAll. Each
+#  subgroup model is composed from single-field building blocks via create_model.
+#  The base models are passed in reverse order because pydantic collects fields
+#  starting from the last base; this keeps the original field order in the
+#  derived JSON schema.
+
+
+class EcosystemStudyFeaturesNaturalRegion(BaseEcosystemStudyFeatures):
+    """Das Schema sammelt Angaben zu Umweltbedingungen des Untersuchungsgebietes:
+    Naturgroßräume.
+    """
+
+    natural_region: list[NaturalRegionEnum] = Field(
+        default_factory=list,
+        alias="Naturgroßräume",
+        description="Um welchen der folgenden Naturgroßräume geht es in dem Text?",
+    )
+
+
+class EcosystemStudyFeaturesClimate(BaseEcosystemStudyFeatures):
+    """Das Schema sammelt Angaben zu Umweltbedingungen des Untersuchungsgebietes:
+    Klima.
+    """
+
+    climate: list[ClimateEnum] = Field(
+        default_factory=list,
+        alias="Klima",
+        description="Welche Umschreibung trifft auf das Klima des Untersuchungsgebiets zu?",
+    )
+
+
+class EcosystemStudyFeaturesLanduse(BaseEcosystemStudyFeatures):
+    """Das Schema sammelt Angaben zu Umweltbedingungen des Untersuchungsgebietes:
+    Landnutzung.
+    """
+
+    landuse: list[LanduseEnum] = Field(
+        default_factory=list,
+        alias="Landnutzung",
+        description="Welche Landnutzung wird im oder nahe des Untersuchungsgebietes betrieben? "
+        "In welche der folgenden Kategorien fällt die Nutzung?",
+    )
+
+
+class EcosystemStudyFeaturesSoil(BaseEcosystemStudyFeatures):
+    """Das Schema sammelt Angaben zu Umweltbedingungen des Untersuchungsgebietes:
+    Böden.
+    """
+
+    soil: list[Soil] = Field(
+        default_factory=list,
+        alias="Böden",
+        description="Welche Bodentypen werden in der Studie untersucht?",
+    )
+
+
+EcosystemStudyFeaturesEnvironment = create_model(
+    "EcosystemStudyFeaturesEnvironment",
+    __base__=(
+        EcosystemStudyFeaturesSoil,
+        EcosystemStudyFeaturesLanduse,
+        EcosystemStudyFeaturesClimate,
+        EcosystemStudyFeaturesEcosystemType,
+        EcosystemStudyFeaturesNaturalRegion,
+        EcosystemStudyFeaturesHabitat,
+    ),
+    __doc__="Das Schema sammelt Angaben zu Umweltbedingungen des Untersuchungsgebietes:\nLebensräume, Naturgroßräume, Ökosystemtypen, Klima, Landnutzung und Böden.",
+)
+
+
+class EcosystemStudyFeaturesLocation(BaseEcosystemStudyFeatures):
+    """Das Schema sammelt räumliche Angaben zur Studie:
+    Untersuchungsgebiete (Land, Bundesland, Orte).
+    """
+
+    location: list[Location] = Field(
+        default_factory=list,
+        alias="Untersuchungsgebiete",
+        description="Welche Untersuchungsgebiete werden in der Studie untersucht?",
+    )
+
+
+class EcosystemStudyFeaturesSpatialExtent(BaseEcosystemStudyFeatures):
+    """Das Schema sammelt räumliche Angaben zur Studie:
+    Räumliche Ausdehnung.
+    """
+
+    spatial_extent: SpatialExtentEnum | None = Field(
+        default=None,
+        alias="Räumliche Ausdehnung",
+        description="Wie ist insgesamt die räumliche Ausdehnung der Studie?",
+    )
+
+
+class EcosystemStudyFeaturesSpatialResolution(BaseEcosystemStudyFeatures):
+    """Das Schema sammelt räumliche Angaben zur Studie:
+    Räumliche Auflösung.
+    """
+
+    spatial_resolution: SpatialResolutionEnum | None = Field(
+        default=None,
+        alias="Räumliche Auflösung",
+        description="Mit welcher räumlichen Auflösung wurden die einzelnen Messungen "
+        "in der Studie durchgeführt?",
+    )
+
+
+class EcosystemStudyFeaturesSpatialMeasurements(BaseEcosystemStudyFeatures):
+    """Das Schema sammelt räumliche Angaben zur Studie:
+    Anzahl räumlicher Messungen.
+    """
+
+    spatial_measurements: int | None = Field(
+        default=None,
+        alias="Anzahl räumlicher Messungen",
+        description="An wie vielen Stellen wurde gemessen?",
+    )
+
+
+EcosystemStudyFeaturesSpatial = create_model(
+    "EcosystemStudyFeaturesSpatial",
+    __base__=(
+        EcosystemStudyFeaturesSpatialMeasurements,
+        EcosystemStudyFeaturesSpatialResolution,
+        EcosystemStudyFeaturesSpatialExtent,
+        EcosystemStudyFeaturesLocation,
+    ),
+    __doc__="Das Schema sammelt räumliche Angaben zur Studie: Untersuchungsgebiete (Land, Bundesland, Orte)\nsowie räumliche Ausdehnung, Auflösung und Anzahl der Messungen.",
+)
+
+
+class EcosystemStudyFeaturesTemporalExtent(BaseEcosystemStudyFeatures):
+    """Das Schema sammelt zeitliche Angaben zur Studie:
+    Zeitraum.
+    """
+
+    temporal_extent: int | None = Field(
+        default=None,
+        alias="Zeitraum",
+        description="In welchem Zeitraum fanden die Messungen statt?",
+    )
+
+
+class EcosystemStudyFeaturesTemporalExtentUnit(BaseEcosystemStudyFeatures):
+    """Das Schema sammelt zeitliche Angaben zur Studie:
+    Zeiteinheit.
+    """
+
+    temporal_extent_unit: TemporalExtentUnit | None = Field(
+        default=None,
+        alias="Zeiteinheit",
+        description="In welcher der folgenden Zeiteinheiten ist der Zeitraum angegeben?",
+    )
+
+
+class EcosystemStudyFeaturesTemporalResolution(BaseEcosystemStudyFeatures):
+    """Das Schema sammelt zeitliche Angaben zur Studie:
+    Zeitliche Auflösung.
+    """
+
+    temporal_resolution: TemporalResolutionEnum | None = Field(
+        default=None,
+        alias="Zeitliche Auflösung",
+        description="Mit welcher zeitlichen Auflösung wurden die einzelnen Messungen in "
+        "der Studie durchgeführt?",
+    )
+
+
+class EcosystemStudyFeaturesTemporalMeasurements(BaseEcosystemStudyFeatures):
+    """Das Schema sammelt zeitliche Angaben zur Studie:
+    Anzahl zeitlicher Messungen.
+    """
+
+    temporal_measurements: int | None = Field(
+        default=None,
+        alias="Anzahl zeitlicher Messungen",
+        description="Zu wie vielen unterschiedlichen Zeitpunkten wurde gemessen?",
+    )
+
+
+class EcosystemStudyFeaturesStartYear(BaseEcosystemStudyFeatures):
+    """Das Schema sammelt zeitliche Angaben zur Studie:
+    Startjahr.
+    """
+
+    start_year: int | None = Field(
+        default=None,
+        alias="Startjahr",
+        description="In welchem Jahr fand die erste Messung statt?",
+    )
+
+
+class EcosystemStudyFeaturesEndYear(BaseEcosystemStudyFeatures):
+    """Das Schema sammelt zeitliche Angaben zur Studie:
+    Endjahr.
+    """
+
+    end_year: int | None = Field(
+        default=None,
+        alias="Endjahr",
+        description="In welchem Jahr fand die letzte Messung statt?",
+    )
+
+
+EcosystemStudyFeaturesTemporal = create_model(
+    "EcosystemStudyFeaturesTemporal",
+    __base__=(
+        EcosystemStudyFeaturesEndYear,
+        EcosystemStudyFeaturesStartYear,
+        EcosystemStudyFeaturesTemporalMeasurements,
+        EcosystemStudyFeaturesTemporalResolution,
+        EcosystemStudyFeaturesTemporalExtentUnit,
+        EcosystemStudyFeaturesTemporalExtent,
+    ),
+    __doc__="Das Schema sammelt zeitliche Angaben zur Studie: Zeitraum, Zeiteinheit,\nzeitliche Auflösung, Anzahl der Messungen sowie Start- und Endjahr.",
+)
+
+
+class EcosystemStudyFeaturesMethod(BaseEcosystemStudyFeatures):
+    """Das Schema sammelt Angaben zur Art der Studie:
+    Methoden der Datenaufnahme.
+    """
+
+    method: list[MethodEnum] = Field(
+        default_factory=list,
+        alias="Methoden der Datenaufnahme",
+        description="Mit welcher/welchen Methode(n) wurden die Daten erhoben?",
+    )
+
+
+class EcosystemStudyFeaturesStudyType(BaseEcosystemStudyFeatures):
+    """Das Schema sammelt Angaben zur Art der Studie:
+    Studienart.
+    """
+
+    study_type: list[StudyTypeEnum] = Field(
+        default_factory=list,
+        alias="Studienart",
+        description="Um welche Form der wissenschaftlichen Studie handelt es sich?",
+    )
+
+
+class EcosystemStudyFeaturesProject(BaseEcosystemStudyFeatures):
+    """Das Schema sammelt Angaben zur Art der Studie:
+    Zugehöriges Projekt bzw. Programm.
+    """
+
+    project: str | None = Field(
+        default=None,
+        alias="Projekt/Programm",
+        description="Gehört die Studie zu einem größeren Programm oder Projekt? Wenn ja, zu welchem?",
+    )
+
+
+EcosystemStudyFeaturesStudy = create_model(
+    "EcosystemStudyFeaturesStudy",
+    __base__=(
+        EcosystemStudyFeaturesProject,
+        EcosystemStudyFeaturesStudyType,
+        EcosystemStudyFeaturesMethod,
+    ),
+    __doc__="Das Schema sammelt Angaben zur Art der Studie: Methoden der Datenaufnahme,\nStudienart und zugehöriges Projekt bzw. Programm.",
+)
+
+
+class EcosystemStudyFeaturesBiodiversityVariable(BaseEcosystemStudyFeatures):
+    """Das Schema sammelt Angaben zur untersuchten Biodiversität:
+    Biodiversitätsvariablen.
+    """
+
+    biodiversity_variable: list[str] = Field(
+        default_factory=list,
+        alias="Biodiversitätsvariable",
+        description="In welchen Variablen wird die Biodiversität gemessen?",
+    )
+
+
+class EcosystemStudyFeaturesEcosystemService(BaseEcosystemStudyFeatures):
+    """Das Schema sammelt Angaben zur untersuchten Biodiversität:
+    Ökosystemleistungen.
+    """
+
+    ecosystem_service: list[EcosystemService] = Field(
+        default_factory=list,
+        alias="Ökosystemleistungen",
+        description="Welche Ökosystemleistungen wurden in der Studie untersucht?",
+    )
+
+
+EcosystemStudyFeaturesBiodiversity = create_model(
+    "EcosystemStudyFeaturesBiodiversity",
+    __base__=(
+        EcosystemStudyFeaturesEcosystemService,
+        EcosystemStudyFeaturesBiodiversityVariable,
+        EcosystemStudyFeaturesBiodiversityLevel,
+        EcosystemStudyFeaturesTaxa,
+    ),
+    __doc__="Das Schema sammelt Angaben zur untersuchten Biodiversität: Arten bzw. Artengruppen,\nBiodiversitätsebene und -variablen sowie Ökosystemleistungen.",
+)
+
+
+class EcosystemStudyFeaturesDirectDriver(BaseEcosystemStudyFeatures):
+    """Das Schema sammelt Angaben zu den untersuchten Treibern von
+    Biodiversitätsveränderungen: direkte Treiber.
+    """
+
+    direct_driver: list[DirectDriver] = Field(
+        default_factory=list,
+        alias="Direkte Treiber",
+        description="Welche Vorgänge mit direktem Einfluss auf Biodiversität wurden untersucht?",
+    )
+
+
+class EcosystemStudyFeaturesIndirectDriver(BaseEcosystemStudyFeatures):
+    """Das Schema sammelt Angaben zu den untersuchten Treibern von
+    Biodiversitätsveränderungen: indirekte Treiber.
+    """
+
+    indirect_driver: list[IndirectDriver] = Field(
+        default_factory=list,
+        alias="Indirekte Treiber",
+        description="Welche Vorgänge mit indirektem Einfluss auf Biodiversität wurden untersucht?",
+    )
+
+
+EcosystemStudyFeaturesDrivers = create_model(
+    "EcosystemStudyFeaturesDrivers",
+    __base__=(
+        EcosystemStudyFeaturesIndirectDriver,
+        EcosystemStudyFeaturesDirectDriver,
+    ),
+    __doc__="Das Schema sammelt Angaben zu den untersuchten Treibern von\nBiodiversitätsveränderungen: direkte und indirekte Treiber.",
+)
+
+
+class EcosystemStudyFeaturesConservationArea(BaseEcosystemStudyFeatures):
+    """Das Schema sammelt Angaben zu den untersuchten Maßnahmen für die Förderung der
+    Biodiversität: Schutzgebiete.
+    """
+
+    conservation_area: list[ConservationArea] = Field(
+        default_factory=list,
+        alias="Schutzgebiete",
+        description="Welche Schutzgebiete werden in der Studie untersucht?",
+    )
+
+
+class EcosystemStudyFeaturesManagementMeasure(BaseEcosystemStudyFeatures):
+    """Das Schema sammelt Angaben zu den untersuchten Maßnahmen für die Förderung der
+    Biodiversität: Managementmaßnahmen.
+    """
+
+    management_measure: list[ManagementMeasure] = Field(
+        default_factory=list,
+        alias="Bewirtschaftungsmaßnahmen",
+        description="Wurden Formen der Bewirtschaftung als Maßnahmen für die Biodiversität untersucht?",
+    )
+
+
+class EcosystemStudyFeaturesImpulseMeasure(BaseEcosystemStudyFeatures):
+    """Das Schema sammelt Angaben zu den untersuchten Maßnahmen für die Förderung der
+    Biodiversität: Impulsmaßnahmen.
+    """
+
+    impulse_measure: list[ImpulseMeasure] = Field(
+        default_factory=list,
+        alias="Einmalige Maßnahmen",
+        description="Wurden einmalige Maßnahmen für die Biodiversität untersucht?",
+    )
+
+
+class EcosystemStudyFeaturesTransformationPotential(BaseEcosystemStudyFeatures):
+    """Das Schema sammelt Angaben zu den untersuchten Maßnahmen für die Förderung der
+    Biodiversität: gesellschaftliches Transformationspotenzial.
+    """
+
+    transformation_potential: list[TransformationPotentialEnum] = Field(
+        default_factory=list,
+        alias="Transformationspotenzial",
+        description="In welche der folgenden Kategorien lässt sich die im Text behandelte Transformation einordnen? ",
+    )
+
+
+EcosystemStudyFeaturesMeasures = create_model(
+    "EcosystemStudyFeaturesMeasures",
+    __base__=(
+        EcosystemStudyFeaturesTransformationPotential,
+        EcosystemStudyFeaturesImpulseMeasure,
+        EcosystemStudyFeaturesManagementMeasure,
+        EcosystemStudyFeaturesConservationArea,
+    ),
+    __doc__="Das Schema sammelt Angaben zu den untersuchten Maßnahmen für die Förderung der\nBiodiversität: Schutzgebiete, Managementmaßnahmen, Impulsmaßnahmen sowie das\ngesellschaftliche Transformationspotenzial.",
+)
+
+EcosystemStudyFeaturesAll = create_model(
+    "EcosystemStudyFeaturesAll",
+    __base__=(
+        EcosystemStudyFeaturesEcosystemService,
+        EcosystemStudyFeaturesIndirectDriver,
+        EcosystemStudyFeaturesDirectDriver,
+        EcosystemStudyFeaturesImpulseMeasure,
+        EcosystemStudyFeaturesManagementMeasure,
+        EcosystemStudyFeaturesConservationArea,
+        EcosystemStudyFeaturesSoil,
+        EcosystemStudyFeaturesTaxa,
+        EcosystemStudyFeaturesLocation,
+        EcosystemStudyFeaturesEcosystemType,
+        EcosystemStudyFeaturesTransformationPotential,
+        EcosystemStudyFeaturesBiodiversityVariable,
+        EcosystemStudyFeaturesBiodiversityLevel,
+        EcosystemStudyFeaturesProject,
+        EcosystemStudyFeaturesStudyType,
+        EcosystemStudyFeaturesMethod,
+        EcosystemStudyFeaturesEndYear,
+        EcosystemStudyFeaturesStartYear,
+        EcosystemStudyFeaturesTemporalMeasurements,
+        EcosystemStudyFeaturesTemporalResolution,
+        EcosystemStudyFeaturesTemporalExtentUnit,
+        EcosystemStudyFeaturesTemporalExtent,
+        EcosystemStudyFeaturesSpatialMeasurements,
+        EcosystemStudyFeaturesSpatialResolution,
+        EcosystemStudyFeaturesSpatialExtent,
+        EcosystemStudyFeaturesLanduse,
+        EcosystemStudyFeaturesClimate,
+        EcosystemStudyFeaturesNaturalRegion,
+        EcosystemStudyFeaturesHabitat,
+    ),
+    __doc__="Angaben zu den ökosystembezogenen Studienmerkmalen.",
+)
+
+# === the following four schemata are currently just used in tests ===
+# TODO: move to tests (also remove the respective schema configs, if possible)
+
+EcosystemStudyFeaturesWithoutCompounds = create_model(
+    "EcosystemStudyFeaturesWithoutCompounds",
+    __base__=(
+        EcosystemStudyFeaturesTransformationPotential,
+        EcosystemStudyFeaturesBiodiversityVariable,
+        EcosystemStudyFeaturesBiodiversityLevel,
+        EcosystemStudyFeaturesProject,
+        EcosystemStudyFeaturesStudyType,
+        EcosystemStudyFeaturesMethod,
+        EcosystemStudyFeaturesEndYear,
+        EcosystemStudyFeaturesStartYear,
+        EcosystemStudyFeaturesTemporalMeasurements,
+        EcosystemStudyFeaturesTemporalResolution,
+        EcosystemStudyFeaturesTemporalExtentUnit,
+        EcosystemStudyFeaturesTemporalExtent,
+        EcosystemStudyFeaturesSpatialMeasurements,
+        EcosystemStudyFeaturesSpatialResolution,
+        EcosystemStudyFeaturesSpatialExtent,
+        EcosystemStudyFeaturesLanduse,
+        EcosystemStudyFeaturesClimate,
+        EcosystemStudyFeaturesNaturalRegion,
+        EcosystemStudyFeaturesHabitat,
+    ),
+    __doc__="Angaben zu den ökosystembezogenen Studienmerkmalen.",
+)
+
+EcosystemStudyFeaturesCompoundsOnly = create_model(
+    "EcosystemStudyFeaturesCompoundsOnly",
+    __base__=(
+        EcosystemStudyFeaturesEcosystemService,
+        EcosystemStudyFeaturesIndirectDriver,
+        EcosystemStudyFeaturesDirectDriver,
+        EcosystemStudyFeaturesImpulseMeasure,
+        EcosystemStudyFeaturesManagementMeasure,
+        EcosystemStudyFeaturesConservationArea,
+        EcosystemStudyFeaturesSoil,
+        EcosystemStudyFeaturesTaxa,
+        EcosystemStudyFeaturesLocation,
+        EcosystemStudyFeaturesEcosystemType,
+    ),
+    __doc__="Angaben zu den ökosystembezogenen Studienmerkmalen.",
+)
+
+
+class EcosystemStudyFeaturesSimple(BaseEcosystemStudyFeatures):
+    """Angaben zu den ökosystembezogenen Studienmerkmalen."""
+
+    habitat: list[HabitatEnum] = Field(
+        default_factory=list,
+        alias="Lebensräume",
+        description="Um welchen der folgenden Lebensräume oder in welcher Kombination der folgenden Lebensräume geht es in dem Text?",
+    )
+    natural_region: list[NaturalRegionEnum] = Field(
+        default_factory=list,
+        alias="Naturgroßräume",
+        description="Um welchen der folgenden Naturgroßräume geht es in dem Text?",
+    )
+    climate: list[ClimateEnum] = Field(
+        default_factory=list,
+        alias="Klima",
+        description="Welche Umschreibung trifft auf das Klima des Untersuchungsgebiets zu?",
+    )
+    landuse: list[LanduseEnum] = Field(
+        default_factory=list,
+        alias="Landnutzung",
+        description="Welche Landnutzung wird im oder nahe des Untersuchungsgebietes betrieben? In welche der folgenden Kategorien fällt die Nutzung?",
+    )
+
+
+class EcosystemStudyFeaturesCompoundsSimple(BaseEcosystemStudyFeatures):
+    """Angaben zu den ökosystembezogenen Studienmerkmalen."""
+
+    ecosystem_type: list[EcosystemType] = Field(
+        default_factory=list,
+        alias="Ökosystemtypen",
+        description="Welche Ökosystemtypen werden in der Studie untersucht?",
+    )
+    location: list[Location] = Field(
+        default_factory=list,
+        alias="Standorte",
+        description="Welche Standorte werden in der Studie untersucht?",
     )
 
 
@@ -1291,3 +1454,4 @@ class EcosystemServiceFields(CompoundFeature):
         "Ergänze, wenn nicht angegeben, die wissenschaftlichen Artennamen, und umgekehrt die "
         "deutschen Namen, wenn nur die wissenschaftlichen Artennamen verwendet wurden. ",
     )
+

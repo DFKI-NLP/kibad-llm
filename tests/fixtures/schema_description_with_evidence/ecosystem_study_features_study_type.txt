@@ -1,0 +1,5 @@
+Beschreibung: Das Schema sammelt Angaben zur Art der Studie: Studienart.
+Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
+- study_type: Um welche Form der wissenschaftlichen Studie handelt es sich? | Kardinalität: 0..* | Typ: object
+  - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Gutachten; Meta-Studie; Nicht Peer-Reviewed; Originalstudie; Peer-Reviewed; Position Paper; Text Review; Vote Count
+  - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
