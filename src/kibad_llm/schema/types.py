@@ -1410,30 +1410,37 @@ class EcosystemStudyFeaturesCompoundsSimple(BaseEcosystemStudyFeatures):
 
 
 class EcosystemServiceFields(CompoundFeature):
-    """Ökosystemleistung bestehend aus Einfluss (influence), Themenkomplex (theme_complex),
-    Ökosystemleistung (ecosystem_service), Biodiv-Facette (biodiversity_facet), Lebensraum (habitat), Art(en) (taxa).
+    """Ein einzelner Zusammenhang zwischen Biodiversität und Ökosystemleistung, bestehend aus
+    Einfluss (influence), Themenkomplex (theme_complex), Ökosystemleistung (ecosystem_service),
+    Biodiv-Facette (biodiversity_facet), Lebensraum (habitat), Art(en) (taxa). Ein Text kann mehrere
+    solcher Zusammenhänge beschreiben; jede Instanz bildet genau einen davon ab, analog zu einer
+    einzelnen Zeile in der ÖSL-VoteCount-Vollständig.csv-Datei.
     """
 
     # The fields below are based ÖSL-VoteCount-Vollständig.xlsx file.
     # We use the column names as field names so that no post-processing is needed.
-    influence: list[EinflussEnum] = Field(
-        default_factory=list,
+    # influence, theme_complex, ecosystem_service and biodiversity_facet are single-valued and
+    # required per relationship (every row of the source data has exactly one value for each);
+    # multiple relationships in one text are represented as multiple EcosystemServiceFields
+    # instances, not by stacking values within a single instance.
+    influence: EinflussEnum = Field(
+        ...,
         alias="Einfluss",
         description="Was ist der gemessene Einfluss der Ökosystemleistung in der Studie auf Biodiversität von den "
         "folgenden Optionen?",  # needs explanation of the terms
     )
-    theme_complex: list[ThemenkomplexEnum] = Field(
-        default_factory=list,
+    theme_complex: ThemenkomplexEnum = Field(
+        ...,
         alias="Themenkomplex",
         description="Welcher dieser Themenkomplexe wird in der Studie betrachtet?",
     )
-    ecosystem_service: str | None = Field(
-        default=None,
+    ecosystem_service: str = Field(
+        ...,
         alias="Ökosystemleistung",
         description="Welche Ökosystemleistung wird in der Studie betrachtet?",
     )
-    biodiversity_facet: list[BiodiversityFacetEnum] = Field(
-        default_factory=list,
+    biodiversity_facet: BiodiversityFacetEnum = Field(
+        ...,
         alias="Biodiv-Facette",
         description="Welche dieser Biodiversitätsfacetten wird in der Studie betrachtet?",
     )
@@ -1455,3 +1462,15 @@ class EcosystemServiceFields(CompoundFeature):
         "deutschen Namen, wenn nur die wissenschaftlichen Artennamen verwendet wurden. ",
     )
 
+
+class EcosystemStudyEcosystemServiceTrends(BaseEcosystemStudyFeatures):
+    """Angaben zu den im Text beschriebenen Zusammenhängen zwischen Biodiversität und
+    Ökosystemleistungen.
+    """
+
+    ecosystem_service_trends: list[EcosystemServiceFields] = Field(
+        default_factory=list,
+        alias="Zusammenhänge zwischen Biodiversität und Ökosystemleistungen",
+        description="Liste der im Text beschriebenen Zusammenhänge zwischen Biodiversität und "
+        "Ökosystemleistungen.",
+    )
