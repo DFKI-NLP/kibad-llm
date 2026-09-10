@@ -40,44 +40,48 @@ Before starting a new experiment:
 - Keep predictions and evaluations scoped to the research question you want to answer.
 - Decide which prediction and evaluation commands are needed before creating result artefacts.
 
-## Preparation
-
-Make sure that the `/data/results` submodule is cloned and checked out on a new branch for the experiment.
-See [submodules](CONTRIBUTING.md#submodules) for general instructions and refer to this section for the [submodule data changing flow](CONTRIBUTING.md#submodule-data-changing-flow).
-
 ## Execution
 
 ### Choose a name
 
-> [!TIP]
-> Create a draft PR early in the experiment process to get the PR ID before naming run outputs.
+Choose a descriptive experiment name for your branch:
 
-Choose a descriptive experiment name:
+```text
+experiment/[descriptive_text]
+```
+
+### Get an ID
+
+Add your new experiment to the [kibad-llm-results:readme.md](https://github.com/DFKI-NLP/kibad-llm-results), commit, push, and create a PR.
+
+Use the PR ID to form your experiments ID. Make sure to pad the ID to be triple digits.
 
 ```text
 [pr_id]_[descriptive_text]
+example:
+012_reasoning_vs_no_reasoning
 ```
 
 > [!IMPORTANT]
-> Use the same `name` value in every `predict` and `evaluate` command that belongs to the experiment.
+> Use the same `experiment_id` value in every `predict` and `evaluate` command that belongs to the experiment.
 
-The name determines the experiment subfolders under:
+The experiment_id determines the experiment subfolders under:
 
-- `logs/<name>` for run logs,
-- `predictions/<name>` for generated prediction outputs, and
-- `data/results/logs/<name>` and `data/results/predictions/<name>` for committed result artefacts.
+- `logs/<experiment_id>` for run logs,
+- `predictions/<experiment_id>` for generated prediction outputs, and
+- `data/results/logs/<experiment_id>` and `data/results/predictions/<experiment_id>` for committed result artefacts.
 
 ### Prepare the experiment folder
 
 Create the committed result folder:
 
 ```bash
-mkdir -p data/results/logs/<name>
+mkdir -p data/results/logs/<experiment_id>
 ```
 
-Create the experiment readme `data/results/logs/<name>/readme.md` with:
+Create the experiment readme `data/results/logs/<experiment_id>/readme.md` with:
 
-- a first-level heading with the experiment name, for example `# 481_faktencheck_core`,
+- a first-level heading with the experiment_id
 - a short description of the goal, motivation, and hypothesis,
 - a `Prediction` section when prediction commands were run,
 - an `Evaluation` section when evaluation commands were run, and
@@ -91,54 +95,39 @@ result location: logs/481_faktencheck_core/evaluate/multiruns/2026-05-26_14-21-1
 
 ### Step-by-step Guide
 
-Since the process for preparing the branches in the main repo and submodule is a bit tricky, here is a step-by-step
-guide of bash commands, up to and including the creation of experiment readme. We assume that you name the
-branch `experiment/your_descriptive_experiment_name` as chosen above, i.e. `[pr_id]_[descriptive_text]`. However,
-this requires that you know the PR id before you can actually create the PR, see the optional instruction below. Feel
-free to name the branch using a `descriptive_experiment_name` that does not include the PR id.
-
-**Optional:** To get the 'correct' PR ID before committing and creating a PR, have a look at the **open and closed**
-[Issues](https://github.com/DFKI-NLP/kibad-llm/issues) and [Pull Requests](https://github.com/DFKI-NLP/kibad-llm/pulls), and use as
-your PR ID max(issue_ids,pull_request_ids) + 1 (Github issue and PR ids use the same counter).
-However, this can be error-prone, so it's fine to name the branch without the `pr_id`.
+Optionally you can clone the kibad-llm-results repo into the kibad-llm repo. This simplifies paths, but not needed.
 
 ```bash
+# optional setup in kibad-llm
 cd <path/to/kibad-llm>
+git checkout main
+git pull
+git clone git@github.com:DFKI-NLP/kibad-llm-results.git ./data/results
+```
+
+Set up the kibad-llm-results like so:
+
+```bash
+cd <path/to/kibad-llm-results>
 
 # Get clean, up-to-date copy of main
 git checkout main
 git pull
-cd data/results
-git checkout main
-git pull
-cd ../..
-# Create branches
-# <your_descriptive_experiment_name> = [pr_id]_[descriptive_text]
-# new_pr_id = max(open_or_closed_issue_id_in_kibad_llm OR open_or_closed_pr_id_in_kibad_llm) + 1
-# since this is error-prone, you can leave away the pr_id part
-git switch -c experiment/<your_descriptive_experiment_name>
-cd data/results
+# Create branch
 git switch -c experiment/<your_descriptive_experiment_name>
 
-# Add empty readme.md and push branches upstream
-mkdir -p logs/<your_descriptive_experiment_name>
-touch logs/<your_descriptive_experiment_name>/README.md
-git add logs/<your_descriptive_experiment_name>/README.md
-git commit -m "initial commit of experiment branch"
-git push --set-upstream origin experiment/<your_descriptive_experiment_name>
-cd ../..
-git add data/results
-git commit -m "initial commit of experiment branch"
-git push --set-upstream origin experiment/<your_descriptive_experiment_name>
+# Add a line for your experiment to the readme.md
+nvim readme.md
+
+# Get an ID for your experiment
+git commit -m "Add stub for experiment in readme.md"
+git push
+# Create PR to get your experiment_id: [pr_id]_[your_descriptive_experiment_name]. Make sure the ID is padded with 0 to triple digits.
 ```
-
-- Go to https://github.com/DFKI-NLP/kibad-llm -> Create new draft PR
-
-- Go to https://github.com/DFKI-NLP/kibad-llm-results/ -> Create new draft PR that references the kibad-llm PR in the description
 
 - Edit `data/results/logs/experiment/<your_descriptive_experiment_name>/README.md` as described [above](https://github.com/DFKI-NLP/kibad-llm/blob/main/docs/CONTRIBUTING-EXPERIMENTS.md#prepare-the-experiment-folder)
 
-- Add a line to [data/results/readme.md](https://github.com/DFKI-NLP/kibad-llm-results/blob/main/readme.md):
+- Finalize your line in [data/results/readme.md](https://github.com/DFKI-NLP/kibad-llm-results/blob/main/readme.md):
 
     `| [<your_descriptive_experiment_name>](logs/<your_descriptive_experiment_name>) | <yyyy-MM-dd> | https://github.com/DFKI-NLP/kibad-llm/pull/<new_pr_id> | <your_descriptive_text> |`
 
