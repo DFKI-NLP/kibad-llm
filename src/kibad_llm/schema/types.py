@@ -1411,48 +1411,44 @@ class EcosystemStudyFeaturesCompoundsSimple(BaseEcosystemStudyFeatures):
 
 class EcosystemServiceFields(CompoundFeature):
     """Ein einzelner Zusammenhang zwischen Biodiversität und Ökosystemleistung, bestehend aus
-    Einfluss (influence), Themenkomplex (theme_complex), Ökosystemleistung (ecosystem_service),
-    Biodiv-Facette (biodiversity_facet), Lebensraum (habitat), Art(en) (taxa). Ein Text kann mehrere
-    solcher Zusammenhänge beschreiben; jede Instanz bildet genau einen davon ab, analog zu einer
-    einzelnen Zeile in der ÖSL-VoteCount-Vollständig.csv-Datei.
+    Einfluss, Themenkomplex, Ökosystemleistung (ÖSL), Biodiv_Facette, Lebensraum_Gruppiert und
+    Arten. Ein Text kann mehrere solcher Zusammenhänge beschreiben; jede Instanz bildet genau einen
+    davon ab, analog zu einer einzelnen Zeile in der ösl_papers_ids.csv-Datei.
     """
 
-    # The fields below are based ÖSL-VoteCount-Vollständig.xlsx file.
-    # We use the column names as field names so that no post-processing is needed.
-    # influence, theme_complex, ecosystem_service and biodiversity_facet are single-valued and
-    # required per relationship (every row of the source data has exactly one value for each);
-    # multiple relationships in one text are represented as multiple EcosystemServiceFields
-    # instances, not by stacking values within a single instance.
-    influence: EinflussEnum = Field(
+    # The fields below are based on the ösl_papers_ids.csv file (ÖSL-VoteCount-Vollständig with
+    # Zotero item keys matched in). We use the column names as field names, analogous to
+    # OrganismBiodiversityTrend, so that no post-processing is needed. "Biodiv-Facette" and
+    # "Art(en)" are not valid Python identifiers, so those two columns are named "Biodiv_Facette"
+    # and "Arten" here and in the CSV.
+    # Einfluss, Themenkomplex, ÖSL and Biodiv_Facette are single-valued and required per
+    # relationship (every row of the source data has exactly one value for each); multiple
+    # relationships in one text are represented as multiple EcosystemServiceFields instances, not
+    # by stacking values within a single instance.
+    Einfluss: EinflussEnum = Field(
         ...,
-        alias="Einfluss",
         description="Was ist der gemessene Einfluss der Ökosystemleistung in der Studie auf Biodiversität von den "
         "folgenden Optionen?",  # needs explanation of the terms
     )
-    theme_complex: ThemenkomplexEnum = Field(
+    Themenkomplex: ThemenkomplexEnum = Field(
         ...,
-        alias="Themenkomplex",
         description="Welcher dieser Themenkomplexe wird in der Studie betrachtet?",
     )
-    ecosystem_service: str = Field(
+    ÖSL: str = Field(
         ...,
-        alias="Ökosystemleistung",
         description="Welche Ökosystemleistung wird in der Studie betrachtet?",
     )
-    biodiversity_facet: BiodiversityFacetEnum = Field(
+    Biodiv_Facette: BiodiversityFacetEnum = Field(
         ...,
-        alias="Biodiv-Facette",
         description="Welche dieser Biodiversitätsfacetten wird in der Studie betrachtet?",
     )
-    habitat: list[HabitatEnum] = Field(
+    Lebensraum_Gruppiert: list[HabitatEnum] = Field(
         default_factory=list,
-        alias="Lebensraum",
         description="Um welchen der folgenden Lebensräume oder um welche Kombination "
         "der folgenden Lebensräume geht es in dem Text?",
     )
-    taxa: str | None = Field(
+    Arten: str | None = Field(
         default=None,
-        alias="Art(en)",
         description="Welche Arten bzw. Artengruppen werden in der Studie untersucht? Verwende die kleinste "
         "machbare Ebene: Wenn eine Studie nur wenige Arten behandelt, sollten diese auf Artebene mit ihrem "
         "wissenschaftlichen und deutschen Namen angegeben werden. Werden jedoch sehr viele Arten "

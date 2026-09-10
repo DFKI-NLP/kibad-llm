@@ -18,9 +18,9 @@
     },
     "EcosystemServiceFields": {
       "additionalProperties": false,
-      "description": "Ein einzelner Zusammenhang zwischen Biodiversität und Ökosystemleistung, bestehend aus\nEinfluss (influence), Themenkomplex (theme_complex), Ökosystemleistung (ecosystem_service),\nBiodiv-Facette (biodiversity_facet), Lebensraum (habitat), Art(en) (taxa). Ein Text kann mehrere\nsolcher Zusammenhänge beschreiben; jede Instanz bildet genau einen davon ab, analog zu einer\neinzelnen Zeile in der ÖSL-VoteCount-Vollständig.csv-Datei.",
+      "description": "Ein einzelner Zusammenhang zwischen Biodiversität und Ökosystemleistung, bestehend aus\nEinfluss, Themenkomplex, Ökosystemleistung (ÖSL), Biodiv_Facette, Lebensraum_Gruppiert und\nArten. Ein Text kann mehrere solcher Zusammenhänge beschreiben; jede Instanz bildet genau einen\ndavon ab, analog zu einer einzelnen Zeile in der ösl_papers_ids.csv-Datei.",
       "properties": {
-        "influence": {
+        "Einfluss": {
           "description": "Was ist der gemessene Einfluss der Ökosystemleistung in der Studie auf Biodiversität von den folgenden Optionen?",
           "anyOf": [
             {
@@ -28,7 +28,7 @@
             }
           ]
         },
-        "theme_complex": {
+        "Themenkomplex": {
           "description": "Welcher dieser Themenkomplexe wird in der Studie betrachtet?",
           "anyOf": [
             {
@@ -36,12 +36,12 @@
             }
           ]
         },
-        "ecosystem_service": {
+        "ÖSL": {
           "description": "Welche Ökosystemleistung wird in der Studie betrachtet?",
-          "title": "Ecosystem Service",
+          "title": "Ösl",
           "type": "string"
         },
-        "biodiversity_facet": {
+        "Biodiv_Facette": {
           "description": "Welche dieser Biodiversitätsfacetten wird in der Studie betrachtet?",
           "anyOf": [
             {
@@ -49,15 +49,15 @@
             }
           ]
         },
-        "habitat": {
+        "Lebensraum_Gruppiert": {
           "description": "Um welchen der folgenden Lebensräume oder um welche Kombination der folgenden Lebensräume geht es in dem Text?",
           "items": {
             "$ref": "#/$defs/HabitatEnum"
           },
-          "title": "Habitat",
+          "title": "Lebensraum Gruppiert",
           "type": "array"
         },
-        "taxa": {
+        "Arten": {
           "anyOf": [
             {
               "type": "string"
@@ -67,16 +67,16 @@
             }
           ],
           "description": "Welche Arten bzw. Artengruppen werden in der Studie untersucht? Verwende die kleinste machbare Ebene: Wenn eine Studie nur wenige Arten behandelt, sollten diese auf Artebene mit ihrem wissenschaftlichen und deutschen Namen angegeben werden. Werden jedoch sehr viele Arten behandelt oder eine Artengruppe besprochen, wird die Artengruppe als 'Sammelbegriff' angegeben. Falls die Studie auf englisch ist, übersetze Art- bzw. Artengruppennamen ins Deutsche. Ergänze, wenn nicht angegeben, die wissenschaftlichen Artennamen, und umgekehrt die deutschen Namen, wenn nur die wissenschaftlichen Artennamen verwendet wurden. ",
-          "title": "Taxa"
+          "title": "Arten"
         }
       },
       "required": [
-        "influence",
-        "theme_complex",
-        "ecosystem_service",
-        "biodiversity_facet",
-        "habitat",
-        "taxa"
+        "Einfluss",
+        "Themenkomplex",
+        "ÖSL",
+        "Biodiv_Facette",
+        "Lebensraum_Gruppiert",
+        "Arten"
       ],
       "title": "EcosystemServiceFields",
       "type": "object"

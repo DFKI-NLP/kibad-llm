@@ -1,8 +1,3 @@
-# TODO (not yet functional): the raw CSV column headers ("Einfluss", "ÖSL", "Biodiv-Facette",
-# "Art(en)", ...) don't match the `EcosystemServiceFields` field names used in predictions
-# ("influence", "ecosystem_service", "biodiversity_facet", "taxa", ...), since predictions are
-# generated with by_alias: false. Columns will need to be renamed to the field names for evaluation
-# to line up.
 # TODO: "Lebensraum_Gruppiert" values use "Küste und Küstengewässer", while `HabitatEnum` uses
 # "Küsten und Küstengewässer" (plural) - this mismatch needs to be resolved before habitat values
 # line up between predictions and references.
@@ -12,11 +7,13 @@ output_key: ecosystem_service_trends
 # in, compatible with how predictions are keyed (see configs/dataset/predictions/extraction_result.yaml)
 file: "${paths.root_dir}/data/external/ecosystem_services/ösl_papers_ids.csv"
 pdf_id_column: "Key"
+# column names match `EcosystemServiceFields` field names (see src/kibad_llm/schema/types.py) so
+# that no post-processing/renaming is needed, analogous to `OrganismBiodiversityTrend`.
 columns:
   - Einfluss
   - Themenkomplex
   - ÖSL
-  - Biodiv-Facette
+  - Biodiv_Facette
   # pre-normalized/grouped version of "Lebensraum" (fewer distinct values, closer to HabitatEnum)
   - Lebensraum_Gruppiert
-  - Art(en)
+  - Arten
