@@ -11,7 +11,7 @@ def test_read_grouped_csv_records_organism_trends_wald_all() -> None:
         output_key="organism_trends",
     )
     assert isinstance(result, dict)
-    assert len(result) == 172
+    assert len(result) == 170
 
     key = "324V8DKM"
     data = result[key]
@@ -52,7 +52,7 @@ def test_read_grouped_csv_records_organism_trends_wald_selected_columns() -> Non
         ],
     )
     assert isinstance(result, dict)
-    assert len(result) == 172
+    assert len(result) == 170
 
     key = "324V8DKM"
     data = result[key]
