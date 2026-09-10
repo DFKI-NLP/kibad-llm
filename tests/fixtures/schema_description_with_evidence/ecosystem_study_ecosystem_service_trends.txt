@@ -1,0 +1,26 @@
+Beschreibung: Angaben zu den im Text beschriebenen Zusammenhängen zwischen Biodiversität und Ökosystemleistungen.
+Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
+- ecosystem_service_trends: Liste der im Text beschriebenen Zusammenhänge zwischen Biodiversität und Ökosystemleistungen. | Kardinalität: 0..* | Typ: object
+  Beschreibung: Ein einzelner Zusammenhang zwischen Biodiversität und Ökosystemleistung, bestehend aus Einfluss (influence), Themenkomplex (theme_complex), Ökosystemleistung (ecosystem_service), Biodiv-Facette (biodiversity_facet), Lebensraum (habitat), Art(en) (taxa). Ein Text kann mehrere solcher Zusammenhänge beschreiben; jede Instanz bildet genau einen davon ab, analog zu einer einzelnen Zeile in der ÖSL-VoteCount-Vollständig.csv-Datei.
+  - influence: Was ist der gemessene Einfluss der Ökosystemleistung in der Studie auf Biodiversität von den folgenden Optionen? | Kardinalität: 1 | Typ: object
+    Beschreibung: Was ist der gemessene Einfluss der Ökosystemleistung in der Studie auf Biodiversität von den folgenden Optionen?
+    - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: ja; neg; nein; neu; nicht linear; pos
+    - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
+  - theme_complex: Welcher dieser Themenkomplexe wird in der Studie betrachtet? | Kardinalität: 1 | Typ: object
+    Beschreibung: Welcher dieser Themenkomplexe wird in der Studie betrachtet?
+    - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Kohlenstoffkreislauf; Kulturelle Leistungen; Stabilität und Resilienz
+    - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
+  - ecosystem_service: Welche Ökosystemleistung wird in der Studie betrachtet? | Kardinalität: 1 | Typ: object
+    Beschreibung: Welche Ökosystemleistung wird in der Studie betrachtet?
+    - content: | Kardinalität: 1 | Typ: string
+    - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
+  - biodiversity_facet: Welche dieser Biodiversitätsfacetten wird in der Studie betrachtet? | Kardinalität: 1 | Typ: object
+    Beschreibung: Welche dieser Biodiversitätsfacetten wird in der Studie betrachtet?
+    - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Artenvielfalt; Artenzusammensetzung; Artidentität; Artzusammensetzung; Funktionelle Diversität; Genetische Diversität; Kompositindikator; Landschaftsdiversität; Landschaftstyp; Strukturelle Diversität
+    - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
+  - habitat: Um welchen der folgenden Lebensräume oder um welche Kombination der folgenden Lebensräume geht es in dem Text? | Kardinalität: 0..* | Typ: object
+    - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Agrar- und Offenland; Binnengewässer und Auen; Boden; Küsten und Küstengewässer; Urbane Räume; Wald
+    - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
+  - taxa: Welche Arten bzw. Artengruppen werden in der Studie untersucht? Verwende die kleinste machbare Ebene: Wenn eine Studie nur wenige Arten behandelt, sollten diese auf Artebene mit ihrem wissenschaftlichen und deutschen Namen angegeben werden. Werden jedoch sehr viele Arten behandelt oder eine Artengruppe besprochen, wird die Artengruppe als 'Sammelbegriff' angegeben. Falls die Studie auf englisch ist, übersetze Art- bzw. Artengruppennamen ins Deutsche. Ergänze, wenn nicht angegeben, die wissenschaftlichen Artennamen, und umgekehrt die deutschen Namen, wenn nur die wissenschaftlichen Artennamen verwendet wurden. | Kardinalität: 0..1 | Typ: object
+    - content: | Kardinalität: 1 | Typ: string
+    - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
