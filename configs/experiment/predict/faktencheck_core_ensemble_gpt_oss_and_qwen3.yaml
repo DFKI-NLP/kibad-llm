@@ -1,0 +1,15 @@
+# @package _global_
+
+# This experiment config shows ensemble extraction using both gpt_oss_20b and qwen3_30b as LLMs.
+
+# To execute this experiment run:
+# uv run -m kibad_llm.predict experiment/predict=faktencheck_core_ensemble_gpt_oss_and_qwen3 pdf_directory=path/to/pdf/files
+
+defaults:
+  - _with_evidence
+  - /extractor/llm@extractor.overrides.1.llm: gpt_oss_20b_in_process
+  - /extractor/llm@extractor.overrides.2.llm: qwen3_30b_in_process
+  - /extractor/schema: faktencheck_core
+  - override /extractor: ensemble
+  # We use a polished prompt template with additional instructions for better extraction performance.
+  - override /extractor/prompt_template: faktencheck_core_v1_with_evidence_and_persona
