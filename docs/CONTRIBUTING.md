@@ -11,6 +11,7 @@ The following guidelines ensure consistency across the project, so please read t
 - [Contribution requirements](#contribution-requirements)
     - [PR description](#pr-description)
     - [CI/CD](#cicd)
+    - [Branch naming](#branch-naming)
 - [Source code](#source-code)
 - [Experiments](#experiments)
 - [Documentation](#documentation)

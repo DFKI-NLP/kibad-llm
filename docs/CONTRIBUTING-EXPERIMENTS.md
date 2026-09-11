@@ -8,8 +8,11 @@ Use this guide when you create, run, evaluate, or document reproducible experime
 - [Datasets](#datasets)
 - [Planning](#planning)
 - [Execution](#execution)
+    - [Clone the repo](#clone-the-repo)
     - [Choose a name](#choose-a-name)
+    - [Get an ID](#get-an-id)
     - [Prepare the experiment folder](#prepare-the-experiment-folder)
+    - [Step-by-step guide](#step-by-step-guide)
     - [Run predictions](#run-predictions)
     - [Run evaluations](#run-evaluations)
     - [Inspect results in the eval dashboard](#inspect-results-in-the-eval-dashboard)
@@ -125,7 +128,7 @@ git push
 # Create PR to get your experiment_id: [pr_id]_[your_descriptive_experiment_name]. Make sure the ID is padded with 0 to triple digits.
 ```
 
-- Edit `kibad-llm-results:/logs/<experiment_id>/README.md` as described [above](/docs/CONTRIBUTING-EXPERIMENTS.md#prepare-the-experiment-folder)
+- Edit `kibad-llm-results:/logs/<experiment_id>/README.md` as described [above](#prepare-the-experiment-folder)
 
 - Finalize your line in [kibad-llm-results:/readme.md](https://github.com/DFKI-NLP/kibad-llm-results/blob/main/readme.md):
 
