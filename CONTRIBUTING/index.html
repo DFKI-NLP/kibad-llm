@@ -1,0 +1,3338 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="kiba-d project team">
+      
+      
+        <link rel="canonical" href="https://dfki-nlp.github.io/kibad-llm/CONTRIBUTING/">
+      
+      
+        <link rel="prev" href="../eval-dashboard-docs/">
+      
+      
+        <link rel="next" href="../CONTRIBUTING-CODE/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-ProperDocs 1.6.7, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>Overview - kibad llm</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Merriweather+Sans:300,300i,400,400i,700,700i%7CRed+Hat+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Merriweather Sans";--md-code-font:"Red Hat Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="green" data-md-color-accent="deep-purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#contribution-guidelines" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="kibad llm" class="md-header__button md-logo" aria-label="kibad llm" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            kibad llm
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Overview
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="green" data-md-color-accent="deep-purple"  aria-label="Dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="deep-orange"  aria-label="Light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="kibad llm" class="md-nav__button md-logo" aria-label="kibad llm" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    kibad llm
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Welcome
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../USAGE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage instructions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../models-readme/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LLM usage instructions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../podman-readme/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Faktencheck database instructions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../eval-dashboard-docs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Evaluation dashboard
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contribution guidelines
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Contribution guidelines
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#project-organization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Project Organization
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setup
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contribution-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Contribution requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Contribution requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pr-description" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PR description
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cicd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CI/CD
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#branch-naming" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Branch naming
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#source-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Source Code
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#experiments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Experiments
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Documentation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#documentation-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation sources
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adding-or-changing-pages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Adding or changing pages
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#links-and-redirects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Links and redirects
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#building-and-hosting-locally" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Building and hosting locally
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#local-checks-and-ci-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Local checks and CI commands
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Local checks and CI commands">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#submodules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Submodules
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Submodules">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#submodule-data-changing-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Submodule data changing flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#misc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Misc
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING-CODE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Source Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING-EXPERIMENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../reference/kibad_llm/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    KIBA-D code Reference
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    KIBA-D code Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Config
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/evaluate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Evaluate
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/metric/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metric
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/predict/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Predict
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/preprocessing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Preprocessing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../reference/kibad_llm/data_integration/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data integration
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7_6" id="__nav_7_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Data integration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/data_integration/database_unique_summary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database unique summary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/data_integration/db_converter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Db converter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/data_integration/extract_vocabulary_enums/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extract vocabulary enums
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/data_integration/synch_nextcloud_with_cluster/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Synch nextcloud with cluster
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/data_integration/zotero_download/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Zotero download
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../reference/kibad_llm/dataset/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dataset
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7_7" id="__nav_7_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Dataset
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/dataset/compression/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compression
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/dataset/csv/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Csv
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/dataset/json/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Json
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/dataset/prediction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prediction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/dataset/utils/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Utils
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../reference/kibad_llm/extractors/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extractors
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7_8" id="__nav_7_8_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Extractors
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/extractors/aggregation_utils/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Aggregation utils
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/extractors/base/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Base
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/extractors/chunking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chunking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/extractors/conditional/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conditional
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/extractors/repeat/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Repeat
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/extractors/union/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Union
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_8_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../reference/kibad_llm/extractors/chunking_utils/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chunking utils
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7_8_7" id="__nav_7_8_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_7_8_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_8_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chunking utils
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/extractors/chunking_utils/core/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/extractors/chunking_utils/tokenizers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tokenizers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_9" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../reference/kibad_llm/hydra_callbacks/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hydra callbacks
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7_9" id="__nav_7_9_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Hydra callbacks
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/hydra_callbacks/save_job_return_value/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Save job return value
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../reference/kibad_llm/llms/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Llms
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7_10" id="__nav_7_10_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Llms
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/llms/base/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Base
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/llms/openai/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Openai
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/llms/openai_like_vllm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Openai like vllm
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/llms/vllm_in_process/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vllm in process
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../reference/kibad_llm/metrics/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metrics
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7_11" id="__nav_7_11_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Metrics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/metrics/base/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Base
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/metrics/collection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Collection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/metrics/confusion_matrix/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Confusion matrix
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/metrics/errors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Errors
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/metrics/f1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    F1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/metrics/tpfpfn/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tpfpfn
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_12" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../reference/kibad_llm/normalization/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Normalization
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7_12" id="__nav_7_12_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Normalization
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/normalization/cli/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cli
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/normalization/gbif/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gbif
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_13" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../reference/kibad_llm/schema/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schema
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7_13" id="__nav_7_13_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_13">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Schema
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/schema/types/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Types
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/schema/utils/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Utils
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_14" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../reference/kibad_llm/utils/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Utils
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7_14" id="__nav_7_14_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_14_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_14">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Utils
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/utils/datasets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Datasets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/utils/dictionary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dictionary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/utils/job_return/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Job return
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/utils/log/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/kibad_llm/utils/path/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Path
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#project-organization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Project Organization
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setup
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contribution-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Contribution requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Contribution requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pr-description" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PR description
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cicd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CI/CD
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#branch-naming" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Branch naming
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#source-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Source Code
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#experiments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Experiments
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Documentation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#documentation-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation sources
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adding-or-changing-pages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Adding or changing pages
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#links-and-redirects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Links and redirects
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#building-and-hosting-locally" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Building and hosting locally
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#local-checks-and-ci-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Local checks and CI commands
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Local checks and CI commands">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#submodules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Submodules
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Submodules">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#submodule-data-changing-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Submodule data changing flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#misc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Misc
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="contribution-guidelines">Contribution guidelines</h1>
+<p>Thank you for your interest in contributing to kibad-llm.</p>
+<p>The following guidelines ensure consistency across the project, so please read them thoroughly.</p>
+<h2 id="table-of-contents">Table of contents</h2>
+<ul>
+<li><a href="#project-organization">Project organization</a></li>
+<li><a href="#setup">Setup</a></li>
+<li><a href="#contribution-requirements">Contribution requirements</a><ul>
+<li><a href="#pr-description">PR description</a></li>
+<li><a href="#cicd">CI/CD</a></li>
+</ul>
+</li>
+<li><a href="#source-code">Source code</a></li>
+<li><a href="#experiments">Experiments</a></li>
+<li><a href="#documentation">Documentation</a><ul>
+<li><a href="#documentation-sources">Documentation sources</a></li>
+<li><a href="#adding-or-changing-pages">Adding or changing pages</a></li>
+<li><a href="#links-and-redirects">Links and redirects</a></li>
+<li><a href="#building-and-hosting-locally">Building and hosting locally</a></li>
+</ul>
+</li>
+<li><a href="#local-checks-and-ci-commands">Local checks and CI commands</a><ul>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+</ul>
+</li>
+<li><a href="#submodules">Submodules</a><ul>
+<li><a href="#submodule-data-changing-flow">Submodule data changing flow</a></li>
+</ul>
+</li>
+<li><a href="#misc">Misc</a></li>
+</ul>
+<h2 id="project-organization">Project Organization</h2>
+<p>High-level overview of contributor-relevant paths (local caches and other generated dot-directories are omitted):</p>
+<pre><code class="language-text">├── .github/                    &lt;- GitHub workflows and repository automation.
+├── configs/                    &lt;- Hydra configuration tree for prediction, evaluation, datasets, metrics, paths,
+│   │                              PDF reading, and experiments.
+│   ├── dataset/                &lt;- Dataset configs for references and prediction inputs.
+│   ├── experiment/             &lt;- Reproducible experiment presets for `predict` and `evaluate`.
+│   ├── extractor/              &lt;- Extractor composition, prompt, schema, LLM, and request-parameter configs.
+│   ├── hydra/                  &lt;- Hydra defaults and logging/callback configuration.
+│   ├── metric/                 &lt;- Evaluation metric configs.
+│   ├── paths/                  &lt;- Centralized input/output path defaults for runs.
+│   ├── pdf_reader/             &lt;- PDF-to-markdown reader configs.
+│   ├── evaluate.yaml           &lt;- Top-level Hydra config for evaluation runs: selects paths, datasets, metrics,
+│   │                              optional experiment presets, and multi-run settings for evaluating prediction
+│   │                              outputs against references.
+│   └── predict.yaml            &lt;- Top-level Hydra config for prediction runs: selects paths, PDF reader,
+│                                  extractor, optional experiment presets, and runtime/output settings for batch
+│                                  PDF-to-JSONL extraction.
+│
+├── data/                       &lt;- Local data area for source inputs and derived datasets.
+│   ├── external/               &lt;- Third-party inputs such as exported Zotero data.
+│   ├── interim/                &lt;- Intermediate converted data such as DB-to-JSON exports used for evaluation.
+│   ├── results/                &lt;- Git submodule of Checked-in experiment artefacts and derived result bundles that are meant to live
+│   │                              in Git.
+│   ├── processed/              &lt;- Versioned processed datasets kept in Git when useful for reproducibility.
+│   └── raw/                    &lt;- Immutable source data dumps (not yet used).
+│
+├── docs/                       &lt;- ProperDocs source files for the published documentation site.
+├── logs/                       &lt;- Local/generated Hydra run logs and experiment metadata; created when executing
+│                                  prediction or evaluation pipelines. This top-level directory should never contain
+│                                  committed data and may be symlinked to shared storage on the cluster.
+├── models/                     &lt;- LLM runtime documentation and config files (for example `vllm.env` and logging
+│                                  config), not model weights themselves.
+├── notebooks/                  &lt;- Analysis notebooks such as multirun evaluation plotting.
+├── podman/
+│   └── faktencheck-db/         &lt;- Podman/Docker Compose setup and instructions for running the local Faktencheck
+│                                  PostgreSQL database dump.
+├── predictions/                &lt;- Local/generated prediction JSONL outputs grouped by experiment/run; created when
+│                                  executing prediction pipelines. This top-level directory should never contain
+│                                  committed data and may be symlinked to shared storage on the cluster.
+├── references/                 &lt;- Data dictionaries, manuals, and all other explanatory materials (not yet used).
+├── reports/
+│   └── figures/                &lt;- Legacy/outdated location for generated figures; current checked-in result artefacts
+│                                  are kept under `data/results/` instead.
+│
+├── src/
+│   └── kibad_llm/              &lt;- Main Python package.
+│       ├── data_integration/   &lt;- Scripts for Zotero download, DB conversion, vocabulary extraction, and file syncing.
+│       ├── dataset/            &lt;- Dataset loaders/utilities for CSV, JSON, compressed data, and predictions.
+│       ├── extractors/         &lt;- Core extraction pipeline components, including chunking, repetition, unions, and
+│       │                          aggregation helpers.
+│       ├── hydra_callbacks/    &lt;- Custom Hydra callbacks such as saving combined job return values.
+│       ├── llms/               &lt;- LLM backend abstractions for OpenAI, OpenAI-compatible vLLM, and in-process vLLM.
+│       ├── metrics/            &lt;- Metric implementations such as F1, TP/FP/FN, and confusion matrices.
+│       ├── schema/             &lt;- Schema types and helpers for structured outputs.
+│       ├── utils/              &lt;- General helper modules for datasets, logging, job returns, dictionaries, and paths.
+│       ├── config.py           &lt;- Shared project paths/constants and `.env` loading.
+│       ├── evaluate.py         &lt;- Hydra entry point for metric computation against references.
+│       ├── metric.py           &lt;- Shared metric interface/types used by evaluators.
+│       ├── predict.py          &lt;- Hydra entry point for PDF-to-structured-prediction runs.
+│       └── preprocessing.py    &lt;- PDF/content preprocessing helpers used before extraction.
+│
+├── scripts/                    &lt;- Repository maintenance scripts, currently focused on building documentation.
+│
+├── tests/                      &lt;- Unit, integration, and fixture-based tests.
+│   ├── fixtures/               &lt;- Static test data, replay fixtures, PDFs, schemas, and expected outputs.
+│   ├── integration/            &lt;- End-to-end style tests for extractors, prediction, and evaluation flows.
+│   └── unit/                   &lt;- Focused tests for individual modules and utilities.
+│
+├── .env.example                &lt;- Example environment variables for local setup. Copy to `.env` and fill in the
+│                                  values to run locally.
+├── .gitignore                  &lt;- Git ignore rules for local/generated data, logs, virtual environments, caches,
+│                                  editor settings, and other machine-specific artefacts, while explicitly keeping
+│                                  versioned directories such as `data/results/` and `data/processed/`.
+├── .pre-commit-config.yaml     &lt;- `prek`/pre-commit hook configuration used locally and in CI.
+├── justfile                    &lt;- Config file for `just` command runner
+├── LICENSE                     &lt;- AGPL-v3 license text for the project.
+├── lychee.toml                 &lt;- Documentation link validation configuration.
+├── Makefile                    &lt;- Legacy helper targets. TODO: clarify which targets are still maintained now that
+│                                  the project uses `uv` instead of `poetry` in most docs.
+├── properdocs.yml              &lt;- ProperDocs site configuration and navigation.
+├── pyproject.toml              &lt;- Python package metadata, dependencies, and tool configuration.
+├── README.md                   &lt;- Short project entry point and quickstart.
+├── run_in_process.sh           &lt;- Cluster helper script for running inference/evaluation with in-process vLLM or
+│                                  API-based models.
+├── run_with_llm.sh             &lt;- Cluster helper script that starts an external vLLM server and then runs `uv` code
+│                                  against it.
+├── run_with_llm_login_node_exec.sh &lt;- Variant of the previous helper that keeps the `uv` side on the login node.
+│                                  TODO: Since this is not used so far, should we remove it?
+└── uv.lock                     &lt;- Locked dependency set managed by `uv`. Do not touch!
+</code></pre>
+<h2 id="setup">Setup</h2>
+<p>Install the project with development dependencies:</p>
+<pre><code class="language-bash">uv sync --group cicd
+</code></pre>
+<p>Optionally install <a href="https://github.com/casey/just"><code>just</code></a> for less verbose dev commands.</p>
+<pre><code>uv tool install rust-just
+</code></pre>
+<p>Run <code>just -l</code> to see what commands are available.</p>
+<h2 id="contribution-requirements">Contribution requirements</h2>
+<p>Pushing to main is prohibited. If you want to contribute code, open a pull request against main.</p>
+<p>All contributions need to be documented, both in the <a href="#pr-description">PR description</a>, and in the repo's <a href="#documentation">Documentation</a>.</p>
+<p>PRs must be reviewed.</p>
+<p>Approved PRs should be squash merged to keep the tree clean.</p>
+<h3 id="pr-description">PR description</h3>
+<p>A PR description needs to document:</p>
+<ul>
+<li>the reason and goal of the PR.</li>
+<li>the changes made, and possibly why they were made.</li>
+<li>the issues they work towards closing.</li>
+<li>the PRs they depend on.</li>
+<li>migration instructions, if needed.</li>
+<li>simple testing instructions for reviewers.</li>
+</ul>
+<h3 id="cicd">CI/CD</h3>
+<p>PRs need to pass CI/CD. This currently includes:</p>
+<ul>
+<li>all pre-commit hooks,</li>
+<li>all <code>"not slow"</code> Python tests, and</li>
+<li>the browser-free eval-dashboard JavaScript logic tests run with Node.js.</li>
+</ul>
+<p>If you state in a PR, review, or commit message that a branch is "CI-ready", "passes local CI", or complies with this document's testing expectations, run the full local CI-equivalent command set from <a href="#local-checks-and-ci-commands">Local checks and CI commands</a>. Running only a changed-area subset of checks is useful for iteration, but is not enough for such a claim.</p>
+<p>For more info, check section <a href="#local-checks-and-ci-commands">Local checks and CI commands</a>.</p>
+<h3 id="branch-naming">Branch naming</h3>
+<p><strong>Prefixing</strong> <br>
+Use</p>
+<ul>
+<li><code>feat/description-here</code> for any new features.</li>
+<li><code>docs/description-here</code> for documentation work. (other branches, e.g. <code>feat/</code> are expected to document their features too.)</li>
+<li><code>fix/description-here</code> for (bug)fixes.</li>
+<li><code>hotfix/description-here</code> for urgent fixes.</li>
+<li><code>experiment/description-here</code> for experiments (see <a href="../CONTRIBUTING-EXPERIMENTS/">CONTRIBUTING-EXPERIMENTS.md</a>)</li>
+</ul>
+<p>These prefixes don't just make branch names easier to read, but also allow for colour coding in tools like <a href="https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md#custom-branch-color">lazy git</a>.</p>
+<p><strong>Alphanumeric characters</strong> <br>
+Use only alphanumeric characters (a-z, A-Z, 0–9) and hyphens. Avoid punctuation, spaces, underscores, or any non-alphanumeric character.</p>
+<p><strong>No Continuous Hyphens</strong> <br>
+Do not use continuous hyphens. <code>feature--new-login</code> can be confusing and hard to read.</p>
+<p><strong>No Trailing Hyphens</strong> <br>
+Do not end your branch name with a hyphen. For example, <code>feature-new-login-</code> is not a good practice.</p>
+<p><strong>Descriptive</strong> <br>
+The name should be descriptive and concise, ideally reflecting the work done on the branch.</p>
+<h2 id="source-code">Source Code</h2>
+<p>The source-code guidelines live in <a href="../CONTRIBUTING-CODE/">CONTRIBUTING-CODE.md</a>.</p>
+<p>They cover general implementation principles, test layout, source-code documentation standards, fixture regeneration, and dependency changes.</p>
+<h2 id="experiments">Experiments</h2>
+<p>The experiment guidelines live in <a href="../CONTRIBUTING-EXPERIMENTS/">CONTRIBUTING-EXPERIMENTS.md</a>.</p>
+<p>They cover how to plan, configure, run, track, and document reproducible experiments for this project.</p>
+<h2 id="documentation">Documentation</h2>
+<p>This project uses <a href="https://properdocs.org/">ProperDocs</a> for the documentation website, which is hosted on <a href="https://dfki-nlp.github.io/kibad-llm/">GitHub Pages</a>.</p>
+<p>Documentation changes should be part of the same PR as the code or workflow changes they describe. For source-code docstring and API reference rules, see <a href="../CONTRIBUTING-CODE/#documentation">CONTRIBUTING-CODE.md</a>.</p>
+<h3 id="documentation-sources">Documentation sources</h3>
+<p>The documentation website is built from:</p>
+<ul>
+<li>Markdown pages under <code>docs/</code>.</li>
+<li>Snippet wrapper pages such as <code>docs/usage.md</code>, which include root-level files with <code>--8&lt;--</code>.</li>
+<li>The site navigation and redirects in <code>properdocs.yml</code>.</li>
+<li>Generated API reference pages from <code>scripts/build_docs.py</code>.</li>
+<li>Link rewrites in <code>scripts/docs_hooks.py</code> for GitHub-style repository links that need different URLs on the generated website.</li>
+</ul>
+<h3 id="adding-or-changing-pages">Adding or changing pages</h3>
+<p>To add a normal documentation page, create a Markdown file under <code>docs/</code> and add it to the <code>nav</code> section in <code>properdocs.yml</code>.</p>
+<p>To publish an existing root-level Markdown file, create a small wrapper under <code>docs/</code> that includes the source file with a snippet directive, then add that wrapper to <code>properdocs.yml</code>.</p>
+<p>Keep the main navigation focused. If a topic grows into several pages, use a parent nav entry with descriptive subentries.</p>
+<p>The API reference is generated from Python source files by <code>scripts/build_docs.py</code>; do not manually edit generated files under <code>docs/reference/</code>.</p>
+<h3 id="links-and-redirects">Links and redirects</h3>
+<p>All links outside the <code>docs</code> directory are supposed to work on GitHub first:</p>
+<ul>
+<li>Make sure that links that point to files or directories of the repo start with a <code>/</code>, e.g. <code>/docs/CONTRIBUTING-CODE.md</code> or <code>/scripts/docs_hooks.py</code>.</li>
+</ul>
+<p>All links inside the <code>docs</code> directory are supposed to work in the docs first:</p>
+<ul>
+<li>Make sure that links that point to files or directories <em>within</em> the <code>docs</code> do <em>not</em> start with a <code>/</code> and are absolute paths to the <code>/docs/</code> directory as root, e.g. <code>reference/kibad_llm/index.md</code> or <code>USAGE.md</code>.<br></li>
+<li>Make sure that links that point to files or directories <em>within</em> the repo, but <em>outside</em> the <code>/docs/</code> are absolute to the repo root and start with a <code>/</code>, e.g. <code>/properdocs.yml</code>.</li>
+</ul>
+<p>All links that live inside the <code>/docs/</code> directory and that start with <code>/</code> are altered by the <a href="https://github.com/DFKI-NLP/kibad-llm/blob/main/scripts/docs_hooks.py"><code>docs_hooks</code></a> script.</p>
+<p>Some files live outside the <code>/docs/</code> directory, but are hooked into the <code>/docs/</code> by use of a linking file like <a href="https://github.com/DFKI-NLP/kibad-llm/blob/main/docs/data-readme.md"><code>/docs/data-readme.md</code></a>.
+Those files need to have a regex to fix their links in <a href="https://github.com/DFKI-NLP/kibad-llm/blob/main/scripts/docs_hooks.py"><code>/scripts/docs_hooks.py</code></a>. Those regexes are built like so:</p>
+<pre><code>                    Path to source file in repo.
+                    |                             Path to destination in the docs.
+                    |                             |               Keyword for links that point into the docs website.
+                    V                             V               V
+(re.compile(r'href=&quot;/data/readme\.md(#[^&quot;]*)?'), &quot;data-readme/&quot;, &quot;local&quot;),
+</code></pre>
+<p>If a public documentation URL changes, add a redirect in <code>properdocs.yml</code> so existing links keep working. (This is currently not implemented. Requires the package <code>mkdocs-redirects</code>.)</p>
+<p>All links in the docs end up being checked by <a href="https://github.com/lycheeverse/lychee">lychee</a>. If any link is broken, CI will fail and block the PR until you fix the link.</p>
+<p>You can run the lychee test locally through the normal prek run <code>uv run --group cicd prek run -a</code></p>
+<h3 id="building-and-hosting-locally">Building and hosting locally</h3>
+<p>You can build the documentation locally with:</p>
+<pre><code class="language-bash">uv run --group cicd properdocs build -f properdocs.yml
+</code></pre>
+<p>You can build and serve the documentation locally with:</p>
+<pre><code class="language-bash">uv run --group cicd properdocs serve -w .
+# or
+just prop
+</code></pre>
+<h2 id="local-checks-and-ci-commands">Local checks and CI commands</h2>
+<p>To run code quality checks, static type checking and link validation of the docs, call:</p>
+<pre><code class="language-bash">uv run prek run -a
+# if you have not run 'uv sync --group cicd' previously, use instead
+uv run --group cicd prek run -a
+# or
+just prek
+</code></pre>
+<p>This runs all configured <a href="https://prek.j178.dev/">prek</a> hooks (see <a href="https://github.com/DFKI-NLP/kibad-llm/blob/main/.pre-commit-config.yaml">pre-commit-config.yaml</a>) on all files. Some hooks may fix issues automatically, others will report issues that need to be fixed manually.</p>
+<p>To run all Python tests with <code>pytest</code>:</p>
+<pre><code class="language-bash">uv run pytest
+# if you have not run 'uv sync --group cicd' previously, use instead
+uv run --group cicd pytest
+# or
+just pytest
+</code></pre>
+<p>To run the eval-dashboard JavaScript logic tests:</p>
+<pre><code class="language-bash">node --test tests/unit/eval_dashboard/js/*.test.mjs
+# or
+just node-test
+</code></pre>
+<p>This requires a working Node.js installation. The dashboard runtime modules in <code>docs/eval-dashboard/assets/js/</code> are treated as ES modules via the colocated <code>package.json</code> file.</p>
+<p>To run link checking on the docs:</p>
+<pre><code class="language-bash">uv run --group cicd properdocs build
+lychee --config lychee.toml --root-dir ./site &quot;site/**/*.html&quot;
+# or in just one line
+just lychee
+</code></pre>
+<p>This requires a working lychee installation.</p>
+<p>The following commands run on GitHub CI (see <a href="https://github.com/DFKI-NLP/kibad-llm/blob/main/.github/workflows/code_quality_and_tests.yml">code_quality_and_tests.yml</a>), but can also be run locally:</p>
+<p>Use this exact command set before claiming local CI readiness or <code>CONTRIBUTING.md</code> test compliance. Running only the checks for the files you touched is often fine while iterating, but do not present that as a full CI-equivalent run.</p>
+<pre><code class="language-bash">uv run --group cicd prek run -a
+# the '-m &quot;not slow&quot;' bit is residue, to be cleaned up by a future polishing pr
+uv run --group cicd pytest -m &quot;not slow&quot;
+node --test tests/unit/eval_dashboard/js/*.test.mjs
+uv run --group cicd properdocs build
+lychee --config lychee.toml --root-dir ./site &quot;site/**/*.html&quot;
+# or run all of the above with just one line
+just pr
+</code></pre>
+<p>For test design, layout, and fixture regeneration guidance, see <a href="../CONTRIBUTING-CODE/">CONTRIBUTING-CODE.md</a>.</p>
+<h3 id="troubleshooting">Troubleshooting</h3>
+<p><strong>GitHub rate-limiting lychee:</strong><br>
+The link checking done by lychee may be erroring due to rate-limits put in place by GitHub.<br>
+Re-running the command a little later tends to work fine, but is a band-aid fix.<br>
+To avoid the GitHub rate-limits altogether:</p>
+<ol>
+<li>Go to the GitHub <a href="https://github.com/settings/personal-access-tokens">settings</a> and click <code>Generate new token</code></li>
+<li>Give it a name and add the permission <code>Interaction limits</code> (read-only is enough)</li>
+<li>Add the token as <code>GITHUB_TOKEN=...</code> to your .env</li>
+</ol>
+<p><strong>No lychee with old glibc:</strong><br></p>
+<p>If your c standard library (e.g. glibc) is too old, you can't run lychee locally. Therefore you need to tell prek to skip the lychee check:</p>
+<pre><code>SKIP=lychee uv run prek run -a
+</code></pre>
+<h2 id="submodules">Submodules</h2>
+<blockquote>
+<p>[!IMPORTANT]
+This repo uses submodules to reduce its footprint. The history, however, still
+carries a lot of removed files, so a plain <code>git clone</code> downloads all of them.
+To avoid that, pick a lightweight clone strategy — see the two snippets below.</p>
+</blockquote>
+<p>This repo has a single submodule, <code>data/results</code>, which points at the <a href="https://github.com/DFKI-NLP/kibad-llm-results"><code>kibad-llm-results</code></a> repository. Its tracked branch is recorded as <code>branch = main</code> in the <code>.gitmodules</code> file, so the <code>--remote</code> commands below follow the <code>main</code> branch of <code>kibad-llm-results</code>.</p>
+<p><strong><code>--filter=blob:none</code> — recommended for development.</strong> A blobless clone keeps the
+full commit history and directory tree, but fetches file contents lazily on
+demand instead of all at once. History tools (<code>git log</code>, <code>git blame</code>,
+<code>git bisect</code>) work normally, and you never download the removed result files
+unless you explicitly inspect their old contents.</p>
+<pre><code class="language-bash">git clone --filter=blob:none git@github.com:DFKI-NLP/kibad-llm.git
+</code></pre>
+<p><strong><code>--depth 1</code> — lightest, for consuming only.</strong> A shallow clone fetches just the
+latest commit, so it is the fastest and smallest option. It has no history
+(<code>git log</code>/<code>blame</code>/<code>bisect</code> cannot reach back) and only the default branch. Use
+it when you just want to build or run the latest state, not develop against it.</p>
+<pre><code class="language-bash">git clone --depth 1 git@github.com:DFKI-NLP/kibad-llm.git
+</code></pre>
+<ul>
+<li>
+<p>Normal cloning ignores submodules: A normal <code>git clone git@github.com:DFKI-NLP/kibad-llm.git</code> does not clone any submodules and is hence much faster. (Combine with <code>--filter=blob:none</code> or <code>--depth 1</code> from above as needed.)</p>
+</li>
+<li>
+<p>To clone with submodules run: <code>git clone -j8 --recurse-submodules git@github.com:DFKI-NLP/kibad-llm.git</code> with <code>-j</code> specifying the number of submodules fetched simultaneously.</p>
+</li>
+<li>
+<p>To update submodules, or clone submodules in a repo that was cloned without the submodules <code>git submodule update --init --recursive</code></p>
+</li>
+<li>
+<p>You can also do this for one specific submodule by appending <code>-- &lt;path to submodule&gt;</code></p>
+</li>
+<li>
+<p>The <code>kibad-llm</code> repo stores the exact commit to check out for each submodule.</p>
+<ul>
+<li>If you want to clone the <code>kibad-llm</code> repo with all submodule repos with the latest commit instead of the stored one, use <code>git clone -j8 --recurse-submodules --remote-submodules git@github.com:DFKI-NLP/kibad-llm.git</code></li>
+<li>If you want to update/ clone submodules with the latest commit instead of the stored one, use <code>git submodule update --init --recursive --remote</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="submodule-data-changing-flow">Submodule data changing flow</h3>
+<ol>
+<li>enter the submodule and check out a branch to work on: <code>cd data/results &amp;&amp; git switch -c &lt;branch&gt;</code>. A fresh clone leaves the submodule in detached <code>HEAD</code> at the stored commit, so this step is required before you can commit.</li>
+<li>change the files in the submodule, commit them there, and push the branch to <code>kibad-llm-results</code> (<code>git push -u origin &lt;branch&gt;</code>) so the commit is reachable for others and CI.</li>
+<li>back in <code>kibad-llm</code>, stage and commit the updated submodule pointer and push, so the superproject records your new submodule commit.</li>
+</ol>
+<h2 id="misc">Misc</h2>
+<p>If you need to take notes, do so in NOTES.md.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
