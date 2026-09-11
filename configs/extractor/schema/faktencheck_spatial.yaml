@@ -1,0 +1,3 @@
+# create the schema from the pydantic model of EcosystemStudyFeaturesSpatial
+_target_: kibad_llm.schema.types.EcosystemStudyFeaturesSpatial.model_json_schema
+by_alias: false
