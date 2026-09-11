@@ -120,7 +120,7 @@ git pull
 git switch -c experiment/<your_descriptive_experiment_name>
 
 # Add a line for your experiment to the readme.md. No need to fill in the placeholders just yet. Do that when you do have all the info.
-echo '| [<experiment_id>](logs/<experiment_id>) | <yyyy-MM-dd> | https://github.com/DFKI-NLP/kibad-llm/pull/<new_pr_id> | <your_descriptive_text> |' >> readme.md
+echo '| [<experiment_id>](logs/<experiment_id>) | <yyyy-MM-dd> | https://github.com/DFKI-NLP/kibad-llm-results/pull/<new_pr_id> | <your_descriptive_text> |' >> readme.md
 
 # Get an ID for your experiment
 git commit -m "Add stub for experiment in readme.md"
@@ -166,12 +166,12 @@ If the run used cluster-local `logs/` and `predictions/`, copy the relevant arte
 
 ```bash
 # copy predictions
-scp -r <username>@<host>:path/to/kibad-llm/predictions/<name> predictions/
+scp -r <username>@<host>:path/to/kibad-llm/predictions/<experiment_id> predictions/
 ```
 
 ```bash
 # copy prediction logs
-scp -r <username>@<host>:path/to/kibad-llm/logs/<name> logs/
+scp -r <username>@<host>:path/to/kibad-llm/logs/<experiment_id> logs/
 ```
 
 ### Run evaluations
@@ -196,7 +196,7 @@ prediction_logs=[logs/<experiment_id>/predict/multiruns/<timestamp-1>,logs/<expe
 Copy local evaluation outputs to the committed result folder (execute from root of kibad-llm-results if repo is cloned at `kibad-llm:/data/results`):
 
 ```text
-cp -r ../../logs/<experiment_id>/evaluate logs/<name>/evaluate
+cp -r ../../logs/<experiment_id>/evaluate logs/<experiment_id>/evaluate
 ```
 
 ### Inspect results in the eval dashboard
@@ -229,7 +229,7 @@ As mentioned [above](#prepare-the-experiment-folder), you should have already do
 
 ## Finalize the documentation
 
-Add a row to the overview table in [data/results/readme.md](https://github.com/DFKI-NLP/kibad-llm-results/blob/main/readme.md) with:
+Add a row to the overview table in [kibad-llm-results:/readme.md](https://github.com/DFKI-NLP/kibad-llm-results/blob/main/readme.md) with:
 
 - the log folder link,
 - the date,
