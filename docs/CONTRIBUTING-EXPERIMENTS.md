@@ -8,8 +8,11 @@ Use this guide when you create, run, evaluate, or document reproducible experime
 - [Datasets](#datasets)
 - [Planning](#planning)
 - [Execution](#execution)
+    - [Clone the repo](#clone-the-repo)
     - [Choose a name](#choose-a-name)
+    - [Get an ID](#get-an-id)
     - [Prepare the experiment folder](#prepare-the-experiment-folder)
+    - [Step-by-step guide](#step-by-step-guide)
     - [Run predictions](#run-predictions)
     - [Run evaluations](#run-evaluations)
     - [Inspect results in the eval dashboard](#inspect-results-in-the-eval-dashboard)
@@ -34,50 +37,64 @@ storage locations.
 
 Before starting a new experiment:
 
-- Check the existing overview table in [kibad-llm-results/readme.md](https://github.com/DFKI-NLP/kibad-llm-results/blob/main/readme.md). Use the latest related experiments as references for naming, command structure, folder layout, and result documentation.
+- Check the existing overview table in [kibad-llm-results:/readme.md](https://github.com/DFKI-NLP/kibad-llm-results/blob/main/readme.md). Use the latest related experiments as references for naming, command structure, folder layout, and result documentation.
 - Prefer a dedicated config under `configs/experiment/` when the setup is not trivial.
 - Decide which input datasets (pdf directory) and ground truth files you need
 - Keep predictions and evaluations scoped to the research question you want to answer.
 - Decide which prediction and evaluation commands are needed before creating result artefacts.
 
-## Preparation
-
-Make sure that the `/data/results` submodule is cloned and checked out on a new branch for the experiment.
-See [submodules](CONTRIBUTING.md#submodules) for general instructions and refer to this section for the [submodule data changing flow](CONTRIBUTING.md#submodule-data-changing-flow).
-
 ## Execution
+
+### Clone the repo
+
+Experiments belong in the [kibad-llm-results](https://github.com/DFKI-NLP/kibad-llm-results) repo.
+It is recommended to clone into /data/results of the kibad-llm repo.
+
+```bash
+# from the kibad-llm repo root
+git clone git@github.com:DFKI-NLP/kibad-llm-results.git ./data/results
+```
 
 ### Choose a name
 
-> [!TIP]
-> Create a draft PR early in the experiment process to get the PR ID before naming run outputs.
+Choose a descriptive experiment name for your branch:
 
-Choose a descriptive experiment name:
+```text
+experiment/[descriptive_text]
+```
+
+### Get an ID
+
+Add your new experiment to the [kibad-llm-results:/readme.md](https://github.com/DFKI-NLP/kibad-llm-results/blob/main/readme.md), commit, push, and create a PR.
+
+Use the PR ID to form your experiments ID. Make sure to pad the ID to be triple digits.
 
 ```text
 [pr_id]_[descriptive_text]
+example:
+012_reasoning_vs_no_reasoning
 ```
 
 > [!IMPORTANT]
-> Use the same `name` value in every `predict` and `evaluate` command that belongs to the experiment.
+> Use the same `experiment_id` value in every `predict` and `evaluate` command that belongs to the experiment.
 
-The name determines the experiment subfolders under:
+The experiment_id determines the experiment subfolders under:
 
-- `logs/<name>` for run logs,
-- `predictions/<name>` for generated prediction outputs, and
-- `data/results/logs/<name>` and `data/results/predictions/<name>` for committed result artefacts.
+- `logs/<experiment_id>` for run logs,
+- `predictions/<experiment_id>` for generated prediction outputs, and
+- `data/results/logs/<experiment_id>` and `data/results/predictions/<experiment_id>` for committed result artefacts.
 
 ### Prepare the experiment folder
 
 Create the committed result folder:
 
 ```bash
-mkdir -p data/results/logs/<name>
+mkdir -p data/results/logs/<experiment_id>
 ```
 
-Create the experiment readme `data/results/logs/<name>/readme.md` with:
+Create the experiment readme `data/results/logs/<experiment_id>/readme.md` with:
 
-- a first-level heading with the experiment name, for example `# 481_faktencheck_core`,
+- a first-level heading with the experiment_id
 - a short description of the goal, motivation, and hypothesis,
 - a `Prediction` section when prediction commands were run,
 - an `Evaluation` section when evaluation commands were run, and
@@ -91,66 +108,35 @@ result location: logs/481_faktencheck_core/evaluate/multiruns/2026-05-26_14-21-1
 
 ### Step-by-step Guide
 
-Since the process for preparing the branches in the main repo and submodule is a bit tricky, here is a step-by-step
-guide of bash commands, up to and including the creation of experiment readme. We assume that you name the
-branch `experiment/your_descriptive_experiment_name` as chosen above, i.e. `[pr_id]_[descriptive_text]`. However,
-this requires that you know the PR id before you can actually create the PR, see the optional instruction below. Feel
-free to name the branch using a `descriptive_experiment_name` that does not include the PR id.
-
-**Optional:** To get the 'correct' PR ID before committing and creating a PR, have a look at the **open and closed**
-[Issues](https://github.com/DFKI-NLP/kibad-llm/issues) and [Pull Requests](https://github.com/DFKI-NLP/kibad-llm/pulls), and use as
-your PR ID max(issue_ids,pull_request_ids) + 1 (Github issue and PR ids use the same counter).
-However, this can be error-prone, so it's fine to name the branch without the `pr_id`.
+Set up the kibad-llm-results like so:
 
 ```bash
-cd <path/to/kibad-llm>
+cd <path/to/kibad-llm-results>
 
 # Get clean, up-to-date copy of main
 git checkout main
 git pull
-cd data/results
-git checkout main
-git pull
-cd ../..
-# Create branches
-# <your_descriptive_experiment_name> = [pr_id]_[descriptive_text]
-# new_pr_id = max(open_or_closed_issue_id_in_kibad_llm OR open_or_closed_pr_id_in_kibad_llm) + 1
-# since this is error-prone, you can leave away the pr_id part
-git switch -c experiment/<your_descriptive_experiment_name>
-cd data/results
+# Create branch
 git switch -c experiment/<your_descriptive_experiment_name>
 
-# Add empty readme.md and push branches upstream
-mkdir -p logs/<your_descriptive_experiment_name>
-touch logs/<your_descriptive_experiment_name>/README.md
-git add logs/<your_descriptive_experiment_name>/README.md
-git commit -m "initial commit of experiment branch"
-git push --set-upstream origin experiment/<your_descriptive_experiment_name>
-cd ../..
-git add data/results
-git commit -m "initial commit of experiment branch"
-git push --set-upstream origin experiment/<your_descriptive_experiment_name>
+# Add a line for your experiment to the readme.md. No need to fill in the placeholders just yet. Do that when you do have all the info.
+echo '| [<experiment_id>](logs/<experiment_id>) | <yyyy-MM-dd> | https://github.com/DFKI-NLP/kibad-llm-results/pull/<new_pr_id> | <your_descriptive_text> |' >> readme.md
+
+# Get an ID for your experiment
+git commit -m "Add stub for experiment in readme.md"
+git push
+# Create PR to get your experiment_id: [pr_id]_[your_descriptive_experiment_name]. Make sure the ID is padded with 0 to triple digits.
 ```
 
-- Go to https://github.com/DFKI-NLP/kibad-llm -> Create new draft PR
+- Edit `kibad-llm-results:/logs/<experiment_id>/README.md` as described [above](#prepare-the-experiment-folder)
 
-- Go to https://github.com/DFKI-NLP/kibad-llm-results/ -> Create new draft PR that references the kibad-llm PR in the description
-
-- Edit `data/results/logs/experiment/<your_descriptive_experiment_name>/README.md` as described [above](https://github.com/DFKI-NLP/kibad-llm/blob/main/docs/CONTRIBUTING-EXPERIMENTS.md#prepare-the-experiment-folder)
-
-- Add a line to [data/results/readme.md](https://github.com/DFKI-NLP/kibad-llm-results/blob/main/readme.md):
-
-    `| [<your_descriptive_experiment_name>](logs/<your_descriptive_experiment_name>) | <yyyy-MM-dd> | https://github.com/DFKI-NLP/kibad-llm/pull/<new_pr_id> | <your_descriptive_text> |`
+- Finalize your line in [kibad-llm-results:/readme.md](https://github.com/DFKI-NLP/kibad-llm-results/blob/main/readme.md):
 
 ```bash
 # Add updated readme's
-cd data/results
-git add logs/<your_descriptive_experiment_name>/README.md
+cd <path/to/kibad-llm-results>
+git add logs/<experiment_id>/README.md
 git add readme.md
-git commit -m "update readme"
-git push
-cd ../..
-git add data/results
 git commit -m "update readme"
 git push
 ```
@@ -165,7 +151,7 @@ Always pass the shared experiment name:
 ./run_in_process.sh \
 -pa "H100-SLT,H100-Trails,H100,A100-80GB" \
 -u "-m kibad_llm.predict \
-       name=<name> \
+       name=<experiment_id> \
        experiment/predict=<predict_experiment_config> \
        pdf_directory=<pdf_directory> \
        extractor/llm=<llm_config> \
@@ -180,12 +166,12 @@ If the run used cluster-local `logs/` and `predictions/`, copy the relevant arte
 
 ```bash
 # copy predictions
-scp -r <username>@<host>:path/to/kibad-llm/predictions/<name> predictions/
+scp -r <username>@<host>:path/to/kibad-llm/predictions/<experiment_id> predictions/
 ```
 
 ```bash
 # copy prediction logs
-scp -r <username>@<host>:path/to/kibad-llm/logs/<name> logs/
+scp -r <username>@<host>:path/to/kibad-llm/logs/<experiment_id> logs/
 ```
 
 ### Run evaluations
@@ -195,22 +181,22 @@ Run evaluation commands locally from within `data/results` so they only use comm
 ```bash
 cd data/results
 uv run -m kibad_llm.evaluate \
-name=<name> \
+name=<experiment_id> \
 experiment/evaluate=<evaluate_experiment_config> \
-prediction_logs=logs/<name>/predict \
+prediction_logs=logs/<experiment_id>/predict \
 --multirun
 ```
 
-To evaluate selected prediction runs instead of every run under `logs/<name>/predict`, pass explicit prediction log paths:
+To evaluate selected prediction runs instead of every run under `logs/<experiment_id>/predict`, pass explicit prediction log paths:
 
 ```bash
-prediction_logs=[logs/<name>/predict/multiruns/<timestamp-1>,logs/<name>/predict/multiruns/<timestamp-2>]
+prediction_logs=[logs/<experiment_id>/predict/multiruns/<timestamp-1>,logs/<experiment_id>/predict/multiruns/<timestamp-2>]
 ```
 
-Copy local evaluation outputs to the committed result folder (execute from `data/results`):
+Copy local evaluation outputs to the committed result folder (execute from root of kibad-llm-results if repo is cloned at `kibad-llm:/data/results`):
 
 ```text
-cp -r ../../logs/<name>/evaluate logs/<name>/evaluate
+cp -r ../../logs/<experiment_id>/evaluate logs/<experiment_id>/evaluate
 ```
 
 ### Inspect results in the eval dashboard
@@ -218,13 +204,17 @@ cp -r ../../logs/<name>/evaluate logs/<name>/evaluate
 Open the [eval dashboard](https://dfki-nlp.github.io/kibad-llm/eval-dashboard-docs/) and load the new evaluation data, usually:
 
 ```text
-data/results/logs/<name>/evaluate
+kibad-llm-results:/logs/<experiment_id>/evaluate
+# if repo is cloned at kibad-llm:/data/results:
+/data/results/logs/<experiment_id>/evaluate
 ```
 
 Configure the dashboard so the experiment hypothesis is easy to verify or reject. Download selected figures into:
 
 ```text
-data/results/logs/<name>/figures/
+kibad-llm-results:/logs/<experiment_id>/figures/
+# if repo is cloned at kibad-llm:/data/results:
+/data/results/logs/<experiment_id>/figures
 ```
 
 > [!TIP]
@@ -239,7 +229,7 @@ As mentioned [above](#prepare-the-experiment-folder), you should have already do
 
 ## Finalize the documentation
 
-Add a row to the overview table in [data/results/readme.md](https://github.com/DFKI-NLP/kibad-llm-results/blob/main/readme.md) with:
+Add a row to the overview table in [kibad-llm-results:/readme.md](https://github.com/DFKI-NLP/kibad-llm-results/blob/main/readme.md) with:
 
 - the log folder link,
 - the date,
@@ -252,5 +242,5 @@ Top-level `logs/` and `predictions/` are local or cluster run locations. They sh
 
 Committed experiment artefacts belong under:
 
-- `data/results/logs/<name>` for logs, evaluation outputs, experiment documentation, and figures,
-- `data/results/predictions/<name>` for copied prediction outputs, when prediction was part of the experiment.
+- `kibad-llm-results:/logs/<experiment_id>` for logs, evaluation outputs, experiment documentation, and figures,
+- `kibad-llm-results:/predictions/<experiment_id>` for copied prediction outputs, when prediction was part of the experiment.
