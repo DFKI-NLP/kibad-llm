@@ -40,7 +40,7 @@ dependencies = [
     "jupyter>=1.1.1,<2.0.0", # to run jupyter notebooks
     "matplotlib>=3.10.8,<4.0.0", # to run eval notebook (create plots)
     "types-regex>=2026.1.15.20260116",
-    "langdetect>=1.0.9",
+    "langdetect>=1.0.9,<2.0.0",  # to run test set stats notebook (estimate language distribution)
 ]
 
 [dependency-groups]
