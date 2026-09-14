@@ -7,7 +7,7 @@ Use this guide when you create, run, evaluate, or document reproducible experime
 - [Setup](#setup)
 - [Datasets](#datasets)
 - [Planning](#planning)
-- [Execution](#execution)
+- [Preparation](#preparation)
     - [Clone the repo](#clone-the-repo)
     - [Choose a name](#choose-a-name)
     - [Get an ID](#get-an-id)
@@ -107,6 +107,7 @@ result location: logs/481_faktencheck_core/evaluate/multiruns/2026-05-26_14-21-1
 ```
 
 ### Step-by-step Guide
+
 This section repeats the above, but put into the commands to execute.
 
 Set up the kibad-llm-results like so:
