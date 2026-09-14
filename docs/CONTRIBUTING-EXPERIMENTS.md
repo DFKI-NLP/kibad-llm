@@ -43,7 +43,7 @@ Before starting a new experiment:
 - Keep predictions and evaluations scoped to the research question you want to answer.
 - Decide which prediction and evaluation commands are needed before creating result artefacts.
 
-## Execution
+## Preparation
 
 ### Clone the repo
 
@@ -60,7 +60,7 @@ git clone git@github.com:DFKI-NLP/kibad-llm-results.git ./data/results
 Choose a descriptive experiment name for your branch:
 
 ```text
-experiment/[descriptive_text]
+git switch -c experiment/<descriptive_text>
 ```
 
 ### Get an ID
@@ -107,6 +107,7 @@ result location: logs/481_faktencheck_core/evaluate/multiruns/2026-05-26_14-21-1
 ```
 
 ### Step-by-step Guide
+This section repeats the above, but put into the commands to execute.
 
 Set up the kibad-llm-results like so:
 
