@@ -13,6 +13,7 @@ Use this guide when you create, run, evaluate, or document reproducible experime
     - [Get an ID](#get-an-id)
     - [Prepare the experiment folder](#prepare-the-experiment-folder)
     - [Step-by-step guide](#step-by-step-guide)
+- [Execution](#execution)
     - [Run predictions](#run-predictions)
     - [Run evaluations](#run-evaluations)
     - [Inspect results in the eval dashboard](#inspect-results-in-the-eval-dashboard)
@@ -142,6 +143,8 @@ git add readme.md
 git commit -m "update readme"
 git push
 ```
+
+## Execution
 
 ### Run predictions
 
