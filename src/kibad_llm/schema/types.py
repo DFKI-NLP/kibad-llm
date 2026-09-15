@@ -235,6 +235,34 @@ class TransformationPotentialEnum(str, Enum):
     LEBENSRAUMUEBERGREIFENDER_WANDLUNGSPROZESS = "Lebensraumübergreifender Wandlungsprozess"
 
 
+class EinflussEnum(str, Enum):
+    JA = "ja"
+    NEG = "neg"
+    NEIN = "nein"
+    NEU = "neu"
+    NICHT_LINEAR = "nicht linear"
+    POS = "pos"
+
+
+class ThemenkomplexEnum(str, Enum):
+    KOHLENSTOFFKREISLAUF = "Kohlenstoffkreislauf"
+    KULTURELLE_LEISTUNGEN = "Kulturelle Leistungen"
+    STABILITAET_UND_RESILIENZ = "Stabilität und Resilienz"
+
+
+class BiodiversityFacetEnum(str, Enum):
+    ARTENVIELFALT = "Artenvielfalt"
+    ARTENZUSAMMENSETZUNG = "Artenzusammensetzung"
+    ARTIDENTITAET = "Artidentität"
+    ARTZUSAMMENSETZUNG = "Artzusammensetzung"
+    FUNKTIONELLE_DIVERSITAET = "Funktionelle Diversität"
+    GENETISCHE_DIVERSITAET = "Genetische Diversität"
+    KOMPOSITINDIKATOR = "Kompositindikator"
+    LANDSCHAFTSDIVERSITAET = "Landschaftsdiversität"
+    LANDSCHAFTSTYP = "Landschaftstyp"
+    STRUKTURELLE_DIVERSITAET = "Strukturelle Diversität"
+
+
 class EcosystemType(CompoundFeature):
     """Ökosystemtyp mit Kategorie, Name und Beschreibung."""
 
@@ -1381,4 +1409,68 @@ class EcosystemStudyFeaturesCompoundsSimple(BaseEcosystemStudyFeatures):
     )
 
 
-# ==========================================================================
+class EcosystemServiceFields(CompoundFeature):
+    """Ein einzelner Zusammenhang zwischen Biodiversität und Ökosystemleistung, bestehend aus
+    Einfluss (influence), Themenkomplex (theme_complex), Ökosystemleistung (ecosystem_service),
+    Biodiv-Facette (biodiversity_facet), Lebensraum (habitat), Art(en) (taxa). Ein Text kann mehrere
+    solcher Zusammenhänge beschreiben; jede Instanz bildet genau einen davon ab, analog zu einer
+    einzelnen Zeile in der ÖSL-VoteCount-Vollständig.csv-Datei.
+    """
+
+    # The fields below are based ÖSL-VoteCount-Vollständig.xlsx file.
+    # We use the column names as field names so that no post-processing is needed.
+    # influence, theme_complex, ecosystem_service and biodiversity_facet are single-valued and
+    # required per relationship (every row of the source data has exactly one value for each);
+    # multiple relationships in one text are represented as multiple EcosystemServiceFields
+    # instances, not by stacking values within a single instance.
+    influence: EinflussEnum = Field(
+        ...,
+        alias="Einfluss",
+        description="Was ist der gemessene Einfluss der Ökosystemleistung in der Studie auf Biodiversität von den "
+        "folgenden Optionen?",  # needs explanation of the terms
+    )
+    theme_complex: ThemenkomplexEnum = Field(
+        ...,
+        alias="Themenkomplex",
+        description="Welcher dieser Themenkomplexe wird in der Studie betrachtet?",
+    )
+    ecosystem_service: str = Field(
+        ...,
+        alias="Ökosystemleistung",
+        description="Welche Ökosystemleistung wird in der Studie betrachtet?",
+    )
+    biodiversity_facet: BiodiversityFacetEnum = Field(
+        ...,
+        alias="Biodiv-Facette",
+        description="Welche dieser Biodiversitätsfacetten wird in der Studie betrachtet?",
+    )
+    habitat: list[HabitatEnum] = Field(
+        default_factory=list,
+        alias="Lebensraum",
+        description="Um welchen der folgenden Lebensräume oder um welche Kombination "
+        "der folgenden Lebensräume geht es in dem Text?",
+    )
+    taxa: str | None = Field(
+        default=None,
+        alias="Art(en)",
+        description="Welche Arten bzw. Artengruppen werden in der Studie untersucht? Verwende die kleinste "
+        "machbare Ebene: Wenn eine Studie nur wenige Arten behandelt, sollten diese auf Artebene mit ihrem "
+        "wissenschaftlichen und deutschen Namen angegeben werden. Werden jedoch sehr viele Arten "
+        "behandelt oder eine Artengruppe besprochen, wird die Artengruppe als 'Sammelbegriff' angegeben. "
+        "Falls die Studie auf englisch ist, übersetze Art- bzw. Artengruppennamen ins Deutsche. "
+        "Ergänze, wenn nicht angegeben, die wissenschaftlichen Artennamen, und umgekehrt die "
+        "deutschen Namen, wenn nur die wissenschaftlichen Artennamen verwendet wurden. ",
+    )
+
+
+class EcosystemStudyEcosystemServiceTrends(BaseEcosystemStudyFeatures):
+    """Angaben zu den im Text beschriebenen Zusammenhängen zwischen Biodiversität und
+    Ökosystemleistungen.
+    """
+
+    ecosystem_service_trends: list[EcosystemServiceFields] = Field(
+        default_factory=list,
+        alias="Zusammenhänge zwischen Biodiversität und Ökosystemleistungen",
+        description="Liste der im Text beschriebenen Zusammenhänge zwischen Biodiversität und "
+        "Ökosystemleistungen.",
+    )

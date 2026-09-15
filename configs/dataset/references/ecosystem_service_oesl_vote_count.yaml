@@ -1,0 +1,20 @@
+# TODO (not yet functional): unlike the organism trends vote count CSV, this source file has no
+# document-ID column (only authors/title/year/doi/Quelle), so `pdf_id_column` below does not exist
+# in the CSV. A document ID compatible with how predictions are keyed (see
+# configs/dataset/predictions/extraction_result.yaml, which matches on Zotero item keys) needs to
+# be added to the CSV, or produced via a preprocessing/matching step, before this reader will work.
+# TODO: the raw CSV column headers ("Einfluss", "ÖSL", "Biodiv-Facette", "Art(en)", ...) also don't
+# match the `EcosystemServiceFields` field names used in predictions ("influence",
+# "ecosystem_service", "biodiversity_facet", "taxa", ...), since predictions are generated with
+# by_alias: false. Columns will need to be renamed to the field names for evaluation to line up.
+_target_: kibad_llm.dataset.csv.read_grouped_csv_records
+output_key: ecosystem_service_trends
+file: "${paths.root_dir}/data/external/ecosystem_services/ÖSL-VoteCount-Vollständig.csv"
+pdf_id_column: "Key"
+columns:
+  - Einfluss
+  - Themenkomplex
+  - ÖSL
+  - Biodiv-Facette
+  - Lebensraum
+  - Art(en)

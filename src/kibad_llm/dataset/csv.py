@@ -6,23 +6,26 @@ def remove_nan_from_dict(d: dict) -> dict:
     return {k: v for k, v in d.items() if not pd.isna(v)}
 
 
-def read_organism_trends(
+def read_grouped_csv_records(
     file: str,
+    output_key: str,
     pdf_id_column: str = "Key",
     columns: list[str] | None = None,
     remove_nan: bool = True,
 ) -> dict[str, dict[str, list]]:
-    """Read organism trends from a CSV file. There are multiple trends per pdf ID,
-    so they are grouped into lists.
+    """Read grouped compound entries (e.g. organism trends, ecosystem service trends) from a CSV
+    file. There are multiple entries per pdf ID, so they are grouped into lists.
 
     Args:
         file: Path to the CSV file.
+        output_key: The key under which the list of entries is stored for each pdf ID. This should
+                    match the corresponding field name in the target schema.
         pdf_id_column: Name of the column containing the pdf IDs.
-        remove_nan: Whether to remove NaN values from the dictionaries.
         columns: Optional list of columns to read from the CSV file. If not provided,
                  all columns are read.
+        remove_nan: Whether to remove NaN values from the dictionaries.
     Returns:
-        A dictionary mapping pdf IDs to their organism trends each represented as a list of dictionaries.
+        A dictionary mapping pdf IDs to their entries each represented as a list of dictionaries.
     """
     if columns is not None and pdf_id_column not in columns:
         columns = [pdf_id_column] + columns
@@ -36,6 +39,6 @@ def read_organism_trends(
         group_dicts = group.to_dict("records")
         if remove_nan:
             group_dicts = [remove_nan_from_dict(d) for d in group_dicts]
-        result[str(pdf_id)] = {"organism_trends": group_dicts}
+        result[str(pdf_id)] = {output_key: group_dicts}
 
     return result
