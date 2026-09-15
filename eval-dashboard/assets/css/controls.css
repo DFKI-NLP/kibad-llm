@@ -1,0 +1,385 @@
+.text-control {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 8px;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.control-row .text-control {
+  flex: 1 1 260px;
+  min-width: 220px;
+}
+
+.control-row button {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.tab-button {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.tab-button.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent) inset;
+}
+
+input[type="file"],
+input[type="checkbox"] {
+  accent-color: var(--accent);
+}
+
+.eval-json-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.eval-json-tab-button {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  border-radius: 6px;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-size: 0.86rem;
+}
+
+.eval-json-tab-button.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent) inset;
+}
+
+.expand-button {
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  border-radius: 4px;
+  width: 28px;
+  height: 24px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.group-toggle {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 4px;
+  font-size: 0.74rem;
+  color: var(--muted);
+  user-select: none;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.header-static-control,
+.header-select-control,
+.header-column-control {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.header-caption {
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1;
+}
+
+.header-sort-button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  padding: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.header-sort-button:hover {
+  color: var(--accent);
+}
+
+.header-sort-button.active {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.header-sort-indicator {
+  font-size: 0.78rem;
+  color: var(--muted);
+  line-height: 1;
+}
+
+.header-sort-button.active .header-sort-indicator {
+  color: inherit;
+}
+
+.prediction-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 8px 0;
+}
+
+.sort-status-value {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.sort-status-hint {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.prediction-action-button {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  border-radius: 6px;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.prediction-action-button.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent) inset;
+}
+
+.options-panel {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-2);
+  padding: 8px;
+  margin: 8px 0;
+}
+
+.options-summary {
+  font-weight: 700;
+  cursor: pointer;
+  user-select: none;
+  padding: 2px 0;
+}
+
+.options-summary::marker {
+  color: var(--muted);
+}
+
+.options-heading {
+  font-weight: 700;
+  padding: 2px 0;
+  margin-bottom: 8px;
+}
+
+.options-content {
+  margin-top: 8px;
+}
+
+.options-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.options-tab-button {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  border-radius: 6px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.options-tab-button.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent) inset;
+  background: color-mix(in srgb, var(--surface-2) 75%, var(--surface));
+}
+
+.options-tab-panel {
+  display: none;
+}
+
+.options-tab-panel.active {
+  display: block;
+}
+
+.truncate-panel-title {
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.truncate-controls {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.truncate-controls-main {
+  flex: 1 1 680px;
+  min-width: 320px;
+}
+
+#truncateColumnsList,
+#evalTruncateColumnsList,
+#predictionDefaultsList,
+#evalDefaultsList {
+  width: 100%;
+  box-sizing: border-box;
+  max-height: 150px;
+  overflow: auto;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  align-content: flex-start;
+}
+
+/* Eval options have no right-side panel, so let the chips column fully own the row width. */
+#evalOptionsPanelTruncate .truncate-controls {
+  justify-content: flex-start;
+}
+
+#evalOptionsPanelTruncate .truncate-controls-main {
+  flex: 1 1 100%;
+  min-width: 0;
+}
+
+.truncate-item {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  white-space: nowrap;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 2px 7px;
+  line-height: 1.1;
+  background: color-mix(in srgb, var(--surface) 90%, var(--surface-2));
+}
+
+.truncate-controls-side {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 220px;
+  max-width: 320px;
+  padding-left: 12px;
+}
+
+.truncate-controls button {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.missing-default-item {
+  display: grid;
+  grid-template-columns: minmax(180px, 320px) minmax(220px, 1fr);
+  gap: 8px;
+  align-items: center;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--surface) 92%, var(--surface-2));
+}
+
+.missing-default-label {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.missing-default-label strong,
+.missing-default-label span {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.missing-default-meta {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.missing-default-input {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+
+.missing-default-empty {
+  color: var(--muted);
+  font-style: italic;
+  padding: 4px 2px;
+}
+
+.export-option-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  user-select: none;
+  cursor: pointer;
+}
+
+.plot-number-input {
+  width: 70px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  border-radius: 6px;
+  padding: 4px 6px;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 980px) {
+  .truncate-controls-side {
+    border-top: 0;
+    padding-left: 0;
+    padding-top: 10px;
+    max-width: none;
+    width: 100%;
+  }
+
+  .missing-default-item {
+    grid-template-columns: 1fr;
+  }
+}
