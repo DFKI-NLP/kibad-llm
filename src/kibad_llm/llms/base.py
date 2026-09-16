@@ -20,25 +20,25 @@ class RawMessageExtractionError(Exception):
 class MissingResponseContentError(Exception):
     """Raised when the LLM response message has no content."""
 
-    ...
+    pass
 
 
 class EmptyResponseMessageError(Exception):
     """Raised when the LLM response message is empty."""
 
-    ...
+    pass
 
 
 class ReasoningExtractionError(Exception):
     """Raised when reasoning cannot be extracted from the LLM response message."""
 
-    ...
+    pass
 
 
 class EmptyReasoningError(Exception):
     """Raised when the extracted reasoning is empty."""
 
-    ...
+    pass
 
 
 @dataclasses.dataclass
