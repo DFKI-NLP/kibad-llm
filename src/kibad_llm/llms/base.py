@@ -43,11 +43,18 @@ class EmptyReasoningError(Exception):
 
 @dataclasses.dataclass
 class SimpleChatMessage:
+    """Distilled 
+
+    Attributes:
+        role: Role of the actor who wrote the content. user or ...? TODO
+        content: Written content, meaning chat output, of the SimpleChatMessage
+    """
     role: MessageRole
     content: str
 
 
 class LLM(ABC):
+    """Base class for LLM interaction."""
 
     @abstractmethod
     def call_llm_chat_with_guided_decoding(
