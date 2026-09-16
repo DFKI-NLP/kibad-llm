@@ -11,7 +11,6 @@ Classes:
     LLM:
 """
 
-
 from abc import ABC, abstractmethod
 import dataclasses
 from typing import Any
@@ -63,6 +62,7 @@ class SimpleChatMessage:
         role: Role of the actor who wrote the content. user, system, or assistant.
         content: Written content, meaning chat output, of the SimpleChatMessage.
     """
+
     role: MessageRole
     content: str
 
@@ -92,14 +92,14 @@ class LLM(ABC):
         """Extract raw message from a chat response.
 
         Args:
-            response: 
+            response:
 
         Returns:
-            
+
 
         Raises:
-            MissingRawChatResponseError: 
-            RawMessageExtractionError: 
+            MissingRawChatResponseError:
+            RawMessageExtractionError:
         """
 
         raw = response.raw
@@ -118,13 +118,13 @@ class LLM(ABC):
         """Extract reasoning from a chat response.
 
         Args:
-            response: 
+            response:
 
         Returns:
-            
+
 
         Raises:
-            NotImplementedError: 
+            NotImplementedError:
         """
         raise NotImplementedError(
             f"get_reasoning_from_chat_response() is not implemented for {type(self)}"
@@ -134,14 +134,14 @@ class LLM(ABC):
         """Extract content from chat response.
 
         Args:
-            response: 
+            response:
 
         Returns:
-            
+
 
         Raises:
-            MissingResponseContentError: 
-            EmptyResponseMessageError: 
+            MissingResponseContentError:
+            EmptyResponseMessageError:
         """
         response_content = response.message.content
         if response_content is None:
