@@ -1,3 +1,17 @@
+"""TODO
+
+Classes:
+    MissingRawChatResponseError:
+    RawMessageExtractionError:
+    MissingResponseContentError:
+    EmptyResponseMessageError:
+    ReasoningExtractionError:
+    EmptyReasoningError:
+    SimpleChatMessage:
+    LLM:
+"""
+
+
 from abc import ABC, abstractmethod
 import dataclasses
 from typing import Any
@@ -43,18 +57,25 @@ class EmptyReasoningError(Exception):
 
 @dataclasses.dataclass
 class SimpleChatMessage:
-    """Distilled 
+    """Simplified representation of a chat message.
 
     Attributes:
-        role: Role of the actor who wrote the content. user or ...? TODO
-        content: Written content, meaning chat output, of the SimpleChatMessage
+        role: Role of the actor who wrote the content. user, system, or assistant.
+        content: Written content, meaning chat output, of the SimpleChatMessage.
     """
     role: MessageRole
     content: str
 
 
 class LLM(ABC):
-    """Base class for LLM interaction."""
+    """Base class for LLM interaction.
+
+    Methods:
+        call_llm_chat_with_guided_decoding: TODO
+        get_raw_message_from_chat_response: TODO
+        get_reasoning_from_chat_response: TODO
+        get_response_content_from_chat_response: TODO
+    """
 
     @abstractmethod
     def call_llm_chat_with_guided_decoding(
@@ -68,7 +89,18 @@ class LLM(ABC):
         ...
 
     def get_raw_message_from_chat_response(self, response: ChatResponse) -> Any:
-        """Extract raw message from a chat response."""
+        """Extract raw message from a chat response.
+
+        Args:
+            response: 
+
+        Returns:
+            
+
+        Raises:
+            MissingRawChatResponseError: 
+            RawMessageExtractionError: 
+        """
 
         raw = response.raw
         if raw is None:
@@ -83,14 +115,34 @@ class LLM(ABC):
             )
 
     def get_reasoning_from_chat_response(self, response: ChatResponse) -> str | None:
-        """Extract reasoning from a chat response."""
+        """Extract reasoning from a chat response.
+
+        Args:
+            response: 
+
+        Returns:
+            
+
+        Raises:
+            NotImplementedError: 
+        """
         raise NotImplementedError(
             f"get_reasoning_from_chat_response() is not implemented for {type(self)}"
         )
 
     def get_response_content_from_chat_response(self, response: ChatResponse) -> str:
-        """Extract content from chat response."""
+        """Extract content from chat response.
 
+        Args:
+            response: 
+
+        Returns:
+            
+
+        Raises:
+            MissingResponseContentError: 
+            EmptyResponseMessageError: 
+        """
         response_content = response.message.content
         if response_content is None:
             raise MissingResponseContentError("LLM response is missing content.")
