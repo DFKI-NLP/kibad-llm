@@ -6,14 +6,15 @@ schema JSON or a readable description when the template references the correspon
 `LLM` also defines the chat call and access to response content, reasoning, and metadata.
 
 Classes:
-    MissingRawChatResponseError:
-    RawMessageExtractionError:
-    MissingResponseContentError:
-    EmptyResponseMessageError:
-    ReasoningExtractionError:
-    EmptyReasoningError:
-    SimpleChatMessage:
-    LLM:
+    MissingRawChatResponseError: Raised when a ChatResponse is missing the raw attribute.
+    RawMessageExtractionError: Raised when a message cannot be extracted from a ChatResponse raw attribute.
+    MissingResponseContentError: Raised when the LLM response message has no content.
+    EmptyResponseMessageError: Raised when the LLM response message is empty.
+    ReasoningExtractionError: Raised when reasoning cannot be extracted from the LLM response message.
+    EmptyReasoningError: Raised when the extracted reasoning is empty.
+    SimpleChatMessage: Simplified representation of a chat message.
+    LLM: Base class for LLM interaction. This class defines the project internal LLM API.
+
 """
 
 from abc import ABC, abstractmethod
@@ -192,14 +193,14 @@ class LLM(ABC):
         """Extract raw message from a chat response.
 
         Args:
-            response:
+            response: A ChatResponse to extract the raw message from.
 
-        Returns:
+        Returns: The raw message embedded in the provided ChatResponse.
 
 
         Raises:
-            MissingRawChatResponseError:
-            RawMessageExtractionError:
+            MissingRawChatResponseError: Raised if the ChatResponse is missing the raw attribute.
+            RawMessageExtractionError: Raised if the raw message cannot be extracted.
         """
 
         raw = response.raw
@@ -218,13 +219,13 @@ class LLM(ABC):
         """Extract reasoning from a chat response.
 
         Args:
-            response:
+            response: A ChatResponse to extract the reasoning from.
 
-        Returns:
+        Returns: The reasoning embedded in the provided ChatResponse.
 
 
         Raises:
-            NotImplementedError:
+            NotImplementedError: This is a stub that needs to be implemented per backend, if the backend supports it.
         """
         raise NotImplementedError(
             f"get_reasoning_from_chat_response() is not implemented for {type(self)}"
@@ -265,14 +266,14 @@ class LLM(ABC):
         """Extract content from chat response.
 
         Args:
-            response:
+            response: A ChatResponse to extract the content from.
 
-        Returns:
+        Returns: The reasoning embedded in the provided ChatResponse.
 
 
         Raises:
-            MissingResponseContentError:
-            EmptyResponseMessageError:
+            MissingResponseContentError: Raised if the ChatResponse carries no content.
+            EmptyResponseMessageError: Raised if the ChatResponse carries an empty message as content.
         """
         response_content = response.message.content
         if response_content is None:
