@@ -39,6 +39,27 @@ def test_read_grouped_csv_records_custom_output_key() -> None:
     assert list(result[key].keys()) == ["ecosystem_service_trends"]
 
 
+def test_read_grouped_csv_records_split_columns() -> None:
+    result = read_grouped_csv_records(
+        "data/external/ecosystem_services/ösl_papers_ids.csv",
+        output_key="ecosystem_service_trends",
+        columns=["Lebensraum_Gruppiert"],
+        split_columns={"Lebensraum_Gruppiert": ", "},
+    )
+    # "62Y3AKIQ" has a single source row with "Lebensraum_Gruppiert" == "Agrar- und Offenland, Wald",
+    # which should be split into two separate entries.
+    assert result["62Y3AKIQ"] == {
+        "ecosystem_service_trends": [
+            {"Lebensraum_Gruppiert": "Agrar- und Offenland"},
+            {"Lebensraum_Gruppiert": "Wald"},
+        ]
+    }
+    # a record with a single, non-split value should be unaffected
+    assert result["27HEKAH2"] == {
+        "ecosystem_service_trends": [{"Lebensraum_Gruppiert": "Agrar- und Offenland"}]
+    }
+
+
 def test_read_grouped_csv_records_organism_trends_wald_selected_columns() -> None:
     result = read_grouped_csv_records(
         "data/external/organism_trends/Weighted Vote Count Wald Literatur - Sheet1.csv",

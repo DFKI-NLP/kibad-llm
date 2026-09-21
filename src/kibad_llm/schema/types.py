@@ -263,6 +263,62 @@ class BiodiversityFacetEnum(str, Enum):
     STRUKTURELLE_DIVERSITAET = "Strukturelle Diversität"
 
 
+class ESGroupEnum(str, Enum):
+    """Werte der "ESGroup"-Spalte in ösl_papers_ids.csv: eine vom Datensatz selbst vorgenommene,
+    gröbere Gruppierung der freitextlichen "ÖSL"-Spalte in klassifizierbare Kategorien. Zwei
+    Rohwerte wurden dabei mit einem bestehenden Wert zusammengeführt: "Schädlingskontrolle?" ->
+    "Schädlingskontrolle" und "Ästhetischer Wert der Landschaft" -> "Ästhetischer Wert".
+    """
+
+    AESTHETISCHER_WERT = "Ästhetischer Wert"
+    ATMOSPHAERISCHE_ZUSAMMENSETZUNG = "Atmosphärische Zusammensetzung"
+    BIOLOGISCHE_SANIERUNG = "Biologische Sanierung"
+    BIOMASSEPRODUKTION = "Biomasseproduktion"
+    DUERRERESISTENZ = "Dürreresistenz"
+    ERHALT_DES_WASSERHAUSHALTS = "Erhalt des Wasserhaushalts"
+    ERHOLUNGSWERT = "Erholungswert"
+    EROSIONSSCHUTZ = "Erosionsschutz"
+    FEUCHTIGKEITSREGULIERUNG = "Feuchtigkeitsregulierung"
+    FEUERSCHUTZ = "Feuerschutz"
+    FILTRATIONSRATE_FUTTEREFFIZIENZ = "Filtrationsrate (Futtereffizienz)"
+    FREIZEITLICHE_NUTZUNG = "Freizeitliche Nutzung"
+    GESUNDHEIT = "Gesundheit"
+    HOCHWASSERSCHUTZ = "Hochwasserschutz"
+    KOHLENSTOFFSPEICHERUNG = "Kohlenstoffspeicherung"
+    KONZENTRATION_GELOESTER_STOFFE_PHOSPHAT_UND_STICKSTOFF = (
+        "Konzentration gelöster Stoffe (Phosphat und Stickstoff)"
+    )
+    KRANKHEITSKONTROLLE = "Krankheitskontrolle"
+    KULTURELLER_WERT = "Kultureller Wert"
+    NAEHRSTOFFGEHALT_IM_BODEN = "Nährstoffgehalt im Boden"
+    PHYSISCHES_WOHLBEFINDEN = "physisches Wohlbefinden"
+    PSYCHISCHES_WOHLBEFINDEN = "psychisches Wohlbefinden"
+    REGULIERUNG_DER_CHEMISCHEN_ZUSAMMENSETZUNG = "Regulierung der chemischen Zusammensetzung"
+    REGULIERUNG_DER_CHEMISCHEN_ZUSAMMENSETZUNG_DER_ATMOSPHAERE_UND_DER_OZEANE_2_2_6_1 = (
+        "Regulierung der chemischen Zusammensetzung der Atmosphäre und der Ozeane (2.2.6.1)"
+    )
+    REGULIERUNG_VON_EXTREMEREIGNISSEN = "Regulierung von Extremereignissen"
+    SCHADSTOFFRUECKHALT = "Schadstoffrückhalt"
+    SCHAEDLINGSKONTROLLE = "Schädlingskontrolle"
+    SCHAEDLINGSKONTROLLE_KRANKHEITSRESISTENZ = "Schädlingskontrolle, Krankheitsresistenz"
+    SCHUTZ_VOR_STURMGEFAHREN = "Schutz vor Sturmgefahren"
+    SEDIMENTSTABILISIERUNG = "Sedimentstabilisierung"
+    SELBSTREINIGUNG_UND_NAEHRSTOFFRETENTION = "Selbstreinigung und Nährstoffretention"
+    SOZIALE_INTERAKTION_INTEGRATION = "Soziale Interaktion (Integration)"
+    STABILITAET_UND_RESILIENZ = "Stabilität und Resilienz"
+    STOERUNGSRESISTENZ = "Störungsresistenz"
+    SULFID_KONZENTRATION = "Sulfid-Konzentration"
+    TEMPERATURREGULIERUNG = "Temperaturregulierung"
+    WASSERQUALITAET = "Wasserqualität"
+    WIRTSCHAFTLICHER_WERT = "Wirtschaftlicher Wert"
+    WISSENSKENNTNISS = "Wissenskenntniss"
+    WOHLBEFINDEN_SICHERHEITSGEFUEHL = "Wohlbefinden/Sicherheitsgefühl"
+    ZERSETZUNG = "Zersetzung"
+    ZERSETZUNGS_UND_FIXIERUNGSPROZESSE_UND_IHRE_AUSWIRKUNGEN_AUF_DIE_BODENQUALITAET_2_2_4_2 = (
+        "Zersetzungs- und Fixierungsprozesse und ihre Auswirkungen auf die Bodenqualität (2.2.4.2)"
+    )
+
+
 class EcosystemType(CompoundFeature):
     """Ökosystemtyp mit Kategorie, Name und Beschreibung."""
 
@@ -1411,20 +1467,30 @@ class EcosystemStudyFeaturesCompoundsSimple(BaseEcosystemStudyFeatures):
 
 class EcosystemServiceFields(CompoundFeature):
     """Ein einzelner Zusammenhang zwischen Biodiversität und Ökosystemleistung, bestehend aus
-    Einfluss, Themenkomplex, Ökosystemleistung (ÖSL), Biodiv_Facette, Lebensraum_Gruppiert und
-    Arten. Ein Text kann mehrere solcher Zusammenhänge beschreiben; jede Instanz bildet genau einen
-    davon ab, analog zu einer einzelnen Zeile in der ösl_papers_ids.csv-Datei.
+    Einfluss, Themenkomplex, Ökosystemleistung (ÖSL), ESGroup, Biodiv_Facette, Lebensraum_Gruppiert
+    und Arten. Ein Text kann mehrere solcher Zusammenhänge beschreiben; jede Instanz bildet genau
+    einen davon ab, analog zu einer einzelnen Zeile in der ösl_papers_ids.csv-Datei.
+
+    Die Kernauswertung (siehe configs/experiment/evaluate/ecosystem_service.yaml) beschränkt sich
+    aktuell auf drei dieser Felder: Biodiv_Facette (die untersuchte Variable), ESGroup (eine
+    gruppierte, kategorisierbare Ausprägung der Ökosystemleistung) und Einfluss (die
+    Indikatorvariable). Die übrigen Felder werden weiterhin extrahiert, aber bei der Bewertung
+    ignoriert (`ignore_subfields`).
     """
 
     # The fields below are based on the ösl_papers_ids.csv file (ÖSL-VoteCount-Vollständig with
     # Zotero item keys matched in). We use the column names as field names, analogous to
     # OrganismBiodiversityTrend, so that no post-processing is needed. "Biodiv-Facette" and
     # "Art(en)" are not valid Python identifiers, so those two columns are named "Biodiv_Facette"
-    # and "Arten" here and in the CSV.
-    # Einfluss, Themenkomplex, ÖSL and Biodiv_Facette are single-valued and required per
-    # relationship (every row of the source data has exactly one value for each); multiple
-    # relationships in one text are represented as multiple EcosystemServiceFields instances, not
-    # by stacking values within a single instance.
+    # and "Arten" here and in the CSV. "ESGroup" is already the CSV's own pre-grouped, classifiable
+    # form of the free-text "ÖSL" column (not a rename of an existing concept).
+    # Einfluss, Themenkomplex, ÖSL, ESGroup, Biodiv_Facette and Lebensraum_Gruppiert are
+    # single-valued and required per relationship (every row of the source data has exactly one
+    # value for each); multiple relationships in one text are represented as multiple
+    # EcosystemServiceFields instances, not by stacking values within a single instance. A
+    # reference row naming several habitats (e.g. "Wald, Agrar- und Offenland") is likewise split
+    # into one row per habitat before evaluation (see split_columns in
+    # configs/dataset/references/ecosystem_service_oesl_vote_count.yaml).
     Einfluss: EinflussEnum = Field(
         ...,
         description="Was ist der gemessene Einfluss der Ökosystemleistung in der Studie auf Biodiversität von den "
@@ -1438,14 +1504,20 @@ class EcosystemServiceFields(CompoundFeature):
         ...,
         description="Welche Ökosystemleistung wird in der Studie betrachtet?",
     )
+    ESGroup: ESGroupEnum = Field(
+        ...,
+        description="Welcher dieser gruppierten Kategorien lässt sich die betrachtete Ökosystemleistung (ÖSL) "
+        "zuordnen?",
+    )
     Biodiv_Facette: BiodiversityFacetEnum = Field(
         ...,
         description="Welche dieser Biodiversitätsfacetten wird in der Studie betrachtet?",
     )
-    Lebensraum_Gruppiert: list[HabitatEnum] = Field(
-        default_factory=list,
-        description="Um welchen der folgenden Lebensräume oder um welche Kombination "
-        "der folgenden Lebensräume geht es in dem Text?",
+    Lebensraum_Gruppiert: HabitatEnum = Field(
+        ...,
+        description="Um welchen der folgenden Lebensräume geht es in dem Text? Falls mehrere "
+        "Lebensräume betroffen sind, erstelle für jeden betroffenen Lebensraum eine eigene "
+        "Instanz dieses Zusammenhangs.",
     )
     Arten: str | None = Field(
         default=None,

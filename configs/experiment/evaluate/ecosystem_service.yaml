@@ -1,7 +1,10 @@
 # @package _global_
 
-# F1 score metric for single- or multi-label classification for ecosystem-service/biodiversity
-# trend predictions, scoring each `ecosystem_service_trends` compound as one entry.
+# F1 score metric for ecosystem-service/biodiversity trend predictions, scoring each
+# `ecosystem_service_trends` compound as one entry, restricted to its three core fields:
+# `Biodiv_Facette` (the variable being checked), `ESGroup` (a grouped, classifiable outcome
+# variable) and `Einfluss` (the indicator variable). `Themenkomplex`, `ÖSL`, `Lebensraum_Gruppiert`
+# and `Arten` are still extracted but ignored during evaluation for now.
 
 defaults:
  - override /dataset: ecosystem_service
@@ -11,5 +14,13 @@ metric:
   # the fields in the prediction and reference to compute the F1 score on
   fields:
    - ecosystem_service_trends
+  # for compound entries, we may ignore certain subfields during evaluation
+  ignore_subfields:
+    ecosystem_service_trends:
+     - Themenkomplex
+     - ÖSL
+     - Lebensraum_Gruppiert
+     - Arten
+
   format_as_markdown: true
   sort_fields: true

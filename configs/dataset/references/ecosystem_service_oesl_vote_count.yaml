@@ -13,7 +13,15 @@ columns:
   - Einfluss
   - Themenkomplex
   - ÖSL
+  # pre-normalized/grouped, classifiable version of "ÖSL" (fewer distinct values)
+  - ESGroup
   - Biodiv_Facette
   # pre-normalized/grouped version of "Lebensraum" (fewer distinct values, closer to HabitatEnum)
   - Lebensraum_Gruppiert
   - Arten
+# `Lebensraum_Gruppiert` is scalar in `EcosystemServiceFields` (one habitat per relationship), but
+# 17 rows in the source CSV name multiple, comma-separated habitats for one relationship (e.g.
+# "Wald, Agrar- und Offenland") - split those into one row per habitat so entries stay comparable
+# to predictions.
+split_columns:
+  Lebensraum_Gruppiert: ", "

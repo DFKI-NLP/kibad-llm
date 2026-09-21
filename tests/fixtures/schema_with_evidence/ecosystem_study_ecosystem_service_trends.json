@@ -16,9 +16,57 @@
       "title": "BiodiversityFacetEnum",
       "type": "string"
     },
+    "ESGroupEnum": {
+      "description": "Werte der \"ESGroup\"-Spalte in ösl_papers_ids.csv: eine vom Datensatz selbst vorgenommene,\ngröbere Gruppierung der freitextlichen \"ÖSL\"-Spalte in klassifizierbare Kategorien. Zwei\nRohwerte wurden dabei mit einem bestehenden Wert zusammengeführt: \"Schädlingskontrolle?\" ->\n\"Schädlingskontrolle\" und \"Ästhetischer Wert der Landschaft\" -> \"Ästhetischer Wert\".",
+      "enum": [
+        "Ästhetischer Wert",
+        "Atmosphärische Zusammensetzung",
+        "Biologische Sanierung",
+        "Biomasseproduktion",
+        "Dürreresistenz",
+        "Erhalt des Wasserhaushalts",
+        "Erholungswert",
+        "Erosionsschutz",
+        "Feuchtigkeitsregulierung",
+        "Feuerschutz",
+        "Filtrationsrate (Futtereffizienz)",
+        "Freizeitliche Nutzung",
+        "Gesundheit",
+        "Hochwasserschutz",
+        "Kohlenstoffspeicherung",
+        "Konzentration gelöster Stoffe (Phosphat und Stickstoff)",
+        "Krankheitskontrolle",
+        "Kultureller Wert",
+        "Nährstoffgehalt im Boden",
+        "physisches Wohlbefinden",
+        "psychisches Wohlbefinden",
+        "Regulierung der chemischen Zusammensetzung",
+        "Regulierung der chemischen Zusammensetzung der Atmosphäre und der Ozeane (2.2.6.1)",
+        "Regulierung von Extremereignissen",
+        "Schadstoffrückhalt",
+        "Schädlingskontrolle",
+        "Schädlingskontrolle, Krankheitsresistenz",
+        "Schutz vor Sturmgefahren",
+        "Sedimentstabilisierung",
+        "Selbstreinigung und Nährstoffretention",
+        "Soziale Interaktion (Integration)",
+        "Stabilität und Resilienz",
+        "Störungsresistenz",
+        "Sulfid-Konzentration",
+        "Temperaturregulierung",
+        "Wasserqualität",
+        "Wirtschaftlicher Wert",
+        "Wissenskenntniss",
+        "Wohlbefinden/Sicherheitsgefühl",
+        "Zersetzung",
+        "Zersetzungs- und Fixierungsprozesse und ihre Auswirkungen auf die Bodenqualität (2.2.4.2)"
+      ],
+      "title": "ESGroupEnum",
+      "type": "string"
+    },
     "EcosystemServiceFields": {
       "additionalProperties": false,
-      "description": "Ein einzelner Zusammenhang zwischen Biodiversität und Ökosystemleistung, bestehend aus\nEinfluss, Themenkomplex, Ökosystemleistung (ÖSL), Biodiv_Facette, Lebensraum_Gruppiert und\nArten. Ein Text kann mehrere solcher Zusammenhänge beschreiben; jede Instanz bildet genau einen\ndavon ab, analog zu einer einzelnen Zeile in der ösl_papers_ids.csv-Datei.",
+      "description": "Ein einzelner Zusammenhang zwischen Biodiversität und Ökosystemleistung, bestehend aus\nEinfluss, Themenkomplex, Ökosystemleistung (ÖSL), ESGroup, Biodiv_Facette, Lebensraum_Gruppiert\nund Arten. Ein Text kann mehrere solcher Zusammenhänge beschreiben; jede Instanz bildet genau\neinen davon ab, analog zu einer einzelnen Zeile in der ösl_papers_ids.csv-Datei.\n\nDie Kernauswertung (siehe configs/experiment/evaluate/ecosystem_service.yaml) beschränkt sich\naktuell auf drei dieser Felder: Biodiv_Facette (die untersuchte Variable), ESGroup (eine\ngruppierte, kategorisierbare Ausprägung der Ökosystemleistung) und Einfluss (die\nIndikatorvariable). Die übrigen Felder werden weiterhin extrahiert, aber bei der Bewertung\nignoriert (`ignore_subfields`).",
       "properties": {
         "Einfluss": {
           "type": "object",
@@ -75,6 +123,24 @@
           "title": "Ösl",
           "description": "Welche Ökosystemleistung wird in der Studie betrachtet?"
         },
+        "ESGroup": {
+          "type": "object",
+          "properties": {
+            "content": {
+              "$ref": "#/$defs/ESGroupEnum"
+            },
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
+          ],
+          "additionalProperties": false,
+          "description": "Welcher dieser gruppierten Kategorien lässt sich die betrachtete Ökosystemleistung (ÖSL) zuordnen?"
+        },
         "Biodiv_Facette": {
           "type": "object",
           "properties": {
@@ -94,26 +160,22 @@
           "description": "Welche dieser Biodiversitätsfacetten wird in der Studie betrachtet?"
         },
         "Lebensraum_Gruppiert": {
-          "description": "Um welchen der folgenden Lebensräume oder um welche Kombination der folgenden Lebensräume geht es in dem Text?",
-          "items": {
-            "type": "object",
-            "properties": {
-              "content": {
-                "$ref": "#/$defs/HabitatEnum"
-              },
-              "evidence_anchor": {
-                "type": "string",
-                "description": "Verbatim excerpt from the source text supporting the extracted content."
-              }
+          "type": "object",
+          "properties": {
+            "content": {
+              "$ref": "#/$defs/HabitatEnum"
             },
-            "required": [
-              "content",
-              "evidence_anchor"
-            ],
-            "additionalProperties": false
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            }
           },
-          "title": "Lebensraum Gruppiert",
-          "type": "array"
+          "required": [
+            "content",
+            "evidence_anchor"
+          ],
+          "additionalProperties": false,
+          "description": "Um welchen der folgenden Lebensräume geht es in dem Text? Falls mehrere Lebensräume betroffen sind, erstelle für jeden betroffenen Lebensraum eine eigene Instanz dieses Zusammenhangs."
         },
         "Arten": {
           "anyOf": [
@@ -147,7 +209,9 @@
         "Einfluss",
         "Themenkomplex",
         "ÖSL",
-        "Biodiv_Facette"
+        "ESGroup",
+        "Biodiv_Facette",
+        "Lebensraum_Gruppiert"
       ],
       "title": "EcosystemServiceFields",
       "type": "object"
