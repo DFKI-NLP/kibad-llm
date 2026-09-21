@@ -361,3 +361,28 @@ def test_newlines_is_secondary_sentence_break():
     )
     with pytest.raises(StopIteration):
         next(chunk_iter)
+
+
+def test_chunking_iterator_returns_tuple():
+    """The important part about this test is not so much the exact type being tuple,
+    but rather that this is not an iterator that will be consumed and then be depleted.
+    Instead it should be a non-depleting iterable."""
+
+    text = "This is a sentence. This is a longer sentence. Mr. Bond\nasks\nwhy?"
+    chunks = _document_chunk_iterator(
+        text,
+        max_char_buffer=12,
+        tokenizer=RegexTokenizer(),
+    )
+    number_of_chunks = len(chunks)
+    assert number_of_chunks > 1
+
+    counter = 0
+    for chunk in chunks:
+        counter += 1
+    assert number_of_chunks == counter
+
+    counter = 0
+    for chunk in chunks:
+        counter += 1
+    assert number_of_chunks == counter
