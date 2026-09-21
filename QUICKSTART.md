@@ -20,12 +20,12 @@ cp .env.example .env         # then fill in the variables you need, see below
 `.env` variables (all optional, only needed for the features that use them):
 
 - `OPENAI_API_KEY` — required to run extraction with OpenAI-hosted models (e.g. `gpt_5`). Create a key at
-  [platform.openai.com/api-keys](https://platform.openai.com/api-keys).
+    [platform.openai.com/api-keys](https://platform.openai.com/api-keys).
 - `HF_TOKEN` — required for access-restricted Hugging Face models (e.g. `gemma3_27b`), and for the in-process
-  vLLM backend. Create a token at [huggingface.co/settings/tokens](https://huggingface.co/settings/tokens).
+    vLLM backend. Create a token at [huggingface.co/settings/tokens](https://huggingface.co/settings/tokens).
 - `VLLM_DOWNLOAD_DIR` — optional, where in-process vLLM caches downloaded model weights.
 - `DB_USER` / `DB_PASSWORD` — only needed for the Faktencheck Postgres database, see
-  [podman/faktencheck-db/README.md](/podman/faktencheck-db/README.md).
+    [podman/faktencheck-db/README.md](/podman/faktencheck-db/README.md).
 
 > [!TIP]
 > If you're new to `uv`: wherever you'd normally write `python ...`, write `uv run python ...` (or, for the
@@ -34,16 +34,16 @@ cp .env.example .env         # then fill in the variables you need, see below
 ## Getting data in
 
 - **PDFs from Zotero**: `uv run -m kibad_llm.data_integration.zotero_download` downloads open-access papers
-  found via Semantic Scholar from an exported Zotero-group CSV (see
-  [data/external/zotero](/data/external/zotero)). Details:
-  [docs/USAGE.md § PDF Download](/docs/USAGE.md#pdf-download-based-on-zotero-groups).
+    found via Semantic Scholar from an exported Zotero-group CSV (see
+    [data/external/zotero](/data/external/zotero)). Details:
+    [docs/USAGE.md § PDF Download](/docs/USAGE.md#pdf-download-based-on-zotero-groups).
 - **Faktencheck reference data**: the ground-truth database lives in Postgres. Start it with Podman (see
-  [podman/faktencheck-db/README.md](/podman/faktencheck-db/README.md)), then convert it to JSON with
-  `uv run -m kibad_llm.data_integration.db_converter`. Scientific names in the converted data can be normalized
-  against GBIF via `uv run -m kibad_llm.normalization.cli gbif ...`. Details:
-  [docs/USAGE.md § Faktencheck Postgres to Json Conversion](/docs/USAGE.md#faktencheck-postgres-to-json-conversion).
+    [podman/faktencheck-db/README.md](/podman/faktencheck-db/README.md)), then convert it to JSON with
+    `uv run -m kibad_llm.data_integration.db_converter`. Scientific names in the converted data can be normalized
+    against GBIF via `uv run -m kibad_llm.normalization.cli gbif ...`. Details:
+    [docs/USAGE.md § Faktencheck Postgres to Json Conversion](/docs/USAGE.md#faktencheck-postgres-to-json-conversion).
 - **What's already available**: [data/readme.md](/data/readme.md) documents the existing PDF sets and
-  reference/ground-truth files, so check there before re-downloading or re-converting anything.
+    reference/ground-truth files, so check there before re-downloading or re-converting anything.
 
 ## Running the extraction pipeline
 
@@ -54,9 +54,9 @@ Prediction needs a running LLM backend, chosen per extractor config under
 
 - **OpenAI-hosted** (e.g. `gpt_5`) — just needs `OPENAI_API_KEY`, no separate hosting step.
 - **External vLLM server** (`*_in_process.yaml`'s sibling, an OpenAI-compatible endpoint you start yourself) —
-  see [models/README.md](/models/README.md) and `run_with_llm.sh`.
+    see [models/README.md](/models/README.md) and `run_with_llm.sh`.
 - **In-process vLLM** (`*_in_process.yaml`, model loaded inside the same process; used on the DFKI cluster via
-  `run_in_process.sh`) — needs `HF_TOKEN` for gated models.
+    `run_in_process.sh`) — needs `HF_TOKEN` for gated models.
 
 Follow [models/README.md § Quickstart](/models/README.md#quickstart) or
 [§ All-in-one run script](/models/README.md#all-in-one-run-script) to get one running.
@@ -116,18 +116,18 @@ Everything is wired through Hydra config groups under [configs/](/configs/) via 
 LLM, extractor, metric, or dataset means adding both a Python class/function and a matching YAML.
 
 - **Extractors** ([src/kibad_llm/extractors/](/src/kibad_llm/extractors/)) all share the contract
-  `(text, file_name) -> dict` and compose: a single LLM call at the core (builds a prompt from a schema derived
-  from the pydantic models in [src/kibad_llm/schema/types.py](/src/kibad_llm/schema/types.py), optionally with
-  guided decoding), wrapped by `ChunkingExtractor` (splits long documents), `UnionExtractor` /
-  `ConditionalUnionExtractor` (multiple passes, merged or chained), and `RepeatingExtractor` (majority vote).
+    `(text, file_name) -> dict` and compose: a single LLM call at the core (builds a prompt from a schema derived
+    from the pydantic models in [src/kibad_llm/schema/types.py](/src/kibad_llm/schema/types.py), optionally with
+    guided decoding), wrapped by `ChunkingExtractor` (splits long documents), `UnionExtractor` /
+    `ConditionalUnionExtractor` (multiple passes, merged or chained), and `RepeatingExtractor` (majority vote).
 - **LLM backends** ([src/kibad_llm/llms/](/src/kibad_llm/llms/)) share one interface over the three hosting
-  options described above (`openai.py`, `openai_like_vllm.py`, `vllm_in_process.py`).
+    options described above (`openai.py`, `openai_like_vllm.py`, `vllm_in_process.py`).
 - **Evaluation** ([src/kibad_llm/evaluate.py](/src/kibad_llm/evaluate.py)) pairs a `dataset` (predictions +
-  references, matched on file name / record id, see [src/kibad_llm/dataset/](/src/kibad_llm/dataset/)) with a
-  `metric` implementing `reset`/`update`/`compute` (see [src/kibad_llm/metrics/](/src/kibad_llm/metrics/)).
+    references, matched on file name / record id, see [src/kibad_llm/dataset/](/src/kibad_llm/dataset/)) with a
+    `metric` implementing `reset`/`update`/`compute` (see [src/kibad_llm/metrics/](/src/kibad_llm/metrics/)).
 - **Data integration** ([src/kibad_llm/data_integration/](/src/kibad_llm/data_integration/)) holds the
-  standalone Zotero/Postgres/GBIF/Nextcloud scripts mentioned above — these aren't part of the extraction
-  pipeline itself.
+    standalone Zotero/Postgres/GBIF/Nextcloud scripts mentioned above — these aren't part of the extraction
+    pipeline itself.
 
 ## Testing and before a PR
 
@@ -155,29 +155,29 @@ intentionally changed.
 ## Repo conventions
 
 - **Docstrings are mandatory** on every file, class, function, and method — Google-style, CommonMark only (no
-  Sphinx/reST). See [docs/CONTRIBUTING-CODE.md § Documentation](/docs/CONTRIBUTING-CODE.md#documentation).
+    Sphinx/reST). See [docs/CONTRIBUTING-CODE.md § Documentation](/docs/CONTRIBUTING-CODE.md#documentation).
 - **Tests mirror source layout**: `tests/unit/` mirrors `src/kibad_llm/`, `tests/integration/` mirrors
-  `configs/` and prefers real Hydra configs over mocks.
+    `configs/` and prefers real Hydra configs over mocks.
 - **Branch naming**: `feat/`, `fix/`, `hotfix/`, `docs/`, `experiment/` prefixes, alphanumeric + hyphens only.
-  Pushing to `main` is prohibited; PRs are reviewed and squash-merged.
+    Pushing to `main` is prohibited; PRs are reviewed and squash-merged.
 - **`data/results` is a separate git submodule** (committed experiment artefacts, logs and predictions). It
-  starts in detached HEAD after a plain clone — run `git switch -c <branch>` inside it before committing there.
+    starts in detached HEAD after a plain clone — run `git switch -c <branch>` inside it before committing there.
 - **`uv.lock`** is managed via `uv add`/`uv lock`, never hand-edited; explain dependency changes in the PR.
 - **Windows**: `uv sync --group cicd` fails there (`vllm` → `ray` ships no `win_amd64` wheels). Run
-  lint/test/docs commands on Linux/macOS, WSL, or the cluster.
+    lint/test/docs commands on Linux/macOS, WSL, or the cluster.
 - For planning, naming, and documenting a full reproducible experiment (not just a one-off run), see
-  [docs/CONTRIBUTING-EXPERIMENTS.md](/docs/CONTRIBUTING-EXPERIMENTS.md).
+    [docs/CONTRIBUTING-EXPERIMENTS.md](/docs/CONTRIBUTING-EXPERIMENTS.md).
 
 ## Where to go deeper
 
 - [docs/USAGE.md](/docs/USAGE.md) — the full walkthrough: PDF download, DB conversion, prediction, evaluation,
-  multirun and A/B testing, all with complete option lists.
+    multirun and A/B testing, all with complete option lists.
 - [docs/CONTRIBUTING.md](/docs/CONTRIBUTING.md) — full directory map, PR workflow, docs-site rules, submodule
-  handling, the complete local-CI command set.
+    handling, the complete local-CI command set.
 - [docs/CONTRIBUTING-CODE.md](/docs/CONTRIBUTING-CODE.md) — coding principles, test layout, docstring/linking
-  conventions, fixture regeneration, dependency changes.
+    conventions, fixture regeneration, dependency changes.
 - [docs/CONTRIBUTING-EXPERIMENTS.md](/docs/CONTRIBUTING-EXPERIMENTS.md) — how to plan, name, run, and document
-  a reproducible experiment.
+    a reproducible experiment.
 - [data/readme.md](/data/readme.md) — description of the datasets and reference files available.
 - [dfki-nlp.github.io/kibad-llm](https://dfki-nlp.github.io/kibad-llm/) — the rendered documentation site with
-  all of the above, plus the auto-generated code reference.
+    all of the above, plus the auto-generated code reference.
