@@ -195,7 +195,8 @@ class LLM(ABC):
         Args:
             response: A ChatResponse to extract the raw message from.
 
-        Returns: The raw message embedded in the provided ChatResponse.
+        Returns:
+            The raw message embedded in the provided ChatResponse.
 
 
         Raises:
@@ -221,7 +222,8 @@ class LLM(ABC):
         Args:
             response: A ChatResponse to extract the reasoning from.
 
-        Returns: The reasoning embedded in the provided ChatResponse.
+        Returns:
+            The reasoning embedded in the provided ChatResponse.
 
 
         Raises:
@@ -268,7 +270,8 @@ class LLM(ABC):
         Args:
             response: A ChatResponse to extract the content from.
 
-        Returns: The reasoning embedded in the provided ChatResponse.
+        Returns:
+            The response embedded in the provided ChatResponse.
 
 
         Raises:
