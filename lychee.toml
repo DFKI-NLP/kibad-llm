@@ -30,4 +30,11 @@ exclude_path = ["site/404.html"]
 # <link> pointing at the production URL, which 404s for pages that only exist
 # on this branch and aren't deployed yet. Page-to-page integrity is already
 # covered by the relative links lychee resolves on disk.
-exclude = ['^https://dfki-nlp\.github\.io/kibad-llm']
+#
+# platform.openai.com sits behind Cloudflare bot protection and answers
+# requests from CI runners (datacenter IPs) with 403, although the links are
+# valid and resolve fine from a normal browser / residential connection.
+exclude = [
+  '^https://dfki-nlp\.github\.io/kibad-llm',
+  '^https://platform\.openai\.com/',
+]
