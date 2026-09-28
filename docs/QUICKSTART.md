@@ -36,12 +36,12 @@ cp .env.example .env         # then fill in the variables you need, see below
 - **PDFs from Zotero**: `uv run -m kibad_llm.data_integration.zotero_download` downloads open-access papers
     found via Semantic Scholar from an exported Zotero-group CSV (see
     [data/external/zotero](/data/external/zotero)). Details:
-    [docs/USAGE.md § PDF Download](/docs/USAGE.md#pdf-download-based-on-zotero-groups).
+    [USAGE.md § PDF Download](USAGE.md#pdf-download-based-on-zotero-groups).
 - **Faktencheck reference data**: the ground-truth database lives in Postgres. Start it with Podman (see
     [podman/faktencheck-db/README.md](/podman/faktencheck-db/README.md)), then convert it to JSON with
     `uv run -m kibad_llm.data_integration.db_converter`. Scientific names in the converted data can be normalized
     against GBIF via `uv run -m kibad_llm.normalization.cli gbif ...`. Details:
-    [docs/USAGE.md § Faktencheck Postgres to Json Conversion](/docs/USAGE.md#faktencheck-postgres-to-json-conversion).
+    [USAGE.md § Faktencheck Postgres to Json Conversion](USAGE.md#faktencheck-postgres-to-json-conversion).
 - **What's already available**: [data/readme.md](/data/readme.md) documents the existing PDF sets and
     reference/ground-truth files, so check there before re-downloading or re-converting anything.
 
@@ -70,14 +70,15 @@ uv run -m kibad_llm.predict pdf_directory=path/to/pdf/files
 Converts every PDF in `pdf_directory` to markdown, runs the configured `extractor` over it, and writes a JSONL
 predictions file. Options live in [configs/predict.yaml](/configs/predict.yaml); `pdf_reader_num_proc` and
 `extractor_num_proc` control parallelism (keep them modest on shared/personal machines, large on compute
-nodes). For a reproducible setup, use a named config instead of ad hoc overrides:
+nodes). For a reproducible setup, use a named config instead of ad hoc overrides, e.g. the organism-trends
+extraction:
 
 ```bash
-uv run -m kibad_llm.predict pdf_directory=path/to/pdf/files experiment/predict=faktencheck_two_schemata
+uv run -m kibad_llm.predict pdf_directory=path/to/pdf/files experiment/predict=organism_trends
 ```
 
 See [configs/experiment/predict](/configs/experiment/predict) for available experiment configs and
-[docs/USAGE.md § Inference](/docs/USAGE.md#inference) for the full picture.
+[USAGE.md § Inference](USAGE.md#inference) for the full picture.
 
 ### Run an evaluation
 
@@ -91,7 +92,7 @@ Scores predictions against reference data. Defaults to `dataset=faktencheck` and
 prediction, prefer a named `experiment/evaluate=<config>` for anything you'll want to reproduce (see
 [configs/experiment/evaluate](/configs/experiment/evaluate)). Full details, including the
 `confusion_matrix` metric's per-field requirement:
-[docs/USAGE.md § Evaluation](/docs/USAGE.md#evaluation).
+[USAGE.md § Evaluation](USAGE.md#evaluation).
 
 ### Multirun and A/B testing
 
@@ -100,15 +101,16 @@ pass comma-separated values for one or more parameters plus `--multirun` (`-m`),
 combination — e.g. `extractor=simple_with_schema,simple --multirun` to compare guided vs. unguided decoding, or
 `seed=42,1337,7331 --multirun` for repeated runs. Add
 `+hydra.callbacks.save_job_return.multirun_markdown_group_by=<column(s)>` to `evaluate` to get aggregated
-mean/std across runs. See [docs/USAGE.md § Multirun](/docs/USAGE.md#multirun) for worked examples.
+mean/std across runs. See [USAGE.md § Multirun](USAGE.md#multirun) for worked examples.
 
 ## Inspect results
 
 Runs write to `logs/<name>/...` and `predictions/<name>/...` locally (git-ignored). Each run produces a
-`job_return_value.json`/`.md` with output paths or metric scores; multiruns get a combined summary. Finished,
-committed experiments live in the `data/results` submodule instead — see
-[Repo conventions](#repo-conventions) below. Browse and compare runs (local, from the repo, or from a GitHub
-URL) in the build-free [evaluation dashboard](/docs/eval-dashboard-docs.md).
+`job_return_value.json`/`.md` with output paths or metric scores; multiruns get a combined summary. Finished
+experiments are committed to the separate [kibad-llm-results](https://github.com/DFKI-NLP/kibad-llm-results)
+repository instead, which you can clone to `data/results` — see [Repo conventions](#repo-conventions) below.
+Browse and compare runs (local, from the repo, or from a GitHub
+URL) in the build-free [evaluation dashboard](eval-dashboard-docs.md).
 
 ## How it fits together
 
@@ -139,8 +141,8 @@ just node-test    # eval-dashboard JS logic tests (needs Node)
 just prop         # serve the docs locally
 ```
 
-`just -l` lists everything, including the raw `uv run ...`/`lychee` invocations these recipes wrap. A single
-test: `uv run pytest tests/unit/extractors/test_base.py::test_extract_from_text`. Tests hitting a real LLM must
+`just -l` lists all recipes. Link checking (lychee) runs as part of `just prek` and therefore `just pr`; the
+standalone `just lychee` recipe is only a convenience wrapper. A single test: `uv run pytest tests/unit/extractors/test_base.py::test_extract_from_text`. Tests hitting a real LLM must
 be marked `slow` (excluded from the default run) — prefer the `llm_chat_replay` fixture instead. If you touch a
 test that uses recorded fixtures, regenerate only that test's fixtures:
 
@@ -155,28 +157,29 @@ intentionally changed.
 ## Repo conventions
 
 - **Docstrings are mandatory** on every file, class, function, and method — Google-style, CommonMark only (no
-    Sphinx/reST). See [docs/CONTRIBUTING-CODE.md § Documentation](/docs/CONTRIBUTING-CODE.md#documentation).
+    Sphinx/reST). See [CONTRIBUTING-CODE.md § Documentation](CONTRIBUTING-CODE.md#documentation).
 - **Tests mirror source layout**: `tests/unit/` mirrors `src/kibad_llm/`, `tests/integration/` mirrors
     `configs/` and prefers real Hydra configs over mocks.
 - **Branch naming**: `feat/`, `fix/`, `hotfix/`, `docs/`, `experiment/` prefixes, alphanumeric + hyphens only.
     Pushing to `main` is prohibited; PRs are reviewed and squash-merged.
-- **`data/results` is a separate git submodule** (committed experiment artefacts, logs and predictions). It
-    starts in detached HEAD after a plain clone — run `git switch -c <branch>` inside it before committing there.
+- **Experiment results live in a separate repository**, [kibad-llm-results](https://github.com/DFKI-NLP/kibad-llm-results)
+    (committed logs and predictions). Clone it into the gitignored `data/results`; branch and open PRs there
+    as described in [CONTRIBUTING-EXPERIMENTS.md](CONTRIBUTING-EXPERIMENTS.md).
 - **`uv.lock`** is managed via `uv add`/`uv lock`, never hand-edited; explain dependency changes in the PR.
 - **Windows**: `uv sync --group cicd` fails there (`vllm` → `ray` ships no `win_amd64` wheels). Run
     lint/test/docs commands on Linux/macOS, WSL, or the cluster.
 - For planning, naming, and documenting a full reproducible experiment (not just a one-off run), see
-    [docs/CONTRIBUTING-EXPERIMENTS.md](/docs/CONTRIBUTING-EXPERIMENTS.md).
+    [CONTRIBUTING-EXPERIMENTS.md](CONTRIBUTING-EXPERIMENTS.md).
 
 ## Where to go deeper
 
-- [docs/USAGE.md](/docs/USAGE.md) — the full walkthrough: PDF download, DB conversion, prediction, evaluation,
+- [USAGE.md](USAGE.md) — the full walkthrough: PDF download, DB conversion, prediction, evaluation,
     multirun and A/B testing, all with complete option lists.
-- [docs/CONTRIBUTING.md](/docs/CONTRIBUTING.md) — full directory map, PR workflow, docs-site rules, submodule
-    handling, the complete local-CI command set.
-- [docs/CONTRIBUTING-CODE.md](/docs/CONTRIBUTING-CODE.md) — coding principles, test layout, docstring/linking
+- [CONTRIBUTING.md](CONTRIBUTING.md) — full directory map, PR workflow, docs-site rules, and the
+    complete local-CI command set.
+- [CONTRIBUTING-CODE.md](CONTRIBUTING-CODE.md) — coding principles, test layout, docstring/linking
     conventions, fixture regeneration, dependency changes.
-- [docs/CONTRIBUTING-EXPERIMENTS.md](/docs/CONTRIBUTING-EXPERIMENTS.md) — how to plan, name, run, and document
+- [CONTRIBUTING-EXPERIMENTS.md](CONTRIBUTING-EXPERIMENTS.md) — how to plan, name, run, and document
     a reproducible experiment.
 - [data/readme.md](/data/readme.md) — description of the datasets and reference files available.
 - [dfki-nlp.github.io/kibad-llm](https://dfki-nlp.github.io/kibad-llm/) — the rendered documentation site with

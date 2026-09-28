@@ -8,6 +8,7 @@ It uses LLMs to extract structured information from scientific literature PDFs.
 
 ## Using the project
 
+- **[Quickstart](QUICKSTART.md)** — Cheat sheet: setup, first prediction and evaluation, architecture overview, and repo conventions
 - **[Usage instructions](USAGE.md)** — Step-by-step guide: PDF download, database conversion, prediction, and evaluation
 - **[LLM usage instructions](models-readme.md)** — How to host and run language models on the cluster
 - **[Faktencheck database instructions](podman-readme.md)** — Setting up the PostgreSQL database via Podman
