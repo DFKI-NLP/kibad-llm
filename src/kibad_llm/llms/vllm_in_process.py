@@ -98,7 +98,7 @@ class VllmInProcess(LLM):
 
     Methods:
         destroy: Clean up vLLM resources.
-        call_llm_chat_with_guided_decoding: Call the in process VllmLLM chat LLM with optional json schema for 
+        call_llm_chat_with_guided_decoding: Call the in process VllmLLM chat LLM with optional json schema for
             guided decoding.
         get_reasoning_from_chat_response: Extract reasoning from a chat response.
     """
