@@ -10,6 +10,8 @@ It uses LLMs to extract structured information from scientific literature PDFs.
 
 For our documentation, please refer to [github-pages](https://dfki-nlp.github.io/kibad-llm/).
 
+New here? See [QUICKSTART.md](/docs/QUICKSTART.md) for a cheat sheet to get set up and run your first prediction.
+
 ## Usage
 
 See [USAGE.md](/docs/USAGE.md) for detailed instructions on how to use the project.
