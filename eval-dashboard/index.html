@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Evaluation Dashboard</title>
+  <link rel="stylesheet" href="assets/css/index.css">
+</head>
+<body>
+  <h1>Evaluation Dashboard</h1>
+  <p class="hint">
+    Select a logs folder (for example <code>data/results/logs/380_faktencheck_core</code>).<br>
+    The dashboard loads all single evaluation-run folders where both
+    <code>job_return_value.json</code> and <code>.hydra/overrides.yaml</code> are present. Runs inside
+    <code>predict</code> are ignored.
+  </p>
+
+  <div class="controls">
+    <div class="control-block">
+      <label for="folderInput"><strong>1) Load Local Folder</strong></label><br>
+      <input id="folderInput" type="file" webkitdirectory directory multiple>
+    </div>
+    <div class="control-block">
+      <label for="gitUrlInput"><strong>2) Load From GitHub</strong></label><br>
+      <input
+        id="gitUrlInput"
+        class="text-control"
+        type="url"
+        placeholder="https://github.com/OWNER/REPO/tree/main/path/to/folder"
+      >
+      <div class="control-row">
+        <label for="githubTokenInput" class="sr-only">GitHub token</label>
+        <input
+          id="githubTokenInput"
+          class="text-control"
+          type="password"
+          placeholder="Optional GitHub token for private repos"
+          autocomplete="off"
+          spellcheck="false"
+        >
+        <button id="loadGitButton" type="button">Load (this may take some time)</button>
+      </div>
+      <div class="hint">Supports GitHub tree URLs with branch, tag, or commit refs. The token is stored only in this browser and is never added to the dashboard URL.</div>
+    </div>
+    <div id="loadStatus" class="status">No folder loaded.</div>
+    <div id="loadProgressWrap" class="load-progress-wrap">
+      <progress id="loadProgress" class="load-progress" value="0" max="1"></progress>
+      <div id="loadProgressLabel" class="load-progress-label"></div>
+    </div>
+  </div>
+
+  <h2>Predictions</h2>
+  <div id="predictionSummary" class="hint">No data loaded yet.</div>
+  <section id="predictionDefaultsPanel" class="options-panel" style="display: none;">
+    <div class="options-heading">Missing value defaults</div>
+    <div class="options-content">
+      <div class="truncate-controls">
+        <div class="truncate-controls-main">
+          <div id="predictionDefaultsList"></div>
+        </div>
+        <div class="truncate-controls-side">
+          <div class="hint">These defaults fill empty values in the currently selected prediction groups and therefore also affect grouping, later tables, and plots. Suggestions come from existing non-empty values in the same column within the currently selected prediction groups. Clear an input to restore blanks.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <div class="prediction-actions">
+    <strong>Group-by:</strong>
+    <button id="groupByAllButton" class="prediction-action-button" type="button">all</button>
+    <button id="groupByNoneButton" class="prediction-action-button" type="button">none</button>
+    <button id="groupByToggleButton" class="prediction-action-button" type="button">toggle</button>
+  </div>
+  <div class="prediction-actions">
+    <strong>Sorted by:</strong>
+    <span id="predictionSortedByLabel" class="sort-status-value">(none)</span>
+    <button id="predictionResetSortButton" class="prediction-action-button" type="button">reset sorting</button>
+    <span class="sort-status-hint">Shift-click column headers to add more sort columns.</span>
+  </div>
+  <details class="options-panel">
+    <summary class="options-summary">Table display options</summary>
+    <div class="options-content">
+      <div id="optionsTabs" class="options-tabs">
+        <button id="optionsTabTruncate" class="options-tab-button" data-tab="truncate" type="button">Truncate columns</button>
+      </div>
+      <div id="optionsPanelTruncate" class="options-tab-panel" data-tab-panel="truncate">
+        <div id="truncateControls" class="truncate-controls">
+          <div class="truncate-controls-main">
+            <div id="truncateColumnsList"></div>
+          </div>
+          <div class="truncate-controls-side">
+            <div class="hint">Defaults: columns containing <code>file</code> or <code>run</code>.</div>
+            <button id="truncateDefaultsButton" type="button">Reset defaults</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </details>
+  <div class="table-container">
+    <table id="predictionsTable" class="dashboard-data-table"></table>
+  </div>
+
+  <h2>Evaluations</h2>
+    <p class="hint">
+      Shows evaluation overrides and <code>job_return_value</code> fields for evaluations connected to selected prediction groups.
+      Tabs are split by <code>experiment/evaluate</code>.
+    </p>
+  <div id="evalTabs" class="tabs"></div>
+  <div id="evalSummary" class="hint">Select one or more prediction groups to view evaluation overrides and job_return_value fields.</div>
+  <section id="evalDefaultsPanel" class="options-panel" style="display: none;">
+    <div class="options-heading">Missing value defaults</div>
+    <div class="options-content">
+      <div class="truncate-controls">
+        <div class="truncate-controls-main">
+          <div id="evalDefaultsList"></div>
+        </div>
+        <div class="truncate-controls-side">
+          <div class="hint">These defaults fill empty evaluation override values in the currently selected evaluation groups of the active tab and therefore also affect grouping, later tables, and plots. Suggestions come from existing non-empty values in the same column within those currently selected evaluation groups. Clear an input to restore blanks.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <div class="prediction-actions">
+    <strong>Group-by:</strong>
+    <button id="evalGroupByAllButton" class="prediction-action-button" type="button">all</button>
+    <button id="evalGroupByNoneButton" class="prediction-action-button" type="button">none</button>
+    <button id="evalGroupByToggleButton" class="prediction-action-button" type="button">toggle</button>
+  </div>
+  <div class="prediction-actions">
+    <strong>Sorted by:</strong>
+    <span id="evalSortedByLabel" class="sort-status-value">(none)</span>
+    <button id="evalResetSortButton" class="prediction-action-button" type="button">reset sorting</button>
+    <span class="sort-status-hint">Shift-click column headers to add more sort columns.</span>
+  </div>
+  <details class="options-panel">
+    <summary class="options-summary">Table display options</summary>
+    <div class="options-content">
+      <div id="evalOptionsTabs" class="options-tabs">
+        <button id="evalOptionsTabTruncate" class="options-tab-button" data-eval-tab="truncate" type="button">Truncate columns</button>
+      </div>
+      <div id="evalOptionsPanelTruncate" class="options-tab-panel" data-eval-tab-panel="truncate">
+        <div class="truncate-controls">
+          <div class="truncate-controls-main">
+            <div id="evalTruncateColumnsList"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </details>
+  <div id="evalLayout" class="eval-layout">
+    <div class="table-container">
+      <table id="evaluationsTable" class="dashboard-data-table"></table>
+    </div>
+    <div id="evalJsonPane" class="eval-json-pane">
+      <div class="eval-json-tabs">
+        <button id="evalJsonTabEvaluation" class="eval-json-tab-button" type="button">Evaluation data</button>
+        <button id="evalJsonTabPrediction" class="eval-json-tab-button" type="button">Prediction metadata</button>
+      </div>
+      <p id="evalJsonTitle" class="eval-json-title"></p>
+      <pre class="eval-json-pre"><code id="evalJsonCode"></code></pre>
+    </div>
+  </div>
+  <h3>Evaluation plots</h3>
+  <div class="prediction-actions">
+    <label for="plotShortenLabels"><strong>Shorten labels:</strong></label>
+    <input id="plotShortenLabels" type="checkbox" checked>
+  </div>
+  <div class="prediction-actions">
+    <label for="plotRoundingPrecision"><strong>Rounding:</strong></label>
+    <input id="plotRoundingPrecision" class="plot-number-input" type="number" min="0" max="6" step="1" value="2">
+  </div>
+  <div id="plotConfusionMinLabelTotalRow" class="prediction-actions">
+    <label for="plotConfusionMinLabelTotal"><strong>Minimum label total:</strong></label>
+    <input id="plotConfusionMinLabelTotal" class="plot-number-input" type="number" min="0" step="1" value="3">
+    <span class="sort-status-hint">Hide labels whose displayed row or column total falls below this threshold.</span>
+  </div>
+  <div id="plotTpFpFnMinLabelTotalRow" class="prediction-actions">
+    <label for="plotTpFpFnMinLabelTotal"><strong>Minimum label total:</strong></label>
+    <input id="plotTpFpFnMinLabelTotal" class="plot-number-input" type="number" min="0" step="1" value="3">
+    <span class="sort-status-hint">Hide label columns whose total TP/FP/FN count across the displayed evaluations falls below this threshold.</span>
+  </div>
+  <div id="plotTpFpFnMinDocumentTotalRow" class="prediction-actions">
+    <label for="plotTpFpFnMinDocumentTotal"><strong>Minimum document total:</strong></label>
+    <input id="plotTpFpFnMinDocumentTotal" class="plot-number-input" type="number" min="0" step="1" value="0">
+    <span class="sort-status-hint">Hide document rows whose total TP/FP/FN count across the displayed evaluations falls below this threshold.</span>
+  </div>
+  <div id="plotTabsByRow" class="prediction-actions">
+    <strong>Create tabs by:</strong>
+    <button id="plotTabsByPrefixButton" class="prediction-action-button" type="button">prefix</button>
+    <button id="plotTabsBySuffixButton" class="prediction-action-button" type="button">suffix</button>
+  </div>
+  <div id="plotConfusionTabsByRow" class="prediction-actions">
+    <strong>Create tabs by:</strong>
+    <button id="confusionTabsByMetricFieldButton" class="prediction-action-button" type="button">overrides.metric.field</button>
+    <button id="confusionTabsByPredictionGroupButton" class="prediction-action-button" type="button">prediction group</button>
+  </div>
+  <div id="plotGroupBarsRow" class="plot-group-bars-controls">
+    <strong>Group bars:</strong>
+    <div id="plotGroupBarsList" class="plot-group-bars-list"></div>
+  </div>
+  <div id="plotShowLegendOnceRow" class="prediction-actions" style="display:none;">
+    <label for="plotShowLegendOnce"><strong>Show legend once:</strong></label>
+    <input id="plotShowLegendOnce" type="checkbox" checked>
+  </div>
+  <div id="evalPlotTabs" class="tabs"></div>
+  <div id="evalPlotContent" class="plot-content"></div>
+  <div class="prediction-actions">
+    <button id="downloadFiguresButton" class="prediction-action-button" type="button" disabled>Download Figures</button>
+    <button id="downloadDataButton" class="prediction-action-button" type="button" disabled>Download Data</button>
+    <label for="exportOpaqueBackground" class="export-option-label">
+      <input id="exportOpaqueBackground" type="checkbox" checked>
+      <span>Opaque background</span>
+    </label>
+  </div>
+  <div id="barTooltip" class="bar-tooltip" aria-hidden="true"></div>
+
+  <script type="module" src="assets/js/main.js"></script>
+</body>
+</html>
