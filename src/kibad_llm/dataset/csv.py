@@ -12,6 +12,7 @@ def read_grouped_csv_records(
     pdf_id_column: str = "Key",
     columns: list[str] | None = None,
     remove_nan: bool = True,
+    split_columns: dict[str, str] | None = None,
 ) -> dict[str, dict[str, list]]:
     """Read grouped compound entries (e.g. organism trends, ecosystem service trends) from a CSV
     file. There are multiple entries per pdf ID, so they are grouped into lists.
@@ -24,12 +25,26 @@ def read_grouped_csv_records(
         columns: Optional list of columns to read from the CSV file. If not provided,
                  all columns are read.
         remove_nan: Whether to remove NaN values from the dictionaries.
+        split_columns: Optional mapping from column name to separator. Cells in that column with
+                       multiple, separator-joined values (e.g. "Wald, Agrar- und Offenland") are
+                       split into individual values, each stripped of surrounding whitespace, and
+                       the row is duplicated once per value (so downstream fields stay scalar,
+                       matching a target schema where the corresponding field is single-valued).
     Returns:
         A dictionary mapping pdf IDs to their entries each represented as a list of dictionaries.
     """
     if columns is not None and pdf_id_column not in columns:
         columns = [pdf_id_column] + columns
     df = pd.read_csv(file, usecols=columns)
+
+    if split_columns:
+        for column, separator in split_columns.items():
+            df[column] = df[column].apply(
+                lambda v: (
+                    [part.strip() for part in v.split(separator)] if isinstance(v, str) else v
+                )
+            )
+        df = df.explode(list(split_columns), ignore_index=True)
 
     # Group by pdf_id_column and convert each group to a list of dictionaries
     result: dict[str, dict[str, list]] = {}
