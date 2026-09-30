@@ -1472,9 +1472,10 @@ class EcosystemServiceFields(CompoundFeature):
     einen davon ab, analog zu einer einzelnen Zeile in der ösl_papers_ids.csv-Datei.
 
     Die Kernauswertung (siehe configs/experiment/evaluate/ecosystem_service.yaml) beschränkt sich
-    aktuell auf drei dieser Felder: Biodiv_Facette (die untersuchte Variable), ESGroup (eine
-    gruppierte, kategorisierbare Ausprägung der Ökosystemleistung) und Einfluss (die
-    Indikatorvariable). Die übrigen Felder werden weiterhin extrahiert, aber bei der Bewertung
+    aktuell auf vier dieser Felder: ÖSL (die untersuchte Variable), Biodiv_Facette (die
+    Biodiversitätsfacette, auf die der Einfluss der ÖSL gemessen wird), Einfluss (die
+    Indikatorvariable) und Lebensraum_Gruppiert (pro betroffenem Lebensraum eine eigene Instanz).
+    Die übrigen Felder werden weiterhin extrahiert, aber bei der Bewertung
     ignoriert (`ignore_subfields`).
     """
 
@@ -1493,8 +1494,8 @@ class EcosystemServiceFields(CompoundFeature):
     # configs/dataset/references/ecosystem_service_oesl_vote_count.yaml).
     Einfluss: EinflussEnum = Field(
         ...,
-        description="Was ist der gemessene Einfluss der Ökosystemleistung in der Studie auf Biodiversität von den "
-        "folgenden Optionen?",  # needs explanation of the terms
+        description="Was ist der gemessene Einfluss der Ökosystemleistung (ÖSL) auf die "
+        "Biodiversitätsfacette (Biodiv_Facette) in der Studie von den folgenden Optionen?",  # needs explanation of the terms
     )
     Themenkomplex: ThemenkomplexEnum = Field(
         ...,
@@ -1511,7 +1512,8 @@ class EcosystemServiceFields(CompoundFeature):
     )
     Biodiv_Facette: BiodiversityFacetEnum = Field(
         ...,
-        description="Welche dieser Biodiversitätsfacetten wird in der Studie betrachtet?",
+        description="Welche dieser Biodiversitätsfacetten wird in der Studie betrachtet? Gemeint ist die "
+        "Facette, auf die der Einfluss (Einfluss) der Ökosystemleistung (ÖSL) gemessen wird.",
     )
     Lebensraum_Gruppiert: HabitatEnum = Field(
         ...,
