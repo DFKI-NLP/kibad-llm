@@ -1,0 +1,13 @@
+# @package _global_
+
+# This experiment uses the schema EcosystemStudyEcosystemServiceTrends to extract relationships between
+# biodiversity and ecosystem services from Markdown documents.
+# Evidence detection is enabled (default of extractor/simple), so that each extracted field value is
+# accompanied by a text snippet from the original document that supports the extraction.
+
+# To execute this experiment run:
+# python -m kibad_llm.predict experiment/predict=ecosystemservice_trends
+
+defaults:
+  - override /extractor/prompt_template: ecosystem_service
+  - override /extractor/schema: ecosystem_service
