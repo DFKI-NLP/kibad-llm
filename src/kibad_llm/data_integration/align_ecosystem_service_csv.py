@@ -36,6 +36,12 @@ COLUMN_RENAMES = {
     "Art(en)": "Arten",
 }
 
+# Cell values renamed per column so they match the vocabulary of the corresponding schema enum.
+# "Lebensraum_Gruppiert" must match `HabitatEnum`, which uses the plural "Küsten".
+VALUE_RENAMES = {
+    "Lebensraum_Gruppiert": {"Küste und Küstengewässer": "Küsten und Küstengewässer"},
+}
+
 # Unicode punctuation variants seen in newer exports, mapped to the ASCII equivalents already used
 # throughout the committed file.
 PUNCTUATION_NORMALIZATION = {
@@ -66,13 +72,32 @@ def normalize_punctuation(value: str) -> str:
     return _PUNCTUATION_PATTERN.sub(lambda m: PUNCTUATION_NORMALIZATION[m.group(0)], value)
 
 
+def rename_value(column: str, value: str) -> str:
+    """Apply the `VALUE_RENAMES` for `column` to `value`.
+
+    Multi-valued cells (comma-separated, e.g. "Wald, Küste und Küstengewässer") are renamed
+    element-wise.
+
+    Args:
+        column: Name of the (already renamed) column the value belongs to.
+        value: Cell value.
+
+    Returns:
+        The value with all renames for `column` applied.
+    """
+    renames = VALUE_RENAMES.get(column)
+    if not renames or not value:
+        return value
+    return ", ".join(renames.get(part.strip(), part.strip()) for part in value.split(","))
+
+
 def align_csv(input_path: Path, reference_path: Path, output_path: Path) -> None:
     """Align `input_path`'s CSV formatting with `reference_path`'s conventions and write the
     result to `output_path`.
 
     Applies, in order: column renames (see `COLUMN_RENAMES`), then restricts and reorders columns
     to exactly match `reference_path`'s header, then normalizes Unicode punctuation to ASCII (see
-    `PUNCTUATION_NORMALIZATION`) on every cell. Line endings are left as `input_path` has them.
+    `PUNCTUATION_NORMALIZATION`) and renames selected values (see `VALUE_RENAMES`) on every cell. Line endings are left as `input_path` has them.
 
     Args:
         input_path: CSV file to align (e.g. a newer export).
@@ -98,7 +123,10 @@ def align_csv(input_path: Path, reference_path: Path, output_path: Path) -> None
         for row in reader:
             renamed_row = {COLUMN_RENAMES.get(k, k): v for k, v in row.items()}
             aligned_rows.append(
-                {col: normalize_punctuation(renamed_row[col]) for col in reference_columns}
+                {
+                    col: rename_value(col, normalize_punctuation(renamed_row[col]))
+                    for col in reference_columns
+                }
             )
 
     with open(output_path, "w", newline="", encoding="utf-8") as f:
