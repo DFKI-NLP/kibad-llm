@@ -1,7 +1,10 @@
-# priorieties are like stages at which hooks run.
-# hooks using the same priority run simultaneously.
-# hooks running simultaneously may run into conflicts when operating on/ changing the same files!
+# Priorities are like stages at which hooks run. Hooks using the same priority run simultaneously.
+# Hooks running simultaneously may run into conflicts when operating on/ changing the same files!
 exclude: "^data/.*|^tests/fixtures/.*"
+
+# Match the project's minimum Python version and the code quality CI job.
+default_language_version:
+  python: python3.12
 
 repos:
   # Core housekeeping
