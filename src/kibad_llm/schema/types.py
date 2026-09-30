@@ -1491,7 +1491,7 @@ class EcosystemServiceFields(CompoundFeature):
     # EcosystemServiceFields instances, not by stacking values within a single instance. A
     # reference row naming several habitats (e.g. "Wald, Agrar- und Offenland") is likewise split
     # into one row per habitat before evaluation (see split_columns in
-    # configs/dataset/references/ecosystem_service_oesl_vote_count.yaml).
+    # configs/dataset/references/ecosystem_service_wald.yaml).
     Einfluss: EinflussEnum = Field(
         ...,
         description="Was ist der gemessene Einfluss der Ökosystemleistung (ÖSL) auf die "

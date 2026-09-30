@@ -12,6 +12,16 @@ The formatting differences this script corrects were identified by comparing
 - Newer exports preserve Unicode punctuation (hyphen/dash/quote variants) that the committed file
   has flattened to their ASCII equivalents.
 
+Optionally, papers can be filtered (all rows of a paper, identified by "Key") with
+`--exclude-methods` (e.g. reviews and pure model studies) and `--require-habitat` (e.g. "Wald"), which
+is used to derive the reference for the forest dev set. Example (the input `ösl_papers_raw.csv` is the
+raw export, formerly `ösl_papers_ids_JM.csv`):
+
+    uv run -m kibad_llm.data_integration.align_ecosystem_service_csv \\
+        --exclude-methods Literaturstudie Modell/Simulation --require-habitat Wald
+
+TODO: papers that contain Wald *and* other habitats are currently kept unchanged, see `filter_papers`.
+
 This script does *not* touch line endings - the committed file is CRLF, but newer exports are left
 as-is (LF), per the decision recorded when this script was written.
 
@@ -20,13 +30,14 @@ This is a one-off/standalone script, not part of the extraction pipeline - see
 """
 
 import argparse
+from collections.abc import Collection
 import csv
 from pathlib import Path
 import re
 
 from loguru import logger
 
-from kibad_llm.config import DATA_DIR
+from kibad_llm.config import DATA_DIR, INTERIM_DATA_DIR
 
 # Columns renamed in this project (see commit "change english terms in schema to german to fit
 # column names of csv") to match `EcosystemServiceFields` field names. Newer raw exports still use
@@ -91,22 +102,117 @@ def rename_value(column: str, value: str) -> str:
     return ", ".join(renames.get(part.strip(), part.strip()) for part in value.split(","))
 
 
-def align_csv(input_path: Path, reference_path: Path, output_path: Path) -> None:
+def _tokens(value: str) -> set[str]:
+    """Split a comma-separated cell into its stripped, non-empty elements.
+
+    Args:
+        value: Cell value, e.g. "Feld, Modell/Simulation".
+
+    Returns:
+        The set of elements, e.g. `{"Feld", "Modell/Simulation"}`.
+    """
+    return {part.strip() for part in value.split(",") if part.strip()}
+
+
+def filter_papers(
+    rows: list[dict[str, str]],
+    exclude_methods: Collection[str] = (),
+    require_habitat: str | None = None,
+) -> list[dict[str, str]]:
+    """Drop whole papers (all rows sharing a "Key") from `rows` based on method and habitat.
+
+    Both criteria work on the comma-separated elements of a cell, and on the paper level:
+
+    - `exclude_methods`: a paper is dropped if *any* of its rows has an excluded method among the
+      elements of its "Methode" cell. "Feld, Modell/Simulation" thus also matches "Modell/Simulation".
+    - `require_habitat`: a paper is kept only if *any* of its rows has the habitat among the
+      elements of its "Lebensraum_Gruppiert" cell.
+
+    Rows of the papers that are kept are not modified.
+
+    Args:
+        rows: Aligned rows; must contain the columns "Key", and "Methode" / "Lebensraum_Gruppiert"
+            if the respective criterion is used.
+        exclude_methods: "Methode" values whose papers to drop. Empty: no filtering by method.
+        require_habitat: "Lebensraum_Gruppiert" value that a paper must contain. `None`: no
+            filtering by habitat.
+
+    Returns:
+        The rows of the remaining papers, in their original order.
+
+    Raises:
+        ValueError: If a column required by a used criterion is missing in `rows`.
+
+    Todo:
+        Papers that contain "Wald" *and* other habitats are kept unchanged, i.e. their non-Wald
+        rows (and the non-Wald parts of multi-habitat cells, which `split_columns` of the dataset
+        config turns into separate rows) remain in the output. Decide whether to (a) drop the
+        non-Wald rows of such papers, (b) drop such papers entirely, or (c) keep them as they are.
+        The prompt only extracts relations for the habitat "Wald".
+    """
+    required_columns = ["Key"]
+    if exclude_methods:
+        required_columns.append("Methode")
+    if require_habitat is not None:
+        required_columns.append("Lebensraum_Gruppiert")
+    if rows:
+        missing = [c for c in required_columns if c not in rows[0]]
+        if missing:
+            raise ValueError(f"Cannot filter papers, missing column(s): {missing}")
+
+    excluded = set(exclude_methods)
+    dropped_by_method: set[str] = set()
+    keys_with_habitat: set[str] = set()
+    for row in rows:
+        if excluded and _tokens(row["Methode"]) & excluded:
+            dropped_by_method.add(row["Key"])
+        if require_habitat is not None and require_habitat in _tokens(row["Lebensraum_Gruppiert"]):
+            keys_with_habitat.add(row["Key"])
+
+    all_keys = {row["Key"] for row in rows}
+    dropped_by_habitat = (
+        set() if require_habitat is None else all_keys - keys_with_habitat - dropped_by_method
+    )
+    if dropped_by_method:
+        logger.info(
+            f"Dropping {len(dropped_by_method)} paper(s) with Methode in {sorted(excluded)}: "
+            f"{sorted(dropped_by_method)}"
+        )
+    if dropped_by_habitat:
+        logger.info(
+            f"Dropping {len(dropped_by_habitat)} paper(s) without habitat '{require_habitat}'"
+        )
+    dropped = dropped_by_method | dropped_by_habitat
+    return [row for row in rows if row["Key"] not in dropped]
+
+
+def align_csv(
+    input_path: Path,
+    reference_path: Path,
+    output_path: Path,
+    exclude_methods: Collection[str] = (),
+    require_habitat: str | None = None,
+) -> None:
     """Align `input_path`'s CSV formatting with `reference_path`'s conventions and write the
     result to `output_path`.
 
     Applies, in order: column renames (see `COLUMN_RENAMES`), then restricts and reorders columns
     to exactly match `reference_path`'s header, then normalizes Unicode punctuation to ASCII (see
-    `PUNCTUATION_NORMALIZATION`) and renames selected values (see `VALUE_RENAMES`) on every cell. Line endings are left as `input_path` has them.
+    `PUNCTUATION_NORMALIZATION`) and renames selected values (see `VALUE_RENAMES`) on every cell.
+    Finally, papers are optionally filtered (see `filter_papers`). Line endings are written as LF.
+    The parent directory of `output_path` is created if necessary.
 
     Args:
         input_path: CSV file to align (e.g. a newer export).
         reference_path: CSV file whose column set/order to align to.
         output_path: Where to write the aligned CSV.
+        exclude_methods: Drop papers with one of these "Methode" values, see `filter_papers`.
+        require_habitat: Keep only papers with this "Lebensraum_Gruppiert" value, see
+            `filter_papers`.
 
     Raises:
         ValueError: If, after applying `COLUMN_RENAMES`, `input_path` is missing a column that
-            `reference_path` has.
+            `reference_path` has, or if a column needed for filtering is missing in the output.
     """
     with open(reference_path, newline="", encoding="utf-8") as f:
         reference_columns = next(csv.reader(f))
@@ -129,6 +235,14 @@ def align_csv(input_path: Path, reference_path: Path, output_path: Path) -> None
                 }
             )
 
+    n_rows_before = len(aligned_rows)
+    aligned_rows = filter_papers(
+        aligned_rows, exclude_methods=exclude_methods, require_habitat=require_habitat
+    )
+    if len(aligned_rows) != n_rows_before:
+        logger.info(f"Filtering kept {len(aligned_rows)} of {n_rows_before} rows")
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
     with open(output_path, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=reference_columns, lineterminator="\n")
         writer.writeheader()
@@ -144,7 +258,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--input",
         type=Path,
-        default=DATA_DIR / "external" / "ecosystem_services" / "ösl_papers_ids_JM.csv",
+        default=DATA_DIR / "external" / "ecosystem_services" / "ösl_papers_raw.csv",
         help="Newer CSV export to align.",
     )
     parser.add_argument(
@@ -156,8 +270,32 @@ if __name__ == "__main__":
     parser.add_argument(
         "--output",
         type=Path,
-        default=DATA_DIR / "external" / "ecosystem_services" / "ösl_papers_ids_JM_aligned.csv",
-        help="Where to write the aligned CSV. Does not overwrite --reference by default.",
+        default=INTERIM_DATA_DIR / "ecosystem_services" / "ösl_papers_processed_wald.csv",
+        help="Where to write the aligned CSV. Does not overwrite --reference by default. The default "
+        "name fits the filters used for the forest dev set (see below); pass --output when using "
+        "other filters.",
+    )
+    parser.add_argument(
+        "--exclude-methods",
+        nargs="+",
+        default=[],
+        metavar="METHODE",
+        help="Drop papers that contain one of these 'Methode' values, e.g. Literaturstudie "
+        "Modell/Simulation (reviews and pure model studies). Values are matched against the "
+        "comma-separated elements of the cell, so 'Feld, Modell/Simulation' matches as well.",
+    )
+    parser.add_argument(
+        "--require-habitat",
+        default=None,
+        metavar="LEBENSRAUM",
+        help="Keep only papers that contain this 'Lebensraum_Gruppiert' value, e.g. Wald. "
+        "TODO: papers that contain Wald and other habitats are kept unchanged, see filter_papers.",
     )
     args = parser.parse_args()
-    align_csv(input_path=args.input, reference_path=args.reference, output_path=args.output)
+    align_csv(
+        input_path=args.input,
+        reference_path=args.reference,
+        output_path=args.output,
+        exclude_methods=args.exclude_methods,
+        require_habitat=args.require_habitat,
+    )

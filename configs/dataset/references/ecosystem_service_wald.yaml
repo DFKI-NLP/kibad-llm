@@ -2,7 +2,11 @@ _target_: kibad_llm.dataset.csv.read_grouped_csv_records
 output_key: ecosystem_service_trends
 # unlike ÖSL-VoteCount-Vollständig.csv, this file has a "Key" column with Zotero item keys matched
 # in, compatible with how predictions are keyed (see configs/dataset/predictions/extraction_result.yaml)
-file: "${paths.root_dir}/data/external/ecosystem_services/ösl_papers_ids.csv"
+# forest dev set: papers that contain the habitat Wald, without reviews / pure model studies. Created from
+# data/external/ecosystem_services/ösl_papers_raw.csv with
+#   uv run -m kibad_llm.data_integration.align_ecosystem_service_csv \
+#       --exclude-methods Literaturstudie Modell/Simulation --require-habitat Wald
+file: "${paths.root_dir}/data/interim/ecosystem_services/ösl_papers_processed_wald.csv"
 pdf_id_column: "Key"
 # column names match `EcosystemServiceFields` field names (see src/kibad_llm/schema/types.py) so
 # that no post-processing/renaming is needed, analogous to `OrganismBiodiversityTrend`.
