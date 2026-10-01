@@ -161,7 +161,7 @@ exclude = [".git", "notebooks", "models", "data", "logs"]
 
 [tool.codespell]
 skip = "logs/**,data/**,configs/**/*template*,configs/evaluate.yaml,tests/fixtures/**.json,tests/fixtures/**.jsonl,src/kibad_llm/schema/**,tests/unit/schema/**,*.ipynb"
-ignore-words-list = "hist"
+ignore-words-list = "hist,methode,modell,feld"
 
 # Bandit (read by prek bandit with -c pyproject.toml)
 [tool.bandit]
