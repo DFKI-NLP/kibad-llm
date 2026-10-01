@@ -235,6 +235,90 @@ class TransformationPotentialEnum(str, Enum):
     LEBENSRAUMUEBERGREIFENDER_WANDLUNGSPROZESS = "Lebensraumübergreifender Wandlungsprozess"
 
 
+class EinflussEnum(str, Enum):
+    JA = "ja"
+    NEG = "neg"
+    NEIN = "nein"
+    NEU = "neu"
+    NICHT_LINEAR = "nicht linear"
+    POS = "pos"
+
+
+class ThemenkomplexEnum(str, Enum):
+    KOHLENSTOFFKREISLAUF = "Kohlenstoffkreislauf"
+    KULTURELLE_LEISTUNGEN = "Kulturelle Leistungen"
+    STABILITAET_UND_RESILIENZ = "Stabilität und Resilienz"
+
+
+class BiodiversityFacetEnum(str, Enum):
+    ARTENVIELFALT = "Artenvielfalt"
+    ARTENZUSAMMENSETZUNG = "Artenzusammensetzung"
+    ARTIDENTITAET = "Artidentität"
+    ARTZUSAMMENSETZUNG = "Artzusammensetzung"
+    FUNKTIONELLE_DIVERSITAET = "Funktionelle Diversität"
+    GENETISCHE_DIVERSITAET = "Genetische Diversität"
+    KOMPOSITINDIKATOR = "Kompositindikator"
+    LANDSCHAFTSDIVERSITAET = "Landschaftsdiversität"
+    LANDSCHAFTSTYP = "Landschaftstyp"
+    STRUKTURELLE_DIVERSITAET = "Strukturelle Diversität"
+
+
+class ESGroupEnum(str, Enum):
+    """Werte der "ESGroup"-Spalte in ösl_papers_raw.csv: eine vom Datensatz selbst vorgenommene,
+    gröbere Gruppierung der freitextlichen "ÖSL"-Spalte in klassifizierbare Kategorien. Zwei
+    Rohwerte wurden dabei mit einem bestehenden Wert zusammengeführt: "Schädlingskontrolle?" ->
+    "Schädlingskontrolle" und "Ästhetischer Wert der Landschaft" -> "Ästhetischer Wert".
+    """
+
+    AESTHETISCHER_WERT = "Ästhetischer Wert"
+    ATMOSPHAERISCHE_ZUSAMMENSETZUNG = "Atmosphärische Zusammensetzung"
+    BIOLOGISCHE_SANIERUNG = "Biologische Sanierung"
+    BIOMASSEPRODUKTION = "Biomasseproduktion"
+    DUERRERESISTENZ = "Dürreresistenz"
+    ERHALT_DES_WASSERHAUSHALTS = "Erhalt des Wasserhaushalts"
+    ERHOLUNGSWERT = "Erholungswert"
+    EROSIONSSCHUTZ = "Erosionsschutz"
+    FEUCHTIGKEITSREGULIERUNG = "Feuchtigkeitsregulierung"
+    FEUERSCHUTZ = "Feuerschutz"
+    FILTRATIONSRATE_FUTTEREFFIZIENZ = "Filtrationsrate (Futtereffizienz)"
+    FREIZEITLICHE_NUTZUNG = "Freizeitliche Nutzung"
+    GESUNDHEIT = "Gesundheit"
+    HOCHWASSERSCHUTZ = "Hochwasserschutz"
+    KOHLENSTOFFSPEICHERUNG = "Kohlenstoffspeicherung"
+    KONZENTRATION_GELOESTER_STOFFE_PHOSPHAT_UND_STICKSTOFF = (
+        "Konzentration gelöster Stoffe (Phosphat und Stickstoff)"
+    )
+    KRANKHEITSKONTROLLE = "Krankheitskontrolle"
+    KULTURELLER_WERT = "Kultureller Wert"
+    NAEHRSTOFFGEHALT_IM_BODEN = "Nährstoffgehalt im Boden"
+    PHYSISCHES_WOHLBEFINDEN = "physisches Wohlbefinden"
+    PSYCHISCHES_WOHLBEFINDEN = "psychisches Wohlbefinden"
+    REGULIERUNG_DER_CHEMISCHEN_ZUSAMMENSETZUNG = "Regulierung der chemischen Zusammensetzung"
+    REGULIERUNG_DER_CHEMISCHEN_ZUSAMMENSETZUNG_DER_ATMOSPHAERE_UND_DER_OZEANE_2_2_6_1 = (
+        "Regulierung der chemischen Zusammensetzung der Atmosphäre und der Ozeane (2.2.6.1)"
+    )
+    REGULIERUNG_VON_EXTREMEREIGNISSEN = "Regulierung von Extremereignissen"
+    SCHADSTOFFRUECKHALT = "Schadstoffrückhalt"
+    SCHAEDLINGSKONTROLLE = "Schädlingskontrolle"
+    SCHAEDLINGSKONTROLLE_KRANKHEITSRESISTENZ = "Schädlingskontrolle, Krankheitsresistenz"
+    SCHUTZ_VOR_STURMGEFAHREN = "Schutz vor Sturmgefahren"
+    SEDIMENTSTABILISIERUNG = "Sedimentstabilisierung"
+    SELBSTREINIGUNG_UND_NAEHRSTOFFRETENTION = "Selbstreinigung und Nährstoffretention"
+    SOZIALE_INTERAKTION_INTEGRATION = "Soziale Interaktion (Integration)"
+    STABILITAET_UND_RESILIENZ = "Stabilität und Resilienz"
+    STOERUNGSRESISTENZ = "Störungsresistenz"
+    SULFID_KONZENTRATION = "Sulfid-Konzentration"
+    TEMPERATURREGULIERUNG = "Temperaturregulierung"
+    WASSERQUALITAET = "Wasserqualität"
+    WIRTSCHAFTLICHER_WERT = "Wirtschaftlicher Wert"
+    WISSENSKENNTNISS = "Wissenskenntniss"
+    WOHLBEFINDEN_SICHERHEITSGEFUEHL = "Wohlbefinden/Sicherheitsgefühl"
+    ZERSETZUNG = "Zersetzung"
+    ZERSETZUNGS_UND_FIXIERUNGSPROZESSE_UND_IHRE_AUSWIRKUNGEN_AUF_DIE_BODENQUALITAET_2_2_4_2 = (
+        "Zersetzungs- und Fixierungsprozesse und ihre Auswirkungen auf die Bodenqualität (2.2.4.2)"
+    )
+
+
 class EcosystemType(CompoundFeature):
     """Ökosystemtyp mit Kategorie, Name und Beschreibung."""
 
@@ -1381,4 +1465,100 @@ class EcosystemStudyFeaturesCompoundsSimple(BaseEcosystemStudyFeatures):
     )
 
 
-# ==========================================================================
+class EcosystemServiceFieldsHabitat(CompoundFeature):
+    """Ein einzelner Zusammenhang zwischen Biodiversität und Ökosystemleistung für einen einzelnen,
+    vorab festgelegten Lebensraum (z.B. Wald), bestehend aus Ökosystemleistung (ÖSL), Biodiv_Facette,
+    Einfluss und Arten. Ein Text kann
+    mehrere solcher Zusammenhänge beschreiben; jede Instanz bildet genau einen davon ab, analog zu
+    einer einzelnen Zeile in der ösl_papers_raw.csv-Datei.
+
+    Die Auswertung (siehe configs/experiment/evaluate/ecosystem_service.yaml) beschränkt sich auf
+    ÖSL (die untersuchte Variable), Biodiv_Facette (die Biodiversitätsfacette) und Einfluss (die
+    Indikatorvariable). Arten wird extrahiert, aber bei der Bewertung ignoriert
+    (`ignore_subfields`).
+    """
+
+    # The fields below are based on the ösl_papers_raw.csv file (ÖSL-VoteCount-Vollständig with
+    # Zotero item keys matched in). We use the column names as field names, analogous to
+    # OrganismBiodiversityTrend, so that no post-processing is needed. "Biodiv-Facette" and
+    # "Art(en)" are not valid Python identifiers, so those two columns are named "Biodiv_Facette"
+    # and "Arten" here and in the processed CSV (see
+    # src/kibad_llm/data_integration/align_ecosystem_service_csv.py).
+    # Further columns of the CSV are intentionally not part of the schema: "Themenkomplex" (one of
+    # Kohlenstoffkreislauf, Stabilität und Resilienz, Kulturelle Leistungen; only used in the prompt
+    # to delimit the relevant ÖSL), "ESGroup" (the CSV's own grouping of the free-text "ÖSL" into 43
+    # categories) and the CICES columns ("CICES-Bereich", "CICES-Gruppe", "CICES-Klasse",
+    # "CICES-Code", partly corrupted). "Lebensraum_Gruppiert" is only part of the base schema
+    # (EcosystemServiceFields), since the habitat is fixed by the data set here (e.g. "Wald", see
+    # configs/dataset/references/ecosystem_service_wald.yaml).
+    # ÖSL, Biodiv_Facette and Einfluss are single-valued and required per relationship (every row
+    # of the source data has exactly one value for each); multiple relationships in one text are
+    # represented as multiple instances, not by stacking values within a single instance.
+    ÖSL: str = Field(
+        ...,
+        description="Welche Ökosystemleistung wird in der Studie betrachtet?",
+    )
+    Biodiv_Facette: BiodiversityFacetEnum = Field(
+        ...,
+        description="Welche dieser Biodiversitätsfacetten wird in der Studie betrachtet? Gemeint ist die "
+        "Facette, auf die der Einfluss (Einfluss) der Ökosystemleistung (ÖSL) gemessen wird.",
+    )
+    Einfluss: EinflussEnum = Field(
+        ...,
+        description="Was ist der gemessene Einfluss der Ökosystemleistung (ÖSL) auf die "
+        "Biodiversitätsfacette (Biodiv_Facette) in der Studie von den folgenden Optionen?",  # needs explanation of the terms
+    )
+    Arten: str | None = Field(
+        default=None,
+        description="Welche Arten bzw. Artengruppen werden in der Studie untersucht? Verwende die kleinste "
+        "machbare Ebene: Wenn eine Studie nur wenige Arten behandelt, sollten diese auf Artebene mit ihrem "
+        "wissenschaftlichen und deutschen Namen angegeben werden. Werden jedoch sehr viele Arten "
+        "behandelt oder eine Artengruppe besprochen, wird die Artengruppe als 'Sammelbegriff' angegeben. "
+        "Falls die Studie auf englisch ist, übersetze Art- bzw. Artengruppennamen ins Deutsche. "
+        "Ergänze, wenn nicht angegeben, die wissenschaftlichen Artennamen, und umgekehrt die "
+        "deutschen Namen, wenn nur die wissenschaftlichen Artennamen verwendet wurden. ",
+    )
+
+
+class EcosystemServiceFields(EcosystemServiceFieldsHabitat):
+    """Ein einzelner Zusammenhang zwischen Biodiversität und Ökosystemleistung, bestehend aus
+    Ökosystemleistung (ÖSL), Biodiv_Facette, Einfluss, Arten und Lebensraum_Gruppiert (Basis-Schema
+    für alle Lebensräume). Wie [`EcosystemServiceFieldsHabitat`][.EcosystemServiceFieldsHabitat], aber
+    mit dem Lebensraum als zusätzlichem Feld; pro betroffenem Lebensraum wird eine eigene Instanz
+    erstellt.
+    """
+
+    # A reference row naming several habitats (e.g. "Wald, Agrar- und Offenland") has to be split
+    # into one row per habitat before evaluation (see split_columns of read_grouped_csv_records).
+    Lebensraum_Gruppiert: HabitatEnum = Field(
+        ...,
+        description="Um welchen der folgenden Lebensräume geht es in dem Text? Falls mehrere "
+        "Lebensräume betroffen sind, erstelle für jeden betroffenen Lebensraum eine eigene "
+        "Instanz dieses Zusammenhangs.",
+    )
+
+
+class EcosystemStudyEcosystemServiceTrends(BaseEcosystemStudyFeatures):
+    """Angaben zu den im Text beschriebenen Zusammenhängen zwischen Biodiversität und
+    Ökosystemleistungen (Basis-Schema für alle Lebensräume, mit Lebensraum je Zusammenhang).
+    """
+
+    ecosystem_service_trends: list[EcosystemServiceFields] = Field(
+        default_factory=list,
+        alias="Zusammenhänge zwischen Biodiversität und Ökosystemleistungen",
+        description="Liste der im Text beschriebenen Zusammenhänge zwischen Biodiversität und "
+        "Ökosystemleistungen.",
+    )
+
+
+class EcosystemStudyEcosystemServiceTrendsHabitat(BaseEcosystemStudyFeatures):
+    """Angaben zu den im Text beschriebenen Zusammenhängen zwischen Biodiversität und
+    Ökosystemleistungen für einen einzelnen, vorab festgelegten Lebensraum (ohne Lebensraum-Feld).
+    """
+
+    ecosystem_service_trends: list[EcosystemServiceFieldsHabitat] = Field(
+        default_factory=list,
+        alias="Zusammenhänge zwischen Biodiversität und Ökosystemleistungen",
+        description="Liste der im Text beschriebenen Zusammenhänge zwischen Biodiversität und "
+        "Ökosystemleistungen.",
+    )

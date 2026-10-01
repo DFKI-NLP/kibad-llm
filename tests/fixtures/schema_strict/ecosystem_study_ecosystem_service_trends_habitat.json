@@ -1,0 +1,96 @@
+{
+  "$defs": {
+    "BiodiversityFacetEnum": {
+      "enum": [
+        "Artenvielfalt",
+        "Artenzusammensetzung",
+        "Artidentität",
+        "Artzusammensetzung",
+        "Funktionelle Diversität",
+        "Genetische Diversität",
+        "Kompositindikator",
+        "Landschaftsdiversität",
+        "Landschaftstyp",
+        "Strukturelle Diversität"
+      ],
+      "title": "BiodiversityFacetEnum",
+      "type": "string"
+    },
+    "EcosystemServiceFieldsHabitat": {
+      "additionalProperties": false,
+      "description": "Ein einzelner Zusammenhang zwischen Biodiversität und Ökosystemleistung für einen einzelnen,\nvorab festgelegten Lebensraum (z.B. Wald), bestehend aus Ökosystemleistung (ÖSL), Biodiv_Facette,\nEinfluss und Arten. Ein Text kann\nmehrere solcher Zusammenhänge beschreiben; jede Instanz bildet genau einen davon ab, analog zu\neiner einzelnen Zeile in der ösl_papers_raw.csv-Datei.\n\nDie Auswertung (siehe configs/experiment/evaluate/ecosystem_service.yaml) beschränkt sich auf\nÖSL (die untersuchte Variable), Biodiv_Facette (die Biodiversitätsfacette) und Einfluss (die\nIndikatorvariable). Arten wird extrahiert, aber bei der Bewertung ignoriert\n(`ignore_subfields`).",
+      "properties": {
+        "ÖSL": {
+          "description": "Welche Ökosystemleistung wird in der Studie betrachtet?",
+          "title": "Ösl",
+          "type": "string"
+        },
+        "Biodiv_Facette": {
+          "description": "Welche dieser Biodiversitätsfacetten wird in der Studie betrachtet? Gemeint ist die Facette, auf die der Einfluss (Einfluss) der Ökosystemleistung (ÖSL) gemessen wird.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/BiodiversityFacetEnum"
+            }
+          ]
+        },
+        "Einfluss": {
+          "description": "Was ist der gemessene Einfluss der Ökosystemleistung (ÖSL) auf die Biodiversitätsfacette (Biodiv_Facette) in der Studie von den folgenden Optionen?",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EinflussEnum"
+            }
+          ]
+        },
+        "Arten": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Welche Arten bzw. Artengruppen werden in der Studie untersucht? Verwende die kleinste machbare Ebene: Wenn eine Studie nur wenige Arten behandelt, sollten diese auf Artebene mit ihrem wissenschaftlichen und deutschen Namen angegeben werden. Werden jedoch sehr viele Arten behandelt oder eine Artengruppe besprochen, wird die Artengruppe als 'Sammelbegriff' angegeben. Falls die Studie auf englisch ist, übersetze Art- bzw. Artengruppennamen ins Deutsche. Ergänze, wenn nicht angegeben, die wissenschaftlichen Artennamen, und umgekehrt die deutschen Namen, wenn nur die wissenschaftlichen Artennamen verwendet wurden. ",
+          "title": "Arten"
+        }
+      },
+      "required": [
+        "ÖSL",
+        "Biodiv_Facette",
+        "Einfluss",
+        "Arten"
+      ],
+      "title": "EcosystemServiceFieldsHabitat",
+      "type": "object"
+    },
+    "EinflussEnum": {
+      "enum": [
+        "ja",
+        "neg",
+        "nein",
+        "neu",
+        "nicht linear",
+        "pos"
+      ],
+      "title": "EinflussEnum",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Angaben zu den im Text beschriebenen Zusammenhängen zwischen Biodiversität und\nÖkosystemleistungen für einen einzelnen, vorab festgelegten Lebensraum (ohne Lebensraum-Feld).",
+  "properties": {
+    "ecosystem_service_trends": {
+      "description": "Liste der im Text beschriebenen Zusammenhänge zwischen Biodiversität und Ökosystemleistungen.",
+      "items": {
+        "$ref": "#/$defs/EcosystemServiceFieldsHabitat"
+      },
+      "title": "Ecosystem Service Trends",
+      "type": "array"
+    }
+  },
+  "title": "EcosystemStudyEcosystemServiceTrendsHabitat",
+  "type": "object",
+  "required": [
+    "ecosystem_service_trends"
+  ]
+}

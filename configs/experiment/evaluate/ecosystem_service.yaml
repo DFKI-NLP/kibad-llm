@@ -1,0 +1,23 @@
+# @package _global_
+
+# F1 score metric for ecosystem-service/biodiversity trend predictions, scoring each
+# `ecosystem_service_trends` compound as one entry, restricted to three fields: `ÖSL` (the variable
+# being checked), `Biodiv_Facette` and `Einfluss` (the indicator variable). `Arten` is extracted but
+# ignored during evaluation. The references are the forest dev set
+# (configs/dataset/references/ecosystem_service_wald.yaml), so the habitat is not evaluated.
+
+defaults:
+ - override /dataset: ecosystem_service
+ - override /metric: f1_micro
+
+metric:
+  # the fields in the prediction and reference to compute the F1 score on
+  fields:
+   - ecosystem_service_trends
+  # for compound entries, we may ignore certain subfields during evaluation
+  ignore_subfields:
+    ecosystem_service_trends:
+     - Arten
+
+  format_as_markdown: true
+  sort_fields: true
