@@ -1,7 +1,3 @@
-# TODO (not yet functional): see the TODOs in
-# configs/dataset/references/ecosystem_service_wald.yaml regarding the missing
-# document-ID column and the column name mismatches that still need to be resolved.
-#
 # Merges the references from the "ÖSL-VoteCount-Vollständig" csv into the predictions from
 # extraction_result. The resulting dataset has "prediction" and "reference" fields for each entry
 # and can be used for evaluation.
