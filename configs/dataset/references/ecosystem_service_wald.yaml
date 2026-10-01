@@ -5,24 +5,16 @@ output_key: ecosystem_service_trends
 # forest dev set: papers that contain the habitat Wald, without reviews / pure model studies. Created from
 # data/external/ecosystem_services/ösl_papers_raw.csv with
 #   uv run -m kibad_llm.data_integration.align_ecosystem_service_csv \
-#       --exclude-methods Literaturstudie Modell/Simulation --require-habitat Wald
+#       --exclude-methods Literaturstudie Modell/Simulation --require-habitat Wald  # codespell:ignore
 file: "${paths.root_dir}/data/interim/ecosystem_services/ösl_papers_processed_wald.csv"
 pdf_id_column: "Key"
-# column names match `EcosystemServiceFields` field names (see src/kibad_llm/schema/types.py) so
+# column names match `EcosystemServiceFieldsHabitat` field names (see src/kibad_llm/schema/types.py) so
 # that no post-processing/renaming is needed, analogous to `OrganismBiodiversityTrend`.
 columns:
-  - Einfluss
-  - Themenkomplex
   - ÖSL
-  # pre-normalized/grouped, classifiable version of "ÖSL" (fewer distinct values)
-  - ESGroup
   - Biodiv_Facette
-  # pre-normalized/grouped version of "Lebensraum" (fewer distinct values, closer to HabitatEnum)
-  - Lebensraum_Gruppiert
+  - Einfluss
   - Arten
-# `Lebensraum_Gruppiert` is scalar in `EcosystemServiceFields` (one habitat per relationship), but
-# 17 rows in the source CSV name multiple, comma-separated habitats for one relationship (e.g.
-# "Wald, Agrar- und Offenland") - split those into one row per habitat so entries stay comparable
-# to predictions.
-split_columns:
-  Lebensraum_Gruppiert: ", "
+# Further columns of the CSV are not read, as they are not part of the schema: "Themenkomplex", "ESGroup"
+# (grouped version of "ÖSL"), the CICES columns, and "Lebensraum_Gruppiert" (the file is already restricted to
+# papers that contain the habitat "Wald", see above).

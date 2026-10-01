@@ -1,3 +1,5 @@
 # create the schema from the pydantic model EcosystemStudyEcosystemServiceTrends
+# (base schema for all habitats: ÖSL, Biodiv_Facette, Einfluss, Arten and Lebensraum_Gruppiert; for a data set
+# restricted to a single habitat, without habitat field, see ecosystem_service_habitat.yaml)
 _target_: kibad_llm.schema.types.EcosystemStudyEcosystemServiceTrends.model_json_schema
 by_alias: false

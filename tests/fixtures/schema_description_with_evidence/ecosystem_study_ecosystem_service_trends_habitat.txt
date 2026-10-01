@@ -1,7 +1,7 @@
-Beschreibung: Angaben zu den im Text beschriebenen Zusammenhängen zwischen Biodiversität und Ökosystemleistungen (Basis-Schema für alle Lebensräume, mit Lebensraum je Zusammenhang).
+Beschreibung: Angaben zu den im Text beschriebenen Zusammenhängen zwischen Biodiversität und Ökosystemleistungen für einen einzelnen, vorab festgelegten Lebensraum (ohne Lebensraum-Feld).
 Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
 - ecosystem_service_trends: Liste der im Text beschriebenen Zusammenhänge zwischen Biodiversität und Ökosystemleistungen. | Kardinalität: 0..* | Typ: object
-  Beschreibung: Ein einzelner Zusammenhang zwischen Biodiversität und Ökosystemleistung, bestehend aus Ökosystemleistung (ÖSL), Biodiv_Facette, Einfluss, Arten und Lebensraum_Gruppiert (Basis-Schema für alle Lebensräume). Wie [`EcosystemServiceFieldsHabitat`][.EcosystemServiceFieldsHabitat], aber mit dem Lebensraum als zusätzlichem Feld; pro betroffenem Lebensraum wird eine eigene Instanz erstellt.
+  Beschreibung: Ein einzelner Zusammenhang zwischen Biodiversität und Ökosystemleistung für einen einzelnen, vorab festgelegten Lebensraum (z.B. Wald), bestehend aus Ökosystemleistung (ÖSL), Biodiv_Facette, Einfluss und Arten. Ein Text kann mehrere solcher Zusammenhänge beschreiben; jede Instanz bildet genau einen davon ab, analog zu einer einzelnen Zeile in der ösl_papers_ids.csv-Datei. Die Auswertung (siehe configs/experiment/evaluate/ecosystem_service.yaml) beschränkt sich auf ÖSL (die untersuchte Variable), Biodiv_Facette (die Biodiversitätsfacette) und Einfluss (die Indikatorvariable). Arten wird extrahiert, aber bei der Bewertung ignoriert (`ignore_subfields`).
   - ÖSL: Welche Ökosystemleistung wird in der Studie betrachtet? | Kardinalität: 1 | Typ: object
     Beschreibung: Welche Ökosystemleistung wird in der Studie betrachtet?
     - content: | Kardinalität: 1 | Typ: string
@@ -16,8 +16,4 @@ Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
     - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
   - Arten: Welche Arten bzw. Artengruppen werden in der Studie untersucht? Verwende die kleinste machbare Ebene: Wenn eine Studie nur wenige Arten behandelt, sollten diese auf Artebene mit ihrem wissenschaftlichen und deutschen Namen angegeben werden. Werden jedoch sehr viele Arten behandelt oder eine Artengruppe besprochen, wird die Artengruppe als 'Sammelbegriff' angegeben. Falls die Studie auf englisch ist, übersetze Art- bzw. Artengruppennamen ins Deutsche. Ergänze, wenn nicht angegeben, die wissenschaftlichen Artennamen, und umgekehrt die deutschen Namen, wenn nur die wissenschaftlichen Artennamen verwendet wurden. | Kardinalität: 0..1 | Typ: object
     - content: | Kardinalität: 1 | Typ: string
-    - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
-  - Lebensraum_Gruppiert: Um welchen der folgenden Lebensräume geht es in dem Text? Falls mehrere Lebensräume betroffen sind, erstelle für jeden betroffenen Lebensraum eine eigene Instanz dieses Zusammenhangs. | Kardinalität: 1 | Typ: object
-    Beschreibung: Um welchen der folgenden Lebensräume geht es in dem Text? Falls mehrere Lebensräume betroffen sind, erstelle für jeden betroffenen Lebensraum eine eigene Instanz dieses Zusammenhangs.
-    - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Agrar- und Offenland; Binnengewässer und Auen; Boden; Küsten und Küstengewässer; Urbane Räume; Wald
     - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string

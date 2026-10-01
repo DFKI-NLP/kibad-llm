@@ -1465,61 +1465,47 @@ class EcosystemStudyFeaturesCompoundsSimple(BaseEcosystemStudyFeatures):
     )
 
 
-class EcosystemServiceFields(CompoundFeature):
-    """Ein einzelner Zusammenhang zwischen Biodiversität und Ökosystemleistung, bestehend aus
-    Einfluss, Themenkomplex, Ökosystemleistung (ÖSL), ESGroup, Biodiv_Facette, Lebensraum_Gruppiert
-    und Arten. Ein Text kann mehrere solcher Zusammenhänge beschreiben; jede Instanz bildet genau
-    einen davon ab, analog zu einer einzelnen Zeile in der ösl_papers_ids.csv-Datei.
+class EcosystemServiceFieldsHabitat(CompoundFeature):
+    """Ein einzelner Zusammenhang zwischen Biodiversität und Ökosystemleistung für einen einzelnen,
+    vorab festgelegten Lebensraum (z.B. Wald), bestehend aus Ökosystemleistung (ÖSL), Biodiv_Facette,
+    Einfluss und Arten. Ein Text kann
+    mehrere solcher Zusammenhänge beschreiben; jede Instanz bildet genau einen davon ab, analog zu
+    einer einzelnen Zeile in der ösl_papers_ids.csv-Datei.
 
-    Die Kernauswertung (siehe configs/experiment/evaluate/ecosystem_service.yaml) beschränkt sich
-    aktuell auf vier dieser Felder: ÖSL (die untersuchte Variable), Biodiv_Facette (die
-    Biodiversitätsfacette, auf die der Einfluss der ÖSL gemessen wird), Einfluss (die
-    Indikatorvariable) und Lebensraum_Gruppiert (pro betroffenem Lebensraum eine eigene Instanz).
-    Die übrigen Felder werden weiterhin extrahiert, aber bei der Bewertung
-    ignoriert (`ignore_subfields`).
+    Die Auswertung (siehe configs/experiment/evaluate/ecosystem_service.yaml) beschränkt sich auf
+    ÖSL (die untersuchte Variable), Biodiv_Facette (die Biodiversitätsfacette) und Einfluss (die
+    Indikatorvariable). Arten wird extrahiert, aber bei der Bewertung ignoriert
+    (`ignore_subfields`).
     """
 
     # The fields below are based on the ösl_papers_ids.csv file (ÖSL-VoteCount-Vollständig with
     # Zotero item keys matched in). We use the column names as field names, analogous to
     # OrganismBiodiversityTrend, so that no post-processing is needed. "Biodiv-Facette" and
     # "Art(en)" are not valid Python identifiers, so those two columns are named "Biodiv_Facette"
-    # and "Arten" here and in the CSV. "ESGroup" is already the CSV's own pre-grouped, classifiable
-    # form of the free-text "ÖSL" column (not a rename of an existing concept).
-    # Einfluss, Themenkomplex, ÖSL, ESGroup, Biodiv_Facette and Lebensraum_Gruppiert are
-    # single-valued and required per relationship (every row of the source data has exactly one
-    # value for each); multiple relationships in one text are represented as multiple
-    # EcosystemServiceFields instances, not by stacking values within a single instance. A
-    # reference row naming several habitats (e.g. "Wald, Agrar- und Offenland") is likewise split
-    # into one row per habitat before evaluation (see split_columns in
+    # and "Arten" here and in the CSV.
+    # Further columns of the CSV are intentionally not part of the schema: "Themenkomplex" (one of
+    # Kohlenstoffkreislauf, Stabilität und Resilienz, Kulturelle Leistungen; only used in the prompt
+    # to delimit the relevant ÖSL), "ESGroup" (the CSV's own grouping of the free-text "ÖSL" into 43
+    # categories) and the CICES columns ("CICES-Bereich", "CICES-Gruppe", "CICES-Klasse",
+    # "CICES-Code", partly corrupted). "Lebensraum_Gruppiert" is only part of the base schema
+    # (EcosystemServiceFields), since the habitat is fixed by the data set here (e.g. "Wald", see
     # configs/dataset/references/ecosystem_service_wald.yaml).
-    Einfluss: EinflussEnum = Field(
-        ...,
-        description="Was ist der gemessene Einfluss der Ökosystemleistung (ÖSL) auf die "
-        "Biodiversitätsfacette (Biodiv_Facette) in der Studie von den folgenden Optionen?",  # needs explanation of the terms
-    )
-    Themenkomplex: ThemenkomplexEnum = Field(
-        ...,
-        description="Welcher dieser Themenkomplexe wird in der Studie betrachtet?",
-    )
+    # ÖSL, Biodiv_Facette and Einfluss are single-valued and required per relationship (every row
+    # of the source data has exactly one value for each); multiple relationships in one text are
+    # represented as multiple instances, not by stacking values within a single instance.
     ÖSL: str = Field(
         ...,
         description="Welche Ökosystemleistung wird in der Studie betrachtet?",
-    )
-    ESGroup: ESGroupEnum = Field(
-        ...,
-        description="Welcher dieser gruppierten Kategorien lässt sich die betrachtete Ökosystemleistung (ÖSL) "
-        "zuordnen?",
     )
     Biodiv_Facette: BiodiversityFacetEnum = Field(
         ...,
         description="Welche dieser Biodiversitätsfacetten wird in der Studie betrachtet? Gemeint ist die "
         "Facette, auf die der Einfluss (Einfluss) der Ökosystemleistung (ÖSL) gemessen wird.",
     )
-    Lebensraum_Gruppiert: HabitatEnum = Field(
+    Einfluss: EinflussEnum = Field(
         ...,
-        description="Um welchen der folgenden Lebensräume geht es in dem Text? Falls mehrere "
-        "Lebensräume betroffen sind, erstelle für jeden betroffenen Lebensraum eine eigene "
-        "Instanz dieses Zusammenhangs.",
+        description="Was ist der gemessene Einfluss der Ökosystemleistung (ÖSL) auf die "
+        "Biodiversitätsfacette (Biodiv_Facette) in der Studie von den folgenden Optionen?",  # needs explanation of the terms
     )
     Arten: str | None = Field(
         default=None,
@@ -1533,12 +1519,43 @@ class EcosystemServiceFields(CompoundFeature):
     )
 
 
+class EcosystemServiceFields(EcosystemServiceFieldsHabitat):
+    """Ein einzelner Zusammenhang zwischen Biodiversität und Ökosystemleistung, bestehend aus
+    Ökosystemleistung (ÖSL), Biodiv_Facette, Einfluss, Arten und Lebensraum_Gruppiert (Basis-Schema
+    für alle Lebensräume). Wie [`EcosystemServiceFieldsHabitat`][.EcosystemServiceFieldsHabitat], aber
+    mit dem Lebensraum als zusätzlichem Feld; pro betroffenem Lebensraum wird eine eigene Instanz
+    erstellt.
+    """
+
+    # A reference row naming several habitats (e.g. "Wald, Agrar- und Offenland") has to be split
+    # into one row per habitat before evaluation (see split_columns of read_grouped_csv_records).
+    Lebensraum_Gruppiert: HabitatEnum = Field(
+        ...,
+        description="Um welchen der folgenden Lebensräume geht es in dem Text? Falls mehrere "
+        "Lebensräume betroffen sind, erstelle für jeden betroffenen Lebensraum eine eigene "
+        "Instanz dieses Zusammenhangs.",
+    )
+
+
 class EcosystemStudyEcosystemServiceTrends(BaseEcosystemStudyFeatures):
     """Angaben zu den im Text beschriebenen Zusammenhängen zwischen Biodiversität und
-    Ökosystemleistungen.
+    Ökosystemleistungen (Basis-Schema für alle Lebensräume, mit Lebensraum je Zusammenhang).
     """
 
     ecosystem_service_trends: list[EcosystemServiceFields] = Field(
+        default_factory=list,
+        alias="Zusammenhänge zwischen Biodiversität und Ökosystemleistungen",
+        description="Liste der im Text beschriebenen Zusammenhänge zwischen Biodiversität und "
+        "Ökosystemleistungen.",
+    )
+
+
+class EcosystemStudyEcosystemServiceTrendsHabitat(BaseEcosystemStudyFeatures):
+    """Angaben zu den im Text beschriebenen Zusammenhängen zwischen Biodiversität und
+    Ökosystemleistungen für einen einzelnen, vorab festgelegten Lebensraum (ohne Lebensraum-Feld).
+    """
+
+    ecosystem_service_trends: list[EcosystemServiceFieldsHabitat] = Field(
         default_factory=list,
         alias="Zusammenhänge zwischen Biodiversität und Ökosystemleistungen",
         description="Liste der im Text beschriebenen Zusammenhänge zwischen Biodiversität und "

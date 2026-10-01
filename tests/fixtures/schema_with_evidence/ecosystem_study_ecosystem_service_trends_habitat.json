@@ -16,9 +16,9 @@
       "title": "BiodiversityFacetEnum",
       "type": "string"
     },
-    "EcosystemServiceFields": {
+    "EcosystemServiceFieldsHabitat": {
       "additionalProperties": false,
-      "description": "Ein einzelner Zusammenhang zwischen Biodiversität und Ökosystemleistung, bestehend aus\nÖkosystemleistung (ÖSL), Biodiv_Facette, Einfluss, Arten und Lebensraum_Gruppiert (Basis-Schema\nfür alle Lebensräume). Wie [`EcosystemServiceFieldsHabitat`][.EcosystemServiceFieldsHabitat], aber\nmit dem Lebensraum als zusätzlichem Feld; pro betroffenem Lebensraum wird eine eigene Instanz\nerstellt.",
+      "description": "Ein einzelner Zusammenhang zwischen Biodiversität und Ökosystemleistung für einen einzelnen,\nvorab festgelegten Lebensraum (z.B. Wald), bestehend aus Ökosystemleistung (ÖSL), Biodiv_Facette,\nEinfluss und Arten. Ein Text kann\nmehrere solcher Zusammenhänge beschreiben; jede Instanz bildet genau einen davon ab, analog zu\neiner einzelnen Zeile in der ösl_papers_ids.csv-Datei.\n\nDie Auswertung (siehe configs/experiment/evaluate/ecosystem_service.yaml) beschränkt sich auf\nÖSL (die untersuchte Variable), Biodiv_Facette (die Biodiversitätsfacette) und Einfluss (die\nIndikatorvariable). Arten wird extrahiert, aber bei der Bewertung ignoriert\n(`ignore_subfields`).",
       "properties": {
         "ÖSL": {
           "type": "object",
@@ -101,33 +101,14 @@
           "default": null,
           "description": "Welche Arten bzw. Artengruppen werden in der Studie untersucht? Verwende die kleinste machbare Ebene: Wenn eine Studie nur wenige Arten behandelt, sollten diese auf Artebene mit ihrem wissenschaftlichen und deutschen Namen angegeben werden. Werden jedoch sehr viele Arten behandelt oder eine Artengruppe besprochen, wird die Artengruppe als 'Sammelbegriff' angegeben. Falls die Studie auf englisch ist, übersetze Art- bzw. Artengruppennamen ins Deutsche. Ergänze, wenn nicht angegeben, die wissenschaftlichen Artennamen, und umgekehrt die deutschen Namen, wenn nur die wissenschaftlichen Artennamen verwendet wurden. ",
           "title": "Arten"
-        },
-        "Lebensraum_Gruppiert": {
-          "type": "object",
-          "properties": {
-            "content": {
-              "$ref": "#/$defs/HabitatEnum"
-            },
-            "evidence_anchor": {
-              "type": "string",
-              "description": "Verbatim excerpt from the source text supporting the extracted content."
-            }
-          },
-          "required": [
-            "content",
-            "evidence_anchor"
-          ],
-          "additionalProperties": false,
-          "description": "Um welchen der folgenden Lebensräume geht es in dem Text? Falls mehrere Lebensräume betroffen sind, erstelle für jeden betroffenen Lebensraum eine eigene Instanz dieses Zusammenhangs."
         }
       },
       "required": [
         "ÖSL",
         "Biodiv_Facette",
-        "Einfluss",
-        "Lebensraum_Gruppiert"
+        "Einfluss"
       ],
-      "title": "EcosystemServiceFields",
+      "title": "EcosystemServiceFieldsHabitat",
       "type": "object"
     },
     "EinflussEnum": {
@@ -141,32 +122,20 @@
       ],
       "title": "EinflussEnum",
       "type": "string"
-    },
-    "HabitatEnum": {
-      "enum": [
-        "Agrar- und Offenland",
-        "Binnengewässer und Auen",
-        "Boden",
-        "Küsten und Küstengewässer",
-        "Urbane Räume",
-        "Wald"
-      ],
-      "title": "HabitatEnum",
-      "type": "string"
     }
   },
   "additionalProperties": false,
-  "description": "Angaben zu den im Text beschriebenen Zusammenhängen zwischen Biodiversität und\nÖkosystemleistungen (Basis-Schema für alle Lebensräume, mit Lebensraum je Zusammenhang).",
+  "description": "Angaben zu den im Text beschriebenen Zusammenhängen zwischen Biodiversität und\nÖkosystemleistungen für einen einzelnen, vorab festgelegten Lebensraum (ohne Lebensraum-Feld).",
   "properties": {
     "ecosystem_service_trends": {
       "description": "Liste der im Text beschriebenen Zusammenhänge zwischen Biodiversität und Ökosystemleistungen.",
       "items": {
-        "$ref": "#/$defs/EcosystemServiceFields"
+        "$ref": "#/$defs/EcosystemServiceFieldsHabitat"
       },
       "title": "Ecosystem Service Trends",
       "type": "array"
     }
   },
-  "title": "EcosystemStudyEcosystemServiceTrends",
+  "title": "EcosystemStudyEcosystemServiceTrendsHabitat",
   "type": "object"
 }
