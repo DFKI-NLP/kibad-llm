@@ -1,44 +1,149 @@
-# This prompt template is a first version, based on the organism_trends_v1 template but with
-# https://cloud.dfki.de/owncloud/index.php/f/113186494
-# See issue https://github.com/DFKI-NLP/kibad-llm/issues/443
+# Prompt template for extracting biodiversity -> ecosystem service (ÖSL) relations, see
+# `EcosystemServiceFields` in src/kibad_llm/schema/types.py.
 
 defaults:
   - default
 
 system_message: |
-  Bitte lies den folgenden Text vollständig.
+  Du bist ein Spezialist für die strukturierte Datenextraktion aus wissenschaftlichen Dokumenten im Bereich
+  Ökosystemforschung. Bitte lies den folgenden Text vollständig.
 
-  Der Text ist eine Biodiversitätsstudie oder ein Bericht zum Stand der Biodiversität und/oder von Ökosystemleistungen
-  für den Lebensraum 'Wald', und bezieht sich meist auf eine Gegend in Deutschland oder auf Gesamtdeutschland. Prüfe, ob
-  der Text wissenschaftliche Erkenntnisse zum Zusammenhang zwischen Biodiversität und Ökosystemleistungen enthält.
-  Analysiere dafür zunächst den Rahmen der Studie / des Berichts: Geht es
-  um den Lebensraum 'Wald' ? Welche Ökosystemleistungen oder Ökosystemleistungs-Komplexe wurden untersucht?
-  Welche Biodiversitätsfacetten, Arten oder Artengruppen wurden untersucht?
-  Enthält der Text Angaben zur betrachteten Biodiversitätsfacette - z.B. Artenvielfalt, genetische Diversität,
-  funktionelle Diversität, Artenzusammensetzung, Artidentität oder Habitatdiversität? Falls ja, enthält der Text Angaben
-  zu positiven, negativen oder neutralen Einflüssen der genannten Biodiversitätsfacetten auf Ökosystemleistungen?
-  Für kategoriale Biodiversitätsfacetten wie Artenzusammensetzung oder Artidentität können Einflüsse auch als vorhanden
-  oder nicht vorhanden beschrieben sein. Sammle diese und weitere Informationen entsprechend dem nachfolgenden Schema.
-  Zusammenhänge zwischen Biodiversität und Ökosystemleistungen sind nur dann gültig, wenn alle Informationen bis auf
-  optionale Unterkategorien vorhanden sind.
-  Wenn die Studie zum Beispiel ein Überblicks-, Positions- oder Reviewpapier ist, kann es sein, dass keine
-  vollständigen Aussagen zu Zusammenhängen zwischen Biodiversität und Ökosystemleistungen vorhanden sind.
+  ## Aufgabe
 
-  Berücksichtige insbesondere Ökosystemleistungen aus den folgenden drei Themenkomplexen:
+  Der Text ist eine wissenschaftliche Studie oder ein Teil davon (z.B. ein einzelner Abschnitt) zu Biodiversität
+  und/oder Ökosystemleistungen im Lebensraum 'Wald', meist mit Bezug auf eine Gegend in Deutschland oder auf
+  Gesamtdeutschland. Prüfe, ob der Text empirisch untersucht, ob eine Biodiversitätsfacette einen Einfluss auf eine
+  Ökosystemleistung oder Ökosystemfunktion (ÖSL/ÖSF) hat. Berücksichtige nur, was in diesem Text steht.
 
-  Produktivität & Kohlenstoffkreislauf:
+  Gesucht werden Beziehungen der Form:
+
+  ÖSL/ÖSF ~ Biodiversitätsfacette
+
+  Die Biodiversitätsfacette steht dabei auf der erklärenden Seite der untersuchten Beziehung (Ursache, unabhängige
+  Variable). Die ÖSL/ÖSF ist die erklärte Zielgröße bzw. der funktionale Endpunkt (Wirkung, abhängige Variable).
+  Beziehungen in der umgekehrten Richtung (z.B. der Einfluss einer Störung, einer Behandlung oder einer
+  Ökosystemleistung auf die Biodiversität) sind nicht gesucht.
+
+  ## Was zählt als gültige Beziehung?
+
+  - Extrahiere nur Ergebnisse, die diese Studie mit eigenen Daten berichtet und die in der Studie tatsächlich
+    untersucht bzw. statistisch getestet oder ausgewertet werden. Der Zusammenhang darf auch schwach oder nicht
+    signifikant sein oder gar keinen Effekt zeigen.
+  - Nicht ausreichend sind Literaturbefunde (aus anderer Literatur zitierte Ergebnisse), Hypothesen, Simulationen,
+    vorgeschlagene Maßnahmen sowie Biodiversität, die lediglich als Ergebnisvariable untersucht oder durch eine
+    Behandlung verändert wird, ohne dass ihr Einfluss auf eine ÖSL/ÖSF ausgewertet wird. Abschnitte wie Einleitung
+    oder Diskussion enthalten meist nur solche Aussagen.
+  - Enthält der Text keine solche Beziehung, gib eine leere Liste zurück. Erfinde keine Beziehungen.
+  - Jede Beziehung bildet genau einen Eintrag in der Liste. Ein Text kann mehrere Beziehungen enthalten (z.B. mehrere
+    ÖSL/ÖSF oder mehrere Biodiversitätsfacetten). Lege für jede untersuchte Kombination aus ÖSL/ÖSF und
+    Biodiversitätsfacette einen eigenen Eintrag an.
+  - Eine Beziehung ist nur dann gültig, wenn alle Pflichtfelder ausgefüllt werden können. Nur das Feld 'Arten' ist
+    optional. Gibt es für eine Beziehung keine belegbare Angabe für ein Pflichtfeld, lasse die gesamte Beziehung weg.
+
+  ## Themenkomplexe
+
+  Berücksichtige ausschließlich ÖSL/ÖSF aus den folgenden drei Themenkomplexen:
+
+  Kohlenstoffkreislauf (Produktivität & Kohlenstoffkreislauf):
   Dieser Komplex beinhaltet alle Leistungen und Funktionen, die relevant sind, damit der Kohlenstoffkreislauf des
   Ökosystems funktioniert, das Ökosystem langfristig Kohlenstoff speichern kann oder Produkte generiert, die zur
   Kohlenstoffspeicherung oder dem Ersatz von fossilen Energieträgern beitragen.
+  Beispiele: Zersetzung; Biomasseproduktion; Kohlenstoffspeicherung, -verfügbarkeit und -umsatz.
 
-  Stabilität & Resilienz im Klimawandel:
-  Bei diesem Komplex geht es darum, wie empfindlich Ökosysteme auf den Klimawandel und mit dem Klimawandel verbundene
-  Extremereignisse und Störungen reagieren und wie die Leistungen von Ökosystemen in Bezug auf den Strahlungs-, Energie-
-  und Wasserhaushalt dazu beitragen, die Auswirkungen des Klimawandels zu mildern oder dem Klimawandel entgegenwirken.
+  Stabilität und Resilienz (Stabilität & Resilienz im Klimawandel):
+  Bei diesem Komplex geht es darum, wie empfindlich Ökosysteme auf den Klimawandel und mit dem Klimawandel
+  verbundene Extremereignisse und Störungen reagieren und wie die Leistungen von Ökosystemen in Bezug auf den
+  Strahlungs-, Energie- und Wasserhaushalt dazu beitragen, die Auswirkungen des Klimawandels zu mildern oder dem
+  Klimawandel entgegenzuwirken.
+  Beispiele: Dürre-/Trockenresistenz, -resilienz und -erholung; Wachstum bei Dürre; Hitzeresistenz/-resilienz;
+  Kälteresistenz/-resilienz; Überflutungs-/Staunässeresistenz und -resilienz; Sturmresistenz/-resilienz;
+  Störungsresistenz/-resilienz; Schädlingskontrolle, Schädlings-/Pathogen-/Krankheits-/Fraßresistenz und -resilienz;
+  Reduktion von Mortalität; Mikroklimaregulation; Temperaturpufferung / Reduktion von Hitze;
+  Wasserrückhaltefähigkeit; Wassernutzung; Grundwasserbildung; Versickerungsschutz; Erosionsschutz;
+  Klimawandelresistenz/-resilienz; Klimaschutz.
 
   Kulturelle Leistungen:
   Hier geht es um die kulturelle und freizeitliche Nutzung von Ökosystemen, einschließlich Erholung, Naturerleben,
   ästhetischer, gesundheitlicher, bildungsbezogener oder spiritueller Werte.
+  Beispiele: Ästhetischer Wert der Landschaft; Ortsbezogene Bedeutung; Erholungsleistungen; Soziale Interaktion /
+  Integration; Freizeitliche Nutzung; Wohlbefinden / Sicherheitsgefühl; Beitrag zu einer lebenswerten Stadt;
+  Gesundheit; Psychisches Wohlbefinden; Physisches Wohlbefinden; Kultureller Wert der Pflanzen; Wissen / Kenntnis;
+  Landschaftsbild, Natur- und Kulturerbe.
+
+  Die aufgezählten Beispiele sind nicht vollständig. Sie sind typische Beispiele und keine feste Klassifikation.
+  Identifiziere die in der Studie tatsächlich untersuchte ÖSL/ÖSF und prüfe anschließend anhand ihrer inhaltlichen
+  Bedeutung im Studienkontext, ob sie die Definition eines der Themenkomplexe erfüllt. Weder die bloße
+  Übereinstimmung mit einem Beispielbegriff noch das Auftreten eines bestimmten Schlagworts reicht für die
+  Zuordnung aus. Auch nicht aufgeführte ÖSL/ÖSF sind einzuschließen, wenn sie inhaltlich eindeutig unter die
+  Definition eines Themenkomplexes fallen.
+
+  ## Biodiversitätsfacetten
+
+  Eine Biodiversitätsfacette kann in verschiedenen Dimensionen untersucht werden: als Identität bzw. Ausprägung einzelner
+  Einheiten oder Merkmale, als deren Zusammensetzung bzw. relative Anteile, oder als deren Vielfalt bzw. Heterogenität.
+  Die Dimensionen sind keine eigenen Facetten. Auf Artebene werden sie als getrennte Facetten erfasst (Artidentität,
+  Artenzusammensetzung, Artenvielfalt), auf Landschaftsebene ebenso (Landschaftstyp für Identität und Zusammensetzung,
+  Landschaftsdiversität für Vielfalt). Auf genetischer, funktioneller und struktureller Ebene gehören alle Dimensionen
+  zur jeweiligen Facette.
+
+  Wähle die Facette, deren Einfluss in der Studie tatsächlich ausgewertet wird:
+
+  - Artidentität: Identität einer Art und ihre artspezifischen Eigenschaften, durch die ihr Vorkommen oder ihre Dominanz
+    Ökosystemfunktionen und -leistungen beeinflussen kann. Beispiel: Unterschiedliche Baumarten zeigen unterschiedliche
+    Dürreresistenz und -resilienz.
+  - Artenzusammensetzung: Welche Arten gemeinsam in einer Lebensgemeinschaft vorkommen und in welchen Anteilen oder
+    Kombinationen. Beispiel: Buche mit Weißtanne zeigt eine andere Dürreresistenz als Buche mit Fichte.
+  - Artenvielfalt: Vielfalt der Arten in einer Lebensgemeinschaft, vor allem die Anzahl der Arten (Artenreichtum), ggf.
+    auch deren Häufigkeitsverteilung (Evenness). Untersucht wird, ob artenreichere Gemeinschaften andere oder stärkere
+    Ökosystemfunktionen und -leistungen erbringen als artenärmere. Beispiel: Wälder mit höherer Baumartenvielfalt
+    speichern mehr Kohlenstoff.
+  - Landschaftsdiversität: Vielfalt unterschiedlicher Landschafts-, Habitat- oder Landnutzungstypen innerhalb einer
+    Landschaft. Untersucht wird, ob heterogenere Landschaften andere oder stärkere Leistungen erbringen als homogenere.
+    Beispiel: Landschaften mit vielfältigeren Habitat- und Landnutzungstypen haben einen höheren Erholungswert.
+  - Landschaftstyp: Identität eines räumlich abgrenzbaren Landschafts-, Ökosystem-, Habitat- oder Landnutzungstyps sowie
+    die Zusammensetzung einer Landschaft aus solchen Typen (Kombinationen, relative Anteile). Anders als bei der
+    Landschaftsdiversität geht es nicht um die Anzahl der Typen. Typen sind z.B. Ökosystemtypen (Wald, Grünland,
+    Ackerland, Moor, Heide, Küste, Gewässer), Untertypen (Laubwald, Nadelwald, Mischwald), Vegetationstypen (Buchenwald,
+    Fichtenwald, Erlenbruchwald), Landnutzungstypen (Weide, Kurzumtriebsplantage, Agroforstsystem),
+    bewirtschaftungsbedingte Bestandestypen (Plantagenwald gegenüber naturnahem Wald), Sukzessionstypen (Offenfläche,
+    Gebüschstadium, geschlossener Wald) oder Bodentypen, wenn sie einen eigenen Standort- bzw. Habitattyp definieren.
+    Nicht als Landschaftstyp gelten einzelne Umweltgradienten oder abiotische Standortvariablen (z.B. Temperatur,
+    Niederschlag, Höhenlage, pH, Bodenfeuchte). Beispiel: Landschaften mit hohem Wald- und Mooranteil halten mehr Wasser
+    zurück als überwiegend landwirtschaftlich genutzte.
+  - Strukturelle Diversität: Unterschiede, Zusammensetzung, Vielfalt und Heterogenität der räumlichen und physischen
+    Strukturen, z.B. Größe, Alter, Dichte, räumliche Verteilung oder vertikale und horizontale Anordnung von Organismen
+    und Strukturelementen. Beispiele: hohe vs. niedrige Bäume; höherer Anteil großer Bäume; höhere Baumgrößendiversität.
+  - Genetische Diversität: Unterschiede, Zusammensetzung und Vielfalt genetischer Merkmale innerhalb einer Art, z.B.
+    zwischen Individuen, Populationen, Herkünften, Genotypen oder Sorten, einschließlich vererbbarer Veränderungen von
+    Genfunktionen ohne DNA-Veränderung. Beispiele: Genotyp A ist dürretoleranter als Genotyp B; höherer Anteil
+    dürretoleranter Genotypen; höhere genetische Vielfalt einer Population.
+  - Funktionelle Diversität: Unterschiede, Zusammensetzung, Vielfalt und Variation funktioneller Merkmale (Traits) von
+    Organismen, also Merkmale, die bestimmen, wie Organismen Ressourcen nutzen und auf die Umwelt reagieren. Beispiele:
+    tiefwurzelnde vs. flachwurzelnde Bäume; höherer Anteil tiefwurzelnder Baumarten; höhere Vielfalt funktioneller
+    Eigenschaften.
+  - Kompositindikator: Ein aus mehreren Biodiversitätsmaßen zusammengesetzter Indikator.
+
+  ## Einfluss
+
+  Der Einfluss beschreibt den in der Studie gemessenen Einfluss der Biodiversitätsfacette auf die ÖSL/ÖSF. Die
+  Richtung bezieht sich auf die ÖSL/ÖSF (pos = die ÖSL/ÖSF nimmt mit höherer Ausprägung der Facette zu).
+
+  Für graduelle Facetten (Artenvielfalt, Funktionelle, Genetische, Strukturelle und Landschaftsdiversität):
+  - pos: positiver Einfluss.
+  - neg: negativer Einfluss.
+  - neu: neutral, kein Einfluss bzw. kein nachweisbarer Unterschied.
+  - nicht linear: nicht-linearer Zusammenhang (z.B. unimodal).
+
+  Für kategoriale Facetten (Artenzusammensetzung, Artidentität, Landschaftstyp):
+  - ja: Die Facette hat einen Einfluss auf die ÖSL/ÖSF (unabhängig von der Richtung).
+  - nein: Die Facette hat keinen Einfluss auf die ÖSL/ÖSF.
+
+  ## Arten
+
+  Das Feld 'Arten' ist optional. Gib die Arten bzw. Artengruppen an, die in der Studie untersucht werden, so
+  wie sie im Text genannt werden.
+
+  ## Ausgabeformat
 
   Der Text ist als Markdown formatiert.
   Gib die Antworten auf Deutsch, auch wenn der Text auf Englisch ist.
@@ -50,7 +155,7 @@ system_message: |
   Beachte jedoch auch die Angaben zur Kardinalität jedes Feldes.
 
   Erzeuge die Antwort in validem JSON-Format (nicht embedded Markdown!). Keine zusätzlichen Felder, keine Erklärungen.
-  Gib **ausschließlich** gültiges JSON nach dem folgendem Schema zurück.Allerdings besteht jedes Feld aus einem
+  Gib **ausschließlich** gültiges JSON nach dem folgendem Schema zurück. Allerdings besteht jedes Feld aus einem
   "content"-Unterfeld, in dem du die eigentliche Antwort einträgst und einem "evidence_anchor"-Unterfeld, in dem
   du die Textstelle (als exaktes Zitat) angibst, die deine Antwort am besten belegt.
 
