@@ -1,29 +1,24 @@
-"""Align a newer ösl_papers_ids-style CSV export with the formatting conventions of the currently
-committed `data/external/ecosystem_services/ösl_papers_ids.csv`.
+"""Process the raw ÖSL reference export `data/external/ecosystem_services/ösl_papers_raw.csv`
+into the format used as reference data for the ecosystem service evaluation.
 
-The formatting differences this script corrects were identified by comparing
-`ösl_papers_ids.csv` (committed) with a newer export received from JM, `ösl_papers_ids_JM.csv`:
+The script corrects the following formatting differences of the raw export:
 
-- Two columns were renamed earlier in this project so their names are valid Python identifiers
-  matching `EcosystemServiceFields` in `src/kibad_llm/schema/types.py` ("Biodiv-Facette" ->
-  "Biodiv_Facette", "Art(en)" -> "Arten"); newer raw exports still use the original names.
-- Newer exports may carry extra columns (e.g. review-tracking metadata) not present in the
-  committed file.
-- Newer exports preserve Unicode punctuation (hyphen/dash/quote variants) that the committed file
-  has flattened to their ASCII equivalents.
+- Two columns are renamed so their names are valid Python identifiers matching
+  `EcosystemServiceFields` in `src/kibad_llm/schema/types.py` ("Biodiv-Facette" ->
+  "Biodiv_Facette", "Art(en)" -> "Arten"); the raw export uses the original names.
+- The raw export carries extra columns (e.g. review-tracking metadata) that are dropped; the
+  columns to keep and their order are defined by `OUTPUT_COLUMNS`.
+- The raw export preserves Unicode punctuation (hyphen/dash/quote variants), which is flattened
+  to the ASCII equivalents.
 
 Optionally, papers can be filtered (all rows of a paper, identified by "Key") with
 `--exclude-methods` (e.g. reviews and pure model studies) and `--require-habitat` (e.g. "Wald"), which
-is used to derive the reference for the forest dev set. Example (the input `ösl_papers_raw.csv` is the
-raw export, formerly `ösl_papers_ids_JM.csv`):
+is used to derive the reference for the forest dev set. Example:
 
     uv run -m kibad_llm.data_integration.align_ecosystem_service_csv \\
         --exclude-methods Literaturstudie Modell/Simulation --require-habitat Wald
 
 TODO: papers that contain Wald *and* other habitats are currently kept unchanged, see `filter_papers`.
-
-This script does *not* touch line endings - the committed file is CRLF, but newer exports are left
-as-is (LF), per the decision recorded when this script was written.
 
 This is a one-off/standalone script, not part of the extraction pipeline - see
 `docs/CONTRIBUTING.md` for where `data_integration/` scripts fit in the project layout.
@@ -40,12 +35,47 @@ from loguru import logger
 from kibad_llm.config import DATA_DIR, INTERIM_DATA_DIR
 
 # Columns renamed in this project (see commit "change english terms in schema to german to fit
-# column names of csv") to match `EcosystemServiceFields` field names. Newer raw exports still use
-# the original column names on the left.
+# column names of csv") to match `EcosystemServiceFields` field names. The raw export uses the
+# original column names on the left.
 COLUMN_RENAMES = {
     "Biodiv-Facette": "Biodiv_Facette",
     "Art(en)": "Arten",
 }
+
+# Columns (after applying `COLUMN_RENAMES`) written to the output, in this order. Further columns of
+# the raw export (e.g. review-tracking metadata) are dropped.
+OUTPUT_COLUMNS = [
+    "Key",
+    "Title",
+    "Ja",
+    "authors",
+    "journal",
+    "abstract",
+    "year",
+    "doi",
+    "Quelle",
+    "Themenkomplex",
+    "ÖSL",
+    "Biodiv_Facette",
+    "Einfluss",
+    "Methode",
+    "Notiz zum Vote Count",
+    "Ort",
+    "Ort Details",
+    "Lebensraum",
+    "Arten",
+    "Ökologische Einheit",
+    "Artengruppe",
+    "ESGroup",
+    "Boden?",
+    "Lebensraum_Gruppiert",
+    "CICES-Bereich",
+    "CICES-Gruppe",
+    "CICES-Klasse",
+    "CICES-Code",
+    "Bereich-Kurz",
+    "Klasse kurz",
+]
 
 # Cell values renamed per column so they match the vocabulary of the corresponding schema enum.
 # "Lebensraum_Gruppiert" must match `HabitatEnum`, which uses the plural "Küsten".
@@ -53,8 +83,7 @@ VALUE_RENAMES = {
     "Lebensraum_Gruppiert": {"Küste und Küstengewässer": "Küsten und Küstengewässer"},
 }
 
-# Unicode punctuation variants seen in newer exports, mapped to the ASCII equivalents already used
-# throughout the committed file.
+# Unicode punctuation variants seen in the raw export, mapped to their ASCII equivalents.
 PUNCTUATION_NORMALIZATION = {
     "‐": "-",  # HYPHEN
     "‑": "-",  # NON-BREAKING HYPHEN
@@ -188,50 +217,43 @@ def filter_papers(
 
 def align_csv(
     input_path: Path,
-    reference_path: Path,
     output_path: Path,
     exclude_methods: Collection[str] = (),
     require_habitat: str | None = None,
 ) -> None:
-    """Align `input_path`'s CSV formatting with `reference_path`'s conventions and write the
+    """Align `input_path`'s CSV formatting with the conventions of the reference data and write the
     result to `output_path`.
 
     Applies, in order: column renames (see `COLUMN_RENAMES`), then restricts and reorders columns
-    to exactly match `reference_path`'s header, then normalizes Unicode punctuation to ASCII (see
+    to exactly match `OUTPUT_COLUMNS`, then normalizes Unicode punctuation to ASCII (see
     `PUNCTUATION_NORMALIZATION`) and renames selected values (see `VALUE_RENAMES`) on every cell.
     Finally, papers are optionally filtered (see `filter_papers`). Line endings are written as LF.
     The parent directory of `output_path` is created if necessary.
 
     Args:
-        input_path: CSV file to align (e.g. a newer export).
-        reference_path: CSV file whose column set/order to align to.
+        input_path: CSV file to align (the raw export).
         output_path: Where to write the aligned CSV.
         exclude_methods: Drop papers with one of these "Methode" values, see `filter_papers`.
         require_habitat: Keep only papers with this "Lebensraum_Gruppiert" value, see
             `filter_papers`.
 
     Raises:
-        ValueError: If, after applying `COLUMN_RENAMES`, `input_path` is missing a column that
-            `reference_path` has, or if a column needed for filtering is missing in the output.
+        ValueError: If, after applying `COLUMN_RENAMES`, `input_path` is missing a column of
+            `OUTPUT_COLUMNS`, or if a column needed for filtering is missing in the output.
     """
-    with open(reference_path, newline="", encoding="utf-8") as f:
-        reference_columns = next(csv.reader(f))
-
     with open(input_path, newline="", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         renamed_fieldnames = [COLUMN_RENAMES.get(c, c) for c in reader.fieldnames or []]
-        missing = [c for c in reference_columns if c not in renamed_fieldnames]
+        missing = [c for c in OUTPUT_COLUMNS if c not in renamed_fieldnames]
         if missing:
-            raise ValueError(
-                f"{input_path} is missing column(s) present in {reference_path}: {missing}"
-            )
+            raise ValueError(f"{input_path} is missing column(s): {missing}")
         aligned_rows = []
         for row in reader:
             renamed_row = {COLUMN_RENAMES.get(k, k): v for k, v in row.items()}
             aligned_rows.append(
                 {
                     col: rename_value(col, normalize_punctuation(renamed_row[col]))
-                    for col in reference_columns
+                    for col in OUTPUT_COLUMNS
                 }
             )
 
@@ -244,7 +266,7 @@ def align_csv(
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with open(output_path, "w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=reference_columns, lineterminator="\n")
+        writer = csv.DictWriter(f, fieldnames=OUTPUT_COLUMNS, lineterminator="\n")
         writer.writeheader()
         writer.writerows(aligned_rows)
 
@@ -259,21 +281,14 @@ if __name__ == "__main__":
         "--input",
         type=Path,
         default=DATA_DIR / "external" / "ecosystem_services" / "ösl_papers_raw.csv",
-        help="Newer CSV export to align.",
-    )
-    parser.add_argument(
-        "--reference",
-        type=Path,
-        default=DATA_DIR / "external" / "ecosystem_services" / "ösl_papers_ids.csv",
-        help="CSV file whose column set/order to align to.",
+        help="Raw CSV export to align.",
     )
     parser.add_argument(
         "--output",
         type=Path,
         default=INTERIM_DATA_DIR / "ecosystem_services" / "ösl_papers_processed_wald.csv",
-        help="Where to write the aligned CSV. Does not overwrite --reference by default. The default "
-        "name fits the filters used for the forest dev set (see below); pass --output when using "
-        "other filters.",
+        help="Where to write the aligned CSV. The default name fits the filters used for the "
+        "forest dev set (see below); pass --output when using other filters.",
     )
     parser.add_argument(
         "--exclude-methods",
@@ -294,7 +309,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
     align_csv(
         input_path=args.input,
-        reference_path=args.reference,
         output_path=args.output,
         exclude_methods=args.exclude_methods,
         require_habitat=args.require_habitat,

@@ -264,7 +264,7 @@ class BiodiversityFacetEnum(str, Enum):
 
 
 class ESGroupEnum(str, Enum):
-    """Werte der "ESGroup"-Spalte in ösl_papers_ids.csv: eine vom Datensatz selbst vorgenommene,
+    """Werte der "ESGroup"-Spalte in ösl_papers_raw.csv: eine vom Datensatz selbst vorgenommene,
     gröbere Gruppierung der freitextlichen "ÖSL"-Spalte in klassifizierbare Kategorien. Zwei
     Rohwerte wurden dabei mit einem bestehenden Wert zusammengeführt: "Schädlingskontrolle?" ->
     "Schädlingskontrolle" und "Ästhetischer Wert der Landschaft" -> "Ästhetischer Wert".
@@ -1470,7 +1470,7 @@ class EcosystemServiceFieldsHabitat(CompoundFeature):
     vorab festgelegten Lebensraum (z.B. Wald), bestehend aus Ökosystemleistung (ÖSL), Biodiv_Facette,
     Einfluss und Arten. Ein Text kann
     mehrere solcher Zusammenhänge beschreiben; jede Instanz bildet genau einen davon ab, analog zu
-    einer einzelnen Zeile in der ösl_papers_ids.csv-Datei.
+    einer einzelnen Zeile in der ösl_papers_raw.csv-Datei.
 
     Die Auswertung (siehe configs/experiment/evaluate/ecosystem_service.yaml) beschränkt sich auf
     ÖSL (die untersuchte Variable), Biodiv_Facette (die Biodiversitätsfacette) und Einfluss (die
@@ -1478,11 +1478,12 @@ class EcosystemServiceFieldsHabitat(CompoundFeature):
     (`ignore_subfields`).
     """
 
-    # The fields below are based on the ösl_papers_ids.csv file (ÖSL-VoteCount-Vollständig with
+    # The fields below are based on the ösl_papers_raw.csv file (ÖSL-VoteCount-Vollständig with
     # Zotero item keys matched in). We use the column names as field names, analogous to
     # OrganismBiodiversityTrend, so that no post-processing is needed. "Biodiv-Facette" and
     # "Art(en)" are not valid Python identifiers, so those two columns are named "Biodiv_Facette"
-    # and "Arten" here and in the CSV.
+    # and "Arten" here and in the processed CSV (see
+    # src/kibad_llm/data_integration/align_ecosystem_service_csv.py).
     # Further columns of the CSV are intentionally not part of the schema: "Themenkomplex" (one of
     # Kohlenstoffkreislauf, Stabilität und Resilienz, Kulturelle Leistungen; only used in the prompt
     # to delimit the relevant ÖSL), "ESGroup" (the CSV's own grouping of the free-text "ÖSL" into 43
