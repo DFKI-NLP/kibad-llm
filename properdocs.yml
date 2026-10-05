@@ -62,6 +62,8 @@ plugins:
 - mkdocstrings:
     handlers:
       python:
+        inventories:
+        - https://developers.llamaindex.ai/python/framework-api-reference/objects.inv
         options:
           show_symbol_type_heading: true
           show_symbol_type_toc: true
