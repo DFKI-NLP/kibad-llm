@@ -1,4 +1,4 @@
-"""Process the raw ÖSL reference export `data/external/ecosystem_services/ösl_papers_raw.csv`
+"""Process the raw ÖSL reference export `data/external/ecosystem_services/papers_raw.csv`
 into the format used as reference data for the ecosystem service evaluation.
 
 The script corrects the following formatting differences of the raw export:
@@ -14,14 +14,11 @@ The script corrects the following formatting differences of the raw export:
 Optionally, papers can be filtered (all rows of a paper, identified by "Key") with
 `--exclude-methods` (e.g. reviews and pure model studies) and `--require-habitat` (e.g. "Wald"), which
 is used to derive the reference for the forest dev set. Example:
-
+```
     uv run -m kibad_llm.data_integration.align_ecosystem_service_csv \\
         --exclude-methods Literaturstudie Modell/Simulation --require-habitat Wald
-
+```
 TODO: papers that contain Wald *and* other habitats are currently kept unchanged, see `filter_papers`.
-
-This is a one-off/standalone script, not part of the extraction pipeline - see
-`docs/CONTRIBUTING.md` for where `data_integration/` scripts fit in the project layout.
 """
 
 import argparse
@@ -32,7 +29,7 @@ import re
 
 from loguru import logger
 
-from kibad_llm.config import DATA_DIR, INTERIM_DATA_DIR
+from kibad_llm.config import EXTERNAL_DATA_DIR, INTERIM_DATA_DIR
 
 # Columns renamed in this project (see commit "change english terms in schema to german to fit
 # column names of csv") to match `EcosystemServiceFields` field names. The raw export uses the
@@ -280,13 +277,13 @@ if __name__ == "__main__":
     parser.add_argument(
         "--input",
         type=Path,
-        default=DATA_DIR / "external" / "ecosystem_services" / "ösl_papers_raw.csv",
+        default=EXTERNAL_DATA_DIR / "ecosystem_services" / "papers_raw.csv",
         help="Raw CSV export to align.",
     )
     parser.add_argument(
         "--output",
         type=Path,
-        default=INTERIM_DATA_DIR / "ecosystem_services" / "ösl_papers_processed_wald.csv",
+        default=INTERIM_DATA_DIR / "ecosystem_services" / "papers_processed_wald.csv",
         help="Where to write the aligned CSV. The default name fits the filters used for the "
         "forest dev set (see below); pass --output when using other filters.",
     )
