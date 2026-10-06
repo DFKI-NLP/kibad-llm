@@ -19,9 +19,6 @@ is used to derive the reference for the forest dev set. Example:
         --exclude-methods Literaturstudie Modell/Simulation --require-habitat Wald
 ```
 TODO: papers that contain Wald *and* other habitats are currently kept unchanged, see `filter_papers`.
-
-This is a one-off/standalone script, not part of the extraction pipeline - see
-`docs/CONTRIBUTING.md` for where `data_integration/` scripts fit in the project layout.
 """
 
 import argparse
