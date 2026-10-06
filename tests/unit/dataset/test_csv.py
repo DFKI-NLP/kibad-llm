@@ -1,22 +1,29 @@
 import json
 
-from kibad_llm.config import PROJ_ROOT
 from kibad_llm.dataset.csv import read_grouped_csv_records
+from tests import FIXTURE_DATA_ROOT
 from tests.conftest import WRITE_FIXTURE_DATA
+
+FIXTURE_DATA_PATH = FIXTURE_DATA_ROOT / "dataset" / "csv"
+
+# this needs to contain at least the following keys: 324V8DKM, 324V8DKM, 324V8DKM
+ORGANISM_TREND_DATA_EXTRACT = (
+    FIXTURE_DATA_PATH / "Weighted Vote Count Wald Literatur - Sheet1_extract.csv"
+)
 
 
 def test_read_grouped_csv_records_organism_trends_wald_all() -> None:
     result = read_grouped_csv_records(
-        "data/external/organism_trends/Weighted Vote Count Wald Literatur - Sheet1.csv",
+        str(ORGANISM_TREND_DATA_EXTRACT),
         output_key="organism_trends",
     )
     assert isinstance(result, dict)
-    assert len(result) == 170
+    assert len(result) == 6
 
     key = "324V8DKM"
     data = result[key]
 
-    path_expected = PROJ_ROOT / "tests" / "fixtures" / "organism_trends" / f"{key}.json"
+    path_expected = FIXTURE_DATA_PATH / f"{key}.json"
 
     if WRITE_FIXTURE_DATA:
         path_expected.parent.mkdir(parents=True, exist_ok=True)
@@ -31,7 +38,7 @@ def test_read_grouped_csv_records_organism_trends_wald_all() -> None:
 
 def test_read_grouped_csv_records_custom_output_key() -> None:
     result = read_grouped_csv_records(
-        "data/external/organism_trends/Weighted Vote Count Wald Literatur - Sheet1.csv",
+        str(ORGANISM_TREND_DATA_EXTRACT),
         columns=["Hauptgruppe_RoteListen"],
         output_key="ecosystem_service_trends",
     )
@@ -41,7 +48,7 @@ def test_read_grouped_csv_records_custom_output_key() -> None:
 
 def test_read_grouped_csv_records_split_columns() -> None:
     result = read_grouped_csv_records(
-        "data/external/ecosystem_services/ösl_papers_raw.csv",
+        str(FIXTURE_DATA_PATH / "ösl_papers_raw_extract.csv"),
         output_key="ecosystem_service_trends",
         columns=["Lebensraum_Gruppiert"],
         split_columns={"Lebensraum_Gruppiert": ", "},
@@ -62,7 +69,7 @@ def test_read_grouped_csv_records_split_columns() -> None:
 
 def test_read_grouped_csv_records_organism_trends_wald_selected_columns() -> None:
     result = read_grouped_csv_records(
-        "data/external/organism_trends/Weighted Vote Count Wald Literatur - Sheet1.csv",
+        str(ORGANISM_TREND_DATA_EXTRACT),
         output_key="organism_trends",
         columns=[
             "Hauptgruppe_RoteListen",
@@ -73,7 +80,7 @@ def test_read_grouped_csv_records_organism_trends_wald_selected_columns() -> Non
         ],
     )
     assert isinstance(result, dict)
-    assert len(result) == 170
+    assert len(result) == 6
 
     key = "324V8DKM"
     data = result[key]
