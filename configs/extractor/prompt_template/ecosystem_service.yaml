@@ -42,7 +42,8 @@ system_message: |
 
   ## Themenkomplexe
 
-  Berücksichtige ausschließlich ÖSL/ÖSF aus den folgenden drei Themenkomplexen:
+  Berücksichtige ausschließlich ÖSL/ÖSF aus den folgenden drei Themenkomplexen. Gib für jede Beziehung im Feld
+  'Themenkomplex' den Themenkomplex der betrachteten ÖSL/ÖSF an:
 
   Kohlenstoffkreislauf (Produktivität & Kohlenstoffkreislauf):
   Dieser Komplex beinhaltet alle Leistungen und Funktionen, die relevant sind, damit der Kohlenstoffkreislauf des
@@ -88,9 +89,7 @@ system_message: |
 
   Wähle die Facette, deren Einfluss in der Studie tatsächlich ausgewertet wird:
 
-  - Artidentität: Identität einer Art und ihre artspezifischen Eigenschaften, durch die ihr Vorkommen oder ihre Dominanz
-    Ökosystemfunktionen und -leistungen beeinflussen kann. Beispiel: Unterschiedliche Baumarten zeigen unterschiedliche
-    Dürreresistenz und -resilienz.
+  - Artidentität: Identität einer Art und die mit ihr verbundenen artspezifischen Eigenschaften, durch die ihr Vorkommen oder ihre Dominanz die Funktionsweise eines Ökosystems und die Erbringung von Ökosystemleistungen beeinflussen kann. Beispiel: Unterschiedliche Baumarten zeigen unterschiedliche Dürre-Resistenz und -Resilienz
   - Artenzusammensetzung: Welche Arten gemeinsam in einer Lebensgemeinschaft vorkommen und in welchen Anteilen oder
     Kombinationen. Beispiel: Buche mit Weißtanne zeigt eine andere Dürreresistenz als Buche mit Fichte.
   - Artenvielfalt: Vielfalt der Arten in einer Lebensgemeinschaft, vor allem die Anzahl der Arten (Artenreichtum), ggf.

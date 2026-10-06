@@ -245,6 +245,10 @@ class EinflussEnum(str, Enum):
 
 
 class ThemenkomplexEnum(str, Enum):
+    """Themenkomplexe, denen eine Ökosystemleistung (ÖSL) zugeordnet wird (Werte der "Themenkomplex"-Spalte
+    in ösl_papers_raw.csv).
+    """
+
     KOHLENSTOFFKREISLAUF = "Kohlenstoffkreislauf"
     KULTURELLE_LEISTUNGEN = "Kulturelle Leistungen"
     STABILITAET_UND_RESILIENZ = "Stabilität und Resilienz"
@@ -1467,14 +1471,14 @@ class EcosystemStudyFeaturesCompoundsSimple(BaseEcosystemStudyFeatures):
 
 class EcosystemServiceFieldsHabitat(CompoundFeature):
     """Ein einzelner Zusammenhang zwischen Biodiversität und Ökosystemleistung für einen einzelnen,
-    vorab festgelegten Lebensraum (z.B. Wald), bestehend aus Ökosystemleistung (ÖSL), Biodiv_Facette,
-    Einfluss und Arten. Ein Text kann
+    vorab festgelegten Lebensraum (z.B. Wald), bestehend aus Themenkomplex, Ökosystemleistung (ÖSL),
+    Biodiv_Facette, Einfluss und Arten. Ein Text kann
     mehrere solcher Zusammenhänge beschreiben; jede Instanz bildet genau einen davon ab, analog zu
     einer einzelnen Zeile in der ösl_papers_raw.csv-Datei.
 
     Die Auswertung (siehe configs/experiment/evaluate/ecosystem_service.yaml) beschränkt sich auf
-    ÖSL (die untersuchte Variable), Biodiv_Facette (die Biodiversitätsfacette) und Einfluss (die
-    Indikatorvariable). Arten wird extrahiert, aber bei der Bewertung ignoriert
+    Themenkomplex (die Gruppierung der ÖSL), ÖSL (die untersuchte Variable), Biodiv_Facette (die
+    Biodiversitätsfacette) und Einfluss (die Indikatorvariable). Arten wird extrahiert, aber bei der Bewertung ignoriert
     (`ignore_subfields`).
     """
 
@@ -1484,16 +1488,21 @@ class EcosystemServiceFieldsHabitat(CompoundFeature):
     # "Art(en)" are not valid Python identifiers, so those two columns are named "Biodiv_Facette"
     # and "Arten" here and in the processed CSV (see
     # src/kibad_llm/data_integration/align_ecosystem_service_csv.py).
-    # Further columns of the CSV are intentionally not part of the schema: "Themenkomplex" (one of
-    # Kohlenstoffkreislauf, Stabilität und Resilienz, Kulturelle Leistungen; only used in the prompt
-    # to delimit the relevant ÖSL), "ESGroup" (the CSV's own grouping of the free-text "ÖSL" into 43
-    # categories) and the CICES columns ("CICES-Bereich", "CICES-Gruppe", "CICES-Klasse",
-    # "CICES-Code", partly corrupted). "Lebensraum_Gruppiert" is only part of the base schema
+    # Further columns of the CSV are intentionally not part of the schema: "ESGroup" (the CSV's own
+    # grouping of the free-text "ÖSL" into 43 categories) and the CICES columns ("CICES-Bereich",
+    # "CICES-Gruppe", "CICES-Klasse", "CICES-Code", partly corrupted). "Themenkomplex" is a coarse
+    # grouping of "ÖSL" (in the forest reference it is fully determined by it), but since "ÖSL" is free
+    # text it cannot be derived and is extracted as its own field. "Lebensraum_Gruppiert" is only part of the base schema
     # (EcosystemServiceFields), since the habitat is fixed by the data set here (e.g. "Wald", see
     # configs/dataset/references/ecosystem_service_wald.yaml).
     # ÖSL, Biodiv_Facette and Einfluss are single-valued and required per relationship (every row
     # of the source data has exactly one value for each); multiple relationships in one text are
     # represented as multiple instances, not by stacking values within a single instance.
+    Themenkomplex: ThemenkomplexEnum = Field(
+        ...,
+        description="Zu welchem der folgenden Themenkomplexe gehört die in der Studie betrachtete "
+        "Ökosystemleistung (ÖSL)?",
+    )
     ÖSL: str = Field(
         ...,
         description="Welche Ökosystemleistung wird in der Studie betrachtet?",

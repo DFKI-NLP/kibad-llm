@@ -39,11 +39,25 @@
       ],
       "title": "HabitatEnum",
       "type": "string"
+    },
+    "ThemenkomplexEnum": {
+      "description": "Themenkomplexe, denen eine Ökosystemleistung (ÖSL) zugeordnet wird (Werte der \"Themenkomplex\"-Spalte\nin ösl_papers_raw.csv).",
+      "enum": [
+        "Kohlenstoffkreislauf",
+        "Kulturelle Leistungen",
+        "Stabilität und Resilienz"
+      ],
+      "title": "ThemenkomplexEnum",
+      "type": "string"
     }
   },
   "additionalProperties": false,
   "description": "Ein einzelner Zusammenhang zwischen Biodiversität und Ökosystemleistung, bestehend aus\nÖkosystemleistung (ÖSL), Biodiv_Facette, Einfluss, Arten und Lebensraum_Gruppiert (Basis-Schema\nfür alle Lebensräume). Wie [`EcosystemServiceFieldsHabitat`][.EcosystemServiceFieldsHabitat], aber\nmit dem Lebensraum als zusätzlichem Feld; pro betroffenem Lebensraum wird eine eigene Instanz\nerstellt.",
   "properties": {
+    "Themenkomplex": {
+      "$ref": "#/$defs/ThemenkomplexEnum",
+      "description": "Zu welchem der folgenden Themenkomplexe gehört die in der Studie betrachtete Ökosystemleistung (ÖSL)?"
+    },
     "ÖSL": {
       "description": "Welche Ökosystemleistung wird in der Studie betrachtet?",
       "title": "Ösl",
@@ -76,6 +90,7 @@
     }
   },
   "required": [
+    "Themenkomplex",
     "ÖSL",
     "Biodiv_Facette",
     "Einfluss",
