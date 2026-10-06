@@ -1,4 +1,4 @@
-"""Process the raw ÖSL reference export `data/external/ecosystem_services/ösl_papers_raw.csv`
+"""Process the raw ÖSL reference export `data/external/ecosystem_services/papers_raw.csv`
 into the format used as reference data for the ecosystem service evaluation.
 
 The script corrects the following formatting differences of the raw export:
@@ -32,7 +32,7 @@ import re
 
 from loguru import logger
 
-from kibad_llm.config import DATA_DIR, INTERIM_DATA_DIR
+from kibad_llm.config import EXTERNAL_DATA_DIR, INTERIM_DATA_DIR
 
 # Columns renamed in this project (see commit "change english terms in schema to german to fit
 # column names of csv") to match `EcosystemServiceFields` field names. The raw export uses the
@@ -280,13 +280,13 @@ if __name__ == "__main__":
     parser.add_argument(
         "--input",
         type=Path,
-        default=DATA_DIR / "external" / "ecosystem_services" / "ösl_papers_raw.csv",
+        default=EXTERNAL_DATA_DIR / "ecosystem_services" / "papers_raw.csv",
         help="Raw CSV export to align.",
     )
     parser.add_argument(
         "--output",
         type=Path,
-        default=INTERIM_DATA_DIR / "ecosystem_services" / "ösl_papers_processed_wald.csv",
+        default=INTERIM_DATA_DIR / "ecosystem_services" / "papers_processed_wald.csv",
         help="Where to write the aligned CSV. The default name fits the filters used for the "
         "forest dev set (see below); pass --output when using other filters.",
     )
