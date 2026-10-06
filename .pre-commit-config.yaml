@@ -110,10 +110,6 @@ repos:
       - id: codespell
         # For Python < 3.11, TOML parsing needs tomli
         additional_dependencies: ["tomli"]
-        args: [
-          # skip this Python script since it lists German column names
-          "--skip", "src/kibad_llm/data_integration/align_ecosystem_service_csv.py",
-        ]
         priority: 80  # run when bandit runs
 
   - repo: local
