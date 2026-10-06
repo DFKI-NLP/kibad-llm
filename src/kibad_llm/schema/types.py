@@ -246,7 +246,7 @@ class EinflussEnum(str, Enum):
 
 class ThemenkomplexEnum(str, Enum):
     """Themenkomplexe, denen eine Ökosystemleistung (ÖSL) zugeordnet wird (Werte der "Themenkomplex"-Spalte
-    in ösl_papers_raw.csv).
+    in wald_devset_raw.csv).
     """
 
     KOHLENSTOFFKREISLAUF = "Kohlenstoffkreislauf"
@@ -268,7 +268,7 @@ class BiodiversityFacetEnum(str, Enum):
 
 
 class ESGroupEnum(str, Enum):
-    """Werte der "ESGroup"-Spalte in ösl_papers_raw.csv: eine vom Datensatz selbst vorgenommene,
+    """Werte der "ESGroup"-Spalte in wald_devset_raw.csv: eine vom Datensatz selbst vorgenommene,
     gröbere Gruppierung der freitextlichen "ÖSL"-Spalte in klassifizierbare Kategorien. Zwei
     Rohwerte wurden dabei mit einem bestehenden Wert zusammengeführt: "Schädlingskontrolle?" ->
     "Schädlingskontrolle" und "Ästhetischer Wert der Landschaft" -> "Ästhetischer Wert".
@@ -1474,7 +1474,7 @@ class EcosystemServiceFieldsHabitat(CompoundFeature):
     vorab festgelegten Lebensraum (z.B. Wald), bestehend aus Themenkomplex, Ökosystemleistung (ÖSL),
     Biodiv_Facette, Einfluss und Arten. Ein Text kann
     mehrere solcher Zusammenhänge beschreiben; jede Instanz bildet genau einen davon ab, analog zu
-    einer einzelnen Zeile in der ösl_papers_raw.csv-Datei.
+    einer einzelnen Zeile in der wald_devset_raw.csv-Datei.
 
     Die Auswertung (siehe configs/experiment/evaluate/ecosystem_service.yaml) beschränkt sich auf
     Themenkomplex (die Gruppierung der ÖSL), ÖSL (die untersuchte Variable), Biodiv_Facette (die
@@ -1482,7 +1482,7 @@ class EcosystemServiceFieldsHabitat(CompoundFeature):
     (`ignore_subfields`).
     """
 
-    # The fields below are based on the ösl_papers_raw.csv file (ÖSL-VoteCount-Vollständig with
+    # The fields below are based on the wald_devset_raw.csv file (ÖSL-VoteCount-Vollständig with
     # Zotero item keys matched in). We use the column names as field names, analogous to
     # OrganismBiodiversityTrend, so that no post-processing is needed. "Biodiv-Facette" and
     # "Art(en)" are not valid Python identifiers, so those two columns are named "Biodiv_Facette"

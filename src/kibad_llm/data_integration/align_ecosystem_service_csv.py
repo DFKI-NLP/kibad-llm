@@ -1,11 +1,12 @@
-"""Process the raw ÖSL reference export `data/external/ecosystem_services/papers_raw.csv`
+"""Process the raw ÖSL reference export `data/external/ecosystem_services/wald_devset_raw.csv`
 into the format used as reference data for the ecosystem service evaluation.
 
 The script corrects the following formatting differences of the raw export:
 
-- Two columns are renamed so their names are valid Python identifiers matching
+- Columns are renamed so their names are valid Python identifiers matching
   `EcosystemServiceFields` in `src/kibad_llm/schema/types.py` ("Biodiv-Facette" ->
-  "Biodiv_Facette", "Art(en)" -> "Arten"); the raw export uses the original names.
+  "Biodiv_Facette", "Art(en)" -> "Arten"); the raw export uses the original names. The title
+  column is accepted both as "Title" and "title" and written as "Title".
 - The raw export carries extra columns (e.g. review-tracking metadata) that are dropped; the
   columns to keep and their order are defined by `OUTPUT_COLUMNS`.
 - The raw export preserves Unicode punctuation (hyphen/dash/quote variants), which is flattened
@@ -37,6 +38,7 @@ from kibad_llm.config import EXTERNAL_DATA_DIR, INTERIM_DATA_DIR
 COLUMN_RENAMES = {
     "Biodiv-Facette": "Biodiv_Facette",
     "Art(en)": "Arten",
+    "title": "Title",
 }
 
 # Columns (after applying `COLUMN_RENAMES`) written to the output, in this order. Further columns of
@@ -277,13 +279,13 @@ if __name__ == "__main__":
     parser.add_argument(
         "--input",
         type=Path,
-        default=EXTERNAL_DATA_DIR / "ecosystem_services" / "papers_raw.csv",
+        default=EXTERNAL_DATA_DIR / "ecosystem_services" / "wald_devset_raw.csv",
         help="Raw CSV export to align.",
     )
     parser.add_argument(
         "--output",
         type=Path,
-        default=INTERIM_DATA_DIR / "ecosystem_services" / "papers_processed_wald.csv",
+        default=INTERIM_DATA_DIR / "ecosystem_services" / "wald_devset_processed.csv",
         help="Where to write the aligned CSV. The default name fits the filters used for the "
         "forest dev set (see below); pass --output when using other filters.",
     )

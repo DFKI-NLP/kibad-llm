@@ -41,7 +41,7 @@
       "type": "string"
     },
     "ThemenkomplexEnum": {
-      "description": "Themenkomplexe, denen eine Ökosystemleistung (ÖSL) zugeordnet wird (Werte der \"Themenkomplex\"-Spalte\nin ösl_papers_raw.csv).",
+      "description": "Themenkomplexe, denen eine Ökosystemleistung (ÖSL) zugeordnet wird (Werte der \"Themenkomplex\"-Spalte\nin wald_devset_raw.csv).",
       "enum": [
         "Kohlenstoffkreislauf",
         "Kulturelle Leistungen",
