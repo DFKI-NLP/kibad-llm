@@ -160,7 +160,8 @@ max-line-length = 99
 exclude = [".git", "notebooks", "models", "data", "logs"]
 
 [tool.codespell]
-skip = "logs/**,data/**,configs/**/*template*,configs/evaluate.yaml,tests/fixtures/**.json,tests/fixtures/**.jsonl,src/kibad_llm/schema/**,tests/unit/schema/**,*.ipynb"
+# skip the whole align_ecosystem_service_csv.py since it lists German column names (excluding them would allow them in all other files, which is not what we want)
+skip = "logs/**,data/**,configs/**/*template*,configs/evaluate.yaml,tests/fixtures/**.json,tests/fixtures/**.jsonl,src/kibad_llm/schema/**,tests/unit/schema/**,*.ipynb,src/kibad_llm/data_integration/align_ecosystem_service_csv.py"
 ignore-words-list = "hist"
 
 # Bandit (read by prek bandit with -c pyproject.toml)
