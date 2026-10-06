@@ -1,8 +1,10 @@
 import json
 
-from kibad_llm.config import PROJ_ROOT
 from kibad_llm.dataset.csv import read_grouped_csv_records
+from tests import FIXTURE_DATA_ROOT
 from tests.conftest import WRITE_FIXTURE_DATA
+
+ECOSYSTEM_SERVICE_TREND_DATA = FIXTURE_DATA_ROOT / "dataset" / "csv" / "ösl_papers_raw_extract.csv"
 
 
 def test_read_grouped_csv_records_organism_trends_wald_all() -> None:
@@ -16,7 +18,7 @@ def test_read_grouped_csv_records_organism_trends_wald_all() -> None:
     key = "324V8DKM"
     data = result[key]
 
-    path_expected = PROJ_ROOT / "tests" / "fixtures" / "organism_trends" / f"{key}.json"
+    path_expected = FIXTURE_DATA_ROOT / "organism_trends" / f"{key}.json"
 
     if WRITE_FIXTURE_DATA:
         path_expected.parent.mkdir(parents=True, exist_ok=True)
@@ -41,7 +43,7 @@ def test_read_grouped_csv_records_custom_output_key() -> None:
 
 def test_read_grouped_csv_records_split_columns() -> None:
     result = read_grouped_csv_records(
-        "data/external/ecosystem_services/ösl_papers_raw.csv",
+        str(ECOSYSTEM_SERVICE_TREND_DATA),
         output_key="ecosystem_service_trends",
         columns=["Lebensraum_Gruppiert"],
         split_columns={"Lebensraum_Gruppiert": ", "},
