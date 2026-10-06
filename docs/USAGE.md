@@ -189,7 +189,7 @@ Use this to send more than one simultaneous request to vLLM.
 
 ### Schema descriptions in prompts
 
-Prompt templates containing `{schema_description}` use `build_schema_description` from [schema/description.py](/src/kibad_llm/schema/description.py). The existing import from `kibad_llm.schema.utils` remains available.
+Prompt templates containing `{schema_description}` use `build_schema_description` from [schema/description.py](/src/kibad_llm/schema/description.py).
 
 Descriptions are assigned a role before formatting:
 
