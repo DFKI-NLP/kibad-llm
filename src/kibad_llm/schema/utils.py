@@ -1,368 +1,15 @@
+"""JSON Schema transformations for attaching extraction metadata.
+
+The description builder is re-exported here for compatibility with existing callers.
+"""
+
 from __future__ import annotations
 
 from collections.abc import Mapping
 from collections.abc import Mapping as ABCMapping
 from typing import Any
 
-from kibad_llm.utils.log import warn_once
 
-
-def _norm_desc(desc: Any) -> str | None:
-    """remove all newlines and extra spaces from the description"""
-    if isinstance(desc, str):
-        d = " ".join(desc.split())
-        return d or None
-    return None
-
-
-def _resolve_ref(schema: Mapping[str, Any], ref: str) -> Mapping[str, Any] | None:
-    """Resolve local JSON Schema $refs like '#/$defs/Name'."""
-    if not ref.startswith("#/"):
-        return None
-
-    node: Mapping[str, Any] | None = schema
-    for part in ref[2:].split("/"):
-        # node may be None; get() returns Any | None
-        next_node = None if node is None else node.get(part)
-        if not isinstance(next_node, ABCMapping):
-            return None
-        # after isinstance, mypy narrows next_node to Mapping[Any, Any]
-        node = next_node
-
-    return node
-
-
-def _extract_choices_with_description(
-    schema: Mapping[str, Any],
-    node: Any,
-    *,
-    description_separator: str = "; ",
-) -> tuple[list[str], str | None] | None:
-    """
-    Extract enum choices and an optional description from a JSON Schema node.
-
-    Supported patterns:
-    - Inline enums via ``{"enum": [...]}`` (returns values and the node's ``description`` if present)
-    - Local references via ``{"$ref": "#/..."} `` (recursively resolves and extracts)
-    - Compositions via ``allOf`` / ``anyOf`` / ``oneOf``
-
-    Composition handling:
-    - ``anyOf`` / ``oneOf``:
-        Treat as a union of alternatives (common for Optional/Union types). We therefore
-        collect enum values from all branches and de-duplicate them while preserving order.
-    - ``allOf``:
-        ``allOf`` imposes an intersection of constraints. We therefore take the intersection
-        of enum values across branches (i.e., only values allowed by all branches are valid).
-
-    Description handling:
-    - We collect all non-empty descriptions found (including wrapper descriptions) and
-      concatenate them with ``description_separator``.
-
-    Args:
-        schema: Root schema (needed for resolving local ``$ref`` targets).
-        node: Current schema node to inspect.
-        description_separator: Separator used when concatenating multiple descriptions.
-
-    Returns:
-        ``(values, description)`` if enum values can be found, otherwise ``None``.
-    """
-    if not isinstance(node, ABCMapping):
-        return None
-
-    # inline enum
-    enum = node.get("enum")
-    if isinstance(enum, list) and enum:
-        return [str(v) for v in enum], _norm_desc(node.get("description"))
-
-    # direct $ref (recurse)
-    ref = node.get("$ref")
-    if isinstance(ref, str):
-        ref_schema = _resolve_ref(schema, ref)
-        if isinstance(ref_schema, ABCMapping):
-            return _extract_choices_with_description(
-                schema,
-                ref_schema,
-                description_separator=description_separator,
-            )
-
-    # composition wrappers
-    for key in ("allOf", "anyOf", "oneOf"):
-        subs = node.get(key)
-        if not isinstance(subs, list) or not subs:
-            continue
-
-        values: list[str] = []
-        descs: list[str] = []
-        no_values_allowed = False  # for allOf, detect if intersection is empty
-
-        # include wrapper description too
-        wrapper_desc = _norm_desc(node.get("description"))
-        if wrapper_desc:
-            descs.append(wrapper_desc)
-
-        for sub in subs:
-            res = _extract_choices_with_description(
-                schema,
-                sub,
-                description_separator=description_separator,
-            )
-            if not res:
-                continue
-
-            sub_values, sub_desc = res
-
-            if key == "allOf":
-                # allOf combines constraints. If multiple enum constraints are present,
-                # only values allowed by *all* of them are valid (intersection).
-                if sub_values:
-                    if values:
-                        # calculate intersection
-                        allowed = set(sub_values)
-                        values = [v for v in values if v in allowed]
-                        if not values:
-                            no_values_allowed = True
-                    else:
-                        values = sub_values
-
-            else:
-                # anyOf/oneOf represent alternatives -> union of allowed values
-                values.extend(sub_values)
-
-            if sub_desc:
-                descs.append(sub_desc)
-
-        if not values and not no_values_allowed:
-            continue
-
-        # de-duplicate union results (preserve order)
-        if key in ("anyOf", "oneOf"):
-            values = list(dict.fromkeys(values))
-
-        # Note: `_extract_choices_with_description` aggregates wrapper + nested descriptions
-        # at every composition level. If a branch contains its own anyOf/oneOf/allOf, its
-        # returned `sub_desc` can already include some of the same wrapper/enum descriptions
-        # we are collecting at this level. To avoid repeated text in the final output,
-        # de-duplicate the description segments (order-preserving).
-        descs = list(dict.fromkeys(descs))
-
-        desc = description_separator.join(descs) or None
-        return values, desc
-
-    return None
-
-
-def _extract_type(schema: Mapping[str, Any], node: Any) -> str | None:
-    """
-    Extract the type from a schema node, handling:
-    - inline 'type'
-    - direct '$ref' (resolves to 'object' for model refs)
-    - composition via 'allOf'/'anyOf'/'oneOf'
-
-    Returns:
-        str: Type like "string", "integer", "number", "boolean", "array", "object", or None
-    """
-    if not isinstance(node, ABCMapping):
-        return None
-
-    # inline type
-    node_type = node.get("type")
-    if isinstance(node_type, str):
-        return node_type
-
-    # direct $ref
-    ref = node.get("$ref")
-    if isinstance(ref, str):
-        ref_schema = _resolve_ref(schema, ref)
-        if isinstance(ref_schema, ABCMapping):
-            ref_type = ref_schema.get("type")
-            if isinstance(ref_type, str):
-                return ref_type
-
-    # composition wrappers
-    for key in ("allOf", "anyOf", "oneOf"):
-        subs = node.get(key)
-        if isinstance(subs, list):
-            for sub in subs:
-                sub_type = _extract_type(schema, sub)
-                if sub_type:
-                    return sub_type
-
-    return None
-
-
-def _pick_preferred_branch(node: Any, root_schema: Mapping[str, Any]) -> Any:
-    """
-    If node is a union (anyOf/oneOf), pick a representative branch for *display* and
-    recursion. We prefer a non-null branch so Optional[T] becomes describable as T.
-    If there is no clear non-null branch, return the node unchanged.
-    """
-    if not isinstance(node, ABCMapping):
-        return node
-    for key in ("anyOf", "oneOf"):
-        subs = node.get(key)
-        if isinstance(subs, list) and subs:
-            for sub in subs:
-                t = _extract_type(root_schema, sub)
-                if t and t != "null":
-                    return sub
-            return subs[0]
-    return node
-
-
-def build_schema_description(
-    schema: Mapping[str, Any],
-    header: str | None = "Feldhinweise und erlaubte Werte (getrennt durch Semikolons):",
-    type_description_prefix: str | None = "Beschreibung: ",
-    cardinality_prefix: str | None = "Kardinalität: ",
-    type_prefix: str | None = "Typ: ",
-    choices_prefix: str | None = "Zulässige Werte: ",
-    choices_description_prefix: str | None = "Hinweise zu den Werten: ",
-    component_separator: str = " | ",
-    choices_separator: str = "; ",
-    indent_step: str = "  ",
-    include_field_descriptions: bool = True,
-    include_type_descriptions: bool = True,
-    # internal args
-    indent: int = 0,
-    root_schema: Mapping[str, Any] | None = None,
-) -> str:
-    """
-    Build a human‑readable summary for a JSON Schema.
-
-    Output format:
-    - Optional first line: `<type_description_prefix><schema.description>` if include_type_descriptions and the description exists
-    - Optional header line (only at top level if header is not None)
-    - One line per property with format depending on which prefix parameters are not None:
-      `<indent>- <name>[: <description>][<separator><cardinality_prefix><cardinality>][<separator><type_prefix><type>][<separator><enum_prefix><values>]`
-    - For nested objects, recursively includes their properties with increased indentation
-
-    Cardinality rules:
-    - type=array ⇒ "0..*"
-    - non-array with "default" ⇒ "0..1"
-    - non-array without "default" ⇒ "1"
-
-    Type extraction:
-    - Supports inline "type", direct "$ref", and compositions via "allOf"/"anyOf"/"oneOf"
-    - For arrays, type is taken from "items"
-
-    Choices extraction:
-    - Supports inline enums, direct "$ref", and compositions via "allOf"/"anyOf"/"oneOf"
-    - For arrays, choices are taken from "items" (including "$ref" or compositions)
-
-    Args:
-        schema: The JSON Schema dictionary to process
-        header: Header text for field list (only shown at top level, None to omit)
-        type_description_prefix: Prefix for type descriptions (descriptions for the overall schema and nested schemas, not field descriptions)
-        cardinality_prefix: Prefix for cardinality information (None to omit cardinality)
-        type_prefix: Prefix for type information (None to omit types)
-        choices_prefix: Prefix for choices value lists (None to omit choices)
-        choices_description_prefix: Prefix for choices descriptions (None to omit choices descriptions)
-        component_separator: Separator between field components (name, cardinality, type, choices)
-        choices_separator: Separator between individual choices values
-        indent_step: String used for each indentation level
-        include_field_descriptions: Whether to include field/property descriptions in the output
-        include_type_descriptions: Whether to include schema/type descriptions (top-level and nested) in the output.
-            NOTE: This is deprecated; please set type_description_prefix to None to omit type descriptions instead.
-        indent: Current indentation level (internal, for recursion)
-        root_schema: Root schema containing $defs (internal, for recursion)
-
-    Returns:
-        Multi-line string summarizing schema structure, fields, and constraints
-    """
-    if not include_type_descriptions:
-        type_description_prefix = None
-        warn_once(
-            "include_type_descriptions is deprecated; please set type_description_prefix to None instead "
-            "of using include_type_descriptions=False."
-        )
-
-    if root_schema is None:
-        root_schema = schema
-
-    lines = []
-    prefix = indent_step * indent
-
-    # Add description
-    if type_description_prefix is not None:
-        # remove all newlines and extra spaces from the description
-        schema_desc = _norm_desc(schema.get("description"))
-        if schema_desc:
-            lines.append(f"{prefix}{type_description_prefix}{schema_desc}")
-
-    if header:
-        lines.append(header)
-
-    props: dict = schema.get("properties", {}) or {}
-    for name, spec in props.items():
-        # Single check for array vs non-array handling
-        is_array = spec.get("type") == "array"
-        target = spec.get("items") if is_array else spec
-        target_for_hints = _pick_preferred_branch(target, root_schema)
-
-        # Determine cardinality
-        has_default = "default" in spec
-        cardinality = "0..*" if is_array else ("0..1" if has_default else "1")
-
-        # Extract type and choices from target
-        field_type = _extract_type(root_schema, target_for_hints)
-        # use choices_separator also to join the enum *descriptions* if needed
-        choices_with_description = _extract_choices_with_description(
-            root_schema, target_for_hints, description_separator=choices_separator
-        )
-
-        # Build field line
-        hint = f"{prefix}- {name}:"
-        # the field description is mandatory (if exists)
-        if include_field_descriptions:
-            # remove all newlines and extra spaces from the description
-            desc = _norm_desc(spec.get("description"))
-            if desc:
-                hint += f" {desc}"
-        if cardinality_prefix is not None:
-            hint += f"{component_separator}{cardinality_prefix}{cardinality}"
-        if field_type and type_prefix is not None:
-            hint += f"{component_separator}{type_prefix}{field_type}"
-        if choices_with_description and choices_prefix is not None:
-            choices, choices_desc = choices_with_description
-            hint += f"{component_separator}{choices_prefix}" + choices_separator.join(choices)
-            # remove all newlines and extra spaces from the choices description
-            choices_desc = _norm_desc(choices_desc)
-            if choices_desc and choices_description_prefix is not None:
-                hint += f"{component_separator}{choices_description_prefix}{choices_desc}"
-
-        lines.append(hint)
-
-        # Handle nested objects recursively:
-        # - $ref objects
-        # - inline object schemas with "properties" (needed for metadata wrappers)
-        if field_type == "object" and isinstance(target_for_hints, ABCMapping):
-            nested_schema: Mapping[str, Any] | None = None
-
-            ref = target_for_hints.get("$ref")
-            if isinstance(ref, str):
-                nested_schema = _resolve_ref(root_schema, ref)
-            elif isinstance(target_for_hints.get("properties"), ABCMapping):
-                nested_schema = target_for_hints
-
-            if nested_schema:
-                nested_content = build_schema_description(
-                    nested_schema,
-                    indent=indent + 1,
-                    root_schema=root_schema,
-                    # no header for nested
-                    header=None,
-                    type_description_prefix=type_description_prefix,
-                    cardinality_prefix=cardinality_prefix,
-                    type_prefix=type_prefix,
-                    choices_prefix=choices_prefix,
-                    component_separator=component_separator,
-                    choices_separator=choices_separator,
-                    indent_step=indent_step,
-                    include_field_descriptions=include_field_descriptions,
-                )
-                lines.append(nested_content)
-
-    return "\n".join(lines)
 
 
 METADATA_SCHEMA_WITH_EVIDENCE: dict[str, Any] = {
@@ -383,6 +30,30 @@ METADATA_SCHEMA_WITH_EVIDENCE_SHORTHAND: dict[str, Any] = {
         "description": "Verbatim excerpt from the source text supporting the extracted content.",
     }
 }
+
+
+def _ref_path(ref: str) -> tuple[str, ...]:
+    """Decode a local JSON Pointer; other reference formats are unsupported."""
+    if ref == "#":
+        return ()
+    if not ref.startswith("#/"):
+        raise ValueError(f"Only local JSON Pointer references are supported: {ref!r}")
+    return tuple(part.replace("~1", "/").replace("~0", "~") for part in ref[2:].split("/"))
+
+
+def _resolve_ref(schema: Mapping[str, Any], ref: str) -> Mapping[str, Any] | None:
+    """Resolve a local reference to a schema mapping, or return None if unresolved."""
+    if ref != "#" and not ref.startswith("#/"):
+        return None
+    node: Any = schema
+    for part in _ref_path(ref):
+        if isinstance(node, Mapping):
+            node = node.get(part)
+        elif isinstance(node, list) and part.isdigit() and int(part) < len(node):
+            node = node[int(part)]
+        else:
+            return None
+    return node if isinstance(node, Mapping) else None
 
 
 def _is_objectish(node: Mapping[str, Any]) -> bool:
