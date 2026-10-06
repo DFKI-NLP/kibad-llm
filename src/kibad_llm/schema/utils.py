@@ -9,9 +9,6 @@ from collections.abc import Mapping
 from collections.abc import Mapping as ABCMapping
 from typing import Any
 
-
-
-
 METADATA_SCHEMA_WITH_EVIDENCE: dict[str, Any] = {
     "type": "object",
     "properties": {
