@@ -149,7 +149,7 @@ repos:
         priority: 100  # run after check-mkdocs, before lychee
 
   - repo: https://github.com/lycheeverse/lychee.git
-    rev: lychee-v0.24.2
+    rev: lychee-v0.24.1
     hooks:
       - id: lychee
         args: ["--no-progress", "--config", "lychee.toml", "--root-dir", "./site", "site/**/*.html"]
