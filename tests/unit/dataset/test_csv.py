@@ -5,11 +5,17 @@ from tests import FIXTURE_DATA_ROOT
 from tests.conftest import WRITE_FIXTURE_DATA
 
 ECOSYSTEM_SERVICE_TREND_DATA = FIXTURE_DATA_ROOT / "dataset" / "csv" / "ösl_papers_raw_extract.csv"
+ORGANISM_TREND_DATA = (
+    FIXTURE_DATA_ROOT
+    / "dataset"
+    / "csv"
+    / "Weighted Vote Count Wald Literatur - Sheet1_extract.csv"
+)
 
 
 def test_read_grouped_csv_records_organism_trends_wald_all() -> None:
     result = read_grouped_csv_records(
-        "data/external/organism_trends/Weighted Vote Count Wald Literatur - Sheet1.csv",
+        str(ORGANISM_TREND_DATA),
         output_key="organism_trends",
     )
     assert isinstance(result, dict)
@@ -33,7 +39,7 @@ def test_read_grouped_csv_records_organism_trends_wald_all() -> None:
 
 def test_read_grouped_csv_records_custom_output_key() -> None:
     result = read_grouped_csv_records(
-        "data/external/organism_trends/Weighted Vote Count Wald Literatur - Sheet1.csv",
+        str(ORGANISM_TREND_DATA),
         columns=["Hauptgruppe_RoteListen"],
         output_key="ecosystem_service_trends",
     )
@@ -64,7 +70,7 @@ def test_read_grouped_csv_records_split_columns() -> None:
 
 def test_read_grouped_csv_records_organism_trends_wald_selected_columns() -> None:
     result = read_grouped_csv_records(
-        "data/external/organism_trends/Weighted Vote Count Wald Literatur - Sheet1.csv",
+        str(ORGANISM_TREND_DATA),
         output_key="organism_trends",
         columns=[
             "Hauptgruppe_RoteListen",
