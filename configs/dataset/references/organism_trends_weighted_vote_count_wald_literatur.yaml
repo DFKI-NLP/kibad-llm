@@ -1,4 +1,5 @@
-_target_: kibad_llm.dataset.csv.read_organism_trends
+_target_: kibad_llm.dataset.csv.read_grouped_csv_records
+output_key: organism_trends
 file: "${paths.root_dir}/data/external/organism_trends/Weighted Vote Count Wald Literatur - Sheet1.csv"
 # pdf_id_column: "Key"
 columns:
