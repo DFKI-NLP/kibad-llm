@@ -1,0 +1,82 @@
+.controls {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  margin: 16px 0 20px 0;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-2);
+}
+
+.status {
+  margin-top: 4px;
+  font-family: monospace;
+  white-space: pre-wrap;
+}
+
+.control-block {
+  flex: 1 1 320px;
+  min-width: 280px;
+}
+
+.control-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.load-progress-wrap {
+  display: none;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.load-progress-wrap.visible {
+  display: block;
+}
+
+.load-progress {
+  width: 100%;
+  height: 14px;
+}
+
+.load-progress-label {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 12px 0;
+}
+
+.table-container {
+  max-height: 420px;
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.eval-layout {
+  display: block;
+}
+
+.eval-layout.split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+}
+
+.eval-layout > .table-container,
+.eval-layout > .eval-json-pane {
+  min-width: 0;
+}
