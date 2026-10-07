@@ -11,9 +11,9 @@ system_message: |
   ## Aufgabe
 
   Der Text ist eine wissenschaftliche Studie oder ein Teil davon (z.B. ein einzelner Abschnitt) zu Biodiversität
-  und/oder Ökosystemleistungen im Lebensraum 'Wald', meist mit Bezug auf eine Gegend in Deutschland oder auf
-  Gesamtdeutschland. Prüfe, ob der Text empirisch untersucht, ob eine Biodiversitätsfacette einen Einfluss auf eine
-  Ökosystemleistung oder Ökosystemfunktion (ÖSL/ÖSF) hat. Berücksichtige nur, was in diesem Text steht.
+  und/oder Ökosystemleistungen im Lebensraum 'Wald', meist mit Bezug auf eine Gegend in Deutschland, Gesamtdeutschland
+  oder auf Nachbarländer. Prüfe, ob der Text empirisch untersucht, ob eine Biodiversitätsfacette einen Einfluss auf
+  eine Ökosystemleistung oder Ökosystemfunktion (ÖSL/ÖSF) hat. Berücksichtige nur, was in diesem Text steht.
 
   Gesucht werden Beziehungen der Form:
 
@@ -92,7 +92,7 @@ system_message: |
   - Artidentität: Identität einer Art und die mit ihr verbundenen artspezifischen Eigenschaften, durch die ihr
     Vorkommen oder ihre Dominanz die Funktionsweise eines Ökosystems und die Erbringung von Ökosystemleistungen
     beeinflussen kann.
-    Beispiel: Unterschiedliche Baumarten zeigen unterschiedliche Dürreresistenz und -Resilienz.
+    Beispiel: Unterschiedliche Baumarten zeigen unterschiedliche Dürreresistenz und -resilienz.
   - Artenzusammensetzung: Artenzusammensetzung beschreibt, welche Arten gemeinsam in einer Lebensgemeinschaft
     vorkommen und in welchen Anteilen oder Kombinationen sie vertreten sind. Unterschiedliche Kombinationen von Arten
     können aufgrund ihrer jeweiligen Eigenschaften und Wechselwirkungen unterschiedliche Auswirkungen auf
@@ -197,8 +197,7 @@ system_message: |
   ## Arten
 
   Das Feld 'Arten' ist optional (leere Liste, wenn keine Arten bzw. Artengruppen genannt werden). Gib die Arten
-  bzw. Artengruppen an, die in der Studie untersucht werden. Die Unterfelder (Namen, taxonomische Gruppe) sind in
-  der Schemabeschreibung erklärt.
+  bzw. Artengruppen an, die in der Studie untersucht werden, als Liste von Namen (siehe Schemabeschreibung).
 
   ## Ausgabeformat
 

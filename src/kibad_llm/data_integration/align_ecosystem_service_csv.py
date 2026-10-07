@@ -14,8 +14,7 @@ The script corrects the following formatting differences of the raw export:
 
 Optionally, papers can be filtered (all rows of a paper, identified by "Key") with
 `--exclude-methods` (e.g. reviews and pure model studies) and `--require-habitat` (e.g. "Wald"). The
-forest dev set reference is created without any filter (it only covers Wald by choice, and reviews /
-pure model studies are kept for the LLM to filter out):
+forest dev set reference is created without any filter (it only covers Wald by choice):
 ```
     uv run -m kibad_llm.data_integration.align_ecosystem_service_csv
 ```

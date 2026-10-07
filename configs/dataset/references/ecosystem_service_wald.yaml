@@ -2,8 +2,7 @@ _target_: kibad_llm.dataset.csv.read_grouped_csv_records
 output_key: ecosystem_service_trends
 # wald_devset_raw.csv has a "Key" column with Zotero item keys matched in, compatible with how
 # predictions are keyed (see configs/dataset/predictions/extraction_result.yaml). Forest dev set:
-# all papers are about the habitat Wald by choice; reviews / pure model studies (column
-# "Methode" is Literaturstudie / Modell/Simulation) are intentionally kept for the LLM to filter out.  # codespell:ignore
+# all papers are about the habitat Wald by choice.
 # Created from data/external/ecosystem_services/wald_devset_raw.csv with
 #   uv run -m kibad_llm.data_integration.align_ecosystem_service_csv
 file: "${paths.root_dir}/data/interim/ecosystem_services/wald_devset_processed.csv"

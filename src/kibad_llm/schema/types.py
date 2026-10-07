@@ -256,10 +256,8 @@ class BiodiversityFacetEnum(str, Enum):
     ARTENVIELFALT = "Artenvielfalt"
     ARTENZUSAMMENSETZUNG = "Artenzusammensetzung"
     ARTIDENTITAET = "Artidentität"
-    ARTZUSAMMENSETZUNG = "Artzusammensetzung"
     FUNKTIONELLE_DIVERSITAET = "Funktionelle Diversität"
     GENETISCHE_DIVERSITAET = "Genetische Diversität"
-    KOMPOSITINDIKATOR = "Kompositindikator"
     LANDSCHAFTSDIVERSITAET = "Landschaftsdiversität"
     LANDSCHAFTSTYP = "Landschaftstyp"
     STRUKTURELLE_DIVERSITAET = "Strukturelle Diversität"
@@ -1506,17 +1504,24 @@ class EcosystemServiceFieldsHabitat(CompoundFeature):
     Biodiv_Facette: BiodiversityFacetEnum = Field(
         ...,
         description="Welche dieser Biodiversitätsfacetten wird in der Studie betrachtet? Gemeint ist die "
-        "Facette, auf die der Einfluss (Einfluss) der Ökosystemleistung (ÖSL) gemessen wird.",
+        "Facette auf der erklärenden Seite (Ursache, unabhängige Variable), deren Einfluss (Einfluss) auf "
+        "die Ökosystemleistung bzw. -funktion (ÖSL/ÖSF) in der Studie ausgewertet wird.",
     )
     Einfluss: EinflussEnum = Field(
         ...,
-        description="Was ist der gemessene Einfluss der Ökosystemleistung (ÖSL) auf die "
-        "Biodiversitätsfacette (Biodiv_Facette) in der Studie von den folgenden Optionen?",  # needs explanation of the terms
+        description="Was ist der in der Studie gemessene Einfluss der Biodiversitätsfacette "
+        "(Biodiv_Facette) auf die Ökosystemleistung bzw. -funktion (ÖSL/ÖSF)? Die Richtung bezieht sich "
+        "auf die ÖSL/ÖSF (pos = die ÖSL/ÖSF nimmt mit höherer Ausprägung der Facette zu).",
     )
-    # Same description as the "Arten" field of EcosystemStudyFeaturesTaxa. The evaluation ignores this field.
-    Arten: list[Taxa] = Field(
+    # The "Art(en)" column of the reference data is a comma-separated list of names as used in the
+    # study (mostly German tree names such as "Buche", "Fichte"), without scientific name or
+    # taxonomic group, so a plain list of strings instead of `Taxa`. The evaluation ignores this field.
+    Arten: list[str] = Field(
         default_factory=list,
-        description=EcosystemStudyFeaturesTaxa.model_fields["taxa"].description,
+        description="Welche Arten, Gattungen bzw. Artengruppen werden in der Studie untersucht? Gib die "
+        "Namen so an, wie sie im Text verwendet werden, auf Deutsch. "
+        "Falls der Text keinen deutschen Namen nennt, übersetze den Namen ins Deutsche; ist das nicht "
+        "möglich, verwende den wissenschaftlichen Namen. Leere Liste, wenn keine Arten genannt werden.",
     )
 
 

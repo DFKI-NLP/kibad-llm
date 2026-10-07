@@ -8,23 +8,15 @@ Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
   - ÖSL: Welche Ökosystemleistung wird in der Studie betrachtet? | Kardinalität: 1 | Typ: object
     - content: | Kardinalität: 1 | Typ: string
     - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
-  - Biodiv_Facette: Welche dieser Biodiversitätsfacetten wird in der Studie betrachtet? Gemeint ist die Facette, auf die der Einfluss (Einfluss) der Ökosystemleistung (ÖSL) gemessen wird. | Kardinalität: 1 | Typ: object
-    - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Artenvielfalt; Artenzusammensetzung; Artidentität; Artzusammensetzung; Funktionelle Diversität; Genetische Diversität; Kompositindikator; Landschaftsdiversität; Landschaftstyp; Strukturelle Diversität
+  - Biodiv_Facette: Welche dieser Biodiversitätsfacetten wird in der Studie betrachtet? Gemeint ist die Facette auf der erklärenden Seite (Ursache, unabhängige Variable), deren Einfluss (Einfluss) auf die Ökosystemleistung bzw. -funktion (ÖSL/ÖSF) in der Studie ausgewertet wird. | Kardinalität: 1 | Typ: object
+    - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Artenvielfalt; Artenzusammensetzung; Artidentität; Funktionelle Diversität; Genetische Diversität; Landschaftsdiversität; Landschaftstyp; Strukturelle Diversität
     - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
-  - Einfluss: Was ist der gemessene Einfluss der Ökosystemleistung (ÖSL) auf die Biodiversitätsfacette (Biodiv_Facette) in der Studie von den folgenden Optionen? | Kardinalität: 1 | Typ: object
+  - Einfluss: Was ist der in der Studie gemessene Einfluss der Biodiversitätsfacette (Biodiv_Facette) auf die Ökosystemleistung bzw. -funktion (ÖSL/ÖSF)? Die Richtung bezieht sich auf die ÖSL/ÖSF (pos = die ÖSL/ÖSF nimmt mit höherer Ausprägung der Facette zu). | Kardinalität: 1 | Typ: object
     - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: ja; neg; nein; neu; pos
     - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
-  - Arten: Welche Arten bzw. Artengruppen werden in der Studie untersucht? Verwende die kleinste machbare Ebene: Wenn eine Studie nur wenige Arten behandelt, sollten diese auf Artebene mit ihrem wissenschaftlichen und deutschen Namen angegeben werden. Werden jedoch sehr viele Arten behandelt oder eine Artengruppe besprochen, wird die Artengruppe als 'Sammelbegriff' angegeben. Falls die Studie auf englisch ist, übersetze Art- bzw. Artengruppennamen ins Deutsche. Ergänze, wenn nicht angegeben, die wissenschaftlichen Artennamen, und umgekehrt die deutschen Namen, wenn nur die wissenschaftlichen Artennamen verwendet wurden. | Kardinalität: 0..* | Typ: object
-    Beschreibung: Art mit wissenschaftlichem und deutschem Namen sowie taxonomischer Gruppe.
-    - scientific_name: Wissenschaftlicher Name der Art | Kardinalität: 0..1 | Typ: object
-      - content: | Kardinalität: 1 | Typ: string
-      - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
-    - german_name: Deutscher Name der Art | Kardinalität: 0..1 | Typ: object
-      - content: | Kardinalität: 1 | Typ: string
-      - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
-    - species_group: Taxonomische Gruppe der Art | Kardinalität: 1 | Typ: object
-      - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Amphibien und Reptilien; Andere; Andere Pflanzen; Andere Wirbellose; Archaeen; Bakterien; Fische; Flechten; Gefäßpflanzen; Insekten; Moose; Pilze; Protisten; Protozoen; Säugetiere; Vögel
-      - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
+  - Arten: Welche Arten, Gattungen bzw. Artengruppen werden in der Studie untersucht? Gib die Namen so an, wie sie im Text verwendet werden, auf Deutsch. Falls der Text keinen deutschen Namen nennt, übersetze den Namen ins Deutsche; ist das nicht möglich, verwende den wissenschaftlichen Namen. Leere Liste, wenn keine Arten genannt werden. | Kardinalität: 0..* | Typ: object
+    - content: | Kardinalität: 1 | Typ: string
+    - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
   - Lebensraum_Gruppiert: Um welchen der folgenden Lebensräume geht es in dem Text? Falls mehrere Lebensräume betroffen sind, erstelle für jeden betroffenen Lebensraum eine eigene Instanz dieses Zusammenhangs. | Kardinalität: 1 | Typ: object
     - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Agrar- und Offenland; Binnengewässer und Auen; Boden; Küsten und Küstengewässer; Urbane Räume; Wald
     - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
