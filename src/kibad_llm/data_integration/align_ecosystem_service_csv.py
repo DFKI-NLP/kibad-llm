@@ -13,11 +13,17 @@ The script corrects the following formatting differences of the raw export:
   to the ASCII equivalents.
 
 Optionally, papers can be filtered (all rows of a paper, identified by "Key") with
-`--exclude-methods` (e.g. reviews and pure model studies) and `--require-habitat` (e.g. "Wald"), which
-is used to derive the reference for the forest dev set. Example:
+`--exclude-methods` (e.g. reviews and pure model studies) and `--require-habitat` (e.g. "Wald"). The
+forest dev set reference is created without any filter (it only covers Wald by choice, and reviews /
+pure model studies are kept for the LLM to filter out):
+```
+    uv run -m kibad_llm.data_integration.align_ecosystem_service_csv
+```
+Example with filters (pass `--output` so the filtered file does not overwrite the default):
 ```
     uv run -m kibad_llm.data_integration.align_ecosystem_service_csv \\
-        --exclude-methods Literaturstudie Modell/Simulation --require-habitat Wald
+        --exclude-methods Literaturstudie Modell/Simulation --require-habitat Wald \\
+        --output path/to/filtered.csv
 ```
 TODO: papers that contain Wald *and* other habitats are currently kept unchanged, see `filter_papers`.
 """
@@ -286,8 +292,8 @@ if __name__ == "__main__":
         "--output",
         type=Path,
         default=INTERIM_DATA_DIR / "ecosystem_services" / "wald_devset_processed.csv",
-        help="Where to write the aligned CSV. The default name fits the filters used for the "
-        "forest dev set (see below); pass --output when using other filters.",
+        help="Where to write the aligned CSV. The default name fits the unfiltered forest dev "
+        "set; pass --output when using filters.",
     )
     parser.add_argument(
         "--exclude-methods",

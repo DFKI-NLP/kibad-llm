@@ -48,7 +48,7 @@ def test_read_grouped_csv_records_custom_output_key() -> None:
 
 def test_read_grouped_csv_records_split_columns() -> None:
     result = read_grouped_csv_records(
-        str(FIXTURE_DATA_PATH / "ösl_papers_raw_extract.csv"),
+        str(FIXTURE_DATA_PATH / "wald_devset_raw_extract.csv"),
         output_key="ecosystem_service_trends",
         columns=["Lebensraum_Gruppiert"],
         split_columns={"Lebensraum_Gruppiert": ", "},
