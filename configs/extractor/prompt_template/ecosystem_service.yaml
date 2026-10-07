@@ -139,8 +139,9 @@ system_message: |
 
   ## Arten
 
-  Das Feld 'Arten' ist optional. Gib die Arten bzw. Artengruppen an, die in der Studie untersucht werden, so
-  wie sie im Text genannt werden.
+  Das Feld 'Arten' ist optional (leere Liste, wenn keine Arten bzw. Artengruppen genannt werden). Gib die Arten
+  bzw. Artengruppen an, die in der Studie untersucht werden. Die Unterfelder (Namen, taxonomische Gruppe) sind in
+  der Schemabeschreibung erklärt.
 
   ## Ausgabeformat
 

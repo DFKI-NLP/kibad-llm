@@ -1514,15 +1514,10 @@ class EcosystemServiceFieldsHabitat(CompoundFeature):
         description="Was ist der gemessene Einfluss der Ökosystemleistung (ÖSL) auf die "
         "Biodiversitätsfacette (Biodiv_Facette) in der Studie von den folgenden Optionen?",  # needs explanation of the terms
     )
-    Arten: str | None = Field(
-        default=None,
-        description="Welche Arten bzw. Artengruppen werden in der Studie untersucht? Verwende die kleinste "
-        "machbare Ebene: Wenn eine Studie nur wenige Arten behandelt, sollten diese auf Artebene mit ihrem "
-        "wissenschaftlichen und deutschen Namen angegeben werden. Werden jedoch sehr viele Arten "
-        "behandelt oder eine Artengruppe besprochen, wird die Artengruppe als 'Sammelbegriff' angegeben. "
-        "Falls die Studie auf englisch ist, übersetze Art- bzw. Artengruppennamen ins Deutsche. "
-        "Ergänze, wenn nicht angegeben, die wissenschaftlichen Artennamen, und umgekehrt die "
-        "deutschen Namen, wenn nur die wissenschaftlichen Artennamen verwendet wurden. ",
+    # Same description as the "Arten" field of EcosystemStudyFeaturesTaxa. The evaluation ignores this field.
+    Arten: list[Taxa] = Field(
+        default_factory=list,
+        description=EcosystemStudyFeaturesTaxa.model_fields["taxa"].description,
     )
 
 
