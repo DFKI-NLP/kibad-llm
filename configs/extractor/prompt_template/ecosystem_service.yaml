@@ -89,41 +89,93 @@ system_message: |
 
   Wähle die Facette, deren Einfluss in der Studie tatsächlich ausgewertet wird:
 
-  - Artidentität: Identität einer Art und die mit ihr verbundenen artspezifischen Eigenschaften, durch die ihr Vorkommen oder ihre Dominanz die Funktionsweise eines Ökosystems und die Erbringung von Ökosystemleistungen beeinflussen kann.
-    Beispiel: Unterschiedliche Baumarten zeigen unterschiedliche Dürre-Resistenz und -Resilienz
-  - Artenzusammensetzung: Artenzusammensetzung beschreibt, welche Arten gemeinsam in einer Lebensgemeinschaft vorkommen und in welchen Anteilen oder Kombinationen sie vertreten sind. Unterschiedliche Kombinationen von Arten können aufgrund ihrer jeweiligen Eigenschaften und Wechselwirkungen unterschiedliche Auswirkungen auf Ökosystemfunktionen und -leistungen haben.
-    Beispiel: Buche + Weißtanne zeigen eine andere Dürre-Resistenz als Buche + Fichte
-  - Artenvielfalt: Artenvielfalt beschreibt die Vielfalt der Arten innerhalb einer Lebensgemeinschaft. Sie umfasst insbesondere die Anzahl der vorkommenden Arten (Artenreichtum) und kann zusätzlich deren relative Häufigkeitsverteilung (Evenness) berücksichtigen. Im Zusammenhang mit Ökosystemleistungen wird untersucht, ob Gemeinschaften mit höherer Artenvielfalt andere oder stärkere Ökosystemfunktionen und -leistungen erbringen als Gemeinschaften mit geringerer Artenvielfalt.
-    Beispiel: Wälder mit höherer Baumartenvielfalt speichern mehr Kohlenstoff als Wälder mit geringerer Baumartenvielfalt
-  - Landschaftsdiversität: Landschaftsdiversität beschreibt die Vielfalt unterschiedlicher Landschafts-, Habitat- oder Landnutzungstypen innerhalb einer Landschaft. Im Zusammenhang mit Ökosystemleistungen wird untersucht, ob heterogenere Landschaften mit einer größeren Vielfalt an Landschaftselementen oder Habitattypen andere oder stärkere Ökosystemfunktionen und -leistungen erbringen als homogenere Landschaften.
-    Beispiel: Landschaften mit einer höheren Vielfalt unterschiedlicher Habitat- und Landnutzungstypen zeigen einen höheren Erholungswert als homogenere Landschaften
-  - Landschaftstyp: Landschaftstyp bezeichnet die Identität bzw. charakteristische Ausprägung eines räumlich abgrenzbaren Landschafts-, Ökosystem-, Habitat- oder Landnutzungstyps sowie die Zusammensetzung einer Landschaft aus unterschiedlichen solchen Typen. Untersucht werden kann somit sowohl, ob sich einzelne Landschafts- oder Habitattypen in ihrer Wirkung auf Ökosystemfunktionen und -leistungen unterscheiden, als auch, ob unterschiedliche Kombinationen oder relative Anteile von Landschafts-, Habitat- oder Landnutzungstypen unterschiedliche Wirkungen haben. Die Typen können durch charakteristische Kombinationen biotischer und abiotischer Merkmale, Vegetation, Struktur, Nutzung und Standortbedingungen gekennzeichnet sein. Im Unterschied zur Landschaftsdiversität steht beim Landschaftstyp nicht die Anzahl oder Vielfalt der vorhandenen Landschafts-, Habitat- oder Landnutzungstypen im Vordergrund, sondern deren Identität, Kombination oder relative Zusammensetzung. 
+  - Artidentität: Identität einer Art und die mit ihr verbundenen artspezifischen Eigenschaften, durch die ihr
+    Vorkommen oder ihre Dominanz die Funktionsweise eines Ökosystems und die Erbringung von Ökosystemleistungen
+    beeinflussen kann.
+    Beispiel: Unterschiedliche Baumarten zeigen unterschiedliche Dürreresistenz und -Resilienz.
+  - Artenzusammensetzung: Artenzusammensetzung beschreibt, welche Arten gemeinsam in einer Lebensgemeinschaft
+    vorkommen und in welchen Anteilen oder Kombinationen sie vertreten sind. Unterschiedliche Kombinationen von Arten
+    können aufgrund ihrer jeweiligen Eigenschaften und Wechselwirkungen unterschiedliche Auswirkungen auf
+    Ökosystemfunktionen und -leistungen haben.
+    Beispiel: Buche + Weißtanne zeigen eine andere Dürreresistenz als Buche + Fichte.
+  - Artenvielfalt: Artenvielfalt beschreibt die Vielfalt der Arten innerhalb einer Lebensgemeinschaft. Sie umfasst
+    insbesondere die Anzahl der vorkommenden Arten (Artenreichtum) und kann zusätzlich deren relative
+    Häufigkeitsverteilung (Evenness) berücksichtigen. Im Zusammenhang mit Ökosystemleistungen wird untersucht, ob
+    Gemeinschaften mit höherer Artenvielfalt andere oder stärkere Ökosystemfunktionen und -leistungen erbringen als
+    Gemeinschaften mit geringerer Artenvielfalt.
+    Beispiel: Wälder mit höherer Baumartenvielfalt speichern mehr Kohlenstoff als Wälder mit geringerer
+    Baumartenvielfalt.
+  - Landschaftsdiversität: Landschaftsdiversität beschreibt die Vielfalt unterschiedlicher Landschafts-, Habitat- oder
+    Landnutzungstypen innerhalb einer Landschaft. Im Zusammenhang mit Ökosystemleistungen wird untersucht, ob
+    heterogenere Landschaften mit einer größeren Vielfalt an Landschaftselementen oder Habitattypen andere oder
+    stärkere Ökosystemfunktionen und -leistungen erbringen als homogenere Landschaften.
+    Beispiel: Landschaften mit einer höheren Vielfalt unterschiedlicher Habitat- und Landnutzungstypen zeigen einen
+    höheren Erholungswert als homogenere Landschaften.
+  - Landschaftstyp: Landschaftstyp bezeichnet die Identität bzw. charakteristische Ausprägung eines räumlich
+    abgrenzbaren Landschafts-, Ökosystem-, Habitat- oder Landnutzungstyps sowie die Zusammensetzung einer Landschaft
+    aus unterschiedlichen solchen Typen. Untersucht werden kann somit sowohl, ob sich einzelne Landschafts- oder
+    Habitattypen in ihrer Wirkung auf Ökosystemfunktionen und -leistungen unterscheiden, als auch, ob unterschiedliche
+    Kombinationen oder relative Anteile von Landschafts-, Habitat- oder Landnutzungstypen unterschiedliche Wirkungen
+    haben. Die Typen können durch charakteristische Kombinationen biotischer und abiotischer Merkmale, Vegetation,
+    Struktur, Nutzung und Standortbedingungen gekennzeichnet sein. Im Unterschied zur Landschaftsdiversität steht beim
+    Landschaftstyp nicht die Anzahl oder Vielfalt der vorhandenen Landschafts-, Habitat- oder Landnutzungstypen im
+    Vordergrund, sondern deren Identität, Kombination oder relative Zusammensetzung.
     Beispiel Identität: Seegrasbett und unbewachsener Meeresboden unterscheiden sich in ihrer Kohlenstoffspeicherung.
-    Beispiel Zusammensetzung: Landschaften mit einem hohen Anteil an Wald und Moor zeigen eine höhere Wasserretention als Landschaften, die überwiegend aus Ackerland und Grünland bestehen.
-	
+    Beispiel Zusammensetzung: Landschaften mit einem hohen Anteil an Wald und Moor zeigen eine höhere Wasserretention
+    als Landschaften, die überwiegend aus Ackerland und Grünland bestehen.
+
     Landschaftstypen können sein:
     - Ökosystemtypen: Wald, Grünland, Ackerland, Moor, Heide, Küste, Gewässer
-    - Untertypen eines Lebensraums: z. B. Laubwald, Nadelwald, Mischwald; Hochmoor und Niedermoor; Feuchtgrünland und Trockenrasen
-    - Vegetations- und Pflanzengesellschaftstypen: z. B. Buchenwald, Fichtenwald, Erlenbruchwald, Kalkmagerrasen, Röhricht
-    - durch charakteristische Vegetation gebildete Habitattypen: z. B. Seegraswiese, Salzwiese, Schilfröhricht
+    - Untertypen eines Lebensraums: z. B. Laubwald, Nadelwald, Mischwald; Hochmoor und Niedermoor; Feuchtgrünland und
+      Trockenrasen
+    - Vegetations- und Pflanzengesellschaftstypen: z. B. Buchenwald, Fichtenwald, Erlenbruchwald, Kalkmagerrasen,
+      Röhricht
+    - Durch charakteristische Vegetation gebildete Habitattypen: z. B. Seegraswiese, Salzwiese, Schilfröhricht
     - Landnutzungstypen: z. B. Acker, Dauergrünland, Weide, Kurzumtriebsplantage, Agroforstsystem
-    - Bewirtschaftungsbedingt entstandene Bestandestypen, sofern sie als eigenständiger Habitat-/Vegetationstyp betrachtet werden: z. B. Plantagenwald gegenüber naturnahem Wald
-    - Sukzessions-/Entwicklungstypen, wenn sie unterschiedliche Habitattypen darstellen: z. B. Offenfläche, Gebüschstadium und geschlossener Wald
-    - ggf. Bodentypen, wenn sie in der Studie einen charakteristischen ökologischen Standort-/Habitattyp definieren und nicht lediglich als einzelne abiotische Messgröße verwendet werden.
-    - Zusammensetzungen von Landschafts-, Habitat- oder Landnutzungstypen: z. B. unterschiedliche Anteile oder Kombinationen von Wald, Grünland, Acker und Moor innerhalb einer Landschaft.
-    Nicht als Landschaftstyp gelten einzelne Umweltgradienten oder abiotische Standortvariablen, wie Temperatur, Niederschlag, Höhenlage, pH, Bodenfeuchte oder Bodentextur, sofern diese nicht zur Abgrenzung eines eigenständigen Landschafts-, Ökosystem- oder Habitattyps dienen.
-  - Strukturelle Diversität: Strukturelle Diversität beschreibt Unterschiede, Zusammensetzung, Vielfalt und Heterogenität der räumlichen und physischen Strukturen eines Ökosystems bzw. einer Lebensgemeinschaft. Sie umfasst sowohl die Variation struktureller Merkmale als auch Unterschiede in deren Ausprägung, beispielsweise hinsichtlich Größe, Alter, Dichte, räumlicher Verteilung oder vertikaler und horizontaler Anordnung von Organismen und biologischen Strukturelementen. Unterschiede in der Struktur können die Funktionsweise eines Ökosystems und damit die Bereitstellung von Ökosystemleistungen beeinflussen.
+    - Bewirtschaftungsbedingt entstandene Bestandestypen, sofern sie als eigenständiger Habitat- bzw. Vegetationstyp
+      betrachtet werden: z. B. Plantagenwald gegenüber naturnahem Wald
+    - Sukzessions- bzw. Entwicklungstypen, wenn sie unterschiedliche Habitattypen darstellen: z. B. Offenfläche,
+      Gebüschstadium und geschlossener Wald
+    - Gegebenenfalls Bodentypen, wenn sie in der Studie einen charakteristischen ökologischen Standort- bzw.
+      Habitattyp definieren und nicht lediglich als einzelne abiotische Messgröße verwendet werden
+    - Zusammensetzungen von Landschafts-, Habitat- oder Landnutzungstypen: z. B. unterschiedliche Anteile oder
+      Kombinationen von Wald, Grünland, Acker und Moor innerhalb einer Landschaft
+
+    Nicht als Landschaftstyp gelten einzelne Umweltgradienten oder abiotische Standortvariablen, wie Temperatur,
+    Niederschlag, Höhenlage, pH, Bodenfeuchte oder Bodentextur, sofern diese nicht zur Abgrenzung eines eigenständigen
+    Landschafts-, Ökosystem- oder Habitattyps dienen.
+  - Strukturelle Diversität: Strukturelle Diversität beschreibt Unterschiede, Zusammensetzung, Vielfalt und
+    Heterogenität der räumlichen und physischen Strukturen eines Ökosystems bzw. einer Lebensgemeinschaft. Sie umfasst
+    sowohl die Variation struktureller Merkmale als auch Unterschiede in deren Ausprägung, beispielsweise hinsichtlich
+    Größe, Alter, Dichte, räumlicher Verteilung oder vertikaler und horizontaler Anordnung von Organismen und
+    biologischen Strukturelementen. Unterschiede in der Struktur können die Funktionsweise eines Ökosystems und damit
+    die Bereitstellung von Ökosystemleistungen beeinflussen.
     Beispiel Ausprägung: Hohe vs. niedrige Bäume zeigen unterschiedliche Dürreresistenz.
-    Beispiel Zusammensetzung: Wälder mit einem höheren Anteil großer Bäume zeigen eine andere Dürre-Resistenz als Wälder, die überwiegend aus kleinen Bäumen bestehen.
-    Beispiel Diversität: Wälder mit höherer Baumgrößendiversität zeigen eine höhere Dürre-Resistenz
-  - Genetische Diversität: Genetische Diversität umfasst Unterschiede und Vielfalt genetischer Merkmale innerhalb einer Art, beispielsweise zwischen Individuen, Populationen, Herkünften, Genotypen oder Varietäten. Sie kann sowohl Unterschiede zwischen bestimmten genetischen Identitäten oder Ausprägungen als auch die genetische Zusammensetzung und die genetische Vielfalt innerhalb einer Population oder Gemeinschaft umfassen. Eingeschlossen sind auch vererbbare Veränderungen in Genfunktionen ohne Veränderungen der DNA. Diese genetischen Unterschiede können zu unterschiedlichen funktionellen Eigenschaften und Reaktionen auf Umweltbedingungen führen und dadurch Ökosystemfunktionen und -leistungen beeinflussen.
+    Beispiel Zusammensetzung: Wälder mit einem höheren Anteil großer Bäume zeigen eine andere Dürreresistenz als
+    Wälder, die überwiegend aus kleinen Bäumen bestehen.
+    Beispiel Diversität: Wälder mit höherer Baumgrößendiversität zeigen eine höhere Dürreresistenz.
+  - Genetische Diversität: Genetische Diversität umfasst Unterschiede und Vielfalt genetischer Merkmale innerhalb
+    einer Art, beispielsweise zwischen Individuen, Populationen, Herkünften, Genotypen oder Varietäten. Sie kann sowohl
+    Unterschiede zwischen bestimmten genetischen Identitäten oder Ausprägungen als auch die genetische Zusammensetzung
+    und die genetische Vielfalt innerhalb einer Population oder Gemeinschaft umfassen. Eingeschlossen sind auch
+    vererbbare Veränderungen in Genfunktionen ohne Veränderungen der DNA. Diese genetischen Unterschiede können zu
+    unterschiedlichen funktionellen Eigenschaften und Reaktionen auf Umweltbedingungen führen und dadurch
+    Ökosystemfunktionen und -leistungen beeinflussen.
     Beispiel Identität: Genotyp A ist dürretoleranter als Genotyp B.
-    Beispiel Zusammensetzung: Populationen mit einem höheren Anteil dürretoleranter Genotypen zeigen eine höhere Dürre-Resistenz.
-    Beispiel Diversität: Eine Population mit hoher genetischer Vielfalt ist gegenüber Dürre stabiler als eine Population mit geringer genetischer Vielfalt.
-  - Funktionelle Diversität: Funktionelle Diversität beschreibt Unterschiede, Zusammensetzung, Vielfalt und Variation funktioneller Merkmale (Traits) von Organismen. Sie umfasst sowohl Unterschiede in der Ausprägung funktioneller Merkmale als auch die Vielfalt dieser Merkmale innerhalb einer Lebensgemeinschaft. Funktionelle Merkmale bestimmen, wie Organismen Ressourcen nutzen, auf Umweltbedingungen reagieren und Ökosystemprozesse beeinflussen. Unterschiede und Vielfalt funktioneller Merkmale können daher unterschiedliche Ökosystemfunktionen und -leistungen bewirken.
-    Beispiel Ausprägung: Tiefwurzelnde Bäume zeigen eine höhere Dürre-Resistenz als flachwurzelnde Bäume.
-    Beispiel Zusammensetzung: Wälder mit einem höheren Anteil tiefwurzelnder Baumarten zeigen eine höhere Dürre-Resistenz als Wälder, die überwiegend aus flachwurzelnden Baumarten bestehen.
-    Beispiel Diversität: Eine höhere Vielfalt funktioneller Eigenschaften der Baumarten erhöht die Widerstandsfähigkeit eines Waldes gegenüber Dürre.
+    Beispiel Zusammensetzung: Populationen mit einem höheren Anteil dürretoleranter Genotypen zeigen eine höhere
+    Dürreresistenz.
+    Beispiel Diversität: Eine Population mit hoher genetischer Vielfalt ist gegenüber Dürre stabiler als eine Population
+    mit geringer genetischer Vielfalt.
+  - Funktionelle Diversität: Funktionelle Diversität beschreibt Unterschiede, Zusammensetzung, Vielfalt und Variation
+    funktioneller Merkmale (Traits) von Organismen. Sie umfasst sowohl Unterschiede in der Ausprägung funktioneller
+    Merkmale als auch die Vielfalt dieser Merkmale innerhalb einer Lebensgemeinschaft. Funktionelle Merkmale bestimmen,
+    wie Organismen Ressourcen nutzen, auf Umweltbedingungen reagieren und Ökosystemprozesse beeinflussen. Unterschiede
+    und Vielfalt funktioneller Merkmale können daher unterschiedliche Ökosystemfunktionen und -leistungen bewirken.
+    Beispiel Ausprägung: Tiefwurzelnde Bäume zeigen eine höhere Dürreresistenz als flachwurzelnde Bäume.
+    Beispiel Zusammensetzung: Wälder mit einem höheren Anteil tiefwurzelnder Baumarten zeigen eine höhere
+    Dürreresistenz als Wälder, die überwiegend aus flachwurzelnden Baumarten bestehen.
+    Beispiel Diversität: Eine höhere Vielfalt funktioneller Eigenschaften der Baumarten erhöht die Widerstandsfähigkeit
+    eines Waldes gegenüber Dürre.
 
   ## Einfluss
 
