@@ -3,7 +3,6 @@ Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
 - ecosystem_type: Welche Ökosystemtypen werden betrachtet? | Kardinalität: 0..* | Typ: object
   Beschreibung: Ökosystemtyp mit Kategorie und (wenn möglich) mit Name. Wenn es im Text um die Ökosystemtyp-Kategorien Meere oder Küsten geht, sind nur die Ökosystemtypen (Namen) möglich: Benthal der Nordsee; Benthal der Ostsee; Fels- und Steilküsten; Küstendünen; Pelagial der Nordsee; Pelagial der Ostsee; Saisonales Meereis der Nordsee; Saisonales Meereis der Ostsee; Salzgrünland, Brackwasserröhrichte und -Hochstaudenfluren des Geolitorals der Ostseeküste; Salzgrünland der Nordseeküste (Supralitoral); Sände, Sand-, Geröll- und Blockstrände. Wenn es im Text um die Ökosystemtyp-Kategorien Binnengewässer geht, sind nur die folgenden Ökosystemtypen (Namen) möglich: Fließende Gewässer; Grundwasser und Höhlengewässer; Quellen (inklusive Quellabfluss (Krenal)); Stehende Gewässer. Wenn es im Text um Ökosystemtyp-Kategorien terrestrisches oder semiterrestrisches Binnenland geht, sind nur die folgenden Ökosystemtypen (Namen) möglich: Äcker und Ackerbrachen; Feldgehölze, Gebüsche, Hecken und Gehölzkulturen; Felsen, Block- und Schutthalden, Geröllfelder, offene Bereiche mit sandigem oder bindigem Substrat; Hoch-, Zwischen- und Übergangsmoore; Höhlen (einschließlich Stollen, Brunnenschächte etc.); Laub(Misch)Wälder und -Forste (Laubbaumanteil über 50 Prozent); Nadel(Misch)Wälder und -Forste; Röhrichte (ohne Brackwasserröhrichte); Trockenrasen sowie Grünland trockener bis frischer Standorte; Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte; Waldmäntel und Vorwälder, spezielle Waldnutzungsformen; Wald- und Ufersäume, Staudenfluren; Zwergstrauchheiden; Großseggenriede. Wenn es im Text um die Ökosystemtyp-Kategorie technische Biotope geht, sind nur die folgenden Ökosystemtypen (Namen) möglich: Bauwerke; Kleine, unbefestigte Freiflächen des besiedelten Bereiches; Verkehrsanlagen und Plätze; Deponien und Rieselfelder. Wenn es im Text um die Ökosystemtyp-Kategorie Biotope mit Schwerpunkt in den Alpen geht, sind nur die folgenden Ökosystemtypen (Namen) möglich: Gebirgsrasen (subalpin bis alpin); Gewässer (subalpin bis alpin); Firn, permanente Schneefelder und Gletscher; Felsen (subalpin bis nival); Steinschutthalden und Schotterflächen (subalpin bis alpin); Schneeböden, Schneetälchen; Moore (subalpin bis alpin); Stauden- und Lägerfluren (hochmontan bis alpin); Zwergstrauchheiden (subalpin bis alpin); Gebüsche (hochmontan bis subalpin); Wälder (subalpin). Passt keine der genannten Ökosystemtyp-Kategorien (d.h. Ökosystemtyp-Kategorie Weitere), sind immer die folgenden Ökosystemtypen (Namen) möglich: Rohbodenstandorte und Ruderalfluren; Grün- und Freiflächen
   - category: Kategorie des Ökosystemtyps | Kardinalität: 1 | Typ: object
-    Beschreibung: Kategorie des Ökosystemtyps
     - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: I Biotoptypengruppen der Meere und Küsten; II Biotoptypengruppen der Binnengewässer; III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes; IV Technische Biotoptypengruppen; V Biotoptypengruppen mit Schwerpunkt in den Alpen; VI Weitere
     - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
   - term: Name des Ökosystemtyps | Kardinalität: 0..1 | Typ: object
@@ -29,7 +28,6 @@ Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
     - content: | Kardinalität: 1 | Typ: string
     - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
   - species_group: Taxonomische Gruppe der Art | Kardinalität: 1 | Typ: object
-    Beschreibung: Taxonomische Gruppe der Art
     - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Amphibien und Reptilien; Andere; Andere Pflanzen; Andere Wirbellose; Archaeen; Bakterien; Fische; Flechten; Gefäßpflanzen; Insekten; Moose; Pilze; Protisten; Protozoen; Säugetiere; Vögel
     - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
 - soil: Welche Bodentypen werden in der Studie untersucht? | Kardinalität: 0..* | Typ: object
@@ -49,33 +47,27 @@ Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
     - content: | Kardinalität: 1 | Typ: string
     - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
   - success: Hatte das Schutzgebiet einen messbaren Effekt auf die Biodiversität? | Kardinalität: 1 | Typ: object
-    Beschreibung: Hatte das Schutzgebiet einen messbaren Effekt auf die Biodiversität?
     - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: ja; nein; teilweise; unbekannt
     - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
 - management_measure: Wurden Formen der Bewirtschaftung als Maßnahmen für die Biodiversität untersucht? | Kardinalität: 0..* | Typ: object
   Beschreibung: Bewirtschaftungsmaßnahme mit Beschreibung und Erfolg.
   - description: Beschreibung der Bewirtschaftungsmaßnahme | Kardinalität: 1 | Typ: object
-    Beschreibung: Beschreibung der Bewirtschaftungsmaßnahme
     - content: | Kardinalität: 1 | Typ: string
     - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
   - success: Hatte die Bewirtschaftung als Maßnahme für die Biodiversität einen messbaren Effekt? | Kardinalität: 1 | Typ: object
-    Beschreibung: Hatte die Bewirtschaftung als Maßnahme für die Biodiversität einen messbaren Effekt?
     - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: ja; nein; teilweise; unbekannt
     - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
 - impulse_measure: Wurden einmalige Maßnahmen für die Biodiversität untersucht? | Kardinalität: 0..* | Typ: object
   Beschreibung: Einmalige Maßnahme mit Beschreibung und Erfolg.
   - description: Beschreibung der einmaligen Maßnahme | Kardinalität: 1 | Typ: object
-    Beschreibung: Beschreibung der einmaligen Maßnahme
     - content: | Kardinalität: 1 | Typ: string
     - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
   - success: Hatte die einmalige Maßnahme für die Biodiversität einen messbaren Effekt? | Kardinalität: 1 | Typ: object
-    Beschreibung: Hatte die einmalige Maßnahme für die Biodiversität einen messbaren Effekt?
     - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: ja; nein; teilweise; unbekannt
     - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
 - direct_driver: Welche Vorgänge mit direktem Einfluss auf Biodiversität wurden untersucht? | Kardinalität: 0..* | Typ: object
   Beschreibung: Direkter Treiber mit Kategorie und Details.
   - category: Zu welcher der folgenden Kategorien lässt sich der direkte Treiber zuordnen? | Kardinalität: 1 | Typ: object
-    Beschreibung: Zu welcher der folgenden Kategorien lässt sich der direkte Treiber zuordnen?
     - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Andere direkte Treiber; Direkte Ressourcenentnahme; Invasive gebietsfremde Arten; Klimawandel; Verschmutzung; Veränderte Land-/Meeresnutzung; Veränderung der Struktur der Landschaft
     - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
   - details: Details zum direkten Treiber | Kardinalität: 0..1 | Typ: object
@@ -84,7 +76,6 @@ Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
 - indirect_driver: Welche Vorgänge mit indirektem Einfluss auf Biodiversität wurden untersucht? | Kardinalität: 0..* | Typ: object
   Beschreibung: Indirekter Treiber mit Kategorie und Details.
   - category: Zu welcher der folgenden Kategorien lässt sich der indirekte Treiber zuordnen? | Kardinalität: 1 | Typ: object
-    Beschreibung: Zu welcher der folgenden Kategorien lässt sich der indirekte Treiber zuordnen?
     - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Gesellschaftliche Treiber; Politische und rechtliche Treiber - rechtlich-regulativ; Politische und rechtliche Treiber - sozial-informationell; Politische und rechtliche Treiber - ökonomisch-anreizbasiert; Wirtschaftliche und technologische Treiber
     - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
   - details: Details zum indirekten Treiber | Kardinalität: 0..1 | Typ: object
@@ -93,7 +84,6 @@ Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
 - ecosystem_service: Welche Ökosystemleistungen wurden in der Studie untersucht? | Kardinalität: 0..* | Typ: object
   Beschreibung: Ökosystemdienstleistung mit Kategorie, Term und Details.
   - category: In welche der folgenden Kategorien lässt sich die im Text behandelte Ökosystemleistung einordnen? | Kardinalität: 1 | Typ: object
-    Beschreibung: In welche der folgenden Kategorien lässt sich die im Text behandelte Ökosystemleistung einordnen?
     - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Kulturelle Leistungen; Regulierungs- und Erhaltungsleistungen; Versorgungsleistungen
     - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
   - term: Welche konkrete Ökosystemleistung wurde untersucht? | Kardinalität: 0..1 | Typ: object
