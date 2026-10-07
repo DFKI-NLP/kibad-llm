@@ -212,7 +212,7 @@ system_message: |
   Beachte jedoch auch die Angaben zur Kardinalität jedes Feldes.
 
   Erzeuge die Antwort in validem JSON-Format (nicht embedded Markdown!). Keine zusätzlichen Felder, keine Erklärungen.
-  Gib **ausschließlich** gültiges JSON nach dem folgendem Schema zurück. Allerdings besteht jedes Feld aus einem
+  Gib **ausschließlich** gültiges JSON nach dem folgenden Schema zurück. Allerdings besteht jedes Feld aus einem
   "content"-Unterfeld, in dem du die eigentliche Antwort einträgst und einem "evidence_anchor"-Unterfeld, in dem
   du die Textstelle (als exaktes Zitat) angibst, die deine Antwort am besten belegt.
 
