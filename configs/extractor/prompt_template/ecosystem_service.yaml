@@ -181,15 +181,17 @@ system_message: |
 
   Der Einfluss beschreibt den in der Studie gemessenen Einfluss der Biodiversitätsfacette auf die ÖSL/ÖSF. Die
   Richtung bezieht sich auf die ÖSL/ÖSF (pos = die ÖSL/ÖSF nimmt mit höherer Ausprägung der Facette zu).
+  Welche Antwortmöglichkeiten gelten, hängt von der Art des Prädiktors ab, d.h. davon, wie die Biodiversitätsfacette
+  in der Studie variiert.
 
-  Für graduelle Facetten (Artenvielfalt, Funktionelle, Genetische, Strukturelle und Landschaftsdiversität):
+  Für kontinuierliche oder ordinale Prädiktoren (Effekt mit Richtung):
   - pos: positiver Einfluss.
   - neg: negativer Einfluss.
   - neu: neutral, kein Einfluss bzw. kein nachweisbarer Unterschied.
-  - nicht linear: nicht-linearer Zusammenhang (z.B. unimodal).
 
-  Für kategoriale Facetten (Artenzusammensetzung, Artidentität, Landschaftstyp):
-  - ja: Die Facette hat einen Einfluss auf die ÖSL/ÖSF (unabhängig von der Richtung).
+  Für kategoriale Prädiktoren ohne natürliche Rangfolge (nur das Vorhandensein eines Effekts, unabhängig von der
+  Richtung bzw. von der Art der Gruppenunterschiede):
+  - ja: Die Facette hat einen Einfluss auf die ÖSL/ÖSF.
   - nein: Die Facette hat keinen Einfluss auf die ÖSL/ÖSF.
 
   ## Arten

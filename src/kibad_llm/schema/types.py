@@ -240,7 +240,6 @@ class EinflussEnum(str, Enum):
     NEG = "neg"
     NEIN = "nein"
     NEU = "neu"
-    NICHT_LINEAR = "nicht linear"
     POS = "pos"
 
 
