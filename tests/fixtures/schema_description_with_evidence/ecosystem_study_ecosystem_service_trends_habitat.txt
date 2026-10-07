@@ -3,19 +3,15 @@ Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
 - ecosystem_service_trends: Liste der im Text beschriebenen Zusammenhänge zwischen Biodiversität und Ökosystemleistungen. | Kardinalität: 0..* | Typ: object
   Beschreibung: Ein einzelner Zusammenhang zwischen Biodiversität und Ökosystemleistung für einen einzelnen, vorab festgelegten Lebensraum, bestehend aus Themenkomplex, Ökosystemleistung (ÖSL), Biodiv_Facette, Einfluss und Arten. Ein Text kann mehrere solcher Zusammenhänge beschreiben; jede Instanz bildet genau einen davon ab.
   - Themenkomplex: Zu welchem der folgenden Themenkomplexe gehört die in der Studie betrachtete Ökosystemleistung (ÖSL)? | Kardinalität: 1 | Typ: object
-    Beschreibung: Zu welchem der folgenden Themenkomplexe gehört die in der Studie betrachtete Ökosystemleistung (ÖSL)?
     - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Kohlenstoffkreislauf; Kulturelle Leistungen; Stabilität und Resilienz | Hinweise zu den Werten: Themenkomplexe, denen eine Ökosystemleistung (ÖSL) zugeordnet wird.
     - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
   - ÖSL: Welche Ökosystemleistung wird in der Studie betrachtet? | Kardinalität: 1 | Typ: object
-    Beschreibung: Welche Ökosystemleistung wird in der Studie betrachtet?
     - content: | Kardinalität: 1 | Typ: string
     - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
   - Biodiv_Facette: Welche dieser Biodiversitätsfacetten wird in der Studie betrachtet? Gemeint ist die Facette, auf die der Einfluss (Einfluss) der Ökosystemleistung (ÖSL) gemessen wird. | Kardinalität: 1 | Typ: object
-    Beschreibung: Welche dieser Biodiversitätsfacetten wird in der Studie betrachtet? Gemeint ist die Facette, auf die der Einfluss (Einfluss) der Ökosystemleistung (ÖSL) gemessen wird.
     - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Artenvielfalt; Artenzusammensetzung; Artidentität; Artzusammensetzung; Funktionelle Diversität; Genetische Diversität; Kompositindikator; Landschaftsdiversität; Landschaftstyp; Strukturelle Diversität
     - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
   - Einfluss: Was ist der gemessene Einfluss der Ökosystemleistung (ÖSL) auf die Biodiversitätsfacette (Biodiv_Facette) in der Studie von den folgenden Optionen? | Kardinalität: 1 | Typ: object
-    Beschreibung: Was ist der gemessene Einfluss der Ökosystemleistung (ÖSL) auf die Biodiversitätsfacette (Biodiv_Facette) in der Studie von den folgenden Optionen?
     - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: ja; neg; nein; neu; pos
     - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
   - Arten: Welche Arten bzw. Artengruppen werden in der Studie untersucht? Verwende die kleinste machbare Ebene: Wenn eine Studie nur wenige Arten behandelt, sollten diese auf Artebene mit ihrem wissenschaftlichen und deutschen Namen angegeben werden. Werden jedoch sehr viele Arten behandelt oder eine Artengruppe besprochen, wird die Artengruppe als 'Sammelbegriff' angegeben. Falls die Studie auf englisch ist, übersetze Art- bzw. Artengruppennamen ins Deutsche. Ergänze, wenn nicht angegeben, die wissenschaftlichen Artennamen, und umgekehrt die deutschen Namen, wenn nur die wissenschaftlichen Artennamen verwendet wurden. | Kardinalität: 0..* | Typ: object
@@ -27,6 +23,5 @@ Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
       - content: | Kardinalität: 1 | Typ: string
       - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
     - species_group: Taxonomische Gruppe der Art | Kardinalität: 1 | Typ: object
-      Beschreibung: Taxonomische Gruppe der Art
       - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Amphibien und Reptilien; Andere; Andere Pflanzen; Andere Wirbellose; Archaeen; Bakterien; Fische; Flechten; Gefäßpflanzen; Insekten; Moose; Pilze; Protisten; Protozoen; Säugetiere; Vögel
       - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
