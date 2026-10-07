@@ -1,10 +1,10 @@
-Beschreibung: Angaben zu den im Text beschriebenen Zusammenhängen zwischen Biodiversität und Ökosystemleistungen (Basis-Schema für alle Lebensräume, mit Lebensraum je Zusammenhang).
+Beschreibung: Angaben zu den im Text beschriebenen Zusammenhängen zwischen Biodiversität und Ökosystemleistungen.
 Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
 - ecosystem_service_trends: Liste der im Text beschriebenen Zusammenhänge zwischen Biodiversität und Ökosystemleistungen. | Kardinalität: 0..* | Typ: object
-  Beschreibung: Ein einzelner Zusammenhang zwischen Biodiversität und Ökosystemleistung, bestehend aus Ökosystemleistung (ÖSL), Biodiv_Facette, Einfluss, Arten und Lebensraum_Gruppiert (Basis-Schema für alle Lebensräume). Wie [`EcosystemServiceFieldsHabitat`][.EcosystemServiceFieldsHabitat], aber mit dem Lebensraum als zusätzlichem Feld; pro betroffenem Lebensraum wird eine eigene Instanz erstellt.
+  Beschreibung: Ein einzelner Zusammenhang zwischen Biodiversität und Ökosystemleistung, bestehend aus Themenkomplex, Ökosystemleistung (ÖSL), Biodiv_Facette, Einfluss, Arten und Lebensraum_Gruppiert. Pro betroffenem Lebensraum wird eine eigene Instanz erstellt.
   - Themenkomplex: Zu welchem der folgenden Themenkomplexe gehört die in der Studie betrachtete Ökosystemleistung (ÖSL)? | Kardinalität: 1 | Typ: object
     Beschreibung: Zu welchem der folgenden Themenkomplexe gehört die in der Studie betrachtete Ökosystemleistung (ÖSL)?
-    - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Kohlenstoffkreislauf; Kulturelle Leistungen; Stabilität und Resilienz | Hinweise zu den Werten: Themenkomplexe, denen eine Ökosystemleistung (ÖSL) zugeordnet wird (Werte der "Themenkomplex"-Spalte in wald_devset_raw.csv).
+    - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Kohlenstoffkreislauf; Kulturelle Leistungen; Stabilität und Resilienz | Hinweise zu den Werten: Themenkomplexe, denen eine Ökosystemleistung (ÖSL) zugeordnet wird.
     - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
   - ÖSL: Welche Ökosystemleistung wird in der Studie betrachtet? | Kardinalität: 1 | Typ: object
     Beschreibung: Welche Ökosystemleistung wird in der Studie betrachtet?

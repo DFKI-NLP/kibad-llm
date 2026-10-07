@@ -244,10 +244,9 @@ class EinflussEnum(str, Enum):
     POS = "pos"
 
 
+# Values of the "Themenkomplex" column in data/external/ecosystem_services/wald_devset_raw.csv.
 class ThemenkomplexEnum(str, Enum):
-    """Themenkomplexe, denen eine Ökosystemleistung (ÖSL) zugeordnet wird (Werte der "Themenkomplex"-Spalte
-    in wald_devset_raw.csv).
-    """
+    """Themenkomplexe, denen eine Ökosystemleistung (ÖSL) zugeordnet wird."""
 
     KOHLENSTOFFKREISLAUF = "Kohlenstoffkreislauf"
     KULTURELLE_LEISTUNGEN = "Kulturelle Leistungen"
@@ -267,12 +266,11 @@ class BiodiversityFacetEnum(str, Enum):
     STRUKTURELLE_DIVERSITAET = "Strukturelle Diversität"
 
 
+# Values of the "ESGroup" column in data/external/ecosystem_services/wald_devset_raw.csv: a coarser
+# grouping, made by the dataset itself, of the free-text "ÖSL" column into classifiable categories. Two
+# raw values were merged into an existing value: "Schädlingskontrolle?" -> "Schädlingskontrolle" and
+# "Ästhetischer Wert der Landschaft" -> "Ästhetischer Wert".
 class ESGroupEnum(str, Enum):
-    """Werte der "ESGroup"-Spalte in wald_devset_raw.csv: eine vom Datensatz selbst vorgenommene,
-    gröbere Gruppierung der freitextlichen "ÖSL"-Spalte in klassifizierbare Kategorien. Zwei
-    Rohwerte wurden dabei mit einem bestehenden Wert zusammengeführt: "Schädlingskontrolle?" ->
-    "Schädlingskontrolle" und "Ästhetischer Wert der Landschaft" -> "Ästhetischer Wert".
-    """
 
     AESTHETISCHER_WERT = "Ästhetischer Wert"
     ATMOSPHAERISCHE_ZUSAMMENSETZUNG = "Atmosphärische Zusammensetzung"
@@ -1469,17 +1467,16 @@ class EcosystemStudyFeaturesCompoundsSimple(BaseEcosystemStudyFeatures):
     )
 
 
+# Each instance corresponds to a single row of data/external/ecosystem_services/wald_devset_raw.csv.
+# The evaluation (see configs/experiment/evaluate/ecosystem_service.yaml) is restricted to Themenkomplex
+# (the grouping of the ÖSL), ÖSL (the studied variable), Biodiv_Facette (the biodiversity facet) and
+# Einfluss (the indicator variable). Arten is extracted, but ignored during evaluation
+# (`ignore_subfields`).
 class EcosystemServiceFieldsHabitat(CompoundFeature):
     """Ein einzelner Zusammenhang zwischen Biodiversität und Ökosystemleistung für einen einzelnen,
-    vorab festgelegten Lebensraum (z.B. Wald), bestehend aus Themenkomplex, Ökosystemleistung (ÖSL),
-    Biodiv_Facette, Einfluss und Arten. Ein Text kann
-    mehrere solcher Zusammenhänge beschreiben; jede Instanz bildet genau einen davon ab, analog zu
-    einer einzelnen Zeile in der wald_devset_raw.csv-Datei.
-
-    Die Auswertung (siehe configs/experiment/evaluate/ecosystem_service.yaml) beschränkt sich auf
-    Themenkomplex (die Gruppierung der ÖSL), ÖSL (die untersuchte Variable), Biodiv_Facette (die
-    Biodiversitätsfacette) und Einfluss (die Indikatorvariable). Arten wird extrahiert, aber bei der Bewertung ignoriert
-    (`ignore_subfields`).
+    vorab festgelegten Lebensraum, bestehend aus Themenkomplex, Ökosystemleistung (ÖSL),
+    Biodiv_Facette, Einfluss und Arten. Ein Text kann mehrere solcher Zusammenhänge beschreiben; jede
+    Instanz bildet genau einen davon ab.
     """
 
     # The fields below are based on the wald_devset_raw.csv file (ÖSL-VoteCount-Vollständig with
@@ -1529,12 +1526,11 @@ class EcosystemServiceFieldsHabitat(CompoundFeature):
     )
 
 
+# Base schema for all habitats: like EcosystemServiceFieldsHabitat, but with the habitat as additional field.
 class EcosystemServiceFields(EcosystemServiceFieldsHabitat):
     """Ein einzelner Zusammenhang zwischen Biodiversität und Ökosystemleistung, bestehend aus
-    Ökosystemleistung (ÖSL), Biodiv_Facette, Einfluss, Arten und Lebensraum_Gruppiert (Basis-Schema
-    für alle Lebensräume). Wie [`EcosystemServiceFieldsHabitat`][.EcosystemServiceFieldsHabitat], aber
-    mit dem Lebensraum als zusätzlichem Feld; pro betroffenem Lebensraum wird eine eigene Instanz
-    erstellt.
+    Themenkomplex, Ökosystemleistung (ÖSL), Biodiv_Facette, Einfluss, Arten und Lebensraum_Gruppiert.
+    Pro betroffenem Lebensraum wird eine eigene Instanz erstellt.
     """
 
     # A reference row naming several habitats (e.g. "Wald, Agrar- und Offenland") has to be split
@@ -1547,9 +1543,10 @@ class EcosystemServiceFields(EcosystemServiceFieldsHabitat):
     )
 
 
+# Base schema for all habitats (with the habitat per relationship).
 class EcosystemStudyEcosystemServiceTrends(BaseEcosystemStudyFeatures):
     """Angaben zu den im Text beschriebenen Zusammenhängen zwischen Biodiversität und
-    Ökosystemleistungen (Basis-Schema für alle Lebensräume, mit Lebensraum je Zusammenhang).
+    Ökosystemleistungen.
     """
 
     ecosystem_service_trends: list[EcosystemServiceFields] = Field(
@@ -1562,7 +1559,7 @@ class EcosystemStudyEcosystemServiceTrends(BaseEcosystemStudyFeatures):
 
 class EcosystemStudyEcosystemServiceTrendsHabitat(BaseEcosystemStudyFeatures):
     """Angaben zu den im Text beschriebenen Zusammenhängen zwischen Biodiversität und
-    Ökosystemleistungen für einen einzelnen, vorab festgelegten Lebensraum (ohne Lebensraum-Feld).
+    Ökosystemleistungen für einen einzelnen, vorab festgelegten Lebensraum.
     """
 
     ecosystem_service_trends: list[EcosystemServiceFieldsHabitat] = Field(

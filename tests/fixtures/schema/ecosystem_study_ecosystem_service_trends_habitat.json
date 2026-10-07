@@ -18,7 +18,7 @@
     },
     "EcosystemServiceFieldsHabitat": {
       "additionalProperties": false,
-      "description": "Ein einzelner Zusammenhang zwischen Biodiversität und Ökosystemleistung für einen einzelnen,\nvorab festgelegten Lebensraum (z.B. Wald), bestehend aus Themenkomplex, Ökosystemleistung (ÖSL),\nBiodiv_Facette, Einfluss und Arten. Ein Text kann\nmehrere solcher Zusammenhänge beschreiben; jede Instanz bildet genau einen davon ab, analog zu\neiner einzelnen Zeile in der wald_devset_raw.csv-Datei.\n\nDie Auswertung (siehe configs/experiment/evaluate/ecosystem_service.yaml) beschränkt sich auf\nThemenkomplex (die Gruppierung der ÖSL), ÖSL (die untersuchte Variable), Biodiv_Facette (die\nBiodiversitätsfacette) und Einfluss (die Indikatorvariable). Arten wird extrahiert, aber bei der Bewertung ignoriert\n(`ignore_subfields`).",
+      "description": "Ein einzelner Zusammenhang zwischen Biodiversität und Ökosystemleistung für einen einzelnen,\nvorab festgelegten Lebensraum, bestehend aus Themenkomplex, Ökosystemleistung (ÖSL),\nBiodiv_Facette, Einfluss und Arten. Ein Text kann mehrere solcher Zusammenhänge beschreiben; jede\nInstanz bildet genau einen davon ab.",
       "properties": {
         "Themenkomplex": {
           "$ref": "#/$defs/ThemenkomplexEnum",
@@ -73,7 +73,7 @@
       "type": "string"
     },
     "ThemenkomplexEnum": {
-      "description": "Themenkomplexe, denen eine Ökosystemleistung (ÖSL) zugeordnet wird (Werte der \"Themenkomplex\"-Spalte\nin wald_devset_raw.csv).",
+      "description": "Themenkomplexe, denen eine Ökosystemleistung (ÖSL) zugeordnet wird.",
       "enum": [
         "Kohlenstoffkreislauf",
         "Kulturelle Leistungen",
@@ -84,7 +84,7 @@
     }
   },
   "additionalProperties": false,
-  "description": "Angaben zu den im Text beschriebenen Zusammenhängen zwischen Biodiversität und\nÖkosystemleistungen für einen einzelnen, vorab festgelegten Lebensraum (ohne Lebensraum-Feld).",
+  "description": "Angaben zu den im Text beschriebenen Zusammenhängen zwischen Biodiversität und\nÖkosystemleistungen für einen einzelnen, vorab festgelegten Lebensraum.",
   "properties": {
     "ecosystem_service_trends": {
       "description": "Liste der im Text beschriebenen Zusammenhänge zwischen Biodiversität und Ökosystemleistungen.",

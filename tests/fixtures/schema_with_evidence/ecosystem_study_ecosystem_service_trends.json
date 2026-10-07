@@ -18,7 +18,7 @@
     },
     "EcosystemServiceFields": {
       "additionalProperties": false,
-      "description": "Ein einzelner Zusammenhang zwischen Biodiversität und Ökosystemleistung, bestehend aus\nÖkosystemleistung (ÖSL), Biodiv_Facette, Einfluss, Arten und Lebensraum_Gruppiert (Basis-Schema\nfür alle Lebensräume). Wie [`EcosystemServiceFieldsHabitat`][.EcosystemServiceFieldsHabitat], aber\nmit dem Lebensraum als zusätzlichem Feld; pro betroffenem Lebensraum wird eine eigene Instanz\nerstellt.",
+      "description": "Ein einzelner Zusammenhang zwischen Biodiversität und Ökosystemleistung, bestehend aus\nThemenkomplex, Ökosystemleistung (ÖSL), Biodiv_Facette, Einfluss, Arten und Lebensraum_Gruppiert.\nPro betroffenem Lebensraum wird eine eigene Instanz erstellt.",
       "properties": {
         "Themenkomplex": {
           "type": "object",
@@ -174,7 +174,7 @@
       "type": "string"
     },
     "ThemenkomplexEnum": {
-      "description": "Themenkomplexe, denen eine Ökosystemleistung (ÖSL) zugeordnet wird (Werte der \"Themenkomplex\"-Spalte\nin wald_devset_raw.csv).",
+      "description": "Themenkomplexe, denen eine Ökosystemleistung (ÖSL) zugeordnet wird.",
       "enum": [
         "Kohlenstoffkreislauf",
         "Kulturelle Leistungen",
@@ -185,7 +185,7 @@
     }
   },
   "additionalProperties": false,
-  "description": "Angaben zu den im Text beschriebenen Zusammenhängen zwischen Biodiversität und\nÖkosystemleistungen (Basis-Schema für alle Lebensräume, mit Lebensraum je Zusammenhang).",
+  "description": "Angaben zu den im Text beschriebenen Zusammenhängen zwischen Biodiversität und\nÖkosystemleistungen.",
   "properties": {
     "ecosystem_service_trends": {
       "description": "Liste der im Text beschriebenen Zusammenhänge zwischen Biodiversität und Ökosystemleistungen.",
