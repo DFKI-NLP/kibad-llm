@@ -1,22 +1,28 @@
-"""Process the raw ÖSL reference export `data/external/ecosystem_services/papers_raw.csv`
+"""Process the raw ÖSL reference export `data/external/ecosystem_services/wald_devset_raw.csv`
 into the format used as reference data for the ecosystem service evaluation.
 
 The script corrects the following formatting differences of the raw export:
 
-- Two columns are renamed so their names are valid Python identifiers matching
+- Columns are renamed so their names are valid Python identifiers matching
   `EcosystemServiceFields` in `src/kibad_llm/schema/types.py` ("Biodiv-Facette" ->
-  "Biodiv_Facette", "Art(en)" -> "Arten"); the raw export uses the original names.
+  "Biodiv_Facette", "Art(en)" -> "Arten"); the raw export uses the original names. The title
+  column is accepted both as "Title" and "title" and written as "Title".
 - The raw export carries extra columns (e.g. review-tracking metadata) that are dropped; the
   columns to keep and their order are defined by `OUTPUT_COLUMNS`.
 - The raw export preserves Unicode punctuation (hyphen/dash/quote variants), which is flattened
   to the ASCII equivalents.
 
 Optionally, papers can be filtered (all rows of a paper, identified by "Key") with
-`--exclude-methods` (e.g. reviews and pure model studies) and `--require-habitat` (e.g. "Wald"), which
-is used to derive the reference for the forest dev set. Example:
+`--exclude-methods` (e.g. reviews and pure model studies) and `--require-habitat` (e.g. "Wald"). The
+forest dev set reference is created without any filter (it only covers Wald by choice):
+```
+    uv run -m kibad_llm.data_integration.align_ecosystem_service_csv
+```
+Example with filters (pass `--output` so the filtered file does not overwrite the default):
 ```
     uv run -m kibad_llm.data_integration.align_ecosystem_service_csv \\
-        --exclude-methods Literaturstudie Modell/Simulation --require-habitat Wald
+        --exclude-methods Literaturstudie Modell/Simulation --require-habitat Wald \\
+        --output path/to/filtered.csv
 ```
 TODO: papers that contain Wald *and* other habitats are currently kept unchanged, see `filter_papers`.
 """
@@ -37,6 +43,7 @@ from kibad_llm.config import EXTERNAL_DATA_DIR, INTERIM_DATA_DIR
 COLUMN_RENAMES = {
     "Biodiv-Facette": "Biodiv_Facette",
     "Art(en)": "Arten",
+    "title": "Title",
 }
 
 # Columns (after applying `COLUMN_RENAMES`) written to the output, in this order. Further columns of
@@ -277,15 +284,15 @@ if __name__ == "__main__":
     parser.add_argument(
         "--input",
         type=Path,
-        default=EXTERNAL_DATA_DIR / "ecosystem_services" / "papers_raw.csv",
+        default=EXTERNAL_DATA_DIR / "ecosystem_services" / "wald_devset_raw.csv",
         help="Raw CSV export to align.",
     )
     parser.add_argument(
         "--output",
         type=Path,
-        default=INTERIM_DATA_DIR / "ecosystem_services" / "papers_processed_wald.csv",
-        help="Where to write the aligned CSV. The default name fits the filters used for the "
-        "forest dev set (see below); pass --output when using other filters.",
+        default=INTERIM_DATA_DIR / "ecosystem_services" / "wald_devset_processed.csv",
+        help="Where to write the aligned CSV. The default name fits the unfiltered forest dev "
+        "set; pass --output when using filters.",
     )
     parser.add_argument(
         "--exclude-methods",

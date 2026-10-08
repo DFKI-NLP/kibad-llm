@@ -3,7 +3,6 @@ Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
 - ecosystem_service: Welche Ökosystemleistungen wurden in der Studie untersucht? | Kardinalität: 0..* | Typ: object
   Beschreibung: Ökosystemdienstleistung mit Kategorie, Term und Details.
   - category: In welche der folgenden Kategorien lässt sich die im Text behandelte Ökosystemleistung einordnen? | Kardinalität: 1 | Typ: object
-    Beschreibung: In welche der folgenden Kategorien lässt sich die im Text behandelte Ökosystemleistung einordnen?
     - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Kulturelle Leistungen; Regulierungs- und Erhaltungsleistungen; Versorgungsleistungen
     - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
   - term: Welche konkrete Ökosystemleistung wurde untersucht? | Kardinalität: 0..1 | Typ: object
