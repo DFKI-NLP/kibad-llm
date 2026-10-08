@@ -27,7 +27,7 @@
           ]
         },
         "ÖSL": {
-          "description": "Welche Ökosystemleistung wird in der Studie betrachtet?",
+          "description": "Welche Ökosystemleistung wird in der Studie betrachtet? Gib eine kurze, allgemeine deutsche Bezeichnung (ein bis drei Wörter) an, nicht die konkrete Messgröße, z.B. Biomasseproduktion, Zersetzung, Kohlenstoffspeicherung oder Dürreresistenz.",
           "title": "Ösl",
           "type": "string"
         },
@@ -40,7 +40,7 @@
           ]
         },
         "Einfluss": {
-          "description": "Was ist der in der Studie gemessene Einfluss der Biodiversitätsfacette (Biodiv_Facette) auf die Ökosystemleistung bzw. -funktion (ÖSL/ÖSF)? Die Richtung bezieht sich auf die ÖSL/ÖSF (pos = die ÖSL/ÖSF nimmt mit höherer Ausprägung der Facette zu).",
+          "description": "Was ist der in der Studie gemessene Einfluss der Biodiversitätsfacette (Biodiv_Facette) auf die Ökosystemleistung bzw. -funktion (ÖSL/ÖSF)? Die Richtung bezieht sich auf die ÖSL/ÖSF (pos = die ÖSL/ÖSF nimmt mit höherer Ausprägung der Facette zu). pos, neg und neu gelten nur für kontinuierliche oder ordinale Prädiktoren, ja und nein für kategoriale Prädiktoren.",
           "anyOf": [
             {
               "$ref": "#/$defs/EinflussEnum"

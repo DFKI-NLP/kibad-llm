@@ -1499,7 +1499,8 @@ class EcosystemServiceFieldsHabitat(CompoundFeature):
     )
     ÖSL: str = Field(
         ...,
-        description="Welche Ökosystemleistung wird in der Studie betrachtet?",
+        description="Welche Ökosystemleistung wird in der Studie betrachtet? Gib eine kurze, allgemeine deutsche "
+        "Bezeichnung (ein bis drei Wörter) an, nicht die konkrete Messgröße.",
     )
     Biodiv_Facette: BiodiversityFacetEnum = Field(
         ...,
@@ -1511,7 +1512,8 @@ class EcosystemServiceFieldsHabitat(CompoundFeature):
         ...,
         description="Was ist der in der Studie gemessene Einfluss der Biodiversitätsfacette "
         "(Biodiv_Facette) auf die Ökosystemleistung bzw. -funktion (ÖSL/ÖSF)? Die Richtung bezieht sich "
-        "auf die ÖSL/ÖSF (pos = die ÖSL/ÖSF nimmt mit höherer Ausprägung der Facette zu).",
+        "auf die ÖSL/ÖSF (pos = die ÖSL/ÖSF nimmt mit höherer Ausprägung der Facette zu). pos, neg und neu "
+        "gelten nur für kontinuierliche oder ordinale Prädiktoren, ja und nein für kategoriale Prädiktoren.",
     )
     # The "Art(en)" column of the reference data is a comma-separated list of names as used in the
     # study (mostly German tree names such as "Buche", "Fichte"), without scientific name or

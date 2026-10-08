@@ -36,7 +36,13 @@ system_message: |
   - Enthält der Text keine solche Beziehung, gib eine leere Liste zurück. Erfinde keine Beziehungen.
   - Jede Beziehung bildet genau einen Eintrag in der Liste. Ein Text kann mehrere Beziehungen enthalten (z.B. mehrere
     ÖSL/ÖSF oder mehrere Biodiversitätsfacetten). Lege für jede untersuchte Kombination aus ÖSL/ÖSF und
-    Biodiversitätsfacette einen eigenen Eintrag an.
+    Biodiversitätsfacette genau einen Eintrag an, nicht mehr.
+  - Fasse zusammen: Verschiedene Messgrößen, Arten, Standorte, Behandlungen oder Zeitpunkte, die derselben ÖSL/ÖSF und
+    derselben Biodiversitätsfacette zugeordnet werden, bilden zusammen nur einen Eintrag (z.B. CO2- und CH4-Emissionen
+    sind beide Kohlenstoffkreislauf-Messgrößen; sterile und nicht sterile Proben sind keine eigenen Beziehungen).
+    Erfasse nur die Hauptbeziehungen der Studie, nicht jede einzelne Teilmessung.
+  - Im Zweifel lasse eine Beziehung weg. Enthält der Text (z.B. ein reiner Methodenabschnitt) keine berichteten
+    Ergebnisse, gib eine leere Liste zurück.
   - Eine Beziehung ist nur dann gültig, wenn alle Pflichtfelder ausgefüllt werden können. Nur das Feld 'Arten' ist
     optional. Gibt es für eine Beziehung keine belegbare Angabe für ein Pflichtfeld, lasse die gesamte Beziehung weg.
 
@@ -78,6 +84,15 @@ system_message: |
   Zuordnung aus. Auch nicht aufgeführte ÖSL/ÖSF sind einzuschließen, wenn sie inhaltlich eindeutig unter die
   Definition eines Themenkomplexes fallen.
 
+  ## ÖSL/ÖSF (Feld 'ÖSL')
+
+  Gib im Feld 'ÖSL' eine kurze, allgemeine deutsche Bezeichnung (ein bis drei Wörter) der Ökosystemleistung bzw.
+  -funktion an, nicht die konkrete Messgröße. Verwende nach Möglichkeit wörtlich einen der Begriffe aus den Beispielen
+  der Themenkomplexe (z.B. Biomasseproduktion, Zersetzung, Kohlenstoffspeicherung, Dürreresistenz, Dürreerholung,
+  Mikroklimaregulation). Übernimm keine Einheiten, Methoden, Arten oder englischen Begriffe aus dem Text, sondern
+  übersetze und verallgemeinere (z.B. 'aboveground woody biomass', 'Radiale Wachstumsrate' -> Biomasseproduktion;
+  'Masseverlust von Totholz' -> Zersetzung; 'Bodenkohlenstoff' -> Kohlenstoffspeicherung).
+
   ## Biodiversitätsfacetten
 
   Eine Biodiversitätsfacette kann in verschiedenen Dimensionen untersucht werden: als Identität bzw. Ausprägung einzelner
@@ -87,7 +102,12 @@ system_message: |
   Landschaftsdiversität für Vielfalt). Auf genetischer, funktioneller und struktureller Ebene gehören alle Dimensionen
   zur jeweiligen Facette.
 
-  Wähle die Facette, deren Einfluss in der Studie tatsächlich ausgewertet wird:
+  Wähle die Facette, deren Einfluss in der Studie tatsächlich ausgewertet wird. Maßgeblich ist die erklärende Variable
+  der Analyse (der Faktor im Modell bzw. der verglichene Gradient), und zwar genau eine Facette pro untersuchtem
+  Prädiktor. Lege nicht zusätzlich eine zweite Facette an, nur weil sich das Design auch anders lesen ließe:
+  Artenvielfalt für Gradienten von Artenreichtum oder Diversitätsindizes (z.B. Shannon), Artidentität für den Vergleich
+  einzelner benannter Arten, Artenzusammensetzung nur, wenn Artenmischungen bzw. die Gemeinschaftszusammensetzung selbst
+  der Prädiktor sind.
 
   - Artidentität: Identität einer Art und die mit ihr verbundenen artspezifischen Eigenschaften, durch die ihr
     Vorkommen oder ihre Dominanz die Funktionsweise eines Ökosystems und die Erbringung von Ökosystemleistungen
@@ -190,7 +210,7 @@ system_message: |
   - neu: neutral, kein Einfluss bzw. kein nachweisbarer Unterschied.
 
   Für kategoriale Prädiktoren ohne natürliche Rangfolge (nur das Vorhandensein eines Effekts, unabhängig von der
-  Richtung bzw. von der Art der Gruppenunterschiede):
+  Richtung bzw. von der Art der Gruppenunterschiede; hier gilt nie pos/neg/neu):
   - ja: Die Facette hat einen Einfluss auf die ÖSL/ÖSF.
   - nein: Die Facette hat keinen Einfluss auf die ÖSL/ÖSF.
 
