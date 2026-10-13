@@ -1,25 +1,20 @@
 {
   "character_start": 0,
   "character_end": 24442,
-  "response_content": "{\n  \"habitat\": [\n    {\n      \"content\": \"Boden\",\n      \"evidence_anchor\": \"entwässerten Moorböden\"\n    }\n  ],\n  \"taxa\": [\n    {\n      \"scientific_name\": {\n        \"content\": \"Insecta\",\n        \"evidence_anchor\": \"Insekten\"\n      },\n      \"german_name\": {\n        \"content\": \"Insekten\",\n        \"evidence_anchor\": \"Insekten\"\n      },\n      \"species_group\": {\n        \"content\": \"Insekten\",\n        \"evidence_anchor\": \"Insekten\"\n      }\n    },\n    {\n      \"scientific_name\": {\n        \"content\": \"Amphibia\",\n        \"evidence_anchor\": \"Amphibien\"\n      },\n      \"german_name\": {\n        \"content\": \"Amphibien\",\n        \"evidence_anchor\": \"Amphibien\"\n      },\n      \"species_group\": {\n        \"content\": \"Amphibien und Reptilien\",\n        \"evidence_anchor\": \"Amphibien\"\n      }\n    },\n    {\n      \"scientific_name\": {\n        \"content\": \"Aves\",\n        \"evidence_anchor\": \"Vögel\"\n      },\n      \"german_name\": {\n        \"content\": \"Vögel\",\n        \"evidence_anchor\": \"Vögel\"\n      },\n      \"species_group\": {\n        \"content\": \"Vögel\",\n        \"evidence_anchor\": \"Vögel\"\n      }\n    }\n  ],\n  \"biodiversity_level\": [\n    {\n      \"content\": \"Zusammensetzung der Artengemeinschaft\",\n      \"evidence_anchor\": \"Biodiversität insbesondere von Insekten, Amphibien und Vögeln\"\n    }\n  ],\n  \"ecosystem_type\": [\n    {\n      \"category\": {\n        \"content\": \"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes\",\n        \"evidence_anchor\": \"Moorböden\"\n      },\n      \"term\": {\n        \"content\": \"Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte\",\n        \"evidence_anchor\": \"Moorböden\"\n      }\n    }\n  ]\n}",
+  "response_content": "{\n  \"habitat\": [\n    {\n      \"content\": \"Boden\",\n      \"evidence_anchor\": \"auf entwässerten Moorböden\"\n    },\n    {\n      \"content\": \"Agrar- und Offenland\",\n      \"evidence_anchor\": \"werden überwiegend (rd. 70 %) landwirtschaftlich genutzt\"\n    }\n  ],\n  \"taxa\": [\n    {\n      \"species_group\": {\n        \"content\": \"Insekten\",\n        \"evidence_anchor\": \"Wirkung auf die Biodiversität insbesondere von Insekten\"\n      }\n    },\n    {\n      \"species_group\": {\n        \"content\": \"Amphibien und Reptilien\",\n        \"evidence_anchor\": \"Wirkung auf die Biodiversität insbesondere von Amphibien\"\n      }\n    },\n    {\n      \"species_group\": {\n        \"content\": \"Vögel\",\n        \"evidence_anchor\": \"Wirkung auf die Biodiversität insbesondere von Vögeln\"\n      }\n    }\n  ],\n  \"biodiversity_level\": [\n    {\n      \"content\": \"Zusammensetzung der Artengemeinschaft\",\n      \"evidence_anchor\": \"Wirkung auf die Biodiversität insbesondere von Insekten, Amphibien und Vögeln\"\n    }\n  ],\n  \"ecosystem_type\": [\n    {\n      \"category\": {\n        \"content\": \"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes\",\n        \"evidence_anchor\": \"Moorböden\"\n      }\n    }\n  ]\n}",
   "structured": {
     "habitat": [
-      "Boden"
+      "Boden",
+      "Agrar- und Offenland"
     ],
     "taxa": [
       {
-        "scientific_name": "Insecta",
-        "german_name": "Insekten",
         "species_group": "Insekten"
       },
       {
-        "scientific_name": "Amphibia",
-        "german_name": "Amphibien",
         "species_group": "Amphibien und Reptilien"
       },
       {
-        "scientific_name": "Aves",
-        "german_name": "Vögel",
         "species_group": "Vögel"
       }
     ],
@@ -28,8 +23,7 @@
     ],
     "ecosystem_type": [
       {
-        "category": "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes",
-        "term": "Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte"
+        "category": "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
       }
     ]
   },
@@ -37,101 +31,55 @@
     "habitat": [
       {
         "content": "Boden",
-        "evidence_anchor": "entwässerten Moorböden",
-        "evidence_num_matches": 2,
-        "first_evidence_start": 369,
+        "evidence_anchor": "auf entwässerten Moorböden",
+        "evidence_num_matches": 1,
+        "first_evidence_start": 365,
         "first_evidence_end": 391,
-        "first_evidence_snippet": "verringern. Dafür wird auch die\nErrichtung von Photovoltaik-Anlagen (PVA) auf entwässerten Moorböden in den Blick genommen und\nim Eckpunktepapier der Bundesregierung [2]"
+        "first_evidence_snippet": "zu verringern. Dafür wird auch die\nErrichtung von Photovoltaik-Anlagen (PVA) auf entwässerten Moorböden in den Blick genommen und\nim Eckpunktepapier der Bundesregierung [2]"
+      },
+      {
+        "content": "Agrar- und Offenland",
+        "evidence_anchor": "werden überwiegend (rd. 70 %) landwirtschaftlich genutzt",
+        "evidence_num_matches": 1,
+        "first_evidence_start": 920,
+        "first_evidence_end": 976,
+        "first_evidence_snippet": "v.a. in der norddeutschen Tiefebene und\nim Alpenvorland verbreitet und werden überwiegend (rd. 70 %) landwirtschaftlich genutzt.\nMoorböden nehmen in Mecklenburg-Vorpommern 12 %, und in Niedersachsen 14"
       }
     ],
     "taxa": [
       {
-        "scientific_name": {
-          "content": "Insecta",
-          "evidence_anchor": "Insekten",
-          "evidence_num_matches": 1,
-          "first_evidence_start": 12096,
-          "first_evidence_end": 12104,
-          "first_evidence_snippet": "PVA ist hinsichtlich ihrer Wirkung auf die Biodiversität insbesondere von Insekten, Amphibien\nund Vögeln zu untersuchen. Zudem gilt es, mögliche Risiken"
-        },
-        "german_name": {
-          "content": "Insekten",
-          "evidence_anchor": "Insekten",
-          "evidence_num_matches": 1,
-          "first_evidence_start": 12096,
-          "first_evidence_end": 12104,
-          "first_evidence_snippet": "PVA ist hinsichtlich ihrer Wirkung auf die Biodiversität insbesondere von Insekten, Amphibien\nund Vögeln zu untersuchen. Zudem gilt es, mögliche Risiken"
-        },
         "species_group": {
           "content": "Insekten",
-          "evidence_anchor": "Insekten",
+          "evidence_anchor": "Wirkung auf die Biodiversität insbesondere von Insekten",
           "evidence_num_matches": 1,
-          "first_evidence_start": 12096,
+          "first_evidence_start": 12049,
           "first_evidence_end": 12104,
-          "first_evidence_snippet": "PVA ist hinsichtlich ihrer Wirkung auf die Biodiversität insbesondere von Insekten, Amphibien\nund Vögeln zu untersuchen. Zudem gilt es, mögliche Risiken"
+          "first_evidence_snippet": "werden. Die Veränderung des Lebensraums\ndurch PVA ist hinsichtlich ihrer Wirkung auf die Biodiversität insbesondere von Insekten, Amphibien\nund Vögeln zu untersuchen. Zudem gilt es, mögliche Risiken"
         }
       },
       {
-        "scientific_name": {
-          "content": "Amphibia",
-          "evidence_anchor": "Amphibien",
-          "evidence_num_matches": 1,
-          "first_evidence_start": 12106,
-          "first_evidence_end": 12115,
-          "first_evidence_snippet": "ist hinsichtlich ihrer Wirkung auf die Biodiversität insbesondere von Insekten, Amphibien\nund Vögeln zu untersuchen. Zudem gilt es, mögliche Risiken der"
-        },
-        "german_name": {
-          "content": "Amphibien",
-          "evidence_anchor": "Amphibien",
-          "evidence_num_matches": 1,
-          "first_evidence_start": 12106,
-          "first_evidence_end": 12115,
-          "first_evidence_snippet": "ist hinsichtlich ihrer Wirkung auf die Biodiversität insbesondere von Insekten, Amphibien\nund Vögeln zu untersuchen. Zudem gilt es, mögliche Risiken der"
-        },
         "species_group": {
           "content": "Amphibien und Reptilien",
-          "evidence_anchor": "Amphibien",
-          "evidence_num_matches": 1,
-          "first_evidence_start": 12106,
-          "first_evidence_end": 12115,
-          "first_evidence_snippet": "ist hinsichtlich ihrer Wirkung auf die Biodiversität insbesondere von Insekten, Amphibien\nund Vögeln zu untersuchen. Zudem gilt es, mögliche Risiken der"
+          "evidence_anchor": "Wirkung auf die Biodiversität insbesondere von Amphibien",
+          "evidence_num_matches": 0
         }
       },
       {
-        "scientific_name": {
-          "content": "Aves",
-          "evidence_anchor": "Vögel",
-          "evidence_num_matches": 1,
-          "first_evidence_start": 12120,
-          "first_evidence_end": 12125,
-          "first_evidence_snippet": "ihrer Wirkung auf die Biodiversität insbesondere von Insekten, Amphibien\nund Vögeln zu untersuchen. Zudem gilt es, mögliche Risiken der PVA auf"
-        },
-        "german_name": {
-          "content": "Vögel",
-          "evidence_anchor": "Vögel",
-          "evidence_num_matches": 1,
-          "first_evidence_start": 12120,
-          "first_evidence_end": 12125,
-          "first_evidence_snippet": "ihrer Wirkung auf die Biodiversität insbesondere von Insekten, Amphibien\nund Vögeln zu untersuchen. Zudem gilt es, mögliche Risiken der PVA auf"
-        },
         "species_group": {
           "content": "Vögel",
-          "evidence_anchor": "Vögel",
-          "evidence_num_matches": 1,
-          "first_evidence_start": 12120,
-          "first_evidence_end": 12125,
-          "first_evidence_snippet": "ihrer Wirkung auf die Biodiversität insbesondere von Insekten, Amphibien\nund Vögeln zu untersuchen. Zudem gilt es, mögliche Risiken der PVA auf"
+          "evidence_anchor": "Wirkung auf die Biodiversität insbesondere von Vögeln",
+          "evidence_num_matches": 0
         }
       }
     ],
     "biodiversity_level": [
       {
         "content": "Zusammensetzung der Artengemeinschaft",
-        "evidence_anchor": "Biodiversität insbesondere von Insekten, Amphibien und Vögeln",
+        "evidence_anchor": "Wirkung auf die Biodiversität insbesondere von Insekten, Amphibien und Vögeln",
         "evidence_num_matches": 1,
-        "first_evidence_start": 12065,
+        "first_evidence_start": 12049,
         "first_evidence_end": 12126,
-        "first_evidence_snippet": "des Lebensraums\ndurch PVA ist hinsichtlich ihrer Wirkung auf die Biodiversität insbesondere von Insekten, Amphibien\nund Vögeln zu untersuchen. Zudem gilt es, mögliche Risiken der PVA auf"
+        "first_evidence_snippet": "werden. Die Veränderung des Lebensraums\ndurch PVA ist hinsichtlich ihrer Wirkung auf die Biodiversität insbesondere von Insekten, Amphibien\nund Vögeln zu untersuchen. Zudem gilt es, mögliche Risiken der PVA auf"
       }
     ],
     "ecosystem_type": [
@@ -143,19 +91,11 @@
           "first_evidence_start": 77,
           "first_evidence_end": 86,
           "first_evidence_snippet": "# Informationspapier des Greifswald Moor Centrum zu Photovoltaik-Anlagen auf Moorböden\n\n_Stand: März 2022_\n\n\nHintergrund\n\n\nDie Nutzung erneuerbarer Energie muss zügig"
-        },
-        "term": {
-          "content": "Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte",
-          "evidence_anchor": "Moorböden",
-          "evidence_num_matches": 36,
-          "first_evidence_start": 77,
-          "first_evidence_end": 86,
-          "first_evidence_snippet": "# Informationspapier des Greifswald Moor Centrum zu Photovoltaik-Anlagen auf Moorböden\n\n_Stand: März 2022_\n\n\nHintergrund\n\n\nDie Nutzung erneuerbarer Energie muss zügig"
         }
       }
     ]
   },
-  "reasoning_content": "We need to extract info per schema: habitats, taxa, biodiversity_level, ecosystem_type. The text is about photovoltaic panels on peat bogs, references measurements of biodiversity? The discussion includes biodiversity impacts on insects, amphibians, birds. So biodiversity_levels include \"Zusammensetzung der Artengemeinschaft\" or \"Artenvielfalt\" maybe. It says \"Die Veränderung des Lebensraums durch PVA ist hinsichtlich ihrer Wirkung auf die Biodiversität insbesondere von Insekten, Amphibien und Vögeln zu untersuchen.\" So we can specify biodiversity level: \"Zusammensetzung der Artengemeinschaft\". We need evidence anchor quotes.\n\nHabitats: peat bogs (Moorböden) which is a specific habitat: \"Moorböden\". In allowed values: Kardinalität: 0..*, content from allowed list: we only have \"Boden\" or \"Wald\" etc. The list is agriculturally? Allowed values: \"Agrar- und Offenland; Binnengewässer und Auen; Boden; Küsten und Küstengewässer; Urbane Räume; Wald\". The peat bog fits \"Boden\" maybe? Also \"Moorböden\". So we include one habitat object: content \"Boden\". evidence anchor: a quote referencing Moorböden. e.g., \"Moorböden\" appears in text multiple times. We need to quote plain text isolate: e.g., \"Moorböden\" as unit maybe. But evidence anchor expects the literal quote from original text. We can pick \"Moorböden\" or \"entwässerten Moorböden\" etc. The request: \"Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt.\" So we can quote e.g., \"entwässerten Moorböden\". That's a quote that supports the habitat. We can use e.g., \"entwässerten Moorböden\" (the phrase appears). Use that.\n\nTaxa: The study mentions Insekten, Amphibien, Vögel. We can produce three taxa objects. For each we need scientific_name, german_name, species_group. For insects: scientific_name maybe \"Insecta\"? But that's class. Allowed species_group values: \"Insekten\". There's no lower taxon; we can use \"Insecta\" as scientific. But better to use \"Insecte\" but must use scientific names. Could use broad group \"Insecta\" (latin order). But may not be generic. The spec says use smallest possible level. We have no specific species. So just use group. The \"species_group\" must be object with content (allowed values). For Insekten, content \"Insekten\", evidence anchor via quote referencing \"Insekten\". The German name: \"Insekten\". Off limit? We can use \"Insekten\" same. For amphibians: scientific: \"Amphibia\". German: \"Amphibien\". Species_group: \"Amphibien und Reptilien\". For birds: scientific: \"Aves\". German: \"Vögel\". Species_group: \"Vögel\". Provide evidence anchors.\n\nbiodiversity_level: \"Zusammensetzung der Artengemeinschaft\" maybe. Quote: \"Arten\" or \"Biodiversität insbesondere von Insekten, Amphibien und Vögeln\".\n\necosystem_type: The ecosystem type categories? This is about peat bog (Moor). The allowed categories: I, II, III, IV, V, VI. For peat bog with aquatic? It's terrestrial wetlands. So category \"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes\" maybe. The term: Not listed in allowed names? Allowed terms for terrestrial includes \"Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte\". But Moor is \"Niedermoore\". So term \"Niedermoore\" maybe not exactly but \"Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte\" but that's a big combination. The term list includes \"Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte\". Use that. evidence anchor: quote \"Moor\" or \"Moorböden\" which are wetlands. Also we can use \"Moorböden\" as term? The term must be allowed. \"Moor\" is not in list. \"Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte\" maybe what describes peatland. We'll use that.\n\nProof anchor: text discussing that \"Moorböden\" etc. That contains \"entwässerten Moorböden\".\n\nLet's craft JSON accordingly.\n\nNow JSON structure: top-level keys: habitat, taxa, biodiversity_level, ecosystem_type. Each: objects/arrays.\n\nHabitat: array of objects. Each object has content and evidence_anchor.\n\nSo habitat: [{ \"content\":\"Boden\", \"evidence_anchor\":\"entwässerten Moorböden\" }]\n\nTaxa: array of objects. Each object: scientific_name, german_name, species_group.\n\nscientific_name: an object with content and evidence_anchor. For Insekten: content \"Insecta\" ; evidence \"Insekten\" (text). German_name: content \"Insekten\" ; evidence anchor same. species_group: content \"Insekten\". evidence anchor \"Insekten\".\n\nFor Amphibien: scientific_name: \"Amphibia\" ; evidence \"Amphibien\". German_name: \"Amphibien\" ; evidence \"Amphibien\". species_group: \"Amphibien und Reptilien\".\n\nFor Vögel: scientific_name: \"Aves\" ; evidence \"Vögel\". German_name: \"Vögel\" ; evidence \"Vögel\". species_group: \"Vögel\".\n\nBiodiversity_level: array with one object: content \"Zusammensetzung der Artengemeinschaft\", evidence_anchor \"Biodiversität insbesondere von Insekten, Amphibien und Vögeln\". Use that phrase.\n\nEcosystem_type: array with one object: category: {content:\"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes\", evidence_anchor:\"Moorböden\"} ; term: {content:\"Waldfreie Niedermoore und Sümpfe, Grünland nasser bis feuchter Standorte\", evidence_anchor:\"Moorböden\"}.\n\nMake sure no other fields.\n\nLet's produce JSON.",
+  "reasoning_content": "We need to extract info per schema: habitats, taxa, biodiversity_level, ecosystem_type. The text is about photovoltaics on moor soils, references measurements of biodiversity? The discussion includes biodiversity impacts on insects, amphibians, birds. So biodiversity_levels include \"Zusammensetzung der Artengemeinschaft\" or \"Arti Wiss\" maybe. Also \"Funktions Diversity\" for species? Not sure. But text explicitly: \"Die Veränderung des Lebensraums durch PVA ist hinsichtlich ihrer Wirkung auf die Biodiversität insbesondere von Insekten, Amphibien und Vögeln zu untersuchen.\" So biodiversity_level: \"Zusammensetzung der Artengemeinschaft\" maybe \"Zusammensetzung\" or \"Artenvielfalt\"? They mention investigation of biodiversity; not specific measure. Might set biodiversity_level content: \"Artenvielfalt\" or \"Zusammensetzung der Artengemeinschaft.\" Choose one that fits. Also mention \"Biodiversität\" general. We can set content \"Artenvielfalt\".\n\nHabitat: moor soils -> \"Boden\" or \"Agrar- und Offenland\" or \"Ökosystemtypen\"? Moorböden are included: \"Boden\" category. And \"Agrar- und Offenland\" is location used. So habitat includes \"Boden\" and \"Agrar- und Offenland\". So list two habitats.\n\nAlso \"Moorböden\" are a habitat type in the schema? Not listed but \"Boden\" is allowed. Also \"Agrar- und Offenland\".\n\nEvidence anchor: quotes: \"auf entwässerten Moorböden\" etc. Provide quotes.\n\nTaxa: Insects, amphibians, birds. The taxonomy grouping should be \"Insekten; Amphibien und Reptilien; Vögel\" groups. The schema expects each taxa object includes scientific_name, german_name optionally, species_group. For group-level, we just provide species_group with group name. Scientific_name maybe not needed? But if group, scientific_name not required? The schema says scientific_name: optional but if exists, must include object with content and evidence. And same for german_name. For group-level, we could skip scientific and german_name, just provide species_group with evidence. They say taxonomic group must be included. So each taxa object at least species_group. So we produce three taxa objects: Insekten, Amphibien und Reptilien, Vögel.\n\nEvidence: Quote referencing \"Insekten, Amphibien und Vögeln\".\n\nBiodiversity_level: \"Artenvielfalt\" or \"Zusammensetzung der Artengemeinschaft\". Actually \"Zusammensetzung der Artengemeinschaft\" is a subtype of biodiversity level? It is a distinct level. Probably best \"Zusammensetzung der Artengemeinschaft\" as that's explicitly about \"Artenvielfalt\". Use that.\n\nEcosystem_type: Not specific. Maybe \"Moorböden\" which fall under \"I Biotoptypengruppen der Meere und Küsten\"? No. Moorböden are terrestrial. Not in given types. There's category \"I Biotoptypengruppen der Meere und Küsten\", \"II...\", \"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes\" etc. Our ecosystem type might be \"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes\". term maybe \"Moorböden\". Term not in allowed list. But categories: \"III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes\" allowed. term list includes many types, does not include Moorböden. So use category only, no term. Provide evidence anchor: quote.\n\nNow produce JSON. Carefully follow schema.\n\nNote: Use double quotes in JSON. Provide arrays. habitat array of objects each with content and evidence_anchor.\n\nWe need evidence texts from document in quotes. Use short excerpts.\n\nExamples:\n\n- \"auf entwässerten Moorböden\" for habitat \"Boden\".\n- \"in der norddeutschen Tiefebene und im Alpenvorland verbreitet\" also habitats.\n\n- For \"Agrar- und Offenland\" maybe use \"werden überwiegend (rd. 70 %) landwirtschaftlich genutzt.\" Provide quote.\n\nTaxa evidence: \"Die Veränderung des Lebensraums durch PVA ist hinsichtlich ihrer Wirkung auf die Biodiversität insbesondere von Insekten, Amphibien und Vögeln zu untersuchen.\"\n\nBiodiversity_level evidence: same quote.\n\nEcosystem_type evidence: \"Moorböden\" mention.\n\nLet's construct.\n\n",
   "messages": null,
   "messages_formatted": null,
   "errors": [],
