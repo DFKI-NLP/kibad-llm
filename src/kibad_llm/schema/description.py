@@ -10,7 +10,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass, replace
 from typing import Any, Literal
 
-from kibad_llm.schema.utils import _ref_path, _resolve_ref
+from kibad_llm.schema.helpers import _ref_path, _resolve_ref
 from kibad_llm.utils.log import warn_once
 
 
