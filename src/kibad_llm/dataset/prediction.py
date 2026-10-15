@@ -40,7 +40,7 @@ def load_with_metadata(
 
     metadata = None
 
-    if log is not None:
+    if log:
         if file is not None:
             raise ValueError("Specify either 'log' or 'file', not both.")
 
