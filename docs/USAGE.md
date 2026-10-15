@@ -15,6 +15,7 @@
 - [Information Extraction from PDFs](#information-extraction-from-pdfs)
     - [Prerequisite: LLM Hosting](#prerequisite-llm-hosting)
     - [Inference](#inference)
+    - [Schema descriptions in prompts](#schema-descriptions-in-prompts)
     - [Evaluation](#evaluation)
     - [Multirun](#multirun)
     - [A/B Testing with Multiple Seeds](#ab-testing-with-multiple-seeds)
@@ -185,6 +186,22 @@ On compute nodes it is recommended to set a large value, like 200. It may be lar
 Use this to send more than one simultaneous request to vLLM.
 
 </details>
+
+### Schema descriptions in prompts
+
+Prompt templates containing `{schema_description}` use `build_schema_description` from [schema/description.py](/src/kibad_llm/schema/description.py).
+
+Descriptions are assigned a role before formatting:
+
+- A property's `description` appears on its field line, including for inline objects, inline enums, nullable fields, and evidence wrappers.
+- Root and nested type descriptions appear on `Beschreibung:` lines. Array item descriptions and non-null branch descriptions belong to their respective types.
+- Enum type descriptions, such as those in referenced `$defs`, appear under `Hinweise zu den Werten:`.
+
+The same annotation is rendered once per field occurrence. Independent annotations with identical wording are preserved, and each use of a shared type retains its documentation. Evidence wrapping keeps field instructions on the wrapper; entering its `content` and `evidence_anchor` properties does not repeat those instructions.
+
+Pass formatting options through `schema_description_kwargs` when building messages. `include_field_descriptions=False` hides property documentation completely; `type_description_prefix=None` hides root/type documentation; `choices_description_prefix=None` hides enum documentation. These options work at every nesting level. `choices_prefix=None` hides enum values independently of their documentation. The deprecated `include_type_descriptions=False` remains supported.
+
+This is a prompt summary, not a complete JSON Schema validator. Local references, inline objects, arrays, nullable unions, and enum compositions are supported. Enum unions combine choices and enum intersections retain their common choices. General structural unions display a representative non-null branch. Unresolved or recursive references, list-valued `type`, and multi-branch structural `allOf` raise `ValueError` instead of producing an incomplete or infinitely recursive description. Cardinality retains the existing convention: arrays use `0..*`; other fields use `0..1` if a default is present, otherwise `1`.
 
 ### Evaluation
 

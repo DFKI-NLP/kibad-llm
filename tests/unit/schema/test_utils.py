@@ -6,11 +6,11 @@ from pydantic import BaseModel
 import pytest
 
 from kibad_llm.config import PROJ_ROOT
+from kibad_llm.schema.description import build_schema_description
 from kibad_llm.schema.utils import (
     METADATA_SCHEMA_WITH_EVIDENCE,
     METADATA_SCHEMA_WITH_EVIDENCE_SHORTHAND,
     _schema_should_be_wrapped,
-    build_schema_description,
     wrap_terminals_with_metadata,
 )
 from tests.conftest import WRITE_FIXTURE_DATA
@@ -385,3 +385,7 @@ def test_wrap_terminals_with_metadata_custom_content_key_and_metadata_requiremen
         content_key="value",
         required_meta=("evidence_anchor", "confidence_score"),
     )
+
+
+def test_schema_builder_legacy_import() -> None:
+    from kibad_llm.schema.utils import build_schema_description
