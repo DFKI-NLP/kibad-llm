@@ -385,3 +385,7 @@ def test_wrap_terminals_with_metadata_custom_content_key_and_metadata_requiremen
         content_key="value",
         required_meta=("evidence_anchor", "confidence_score"),
     )
+
+
+def test_schema_builder_legacy_import() -> None:
+    from kibad_llm.schema.utils import build_schema_description
