@@ -42,9 +42,9 @@ from jsonschema.validators import validator_for
 from llama_index.core.base.llms.types import ChatResponse
 
 from kibad_llm.llms.base import LLM, MessageRole, SimpleChatMessage
+from kibad_llm.schema.description import build_schema_description
 from kibad_llm.schema.utils import (
     WRAPPED_CONTENT_KEY,
-    build_schema_description,
     wrap_terminals_with_metadata,
 )
 from kibad_llm.utils.dictionary import FieldDict
