@@ -235,6 +235,89 @@ class TransformationPotentialEnum(str, Enum):
     LEBENSRAUMUEBERGREIFENDER_WANDLUNGSPROZESS = "Lebensraumübergreifender Wandlungsprozess"
 
 
+class EinflussEnum(str, Enum):
+    JA = "ja"
+    NEG = "neg"
+    NEIN = "nein"
+    NEU = "neu"
+    POS = "pos"
+
+
+# Values of the "Themenkomplex" column in data/external/ecosystem_services/wald_devset_raw.csv.
+class ThemenkomplexEnum(str, Enum):
+    """Themenkomplexe, denen eine Ökosystemleistung (ÖSL) zugeordnet wird."""
+
+    KOHLENSTOFFKREISLAUF = "Kohlenstoffkreislauf"
+    KULTURELLE_LEISTUNGEN = "Kulturelle Leistungen"
+    STABILITAET_UND_RESILIENZ = "Stabilität und Resilienz"
+
+
+class BiodiversityFacetEnum(str, Enum):
+    ARTENVIELFALT = "Artenvielfalt"
+    ARTENZUSAMMENSETZUNG = "Artenzusammensetzung"
+    ARTIDENTITAET = "Artidentität"
+    FUNKTIONELLE_DIVERSITAET = "Funktionelle Diversität"
+    GENETISCHE_DIVERSITAET = "Genetische Diversität"
+    LANDSCHAFTSDIVERSITAET = "Landschaftsdiversität"
+    LANDSCHAFTSTYP = "Landschaftstyp"
+    STRUKTURELLE_DIVERSITAET = "Strukturelle Diversität"
+
+
+# Values of the "ESGroup" column in data/external/ecosystem_services/wald_devset_raw.csv: a coarser
+# grouping, made by the dataset itself, of the free-text "ÖSL" column into classifiable categories. Two
+# raw values were merged into an existing value: "Schädlingskontrolle?" -> "Schädlingskontrolle" and
+# "Ästhetischer Wert der Landschaft" -> "Ästhetischer Wert".
+class ESGroupEnum(str, Enum):
+
+    AESTHETISCHER_WERT = "Ästhetischer Wert"
+    ATMOSPHAERISCHE_ZUSAMMENSETZUNG = "Atmosphärische Zusammensetzung"
+    BIOLOGISCHE_SANIERUNG = "Biologische Sanierung"
+    BIOMASSEPRODUKTION = "Biomasseproduktion"
+    DUERRERESISTENZ = "Dürreresistenz"
+    ERHALT_DES_WASSERHAUSHALTS = "Erhalt des Wasserhaushalts"
+    ERHOLUNGSWERT = "Erholungswert"
+    EROSIONSSCHUTZ = "Erosionsschutz"
+    FEUCHTIGKEITSREGULIERUNG = "Feuchtigkeitsregulierung"
+    FEUERSCHUTZ = "Feuerschutz"
+    FILTRATIONSRATE_FUTTEREFFIZIENZ = "Filtrationsrate (Futtereffizienz)"
+    FREIZEITLICHE_NUTZUNG = "Freizeitliche Nutzung"
+    GESUNDHEIT = "Gesundheit"
+    HOCHWASSERSCHUTZ = "Hochwasserschutz"
+    KOHLENSTOFFSPEICHERUNG = "Kohlenstoffspeicherung"
+    KONZENTRATION_GELOESTER_STOFFE_PHOSPHAT_UND_STICKSTOFF = (
+        "Konzentration gelöster Stoffe (Phosphat und Stickstoff)"
+    )
+    KRANKHEITSKONTROLLE = "Krankheitskontrolle"
+    KULTURELLER_WERT = "Kultureller Wert"
+    NAEHRSTOFFGEHALT_IM_BODEN = "Nährstoffgehalt im Boden"
+    PHYSISCHES_WOHLBEFINDEN = "physisches Wohlbefinden"
+    PSYCHISCHES_WOHLBEFINDEN = "psychisches Wohlbefinden"
+    REGULIERUNG_DER_CHEMISCHEN_ZUSAMMENSETZUNG = "Regulierung der chemischen Zusammensetzung"
+    REGULIERUNG_DER_CHEMISCHEN_ZUSAMMENSETZUNG_DER_ATMOSPHAERE_UND_DER_OZEANE_2_2_6_1 = (
+        "Regulierung der chemischen Zusammensetzung der Atmosphäre und der Ozeane (2.2.6.1)"
+    )
+    REGULIERUNG_VON_EXTREMEREIGNISSEN = "Regulierung von Extremereignissen"
+    SCHADSTOFFRUECKHALT = "Schadstoffrückhalt"
+    SCHAEDLINGSKONTROLLE = "Schädlingskontrolle"
+    SCHAEDLINGSKONTROLLE_KRANKHEITSRESISTENZ = "Schädlingskontrolle, Krankheitsresistenz"
+    SCHUTZ_VOR_STURMGEFAHREN = "Schutz vor Sturmgefahren"
+    SEDIMENTSTABILISIERUNG = "Sedimentstabilisierung"
+    SELBSTREINIGUNG_UND_NAEHRSTOFFRETENTION = "Selbstreinigung und Nährstoffretention"
+    SOZIALE_INTERAKTION_INTEGRATION = "Soziale Interaktion (Integration)"
+    STABILITAET_UND_RESILIENZ = "Stabilität und Resilienz"
+    STOERUNGSRESISTENZ = "Störungsresistenz"
+    SULFID_KONZENTRATION = "Sulfid-Konzentration"
+    TEMPERATURREGULIERUNG = "Temperaturregulierung"
+    WASSERQUALITAET = "Wasserqualität"
+    WIRTSCHAFTLICHER_WERT = "Wirtschaftlicher Wert"
+    WISSENSKENNTNISS = "Wissenskenntniss"
+    WOHLBEFINDEN_SICHERHEITSGEFUEHL = "Wohlbefinden/Sicherheitsgefühl"
+    ZERSETZUNG = "Zersetzung"
+    ZERSETZUNGS_UND_FIXIERUNGSPROZESSE_UND_IHRE_AUSWIRKUNGEN_AUF_DIE_BODENQUALITAET_2_2_4_2 = (
+        "Zersetzungs- und Fixierungsprozesse und ihre Auswirkungen auf die Bodenqualität (2.2.4.2)"
+    )
+
+
 class EcosystemType(CompoundFeature):
     """Ökosystemtyp mit Kategorie, Name und Beschreibung."""
 
@@ -1381,4 +1464,108 @@ class EcosystemStudyFeaturesCompoundsSimple(BaseEcosystemStudyFeatures):
     )
 
 
-# ==========================================================================
+# Each instance corresponds to a single row of data/external/ecosystem_services/wald_devset_raw.csv.
+# The evaluation (see configs/experiment/evaluate/ecosystem_service.yaml) is restricted to Themenkomplex
+# (the grouping of the ÖSL), ÖSL (the studied variable), Biodiv_Facette (the biodiversity facet) and
+# Einfluss (the indicator variable). Arten is extracted, but ignored during evaluation
+# (`ignore_subfields`).
+class EcosystemServiceFieldsHabitat(CompoundFeature):
+    """Ein einzelner Zusammenhang zwischen Biodiversität und Ökosystemleistung für einen einzelnen,
+    vorab festgelegten Lebensraum, bestehend aus Themenkomplex, Ökosystemleistung (ÖSL),
+    Biodiv_Facette, Einfluss und Arten. Ein Text kann mehrere solcher Zusammenhänge beschreiben; jede
+    Instanz bildet genau einen davon ab.
+    """
+
+    # The fields below are based on the wald_devset_raw.csv file (ÖSL-VoteCount-Vollständig with
+    # Zotero item keys matched in). We use the column names as field names, analogous to
+    # OrganismBiodiversityTrend, so that no post-processing is needed. "Biodiv-Facette" and
+    # "Art(en)" are not valid Python identifiers, so those two columns are named "Biodiv_Facette"
+    # and "Arten" here and in the processed CSV (see
+    # src/kibad_llm/data_integration/align_ecosystem_service_csv.py).
+    # Further columns of the CSV are intentionally not part of the schema: "ESGroup" (the CSV's own
+    # grouping of the free-text "ÖSL" into 43 categories) and the CICES columns ("CICES-Bereich",
+    # "CICES-Gruppe", "CICES-Klasse", "CICES-Code", partly corrupted). "Themenkomplex" is a coarse
+    # grouping of "ÖSL" (in the forest reference it is fully determined by it), but since "ÖSL" is free
+    # text it cannot be derived and is extracted as its own field. "Lebensraum_Gruppiert" is only part of the base schema
+    # (EcosystemServiceFields), since the habitat is fixed by the data set here (e.g. "Wald", see
+    # configs/dataset/references/ecosystem_service_wald.yaml).
+    # ÖSL, Biodiv_Facette and Einfluss are single-valued and required per relationship (every row
+    # of the source data has exactly one value for each); multiple relationships in one text are
+    # represented as multiple instances, not by stacking values within a single instance.
+    Themenkomplex: ThemenkomplexEnum = Field(
+        ...,
+        description="Zu welchem der folgenden Themenkomplexe gehört die in der Studie betrachtete "
+        "Ökosystemleistung (ÖSL)?",
+    )
+    ÖSL: str = Field(
+        ...,
+        description="Welche Ökosystemleistung wird in der Studie betrachtet? Gib eine kurze, allgemeine deutsche "
+        "Bezeichnung (ein bis drei Wörter) an, nicht die konkrete Messgröße.",
+    )
+    Biodiv_Facette: BiodiversityFacetEnum = Field(
+        ...,
+        description="Welche dieser Biodiversitätsfacetten wird in der Studie betrachtet? Gemeint ist die "
+        "Facette auf der erklärenden Seite (Ursache, unabhängige Variable), deren Einfluss (Einfluss) auf "
+        "die Ökosystemleistung bzw. -funktion (ÖSL/ÖSF) in der Studie ausgewertet wird.",
+    )
+    Einfluss: EinflussEnum = Field(
+        ...,
+        description="Was ist der in der Studie gemessene Einfluss der Biodiversitätsfacette "
+        "(Biodiv_Facette) auf die Ökosystemleistung bzw. -funktion (ÖSL/ÖSF)? Die Richtung bezieht sich "
+        "auf die ÖSL/ÖSF (pos = die ÖSL/ÖSF nimmt mit höherer Ausprägung der Facette zu). pos, neg und neu "
+        "gelten nur für kontinuierliche oder ordinale Prädiktoren, ja und nein für kategoriale Prädiktoren.",
+    )
+    # The "Art(en)" column of the reference data is a comma-separated list of names as used in the
+    # study (mostly German tree names such as "Buche", "Fichte"), without scientific name or
+    # taxonomic group, so a plain list of strings instead of `Taxa`. The evaluation ignores this field.
+    Arten: list[str] = Field(
+        default_factory=list,
+        description="Welche Arten, Gattungen bzw. Artengruppen werden in der Studie untersucht? Gib die "
+        "Namen so an, wie sie im Text verwendet werden, auf Deutsch. "
+        "Falls der Text keinen deutschen Namen nennt, übersetze den Namen ins Deutsche; ist das nicht "
+        "möglich, verwende den wissenschaftlichen Namen. Leere Liste, wenn keine Arten genannt werden.",
+    )
+
+
+# Base schema for all habitats: like EcosystemServiceFieldsHabitat, but with the habitat as additional field.
+class EcosystemServiceFields(EcosystemServiceFieldsHabitat):
+    """Ein einzelner Zusammenhang zwischen Biodiversität und Ökosystemleistung, bestehend aus
+    Themenkomplex, Ökosystemleistung (ÖSL), Biodiv_Facette, Einfluss, Arten und Lebensraum_Gruppiert.
+    Pro betroffenem Lebensraum wird eine eigene Instanz erstellt.
+    """
+
+    # A reference row naming several habitats (e.g. "Wald, Agrar- und Offenland") has to be split
+    # into one row per habitat before evaluation (see split_columns of read_grouped_csv_records).
+    Lebensraum_Gruppiert: HabitatEnum = Field(
+        ...,
+        description="Um welchen der folgenden Lebensräume geht es in dem Text? Falls mehrere "
+        "Lebensräume betroffen sind, erstelle für jeden betroffenen Lebensraum eine eigene "
+        "Instanz dieses Zusammenhangs.",
+    )
+
+
+# Base schema for all habitats (with the habitat per relationship).
+class EcosystemStudyEcosystemServiceTrends(BaseEcosystemStudyFeatures):
+    """Angaben zu den im Text beschriebenen Zusammenhängen zwischen Biodiversität und
+    Ökosystemleistungen.
+    """
+
+    ecosystem_service_trends: list[EcosystemServiceFields] = Field(
+        default_factory=list,
+        alias="Zusammenhänge zwischen Biodiversität und Ökosystemleistungen",
+        description="Liste der im Text beschriebenen Zusammenhänge zwischen Biodiversität und "
+        "Ökosystemleistungen.",
+    )
+
+
+class EcosystemStudyEcosystemServiceTrendsHabitat(BaseEcosystemStudyFeatures):
+    """Angaben zu den im Text beschriebenen Zusammenhängen zwischen Biodiversität und
+    Ökosystemleistungen für einen einzelnen, vorab festgelegten Lebensraum.
+    """
+
+    ecosystem_service_trends: list[EcosystemServiceFieldsHabitat] = Field(
+        default_factory=list,
+        alias="Zusammenhänge zwischen Biodiversität und Ökosystemleistungen",
+        description="Liste der im Text beschriebenen Zusammenhänge zwischen Biodiversität und "
+        "Ökosystemleistungen.",
+    )
