@@ -27,7 +27,7 @@
           ]
         },
         "ÖSL": {
-          "description": "Welche Ökosystemleistung wird in der Studie betrachtet? Gib eine kurze, allgemeine deutsche Bezeichnung (ein bis drei Wörter) an, nicht die konkrete Messgröße, z.B. Biomasseproduktion, Zersetzung, Kohlenstoffspeicherung oder Dürreresistenz.",
+          "description": "Welche Ökosystemleistung wird in der Studie betrachtet? Gib eine kurze, allgemeine deutsche Bezeichnung (ein bis drei Wörter) an, nicht die konkrete Messgröße.",
           "title": "Ösl",
           "type": "string"
         },

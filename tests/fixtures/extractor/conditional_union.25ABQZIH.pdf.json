@@ -4,6 +4,10 @@
       "Norddeutsches Tiefland",
       "Alpenvorland"
     ],
+    "landuse": [
+      "Landwirtschaft"
+    ],
+    "climate": [],
     "location": [
       {
         "country": "Deutschland",
@@ -22,10 +26,6 @@
         "federal_state": "Bayern"
       }
     ],
-    "landuse": [
-      "Landwirtschaft"
-    ],
-    "climate": [],
     "habitat": [
       "Boden"
     ],

@@ -4,6 +4,11 @@
       "Alpenvorland",
       "Norddeutsches Tiefland"
     ],
+    "landuse": [
+      "Bau",
+      "Energieproduktion",
+      "Landwirtschaft"
+    ],
     "location": [
       {
         "country": "Deutschland",
@@ -34,11 +39,6 @@
         "country": "Deutschland",
         "federal_state": "Schleswig-Holstein"
       }
-    ],
-    "landuse": [
-      "Bau",
-      "Energieproduktion",
-      "Landwirtschaft"
     ],
     "habitat": [
       "Agrar- und Offenland",

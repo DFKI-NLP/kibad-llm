@@ -4,6 +4,10 @@
       "Norddeutsches Tiefland",
       "Alpenvorland"
     ],
+    "landuse": [
+      "Landwirtschaft"
+    ],
+    "climate": [],
     "location": [
       {
         "country": "Deutschland"
@@ -24,10 +28,6 @@
         "federal_state": "Brandenburg"
       }
     ],
-    "landuse": [
-      "Landwirtschaft"
-    ],
-    "climate": [],
     "habitat": [
       "Boden",
       "Agrar- und Offenland"

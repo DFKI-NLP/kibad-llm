@@ -1,5 +1,16 @@
 {
   "structured": {
+    "habitat": [
+      "Boden"
+    ],
+    "ecosystem_type": [
+      {
+        "category": "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
+      }
+    ],
+    "biodiversity_level": [
+      "Artenvielfalt"
+    ],
     "taxa": [
       {
         "species_group": "Amphibien und Reptilien"
@@ -9,17 +20,6 @@
       },
       {
         "species_group": "Vögel"
-      }
-    ],
-    "biodiversity_level": [
-      "Artenvielfalt"
-    ],
-    "habitat": [
-      "Boden"
-    ],
-    "ecosystem_type": [
-      {
-        "category": "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
       }
     ]
   },
