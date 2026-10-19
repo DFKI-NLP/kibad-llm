@@ -1,27 +1,8 @@
 {
   "structured": {
-    "landuse": [
-      "Bau",
-      "Energieproduktion",
-      "Landwirtschaft"
-    ],
-    "habitat": [
-      "Agrar- und Offenland",
-      "Boden"
-    ],
     "natural_region": [
       "Alpenvorland",
       "Norddeutsches Tiefland"
-    ],
-    "ecosystem_type": [
-      {
-        "category": "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes",
-        "description": "Peat soils (Moorböden) dominate the North German lowland and the Alpine foreland, are predominantly cultivated (≈70 %) and are responsible for about 7 % of Germany’s greenhouse gas emissions."
-      },
-      {
-        "category": "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes",
-        "term": "Moore der subalpinen bis alpinen Stufe"
-      }
     ],
     "location": [
       {
@@ -52,6 +33,25 @@
       {
         "country": "Deutschland",
         "federal_state": "Schleswig-Holstein"
+      }
+    ],
+    "landuse": [
+      "Bau",
+      "Energieproduktion",
+      "Landwirtschaft"
+    ],
+    "habitat": [
+      "Agrar- und Offenland",
+      "Boden"
+    ],
+    "ecosystem_type": [
+      {
+        "category": "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes",
+        "description": "Peat soils (Moorböden) dominate the North German lowland and the Alpine foreland, are predominantly cultivated (≈70 %) and are responsible for about 7 % of Germany’s greenhouse gas emissions."
+      },
+      {
+        "category": "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes",
+        "term": "Moore der subalpinen bis alpinen Stufe"
       }
     ]
   },

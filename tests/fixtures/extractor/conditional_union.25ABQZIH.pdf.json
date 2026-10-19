@@ -1,19 +1,8 @@
 {
   "structured": {
-    "landuse": [
-      "Landwirtschaft"
-    ],
-    "habitat": [
-      "Boden"
-    ],
     "natural_region": [
       "Norddeutsches Tiefland",
       "Alpenvorland"
-    ],
-    "ecosystem_type": [
-      {
-        "category": "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
-      }
     ],
     "location": [
       {
@@ -33,7 +22,18 @@
         "federal_state": "Bayern"
       }
     ],
-    "climate": []
+    "landuse": [
+      "Landwirtschaft"
+    ],
+    "climate": [],
+    "habitat": [
+      "Boden"
+    ],
+    "ecosystem_type": [
+      {
+        "category": "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
+      }
+    ]
   },
   "structured_with_metadata_list": [
     {

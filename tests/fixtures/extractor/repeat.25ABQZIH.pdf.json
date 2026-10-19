@@ -1,17 +1,5 @@
 {
   "structured": {
-    "habitat": [
-      "Boden",
-      "Agrar- und Offenland"
-    ],
-    "biodiversity_level": [
-      "Zusammensetzung der Artengemeinschaft"
-    ],
-    "ecosystem_type": [
-      {
-        "category": "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
-      }
-    ],
     "taxa": [
       {
         "species_group": "Insekten"
@@ -21,6 +9,18 @@
       },
       {
         "species_group": "Vögel"
+      }
+    ],
+    "biodiversity_level": [
+      "Zusammensetzung der Artengemeinschaft"
+    ],
+    "habitat": [
+      "Boden",
+      "Agrar- und Offenland"
+    ],
+    "ecosystem_type": [
+      {
+        "category": "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
       }
     ]
   },
