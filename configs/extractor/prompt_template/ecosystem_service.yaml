@@ -55,43 +55,45 @@ system_message: |
   Dieser Komplex beinhaltet alle Leistungen und Funktionen, die relevant sind, damit der Kohlenstoffkreislauf des
   Ökosystems funktioniert, das Ökosystem langfristig Kohlenstoff speichern kann oder Produkte generiert, die zur
   Kohlenstoffspeicherung oder dem Ersatz von fossilen Energieträgern beitragen.
-  Beispiele: Zersetzung; Biomasseproduktion; Kohlenstoffspeicherung, -verfügbarkeit und -umsatz.
+  Zugehörige ÖSL/ÖSF: Zersetzung; Biomasseproduktion; Kohlenstoffspeicherung; Kohlenstoffverfügbarkeit;
+  Kohlenstoffumsatz.
 
   Stabilität und Resilienz (Stabilität & Resilienz im Klimawandel):
   Bei diesem Komplex geht es darum, wie empfindlich Ökosysteme auf den Klimawandel und mit dem Klimawandel
   verbundene Extremereignisse und Störungen reagieren und wie die Leistungen von Ökosystemen in Bezug auf den
   Strahlungs-, Energie- und Wasserhaushalt dazu beitragen, die Auswirkungen des Klimawandels zu mildern oder dem
   Klimawandel entgegenzuwirken.
-  Beispiele: Dürre-/Trockenresistenz, -resilienz und -erholung; Wachstum bei Dürre; Hitzeresistenz/-resilienz;
-  Kälteresistenz/-resilienz; Überflutungs-/Staunässeresistenz und -resilienz; Sturmresistenz/-resilienz;
-  Störungsresistenz/-resilienz; Schädlingskontrolle, Schädlings-/Pathogen-/Krankheits-/Fraßresistenz und -resilienz;
-  Reduktion von Mortalität; Mikroklimaregulation; Temperaturpufferung / Reduktion von Hitze;
-  Wasserrückhaltefähigkeit; Wassernutzung; Grundwasserbildung; Versickerungsschutz; Erosionsschutz;
-  Klimawandelresistenz/-resilienz; Klimaschutz.
+  Zugehörige ÖSL/ÖSF: Dürreresistenz; Dürreresilienz; Dürreerholung; Trockenresistenz; Trockenresilienz;
+  Trockenerholung; Wachstum bei Dürre; Hitzeresistenz; Hitzeresilienz; Kälteresistenz; Kälteresilienz;
+  Überflutungsresistenz; Überflutungsresilienz; Staunässeresistenz; Staunässeresilienz; Sturmresistenz;
+  Sturmresilienz; Störungsresistenz; Störungsresilienz; Schädlingskontrolle; Schädlingsresistenz;
+  Schädlingsresilienz; Pathogenresistenz; Pathogenresilienz; Krankheitsresistenz; Krankheitsresilienz;
+  Fraßresistenz; Fraßresilienz; Reduktion von Mortalität; Mikroklimaregulation; Temperaturpufferung / Reduktion
+  von Hitze; Wasserrückhaltefähigkeit; Wassernutzung; Grundwasserbildung; Versickerungsschutz; Erosionsschutz;
+  Klimawandelresistenz; Klimawandelresilienz; Klimaschutz.
 
   Kulturelle Leistungen:
   Hier geht es um die kulturelle und freizeitliche Nutzung von Ökosystemen, einschließlich Erholung, Naturerleben,
   ästhetischer, gesundheitlicher, bildungsbezogener oder spiritueller Werte.
-  Beispiele: Ästhetischer Wert der Landschaft; Ortsbezogene Bedeutung; Erholungsleistungen; Soziale Interaktion /
-  Integration; Freizeitliche Nutzung; Wohlbefinden / Sicherheitsgefühl; Beitrag zu einer lebenswerten Stadt;
-  Gesundheit; Psychisches Wohlbefinden; Physisches Wohlbefinden; Kultureller Wert der Pflanzen; Wissen / Kenntnis;
-  Landschaftsbild, Natur- und Kulturerbe.
+  Zugehörige ÖSL/ÖSF: Ästhetischer Wert der Landschaft; Ortsbezogene Bedeutung; Erholungsleistungen; Soziale
+  Interaktion / Integration; Freizeitliche Nutzung; Wohlbefinden / Sicherheitsgefühl; Beitrag zu einer
+  lebenswerten Stadt; Gesundheit; Psychisches Wohlbefinden; Physisches Wohlbefinden; Kultureller Wert der
+  Pflanzen; Wissen / Kenntnis; Landschaftsbild, Natur- und Kulturerbe.
 
-  Die aufgezählten Beispiele sind nicht vollständig. Sie sind typische Beispiele und keine feste Klassifikation.
-  Identifiziere die in der Studie tatsächlich untersuchte ÖSL/ÖSF und prüfe anschließend anhand ihrer inhaltlichen
-  Bedeutung im Studienkontext, ob sie die Definition eines der Themenkomplexe erfüllt. Weder die bloße
-  Übereinstimmung mit einem Beispielbegriff noch das Auftreten eines bestimmten Schlagworts reicht für die
-  Zuordnung aus. Auch nicht aufgeführte ÖSL/ÖSF sind einzuschließen, wenn sie inhaltlich eindeutig unter die
-  Definition eines Themenkomplexes fallen.
+  Die Liste der zugehörigen ÖSL/ÖSF ist abschließend: Im Feld 'ÖSL' sind nur diese Werte zulässig. Identifiziere
+  die in der Studie tatsächlich untersuchte ÖSL/ÖSF und prüfe anhand ihrer inhaltlichen Bedeutung im
+  Studienkontext, ob sie die Definition eines der Themenkomplexe erfüllt. Das bloße Auftreten eines Schlagworts
+  reicht für die Zuordnung nicht aus. Ordne die ÖSL/ÖSF dann dem inhaltlich passendsten zulässigen Wert zu.
+  Fällt sie unter keinen Themenkomplex, lasse die Beziehung weg. Das Feld 'Themenkomplex' muss der Themenkomplex
+  sein, zu dem der gewählte ÖSL-Wert gehört.
 
   ## ÖSL/ÖSF (Feld 'ÖSL')
 
-  Gib im Feld 'ÖSL' eine kurze, allgemeine deutsche Bezeichnung (ein bis drei Wörter) der Ökosystemleistung bzw.
-  -funktion an, nicht die konkrete Messgröße. Verwende nach Möglichkeit wörtlich einen der Begriffe aus den Beispielen
-  der Themenkomplexe (z.B. Biomasseproduktion, Zersetzung, Kohlenstoffspeicherung, Dürreresistenz, Dürreerholung,
-  Mikroklimaregulation). Übernimm keine Einheiten, Methoden, Arten oder englischen Begriffe aus dem Text, sondern
-  übersetze und verallgemeinere (z.B. 'aboveground woody biomass', 'Radiale Wachstumsrate' -> Biomasseproduktion;
-  'Masseverlust von Totholz' -> Zersetzung; 'Bodenkohlenstoff' -> Kohlenstoffspeicherung).
+  Wähle im Feld 'ÖSL' genau einen der zulässigen Werte (siehe Themenkomplexe), der die untersuchte
+  Ökosystemleistung bzw. -funktion am besten beschreibt, nicht die konkrete Messgröße. Ordne Messgrößen, Methoden
+  und englische Begriffe aus dem Text dem passenden Wert zu (z.B. 'aboveground woody biomass', 'Radiale
+  Wachstumsrate' -> Biomasseproduktion; 'Masseverlust von Totholz' -> Zersetzung; 'Bodenkohlenstoff' ->
+  Kohlenstoffspeicherung).
 
   ## Biodiversitätsfacetten
 

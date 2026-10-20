@@ -252,6 +252,72 @@ class ThemenkomplexEnum(str, Enum):
     STABILITAET_UND_RESILIENZ = "Stabilität und Resilienz"
 
 
+# Example ÖSL/ÖSF of the three Themenkomplexe as listed in the "Themenkomplexe" section of
+# configs/extractor/prompt_template/ecosystem_service.yaml. Abbreviated compounds are expanded (e.g.
+# "Dürre-/Trockenresistenz, -resilienz und -erholung" -> "Dürreresistenz", ..., "Trockenerholung"),
+# while items joined by " / " (e.g. "Wissen / Kenntnis") denote a single ÖSL and are kept as one value.
+class ÖSLEnum(str, Enum):
+    """Ökosystemleistungen bzw. -funktionen (ÖSL/ÖSF) der Themenkomplexe."""
+
+    AESTHETISCHER_WERT_DER_LANDSCHAFT = "Ästhetischer Wert der Landschaft"
+    BEITRAG_ZU_EINER_LEBENSWERTEN_STADT = "Beitrag zu einer lebenswerten Stadt"
+    BIOMASSEPRODUKTION = "Biomasseproduktion"
+    DUERREERHOLUNG = "Dürreerholung"
+    DUERRERESILIENZ = "Dürreresilienz"
+    DUERRERESISTENZ = "Dürreresistenz"
+    ERHOLUNGSLEISTUNGEN = "Erholungsleistungen"
+    EROSIONSSCHUTZ = "Erosionsschutz"
+    FRASSRESILIENZ = "Fraßresilienz"
+    FRASSRESISTENZ = "Fraßresistenz"
+    FREIZEITLICHE_NUTZUNG = "Freizeitliche Nutzung"
+    GESUNDHEIT = "Gesundheit"
+    GRUNDWASSERBILDUNG = "Grundwasserbildung"
+    HITZERESILIENZ = "Hitzeresilienz"
+    HITZERESISTENZ = "Hitzeresistenz"
+    KAELTERESILIENZ = "Kälteresilienz"
+    KAELTERESISTENZ = "Kälteresistenz"
+    KLIMASCHUTZ = "Klimaschutz"
+    KLIMAWANDELRESILIENZ = "Klimawandelresilienz"
+    KLIMAWANDELRESISTENZ = "Klimawandelresistenz"
+    KOHLENSTOFFSPEICHERUNG = "Kohlenstoffspeicherung"
+    KOHLENSTOFFUMSATZ = "Kohlenstoffumsatz"
+    KOHLENSTOFFVERFUEGBARKEIT = "Kohlenstoffverfügbarkeit"
+    KRANKHEITSRESILIENZ = "Krankheitsresilienz"
+    KRANKHEITSRESISTENZ = "Krankheitsresistenz"
+    KULTURELLER_WERT_DER_PFLANZEN = "Kultureller Wert der Pflanzen"
+    LANDSCHAFTSBILD_NATUR_UND_KULTURERBE = "Landschaftsbild, Natur- und Kulturerbe"
+    MIKROKLIMAREGULATION = "Mikroklimaregulation"
+    ORTSBEZOGENE_BEDEUTUNG = "Ortsbezogene Bedeutung"
+    PATHOGENRESILIENZ = "Pathogenresilienz"
+    PATHOGENRESISTENZ = "Pathogenresistenz"
+    PHYSISCHES_WOHLBEFINDEN = "Physisches Wohlbefinden"
+    PSYCHISCHES_WOHLBEFINDEN = "Psychisches Wohlbefinden"
+    REDUKTION_VON_MORTALITAET = "Reduktion von Mortalität"
+    SCHAEDLINGSKONTROLLE = "Schädlingskontrolle"
+    SCHAEDLINGSRESILIENZ = "Schädlingsresilienz"
+    SCHAEDLINGSRESISTENZ = "Schädlingsresistenz"
+    SOZIALE_INTERAKTION_INTEGRATION = "Soziale Interaktion / Integration"
+    STAUNAESSERESILIENZ = "Staunässeresilienz"
+    STAUNAESSERESISTENZ = "Staunässeresistenz"
+    STOERUNGSRESILIENZ = "Störungsresilienz"
+    STOERUNGSRESISTENZ = "Störungsresistenz"
+    STURMRESILIENZ = "Sturmresilienz"
+    STURMRESISTENZ = "Sturmresistenz"
+    TEMPERATURPUFFERUNG_REDUKTION_VON_HITZE = "Temperaturpufferung / Reduktion von Hitze"
+    TROCKENERHOLUNG = "Trockenerholung"
+    TROCKENRESILIENZ = "Trockenresilienz"
+    TROCKENRESISTENZ = "Trockenresistenz"
+    UEBERFLUTUNGSRESILIENZ = "Überflutungsresilienz"
+    UEBERFLUTUNGSRESISTENZ = "Überflutungsresistenz"
+    VERSICKERUNGSSCHUTZ = "Versickerungsschutz"
+    WACHSTUM_BEI_DUERRE = "Wachstum bei Dürre"
+    WASSERNUTZUNG = "Wassernutzung"
+    WASSERRUECKHALTEFAEHIGKEIT = "Wasserrückhaltefähigkeit"
+    WISSEN_KENNTNIS = "Wissen / Kenntnis"
+    WOHLBEFINDEN_SICHERHEITSGEFUEHL = "Wohlbefinden / Sicherheitsgefühl"
+    ZERSETZUNG = "Zersetzung"
+
+
 class BiodiversityFacetEnum(str, Enum):
     ARTENVIELFALT = "Artenvielfalt"
     ARTENZUSAMMENSETZUNG = "Artenzusammensetzung"
@@ -1485,8 +1551,9 @@ class EcosystemServiceFieldsHabitat(CompoundFeature):
     # Further columns of the CSV are intentionally not part of the schema: "ESGroup" (the CSV's own
     # grouping of the free-text "ÖSL" into 43 categories) and the CICES columns ("CICES-Bereich",
     # "CICES-Gruppe", "CICES-Klasse", "CICES-Code", partly corrupted). "Themenkomplex" is a coarse
-    # grouping of "ÖSL" (in the forest reference it is fully determined by it), but since "ÖSL" is free
-    # text it cannot be derived and is extracted as its own field. "Lebensraum_Gruppiert" is only part of the base schema
+    # grouping of "ÖSL" (in the forest reference it is fully determined by it), but it is still extracted
+    # as its own field. "ÖSL" is free text in the reference data; here it is restricted to the examples
+    # from the prompt (ÖSLEnum). "Lebensraum_Gruppiert" is only part of the base schema
     # (EcosystemServiceFields), since the habitat is fixed by the data set here (e.g. "Wald", see
     # configs/dataset/references/ecosystem_service_wald.yaml).
     # ÖSL, Biodiv_Facette and Einfluss are single-valued and required per relationship (every row
@@ -1497,10 +1564,10 @@ class EcosystemServiceFieldsHabitat(CompoundFeature):
         description="Zu welchem der folgenden Themenkomplexe gehört die in der Studie betrachtete "
         "Ökosystemleistung (ÖSL)?",
     )
-    ÖSL: str = Field(
+    ÖSL: ÖSLEnum = Field(
         ...,
-        description="Welche Ökosystemleistung wird in der Studie betrachtet? Gib eine kurze, allgemeine deutsche "
-        "Bezeichnung (ein bis drei Wörter) an, nicht die konkrete Messgröße.",
+        description="Welche der folgenden Ökosystemleistungen wird in der Studie betrachtet? Gemeint ist die "
+        "allgemeine Ökosystemleistung bzw. -funktion, nicht die konkrete Messgröße.",
     )
     Biodiv_Facette: BiodiversityFacetEnum = Field(
         ...,

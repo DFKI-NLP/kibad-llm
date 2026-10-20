@@ -40,7 +40,7 @@
           "type": "object",
           "properties": {
             "content": {
-              "type": "string"
+              "$ref": "#/$defs/_SLEnum"
             },
             "evidence_anchor": {
               "type": "string",
@@ -52,8 +52,7 @@
             "evidence_anchor"
           ],
           "additionalProperties": false,
-          "title": "Ösl",
-          "description": "Welche Ökosystemleistung wird in der Studie betrachtet? Gib eine kurze, allgemeine deutsche Bezeichnung (ein bis drei Wörter) an, nicht die konkrete Messgröße."
+          "description": "Welche der folgenden Ökosystemleistungen wird in der Studie betrachtet? Gemeint ist die allgemeine Ökosystemleistung bzw. -funktion, nicht die konkrete Messgröße."
         },
         "Biodiv_Facette": {
           "type": "object",
@@ -173,6 +172,70 @@
         "Stabilität und Resilienz"
       ],
       "title": "ThemenkomplexEnum",
+      "type": "string"
+    },
+    "_SLEnum": {
+      "description": "Ökosystemleistungen bzw. -funktionen (ÖSL/ÖSF) der Themenkomplexe.",
+      "enum": [
+        "Ästhetischer Wert der Landschaft",
+        "Beitrag zu einer lebenswerten Stadt",
+        "Biomasseproduktion",
+        "Dürreerholung",
+        "Dürreresilienz",
+        "Dürreresistenz",
+        "Erholungsleistungen",
+        "Erosionsschutz",
+        "Fraßresilienz",
+        "Fraßresistenz",
+        "Freizeitliche Nutzung",
+        "Gesundheit",
+        "Grundwasserbildung",
+        "Hitzeresilienz",
+        "Hitzeresistenz",
+        "Kälteresilienz",
+        "Kälteresistenz",
+        "Klimaschutz",
+        "Klimawandelresilienz",
+        "Klimawandelresistenz",
+        "Kohlenstoffspeicherung",
+        "Kohlenstoffumsatz",
+        "Kohlenstoffverfügbarkeit",
+        "Krankheitsresilienz",
+        "Krankheitsresistenz",
+        "Kultureller Wert der Pflanzen",
+        "Landschaftsbild, Natur- und Kulturerbe",
+        "Mikroklimaregulation",
+        "Ortsbezogene Bedeutung",
+        "Pathogenresilienz",
+        "Pathogenresistenz",
+        "Physisches Wohlbefinden",
+        "Psychisches Wohlbefinden",
+        "Reduktion von Mortalität",
+        "Schädlingskontrolle",
+        "Schädlingsresilienz",
+        "Schädlingsresistenz",
+        "Soziale Interaktion / Integration",
+        "Staunässeresilienz",
+        "Staunässeresistenz",
+        "Störungsresilienz",
+        "Störungsresistenz",
+        "Sturmresilienz",
+        "Sturmresistenz",
+        "Temperaturpufferung / Reduktion von Hitze",
+        "Trockenerholung",
+        "Trockenresilienz",
+        "Trockenresistenz",
+        "Überflutungsresilienz",
+        "Überflutungsresistenz",
+        "Versickerungsschutz",
+        "Wachstum bei Dürre",
+        "Wassernutzung",
+        "Wasserrückhaltefähigkeit",
+        "Wissen / Kenntnis",
+        "Wohlbefinden / Sicherheitsgefühl",
+        "Zersetzung"
+      ],
+      "title": "ÖSLEnum",
       "type": "string"
     }
   },
