@@ -1,0 +1,20 @@
+_target_: kibad_llm.dataset.csv.read_grouped_csv_records
+output_key: ecosystem_service_trends
+# wald_devset_raw.csv has a "Key" column with Zotero item keys matched in, compatible with how
+# predictions are keyed (see configs/dataset/predictions/extraction_result.yaml). Forest dev set:
+# all papers are about the habitat Wald by choice.
+# Created from data/external/ecosystem_services/wald_devset_raw.csv with
+#   uv run -m kibad_llm.data_integration.align_ecosystem_service_csv
+file: "${paths.root_dir}/data/interim/ecosystem_services/wald_devset_processed.csv"
+pdf_id_column: "Key"
+# column names match `EcosystemServiceFieldsHabitat` field names (see src/kibad_llm/schema/types.py) so
+# that no post-processing/renaming is needed, analogous to `OrganismBiodiversityTrend`.
+columns:
+  - Themenkomplex
+  - ÖSL
+  - Biodiv_Facette
+  - Einfluss
+  - Arten
+# Further columns of the CSV are not read, as they are not part of the schema: "ESGroup"
+# (grouped version of "ÖSL"), the CICES columns, and "Lebensraum_Gruppiert" (the file is already restricted to
+# papers that contain the habitat "Wald", see above).
