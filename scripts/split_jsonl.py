@@ -11,8 +11,8 @@ Usage:
 """
 import argparse
 import json
-import sys
 from pathlib import Path
+import sys
 
 SPLITS = ("train", "dev", "test")
 
@@ -24,12 +24,18 @@ def list_pdfs(folder: Path) -> set[str]:
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     ap.add_argument("jsonl", type=Path, help="input JSONL file")
-    ap.add_argument("--pdf-root", type=Path, help="folder containing train/, dev/, test/ subfolders")
+    ap.add_argument(
+        "--pdf-root", type=Path, help="folder containing train/, dev/, test/ subfolders"
+    )
     for s in SPLITS:
         ap.add_argument(f"--{s}", type=Path, help=f"{s} PDF folder (overrides --pdf-root)")
-    ap.add_argument("--out-dir", type=Path, default=Path("."), help="where to write train/dev/test.jsonl")
+    ap.add_argument(
+        "--out-dir", type=Path, default=Path("."), help="where to write train/dev/test.jsonl"
+    )
     ap.add_argument("--key", default="zotitem_ptr_id", help="JSON key holding the file id")
     args = ap.parse_args()
 
@@ -84,7 +90,9 @@ def main() -> None:
     if missing:
         print(f"\n{len(missing)} PDF(s) not found in any split, e.g.: {missing[:5]}")
     if ambiguous:
-        print(f"\n{len(ambiguous)} PDF(s) found in more than one split (skipped), e.g.: {ambiguous[:5]}")
+        print(
+            f"\n{len(ambiguous)} PDF(s) found in more than one split (skipped), e.g.: {ambiguous[:5]}"
+        )
     if bad:
         print(f"\n{len(bad)} malformed line(s) or missing key, e.g.: {bad[:5]}")
 

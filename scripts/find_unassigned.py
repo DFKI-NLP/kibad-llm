@@ -11,8 +11,8 @@ Usage:
     python find_unassigned.py --dry-run            # only list what would be copied
 """
 import argparse
-import shutil
 from pathlib import Path
+import shutil
 
 SPLITS = ("train", "dev", "test", "unlabeled")
 
@@ -22,9 +22,18 @@ def pdf_names(folder: Path) -> set[str]:
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--base", type=Path, default=Path("."), help="folder containing the main folder and splits/")
-    ap.add_argument("--main", default="zotero_literaturdatenbank", help="name of the main PDF folder")
+    ap = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    ap.add_argument(
+        "--base",
+        type=Path,
+        default=Path("."),
+        help="folder containing the main folder and splits/",
+    )
+    ap.add_argument(
+        "--main", default="zotero_literaturdatenbank", help="name of the main PDF folder"
+    )
     ap.add_argument("--splits", default="splits", help="name of the splits folder")
     ap.add_argument("--dry-run", action="store_true", help="only report, don't copy")
     args = ap.parse_args()
@@ -52,7 +61,9 @@ def main() -> None:
     # Sanity check: files in splits that aren't in the main folder
     orphans = assigned - set(all_pdfs)
     if orphans:
-        print(f"Note: {len(orphans)} PDF(s) in splits are missing from {args.main}, e.g. {sorted(orphans)[:5]}")
+        print(
+            f"Note: {len(orphans)} PDF(s) in splits are missing from {args.main}, e.g. {sorted(orphans)[:5]}"
+        )
 
     if not new:
         return
@@ -71,7 +82,10 @@ def main() -> None:
             continue
         shutil.copy2(main_dir / n, dst)
         copied += 1
-    print(f"\nCopied {copied} file(s) to {target}" + (f" ({skipped} already there)" if skipped else ""))
+    print(
+        f"\nCopied {copied} file(s) to {target}"
+        + (f" ({skipped} already there)" if skipped else "")
+    )
 
 
 if __name__ == "__main__":
