@@ -3,6 +3,7 @@ import copy
 import pytest
 
 from kibad_llm.extractors.base import (
+    _find_anchor_match_spans,
     check_utf8_encodable,
     strip_metadata,
 )
@@ -92,3 +93,45 @@ def test_check_utf8_encodable_raises_for_lone_surrogate_nested_in_dict_and_list(
         "'utf-8' codec can't encode character '\\udd7a' in position 4: surrogates "
         "not allowed (string: 'Wild\\udd7aschwein')"
     )
+
+
+TEXT = (
+    "Results\n\nIn mixed stands, _Fagus sylvatica_ showed higher above-ground productivity.\n"
+    "Several unrelated sentences follow here. Decomposition was \u201cfaster\u201d in pure stands."
+)
+
+
+@pytest.mark.parametrize(
+    "anchor, expected",
+    [
+        # verbatim, wrapping quotes, and different whitespace
+        ("higher above-ground productivity", "higher above-ground productivity"),
+        ('"higher above-ground\n productivity"', "higher above-ground productivity"),
+        # non-breaking hyphen (U+2011) and soft hyphen as emitted by LLMs
+        ("higher above\u2011ground produc\u00adtivity", "higher above-ground productivity"),
+        # markdown emphasis in the text, but not in the anchor
+        ("stands, Fagus sylvatica showed", "stands, _Fagus sylvatica_ showed"),
+        # straight quotes in the anchor, typographic quotes in the text
+        ('was "faster" in', "was \u201cfaster\u201d in"),
+        # differing case
+        ("in Mixed Stands", "In mixed stands"),
+        # ellipsis stitching two passages
+        (
+            "higher above-ground productivity \u2026 Decomposition was",
+            "higher above-ground productivity.\nSeveral unrelated sentences follow here. Decomposition was",
+        ),
+    ],
+)
+def test_find_anchor_match_spans_matches_llm_variants(anchor, expected) -> None:
+    spans = _find_anchor_match_spans(TEXT, anchor)
+    assert [TEXT[start:end] for start, end in spans] == [expected]
+
+
+def test_find_anchor_match_spans_prefers_exact_over_lenient_matches() -> None:
+    text = "Mixed stands. mixed stands."
+    assert _find_anchor_match_spans(text, "mixed stands") == [(14, 26)]
+
+
+@pytest.mark.parametrize("anchor", ["", "  ", "\u2026", "lower productivity", "**"])
+def test_find_anchor_match_spans_without_match(anchor) -> None:
+    assert _find_anchor_match_spans(TEXT, anchor) == []

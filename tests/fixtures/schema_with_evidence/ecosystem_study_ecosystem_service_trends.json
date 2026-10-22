@@ -1,41 +1,38 @@
 {
   "$defs": {
-    "BiodiversityFacetEnum": {
+    "CategoricalBiodiversityFacetEnum": {
+      "description": "Facetten, die als Kategorien (Identität bzw. Zusammensetzung) verglichen werden.",
       "enum": [
-        "Artenvielfalt",
         "Artenzusammensetzung",
         "Artidentität",
-        "Funktionelle Diversität",
-        "Genetische Diversität",
-        "Landschaftsdiversität",
-        "Landschaftstyp",
-        "Strukturelle Diversität"
+        "Landschaftstyp"
       ],
-      "title": "BiodiversityFacetEnum",
+      "title": "CategoricalBiodiversityFacetEnum",
       "type": "string"
     },
-    "EcosystemServiceFields": {
+    "CategoricalEinflussEnum": {
+      "description": "ja = die Facette hat einen Einfluss auf die ÖSL/ÖSF (unabhängig von dessen Richtung), nein = kein\nEinfluss bzw. kein nachweisbarer Unterschied.",
+      "enum": [
+        "ja",
+        "nein"
+      ],
+      "title": "CategoricalEinflussEnum",
+      "type": "string"
+    },
+    "DirectionalEinflussEnum": {
+      "description": "pos = die ÖSL/ÖSF nimmt mit höherer Ausprägung der Facette zu, neg = sie nimmt ab, neu = kein\nEinfluss bzw. kein nachweisbarer Zusammenhang.",
+      "enum": [
+        "neg",
+        "neu",
+        "pos"
+      ],
+      "title": "DirectionalEinflussEnum",
+      "type": "string"
+    },
+    "EcosystemServiceFieldsCategorical": {
       "additionalProperties": false,
-      "description": "Ein einzelner Zusammenhang zwischen Biodiversität und Ökosystemleistung, bestehend aus\nThemenkomplex, Ökosystemleistung (ÖSL), Biodiv_Facette, Einfluss, Arten und Lebensraum_Gruppiert.\nPro betroffenem Lebensraum wird eine eigene Instanz erstellt.",
+      "description": "Zusammenhang mit einer kategorialen Biodiversitätsfacette (verglichen werden einzelne Arten,\nArtenmischungen bzw. -anteile oder Landschaftstypen): Einfluss ist nur ja oder nein. Pro\nbetroffenem Lebensraum wird eine eigene Instanz erstellt.",
       "properties": {
-        "Themenkomplex": {
-          "type": "object",
-          "properties": {
-            "content": {
-              "$ref": "#/$defs/ThemenkomplexEnum"
-            },
-            "evidence_anchor": {
-              "type": "string",
-              "description": "Verbatim excerpt from the source text supporting the extracted content."
-            }
-          },
-          "required": [
-            "content",
-            "evidence_anchor"
-          ],
-          "additionalProperties": false,
-          "description": "Zu welchem der folgenden Themenkomplexe gehört die in der Studie betrachtete Ökosystemleistung (ÖSL)?"
-        },
         "ÖSL": {
           "type": "object",
           "properties": {
@@ -54,11 +51,29 @@
           "additionalProperties": false,
           "description": "Welche der folgenden Ökosystemleistungen wird in der Studie betrachtet? Gemeint ist die allgemeine Ökosystemleistung bzw. -funktion, nicht die konkrete Messgröße."
         },
+        "Themenkomplex": {
+          "type": "object",
+          "properties": {
+            "content": {
+              "$ref": "#/$defs/ThemenkomplexEnum"
+            },
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
+          ],
+          "additionalProperties": false,
+          "description": "Zu welchem Themenkomplex gehört die gewählte Ökosystemleistung (ÖSL)?"
+        },
         "Biodiv_Facette": {
           "type": "object",
           "properties": {
             "content": {
-              "$ref": "#/$defs/BiodiversityFacetEnum"
+              "$ref": "#/$defs/CategoricalBiodiversityFacetEnum"
             },
             "evidence_anchor": {
               "type": "string",
@@ -76,7 +91,7 @@
           "type": "object",
           "properties": {
             "content": {
-              "$ref": "#/$defs/EinflussEnum"
+              "$ref": "#/$defs/CategoricalEinflussEnum"
             },
             "evidence_anchor": {
               "type": "string",
@@ -88,7 +103,7 @@
             "evidence_anchor"
           ],
           "additionalProperties": false,
-          "description": "Was ist der in der Studie gemessene Einfluss der Biodiversitätsfacette (Biodiv_Facette) auf die Ökosystemleistung bzw. -funktion (ÖSL/ÖSF)? Die Richtung bezieht sich auf die ÖSL/ÖSF (pos = die ÖSL/ÖSF nimmt mit höherer Ausprägung der Facette zu). pos, neg und neu gelten nur für kontinuierliche oder ordinale Prädiktoren, ja und nein für kategoriale Prädiktoren."
+          "description": "Was ist der in der Studie gemessene Einfluss der Biodiversitätsfacette (Biodiv_Facette) auf die Ökosystemleistung bzw. -funktion (ÖSL/ÖSF)? Die Richtung bezieht sich auf die ÖSL/ÖSF."
         },
         "Arten": {
           "description": "Welche Arten, Gattungen bzw. Artengruppen werden in der Studie untersucht? Gib die Namen so an, wie sie im Text verwendet werden, auf Deutsch. Falls der Text keinen deutschen Namen nennt, übersetze den Namen ins Deutsche; ist das nicht möglich, verwende den wissenschaftlichen Namen. Leere Liste, wenn keine Arten genannt werden.",
@@ -132,13 +147,267 @@
         }
       },
       "required": [
-        "Themenkomplex",
         "ÖSL",
+        "Themenkomplex",
         "Biodiv_Facette",
         "Einfluss",
         "Lebensraum_Gruppiert"
       ],
-      "title": "EcosystemServiceFields",
+      "title": "EcosystemServiceFieldsCategorical",
+      "type": "object"
+    },
+    "EcosystemServiceFieldsGradient": {
+      "additionalProperties": false,
+      "description": "Zusammenhang mit einer Biodiversitätsfacette, die als Gradient untersucht wird (mehr oder weniger\nVielfalt bzw. Struktur, z.B. Artenreichtum oder Reinbestand vs. Mischbestand): Einfluss ist nur pos,\nneg oder neu. Pro betroffenem Lebensraum wird eine eigene Instanz erstellt.",
+      "properties": {
+        "ÖSL": {
+          "type": "object",
+          "properties": {
+            "content": {
+              "$ref": "#/$defs/_SLEnum"
+            },
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
+          ],
+          "additionalProperties": false,
+          "description": "Welche der folgenden Ökosystemleistungen wird in der Studie betrachtet? Gemeint ist die allgemeine Ökosystemleistung bzw. -funktion, nicht die konkrete Messgröße."
+        },
+        "Themenkomplex": {
+          "type": "object",
+          "properties": {
+            "content": {
+              "$ref": "#/$defs/ThemenkomplexEnum"
+            },
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
+          ],
+          "additionalProperties": false,
+          "description": "Zu welchem Themenkomplex gehört die gewählte Ökosystemleistung (ÖSL)?"
+        },
+        "Biodiv_Facette": {
+          "type": "object",
+          "properties": {
+            "content": {
+              "$ref": "#/$defs/GradientBiodiversityFacetEnum"
+            },
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
+          ],
+          "additionalProperties": false,
+          "description": "Welche dieser Biodiversitätsfacetten wird in der Studie betrachtet? Gemeint ist die Facette auf der erklärenden Seite (Ursache, unabhängige Variable), deren Einfluss (Einfluss) auf die Ökosystemleistung bzw. -funktion (ÖSL/ÖSF) in der Studie ausgewertet wird."
+        },
+        "Einfluss": {
+          "type": "object",
+          "properties": {
+            "content": {
+              "$ref": "#/$defs/DirectionalEinflussEnum"
+            },
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
+          ],
+          "additionalProperties": false,
+          "description": "Was ist der in der Studie gemessene Einfluss der Biodiversitätsfacette (Biodiv_Facette) auf die Ökosystemleistung bzw. -funktion (ÖSL/ÖSF)? Die Richtung bezieht sich auf die ÖSL/ÖSF."
+        },
+        "Arten": {
+          "description": "Welche Arten, Gattungen bzw. Artengruppen werden in der Studie untersucht? Gib die Namen so an, wie sie im Text verwendet werden, auf Deutsch. Falls der Text keinen deutschen Namen nennt, übersetze den Namen ins Deutsche; ist das nicht möglich, verwende den wissenschaftlichen Namen. Leere Liste, wenn keine Arten genannt werden.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "content": {
+                "type": "string"
+              },
+              "evidence_anchor": {
+                "type": "string",
+                "description": "Verbatim excerpt from the source text supporting the extracted content."
+              }
+            },
+            "required": [
+              "content",
+              "evidence_anchor"
+            ],
+            "additionalProperties": false
+          },
+          "title": "Arten",
+          "type": "array"
+        },
+        "Lebensraum_Gruppiert": {
+          "type": "object",
+          "properties": {
+            "content": {
+              "$ref": "#/$defs/HabitatEnum"
+            },
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
+          ],
+          "additionalProperties": false,
+          "description": "Um welchen der folgenden Lebensräume geht es in dem Text? Falls mehrere Lebensräume betroffen sind, erstelle für jeden betroffenen Lebensraum eine eigene Instanz dieses Zusammenhangs."
+        }
+      },
+      "required": [
+        "ÖSL",
+        "Themenkomplex",
+        "Biodiv_Facette",
+        "Einfluss",
+        "Lebensraum_Gruppiert"
+      ],
+      "title": "EcosystemServiceFieldsGradient",
+      "type": "object"
+    },
+    "EcosystemServiceFieldsOther": {
+      "additionalProperties": false,
+      "description": "Zusammenhang mit genetischer oder funktioneller Diversität: Einfluss ist ja oder nein, wenn\nKategorien verglichen werden (z.B. Herkünfte), sonst pos, neg oder neu. Pro betroffenem Lebensraum\nwird eine eigene Instanz erstellt.",
+      "properties": {
+        "ÖSL": {
+          "type": "object",
+          "properties": {
+            "content": {
+              "$ref": "#/$defs/_SLEnum"
+            },
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
+          ],
+          "additionalProperties": false,
+          "description": "Welche der folgenden Ökosystemleistungen wird in der Studie betrachtet? Gemeint ist die allgemeine Ökosystemleistung bzw. -funktion, nicht die konkrete Messgröße."
+        },
+        "Themenkomplex": {
+          "type": "object",
+          "properties": {
+            "content": {
+              "$ref": "#/$defs/ThemenkomplexEnum"
+            },
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
+          ],
+          "additionalProperties": false,
+          "description": "Zu welchem Themenkomplex gehört die gewählte Ökosystemleistung (ÖSL)?"
+        },
+        "Biodiv_Facette": {
+          "type": "object",
+          "properties": {
+            "content": {
+              "$ref": "#/$defs/OtherBiodiversityFacetEnum"
+            },
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
+          ],
+          "additionalProperties": false,
+          "description": "Welche dieser Biodiversitätsfacetten wird in der Studie betrachtet? Gemeint ist die Facette auf der erklärenden Seite (Ursache, unabhängige Variable), deren Einfluss (Einfluss) auf die Ökosystemleistung bzw. -funktion (ÖSL/ÖSF) in der Studie ausgewertet wird."
+        },
+        "Einfluss": {
+          "type": "object",
+          "properties": {
+            "content": {
+              "$ref": "#/$defs/EinflussEnum"
+            },
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
+          ],
+          "additionalProperties": false,
+          "description": "Was ist der in der Studie gemessene Einfluss der Biodiversitätsfacette (Biodiv_Facette) auf die Ökosystemleistung bzw. -funktion (ÖSL/ÖSF)? Die Richtung bezieht sich auf die ÖSL/ÖSF."
+        },
+        "Arten": {
+          "description": "Welche Arten, Gattungen bzw. Artengruppen werden in der Studie untersucht? Gib die Namen so an, wie sie im Text verwendet werden, auf Deutsch. Falls der Text keinen deutschen Namen nennt, übersetze den Namen ins Deutsche; ist das nicht möglich, verwende den wissenschaftlichen Namen. Leere Liste, wenn keine Arten genannt werden.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "content": {
+                "type": "string"
+              },
+              "evidence_anchor": {
+                "type": "string",
+                "description": "Verbatim excerpt from the source text supporting the extracted content."
+              }
+            },
+            "required": [
+              "content",
+              "evidence_anchor"
+            ],
+            "additionalProperties": false
+          },
+          "title": "Arten",
+          "type": "array"
+        },
+        "Lebensraum_Gruppiert": {
+          "type": "object",
+          "properties": {
+            "content": {
+              "$ref": "#/$defs/HabitatEnum"
+            },
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
+          ],
+          "additionalProperties": false,
+          "description": "Um welchen der folgenden Lebensräume geht es in dem Text? Falls mehrere Lebensräume betroffen sind, erstelle für jeden betroffenen Lebensraum eine eigene Instanz dieses Zusammenhangs."
+        }
+      },
+      "required": [
+        "ÖSL",
+        "Themenkomplex",
+        "Biodiv_Facette",
+        "Einfluss",
+        "Lebensraum_Gruppiert"
+      ],
+      "title": "EcosystemServiceFieldsOther",
       "type": "object"
     },
     "EinflussEnum": {
@@ -152,6 +421,16 @@
       "title": "EinflussEnum",
       "type": "string"
     },
+    "GradientBiodiversityFacetEnum": {
+      "description": "Facetten, die als Gradient (mehr oder weniger Vielfalt bzw. Struktur) untersucht werden.",
+      "enum": [
+        "Artenvielfalt",
+        "Landschaftsdiversität",
+        "Strukturelle Diversität"
+      ],
+      "title": "GradientBiodiversityFacetEnum",
+      "type": "string"
+    },
     "HabitatEnum": {
       "enum": [
         "Agrar- und Offenland",
@@ -162,6 +441,15 @@
         "Wald"
       ],
       "title": "HabitatEnum",
+      "type": "string"
+    },
+    "OtherBiodiversityFacetEnum": {
+      "description": "Facetten, die je nach Studie kategorial oder als Gradient untersucht werden.",
+      "enum": [
+        "Funktionelle Diversität",
+        "Genetische Diversität"
+      ],
+      "title": "OtherBiodiversityFacetEnum",
       "type": "string"
     },
     "ThemenkomplexEnum": {
@@ -243,9 +531,19 @@
   "description": "Angaben zu den im Text beschriebenen Zusammenhängen zwischen Biodiversität und\nÖkosystemleistungen.",
   "properties": {
     "ecosystem_service_trends": {
-      "description": "Liste der im Text beschriebenen Zusammenhänge zwischen Biodiversität und Ökosystemleistungen.",
+      "description": "Liste der im Text beschriebenen Zusammenhänge zwischen Biodiversität und Ökosystemleistungen. Jeder Eintrag folgt genau einer der Varianten, abhängig von der Art der Biodiversitätsfacette.",
       "items": {
-        "$ref": "#/$defs/EcosystemServiceFields"
+        "anyOf": [
+          {
+            "$ref": "#/$defs/EcosystemServiceFieldsCategorical"
+          },
+          {
+            "$ref": "#/$defs/EcosystemServiceFieldsGradient"
+          },
+          {
+            "$ref": "#/$defs/EcosystemServiceFieldsOther"
+          }
+        ]
       },
       "title": "Ecosystem Service Trends",
       "type": "array"

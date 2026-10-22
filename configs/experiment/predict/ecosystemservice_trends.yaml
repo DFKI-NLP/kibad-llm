@@ -1,6 +1,6 @@
 # @package _global_
 
-# This experiment uses the schema EcosystemStudyEcosystemServiceTrendsHabitat to extract relationships between
+# This experiment uses the schema EcosystemStudyEcosystemServiceTrendsWithoutHabitat to extract relationships between
 # biodiversity and ecosystem services (forest dev set) from Markdown documents, using chunking and evidence detection.
 # For other habitats, use the base schema extractor/schema=ecosystem_service (adds Lebensraum_Gruppiert).
 
@@ -11,3 +11,7 @@ defaults:
   - override /extractor: chunking
   - override /extractor/prompt_template: ecosystem_service
   - override /extractor/schema: ecosystem_service_habitat
+
+extractor:
+  # quote the evidence before committing to a value (see configs/extractor/_with_evidence.yaml)
+  evidence_before_content: true

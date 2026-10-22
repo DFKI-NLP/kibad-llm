@@ -329,6 +329,50 @@ class BiodiversityFacetEnum(str, Enum):
     STRUKTURELLE_DIVERSITAET = "Strukturelle Diversität"
 
 
+# The facets are split into three groups by the kind of predictor they are in the reference data
+# (data/interim/ecosystem_services/wald_devset_processed.csv): categorical facets almost always have
+# Einfluss ja/nein, gradient facets always pos/neg/neu, the other facets both. The groups are used to
+# constrain Einfluss by Biodiv_Facette via guided decoding (see EcosystemServiceFieldsWithoutHabitat).
+class CategoricalBiodiversityFacetEnum(str, Enum):
+    """Facetten, die als Kategorien (Identität bzw. Zusammensetzung) verglichen werden."""
+
+    ARTENZUSAMMENSETZUNG = BiodiversityFacetEnum.ARTENZUSAMMENSETZUNG.value
+    ARTIDENTITAET = BiodiversityFacetEnum.ARTIDENTITAET.value
+    LANDSCHAFTSTYP = BiodiversityFacetEnum.LANDSCHAFTSTYP.value
+
+
+class GradientBiodiversityFacetEnum(str, Enum):
+    """Facetten, die als Gradient (mehr oder weniger Vielfalt bzw. Struktur) untersucht werden."""
+
+    ARTENVIELFALT = BiodiversityFacetEnum.ARTENVIELFALT.value
+    LANDSCHAFTSDIVERSITAET = BiodiversityFacetEnum.LANDSCHAFTSDIVERSITAET.value
+    STRUKTURELLE_DIVERSITAET = BiodiversityFacetEnum.STRUKTURELLE_DIVERSITAET.value
+
+
+class OtherBiodiversityFacetEnum(str, Enum):
+    """Facetten, die je nach Studie kategorial oder als Gradient untersucht werden."""
+
+    FUNKTIONELLE_DIVERSITAET = BiodiversityFacetEnum.FUNKTIONELLE_DIVERSITAET.value
+    GENETISCHE_DIVERSITAET = BiodiversityFacetEnum.GENETISCHE_DIVERSITAET.value
+
+
+class CategoricalEinflussEnum(str, Enum):
+    """ja = die Facette hat einen Einfluss auf die ÖSL/ÖSF (unabhängig von dessen Richtung), nein = kein
+    Einfluss bzw. kein nachweisbarer Unterschied."""
+
+    JA = EinflussEnum.JA.value
+    NEIN = EinflussEnum.NEIN.value
+
+
+class DirectionalEinflussEnum(str, Enum):
+    """pos = die ÖSL/ÖSF nimmt mit höherer Ausprägung der Facette zu, neg = sie nimmt ab, neu = kein
+    Einfluss bzw. kein nachweisbarer Zusammenhang."""
+
+    NEG = EinflussEnum.NEG.value
+    NEU = EinflussEnum.NEU.value
+    POS = EinflussEnum.POS.value
+
+
 # Values of the "ESGroup" column in data/external/ecosystem_services/wald_devset_raw.csv: a coarser
 # grouping, made by the dataset itself, of the free-text "ÖSL" column into classifiable categories. Two
 # raw values were merged into an existing value: "Schädlingskontrolle?" -> "Schädlingskontrolle" and
@@ -1530,6 +1574,29 @@ class EcosystemStudyFeaturesCompoundsSimple(BaseEcosystemStudyFeatures):
     )
 
 
+# Field descriptions shared by the flat relationship model and its facet-group variants below.
+_OESL_DESCRIPTION = (
+    "Welche der folgenden Ökosystemleistungen wird in der Studie betrachtet? Gemeint ist die allgemeine "
+    "Ökosystemleistung bzw. -funktion, nicht die konkrete Messgröße."
+)
+_THEMENKOMPLEX_DESCRIPTION = (
+    "Zu welchem Themenkomplex gehört die gewählte Ökosystemleistung (ÖSL)?"
+)
+_BIODIV_FACETTE_DESCRIPTION = (
+    "Welche dieser Biodiversitätsfacetten wird in der Studie betrachtet? Gemeint ist die Facette auf der "
+    "erklärenden Seite (Ursache, unabhängige Variable), deren Einfluss (Einfluss) auf die Ökosystemleistung "
+    "bzw. -funktion (ÖSL/ÖSF) in der Studie ausgewertet wird."
+)
+_EINFLUSS_DESCRIPTION = (
+    "Was ist der in der Studie gemessene Einfluss der Biodiversitätsfacette (Biodiv_Facette) auf die "
+    "Ökosystemleistung bzw. -funktion (ÖSL/ÖSF)? Die Richtung bezieht sich auf die ÖSL/ÖSF."
+)
+_LEBENSRAUM_DESCRIPTION = (
+    "Um welchen der folgenden Lebensräume geht es in dem Text? Falls mehrere Lebensräume betroffen sind, "
+    "erstelle für jeden betroffenen Lebensraum eine eigene Instanz dieses Zusammenhangs."
+)
+
+
 # Each instance corresponds to a single row of data/external/ecosystem_services/wald_devset_raw.csv.
 # The evaluation (see configs/experiment/evaluate/ecosystem_service.yaml) is restricted to Themenkomplex
 # (the grouping of the ÖSL), ÖSL (the studied variable), Biodiv_Facette (the biodiversity facet) and
@@ -1537,7 +1604,7 @@ class EcosystemStudyFeaturesCompoundsSimple(BaseEcosystemStudyFeatures):
 # (`ignore_subfields`).
 class EcosystemServiceFieldsWithoutHabitat(CompoundFeature):
     """Ein einzelner Zusammenhang zwischen Biodiversität und Ökosystemleistung für einen einzelnen,
-    vorab festgelegten Lebensraum, bestehend aus Themenkomplex, Ökosystemleistung (ÖSL),
+    vorab festgelegten Lebensraum, bestehend aus Ökosystemleistung (ÖSL), Themenkomplex,
     Biodiv_Facette, Einfluss und Arten. Ein Text kann mehrere solcher Zusammenhänge beschreiben; jede
     Instanz bildet genau einen davon ab.
     """
@@ -1552,36 +1619,20 @@ class EcosystemServiceFieldsWithoutHabitat(CompoundFeature):
     # grouping of the free-text "ÖSL" into 43 categories) and the CICES columns ("CICES-Bereich",
     # "CICES-Gruppe", "CICES-Klasse", "CICES-Code", partly corrupted). "Themenkomplex" is a coarse
     # grouping of "ÖSL" (in the forest reference it is fully determined by it), but it is still extracted
-    # as its own field. "ÖSL" is free text in the reference data; here it is restricted to the examples
-    # from the prompt (ÖSLEnum). "Lebensraum_Gruppiert" is only part of the base schema
+    # as its own field. It comes after "ÖSL", so that the model picks the ÖSL first and then only needs
+    # to look up its Themenkomplex. "ÖSL" is free text in the reference data; here it is restricted to the
+    # examples from the prompt (ÖSLEnum). "Lebensraum_Gruppiert" is only part of the base schema
     # (EcosystemServiceFields), since the habitat is fixed by the data set here (e.g. "Wald", see
     # configs/dataset/references/ecosystem_service_wald.yaml).
     # ÖSL, Biodiv_Facette and Einfluss are single-valued and required per relationship (every row
     # of the source data has exactly one value for each); multiple relationships in one text are
     # represented as multiple instances, not by stacking values within a single instance.
-    Themenkomplex: ThemenkomplexEnum = Field(
-        ...,
-        description="Zu welchem der folgenden Themenkomplexe gehört die in der Studie betrachtete "
-        "Ökosystemleistung (ÖSL)?",
-    )
-    ÖSL: ÖSLEnum = Field(
-        ...,
-        description="Welche der folgenden Ökosystemleistungen wird in der Studie betrachtet? Gemeint ist die "
-        "allgemeine Ökosystemleistung bzw. -funktion, nicht die konkrete Messgröße.",
-    )
-    Biodiv_Facette: BiodiversityFacetEnum = Field(
-        ...,
-        description="Welche dieser Biodiversitätsfacetten wird in der Studie betrachtet? Gemeint ist die "
-        "Facette auf der erklärenden Seite (Ursache, unabhängige Variable), deren Einfluss (Einfluss) auf "
-        "die Ökosystemleistung bzw. -funktion (ÖSL/ÖSF) in der Studie ausgewertet wird.",
-    )
-    Einfluss: EinflussEnum = Field(
-        ...,
-        description="Was ist der in der Studie gemessene Einfluss der Biodiversitätsfacette "
-        "(Biodiv_Facette) auf die Ökosystemleistung bzw. -funktion (ÖSL/ÖSF)? Die Richtung bezieht sich "
-        "auf die ÖSL/ÖSF (pos = die ÖSL/ÖSF nimmt mit höherer Ausprägung der Facette zu). pos, neg und neu "
-        "gelten nur für kontinuierliche oder ordinale Prädiktoren, ja und nein für kategoriale Prädiktoren.",
-    )
+    # This model allows every combination of Biodiv_Facette and Einfluss (as the reference data does);
+    # for extraction, the variants below restrict Einfluss depending on Biodiv_Facette.
+    ÖSL: ÖSLEnum = Field(..., description=_OESL_DESCRIPTION)
+    Themenkomplex: ThemenkomplexEnum = Field(..., description=_THEMENKOMPLEX_DESCRIPTION)
+    Biodiv_Facette: BiodiversityFacetEnum = Field(..., description=_BIODIV_FACETTE_DESCRIPTION)
+    Einfluss: EinflussEnum = Field(..., description=_EINFLUSS_DESCRIPTION)
     # The "Art(en)" column of the reference data is a comma-separated list of names as used in the
     # study (mostly German tree names such as "Buche", "Fichte"), without scientific name or
     # taxonomic group, so a plain list of strings instead of `Taxa`. The evaluation ignores this field.
@@ -1594,21 +1645,85 @@ class EcosystemServiceFieldsWithoutHabitat(CompoundFeature):
     )
 
 
+# The three variants below restrict Einfluss by the facet group (see CategoricalBiodiversityFacetEnum).
+# Without this restriction, about 35-40% of the predicted relationships of run 592 combined a categorical
+# facet with pos/neg/neu, which the reference data does in only 2 of 75 cases. Overriding the fields keeps
+# their position, so all variants share the field order of EcosystemServiceFieldsWithoutHabitat. The
+# overrides intentionally narrow the field types, hence the `type: ignore[assignment]`.
+class EcosystemServiceFieldsCategoricalWithoutHabitat(EcosystemServiceFieldsWithoutHabitat):
+    """Zusammenhang mit einer kategorialen Biodiversitätsfacette (verglichen werden einzelne Arten,
+    Artenmischungen bzw. -anteile oder Landschaftstypen): Einfluss ist nur ja oder nein.
+    """
+
+    Biodiv_Facette: CategoricalBiodiversityFacetEnum = Field(  # type: ignore[assignment]
+        ..., description=_BIODIV_FACETTE_DESCRIPTION
+    )
+    Einfluss: CategoricalEinflussEnum = Field(  # type: ignore[assignment]
+        ..., description=_EINFLUSS_DESCRIPTION
+    )
+
+
+class EcosystemServiceFieldsGradientWithoutHabitat(EcosystemServiceFieldsWithoutHabitat):
+    """Zusammenhang mit einer Biodiversitätsfacette, die als Gradient untersucht wird (mehr oder weniger
+    Vielfalt bzw. Struktur, z.B. Artenreichtum oder Reinbestand vs. Mischbestand): Einfluss ist nur pos,
+    neg oder neu.
+    """
+
+    Biodiv_Facette: GradientBiodiversityFacetEnum = Field(  # type: ignore[assignment]
+        ..., description=_BIODIV_FACETTE_DESCRIPTION
+    )
+    Einfluss: DirectionalEinflussEnum = Field(  # type: ignore[assignment]
+        ..., description=_EINFLUSS_DESCRIPTION
+    )
+
+
+class EcosystemServiceFieldsOtherWithoutHabitat(EcosystemServiceFieldsWithoutHabitat):
+    """Zusammenhang mit genetischer oder funktioneller Diversität: Einfluss ist ja oder nein, wenn
+    Kategorien verglichen werden (z.B. Herkünfte), sonst pos, neg oder neu.
+    """
+
+    Biodiv_Facette: OtherBiodiversityFacetEnum = Field(  # type: ignore[assignment]
+        ..., description=_BIODIV_FACETTE_DESCRIPTION
+    )
+
+
 # Base schema for all habitats: like EcosystemServiceFieldsWithoutHabitat, but with the habitat as additional field.
 class EcosystemServiceFields(EcosystemServiceFieldsWithoutHabitat):
     """Ein einzelner Zusammenhang zwischen Biodiversität und Ökosystemleistung, bestehend aus
-    Themenkomplex, Ökosystemleistung (ÖSL), Biodiv_Facette, Einfluss, Arten und Lebensraum_Gruppiert.
+    Ökosystemleistung (ÖSL), Themenkomplex, Biodiv_Facette, Einfluss, Arten und Lebensraum_Gruppiert.
     Pro betroffenem Lebensraum wird eine eigene Instanz erstellt.
     """
 
     # A reference row naming several habitats (e.g. "Wald, Agrar- und Offenland") has to be split
     # into one row per habitat before evaluation (see split_columns of read_grouped_csv_records).
-    Lebensraum_Gruppiert: HabitatEnum = Field(
-        ...,
-        description="Um welchen der folgenden Lebensräume geht es in dem Text? Falls mehrere "
-        "Lebensräume betroffen sind, erstelle für jeden betroffenen Lebensraum eine eigene "
-        "Instanz dieses Zusammenhangs.",
-    )
+    Lebensraum_Gruppiert: HabitatEnum = Field(..., description=_LEBENSRAUM_DESCRIPTION)
+
+
+class EcosystemServiceFieldsCategorical(EcosystemServiceFieldsCategoricalWithoutHabitat):
+    """Zusammenhang mit einer kategorialen Biodiversitätsfacette (verglichen werden einzelne Arten,
+    Artenmischungen bzw. -anteile oder Landschaftstypen): Einfluss ist nur ja oder nein. Pro
+    betroffenem Lebensraum wird eine eigene Instanz erstellt.
+    """
+
+    Lebensraum_Gruppiert: HabitatEnum = Field(..., description=_LEBENSRAUM_DESCRIPTION)
+
+
+class EcosystemServiceFieldsGradient(EcosystemServiceFieldsGradientWithoutHabitat):
+    """Zusammenhang mit einer Biodiversitätsfacette, die als Gradient untersucht wird (mehr oder weniger
+    Vielfalt bzw. Struktur, z.B. Artenreichtum oder Reinbestand vs. Mischbestand): Einfluss ist nur pos,
+    neg oder neu. Pro betroffenem Lebensraum wird eine eigene Instanz erstellt.
+    """
+
+    Lebensraum_Gruppiert: HabitatEnum = Field(..., description=_LEBENSRAUM_DESCRIPTION)
+
+
+class EcosystemServiceFieldsOther(EcosystemServiceFieldsOtherWithoutHabitat):
+    """Zusammenhang mit genetischer oder funktioneller Diversität: Einfluss ist ja oder nein, wenn
+    Kategorien verglichen werden (z.B. Herkünfte), sonst pos, neg oder neu. Pro betroffenem Lebensraum
+    wird eine eigene Instanz erstellt.
+    """
+
+    Lebensraum_Gruppiert: HabitatEnum = Field(..., description=_LEBENSRAUM_DESCRIPTION)
 
 
 # Base schema for all habitats (with the habitat per relationship).
@@ -1617,11 +1732,16 @@ class EcosystemStudyEcosystemServiceTrends(BaseEcosystemStudyFeatures):
     Ökosystemleistungen.
     """
 
-    ecosystem_service_trends: list[EcosystemServiceFields] = Field(
+    ecosystem_service_trends: list[
+        EcosystemServiceFieldsCategorical
+        | EcosystemServiceFieldsGradient
+        | EcosystemServiceFieldsOther
+    ] = Field(
         default_factory=list,
         alias="Zusammenhänge zwischen Biodiversität und Ökosystemleistungen",
         description="Liste der im Text beschriebenen Zusammenhänge zwischen Biodiversität und "
-        "Ökosystemleistungen.",
+        "Ökosystemleistungen. Jeder Eintrag folgt genau einer der Varianten, abhängig von der Art der "
+        "Biodiversitätsfacette.",
     )
 
 
@@ -1630,9 +1750,14 @@ class EcosystemStudyEcosystemServiceTrendsWithoutHabitat(BaseEcosystemStudyFeatu
     Ökosystemleistungen für einen einzelnen, vorab festgelegten Lebensraum.
     """
 
-    ecosystem_service_trends: list[EcosystemServiceFieldsWithoutHabitat] = Field(
+    ecosystem_service_trends: list[
+        EcosystemServiceFieldsCategoricalWithoutHabitat
+        | EcosystemServiceFieldsGradientWithoutHabitat
+        | EcosystemServiceFieldsOtherWithoutHabitat
+    ] = Field(
         default_factory=list,
         alias="Zusammenhänge zwischen Biodiversität und Ökosystemleistungen",
         description="Liste der im Text beschriebenen Zusammenhänge zwischen Biodiversität und "
-        "Ökosystemleistungen.",
+        "Ökosystemleistungen. Jeder Eintrag folgt genau einer der Varianten, abhängig von der Art der "
+        "Biodiversitätsfacette.",
     )

@@ -101,15 +101,15 @@
     }
   },
   "additionalProperties": false,
-  "description": "Ein einzelner Zusammenhang zwischen Biodiversität und Ökosystemleistung für einen einzelnen,\nvorab festgelegten Lebensraum, bestehend aus Themenkomplex, Ökosystemleistung (ÖSL),\nBiodiv_Facette, Einfluss und Arten. Ein Text kann mehrere solcher Zusammenhänge beschreiben; jede\nInstanz bildet genau einen davon ab.",
+  "description": "Ein einzelner Zusammenhang zwischen Biodiversität und Ökosystemleistung für einen einzelnen,\nvorab festgelegten Lebensraum, bestehend aus Ökosystemleistung (ÖSL), Themenkomplex,\nBiodiv_Facette, Einfluss und Arten. Ein Text kann mehrere solcher Zusammenhänge beschreiben; jede\nInstanz bildet genau einen davon ab.",
   "properties": {
-    "Themenkomplex": {
-      "$ref": "#/$defs/ThemenkomplexEnum",
-      "description": "Zu welchem der folgenden Themenkomplexe gehört die in der Studie betrachtete Ökosystemleistung (ÖSL)?"
-    },
     "ÖSL": {
       "$ref": "#/$defs/_SLEnum",
       "description": "Welche der folgenden Ökosystemleistungen wird in der Studie betrachtet? Gemeint ist die allgemeine Ökosystemleistung bzw. -funktion, nicht die konkrete Messgröße."
+    },
+    "Themenkomplex": {
+      "$ref": "#/$defs/ThemenkomplexEnum",
+      "description": "Zu welchem Themenkomplex gehört die gewählte Ökosystemleistung (ÖSL)?"
     },
     "Biodiv_Facette": {
       "$ref": "#/$defs/BiodiversityFacetEnum",
@@ -117,7 +117,7 @@
     },
     "Einfluss": {
       "$ref": "#/$defs/EinflussEnum",
-      "description": "Was ist der in der Studie gemessene Einfluss der Biodiversitätsfacette (Biodiv_Facette) auf die Ökosystemleistung bzw. -funktion (ÖSL/ÖSF)? Die Richtung bezieht sich auf die ÖSL/ÖSF (pos = die ÖSL/ÖSF nimmt mit höherer Ausprägung der Facette zu). pos, neg und neu gelten nur für kontinuierliche oder ordinale Prädiktoren, ja und nein für kategoriale Prädiktoren."
+      "description": "Was ist der in der Studie gemessene Einfluss der Biodiversitätsfacette (Biodiv_Facette) auf die Ökosystemleistung bzw. -funktion (ÖSL/ÖSF)? Die Richtung bezieht sich auf die ÖSL/ÖSF."
     },
     "Arten": {
       "description": "Welche Arten, Gattungen bzw. Artengruppen werden in der Studie untersucht? Gib die Namen so an, wie sie im Text verwendet werden, auf Deutsch. Falls der Text keinen deutschen Namen nennt, übersetze den Namen ins Deutsche; ist das nicht möglich, verwende den wissenschaftlichen Namen. Leere Liste, wenn keine Arten genannt werden.",
@@ -129,8 +129,8 @@
     }
   },
   "required": [
-    "Themenkomplex",
     "ÖSL",
+    "Themenkomplex",
     "Biodiv_Facette",
     "Einfluss"
   ],

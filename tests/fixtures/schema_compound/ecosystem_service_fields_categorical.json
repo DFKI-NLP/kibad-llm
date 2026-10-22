@@ -1,0 +1,150 @@
+{
+  "$defs": {
+    "CategoricalBiodiversityFacetEnum": {
+      "description": "Facetten, die als Kategorien (Identität bzw. Zusammensetzung) verglichen werden.",
+      "enum": [
+        "Artenzusammensetzung",
+        "Artidentität",
+        "Landschaftstyp"
+      ],
+      "title": "CategoricalBiodiversityFacetEnum",
+      "type": "string"
+    },
+    "CategoricalEinflussEnum": {
+      "description": "ja = die Facette hat einen Einfluss auf die ÖSL/ÖSF (unabhängig von dessen Richtung), nein = kein\nEinfluss bzw. kein nachweisbarer Unterschied.",
+      "enum": [
+        "ja",
+        "nein"
+      ],
+      "title": "CategoricalEinflussEnum",
+      "type": "string"
+    },
+    "HabitatEnum": {
+      "enum": [
+        "Agrar- und Offenland",
+        "Binnengewässer und Auen",
+        "Boden",
+        "Küsten und Küstengewässer",
+        "Urbane Räume",
+        "Wald"
+      ],
+      "title": "HabitatEnum",
+      "type": "string"
+    },
+    "ThemenkomplexEnum": {
+      "description": "Themenkomplexe, denen eine Ökosystemleistung (ÖSL) zugeordnet wird.",
+      "enum": [
+        "Kohlenstoffkreislauf",
+        "Kulturelle Leistungen",
+        "Stabilität und Resilienz"
+      ],
+      "title": "ThemenkomplexEnum",
+      "type": "string"
+    },
+    "_SLEnum": {
+      "description": "Ökosystemleistungen bzw. -funktionen (ÖSL/ÖSF) der Themenkomplexe.",
+      "enum": [
+        "Ästhetischer Wert der Landschaft",
+        "Beitrag zu einer lebenswerten Stadt",
+        "Biomasseproduktion",
+        "Dürreerholung",
+        "Dürreresilienz",
+        "Dürreresistenz",
+        "Erholungsleistungen",
+        "Erosionsschutz",
+        "Fraßresilienz",
+        "Fraßresistenz",
+        "Freizeitliche Nutzung",
+        "Gesundheit",
+        "Grundwasserbildung",
+        "Hitzeresilienz",
+        "Hitzeresistenz",
+        "Kälteresilienz",
+        "Kälteresistenz",
+        "Klimaschutz",
+        "Klimawandelresilienz",
+        "Klimawandelresistenz",
+        "Kohlenstoffspeicherung",
+        "Kohlenstoffumsatz",
+        "Kohlenstoffverfügbarkeit",
+        "Krankheitsresilienz",
+        "Krankheitsresistenz",
+        "Kultureller Wert der Pflanzen",
+        "Landschaftsbild, Natur- und Kulturerbe",
+        "Mikroklimaregulation",
+        "Ortsbezogene Bedeutung",
+        "Pathogenresilienz",
+        "Pathogenresistenz",
+        "Physisches Wohlbefinden",
+        "Psychisches Wohlbefinden",
+        "Reduktion von Mortalität",
+        "Schädlingskontrolle",
+        "Schädlingsresilienz",
+        "Schädlingsresistenz",
+        "Soziale Interaktion / Integration",
+        "Staunässeresilienz",
+        "Staunässeresistenz",
+        "Störungsresilienz",
+        "Störungsresistenz",
+        "Sturmresilienz",
+        "Sturmresistenz",
+        "Temperaturpufferung / Reduktion von Hitze",
+        "Trockenerholung",
+        "Trockenresilienz",
+        "Trockenresistenz",
+        "Überflutungsresilienz",
+        "Überflutungsresistenz",
+        "Versickerungsschutz",
+        "Wachstum bei Dürre",
+        "Wassernutzung",
+        "Wasserrückhaltefähigkeit",
+        "Wissen / Kenntnis",
+        "Wohlbefinden / Sicherheitsgefühl",
+        "Zersetzung"
+      ],
+      "title": "ÖSLEnum",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Zusammenhang mit einer kategorialen Biodiversitätsfacette (verglichen werden einzelne Arten,\nArtenmischungen bzw. -anteile oder Landschaftstypen): Einfluss ist nur ja oder nein. Pro\nbetroffenem Lebensraum wird eine eigene Instanz erstellt.",
+  "properties": {
+    "ÖSL": {
+      "$ref": "#/$defs/_SLEnum",
+      "description": "Welche der folgenden Ökosystemleistungen wird in der Studie betrachtet? Gemeint ist die allgemeine Ökosystemleistung bzw. -funktion, nicht die konkrete Messgröße."
+    },
+    "Themenkomplex": {
+      "$ref": "#/$defs/ThemenkomplexEnum",
+      "description": "Zu welchem Themenkomplex gehört die gewählte Ökosystemleistung (ÖSL)?"
+    },
+    "Biodiv_Facette": {
+      "$ref": "#/$defs/CategoricalBiodiversityFacetEnum",
+      "description": "Welche dieser Biodiversitätsfacetten wird in der Studie betrachtet? Gemeint ist die Facette auf der erklärenden Seite (Ursache, unabhängige Variable), deren Einfluss (Einfluss) auf die Ökosystemleistung bzw. -funktion (ÖSL/ÖSF) in der Studie ausgewertet wird."
+    },
+    "Einfluss": {
+      "$ref": "#/$defs/CategoricalEinflussEnum",
+      "description": "Was ist der in der Studie gemessene Einfluss der Biodiversitätsfacette (Biodiv_Facette) auf die Ökosystemleistung bzw. -funktion (ÖSL/ÖSF)? Die Richtung bezieht sich auf die ÖSL/ÖSF."
+    },
+    "Arten": {
+      "description": "Welche Arten, Gattungen bzw. Artengruppen werden in der Studie untersucht? Gib die Namen so an, wie sie im Text verwendet werden, auf Deutsch. Falls der Text keinen deutschen Namen nennt, übersetze den Namen ins Deutsche; ist das nicht möglich, verwende den wissenschaftlichen Namen. Leere Liste, wenn keine Arten genannt werden.",
+      "items": {
+        "type": "string"
+      },
+      "title": "Arten",
+      "type": "array"
+    },
+    "Lebensraum_Gruppiert": {
+      "$ref": "#/$defs/HabitatEnum",
+      "description": "Um welchen der folgenden Lebensräume geht es in dem Text? Falls mehrere Lebensräume betroffen sind, erstelle für jeden betroffenen Lebensraum eine eigene Instanz dieses Zusammenhangs."
+    }
+  },
+  "required": [
+    "ÖSL",
+    "Themenkomplex",
+    "Biodiv_Facette",
+    "Einfluss",
+    "Lebensraum_Gruppiert"
+  ],
+  "title": "EcosystemServiceFieldsCategorical",
+  "type": "object"
+}

@@ -7,6 +7,8 @@ output_key: ecosystem_service_trends
 #   uv run -m kibad_llm.data_integration.align_ecosystem_service_csv
 file: "${paths.root_dir}/data/interim/ecosystem_services/wald_devset_processed.csv"
 pdf_id_column: "Key"
+# some cells have trailing whitespace (e.g. "Biomasseproduktion "), which would never match a prediction
+normalize_whitespace: true
 # column names match `EcosystemServiceFieldsHabitat` field names (see src/kibad_llm/schema/types.py) so
 # that no post-processing/renaming is needed, analogous to `OrganismBiodiversityTrend`.
 columns:

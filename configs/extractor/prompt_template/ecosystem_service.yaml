@@ -30,17 +30,21 @@ system_message: |
     untersucht bzw. statistisch getestet oder ausgewertet werden. Der Zusammenhang darf auch schwach oder nicht
     signifikant sein oder gar keinen Effekt zeigen.
   - Nicht ausreichend sind Literaturbefunde (aus anderer Literatur zitierte Ergebnisse), Hypothesen, Simulationen,
-    vorgeschlagene Maßnahmen sowie Biodiversität, die lediglich als Ergebnisvariable untersucht oder durch eine
-    Behandlung verändert wird, ohne dass ihr Einfluss auf eine ÖSL/ÖSF ausgewertet wird. Abschnitte wie Einleitung
-    oder Diskussion enthalten meist nur solche Aussagen.
+    vorgeschlagene Maßnahmen sowie Biodiversität, die lediglich als Ergebnisvariable untersucht wird. Abschnitte wie
+    Einleitung oder Diskussion enthalten meist nur solche Aussagen.
+  - Werden Bestände, Flächen oder Bewirtschaftungsformen verglichen, die sich in ihrer Biodiversität unterscheiden
+    (z.B. Reinbestand vs. Mischbestand, Hochwald aus einer Baumart vs. artenreicher Niederwald, verschiedene
+    Herkünfte einer Art), und wird dabei eine ÖSL/ÖSF gemessen, dann zählt das als gültige Beziehung, auch wenn die
+    Studie den Unterschied zusätzlich mit der Bewirtschaftung erklärt.
   - Enthält der Text keine solche Beziehung, gib eine leere Liste zurück. Erfinde keine Beziehungen.
   - Jede Beziehung bildet genau einen Eintrag in der Liste. Ein Text kann mehrere Beziehungen enthalten (z.B. mehrere
     ÖSL/ÖSF oder mehrere Biodiversitätsfacetten). Lege für jede untersuchte Kombination aus ÖSL/ÖSF und
     Biodiversitätsfacette genau einen Eintrag an, nicht mehr.
   - Fasse zusammen: Verschiedene Messgrößen, Arten, Standorte, Behandlungen oder Zeitpunkte, die derselben ÖSL/ÖSF und
-    derselben Biodiversitätsfacette zugeordnet werden, bilden zusammen nur einen Eintrag (z.B. CO2- und CH4-Emissionen
-    sind beide Kohlenstoffkreislauf-Messgrößen; sterile und nicht sterile Proben sind keine eigenen Beziehungen).
-    Erfasse nur die Hauptbeziehungen der Studie, nicht jede einzelne Teilmessung.
+    derselben Biodiversitätsfacette zugeordnet werden, bilden zusammen nur einen Eintrag (z.B. sterile und nicht
+    sterile Proben sind keine eigenen Beziehungen). Erfasse nur die Hauptbeziehungen der Studie, wie sie typischerweise
+    auch im Abstract oder Fazit genannt werden, nicht jede einzelne Teilmessung. Die meisten Studien enthalten nur
+    eine oder zwei solche Hauptbeziehungen.
   - Im Zweifel lasse eine Beziehung weg. Enthält der Text (z.B. ein reiner Methodenabschnitt) keine berichteten
     Ergebnisse, gib eine leere Liste zurück.
   - Eine Beziehung ist nur dann gültig, wenn alle Pflichtfelder ausgefüllt werden können. Nur das Feld 'Arten' ist
@@ -95,6 +99,11 @@ system_message: |
   Wachstumsrate' -> Biomasseproduktion; 'Masseverlust von Totholz' -> Zersetzung; 'Bodenkohlenstoff' ->
   Kohlenstoffspeicherung).
 
+  Wird Wachstum, Zuwachs oder Mortalität als Reaktion auf Trockenheit, Hitze oder ein anderes Extremereignis
+  ausgewertet (z.B. Zuwachs im Trockenjahr, Resistenz-, Erholungs- oder Resilienzindizes des Jahrringzuwachses),
+  dann ist die ÖSL/ÖSF nicht Biomasseproduktion, sondern der passende Wert aus 'Stabilität und Resilienz' (z.B.
+  Dürreresistenz, Dürreerholung, Dürreresilienz, Wachstum bei Dürre).
+
   ## Biodiversitätsfacetten
 
   Eine Biodiversitätsfacette kann in verschiedenen Dimensionen untersucht werden: als Identität bzw. Ausprägung einzelner
@@ -106,10 +115,17 @@ system_message: |
 
   Wähle die Facette, deren Einfluss in der Studie tatsächlich ausgewertet wird. Maßgeblich ist die erklärende Variable
   der Analyse (der Faktor im Modell bzw. der verglichene Gradient), und zwar genau eine Facette pro untersuchtem
-  Prädiktor. Lege nicht zusätzlich eine zweite Facette an, nur weil sich das Design auch anders lesen ließe:
-  Artenvielfalt für Gradienten von Artenreichtum oder Diversitätsindizes (z.B. Shannon), Artidentität für den Vergleich
-  einzelner benannter Arten, Artenzusammensetzung nur, wenn Artenmischungen bzw. die Gemeinschaftszusammensetzung selbst
-  der Prädiktor sind.
+  Prädiktor. Lege nicht zusätzlich eine zweite Facette an, nur weil sich das Design auch anders lesen ließe. Für die
+  häufigsten Studiendesigns gilt:
+  - Gradient von Artenreichtum oder Diversitätsindizes (z.B. Shannon) -> Artenvielfalt.
+  - Reinbestand (Monokultur) vs. Mischbestand, oder Bestände mit unterschiedlich vielen Arten -> Artenvielfalt
+    (Mischung = höhere Artenvielfalt; Einfluss pos, neg oder neu). Das gilt auch dann, wenn die Mischung aus
+    bestimmten, benannten Arten besteht.
+  - Vergleich verschiedener Mischungstypen untereinander (z.B. Buche + Tanne vs. Buche + Fichte) oder Anteil bzw.
+    Deckung bestimmter Arten in der Gemeinschaft -> Artenzusammensetzung (Einfluss ja oder nein).
+  - Vergleich einzelner benannter Arten (z.B. Streu oder Totholz verschiedener Baumarten, Reinbestände verschiedener
+    Arten) -> Artidentität (Einfluss ja oder nein).
+  - Vergleich von Herkünften, Provenienzen, Populationen, Genotypen oder Klonen derselben Art -> Genetische Diversität.
 
   - Artidentität: Identität einer Art und die mit ihr verbundenen artspezifischen Eigenschaften, durch die ihr
     Vorkommen oder ihre Dominanz die Funktionsweise eines Ökosystems und die Erbringung von Ökosystemleistungen
@@ -203,18 +219,22 @@ system_message: |
 
   Der Einfluss beschreibt den in der Studie gemessenen Einfluss der Biodiversitätsfacette auf die ÖSL/ÖSF. Die
   Richtung bezieht sich auf die ÖSL/ÖSF (pos = die ÖSL/ÖSF nimmt mit höherer Ausprägung der Facette zu).
-  Welche Antwortmöglichkeiten gelten, hängt von der Art des Prädiktors ab, d.h. davon, wie die Biodiversitätsfacette
-  in der Studie variiert.
+  Welche Antwortmöglichkeiten gelten, hängt von der gewählten Biodiversitätsfacette ab (siehe die Varianten in der
+  Schemabeschreibung):
 
-  Für kontinuierliche oder ordinale Prädiktoren (Effekt mit Richtung):
-  - pos: positiver Einfluss.
-  - neg: negativer Einfluss.
+  Artidentität, Artenzusammensetzung und Landschaftstyp (Kategorien werden verglichen; nur das Vorhandensein eines
+  Effekts zählt, nicht seine Richtung oder welche Gruppe höhere Werte hat; hier gilt nie pos/neg/neu):
+  - ja: Die Facette hat einen Einfluss auf die ÖSL/ÖSF (z.B. Baumart A zersetzt sich schneller als Baumart B).
+  - nein: Die Facette hat keinen Einfluss auf die ÖSL/ÖSF.
+
+  Artenvielfalt, Strukturelle Diversität und Landschaftsdiversität (mehr oder weniger Vielfalt bzw. Struktur,
+  Effekt mit Richtung; hier gilt nie ja/nein):
+  - pos: Die ÖSL/ÖSF nimmt mit höherer Vielfalt bzw. Struktur zu (z.B. Mischbestand höher als Reinbestand).
+  - neg: Die ÖSL/ÖSF nimmt mit höherer Vielfalt bzw. Struktur ab.
   - neu: neutral, kein Einfluss bzw. kein nachweisbarer Unterschied.
 
-  Für kategoriale Prädiktoren ohne natürliche Rangfolge (nur das Vorhandensein eines Effekts, unabhängig von der
-  Richtung bzw. von der Art der Gruppenunterschiede; hier gilt nie pos/neg/neu):
-  - ja: Die Facette hat einen Einfluss auf die ÖSL/ÖSF.
-  - nein: Die Facette hat keinen Einfluss auf die ÖSL/ÖSF.
+  Genetische und Funktionelle Diversität: ja/nein, wenn Kategorien verglichen werden (z.B. einzelne Herkünfte oder
+  Genotypen), pos/neg/neu, wenn ein Gradient untersucht wird (z.B. genetische Vielfalt, Merkmalsausprägung).
 
   ## Arten
 
@@ -224,7 +244,7 @@ system_message: |
   ## Ausgabeformat
 
   Der Text ist als Markdown formatiert.
-  Gib die Antworten auf Deutsch, auch wenn der Text auf Englisch ist.
+  Gib die Antworten ("content") auf Deutsch, auch wenn der Text auf Englisch ist.
   Wenn Antwortmöglichkeiten nach einer Frage gegeben sind, wähle nur aus den durch Semikolon getrennten
   Antwortmöglichkeiten. Extrahiere dabei nur, was auch im Text steht, konzentriere dich daher auf die
   Informationen, die du sicher identifizieren und auch belegen kannst. Für nicht im Text vorhandene
@@ -236,6 +256,16 @@ system_message: |
   Gib **ausschließlich** gültiges JSON nach dem folgenden Schema zurück. Allerdings besteht jedes Feld aus einem
   "content"-Unterfeld, in dem du die eigentliche Antwort einträgst und einem "evidence_anchor"-Unterfeld, in dem
   du die Textstelle (als exaktes Zitat) angibst, die deine Antwort am besten belegt.
+
+  Regeln für "evidence_anchor":
+  - Kopiere eine zusammenhängende Textstelle Zeichen für Zeichen aus dem Text: in der Originalsprache (nicht
+    übersetzen), ohne Auslassungen ("..." oder "…"), ohne eigene Anführungszeichen, ohne Umformulierung. Ein Satz
+    oder Teilsatz genügt.
+  - Zitiere bevorzugt den Satz aus Ergebnisteil, Abstract oder Fazit, der das Ergebnis der Beziehung berichtet.
+    Derselbe Satz darf für mehrere Felder eines Eintrags verwendet werden, z.B. für Themenkomplex, Biodiv_Facette und
+    Einfluss.
+  - Zitiere nie diese Anleitung oder die Schemabeschreibung, sondern nur den Studientext.
+  - Für "Arten" genügt die Textstelle, in der die Art genannt wird.
 
   {schema_description}
 

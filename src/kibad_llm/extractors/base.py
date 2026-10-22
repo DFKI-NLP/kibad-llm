@@ -460,17 +460,87 @@ def _strip_wrapping_quotes(s: str) -> str:
     return s2
 
 
+# Characters that LLMs emit interchangeably with each other (e.g. gpt-oss often writes the
+# non-breaking hyphen U+2011 instead of "-"); in lenient matching, each matches any of its group.
+_DASH_CHARS = "-‐‑‒–—−"
+_QUOTE_CHARS = "\"'`‘’‚“”„«»‹›"
+# Ellipses mark omissions in an anchor that stitches several text passages together.
+_ELLIPSIS_PATTERN = re.compile(r"\s*(?:\.\.\.|…|\[\.\.\.\]|\[…\])\s*")
+# Maximal number of omitted characters an ellipsis in an anchor can stand for.
+_MAX_ELLIPSIS_GAP = 1000
+
+
+def _exact_anchor_pattern(anchor: str) -> str | None:
+    """Build a regex that matches the anchor verbatim, but with any whitespace for whitespace.
+
+    Args:
+        anchor: The anchor string (already stripped of wrapping quotes).
+
+    Returns:
+        The regex pattern, or None if the anchor contains no non-whitespace characters.
+    """
+    # Split the anchor on any whitespace. This lets us treat " " vs "\n" (or multiple spaces/tabs)
+    # as equivalent when searching in the original text.
+    # Example: "foo bar\nbaz" -> ["foo", "bar", "baz"]
+    parts = [p for p in re.split(r"\s+", anchor.strip()) if p]
+    if not parts:
+        return None
+    # Escape each chunk to avoid regex metacharacters being treated specially (e.g., "." in the
+    # anchor should match a literal dot). Example parts ["foo","bar"] -> pattern "foo\\s+bar"
+    return r"\s+".join(re.escape(p) for p in parts)
+
+
+def _lenient_anchor_pattern(anchor: str) -> str | None:
+    """Build a regex that matches the anchor up to typical LLM copying deviations.
+
+    In addition to the whitespace insensitivity of `_exact_anchor_pattern`, it
+    - treats all dash variants and all quote variants as equal,
+    - ignores soft hyphens in the anchor,
+    - ignores markdown emphasis markers (`*`, `_`) around words in the anchor and the text, and
+    - lets an ellipsis ("...", "…", "[...]") in the anchor stand for up to `_MAX_ELLIPSIS_GAP`
+      characters of the text.
+
+    Args:
+        anchor: The anchor string (already stripped of wrapping quotes).
+
+    Returns:
+        The regex pattern, or None if the anchor contains no words.
+    """
+
+    def char_pattern(char: str) -> str:
+        """Match a character or, for dashes and quotes, any character of its group."""
+        for group in (_DASH_CHARS, _QUOTE_CHARS):
+            if char in group:
+                return f"[{re.escape(group)}]"
+        return re.escape(char)
+
+    piece_patterns = []
+    for piece in _ELLIPSIS_PATTERN.split(anchor.replace("­", "")):
+        words = [w.strip("*_") for w in piece.split()]
+        word_patterns = [
+            r"[*_]*" + "".join(char_pattern(c) for c in w) + r"[*_]*" for w in words if w
+        ]
+        if word_patterns:
+            piece_patterns.append(r"\s+".join(word_patterns))
+    if not piece_patterns:
+        return None
+    return rf"[\s\S]{{0,{_MAX_ELLIPSIS_GAP}}}?".join(piece_patterns)
+
+
 def _find_anchor_match_spans(text: str, anchor: str) -> list[tuple[int, int]]:
     """Find all character spans in `text` that match the given `anchor` string.
-    The matching is whitespace-insensitive, meaning that any whitespace in the anchor
-    can match any whitespace in the text (including different kinds of whitespace).
+
+    The anchor is first searched verbatim, where any whitespace in the anchor can match any
+    whitespace in the text (including different kinds of whitespace). Only if that fails, it is
+    searched leniently (see `_lenient_anchor_pattern`), and then also case-insensitively.
 
     Args:
         text: The original text to search within.
         anchor: The anchor string to search for.
 
     Returns:
-        A list of (start_offset_in_text, end_offset_in_text) tuples for each match of the anchor.
+        A list of (start_offset_in_text, end_offset_in_text) tuples for each match of the anchor
+        (from the first of the above strategies that finds any match).
     """
 
     # Preprocess anchor: strip wrapping quotes
@@ -480,24 +550,19 @@ def _find_anchor_match_spans(text: str, anchor: str) -> list[tuple[int, int]]:
     if not anchor:
         return []
 
-    # Split the anchor on any whitespace. This lets us treat " " vs "\n" (or multiple spaces/tabs)
-    # as equivalent when searching in the original text.
-    # Example: "foo bar\nbaz" -> ["foo", "bar", "baz"]
-    parts = re.split(r"\s+", anchor.strip())
-
-    # If the anchor was only whitespace (or otherwise produced no meaningful parts), give up.
-    if not parts or not any(parts):
-        return []
-
-    # Build a regex that matches the non-whitespace chunks in order, allowing *any* whitespace
-    # between them in the text. We escape each chunk to avoid regex metacharacters being treated
-    # specially (e.g., "." in the anchor should match a literal dot).
-    # Example parts ["foo","bar"] -> pattern "foo\\s+bar"
-    pattern = r"\s+".join(re.escape(p) for p in parts if p)
-
-    # Find all non-overlapping matches of that pattern in the text and return their character spans.
-    # Each span is (start_offset_in_text, end_offset_in_text).
-    return [(m.start(), m.end()) for m in re.finditer(pattern, text)]
+    strategies = [
+        (_exact_anchor_pattern(anchor), 0),
+        (_lenient_anchor_pattern(anchor), 0),
+        (_lenient_anchor_pattern(anchor), re.IGNORECASE),
+    ]
+    for pattern, flags in strategies:
+        if pattern is None:
+            continue
+        # Each span is (start_offset_in_text, end_offset_in_text) of a non-overlapping match.
+        spans = [(m.start(), m.end()) for m in re.finditer(pattern, text, flags)]
+        if spans:
+            return spans
+    return []
 
 
 def augment_metadata_node_with_evidence(
@@ -790,6 +855,7 @@ def extract_from_text(
     adjust_schema_description_for_evidence_detection: bool = False,
     evidence_anchor_description: str = "Verbatim excerpt from the source text supporting the extracted content.",
     wrapped_content_description: str | None = None,
+    evidence_before_content: bool = False,
     response_has_metadata: bool = False,
     augment_metadata_kwargs: dict[str, Any] | None = None,
     character_start: int = 0,
@@ -836,6 +902,9 @@ def extract_from_text(
             Has only an effect if adjust_schema_for_detect_evidence is also True.
         evidence_anchor_description: Description for the evidence anchor field.
         wrapped_content_description: Optional description for the content field in the metadata wrapper.
+        evidence_before_content: Whether to place `evidence_anchor` before `content` in the metadata
+            wrapper. With guided decoding, the model then quotes the evidence before it commits to the
+            extracted value. Has only an effect if adjust_schema_for_evidence_detection is True.
         response_has_metadata: If True, the output is expected to have each leaf value wrapped in
             an object with `content` plus metadata fields. If so, the metadata is stripped and the cleaned
             output is returned under the "structured" key, while the raw output with metadata is returned
@@ -917,6 +986,7 @@ def extract_from_text(
             },
             content_key=WRAPPED_CONTENT_KEY,
             content_description=wrapped_content_description,
+            metadata_first=evidence_before_content,
         )
         # since we wrapped terminals with metadata, we expect metadata in the response
         response_has_metadata = True

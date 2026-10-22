@@ -102,3 +102,21 @@ def test_read_grouped_csv_records_organism_trends_wald_selected_columns() -> Non
             },
         ]
     }
+
+
+def test_read_grouped_csv_records_normalize_whitespace(tmp_path) -> None:
+    path = tmp_path / "records.csv"
+    path.write_text(
+        "Key,ÖSL,Einfluss\nA,Biomasseproduktion ,pos\nA, Dürre  resistenz,1\n", encoding="utf-8"
+    )
+
+    raw = read_grouped_csv_records(str(path), output_key="trends")
+    assert raw["A"]["trends"][0]["ÖSL"] == "Biomasseproduktion "
+
+    result = read_grouped_csv_records(str(path), output_key="trends", normalize_whitespace=True)
+    assert result["A"] == {
+        "trends": [
+            {"ÖSL": "Biomasseproduktion", "Einfluss": "pos"},
+            {"ÖSL": "Dürre resistenz", "Einfluss": "1"},
+        ]
+    }
