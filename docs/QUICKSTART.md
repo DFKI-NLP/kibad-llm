@@ -163,13 +163,14 @@ intentionally changed.
 - **Branch naming**: `feat/`, `fix/`, `hotfix/`, `docs/`, `experiment/` prefixes, alphanumeric + hyphens only.
     Pushing to `main` is prohibited; PRs are reviewed and squash-merged.
 - **Experiment results live in a separate repository**, [kibad-llm-results](https://github.com/DFKI-NLP/kibad-llm-results)
-    (committed logs and predictions). Clone it into the gitignored `data/results`; branch and open PRs there
-    as described in [CONTRIBUTING-EXPERIMENTS.md](CONTRIBUTING-EXPERIMENTS.md).
+    (committed logs and predictions).
+    - For planning, naming, and documenting a **full reproducible experiment** (not just a one-off run), see its
+        [CONTRIBUTING-EXPERIMENTS.md](https://github.com/DFKI-NLP/kibad-llm-results/blob/main/docs/CONTRIBUTING-EXPERIMENTS.md).
+    - Clone it into the gitignored `data/results`; branch and open PRs there
+        as also described in its [CONTRIBUTING-EXPERIMENTS.md](https://github.com/DFKI-NLP/kibad-llm-results/blob/main/docs/CONTRIBUTING-EXPERIMENTS.md).
 - **`uv.lock`** is managed via `uv add`/`uv lock`, never hand-edited; explain dependency changes in the PR.
 - **Windows**: `uv sync --group cicd` fails there (`vllm` → `ray` ships no `win_amd64` wheels). Run
     lint/test/docs commands on Linux/macOS, WSL, or the cluster.
-- For planning, naming, and documenting a full reproducible experiment (not just a one-off run), see
-    [CONTRIBUTING-EXPERIMENTS.md](CONTRIBUTING-EXPERIMENTS.md).
 
 ## Where to go deeper
 
@@ -179,7 +180,7 @@ intentionally changed.
     complete local-CI command set.
 - [CONTRIBUTING-CODE.md](CONTRIBUTING-CODE.md) — coding principles, test layout, docstring/linking
     conventions, fixture regeneration, dependency changes.
-- [CONTRIBUTING-EXPERIMENTS.md](CONTRIBUTING-EXPERIMENTS.md) — how to plan, name, run, and document
+- [CONTRIBUTING-EXPERIMENTS.md (in kibad-llm-results)](https://github.com/DFKI-NLP/kibad-llm-results/blob/main/docs/CONTRIBUTING-EXPERIMENTS.md) — how to plan, name, run, and document
     a reproducible experiment.
 - [data/readme.md](/data/readme.md) — description of the datasets and reference files available.
 - [dfki-nlp.github.io/kibad-llm](https://dfki-nlp.github.io/kibad-llm/) — the rendered documentation site with
