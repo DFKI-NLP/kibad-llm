@@ -14,7 +14,7 @@
       "title": "BiodiversityFacetEnum",
       "type": "string"
     },
-    "EcosystemServiceFieldsHabitat": {
+    "EcosystemServiceFieldsWithoutHabitat": {
       "additionalProperties": false,
       "description": "Ein einzelner Zusammenhang zwischen Biodiversität und Ökosystemleistung für einen einzelnen,\nvorab festgelegten Lebensraum, bestehend aus Themenkomplex, Ökosystemleistung (ÖSL),\nBiodiv_Facette, Einfluss und Arten. Ein Text kann mehrere solcher Zusammenhänge beschreiben; jede\nInstanz bildet genau einen davon ab.",
       "properties": {
@@ -66,7 +66,7 @@
         "Einfluss",
         "Arten"
       ],
-      "title": "EcosystemServiceFieldsHabitat",
+      "title": "EcosystemServiceFieldsWithoutHabitat",
       "type": "object"
     },
     "EinflussEnum": {
@@ -161,13 +161,13 @@
     "ecosystem_service_trends": {
       "description": "Liste der im Text beschriebenen Zusammenhänge zwischen Biodiversität und Ökosystemleistungen.",
       "items": {
-        "$ref": "#/$defs/EcosystemServiceFieldsHabitat"
+        "$ref": "#/$defs/EcosystemServiceFieldsWithoutHabitat"
       },
       "title": "Ecosystem Service Trends",
       "type": "array"
     }
   },
-  "title": "EcosystemStudyEcosystemServiceTrendsHabitat",
+  "title": "EcosystemStudyEcosystemServiceTrendsWithoutHabitat",
   "type": "object",
   "required": [
     "ecosystem_service_trends"

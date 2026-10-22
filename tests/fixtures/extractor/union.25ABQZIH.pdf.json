@@ -7,7 +7,6 @@
     "landuse": [
       "Landwirtschaft"
     ],
-    "climate": [],
     "location": [
       {
         "country": "Deutschland"
@@ -28,15 +27,16 @@
         "federal_state": "Brandenburg"
       }
     ],
-    "habitat": [
-      "Boden",
-      "Agrar- und Offenland"
-    ],
     "ecosystem_type": [
       {
         "category": "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes",
         "description": "Peatland ecosystems primarily in northern Germany and the Alps, used for solar PV after rewetting"
       }
+    ],
+    "climate": [],
+    "habitat": [
+      "Boden",
+      "Agrar- und Offenland"
     ]
   },
   "structured_with_metadata_list": [

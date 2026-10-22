@@ -1,8 +1,5 @@
 {
   "structured": {
-    "habitat": [
-      "Boden"
-    ],
     "ecosystem_type": [
       {
         "category": "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
@@ -21,6 +18,9 @@
       {
         "species_group": "Vögel"
       }
+    ],
+    "habitat": [
+      "Boden"
     ]
   },
   "structured_with_metadata_list": [

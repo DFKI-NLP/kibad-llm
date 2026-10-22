@@ -1,14 +1,5 @@
 {
   "structured": {
-    "natural_region": [
-      "Alpenvorland",
-      "Norddeutsches Tiefland"
-    ],
-    "landuse": [
-      "Bau",
-      "Energieproduktion",
-      "Landwirtschaft"
-    ],
     "location": [
       {
         "country": "Deutschland",
@@ -40,9 +31,14 @@
         "federal_state": "Schleswig-Holstein"
       }
     ],
-    "habitat": [
-      "Agrar- und Offenland",
-      "Boden"
+    "natural_region": [
+      "Alpenvorland",
+      "Norddeutsches Tiefland"
+    ],
+    "landuse": [
+      "Bau",
+      "Energieproduktion",
+      "Landwirtschaft"
     ],
     "ecosystem_type": [
       {
@@ -53,6 +49,10 @@
         "category": "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes",
         "term": "Moore der subalpinen bis alpinen Stufe"
       }
+    ],
+    "habitat": [
+      "Agrar- und Offenland",
+      "Boden"
     ]
   },
   "structured_with_metadata_list": [
