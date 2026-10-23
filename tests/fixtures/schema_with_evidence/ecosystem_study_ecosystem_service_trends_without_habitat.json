@@ -177,6 +177,24 @@
           "additionalProperties": false,
           "description": "Zu welchem Themenkomplex gehört die gewählte Ökosystemleistung (ÖSL)?"
         },
+        "Themenkomplex": {
+          "type": "object",
+          "properties": {
+            "content": {
+              "$ref": "#/$defs/ThemenkomplexEnum"
+            },
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
+          ],
+          "additionalProperties": false,
+          "description": "Zu welchem Themenkomplex gehört die gewählte Ökosystemleistung (ÖSL)?"
+        },
         "Biodiv_Facette": {
           "type": "object",
           "properties": {

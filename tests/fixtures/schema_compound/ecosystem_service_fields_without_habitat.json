@@ -111,6 +111,10 @@
       "$ref": "#/$defs/ThemenkomplexEnum",
       "description": "Zu welchem Themenkomplex gehört die gewählte Ökosystemleistung (ÖSL)?"
     },
+    "Themenkomplex": {
+      "$ref": "#/$defs/ThemenkomplexEnum",
+      "description": "Zu welchem Themenkomplex gehört die gewählte Ökosystemleistung (ÖSL)?"
+    },
     "Biodiv_Facette": {
       "$ref": "#/$defs/BiodiversityFacetEnum",
       "description": "Welche dieser Biodiversitätsfacetten wird in der Studie betrachtet? Gemeint ist die Facette auf der erklärenden Seite (Ursache, unabhängige Variable), deren Einfluss (Einfluss) auf die Ökosystemleistung bzw. -funktion (ÖSL/ÖSF) in der Studie ausgewertet wird."
