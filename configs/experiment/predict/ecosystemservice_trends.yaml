@@ -11,7 +11,3 @@ defaults:
   - override /extractor: chunking
   - override /extractor/prompt_template: ecosystem_service
   - override /extractor/schema: ecosystem_service_habitat
-
-extractor:
-  # quote the evidence before committing to a value (see configs/extractor/_with_evidence.yaml)
-  evidence_before_content: true

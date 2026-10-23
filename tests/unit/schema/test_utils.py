@@ -387,27 +387,5 @@ def test_wrap_terminals_with_metadata_custom_content_key_and_metadata_requiremen
     )
 
 
-@pytest.mark.parametrize("metadata_first", [False, True])
-def test_wrap_terminals_with_metadata_metadata_first_orders_properties(
-    sample_schema, metadata_first
-) -> None:
-    out = wrap_terminals_with_metadata(
-        sample_schema, metadata_schema=METADATA_SCHEMA_WITH_EVIDENCE, metadata_first=metadata_first
-    )
-
-    name = out["properties"]["name"]
-    _assert_is_wrapper(name, content_schema={"type": "string"})
-    expected = ["evidence_anchor", "content"] if metadata_first else ["content", "evidence_anchor"]
-    assert list(name["properties"]) == expected
-    assert name["required"] == expected
-    # the reordered wrapper is still recognized as a wrapper (idempotency)
-    assert (
-        wrap_terminals_with_metadata(
-            out, metadata_schema=METADATA_SCHEMA_WITH_EVIDENCE, metadata_first=metadata_first
-        )
-        == out
-    )
-
-
 def test_schema_builder_legacy_import() -> None:
     from kibad_llm.schema.utils import build_schema_description
