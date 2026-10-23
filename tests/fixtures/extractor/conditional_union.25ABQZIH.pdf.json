@@ -3,7 +3,6 @@
     "landuse": [
       "Landwirtschaft"
     ],
-    "climate": [],
     "location": [
       {
         "country": "Deutschland",
@@ -22,13 +21,14 @@
         "federal_state": "Bayern"
       }
     ],
-    "habitat": [
-      "Boden"
-    ],
     "ecosystem_type": [
       {
         "category": "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes"
       }
+    ],
+    "climate": [],
+    "habitat": [
+      "Boden"
     ]
   },
   "structured_with_metadata_list": [

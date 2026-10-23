@@ -18,7 +18,7 @@ It uses LLMs to extract structured information from scientific literature PDFs.
 
 - **[Overview](CONTRIBUTING.md)** — PR workflow, branch conventions, and CI requirements
 - **[Source code guidelines](CONTRIBUTING-CODE.md)** — Coding standards, testing, and docstring conventions
-- **[Experiment guidelines](CONTRIBUTING-EXPERIMENTS.md)** — How to plan, run, and document experiments
+- **[Experiment guidelines (in kibad-llm-results)](https://github.com/DFKI-NLP/kibad-llm-results/blob/main/docs/CONTRIBUTING-EXPERIMENTS.md)** — How to plan, run, and document experiments
 
 ## Code reference
 

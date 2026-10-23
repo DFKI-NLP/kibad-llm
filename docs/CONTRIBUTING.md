@@ -176,7 +176,6 @@ Use
 - `docs/description-here` for documentation work. (other branches, e.g. `feat/` are expected to document their features too.)
 - `fix/description-here` for (bug)fixes.
 - `hotfix/description-here` for urgent fixes.
-- `experiment/description-here` for experiments (see [CONTRIBUTING-EXPERIMENTS.md](CONTRIBUTING-EXPERIMENTS.md))
 
 These prefixes don't just make branch names easier to read, but also allow for colour coding in tools like [lazy git](https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md#custom-branch-color).
 
@@ -200,7 +199,7 @@ They cover general implementation principles, test layout, source-code documenta
 
 ## Experiments
 
-The experiment guidelines live in [CONTRIBUTING-EXPERIMENTS.md](CONTRIBUTING-EXPERIMENTS.md).
+The experimental results are collected in the https://github.com/DFKI-NLP/kibad-llm-results, see there for guidelines the respective guidelines for contributing to the results repository.
 
 They cover how to plan, configure, run, track, and document reproducible experiments for this project.
 

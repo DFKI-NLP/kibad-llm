@@ -36,4 +36,6 @@ exclude = [
     # requests from CI runners (datacenter IPs) with 403, although the links are
     # valid and resolve fine from a normal browser / residential connection.
     '^https://platform\.openai\.com/',
+    # The results repo is private, so CI runners can't access it.
+    '^https://github\.com/DFKI-NLP/kibad-llm-results',
 ]

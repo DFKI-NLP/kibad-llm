@@ -14,31 +14,101 @@
       "title": "BiodiversityFacetEnum",
       "type": "string"
     },
-    "EcosystemServiceFieldsHabitat": {
+    "EcosystemServiceFieldsWithoutHabitat": {
       "additionalProperties": false,
       "description": "Ein einzelner Zusammenhang zwischen Biodiversität und Ökosystemleistung für einen einzelnen,\nvorab festgelegten Lebensraum, bestehend aus Themenkomplex, Ökosystemleistung (ÖSL),\nBiodiv_Facette, Einfluss und Arten. Ein Text kann mehrere solcher Zusammenhänge beschreiben; jede\nInstanz bildet genau einen davon ab.",
       "properties": {
         "Themenkomplex": {
-          "$ref": "#/$defs/ThemenkomplexEnum",
+          "type": "object",
+          "properties": {
+            "content": {
+              "$ref": "#/$defs/ThemenkomplexEnum"
+            },
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
+          ],
+          "additionalProperties": false,
           "description": "Zu welchem der folgenden Themenkomplexe gehört die in der Studie betrachtete Ökosystemleistung (ÖSL)?"
         },
         "ÖSL": {
-          "description": "Welche Ökosystemleistung wird in der Studie betrachtet? Gib eine kurze, allgemeine deutsche Bezeichnung (ein bis drei Wörter) an, nicht die konkrete Messgröße.",
+          "type": "object",
+          "properties": {
+            "content": {
+              "type": "string"
+            },
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
+          ],
+          "additionalProperties": false,
           "title": "Ösl",
-          "type": "string"
+          "description": "Welche Ökosystemleistung wird in der Studie betrachtet? Gib eine kurze, allgemeine deutsche Bezeichnung (ein bis drei Wörter) an, nicht die konkrete Messgröße."
         },
         "Biodiv_Facette": {
-          "$ref": "#/$defs/BiodiversityFacetEnum",
+          "type": "object",
+          "properties": {
+            "content": {
+              "$ref": "#/$defs/BiodiversityFacetEnum"
+            },
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
+          ],
+          "additionalProperties": false,
           "description": "Welche dieser Biodiversitätsfacetten wird in der Studie betrachtet? Gemeint ist die Facette auf der erklärenden Seite (Ursache, unabhängige Variable), deren Einfluss (Einfluss) auf die Ökosystemleistung bzw. -funktion (ÖSL/ÖSF) in der Studie ausgewertet wird."
         },
         "Einfluss": {
-          "$ref": "#/$defs/EinflussEnum",
+          "type": "object",
+          "properties": {
+            "content": {
+              "$ref": "#/$defs/EinflussEnum"
+            },
+            "evidence_anchor": {
+              "type": "string",
+              "description": "Verbatim excerpt from the source text supporting the extracted content."
+            }
+          },
+          "required": [
+            "content",
+            "evidence_anchor"
+          ],
+          "additionalProperties": false,
           "description": "Was ist der in der Studie gemessene Einfluss der Biodiversitätsfacette (Biodiv_Facette) auf die Ökosystemleistung bzw. -funktion (ÖSL/ÖSF)? Die Richtung bezieht sich auf die ÖSL/ÖSF (pos = die ÖSL/ÖSF nimmt mit höherer Ausprägung der Facette zu). pos, neg und neu gelten nur für kontinuierliche oder ordinale Prädiktoren, ja und nein für kategoriale Prädiktoren."
         },
         "Arten": {
           "description": "Welche Arten, Gattungen bzw. Artengruppen werden in der Studie untersucht? Gib die Namen so an, wie sie im Text verwendet werden, auf Deutsch. Falls der Text keinen deutschen Namen nennt, übersetze den Namen ins Deutsche; ist das nicht möglich, verwende den wissenschaftlichen Namen. Leere Liste, wenn keine Arten genannt werden.",
           "items": {
-            "type": "string"
+            "type": "object",
+            "properties": {
+              "content": {
+                "type": "string"
+              },
+              "evidence_anchor": {
+                "type": "string",
+                "description": "Verbatim excerpt from the source text supporting the extracted content."
+              }
+            },
+            "required": [
+              "content",
+              "evidence_anchor"
+            ],
+            "additionalProperties": false
           },
           "title": "Arten",
           "type": "array"
@@ -50,7 +120,7 @@
         "Biodiv_Facette",
         "Einfluss"
       ],
-      "title": "EcosystemServiceFieldsHabitat",
+      "title": "EcosystemServiceFieldsWithoutHabitat",
       "type": "object"
     },
     "EinflussEnum": {
@@ -81,12 +151,12 @@
     "ecosystem_service_trends": {
       "description": "Liste der im Text beschriebenen Zusammenhänge zwischen Biodiversität und Ökosystemleistungen.",
       "items": {
-        "$ref": "#/$defs/EcosystemServiceFieldsHabitat"
+        "$ref": "#/$defs/EcosystemServiceFieldsWithoutHabitat"
       },
       "title": "Ecosystem Service Trends",
       "type": "array"
     }
   },
-  "title": "EcosystemStudyEcosystemServiceTrendsHabitat",
+  "title": "EcosystemStudyEcosystemServiceTrendsWithoutHabitat",
   "type": "object"
 }

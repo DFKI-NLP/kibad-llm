@@ -1469,7 +1469,7 @@ class EcosystemStudyFeaturesCompoundsSimple(BaseEcosystemStudyFeatures):
 # (the grouping of the ÖSL), ÖSL (the studied variable), Biodiv_Facette (the biodiversity facet) and
 # Einfluss (the indicator variable). Arten is extracted, but ignored during evaluation
 # (`ignore_subfields`).
-class EcosystemServiceFieldsHabitat(CompoundFeature):
+class EcosystemServiceFieldsWithoutHabitat(CompoundFeature):
     """Ein einzelner Zusammenhang zwischen Biodiversität und Ökosystemleistung für einen einzelnen,
     vorab festgelegten Lebensraum, bestehend aus Themenkomplex, Ökosystemleistung (ÖSL),
     Biodiv_Facette, Einfluss und Arten. Ein Text kann mehrere solcher Zusammenhänge beschreiben; jede
@@ -1527,8 +1527,8 @@ class EcosystemServiceFieldsHabitat(CompoundFeature):
     )
 
 
-# Base schema for all habitats: like EcosystemServiceFieldsHabitat, but with the habitat as additional field.
-class EcosystemServiceFields(EcosystemServiceFieldsHabitat):
+# Base schema for all habitats: like EcosystemServiceFieldsWithoutHabitat, but with the habitat as additional field.
+class EcosystemServiceFields(EcosystemServiceFieldsWithoutHabitat):
     """Ein einzelner Zusammenhang zwischen Biodiversität und Ökosystemleistung, bestehend aus
     Themenkomplex, Ökosystemleistung (ÖSL), Biodiv_Facette, Einfluss, Arten und Lebensraum_Gruppiert.
     Pro betroffenem Lebensraum wird eine eigene Instanz erstellt.
@@ -1558,12 +1558,12 @@ class EcosystemStudyEcosystemServiceTrends(BaseEcosystemStudyFeatures):
     )
 
 
-class EcosystemStudyEcosystemServiceTrendsHabitat(BaseEcosystemStudyFeatures):
+class EcosystemStudyEcosystemServiceTrendsWithoutHabitat(BaseEcosystemStudyFeatures):
     """Angaben zu den im Text beschriebenen Zusammenhängen zwischen Biodiversität und
     Ökosystemleistungen für einen einzelnen, vorab festgelegten Lebensraum.
     """
 
-    ecosystem_service_trends: list[EcosystemServiceFieldsHabitat] = Field(
+    ecosystem_service_trends: list[EcosystemServiceFieldsWithoutHabitat] = Field(
         default_factory=list,
         alias="Zusammenhänge zwischen Biodiversität und Ökosystemleistungen",
         description="Liste der im Text beschriebenen Zusammenhänge zwischen Biodiversität und "
