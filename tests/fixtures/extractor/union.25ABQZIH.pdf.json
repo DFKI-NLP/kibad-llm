@@ -1,5 +1,15 @@
 {
   "structured": {
+    "ecosystem_type": [
+      {
+        "category": "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes",
+        "description": "Peatland ecosystems primarily in northern Germany and the Alps, used for solar PV after rewetting"
+      }
+    ],
+    "habitat": [
+      "Boden",
+      "Agrar- und Offenland"
+    ],
     "landuse": [
       "Landwirtschaft"
     ],
@@ -23,16 +33,10 @@
         "federal_state": "Brandenburg"
       }
     ],
-    "ecosystem_type": [
-      {
-        "category": "III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes",
-        "description": "Peatland ecosystems primarily in northern Germany and the Alps, used for solar PV after rewetting"
-      }
-    ],
     "climate": [],
-    "habitat": [
-      "Boden",
-      "Agrar- und Offenland"
+    "natural_region": [
+      "Norddeutsches Tiefland",
+      "Alpenvorland"
     ]
   },
   "structured_with_metadata_list": [
