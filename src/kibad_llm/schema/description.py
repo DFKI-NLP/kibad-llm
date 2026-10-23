@@ -44,6 +44,8 @@ class _Value:
     choices: tuple[str, ...] | None = None
     fields: tuple[_Field, ...] = ()
     items: _Value | None = None
+    # alternative object shapes of an anyOf/oneOf union with several structural branches
+    variants: tuple[_Value, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -142,16 +144,22 @@ class _SchemaInterpreter:
             choices=choices,
             fields=fields,
             items=items,
+            variants=value.variants,
         )
 
     @staticmethod
     def composition(keyword: str, alternatives: tuple[_Value, ...]) -> _Value:
-        """Combine enum constraints, or select a representative non-null display branch.
+        """Combine enum constraints, keep object variants, or select a representative branch.
 
-        Structural unions remain summaries of one branch, as in the original formatter.
-        Multi-branch object intersections require merging constraints and are unsupported.
+        anyOf/oneOf unions with several object branches keep all of them as variants, so
+        that each variant can be rendered with its own fields and choices. Other structural
+        unions remain summaries of one branch, as in the original formatter. Multi-branch
+        object intersections require merging constraints and are unsupported.
         """
         non_null = tuple(value for value in alternatives if value.type_name != "null")
+        object_branches = tuple(value for value in non_null if value.fields)
+        if keyword != "allOf" and len(object_branches) > 1:
+            return _Value(type_name="object", variants=object_branches)
         selected = next(
             (value for value in non_null if value.type_name),
             non_null[0] if non_null else alternatives[0],
@@ -199,6 +207,7 @@ class _RenderOptions:
     choices_separator: str
     indent_step: str
     include_field_descriptions: bool
+    variant_prefix: str
 
 
 def _render_fields(fields: tuple[_Field, ...], options: _RenderOptions, indent: int) -> list[str]:
@@ -235,6 +244,51 @@ def _render_fields(fields: tuple[_Field, ...], options: _RenderOptions, indent: 
                 for d in type_descriptions
             )
         lines.extend(_render_fields(target.fields, options, indent + 1))
+        lines.extend(_render_variants(target.variants, options, indent + 1))
+    return lines
+
+
+def _render_variants(
+    variants: tuple[_Value, ...], options: _RenderOptions, indent: int
+) -> list[str]:
+    """Render fields shared by all variants once, then each variant with its remaining fields.
+
+    A field is shared if it renders identically in every variant (same name, documentation,
+    and choices), so only the differing fields are repeated per variant.
+    """
+    if not variants:
+        return []
+
+    def rendered(variant: _Value) -> dict[str, list[str]]:
+        """Render each field of a variant on its own."""
+        return {f.name: _render_fields((f,), options, indent) for f in variant.fields}
+
+    per_variant = [rendered(variant) for variant in variants]
+    shared = {
+        name
+        for name, lines in per_variant[0].items()
+        if all(other.get(name) == lines for other in per_variant[1:])
+    }
+    lines = [
+        line
+        for name, field_lines in per_variant[0].items()
+        if name in shared
+        for line in field_lines
+    ]
+    prefix = options.indent_step * indent
+    for number, variant in enumerate(variants, start=1):
+        lines.append(f"{prefix}- {options.variant_prefix}{number}:")
+        if options.type_description_prefix is not None:
+            lines.extend(
+                f"{prefix}{options.indent_step}{options.type_description_prefix}{d.text}"
+                for d in variant.descriptions
+                if d.role == "type"
+            )
+        lines.extend(
+            _render_fields(
+                tuple(f for f in variant.fields if f.name not in shared), options, indent + 1
+            )
+        )
     return lines
 
 
@@ -253,6 +307,7 @@ def build_schema_description(
     include_type_descriptions: bool = True,
     indent: int = 0,
     root_schema: Mapping[str, Any] | None = None,
+    variant_prefix: str = "Variante ",
 ) -> str:
     """Build a human-readable description with explicit ownership of documentation.
 
@@ -265,7 +320,10 @@ def build_schema_description(
     schema locations is preserved.
 
     Local references, inline objects, arrays, nullable unions, and enum compositions
-    are supported. General structural unions display the first typed non-null branch.
+    are supported. anyOf/oneOf unions of several object types are rendered as numbered
+    variants: fields that render identically in all variants are shown once, the others per
+    variant together with its documentation. Other structural unions display the first typed
+    non-null branch.
     Enum unions combine choices; enum intersections keep their common choices.
     Cardinality follows the existing display convention: arrays use `0..*`, other
     fields use `0..1` when they have a default, otherwise `1`. This is a prompt
@@ -287,6 +345,7 @@ def build_schema_description(
         include_type_descriptions: Deprecated; use type_description_prefix=None.
         indent: Initial indentation (retained for compatibility).
         root_schema: Reference-resolution root when describing a subschema.
+        variant_prefix: Label before the number of each object variant of a union.
 
     Returns:
         A multiline description of the schema's fields and documentation.
@@ -312,6 +371,7 @@ def build_schema_description(
         choices_separator,
         indent_step,
         include_field_descriptions,
+        variant_prefix,
     )
     lines = []
     if type_description_prefix is not None:
