@@ -14,7 +14,10 @@ from kibad_llm.statistics import pdf as pdf_stats
 
 
 class PdfStatsTest(unittest.TestCase):
+    """Check input joins, duplicate policies, grouping, and aggregate output."""
+
     def setUp(self):
+        """Create nested PDF and markdown inputs and stub page counting."""
         temporary = TemporaryDirectory()
         self.addCleanup(temporary.cleanup)
         self.root = Path(temporary.name)
@@ -51,15 +54,29 @@ class PdfStatsTest(unittest.TestCase):
         self.addCleanup(counter.stop)
 
     def write_metadata(self, rows):
+        """Replace the metadata fixture with the supplied rows.
+
+        Args:
+            rows (list[list[str]]): Metadata key and language pairs.
+        """
         with self.metadata.open("w", newline="", encoding="utf-8-sig") as stream:
             writer = csv.writer(stream)
             writer.writerow(["Key", "Language"])
             writer.writerows(rows)
 
     def collect(self, *options):
+        """Collect a report using the fixture inputs and extra CLI options.
+
+        Args:
+            *options (str): Additional argument strings.
+
+        Returns:
+            report (dict): Aggregate report for the fixture inputs.
+        """
         return pdf_stats.collect(pdf_stats.parse_args([*self.argv, *options]))
 
     def test_recursive_gzip_totals_and_metadata_percentages(self):
+        """Count Unicode characters and load nested gzip files into CSV groups."""
         report = self.collect("--group-by", "Language")
         self.assertEqual(report["total"]["documents"], 2)
         self.assertEqual(report["total"]["pages"], 5)
@@ -73,19 +90,23 @@ class PdfStatsTest(unittest.TestCase):
         self.assertTrue(self.count_pages.call_args.args[1])
 
     def test_pdf_path_groups_use_input_folders(self):
+        """Attribute nested PDFs to their supplied input folder."""
         report = self.collect("--group-by", "pdf-path")
         self.assertEqual([row["group"] for row in report["groups"]], list(map(str, self.folders)))
 
     def test_identical_metadata_rows_are_accepted(self):
+        """Accept repeated metadata rows without counting a document twice."""
         self.write_metadata([["A", "en"], ["A", "en"], ["B", ""]])
         self.assertEqual(self.collect()["total"]["documents"], 2)
 
     def test_conflicting_metadata_fails(self):
+        """Reject differing metadata rows for the same key."""
         self.write_metadata([["A", "en"], ["A", "de"]])
         with self.assertRaisesRegex(ValueError, "conflicting content for 'A'"):
             self.collect()
 
     def test_identical_markdown_is_accepted_across_explicit_and_folder_inputs(self):
+        """Accept identical markdown despite differences in unused prediction fields."""
         duplicate = self.root / "duplicate.jsonl"
         duplicate.write_text(
             json.dumps({"file_name": "A.pdf", "text": "ä\n", "structured": {}}) + "\n",
@@ -95,6 +116,7 @@ class PdfStatsTest(unittest.TestCase):
         self.assertEqual(report["total"]["markdown_characters"], 5)
 
     def test_conflicting_markdown_fails_even_with_same_character_count(self):
+        """Compare markdown content rather than only its character count."""
         (self.markdown / "duplicate.jsonl").write_text(
             json.dumps({"file_name": "A.pdf", "text": "ab"}) + "\n", encoding="utf-8"
         )
@@ -102,6 +124,7 @@ class PdfStatsTest(unittest.TestCase):
             self.collect()
 
     def test_duplicate_pdfs_warn_and_keep_first_input_folder(self):
+        """Warn about duplicate PDF stems and keep the first folder's counts."""
         (self.folders[1] / "A.pdf").touch()
         with patch("sys.stderr", new_callable=io.StringIO) as stderr:
             report = self.collect("--group-by", "pdf-path", "--pdf-path", str(self.folders[0]))
@@ -111,6 +134,7 @@ class PdfStatsTest(unittest.TestCase):
         self.assertEqual(self.count_pages.call_count, 2)
 
     def test_missing_metadata_or_markdown_fails_or_warns_and_skips(self):
+        """Fail on missing matches by default and skip them only when requested."""
         for missing in ("metadata", "markdown"):
             with self.subTest(missing=missing):
                 self.write_metadata(
@@ -127,6 +151,7 @@ class PdfStatsTest(unittest.TestCase):
                 self.assertIn(f"missing {missing}", stderr.getvalue())
 
     def test_empty_markdown_and_zero_totals(self):
+        """Retain empty markdown and produce zero percentages for empty totals."""
         for file in self.markdown.rglob("*.jsonl*"):
             file.unlink()
         (self.markdown / "empty.jsonl").write_text(
@@ -143,10 +168,12 @@ class PdfStatsTest(unittest.TestCase):
         self.assertTrue(all(value == 0 for value in report["total"].values()))
 
     def test_unknown_csv_column_fails(self):
+        """Reject a grouping column absent from the metadata CSV."""
         with self.assertRaisesRegex(ValueError, "Unknown --group-by"):
             self.collect("--group-by", "Missing")
 
     def test_json_output_contains_only_aggregates(self):
+        """Print valid JSON without individual PDF records."""
         with (
             patch("sys.argv", ["pdf.py", *self.argv, "--format", "json"]),
             patch("sys.stdout", new_callable=io.StringIO) as stdout,
@@ -158,6 +185,7 @@ class PdfStatsTest(unittest.TestCase):
         self.assertNotIn("A.pdf", stdout.getvalue())
 
     def test_markdown_escapes_group_labels(self):
+        """Escape table delimiters and newlines and label empty CSV groups."""
         self.write_metadata([["A", "en|de\nfr"], ["B", ""]])
         with patch("sys.stdout", new_callable=io.StringIO) as stdout:
             pdf_stats.print_markdown(self.collect("--group-by", "Language"))
@@ -167,7 +195,10 @@ class PdfStatsTest(unittest.TestCase):
 
 
 class PageCountTest(unittest.TestCase):
+    """Check reader selection and page counts for compressed PDF objects."""
+
     def test_dependency_free_counter_and_flags(self):
+        """Default to PyMuPDF and reject zero matches in the approximate reader."""
         self.assertTrue(
             pdf_stats.parse_args(
                 ["--pdf-path", ".", "--markdown", ".", "--metadata", "m.csv"]
@@ -189,6 +220,7 @@ class PageCountTest(unittest.TestCase):
 
     @unittest.skipUnless(importlib.util.find_spec("pymupdf"), "PyMuPDF is not installed")
     def test_pymupdf_counts_compressed_page_objects(self):
+        """Read compressed page objects that the marker approximation cannot find."""
         import pymupdf
 
         with TemporaryDirectory() as folder:

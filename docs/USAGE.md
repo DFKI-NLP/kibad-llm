@@ -4,6 +4,7 @@
 
 - [Setup](#setup)
 - [Datasets](#datasets)
+- [PDF Dataset Statistics](#pdf-dataset-statistics)
 - [PDF Download Based on Zotero Groups](#pdf-download-based-on-zotero-groups)
     - [Prerequisites](#prerequisites-pdf-download)
     - [Downloading Papers](#downloading-papers)
@@ -47,6 +48,13 @@ cp .env.example .env
 ## Datasets
 
 See [data/readme.md](/data/readme.md) for an in-depth documentation of the various datasets and ground truth reference files available, as well as other potentially relevant data sources.
+
+## PDF Dataset Statistics
+
+Use `uv run -m kibad_llm.statistics.pdf` to summarize document counts, PDF pages, and
+markdown characters from PDF folders, converted JSONL files, and a metadata CSV.
+Output is JSON or Markdown, with optional grouping by input folder or metadata column.
+Run `uv run -m kibad_llm.statistics.pdf --help` for input options and counting rules.
 
 ## PDF Download Based on Zotero Groups
 

@@ -1,5 +1,19 @@
 #!/usr/bin/env python3
-"""Summarize PDF pages and markdown characters, optionally grouped by metadata."""
+"""Summarize PDF pages and markdown characters, optionally grouped by metadata.
+
+Attributes:
+    METRICS (tuple[str, ...]): Count fields included in totals and groups.
+
+Functions:
+    warn: Write a warning to standard error.
+    add_unique: Accept identical duplicate values and reject conflicts.
+    read_markdown: Load markdown texts from JSONL files and folders.
+    count_pages: Count pages with PyMuPDF or a standard-library approximation.
+    collect: Join inputs and aggregate counts and percentages.
+    print_markdown: Render a report as a Markdown table.
+    parse_args: Parse the command-line arguments.
+    main: Print the requested aggregate report.
+"""
 
 import argparse
 from collections import Counter, defaultdict
@@ -14,18 +28,45 @@ METRICS = ("documents", "pages", "markdown_characters")
 
 
 def warn(message):
+    """Write a warning to standard error.
+
+    Args:
+        message (str): Warning text without the severity prefix.
+    """
     print(f"Warning: {message}", file=sys.stderr)
 
 
 def add_unique(index, key, value, source):
-    """Accept identical duplicates; fail on conflicting content."""
+    """Accept identical duplicates; fail on conflicting content.
+
+    Args:
+        index (dict): Mapping to update in place.
+        key (str): Metadata key or PDF filename.
+        value (str | dict): Markdown text or metadata row to associate with the key.
+        source (str | Path): Input location to include in an error message.
+
+    Raises:
+        ValueError: The key already has a different value.
+    """
     if key in index and index[key] != value:
         raise ValueError(f"{source}: conflicting content for {key!r}")
     index[key] = value
 
 
 def read_markdown(paths):
-    """Index markdown text by PDF filename; ignore other prediction fields."""
+    """Index markdown text by PDF filename; ignore other prediction fields.
+
+    Args:
+        paths (list[Path]): JSONL or JSONL.GZ files, or folders to search recursively.
+
+    Returns:
+        markdown (dict[str, str]): Texts keyed by the JSONL records' PDF filenames.
+
+    Raises:
+        ValueError: An explicit file has an unsupported extension, or duplicate
+            filenames have conflicting markdown texts.
+        TypeError: A record's text is not a string.
+    """
     markdown = {}
     for path in paths:
         files = sorted(path.rglob("*")) if path.is_dir() else [path]
@@ -49,7 +90,22 @@ def read_markdown(paths):
 
 
 def count_pages(path, use_pymupdf):
-    """Count pages using the selected PDF reader."""
+    """Count pages using the selected PDF reader.
+
+    Args:
+        path (Path): PDF file to read.
+        use_pymupdf (bool): Use PyMuPDF when true, otherwise count page markers.
+
+    Returns:
+        pages (int): Page count from the selected reader.
+
+    Raises:
+        ValueError: The standard-library counter finds no uncompressed page markers.
+
+    Warning:
+        The standard-library approximation can miss compressed page objects and
+        count obsolete revisions. Use PyMuPDF for reliable counts.
+    """
     if use_pymupdf:
         import pymupdf
 
@@ -64,7 +120,25 @@ def count_pages(path, use_pymupdf):
 
 
 def collect(args):
-    """Join PDFs to metadata and markdown, then keep only aggregate counts."""
+    """Join PDFs to metadata and markdown, then keep only aggregate counts.
+
+    Duplicate PDF stems keep the first occurrence and print a warning to standard
+    error. Missing matches warn and skip when requested. Selecting the approximate
+    page counter also prints a warning to standard error.
+
+    Args:
+        args (argparse.Namespace): Options returned by `parse_args`.
+
+    Returns:
+        report (dict): Total counts and percentages, the grouping column, and group statistics.
+            Percentages use the totals after skipping and deduplication.
+
+    Raises:
+        ValueError: The metadata key column or grouping column is invalid, input
+            content conflicts, or required metadata or markdown is missing and
+            skipping is disabled.
+        NotADirectoryError: A PDF input path is not a directory.
+    """
     metadata = {}
     with args.metadata.open(newline="", encoding="utf-8-sig") as stream:
         reader = csv.DictReader(stream)
@@ -120,6 +194,14 @@ def collect(args):
                 groups[group].update(counts)
 
     def statistics(counts):
+        """Calculate counts and their percentages of the retained totals.
+
+        Args:
+            counts (Counter): Counts for the total or one group.
+
+        Returns:
+            statistics (dict): Counts and percentage fields, using zero for empty totals.
+        """
         return {
             **{metric: counts[metric] for metric in METRICS},
             **{
@@ -138,7 +220,11 @@ def collect(args):
 
 
 def print_markdown(report):
-    """Print totals and group shares as a Markdown table."""
+    """Print totals and group shares as a Markdown table.
+
+    Args:
+        report (dict): Aggregate report returned by `collect`.
+    """
     print("| Group | Documents | % | Pages | % | Markdown characters | % |")
     print("| --- | ---: | ---: | ---: | ---: | ---: | ---: |")
     rows = [("Total", report["total"])]
@@ -152,8 +238,19 @@ def print_markdown(report):
 
 
 def parse_args(argv=None):
+    """Parse the command-line arguments.
+
+    Args:
+        argv (list[str] | None): Argument strings, or None to use the process arguments.
+
+    Returns:
+        args (argparse.Namespace): Input paths, grouping, output format, and reader options.
+
+    Raises:
+        SystemExit: Help was requested or the supplied arguments are invalid.
+    """
     parser = argparse.ArgumentParser(
-        description=__doc__,
+        description=__doc__.split("\n\n", 1)[0],
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""Matching and counting:
   PDF stem = metadata CSV 'Key'; PDF filename = JSONL 'file_name'.
@@ -226,6 +323,7 @@ Example:
 
 
 def main():
+    """Read process arguments and print an aggregate JSON or Markdown report."""
     args = parse_args()
     report = collect(args)
     if args.format == "json":
