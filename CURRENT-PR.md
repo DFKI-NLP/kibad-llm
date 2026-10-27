@@ -50,17 +50,8 @@ git clone git@github.com:DFKI-NLP/kibad-llm-results.git data/kibad-llm-results
 ```
 
 The captured outputs use results revision `dc7afea1bcc5af89b8e400712b4886079e301256`.
-At that revision, the core test markdown is stored under `faktencheck/test/`. To use the
-`faktencheck/splits/test/` path in the example, create a local copy:
-
-```bash
-mkdir -p data/kibad-llm-results/data/processed/faktencheck/splits/test
-cp data/kibad-llm-results/data/processed/faktencheck/test/predictions.jsonl.gz \
-  data/kibad-llm-results/data/processed/faktencheck/splits/test/
-```
-
-Alternatively, pass `--markdown data/kibad-llm-results/data/processed/faktencheck/test`
-directly. The AuO markdown already lives under `faktencheck/test-set-AuO-WVC/`.
+The core test markdown is stored under `faktencheck/test/`; the AuO markdown lives under
+`faktencheck/test-set-AuO-WVC/`.
 
 ### Metadata CSV
 
@@ -83,7 +74,7 @@ stderr. The package's timestamped startup INFO message is omitted.
 ```bash
 uv run -m kibad_llm.statistics.pdf \
   --pdf-path data/cluster-mirror/splits/test \
-  --markdown data/kibad-llm-results/data/processed/faktencheck/splits/test \
+  --markdown data/kibad-llm-results/data/processed/faktencheck/test \
   --metadata "data/external/faktencheck-db/Faktencheck Artenvielfalt Literaturdatenbank-neu.xlsx - Faktencheck Artenvielfalt Liter.csv" \
   --group-by "Item Type" \
   --skip-missing-metadata-or-md
@@ -283,3 +274,7 @@ Warning: data/cluster-mirror/test-set-AuO-WVC/ZVXC3I83.pdf: missing metadata; sk
 - `lychee --config lychee.toml --root-dir ./site "site/**/*.html"`: passed, 0 errors.
 
 </details>
+
+## TODO
+
+- [ ] remove CURRENT-PR.md before merge
