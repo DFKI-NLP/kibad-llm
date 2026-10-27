@@ -122,6 +122,9 @@ def count_pages(path, use_pymupdf):
 def collect(args):
     """Join PDFs to metadata and markdown, then keep only aggregate counts.
 
+    Metadata matching is performed only when a CSV is supplied. Grouping by a CSV
+    column requires metadata; grouping by the input PDF folder is always available.
+
     Duplicate PDF stems keep the first occurrence and print a warning to standard
     error. Missing matches warn and skip when requested. Selecting the approximate
     page counter also prints a warning to standard error.
@@ -134,21 +137,27 @@ def collect(args):
             Percentages use the totals after skipping and deduplication.
 
     Raises:
-        ValueError: The metadata key column or grouping column is invalid, input
+        ValueError: A CSV grouping column is requested without metadata, the
+            metadata key column or grouping column is invalid, input
             content conflicts, or required metadata or markdown is missing and
             skipping is disabled.
         NotADirectoryError: A PDF input path is not a directory.
     """
     metadata = {}
-    with args.metadata.open(newline="", encoding="utf-8-sig") as stream:
-        reader = csv.DictReader(stream)
-        columns = reader.fieldnames or []
-        if "Key" not in columns:
-            raise ValueError("Metadata CSV must have a 'Key' column")
-        if args.group_by and args.group_by not in ["pdf-path", *columns]:
-            raise ValueError(f"Unknown --group-by {args.group_by!r}; choose pdf-path or {columns}")
-        for row in reader:
-            add_unique(metadata, row["Key"], row, args.metadata)
+    if args.metadata is None and args.group_by not in (None, "pdf-path"):
+        raise ValueError(f"--group-by {args.group_by!r} requires --metadata")
+    if args.metadata is not None:
+        with args.metadata.open(newline="", encoding="utf-8-sig") as stream:
+            reader = csv.DictReader(stream)
+            columns = reader.fieldnames or []
+            if "Key" not in columns:
+                raise ValueError("Metadata CSV must have a 'Key' column")
+            if args.group_by and args.group_by not in ["pdf-path", *columns]:
+                raise ValueError(
+                    f"Unknown --group-by {args.group_by!r}; choose pdf-path or {columns}"
+                )
+            for row in reader:
+                add_unique(metadata, row["Key"], row, args.metadata)
     markdown = read_markdown(args.markdown)
     if not args.use_pymupdf:
         warn(
@@ -171,7 +180,7 @@ def collect(args):
                 continue
             seen[key] = path
             missing = []
-            if key not in metadata:
+            if args.metadata is not None and key not in metadata:
                 missing.append("metadata")
             if path.name not in markdown:
                 missing.append("markdown")
@@ -254,11 +263,14 @@ def parse_args(argv=None):
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""Matching and counting:
   PDF stem = metadata CSV 'Key'; PDF filename = JSONL 'file_name'.
+  Without --metadata, metadata matching is disabled; only pdf-path grouping
+  is available. Grouping by a CSV column requires --metadata.
   Characters = len(JSONL 'text'), including whitespace and markdown syntax.
   Identical metadata rows or markdown texts for a key are accepted; conflicts
   raise an error. Other JSONL fields are ignored. Duplicate PDF stems warn and
   keep the first PDF, in input-folder order then sorted path order.
-  Missing metadata/markdown fails unless --skip-missing-metadata-or-md is set.
+  Missing markdown or supplied metadata fails unless
+  --skip-missing-metadata-or-md is set.
   Empty markdown is valid. Empty CSV group values form a single group.
   Percentages use totals after skipping and deduplication; zero totals give 0%.
   Warnings go to stderr. Output contains aggregates only.
@@ -295,7 +307,12 @@ Example:
         metavar="PATH",
         help="JSONL/JSONL.GZ files or recursively searched folders; may be repeated",
     )
-    parser.add_argument("--metadata", type=Path, required=True, metavar="CSV", help="Metadata CSV")
+    parser.add_argument(
+        "--metadata",
+        type=Path,
+        metavar="CSV",
+        help="Optional metadata CSV; required for grouping by a CSV column",
+    )
     parser.add_argument(
         "--group-by",
         metavar="COLUMN",
@@ -310,7 +327,7 @@ Example:
     parser.add_argument(
         "--skip-missing-metadata-or-md",
         action="store_true",
-        help="Warn and skip PDFs missing metadata or markdown (default: fail)",
+        help="Warn and skip PDFs missing markdown or supplied metadata (default: fail)",
     )
     parser.add_argument(
         "--dont-use-pymupdf",

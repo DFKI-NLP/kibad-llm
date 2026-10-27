@@ -1,8 +1,8 @@
 # Add PDF dataset statistics command
 
-Add `uv run -m kibad_llm.statistics.pdf` to summarize document counts, PDF pages, and markdown characters across PDF folders and converted JSONL files, joined to the Faktencheck metadata CSV. Output is aggregate JSON or Markdown, optionally grouped by input folder or metadata column, with percentages of each retained total.
+Add `uv run -m kibad_llm.statistics.pdf` to summarize document counts, PDF pages, and markdown characters across PDF folders and converted JSONL files, optionally joined to the Faktencheck metadata CSV. Output is aggregate JSON or Markdown, optionally grouped by input folder or metadata column, with percentages of each retained total. Without `--metadata`, totals and grouping by input folder work without metadata matching; grouping by a CSV column requires `--metadata`.
 
-Identical duplicate metadata and markdown are accepted; conflicts fail. Duplicate PDFs warn and keep the first occurrence. Missing metadata or markdown fails unless `--skip-missing-metadata-or-md` is supplied. PyMuPDF is the default page reader; `--dont-use-pymupdf` enables an approximate standard-library counter. The PR includes usage and API documentation and 14 regression tests. No dependency or migration changes are required. No linked issue or dependent PR.
+Identical duplicate metadata and markdown are accepted; conflicts fail. Duplicate PDFs warn and keep the first occurrence. Missing markdown or matches in a supplied metadata CSV fail unless `--skip-missing-metadata-or-md` is supplied. PyMuPDF is the default page reader; `--dont-use-pymupdf` enables an approximate standard-library counter. The PR includes usage and API documentation and 18 regression tests. No dependency or migration changes are required. No linked issue or dependent PR.
 
 ## Reviewer testing
 
@@ -246,7 +246,7 @@ Warning: data/cluster-mirror/test-set-AuO-WVC/ZVXC3I83.pdf: missing metadata; sk
 <summary>Click to expand</summary>
 
 - `uv run --group cicd prek run -a`: passed all hooks.
-- `uv run --group cicd pytest -m "not slow"`: 635 passed, 1 deselected.
+- `uv run --group cicd pytest -m "not slow"`: 639 passed, 1 deselected.
 - `node --test tests/unit/eval_dashboard/js/*.test.mjs`: 207 passed.
 - `uv run --group cicd properdocs build`: passed.
 - `lychee --config lychee.toml --root-dir ./site "site/**/*.html"`: passed, 0 errors.

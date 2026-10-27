@@ -94,6 +94,59 @@ class PdfStatsTest(unittest.TestCase):
         report = self.collect("--group-by", "pdf-path")
         self.assertEqual([row["group"] for row in report["groups"]], list(map(str, self.folders)))
 
+    def test_totals_and_pdf_path_groups_without_metadata(self):
+        """Count every matching PDF without reading or requiring metadata."""
+        expected = self.collect()["total"]
+        self.metadata.unlink()
+        for options in ([], ["--group-by", "pdf-path"]):
+            with self.subTest(options=options):
+                args = pdf_stats.parse_args([*self.argv[:-2], *options])
+                self.assertIsNone(args.metadata)
+                with patch("sys.stderr", new_callable=io.StringIO) as stderr:
+                    report = pdf_stats.collect(args)
+                self.assertEqual(report["total"], expected)
+                self.assertEqual(stderr.getvalue(), "")
+                if options:
+                    self.assertEqual(
+                        [row["group"] for row in report["groups"]], list(map(str, self.folders))
+                    )
+                else:
+                    self.assertEqual(report["groups"], [])
+
+    def test_csv_grouping_requires_metadata(self):
+        """Reject CSV grouping without metadata before reading markdown or PDFs."""
+        args = pdf_stats.parse_args([*self.argv[:-2], "--group-by", "Language"])
+        with patch.object(pdf_stats, "read_markdown") as read_markdown:
+            with self.assertRaisesRegex(ValueError, "requires --metadata"):
+                pdf_stats.collect(args)
+        read_markdown.assert_not_called()
+        self.count_pages.assert_not_called()
+
+    def test_missing_markdown_without_metadata_fails_or_skips(self):
+        """Keep markdown matching strict when metadata is omitted."""
+        (self.markdown / "a.jsonl").unlink()
+        args = pdf_stats.parse_args(self.argv[:-2])
+        with self.assertRaisesRegex(ValueError, "missing markdown"):
+            pdf_stats.collect(args)
+        args.skip_missing_metadata_or_md = True
+        with patch("sys.stderr", new_callable=io.StringIO) as stderr:
+            report = pdf_stats.collect(args)
+        self.assertEqual(report["total"]["documents"], 1)
+        self.assertEqual(report["total"]["pages"], 3)
+        self.assertEqual(report["total"]["markdown_characters"], 3)
+        self.assertIn("missing markdown", stderr.getvalue())
+        self.assertNotIn("missing metadata", stderr.getvalue())
+
+    def test_empty_supplied_metadata_still_requires_matches(self):
+        """Treat a supplied empty CSV as enabled metadata matching."""
+        self.write_metadata([])
+        with self.assertRaisesRegex(ValueError, "missing metadata"):
+            self.collect()
+        with patch("sys.stderr", new_callable=io.StringIO) as stderr:
+            report = self.collect("--skip-missing-metadata-or-md")
+        self.assertEqual(report["total"]["documents"], 0)
+        self.assertEqual(stderr.getvalue().count("missing metadata"), 2)
+
     def test_identical_metadata_rows_are_accepted(self):
         """Accept repeated metadata rows without counting a document twice."""
         self.write_metadata([["A", "en"], ["A", "en"], ["B", ""]])

@@ -52,8 +52,9 @@ See [data/readme.md](/data/readme.md) for an in-depth documentation of the vario
 ## PDF Dataset Statistics
 
 Use `uv run -m kibad_llm.statistics.pdf` to summarize document counts, PDF pages, and
-markdown characters from PDF folders, converted JSONL files, and a metadata CSV.
+markdown characters from PDF folders, converted JSONL files, and an optional metadata CSV.
 Output is JSON or Markdown, with optional grouping by input folder or metadata column.
+Grouping by a metadata column requires `--metadata`.
 Run `uv run -m kibad_llm.statistics.pdf --help` for input options and counting rules.
 
 ## PDF Download Based on Zotero Groups
