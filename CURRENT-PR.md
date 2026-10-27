@@ -1,16 +1,8 @@
 # Add PDF dataset statistics command
 
-Add `uv run -m kibad_llm.statistics.pdf` to summarize document counts, PDF pages, and
-markdown characters across PDF folders and converted JSONL files, joined to the
-Faktencheck metadata CSV. Output is aggregate JSON or Markdown, optionally grouped by
-input folder or metadata column, with percentages of each retained total.
+Add `uv run -m kibad_llm.statistics.pdf` to summarize document counts, PDF pages, and markdown characters across PDF folders and converted JSONL files, joined to the Faktencheck metadata CSV. Output is aggregate JSON or Markdown, optionally grouped by input folder or metadata column, with percentages of each retained total.
 
-Identical duplicate metadata and markdown are accepted; conflicts fail. Duplicate PDFs
-warn and keep the first occurrence. Missing metadata or markdown fails unless
-`--skip-missing-metadata-or-md` is supplied. PyMuPDF is the default page reader;
-`--dont-use-pymupdf` enables an approximate standard-library counter. The PR includes
-usage and API documentation and 14 regression tests. No dependency or migration changes
-are required. No linked issue or dependent PR.
+Identical duplicate metadata and markdown are accepted; conflicts fail. Duplicate PDFs warn and keep the first occurrence. Missing metadata or markdown fails unless `--skip-missing-metadata-or-md` is supplied. PyMuPDF is the default page reader; `--dont-use-pymupdf` enables an approximate standard-library counter. The PR includes usage and API documentation and 14 regression tests. No dependency or migration changes are required. No linked issue or dependent PR.
 
 ## Reviewer testing
 
@@ -21,15 +13,11 @@ uv run -m kibad_llm.statistics.pdf --help
 
 ## Reproducing the examples
 
-Run the commands from the `kibad-llm` repository root after `uv sync`. The inputs require
-access to the DFKI cluster, the private results repository, and the metadata spreadsheet;
-they are not included in this repository.
+Run the commands from the `kibad-llm` repository root after `uv sync`. The inputs require access to the DFKI cluster, the private results repository, and the metadata spreadsheet; they are not included in this repository.
 
 ### PDF files
 
-`data/cluster-mirror` is a local copy of selected directories under `/ds/text/kiba-d/`
-on the DFKI cluster. See [data/readme.md](/data/readme.md#dfki-cluster) for dataset origins.
-Replace `USER@CLUSTER_HOST` with your cluster SSH login and copy the two test sets:
+`data/cluster-mirror` is a local copy of selected directories under `/ds/text/kiba-d/` on the DFKI cluster. See [data/readme.md](/data/readme.md#dfki-cluster) for dataset origins. Replace `USER@CLUSTER_HOST` with your cluster SSH login and copy the two test sets:
 
 ```bash
 mkdir -p data/cluster-mirror/splits/test data/cluster-mirror/test-set-AuO-WVC
@@ -37,37 +25,27 @@ rsync -a USER@CLUSTER_HOST:/ds/text/kiba-d/splits/test/ data/cluster-mirror/spli
 rsync -a USER@CLUSTER_HOST:/ds/text/kiba-d/test-set-AuO-WVC/ data/cluster-mirror/test-set-AuO-WVC/
 ```
 
-On the cluster itself, the original `/ds/text/kiba-d/...` paths can be passed directly
-as `--pdf-path` instead.
+On the cluster itself, the original `/ds/text/kiba-d/...` paths can be passed directly as `--pdf-path` instead.
 
 ### Converted markdown
 
-Clone the private [kibad-llm-results repository](https://github.com/DFKI-NLP/kibad-llm-results)
-using an account with access:
+Clone the private [kibad-llm-results repository](https://github.com/DFKI-NLP/kibad-llm-results) using an account with access:
 
 ```bash
 git clone git@github.com:DFKI-NLP/kibad-llm-results.git data/kibad-llm-results
 ```
 
-The captured outputs use results revision `dc7afea1bcc5af89b8e400712b4886079e301256`.
-The core test markdown is stored under `faktencheck/test/`; the AuO markdown lives under
-`faktencheck/test-set-AuO-WVC/`.
+The captured outputs use results revision `dc7afea1bcc5af89b8e400712b4886079e301256`. The core test markdown is stored under `faktencheck/test/`; the AuO markdown lives under `faktencheck/test-set-AuO-WVC/`.
 
 ### Metadata CSV
 
-Open the [Faktencheck literature spreadsheet](https://docs.google.com/spreadsheets/d/1p7myxm5yAPq0MALP_GvVSoCf4ODSjU68/edit?gid=1666146796#gid=1666146796),
-select its first sheet (gid `1666146796`), and use **File → Download → Comma-separated
-values (.csv)** to export the current sheet. Create `data/external/faktencheck-db/` if
-needed and save the download there as:
+Open the [Faktencheck literature spreadsheet](https://docs.google.com/spreadsheets/d/1p7myxm5yAPq0MALP_GvVSoCf4ODSjU68/edit?gid=1666146796#gid=1666146796), select its first sheet (gid `1666146796`), and use **File → Download → Comma-separated values (.csv)** to export the current sheet. Create `data/external/faktencheck-db/` if needed and save the download there as:
 
 ```text
 Faktencheck Artenvielfalt Literaturdatenbank-neu.xlsx - Faktencheck Artenvielfalt Liter.csv
 ```
 
-The outputs below were captured on 2026-10-27 using the local CSV export with 2,282
-metadata rows. Later spreadsheet edits or dataset updates can change the results.
-The tables show stdout in full; expandable sections contain every warning line from
-stderr. The package's timestamped startup INFO message is omitted.
+The outputs below were captured on 2026-10-27 using the local CSV export with 2,282 metadata rows. Later spreadsheet edits or dataset updates can change the results. The tables show stdout in full; expandable sections contain every warning line from stderr. The package's timestamped startup INFO message is omitted.
 
 ## Core schema test set
 
