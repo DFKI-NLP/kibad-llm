@@ -15,6 +15,7 @@ Modules:
     llms: LLM provider integrations (OpenAI, vLLM).
     metrics: Concrete metric implementations (e.g., F1, confusion matrix, error collection).
     schema: Shared type definitions and schema utilities.
+    statistics: Descriptive statistics for input datasets.
     hydra_callbacks: Hydra lifecycle callbacks.
     utils: General-purpose helpers.
 """
