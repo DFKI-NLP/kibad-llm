@@ -22,7 +22,7 @@ The agreed scope is to finish the existing talk: address the remaining comments,
 4. Preserve the two task panels on slide 11 and modify the lower strip. Use a **combined, deduplicated, character-weighted** source-type chart.
 5. Retain the scale teaser: **“≈1,500 document inputs across development and testing.”**
 6. Colour-code open-weight versus proprietary models consistently on slides 12 and 16.
-7. Use **Qwen 3 only** on slide 17; remove GPT-5 and the average across open-weight model families from that slide.
+7. Use **Qwen 3 only** and **version B** on slide 17: detect habitat + species group + variable, then categorise direction on matched triples. Remove GPT-5 and the average across model families.
 8. Present F1 as **points on a 0–100 scale**, not a percentage of correct answers.
 9. Omit the legal/governance slide 25. Its comment is considered resolved; no request to Luisa is needed.
 10. Omit the software licence detail. The repository licence is not considered final enough to report in the talk.
@@ -208,51 +208,52 @@ For complete trend extraction, GPT-5 recall is **48.6%** (37.8% for Qwen); Qwen 
 
 ### Slide 17 — Detection versus categorisation
 
-**Final decision:** show **Qwen 3 only**, not GPT-5 and not the mean across the four open-weight model families. Qwen 3 was the best open model for complete trend extraction. Repeated seeds of this one model may still be summarized with a mean and SD.
+**Final decision:** use **version B**, showing **Qwen 3 only**, not GPT-5 or an average across open-weight model families. The variable is part of the detected trend target; categorisation assigns its direction. Qwen 3 was the best open model for complete trend extraction. Means and SDs summarize repeated seeds of this one model.
 
 **Verified checkpoint:** `Qwen/Qwen3-30B-A3B-Thinking-2507`.
 
 | Evaluation | Qwen F1 points, mean ± sample SD |
 | --- | ---: |
-| Detection: habitat–species-group pair | **49.6 ± 0.9** |
-| Variable alone, conditional on detection | **71.5 ± 1.1** |
-| Variable + direction, conditional on detection | **47.7 ± 1.6** |
+| Detection: habitat + species group + variable | **37.3 ± 1.1** |
+| Direction categorisation, conditional on a matched triple | **66.9 ± 1.5** |
 | Complete four-field extraction | **25.5 ± 1.2** |
 
-These are three repetitions with seeds **42, 1337, 7331** from the corrected agricultural/open-land test experiment, **PR #586**. Do not substitute the older #549 results. Appendix B gives the provenance, individual values and original file paths.
+These scores were recomputed from the three existing prediction runs with seeds **42, 1337, 7331** from the corrected agricultural/open-land test experiment, **PR #586**. No new LLM inference was run. The complete-extraction result reproduces the original score exactly. Appendix B contains the derivation, raw counts, input paths, checksums, and tested reproduction code.
+
+**These replace the earlier version A diagnostics of 49.6 for habitat–group detection and 47.7 for joint variable/direction categorisation. Do not reuse those numbers with version B labels.** The manuscript's original breakdown uses version A; the new version B diagnostics are a re-evaluation of the same outputs.
 
 #### What the evaluations actually mean
 
-The existing metrics support a detection/categorisation interpretation, with a specific definition of detection. They are different views of the same predictions; separate inference stages are not required.
-
-| Evaluation | Matching unit | Treatment of missed/extra base pairs |
+| Evaluation | Matching unit | Treatment of missed/extra targets |
 | --- | --- | --- |
-| Detection | Document-level **habitat + species-group pair**, projected from trend tuples; variable/direction ignored. | Both penalized. |
-| Conditional categorisation | **Variable + direction** combinations for base pairs present in both prediction and reference. | Pairs found on only one side are excluded. |
+| Detection | Document-level **habitat + species group + biodiversity variable** triple, projected from extracted trend tuples; direction ignored. | Both penalized. |
+| Conditional categorisation | **Trend direction** labels for triples present in both prediction and reference. | Triples found on only one side are excluded. |
 | Complete extraction | Exact **habitat + species group + variable + direction** tuple. | Both penalized. |
+
+The distinction is between identifying **what changes** and assigning **how it changes**. The variable belongs to the target because abundance, species number, and effective species number can have different trends for the same habitat and organism group. This is a choice of evaluation identity, not a claim that biodiversity variables cannot be mentioned outside trend statements.
 
 Example reference: `agricultural land · birds · abundance · negative`.
 
-- Predicting the same habitat and species group with a **positive** direction succeeds at detection but fails at categorisation and complete extraction.
-- Missing that base pair hurts detection and complete extraction; it contributes nothing to the conditional categorisation score.
-- Several trends with the same habitat–group pair collapse to one detection target. This is not detection of every individual evidence passage or trend statement. Such an evaluation would need a more specific statement identity, variable, or evidence annotation.
+- Predicting the same habitat, species group, and variable with a **positive** direction succeeds at detection but fails at categorisation and complete extraction.
+- Predicting **species richness** instead of abundance is a missed reference target plus an extra predicted target. That unmatched triple is excluded from the conditional direction score.
+- Reference and prediction directions are compared as **sets per document and triple**, not as one mandatory direction label. Multiple directions may describe different observations, subgroups, places, or periods not distinguished by the evaluated schema.
+- There are **270 reference triples**, compared with 225 habitat–group pairs. Of those pairs, **43 involve multiple variables**. **22 reference triples have multiple direction labels**. Even the three-field target is therefore not a unique identifier for every evidence passage or underlying observation.
 
-Useful configuration files, relative to the repository root:
+Useful existing files, relative to the repository root:
 
-- `configs/experiment/evaluate/organism_trends_f1_micro_base_entries.yaml`.
-- `configs/experiment/evaluate/organism_trends_f1_micro_conditional_variable_only.yaml`.
-- `configs/experiment/evaluate/organism_trends_f1_micro_conditional_variable_and_trend.yaml`.
-- `configs/experiment/evaluate/organism_trends_f1_micro.yaml`.
+- `configs/experiment/evaluate/organism_trends_f1_micro.yaml`: full-tuple F1; version B detection uses the same metric while additionally ignoring `Trend`.
+- `configs/experiment/evaluate/organism_trends_confusion_matrix_conditional_trend_only.yaml`: already groups by habitat, group, and variable and scores direction; the new calculation uses that grouping with the F1 metric.
+- `src/kibad_llm/metrics/f1.py` and `src/kibad_llm/metrics/collection.py`: the existing micro-F1 and conditional grouping implementations.
 
 #### Suggested slide arrangement and interpretation
 
-Show detection **49.6** and conditional categorisation **47.7** as two diagnostic panels, with a visually separate **complete extraction: 25.5** panel below or alongside them. Add a small callout:
+Show **“Identify the trend target: 37.3”** and **“Assign its direction: 66.9”** as two diagnostic panels, with a visually separate **“Complete extraction: 25.5”** panel below or alongside them. Explicitly label the direction score **“on correctly matched targets.”**
 
-> Identifying the variable is easier; adding trend direction lowers conditional F1 from 71.5 to 47.7.
+Suggested takeaway:
 
-**Update the old takeaway:** detection is not the sole bottleneck for Qwen. Both finding the relevant pair and assigning the full variable–direction combination remain challenging. The conditionally evaluated subset must be labelled.
+> Finding the correct trend target is challenging; direction assignment works better once that target is found.
 
-This is a **diagnostic breakdown, not an arithmetic decomposition**. The units and evaluated subsets differ; do not multiply/add the F1 values or use a waterfall/stacked chart implying that relationship. Use a common 0–100 F1 axis where appropriate.
+The direction score is conditional on successful target matching, so it does not describe direction performance on missed or extra targets, or establish the performance of an independently run classifier supplied with gold targets. This is a **diagnostic breakdown, not an arithmetic decomposition**: do not add or multiply the F1 values or use a waterfall/stacked chart implying that relationship. Use a common 0–100 F1 axis where appropriate. Remove the old variable-only 71.5-point callout, which belongs to version A.
 
 ### Slide 25 — Legal/governance, hidden
 
@@ -334,7 +335,7 @@ Some later discussion in issue #383 still refers to #549. The corrected experime
 - [ ] Apply open/proprietary colours on slide 12 and correct the F1 wording.
 - [ ] Emphasize the recall priority on slide 14, keeping development/test findings separate.
 - [ ] Rebuild slide 16's chart without the open-model mean, apply the colour convention, and correct its takeaway/F1 wording.
-- [ ] Rebuild slide 17 for Qwen only, using verified values, conditional labels, and the revised interpretation.
+- [ ] Rebuild slide 17 for Qwen only using version B: detection 37.3, conditional direction categorisation 66.9, complete extraction 25.5; label the conditional subset.
 - [ ] Omit slide 25.
 - [ ] Check wording, charts, footers, builds, hidden/backup slides, and readability in the actual presentation application.
 - [ ] Confirm all 14 comment threads are addressed or deliberately omitted as documented; resolve comments after checking the edits.
@@ -346,66 +347,176 @@ The remaining choices are routine implementation details: precise colours, spaci
 
 Moved to [PR #636 comment](https://github.com/DFKI-NLP/kibad-llm/pull/636#issuecomment-6526264782).
 
-## Appendix B — Qwen results and averaging provenance
+## Appendix B — Version B: Qwen results, derivation, and reproduction
 
-The following analysis records the per-seed results and their original files. Paths inside it are relative to the repository root.
+This appendix supersedes the earlier version A slide diagnostics. Version B changes the evaluation projection and conditioning; the predictions, reference labels, checkpoint, and three seeds remain the same. Only this handover was updated; the slides and source data were not changed. No logs or predictions were copied.
 
-### Qwen 3 trend evaluation: verified presentation values
+### Inputs and provenance
 
-Checkpoint: `Qwen/Qwen3-30B-A3B-Thinking-2507`. Test habitat: Agrar- und Offenland. Results repository revision: `dc7afea1bcc5af89b8e400712b4886079e301256`.
+- Checkpoint: `Qwen/Qwen3-30B-A3B-Thinking-2507`.
+- Source experiment: [PR #586](https://github.com/DFKI-NLP/kibad-llm/pull/586), following [issue #583](https://github.com/DFKI-NLP/kibad-llm/issues/583). It corrects the forest-specific prompt and missing prediction inputs in the earlier #549/#574 trend runs.
+- Test habitat: Agrar- und Offenland; **430 prediction records per seed**, including documents without reference trends.
+- Prediction prompt override: `organism_trends_v1_with_chunking_AuO`.
+- Seeds: **42, 1337, 7331**; model override `qwen3_30b_in_process`.
+- Original results repository revision: `dc7afea1bcc5af89b8e400712b4886079e301256`.
+- Re-evaluation used the existing metric implementation at `kibad-llm` revision `a397ac2efe0798a3ec79096349f3fa6b93c05164`.
+- Reference CSV: `data/external/organism_trends/Weighted Vote Count Agrar- und Offenland Literatur - Sheet1.csv`.
+- Reference CSV SHA-256: `b4995a46fcd3f950f8fb3bb49c532929a40107c76c1a14dd0bbd4c41d600a350`.
 
-The corrected test experiment is [PR #586](https://github.com/DFKI-NLP/kibad-llm/pull/586), following [issue #583](https://github.com/DFKI-NLP/kibad-llm/issues/583). It replaces the earlier #549/#574 trend runs, which used forest-specific prompt text and lacked predictions for 11 reference PDFs. [Issue #521](https://github.com/DFKI-NLP/kibad-llm/issues/521#issuecomment-5660062464) identifies #586 as the final test experiment. The later comment on issue #383 mentioning #549 conflicts with that history; the numerical checks below identify #586 as matching the current manuscript.
+Original evaluation metadata is located under:
 
-Every value below was checked against the original per-run `job_return_value.json` files, including the model, corrected AuO prompt, seed, and `data.ALL.f1`. Those numbers match the `figure_data/*-ALL-data.json` samples.
+```text
+data/kibad-llm-results/logs/586_organism_trends_bestconfig_testset_rerun/
+  evaluate/multiruns/2026-09-03_14-46-39/{6,7,8}/job_return_value.json
+```
+
+Jobs 6, 7, and 8 correspond to seeds 42, 1337, and 7331. Their metadata identifies the prediction file for each run. The three prediction files are below `data/kibad-llm-results/predictions/586_organism_trends_bestconfig_testset_rerun/2026-08-27_16-03-08/`:
+
+- Seed 42: `2026-08-27_16-03-10_301281/predictions.jsonl`; SHA-256 `283973272d29a0626328701aa294412c375a4713debdda121544f59be0025d7d`.
+- Seed 1337: `2026-08-28_00-51-21_102508/predictions.jsonl`; SHA-256 `3c821888db2f5215ae28feff4602c0f69f955867ec8ff9ccacfae4213c8a7363`.
+- Seed 7331: `2026-08-28_09-41-01_994483/predictions.jsonl`; SHA-256 `5c9836edf87eaaab01d59fb3cd82b0863e8cdc1a0d85022c84484056a1a41c20`.
+
+### Exact derivation
+
+Use the existing `F1MicroMultipleFieldsMetric`, reporting its **`ALL` micro-average**, not the `AVG` macro-average:
+
+1. **Detection B:** compare sets of `(habitat, group, variable)` triples per document. Ignore `Trend` and `Untergruppe_RoteListen`. Include missed and extra triples.
+2. **Direction categorisation B:** group each document's tuples by `(habitat, group, variable)`; compare sets of `Trend` values only for groups present in both prediction and reference (`ignore_missing_entries=True`). Exclude unmatched triples.
+3. **Complete extraction:** compare full four-field tuples, ignoring `Untergruppe_RoteListen`, as in the original experiment.
+4. Retain all prediction documents. Missing reference records are empty reference sets (`allow_missing_references=True`); they can contribute false positives to detection and complete extraction. Missing predictions for reference documents remain an error.
+5. Within each seed, pool TP/FP/FN over documents and compute precision, recall, and F1. Average the **three run-level scores** and report the **sample SD (`ddof=1`)**. Multiply by 100 for F1 points and precision/recall percentages. Do not pool repeated seeds, average model families, or calculate F1 from averaged precision and recall.
+
+The computations use exact enum-label matching and set deduplication per document. They do not score evidence spans or distinct observations sharing the same evaluated fields. A neutral/no-change direction (`no`) counts as a trend category, not as absence of a detected target.
+
+### Per-seed F1 points
 
 | Evaluation | Seed 42 | Seed 1337 | Seed 7331 | Mean F1 points | Sample SD (points) |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| Detection: habitat + species-group pair | 48.473968 | 50.181818 | 50.000000 | 49.551929 | 0.937958 |
-| Variable, conditional on detected pair | 70.360111 | 72.576177 | 71.549296 | 71.495195 | 1.109023 |
-| Variable + direction, conditional on detected pair | 46.881720 | 49.576271 | 46.623094 | 47.693695 | 1.635479 |
-| Complete four-field extraction | 24.660633 | 26.896552 | 25.000000 | 25.519062 | 1.204949 |
+| Detection B: habitat + group + variable | 36.079545 | 38.081395 | 37.685460 | 37.282134 | 1.060120 |
+| Direction categorisation B, conditional | 67.283951 | 68.221574 | 65.243902 | 66.916476 | 1.522469 |
+| Complete extraction | 24.660633 | 26.896552 | 25.000000 | 25.519062 | 1.204949 |
 
-#### Reconstructing the manuscript averages
+### Raw counts
 
-Per-run micro-F1 is computed from that run's pooled TP, FP and FN counts. The model result is the arithmetic mean of the three run-level F1 values (seeds 42, 1337, 7331), not F1 recomputed from averaged precision and recall and not a merged prediction ensemble. An equal-weight mean of the four open-model results reproduces the manuscript/slide values:
+| Seed | Evaluation | TP | FP | FN | Reference support (TP + FN) |
+| --- | --- | ---: | ---: | ---: | ---: |
+| 42 | Detection B: habitat + group + variable | 127 | 307 | 143 | 270 |
+| 42 | Direction categorisation B, conditional | 109 | 77 | 29 | 138 |
+| 42 | Complete extraction | 109 | 481 | 185 | 294 |
+| 1337 | Detection B: habitat + group + variable | 131 | 287 | 139 | 270 |
+| 1337 | Direction categorisation B, conditional | 117 | 83 | 26 | 143 |
+| 1337 | Complete extraction | 117 | 459 | 177 | 294 |
+| 7331 | Detection B: habitat + group + variable | 127 | 277 | 143 | 270 |
+| 7331 | Direction categorisation B, conditional | 107 | 82 | 32 | 139 |
+| 7331 | Complete extraction | 107 | 455 | 187 | 294 |
 
-| Evaluation | GPT OSS | Mistral | Gemma | Qwen | Open-model mean |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| Detection: habitat + species-group pair | 36.678679 | 34.765966 | 32.252705 | 49.551929 | 38.312320 |
-| Variable, conditional on detected pair | 74.420739 | 66.868308 | 73.191206 | 71.495195 | 71.493862 |
-| Variable + direction, conditional on detected pair | 46.805258 | 35.243350 | 39.980283 | 47.693695 | 42.430646 |
-| Complete four-field extraction | 19.161915 | 13.428457 | 14.107166 | 25.519062 | 18.054150 |
+Detection always has 270 reference triples. Conditional direction support varies by seed because only correctly matched triples are retained. It can exceed the number of matched triples (127, 131, 127) because a triple can have multiple reference directions. Full extraction has 294 reference four-tuples. These supports are counts of evaluated labels/tuples, not document counts.
 
-#### Source files
+### Summary, mean ± sample SD on a 0–100 scale
 
-**Detection: habitat + species-group pair**
+| Evaluation | Precision (%) | Recall (%) | F1 points |
+| --- | ---: | ---: | ---: |
+| Detection B: habitat + group + variable | 30.679343 ± 1.227810 | 47.530864 ± 0.855334 | 37.282134 ± 1.060120 |
+| Direction categorisation B, conditional | 57.905302 ± 1.119677 | 79.260702 ± 2.431590 | 66.916476 ± 1.522469 |
+| Complete extraction | 19.275407 ± 0.941465 | 37.755102 ± 1.799831 | 25.519062 ± 1.204949 |
 
-- Seed 42: `data/kibad-llm-results/logs/586_organism_trends_bestconfig_testset_rerun/evaluate/multiruns/2026-09-03_14-47-02/6/job_return_value.json`; support = 225.
-- Seed 1337: `data/kibad-llm-results/logs/586_organism_trends_bestconfig_testset_rerun/evaluate/multiruns/2026-09-03_14-47-02/7/job_return_value.json`; support = 225.
-- Seed 7331: `data/kibad-llm-results/logs/586_organism_trends_bestconfig_testset_rerun/evaluate/multiruns/2026-09-03_14-47-02/8/job_return_value.json`; support = 225.
+### Checks performed
 
-**Variable, conditional on detected pair**
+- Verified the model, corrected AuO prompt, seeds, and 430 prediction records per run against the source metadata.
+- Recomputed complete extraction and reproduced the original precision, recall, F1, and support for all three seeds to numerical tolerance `1e-12`.
+- Recomputed all three old diagnostics (habitat–group detection, conditional variable-only, conditional variable+direction) and reproduced their saved scores/supports at the same tolerance. This checks that the same data loading and reference conventions are used.
+- Independently reproduced TP/FP/FN for both version B diagnostics and complete extraction with plain set operations, without the project's metric classes. All counts agree.
+- Ran the reproduction code below and confirmed the same new scores.
 
-- Seed 42: `data/kibad-llm-results/logs/586_organism_trends_bestconfig_testset_rerun/evaluate/multiruns/2026-09-03_14-47-26/6/job_return_value.json`; support = 174.
-- Seed 1337: `data/kibad-llm-results/logs/586_organism_trends_bestconfig_testset_rerun/evaluate/multiruns/2026-09-03_14-47-26/7/job_return_value.json`; support = 178.
-- Seed 7331: `data/kibad-llm-results/logs/586_organism_trends_bestconfig_testset_rerun/evaluate/multiruns/2026-09-03_14-47-26/8/job_return_value.json`; support = 175.
+### Reproduction from the repository root
 
-**Variable + direction, conditional on detected pair**
+Use the existing project environment with dependencies installed. The following command reads the existing files, computes the three requested metrics, checks complete extraction against the saved original results, and prints the raw counts and summaries. It performs no inference and writes no files:
 
-- Seed 42: `data/kibad-llm-results/logs/586_organism_trends_bestconfig_testset_rerun/evaluate/multiruns/2026-09-03_14-47-44/6/job_return_value.json`; support = 191.
-- Seed 1337: `data/kibad-llm-results/logs/586_organism_trends_bestconfig_testset_rerun/evaluate/multiruns/2026-09-03_14-47-44/7/job_return_value.json`; support = 195.
-- Seed 7331: `data/kibad-llm-results/logs/586_organism_trends_bestconfig_testset_rerun/evaluate/multiruns/2026-09-03_14-47-44/8/job_return_value.json`; support = 192.
+```bash
+.venv/bin/python - <<'PYTHON'
+from hashlib import sha256
+import json
+from math import isclose
+from pathlib import Path
+from statistics import mean, stdev
 
-**Complete four-field extraction**
+from kibad_llm.dataset.csv import read_grouped_csv_records
+from kibad_llm.dataset.json import read_and_preprocess
+from kibad_llm.dataset.utils import merge_references_into_predictions
+from kibad_llm.metrics.f1 import F1MicroMultipleFieldsMetric
+from kibad_llm.utils.path import strip_filename_extension
 
-- Seed 42: `data/kibad-llm-results/logs/586_organism_trends_bestconfig_testset_rerun/evaluate/multiruns/2026-09-03_14-46-39/6/job_return_value.json`; support = 294.
-- Seed 1337: `data/kibad-llm-results/logs/586_organism_trends_bestconfig_testset_rerun/evaluate/multiruns/2026-09-03_14-46-39/7/job_return_value.json`; support = 294.
-- Seed 7331: `data/kibad-llm-results/logs/586_organism_trends_bestconfig_testset_rerun/evaluate/multiruns/2026-09-03_14-46-39/8/job_return_value.json`; support = 294.
+root = Path("data/kibad-llm-results")
+run = root / "logs/586_organism_trends_bestconfig_testset_rerun"
+csv = Path("data/external/organism_trends/Weighted Vote Count Agrar- und Offenland Literatur - Sheet1.csv")
+assert sha256(csv.read_bytes()).hexdigest() == "b4995a46fcd3f950f8fb3bb49c532929a40107c76c1a14dd0bbd4c41d600a350"
+field = "organism_trends"
+h, s, v, d = "Lebensraum", "Hauptgruppe_RoteListen", "Antwortvariable", "Trend"
+sub = "Untergruppe_RoteListen"
+configs = {
+    "detection_B": {"ignore_subfields": {field: [d, sub]}},
+    "direction_B": {
+        "subfield_keys": {field: [h, s, v]},
+        "subfield_values": {field: [d]},
+        "ignore_missing_entries": True,
+    },
+    "complete": {"ignore_subfields": {field: [sub]}},
+}
+references = read_grouped_csv_records(
+    file=str(csv), output_key=field, columns=[s, sub, h, v, d]
+)
+samples = {name: [] for name in configs}
+for job in (6, 7, 8):
+    source = run / f"evaluate/multiruns/2026-09-03_14-46-39/{job}/job_return_value.json"
+    saved = json.loads(source.read_text())
+    metadata = saved["prediction"]
+    assert metadata["overrides"]["extractor/llm"] == "qwen3_30b_in_process"
+    assert metadata["overrides"]["extractor/prompt_template"] == "organism_trends_v1_with_chunking_AuO"
+    predictions = read_and_preprocess(
+        file=root / metadata["job_return_value"]["output_file"],
+        id_key="file_name", process_id=strip_filename_extension,
+        preprocess=lambda row: row.get("structured"),
+    )
+    assert len(predictions) == 430
+    dataset = merge_references_into_predictions(
+        predictions=predictions, references=references,
+        allow_missing_references=True,
+    )
+    print("Seed", metadata["overrides"]["seed"])
+    for name, options in configs.items():
+        metric = F1MicroMultipleFieldsMetric(fields=[field], **options)
+        for record_id, example in dataset.items():
+            metric.update(prediction=example["prediction"], reference=example["reference"], record_id=record_id)
+        counts = {
+            k: sum(m.state_count[k] for m in metric.metrics.values())
+            for k in ("tp", "fp", "fn")
+        }
+        scores = metric.compute()["ALL"]
+        if name == "complete":
+            assert all(isclose(scores[k], saved["data"]["ALL"][k], abs_tol=1e-12)
+                       for k in ("precision", "recall", "f1", "support"))
+        samples[name].append(scores)
+        print(name, json.dumps({**scores, **counts}, sort_keys=True))
+print("Mean +/- sample SD, on a 0-100 scale:")
+for name, rows in samples.items():
+    for metric in ("precision", "recall", "f1"):
+        values = [100 * row[metric] for row in rows]
+        print(name, metric, f"{mean(values):.6f} +/- {stdev(values):.6f}")
+PYTHON
+```
 
-#### Interpretation
+The output's F1 summaries are:
 
-Detection evaluates document-level habitat–species-group pairs projected from predicted/reference trend tuples. Conditional categorisation compares variable–direction sets for pairs found on both sides. Missing/extra pairs are excluded from the conditional score. Full extraction evaluates exact four-field tuples. The units and evaluated subsets differ; the three F1 values do not form an arithmetic decomposition.
+```text
+detection_B f1 37.282134 +/- 1.060120
+direction_B f1 66.916476 +/- 1.522469
+complete f1 25.519062 +/- 1.204949
+```
 
-For Qwen, detection (49.6 points) and joint variable/direction categorisation on matched pairs (47.7) are both challenging. Variable-only conditional F1 is 71.5; adding direction is a substantial further requirement. The earlier blanket claim that detection is the single bottleneck should be revised.
+### Difference from the earlier diagnostics
 
-For slide 17, present Qwen only. Means/SD describe repeated seeds of this one model, with no averaging across model families.
+Version A used habitat + group as the detected identity and variable + direction as the conditional payload. Its Qwen F1 scores were 49.551929 for detection, 71.495195 for conditional variable-only, and 47.693695 for conditional variable+direction. Those remain valid under that older definition, but are not version B scores.
+
+The earlier manuscript averages were obtained by averaging each model's three run-level micro-F1 scores and then taking an equal-weight mean across the four open-weight models. They are retained only as historical context; slide 17 now uses Qwen alone and version B. Full extraction is unchanged at 25.519062 F1 points.
+
+The higher conditional direction score in version B reflects both a narrower task (direction only) and selection of correctly identified triples. It is not an improvement to the underlying model, does not cover unmatched targets, and cannot be multiplied by detection F1 to recover the complete-extraction score.
