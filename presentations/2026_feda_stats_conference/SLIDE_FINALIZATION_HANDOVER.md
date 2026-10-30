@@ -342,6 +342,10 @@ Some later discussion in issue #383 still refers to #549. The corrected experime
 
 The remaining choices are routine implementation details: precise colours, spacing, native build mechanics, and whether the available space favors the recommended stacked bar or a pie. There is no outstanding scientific-data requirement for the agreed edits.
 
+## Appendix A — Qwen results and averaging provenance
+
+Moved to [PR #636 comment](https://github.com/DFKI-NLP/kibad-llm/pull/636#issuecomment-6526264782).
+
 ## Appendix B — Qwen results and averaging provenance
 
 The following analysis records the per-seed results and their original files. Paths inside it are relative to the repository root.
