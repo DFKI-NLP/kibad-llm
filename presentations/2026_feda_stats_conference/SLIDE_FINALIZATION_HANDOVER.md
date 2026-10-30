@@ -520,3 +520,145 @@ Version A used habitat + group as the detected identity and variable + direction
 The earlier manuscript averages were obtained by averaging each model's three run-level micro-F1 scores and then taking an equal-weight mean across the four open-weight models. They are retained only as historical context; slide 17 now uses Qwen alone and version B. Full extraction is unchanged at 25.519062 F1 points.
 
 The higher conditional direction score in version B reflects both a narrower task (direction only) and selection of correctly identified triples. It is not an improvement to the underlying model, does not cover unmatched targets, and cannot be multiplied by detection F1 to recover the complete-extraction score.
+
+## Appendix C — Conditional direction confusion matrix (version B)
+
+The Qwen direction confusion matrices were calculated using the existing **`ConfusionMatrixCollection`** implementation, with the grouping already specified in `configs/experiment/evaluate/organism_trends_confusion_matrix_conditional_trend_only.yaml`: keys = habitat + species group + variable; value = direction; `ignore_missing_entries=True`. No metric implementation or configuration was changed. The inputs are the same three PR #586 prediction runs and reference CSV as Appendix B.
+
+### What the existing code measures
+
+This is a **multi-label, alignment-averaged confusion matrix**, not a conventional single-label confusion matrix. After exact matches are assigned to the diagonal, the code distributes unmatched reference/prediction labels uniformly over all partial one-to-one alignments. Unpaired reference labels go to `UNDETECTED`; unpaired predictions go to `UNASSIGNABLE`. The off-diagonal cells are expected error allocations under that rule, not observed label swaps or uncertainty estimates.
+
+For example, reference `{negative}` and prediction `{positive}` contribute **0.5** to negative→positive, **0.5** to negative→missing, and **0.5** to unassigned→positive. A conventional single-label matrix would put 1 into negative→positive. This difference is deliberate in the existing implementation and must be explained when showing its output.
+
+Here, only **220 of 385 matched target occurrences across the three seeds (57.1%)** have exactly one reference and one predicted direction. The remainder are multi-label on at least one side. A conventional 5×5 matrix restricted to the singleton subset would exclude 42.9% of the matched targets and describe a different evaluation population.
+
+### Matrix: mean counts across seeds
+
+Rows are reference labels; columns are predicted labels. “Neutral” displays the schema's `no` label. The five direction labels plus the extra row/column must be retained; hiding the extra row would hide a substantial part of the mismatch. Fractional values arise both from alignment averaging within a run and averaging the three runs.
+
+| Reference \ Predicted | Negative | Neutral | Positive | Positive → negative | Negative → positive | Missing direction |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Negative | 62.67 | 0.00 | 0.44 | 0.00 | 0.00 | 1.22 |
+| Neutral | 2.44 | 15.33 | 3.56 | 0.00 | 0.00 | 8.33 |
+| Positive | 1.11 | 1.00 | 30.00 | 0.28 | 0.00 | 3.94 |
+| Positive → negative | 0.67 | 0.17 | 0.00 | 1.00 | 0.00 | 0.83 |
+| Negative → positive | 1.11 | 0.00 | 0.94 | 0.00 | 2.00 | 2.94 |
+| Unassigned prediction | 25.67 | 13.17 | 28.06 | 1.06 | 1.00 | 0.00 |
+
+“Missing direction” and “unassigned prediction” concern labels **within matched triples**. They do not represent missed or extra triples: those were excluded by the conditional evaluation. Do not interpret the bottom-right cell as true negatives. The sum of all matrix cells is not a conventional sample count, and diagonal/total is not an accuracy measure.
+
+### Exact per-direction diagnostics
+
+The following are observed binary presence/absence counts for each direction within matched triples. They do not require assigning an unmatched reference label to an unmatched prediction label. Counts are means across seeds; precision and recall are means of the three per-seed ratios, consistent with Appendix B's reporting convention.
+
+| Direction | TP | FP | FN | Precision | Recall |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Negative | 62.67 | 31.00 | 1.67 | 66.9% | 97.4% |
+| Neutral | 15.33 | 14.33 | 14.33 | 52.5% | 51.5% |
+| Positive | 30.00 | 33.00 | 6.33 | 47.6% | 82.5% |
+| Positive → negative | 1.00 | 1.33 | 1.67 | 44.4% | 38.9% |
+| Negative → positive | 2.00 | 1.00 | 5.00 | 66.7% | 28.6% |
+
+Relative to the reference, negative directions are rarely missed, but the model also adds negative labels; neutral trends are recovered less reliably. Transition categories have low support and should not drive a strong conclusion. Unmatched predictions are not automatically scientifically incorrect, given the known incompleteness of the reference.
+
+### Verification and recommendation
+
+Per-seed diagonal totals are **109, 117, 107**, exactly matching the conditional F1 true positives. Real-reference row sums are **138, 143, 139**, matching its supports. Real-prediction column sums are **186, 200, 189**, matching TP + FP. Independently computed per-direction TP/FP/FN also sum to the conditional metric's totals. These checks ensure the matrix uses the same evaluated subset as the **66.9 ± 1.5 F1-point** result.
+
+The existing code is suitable for an exploratory appendix matrix. For the presentation, retain the conditional F1 score as the headline; a per-direction precision/recall or TP/FP/FN breakdown is easier to explain than alignment-averaged off-diagonals. A matrix shown publicly should be explicitly labelled **“alignment-averaged, multi-label; matched targets only.”**
+
+### Reproduction
+
+Run from the repository root using the existing environment and inputs. This prints per-seed matrices, their mean, exact binary diagnostics, the singleton-subset matrix, and the verification counts as JSON. It does not perform inference or modify the input files. To save the output, redirect stdout to a scratch JSON file.
+
+```bash
+.venv/bin/python - <<'PYTHON'
+"""Existing repo confusion matrix for Qwen version-B conditional categorisation."""
+
+from ast import literal_eval
+from collections import Counter, defaultdict
+from hashlib import sha256
+import json
+from math import isclose
+from pathlib import Path
+from statistics import mean
+
+from kibad_llm.dataset.csv import read_grouped_csv_records
+from kibad_llm.dataset.json import read_and_preprocess
+from kibad_llm.dataset.utils import merge_references_into_predictions
+from kibad_llm.metrics import ConfusionMatrixCollection, F1MicroMultipleFieldsMetric
+from kibad_llm.utils.path import strip_filename_extension
+
+ROOT = Path("data/kibad-llm-results")
+RUN = ROOT / "logs/586_organism_trends_bestconfig_testset_rerun"
+CSV = Path("data/external/organism_trends/Weighted Vote Count Agrar- und Offenland Literatur - Sheet1.csv")
+FIELD = "organism_trends"
+H, S, V, D = "Lebensraum", "Hauptgruppe_RoteListen", "Antwortvariable", "Trend"
+LABELS = ["negative", "no", "positive", "positive to negative", "negative to positive"]
+OPTIONS = dict(fields=[FIELD], subfield_keys={FIELD: [H, S, V]}, subfield_values={FIELD: [D]}, ignore_missing_entries=True)
+assert sha256(CSV.read_bytes()).hexdigest() == "b4995a46fcd3f950f8fb3bb49c532929a40107c76c1a14dd0bbd4c41d600a350"
+refs = read_grouped_csv_records(file=str(CSV), output_key=FIELD, columns=[H, S, V, D, "Untergruppe_RoteListen"])
+
+
+def label(s):
+    return s if s in ("UNDETECTED", "UNASSIGNABLE") else dict(literal_eval(s))[D]
+
+
+def groups(entry):
+    result = defaultdict(set)
+    for trend in (entry or {}).get(FIELD) or []:
+        result[tuple(trend[k] for k in (H, S, V))].add(trend[D])
+    return result
+
+
+report = {"rows": LABELS + ["UNASSIGNABLE"], "columns": LABELS + ["UNDETECTED"], "runs": []}
+for job in (6, 7, 8):
+    source = RUN / f"evaluate/multiruns/2026-09-03_14-46-39/{job}/job_return_value.json"
+    saved = json.loads(source.read_text())
+    metadata = saved["prediction"]
+    assert metadata["overrides"]["extractor/llm"] == "qwen3_30b_in_process"
+    assert metadata["overrides"]["extractor/prompt_template"] == "organism_trends_v1_with_chunking_AuO"
+    predictions = read_and_preprocess(file=ROOT / metadata["job_return_value"]["output_file"], id_key="file_name", process_id=strip_filename_extension, preprocess=lambda x: x.get("structured"))
+    assert len(predictions) == 430
+    dataset = merge_references_into_predictions(predictions=predictions, references=refs, allow_missing_references=True)
+    cm = ConfusionMatrixCollection(**OPTIONS)
+    f1 = F1MicroMultipleFieldsMetric(**OPTIONS)
+    binary = {v: Counter(tp=0, fp=0, fn=0, tn=0) for v in LABELS}
+    singles = Counter()
+    group_types = Counter()
+    total_matched = 0
+    for record_id, example in dataset.items():
+        cm.update(prediction=example["prediction"], reference=example["reference"], record_id=record_id)
+        f1.update(prediction=example["prediction"], reference=example["reference"], record_id=record_id)
+        pg, rg = groups(example["prediction"]), groups(example["reference"])
+        for key in pg.keys() & rg.keys():
+            p, r = pg[key], rg[key]
+            total_matched += 1
+            group_types[(len(r), len(p))] += 1
+            if len(r) == len(p) == 1:
+                singles[(next(iter(r)), next(iter(p)))] += 1
+            for v in LABELS:
+                binary[v]["tp" if v in r and v in p else "fn" if v in r else "fp" if v in p else "tn"] += 1
+    counts = {k: sum(m.state_count[k] for m in cm.metrics.values()) for k in ("tp", "fp", "fn")}
+    fm = f1.compute()["ALL"]
+    aggregated = Counter()
+    for matrix in cm.compute().values():
+        for gold, columns in matrix.items():
+            for pred, value in columns.items():
+                aggregated[(label(gold), label(pred))] += value
+    dense = [[aggregated[(r, c)] for c in report["columns"]] for r in report["rows"]]
+    assert isclose(sum(aggregated[(v, v)] for v in LABELS), counts["tp"])
+    assert isclose(sum(aggregated[(r, c)] for r in LABELS for c in report["columns"]), fm["support"])
+    assert isclose(sum(aggregated[(r, c)] for r in report["rows"] for c in LABELS), counts["tp"] + counts["fp"])
+    assert sum(v["tp"] for v in binary.values()) == counts["tp"]
+    assert sum(v["fp"] for v in binary.values()) == counts["fp"]
+    assert sum(v["fn"] for v in binary.values()) == counts["fn"]
+    assert all(sum(v.values()) == total_matched for v in binary.values())
+    report["runs"].append({"seed": metadata["overrides"]["seed"], "matched_triples": total_matched, "group_cardinalities": {str(k): v for k, v in sorted(group_types.items())}, "tp_fp_fn": counts, "conditional_scores": fm, "matrix": dense, "binary": binary, "single_label_subset_n": sum(singles.values()), "single_label_subset_matrix": [[singles[(r, c)] for c in LABELS] for r in LABELS]})
+report["mean_matrix"] = [[mean(x["matrix"][i][j] for x in report["runs"]) for j in range(6)] for i in range(6)]
+report["mean_binary"] = {v: {k: mean(x["binary"][v][k] for x in report["runs"]) for k in ("tp", "fp", "fn", "tn")} for v in LABELS}
+report["mean_single_label_subset_matrix"] = [[mean(x["single_label_subset_matrix"][i][j] for x in report["runs"]) for j in range(5)] for i in range(5)]
+print(json.dumps(report, indent=2))
+PYTHON
+```
