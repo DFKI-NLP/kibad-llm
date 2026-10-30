@@ -27,6 +27,7 @@ The agreed scope is to finish the existing talk: address the remaining comments,
 9. Omit the legal/governance slide 25. Its comment is considered resolved; no request to Luisa is needed.
 10. Omit the software licence detail. The repository licence is not considered final enough to report in the talk.
 11. Correct the old milestone-meeting footer on slide 9.
+12. Add a **backup slide on Qwen's direction categorisation**, covering all five categories explicitly: Negative, Neutral, Positive, Positive → negative, and Negative → positive. Use the full confusion matrix and per-direction diagnostics in Appendix C.
 
 ## Slide-by-slide instructions
 
@@ -259,6 +260,48 @@ The direction score is conditional on successful target matching, so it does not
 
 **Resolved by omission.** Remove this slide from the finished presentation. Do not seek Luisa's review or undertake legal research for this talk. Preserve the rest of the backup organization unless another change is necessary for consistency. EDIT: This can just stay there for now as hidden slide or backup slide.
 
+### New backup slide — Which trend directions does Qwen identify?
+
+**Add this slide in the backup section**, after the existing Backup divider. It supports questions about slide 17 and does not extend the main talk sequence. No new slide has been created yet; these are the implementation instructions.
+
+**Scope:** Qwen 3 only, version B direction categorisation on correctly matched habitat–species-group–variable triples, using the three existing seeds. Include **all five direction categories** separately in both the matrix and the summary:
+
+1. **Negative**
+2. **Neutral** (the schema's `no` label)
+3. **Positive**
+4. **Positive → negative**
+5. **Negative → positive**
+
+Do not merge the two transition categories, fold them into “Other,” or omit them because their support is small. Each transition describes a change in trend direction over time and is one distinct label; do not split it into two simple direction labels.
+
+**Suggested layout:**
+
+- **Title:** “Which trend directions does Qwen identify?”
+- **Subtitle:** “Direction categorisation on correctly matched targets · Qwen 3 · three seeds.”
+- **Left, about 60% of the body:** heatmap of the full **6×6 alignment-averaged confusion matrix** from Appendix C. Reference labels are rows; predicted labels are columns. Keep all five direction categories, plus the **Unassigned prediction** row and **Missing direction** column. Use wrapped transition labels and readable cell annotations. Counts are means across the three seeds, not pooled counts of independent observations.
+- **Right, about 35%:** the compact five-category precision/recall table below, with reference support. These are exact per-direction presence/absence diagnostics, independent of the off-diagonal alignment convention.
+- **Footer:** “Matched targets only. Matrix off-diagonals are alignment-averaged error allocations; transition categories have low support.”
+
+| Direction | Precision | Recall | Reference labels per seed |
+| --- | ---: | ---: | ---: |
+| Negative | **66.9%** | **97.4%** | 64–65 |
+| Neutral | **52.5%** | **51.5%** | 29–31 |
+| Positive | **47.6%** | **82.5%** | 35–39 |
+| Positive → negative | **44.4%** | **38.9%** | 2–3 |
+| Negative → positive | **66.7%** | **28.6%** | 7 |
+
+Precision and recall are arithmetic means of the three per-seed ratios. Support is the number of reference direction labels within each seed's matched triples; it is neither the number of documents nor the full test-set support. Show the per-seed range rather than adding the same reference information across repeated runs. The overall conditional micro-F1 remains **66.9 ± 1.5 points**, as on slide 17; the per-category table is not averaged to obtain that micro-F1.
+
+**Speaking notes / interpretation:**
+
+- Negative directions are rarely missed within the matched targets, but additional negative labels reduce precision. Positive directions also have relatively high recall with lower precision; neutral directions are less reliably recovered.
+- **Both complex directions must be discussed:** Positive → negative has 38.9% recall on only 2–3 reference labels per seed; Negative → positive has 28.6% recall on 7. Their low recall is relevant, but the small support prevents a strong comparison between them or a general conclusion about all complex trends.
+- The matrix is a multi-label exploratory diagnostic. Off-diagonal entries do not count directly observed label swaps, and diagonal/total is not an accuracy score. Explain the alignment rule in questions if necessary; the example and exact reproduction are in Appendix C.
+- Missing/extra labels in the matrix occur **within matched triples**. Missed or extra triples are outside this conditional analysis and are covered by the detection score on slide 17.
+- The reference is known to be incomplete, so unmatched predictions are not automatically scientifically incorrect.
+
+Use Appendix C's embedded matrix values and reproduction code as the durable source; do not depend on temporary plot files from the analysis session. Rebuild/export the chart when the slides are finalized. No change to the repository's confusion-matrix implementation is needed.
+
 ## Shared wording and consistency
 
 ### Making F1 understandable
@@ -336,6 +379,7 @@ Some later discussion in issue #383 still refers to #549. The corrected experime
 - [ ] Emphasize the recall priority on slide 14, keeping development/test findings separate.
 - [ ] Rebuild slide 16's chart without the open-model mean, apply the colour convention, and correct its takeaway/F1 wording.
 - [ ] Rebuild slide 17 for Qwen only using version B: detection 37.3, conditional direction categorisation 66.9, complete extraction 25.5; label the conditional subset.
+- [ ] Add the Qwen direction-categorisation backup slide with all five classes, including both transition directions, the full matrix, per-class precision/recall, and support/caveat labels.
 - [ ] Omit slide 25.
 - [ ] Check wording, charts, footers, builds, hidden/backup slides, and readability in the actual presentation application.
 - [ ] Confirm all 14 comment threads are addressed or deliberately omitted as documented; resolve comments after checking the edits.
@@ -566,7 +610,7 @@ Relative to the reference, negative directions are rarely missed, but the model 
 
 Per-seed diagonal totals are **109, 117, 107**, exactly matching the conditional F1 true positives. Real-reference row sums are **138, 143, 139**, matching its supports. Real-prediction column sums are **186, 200, 189**, matching TP + FP. Independently computed per-direction TP/FP/FN also sum to the conditional metric's totals. These checks ensure the matrix uses the same evaluated subset as the **66.9 ± 1.5 F1-point** result.
 
-The existing code is suitable for an exploratory appendix matrix. For the presentation, retain the conditional F1 score as the headline; a per-direction precision/recall or TP/FP/FN breakdown is easier to explain than alignment-averaged off-diagonals. A matrix shown publicly should be explicitly labelled **“alignment-averaged, multi-label; matched targets only.”**
+The existing code is suitable for the requested **backup slide**. Keep the conditional F1 score as the main slide's headline; use the full matrix and a five-category precision/recall breakdown on the backup slide specified above. Include **Positive → negative** and **Negative → positive** separately, with their low reference support visible. A matrix shown publicly should be explicitly labelled **“alignment-averaged, multi-label; matched targets only.”**
 
 ### Reproduction
 
