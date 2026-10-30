@@ -8,8 +8,8 @@ Prepared on 30 October 2026. This document consolidates the slide-comment review
 - **Primary background and results source:** [Manuscript draft KIBA D.docx](<Manuscript draft KIBA D.docx>). Prefer its reported results, supplemented by the verified original evaluation files described below.
 - **Other sources:** this `kibad-llm` repository and neighboring `../kibad-crawler`, relative to the repository root. Both are readable locally. This folder is two levels below the repository root.
 - **Event:** [FEdA Status Conference 2026](https://www.feda.bio/de/statuskonferenz2026/), Senckenberg, Frankfurt. The [programme](https://www.feda.bio/wp-content/uploads/2026/10/FEdA_Conference_Program-3.pdf) lists the opening keynote on **3 November 2026, 13:45–14:15, in English**, with Julia Ellerbrok and Arne Binder. The slot is 30 minutes; the programme does not specify a separate Q&A allocation.
-- The supplied deck contains **30 slides, 22 comments, and 14 comment threads on nine slides**, including hidden slide 25. Replies within a thread are not separate tasks.
-- **The slides have not been edited.** Work completed so far consists of inspection, statistics, provenance research, and preparation of this handover and an unposted PR-comment draft.
+- The supplied original contained **30 slides, 22 comments, and 14 comment threads on nine slides**, including hidden slide 25. Replies within a thread are not separate tasks.
+- **At handover preparation, the slides had not been edited.** Finalization is now implemented at the original presentation path; see the implementation report below. The unedited original is preserved in the numbered backup.
 - Slide numbers throughout this document refer to the **original supplied deck**. Apply the mapping before deleting slides or adding build states.
 
 The agreed scope is to finish the existing talk: address the remaining comments, improve the specified layouts and explanations, and correct the identified inconsistencies. No new inference experiments, crawler features, or legal review are required.
@@ -32,7 +32,25 @@ The agreed scope is to finish the existing talk: address the remaining comments,
 ## Implementation notes
 
 - Create a backup of the slide deck before editing. Name the backup file `KIBA-D_FEdA2026_Keynote.backup-0.pptx`. If this file already exists, increment the number. Keep the backup in the same folder as the original deck.
+- Overwrite `KIBA-D_FEdA2026_Keynote.pptx` with the finalized deck; the numbered file preserves the original.
 - Integrate a short report for the implemented changes into this handover document. Be concise, do not replicate the instructions, just reference them. Most important: note any deviations from the agreed plan, with justification. 
+
+## Implementation report — 30 October 2026
+
+**Deliverables:** [finished PowerPoint](KIBA-D_FEdA2026_Keynote.pptx), [PDF of the visible slides](KIBA-D_FEdA2026_Keynote.pdf), and [numbered original backup](KIBA-D_FEdA2026_Keynote.backup-0.pptx). The finished deck overwrites the original presentation path, as clarified by the user; the numbered backup remains unchanged. The final deck has 31 slides: the 22-slide main talk, the existing Backup divider, and eight backup slides, five hidden. The PDF has 26 pages and shows the final state of each build.
+
+Implemented the specified crawler simplification, extraction board and native reveals, conference footer, resource table, dataset strip, model colours, F1 wording, screening explanation, complete-trend chart, Qwen version-B diagnostics, and five-category direction backup. Speaker notes now carry the matching definitions, denominators, assumptions and sources. No inference or source-data changes were made.
+
+Implementation choices and deviations:
+
+- Followed the later **EDIT** decisions: retained the fortnightly schedule and confirmed 95%/97% crawler figures, marked the semantic filter as work in progress, and retained the legal slide **hidden**. The new direction backup is slide **24**; original slides 24–30 are now **25–31**, so the hidden legal slide is **26**.
+- Used the recommended character-weighted stacked bar. Retained slide 12's native chart and updated its embedded workbook to F1 points; rebuilt slide 16 as a native chart. For consistency, also converted the related charts on original slides 13, 14, 26 and 28 to editable English charts, clarified historical version-A results, updated original slide 29 to a version-B matching example, and corrected the unsupported tuple on original slide 30. Removed the unsupported 80-point test-score forecast from slides 19/20.
+- Addressed all **14 comment threads**: original slides 7 (1), 8 (2), 10 (1), 11 (4), 12 (1), 14 (1), 16 (2), 17 (1), and 25 (1). After checking the edits, removed the 22 legacy comments from the final deck rather than adding an unsupported “resolved” flag to their legacy XML format. Their full discussion remains in the numbered original backup.
+- Slide 8 retains every original excerpt/annotation shape, including its text, styling, dimensions and coordinates. An identity-transform subgroup allows the annotations to appear together. The initial state shows the excerpt; click 1 reveals the board; click 2 reveals annotations and the provenance message.
+
+Verification: checked package XML and relationships, native chart/workbook values, the full matrix and diagnostics, slide order, unique shape IDs, animation targets, unchanged hidden flags, and exact preservation of the original excerpt/annotation elements and group transform. Reviewed all 31 rendered slides in Impress, including hidden backups, and rendered the three extraction-example states separately. Impress imports the two native click groups in the intended order; the PDF contains the completed build state. A Microsoft PowerPoint playback check was not available.
+
+**Rendering note:** LibreOffice's Snap `desktop` and `desktop-legacy` connections were already connected, and its font environment could find IBM Plex Sans Light. Impress nevertheless selected normal weight on import. The PDF was exported from a temporary Impress copy with the intended Light weight selected explicitly; the editable PPTX retains the original font names and geometry. No Snap connection changes or LibreOffice reinstall were needed.
 
 ## Slide-by-slide instructions
 
@@ -384,22 +402,22 @@ Some later discussion in issue #383 still refers to #549. The corrected experime
 
 ## Completion checklist
 
-- [ ] Simplify slide 7 and keep crawling brief; distinguish planned work and omit unsupported peripheral claims if no ready source exists.
-- [ ] Rebuild slide 8's extraction output as coloured columns/boxes with an ellipsis.
-- [ ] Add slide 8's three reveals and verify text/annotation alignment.
-- [ ] Correct slide 9's footer.
-- [ ] Reformat slide 10 with concrete resource/cost estimates and a concise assumption note; remove the licence claim.
-- [ ] Keep slide 11's task panels, group the four trend fields, and replace the lower strip with facts and one combined source-type chart.
-- [ ] Use the agreed ≈1,500-input wording and correct denominators.
-- [ ] Apply open/proprietary colours on slide 12 and correct the F1 wording.
-- [ ] Emphasize the recall priority on slide 14, keeping development/test findings separate.
-- [ ] Rebuild slide 16's chart without the open-model mean, apply the colour convention, and correct its takeaway/F1 wording.
-- [ ] Rebuild slide 17 for Qwen only using version B: detection 37.3, conditional direction categorisation 66.9, complete extraction 25.5; label the conditional subset.
-- [ ] Add the Qwen direction-categorisation backup slide with all five classes, including both transition directions, the full matrix, per-class precision/recall, and support/caveat labels.
-- [ ] Omit slide 25.
-- [ ] Check wording, charts, footers, builds, hidden/backup slides, and readability in the actual presentation application.
-- [ ] Confirm all 14 comment threads are addressed or deliberately omitted as documented; resolve comments after checking the edits.
-- [ ] Preserve the supplied original and deliver a clearly named finished PPTX. If exporting a PDF, confirm the intended final build state is visible.
+- [x] Simplify slide 7 and keep crawling brief; distinguish planned work and retain the figures confirmed in the later EDIT.
+- [x] Rebuild slide 8's extraction output as coloured columns/boxes with an ellipsis.
+- [x] Add slide 8's three reveals and verify text/annotation alignment with the intended font face; see the rendering note above.
+- [x] Correct slide 9's footer.
+- [x] Reformat slide 10 with concrete resource/cost estimates and a concise assumption note; remove the licence claim.
+- [x] Keep slide 11's task panels, group the four trend fields, and replace the lower strip with facts and one combined source-type chart.
+- [x] Use the agreed ≈1,500-input wording and correct denominators.
+- [x] Apply open/proprietary colours on slide 12 and correct the F1 wording.
+- [x] Emphasize the recall priority on slide 14, keeping development/test findings separate.
+- [x] Rebuild slide 16's chart without the open-model mean, apply the colour convention, and correct its takeaway/F1 wording.
+- [x] Rebuild slide 17 for Qwen only using version B: detection 37.3, conditional direction categorisation 66.9, complete extraction 25.5; label the conditional subset.
+- [x] Add the Qwen direction-categorisation backup slide with all five classes, including both transition directions, the full matrix, per-class precision/recall, and support/caveat labels.
+- [x] Retain original slide 25 as hidden, following its later EDIT.
+- [x] Check wording, charts, footers, builds, hidden/backup slides, and readability in Impress; PowerPoint playback was unavailable.
+- [x] Confirm all 14 comment threads are addressed or deliberately omitted as documented; archive legacy comments in the preserved original/backup.
+- [x] Preserve the supplied original in the numbered backup, overwrite the original PPTX path with the finished deck, and deliver a PDF showing the final build state.
 
 The remaining choices are routine implementation details: precise colours, spacing, native build mechanics, and whether the available space favors the recommended stacked bar or a pie. There is no outstanding scientific-data requirement for the agreed edits.
 
