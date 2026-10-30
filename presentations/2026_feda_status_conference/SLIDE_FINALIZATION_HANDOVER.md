@@ -355,7 +355,7 @@ All paths in this section are relative to the `kibad-llm` repository root unless
 
 | Source | Purpose |
 | --- | --- |
-| `presentations/2026_feda_stats_conference/Manuscript draft KIBA D.docx` | Primary scientific background; methods and evaluation definitions; dataset Table 2; results; extraction timing Table 4. |
+| `presentations/2026_feda_status_conference/Manuscript draft KIBA D.docx` | Primary scientific background; methods and evaluation definitions; dataset Table 2; results; extraction timing Table 4. |
 | `../kibad-crawler/` | Implementation evidence for the short literature-discovery slide. |
 | `src/kibad_llm/statistics/pdf.py` | Existing statistics CLI, now available on `feat/pdf-stats`. |
 | `data/cluster-mirror/splits/test/` | CoreSchema test PDFs. |
