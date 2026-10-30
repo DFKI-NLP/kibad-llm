@@ -274,12 +274,23 @@ The direction score is conditional on successful target matching, so it does not
 
 Do not merge the two transition categories, fold them into “Other,” or omit them because their support is small. Each transition describes a change in trend direction over time and is one distinct label; do not split it into two simple direction labels.
 
+**Agreed takeaway (visible on the backup slide):**
+
+> Qwen recovers increases and declines more reliably than stability or trend reversals.
+
+**Supporting line, using rounded recall figures:**
+
+> On matched targets, recall is 97% for declines and 82% for increases, versus 52% for neutral trends and 29–39% for reversals.
+
+Keep the qualification **“Few reference examples for reversals.”** visible. The takeaway describes recall within matched targets; it does not imply that all predicted increases or declines are correct. Keep the precision values in the accompanying table.
+
 **Suggested layout:**
 
 - **Title:** “Which trend directions does Qwen identify?”
 - **Subtitle:** “Direction categorisation on correctly matched targets · Qwen 3 · three seeds.”
 - **Left, about 60% of the body:** heatmap of the full **6×6 alignment-averaged confusion matrix** from Appendix C. Reference labels are rows; predicted labels are columns. Keep all five direction categories, plus the **Unassigned prediction** row and **Missing direction** column. Use wrapped transition labels and readable cell annotations. Counts are means across the three seeds, not pooled counts of independent observations.
 - **Right, about 35%:** the compact five-category precision/recall table below, with reference support. These are exact per-direction presence/absence diagnostics, independent of the off-diagonal alignment convention.
+- **Takeaway callout:** the agreed sentence above, near the bottom; use the supporting line if space permits.
 - **Footer:** “Matched targets only. Matrix off-diagonals are alignment-averaged error allocations; transition categories have low support.”
 
 | Direction | Precision | Recall | Reference labels per seed |
