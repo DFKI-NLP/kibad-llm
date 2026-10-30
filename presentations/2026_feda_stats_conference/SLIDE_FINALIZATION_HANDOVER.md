@@ -29,6 +29,11 @@ The agreed scope is to finish the existing talk: address the remaining comments,
 11. Correct the old milestone-meeting footer on slide 9.
 12. Add a **backup slide on Qwen's direction categorisation**, covering all five categories explicitly: Negative, Neutral, Positive, Positive → negative, and Negative → positive. Use the full confusion matrix and per-direction diagnostics in Appendix C.
 
+## Implementation notes
+
+- Create a backup of the slide deck before editing. Name the backup file `KIBA-D_FEdA2026_Keynote.backup-0.pptx`. If this file already exists, increment the number. Keep the backup in the same folder as the original deck.
+- Integrate a short report for the implemented changes into this handover document. Be concise, do not replicate the instructions, just reference them. Most important: note any deviations from the agreed plan, with justification. 
+
 ## Slide-by-slide instructions
 
 ### Slide 7 — Finding new literature automatically
