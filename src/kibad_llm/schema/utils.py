@@ -302,9 +302,10 @@ def _wrap_value_schema_with_metadata(
 
     properties = {content_key: content_schema, **meta_props}
     required = [content_key, *[r for r in meta_required if r != content_key]]
+
     if metadata_first:
         properties = {**meta_props, content_key: content_schema}
-        required = [*required[1:], content_key]
+
     wrapper: dict[str, Any] = {
         "type": "object",
         "properties": properties,

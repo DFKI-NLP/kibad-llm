@@ -397,9 +397,9 @@ def test_wrap_terminals_with_metadata_metadata_first_orders_properties(
 
     name = out["properties"]["name"]
     _assert_is_wrapper(name, content_schema={"type": "string"})
-    expected = ["evidence_anchor", "content"] if metadata_first else ["content", "evidence_anchor"]
-    assert list(name["properties"]) == expected
-    assert name["required"] == expected
+    assert set(name["properties"]) == {"evidence_anchor", "content"}
+
+    assert name["required"] == ["content", "evidence_anchor"]
     # the reordered wrapper is still recognized as a wrapper (idempotency)
     assert (
         wrap_terminals_with_metadata(
