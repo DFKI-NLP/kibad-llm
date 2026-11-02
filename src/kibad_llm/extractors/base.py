@@ -790,6 +790,7 @@ def extract_from_text(
     adjust_schema_description_for_evidence_detection: bool = False,
     evidence_anchor_description: str = "Verbatim excerpt from the source text supporting the extracted content.",
     wrapped_content_description: str | None = None,
+    evidence_before_content: bool = False,
     response_has_metadata: bool = False,
     augment_metadata_kwargs: dict[str, Any] | None = None,
     character_start: int = 0,
@@ -836,6 +837,9 @@ def extract_from_text(
             Has only an effect if adjust_schema_for_detect_evidence is also True.
         evidence_anchor_description: Description for the evidence anchor field.
         wrapped_content_description: Optional description for the content field in the metadata wrapper.
+        evidence_before_content: Whether to place `evidence_anchor` before `content` in the metadata
+            wrapper. With guided decoding, the model then quotes the evidence before it commits to the
+            extracted value. Has only an effect if adjust_schema_for_evidence_detection is True.
         response_has_metadata: If True, the output is expected to have each leaf value wrapped in
             an object with `content` plus metadata fields. If so, the metadata is stripped and the cleaned
             output is returned under the "structured" key, while the raw output with metadata is returned
@@ -917,6 +921,7 @@ def extract_from_text(
             },
             content_key=WRAPPED_CONTENT_KEY,
             content_description=wrapped_content_description,
+            metadata_first=evidence_before_content,
         )
         # since we wrapped terminals with metadata, we expect metadata in the response
         response_has_metadata = True
