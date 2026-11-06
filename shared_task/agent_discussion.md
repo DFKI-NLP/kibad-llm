@@ -30,7 +30,7 @@ feedback:
 - "1. BERTScore settings": yes, please choose and document a reproducible definition
 - "2. CodaBench integration:": yes, supporting both through one shared implementation, sounds good
 
-One more detail: Please create two documentation documents, one for me (the maintainer), where you exactly describe how you derived teh screipt from the existing kibad-llm code. And then the README.md which should be independent of kibad-llm code. Especially, it should not leak what's not already in the script (the participants should not be lead to the kibad-llm repo).
+One more detail: Please create two documentation documents, one for me (the maintainer), where you exactly describe how you derived the screipt from the existing kibad-llm code. And then the README.md which should be independent of kibad-llm code. Especially, it should not leak what's not already in the script (the participants should not be lead to the kibad-llm repo).
 
 Anything else? If not, please implement this.
 
@@ -48,7 +48,7 @@ Validation: **116 tests passed**, categorical parity checked on all 908 training
 
 ## User
 
-ok, cool. can you create predictions.jsonl for all subtasks in example-data so that I can test the commmands myself?
+ok, cool. can you create predictions.jsonl for all subtasks in example-data so that I can test the commands myself?
 
 ## Assistant
 
