@@ -387,5 +387,71 @@ def test_wrap_terminals_with_metadata_custom_content_key_and_metadata_requiremen
     )
 
 
+@pytest.mark.parametrize("metadata_first", [False, True])
+def test_wrap_terminals_with_metadata_metadata_first_orders_properties(
+    sample_schema, metadata_first
+) -> None:
+    out = wrap_terminals_with_metadata(
+        sample_schema, metadata_schema=METADATA_SCHEMA_WITH_EVIDENCE, metadata_first=metadata_first
+    )
+
+    name = out["properties"]["name"]
+    _assert_is_wrapper(name, content_schema={"type": "string"})
+    assert set(name["properties"]) == {"evidence_anchor", "content"}
+
+    assert name["required"] == ["content", "evidence_anchor"]
+    # the reordered wrapper is still recognized as a wrapper (idempotency)
+    assert (
+        wrap_terminals_with_metadata(
+            out, metadata_schema=METADATA_SCHEMA_WITH_EVIDENCE, metadata_first=metadata_first
+        )
+        == out
+    )
+
+    schema_description = build_schema_description(out)
+    # default setup: content first, then metadata
+    if not metadata_first:
+        assert schema_description == (
+            "Feldhinweise und erlaubte Werte (getrennt durch Semikolons):\n"
+            "- name: | Kardinalität: 1 | Typ: object\n"
+            "  - content: | Kardinalität: 1 | Typ: string\n"
+            "  - evidence_anchor: Verbatim excerpt from the source text supporting the extracted content. | Kardinalität: 1 | Typ: string\n"
+            "- age: | Kardinalität: 1 | Typ: object\n"
+            "  - content: | Kardinalität: 1 | Typ: integer\n"
+            "  - evidence_anchor: Verbatim excerpt from the source text supporting the extracted content. | Kardinalität: 1 | Typ: string\n"
+            "- tags: | Kardinalität: 0..* | Typ: object\n"
+            "  - content: | Kardinalität: 1 | Typ: string\n"
+            "  - evidence_anchor: Verbatim excerpt from the source text supporting the extracted content. | Kardinalität: 1 | Typ: string\n"
+            "- obj: | Kardinalität: 1 | Typ: object\n"
+            "  - x: | Kardinalität: 1 | Typ: object\n"
+            "    - content: | Kardinalität: 1 | Typ: number\n"
+            "    - evidence_anchor: Verbatim excerpt from the source text supporting the extracted content. | Kardinalität: 1 | Typ: string\n"
+            "- enum_ref: | Kardinalität: 1 | Typ: object\n"
+            "  - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: A; B\n"
+            "  - evidence_anchor: Verbatim excerpt from the source text supporting the extracted content. | Kardinalität: 1 | Typ: string"
+        )
+    # metadata_first: metadata first, then content
+    else:
+        assert schema_description == (
+            "Feldhinweise und erlaubte Werte (getrennt durch Semikolons):\n"
+            "- name: | Kardinalität: 1 | Typ: object\n"
+            "  - evidence_anchor: Verbatim excerpt from the source text supporting the extracted content. | Kardinalität: 1 | Typ: string\n"
+            "  - content: | Kardinalität: 1 | Typ: string\n"
+            "- age: | Kardinalität: 1 | Typ: object\n"
+            "  - evidence_anchor: Verbatim excerpt from the source text supporting the extracted content. | Kardinalität: 1 | Typ: string\n"
+            "  - content: | Kardinalität: 1 | Typ: integer\n"
+            "- tags: | Kardinalität: 0..* | Typ: object\n"
+            "  - evidence_anchor: Verbatim excerpt from the source text supporting the extracted content. | Kardinalität: 1 | Typ: string\n"
+            "  - content: | Kardinalität: 1 | Typ: string\n"
+            "- obj: | Kardinalität: 1 | Typ: object\n"
+            "  - x: | Kardinalität: 1 | Typ: object\n"
+            "    - evidence_anchor: Verbatim excerpt from the source text supporting the extracted content. | Kardinalität: 1 | Typ: string\n"
+            "    - content: | Kardinalität: 1 | Typ: number\n"
+            "- enum_ref: | Kardinalität: 1 | Typ: object\n"
+            "  - evidence_anchor: Verbatim excerpt from the source text supporting the extracted content. | Kardinalität: 1 | Typ: string\n"
+            "  - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: A; B"
+        )
+
+
 def test_schema_builder_legacy_import() -> None:
     from kibad_llm.schema.utils import build_schema_description
