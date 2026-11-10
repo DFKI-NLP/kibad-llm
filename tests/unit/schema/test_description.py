@@ -190,6 +190,66 @@ def test_multi_branch_structural_allof_fails_explicitly():
         build_schema_description(schema)
 
 
+@pytest.mark.parametrize("keyword", ["anyOf", "oneOf"])
+@pytest.mark.parametrize("evidence", [False, True])
+def test_object_union_items_are_rendered_as_variants(keyword, evidence):
+    """Fields shared by all object branches appear once; each branch shows its own choices."""
+
+    def variant(doc: str, choices: list[str]) -> dict[str, Any]:
+        """Build an object branch with one enum field."""
+        return {
+            "type": "object",
+            "description": doc,
+            "properties": {
+                "name": {"type": "string", "description": "Shared field."},
+                "kind": {"type": "string", "enum": choices},
+            },
+        }
+
+    schema = _schema(
+        {
+            "type": "array",
+            "description": "Field instructions.",
+            "items": {keyword: [{"$ref": "#/$defs/First"}, {"$ref": "#/$defs/Second"}]},
+        }
+    )
+    schema["$defs"] = {
+        "First": variant("First doc.", ["A"]),
+        "Second": variant("Second doc.", ["B"]),
+    }
+    if evidence:
+        schema = wrap_terminals_with_metadata(schema, METADATA_SCHEMA_WITH_EVIDENCE)
+    output = build_schema_description(
+        schema, header=None, cardinality_prefix=None, type_prefix=None
+    )
+    if not evidence:
+        assert output == "\n".join(
+            [
+                "- example: Field instructions.",
+                "  - name: Shared field.",
+                "  - Variante 1:",
+                "    Beschreibung: First doc.",
+                "    - kind: | Zulässige Werte: A",
+                "  - Variante 2:",
+                "    Beschreibung: Second doc.",
+                "    - kind: | Zulässige Werte: B",
+            ]
+        )
+    else:
+        lines = output.split("\n")
+        # wrapped fields keep their content/evidence_anchor children below the field line
+        assert lines.count("  - name: Shared field.") == 1
+        positions = [
+            lines.index(line)
+            for line in ("  - name: Shared field.", "  - Variante 1:", "  - Variante 2:")
+        ]
+        choice_a, choice_b = (
+            next(i for i, line in enumerate(lines) if f"Zulässige Werte: {c}" in line)
+            for c in "AB"
+        )
+        assert positions[0] < positions[1] < choice_a < positions[2] < choice_b
+
+
 def test_shared_enum_documentation_is_repeated_per_field_occurrence():
     """Each use of a shared enum retains its documentation independently."""
     schema = {
