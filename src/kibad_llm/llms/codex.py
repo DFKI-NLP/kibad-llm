@@ -90,10 +90,17 @@ class Codex(LLM):
                         except json.JSONDecodeError:
                             continue
                         usage = event.get("usage") or {}
-                        for key in ("input_tokens", "cached_input_tokens", "output_tokens", "reasoning_tokens"):
+                        for key in (
+                            "input_tokens",
+                            "cached_input_tokens",
+                            "output_tokens",
+                            "reasoning_tokens",
+                        ):
                             if usage.get(key) is not None:
                                 metadata[key] = (metadata[key] or 0) + usage[key]
-            (artifact / "metadata.json").write_text(json.dumps(metadata, indent=2), encoding="utf-8")
+            (artifact / "metadata.json").write_text(
+                json.dumps(metadata, indent=2), encoding="utf-8"
+            )
 
         return ChatResponse(
             message=ChatMessage(role=MessageRole.ASSISTANT, content=answer),
@@ -155,13 +162,26 @@ enabled = false
 """,
                 encoding="utf-8",
             )
-            canary = root / "private"
+            canary = state / "private"
             canary.touch()
+            protected = [
+                canary,
+                state / "auth.json",
+                Path.cwd() / "pyproject.toml",
+                artifact / "prompt.txt",
+                auth_source,
+                Path.home() / ".bash_history",
+            ]
             probe = subprocess.run(
                 [
-                    executable, "sandbox", "/bin/sh", "-ec",
-                    'test -r input.md; touch probe; test ! -e "$1"; test ! -e "$2"',
-                    "probe", str(canary), str(state / "auth.json"),
+                    executable,
+                    "sandbox",
+                    "/bin/sh",
+                    "-ec",
+                    "test -r input.md; touch probe; "
+                    'for path do if test -r "$path"; then echo "Readable: $path" >&2; exit 1; fi; done',
+                    "probe",
+                    *map(str, protected),
                 ],
                 cwd=workspace,
                 env=env,
@@ -173,15 +193,25 @@ enabled = false
                 raise ValueError(f"Codex isolation probe failed: {probe.stderr.strip()}")
             (workspace / "probe").unlink()
             final = artifact / "final.json"
-            with events.open("w", encoding="utf-8") as stdout, (artifact / "stderr.log").open(
-                "w", encoding="utf-8"
-            ) as stderr:
+            with (
+                events.open("w", encoding="utf-8") as stdout,
+                (artifact / "stderr.log").open("w", encoding="utf-8") as stderr,
+            ):
                 metadata["attempt_count"] = 1
                 result = subprocess.run(
                     [
-                        executable, "exec", "--strict-config", "--ephemeral", "--skip-git-repo-check",
-                        "--ignore-rules", "--json", "--model", self.model,
-                        "--output-last-message", str(final), "-",
+                        executable,
+                        "exec",
+                        "--strict-config",
+                        "--ephemeral",
+                        "--skip-git-repo-check",
+                        "--ignore-rules",
+                        "--json",
+                        "--model",
+                        self.model,
+                        "--output-last-message",
+                        str(final),
+                        "-",
                     ],
                     cwd=workspace,
                     env=env,
@@ -192,7 +222,9 @@ enabled = false
                     timeout=self.timeout,
                 )
             if result.returncode:
-                raise ValueError(f"Codex exited with status {result.returncode}. See stderr.log and events.jsonl.")
+                raise ValueError(
+                    f"Codex exited with status {result.returncode}. See stderr.log and events.jsonl."
+                )
             if not final.is_file():
                 raise ValueError("Codex did not produce a final response.")
             answer = final.read_text(encoding="utf-8")

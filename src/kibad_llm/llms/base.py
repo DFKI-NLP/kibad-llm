@@ -64,7 +64,6 @@ class LLM(ABC):
         """Format messages and return any input artifacts needed by the backend."""
         return format_messages(document), {}
 
-
     @abstractmethod
     def call_llm_chat_with_guided_decoding(
         self,
