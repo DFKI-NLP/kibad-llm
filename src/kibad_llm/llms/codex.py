@@ -89,7 +89,7 @@ class Codex(LLM):
                             event = json.loads(line)
                         except json.JSONDecodeError:
                             continue
-                        usage = event.get("usage") or {}
+                        usage: dict[str, int] = event.get("usage") or {}
                         for key in (
                             "input_tokens",
                             "cached_input_tokens",
