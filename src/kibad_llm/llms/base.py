@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 import dataclasses
-from typing import Any, Callable
+from typing import Any
 
 from llama_index.core.base.llms.types import ChatResponse, MessageRole
 

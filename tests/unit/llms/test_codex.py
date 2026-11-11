@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-import subprocess
+import subprocess  # nosec B404  # Used only to simulate TimeoutExpired.
 
 import pytest
 

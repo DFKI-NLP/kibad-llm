@@ -1,14 +1,15 @@
 """Document extraction through the non-interactive Codex CLI."""
 
+from collections.abc import Callable
 from hashlib import sha256
 import json
 import os
 from pathlib import Path
 import shutil
-import subprocess
+import subprocess  # nosec B404  # Required to invoke the Codex CLI.
 from tempfile import TemporaryDirectory
 from time import monotonic
-from typing import Any, Callable
+from typing import Any
 from uuid import uuid4
 
 from llama_index.core.base.llms.types import ChatMessage, ChatResponse, MessageRole
@@ -127,7 +128,8 @@ class Codex(LLM):
             workspace.mkdir()
             state.mkdir(mode=0o700)
             (workspace / "input.md").write_text(document, encoding="utf-8")
-            metadata["codex_version"] = subprocess.check_output(
+            # The operator controls the Codex executable and PATH. The version flag is fixed.
+            metadata["codex_version"] = subprocess.check_output(  # nosec B603
                 [executable, "--version"], text=True, timeout=30
             ).strip()
             env = {"PATH": "/usr/bin:/bin", "HOME": str(state), "CODEX_HOME": str(state)}
@@ -172,7 +174,8 @@ enabled = false
                 auth_source,
                 Path.home() / ".bash_history",
             ]
-            probe = subprocess.run(
+            # The probe script is fixed and receives paths as positional arguments.
+            probe = subprocess.run(  # nosec B603
                 [
                     executable,
                     "sandbox",
@@ -198,7 +201,8 @@ enabled = false
                 (artifact / "stderr.log").open("w", encoding="utf-8") as stderr,
             ):
                 metadata["attempt_count"] = 1
-                result = subprocess.run(
+                # Pass options as arguments and the extraction prompt through stdin.
+                result = subprocess.run(  # nosec B603
                     [
                         executable,
                         "exec",
