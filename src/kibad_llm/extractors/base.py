@@ -41,7 +41,7 @@ from typing import Any
 from jsonschema.validators import validator_for
 from llama_index.core.base.llms.types import ChatResponse
 
-from kibad_llm.llms.base import LLM, MessageRole, SimpleChatMessage
+from kibad_llm.llms.base import BackendExecutionError, LLM, MessageRole, SimpleChatMessage
 from kibad_llm.schema.description import build_schema_description
 from kibad_llm.schema.utils import (
     WRAPPED_CONTENT_KEY,
@@ -87,6 +87,7 @@ class SingleExtractionResult(FieldDict):
     reasoning_content: str | None = None
     messages: dict[str, str | None] | None = None
     messages_formatted: dict[str, str] | None = None
+    backend_metadata: dict[str, Any] | None = None
     errors: list[str] = field(default_factory=list)
     errors_long: list[str] = field(default_factory=list)
 
@@ -931,14 +932,21 @@ def extract_from_text(
 
     text_to_process = text[out.character_start : out.character_end]
 
-    messages = build_chat_messages(
-        document=text_to_process,
+    format_messages = partial(
+        build_chat_messages,
         schema=schema_for_build_messages,
         _out=out,
         **build_messages_kwargs,
     )
-
-    request_kwargs = request_parameters or {}
+    request_kwargs = dict(request_parameters or {})
+    if llm is None:
+        format_messages(document=text_to_process)
+    else:
+        messages, artifacts = llm.prepare_request(
+            text_to_process, lambda document: format_messages(document=document)
+        )
+        if artifacts:
+            request_kwargs["input_artifacts"] = artifacts
 
     if use_guided_decoding:
         if schema is None:
@@ -981,11 +989,19 @@ def extract_from_text(
             )
 
         # LLM chat call
-        resp = llm.call_llm_chat_with_guided_decoding(
-            messages=messages,
-            json_schema=schema if use_guided_decoding else None,
-            **request_kwargs,
-        )
+        try:
+            resp = llm.call_llm_chat_with_guided_decoding(
+                messages=messages,
+                json_schema=schema if use_guided_decoding else None,
+                **request_kwargs,
+            )
+        except BackendExecutionError as e:
+            out.backend_metadata = e.metadata
+            short, long = exception2error_msg(e)
+            out.errors.append(short)
+            out.errors_long.append(long)
+            return out
+        out.backend_metadata = resp.additional_kwargs.get("backend_metadata")
 
         # postprocessing: call each callback in order, but proceed if one fails
         for callback in postprocessing_callbacks:

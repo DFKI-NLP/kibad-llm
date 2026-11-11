@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 import dataclasses
-from typing import Any
+from typing import Any, Callable
 
 from llama_index.core.base.llms.types import ChatResponse, MessageRole
 
@@ -47,7 +47,23 @@ class SimpleChatMessage:
     content: str
 
 
+class BackendExecutionError(Exception):
+    """A backend failure with any metadata collected before the failure."""
+
+    def __init__(self, message: str, metadata: dict[str, Any]):
+        super().__init__(message)
+        self.metadata = metadata
+
+
 class LLM(ABC):
+    def prepare_request(
+        self,
+        document: str,
+        format_messages: Callable[[str], list[SimpleChatMessage]],
+    ) -> tuple[list[SimpleChatMessage], dict[str, str]]:
+        """Format messages and return any input artifacts needed by the backend."""
+        return format_messages(document), {}
+
 
     @abstractmethod
     def call_llm_chat_with_guided_decoding(

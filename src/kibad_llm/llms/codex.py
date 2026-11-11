@@ -1,0 +1,200 @@
+"""Document extraction through the non-interactive Codex CLI."""
+
+from hashlib import sha256
+import json
+import os
+from pathlib import Path
+import shutil
+import subprocess
+from tempfile import TemporaryDirectory
+from time import monotonic
+from typing import Any, Callable
+from uuid import uuid4
+
+from llama_index.core.base.llms.types import ChatMessage, ChatResponse, MessageRole
+
+from kibad_llm.llms.base import BackendExecutionError, LLM, SimpleChatMessage
+from kibad_llm.utils.log import warn_once
+
+
+class Codex(LLM):
+    """Run one isolated Codex conversation per document."""
+
+    def __init__(
+        self,
+        model: str,
+        reasoning_effort: str,
+        timeout: float,
+        artifact_dir: str,
+        executable: str = "codex",
+    ):
+        self.model = model
+        self.reasoning_effort = reasoning_effort
+        self.timeout = timeout
+        self.artifact_dir = Path(artifact_dir).resolve()
+        self.executable = executable
+
+    def prepare_request(
+        self,
+        document: str,
+        format_messages: Callable[[str], list[SimpleChatMessage]],
+    ) -> tuple[list[SimpleChatMessage], dict[str, str]]:
+        return format_messages("Read the source document from input.md."), {"input.md": document}
+
+    def get_reasoning_from_chat_response(self, response: ChatResponse) -> None:
+        warn_once("Codex does not return reasoning content.")
+        return None
+
+    def call_llm_chat_with_guided_decoding(
+        self,
+        messages: list[SimpleChatMessage],
+        *,
+        json_schema: dict[str, Any] | None = None,
+        input_artifacts: dict[str, str] | None = None,
+        **request_kwargs,
+    ) -> ChatResponse:
+        document = (input_artifacts or {})["input.md"]
+        artifact = self.artifact_dir / uuid4().hex
+        artifact.mkdir(mode=0o700, parents=True)
+        events = artifact / "events.jsonl"
+        prompt = "\n\n".join(f"{message.role.value}:\n{message.content}" for message in messages)
+        prompt += "\n\nRead input.md before answering. Return the final answer as JSON."
+        if json_schema is not None:
+            prompt += "\nUse this JSON schema:\n" + json.dumps(json_schema, ensure_ascii=False)
+        (artifact / "prompt.txt").write_text(prompt, encoding="utf-8")
+        metadata: dict[str, Any] = {
+            "model": self.model,
+            "reasoning_effort": self.reasoning_effort,
+            "timeout_seconds": self.timeout,
+            "markdown_sha256": sha256(document.encode()).hexdigest(),
+            "execution_events": str(events.relative_to(self.artifact_dir.parent)),
+            "input_tokens": None,
+            "cached_input_tokens": None,
+            "output_tokens": None,
+            "reasoning_tokens": None,
+            "attempt_count": 0,
+        }
+        started = monotonic()
+        try:
+            answer = self._run(document, prompt, artifact, events, metadata)
+        except (OSError, ValueError, subprocess.SubprocessError) as error:
+            (artifact / "error.txt").write_text(str(error), encoding="utf-8")
+            raise BackendExecutionError(str(error), metadata) from error
+        finally:
+            metadata["backend_elapsed_seconds"] = monotonic() - started
+            if events.exists():
+                with events.open(encoding="utf-8", errors="replace") as stream:
+                    for line in stream:
+                        try:
+                            event = json.loads(line)
+                        except json.JSONDecodeError:
+                            continue
+                        usage = event.get("usage") or {}
+                        for key in ("input_tokens", "cached_input_tokens", "output_tokens", "reasoning_tokens"):
+                            if usage.get(key) is not None:
+                                metadata[key] = (metadata[key] or 0) + usage[key]
+            (artifact / "metadata.json").write_text(json.dumps(metadata, indent=2), encoding="utf-8")
+
+        return ChatResponse(
+            message=ChatMessage(role=MessageRole.ASSISTANT, content=answer),
+            additional_kwargs={"backend_metadata": metadata},
+        )
+
+    def _run(
+        self,
+        document: str,
+        prompt: str,
+        artifact: Path,
+        events: Path,
+        metadata: dict[str, Any],
+    ) -> str:
+        executable_path = shutil.which(self.executable)
+        if executable_path is None:
+            raise FileNotFoundError(f"Codex executable unavailable: {self.executable}")
+        executable = Path(executable_path).resolve()
+        auth_source = Path(os.environ.get("CODEX_HOME", Path.home() / ".codex")) / "auth.json"
+        with TemporaryDirectory(prefix="codex-", dir=self.artifact_dir) as temporary:
+            root = Path(temporary)
+            workspace = root / "document"
+            state = root / "state"
+            workspace.mkdir()
+            state.mkdir(mode=0o700)
+            (workspace / "input.md").write_text(document, encoding="utf-8")
+            metadata["codex_version"] = subprocess.check_output(
+                [executable, "--version"], text=True, timeout=30
+            ).strip()
+            env = {"PATH": "/usr/bin:/bin", "HOME": str(state), "CODEX_HOME": str(state)}
+            api_key = os.environ.get("CODEX_API_KEY") or os.environ.get("OPENAI_API_KEY")
+            if api_key:
+                env["CODEX_API_KEY"] = api_key
+            elif auth_source.is_file():
+                shutil.copyfile(auth_source, state / "auth.json")
+                (state / "auth.json").chmod(0o600)
+            else:
+                raise ValueError("Set CODEX_API_KEY or provide a Codex auth.json file.")
+
+            (state / "config.toml").write_text(
+                f"""
+default_permissions = "document"
+approval_policy = "never"
+web_search = "disabled"
+model_reasoning_effort = {json.dumps(self.reasoning_effort)}
+[shell_environment_policy]
+inherit = "none"
+[features]
+apps = false
+[plugins._default]
+enabled = false
+[permissions.document.filesystem]
+":minimal" = "read"
+{json.dumps(str(executable))} = "read"
+[permissions.document.filesystem.":workspace_roots"]
+"." = "write"
+[permissions.document.network]
+enabled = false
+""",
+                encoding="utf-8",
+            )
+            canary = root / "private"
+            canary.touch()
+            probe = subprocess.run(
+                [
+                    executable, "sandbox", "/bin/sh", "-ec",
+                    'test -r input.md; touch probe; test ! -e "$1"; test ! -e "$2"',
+                    "probe", str(canary), str(state / "auth.json"),
+                ],
+                cwd=workspace,
+                env=env,
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
+            if probe.returncode:
+                raise ValueError(f"Codex isolation probe failed: {probe.stderr.strip()}")
+            (workspace / "probe").unlink()
+            final = artifact / "final.json"
+            with events.open("w", encoding="utf-8") as stdout, (artifact / "stderr.log").open(
+                "w", encoding="utf-8"
+            ) as stderr:
+                metadata["attempt_count"] = 1
+                result = subprocess.run(
+                    [
+                        executable, "exec", "--strict-config", "--ephemeral", "--skip-git-repo-check",
+                        "--ignore-rules", "--json", "--model", self.model,
+                        "--output-last-message", str(final), "-",
+                    ],
+                    cwd=workspace,
+                    env=env,
+                    input=prompt,
+                    text=True,
+                    stdout=stdout,
+                    stderr=stderr,
+                    timeout=self.timeout,
+                )
+            if result.returncode:
+                raise ValueError(f"Codex exited with status {result.returncode}. See stderr.log and events.jsonl.")
+            if not final.is_file():
+                raise ValueError("Codex did not produce a final response.")
+            answer = final.read_text(encoding="utf-8")
+            json.loads(answer)
+            return answer

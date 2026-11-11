@@ -12,6 +12,9 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from datetime import datetime
+from hashlib import sha256
+from importlib.metadata import version
+import json
 import logging
 import os
 from pathlib import Path
@@ -195,6 +198,31 @@ def predict(cfg: DictConfig) -> dict[str, Any]:
 
     # delete the extractor (may free up GPU memory if the extractor contains a vllm in-process LLM)
     del extractor
+
+    if run_log_dir is not None and "backend_metadata" in dataset.column_names:
+        documents = [
+            {
+                "document_id": Path(file_name).stem,
+                "pdf_sha256": sha256((data_base_path / file_name).read_bytes()).hexdigest(),
+                **backend_metadata,
+            }
+            for file_name, backend_metadata in zip(
+                dataset["file_name"], dataset["backend_metadata"], strict=True
+            )
+            if backend_metadata is not None
+        ]
+        if documents:
+            provenance = {
+                "documents": documents,
+                "git": git_info,
+                "pdf_reader": OmegaConf.to_container(cfg.pdf_reader, resolve=True),
+                "pymupdf4llm_version": version("pymupdf4llm"),
+                "pymupdf_version": version("pymupdf"),
+                "uv_lock_sha256": sha256((PROJ_ROOT / "uv.lock").read_bytes()).hexdigest(),
+            }
+            (Path(run_log_dir) / "backend-provenance.json").write_text(
+                json.dumps(provenance, indent=2), encoding="utf-8"
+            )
 
     if not cfg.get("store_text_in_predictions", True):
         dataset = dataset.remove_columns("text")
