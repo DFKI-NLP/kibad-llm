@@ -13,7 +13,7 @@ from uuid import uuid4
 
 from llama_index.core.base.llms.types import ChatMessage, ChatResponse, MessageRole
 
-from kibad_llm.llms.base import BackendExecutionError, LLM, SimpleChatMessage
+from kibad_llm.llms.base import LLM, BackendExecutionError, SimpleChatMessage
 from kibad_llm.utils.log import warn_once
 
 

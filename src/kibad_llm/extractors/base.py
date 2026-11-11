@@ -41,7 +41,12 @@ from typing import Any
 from jsonschema.validators import validator_for
 from llama_index.core.base.llms.types import ChatResponse
 
-from kibad_llm.llms.base import BackendExecutionError, LLM, MessageRole, SimpleChatMessage
+from kibad_llm.llms.base import (
+    LLM,
+    BackendExecutionError,
+    MessageRole,
+    SimpleChatMessage,
+)
 from kibad_llm.schema.description import build_schema_description
 from kibad_llm.schema.utils import (
     WRAPPED_CONTENT_KEY,
@@ -75,6 +80,7 @@ class SingleExtractionResult(FieldDict):
             `{ "system": system_message, "user": user_message }` [`build_chat_messages`][..build_chat_messages]
         messages_formatted: prompt messages with inserted input text and schema description
             `{ "system": system_message, "user": user_message }`  [`build_chat_messages`][..build_chat_messages]
+        backend_metadata: Optional execution metadata reported by the backend.
         errors: list of strings "error_name: error_message"
         errors_long: list of strings "error_name: error_message_and_traceback"
     """
@@ -90,6 +96,12 @@ class SingleExtractionResult(FieldDict):
     backend_metadata: dict[str, Any] | None = None
     errors: list[str] = field(default_factory=list)
     errors_long: list[str] = field(default_factory=list)
+
+    def __post_init__(self) -> None:
+        super().__post_init__()
+        if self.backend_metadata is None:
+            # Preserve the serialized shape for backends that report no metadata.
+            dict.__delitem__(self, "backend_metadata")
 
 
 def exception2error_msg(e: BaseException) -> tuple[str, str]:
@@ -1001,7 +1013,8 @@ def extract_from_text(
             out.errors.append(short)
             out.errors_long.append(long)
             return out
-        out.backend_metadata = resp.additional_kwargs.get("backend_metadata")
+        if "backend_metadata" in resp.additional_kwargs:
+            out.backend_metadata = resp.additional_kwargs["backend_metadata"]
 
         # postprocessing: call each callback in order, but proceed if one fails
         for callback in postprocessing_callbacks:
