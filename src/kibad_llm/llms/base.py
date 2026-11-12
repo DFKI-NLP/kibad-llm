@@ -1,8 +1,14 @@
+"""Base interface for preparing and executing LLM chat requests."""
+
 from abc import ABC, abstractmethod
-import dataclasses
 from typing import Any
 
-from llama_index.core.base.llms.types import ChatResponse, MessageRole
+from llama_index.core.base.llms.types import ChatResponse
+from llama_index.core.base.llms.types import MessageRole as MessageRole
+
+from kibad_llm.llms.prompt import ExtractionPrompt, PreparedRequest
+from kibad_llm.llms.prompt import SimpleChatMessage as SimpleChatMessage
+from kibad_llm.llms.prompt import prepare_inline_request
 
 
 class MissingRawChatResponseError(Exception):
@@ -41,13 +47,16 @@ class EmptyReasoningError(Exception):
     ...
 
 
-@dataclasses.dataclass
-class SimpleChatMessage:
-    role: MessageRole
-    content: str
-
-
 class LLM(ABC):
+    """Prepare and execute chat requests with a model backend."""
+
+    def prepare_request(self, prompt: ExtractionPrompt) -> PreparedRequest:
+        """Build the current turn and full request, using inline document text by default.
+
+        Backends can override this method to change how they build messages or
+        supply auxiliary inputs for their chat call.
+        """
+        return prepare_inline_request(prompt)
 
     @abstractmethod
     def call_llm_chat_with_guided_decoding(
