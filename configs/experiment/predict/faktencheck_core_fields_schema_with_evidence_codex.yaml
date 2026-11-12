@@ -7,6 +7,7 @@ defaults:
 
 extractor:
   prompt_template:
+    schema_placeholder: schema
     user_message: |
       Lies das Markdown-Dokument aus der Datei `input.md`.
       Verwende für deine JSON-Antwort das folgende JSON-Schema:
