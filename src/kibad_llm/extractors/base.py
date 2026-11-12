@@ -41,7 +41,13 @@ from typing import Any
 from jsonschema.validators import validator_for
 from llama_index.core.base.llms.types import ChatResponse
 
-from kibad_llm.llms.base import LLM, MessageRole, SimpleChatMessage
+from kibad_llm.llms.base import (
+    LLM,
+    BackendExecutionError,
+    MessageRole,
+    MissingDocumentError,
+    SimpleChatMessage,
+)
 from kibad_llm.schema.description import build_schema_description
 from kibad_llm.schema.utils import (
     WRAPPED_CONTENT_KEY,
@@ -75,6 +81,7 @@ class SingleExtractionResult(FieldDict):
             `{ "system": system_message, "user": user_message }` [`build_chat_messages`][..build_chat_messages]
         messages_formatted: prompt messages with inserted input text and schema description
             `{ "system": system_message, "user": user_message }`  [`build_chat_messages`][..build_chat_messages]
+        backend_metadata: Optional execution metadata reported by the backend.
         errors: list of strings "error_name: error_message"
         errors_long: list of strings "error_name: error_message_and_traceback"
     """
@@ -87,8 +94,15 @@ class SingleExtractionResult(FieldDict):
     reasoning_content: str | None = None
     messages: dict[str, str | None] | None = None
     messages_formatted: dict[str, str] | None = None
+    backend_metadata: dict[str, Any] | None = None
     errors: list[str] = field(default_factory=list)
     errors_long: list[str] = field(default_factory=list)
+
+    def __post_init__(self) -> None:
+        super().__post_init__()
+        if self.backend_metadata is None:
+            # Preserve the serialized shape for backends that report no metadata.
+            dict.__delitem__(self, "backend_metadata")
 
 
 def exception2error_msg(e: BaseException) -> tuple[str, str]:
@@ -176,7 +190,7 @@ def build_chat_message(
 
     Raises:
         ValueError: If a schema is required but not supplied.
-        ValueError: If a document is required but not supplied.
+        MissingDocumentError: If a document is required but not supplied.
     """
     content = message
     formatting = {}
@@ -207,7 +221,7 @@ def build_chat_message(
     message_requires_document = "{" + document_placeholder + "}" in content
     if message_requires_document:
         if document is None:
-            raise ValueError(
+            raise MissingDocumentError(
                 f"Document text must be provided if {role.name} message template requires "
                 f"input text (it contains '{{{document_placeholder}}}')."
             )
@@ -226,6 +240,7 @@ def build_chat_messages(
     user_message: str | None = None,
     schema_description_placeholder: str = "schema_description",
     document_placeholder: str = "document",
+    require_document: bool = True,
     schema: dict[str, Any] | None = None,
     schema_placeholder: str = "schema",
     history: list[SimpleChatMessage] | None = None,
@@ -240,13 +255,14 @@ def build_chat_messages(
     Args:
         system_message: The system message template.
         user_message: The user message template.
-        schema: Optional JSON schema for structured output.
-        schema_placeholder: The placeholder for `schema` serialized as JSON.
         schema_description_placeholder: The placeholder in the message templates for the
             schema description. If the placeholder is present in the message templates,
             the schema must be provided and the description will be generated and inserted.
         document_placeholder: The placeholder in the message templates for the input text. If the
             placeholder is present in the message templates, it will be replaced with the input text.
+        require_document: Require a document placeholder when there is no conversation history.
+        schema: Optional JSON schema for structured output.
+        schema_placeholder: The placeholder for `schema` serialized as JSON.
         history: Optional list of ChatMessage objects representing the conversation history.
         return_messages: Whether to return the used prompt messages, but without input text and
             schema description.
@@ -264,7 +280,7 @@ def build_chat_messages(
 
     Raises:
         ValueError: If neither a system_message nor user_message are provided.
-        ValueError: If no document placeholder is supplied and history is false. (no input text would be inserted)
+        ValueError: If a document placeholder is required and none is supplied.
 
     Warns:
         UserWarning: If a schema is supplied and neither schema placeholder is used.
@@ -307,8 +323,7 @@ def build_chat_messages(
             f"('{{{schema_description_placeholder}}}' or '{{{schema_placeholder}}}')."
         )
 
-    # Check where the input document was inserted. At least one message must have it (if history is not used).
-    if not any(meta["has_document"] for meta in metas) and not history:
+    if require_document and not history and not any(meta["has_document"] for meta in metas):
         raise ValueError(
             "At least one of the message templates must require the input text "
             f"(they must contain '{{{document_placeholder}}}')."
@@ -942,14 +957,24 @@ def extract_from_text(
 
     text_to_process = text[out.character_start : out.character_end]
 
-    messages = build_chat_messages(
-        document=text_to_process,
-        schema=schema_for_build_messages,
-        _out=out,
-        **build_messages_kwargs,
-    )
+    def format_messages(
+        document: str | None = None, *, require_document: bool = True
+    ) -> list[SimpleChatMessage]:
+        return build_chat_messages(
+            document=document,
+            require_document=require_document,
+            schema=schema_for_build_messages,
+            _out=out,
+            **build_messages_kwargs,
+        )
 
-    request_kwargs = request_parameters or {}
+    request_kwargs = dict(request_parameters or {})
+    if llm is None:
+        format_messages(text_to_process)
+    else:
+        messages, artifacts = llm.prepare_request(text_to_process, format_messages)
+        if artifacts:
+            request_kwargs["input_artifacts"] = artifacts
 
     if use_guided_decoding:
         if schema is None:
@@ -992,11 +1017,20 @@ def extract_from_text(
             )
 
         # LLM chat call
-        resp = llm.call_llm_chat_with_guided_decoding(
-            messages=messages,
-            json_schema=schema if use_guided_decoding else None,
-            **request_kwargs,
-        )
+        try:
+            resp = llm.call_llm_chat_with_guided_decoding(
+                messages=messages,
+                json_schema=schema if use_guided_decoding else None,
+                **request_kwargs,
+            )
+        except BackendExecutionError as e:
+            out.backend_metadata = e.metadata
+            short, long = exception2error_msg(e)
+            out.errors.append(short)
+            out.errors_long.append(long)
+            return out
+        if "backend_metadata" in resp.additional_kwargs:
+            out.backend_metadata = resp.additional_kwargs["backend_metadata"]
 
         # postprocessing: call each callback in order, but proceed if one fails
         for callback in postprocessing_callbacks:

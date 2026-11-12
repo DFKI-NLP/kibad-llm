@@ -1,0 +1,5 @@
+_target_: kibad_llm.llms.codex.Codex
+model: gpt-6.1-sol
+reasoning_effort: high
+timeout: 600
+artifact_dir: ${paths.output_dir}/codex

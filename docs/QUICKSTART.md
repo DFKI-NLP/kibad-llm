@@ -185,3 +185,34 @@ intentionally changed.
 - [data/readme.md](/data/readme.md) — description of the datasets and reference files available.
 - [dfki-nlp.github.io/kibad-llm](https://dfki-nlp.github.io/kibad-llm/) — the rendered documentation site with
     all of the above, plus the auto-generated code reference.
+
+### Codex extraction backend
+
+Use Codex CLI on a Linux host that supports its restricted filesystem sandbox.
+Install Codex separately and authenticate with `codex login` or set
+`CODEX_API_KEY`. Choose an explicit model available to that credential with
+`extractor.llm.model=MODEL`. The default model is an alias. Hosted inference
+and agent execution can vary across reruns.
+
+```bash
+uv run -m kibad_llm.predict \
+  name=codex_fixture \
+  experiment/predict=faktencheck_core_fields_schema_with_evidence_codex \
+  pdf_directory=tests/fixtures/pdfs
+```
+
+The preset gives Codex the Markdown as `input.md` and supplies the extraction instructions
+and schema through the prompt template. You can override `extractor.llm.reasoning_effort`
+(default `high`) and `extractor.llm.timeout` (default 600 seconds).
+
+Each call launches a fresh ephemeral Codex process in a document workspace.
+Shell commands have a restricted filesystem profile and no network access.
+Web search, apps, and plugins are disabled. The backend checks workspace access
+before inference. If sandboxing is unavailable, the extraction records an error.
+Use a job-local Hydra run directory on shared filesystems to keep temporary
+runtime state off shared storage.
+
+The Hydra run directory contains prompts, final JSON, execution events, and
+backend provenance. Prediction records include elapsed time and usage counters
+reported by the CLI. Event paths are relative to that run directory. Keep the
+run directory with the predictions to resolve those references.

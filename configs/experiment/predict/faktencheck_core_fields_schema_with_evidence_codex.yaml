@@ -1,0 +1,7 @@
+# @package _global_
+
+defaults:
+  - faktencheck_core_fields_schema_with_evidence
+  - override /extractor: simple
+  - override /extractor/llm: codex
+  - override /extractor/prompt_template: faktencheck_core_v1_with_evidence_codex

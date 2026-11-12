@@ -1,0 +1,9 @@
+defaults:
+  - faktencheck_core_v1_with_evidence_and_persona
+
+schema_placeholder: schema
+user_message: |
+  Lies das Markdown-Dokument aus der Datei `input.md`.
+  Verwende für deine JSON-Antwort das folgende JSON-Schema:
+
+  {schema}
