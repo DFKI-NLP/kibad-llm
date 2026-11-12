@@ -75,7 +75,7 @@ def _chat_message_to_vllm_param(m: SimpleChatMessage) -> ChatCompletionMessagePa
         `ChatCompletionMessageParam` equivalent to the
             [`SimpleChatMessage`][kibad_llm.llms.base.SimpleChatMessage].
     """
-    # This type is a narrower version of ChatCompletionMessageParam, ensuring compatability and security.
+    # This type is a narrower version of ChatCompletionMessageParam, ensuring compatibility and security.
     msg: CustomChatCompletionMessageParam = {"role": m.role.value, "content": m.content}
     return msg
 
