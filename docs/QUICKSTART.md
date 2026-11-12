@@ -196,10 +196,14 @@ and agent execution can vary across reruns.
 
 ```bash
 uv run -m kibad_llm.predict \
-  name=codex_fixture extractor=simple extractor/llm=codex \
-  experiment/predict=faktencheck_core_fields_schema_with_evidence \
+  name=codex_fixture \
+  experiment/predict=faktencheck_core_fields_schema_with_evidence_codex \
   pdf_directory=tests/fixtures/pdfs
 ```
+
+The preset gives Codex the Markdown as `input.md` and supplies the extraction instructions
+and schema through the prompt template. You can override `extractor.llm.reasoning_effort`
+(default `high`) and `extractor.llm.timeout` (default 600 seconds).
 
 Each call launches a fresh ephemeral Codex process in a document workspace.
 Shell commands have a restricted filesystem profile and no network access.

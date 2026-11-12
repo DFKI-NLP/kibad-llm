@@ -1,0 +1,14 @@
+# @package _global_
+
+defaults:
+  - faktencheck_core_fields_schema_with_evidence
+  - override /extractor: simple
+  - override /extractor/llm: codex
+
+extractor:
+  prompt_template:
+    user_message: |
+      Lies das Markdown-Dokument aus der Datei `input.md`.
+      Verwende für deine JSON-Antwort das folgende JSON-Schema:
+
+      {schema}

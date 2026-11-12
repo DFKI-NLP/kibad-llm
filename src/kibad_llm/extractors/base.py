@@ -45,6 +45,7 @@ from kibad_llm.llms.base import (
     LLM,
     BackendExecutionError,
     MessageRole,
+    MissingDocumentError,
     SimpleChatMessage,
 )
 from kibad_llm.schema.description import build_schema_description
@@ -189,7 +190,7 @@ def build_chat_message(
 
     Raises:
         ValueError: If a schema is required but not supplied.
-        ValueError: If a document is required but not supplied.
+        MissingDocumentError: If a document is required but not supplied.
     """
     content = message
     formatting = {}
@@ -220,7 +221,7 @@ def build_chat_message(
     message_requires_document = "{" + document_placeholder + "}" in content
     if message_requires_document:
         if document is None:
-            raise ValueError(
+            raise MissingDocumentError(
                 f"Document text must be provided if {role.name} message template requires "
                 f"input text (it contains '{{{document_placeholder}}}')."
             )
@@ -246,6 +247,8 @@ def build_chat_messages(
     return_messages_formatted: bool = False,
     truncate_user_message_formatted: int | None = 300,
     _out: SingleExtractionResult | None = None,
+    *,
+    require_document: bool = True,
     **build_messages_kwargs: Any,
 ) -> list[SimpleChatMessage]:
     """Build extraction messages by filling document and schema placeholders.
@@ -268,6 +271,7 @@ def build_chat_messages(
         truncate_user_message_formatted: If return_messages_formatted is True, truncate the user message
             content to this many characters (to avoid huge outputs). Set to None to disable truncation.
         _out: Optional output [`..SingleExtractionResult`][] to store messages in (used internally).
+        require_document: Require a document placeholder when there is no conversation history.
 
     Keyword Args:
         **build_messages_kwargs: Additional keyword arguments for build_chat_message.
@@ -277,7 +281,7 @@ def build_chat_messages(
 
     Raises:
         ValueError: If neither a system_message nor user_message are provided.
-        ValueError: If no document placeholder is supplied and history is false. (no input text would be inserted)
+        ValueError: If a document placeholder is required and none is supplied.
 
     Warns:
         UserWarning: If a schema is supplied and neither schema placeholder is used.
@@ -320,8 +324,7 @@ def build_chat_messages(
             f"('{{{schema_description_placeholder}}}' or '{{{schema_placeholder}}}')."
         )
 
-    # Check where the input document was inserted. At least one message must have it (if history is not used).
-    if not any(meta["has_document"] for meta in metas) and not history:
+    if require_document and not history and not any(meta["has_document"] for meta in metas):
         raise ValueError(
             "At least one of the message templates must require the input text "
             f"(they must contain '{{{document_placeholder}}}')."
@@ -955,19 +958,22 @@ def extract_from_text(
 
     text_to_process = text[out.character_start : out.character_end]
 
-    format_messages = partial(
-        build_chat_messages,
-        schema=schema_for_build_messages,
-        _out=out,
-        **build_messages_kwargs,
-    )
+    def format_messages(
+        document: str | None = None, *, require_document: bool = True
+    ) -> list[SimpleChatMessage]:
+        return build_chat_messages(
+            document=document,
+            require_document=require_document,
+            schema=schema_for_build_messages,
+            _out=out,
+            **build_messages_kwargs,
+        )
+
     request_kwargs = dict(request_parameters or {})
     if llm is None:
-        format_messages(document=text_to_process)
+        format_messages(text_to_process)
     else:
-        messages, artifacts = llm.prepare_request(
-            text_to_process, lambda document: format_messages(document=document)
-        )
+        messages, artifacts = llm.prepare_request(text_to_process, format_messages)
         if artifacts:
             request_kwargs["input_artifacts"] = artifacts
 

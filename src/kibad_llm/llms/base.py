@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
-from collections.abc import Callable
 import dataclasses
-from typing import Any
+from typing import Any, Protocol
 
 from llama_index.core.base.llms.types import ChatResponse, MessageRole
 
@@ -48,6 +47,18 @@ class SimpleChatMessage:
     content: str
 
 
+class MissingDocumentError(ValueError):
+    """A prompt template requires inline document text that was not supplied."""
+
+
+class MessageFormatter(Protocol):
+    """Render the extractor prompt with the backend’s chosen document delivery."""
+
+    def __call__(
+        self, document: str | None = None, *, require_document: bool = True
+    ) -> list[SimpleChatMessage]: ...
+
+
 class BackendExecutionError(Exception):
     """A backend failure with any metadata collected before the failure."""
 
@@ -60,7 +71,7 @@ class LLM(ABC):
     def prepare_request(
         self,
         document: str,
-        format_messages: Callable[[str], list[SimpleChatMessage]],
+        format_messages: MessageFormatter,
     ) -> tuple[list[SimpleChatMessage], dict[str, str]]:
         """Format messages and return any input artifacts needed by the backend."""
         return format_messages(document), {}

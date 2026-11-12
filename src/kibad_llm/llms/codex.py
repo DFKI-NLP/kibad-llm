@@ -1,6 +1,5 @@
 """Document extraction through the non-interactive Codex CLI."""
 
-from collections.abc import Callable
 from hashlib import sha256
 import json
 import os
@@ -14,7 +13,13 @@ from uuid import uuid4
 
 from llama_index.core.base.llms.types import ChatMessage, ChatResponse, MessageRole
 
-from kibad_llm.llms.base import LLM, BackendExecutionError, SimpleChatMessage
+from kibad_llm.llms.base import (
+    LLM,
+    BackendExecutionError,
+    MessageFormatter,
+    MissingDocumentError,
+    SimpleChatMessage,
+)
 from kibad_llm.utils.log import warn_once
 
 
@@ -38,9 +43,17 @@ class Codex(LLM):
     def prepare_request(
         self,
         document: str,
-        format_messages: Callable[[str], list[SimpleChatMessage]],
+        format_messages: MessageFormatter,
     ) -> tuple[list[SimpleChatMessage], dict[str, str]]:
-        return format_messages("Read the source document from input.md."), {"input.md": document}
+        try:
+            messages = format_messages(require_document=False)
+        except MissingDocumentError as error:
+            raise ValueError(
+                "Codex reads the document from input.md. Use "
+                "experiment/predict=faktencheck_core_fields_schema_with_evidence_codex "
+                "or remove the document placeholder from your file-backed template."
+            ) from error
+        return messages, {"input.md": document}
 
     def get_reasoning_from_chat_response(self, response: ChatResponse) -> None:
         warn_once("Codex does not return reasoning content.")
@@ -59,9 +72,6 @@ class Codex(LLM):
         artifact.mkdir(mode=0o700, parents=True)
         events = artifact / "events.jsonl"
         prompt = "\n\n".join(f"{message.role.value}:\n{message.content}" for message in messages)
-        prompt += "\n\nRead input.md before answering. Return the final answer as JSON."
-        if json_schema is not None:
-            prompt += "\nUse this JSON schema:\n" + json.dumps(json_schema, ensure_ascii=False)
         (artifact / "prompt.txt").write_text(prompt, encoding="utf-8")
         metadata: dict[str, Any] = {
             "model": self.model,

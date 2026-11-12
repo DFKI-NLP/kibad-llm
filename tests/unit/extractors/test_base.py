@@ -123,6 +123,11 @@ def test_build_chat_messages_rejects_missing_json_schema() -> None:
         )
 
 
+def test_build_chat_messages_requires_document_placeholder_by_default() -> None:
+    with pytest.raises(ValueError, match="must contain"):
+        build_chat_messages(user_message="Read the source.", document="Markdown")
+
+
 @pytest.mark.parametrize("use_wrapped_schema", [False, True])
 def test_extract_from_text_uses_same_schema_for_both_placeholders(
     use_wrapped_schema: bool,
