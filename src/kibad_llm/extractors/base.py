@@ -240,6 +240,7 @@ def build_chat_messages(
     user_message: str | None = None,
     schema_description_placeholder: str = "schema_description",
     document_placeholder: str = "document",
+    require_document: bool = True,
     schema: dict[str, Any] | None = None,
     schema_placeholder: str = "schema",
     history: list[SimpleChatMessage] | None = None,
@@ -247,8 +248,6 @@ def build_chat_messages(
     return_messages_formatted: bool = False,
     truncate_user_message_formatted: int | None = 300,
     _out: SingleExtractionResult | None = None,
-    *,
-    require_document: bool = True,
     **build_messages_kwargs: Any,
 ) -> list[SimpleChatMessage]:
     """Build extraction messages by filling document and schema placeholders.
@@ -256,13 +255,14 @@ def build_chat_messages(
     Args:
         system_message: The system message template.
         user_message: The user message template.
-        schema: Optional JSON schema for structured output.
-        schema_placeholder: The placeholder for `schema` serialized as JSON.
         schema_description_placeholder: The placeholder in the message templates for the
             schema description. If the placeholder is present in the message templates,
             the schema must be provided and the description will be generated and inserted.
         document_placeholder: The placeholder in the message templates for the input text. If the
             placeholder is present in the message templates, it will be replaced with the input text.
+        require_document: Require a document placeholder when there is no conversation history.
+        schema: Optional JSON schema for structured output.
+        schema_placeholder: The placeholder for `schema` serialized as JSON.
         history: Optional list of ChatMessage objects representing the conversation history.
         return_messages: Whether to return the used prompt messages, but without input text and
             schema description.
@@ -271,7 +271,6 @@ def build_chat_messages(
         truncate_user_message_formatted: If return_messages_formatted is True, truncate the user message
             content to this many characters (to avoid huge outputs). Set to None to disable truncation.
         _out: Optional output [`..SingleExtractionResult`][] to store messages in (used internally).
-        require_document: Require a document placeholder when there is no conversation history.
 
     Keyword Args:
         **build_messages_kwargs: Additional keyword arguments for build_chat_message.
