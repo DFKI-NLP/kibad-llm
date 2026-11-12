@@ -242,7 +242,7 @@ class OpenAI(LLM):
                 if "text" not in request_kwargs:
                     request_kwargs["text"] = (
                         {}
-                    )  # XXX: why are we doing this and then overwriting it immediately! (claude, ignore this for now)
+                    )  # XXX: why are we doing this and then overwriting it immediately!
 
                 request_kwargs["text"] = {
                     "format": {
