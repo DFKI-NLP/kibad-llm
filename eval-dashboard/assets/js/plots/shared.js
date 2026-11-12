@@ -1,0 +1,357 @@
+/**
+ * Shared DOM-free plot helpers for the eval dashboard.
+ *
+ * Plot families use these helpers to keep data preparation, grouping labels,
+ * and adaptive SVG sizing consistent without depending on the dashboard
+ * controller module.
+ */
+
+import { splitLabelByLastDot } from "../utils/text.js";
+import { getEvaluationRunId } from "../utils/runs.js";
+import { normalizeValue } from "../utils/values.js";
+
+/**
+ * Resolves the stable source run id for a metric collection evaluation.
+ *
+ * Collection views may wrap a raw evaluation and carry their own `sourceRunId`.
+ * Source-run identity keeps counts and labels tied to the original run rather
+ * than to temporary wrappers rebuilt during plotting.
+ *
+ * @param {object} evaluation - Evaluation record.
+ * @returns {string} Normalized source run id.
+ */
+export function getMetricCollectionSourceRunId(evaluation) {
+  const sourceRunId = normalizeValue(evaluation?.sourceRunId).trim();
+  return sourceRunId || getEvaluationRunId(evaluation);
+}
+
+/**
+ * Resolves the required source run id for aligned plot data.
+ *
+ * Numeric inputs use raw evaluations while matrix inputs use collection views.
+ * Both must expose the same source-run id before values are detached from
+ * their evaluation records for aggregation and download.
+ *
+ * @param {object} evaluation - Raw evaluation or metric collection view.
+ * @param {string} context - Plot-data context used in validation errors.
+ * @returns {string} Non-empty normalized source run id.
+ * @throws {Error} If source-run id is unavailable.
+ */
+export function getRequiredPlotRunId(evaluation, context = "Plot data") {
+  const runId = getMetricCollectionSourceRunId(evaluation);
+  if (!runId) {
+    throw new Error(`${context} requires every evaluation to define a run id.`);
+  }
+  return runId;
+}
+
+/**
+ * Asserts that two arrays remain index-aligned.
+ *
+ * @param {string} context - Plot-data context used in validation errors.
+ * @param {string} firstName - First array field name.
+ * @param {Array<*>} firstValues - First aligned array.
+ * @param {string} secondName - Second array field name.
+ * @param {Array<*>} secondValues - Second aligned array.
+ * @returns {void}
+ * @throws {Error} If either value is not an array or their lengths differ.
+ */
+export function assertAlignedArrayLengths(
+  context,
+  firstName,
+  firstValues,
+  secondName,
+  secondValues
+) {
+  if (!Array.isArray(firstValues) || !Array.isArray(secondValues)) {
+    throw new Error(`${context} requires ${firstName} and ${secondName} to be arrays.`);
+  }
+  if (firstValues.length !== secondValues.length) {
+    throw new Error(
+      `${context} requires ${firstName}.length (${firstValues.length}) to equal ` +
+      `${secondName}.length (${secondValues.length}).`
+    );
+  }
+}
+
+/**
+ * Check whether a value is a plain object record.
+ *
+ * Metric plot inputs use object records for nested metric data. Centralizing
+ * this check keeps collection wrapping and metric validation from accepting
+ * arrays or scalar values by accident.
+ *
+ * @param {*} value - Candidate record.
+ * @returns {boolean} Whether the value is a non-array object.
+ */
+export function isMetricDataRecord(value) {
+  return Boolean(value && typeof value === "object" && !Array.isArray(value));
+}
+
+/**
+ * Resolves the non-enumerable prepared-data container for a metric evaluation.
+ *
+ * Collection views keep the raw dashboard evaluation on `.evaluation`; caching
+ * on that source record lets rebuilt views reuse the same prepared data. Direct
+ * aggregation inputs fall back to the object they received.
+ *
+ * @param {object} evaluation - Collection view or direct evaluation.
+ * @returns {object} Mutable prepared-data container.
+ * @throws {Error} If the input cannot own prepared data.
+ */
+export function getMetricPreparedDataContainer(evaluation) {
+  const cacheTarget = evaluation?.evaluation && typeof evaluation.evaluation === "object"
+    ? evaluation.evaluation
+    : evaluation;
+  if (!cacheTarget || typeof cacheTarget !== "object") {
+    throw new Error("Metric preparation cache target must be an object.");
+  }
+  if (!cacheTarget.dataPrepared || typeof cacheTarget.dataPrepared !== "object") {
+    Object.defineProperty(cacheTarget, "dataPrepared", {
+      value: Object.create(null),
+      enumerable: false,
+      configurable: true,
+      writable: true,
+    });
+  } else if (Object.getPrototypeOf(cacheTarget.dataPrepared) !== null) {
+    const preparedData = Object.assign(Object.create(null), cacheTarget.dataPrepared);
+    Object.defineProperty(cacheTarget, "dataPrepared", {
+      value: preparedData,
+      enumerable: false,
+      configurable: true,
+      writable: true,
+    });
+  }
+  return cacheTarget.dataPrepared;
+}
+
+/**
+ * Build a collection-view wrapper for one field-based metric evaluation.
+ *
+ * Collection metrics expose their field map by reference. Single-field metrics
+ * are wrapped as one-field collections and must define a non-empty metric.field.
+ * The wrapper gives confusion and TP/FP/FN plots one field-map contract while
+ * leaving raw dashboard evaluations unchanged for tables and grouping.
+ *
+ * @param {object} evaluation - Evaluation record to wrap.
+ * @param {object} options - Collection type names, metric label, and field resolver.
+ * @returns {object} Collection-view record.
+ * @throws {Error} If the evaluation shape violates the metric contract.
+ */
+export function getMetricCollectionView(
+  evaluation,
+  { collectionType, singularType, metricLabel, evalTabState, getEvaluationEffectiveValue }
+) {
+  if (!evaluation || typeof evaluation !== "object") {
+    throw new Error(`${metricLabel} evaluation must be an object.`);
+  }
+
+  const metricType = normalizeValue(evaluation?.jobReturnValue?.type).trim();
+  const sourceRunId = getMetricCollectionSourceRunId(evaluation);
+  if (metricType === collectionType) {
+    const fieldEntries = evaluation.data;
+    if (!isMetricDataRecord(fieldEntries)) {
+      throw new Error(`${collectionType} data must be an object mapping metric fields to metric data.`);
+    }
+
+    const fields = new Map();
+    for (const [rawField, fieldEntry] of Object.entries(fieldEntries)) {
+      const fieldLabel = normalizeValue(rawField).trim();
+      if (!fieldLabel) {
+        throw new Error(`${collectionType} data contains an empty metric field name.`);
+      }
+      if (fields.has(fieldLabel)) {
+        throw new Error(`${collectionType} data contains duplicate metric field ${JSON.stringify(fieldLabel)} after normalization.`);
+      }
+      if (!isMetricDataRecord(fieldEntry)) {
+        throw new Error(`${collectionType} field ${JSON.stringify(fieldLabel)} must contain object metric data.`);
+      }
+      fields.set(fieldLabel, fieldEntry);
+    }
+    if (fields.size === 0) {
+      throw new Error(`${collectionType} data must contain at least one metric field.`);
+    }
+
+    return {
+      evaluation,
+      runId: getEvaluationRunId(evaluation) || sourceRunId,
+      sourceRunId,
+      runDir: normalizeValue(evaluation?.runDir),
+      fields,
+    };
+  }
+
+  if (metricType === singularType) {
+    const rawField = getEvaluationEffectiveValue
+      ? getEvaluationEffectiveValue(evaluation, "metric.field", evalTabState)
+      : evaluation?.overrides?.["metric.field"];
+    const fieldLabel = normalizeValue(rawField).trim();
+    if (!fieldLabel) {
+      throw new Error(`${singularType} evaluation must define a non-empty metric.field.`);
+    }
+    if (!isMetricDataRecord(evaluation.data)) {
+      throw new Error(`${singularType} data must be an object.`);
+    }
+    return {
+      evaluation,
+      runId: getEvaluationRunId(evaluation) || sourceRunId,
+      sourceRunId,
+      runDir: normalizeValue(evaluation?.runDir),
+      fields: new Map([[fieldLabel, evaluation.data]]),
+    };
+  }
+
+  throw new Error(`${metricLabel} plot received unsupported metric type: ${metricType || "(missing)"}.`);
+}
+
+/**
+ * Formats a plot label, optionally shortening dotted paths to their suffix.
+ *
+ * The dashboard can shorten long metric or label paths for dense matrices while
+ * keeping the full label available in data and tooltips.
+ *
+ * @param {*} label - Raw label value.
+ * @param {object} [options] - Display options.
+ * @returns {string} Normalized label text.
+ */
+export function getPlotDisplayLabel(label, { shortenLabels = false } = {}) {
+  const text = normalizeValue(label);
+  return shortenLabels ? splitLabelByLastDot(text) : text;
+}
+
+/**
+ * Expands an SVG viewport so all generated plot content is visible.
+ *
+ * Rotated axis labels and browser font metrics can extend beyond the initial
+ * viewBox. Measuring the content group after render prevents clipped exports
+ * and clipped on-screen plots.
+ *
+ * @param {SVGSVGElement} svg - SVG element to resize.
+ * @param {SVGGElement} contentGroup - Group whose bounding box is measured.
+ * @param {number} minWidth - Minimum SVG width.
+ * @param {number} minHeight - Minimum SVG height.
+ * @returns {boolean} True when fitting succeeded.
+ */
+function fitSvgToContents(svg, contentGroup, minWidth, minHeight) {
+  if (!svg.isConnected) {
+    return false;
+  }
+  let bbox;
+  try {
+    bbox = contentGroup.getBBox();
+  } catch (error) {
+    return false;
+  }
+  if (
+    !bbox ||
+    !Number.isFinite(bbox.x) ||
+    !Number.isFinite(bbox.y) ||
+    !Number.isFinite(bbox.width) ||
+    !Number.isFinite(bbox.height)
+  ) {
+    return false;
+  }
+
+  const padding = 8;
+  const shiftX = Math.max(0, padding - bbox.x);
+  const shiftY = Math.max(0, padding - bbox.y);
+  contentGroup.setAttribute("transform", `translate(${shiftX}, ${shiftY})`);
+
+  const fittedWidth = Math.ceil(
+    Math.max(minWidth + shiftX, bbox.x + bbox.width + shiftX + padding)
+  );
+  const fittedHeight = Math.ceil(
+    Math.max(minHeight + shiftY, bbox.y + bbox.height + shiftY + padding)
+  );
+
+  svg.setAttribute("width", String(fittedWidth));
+  svg.setAttribute("height", String(fittedHeight));
+  svg.setAttribute("viewBox", `0 0 ${fittedWidth} ${fittedHeight}`);
+  return true;
+}
+
+/**
+ * Schedules repeated SVG fitting attempts after layout and font loading.
+ *
+ * SVG text bounding boxes are not always available immediately after elements
+ * are created. Retrying across animation frames and after `document.fonts`
+ * settles makes sizing robust in both browsers and DOM-like tests.
+ *
+ * @param {object} options - Fitting dependencies and dimensions.
+ * @returns {void}
+ */
+export function scheduleAdaptiveSvgFit({
+  documentLike = globalThis.document,
+  requestAnimationFrameLike = globalThis.requestAnimationFrame,
+  svg,
+  contentGroup,
+  minWidth,
+  minHeight,
+}) {
+  let attempts = 4;
+  const requestFrame = requestAnimationFrameLike || ((callback) => callback());
+  const runFit = () => {
+    const fitted = fitSvgToContents(svg, contentGroup, minWidth, minHeight);
+    if (!fitted && attempts > 0) {
+      attempts -= 1;
+      requestFrame(runFit);
+    }
+  };
+
+  requestFrame(runFit);
+  if (documentLike?.fonts?.ready) {
+    documentLike.fonts.ready
+      .then(() => {
+        requestFrame(runFit);
+      })
+      .catch(() => {});
+  }
+}
+
+/**
+ * Finds grouping fields whose values differ across groups.
+ *
+ * Plot labels and grouping controls should focus on fields that actually
+ * distinguish the visible groups. Omitting constant fields keeps titles and
+ * chips concise.
+ *
+ * @param {Array<object>} groups - Plot groups with value maps.
+ * @param {Array<string>} fields - Candidate field names.
+ * @returns {Array<string>} Fields with more than one normalized value.
+ */
+export function getVaryingFields(groups, fields) {
+  if (!fields.length || groups.length <= 1) {
+    return [];
+  }
+  return fields.filter((field) => {
+    const values = new Set(groups.map((group) => normalizeValue(group.values?.[field])));
+    return values.size > 1;
+  });
+}
+
+/**
+ * Builds a readable label from selected group fields.
+ *
+ * Plot tabs, titles, and categories need a stable text representation of the
+ * active grouping fields. This helper centralizes fallback handling and display
+ * name formatting.
+ *
+ * @param {object} group - Plot group containing values.
+ * @param {Array<string>} labelFields - Field names to include.
+ * @param {string} fallback - Label used when no fields are selected.
+ * @param {Function} [fieldNameFormatter] - Formatter for field names.
+ * @returns {string} Group label text.
+ */
+export function getGroupLabelForFields(
+  group,
+  labelFields,
+  fallback,
+  fieldNameFormatter = (field) => field
+) {
+  if (labelFields.length === 0) {
+    return fallback;
+  }
+  return labelFields
+    .map((field) => `${fieldNameFormatter(field)}=${normalizeValue(group.values[field])}`)
+    .join(" | ");
+}
