@@ -200,8 +200,7 @@ Descriptions are assigned a role before formatting:
 The same annotation is rendered once per field occurrence. Independent annotations with identical wording are preserved, and each use of a shared type retains its documentation. Evidence wrapping keeps field instructions on the wrapper; entering its `content` and `evidence_anchor` properties does not repeat those instructions.
 
 When `adjust_schema_for_evidence_detection` is enabled, the output schema wraps each value with an evidence anchor.
-Set `adjust_schema_description_for_evidence_detection: true` to use that wrapped schema in the prompt.
-By default, the prompt uses the original schema and guided decoding uses the wrapped output schema.
+With evidence wrapping enabled, the prompt uses the wrapped schema by default (`adjust_schema_description_for_evidence_detection: true`).
 
 Pass formatting options through `schema_description_kwargs` when building messages. `include_field_descriptions=False` hides property documentation completely; `type_description_prefix=None` hides root/type documentation; `choices_description_prefix=None` hides enum documentation. These options work at every nesting level. `choices_prefix=None` hides enum values independently of their documentation. The deprecated `include_type_descriptions=False` remains supported.
 

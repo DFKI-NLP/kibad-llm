@@ -35,7 +35,6 @@ from functools import partial
 import json
 import logging
 import re
-from string import Formatter
 import traceback
 from typing import Any
 
@@ -195,9 +194,7 @@ def build_chat_message(
         )
         formatting[schema_description_placeholder] = schema_description
 
-    message_requires_json_schema = any(
-        field_name == schema_placeholder for _, field_name, _, _ in Formatter().parse(content)
-    )
+    message_requires_json_schema = f"{{{schema_placeholder}}}" in content
     if message_requires_json_schema:
         if schema is None:
             raise ValueError(
