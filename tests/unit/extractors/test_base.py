@@ -1,14 +1,17 @@
 import copy
+from dataclasses import replace
 import json
 
+from llama_index.core.base.llms.types import ChatMessage, ChatResponse, MessageRole
 import pytest
 
 from kibad_llm.extractors.base import (
-    build_chat_messages,
     check_utf8_encodable,
     extract_from_text,
     strip_metadata,
 )
+from kibad_llm.llms.base import LLM
+from kibad_llm.llms.prompt import ExtractionPrompt, PreparedRequest, SimpleChatMessage
 
 
 def test_strip_metadata_unwraps_simple_wrapper() -> None:
@@ -97,30 +100,53 @@ def test_check_utf8_encodable_raises_for_lone_surrogate_nested_in_dict_and_list(
     )
 
 
-def test_build_chat_messages_inserts_json_schema_with_custom_placeholder(monkeypatch) -> None:
-    schema = {"type": "object", "properties": {"field": {"const": "Wälder"}}}
-    warnings: list[str] = []
-    monkeypatch.setattr("kibad_llm.extractors.base.warn_once", warnings.append)
+def test_backend_prepares_messages_before_extractor_records_them() -> None:
+    """Send the full backend-prepared request and record only its current turn."""
+    history = [SimpleChatMessage(role=MessageRole.USER, content="Previous turn")]
+    prepared_user = SimpleChatMessage(role=MessageRole.USER, content="Backend: document")
 
-    system, user = build_chat_messages(
-        system_message="{output_schema}",
-        user_message="{document}",
-        document="Markdown",
-        schema=schema,
-        schema_placeholder="output_schema",
+    class TestLLM(LLM):
+        """Customize the prompt and provide an auxiliary input to the chat call."""
+
+        def prepare_request(self, prompt: ExtractionPrompt) -> PreparedRequest:
+            """Use the sliced document to render a backend-specific template."""
+            assert prompt.document == "document"
+            request = super().prepare_request(replace(prompt, user_message="Backend: {document}"))
+            request.input_artifacts["context.txt"] = "Extra context"
+            return request
+
+        def call_llm_chat_with_guided_decoding(
+            self, messages, *, json_schema=None, **request_kwargs
+        ) -> ChatResponse:
+            """Check the prepared request received by the backend."""
+            assert messages == [*history, prepared_user]
+            assert json_schema is None
+            assert request_kwargs == {
+                "seed": 42,
+                "input_artifacts": {"context.txt": "Extra context"},
+            }
+            return ChatResponse(message=ChatMessage(role=MessageRole.ASSISTANT, content="{}"))
+
+    request_parameters = {"seed": 42}
+    result = extract_from_text(
+        text="a document",
+        text_id="fixture",
+        character_start=2,
+        prompt_template={"user_message": "Configured: {document}"},
+        history=history,
+        llm=TestLLM(),
+        use_guided_decoding=False,
+        request_parameters=request_parameters,
+        return_messages=True,
+        return_messages_formatted=True,
+        truncate_user_message_formatted=7,
     )
 
-    assert json.loads(system.content) == schema
-    assert "Wälder" in system.content
-    assert user.content == "Markdown"
-    assert warnings == []
-
-
-def test_build_chat_messages_rejects_missing_json_schema() -> None:
-    with pytest.raises(ValueError, match="requires JSON Schema"):
-        build_chat_messages(
-            system_message="{schema}", user_message="{document}", document="Markdown"
-        )
+    assert result.errors == []
+    assert result.structured == {}
+    assert result.messages == {"system": None, "user": "Configured: {document}"}
+    assert result.messages_formatted == {"user": "Backend... (truncated @ 7 chars)"}
+    assert request_parameters == {"seed": 42}
 
 
 @pytest.mark.parametrize("use_wrapped_schema", [False, True])

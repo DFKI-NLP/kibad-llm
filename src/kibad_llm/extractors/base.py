@@ -8,9 +8,6 @@ Functions:
     extract_from_text: Extract structured output from text using an LLM.
     extract_from_text_lenient: Wrapper around [`extract_from_text`][.extract_from_text]
         that catches and records all exceptions instead of raising.
-    build_chat_messages: Build a list of chat messages from system/user templates,
-        inserting document text and schema description where needed, using [`build_chat_message`][.build_chat_message].
-    build_chat_message: Build a single chat message from a template.
     strip_metadata: Strip metadata wrappers from a JSON-parsed result.
     augment_metadata: Recursively augment metadata wrapper dicts.
         Uses just [`augment_metadata_node_with_evidence`][.augment_metadata_node_with_evidence] for now.
@@ -41,8 +38,12 @@ from typing import Any
 from jsonschema.validators import validator_for
 from llama_index.core.base.llms.types import ChatResponse
 
-from kibad_llm.llms.base import LLM, MessageRole, SimpleChatMessage
-from kibad_llm.schema.description import build_schema_description
+from kibad_llm.llms.base import LLM
+from kibad_llm.llms.prompt import (
+    ExtractionPrompt,
+    SimpleChatMessage,
+    prepare_inline_request,
+)
 from kibad_llm.schema.utils import (
     WRAPPED_CONTENT_KEY,
     wrap_terminals_with_metadata,
@@ -71,10 +72,8 @@ class SingleExtractionResult(FieldDict):
         structured_with_metadata: Parsed version of response_content, with enriched metadata.
         reasoning_content: The LLMs reasoning output, as parsed by the api endpoint.
             (Usually output between <think> and </think> tokens)
-        messages: prompt messages with placeholders for input text and schema description
-            `{ "system": system_message, "user": user_message }` [`build_chat_messages`][..build_chat_messages]
-        messages_formatted: prompt messages with inserted input text and schema description
-            `{ "system": system_message, "user": user_message }`  [`build_chat_messages`][..build_chat_messages]
+        messages: Configured system and user templates before formatting.
+        messages_formatted: Rendered messages in the current turn, keyed by role.
         errors: list of strings "error_name: error_message"
         errors_long: list of strings "error_name: error_message_and_traceback"
     """
@@ -143,194 +142,6 @@ def check_utf8_encodable(data: Any) -> None:
     elif isinstance(data, (list, tuple)):
         for value in data:
             check_utf8_encodable(value)
-
-
-def build_chat_message(
-    message: str,
-    role: MessageRole,
-    document: str | None = None,
-    document_placeholder: str = "document",
-    schema: dict[str, Any] | None = None,
-    schema_placeholder: str = "schema",
-    schema_description_kwargs: dict[str, Any] | None = None,
-    schema_description_placeholder: str = "schema_description",
-) -> tuple[SimpleChatMessage, dict[str, bool]]:
-    """Render document text and schema representations into a chat message.
-
-    Args:
-        message: The message template.
-        role: The role of the message (e.g., system, user).
-        document: The document text to process.
-        document_placeholder: The placeholder in the message template for the input text. If the
-            placeholder is present in the message template, it will be replaced with the input text.
-        schema: Optional JSON schema for structured output.
-        schema_placeholder: The placeholder for `schema` serialized as JSON.
-        schema_description_kwargs: Optional kwargs for build_schema_description when generating
-            the schema description.
-        schema_description_placeholder: The placeholder in the message template for the
-            schema description. If the placeholder is present in the message template,
-            the schema must be provided and the description will be generated and inserted.
-
-    Returns:
-        A chat message and metadata indicating which values were inserted.
-
-    Raises:
-        ValueError: If a schema is required but not supplied.
-        ValueError: If a document is required but not supplied.
-    """
-    content = message
-    formatting = {}
-
-    # Check if schema description is needed. If so, generate it and insert it.
-    message_requires_schema_description = f"{{{schema_description_placeholder}}}" in content
-    if message_requires_schema_description:
-        if schema is None:
-            raise ValueError(
-                f"Schema must be provided if {role.name} message template requires schema "
-                f"description (it contains '{{{schema_description_placeholder}}}')."
-            )
-        schema_description = build_schema_description(
-            schema=schema, **(schema_description_kwargs or {})
-        )
-        formatting[schema_description_placeholder] = schema_description
-
-    message_requires_json_schema = f"{{{schema_placeholder}}}" in content
-    if message_requires_json_schema:
-        if schema is None:
-            raise ValueError(
-                f"Schema must be provided if {role.name} message template requires JSON "
-                f"Schema (it contains '{{{schema_placeholder}}}')."
-            )
-        formatting[schema_placeholder] = json.dumps(schema, ensure_ascii=False)
-
-    # Check if input document is needed and insert it.
-    message_requires_document = "{" + document_placeholder + "}" in content
-    if message_requires_document:
-        if document is None:
-            raise ValueError(
-                f"Document text must be provided if {role.name} message template requires "
-                f"input text (it contains '{{{document_placeholder}}}')."
-            )
-        formatting[document_placeholder] = document
-
-    content = content.format(**formatting)
-    return SimpleChatMessage(role=role, content=content), {
-        "has_schema_description": message_requires_schema_description,
-        "has_json_schema": message_requires_json_schema,
-        "has_document": message_requires_document,
-    }
-
-
-def build_chat_messages(
-    system_message: str | None = None,
-    user_message: str | None = None,
-    schema_description_placeholder: str = "schema_description",
-    document_placeholder: str = "document",
-    schema: dict[str, Any] | None = None,
-    schema_placeholder: str = "schema",
-    history: list[SimpleChatMessage] | None = None,
-    return_messages: bool = False,
-    return_messages_formatted: bool = False,
-    truncate_user_message_formatted: int | None = 300,
-    _out: SingleExtractionResult | None = None,
-    **build_messages_kwargs: Any,
-) -> list[SimpleChatMessage]:
-    """Build extraction messages by filling document and schema placeholders.
-
-    Args:
-        system_message: The system message template.
-        user_message: The user message template.
-        schema: Optional JSON schema for structured output.
-        schema_placeholder: The placeholder for `schema` serialized as JSON.
-        schema_description_placeholder: The placeholder in the message templates for the
-            schema description. If the placeholder is present in the message templates,
-            the schema must be provided and the description will be generated and inserted.
-        document_placeholder: The placeholder in the message templates for the input text. If the
-            placeholder is present in the message templates, it will be replaced with the input text.
-        history: Optional list of ChatMessage objects representing the conversation history.
-        return_messages: Whether to return the used prompt messages, but without input text and
-            schema description.
-        return_messages_formatted: Whether to return the used prompt messages formatted with
-            input text and schema description.
-        truncate_user_message_formatted: If return_messages_formatted is True, truncate the user message
-            content to this many characters (to avoid huge outputs). Set to None to disable truncation.
-        _out: Optional output [`..SingleExtractionResult`][] to store messages in (used internally).
-
-    Keyword Args:
-        **build_messages_kwargs: Additional keyword arguments for build_chat_message.
-
-    Returns:
-        A list of ChatMessage objects.
-
-    Raises:
-        ValueError: If neither a system_message nor user_message are provided.
-        ValueError: If no document placeholder is supplied and history is false. (no input text would be inserted)
-
-    Warns:
-        UserWarning: If a schema is supplied and neither schema placeholder is used.
-    """
-
-    # Record the templates before substituting the document or schema.
-    if return_messages and _out is not None:
-        _out["messages"] = {
-            "system": system_message,
-            "user": user_message,
-        }
-
-    messages = []
-    metas = []
-    for msg_str, role in [
-        (system_message, MessageRole.SYSTEM),
-        (user_message, MessageRole.USER),
-    ]:
-        if msg_str is not None:
-            msg, meta = build_chat_message(
-                message=msg_str,
-                role=role,
-                schema=schema,
-                schema_placeholder=schema_placeholder,
-                schema_description_placeholder=schema_description_placeholder,
-                document_placeholder=document_placeholder,
-                **build_messages_kwargs,
-            )
-            messages.append(msg)
-            metas.append(meta)
-
-    if len(messages) == 0:
-        raise ValueError("At least one of system_message or user_message must be provided.")
-
-    if schema is not None and not any(
-        meta["has_schema_description"] or meta["has_json_schema"] for meta in metas
-    ):
-        warn_once(
-            "Schema provided but message templates use neither schema placeholder "
-            f"('{{{schema_description_placeholder}}}' or '{{{schema_placeholder}}}')."
-        )
-
-    # Check where the input document was inserted. At least one message must have it (if history is not used).
-    if not any(meta["has_document"] for meta in metas) and not history:
-        raise ValueError(
-            "At least one of the message templates must require the input text "
-            f"(they must contain '{{{document_placeholder}}}')."
-        )
-
-    # Record the rendered prompt messages.
-    if return_messages_formatted and _out is not None:
-        messages_formatted = {msg.role.name.lower(): msg.content or "" for msg in messages}
-        if (
-            truncate_user_message_formatted is not None
-            and "user" in messages_formatted
-            and len(messages_formatted["user"]) > truncate_user_message_formatted
-        ):
-            messages_formatted["user"] = (
-                f"{messages_formatted['user'][:truncate_user_message_formatted]}... "
-                f"(truncated @ {truncate_user_message_formatted} chars)"
-            )
-        _out["messages_formatted"] = messages_formatted
-
-    if history:
-        messages = history + messages
-    return messages
 
 
 def _is_wrapper_dict(d: Mapping[str, Any], content_key: str) -> bool:
@@ -792,7 +603,7 @@ def augment_and_strip_metadata_from_structured_callback(
 def extract_from_text(
     text: str,
     text_id: str,
-    prompt_template: dict[str, str | None],
+    prompt_template: dict[str, Any],
     schema: dict[str, Any] | None = None,
     use_guided_decoding: bool = True,
     validate_with_schema: bool = True,
@@ -813,7 +624,12 @@ def extract_from_text(
     system_message: str | None = None,
     schema_description_placeholder: str | None = None,
     document_placeholder: str | None = None,
-    **build_messages_kwargs: Any,
+    *,
+    history: list[SimpleChatMessage] | None = None,
+    return_messages: bool = False,
+    return_messages_formatted: bool = False,
+    truncate_user_message_formatted: int | None = 300,
+    **prompt_options: Any,
 ) -> SingleExtractionResult:
     """Extract structured information from text using an LLM.
 
@@ -860,9 +676,15 @@ def extract_from_text(
             Defaults to 0 (process from the beginning of the text).
         character_end: Optional character offsets to specify a substring of `text` to process.
             If None (default), processes until the end of the text.
+        history: Messages from previous turns.
+        return_messages: Record the configured prompt templates.
+        return_messages_formatted: Record the rendered messages from the current turn.
+        truncate_user_message_formatted: Character limit for the recorded user message.
+            Use None to keep the full message.
 
     Keyword Args:
-        **build_messages_kwargs: Additional keyword arguments for build_chat_messages.
+        **prompt_options: Additional prompt settings, such as schema_description_kwargs.
+            Settings in `prompt_template` take precedence.
 
     Returns:
         A SingleExtractionResult object with the extraction result.
@@ -891,7 +713,6 @@ def extract_from_text(
             "'user_message' (and optionally schema_description_placeholder and document_placeholder)"
             "instead."
         )
-    build_messages_kwargs.update(prompt_template)
 
     if not (0 <= character_start <= len(text)):
         raise TextOffsetValueError(
@@ -909,7 +730,7 @@ def extract_from_text(
     )
 
     original_schema = schema
-    schema_for_build_messages = schema
+    prompt_schema = schema
 
     if adjust_schema_for_evidence_detection:
         if schema is None:
@@ -938,18 +759,37 @@ def extract_from_text(
         response_has_metadata = True
 
         if adjust_schema_description_for_evidence_detection:
-            schema_for_build_messages = schema
+            prompt_schema = schema
 
     text_to_process = text[out.character_start : out.character_end]
 
-    messages = build_chat_messages(
+    prompt = ExtractionPrompt(
         document=text_to_process,
-        schema=schema_for_build_messages,
-        _out=out,
-        **build_messages_kwargs,
+        schema=prompt_schema,
+        history=history or (),
+        **{**prompt_options, **prompt_template},
     )
+    request = prepare_inline_request(prompt) if llm is None else llm.prepare_request(prompt)
 
-    request_kwargs = request_parameters or {}
+    if return_messages:
+        out.messages = {"system": prompt.system_message, "user": prompt.user_message}
+
+    if return_messages_formatted:
+        messages_formatted = {
+            message.role.name.lower(): message.content or ""
+            for message in request.current_messages
+        }
+        user_message_formatted = messages_formatted.get("user")
+        limit = truncate_user_message_formatted
+        if (
+            limit is not None
+            and user_message_formatted is not None
+            and len(user_message_formatted) > limit
+        ):
+            messages_formatted["user"] = (
+                f"{user_message_formatted[:limit]}... (truncated @ {limit} chars)"
+            )
+        out.messages_formatted = messages_formatted
 
     if use_guided_decoding:
         if schema is None:
@@ -991,9 +831,11 @@ def extract_from_text(
                 )
             )
 
-        # LLM chat call
+        request_kwargs = dict(request_parameters or {})
+        if request.input_artifacts:
+            request_kwargs["input_artifacts"] = request.input_artifacts
         resp = llm.call_llm_chat_with_guided_decoding(
-            messages=messages,
+            messages=request.messages,
             json_schema=schema if use_guided_decoding else None,
             **request_kwargs,
         )
