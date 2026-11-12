@@ -23,6 +23,27 @@ from kibad_llm.llms.base import (
 from kibad_llm.utils.log import warn_once
 
 
+CODEX_CONFIG_TEMPLATE = """
+default_permissions = "document"
+approval_policy = "never"
+web_search = "disabled"
+model_reasoning_effort = {reasoning_effort}
+[shell_environment_policy]
+inherit = "none"
+[features]
+apps = false
+[plugins._default]
+enabled = false
+[permissions.document.filesystem]
+":minimal" = "read"
+{executable} = "read"
+[permissions.document.filesystem.":workspace_roots"]
+"." = "write"
+[permissions.document.network]
+enabled = false
+"""
+
+
 class Codex(LLM):
     """Run one isolated Codex conversation per document."""
 
@@ -153,25 +174,10 @@ class Codex(LLM):
                 raise ValueError("Set CODEX_API_KEY or provide a Codex auth.json file.")
 
             (state / "config.toml").write_text(
-                f"""
-default_permissions = "document"
-approval_policy = "never"
-web_search = "disabled"
-model_reasoning_effort = {json.dumps(self.reasoning_effort)}
-[shell_environment_policy]
-inherit = "none"
-[features]
-apps = false
-[plugins._default]
-enabled = false
-[permissions.document.filesystem]
-":minimal" = "read"
-{json.dumps(str(executable))} = "read"
-[permissions.document.filesystem.":workspace_roots"]
-"." = "write"
-[permissions.document.network]
-enabled = false
-""",
+                CODEX_CONFIG_TEMPLATE.format(
+                    reasoning_effort=json.dumps(self.reasoning_effort),
+                    executable=json.dumps(str(executable)),
+                ),
                 encoding="utf-8",
             )
             canary = state / "private"
