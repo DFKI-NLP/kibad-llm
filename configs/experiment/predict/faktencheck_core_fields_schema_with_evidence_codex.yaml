@@ -4,12 +4,4 @@ defaults:
   - faktencheck_core_fields_schema_with_evidence
   - override /extractor: simple
   - override /extractor/llm: codex
-
-extractor:
-  prompt_template:
-    schema_placeholder: schema
-    user_message: |
-      Lies das Markdown-Dokument aus der Datei `input.md`.
-      Verwende für deine JSON-Antwort das folgende JSON-Schema:
-
-      {schema}
+  - override /extractor/prompt_template: faktencheck_core_v1_with_evidence_codex

@@ -22,7 +22,6 @@ from kibad_llm.llms.base import (
 )
 from kibad_llm.utils.log import warn_once
 
-
 CODEX_CONFIG_TEMPLATE = """
 default_permissions = "document"
 approval_policy = "never"
