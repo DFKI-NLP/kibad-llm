@@ -214,7 +214,7 @@ class VllmInProcess(LLM):
 
         Returns:
             [`ChatResponse`][llama_index.core.base.llms.types.ChatResponse] holding the model's
-                reply message and raw API response.
+                reply message and raw vLLM response.
         """
         convo = [_chat_message_to_vllm_param(m) for m in messages]
 

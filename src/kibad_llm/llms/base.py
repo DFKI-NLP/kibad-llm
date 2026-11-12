@@ -60,7 +60,8 @@ class SimpleChatMessage:
     """Simplified representation of a chat message.
 
     Attributes:
-        role: Role of the actor who wrote the content. One of user, system, or assistant.
+        role: Role of the actor who wrote the content. E.g. one of user, system, or assistant.
+            Refer to [`MessageRole`][llama_index.core.base.llms.types.MessageRole] for the full list.
         content: Written content, meaning chat output, of the SimpleChatMessage.
     """
 
@@ -89,7 +90,20 @@ class LLM(ABC):
         json_schema: dict[str, Any] | None = None,
         **request_kwargs,
     ) -> ChatResponse:
-        """Call a chat LLM with optional json schema for guided decoding."""
+        """Call a chat LLM with optional json schema for guided decoding.
+
+        Args:
+            messages: Message history to pass to the LLM query.
+            json_schema: Schema the LLM output must comply with.
+                None means free-form output. - must be passed by keyword
+
+        Keyword Args:
+              **request_kwargs (Any): Backend-specific request options, forwarded to the
+                  underlying client. See the implementing subclass for what is supported.
+
+        Returns:
+            ChatResponse holding the model's reply message and the raw response.
+        """
         ...
 
     def get_raw_message_from_chat_response(self, response: ChatResponse) -> Any:

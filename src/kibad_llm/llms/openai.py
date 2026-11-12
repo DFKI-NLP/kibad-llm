@@ -88,7 +88,7 @@ def make_openai_strict_json_schema(schema: dict[str, Any]) -> dict[str, Any]:
         - For every node that looks like an object schema
           (`{"type": "object", "properties": {...}}`):
             1. Set `required = list(properties.keys())`
-            2. Set `additionalProperties = False`
+            2. Set `additionalProperties = false`
 
         - Remove all `default` keys anywhere in the schema.
 
