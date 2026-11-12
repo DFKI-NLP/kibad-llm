@@ -1,9 +1,12 @@
 import copy
+import json
 
 import pytest
 
 from kibad_llm.extractors.base import (
+    build_chat_messages,
     check_utf8_encodable,
+    extract_from_text,
     strip_metadata,
 )
 
@@ -92,3 +95,71 @@ def test_check_utf8_encodable_raises_for_lone_surrogate_nested_in_dict_and_list(
         "'utf-8' codec can't encode character '\\udd7a' in position 4: surrogates "
         "not allowed (string: 'Wild\\udd7aschwein')"
     )
+
+
+def test_build_chat_messages_inserts_json_schema_with_custom_placeholder(monkeypatch) -> None:
+    schema = {"type": "object", "properties": {"field": {"const": "Wälder"}}}
+    warnings: list[str] = []
+    monkeypatch.setattr("kibad_llm.extractors.base.warn_once", warnings.append)
+
+    system, user = build_chat_messages(
+        system_message="{output_schema}",
+        user_message="{document}",
+        document="Markdown",
+        schema=schema,
+        schema_placeholder="output_schema",
+    )
+
+    assert json.loads(system.content) == schema
+    assert "Wälder" in system.content
+    assert user.content == "Markdown"
+    assert warnings == []
+
+
+def test_build_chat_messages_rejects_missing_json_schema() -> None:
+    with pytest.raises(ValueError, match="requires JSON Schema"):
+        build_chat_messages(
+            system_message="{schema}", user_message="{document}", document="Markdown"
+        )
+
+
+@pytest.mark.parametrize("use_wrapped_schema", [False, True])
+def test_extract_from_text_uses_same_schema_for_both_placeholders(
+    use_wrapped_schema: bool,
+) -> None:
+    schema = {
+        "type": "object",
+        "properties": {"habitat": {"type": "string", "description": "Habitat label"}},
+    }
+    result = extract_from_text(
+        text="A forest.",
+        text_id="fixture",
+        prompt_template={
+            "system_message": "{schema_description}",
+            "user_message": "{document}\n{schema}",
+        },
+        schema=schema,
+        adjust_schema_for_evidence_detection=True,
+        adjust_schema_description_for_evidence_detection=use_wrapped_schema,
+        return_messages=True,
+        return_messages_formatted=True,
+        truncate_user_message_formatted=None,
+    )
+
+    assert result.messages == {
+        "system": "{schema_description}",
+        "user": "{document}\n{schema}",
+    }
+    assert result.messages_formatted is not None
+    assert "Habitat label" in result.messages_formatted["system"]
+    assert ("evidence_anchor" in result.messages_formatted["system"]) == use_wrapped_schema
+    document, rendered_schema = result.messages_formatted["user"].split("\n", maxsplit=1)
+    assert document == "A forest."
+    rendered = json.loads(rendered_schema)
+    if use_wrapped_schema:
+        assert set(rendered["properties"]["habitat"]["properties"]) == {
+            "content",
+            "evidence_anchor",
+        }
+    else:
+        assert rendered == schema

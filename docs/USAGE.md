@@ -199,9 +199,28 @@ Descriptions are assigned a role before formatting:
 
 The same annotation is rendered once per field occurrence. Independent annotations with identical wording are preserved, and each use of a shared type retains its documentation. Evidence wrapping keeps field instructions on the wrapper; entering its `content` and `evidence_anchor` properties does not repeat those instructions.
 
+When `adjust_schema_for_evidence_detection` is enabled, the output schema wraps each value with an evidence anchor.
+With evidence wrapping enabled, the prompt uses the wrapped schema by default (`adjust_schema_description_for_evidence_detection: true`).
+
 Pass formatting options through `schema_description_kwargs` when building messages. `include_field_descriptions=False` hides property documentation completely; `type_description_prefix=None` hides root/type documentation; `choices_description_prefix=None` hides enum documentation. These options work at every nesting level. `choices_prefix=None` hides enum values independently of their documentation. The deprecated `include_type_descriptions=False` remains supported.
 
 This is a prompt summary, not a complete JSON Schema validator. Local references, inline objects, arrays, nullable unions, and enum compositions are supported. Enum unions combine choices and enum intersections retain their common choices. General structural unions display a representative non-null branch. Unresolved or recursive references, list-valued `type`, and multi-branch structural `allOf` raise `ValueError` instead of producing an incomplete or infinitely recursive description. Cardinality retains the existing convention: arrays use `0..*`; other fields use `0..1` if a default is present, otherwise `1`.
+
+To include the full JSON Schema in a prompt, use `{schema}` in the system or user message.
+A prompt template can include either schema representation or both. To rename the JSON placeholder,
+set `schema_placeholder` in the prompt template and use the corresponding name in the message:
+
+```yaml
+prompt_template:
+  system_message: |
+    Extract the requested information and return JSON matching this schema.
+    {output_schema}
+  user_message: "{document}"
+  schema_placeholder: output_schema
+```
+
+Both the full schema and the readable description follow `adjust_schema_description_for_evidence_detection`.
+Both placeholders affect the prompt independently of whether guided decoding is enabled.
 
 ### Evaluation
 
