@@ -35,6 +35,7 @@ from functools import partial
 import json
 import logging
 import re
+from string import Formatter
 import traceback
 from typing import Any
 
@@ -153,9 +154,11 @@ def build_chat_message(
     schema: dict[str, Any] | None = None,
     schema_description_kwargs: dict[str, Any] | None = None,
     schema_description_placeholder: str = "schema_description",
+    *,
+    json_schema: dict[str, Any] | None = None,
+    json_schema_placeholder: str = "json_schema",
 ) -> tuple[SimpleChatMessage, dict[str, bool]]:
-    """Build a single chat message by inserting text and schema description
-    if respective placeholders are present in the message template.
+    """Render document text and schema representations into a chat message.
 
     Args:
         message: The message template.
@@ -170,9 +173,11 @@ def build_chat_message(
             schema description. If the placeholder is present in the message template,
             the schema must be provided and the description will be generated and inserted.
 
+        json_schema: Schema to serialize as JSON. Defaults to `schema` when omitted.
+        json_schema_placeholder: The placeholder for the serialized JSON Schema.
+
     Returns:
-        A tuple of ChatMessage and a metadata dictionary indicating whether schema description
-        and text were inserted.
+        A chat message and metadata indicating which values were inserted.
 
     Raises:
         ValueError: If a schema is required but not supplied.
@@ -194,6 +199,18 @@ def build_chat_message(
         )
         formatting[schema_description_placeholder] = schema_description
 
+    message_requires_json_schema = any(
+        field_name == json_schema_placeholder for _, field_name, _, _ in Formatter().parse(content)
+    )
+    if message_requires_json_schema:
+        schema_to_serialize = json_schema if json_schema is not None else schema
+        if schema_to_serialize is None:
+            raise ValueError(
+                f"Schema must be provided if {role.name} message template requires JSON "
+                f"Schema (it contains '{{{json_schema_placeholder}}}')."
+            )
+        formatting[json_schema_placeholder] = json.dumps(schema_to_serialize, ensure_ascii=False)
+
     # Check if input document is needed and insert it.
     message_requires_document = "{" + document_placeholder + "}" in content
     if message_requires_document:
@@ -207,6 +224,7 @@ def build_chat_message(
     content = content.format(**formatting)
     return SimpleChatMessage(role=role, content=content), {
         "has_schema_description": message_requires_schema_description,
+        "has_json_schema": message_requires_json_schema,
         "has_document": message_requires_document,
     }
 
@@ -222,10 +240,12 @@ def build_chat_messages(
     return_messages_formatted: bool = False,
     truncate_user_message_formatted: int | None = 300,
     _out: SingleExtractionResult | None = None,
+    *,
+    json_schema: dict[str, Any] | None = None,
+    json_schema_placeholder: str = "json_schema",
     **build_messages_kwargs: Any,
 ) -> list[SimpleChatMessage]:
-    """Build chat messages for extraction. The document text and schema description may be inserted
-    into the message templates, depending on the presence of the respective placeholders.
+    """Build extraction messages by filling document and schema placeholders.
 
     Args:
         system_message: The system message template.
@@ -244,6 +264,8 @@ def build_chat_messages(
         truncate_user_message_formatted: If return_messages_formatted is True, truncate the user message
             content to this many characters (to avoid huge outputs). Set to None to disable truncation.
         _out: Optional output [`..SingleExtractionResult`][] to store messages in (used internally).
+        json_schema: Schema to serialize as JSON. Defaults to `schema` when omitted.
+        json_schema_placeholder: The placeholder for the serialized JSON Schema.
 
     Keyword Args:
         **build_messages_kwargs: Additional keyword arguments for build_chat_message.
@@ -256,10 +278,10 @@ def build_chat_messages(
         ValueError: If no document placeholder is supplied and history is false. (no input text would be inserted)
 
     Warns:
-        UserWarning: If a schema description is supplied, but there is no schema description placeholder.
+        UserWarning: If a schema is supplied and neither schema placeholder is used.
     """
 
-    # return the prompt messages without input text and schema description
+    # Record the templates before substituting the document or schema.
     if return_messages and _out is not None:
         _out["messages"] = {
             "system": system_message,
@@ -278,6 +300,8 @@ def build_chat_messages(
                 role=role,
                 schema=schema,
                 schema_description_placeholder=schema_description_placeholder,
+                json_schema=json_schema,
+                json_schema_placeholder=json_schema_placeholder,
                 document_placeholder=document_placeholder,
                 **build_messages_kwargs,
             )
@@ -287,11 +311,12 @@ def build_chat_messages(
     if len(messages) == 0:
         raise ValueError("At least one of system_message or user_message must be provided.")
 
-    # Check if schema description was inserted. At least one message must have it (if schema provided).
-    if not any(meta["has_schema_description"] for meta in metas) and schema is not None:
+    if (schema is not None or json_schema is not None) and not any(
+        meta["has_schema_description"] or meta["has_json_schema"] for meta in metas
+    ):
         warn_once(
-            "Schema provided but message templates do not require schema description "
-            f"(they do not contain '{{{schema_description_placeholder}}}')."
+            "Schema provided but message templates use neither schema placeholder "
+            f"('{{{schema_description_placeholder}}}' or '{{{json_schema_placeholder}}}')."
         )
 
     # Check where the input document was inserted. At least one message must have it (if history is not used).
@@ -301,7 +326,7 @@ def build_chat_messages(
             f"(they must contain '{{{document_placeholder}}}')."
         )
 
-    # return the prompt messages with input text and schema description formatted in
+    # Record the rendered prompt messages.
     if return_messages_formatted and _out is not None:
         messages_formatted = {msg.role.name.lower(): msg.content or "" for msg in messages}
         if (
@@ -934,6 +959,7 @@ def extract_from_text(
     messages = build_chat_messages(
         document=text_to_process,
         schema=schema_for_build_messages,
+        json_schema=schema,
         _out=out,
         **build_messages_kwargs,
     )
