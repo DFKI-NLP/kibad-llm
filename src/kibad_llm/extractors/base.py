@@ -154,9 +154,7 @@ def build_chat_message(
     schema: dict[str, Any] | None = None,
     schema_description_kwargs: dict[str, Any] | None = None,
     schema_description_placeholder: str = "schema_description",
-    *,
-    json_schema: dict[str, Any] | None = None,
-    json_schema_placeholder: str = "json_schema",
+    schema_placeholder: str = "schema",
 ) -> tuple[SimpleChatMessage, dict[str, bool]]:
     """Render document text and schema representations into a chat message.
 
@@ -173,8 +171,7 @@ def build_chat_message(
             schema description. If the placeholder is present in the message template,
             the schema must be provided and the description will be generated and inserted.
 
-        json_schema: Schema to serialize as JSON. Defaults to `schema` when omitted.
-        json_schema_placeholder: The placeholder for the serialized JSON Schema.
+        schema_placeholder: The placeholder for `schema` serialized as JSON.
 
     Returns:
         A chat message and metadata indicating which values were inserted.
@@ -200,16 +197,15 @@ def build_chat_message(
         formatting[schema_description_placeholder] = schema_description
 
     message_requires_json_schema = any(
-        field_name == json_schema_placeholder for _, field_name, _, _ in Formatter().parse(content)
+        field_name == schema_placeholder for _, field_name, _, _ in Formatter().parse(content)
     )
     if message_requires_json_schema:
-        schema_to_serialize = json_schema if json_schema is not None else schema
-        if schema_to_serialize is None:
+        if schema is None:
             raise ValueError(
                 f"Schema must be provided if {role.name} message template requires JSON "
-                f"Schema (it contains '{{{json_schema_placeholder}}}')."
+                f"Schema (it contains '{{{schema_placeholder}}}')."
             )
-        formatting[json_schema_placeholder] = json.dumps(schema_to_serialize, ensure_ascii=False)
+        formatting[schema_placeholder] = json.dumps(schema, ensure_ascii=False)
 
     # Check if input document is needed and insert it.
     message_requires_document = "{" + document_placeholder + "}" in content
@@ -240,9 +236,7 @@ def build_chat_messages(
     return_messages_formatted: bool = False,
     truncate_user_message_formatted: int | None = 300,
     _out: SingleExtractionResult | None = None,
-    *,
-    json_schema: dict[str, Any] | None = None,
-    json_schema_placeholder: str = "json_schema",
+    schema_placeholder: str = "schema",
     **build_messages_kwargs: Any,
 ) -> list[SimpleChatMessage]:
     """Build extraction messages by filling document and schema placeholders.
@@ -264,8 +258,7 @@ def build_chat_messages(
         truncate_user_message_formatted: If return_messages_formatted is True, truncate the user message
             content to this many characters (to avoid huge outputs). Set to None to disable truncation.
         _out: Optional output [`..SingleExtractionResult`][] to store messages in (used internally).
-        json_schema: Schema to serialize as JSON. Defaults to `schema` when omitted.
-        json_schema_placeholder: The placeholder for the serialized JSON Schema.
+        schema_placeholder: The placeholder for `schema` serialized as JSON.
 
     Keyword Args:
         **build_messages_kwargs: Additional keyword arguments for build_chat_message.
@@ -300,8 +293,7 @@ def build_chat_messages(
                 role=role,
                 schema=schema,
                 schema_description_placeholder=schema_description_placeholder,
-                json_schema=json_schema,
-                json_schema_placeholder=json_schema_placeholder,
+                schema_placeholder=schema_placeholder,
                 document_placeholder=document_placeholder,
                 **build_messages_kwargs,
             )
@@ -311,12 +303,12 @@ def build_chat_messages(
     if len(messages) == 0:
         raise ValueError("At least one of system_message or user_message must be provided.")
 
-    if (schema is not None or json_schema is not None) and not any(
+    if schema is not None and not any(
         meta["has_schema_description"] or meta["has_json_schema"] for meta in metas
     ):
         warn_once(
             "Schema provided but message templates use neither schema placeholder "
-            f"('{{{schema_description_placeholder}}}' or '{{{json_schema_placeholder}}}')."
+            f"('{{{schema_description_placeholder}}}' or '{{{schema_placeholder}}}')."
         )
 
     # Check where the input document was inserted. At least one message must have it (if history is not used).
@@ -854,12 +846,10 @@ def extract_from_text(
             extracted content). Requires a schema to be provided.
             Per default, the schema description is constructed from the original schema, so it is
             recommended to adjust the prompt_template accordingly (e.g., by adding instructions about
-            evidence). But see `adjust_schema_description_for_detect_evidence` to switch this behavior.
-        adjust_schema_description_for_evidence_detection: Whether to adjust the schema description
-            when detect_evidence is True. If True, the schema description will mention that
-            each value is accompanied by an evidence_anchor that is a "verbatim excerpt from the source
-            text supporting the extracted content" (see METADATA_SCHEMA_WITH_EVIDENCE_SHORTHAND).
-            Has only an effect if adjust_schema_for_detect_evidence is also True.
+            evidence). Set `adjust_schema_description_for_evidence_detection` to use the wrapped schema in prompts.
+        adjust_schema_description_for_evidence_detection: When evidence wrapping is enabled, use
+            the wrapped schema for both schema placeholders in the prompt. The default uses the
+            original schema in the prompt. This does not affect the schema used for decoding.
         evidence_anchor_description: Description for the evidence anchor field.
         wrapped_content_description: Optional description for the content field in the metadata wrapper.
         evidence_before_content: Whether to place `evidence_anchor` before `content` in the metadata
@@ -959,7 +949,6 @@ def extract_from_text(
     messages = build_chat_messages(
         document=text_to_process,
         schema=schema_for_build_messages,
-        json_schema=schema,
         _out=out,
         **build_messages_kwargs,
     )

@@ -107,7 +107,7 @@ def test_build_chat_messages_inserts_json_schema_with_custom_placeholder(monkeyp
         user_message="{document}",
         document="Markdown",
         schema=schema,
-        json_schema_placeholder="output_schema",
+        schema_placeholder="output_schema",
     )
 
     assert json.loads(system.content) == schema
@@ -119,11 +119,14 @@ def test_build_chat_messages_inserts_json_schema_with_custom_placeholder(monkeyp
 def test_build_chat_messages_rejects_missing_json_schema() -> None:
     with pytest.raises(ValueError, match="requires JSON Schema"):
         build_chat_messages(
-            system_message="{json_schema}", user_message="{document}", document="Markdown"
+            system_message="{schema}", user_message="{document}", document="Markdown"
         )
 
 
-def test_extract_from_text_uses_evidence_schema_for_json_placeholder() -> None:
+@pytest.mark.parametrize("use_wrapped_schema", [False, True])
+def test_extract_from_text_uses_same_schema_for_both_placeholders(
+    use_wrapped_schema: bool,
+) -> None:
     schema = {
         "type": "object",
         "properties": {"habitat": {"type": "string", "description": "Habitat label"}},
@@ -133,10 +136,11 @@ def test_extract_from_text_uses_evidence_schema_for_json_placeholder() -> None:
         text_id="fixture",
         prompt_template={
             "system_message": "{schema_description}",
-            "user_message": "{document}\n{json_schema}",
+            "user_message": "{document}\n{schema}",
         },
         schema=schema,
         adjust_schema_for_evidence_detection=True,
+        adjust_schema_description_for_evidence_detection=use_wrapped_schema,
         return_messages=True,
         return_messages_formatted=True,
         truncate_user_message_formatted=None,
@@ -144,14 +148,18 @@ def test_extract_from_text_uses_evidence_schema_for_json_placeholder() -> None:
 
     assert result.messages == {
         "system": "{schema_description}",
-        "user": "{document}\n{json_schema}",
+        "user": "{document}\n{schema}",
     }
     assert result.messages_formatted is not None
     assert "Habitat label" in result.messages_formatted["system"]
-    assert "evidence_anchor" not in result.messages_formatted["system"]
+    assert ("evidence_anchor" in result.messages_formatted["system"]) == use_wrapped_schema
     document, rendered_schema = result.messages_formatted["user"].split("\n", maxsplit=1)
     assert document == "A forest."
-    assert set(json.loads(rendered_schema)["properties"]["habitat"]["properties"]) == {
-        "content",
-        "evidence_anchor",
-    }
+    rendered = json.loads(rendered_schema)
+    if use_wrapped_schema:
+        assert set(rendered["properties"]["habitat"]["properties"]) == {
+            "content",
+            "evidence_anchor",
+        }
+    else:
+        assert rendered == schema
