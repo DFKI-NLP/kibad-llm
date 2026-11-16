@@ -5,9 +5,12 @@ from typing import Any
 
 from llama_index.core.base.llms.types import ChatResponse
 
-from kibad_llm.llms.request import ExtractionPrompt, PreparedRequest
-from kibad_llm.llms.request import SimpleChatMessage as SimpleChatMessage
-from kibad_llm.llms.request import prepare_inline_request
+from kibad_llm.llms.request import (
+    ExtractionPrompt,
+    PreparedRequest,
+    SimpleChatMessage,
+    prepare_inline_request,
+)
 
 
 class MissingRawChatResponseError(Exception):
