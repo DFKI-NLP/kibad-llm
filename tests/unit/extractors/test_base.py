@@ -11,7 +11,7 @@ from kibad_llm.extractors.base import (
     strip_metadata,
 )
 from kibad_llm.llms.base import LLM
-from kibad_llm.llms.prompt import ExtractionPrompt, PreparedRequest, SimpleChatMessage
+from kibad_llm.llms.request import ExtractionPrompt, PreparedRequest, SimpleChatMessage
 
 
 def test_strip_metadata_unwraps_simple_wrapper() -> None:

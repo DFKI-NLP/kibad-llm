@@ -39,7 +39,7 @@ from jsonschema.validators import validator_for
 from llama_index.core.base.llms.types import ChatResponse
 
 from kibad_llm.llms.base import LLM
-from kibad_llm.llms.prompt import (
+from kibad_llm.llms.request import (
     ExtractionPrompt,
     SimpleChatMessage,
     prepare_inline_request,

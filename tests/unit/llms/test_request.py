@@ -5,7 +5,7 @@ import json
 from llama_index.core.base.llms.types import MessageRole
 import pytest
 
-from kibad_llm.llms.prompt import (
+from kibad_llm.llms.request import (
     ExtractionPrompt,
     SimpleChatMessage,
     build_chat_messages,
@@ -34,7 +34,7 @@ def test_prepare_inline_request_inserts_json_schema_with_custom_placeholder(monk
     """Render non-ASCII JSON Schema and Markdown using the configured placeholder names."""
     schema = {"type": "object", "properties": {"field": {"const": "Wälder"}}}
     warnings: list[str] = []
-    monkeypatch.setattr("kibad_llm.llms.prompt.warn_once", warnings.append)
+    monkeypatch.setattr("kibad_llm.llms.request.warn_once", warnings.append)
     request = prepare_inline_request(
         ExtractionPrompt(
             system_message="{output_schema}",

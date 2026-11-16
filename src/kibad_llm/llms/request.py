@@ -1,4 +1,4 @@
-"""Render extraction prompts and prepare the messages sent to an LLM."""
+"""Prepare extraction requests for LLM backends."""
 
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
