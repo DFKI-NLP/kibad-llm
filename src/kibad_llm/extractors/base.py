@@ -619,16 +619,17 @@ def extract_from_text(
     augment_metadata_kwargs: dict[str, Any] | None = None,
     character_start: int = 0,
     character_end: int | None = None,
-    # deprecated arguments
-    user_message: str | None = None,
-    system_message: str | None = None,
-    schema_description_placeholder: str | None = None,
-    document_placeholder: str | None = None,
     *,
     history: list[SimpleChatMessage] | None = None,
     return_messages: bool = False,
     return_messages_formatted: bool = False,
     truncate_user_message_formatted: int | None = 300,
+    # deprecated arguments
+    user_message: str | None = None,
+    system_message: str | None = None,
+    schema_description_placeholder: str | None = None,
+    document_placeholder: str | None = None,
+    #
     **prompt_options: Any,
 ) -> SingleExtractionResult:
     """Extract structured information from text using an LLM.

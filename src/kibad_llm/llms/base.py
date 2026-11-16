@@ -4,7 +4,6 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 from llama_index.core.base.llms.types import ChatResponse
-from llama_index.core.base.llms.types import MessageRole as MessageRole
 
 from kibad_llm.llms.prompt import ExtractionPrompt, PreparedRequest
 from kibad_llm.llms.prompt import SimpleChatMessage as SimpleChatMessage
