@@ -56,7 +56,26 @@ class LLM(ABC):
         """Build the current turn and full request, using inline document text by default.
 
         Backends can override this method to change how they build messages or
-        supply auxiliary inputs for their chat call.
+        supply auxiliary inputs for their chat call. The default implementation delegates
+        to [`prepare_inline_request`][kibad_llm.llms.request.prepare_inline_request].
+
+        Args:
+            prompt: Templates and inputs available for preparing the extraction request.
+
+        Returns:
+            The current turn, full conversation including history, and any auxiliary
+            backend inputs. The default implementation creates no auxiliary inputs.
+
+        Raises:
+            ValueError: Default inline preparation rejects missing templates, a missing
+                required schema, a missing first-turn document placeholder, invalid
+                formatting, or an unsupported schema description.
+            TypeError: A referenced schema cannot be serialized as JSON, or schema
+                description options contain unsupported arguments.
+
+        Warns:
+            UserWarning: Default inline preparation logs a warning once if a supplied
+                schema is unused by the templates.
         """
         return prepare_inline_request(prompt)
 

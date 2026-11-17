@@ -1,4 +1,14 @@
-"""Prepare extraction requests for LLM backends."""
+"""Prepare extraction requests for LLM backends.
+
+Classes:
+    SimpleChatMessage: A role and template or rendered message text.
+    ExtractionPrompt: Templates and inputs for preparing an extraction request.
+    PreparedRequest: Rendered messages and optional backend inputs.
+
+Functions:
+    build_chat_messages: Render role-tagged templates with explicit bindings.
+    prepare_inline_request: Prepare messages with the document embedded in the text.
+"""
 
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
@@ -14,7 +24,14 @@ from kibad_llm.utils.log import warn_once
 
 @dataclass
 class SimpleChatMessage:
-    """A message role and its text content."""
+    """Simplified representation of a chat message.
+
+    Attributes:
+        role: Role of the actor who wrote the content, such as user, system, or assistant.
+            Any `MessageRole` value is accepted.
+        content: Message text, which may be a template before request preparation or
+            rendered content ready to send to the backend.
+    """
 
     role: MessageRole
     content: str
@@ -26,6 +43,23 @@ class ExtractionPrompt:
 
     The schema is the one selected for the prompt. The extractor passes the
     decoding schema separately when it executes the request.
+
+    Attributes:
+        document: Source document text to extract from, typically Markdown.
+        schema: JSON Schema available to the templates, or None when no schema is supplied.
+        system_message: System message template, or None to omit the system message.
+        user_message: User message template, or None to omit the user message.
+        history: Previously rendered messages to prepend to the current turn, in order.
+            Defaults to an empty sequence. Inline preparation leaves these messages unchanged.
+        document_placeholder: Template field name for the document, without braces.
+            Defaults to `document`.
+        schema_placeholder: Template field name for the schema serialized as JSON, without
+            braces. Defaults to `schema`.
+        schema_description_placeholder: Template field name for the human-readable schema
+            description, without braces. Defaults to `schema_description`.
+        schema_description_kwargs: Optional keyword arguments forwarded to
+            [`build_schema_description`][kibad_llm.schema.description.build_schema_description]
+            when a template uses the schema description placeholder.
     """
 
     document: str
@@ -44,9 +78,12 @@ class PreparedRequest:
     """Prepared input to a backend's chat call.
 
     Attributes:
-        current_messages: The rendered current turn, used for extraction result recording.
-        messages: The complete chat input, including any history.
-        input_artifacts: Optional named text inputs for the backend to consume.
+        current_messages: The rendered current turn without history, used for extraction
+            result recording. These messages retain the full text before snapshot truncation.
+        messages: The complete chat input, with history followed by the current turn.
+        input_artifacts: Named text inputs for backends that support auxiliary inputs.
+            Defaults to an empty dictionary. When nonempty, the extractor passes this dictionary
+            to the backend's chat call as the `input_artifacts` keyword argument.
     """
 
     current_messages: list[SimpleChatMessage]
@@ -58,7 +95,23 @@ def build_chat_messages(
     templates: Sequence[SimpleChatMessage],
     bindings: Mapping[str, str],
 ) -> list[SimpleChatMessage]:
-    """Render message templates with the supplied placeholder values."""
+    """Render message templates with the supplied placeholder values.
+
+    Uses Python's `str.format_map` syntax. Double braces escape literal braces;
+    braces inside binding values are not interpreted again.
+
+    Args:
+        templates: Messages whose content contains named replacement fields.
+        bindings: Replacement values keyed by field name, without braces.
+
+    Returns:
+        New messages in template order, preserving each role and replacing its content.
+        The input templates are not modified.
+
+    Raises:
+        ValueError: A replacement field has no binding, with the field name and message role
+            included in the error, or a template contains invalid formatting syntax.
+    """
     messages = []
     for template in templates:
         try:
@@ -72,7 +125,33 @@ def build_chat_messages(
 
 
 def prepare_inline_request(prompt: ExtractionPrompt) -> PreparedRequest:
-    """Render an extraction request that provides the document inline."""
+    """Render an extraction request that provides the document inline.
+
+    Render the configured system and user templates in that order, omitting templates
+    set to None. Bind the document text and, when referenced, the JSON Schema or its
+    human-readable description. Without history, at least one template must use the
+    document placeholder. Escaped placeholders such as `{{document}}` remain literal
+    text and do not satisfy that requirement.
+
+    Args:
+        prompt: Templates, document, optional schema, history, and placeholder settings
+            to use for this turn.
+
+    Returns:
+        A request with the rendered current turn and the full conversation formed by
+        prepending unchanged history. No auxiliary input artifacts are created.
+
+    Raises:
+        ValueError: Both templates are None, a schema placeholder is used without a schema,
+            no document placeholder is used when history is empty, a template cannot be
+            rendered, or the schema cannot be expanded into a description.
+        TypeError: A referenced schema cannot be serialized as JSON, or
+            `schema_description_kwargs` contains unsupported arguments.
+
+    Warns:
+        UserWarning: Logs a warning once when a schema is supplied but neither schema
+            placeholder is used by the templates.
+    """
     templates = [
         SimpleChatMessage(role=role, content=content)
         for role, content in (
