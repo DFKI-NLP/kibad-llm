@@ -15,6 +15,7 @@
 - [Information Extraction from PDFs](#information-extraction-from-pdfs)
     - [Prerequisite: LLM Hosting](#prerequisite-llm-hosting)
     - [Inference](#inference)
+    - [CPU smoke test with a micro LLM](#cpu-smoke-test-with-a-micro-llm)
     - [Schema descriptions in prompts](#schema-descriptions-in-prompts)
     - [Evaluation](#evaluation)
     - [Multirun](#multirun)
@@ -186,6 +187,51 @@ On compute nodes it is recommended to set a large value, like 200. It may be lar
 Use this to send more than one simultaneous request to vLLM.
 
 </details>
+
+### CPU smoke test with a micro LLM
+
+Use [SmolLM2-135M-Instruct](https://huggingface.co/HuggingFaceTB/SmolLM2-135M-Instruct)
+for local pipeline testing. The [model config](/configs/extractor/llm/smollm2_135m_in_process.yaml)
+uses `kibad_llm.llms.VllmInProcess`, so no model server or API key is needed. The public
+weights require no Hugging Face token. This 135-million-parameter model is intended
+for smoke tests; its predictions are not suitable for evaluating extraction quality.
+
+The standard PyPI vLLM package targets GPUs. Install a **CPU build of vLLM 0.12.0**
+into the project environment instead. For Linux ARM64, the official package index
+provides a prebuilt CPU wheel, so no compiler or source build is needed:
+
+```bash
+uv pip install --torch-backend cpu 'vllm==0.12.0+cpu' \
+  --extra-index-url https://wheels.vllm.ai/0.12.0/cpu/
+```
+
+For other platforms, follow the [vLLM CPU installation instructions](https://docs.vllm.ai/en/v0.12.0/getting_started/installation/cpu/)
+and choose a CPU package compatible with the project's vLLM version range.
+Use `uv run --no-sync` afterwards to retain the CPU-specific installation.
+
+From the repository root, run:
+
+```bash
+export VLLM_CPU_KVCACHE_SPACE=1
+export VLLM_CPU_OMP_THREADS_BIND=nobind
+export OMP_NUM_THREADS=4
+uv run --no-sync -m kibad_llm.predict experiment/predict=micro_llm
+```
+
+The [smoke-test preset](/configs/experiment/predict/micro_llm.yaml) processes all four
+complete PDFs in `tests/fixtures/pdfs`, splits their text into 6,000-character chunks,
+and extracts the existing `faktencheck_simple` schema without evidence wrappers.
+It uses an 8,192-token context and limits each response to 512 tokens. Results and
+run metadata are written to the usual `predictions/micro_llm` and `logs/micro_llm`
+directories. These environment settings limit the KV cache to 1 GiB and use four
+CPU threads. Override `pdf_directory` to test another directory.
+
+With the same environment, run the corresponding test with real inference
+(excluded from regular CI):
+
+```bash
+uv run --no-sync --group cicd pytest tests/integration/test_micro_llm.py -m slow
+```
 
 ### Schema descriptions in prompts
 

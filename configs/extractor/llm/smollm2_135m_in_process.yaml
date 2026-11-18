@@ -1,0 +1,17 @@
+# Tiny instruction model for pipeline smoke tests, not extraction-quality evaluation.
+# CPU inference requires a CPU build of vLLM; see docs/USAGE.md.
+_target_: kibad_llm.llms.VllmInProcess
+model: HuggingFaceTB/SmolLM2-135M-Instruct
+
+vllm_kwargs:
+  # Float32 also works on CPUs without native BFloat16 instructions.
+  dtype: float32
+  tensor_parallel_size: 1
+  max_model_len: 8192
+  max_num_seqs: 1
+  enforce_eager: true
+  download_dir: ${oc.env:VLLM_DOWNLOAD_DIR,null}
+  seed: ${seed}
+
+temperature: 0.0
+max_tokens: 512
