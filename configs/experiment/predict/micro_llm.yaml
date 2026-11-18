@@ -5,7 +5,7 @@
 defaults:
   - override /extractor: chunking
   - override /extractor/llm: smollm2_135m_in_process
-  - override /extractor/schema: faktencheck_simple
+  - override /extractor/schema: document_language
 
 name: micro_llm
 pdf_directory: ${paths.root_dir}/tests/fixtures/pdfs

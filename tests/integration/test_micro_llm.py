@@ -30,7 +30,8 @@ def test_micro_llm_prediction(tmp_path):
     for row in rows:
         assert row["errors_list"]
         assert all(not errors for errors in row["errors_list"]), row["file_name"]
-        assert isinstance(row["structured"], dict)
+        assert set(row["structured"]) == {"language"}
+        assert row["structured"]["language"] in {"de", "en", "other"}
         cursor = 0
         for start, end in zip(row["character_start_list"], row["character_end_list"]):
             assert not row["text"][cursor:start].strip()

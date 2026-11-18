@@ -220,8 +220,10 @@ uv run --no-sync -m kibad_llm.predict experiment/predict=micro_llm
 
 The [smoke-test preset](/configs/experiment/predict/micro_llm.yaml) processes all four
 complete PDFs in `tests/fixtures/pdfs`, splits their text into 6,000-character chunks,
-and extracts the existing `faktencheck_simple` schema without evidence wrappers.
-It uses an 8,192-token context and limits each response to 512 tokens. Results and
+and predicts the main language (`de`, `en`, or `other`) of each chunk using a small,
+bounded JSON schema. Chunk predictions are combined by majority vote. Evidence
+wrappers are disabled. It uses an 8,192-token context, compact JSON decoding, and a
+64-token response limit. Results and
 run metadata are written to the usual `predictions/micro_llm` and `logs/micro_llm`
 directories. These environment settings limit the KV cache to 1 GiB and use four
 CPU threads. Override `pdf_directory` to test another directory.
