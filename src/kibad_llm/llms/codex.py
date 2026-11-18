@@ -64,6 +64,10 @@ class Codex(LLM):
     def prepare_request(self, prompt: ExtractionPrompt) -> PreparedRequest:
         """Render a file-backed prompt and supply the original Markdown as `input.md`.
 
+        Implements the LLM request-preparation hook. The request separates the rendered
+        current turn from the full conversation, which includes history. The extractor
+        records the current turn; snapshot truncation leaves the messages sent to Codex intact.
+
         Args:
             prompt: Configured templates, source Markdown, schema, and history.
 

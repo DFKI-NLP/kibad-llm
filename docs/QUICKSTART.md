@@ -47,9 +47,11 @@ cp .env.example .env         # then fill in the variables you need, see below
 
 ## Running the extraction pipeline
 
-### Prerequisite: host an LLM
+<a id="prerequisite-host-an-llm"></a>
 
-Prediction needs a running LLM backend, chosen per extractor config under
+### Prerequisite: choose an LLM backend
+
+Prediction uses an LLM backend, chosen per extractor config under
 [configs/extractor/llm/](/configs/extractor/llm/):
 
 - **OpenAI-hosted** (e.g. `gpt_5`) — just needs `OPENAI_API_KEY`, no separate hosting step.
@@ -57,8 +59,10 @@ Prediction needs a running LLM backend, chosen per extractor config under
     see [models/README.md](/models/README.md) and `run_with_llm.sh`.
 - **In-process vLLM** (`*_in_process.yaml`, model loaded inside the same process; used on the DFKI cluster via
     `run_in_process.sh`) — needs `HF_TOKEN` for gated models.
+- **Codex CLI** (`codex`) — needs an authenticated CLI and a Linux host supporting its filesystem sandbox.
+    See [USAGE.md § Codex extraction backend](USAGE.md#codex-extraction-backend) for setup and prediction instructions.
 
-Follow [models/README.md § Quickstart](/models/README.md#quickstart) or
+For vLLM, follow [models/README.md § Quickstart](/models/README.md#quickstart) or
 [§ All-in-one run script](/models/README.md#all-in-one-run-script) to get one running.
 
 ### Run a prediction
@@ -122,8 +126,8 @@ LLM, extractor, metric, or dataset means adding both a Python class/function and
     from the pydantic models in [src/kibad_llm/schema/types.py](/src/kibad_llm/schema/types.py), optionally with
     guided decoding), wrapped by `ChunkingExtractor` (splits long documents), `UnionExtractor` /
     `ConditionalUnionExtractor` (multiple passes, merged or chained), and `RepeatingExtractor` (majority vote).
-- **LLM backends** ([src/kibad_llm/llms/](/src/kibad_llm/llms/)) share one interface over the three hosting
-    options described above (`openai.py`, `openai_like_vllm.py`, `vllm_in_process.py`).
+- **LLM backends** ([src/kibad_llm/llms/](/src/kibad_llm/llms/)) share one interface across the backends
+    described above (`openai.py`, `openai_like_vllm.py`, `vllm_in_process.py`, `codex.py`).
 - **Evaluation** ([src/kibad_llm/evaluate.py](/src/kibad_llm/evaluate.py)) pairs a `dataset` (predictions +
     references, matched on file name / record id, see [src/kibad_llm/dataset/](/src/kibad_llm/dataset/)) with a
     `metric` implementing `reset`/`update`/`compute` (see [src/kibad_llm/metrics/](/src/kibad_llm/metrics/)).
@@ -185,39 +189,3 @@ intentionally changed.
 - [data/readme.md](/data/readme.md) — description of the datasets and reference files available.
 - [dfki-nlp.github.io/kibad-llm](https://dfki-nlp.github.io/kibad-llm/) — the rendered documentation site with
     all of the above, plus the auto-generated code reference.
-
-### Codex extraction backend
-
-Use Codex CLI on a Linux host that supports its restricted filesystem sandbox.
-Install Codex separately and authenticate with `codex login` or set
-`CODEX_API_KEY`. Choose an explicit model available to that credential with
-`extractor.llm.model=MODEL`. The default model is an alias. Hosted inference
-and agent execution can vary across reruns.
-
-```bash
-uv run -m kibad_llm.predict \
-  name=codex_fixture \
-  experiment/predict=faktencheck_core_fields_schema_with_evidence_codex \
-  pdf_directory=tests/fixtures/pdfs
-```
-
-The preset gives Codex the Markdown as `input.md` and supplies the extraction instructions
-and schema through the prompt template. You can override `extractor.llm.reasoning_effort`
-(default `high`) and `extractor.llm.timeout` (default 600 seconds).
-
-Custom Codex templates must name `input.md` and omit the inline document placeholder
-(`{document}` by default). The backend prepares the messages and document artifact through
-`LLM.prepare_request(ExtractionPrompt)`. The extractor records the rendered current turn;
-any snapshot truncation leaves the full messages sent to Codex intact.
-
-Each call launches a fresh ephemeral Codex process in a document workspace.
-Shell commands have a restricted filesystem profile and no network access.
-Web search, apps, and plugins are disabled. The backend checks workspace access
-before inference. If sandboxing is unavailable, the extraction records an error.
-Use a job-local Hydra run directory on shared filesystems to keep temporary
-runtime state off shared storage.
-
-The Hydra run directory contains prompts, final JSON, execution events, and
-backend provenance. Prediction records include elapsed time and usage counters
-reported by the CLI. Event paths are relative to that run directory. Keep the
-run directory with the predictions to resolve those references.

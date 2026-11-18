@@ -15,6 +15,7 @@
 - [Information Extraction from PDFs](#information-extraction-from-pdfs)
     - [Prerequisite: LLM Hosting](#prerequisite-llm-hosting)
     - [Inference](#inference)
+        - [Codex extraction backend](#codex-extraction-backend)
     - [Schema descriptions in prompts](#schema-descriptions-in-prompts)
     - [Evaluation](#evaluation)
     - [Multirun](#multirun)
@@ -142,7 +143,9 @@ uv run -m kibad_llm.data_integration.synch_nextcloud_with_cluster
 
 ### Prerequisite: LLM Hosting
 
-Follow the instructions [here for a quickstart](/models/README.md#quickstart), [here for an all-in-one script](/models/README.md#all-in-one-run-script) or [here for general instructions on uv and the cluster](/models/README.md#the-two-ways-to-use-uv-on-pegasus).
+Choose a backend through the extractor configuration under [configs/extractor/llm](/configs/extractor/llm).
+For vLLM, follow the instructions [here for a quickstart](/models/README.md#quickstart), [here for an all-in-one script](/models/README.md#all-in-one-run-script) or [here for general instructions on uv and the cluster](/models/README.md#the-two-ways-to-use-uv-on-pegasus).
+OpenAI-hosted models use `OPENAI_API_KEY`; the [Codex backend](#codex-extraction-backend) uses a separately installed CLI.
 
 ### Inference
 
@@ -186,6 +189,40 @@ On compute nodes it is recommended to set a large value, like 200. It may be lar
 Use this to send more than one simultaneous request to vLLM.
 
 </details>
+
+#### Codex extraction backend
+
+Use Codex CLI on a Linux host that supports its restricted filesystem sandbox.
+Install Codex separately and authenticate with `codex login` or set
+`CODEX_API_KEY`. Choose an explicit model available to that credential with
+`extractor.llm.model=MODEL`. The default model is an alias. Hosted inference
+and agent execution can vary across reruns.
+
+```bash
+uv run -m kibad_llm.predict \
+  name=codex_fixture \
+  experiment/predict=faktencheck_core_fields_schema_with_evidence_codex \
+  pdf_directory=tests/fixtures/pdfs
+```
+
+The preset gives Codex the Markdown as `input.md` and supplies the extraction instructions
+and schema through the prompt template. You can override `extractor.llm.reasoning_effort`
+(default `high`) and `extractor.llm.timeout` (default 600 seconds).
+
+Custom Codex templates must name `input.md` and omit the inline document placeholder
+(`{document}` by default).
+
+Each call launches a fresh ephemeral Codex process in a document workspace.
+Shell commands have a restricted filesystem profile and no network access.
+Web search, apps, and plugins are disabled. The backend checks workspace access
+before inference. If sandboxing is unavailable, the extraction records an error.
+Use a job-local Hydra run directory on shared filesystems to keep temporary
+runtime state off shared storage.
+
+The Hydra run directory contains prompts, final JSON, execution events, and
+backend provenance. Prediction records include elapsed time and usage counters
+reported by the CLI. Event paths are relative to that run directory. Keep the
+run directory with the predictions to resolve those references.
 
 ### Schema descriptions in prompts
 
