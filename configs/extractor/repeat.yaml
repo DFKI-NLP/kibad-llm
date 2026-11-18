@@ -13,6 +13,7 @@ _target_: kibad_llm.extractors.RepeatingExtractor
 n: 3  # number of repetitions
 # for these fields, return a list of results from each repetition
 return_as_list:
+  - backend_metadata
   # - structured
   - structured_with_metadata
   - errors

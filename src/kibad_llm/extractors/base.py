@@ -15,6 +15,7 @@ Functions:
         evidence location info.
     add_response_content_callback: Postprocessing callback to add response content to output.
     add_reasoning_content_callback: Postprocessing callback to add reasoning content to output.
+    add_backend_metadata_callback: Postprocessing callback to preserve backend token usage.
     add_structured_callback: Postprocessing callback to parse and validate structured output.
     augment_and_strip_metadata_from_structured_callback: Postprocessing callback to augment
         metadata and strip it from structured output.
@@ -76,6 +77,7 @@ class SingleExtractionResult(FieldDict):
         messages_formatted: Rendered messages in the current turn, keyed by role.
         errors: list of strings "error_name: error_message"
         errors_long: list of strings "error_name: error_message_and_traceback"
+        backend_metadata: Backend-reported token usage for this call, or None if unavailable.
     """
 
     character_start: int
@@ -88,6 +90,7 @@ class SingleExtractionResult(FieldDict):
     messages_formatted: dict[str, str] | None = None
     errors: list[str] = field(default_factory=list)
     errors_long: list[str] = field(default_factory=list)
+    backend_metadata: dict[str, Any] | None = None
 
 
 def exception2error_msg(e: BaseException) -> tuple[str, str]:
@@ -472,6 +475,22 @@ def augment_metadata(
     return _augment(data)
 
 
+def add_backend_metadata_callback(
+    out: SingleExtractionResult,
+    response: ChatResponse,
+    *,
+    llm: LLM,
+) -> None:
+    """Preserve backend metadata independently of response parsing and validation.
+
+    Args:
+        out: Extraction result to update in place.
+        response: Response from the chat call.
+        llm: Backend that extracts its metadata from the response.
+    """
+    out.backend_metadata = llm.get_backend_metadata_from_chat_response(response)
+
+
 def add_response_content_callback(
     out: SingleExtractionResult,
     response: ChatResponse,
@@ -801,7 +820,9 @@ def extract_from_text(
     # only proceed if we have an llm
     if llm is not None:
         # setup postprocessing callbacks
-        postprocessing_callbacks: list[Callable[[SingleExtractionResult, ChatResponse], None]] = []
+        postprocessing_callbacks: list[Callable[[SingleExtractionResult, ChatResponse], None]] = [
+            partial(add_backend_metadata_callback, llm=llm)
+        ]
         # 1) get response content
         postprocessing_callbacks.append(partial(add_response_content_callback, llm=llm))
         # 2) get reasoning if requested

@@ -15,6 +15,7 @@
 - [Information Extraction from PDFs](#information-extraction-from-pdfs)
     - [Prerequisite: LLM Hosting](#prerequisite-llm-hosting)
     - [Inference](#inference)
+    - [Token usage in prediction results](#token-usage-in-prediction-results)
     - [Schema descriptions in prompts](#schema-descriptions-in-prompts)
     - [Evaluation](#evaluation)
     - [Multirun](#multirun)
@@ -186,6 +187,43 @@ On compute nodes it is recommended to set a large value, like 200. It may be lar
 Use this to send more than one simultaneous request to vLLM.
 
 </details>
+
+### Token usage in prediction results
+
+Each LLM call records its token usage in `SingleExtractionResult.backend_metadata.usage`.
+The simple extractor writes this to `backend_metadata` in the prediction JSONL.
+The default chunking, repeat, union, conditional union, and multi-pass configs preserve each
+call's metadata in `backend_metadata_list`, in call order. When customizing `return_as_list`,
+include `backend_metadata` to retain it.
+
+OpenAI Responses preserves the API's usage fields, including `input_tokens`, `output_tokens`,
+`total_tokens`, `input_tokens_details.cached_tokens`, and `output_tokens_details.reasoning_tokens`.
+API-hosted vLLM preserves its reported usage, including `prompt_tokens`, `completion_tokens`,
+`total_tokens`, and any token details supplied by the server. For example:
+
+```json
+{
+  "backend_metadata": {
+    "usage": {
+      "input_tokens": 120,
+      "input_tokens_details": {"cached_tokens": 80},
+      "output_tokens": 30,
+      "output_tokens_details": {"reasoning_tokens": 10},
+      "total_tokens": 150
+    }
+  }
+}
+```
+
+In-process vLLM records `prompt_tokens`, `completion_tokens`, and `total_tokens` from the returned
+token IDs, plus `prompt_tokens_details.cached_tokens` when available. Completion tokens include
+reasoning and all generated candidates. If prompt token IDs are unavailable, prompt and total
+counts are omitted.
+
+Metadata is retained even if response parsing, schema validation, or reasoning extraction fails.
+It is `null` when there is no response or the backend does not report usage; missing counts are
+not estimated. Older prediction files remain readable without this field. These records contain
+token counts only; monetary costs and aggregation across calls or documents are not computed.
 
 ### Schema descriptions in prompts
 
