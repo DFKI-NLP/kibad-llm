@@ -3,11 +3,13 @@ from pathlib import Path
 import subprocess  # nosec B404  # Used only to simulate TimeoutExpired.
 
 from hydra.utils import instantiate
+from llama_index.core.base.llms.types import MessageRole
 import pytest
 
 from kibad_llm.extractors.base import extract_from_text
 from kibad_llm.llms.base import BackendExecutionError
 from kibad_llm.llms.codex import Codex
+from kibad_llm.llms.request import ExtractionPrompt, SimpleChatMessage
 from tests.conftest import cfg_global
 
 CODEX_PRESET = "faktencheck_core_fields_schema_with_evidence_codex"
@@ -70,18 +72,103 @@ def test_file_backed_preset_stages_markdown_and_uses_only_template_messages(tmp_
     assert "evidence_anchor" in schema["properties"]["habitat"]["items"]["properties"]
 
 
-def test_codex_rejects_inline_template_before_inference(tmp_path):
+@pytest.mark.parametrize(
+    "template, placeholder",
+    [
+        ({"user_message": "Read {document}"}, "document"),
+        ({"system_message": "Read {markdown!s}"}, "markdown"),
+        ({"user_message": "Read {document[0]}"}, "document"),
+        ({"user_message": "{schema:{document}}"}, "document"),
+    ],
+)
+def test_codex_rejects_inline_template_before_inference(tmp_path, template, placeholder):
+    """Reject inline document bindings in either role, including custom field names."""
     backend = Codex("test-model", "medium", 30, str(tmp_path))
 
     with pytest.raises(ValueError, match=CODEX_PRESET):
         extract_from_text(
             text="# Fixture",
             text_id="fixture",
-            prompt_template={"user_message": "Read {document}"},
+            prompt_template={**template, "document_placeholder": placeholder},
             llm=backend,
+            schema={},
             use_guided_decoding=False,
         )
     assert not list(tmp_path.iterdir())
+
+
+def test_codex_reports_unrelated_missing_bindings(tmp_path):
+    """Preserve the shared renderer's error for an unrelated missing field."""
+    backend = Codex("test-model", "high", 600, str(tmp_path))
+    with pytest.raises(ValueError, match="No value for placeholder 'missing' in USER message"):
+        backend.prepare_request(
+            ExtractionPrompt(document="Source", schema=None, user_message="Read {missing}")
+        )
+
+
+def test_prepare_request_preserves_history_and_custom_schema_placeholders(tmp_path):
+    """Render custom schema bindings while leaving escaped document fields literal."""
+    backend = Codex("test-model", "high", 600, str(tmp_path))
+    history = [SimpleChatMessage(role=MessageRole.USER, content="Previous turn")]
+    schema = {"type": "object", "properties": {"habitat": {"type": "string"}}}
+    prompt = ExtractionPrompt(
+        document="# Original Markdown\n",
+        schema=schema,
+        system_message="{description}",
+        user_message="Read input.md; {{markdown}} is literal.\n{output_schema}",
+        history=history,
+        document_placeholder="markdown",
+        schema_placeholder="output_schema",
+        schema_description_placeholder="description",
+    )
+
+    request = backend.prepare_request(prompt)
+
+    system, user = request.current_messages
+    assert "habitat" in system.content
+    assert user.content.startswith("Read input.md; {markdown} is literal.")
+    assert json.loads(user.content.split("\n", maxsplit=1)[1]) == schema
+    assert request.messages == [*history, system, user]
+    assert history == [SimpleChatMessage(role=MessageRole.USER, content="Previous turn")]
+    assert request.input_artifacts == {"input.md": prompt.document}
+    assert all(prompt.document not in message.content for message in request.messages)
+
+
+def test_failed_execution_keeps_metadata_and_current_prompt_snapshot(tmp_path, monkeypatch):
+    """Keep partial execution metadata and truncate only the recorded current turn."""
+    backend = Codex("test-model", "high", 600, str(tmp_path))
+    document = "# Source Markdown"
+    history = [SimpleChatMessage(role=MessageRole.USER, content="Previous turn")]
+    user_message = "Read input.md and extract the fields."
+    metadata = {"input_tokens": 9, "attempt_count": 1}
+
+    def fail(messages, *, json_schema, input_artifacts):
+        """Verify the complete request before simulating a backend failure."""
+        assert messages == [
+            *history,
+            SimpleChatMessage(role=MessageRole.USER, content=user_message),
+        ]
+        assert json_schema is None
+        assert input_artifacts == {"input.md": document}
+        raise BackendExecutionError("Timed out", metadata)
+
+    monkeypatch.setattr(backend, "call_llm_chat_with_guided_decoding", fail)
+    result = extract_from_text(
+        text=document,
+        text_id="fixture",
+        prompt_template={"user_message": user_message},
+        llm=backend,
+        use_guided_decoding=False,
+        history=history,
+        return_messages=True,
+        return_messages_formatted=True,
+        truncate_user_message_formatted=5,
+    )
+
+    assert result.errors == ["BackendExecutionError: Timed out"]
+    assert result.backend_metadata == metadata
+    assert result.messages == {"system": None, "user": user_message}
+    assert result.messages_formatted == {"user": "Read ... (truncated @ 5 chars)"}
 
 
 def test_timeout_keeps_partial_usage(tmp_path, monkeypatch):

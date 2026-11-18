@@ -205,6 +205,11 @@ The preset gives Codex the Markdown as `input.md` and supplies the extraction in
 and schema through the prompt template. You can override `extractor.llm.reasoning_effort`
 (default `high`) and `extractor.llm.timeout` (default 600 seconds).
 
+Custom Codex templates must name `input.md` and omit the inline document placeholder
+(`{document}` by default). The backend prepares the messages and document artifact through
+`LLM.prepare_request(ExtractionPrompt)`. The extractor records the rendered current turn;
+any snapshot truncation leaves the full messages sent to Codex intact.
+
 Each call launches a fresh ephemeral Codex process in a document workspace.
 Shell commands have a restricted filesystem profile and no network access.
 Web search, apps, and plugins are disabled. The backend checks workspace access

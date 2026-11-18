@@ -13,12 +13,13 @@ from uuid import uuid4
 
 from llama_index.core.base.llms.types import ChatMessage, ChatResponse, MessageRole
 
-from kibad_llm.llms.base import (
-    LLM,
-    BackendExecutionError,
-    MessageFormatter,
-    MissingDocumentError,
+from kibad_llm.llms.base import LLM, BackendExecutionError
+from kibad_llm.llms.request import (
+    ExtractionPrompt,
+    MissingBindingError,
+    PreparedRequest,
     SimpleChatMessage,
+    prepare_inline_request,
 )
 from kibad_llm.utils.log import warn_once
 
@@ -60,20 +61,32 @@ class Codex(LLM):
         self.artifact_dir = Path(artifact_dir).resolve()
         self.executable = executable
 
-    def prepare_request(
-        self,
-        document: str,
-        format_messages: MessageFormatter,
-    ) -> tuple[list[SimpleChatMessage], dict[str, str]]:
+    def prepare_request(self, prompt: ExtractionPrompt) -> PreparedRequest:
+        """Render a file-backed prompt and supply the original Markdown as `input.md`.
+
+        Args:
+            prompt: Configured templates, source Markdown, schema, and history.
+
+        Returns:
+            Rendered current messages, the full conversation, and the document artifact.
+
+        Raises:
+            ValueError: A template uses the inline document placeholder, or shared
+                request preparation rejects its templates or schema.
+            TypeError: Schema serialization or schema description options are invalid.
+        """
         try:
-            messages = format_messages(require_document=False)
-        except MissingDocumentError as error:
+            request = prepare_inline_request(prompt, include_document=False)
+        except MissingBindingError as error:
+            if error.placeholder != prompt.document_placeholder:
+                raise
             raise ValueError(
                 "Codex reads the document from input.md. Use "
                 "experiment/predict=faktencheck_core_fields_schema_with_evidence_codex "
                 "or remove the document placeholder from your file-backed template."
             ) from error
-        return messages, {"input.md": document}
+        request.input_artifacts["input.md"] = prompt.document
+        return request
 
     def get_reasoning_from_chat_response(self, response: ChatResponse) -> None:
         warn_once("Codex does not return reasoning content.")

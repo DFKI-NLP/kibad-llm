@@ -1,8 +1,16 @@
-from abc import ABC, abstractmethod
-import dataclasses
-from typing import Any, Protocol
+"""Base interface for preparing and executing LLM chat requests."""
 
-from llama_index.core.base.llms.types import ChatResponse, MessageRole
+from abc import ABC, abstractmethod
+from typing import Any
+
+from llama_index.core.base.llms.types import ChatResponse
+
+from kibad_llm.llms.request import (
+    ExtractionPrompt,
+    PreparedRequest,
+    SimpleChatMessage,
+    prepare_inline_request,
+)
 
 
 class MissingRawChatResponseError(Exception):
@@ -41,40 +49,44 @@ class EmptyReasoningError(Exception):
     ...
 
 
-@dataclasses.dataclass
-class SimpleChatMessage:
-    role: MessageRole
-    content: str
-
-
-class MissingDocumentError(ValueError):
-    """A prompt template requires inline document text that was not supplied."""
-
-
-class MessageFormatter(Protocol):
-    """Render the extractor prompt with the backend’s chosen document delivery."""
-
-    def __call__(
-        self, document: str | None = None, *, require_document: bool = True
-    ) -> list[SimpleChatMessage]: ...
-
-
 class BackendExecutionError(Exception):
     """A backend failure with any metadata collected before the failure."""
 
     def __init__(self, message: str, metadata: dict[str, Any]):
+        """Store the failure message and partial execution metadata."""
         super().__init__(message)
         self.metadata = metadata
 
 
 class LLM(ABC):
-    def prepare_request(
-        self,
-        document: str,
-        format_messages: MessageFormatter,
-    ) -> tuple[list[SimpleChatMessage], dict[str, str]]:
-        """Format messages and return any input artifacts needed by the backend."""
-        return format_messages(document), {}
+    """Prepare and execute chat requests with a model backend."""
+
+    def prepare_request(self, prompt: ExtractionPrompt) -> PreparedRequest:
+        """Build the current turn and full request, using inline document text by default.
+
+        Backends can override this method to change how they build messages or
+        supply auxiliary inputs for their chat call. The default implementation delegates
+        to [`prepare_inline_request`][kibad_llm.llms.request.prepare_inline_request].
+
+        Args:
+            prompt: Templates and inputs available for preparing the extraction request.
+
+        Returns:
+            The current turn, full conversation including history, and any auxiliary
+            backend inputs. The default implementation creates no auxiliary inputs.
+
+        Raises:
+            ValueError: Default inline preparation rejects missing templates, a missing
+                required schema, a missing first-turn document placeholder, invalid
+                formatting, or an unsupported schema description.
+            TypeError: A referenced schema cannot be serialized as JSON, or schema
+                description options contain unsupported arguments.
+
+        Warns:
+            UserWarning: Default inline preparation logs a warning once if a supplied
+                schema is unused by the templates.
+        """
+        return prepare_inline_request(prompt)
 
     @abstractmethod
     def call_llm_chat_with_guided_decoding(
