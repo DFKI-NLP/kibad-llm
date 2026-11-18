@@ -195,7 +195,8 @@ Use [SmolLM2-135M-Instruct](https://huggingface.co/HuggingFaceTB/SmolLM2-135M-In
 The standard PyPI vLLM package targets GPUs. Install a **CPU build of vLLM 0.12.0** into the project environment instead. For Linux ARM64, the official package index provides a prebuilt CPU wheel, so no compiler or source build is needed:
 
 ```bash
-uv pip install --torch-backend cpu 'vllm==0.12.0+cpu' --extra-index-url https://wheels.vllm.ai/0.12.0/cpu/
+uv pip install --torch-backend cpu 'vllm==0.12.0+cpu' \
+  --extra-index-url https://wheels.vllm.ai/0.12.0/cpu/
 ```
 
 The wheel command above is specific to Linux ARM64. For AMD64, vLLM provides the [prebuilt CPU container](https://gallery.ecr.aws/q9t5s3a7/vllm-cpu-release-repo) `public.ecr.aws/q9t5s3a7/vllm-cpu-release-repo:v0.12.0`; the 0.12.0 CPU wheel index currently lists only an ARM64 wheel. Follow the [vLLM CPU installation instructions](https://docs.vllm.ai/en/v0.12.0/getting_started/installation/cpu/) for platform requirements and native CPU builds. Choose a runtime compatible with the project's vLLM version range. Use `uv run --no-sync` afterwards to retain the CPU-specific installation. Plain `uv run` or `uv sync` can restore the GPU package pinned in `uv.lock`.
@@ -216,7 +217,8 @@ The [smoke-test preset](/configs/experiment/predict/micro_llm.yaml) processes al
 The real-inference integration test is skipped by default, including under plain `uv run --group cicd pytest`. With the same CPU environment, explicitly enable it:
 
 ```bash
-RUN_MICRO_LLM_TEST=1 uv run --no-sync --group cicd pytest tests/integration/test_micro_llm.py -m slow
+RUN_MICRO_LLM_TEST=1 uv run --no-sync --group cicd pytest \
+  tests/integration/test_micro_llm.py -m slow
 ```
 
 The `slow` marker also excludes this test from CI. Selecting `-m slow` alone does not enable the test; `RUN_MICRO_LLM_TEST=1` is required.
