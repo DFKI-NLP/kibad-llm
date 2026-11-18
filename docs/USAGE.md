@@ -13,7 +13,7 @@
     - [Scientific-name normalization](#scientific-name-normalization)
     - [Syncing Nextcloud PDFs with the cluster storage](#syncing-nextcloud-pdfs-with-the-cluster-storage)
 - [Information Extraction from PDFs](#information-extraction-from-pdfs)
-    - [Prerequisite: LLM Hosting](#prerequisite-llm-hosting)
+    - [Prerequisite: choose an LLM backend](#prerequisite-choose-an-llm-backend)
     - [Inference](#inference)
         - [Codex extraction backend](#codex-extraction-backend)
     - [Schema descriptions in prompts](#schema-descriptions-in-prompts)
@@ -141,7 +141,9 @@ uv run -m kibad_llm.data_integration.synch_nextcloud_with_cluster
 
 ## Information Extraction from PDFs
 
-### Prerequisite: LLM Hosting
+<a id="prerequisite-llm-hosting"></a>
+
+### Prerequisite: choose an LLM backend
 
 Choose a backend through the extractor configuration under [configs/extractor/llm](/configs/extractor/llm).
 For vLLM, follow the instructions [here for a quickstart](/models/README.md#quickstart), [here for an all-in-one script](/models/README.md#all-in-one-run-script) or [here for general instructions on uv and the cluster](/models/README.md#the-two-ways-to-use-uv-on-pegasus).
