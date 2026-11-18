@@ -190,35 +190,17 @@ Use this to send more than one simultaneous request to vLLM.
 
 ### CPU smoke test with a micro LLM
 
-Use [SmolLM2-135M-Instruct](https://huggingface.co/HuggingFaceTB/SmolLM2-135M-Instruct)
-for local pipeline testing. The [model config](/configs/extractor/llm/smollm2_135m_in_process.yaml)
-uses `kibad_llm.llms.VllmInProcess`, so no model server or API key is needed. The public
-weights require no Hugging Face token. This 135-million-parameter model is intended
-for smoke tests; its predictions are not suitable for evaluating extraction quality.
+Use [SmolLM2-135M-Instruct](https://huggingface.co/HuggingFaceTB/SmolLM2-135M-Instruct) for local pipeline testing. The [model config](/configs/extractor/llm/smollm2_135m_in_process.yaml) uses `kibad_llm.llms.VllmInProcess`, so no model server or API key is needed. The public weights require no Hugging Face token. This 135-million-parameter model is intended for smoke tests; its predictions are not suitable for evaluating extraction quality.
 
-The standard PyPI vLLM package targets GPUs. Install a **CPU build of vLLM 0.12.0**
-into the project environment instead. For Linux ARM64, the official package index
-provides a prebuilt CPU wheel, so no compiler or source build is needed:
+The standard PyPI vLLM package targets GPUs. Install a **CPU build of vLLM 0.12.0** into the project environment instead. For Linux ARM64, the official package index provides a prebuilt CPU wheel, so no compiler or source build is needed:
 
 ```bash
-uv pip install --torch-backend cpu 'vllm==0.12.0+cpu' \
-  --extra-index-url https://wheels.vllm.ai/0.12.0/cpu/
+uv pip install --torch-backend cpu 'vllm==0.12.0+cpu' --extra-index-url https://wheels.vllm.ai/0.12.0/cpu/
 ```
 
-The wheel command above is specific to Linux ARM64. For AMD64, vLLM provides the
-[prebuilt CPU container](https://gallery.ecr.aws/q9t5s3a7/vllm-cpu-release-repo)
-`public.ecr.aws/q9t5s3a7/vllm-cpu-release-repo:v0.12.0`; the 0.12.0 CPU wheel index
-currently lists only an ARM64 wheel. Follow the [vLLM CPU installation instructions](https://docs.vllm.ai/en/v0.12.0/getting_started/installation/cpu/)
-for platform requirements and native CPU builds. Choose a runtime compatible with
-the project's vLLM version range.
-Use `uv run --no-sync` afterwards to retain the CPU-specific installation. Plain
-`uv run` or `uv sync` can restore the GPU package pinned in `uv.lock`.
+The wheel command above is specific to Linux ARM64. For AMD64, vLLM provides the [prebuilt CPU container](https://gallery.ecr.aws/q9t5s3a7/vllm-cpu-release-repo) `public.ecr.aws/q9t5s3a7/vllm-cpu-release-repo:v0.12.0`; the 0.12.0 CPU wheel index currently lists only an ARM64 wheel. Follow the [vLLM CPU installation instructions](https://docs.vllm.ai/en/v0.12.0/getting_started/installation/cpu/) for platform requirements and native CPU builds. Choose a runtime compatible with the project's vLLM version range. Use `uv run --no-sync` afterwards to retain the CPU-specific installation. Plain `uv run` or `uv sync` can restore the GPU package pinned in `uv.lock`.
 
-If vLLM reports `Device string must not be empty`, it has detected no usable device
-backend. On a CPU-only machine, check that the active environment contains a CPU
-build of vLLM. The `VLLM_CPU_*` settings below tune that backend; they do not install
-or select it. `--no-sync` preserves the current installation, so reinstall the CPU
-runtime first if an earlier sync replaced it.
+If vLLM reports `Device string must not be empty`, it has detected no usable device backend. On a CPU-only machine, check that the active environment contains a CPU build of vLLM. The `VLLM_CPU_*` settings below tune that backend; they do not install or select it. `--no-sync` preserves the current installation, so reinstall the CPU runtime first if an earlier sync replaced it.
 
 From the repository root, run:
 
@@ -229,26 +211,15 @@ export OMP_NUM_THREADS=4
 uv run --no-sync -m kibad_llm.predict experiment/predict=micro_llm
 ```
 
-The [smoke-test preset](/configs/experiment/predict/micro_llm.yaml) processes all four
-complete PDFs in `tests/fixtures/pdfs`, splits their text into 6,000-character chunks,
-and predicts the main language (`de`, `en`, or `other`) of each chunk using a small,
-bounded JSON schema. Chunk predictions are combined by majority vote. Evidence
-wrappers are disabled. It uses an 8,192-token context, compact JSON decoding, and a
-64-token response limit. Results and
-run metadata are written to the usual `predictions/micro_llm` and `logs/micro_llm`
-directories. These environment settings limit the KV cache to 1 GiB and use four
-CPU threads. Override `pdf_directory` to test another directory.
+The [smoke-test preset](/configs/experiment/predict/micro_llm.yaml) processes all four complete PDFs in `tests/fixtures/pdfs`, splits their text into 6,000-character chunks, and predicts the main language (`de`, `en`, or `other`) of each chunk using a small, bounded JSON schema. Chunk predictions are combined by majority vote. Evidence wrappers are disabled. It uses an 8,192-token context, compact JSON decoding, and a 64-token response limit. Results and run metadata are written to the usual `predictions/micro_llm` and `logs/micro_llm` directories. These environment settings limit the KV cache to 1 GiB and use four CPU threads. Override `pdf_directory` to test another directory.
 
-The real-inference integration test is skipped by default, including under plain
-`uv run --group cicd pytest`. With the same CPU environment, explicitly enable it:
+The real-inference integration test is skipped by default, including under plain `uv run --group cicd pytest`. With the same CPU environment, explicitly enable it:
 
 ```bash
-RUN_MICRO_LLM_TEST=1 uv run --no-sync --group cicd pytest \
-  tests/integration/test_micro_llm.py -m slow
+RUN_MICRO_LLM_TEST=1 uv run --no-sync --group cicd pytest tests/integration/test_micro_llm.py -m slow
 ```
 
-The `slow` marker also excludes this test from CI. Selecting `-m slow` alone does
-not enable the test; `RUN_MICRO_LLM_TEST=1` is required.
+The `slow` marker also excludes this test from CI. Selecting `-m slow` alone does not enable the test; `RUN_MICRO_LLM_TEST=1` is required.
 
 ### Schema descriptions in prompts
 
