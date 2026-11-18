@@ -8,12 +8,26 @@ import pytest
 
 from kibad_llm.config import PROJ_ROOT
 from kibad_llm.predict import predict
-from tests.conftest import cfg_global
+from tests.conftest import _env_flag, cfg_global
 
 
 @pytest.mark.slow
+@pytest.mark.skipif(
+    not _env_flag("RUN_MICRO_LLM_TEST"),
+    reason="Set RUN_MICRO_LLM_TEST=1 to run real inference with a working vLLM backend.",
+)
 def test_micro_llm_prediction(tmp_path):
     """Predict all four complete fixture PDFs without replaying LLM responses."""
+    from vllm.platforms import current_platform
+
+    if not current_platform.device_type:
+        pytest.fail(
+            "vLLM detected no usable device backend. CPU-only machines need a CPU build "
+            "of vLLM. Use uv run --no-sync to preserve that installation; see "
+            "docs/USAGE.md#cpu-smoke-test-with-a-micro-llm.",
+            pytrace=False,
+        )
+
     cfg = cfg_global(
         overrides=["experiment/predict=micro_llm", "store_text_in_predictions=true"],
         out_dir=tmp_path,

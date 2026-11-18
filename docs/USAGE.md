@@ -205,9 +205,20 @@ uv pip install --torch-backend cpu 'vllm==0.12.0+cpu' \
   --extra-index-url https://wheels.vllm.ai/0.12.0/cpu/
 ```
 
-For other platforms, follow the [vLLM CPU installation instructions](https://docs.vllm.ai/en/v0.12.0/getting_started/installation/cpu/)
-and choose a CPU package compatible with the project's vLLM version range.
-Use `uv run --no-sync` afterwards to retain the CPU-specific installation.
+The wheel command above is specific to Linux ARM64. For AMD64, vLLM provides the
+[prebuilt CPU container](https://gallery.ecr.aws/q9t5s3a7/vllm-cpu-release-repo)
+`public.ecr.aws/q9t5s3a7/vllm-cpu-release-repo:v0.12.0`; the 0.12.0 CPU wheel index
+currently lists only an ARM64 wheel. Follow the [vLLM CPU installation instructions](https://docs.vllm.ai/en/v0.12.0/getting_started/installation/cpu/)
+for platform requirements and native CPU builds. Choose a runtime compatible with
+the project's vLLM version range.
+Use `uv run --no-sync` afterwards to retain the CPU-specific installation. Plain
+`uv run` or `uv sync` can restore the GPU package pinned in `uv.lock`.
+
+If vLLM reports `Device string must not be empty`, it has detected no usable device
+backend. On a CPU-only machine, check that the active environment contains a CPU
+build of vLLM. The `VLLM_CPU_*` settings below tune that backend; they do not install
+or select it. `--no-sync` preserves the current installation, so reinstall the CPU
+runtime first if an earlier sync replaced it.
 
 From the repository root, run:
 
@@ -228,12 +239,16 @@ run metadata are written to the usual `predictions/micro_llm` and `logs/micro_ll
 directories. These environment settings limit the KV cache to 1 GiB and use four
 CPU threads. Override `pdf_directory` to test another directory.
 
-With the same environment, run the corresponding test with real inference
-(excluded from regular CI):
+The real-inference integration test is skipped by default, including under plain
+`uv run --group cicd pytest`. With the same CPU environment, explicitly enable it:
 
 ```bash
-uv run --no-sync --group cicd pytest tests/integration/test_micro_llm.py -m slow
+RUN_MICRO_LLM_TEST=1 uv run --no-sync --group cicd pytest \
+  tests/integration/test_micro_llm.py -m slow
 ```
+
+The `slow` marker also excludes this test from CI. Selecting `-m slow` alone does
+not enable the test; `RUN_MICRO_LLM_TEST=1` is required.
 
 ### Schema descriptions in prompts
 
