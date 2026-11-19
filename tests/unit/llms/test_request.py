@@ -5,13 +5,13 @@ import json
 from llama_index.core.base.llms.types import MessageRole
 import pytest
 
+from kibad_llm.llms.base import prepare_inline_request
 from kibad_llm.llms.request import (
     ExtractionPrompt,
     MissingBindingError,
     SimpleChatMessage,
     build_chat_messages,
-    get_placeholder_roles,
-    prepare_inline_request,
+    get_template_placeholders,
     prepare_template_request,
 )
 
@@ -40,136 +40,64 @@ def test_build_chat_messages_reports_missing_binding() -> None:
 @pytest.mark.parametrize(
     "template, fields",
     [
-        ("{document_filename!s}", {"document_filename"}),
-        ("{schema_filename[0]}", {"schema_filename"}),
-        ("{schema:{document_filename}}", {"schema", "document_filename"}),
-        ("{{document_filename}} {{schema_filename}}", set()),
+        ("{value!s}", {"value"}),
+        ("{value[0]}", {"value"}),
+        ("{value:{width}}", {"value", "width"}),
+        ("{{value}} {{width}}", set()),
     ],
 )
-def test_get_placeholder_roles_finds_bindings_without_interpreting_literals(template, fields):
+def test_get_template_placeholders_finds_bindings_without_interpreting_literals(template, fields):
     """Discover root bindings, including nested fields, using formatter syntax."""
-    prompt = ExtractionPrompt(document="Source", schema=None, user_message=template)
+    templates = [SimpleChatMessage(role=MessageRole.USER, content=template)]
 
-    assert get_placeholder_roles(prompt) == {field: MessageRole.USER for field in fields}
-
-
-@pytest.mark.parametrize(
-    "options",
-    [
-        {"document_filename_placeholder": "document"},
-        {"schema_filename_placeholder": "document_filename"},
-        {"schema_filename_placeholder": "schema"},
-    ],
-)
-def test_prepare_template_request_rejects_colliding_placeholder_names(options):
-    """Reject ambiguous document and schema bindings before rendering."""
-    prompt = ExtractionPrompt(document="Source", schema={}, user_message="{schema}", **options)
-
-    with pytest.raises(ValueError, match="placeholder names must be distinct"):
-        prepare_template_request(prompt, bindings={})
+    assert get_template_placeholders(templates) == fields
 
 
-def test_prepare_template_request_renders_schema_and_preserves_caller_inputs() -> None:
-    """Render a file-oriented prompt with custom bindings and unchanged history."""
-    history = [SimpleChatMessage(role=MessageRole.USER, content="Previous turn")]
-    bindings = {"filename": "input.md"}
-    schema = {"type": "object", "properties": {"habitat": {"type": "string"}}}
-    prompt = ExtractionPrompt(
-        document="Original Markdown",
-        schema=schema,
-        system_message="{description}",
-        user_message="Read {filename}; {{markdown}} is literal.\n{output_schema}",
-        history=history,
-        document_placeholder="markdown",
-        schema_placeholder="output_schema",
-        schema_description_placeholder="description",
-    )
+def test_prepare_template_request_renders_only_current_templates() -> None:
+    """Use explicit binding values and leave already-rendered history alone."""
+    history = [SimpleChatMessage(role=MessageRole.USER, content="Previous {turn}")]
+    bindings = {"schema": "Custom schema text", "filename": "input.md"}
+    templates = [
+        SimpleChatMessage(role=MessageRole.SYSTEM, content="{schema}"),
+        SimpleChatMessage(role=MessageRole.USER, content="Read {filename}."),
+    ]
 
-    request = prepare_template_request(prompt, bindings=bindings)
-
-    system, user = request.current_messages
-    assert system.role == MessageRole.SYSTEM
-    assert "habitat" in system.content
-    assert user.role == MessageRole.USER
-    assert user.content.startswith("Read input.md; {markdown} is literal.\n")
-    assert json.loads(user.content.split("\n", maxsplit=1)[1]) == schema
-    assert request.messages == [*history, system, user]
-    assert request.input_artifacts == {}
-    assert all(prompt.document not in message.content for message in request.messages)
-    assert bindings == {"filename": "input.md"}
-    assert history == [SimpleChatMessage(role=MessageRole.USER, content="Previous turn")]
-    assert prompt.user_message == "Read {filename}; {{markdown}} is literal.\n{output_schema}"
-
-
-def test_prepare_template_request_requires_explicit_document_binding() -> None:
-    """Leave document binding to the caller even when the source document is available."""
-    prompt = ExtractionPrompt(document="Source", schema=None, user_message="Read {document}")
-
-    with pytest.raises(MissingBindingError) as raised:
-        prepare_template_request(prompt, bindings={})
-
-    assert raised.value.placeholder == "document"
-    assert raised.value.role == MessageRole.USER
-
-
-@pytest.mark.parametrize("placeholder", ["output_schema", "description"])
-def test_prepare_template_request_rejects_schema_binding_overrides(placeholder: str) -> None:
-    """Reject caller bindings that collide with either configured schema placeholder."""
-    prompt = ExtractionPrompt(
-        document="Source",
-        schema={},
-        user_message="{output_schema}",
-        schema_placeholder="output_schema",
-        schema_description_placeholder="description",
-    )
-
-    with pytest.raises(ValueError, match="must not override schema placeholders"):
-        prepare_template_request(prompt, bindings={placeholder: "Replacement"})
-
-
-def test_prepare_template_request_warns_about_unused_schema_without_rendering_it(
-    monkeypatch,
-) -> None:
-    """Treat escaped schema fields as literals even when the caller supplies bindings."""
-    warnings: list[str] = []
-    monkeypatch.setattr("kibad_llm.llms.request.warn_once", warnings.append)
-    prompt = ExtractionPrompt(
-        document="Source",
-        schema={"default": object()},
-        user_message="{filename} {{schema}} {{schema_description}}",
-    )
-
-    request = prepare_template_request(prompt, bindings={"filename": "input.md"})
+    request = prepare_template_request(templates, bindings=bindings, history=history)
 
     assert request.current_messages == [
-        SimpleChatMessage(role=MessageRole.USER, content="input.md {schema} {schema_description}")
+        SimpleChatMessage(role=MessageRole.SYSTEM, content="Custom schema text"),
+        SimpleChatMessage(role=MessageRole.USER, content="Read input.md."),
     ]
-    assert len(warnings) == 1
-    assert warnings[0].startswith(
-        "Schema provided but message templates use no schema placeholder"
+    assert request.messages == [*history, *request.current_messages]
+    assert request.input_artifacts == {}
+    assert bindings == {"schema": "Custom schema text", "filename": "input.md"}
+    assert history == [SimpleChatMessage(role=MessageRole.USER, content="Previous {turn}")]
+
+
+def test_prepare_inline_request_can_omit_schema_bindings() -> None:
+    """Leave a supplied schema alone when the template uses only the document."""
+    request = prepare_inline_request(
+        ExtractionPrompt(
+            document="Source",
+            schema={"default": object()},
+            user_message="{document} {{schema}} {{schema_description}}",
+        )
     )
 
-
-@pytest.mark.parametrize("placeholder", ["schema", "schema_description", "schema_filename"])
-def test_prepare_template_request_requires_referenced_schema(placeholder: str) -> None:
-    """Require a schema for inline representations and schema-file references."""
-    prompt = ExtractionPrompt(document="Source", schema=None, user_message="{" + placeholder + "}")
-
-    with pytest.raises(ValueError, match="Schema must be provided"):
-        prepare_template_request(prompt, bindings={})
+    assert request.current_messages == [
+        SimpleChatMessage(role=MessageRole.USER, content="Source {schema} {schema_description}")
+    ]
 
 
-def test_prepare_template_request_requires_a_template() -> None:
+def test_prepare_inline_request_requires_a_template() -> None:
     """Fail before execution when neither message template is configured."""
     with pytest.raises(ValueError, match="At least one of system_message or user_message"):
-        prepare_template_request(ExtractionPrompt(document="Source", schema=None), bindings={})
+        prepare_inline_request(ExtractionPrompt(document="Source", schema=None))
 
 
-def test_prepare_inline_request_inserts_json_schema_with_custom_placeholder(monkeypatch) -> None:
+def test_prepare_inline_request_inserts_json_schema_with_custom_placeholder() -> None:
     """Render non-ASCII JSON Schema and Markdown using the configured placeholder names."""
     schema = {"type": "object", "properties": {"field": {"const": "Wälder"}}}
-    warnings: list[str] = []
-    monkeypatch.setattr("kibad_llm.llms.request.warn_once", warnings.append)
     request = prepare_inline_request(
         ExtractionPrompt(
             system_message="{output_schema}",
@@ -185,15 +113,23 @@ def test_prepare_inline_request_inserts_json_schema_with_custom_placeholder(monk
     assert json.loads(system.content) == schema
     assert "Wälder" in system.content
     assert user.content == "Markdown"
-    assert warnings == []
 
 
-def test_prepare_inline_request_rejects_missing_json_schema() -> None:
-    """Require a schema when a template references it."""
-    with pytest.raises(ValueError, match="requires JSON Schema"):
+@pytest.mark.parametrize("placeholder", ["schema", "schema_description"])
+def test_prepare_inline_request_reports_missing_schema_binding(placeholder: str) -> None:
+    """Report the referenced inline schema field when a schema is absent."""
+    with pytest.raises(MissingBindingError) as raised:
         prepare_inline_request(
-            ExtractionPrompt(system_message="{schema}", document="Markdown", schema=None)
+            ExtractionPrompt(
+                system_message=f"{{{placeholder}}}",
+                user_message="{document}",
+                document="Markdown",
+                schema=None,
+            )
         )
+
+    assert raised.value.placeholder == placeholder
+    assert raised.value.role == MessageRole.SYSTEM
 
 
 @pytest.mark.parametrize("user_message", ["Extract the fields.", "Extract from {{document}}."])
@@ -214,6 +150,7 @@ def test_prepare_inline_request_keeps_history_separate_from_current_turn() -> No
             document="Markdown",
             schema=None,
             history=history,
+            require_document=False,
         )
     )
 

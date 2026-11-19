@@ -39,12 +39,8 @@ from typing import Any
 from jsonschema.validators import validator_for
 from llama_index.core.base.llms.types import ChatResponse
 
-from kibad_llm.llms.base import LLM
-from kibad_llm.llms.request import (
-    ExtractionPrompt,
-    SimpleChatMessage,
-    prepare_inline_request,
-)
+from kibad_llm.llms.base import LLM, prepare_inline_request
+from kibad_llm.llms.request import ExtractionPrompt, SimpleChatMessage
 from kibad_llm.schema.utils import (
     WRAPPED_CONTENT_KEY,
     wrap_terminals_with_metadata,
@@ -696,7 +692,8 @@ def extract_from_text(
             Defaults to 0 (process from the beginning of the text).
         character_end: Optional character offsets to specify a substring of `text` to process.
             If None (default), processes until the end of the text.
-        history: Messages from previous turns.
+        history: Rendered messages from previous turns. When supplied, the current
+            templates can omit the document if the needed context is already in history.
         return_messages: Record the configured prompt templates.
         return_messages_formatted: Record the rendered messages from the current turn.
         truncate_user_message_formatted: Character limit for the recorded user message.
@@ -787,6 +784,7 @@ def extract_from_text(
         document=text_to_process,
         schema=prompt_schema,
         history=history or (),
+        require_document=not history,
         **{**prompt_options, **prompt_template},
     )
     request = prepare_inline_request(prompt) if llm is None else llm.prepare_request(prompt)

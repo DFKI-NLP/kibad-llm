@@ -207,15 +207,16 @@ The preset binds `{document_filename}` to `input.md` and includes the schema inl
 
 The preset sets `extractor.use_guided_decoding=false`: the schema is supplied in the prompt, and the extractor validates the response after inference. Keep `extractor.request_parameters` empty; Codex rejects guided decoding and additional request parameters before starting the CLI.
 
-Use `{schema_filename}` to provide the prompt schema as `schema.json` instead of embedding it. Each input file is attached and written only when its filename field occurs in a configured system or user template. Literal filenames and escaped fields such as `{{schema_filename}}` do not request files. Inline document text (`{document}` by default) remains unsupported.
+The first extraction turn must reference `{document_filename}` in its system or user template. Use `{schema_filename}` to supply the prompt schema as `schema.json`, with or without an inline schema binding. A referenced schema field requires a schema. Codex stages files requested by the current turn's filename fields. Use those fields again in any follow-up that needs the files, since history carries rendered messages and each call starts with a fresh workspace. Literal filenames and escaped fields such as `{{schema_filename}}` do not request files.
 
-Customize the field names with `document_filename_placeholder` and `schema_filename_placeholder`. For example, an experiment based on the Codex preset can request both files with:
+Customize the filename field names under `extractor.llm`. Move any `document_filename_placeholder` and `schema_filename_placeholder` settings from `extractor.prompt_template` to `extractor.llm`, and use the corresponding fields in the message templates. For example:
 
 ```yaml
 extractor:
-  prompt_template:
+  llm:
     document_filename_placeholder: source_file
     schema_filename_placeholder: output_spec
+  prompt_template:
     user_message: |
       Lies das Markdown-Dokument aus `{source_file}`.
       Verwende das JSON-Schema aus `{output_spec}`.
@@ -226,6 +227,8 @@ Each call launches a fresh ephemeral Codex process in a document workspace. Shel
 The Hydra run directory contains prompts, final responses, execution events, and errors. Prediction records use the shared `backend_metadata` field described under [Token usage in prediction results](#token-usage-in-prediction-results). For Codex, `backend_metadata.usage` is a list of the CLI's individual usage reports in event order. Their native fields are preserved without calculating totals or costs. When the CLI reports no usage, `backend_metadata` is `null`. Keep the run directory with the predictions to retain the execution diagnostics.
 
 ### Schema descriptions in prompts
+
+For backends that embed the source, include `{document}` in the first turn's system or user template. Follow-up templates can omit it when the rendered history supplies the context they need. Use distinct placeholder names for the values the backend supplies. A template can omit schema fields even when the extractor uses a schema for guided decoding or output validation.
 
 Prompt templates containing `{schema_description}` use `build_schema_description` from [schema/description.py](/src/kibad_llm/schema/description.py).
 

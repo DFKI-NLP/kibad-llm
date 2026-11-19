@@ -10,7 +10,11 @@ import pytest
 
 from kibad_llm.extractors.base import extract_from_text, extract_from_text_lenient
 from kibad_llm.llms.codex import Codex
-from kibad_llm.llms.request import ExtractionPrompt, SimpleChatMessage
+from kibad_llm.llms.request import (
+    ExtractionPrompt,
+    MissingBindingError,
+    SimpleChatMessage,
+)
 from tests.conftest import cfg_global
 
 CODEX_PRESET = "faktencheck_core_fields_schema_with_evidence_codex"
@@ -27,10 +31,17 @@ def test_codex_stages_only_files_referenced_by_filename_placeholders(
     document = "# Original Markdown\nWälder\n"
     user = "Read {document_filename}." if include_document else "Return the fields."
     user += "\n{schema_filename}" if include_schema_file else "\n{schema}"
-    warnings: list[str] = []
-    monkeypatch.setattr("kibad_llm.llms.request.warn_once", warnings.append)
+    history = (
+        [] if include_document else [SimpleChatMessage(role=MessageRole.USER, content=document)]
+    )
     request = backend.prepare_request(
-        ExtractionPrompt(document=document, schema=schema, user_message=user)
+        ExtractionPrompt(
+            document=document,
+            schema=schema,
+            user_message=user,
+            history=history,
+            require_document=not history,
+        )
     )
     expected = {}
     if include_document:
@@ -38,7 +49,6 @@ def test_codex_stages_only_files_referenced_by_filename_placeholders(
     if include_schema_file:
         expected["schema.json"] = json.dumps(schema, ensure_ascii=False)
     assert request.input_artifacts == expected
-    assert warnings == []
     run_shell = subprocess.run
 
     def run_cli(args, *, cwd, **kwargs):
@@ -85,12 +95,14 @@ def test_codex_can_supply_the_same_schema_inline_and_as_a_file(tmp_path):
         ExtractionPrompt(
             document="Source",
             schema={"type": "string", "const": "Wälder"},
-            user_message="{schema_filename}\n{schema}",
+            user_message="{document_filename}\n{schema_filename}\n{schema}",
         )
     )
 
-    filename, inline_schema = request.current_messages[0].content.split("\n", maxsplit=1)
-    assert request.input_artifacts == {filename: inline_schema}
+    document_file, schema_file, inline_schema = request.current_messages[0].content.split(
+        "\n", maxsplit=2
+    )
+    assert request.input_artifacts == {document_file: "Source", schema_file: inline_schema}
 
 
 @pytest.mark.parametrize(
@@ -106,7 +118,12 @@ def test_codex_does_not_attach_files_for_literals_or_rendered_values(tmp_path, t
     schema = {"description": "Literal {document_filename} and {schema_filename}"}
 
     request = backend.prepare_request(
-        ExtractionPrompt(document="Source", schema=schema, user_message=template)
+        ExtractionPrompt(
+            document="Source",
+            schema=schema,
+            user_message=template,
+            require_document=False,
+        )
     )
 
     assert request.input_artifacts == {}
@@ -114,7 +131,15 @@ def test_codex_does_not_attach_files_for_literals_or_rendered_values(tmp_path, t
 
 def test_schema_file_uses_prompt_schema_and_custom_filename_placeholders(tmp_path, monkeypatch):
     """Use the evidence-adjusted prompt schema and preserve the original schema."""
-    backend = Codex("test-model", "high", 30, str(tmp_path))
+    cfg = cfg_global(
+        out_dir=tmp_path,
+        overrides=[
+            f"experiment/predict={CODEX_PRESET}",
+            "extractor.llm.document_filename_placeholder=source_file",
+            "extractor.llm.schema_filename_placeholder=output_file",
+        ],
+    )
+    backend = instantiate(cfg.extractor.llm)
     schema = {"type": "object", "properties": {"habitat": {"type": "string"}}}
     inputs = {}
 
@@ -131,8 +156,6 @@ def test_schema_file_uses_prompt_schema_and_custom_filename_placeholders(tmp_pat
         prompt_template={
             "system_message": "Use {output_file}",
             "user_message": "Read {source_file}",
-            "document_filename_placeholder": "source_file",
-            "schema_filename_placeholder": "output_file",
         },
         llm=backend,
         schema=schema,
@@ -155,9 +178,31 @@ def test_codex_requires_schema_when_its_filename_is_referenced(tmp_path):
     """Fail before inference if the requested schema file has no schema value."""
     backend = Codex("test-model", "high", 30, str(tmp_path))
 
-    with pytest.raises(ValueError, match="requires schema file"):
+    with pytest.raises(MissingBindingError) as raised:
         backend.prepare_request(
-            ExtractionPrompt(document="Source", schema=None, user_message="Read {schema_filename}")
+            ExtractionPrompt(
+                document="Source",
+                schema=None,
+                system_message="Use {schema_filename}",
+                user_message="Read {document_filename}",
+            )
+        )
+    assert raised.value.placeholder == "schema_filename"
+    assert raised.value.role == MessageRole.SYSTEM
+    assert not list(tmp_path.iterdir())
+
+
+def test_extractor_requires_document_filename_for_initial_codex_turn(tmp_path):
+    """Require a file binding when the extractor has no conversation history."""
+    backend = Codex("test-model", "high", 30, str(tmp_path))
+
+    with pytest.raises(ValueError, match=r"must contain.*\{document_filename\}"):
+        extract_from_text(
+            text="Source",
+            text_id="fixture",
+            prompt_template={"user_message": "Read input.md and extract the fields."},
+            use_guided_decoding=False,
+            llm=backend,
         )
     assert not list(tmp_path.iterdir())
 
@@ -327,7 +372,7 @@ def test_codex_rejects_inline_template_before_inference(tmp_path, template, plac
     """Reject inline document bindings in either role, including custom field names."""
     backend = Codex("test-model", "medium", 30, str(tmp_path))
 
-    with pytest.raises(ValueError, match=CODEX_PRESET):
+    with pytest.raises(MissingBindingError) as raised:
         extract_from_text(
             text="# Fixture",
             text_id="fixture",
@@ -336,6 +381,7 @@ def test_codex_rejects_inline_template_before_inference(tmp_path, template, plac
             schema={},
             use_guided_decoding=False,
         )
+    assert raised.value.placeholder == placeholder
     assert not list(tmp_path.iterdir())
 
 
@@ -350,7 +396,9 @@ def test_codex_reports_unrelated_missing_bindings(tmp_path):
 
 def test_prepare_request_preserves_history_and_custom_schema_placeholders(tmp_path):
     """Render custom schema bindings while leaving escaped document fields literal."""
-    backend = Codex("test-model", "high", 600, str(tmp_path))
+    backend = Codex(
+        "test-model", "high", 600, str(tmp_path), document_filename_placeholder="source_file"
+    )
     history = [SimpleChatMessage(role=MessageRole.USER, content="Previous turn")]
     schema = {"type": "object", "properties": {"habitat": {"type": "string"}}}
     prompt = ExtractionPrompt(
@@ -362,7 +410,7 @@ def test_prepare_request_preserves_history_and_custom_schema_placeholders(tmp_pa
         document_placeholder="markdown",
         schema_placeholder="output_schema",
         schema_description_placeholder="description",
-        document_filename_placeholder="source_file",
+        require_document=False,
     )
 
     request = backend.prepare_request(prompt)

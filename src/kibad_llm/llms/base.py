@@ -3,6 +3,7 @@
 from abc import ABC, abstractmethod
 from collections.abc import Mapping
 from copy import deepcopy
+import json
 from typing import Any
 
 from llama_index.core.base.llms.types import ChatResponse
@@ -12,8 +13,10 @@ from kibad_llm.llms.request import (
     ExtractionPrompt,
     PreparedRequest,
     SimpleChatMessage,
-    prepare_inline_request,
+    get_template_placeholders,
+    prepare_template_request,
 )
+from kibad_llm.schema.description import build_schema_description
 
 
 class MissingRawChatResponseError(Exception):
@@ -52,36 +55,87 @@ class EmptyReasoningError(Exception):
     ...
 
 
+def build_inline_schema_bindings(
+    prompt: ExtractionPrompt, placeholders: set[str]
+) -> dict[str, str]:
+    """Build the requested text representations of the selected prompt schema.
+
+    Args:
+        prompt: The selected schema, inline field names, and description options.
+        placeholders: Names of the representations the backend needs.
+
+    Returns:
+        Bindings for the requested JSON and readable description fields. If the
+        prompt has no schema, neither binding is supplied.
+
+    Raises:
+        TypeError: The schema cannot be serialized or the description options are invalid.
+        ValueError: The schema cannot be expanded into a requested description.
+    """
+    bindings: dict[str, str] = {}
+    if prompt.schema is None:
+        return bindings
+    if prompt.schema_placeholder in placeholders:
+        bindings[prompt.schema_placeholder] = json.dumps(prompt.schema, ensure_ascii=False)
+    if prompt.schema_description_placeholder in placeholders:
+        bindings[prompt.schema_description_placeholder] = build_schema_description(
+            schema=prompt.schema, **(prompt.schema_description_kwargs or {})
+        )
+    return bindings
+
+
+def prepare_inline_request(prompt: ExtractionPrompt) -> PreparedRequest:
+    """Deliver the document and any requested schema representations as message text.
+
+    Args:
+        prompt: Templates, inputs, history, and the document requirement for this turn.
+
+    Returns:
+        The rendered current turn and full conversation.
+
+    Raises:
+        MissingBindingError: A template references an unavailable binding.
+        ValueError: A required document is unused, or the templates cannot be rendered.
+    """
+    templates = prompt.message_templates()
+    placeholders = get_template_placeholders(templates)
+    bindings = build_inline_schema_bindings(prompt, placeholders)
+    bindings[prompt.document_placeholder] = prompt.document
+    request = prepare_template_request(templates, bindings=bindings, history=prompt.history)
+    if prompt.require_document and prompt.document_placeholder not in placeholders:
+        raise ValueError(
+            "The message templates must contain the document placeholder "
+            f"'{{{prompt.document_placeholder}}}' for this extraction turn."
+        )
+    return request
+
+
 class LLM(ABC):
     """Prepare and execute chat requests with a model backend."""
 
     def prepare_request(self, prompt: ExtractionPrompt) -> PreparedRequest:
-        """Build the current turn and full request, using inline document text by default.
+        """Prepare the current turn and its inputs for this backend.
 
-        Backends can override this method to change how they build messages or
-        supply auxiliary inputs for their chat call. The default implementation delegates
-        to [`prepare_inline_request`][kibad_llm.llms.request.prepare_inline_request].
-        Overrides can reuse schema rendering and history assembly through
-        [`prepare_template_request`][kibad_llm.llms.request.prepare_template_request]
-        with their own explicit bindings, then attach any backend-specific input artifacts.
+        The caller selects the document and prompt schema and declares whether this
+        turn requires the document. The backend must satisfy that requirement, supply
+        values for the fields used in its templates, and include any required files
+        in the request. Use distinct names for the fields a backend supplies.
+
+        The default embeds the document and requested schema representations in the
+        messages. Overrides can reuse [`build_inline_schema_bindings`][kibad_llm.llms.base.build_inline_schema_bindings]
+        and [`prepare_template_request`][kibad_llm.llms.request.prepare_template_request]
+        with their own bindings. History is already rendered and can be prepended as supplied.
 
         Args:
-            prompt: Templates and inputs available for preparing the extraction request.
+            prompt: Inputs, templates, history, and context requirements for this turn.
 
         Returns:
             The current turn, full conversation including history, and any auxiliary
             backend inputs. The default implementation creates no auxiliary inputs.
 
         Raises:
-            ValueError: Default inline preparation rejects missing templates, a missing
-                required schema, a missing first-turn document placeholder, invalid
-                formatting, or an unsupported schema description.
-            TypeError: A referenced schema cannot be serialized as JSON, or schema
-                description options contain unsupported arguments.
-
-        Warns:
-            UserWarning: Default inline preparation logs a warning once if a supplied
-                schema is unused by the templates.
+            MissingBindingError: A template references an unavailable binding.
+            ValueError: A required document is unused, or the templates cannot be rendered.
         """
         return prepare_inline_request(prompt)
 

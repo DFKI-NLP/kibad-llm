@@ -11,13 +11,12 @@ from uuid import uuid4
 
 from llama_index.core.base.llms.types import ChatMessage, ChatResponse, MessageRole
 
-from kibad_llm.llms.base import LLM
+from kibad_llm.llms.base import LLM, build_inline_schema_bindings
 from kibad_llm.llms.request import (
     ExtractionPrompt,
-    MissingBindingError,
     PreparedRequest,
     SimpleChatMessage,
-    get_placeholder_roles,
+    get_template_placeholders,
     prepare_template_request,
 )
 from kibad_llm.utils.log import warn_once
@@ -56,57 +55,73 @@ class Codex(LLM):
         timeout: float,
         artifact_dir: str,
         executable: str = "codex",
+        *,
+        document_filename_placeholder: str = "document_filename",
+        schema_filename_placeholder: str = "schema_filename",
     ):
-        """Configure the CLI model, reasoning effort, timeout, artifacts, and executable."""
+        """Configure the CLI and the template fields it supplies for files.
+
+        Args:
+            model: Model name passed to the CLI.
+            reasoning_effort: Reasoning effort passed to the CLI.
+            timeout: Time limit for inference in seconds.
+            artifact_dir: Directory for run diagnostics and temporary workspaces.
+            executable: Codex CLI executable name or path.
+            document_filename_placeholder: Field name for the document file, without braces.
+            schema_filename_placeholder: Field name for the prompt schema file, without braces.
+        """
         self.model = model
         self.reasoning_effort = reasoning_effort
         self.timeout = timeout
         self.artifact_dir = Path(artifact_dir).resolve()
         self.executable = executable
+        self.document_filename_placeholder = document_filename_placeholder
+        self.schema_filename_placeholder = schema_filename_placeholder
 
     def prepare_request(self, prompt: ExtractionPrompt) -> PreparedRequest:
         """Render templates and attach only the document and schema files they reference.
 
-        Implements the LLM request-preparation hook. The request separates the rendered
-        current turn from the full conversation, which includes history. The extractor
-        records the current turn; snapshot truncation leaves the messages sent to Codex intact.
-        Document and schema filename fields bind to `input.md` and `schema.json`.
-        Each file is attached only when its field is used in a configured template.
+        Use the configured filename fields to bind `input.md` and `schema.json`. A
+        turn that requires the document must reference its filename. The selected
+        schema can be supplied as a file, inline text, or both. History is already
+        rendered. Each call has a fresh workspace, so a follow-up that needs a file
+        must reference the filename field in its current templates.
 
         Args:
-            prompt: Configured templates, source Markdown, schema, and history.
+            prompt: Templates, source Markdown, prompt schema, history, and document requirement.
 
         Returns:
             Rendered current messages, the full conversation, and the requested input artifacts.
 
         Raises:
-            ValueError: A template uses the inline document placeholder, or shared
-                request preparation rejects its templates or schema.
+            MissingBindingError: A template references an unavailable binding.
+            ValueError: A required document filename field is unused, or the templates
+                cannot be rendered.
             TypeError: Schema serialization or schema description options are invalid.
         """
-        placeholders = get_placeholder_roles(prompt)
-        bindings = {}
-        if prompt.document_filename_placeholder in placeholders:
-            bindings[prompt.document_filename_placeholder] = _DOCUMENT_FILENAME
-        if prompt.schema_filename_placeholder in placeholders:
-            bindings[prompt.schema_filename_placeholder] = _SCHEMA_FILENAME
-        try:
-            request = prepare_template_request(prompt, bindings=bindings)
-        except MissingBindingError as error:
-            if error.placeholder != prompt.document_placeholder:
-                raise
+        templates = prompt.message_templates()
+        placeholders = get_template_placeholders(templates)
+        document_file_requested = self.document_filename_placeholder in placeholders
+        schema_file_requested = self.schema_filename_placeholder in placeholders
+        schema_fields = (
+            placeholders | {prompt.schema_placeholder} if schema_file_requested else placeholders
+        )
+        bindings = build_inline_schema_bindings(prompt, schema_fields)
+        input_artifacts = {}
+        if schema_file_requested and prompt.schema is not None:
+            input_artifacts[_SCHEMA_FILENAME] = bindings[prompt.schema_placeholder]
+            bindings[self.schema_filename_placeholder] = _SCHEMA_FILENAME
+        if document_file_requested:
+            bindings[self.document_filename_placeholder] = _DOCUMENT_FILENAME
+            input_artifacts[_DOCUMENT_FILENAME] = prompt.document
+
+        request = prepare_template_request(templates, bindings=bindings, history=prompt.history)
+        if prompt.require_document and not document_file_requested:
             raise ValueError(
-                f"Codex reads the document from a file. Use '{{{prompt.document_filename_placeholder}}}' "
-                "in your template or select "
-                "experiment/predict=faktencheck_core_fields_schema_with_evidence_codex "
-                "for the file-backed preset."
-            ) from error
-        if prompt.document_filename_placeholder in bindings:
-            request.input_artifacts[_DOCUMENT_FILENAME] = prompt.document
-        if prompt.schema_filename_placeholder in bindings:
-            request.input_artifacts[_SCHEMA_FILENAME] = json.dumps(
-                prompt.schema, ensure_ascii=False
+                "The message templates must contain the Codex document filename placeholder "
+                f"'{{{self.document_filename_placeholder}}}' for this extraction turn."
             )
+        request.input_artifacts = input_artifacts
         return request
 
     def get_reasoning_from_chat_response(self, response: ChatResponse) -> None:
