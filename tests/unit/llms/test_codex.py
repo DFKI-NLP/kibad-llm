@@ -17,6 +17,68 @@ CODEX_PRESET = "faktencheck_core_fields_schema_with_evidence_codex"
 
 
 @pytest.mark.parametrize(
+    "options, message",
+    [
+        ({"json_schema": {}}, "does not support guided decoding"),
+        ({"json_schema": {"type": "object"}}, "does not support guided decoding"),
+        ({"temperature": 0.0}, "additional request parameters: temperature"),
+        ({"temperature": 0.0, "seed": None}, "additional request parameters: seed, temperature"),
+    ],
+)
+def test_codex_rejects_unsupported_options_before_creating_artifacts(
+    tmp_path, monkeypatch, options, message
+):
+    """Reject unsupported options without starting the CLI or creating run artifacts."""
+    artifact_dir = tmp_path / "codex"
+    backend = Codex("test-model", "high", 30, str(artifact_dir))
+
+    def run(*args):
+        """Fail if an unsupported request reaches CLI execution."""
+        pytest.fail("Unsupported request reached CLI execution")
+
+    monkeypatch.setattr(backend, "_run", run)
+    with pytest.raises(ValueError, match=message):
+        backend.call_llm_chat_with_guided_decoding(
+            [SimpleChatMessage(role=MessageRole.USER, content="Read input.md")],
+            input_artifacts={"input.md": "Source Markdown"},
+            **options,
+        )
+    assert not artifact_dir.exists()
+
+
+@pytest.mark.parametrize(
+    "override, message",
+    [
+        ("++extractor.use_guided_decoding=true", "does not support guided decoding"),
+        (
+            "+extractor.request_parameters.temperature=0.0",
+            "additional request parameters: temperature",
+        ),
+    ],
+)
+def test_unsupported_preset_options_use_existing_error_result(
+    tmp_path, monkeypatch, override, message
+):
+    """Record invalid configuration through the extractor without starting inference."""
+    cfg = cfg_global(
+        out_dir=tmp_path,
+        overrides=[f"experiment/predict={CODEX_PRESET}", override],
+    )
+
+    def run(*args):
+        """Fail if an invalid preset reaches CLI execution."""
+        pytest.fail("Invalid preset reached CLI execution")
+
+    monkeypatch.setattr(Codex, "_run", run)
+    result = instantiate(cfg.extractor, _convert_="all")("Source Markdown", "fixture")
+
+    assert len(result.errors) == 1
+    assert result.errors[0].startswith("ValueError:")
+    assert message in result.errors[0]
+    assert not (tmp_path / "codex").exists()
+
+
+@pytest.mark.parametrize(
     "usage_reports",
     [
         [],

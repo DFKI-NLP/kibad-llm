@@ -5,3 +5,6 @@ defaults:
   - override /extractor: simple
   - override /extractor/llm: codex
   - override /extractor/prompt_template: faktencheck_core_v1_with_evidence_codex
+
+extractor:
+  use_guided_decoding: false

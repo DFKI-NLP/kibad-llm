@@ -213,6 +213,8 @@ The preset gives Codex the Markdown as `input.md` and supplies the extraction in
 and schema through the prompt template. You can override `extractor.llm.reasoning_effort`
 (default `high`) and `extractor.llm.timeout` (default 600 seconds).
 
+The preset sets `extractor.use_guided_decoding=false`: the schema is supplied in the prompt, and the extractor validates the response after inference. Keep `extractor.request_parameters` empty; Codex rejects guided decoding and additional request parameters before starting the CLI.
+
 Custom Codex templates must name `input.md` and omit the inline document placeholder
 (`{document}` by default).
 

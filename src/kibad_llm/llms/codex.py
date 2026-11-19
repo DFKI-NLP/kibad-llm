@@ -107,9 +107,35 @@ class Codex(LLM):
         """Execute a file-backed request and return the final text and raw CLI events.
 
         Schema instructions come from the configured messages; the shared extractor
-        performs JSON parsing and schema validation. The shared interface's json_schema
-        and other request parameters do not constrain the CLI's decoding.
+        performs JSON parsing and schema validation. Guided decoding and additional
+        request parameters are rejected before creating artifacts or starting the CLI.
+
+        Args:
+            messages: Prepared extraction messages, including conversation history.
+            json_schema: Must be None; configure `extractor.use_guided_decoding=false`.
+            input_artifacts: Named inputs containing the source Markdown as `input.md`.
+
+        Returns:
+            The final response text and raw CLI events for shared postprocessing.
+
+        Keyword Args:
+            **request_kwargs: Additional request parameters are unsupported and must be omitted.
+
+        Raises:
+            ValueError: Guided decoding or additional request parameters were supplied,
+                or CLI execution failed.
         """
+        if json_schema is not None:
+            raise ValueError(
+                "Codex does not support guided decoding. Set extractor.use_guided_decoding=false; "
+                "supply schema instructions through the prompt template."
+            )
+        if request_kwargs:
+            raise ValueError(
+                "Codex does not support additional request parameters: "
+                f"{', '.join(sorted(request_kwargs))}. "
+                "Remove them from extractor.request_parameters."
+            )
         document = (input_artifacts or {})["input.md"]
         artifact = self.artifact_dir / uuid4().hex
         artifact.mkdir(mode=0o700, parents=True)
