@@ -125,7 +125,8 @@ class VllmInProcess(LLM):
             additional_kwargs: These args are handed to the `_default_request_kwargs`.
 
         Keyword Args:
-            *: These args are handed to the `_default_request_kwargs`.
+            **default_request_kwargs (Any): These args take precedence over `additional_kwargs` and are handed to 
+                the `_default_request_kwargs`.
         """
         self._model_name = model
         self._vllm_kwargs = vllm_kwargs or {}
