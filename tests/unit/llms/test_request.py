@@ -73,8 +73,9 @@ def test_prepare_template_request_renders_only_current_templates() -> None:
     assert history == [SimpleChatMessage(role=MessageRole.USER, content="Previous {turn}")]
 
 
-def test_prepare_inline_request_can_omit_schema_bindings() -> None:
-    """Leave a supplied schema alone when the template uses only the document."""
+@pytest.mark.parametrize("schema", [None, {"default": object()}], ids=["absent", "unused"])
+def test_prepare_inline_request_can_omit_schema_bindings(schema) -> None:
+    """Skip schema preparation when the template uses only the document."""
     request = prepare_inline_request(
         {
             "user_message": "{document} {{schema}} {{schema_description}}",
@@ -83,7 +84,7 @@ def test_prepare_inline_request_can_omit_schema_bindings() -> None:
             "schema_description_placeholder": "schema_description",
         },
         document="Source",
-        schema={"default": object()},
+        schema=schema,
     )
 
     assert request.current_messages == [
@@ -117,19 +118,29 @@ def test_prepare_inline_request_inserts_json_schema_with_custom_placeholder() ->
     assert user.content == "Markdown"
 
 
+@pytest.mark.parametrize("setting", ["schema_placeholder", "schema_description_placeholder"])
+def test_prepare_inline_request_requires_schema_for_declared_field(setting) -> None:
+    """Name the declared field that requested the missing schema."""
+    template = {
+        "system_message": "{spec}",
+        "user_message": "{document}",
+        "document_placeholder": "document",
+        setting: "spec",
+    }
+    with pytest.raises(ValueError, match=r"\{spec\}.*requires a schema"):
+        prepare_inline_request(template, document="Markdown", schema=None)
+
+
 @pytest.mark.parametrize("placeholder", ["schema", "schema_description"])
-@pytest.mark.parametrize("schema", [None, {}], ids=["no-schema", "undeclared-field"])
-def test_prepare_inline_request_reports_missing_schema_binding(placeholder, schema) -> None:
-    """A referenced schema field requires both a declaration and a schema."""
+def test_prepare_inline_request_reports_undeclared_schema_field(placeholder) -> None:
+    """The renderer identifies an undeclared field and its message role."""
     template = {
         "system_message": f"{{{placeholder}}}",
         "user_message": "{document}",
         "document_placeholder": "document",
     }
-    if schema is None:
-        template[f"{placeholder}_placeholder"] = placeholder
     with pytest.raises(MissingBindingError) as raised:
-        prepare_inline_request(template, document="Markdown", schema=schema)
+        prepare_inline_request(template, document="Markdown", schema={})
 
     assert raised.value.placeholder == placeholder
     assert raised.value.role == MessageRole.SYSTEM

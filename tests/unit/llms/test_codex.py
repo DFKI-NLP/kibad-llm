@@ -171,28 +171,28 @@ def test_schema_file_uses_prompt_schema_and_custom_filename_placeholders(tmp_pat
     assert schema == {"type": "object", "properties": {"habitat": {"type": "string"}}}
 
 
-def test_codex_requires_schema_when_its_filename_is_referenced(tmp_path):
-    """Fail before inference if the requested schema file has no schema value."""
+@pytest.mark.parametrize(
+    "setting",
+    ["schema_placeholder", "schema_description_placeholder", "schema_filename_placeholder"],
+)
+def test_codex_requires_schema_for_declared_field(tmp_path, setting):
+    """Name the declared field that requested the missing schema before inference."""
     backend = Codex("test-model", "high", 30, str(tmp_path))
 
-    with pytest.raises(MissingBindingError) as raised:
+    with pytest.raises(ValueError, match=r"\{spec\}.*requires a schema"):
         backend.prepare_request(
             {
-                "system_message": "Use {schema_filename}",
-                "user_message": "Read {document_filename}",
-                "schema_filename_placeholder": "schema_filename",
-                "document_filename_placeholder": "document_filename",
+                "system_message": "Use {spec}",
+                setting: "spec",
             },
             document="Source",
             schema=None,
         )
-    assert raised.value.placeholder == "schema_filename"
-    assert raised.value.role == MessageRole.SYSTEM
     assert not list(tmp_path.iterdir())
 
 
 def test_extractor_accepts_initial_codex_turn_without_files(tmp_path, monkeypatch):
-    """Pass a first-turn prompt with no filename fields through to Codex."""
+    """Allow a first-turn prompt to leave declared file fields unused."""
     backend = Codex("test-model", "high", 30, str(tmp_path))
 
     def run(input_artifacts, prompt, artifact, events):
@@ -206,7 +206,11 @@ def test_extractor_accepts_initial_codex_turn_without_files(tmp_path, monkeypatc
     result = extract_from_text(
         text="Source",
         text_id="fixture",
-        prompt_template={"user_message": "Return an empty object."},
+        prompt_template={
+            "user_message": "Return an empty object.",
+            "document_filename_placeholder": "document_filename",
+            "schema_filename_placeholder": "schema_filename",
+        },
         use_guided_decoding=False,
         llm=backend,
     )

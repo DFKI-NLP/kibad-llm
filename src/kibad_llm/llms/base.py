@@ -86,20 +86,24 @@ def prepare_inline_request(
 
     Raises:
         MissingBindingError: A template references an unavailable binding.
-        ValueError: The first turn omits the document field, or the templates cannot be rendered.
+        ValueError: A referenced schema field has no schema, the first turn omits
+            the document field, or the templates cannot be rendered.
     """
     templates = get_message_templates(prompt_template)
     placeholders = get_template_placeholders(templates)
     bindings: dict[str, str] = {}
-    if schema is not None:
-        schema_field = prompt_template.get("schema_placeholder")
-        if schema_field in placeholders:
-            bindings[schema_field] = json.dumps(schema, ensure_ascii=False)
-        description_field = prompt_template.get("schema_description_placeholder")
-        if description_field in placeholders:
-            bindings[description_field] = build_schema_description(
-                schema=schema, **(prompt_template.get("schema_description_kwargs") or {})
-            )
+    schema_field = prompt_template.get("schema_placeholder")
+    if schema_field in placeholders:
+        if schema is None:
+            raise ValueError(f"Placeholder '{{{schema_field}}}' requires a schema.")
+        bindings[schema_field] = json.dumps(schema, ensure_ascii=False)
+    description_field = prompt_template.get("schema_description_placeholder")
+    if description_field in placeholders:
+        if schema is None:
+            raise ValueError(f"Placeholder '{{{description_field}}}' requires a schema.")
+        bindings[description_field] = build_schema_description(
+            schema=schema, **(prompt_template.get("schema_description_kwargs") or {})
+        )
     document_field = prompt_template.get("document_placeholder")
     if document_field in placeholders:
         bindings[document_field] = document

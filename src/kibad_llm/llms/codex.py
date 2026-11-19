@@ -103,7 +103,8 @@ class Codex(LLM):
 
         Raises:
             MissingBindingError: A template references an unavailable binding.
-            ValueError: The templates cannot be rendered.
+            ValueError: A referenced schema field has no schema, or the templates
+                cannot be rendered.
             TypeError: Schema serialization or schema description options are invalid.
         """
         templates = get_message_templates(prompt_template)
@@ -115,19 +116,24 @@ class Codex(LLM):
             bindings[document_file_field] = _DOCUMENT_FILENAME
             input_artifacts[_DOCUMENT_FILENAME] = document
 
-        if schema is not None:
-            schema_field = prompt_template.get("schema_placeholder")
-            if schema_field in placeholders:
-                bindings[schema_field] = json.dumps(schema, ensure_ascii=False)
-            description_field = prompt_template.get("schema_description_placeholder")
-            if description_field in placeholders:
-                bindings[description_field] = build_schema_description(
-                    schema=schema, **(prompt_template.get("schema_description_kwargs") or {})
-                )
-            schema_file_field = prompt_template.get("schema_filename_placeholder")
-            if schema_file_field in placeholders:
-                bindings[schema_file_field] = _SCHEMA_FILENAME
-                input_artifacts[_SCHEMA_FILENAME] = json.dumps(schema, ensure_ascii=False)
+        schema_field = prompt_template.get("schema_placeholder")
+        if schema_field in placeholders:
+            if schema is None:
+                raise ValueError(f"Placeholder '{{{schema_field}}}' requires a schema.")
+            bindings[schema_field] = json.dumps(schema, ensure_ascii=False)
+        description_field = prompt_template.get("schema_description_placeholder")
+        if description_field in placeholders:
+            if schema is None:
+                raise ValueError(f"Placeholder '{{{description_field}}}' requires a schema.")
+            bindings[description_field] = build_schema_description(
+                schema=schema, **(prompt_template.get("schema_description_kwargs") or {})
+            )
+        schema_file_field = prompt_template.get("schema_filename_placeholder")
+        if schema_file_field in placeholders:
+            if schema is None:
+                raise ValueError(f"Placeholder '{{{schema_file_field}}}' requires a schema.")
+            bindings[schema_file_field] = _SCHEMA_FILENAME
+            input_artifacts[_SCHEMA_FILENAME] = json.dumps(schema, ensure_ascii=False)
 
         request = prepare_template_request(templates, bindings=bindings, history=history)
         request.input_artifacts = input_artifacts
