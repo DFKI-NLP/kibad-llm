@@ -1,8 +1,8 @@
 """Define the LLM backend interface and its default inline request preparation.
 
 Each backend supplies values and input artifacts for the fields in the current template.
-The default inline preparation requires a document field on the first turn. Its schema
-bindings supply JSON or a readable description and can be reused by other backends.
+The default inline preparation requires a document field on the first turn and supplies
+schema JSON or a readable description for fields declared and referenced by the template.
 `LLM` also defines the chat call and access to response content, reasoning, and metadata.
 """
 
@@ -61,41 +61,6 @@ class EmptyReasoningError(Exception):
     ...
 
 
-def build_inline_schema_bindings(
-    prompt_template: Mapping[str, Any], placeholders: set[str], *, schema: dict[str, Any] | None
-) -> dict[str, str]:
-    """Build the requested text representations of the selected prompt schema.
-
-    Args:
-        prompt_template: Per-template settings for the JSON field (`schema_placeholder`),
-            the description field (`schema_description_placeholder`), and options for
-            [`build_schema_description`][kibad_llm.schema.description.build_schema_description]
-            (`schema_description_kwargs`).
-        placeholders: Names of the representations the backend needs.
-        schema: Schema selected for this prompt, or None to omit schema bindings.
-
-    Returns:
-        Bindings for the requested JSON and readable description fields. If the
-        prompt has no schema, neither binding is supplied.
-
-    Raises:
-        TypeError: The schema cannot be serialized or the description options are invalid.
-        ValueError: The schema cannot be expanded into a requested description.
-    """
-    bindings: dict[str, str] = {}
-    if schema is None:
-        return bindings
-    schema_field = prompt_template.get("schema_placeholder")
-    description_field = prompt_template.get("schema_description_placeholder")
-    if schema_field in placeholders:
-        bindings[schema_field] = json.dumps(schema, ensure_ascii=False)
-    if description_field in placeholders:
-        bindings[description_field] = build_schema_description(
-            schema=schema, **(prompt_template.get("schema_description_kwargs") or {})
-        )
-    return bindings
-
-
 def prepare_inline_request(
     prompt_template: Mapping[str, Any],
     *,
@@ -109,7 +74,9 @@ def prepare_inline_request(
     field. A follow-up can use the document already present in the conversation.
 
     Args:
-        prompt_template: Current message templates and their inline field settings.
+        prompt_template: Current messages and field declarations. `schema_placeholder`
+            names the JSON field and `schema_description_placeholder` names the readable
+            description field. `schema_description_kwargs` configures the description.
         document: Source text bound to the configured `document_placeholder` (default `document`).
         schema: Schema selected for the prompt, or None.
         history: Previously rendered messages to prepend.
@@ -123,7 +90,16 @@ def prepare_inline_request(
     """
     templates = get_message_templates(prompt_template)
     placeholders = get_template_placeholders(templates)
-    bindings = build_inline_schema_bindings(prompt_template, placeholders, schema=schema)
+    bindings: dict[str, str] = {}
+    if schema is not None:
+        schema_field = prompt_template.get("schema_placeholder")
+        if schema_field in placeholders:
+            bindings[schema_field] = json.dumps(schema, ensure_ascii=False)
+        description_field = prompt_template.get("schema_description_placeholder")
+        if description_field in placeholders:
+            bindings[description_field] = build_schema_description(
+                schema=schema, **(prompt_template.get("schema_description_kwargs") or {})
+            )
     document_field = prompt_template.get("document_placeholder", "document")
     bindings[document_field] = document
     request = prepare_template_request(templates, bindings=bindings, history=history)
@@ -153,10 +129,9 @@ class LLM(ABC):
         fields refer to in the returned request.
 
         The default uses [`prepare_inline_request`][kibad_llm.llms.base.prepare_inline_request],
-        which requires the inline document field on the first turn. Overrides can reuse
-        [`build_inline_schema_bindings`][kibad_llm.llms.base.build_inline_schema_bindings]
-        and [`prepare_template_request`][kibad_llm.llms.request.prepare_template_request]
-        with their own bindings. History is already rendered and can be prepended as supplied.
+        which requires the inline document field on the first turn. Overrides can pass
+        their bindings and rendered history to
+        [`prepare_template_request`][kibad_llm.llms.request.prepare_template_request].
 
         Args:
             prompt_template: Current system/user templates and their backend-specific settings.

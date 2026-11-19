@@ -12,7 +12,7 @@ from uuid import uuid4
 
 from llama_index.core.base.llms.types import ChatMessage, ChatResponse, MessageRole
 
-from kibad_llm.llms.base import LLM, build_inline_schema_bindings
+from kibad_llm.llms.base import LLM
 from kibad_llm.llms.request import (
     PreparedRequest,
     SimpleChatMessage,
@@ -20,6 +20,7 @@ from kibad_llm.llms.request import (
     get_template_placeholders,
     prepare_template_request,
 )
+from kibad_llm.schema.description import build_schema_description
 from kibad_llm.utils.log import warn_once
 
 _DOCUMENT_FILENAME = "input.md"
@@ -91,7 +92,9 @@ class Codex(LLM):
             prompt_template: Current messages and their field names. Set
                 `document_filename_placeholder` (default `document_filename`) and
                 `schema_filename_placeholder` (default `schema_filename`) here to
-                choose the fields for `input.md` and `schema.json`.
+                choose the fields for `input.md` and `schema.json`. To include schema
+                text in the message, declare `schema_placeholder` for JSON or
+                `schema_description_placeholder` for a readable description.
             document: Source Markdown to stage when the template requests the document file.
             schema: Selected prompt schema, or None when none is available.
             history: Previously rendered messages to prepend.
@@ -106,16 +109,30 @@ class Codex(LLM):
         """
         templates = get_message_templates(prompt_template)
         placeholders = get_template_placeholders(templates)
-        bindings = build_inline_schema_bindings(prompt_template, placeholders, schema=schema)
+        bindings: dict[str, str] = {}
         input_artifacts = {}
-        document_field = prompt_template.get("document_filename_placeholder", "document_filename")
-        schema_field = prompt_template.get("schema_filename_placeholder", "schema_filename")
-        if document_field in placeholders:
-            bindings[document_field] = _DOCUMENT_FILENAME
+        document_file_field = prompt_template.get(
+            "document_filename_placeholder", "document_filename"
+        )
+        if document_file_field in placeholders:
+            bindings[document_file_field] = _DOCUMENT_FILENAME
             input_artifacts[_DOCUMENT_FILENAME] = document
-        if schema_field in placeholders and schema is not None:
-            bindings[schema_field] = _SCHEMA_FILENAME
-            input_artifacts[_SCHEMA_FILENAME] = json.dumps(schema, ensure_ascii=False)
+
+        if schema is not None:
+            schema_field = prompt_template.get("schema_placeholder")
+            if schema_field in placeholders:
+                bindings[schema_field] = json.dumps(schema, ensure_ascii=False)
+            description_field = prompt_template.get("schema_description_placeholder")
+            if description_field in placeholders:
+                bindings[description_field] = build_schema_description(
+                    schema=schema, **(prompt_template.get("schema_description_kwargs") or {})
+                )
+            schema_file_field = prompt_template.get(
+                "schema_filename_placeholder", "schema_filename"
+            )
+            if schema_file_field in placeholders:
+                bindings[schema_file_field] = _SCHEMA_FILENAME
+                input_artifacts[_SCHEMA_FILENAME] = json.dumps(schema, ensure_ascii=False)
 
         request = prepare_template_request(templates, bindings=bindings, history=history)
         request.input_artifacts = input_artifacts
