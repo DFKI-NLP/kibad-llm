@@ -52,7 +52,7 @@ class SimpleChatMessage:
 
 @dataclass(frozen=True)
 class ExtractionPrompt:
-    """Inputs, templates, and context requirements for preparing an extraction turn.
+    """Inputs and templates for preparing an extraction turn.
 
     The extractor selects the prompt schema and passes the decoding schema separately
     when executing the request. The backend chooses what bindings and files to supply.
@@ -64,9 +64,6 @@ class ExtractionPrompt:
         user_message: User message template, or None to omit the user message.
         history: Previously rendered messages to prepend to the current turn, in order.
             History contains message text. Files are supplied separately for each call.
-        require_document: Whether the current turn must deliver the source document.
-            Defaults to True. The extractor can set this to False for follow-up turns
-            whose previous messages supply the context they need.
         document_placeholder: Name of the inline document field, without braces.
             Defaults to `document`. Applies to backends that supply the document inline.
         schema_placeholder: Template field name for the schema serialized as JSON, without
@@ -87,7 +84,6 @@ class ExtractionPrompt:
     schema_placeholder: str = "schema"
     schema_description_placeholder: str = "schema_description"
     schema_description_kwargs: dict[str, Any] | None = None
-    require_document: bool = True
 
     def message_templates(self) -> list[SimpleChatMessage]:
         """Return the configured system and user templates in that order.

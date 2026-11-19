@@ -112,7 +112,6 @@ def test_backend_prepares_messages_before_extractor_records_them() -> None:
         def prepare_request(self, prompt: ExtractionPrompt) -> PreparedRequest:
             """Use the sliced document to render a backend-specific template."""
             assert prompt.document == "document"
-            assert not prompt.require_document
             request = super().prepare_request(replace(prompt, user_message="Backend: {document}"))
             request.input_artifacts["context.txt"] = "Extra context"
             return request

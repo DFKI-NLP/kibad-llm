@@ -207,7 +207,7 @@ The preset binds `{document_filename}` to `input.md` and includes the schema inl
 
 The preset sets `extractor.use_guided_decoding=false`: the schema is supplied in the prompt, and the extractor validates the response after inference. Keep `extractor.request_parameters` empty; Codex rejects guided decoding and additional request parameters before starting the CLI.
 
-The first extraction turn must reference `{document_filename}` in its system or user template. Use `{schema_filename}` to supply the prompt schema as `schema.json`, with or without an inline schema binding. A referenced schema field requires a schema. Codex stages files requested by the current turn's filename fields. Use those fields again in any follow-up that needs the files, since history carries rendered messages and each call starts with a fresh workspace. Literal filenames and escaped fields such as `{{schema_filename}}` do not request files.
+Both filename fields are optional on every Codex turn, including the first. Reference `{document_filename}` to stage the source as `input.md` and `{schema_filename}` to stage the prompt schema as `schema.json`. A referenced schema field requires a schema. Each call starts with a fresh workspace, so reference a filename field again in any follow-up that needs the file. Literal filenames and escaped fields such as `{{schema_filename}}` do not request files.
 
 Customize the filename field names under `extractor.llm`. Move any `document_filename_placeholder` and `schema_filename_placeholder` settings from `extractor.prompt_template` to `extractor.llm`, and use the corresponding fields in the message templates. For example:
 
@@ -228,7 +228,7 @@ The Hydra run directory contains prompts, final responses, execution events, and
 
 ### Schema descriptions in prompts
 
-For backends that embed the source, include `{document}` in the first turn's system or user template. Follow-up templates can omit it when the rendered history supplies the context they need. Use distinct placeholder names for the values the backend supplies. A template can omit schema fields even when the extractor uses a schema for guided decoding or output validation.
+The default inline backend requires `{document}` in the first turn's system or user template. Follow-up templates can omit it when the rendered history supplies the context they need. Use distinct placeholder names for the values the backend supplies. A template can omit schema fields even when the extractor uses a schema for guided decoding or output validation.
 
 Prompt templates containing `{schema_description}` use `build_schema_description` from [schema/description.py](/src/kibad_llm/schema/description.py).
 

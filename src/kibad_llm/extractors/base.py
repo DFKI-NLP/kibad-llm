@@ -692,8 +692,7 @@ def extract_from_text(
             Defaults to 0 (process from the beginning of the text).
         character_end: Optional character offsets to specify a substring of `text` to process.
             If None (default), processes until the end of the text.
-        history: Rendered messages from previous turns. When supplied, the current
-            templates can omit the document if the needed context is already in history.
+        history: Previously rendered messages to prepend to the current turn.
         return_messages: Record the configured prompt templates.
         return_messages_formatted: Record the rendered messages from the current turn.
         truncate_user_message_formatted: Character limit for the recorded user message.
@@ -784,7 +783,6 @@ def extract_from_text(
         document=text_to_process,
         schema=prompt_schema,
         history=history or (),
-        require_document=not history,
         **{**prompt_options, **prompt_template},
     )
     request = prepare_inline_request(prompt) if llm is None else llm.prepare_request(prompt)

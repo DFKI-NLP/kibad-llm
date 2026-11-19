@@ -81,27 +81,24 @@ class Codex(LLM):
     def prepare_request(self, prompt: ExtractionPrompt) -> PreparedRequest:
         """Render templates and attach only the document and schema files they reference.
 
-        Use the configured filename fields to bind `input.md` and `schema.json`. A
-        turn that requires the document must reference its filename. The selected
-        schema can be supplied as a file, inline text, or both. History is already
-        rendered. Each call has a fresh workspace, so a follow-up that needs a file
-        must reference the filename field in its current templates.
+        The document and schema filename fields are both optional on every turn.
+        Referencing either field stages its file in the current call's fresh workspace.
+        The schema can also be included inline. History carries rendered messages,
+        so a follow-up that needs a file must reference its filename field again.
 
         Args:
-            prompt: Templates, source Markdown, prompt schema, history, and document requirement.
+            prompt: Templates, source Markdown, prompt schema, and rendered history.
 
         Returns:
             Rendered current messages, the full conversation, and the requested input artifacts.
 
         Raises:
             MissingBindingError: A template references an unavailable binding.
-            ValueError: A required document filename field is unused, or the templates
-                cannot be rendered.
+            ValueError: The templates cannot be rendered.
             TypeError: Schema serialization or schema description options are invalid.
         """
         templates = prompt.message_templates()
         placeholders = get_template_placeholders(templates)
-        document_file_requested = self.document_filename_placeholder in placeholders
         schema_file_requested = self.schema_filename_placeholder in placeholders
         schema_fields = (
             placeholders | {prompt.schema_placeholder} if schema_file_requested else placeholders
@@ -111,16 +108,11 @@ class Codex(LLM):
         if schema_file_requested and prompt.schema is not None:
             input_artifacts[_SCHEMA_FILENAME] = bindings[prompt.schema_placeholder]
             bindings[self.schema_filename_placeholder] = _SCHEMA_FILENAME
-        if document_file_requested:
+        if self.document_filename_placeholder in placeholders:
             bindings[self.document_filename_placeholder] = _DOCUMENT_FILENAME
             input_artifacts[_DOCUMENT_FILENAME] = prompt.document
 
         request = prepare_template_request(templates, bindings=bindings, history=prompt.history)
-        if prompt.require_document and not document_file_requested:
-            raise ValueError(
-                "The message templates must contain the Codex document filename placeholder "
-                f"'{{{self.document_filename_placeholder}}}' for this extraction turn."
-            )
         request.input_artifacts = input_artifacts
         return request
 

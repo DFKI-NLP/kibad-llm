@@ -25,23 +25,14 @@ CODEX_PRESET = "faktencheck_core_fields_schema_with_evidence_codex"
 def test_codex_stages_only_files_referenced_by_filename_placeholders(
     tmp_path, monkeypatch, include_document, include_schema_file
 ):
-    """Stage and probe exactly the requested document/schema files, including no files."""
+    """Stage and probe exactly the files referenced on a first turn, including no files."""
     backend = Codex("test-model", "high", 30, str(tmp_path))
     schema = {"type": "object", "properties": {"habitat": {"const": "Wälder"}}}
     document = "# Original Markdown\nWälder\n"
     user = "Read {document_filename}." if include_document else "Return the fields."
     user += "\n{schema_filename}" if include_schema_file else "\n{schema}"
-    history = (
-        [] if include_document else [SimpleChatMessage(role=MessageRole.USER, content=document)]
-    )
     request = backend.prepare_request(
-        ExtractionPrompt(
-            document=document,
-            schema=schema,
-            user_message=user,
-            history=history,
-            require_document=not history,
-        )
+        ExtractionPrompt(document=document, schema=schema, user_message=user)
     )
     expected = {}
     if include_document:
@@ -95,14 +86,12 @@ def test_codex_can_supply_the_same_schema_inline_and_as_a_file(tmp_path):
         ExtractionPrompt(
             document="Source",
             schema={"type": "string", "const": "Wälder"},
-            user_message="{document_filename}\n{schema_filename}\n{schema}",
+            user_message="{schema_filename}\n{schema}",
         )
     )
 
-    document_file, schema_file, inline_schema = request.current_messages[0].content.split(
-        "\n", maxsplit=2
-    )
-    assert request.input_artifacts == {document_file: "Source", schema_file: inline_schema}
+    schema_file, inline_schema = request.current_messages[0].content.split("\n", maxsplit=1)
+    assert request.input_artifacts == {schema_file: inline_schema}
 
 
 @pytest.mark.parametrize(
@@ -118,12 +107,7 @@ def test_codex_does_not_attach_files_for_literals_or_rendered_values(tmp_path, t
     schema = {"description": "Literal {document_filename} and {schema_filename}"}
 
     request = backend.prepare_request(
-        ExtractionPrompt(
-            document="Source",
-            schema=schema,
-            user_message=template,
-            require_document=False,
-        )
+        ExtractionPrompt(document="Source", schema=schema, user_message=template)
     )
 
     assert request.input_artifacts == {}
@@ -192,19 +176,27 @@ def test_codex_requires_schema_when_its_filename_is_referenced(tmp_path):
     assert not list(tmp_path.iterdir())
 
 
-def test_extractor_requires_document_filename_for_initial_codex_turn(tmp_path):
-    """Require a file binding when the extractor has no conversation history."""
+def test_extractor_accepts_initial_codex_turn_without_files(tmp_path, monkeypatch):
+    """Pass a first-turn prompt with no filename fields through to Codex."""
     backend = Codex("test-model", "high", 30, str(tmp_path))
 
-    with pytest.raises(ValueError, match=r"must contain.*\{document_filename\}"):
-        extract_from_text(
-            text="Source",
-            text_id="fixture",
-            prompt_template={"user_message": "Read input.md and extract the fields."},
-            use_guided_decoding=False,
-            llm=backend,
-        )
-    assert not list(tmp_path.iterdir())
+    def run(input_artifacts, prompt, artifact, events):
+        """Return a model response for the fileless prompt."""
+        assert input_artifacts == {}
+        assert "Return an empty object." in prompt
+        events.write_text("", encoding="utf-8")
+        return "{}"
+
+    monkeypatch.setattr(backend, "_run", run)
+    result = extract_from_text(
+        text="Source",
+        text_id="fixture",
+        prompt_template={"user_message": "Return an empty object."},
+        use_guided_decoding=False,
+        llm=backend,
+    )
+    assert result.errors == []
+    assert result.structured == {}
 
 
 @pytest.mark.parametrize("filename", ["notes.txt", "../outside.md"])
@@ -410,7 +402,6 @@ def test_prepare_request_preserves_history_and_custom_schema_placeholders(tmp_pa
         document_placeholder="markdown",
         schema_placeholder="output_schema",
         schema_description_placeholder="description",
-        require_document=False,
     )
 
     request = backend.prepare_request(prompt)

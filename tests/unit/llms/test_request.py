@@ -150,7 +150,6 @@ def test_prepare_inline_request_keeps_history_separate_from_current_turn() -> No
             document="Markdown",
             schema=None,
             history=history,
-            require_document=False,
         )
     )
 

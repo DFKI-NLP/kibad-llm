@@ -85,27 +85,30 @@ def build_inline_schema_bindings(
 
 
 def prepare_inline_request(prompt: ExtractionPrompt) -> PreparedRequest:
-    """Deliver the document and any requested schema representations as message text.
+    """Render the requested document and schema fields as message text.
+
+    With empty history, at least one template must reference the configured document
+    field. A follow-up can use the document already present in the conversation.
 
     Args:
-        prompt: Templates, inputs, history, and the document requirement for this turn.
+        prompt: Templates, inputs, and rendered history for this turn.
 
     Returns:
         The rendered current turn and full conversation.
 
     Raises:
         MissingBindingError: A template references an unavailable binding.
-        ValueError: A required document is unused, or the templates cannot be rendered.
+        ValueError: The first turn omits the document field, or the templates cannot be rendered.
     """
     templates = prompt.message_templates()
     placeholders = get_template_placeholders(templates)
     bindings = build_inline_schema_bindings(prompt, placeholders)
     bindings[prompt.document_placeholder] = prompt.document
     request = prepare_template_request(templates, bindings=bindings, history=prompt.history)
-    if prompt.require_document and prompt.document_placeholder not in placeholders:
+    if not prompt.history and prompt.document_placeholder not in placeholders:
         raise ValueError(
             "The message templates must contain the document placeholder "
-            f"'{{{prompt.document_placeholder}}}' for this extraction turn."
+            f"'{{{prompt.document_placeholder}}}' on the first turn."
         )
     return request
 
@@ -116,18 +119,18 @@ class LLM(ABC):
     def prepare_request(self, prompt: ExtractionPrompt) -> PreparedRequest:
         """Prepare the current turn and its inputs for this backend.
 
-        The caller selects the document and prompt schema and declares whether this
-        turn requires the document. The backend must satisfy that requirement, supply
-        values for the fields used in its templates, and include any required files
-        in the request. Use distinct names for the fields a backend supplies.
+        The caller selects the document and prompt schema. The backend supplies values
+        for the fields referenced by the current templates and includes any files those
+        fields refer to. Use distinct names for the fields a backend supplies.
 
-        The default embeds the document and requested schema representations in the
-        messages. Overrides can reuse [`build_inline_schema_bindings`][kibad_llm.llms.base.build_inline_schema_bindings]
+        The default uses [`prepare_inline_request`][kibad_llm.llms.base.prepare_inline_request],
+        which requires the inline document field on the first turn. Overrides can reuse
+        [`build_inline_schema_bindings`][kibad_llm.llms.base.build_inline_schema_bindings]
         and [`prepare_template_request`][kibad_llm.llms.request.prepare_template_request]
         with their own bindings. History is already rendered and can be prepended as supplied.
 
         Args:
-            prompt: Inputs, templates, history, and context requirements for this turn.
+            prompt: Inputs, templates, and rendered history for this turn.
 
         Returns:
             The current turn, full conversation including history, and any auxiliary
@@ -135,7 +138,7 @@ class LLM(ABC):
 
         Raises:
             MissingBindingError: A template references an unavailable binding.
-            ValueError: A required document is unused, or the templates cannot be rendered.
+            ValueError: A template is invalid for the backend.
         """
         return prepare_inline_request(prompt)
 
