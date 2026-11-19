@@ -179,7 +179,9 @@ class MetricCollectionWithFieldDiscoveryAndGrouping(MetricCollection[T2], Generi
                 expansion.
             sort_fields: Whether computed results should be emitted in sorted field order.
             field_overrides: Optional mapping of field names to keyword arguments for each per-field metric.
-            **kwargs: Additional keyword arguments forwarded to each created metric instance.
+
+        Keyword Args:
+            **kwargs (Any): Additional keyword arguments forwarded to each created metric instance.
         """
         self.metric_class = metric_class
         self.fields = fields

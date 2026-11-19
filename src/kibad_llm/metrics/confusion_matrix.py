@@ -91,12 +91,12 @@ class ConfusionMatrix(MetricWithTpFpFnEntries):
                 remain unaligned to any prediction.
 
         Keyword Args:
-            field: Optional field to extract from dictionary inputs.
-            flatten_dicts: Whether nested dictionaries should be flattened before
+            field (str | None): Optional field to extract from dictionary inputs.
+            flatten_dicts (bool): Whether nested dictionaries should be flattened before
                 comparison.
-            ignore_subfields: Optional subfields to ignore when hashing dictionary
-                values.
-            ignore_missing_entries: Whether one-sided empty entries should be skipped.
+            ignore_subfields (dict[str, list] | None): Optional subfields to ignore when
+                hashing dictionary values.
+            ignore_missing_entries (bool): Whether one-sided empty entries should be skipped.
         """
         super().__init__(**kwargs)
         self.unassignable_label = unassignable_label
@@ -278,19 +278,20 @@ class ConfusionMatrixCollection(MetricCollectionWithFieldDiscoveryAndGrouping[Co
         """Initialize a multi-field confusion-matrix collection.
 
         Keyword Args:
-            fields: Optional allowlist of fields to evaluate. If omitted, fields are discovered
-                from the union of keys present in each prediction/reference pair.
-            subfield_keys: Optional mapping describing how nested entries are split into generated
-                fields.
-            subfield_values: Optional mapping restricting which nested values are kept after field
-                expansion.
-            sort_fields: Whether to sort the fields in the output. Defaults to False.
-            show_as_markdown: Whether each per-field confusion matrix should be logged as a markdown
-                table when computed.
-            unassignable_label: Label used on the gold axis for false positives.
-            undetected_label: Label used on the prediction axis for false negatives.
-            flatten_dicts: Whether nested dictionaries should be flattened before comparison.
-            ignore_subfields: Optional subfields to ignore when hashing dictionary payloads.
-            ignore_missing_entries: Whether one-sided empty entries should be skipped.
+            fields (list[str] | None): Optional allowlist of fields to evaluate. If omitted,
+                fields are discovered from the union of keys in each prediction/reference pair.
+            subfield_keys (dict[str, list[str]] | None): Optional mapping describing how nested
+                entries are split into generated fields.
+            subfield_values (dict[str, list[str]] | None): Optional mapping restricting which
+                nested values are kept after field expansion.
+            sort_fields (bool): Whether to sort the fields in the output. Defaults to False.
+            show_as_markdown (bool): Whether to log each computed per-field confusion matrix
+                as a Markdown table.
+            unassignable_label (str): Label used on the gold axis for false positives.
+            undetected_label (str): Label used on the prediction axis for false negatives.
+            flatten_dicts (bool): Whether nested dictionaries should be flattened before comparison.
+            ignore_subfields (dict[str, list] | None): Optional subfields to ignore when
+                hashing dictionary payloads.
+            ignore_missing_entries (bool): Whether one-sided empty entries should be skipped.
         """
         super().__init__(metric_class=ConfusionMatrix, **kwargs)
