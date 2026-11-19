@@ -70,8 +70,9 @@ def prepare_inline_request(
 ) -> PreparedRequest:
     """Render the requested document and schema fields as message text.
 
-    With empty history, at least one template must reference the configured document
-    field. A follow-up can use the document already present in the conversation.
+    With empty history, the system or user message must reference the document field.
+    Its name defaults to `document` when `document_placeholder` is omitted.
+    A turn with history may omit the reference.
 
     Args:
         prompt_template: Current messages and field declarations. `schema_placeholder`
@@ -124,9 +125,10 @@ class LLM(ABC):
     ) -> PreparedRequest:
         """Prepare the current turn and its inputs for this backend.
 
-        The caller selects the document and prompt schema. Read the template settings
-        for this call, supply values for referenced fields, and include any files those
-        fields refer to in the returned request.
+        The template declares which fields the backend can supply. The message text
+        selects which of those fields it uses. Field names can come from the template's
+        settings, an inherited preset, or a default documented by the backend.
+        Include any files the referenced fields require in the returned request.
 
         The default uses [`prepare_inline_request`][kibad_llm.llms.base.prepare_inline_request],
         which requires the inline document field on the first turn. Overrides can pass
