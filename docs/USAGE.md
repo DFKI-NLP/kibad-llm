@@ -209,14 +209,13 @@ The preset sets `extractor.use_guided_decoding=false`: the schema is supplied in
 
 Both filename fields are optional on every Codex turn, including the first. Reference `{document_filename}` to stage the source as `input.md` and `{schema_filename}` to stage the prompt schema as `schema.json`. A referenced schema field requires a schema. Each call starts with a fresh workspace, so reference a filename field again in any follow-up that needs the file. Literal filenames and escaped fields such as `{{schema_filename}}` do not request files.
 
-Customize the filename field names under `extractor.llm`. Move any `document_filename_placeholder` and `schema_filename_placeholder` settings from `extractor.prompt_template` to `extractor.llm`, and use the corresponding fields in the message templates. For example:
+Set `document_filename_placeholder` and `schema_filename_placeholder` alongside the message text in `extractor.prompt_template`. Codex reads these names for each request, so different templates can use different names with the same backend.
 
 ```yaml
 extractor:
-  llm:
+  prompt_template:
     document_filename_placeholder: source_file
     schema_filename_placeholder: output_spec
-  prompt_template:
     user_message: |
       Lies das Markdown-Dokument aus `{source_file}`.
       Verwende das JSON-Schema aus `{output_spec}`.

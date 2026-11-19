@@ -10,11 +10,7 @@ import pytest
 
 from kibad_llm.extractors.base import extract_from_text, extract_from_text_lenient
 from kibad_llm.llms.codex import Codex
-from kibad_llm.llms.request import (
-    ExtractionPrompt,
-    MissingBindingError,
-    SimpleChatMessage,
-)
+from kibad_llm.llms.request import MissingBindingError, SimpleChatMessage
 from tests.conftest import cfg_global
 
 CODEX_PRESET = "faktencheck_core_fields_schema_with_evidence_codex"
@@ -31,9 +27,7 @@ def test_codex_stages_only_files_referenced_by_filename_placeholders(
     document = "# Original Markdown\nWälder\n"
     user = "Read {document_filename}." if include_document else "Return the fields."
     user += "\n{schema_filename}" if include_schema_file else "\n{schema}"
-    request = backend.prepare_request(
-        ExtractionPrompt(document=document, schema=schema, user_message=user)
-    )
+    request = backend.prepare_request({"user_message": user}, document=document, schema=schema)
     expected = {}
     if include_document:
         expected["input.md"] = document
@@ -83,11 +77,9 @@ def test_codex_can_supply_the_same_schema_inline_and_as_a_file(tmp_path):
     """Create the schema file when requested alongside its inline representation."""
     backend = Codex("test-model", "high", 30, str(tmp_path))
     request = backend.prepare_request(
-        ExtractionPrompt(
-            document="Source",
-            schema={"type": "string", "const": "Wälder"},
-            user_message="{schema_filename}\n{schema}",
-        )
+        {"user_message": "{schema_filename}\n{schema}"},
+        document="Source",
+        schema={"type": "string", "const": "Wälder"},
     )
 
     schema_file, inline_schema = request.current_messages[0].content.split("\n", maxsplit=1)
@@ -106,9 +98,7 @@ def test_codex_does_not_attach_files_for_literals_or_rendered_values(tmp_path, t
     backend = Codex("test-model", "high", 30, str(tmp_path))
     schema = {"description": "Literal {document_filename} and {schema_filename}"}
 
-    request = backend.prepare_request(
-        ExtractionPrompt(document="Source", schema=schema, user_message=template)
-    )
+    request = backend.prepare_request({"user_message": template}, document="Source", schema=schema)
 
     assert request.input_artifacts == {}
 
@@ -119,8 +109,8 @@ def test_schema_file_uses_prompt_schema_and_custom_filename_placeholders(tmp_pat
         out_dir=tmp_path,
         overrides=[
             f"experiment/predict={CODEX_PRESET}",
-            "extractor.llm.document_filename_placeholder=source_file",
-            "extractor.llm.schema_filename_placeholder=output_file",
+            "extractor.prompt_template.document_filename_placeholder=source_file",
+            "extractor.prompt_template.schema_filename_placeholder=output_file",
         ],
     )
     backend = instantiate(cfg.extractor.llm)
@@ -138,6 +128,7 @@ def test_schema_file_uses_prompt_schema_and_custom_filename_placeholders(tmp_pat
         text="Wälder",
         text_id="fixture",
         prompt_template={
+            **cfg.extractor.prompt_template,
             "system_message": "Use {output_file}",
             "user_message": "Read {source_file}",
         },
@@ -164,12 +155,12 @@ def test_codex_requires_schema_when_its_filename_is_referenced(tmp_path):
 
     with pytest.raises(MissingBindingError) as raised:
         backend.prepare_request(
-            ExtractionPrompt(
-                document="Source",
-                schema=None,
-                system_message="Use {schema_filename}",
-                user_message="Read {document_filename}",
-            )
+            {
+                "system_message": "Use {schema_filename}",
+                "user_message": "Read {document_filename}",
+            },
+            document="Source",
+            schema=None,
         )
     assert raised.value.placeholder == "schema_filename"
     assert raised.value.role == MessageRole.SYSTEM
@@ -381,30 +372,45 @@ def test_codex_reports_unrelated_missing_bindings(tmp_path):
     """Preserve the shared renderer's error for an unrelated missing field."""
     backend = Codex("test-model", "high", 600, str(tmp_path))
     with pytest.raises(ValueError, match="No value for placeholder 'missing' in USER message"):
-        backend.prepare_request(
-            ExtractionPrompt(document="Source", schema=None, user_message="Read {missing}")
+        backend.prepare_request({"user_message": "Read {missing}"}, document="Source", schema=None)
+
+
+def test_codex_reads_filename_fields_per_template(tmp_path):
+    """Resolve both file bindings from the template on each call to the same backend."""
+    backend = Codex("test-model", "high", 30, str(tmp_path))
+    for source, spec in [("article", "format"), ("paper", "output_schema")]:
+        request = backend.prepare_request(
+            {
+                "user_message": f"Read {{{source}}} using {{{spec}}}.",
+                "document_filename_placeholder": source,
+                "schema_filename_placeholder": spec,
+            },
+            document="Text",
+            schema={},
         )
+        assert request.current_messages[0].content == "Read input.md using schema.json."
+        assert request.input_artifacts == {"input.md": "Text", "schema.json": "{}"}
 
 
 def test_prepare_request_preserves_history_and_custom_schema_placeholders(tmp_path):
     """Render custom schema bindings while leaving escaped document fields literal."""
-    backend = Codex(
-        "test-model", "high", 600, str(tmp_path), document_filename_placeholder="source_file"
-    )
+    backend = Codex("test-model", "high", 600, str(tmp_path))
     history = [SimpleChatMessage(role=MessageRole.USER, content="Previous turn")]
     schema = {"type": "object", "properties": {"habitat": {"type": "string"}}}
-    prompt = ExtractionPrompt(
-        document="# Original Markdown\n",
+    document = "# Original Markdown\n"
+    request = backend.prepare_request(
+        {
+            "system_message": "{description}",
+            "user_message": "Read {source_file}; {{markdown}} is literal.\n{output_schema}",
+            "document_filename_placeholder": "source_file",
+            "document_placeholder": "markdown",
+            "schema_placeholder": "output_schema",
+            "schema_description_placeholder": "description",
+        },
+        document=document,
         schema=schema,
-        system_message="{description}",
-        user_message="Read {source_file}; {{markdown}} is literal.\n{output_schema}",
         history=history,
-        document_placeholder="markdown",
-        schema_placeholder="output_schema",
-        schema_description_placeholder="description",
     )
-
-    request = backend.prepare_request(prompt)
 
     system, user = request.current_messages
     assert "habitat" in system.content
@@ -412,8 +418,8 @@ def test_prepare_request_preserves_history_and_custom_schema_placeholders(tmp_pa
     assert json.loads(user.content.split("\n", maxsplit=1)[1]) == schema
     assert request.messages == [*history, system, user]
     assert history == [SimpleChatMessage(role=MessageRole.USER, content="Previous turn")]
-    assert request.input_artifacts == {"input.md": prompt.document}
-    assert all(prompt.document not in message.content for message in request.messages)
+    assert request.input_artifacts == {"input.md": document}
+    assert all(document not in message.content for message in request.messages)
 
 
 @pytest.mark.parametrize(

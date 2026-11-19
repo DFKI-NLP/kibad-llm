@@ -1,16 +1,15 @@
 """Base interface for preparing and executing LLM chat requests."""
 
 from abc import ABC, abstractmethod
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from copy import deepcopy
 import json
 from typing import Any
 
-from llama_index.core.base.llms.types import ChatResponse
+from llama_index.core.base.llms.types import ChatResponse, MessageRole
 from pydantic import BaseModel
 
 from kibad_llm.llms.request import (
-    ExtractionPrompt,
     PreparedRequest,
     SimpleChatMessage,
     get_template_placeholders,
@@ -55,14 +54,43 @@ class EmptyReasoningError(Exception):
     ...
 
 
+def get_message_templates(prompt_template: Mapping[str, Any]) -> list[SimpleChatMessage]:
+    """Read the configured system and user message templates, in conversation order.
+
+    Args:
+        prompt_template: Settings for the current turn, including `system_message` or `user_message`.
+
+    Returns:
+        Role-tagged templates in order, omitting messages whose text is absent or None.
+
+    Raises:
+        ValueError: Neither message has a template.
+    """
+    templates = [
+        SimpleChatMessage(role=role, content=content)
+        for role, content in (
+            (MessageRole.SYSTEM, prompt_template.get("system_message")),
+            (MessageRole.USER, prompt_template.get("user_message")),
+        )
+        if content is not None
+    ]
+    if not templates:
+        raise ValueError("At least one of system_message or user_message must be provided.")
+    return templates
+
+
 def build_inline_schema_bindings(
-    prompt: ExtractionPrompt, placeholders: set[str]
+    prompt_template: Mapping[str, Any], placeholders: set[str], *, schema: dict[str, Any] | None
 ) -> dict[str, str]:
     """Build the requested text representations of the selected prompt schema.
 
     Args:
-        prompt: The selected schema, inline field names, and description options.
+        prompt_template: Per-template settings for the JSON field (`schema_placeholder`),
+            the description field (`schema_description_placeholder`), and options for
+            [`build_schema_description`][kibad_llm.schema.description.build_schema_description]
+            (`schema_description_kwargs`).
         placeholders: Names of the representations the backend needs.
+        schema: Schema selected for this prompt, or None to omit schema bindings.
 
     Returns:
         Bindings for the requested JSON and readable description fields. If the
@@ -73,25 +101,36 @@ def build_inline_schema_bindings(
         ValueError: The schema cannot be expanded into a requested description.
     """
     bindings: dict[str, str] = {}
-    if prompt.schema is None:
+    if schema is None:
         return bindings
-    if prompt.schema_placeholder in placeholders:
-        bindings[prompt.schema_placeholder] = json.dumps(prompt.schema, ensure_ascii=False)
-    if prompt.schema_description_placeholder in placeholders:
-        bindings[prompt.schema_description_placeholder] = build_schema_description(
-            schema=prompt.schema, **(prompt.schema_description_kwargs or {})
+    schema_field = prompt_template.get("schema_placeholder", "schema")
+    description_field = prompt_template.get("schema_description_placeholder", "schema_description")
+    if schema_field in placeholders:
+        bindings[schema_field] = json.dumps(schema, ensure_ascii=False)
+    if description_field in placeholders:
+        bindings[description_field] = build_schema_description(
+            schema=schema, **(prompt_template.get("schema_description_kwargs") or {})
         )
     return bindings
 
 
-def prepare_inline_request(prompt: ExtractionPrompt) -> PreparedRequest:
+def prepare_inline_request(
+    prompt_template: Mapping[str, Any],
+    *,
+    document: str,
+    schema: dict[str, Any] | None,
+    history: Sequence[SimpleChatMessage] = (),
+) -> PreparedRequest:
     """Render the requested document and schema fields as message text.
 
     With empty history, at least one template must reference the configured document
     field. A follow-up can use the document already present in the conversation.
 
     Args:
-        prompt: Templates, inputs, and rendered history for this turn.
+        prompt_template: Current message templates and their inline field settings.
+        document: Source text bound to the configured `document_placeholder` (default `document`).
+        schema: Schema selected for the prompt, or None.
+        history: Previously rendered messages to prepend.
 
     Returns:
         The rendered current turn and full conversation.
@@ -100,15 +139,16 @@ def prepare_inline_request(prompt: ExtractionPrompt) -> PreparedRequest:
         MissingBindingError: A template references an unavailable binding.
         ValueError: The first turn omits the document field, or the templates cannot be rendered.
     """
-    templates = prompt.message_templates()
+    templates = get_message_templates(prompt_template)
     placeholders = get_template_placeholders(templates)
-    bindings = build_inline_schema_bindings(prompt, placeholders)
-    bindings[prompt.document_placeholder] = prompt.document
-    request = prepare_template_request(templates, bindings=bindings, history=prompt.history)
-    if not prompt.history and prompt.document_placeholder not in placeholders:
+    bindings = build_inline_schema_bindings(prompt_template, placeholders, schema=schema)
+    document_field = prompt_template.get("document_placeholder", "document")
+    bindings[document_field] = document
+    request = prepare_template_request(templates, bindings=bindings, history=history)
+    if not history and document_field not in placeholders:
         raise ValueError(
             "The message templates must contain the document placeholder "
-            f"'{{{prompt.document_placeholder}}}' on the first turn."
+            f"'{{{document_field}}}' on the first turn."
         )
     return request
 
@@ -116,12 +156,19 @@ def prepare_inline_request(prompt: ExtractionPrompt) -> PreparedRequest:
 class LLM(ABC):
     """Prepare and execute chat requests with a model backend."""
 
-    def prepare_request(self, prompt: ExtractionPrompt) -> PreparedRequest:
+    def prepare_request(
+        self,
+        prompt_template: Mapping[str, Any],
+        *,
+        document: str,
+        schema: dict[str, Any] | None,
+        history: Sequence[SimpleChatMessage] = (),
+    ) -> PreparedRequest:
         """Prepare the current turn and its inputs for this backend.
 
-        The caller selects the document and prompt schema. The backend supplies values
-        for the fields referenced by the current templates and includes any files those
-        fields refer to. Use distinct names for the fields a backend supplies.
+        The caller selects the document and prompt schema. Read the template settings
+        for this call, supply values for referenced fields, and include any files those
+        fields refer to in the returned request.
 
         The default uses [`prepare_inline_request`][kibad_llm.llms.base.prepare_inline_request],
         which requires the inline document field on the first turn. Overrides can reuse
@@ -130,7 +177,11 @@ class LLM(ABC):
         with their own bindings. History is already rendered and can be prepended as supplied.
 
         Args:
-            prompt: Inputs, templates, and rendered history for this turn.
+            prompt_template: Current system/user templates and their backend-specific settings.
+            document: Source text selected by the extractor for this turn.
+            schema: Schema selected for use in the prompt. The extractor supplies the
+                decoding schema separately when it calls the model.
+            history: Previously rendered messages to prepend.
 
         Returns:
             The current turn, full conversation including history, and any auxiliary
@@ -140,7 +191,9 @@ class LLM(ABC):
             MissingBindingError: A template references an unavailable binding.
             ValueError: A template is invalid for the backend.
         """
-        return prepare_inline_request(prompt)
+        return prepare_inline_request(
+            prompt_template, document=document, schema=schema, history=history
+        )
 
     @abstractmethod
     def call_llm_chat_with_guided_decoding(

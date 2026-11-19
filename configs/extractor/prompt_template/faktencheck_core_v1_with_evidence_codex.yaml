@@ -2,6 +2,8 @@ defaults:
   - faktencheck_core_v1_with_evidence_and_persona
 
 schema_placeholder: schema
+document_filename_placeholder: document_filename
+schema_filename_placeholder: schema_filename
 user_message: |
   Lies das Markdown-Dokument aus der Datei `{document_filename}`.
   Verwende für deine JSON-Antwort das folgende JSON-Schema:

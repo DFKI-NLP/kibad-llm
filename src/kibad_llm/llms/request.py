@@ -3,7 +3,6 @@
 Classes:
     MissingBindingError: A template references a field without a supplied value.
     SimpleChatMessage: A role and template or rendered message text.
-    ExtractionPrompt: Templates and inputs for preparing an extraction request.
     PreparedRequest: Rendered messages and optional backend inputs.
 
 Functions:
@@ -15,7 +14,6 @@ Functions:
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from string import Formatter
-from typing import Any
 
 from llama_index.core.base.llms.types import MessageRole
 
@@ -48,63 +46,6 @@ class SimpleChatMessage:
 
     role: MessageRole
     content: str
-
-
-@dataclass(frozen=True)
-class ExtractionPrompt:
-    """Inputs and templates for preparing an extraction turn.
-
-    The extractor selects the prompt schema and passes the decoding schema separately
-    when executing the request. The backend chooses what bindings and files to supply.
-
-    Attributes:
-        document: Source document text to extract from, typically Markdown.
-        schema: JSON Schema available to the templates, or None when no schema is supplied.
-        system_message: System message template, or None to omit the system message.
-        user_message: User message template, or None to omit the user message.
-        history: Previously rendered messages to prepend to the current turn, in order.
-            History contains message text. Files are supplied separately for each call.
-        document_placeholder: Name of the inline document field, without braces.
-            Defaults to `document`. Applies to backends that supply the document inline.
-        schema_placeholder: Template field name for the schema serialized as JSON, without
-            braces. Defaults to `schema`.
-        schema_description_placeholder: Template field name for the human-readable schema
-            description, without braces. Defaults to `schema_description`.
-        schema_description_kwargs: Optional keyword arguments forwarded to
-            [`build_schema_description`][kibad_llm.schema.description.build_schema_description]
-            when a template uses the schema description placeholder.
-    """
-
-    document: str
-    schema: dict[str, Any] | None
-    system_message: str | None = None
-    user_message: str | None = None
-    history: Sequence[SimpleChatMessage] = ()
-    document_placeholder: str = "document"
-    schema_placeholder: str = "schema"
-    schema_description_placeholder: str = "schema_description"
-    schema_description_kwargs: dict[str, Any] | None = None
-
-    def message_templates(self) -> list[SimpleChatMessage]:
-        """Return the configured system and user templates in that order.
-
-        Returns:
-            The role-tagged templates, omitting messages configured as None.
-
-        Raises:
-            ValueError: Neither message template is configured.
-        """
-        templates = [
-            SimpleChatMessage(role=role, content=content)
-            for role, content in (
-                (MessageRole.SYSTEM, self.system_message),
-                (MessageRole.USER, self.user_message),
-            )
-            if content is not None
-        ]
-        if not templates:
-            raise ValueError("At least one of system_message or user_message must be provided.")
-        return templates
 
 
 @dataclass

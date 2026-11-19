@@ -7,7 +7,6 @@ import pytest
 
 from kibad_llm.llms.base import prepare_inline_request
 from kibad_llm.llms.request import (
-    ExtractionPrompt,
     MissingBindingError,
     SimpleChatMessage,
     build_chat_messages,
@@ -77,11 +76,9 @@ def test_prepare_template_request_renders_only_current_templates() -> None:
 def test_prepare_inline_request_can_omit_schema_bindings() -> None:
     """Leave a supplied schema alone when the template uses only the document."""
     request = prepare_inline_request(
-        ExtractionPrompt(
-            document="Source",
-            schema={"default": object()},
-            user_message="{document} {{schema}} {{schema_description}}",
-        )
+        {"user_message": "{document} {{schema}} {{schema_description}}"},
+        document="Source",
+        schema={"default": object()},
     )
 
     assert request.current_messages == [
@@ -92,21 +89,21 @@ def test_prepare_inline_request_can_omit_schema_bindings() -> None:
 def test_prepare_inline_request_requires_a_template() -> None:
     """Fail before execution when neither message template is configured."""
     with pytest.raises(ValueError, match="At least one of system_message or user_message"):
-        prepare_inline_request(ExtractionPrompt(document="Source", schema=None))
+        prepare_inline_request({}, document="Source", schema=None)
 
 
 def test_prepare_inline_request_inserts_json_schema_with_custom_placeholder() -> None:
     """Render non-ASCII JSON Schema and Markdown using the configured placeholder names."""
     schema = {"type": "object", "properties": {"field": {"const": "Wälder"}}}
     request = prepare_inline_request(
-        ExtractionPrompt(
-            system_message="{output_schema}",
-            user_message="{markdown}",
-            document="Markdown",
-            document_placeholder="markdown",
-            schema=schema,
-            schema_placeholder="output_schema",
-        )
+        {
+            "system_message": "{output_schema}",
+            "user_message": "{markdown}",
+            "document_placeholder": "markdown",
+            "schema_placeholder": "output_schema",
+        },
+        document="Markdown",
+        schema=schema,
     )
 
     system, user = request.messages
@@ -120,12 +117,9 @@ def test_prepare_inline_request_reports_missing_schema_binding(placeholder: str)
     """Report the referenced inline schema field when a schema is absent."""
     with pytest.raises(MissingBindingError) as raised:
         prepare_inline_request(
-            ExtractionPrompt(
-                system_message=f"{{{placeholder}}}",
-                user_message="{document}",
-                document="Markdown",
-                schema=None,
-            )
+            {"system_message": f"{{{placeholder}}}", "user_message": "{document}"},
+            document="Markdown",
+            schema=None,
         )
 
     assert raised.value.placeholder == placeholder
@@ -136,21 +130,17 @@ def test_prepare_inline_request_reports_missing_schema_binding(placeholder: str)
 def test_prepare_inline_request_requires_document_in_first_turn(user_message: str) -> None:
     """Require an actual document binding in an initial prompt."""
     with pytest.raises(ValueError, match="must contain"):
-        prepare_inline_request(
-            ExtractionPrompt(user_message=user_message, document="Markdown", schema=None)
-        )
+        prepare_inline_request({"user_message": user_message}, document="Markdown", schema=None)
 
 
 def test_prepare_inline_request_keeps_history_separate_from_current_turn() -> None:
     """Allow a follow-up template without a document placeholder."""
     history = [SimpleChatMessage(role=MessageRole.USER, content="Markdown")]
     request = prepare_inline_request(
-        ExtractionPrompt(
-            user_message="Extract one more field.",
-            document="Markdown",
-            schema=None,
-            history=history,
-        )
+        {"user_message": "Extract one more field."},
+        document="Markdown",
+        schema=None,
+        history=history,
     )
 
     assert request.current_messages == [

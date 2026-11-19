@@ -1,5 +1,4 @@
 import copy
-from dataclasses import replace
 import json
 from types import SimpleNamespace
 
@@ -12,7 +11,7 @@ from kibad_llm.extractors.base import (
     strip_metadata,
 )
 from kibad_llm.llms.base import LLM
-from kibad_llm.llms.request import ExtractionPrompt, PreparedRequest, SimpleChatMessage
+from kibad_llm.llms.request import PreparedRequest, SimpleChatMessage
 
 
 def test_strip_metadata_unwraps_simple_wrapper() -> None:
@@ -109,10 +108,17 @@ def test_backend_prepares_messages_before_extractor_records_them() -> None:
     class TestLLM(LLM):
         """Customize the prompt and provide an auxiliary input to the chat call."""
 
-        def prepare_request(self, prompt: ExtractionPrompt) -> PreparedRequest:
+        def prepare_request(
+            self, prompt_template, *, document, schema, history=()
+        ) -> PreparedRequest:
             """Use the sliced document to render a backend-specific template."""
-            assert prompt.document == "document"
-            request = super().prepare_request(replace(prompt, user_message="Backend: {document}"))
+            assert document == "document"
+            request = super().prepare_request(
+                {**prompt_template, "user_message": "Backend: {document}"},
+                document=document,
+                schema=schema,
+                history=history,
+            )
             request.input_artifacts["context.txt"] = "Extra context"
             return request
 

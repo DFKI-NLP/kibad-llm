@@ -40,7 +40,7 @@ from jsonschema.validators import validator_for
 from llama_index.core.base.llms.types import ChatResponse
 
 from kibad_llm.llms.base import LLM, prepare_inline_request
-from kibad_llm.llms.request import ExtractionPrompt, SimpleChatMessage
+from kibad_llm.llms.request import SimpleChatMessage
 from kibad_llm.schema.utils import (
     WRAPPED_CONTENT_KEY,
     wrap_terminals_with_metadata,
@@ -656,8 +656,8 @@ def extract_from_text(
     Args:
         text: The document text to process.
         text_id: Document text identifier for logging.
-        prompt_template: A dictionary with at least one of 'system_message' and 'user_message'
-            templates (or both).
+        prompt_template: At least one of `system_message` and `user_message`, plus
+            any per-template settings used by the selected backend.
         schema: Optional JSON schema for structured output.
         use_guided_decoding: Whether to use guided decoding.
         validate_with_schema: Whether to validate the output against the provided schema.
@@ -779,16 +779,20 @@ def extract_from_text(
 
     text_to_process = text[out.character_start : out.character_end]
 
-    prompt = ExtractionPrompt(
+    prompt_template = {**prompt_options, **prompt_template}
+    prepare_request = prepare_inline_request if llm is None else llm.prepare_request
+    request = prepare_request(
+        prompt_template,
         document=text_to_process,
         schema=prompt_schema,
         history=history or (),
-        **{**prompt_options, **prompt_template},
     )
-    request = prepare_inline_request(prompt) if llm is None else llm.prepare_request(prompt)
 
     if return_messages:
-        out.messages = {"system": prompt.system_message, "user": prompt.user_message}
+        out.messages = {
+            "system": prompt_template.get("system_message"),
+            "user": prompt_template.get("user_message"),
+        }
 
     if return_messages_formatted:
         messages_formatted = {

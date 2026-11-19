@@ -1,5 +1,6 @@
 """Document extraction through the non-interactive Codex CLI."""
 
+from collections.abc import Mapping, Sequence
 import json
 import os
 from pathlib import Path
@@ -11,9 +12,8 @@ from uuid import uuid4
 
 from llama_index.core.base.llms.types import ChatMessage, ChatResponse, MessageRole
 
-from kibad_llm.llms.base import LLM, build_inline_schema_bindings
+from kibad_llm.llms.base import LLM, build_inline_schema_bindings, get_message_templates
 from kibad_llm.llms.request import (
-    ExtractionPrompt,
     PreparedRequest,
     SimpleChatMessage,
     get_template_placeholders,
@@ -55,11 +55,8 @@ class Codex(LLM):
         timeout: float,
         artifact_dir: str,
         executable: str = "codex",
-        *,
-        document_filename_placeholder: str = "document_filename",
-        schema_filename_placeholder: str = "schema_filename",
     ):
-        """Configure the CLI and the template fields it supplies for files.
+        """Configure the Codex CLI.
 
         Args:
             model: Model name passed to the CLI.
@@ -67,18 +64,21 @@ class Codex(LLM):
             timeout: Time limit for inference in seconds.
             artifact_dir: Directory for run diagnostics and temporary workspaces.
             executable: Codex CLI executable name or path.
-            document_filename_placeholder: Field name for the document file, without braces.
-            schema_filename_placeholder: Field name for the prompt schema file, without braces.
         """
         self.model = model
         self.reasoning_effort = reasoning_effort
         self.timeout = timeout
         self.artifact_dir = Path(artifact_dir).resolve()
         self.executable = executable
-        self.document_filename_placeholder = document_filename_placeholder
-        self.schema_filename_placeholder = schema_filename_placeholder
 
-    def prepare_request(self, prompt: ExtractionPrompt) -> PreparedRequest:
+    def prepare_request(
+        self,
+        prompt_template: Mapping[str, Any],
+        *,
+        document: str,
+        schema: dict[str, Any] | None,
+        history: Sequence[SimpleChatMessage] = (),
+    ) -> PreparedRequest:
         """Render templates and attach only the document and schema files they reference.
 
         The document and schema filename fields are both optional on every turn.
@@ -87,7 +87,13 @@ class Codex(LLM):
         so a follow-up that needs a file must reference its filename field again.
 
         Args:
-            prompt: Templates, source Markdown, prompt schema, and rendered history.
+            prompt_template: Current messages and their field names. Set
+                `document_filename_placeholder` (default `document_filename`) and
+                `schema_filename_placeholder` (default `schema_filename`) here to
+                choose the fields for `input.md` and `schema.json`.
+            document: Source Markdown to stage when the template requests the document file.
+            schema: Selected prompt schema, or None when none is available.
+            history: Previously rendered messages to prepend.
 
         Returns:
             Rendered current messages, the full conversation, and the requested input artifacts.
@@ -97,22 +103,20 @@ class Codex(LLM):
             ValueError: The templates cannot be rendered.
             TypeError: Schema serialization or schema description options are invalid.
         """
-        templates = prompt.message_templates()
+        templates = get_message_templates(prompt_template)
         placeholders = get_template_placeholders(templates)
-        schema_file_requested = self.schema_filename_placeholder in placeholders
-        schema_fields = (
-            placeholders | {prompt.schema_placeholder} if schema_file_requested else placeholders
-        )
-        bindings = build_inline_schema_bindings(prompt, schema_fields)
+        bindings = build_inline_schema_bindings(prompt_template, placeholders, schema=schema)
         input_artifacts = {}
-        if schema_file_requested and prompt.schema is not None:
-            input_artifacts[_SCHEMA_FILENAME] = bindings[prompt.schema_placeholder]
-            bindings[self.schema_filename_placeholder] = _SCHEMA_FILENAME
-        if self.document_filename_placeholder in placeholders:
-            bindings[self.document_filename_placeholder] = _DOCUMENT_FILENAME
-            input_artifacts[_DOCUMENT_FILENAME] = prompt.document
+        document_field = prompt_template.get("document_filename_placeholder", "document_filename")
+        schema_field = prompt_template.get("schema_filename_placeholder", "schema_filename")
+        if document_field in placeholders:
+            bindings[document_field] = _DOCUMENT_FILENAME
+            input_artifacts[_DOCUMENT_FILENAME] = document
+        if schema_field in placeholders and schema is not None:
+            bindings[schema_field] = _SCHEMA_FILENAME
+            input_artifacts[_SCHEMA_FILENAME] = json.dumps(schema, ensure_ascii=False)
 
-        request = prepare_template_request(templates, bindings=bindings, history=prompt.history)
+        request = prepare_template_request(templates, bindings=bindings, history=history)
         request.input_artifacts = input_artifacts
         return request
 
