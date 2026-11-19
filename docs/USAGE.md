@@ -214,15 +214,6 @@ uv run --no-sync -m kibad_llm.predict experiment/predict=micro_llm
 
 The [smoke-test preset](/configs/experiment/predict/micro_llm.yaml) processes all four complete PDFs in `tests/fixtures/pdfs`, splits their text into 6,000-character chunks, and predicts the main language (`de`, `en`, or `other`) of each chunk using a small, bounded JSON schema. Chunk predictions are combined by majority vote. Evidence wrappers are disabled. It uses an 8,192-token context, compact JSON decoding, and a 64-token response limit. Results and run metadata are written to the usual `predictions/micro_llm` and `logs/micro_llm` directories. These environment settings limit the KV cache to 1 GiB and use four CPU threads. Override `pdf_directory` to test another directory.
 
-The real-inference integration test is skipped by default, including under plain `uv run --group cicd pytest`. With the same CPU environment, explicitly enable it:
-
-```bash
-RUN_MICRO_LLM_TEST=1 uv run --no-sync --group cicd pytest \
-  tests/integration/test_micro_llm.py -m slow
-```
-
-The `slow` marker also excludes this test from CI. Selecting `-m slow` alone does not enable the test; `RUN_MICRO_LLM_TEST=1` is required.
-
 ### Schema descriptions in prompts
 
 Prompt templates containing `{schema_description}` use `build_schema_description` from [schema/description.py](/src/kibad_llm/schema/description.py).
