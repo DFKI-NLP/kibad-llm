@@ -1,19 +1,28 @@
-"""Base interface for preparing and executing LLM chat requests."""
+"""Define the LLM backend interface and its default inline request preparation.
+
+Each backend supplies values and input artifacts for the fields in the current template.
+The default inline preparation requires a document field on the first turn and supplies
+schema JSON or a readable description for fields declared and referenced by the template.
+`LLM` also defines the chat call and access to response content, reasoning, and metadata.
+"""
 
 from abc import ABC, abstractmethod
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from copy import deepcopy
+import json
 from typing import Any
 
 from llama_index.core.base.llms.types import ChatResponse
 from pydantic import BaseModel
 
 from kibad_llm.llms.request import (
-    ExtractionPrompt,
     PreparedRequest,
     SimpleChatMessage,
-    prepare_inline_request,
+    get_message_templates,
+    get_template_placeholders,
+    prepare_template_request,
 )
+from kibad_llm.schema.description import build_schema_description
 
 
 class MissingRawChatResponseError(Exception):
@@ -52,35 +61,102 @@ class EmptyReasoningError(Exception):
     ...
 
 
+def prepare_inline_request(
+    prompt_template: Mapping[str, Any],
+    *,
+    document: str,
+    schema: dict[str, Any] | None,
+    history: Sequence[SimpleChatMessage] = (),
+) -> PreparedRequest:
+    """Render the requested document and schema fields as message text.
+
+    With empty history, the template must declare `document_placeholder` and reference
+    that field in its system or user message. A turn with history may omit both.
+
+    Args:
+        prompt_template: Current messages and field declarations. `schema_placeholder`
+            names the JSON field and `schema_description_placeholder` names the readable
+            description field. `schema_description_kwargs` configures the description.
+        document: Source text to insert when the message references the declared document field.
+        schema: Schema selected for the prompt, or None.
+        history: Previously rendered messages to prepend.
+
+    Returns:
+        The rendered current turn and full conversation.
+
+    Raises:
+        MissingBindingError: A template references an unavailable binding.
+        ValueError: A referenced schema field has no schema, the first turn omits
+            the document field, or the templates cannot be rendered.
+    """
+    templates = get_message_templates(prompt_template)
+    placeholders = get_template_placeholders(templates)
+    bindings: dict[str, str] = {}
+    schema_field = prompt_template.get("schema_placeholder")
+    if schema_field in placeholders:
+        if schema is None:
+            raise ValueError(f"Placeholder '{{{schema_field}}}' requires a schema.")
+        bindings[schema_field] = json.dumps(schema, ensure_ascii=False)
+    description_field = prompt_template.get("schema_description_placeholder")
+    if description_field in placeholders:
+        if schema is None:
+            raise ValueError(f"Placeholder '{{{description_field}}}' requires a schema.")
+        bindings[description_field] = build_schema_description(
+            schema=schema, **(prompt_template.get("schema_description_kwargs") or {})
+        )
+    document_field = prompt_template.get("document_placeholder")
+    if document_field in placeholders:
+        bindings[document_field] = document
+    request = prepare_template_request(templates, bindings=bindings, history=history)
+    if not history and document_field not in placeholders:
+        raise ValueError(
+            "The first inline turn must declare 'document_placeholder' and reference "
+            "that field in the system or user message."
+        )
+    return request
+
+
 class LLM(ABC):
     """Prepare and execute chat requests with a model backend."""
 
-    def prepare_request(self, prompt: ExtractionPrompt) -> PreparedRequest:
-        """Build the current turn and full request, using inline document text by default.
+    def prepare_request(
+        self,
+        prompt_template: Mapping[str, Any],
+        *,
+        document: str,
+        schema: dict[str, Any] | None,
+        history: Sequence[SimpleChatMessage] = (),
+    ) -> PreparedRequest:
+        """Prepare the current turn and its inputs for this backend.
 
-        Backends can override this method to change how they build messages or
-        supply auxiliary inputs for their chat call. The default implementation delegates
-        to [`prepare_inline_request`][kibad_llm.llms.request.prepare_inline_request].
+        The template declares which fields the backend can supply. The message text
+        selects which of those fields it uses. Field declarations can be inherited
+        from a prompt preset.
+        Include any files the referenced fields require in the returned request.
+
+        The default uses [`prepare_inline_request`][kibad_llm.llms.base.prepare_inline_request],
+        which requires the inline document field on the first turn. Overrides can pass
+        their bindings and rendered history to
+        [`prepare_template_request`][kibad_llm.llms.request.prepare_template_request].
 
         Args:
-            prompt: Templates and inputs available for preparing the extraction request.
+            prompt_template: Current system/user templates and their backend-specific settings.
+            document: Source text selected by the extractor for this turn.
+            schema: Schema selected for use in the prompt. The extractor supplies the
+                decoding schema separately when it calls the model.
+            history: Previously rendered messages to prepend.
 
         Returns:
             The current turn, full conversation including history, and any auxiliary
             backend inputs. The default implementation creates no auxiliary inputs.
 
         Raises:
-            ValueError: Default inline preparation rejects missing templates, a missing
-                required schema, a missing first-turn document placeholder, invalid
-                formatting, or an unsupported schema description.
-            TypeError: A referenced schema cannot be serialized as JSON, or schema
-                description options contain unsupported arguments.
-
-        Warns:
-            UserWarning: Default inline preparation logs a warning once if a supplied
-                schema is unused by the templates.
+            MissingBindingError: A template references an unavailable binding.
+            ValueError: A template is invalid for the backend.
         """
-        return prepare_inline_request(prompt)
+        return prepare_inline_request(
+            prompt_template, document=document, schema=schema, history=history
+        )
 
     @abstractmethod
     def call_llm_chat_with_guided_decoding(

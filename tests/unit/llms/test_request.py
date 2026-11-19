@@ -5,11 +5,13 @@ import json
 from llama_index.core.base.llms.types import MessageRole
 import pytest
 
+from kibad_llm.llms.base import prepare_inline_request
 from kibad_llm.llms.request import (
-    ExtractionPrompt,
+    MissingBindingError,
     SimpleChatMessage,
     build_chat_messages,
-    prepare_inline_request,
+    get_template_placeholders,
+    prepare_template_request,
 )
 
 
@@ -26,60 +28,154 @@ def test_build_chat_messages_renders_backend_supplied_templates() -> None:
 def test_build_chat_messages_reports_missing_binding() -> None:
     """Identify the missing placeholder and message role."""
     templates = [SimpleChatMessage(role=MessageRole.USER, content="{missing}")]
-    with pytest.raises(ValueError, match="No value for placeholder 'missing' in USER message"):
+    with pytest.raises(
+        MissingBindingError, match="No value for placeholder 'missing' in USER message"
+    ) as raised:
         build_chat_messages(templates, {})
+    assert raised.value.placeholder == "missing"
+    assert raised.value.role == MessageRole.USER
 
 
-def test_prepare_inline_request_inserts_json_schema_with_custom_placeholder(monkeypatch) -> None:
+@pytest.mark.parametrize(
+    "template, fields",
+    [
+        ("{value!s}", {"value"}),
+        ("{value[0]}", {"value"}),
+        ("{value:{width}}", {"value", "width"}),
+        ("{{value}} {{width}}", set()),
+    ],
+)
+def test_get_template_placeholders_finds_bindings_without_interpreting_literals(template, fields):
+    """Discover root bindings, including nested fields, using formatter syntax."""
+    templates = [SimpleChatMessage(role=MessageRole.USER, content=template)]
+
+    assert get_template_placeholders(templates) == fields
+
+
+def test_prepare_template_request_renders_only_current_templates() -> None:
+    """Use explicit binding values and leave already-rendered history alone."""
+    history = [SimpleChatMessage(role=MessageRole.USER, content="Previous {turn}")]
+    bindings = {"schema": "Custom schema text", "filename": "input.md"}
+    templates = [
+        SimpleChatMessage(role=MessageRole.SYSTEM, content="{schema}"),
+        SimpleChatMessage(role=MessageRole.USER, content="Read {filename}."),
+    ]
+
+    request = prepare_template_request(templates, bindings=bindings, history=history)
+
+    assert request.current_messages == [
+        SimpleChatMessage(role=MessageRole.SYSTEM, content="Custom schema text"),
+        SimpleChatMessage(role=MessageRole.USER, content="Read input.md."),
+    ]
+    assert request.messages == [*history, *request.current_messages]
+    assert request.input_artifacts == {}
+    assert bindings == {"schema": "Custom schema text", "filename": "input.md"}
+    assert history == [SimpleChatMessage(role=MessageRole.USER, content="Previous {turn}")]
+
+
+@pytest.mark.parametrize("schema", [None, {"default": object()}], ids=["absent", "unused"])
+def test_prepare_inline_request_can_omit_schema_bindings(schema) -> None:
+    """Skip schema preparation when the template uses only the document."""
+    request = prepare_inline_request(
+        {
+            "user_message": "{document} {{schema}} {{schema_description}}",
+            "document_placeholder": "document",
+            "schema_placeholder": "schema",
+            "schema_description_placeholder": "schema_description",
+        },
+        document="Source",
+        schema=schema,
+    )
+
+    assert request.current_messages == [
+        SimpleChatMessage(role=MessageRole.USER, content="Source {schema} {schema_description}")
+    ]
+
+
+def test_prepare_inline_request_requires_a_template() -> None:
+    """Fail before execution when neither message template is configured."""
+    with pytest.raises(ValueError, match="At least one of system_message or user_message"):
+        prepare_inline_request({}, document="Source", schema=None)
+
+
+def test_prepare_inline_request_inserts_json_schema_with_custom_placeholder() -> None:
     """Render non-ASCII JSON Schema and Markdown using the configured placeholder names."""
     schema = {"type": "object", "properties": {"field": {"const": "Wälder"}}}
-    warnings: list[str] = []
-    monkeypatch.setattr("kibad_llm.llms.request.warn_once", warnings.append)
     request = prepare_inline_request(
-        ExtractionPrompt(
-            system_message="{output_schema}",
-            user_message="{markdown}",
-            document="Markdown",
-            document_placeholder="markdown",
-            schema=schema,
-            schema_placeholder="output_schema",
-        )
+        {
+            "system_message": "{output_schema}",
+            "user_message": "{markdown}",
+            "document_placeholder": "markdown",
+            "schema_placeholder": "output_schema",
+        },
+        document="Markdown",
+        schema=schema,
     )
 
     system, user = request.messages
     assert json.loads(system.content) == schema
     assert "Wälder" in system.content
     assert user.content == "Markdown"
-    assert warnings == []
 
 
-def test_prepare_inline_request_rejects_missing_json_schema() -> None:
-    """Require a schema when a template references it."""
-    with pytest.raises(ValueError, match="requires JSON Schema"):
-        prepare_inline_request(
-            ExtractionPrompt(system_message="{schema}", document="Markdown", schema=None)
-        )
+@pytest.mark.parametrize("setting", ["schema_placeholder", "schema_description_placeholder"])
+def test_prepare_inline_request_requires_schema_for_declared_field(setting) -> None:
+    """Name the declared field that requested the missing schema."""
+    template = {
+        "system_message": "{spec}",
+        "user_message": "{document}",
+        "document_placeholder": "document",
+        setting: "spec",
+    }
+    with pytest.raises(ValueError, match=r"\{spec\}.*requires a schema"):
+        prepare_inline_request(template, document="Markdown", schema=None)
 
 
-@pytest.mark.parametrize("user_message", ["Extract the fields.", "Extract from {{document}}."])
-def test_prepare_inline_request_requires_document_in_first_turn(user_message: str) -> None:
-    """Require an actual document binding in an initial prompt."""
-    with pytest.raises(ValueError, match="must contain"):
-        prepare_inline_request(
-            ExtractionPrompt(user_message=user_message, document="Markdown", schema=None)
-        )
+@pytest.mark.parametrize("placeholder", ["schema", "schema_description"])
+def test_prepare_inline_request_reports_undeclared_schema_field(placeholder) -> None:
+    """The renderer identifies an undeclared field and its message role."""
+    template = {
+        "system_message": f"{{{placeholder}}}",
+        "user_message": "{document}",
+        "document_placeholder": "document",
+    }
+    with pytest.raises(MissingBindingError) as raised:
+        prepare_inline_request(template, document="Markdown", schema={})
+
+    assert raised.value.placeholder == placeholder
+    assert raised.value.role == MessageRole.SYSTEM
+
+
+@pytest.mark.parametrize(
+    "template",
+    [
+        {"user_message": "Extract the fields."},
+        {"user_message": "Extract the fields.", "document_placeholder": "document"},
+        {"user_message": "Extract from {{document}}.", "document_placeholder": "document"},
+    ],
+)
+def test_prepare_inline_request_requires_document_in_first_turn(template) -> None:
+    """Require a declared and referenced document field in the initial prompt."""
+    with pytest.raises(ValueError, match="first inline turn must declare 'document_placeholder'"):
+        prepare_inline_request(template, document="Markdown", schema=None)
+
+
+def test_prepare_inline_request_reports_undeclared_document_field() -> None:
+    """Using the conventional field name still requires a declaration."""
+    with pytest.raises(MissingBindingError) as raised:
+        prepare_inline_request({"user_message": "{document}"}, document="Markdown", schema=None)
+    assert raised.value.placeholder == "document"
+    assert raised.value.role == MessageRole.USER
 
 
 def test_prepare_inline_request_keeps_history_separate_from_current_turn() -> None:
     """Allow a follow-up template without a document placeholder."""
     history = [SimpleChatMessage(role=MessageRole.USER, content="Markdown")]
     request = prepare_inline_request(
-        ExtractionPrompt(
-            user_message="Extract one more field.",
-            document="Markdown",
-            schema=None,
-            history=history,
-        )
+        {"user_message": "Extract one more field."},
+        document="Markdown",
+        schema=None,
+        history=history,
     )
 
     assert request.current_messages == [
