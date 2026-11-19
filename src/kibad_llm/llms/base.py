@@ -110,8 +110,8 @@ class LLM(ABC):
                 None means free-form output. - must be passed by keyword
 
         Keyword Args:
-              **request_kwargs (Any): Backend-specific request options, forwarded to the
-                  underlying client. See the implementing subclass for what is supported.
+            **request_kwargs (Any): Backend-specific request options, forwarded to the
+                underlying client. See the implementing subclass for what is supported.
 
         Returns:
             ChatResponse holding the model's reply message and the raw response.
