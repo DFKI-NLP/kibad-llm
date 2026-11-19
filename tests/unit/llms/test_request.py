@@ -76,7 +76,11 @@ def test_prepare_template_request_renders_only_current_templates() -> None:
 def test_prepare_inline_request_can_omit_schema_bindings() -> None:
     """Leave a supplied schema alone when the template uses only the document."""
     request = prepare_inline_request(
-        {"user_message": "{document} {{schema}} {{schema_description}}"},
+        {
+            "user_message": "{document} {{schema}} {{schema_description}}",
+            "schema_placeholder": "schema",
+            "schema_description_placeholder": "schema_description",
+        },
         document="Source",
         schema={"default": object()},
     )
@@ -113,14 +117,14 @@ def test_prepare_inline_request_inserts_json_schema_with_custom_placeholder() ->
 
 
 @pytest.mark.parametrize("placeholder", ["schema", "schema_description"])
-def test_prepare_inline_request_reports_missing_schema_binding(placeholder: str) -> None:
-    """Report the referenced inline schema field when a schema is absent."""
+@pytest.mark.parametrize("schema", [None, {}], ids=["no-schema", "undeclared-field"])
+def test_prepare_inline_request_reports_missing_schema_binding(placeholder, schema) -> None:
+    """A referenced schema field requires both a declaration and a schema."""
+    template = {"system_message": f"{{{placeholder}}}", "user_message": "{document}"}
+    if schema is None:
+        template[f"{placeholder}_placeholder"] = placeholder
     with pytest.raises(MissingBindingError) as raised:
-        prepare_inline_request(
-            {"system_message": f"{{{placeholder}}}", "user_message": "{document}"},
-            document="Markdown",
-            schema=None,
-        )
+        prepare_inline_request(template, document="Markdown", schema=schema)
 
     assert raised.value.placeholder == placeholder
     assert raised.value.role == MessageRole.SYSTEM

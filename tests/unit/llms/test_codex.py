@@ -27,7 +27,9 @@ def test_codex_stages_only_files_referenced_by_filename_placeholders(
     document = "# Original Markdown\nWälder\n"
     user = "Read {document_filename}." if include_document else "Return the fields."
     user += "\n{schema_filename}" if include_schema_file else "\n{schema}"
-    request = backend.prepare_request({"user_message": user}, document=document, schema=schema)
+    request = backend.prepare_request(
+        {"user_message": user, "schema_placeholder": "schema"}, document=document, schema=schema
+    )
     expected = {}
     if include_document:
         expected["input.md"] = document
@@ -77,7 +79,7 @@ def test_codex_can_supply_the_same_schema_inline_and_as_a_file(tmp_path):
     """Create the schema file when requested alongside its inline representation."""
     backend = Codex("test-model", "high", 30, str(tmp_path))
     request = backend.prepare_request(
-        {"user_message": "{schema_filename}\n{schema}"},
+        {"user_message": "{schema_filename}\n{schema}", "schema_placeholder": "schema"},
         document="Source",
         schema={"type": "string", "const": "Wälder"},
     )
@@ -98,7 +100,11 @@ def test_codex_does_not_attach_files_for_literals_or_rendered_values(tmp_path, t
     backend = Codex("test-model", "high", 30, str(tmp_path))
     schema = {"description": "Literal {document_filename} and {schema_filename}"}
 
-    request = backend.prepare_request({"user_message": template}, document="Source", schema=schema)
+    request = backend.prepare_request(
+        {"user_message": template, "schema_placeholder": "schema"},
+        document="Source",
+        schema=schema,
+    )
 
     assert request.input_artifacts == {}
 
@@ -348,7 +354,7 @@ def test_file_backed_preset_stages_markdown_and_uses_only_template_messages(
         ({"user_message": "Read {document}"}, "document"),
         ({"system_message": "Read {markdown!s}"}, "markdown"),
         ({"user_message": "Read {document[0]}"}, "document"),
-        ({"user_message": "{schema:{document}}"}, "document"),
+        ({"user_message": "{schema:{document}}", "schema_placeholder": "schema"}, "document"),
     ],
 )
 def test_codex_rejects_inline_template_before_inference(tmp_path, template, placeholder):
@@ -368,11 +374,16 @@ def test_codex_rejects_inline_template_before_inference(tmp_path, template, plac
     assert not list(tmp_path.iterdir())
 
 
-def test_codex_reports_unrelated_missing_bindings(tmp_path):
-    """Preserve the shared renderer's error for an unrelated missing field."""
+@pytest.mark.parametrize("field", ["missing", "schema", "schema_description"])
+def test_codex_reports_undeclared_fields(tmp_path, field):
+    """Supplying a schema only binds the message fields declared by the template."""
     backend = Codex("test-model", "high", 600, str(tmp_path))
-    with pytest.raises(ValueError, match="No value for placeholder 'missing' in USER message"):
-        backend.prepare_request({"user_message": "Read {missing}"}, document="Source", schema=None)
+    with pytest.raises(MissingBindingError) as raised:
+        backend.prepare_request(
+            {"user_message": f"Read {{{field}}}"}, document="Source", schema={}
+        )
+    assert raised.value.placeholder == field
+    assert raised.value.role == MessageRole.USER
 
 
 def test_codex_reads_filename_fields_per_template(tmp_path):

@@ -85,8 +85,8 @@ def build_inline_schema_bindings(
     bindings: dict[str, str] = {}
     if schema is None:
         return bindings
-    schema_field = prompt_template.get("schema_placeholder", "schema")
-    description_field = prompt_template.get("schema_description_placeholder", "schema_description")
+    schema_field = prompt_template.get("schema_placeholder")
+    description_field = prompt_template.get("schema_description_placeholder")
     if schema_field in placeholders:
         bindings[schema_field] = json.dumps(schema, ensure_ascii=False)
     if description_field in placeholders:

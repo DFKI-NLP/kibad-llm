@@ -171,6 +171,8 @@ def test_extract_from_text_uses_same_schema_for_both_placeholders(
         prompt_template={
             "system_message": "{schema_description}",
             "user_message": "{document}\n{schema}",
+            "schema_description_placeholder": "schema_description",
+            "schema_placeholder": "schema",
         },
         schema=schema,
         adjust_schema_for_evidence_detection=True,
