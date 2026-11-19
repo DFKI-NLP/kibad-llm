@@ -199,7 +199,8 @@ class OpenAI(LLM):
             strict_json_schema (bool): Determines whether to apply strict schema conversion.
                 Defaults to `True`.
             text (dict[str, Any]): Responses API `text` config. If it already contains a `format`,
-                that format takes precedence and `json_schema` is ignored.
+                that format takes precedence and `json_schema` is ignored. If `json_schema` is not `None`
+                and `text` has no `format`, the entire `text` dict is replaced, dropping all values. #642
             * (Any): Everything else is forwarded to
                 [`OpenAIResponses`][llama_index.llms.openai.OpenAIResponses]`.chat`.
 
