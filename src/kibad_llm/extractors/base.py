@@ -15,6 +15,7 @@ Functions:
         evidence location info.
     add_response_content_callback: Postprocessing callback to add response content to output.
     add_reasoning_content_callback: Postprocessing callback to add reasoning content to output.
+    add_backend_metadata_callback: Postprocessing callback to preserve backend token usage.
     add_structured_callback: Postprocessing callback to parse and validate structured output.
     augment_and_strip_metadata_from_structured_callback: Postprocessing callback to augment
         metadata and strip it from structured output.
@@ -38,7 +39,7 @@ from typing import Any
 from jsonschema.validators import validator_for
 from llama_index.core.base.llms.types import ChatResponse
 
-from kibad_llm.llms.base import LLM, BackendExecutionError
+from kibad_llm.llms.base import LLM
 from kibad_llm.llms.request import (
     ExtractionPrompt,
     SimpleChatMessage,
@@ -74,9 +75,9 @@ class SingleExtractionResult(FieldDict):
             (Usually output between <think> and </think> tokens)
         messages: Configured system and user templates before formatting.
         messages_formatted: Rendered messages in the current turn, keyed by role.
-        backend_metadata: Optional execution metadata reported by the backend.
         errors: list of strings "error_name: error_message"
         errors_long: list of strings "error_name: error_message_and_traceback"
+        backend_metadata: Backend-reported token usage for this call, or None if unavailable.
     """
 
     character_start: int
@@ -87,15 +88,9 @@ class SingleExtractionResult(FieldDict):
     reasoning_content: str | None = None
     messages: dict[str, str | None] | None = None
     messages_formatted: dict[str, str] | None = None
-    backend_metadata: dict[str, Any] | None = None
     errors: list[str] = field(default_factory=list)
     errors_long: list[str] = field(default_factory=list)
-
-    def __post_init__(self) -> None:
-        """Omit backend metadata from serialized results when none is reported."""
-        super().__post_init__()
-        if self.backend_metadata is None:
-            dict.__delitem__(self, "backend_metadata")
+    backend_metadata: dict[str, Any] | None = None
 
 
 def exception2error_msg(e: BaseException) -> tuple[str, str]:
@@ -480,6 +475,22 @@ def augment_metadata(
     return _augment(data)
 
 
+def add_backend_metadata_callback(
+    out: SingleExtractionResult,
+    response: ChatResponse,
+    *,
+    llm: LLM,
+) -> None:
+    """Preserve backend metadata independently of response parsing and validation.
+
+    Args:
+        out: Extraction result to update in place.
+        response: Response from the chat call.
+        llm: Backend that extracts its metadata from the response.
+    """
+    out.backend_metadata = llm.get_backend_metadata_from_chat_response(response)
+
+
 def add_response_content_callback(
     out: SingleExtractionResult,
     response: ChatResponse,
@@ -809,7 +820,9 @@ def extract_from_text(
     # only proceed if we have an llm
     if llm is not None:
         # setup postprocessing callbacks
-        postprocessing_callbacks: list[Callable[[SingleExtractionResult, ChatResponse], None]] = []
+        postprocessing_callbacks: list[Callable[[SingleExtractionResult, ChatResponse], None]] = [
+            partial(add_backend_metadata_callback, llm=llm)
+        ]
         # 1) get response content
         postprocessing_callbacks.append(partial(add_response_content_callback, llm=llm))
         # 2) get reasoning if requested
@@ -843,20 +856,11 @@ def extract_from_text(
         request_kwargs = dict(request_parameters or {})
         if request.input_artifacts:
             request_kwargs["input_artifacts"] = request.input_artifacts
-        try:
-            resp = llm.call_llm_chat_with_guided_decoding(
-                messages=request.messages,
-                json_schema=schema if use_guided_decoding else None,
-                **request_kwargs,
-            )
-        except BackendExecutionError as error:
-            out.backend_metadata = error.metadata
-            short, long = exception2error_msg(error)
-            out.errors.append(short)
-            out.errors_long.append(long)
-            return out
-        if "backend_metadata" in resp.additional_kwargs:
-            out.backend_metadata = resp.additional_kwargs["backend_metadata"]
+        resp = llm.call_llm_chat_with_guided_decoding(
+            messages=request.messages,
+            json_schema=schema if use_guided_decoding else None,
+            **request_kwargs,
+        )
 
         # postprocessing: call each callback in order, but proceed if one fails
         for callback in postprocessing_callbacks:

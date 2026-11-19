@@ -1,3 +1,5 @@
+"""Tests for file-backed Codex extraction and native usage reporting."""
+
 import json
 from pathlib import Path
 import subprocess  # nosec B404  # Used only to simulate TimeoutExpired.
@@ -6,8 +8,7 @@ from hydra.utils import instantiate
 from llama_index.core.base.llms.types import MessageRole
 import pytest
 
-from kibad_llm.extractors.base import extract_from_text
-from kibad_llm.llms.base import BackendExecutionError
+from kibad_llm.extractors.base import extract_from_text, extract_from_text_lenient
 from kibad_llm.llms.codex import Codex
 from kibad_llm.llms.request import ExtractionPrompt, SimpleChatMessage
 from tests.conftest import cfg_global
@@ -15,7 +16,19 @@ from tests.conftest import cfg_global
 CODEX_PRESET = "faktencheck_core_fields_schema_with_evidence_codex"
 
 
-def test_file_backed_preset_stages_markdown_and_uses_only_template_messages(tmp_path, monkeypatch):
+@pytest.mark.parametrize(
+    "usage_reports",
+    [
+        [],
+        [{"input_tokens": 12, "cached_input_tokens": 4, "output_tokens": 3}],
+        [{"input_tokens": 12}, {"input_tokens": 7, "output_tokens": 2}],
+    ],
+)
+@pytest.mark.parametrize("invalid_json", [False, True])
+def test_file_backed_preset_stages_markdown_and_uses_only_template_messages(
+    tmp_path, monkeypatch, usage_reports, invalid_json
+):
+    """Use the shared metadata callback and retain usage when JSON postprocessing fails."""
     cfg = cfg_global(
         out_dir=tmp_path,
         overrides=[
@@ -43,22 +56,29 @@ def test_file_backed_preset_stages_markdown_and_uses_only_template_messages(tmp_
             (cwd / "probe").touch()
         else:
             final = Path(args[args.index("--output-last-message") + 1])
-            final.write_text(json.dumps(answer), encoding="utf-8")
-            kwargs["stdout"].write(json.dumps({"usage": {"input_tokens": 12}}) + "\n")
+            final.write_text(
+                "invalid JSON" if invalid_json else json.dumps(answer), encoding="utf-8"
+            )
+            for usage in usage_reports:
+                kwargs["stdout"].write(
+                    json.dumps({"type": "turn.completed", "usage": usage}) + "\n"
+                )
         return subprocess.CompletedProcess(args, 0)
 
     monkeypatch.setenv("CODEX_API_KEY", "test")
     monkeypatch.setattr("kibad_llm.llms.codex.shutil.which", lambda _: "/usr/bin/codex")
-    monkeypatch.setattr(
-        "kibad_llm.llms.codex.subprocess.check_output", lambda *a, **kw: "codex test"
-    )
     monkeypatch.setattr("kibad_llm.llms.codex.subprocess.run", run_cli)
 
     result = instantiate(cfg.extractor, _convert_="all")(document, "fixture")
 
-    assert result.errors == []
-    assert result.structured["habitat"] == ["Wald"]
-    assert result.backend_metadata["input_tokens"] == 12
+    if invalid_json:
+        assert len(result.errors) == 1
+        assert result.errors[0].startswith("JSONDecodeError:")
+    else:
+        assert result.errors == []
+        assert result.structured["habitat"] == ["Wald"]
+    expected_metadata = {"usage": usage_reports} if usage_reports else None
+    assert result.backend_metadata == expected_metadata
     assert result.messages["user"].endswith("{schema}\n")
     system = result.messages_formatted["system"]
     user = result.messages_formatted["user"]
@@ -134,60 +154,57 @@ def test_prepare_request_preserves_history_and_custom_schema_placeholders(tmp_pa
     assert all(prompt.document not in message.content for message in request.messages)
 
 
-def test_failed_execution_keeps_metadata_and_current_prompt_snapshot(tmp_path, monkeypatch):
-    """Keep partial execution metadata and truncate only the recorded current turn."""
-    backend = Codex("test-model", "high", 600, str(tmp_path))
-    document = "# Source Markdown"
-    history = [SimpleChatMessage(role=MessageRole.USER, content="Previous turn")]
-    user_message = "Read input.md and extract the fields."
-    metadata = {"input_tokens": 9, "attempt_count": 1}
+@pytest.mark.parametrize(
+    "error",
+    [
+        subprocess.TimeoutExpired("codex", 30),
+        ValueError("Codex did not produce a final response."),
+    ],
+)
+def test_failed_execution_uses_existing_error_result(tmp_path, monkeypatch, error):
+    """Record execution failures through the existing extractor and retain CLI diagnostics."""
+    backend = Codex("test-model", "high", 30, str(tmp_path))
 
-    def fail(messages, *, json_schema, input_artifacts):
-        """Verify the complete request before simulating a backend failure."""
-        assert messages == [
-            *history,
-            SimpleChatMessage(role=MessageRole.USER, content=user_message),
-        ]
-        assert json_schema is None
-        assert input_artifacts == {"input.md": document}
-        raise BackendExecutionError("Timed out", metadata)
+    def fail(document, prompt, artifact, events):
+        """Simulate a failed CLI execution with an incomplete event log."""
+        events.write_text('{"type":', encoding="utf-8")
+        raise error
 
-    monkeypatch.setattr(backend, "call_llm_chat_with_guided_decoding", fail)
-    result = extract_from_text(
-        text=document,
+    monkeypatch.setattr(backend, "_run", fail)
+    result = extract_from_text_lenient(
+        text="Source Markdown",
         text_id="fixture",
-        prompt_template={"user_message": user_message},
+        prompt_template={"user_message": "Read input.md"},
         llm=backend,
         use_guided_decoding=False,
-        history=history,
-        return_messages=True,
-        return_messages_formatted=True,
-        truncate_user_message_formatted=5,
     )
+    assert len(result.errors) == 1
+    assert result.errors[0].startswith(type(error).__name__ + ":")
+    assert result.backend_metadata is None
+    (error_file,) = tmp_path.glob("*/error.txt")
+    assert error_file.read_text(encoding="utf-8") == str(error)
+    assert error_file.with_name("events.jsonl").is_file()
 
-    assert result.errors == ["BackendExecutionError: Timed out"]
-    assert result.backend_metadata == metadata
-    assert result.messages == {"system": None, "user": user_message}
-    assert result.messages_formatted == {"user": "Read ... (truncated @ 5 chars)"}
 
+@pytest.mark.parametrize("event_log", ['{"usage":', '{"usage": "invalid"}'])
+def test_metadata_error_does_not_discard_response(tmp_path, monkeypatch, event_log):
+    """Use the shared callback error handling when CLI usage cannot be parsed."""
+    backend = Codex("test-model", "high", 30, str(tmp_path))
 
-def test_timeout_keeps_partial_usage(tmp_path, monkeypatch):
-    backend = Codex("test-model", "medium", 30, str(tmp_path))
+    def run(document, prompt, artifact, events):
+        """Return valid extraction content alongside malformed CLI events."""
+        events.write_text(event_log, encoding="utf-8")
+        return "{}"
 
-    def timeout(document, prompt, artifact, events, metadata):
-        metadata["attempt_count"] = 1
-        event = {"type": "turn.completed", "usage": {"input_tokens": 9, "cached_input_tokens": 4}}
-        events.write_text(json.dumps(event) + "\n" + '{"type":', encoding="utf-8")
-        raise subprocess.TimeoutExpired("codex", 30)
-
-    monkeypatch.setattr(backend, "_run", timeout)
-    with pytest.raises(BackendExecutionError) as raised:
-        backend.call_llm_chat_with_guided_decoding([], input_artifacts={"input.md": "fixture"})
-
-    metadata = raised.value.metadata
-    assert metadata["input_tokens"] == 9
-    assert metadata["cached_input_tokens"] == 4
-    assert metadata["output_tokens"] is None
-    assert metadata["attempt_count"] == 1
-    assert metadata["backend_elapsed_seconds"] >= 0
-    assert (tmp_path.parent / Path(metadata["execution_events"])).is_file()
+    monkeypatch.setattr(backend, "_run", run)
+    result = extract_from_text(
+        text="Source",
+        text_id="fixture",
+        prompt_template={"user_message": "Read input.md"},
+        llm=backend,
+        use_guided_decoding=False,
+    )
+    assert result.structured == {}
+    assert result.backend_metadata is None
+    assert len(result.errors) == 1
+    assert result.errors[0].startswith(("JSONDecodeError:", "TypeError:"))

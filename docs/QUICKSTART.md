@@ -21,8 +21,7 @@ cp .env.example .env         # then fill in the variables you need, see below
 
 - `OPENAI_API_KEY` — required to run extraction with OpenAI-hosted models (e.g. `gpt_5`). Create a key at
     [platform.openai.com/api-keys](https://platform.openai.com/api-keys).
-- `HF_TOKEN` — required for access-restricted Hugging Face models (e.g. `gemma3_27b`), and for the in-process
-    vLLM backend. Create a token at [huggingface.co/settings/tokens](https://huggingface.co/settings/tokens).
+- `HF_TOKEN` — required for access-restricted Hugging Face models (e.g. `gemma3_27b`), including when using the in-process vLLM backend. Public models such as `smollm2_135m_in_process` need no token. Create a token at [huggingface.co/settings/tokens](https://huggingface.co/settings/tokens).
 - `VLLM_DOWNLOAD_DIR` — optional, where in-process vLLM caches downloaded model weights.
 - `DB_USER` / `DB_PASSWORD` — only needed for the Faktencheck Postgres database, see
     [podman/faktencheck-db/README.md](/podman/faktencheck-db/README.md).
@@ -61,6 +60,8 @@ Prediction uses an LLM backend, chosen per extractor config under
     `run_in_process.sh`) — needs `HF_TOKEN` for gated models.
 - **Codex CLI** (`codex`) — needs an authenticated CLI and a Linux host supporting its filesystem sandbox.
     See [USAGE.md § Codex extraction backend](USAGE.md#codex-extraction-backend) for setup and prediction instructions.
+
+For a tiny CPU model and a prediction run on the four fixture PDFs, see [USAGE.md § CPU smoke test](USAGE.md#cpu-smoke-test-with-a-micro-llm).
 
 For vLLM, follow [models/README.md § Quickstart](/models/README.md#quickstart) or
 [§ All-in-one run script](/models/README.md#all-in-one-run-script) to get one running.

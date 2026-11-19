@@ -1,9 +1,12 @@
 """Base interface for preparing and executing LLM chat requests."""
 
 from abc import ABC, abstractmethod
+from collections.abc import Mapping
+from copy import deepcopy
 from typing import Any
 
 from llama_index.core.base.llms.types import ChatResponse
+from pydantic import BaseModel
 
 from kibad_llm.llms.request import (
     ExtractionPrompt,
@@ -47,15 +50,6 @@ class EmptyReasoningError(Exception):
     """Raised when the extracted reasoning is empty."""
 
     ...
-
-
-class BackendExecutionError(Exception):
-    """A backend failure with any metadata collected before the failure."""
-
-    def __init__(self, message: str, metadata: dict[str, Any]):
-        """Store the failure message and partial execution metadata."""
-        super().__init__(message)
-        self.metadata = metadata
 
 
 class LLM(ABC):
@@ -119,6 +113,37 @@ class LLM(ABC):
         raise NotImplementedError(
             f"get_reasoning_from_chat_response() is not implemented for {type(self)}"
         )
+
+    def get_backend_metadata_from_chat_response(
+        self, response: ChatResponse
+    ) -> dict[str, Any] | None:
+        """Return token usage without changing the backend's field names or details.
+
+        The default supports the raw API responses used by OpenAI and API-hosted
+        vLLM. Other backends can override this method for their response format.
+
+        Args:
+            response: The response from one chat call.
+
+        Returns:
+            JSON-serializable metadata containing a copy of the backend's `usage`,
+            or None if the response does not report usage. Missing counts are not
+            estimated or replaced with zero.
+
+        Raises:
+            TypeError: Reported usage is neither a Pydantic model nor a mapping.
+        """
+        raw = response.raw
+        usage = raw.get("usage") if isinstance(raw, Mapping) else getattr(raw, "usage", None)
+        if usage is None:
+            return None
+        if isinstance(usage, BaseModel):
+            usage = usage.model_dump(mode="json")
+        elif isinstance(usage, Mapping):
+            usage = deepcopy(dict(usage))
+        else:
+            raise TypeError(f"Unsupported token usage type: {type(usage).__name__}")
+        return {"usage": usage}
 
     def get_response_content_from_chat_response(self, response: ChatResponse) -> str:
         """Extract content from chat response."""

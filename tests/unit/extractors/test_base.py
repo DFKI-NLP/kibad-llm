@@ -1,6 +1,7 @@
 import copy
 from dataclasses import replace
 import json
+from types import SimpleNamespace
 
 from llama_index.core.base.llms.types import ChatMessage, ChatResponse, MessageRole
 import pytest
@@ -143,6 +144,7 @@ def test_backend_prepares_messages_before_extractor_records_them() -> None:
     )
 
     assert result.errors == []
+    assert result.backend_metadata is None
     assert result.structured == {}
     assert result.messages == {"system": None, "user": "Configured: {document}"}
     assert result.messages_formatted == {"user": "Backend... (truncated @ 7 chars)"}
@@ -172,6 +174,7 @@ def test_extract_from_text_uses_same_schema_for_both_placeholders(
         truncate_user_message_formatted=None,
     )
 
+    assert result.backend_metadata is None
     assert result.messages == {
         "system": "{schema_description}",
         "user": "{document}\n{schema}",
@@ -189,3 +192,70 @@ def test_extract_from_text_uses_same_schema_for_both_placeholders(
         }
     else:
         assert rendered == schema
+
+
+@pytest.mark.parametrize(
+    ("content", "return_reasoning", "validate_with_schema", "expected_error"),
+    [
+        ("{}", False, False, None),
+        (None, False, False, "MissingResponseContentError"),
+        ("", False, False, "EmptyResponseMessageError"),
+        ("invalid json", False, False, "JSONDecodeError"),
+        ("{}", False, True, "ValidationError"),
+        ("{}", True, False, "NotImplementedError"),
+    ],
+)
+def test_backend_metadata_survives_postprocessing_errors(
+    content, return_reasoning: bool, validate_with_schema: bool, expected_error
+) -> None:
+    """Retain usage for responses that cannot produce a valid extraction."""
+    usage = {"input_tokens": 120, "output_tokens": 30, "total_tokens": 150}
+
+    class TestLLM(LLM):
+        """Return usage independently of the response's parseable content."""
+
+        def call_llm_chat_with_guided_decoding(self, messages, **kwargs) -> ChatResponse:
+            """Return the test response without contacting a backend."""
+            return ChatResponse(
+                message=ChatMessage(content=content), raw=SimpleNamespace(usage=usage)
+            )
+
+    result = extract_from_text(
+        text="document",
+        text_id="test",
+        prompt_template={"user_message": "{document}"},
+        schema={"type": "object", "required": ["missing"]},
+        use_guided_decoding=False,
+        validate_with_schema=validate_with_schema,
+        return_reasoning=return_reasoning,
+        llm=TestLLM(),
+    )
+
+    assert result.backend_metadata == {"usage": usage}
+    if expected_error is None:
+        assert result.errors == []
+    else:
+        assert any(error.startswith(expected_error + ":") for error in result.errors)
+
+
+def test_metadata_error_does_not_discard_structured_output() -> None:
+    """Report malformed backend usage through the existing extraction error fields."""
+
+    class TestLLM(LLM):
+        """Return valid content with invalid usage metadata."""
+
+        def call_llm_chat_with_guided_decoding(self, messages, **kwargs) -> ChatResponse:
+            """Provide a response that fails only the metadata callback."""
+            return ChatResponse(message=ChatMessage(content="{}"), raw={"usage": "invalid"})
+
+    result = extract_from_text(
+        text="document",
+        text_id="test",
+        prompt_template={"user_message": "{document}"},
+        use_guided_decoding=False,
+        llm=TestLLM(),
+    )
+    assert result.backend_metadata is None
+    assert result.structured == {}
+    assert len(result.errors) == 1
+    assert result.errors[0].startswith("TypeError: Unsupported token usage type")

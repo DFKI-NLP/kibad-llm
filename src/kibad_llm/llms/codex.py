@@ -1,19 +1,17 @@
 """Document extraction through the non-interactive Codex CLI."""
 
-from hashlib import sha256
 import json
 import os
 from pathlib import Path
 import shutil
 import subprocess  # nosec B404  # Required to invoke the Codex CLI.
 from tempfile import TemporaryDirectory
-from time import monotonic
 from typing import Any
 from uuid import uuid4
 
 from llama_index.core.base.llms.types import ChatMessage, ChatResponse, MessageRole
 
-from kibad_llm.llms.base import LLM, BackendExecutionError
+from kibad_llm.llms.base import LLM
 from kibad_llm.llms.request import (
     ExtractionPrompt,
     MissingBindingError,
@@ -110,50 +108,45 @@ class Codex(LLM):
         events = artifact / "events.jsonl"
         prompt = "\n\n".join(f"{message.role.value}:\n{message.content}" for message in messages)
         (artifact / "prompt.txt").write_text(prompt, encoding="utf-8")
-        metadata: dict[str, Any] = {
-            "model": self.model,
-            "reasoning_effort": self.reasoning_effort,
-            "timeout_seconds": self.timeout,
-            "markdown_sha256": sha256(document.encode()).hexdigest(),
-            "execution_events": str(events.relative_to(self.artifact_dir.parent)),
-            "input_tokens": None,
-            "cached_input_tokens": None,
-            "output_tokens": None,
-            "reasoning_tokens": None,
-            "attempt_count": 0,
-        }
-        started = monotonic()
         try:
-            answer = self._run(document, prompt, artifact, events, metadata)
+            answer = self._run(document, prompt, artifact, events)
         except (OSError, ValueError, subprocess.SubprocessError) as error:
             (artifact / "error.txt").write_text(str(error), encoding="utf-8")
-            raise BackendExecutionError(str(error), metadata) from error
-        finally:
-            metadata["backend_elapsed_seconds"] = monotonic() - started
-            if events.exists():
-                with events.open(encoding="utf-8", errors="replace") as stream:
-                    for line in stream:
-                        try:
-                            event = json.loads(line)
-                        except json.JSONDecodeError:
-                            continue
-                        usage: dict[str, int] = event.get("usage") or {}
-                        for key in (
-                            "input_tokens",
-                            "cached_input_tokens",
-                            "output_tokens",
-                            "reasoning_tokens",
-                        ):
-                            if usage.get(key) is not None:
-                                metadata[key] = (metadata[key] or 0) + usage[key]
-            (artifact / "metadata.json").write_text(
-                json.dumps(metadata, indent=2), encoding="utf-8"
-            )
+            raise
 
         return ChatResponse(
             message=ChatMessage(role=MessageRole.ASSISTANT, content=answer),
-            additional_kwargs={"backend_metadata": metadata},
+            raw=events.read_text(encoding="utf-8"),
         )
+
+    def get_backend_metadata_from_chat_response(
+        self, response: ChatResponse
+    ) -> dict[str, Any] | None:
+        """Expose individual CLI usage reports through the shared metadata callback.
+
+        Args:
+            response: Codex response whose raw value contains the CLI's JSONL event stream.
+
+        Returns:
+            A copy of the usage reports in event order, preserving native fields without
+            summing counters, or None when the CLI reported no usage.
+
+        Raises:
+            ValueError: A CLI event is not valid JSON.
+            TypeError: Reported usage is not a JSON object.
+        """
+        raw = response.raw
+        if raw is None:
+            return None
+        usage_reports = []
+        for line in raw.splitlines():
+            event = json.loads(line)
+            usage = event.get("usage")
+            if usage is not None:
+                if not isinstance(usage, dict):
+                    raise TypeError(f"Unsupported Codex usage type: {type(usage).__name__}")
+                usage_reports.append(usage)
+        return {"usage": usage_reports} if usage_reports else None
 
     def _run(
         self,
@@ -161,7 +154,6 @@ class Codex(LLM):
         prompt: str,
         artifact: Path,
         events: Path,
-        metadata: dict[str, Any],
     ) -> str:
         executable_path = shutil.which(self.executable)
         if executable_path is None:
@@ -175,10 +167,6 @@ class Codex(LLM):
             workspace.mkdir()
             state.mkdir(mode=0o700)
             (workspace / "input.md").write_text(document, encoding="utf-8")
-            # The operator controls the Codex executable and PATH. The version flag is fixed.
-            metadata["codex_version"] = subprocess.check_output(  # nosec B603
-                [executable, "--version"], text=True, timeout=30
-            ).strip()
             env = {"PATH": "/usr/bin:/bin", "HOME": str(state), "CODEX_HOME": str(state)}
             api_key = os.environ.get("CODEX_API_KEY") or os.environ.get("OPENAI_API_KEY")
             if api_key:
@@ -232,7 +220,6 @@ class Codex(LLM):
                 events.open("w", encoding="utf-8") as stdout,
                 (artifact / "stderr.log").open("w", encoding="utf-8") as stderr,
             ):
-                metadata["attempt_count"] = 1
                 # Pass options as arguments and the extraction prompt through stdin.
                 result = subprocess.run(  # nosec B603
                     [
@@ -263,6 +250,4 @@ class Codex(LLM):
                 )
             if not final.is_file():
                 raise ValueError("Codex did not produce a final response.")
-            answer = final.read_text(encoding="utf-8")
-            json.loads(answer)
-            return answer
+            return final.read_text(encoding="utf-8")
