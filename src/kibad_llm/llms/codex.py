@@ -17,7 +17,7 @@ from kibad_llm.llms.request import (
     MissingBindingError,
     PreparedRequest,
     SimpleChatMessage,
-    prepare_inline_request,
+    prepare_template_request,
 )
 from kibad_llm.utils.log import warn_once
 
@@ -79,7 +79,7 @@ class Codex(LLM):
             TypeError: Schema serialization or schema description options are invalid.
         """
         try:
-            request = prepare_inline_request(prompt, include_document=False)
+            request = prepare_template_request(prompt, bindings={})
         except MissingBindingError as error:
             if error.placeholder != prompt.document_placeholder:
                 raise

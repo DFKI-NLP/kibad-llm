@@ -8,6 +8,7 @@ Classes:
 
 Functions:
     build_chat_messages: Render role-tagged templates with explicit bindings.
+    prepare_template_request: Render templates and schema bindings and prepend history.
     prepare_inline_request: Prepare messages with the document embedded in the text.
 """
 
@@ -139,34 +140,46 @@ def build_chat_messages(
     return messages
 
 
-def prepare_inline_request(
-    prompt: ExtractionPrompt, *, include_document: bool = True
+def _get_placeholder_roles(prompt: ExtractionPrompt) -> dict[str, MessageRole]:
+    """Find unescaped template fields and the first message role that references each."""
+    formatter = Formatter()
+    roles_by_placeholder: dict[str, MessageRole] = {}
+    for role, content in (
+        (MessageRole.SYSTEM, prompt.system_message),
+        (MessageRole.USER, prompt.user_message),
+    ):
+        if content is not None:
+            for _, name, _, _ in formatter.parse(content):
+                if name is not None:
+                    roles_by_placeholder.setdefault(name, role)
+    return roles_by_placeholder
+
+
+def prepare_template_request(
+    prompt: ExtractionPrompt, *, bindings: Mapping[str, str]
 ) -> PreparedRequest:
-    """Render an extraction request that provides the document inline.
+    """Render extraction templates with schema bindings and caller-supplied values.
 
     Render the configured system and user templates in that order, omitting templates
-    set to None. Bind the document text and, when referenced, the JSON Schema or its
-    human-readable description. By default, bind the document and require its placeholder
-    when there is no history. Escaped placeholders such as `{{document}}` remain literal
-    text and do not satisfy that requirement.
+    set to None. Resolve the JSON Schema and its human-readable description only when
+    referenced. Caller bindings supply any other values; document delivery and its
+    validation belong to the caller. Escaped placeholders remain literal text.
 
     Args:
-        prompt: Templates, document, optional schema, history, and placeholder settings
-            to use for this turn.
-        include_document: Bind the document and require its placeholder in the first
-            turn. Disable this for backends that supply the document as an artifact;
-            references to the document placeholder then raise MissingBindingError.
+        prompt: Templates, optional schema, history, and placeholder settings for this turn.
+        bindings: Explicit replacement values, excluding the configured schema placeholders.
+            The mapping is not modified. Pass an empty mapping for file-backed prompts
+            that need only schema bindings.
 
     Returns:
         A request with the rendered current turn and the full conversation formed by
         prepending unchanged history. No auxiliary input artifacts are created.
 
     Raises:
-        MissingBindingError: A template references an unavailable binding, including the
-            document when include_document is False.
-        ValueError: Both templates are None, a schema placeholder is used without a schema,
-            a required document placeholder is absent when history is empty, a template cannot be
-            rendered, or the schema cannot be expanded into a description.
+        MissingBindingError: A template references an unavailable binding.
+        ValueError: Both templates are None, caller bindings override schema placeholders,
+            a schema placeholder is used without a schema, a template cannot be rendered,
+            or the schema cannot be expanded into a description.
         TypeError: A referenced schema cannot be serialized as JSON, or
             `schema_description_kwargs` contains unsupported arguments.
 
@@ -185,16 +198,17 @@ def prepare_inline_request(
     if not templates:
         raise ValueError("At least one of system_message or user_message must be provided.")
 
-    formatter = Formatter()
-    roles_by_placeholder: dict[str, MessageRole] = {}
-    for template in templates:
-        for _, name, _, _ in formatter.parse(template.content):
-            if name is not None:
-                roles_by_placeholder.setdefault(name, template.role)
+    schema_placeholders = {prompt.schema_placeholder, prompt.schema_description_placeholder}
+    conflicting_bindings = schema_placeholders.intersection(bindings)
+    if conflicting_bindings:
+        raise ValueError(
+            f"Caller bindings must not override schema placeholders: {sorted(conflicting_bindings)}."
+        )
 
+    roles_by_placeholder = _get_placeholder_roles(prompt)
     schema_description_role = roles_by_placeholder.get(prompt.schema_description_placeholder)
     schema_role = roles_by_placeholder.get(prompt.schema_placeholder)
-    bindings = {}
+    resolved_bindings = dict(bindings)
     if prompt.schema is None:
         for role, description, placeholder in (
             (schema_description_role, "schema description", prompt.schema_description_placeholder),
@@ -207,31 +221,60 @@ def prepare_inline_request(
                 )
     else:
         if schema_description_role is not None:
-            bindings[prompt.schema_description_placeholder] = build_schema_description(
+            resolved_bindings[prompt.schema_description_placeholder] = build_schema_description(
                 schema=prompt.schema, **(prompt.schema_description_kwargs or {})
             )
         if schema_role is not None:
-            bindings[prompt.schema_placeholder] = json.dumps(prompt.schema, ensure_ascii=False)
-        if not bindings:
+            resolved_bindings[prompt.schema_placeholder] = json.dumps(
+                prompt.schema, ensure_ascii=False
+            )
+        if schema_description_role is None and schema_role is None:
             warn_once(
                 "Schema provided but message templates use neither schema placeholder "
                 f"('{{{prompt.schema_description_placeholder}}}' or '{{{prompt.schema_placeholder}}}')."
             )
 
-    if include_document:
-        bindings[prompt.document_placeholder] = prompt.document
-    current_messages = build_chat_messages(templates, bindings)
-    if (
-        include_document
-        and not prompt.history
-        and prompt.document_placeholder not in roles_by_placeholder
-    ):
+    current_messages = build_chat_messages(templates, resolved_bindings)
+    return PreparedRequest(
+        current_messages=current_messages,
+        messages=[*prompt.history, *current_messages],
+    )
+
+
+def prepare_inline_request(prompt: ExtractionPrompt) -> PreparedRequest:
+    """Prepare an extraction request with the document embedded in its templates.
+
+    Supply the document binding to
+    [`prepare_template_request`][kibad_llm.llms.request.prepare_template_request]
+    and require its placeholder when history is empty. Escaped placeholders such as
+    `{{document}}` remain literal text and do not satisfy that requirement.
+
+    Args:
+        prompt: Templates, document, optional schema, history, and placeholder settings
+            to use for this turn.
+
+    Returns:
+        A request with the rendered current turn and unchanged history prepended to it.
+        No auxiliary input artifacts are created.
+
+    Raises:
+        MissingBindingError: A template references an unavailable binding.
+        ValueError: No document placeholder is used when history is empty, or shared
+            template preparation rejects the templates, bindings, or schema.
+        TypeError: A referenced schema cannot be serialized as JSON, or
+            `schema_description_kwargs` contains unsupported arguments.
+
+    Warns:
+        UserWarning: Logs a warning once when a schema is supplied but neither schema
+            placeholder is used by the templates.
+    """
+    request = prepare_template_request(
+        prompt, bindings={prompt.document_placeholder: prompt.document}
+    )
+    if not prompt.history and prompt.document_placeholder not in _get_placeholder_roles(prompt):
         raise ValueError(
             "At least one of the message templates must require the input text "
             f"(they must contain '{{{prompt.document_placeholder}}}')."
         )
 
-    return PreparedRequest(
-        current_messages=current_messages,
-        messages=[*prompt.history, *current_messages],
-    )
+    return request

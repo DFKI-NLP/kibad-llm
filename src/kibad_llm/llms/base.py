@@ -61,6 +61,9 @@ class LLM(ABC):
         Backends can override this method to change how they build messages or
         supply auxiliary inputs for their chat call. The default implementation delegates
         to [`prepare_inline_request`][kibad_llm.llms.request.prepare_inline_request].
+        Overrides can reuse schema rendering and history assembly through
+        [`prepare_template_request`][kibad_llm.llms.request.prepare_template_request]
+        with their own explicit bindings, then attach any backend-specific input artifacts.
 
         Args:
             prompt: Templates and inputs available for preparing the extraction request.
