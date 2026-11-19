@@ -111,6 +111,10 @@ class OpenAILikeVllm(LLM):
         Raises:
             ReasoningExtractionError: If the reasoning cannot be extracted.
             EmptyReasoningError: If the extracted reasoning is empty.
+            MissingRawChatResponseError: Raised by [`get_raw_message_from_chat_response`][..get_raw_message_from_chat_response]
+                if the `response` is missing the raw attribute.
+            RawMessageExtractionError: Raised by [`get_raw_message_from_chat_response`][..get_raw_message_from_chat_response]
+                if the raw message cannot be extracted from `response`.
         """
 
         raw_msg = self.get_raw_message_from_chat_response(response)
