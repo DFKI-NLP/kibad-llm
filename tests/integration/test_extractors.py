@@ -1,13 +1,18 @@
 import json
 import os
+from types import SimpleNamespace
+from typing import Any
 
+from datasets import Dataset
 from hydra.core.global_hydra import GlobalHydra
 from hydra.core.hydra_config import HydraConfig
 from hydra.utils import instantiate
+from llama_index.core.base.llms.types import ChatMessage, ChatResponse
 from omegaconf import DictConfig
 import pytest
 
 from kibad_llm.config import PROJ_ROOT
+from kibad_llm.llms.base import LLM
 from tests.conftest import WRITE_FIXTURE_DATA, cfg_global
 
 pytestmark = pytest.mark.usefixtures("llm_chat_replay")
@@ -92,3 +97,53 @@ def test_extractor(tmp_path, cfg_predict_extractor, extractor_name):
 
     # just check keys since the actual values are not deterministic
     assert set(result["structured"]) == set(expected_result["structured"])
+
+
+def test_extractor_preserves_backend_metadata_in_jsonl(
+    tmp_path, cfg_predict_extractor, extractor_name
+) -> None:
+    """Keep each call's usage through the configured workflow and prediction serialization."""
+
+    class TestLLM(LLM):
+        """Return different usage for each call to detect dropped or combined records."""
+
+        def __init__(self) -> None:
+            """Collect expected metadata in the order of backend calls."""
+            self.metadata: list[dict[str, Any]] = []
+
+        def call_llm_chat_with_guided_decoding(self, messages, **kwargs) -> ChatResponse:
+            """Return valid empty content and monotonically increasing usage counts."""
+            count = len(self.metadata) + 1
+            usage = {"prompt_tokens": count, "completion_tokens": 1, "total_tokens": count + 1}
+            self.metadata.append({"usage": usage})
+            return ChatResponse(
+                message=ChatMessage(content="{}"), raw=SimpleNamespace(usage=usage)
+            )
+
+    if "max_char_buffer" in cfg_predict_extractor.extractor:
+        cfg_predict_extractor.extractor.max_char_buffer = 16
+    HydraConfig().set_config(cfg_predict_extractor)
+    extractor = instantiate(cfg_predict_extractor.extractor, _convert_="all")
+    backend = TestLLM()
+    result = extractor(
+        text_id="test",
+        text="First sentence. Second sentence.",
+        llm=backend,
+        use_guided_decoding=False,
+        validate_with_schema=False,
+        return_reasoning=False,
+        adjust_schema_for_evidence_detection=False,
+        response_has_metadata=False,
+    )
+
+    output_file = tmp_path / "predictions.jsonl"
+    Dataset.from_list([dict(result)]).to_json(output_file)
+    saved_result = json.loads(output_file.read_text())
+    assert backend.metadata
+    if extractor_name == "simple":
+        assert saved_result["backend_metadata"] == backend.metadata[0]
+        assert saved_result["errors"] == []
+    else:
+        assert len(backend.metadata) > 1
+        assert saved_result["backend_metadata_list"] == backend.metadata
+        assert saved_result["errors_list"] == [[]] * len(backend.metadata)
