@@ -28,7 +28,14 @@ def test_codex_stages_only_files_referenced_by_filename_placeholders(
     user = "Read {document_filename}." if include_document else "Return the fields."
     user += "\n{schema_filename}" if include_schema_file else "\n{schema}"
     request = backend.prepare_request(
-        {"user_message": user, "schema_placeholder": "schema"}, document=document, schema=schema
+        {
+            "user_message": user,
+            "document_filename_placeholder": "document_filename",
+            "schema_filename_placeholder": "schema_filename",
+            "schema_placeholder": "schema",
+        },
+        document=document,
+        schema=schema,
     )
     expected = {}
     if include_document:
@@ -79,7 +86,11 @@ def test_codex_can_supply_the_same_schema_inline_and_as_a_file(tmp_path):
     """Create the schema file when requested alongside its inline representation."""
     backend = Codex("test-model", "high", 30, str(tmp_path))
     request = backend.prepare_request(
-        {"user_message": "{schema_filename}\n{schema}", "schema_placeholder": "schema"},
+        {
+            "user_message": "{schema_filename}\n{schema}",
+            "schema_filename_placeholder": "schema_filename",
+            "schema_placeholder": "schema",
+        },
         document="Source",
         schema={"type": "string", "const": "Wälder"},
     )
@@ -101,7 +112,12 @@ def test_codex_does_not_attach_files_for_literals_or_rendered_values(tmp_path, t
     schema = {"description": "Literal {document_filename} and {schema_filename}"}
 
     request = backend.prepare_request(
-        {"user_message": template, "schema_placeholder": "schema"},
+        {
+            "user_message": template,
+            "document_filename_placeholder": "document_filename",
+            "schema_filename_placeholder": "schema_filename",
+            "schema_placeholder": "schema",
+        },
         document="Source",
         schema=schema,
     )
@@ -164,6 +180,8 @@ def test_codex_requires_schema_when_its_filename_is_referenced(tmp_path):
             {
                 "system_message": "Use {schema_filename}",
                 "user_message": "Read {document_filename}",
+                "schema_filename_placeholder": "schema_filename",
+                "document_filename_placeholder": "document_filename",
             },
             document="Source",
             schema=None,
@@ -374,9 +392,11 @@ def test_codex_rejects_inline_template_before_inference(tmp_path, template, plac
     assert not list(tmp_path.iterdir())
 
 
-@pytest.mark.parametrize("field", ["missing", "schema", "schema_description"])
+@pytest.mark.parametrize(
+    "field", ["missing", "schema", "schema_description", "document_filename", "schema_filename"]
+)
 def test_codex_reports_undeclared_fields(tmp_path, field):
-    """Supplying a schema only binds the message fields declared by the template."""
+    """Document and schema inputs only bind fields declared by the template."""
     backend = Codex("test-model", "high", 600, str(tmp_path))
     with pytest.raises(MissingBindingError) as raised:
         backend.prepare_request(
@@ -453,7 +473,10 @@ def test_failed_execution_uses_existing_error_result(tmp_path, monkeypatch, erro
     result = extract_from_text_lenient(
         text="Source Markdown",
         text_id="fixture",
-        prompt_template={"user_message": "Read {document_filename}"},
+        prompt_template={
+            "user_message": "Read {document_filename}",
+            "document_filename_placeholder": "document_filename",
+        },
         llm=backend,
         use_guided_decoding=False,
     )
@@ -479,7 +502,10 @@ def test_metadata_error_does_not_discard_response(tmp_path, monkeypatch, event_l
     result = extract_from_text(
         text="Source",
         text_id="fixture",
-        prompt_template={"user_message": "Read {document_filename}"},
+        prompt_template={
+            "user_message": "Read {document_filename}",
+            "document_filename_placeholder": "document_filename",
+        },
         llm=backend,
         use_guided_decoding=False,
     )

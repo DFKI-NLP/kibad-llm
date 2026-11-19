@@ -89,10 +89,9 @@ class Codex(LLM):
         so a follow-up that needs a file must reference its filename field again.
 
         Args:
-            prompt_template: Current messages and their field names. Set
-                `document_filename_placeholder` (default `document_filename`) and
-                `schema_filename_placeholder` (default `schema_filename`) here to
-                choose the fields for `input.md` and `schema.json`. To include schema
+            prompt_template: Current messages and their field declarations. Use
+                `document_filename_placeholder` to name the field for `input.md` and
+                `schema_filename_placeholder` to name the field for `schema.json`. To include schema
                 text in the message, declare `schema_placeholder` for JSON or
                 `schema_description_placeholder` for a readable description.
             document: Source Markdown to stage when the template requests the document file.
@@ -111,9 +110,7 @@ class Codex(LLM):
         placeholders = get_template_placeholders(templates)
         bindings: dict[str, str] = {}
         input_artifacts = {}
-        document_file_field = prompt_template.get(
-            "document_filename_placeholder", "document_filename"
-        )
+        document_file_field = prompt_template.get("document_filename_placeholder")
         if document_file_field in placeholders:
             bindings[document_file_field] = _DOCUMENT_FILENAME
             input_artifacts[_DOCUMENT_FILENAME] = document
@@ -127,9 +124,7 @@ class Codex(LLM):
                 bindings[description_field] = build_schema_description(
                     schema=schema, **(prompt_template.get("schema_description_kwargs") or {})
                 )
-            schema_file_field = prompt_template.get(
-                "schema_filename_placeholder", "schema_filename"
-            )
+            schema_file_field = prompt_template.get("schema_filename_placeholder")
             if schema_file_field in placeholders:
                 bindings[schema_file_field] = _SCHEMA_FILENAME
                 input_artifacts[_SCHEMA_FILENAME] = json.dumps(schema, ensure_ascii=False)

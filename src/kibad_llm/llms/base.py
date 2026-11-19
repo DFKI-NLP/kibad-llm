@@ -70,15 +70,14 @@ def prepare_inline_request(
 ) -> PreparedRequest:
     """Render the requested document and schema fields as message text.
 
-    With empty history, the system or user message must reference the document field.
-    Its name defaults to `document` when `document_placeholder` is omitted.
-    A turn with history may omit the reference.
+    With empty history, the template must declare `document_placeholder` and reference
+    that field in its system or user message. A turn with history may omit both.
 
     Args:
         prompt_template: Current messages and field declarations. `schema_placeholder`
             names the JSON field and `schema_description_placeholder` names the readable
             description field. `schema_description_kwargs` configures the description.
-        document: Source text bound to the configured `document_placeholder` (default `document`).
+        document: Source text to insert when the message references the declared document field.
         schema: Schema selected for the prompt, or None.
         history: Previously rendered messages to prepend.
 
@@ -101,13 +100,14 @@ def prepare_inline_request(
             bindings[description_field] = build_schema_description(
                 schema=schema, **(prompt_template.get("schema_description_kwargs") or {})
             )
-    document_field = prompt_template.get("document_placeholder", "document")
-    bindings[document_field] = document
+    document_field = prompt_template.get("document_placeholder")
+    if document_field in placeholders:
+        bindings[document_field] = document
     request = prepare_template_request(templates, bindings=bindings, history=history)
     if not history and document_field not in placeholders:
         raise ValueError(
-            "The message templates must contain the document placeholder "
-            f"'{{{document_field}}}' on the first turn."
+            "The first inline turn must declare 'document_placeholder' and reference "
+            "that field in the system or user message."
         )
     return request
 
@@ -126,8 +126,8 @@ class LLM(ABC):
         """Prepare the current turn and its inputs for this backend.
 
         The template declares which fields the backend can supply. The message text
-        selects which of those fields it uses. Field names can come from the template's
-        settings, an inherited preset, or a default documented by the backend.
+        selects which of those fields it uses. Field declarations can be inherited
+        from a prompt preset.
         Include any files the referenced fields require in the returned request.
 
         The default uses [`prepare_inline_request`][kibad_llm.llms.base.prepare_inline_request],

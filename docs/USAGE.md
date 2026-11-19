@@ -209,7 +209,7 @@ The preset sets `extractor.use_guided_decoding=false`: the schema is supplied in
 
 Both filename fields are optional on every Codex turn, including the first. Reference `{document_filename}` to stage the source as `input.md` and `{schema_filename}` to stage the prompt schema as `schema.json`. A referenced schema field requires a schema. Each call starts with a fresh workspace, so reference a filename field again in any follow-up that needs the file. Literal filenames and escaped fields such as `{{schema_filename}}` do not request files.
 
-Set `document_filename_placeholder` and `schema_filename_placeholder` alongside the message text in `extractor.prompt_template`. Codex reads these names for each request, so different templates can use different names with the same backend.
+Declare or inherit the name of each filename field your template uses. The Codex preset declares `document_filename_placeholder: document_filename` and `schema_filename_placeholder: schema_filename`. Standalone templates set these alongside the message text and may choose their own names.
 
 ```yaml
 extractor:
@@ -227,7 +227,7 @@ The Hydra run directory contains prompts, final responses, execution events, and
 
 ### Schema descriptions in prompts
 
-The default inline backend requires `{document}` in the first turn's system or user template. Follow-up templates can omit it when the rendered history supplies the context they need. Use distinct placeholder names for the values the backend supplies. A template can omit schema fields even when the extractor uses a schema for guided decoding or output validation.
+On the first inline turn, declare `document_placeholder` and reference its field in the system or user message. The default prompt preset declares `document_placeholder: document`. A standalone template using `{document}` must supply that declaration itself. Follow-ups can omit both when history provides the context they need. Use distinct placeholder names for the values the backend supplies. A template can omit schema fields even when the extractor uses a schema for guided decoding or output validation.
 
 Declare the schema representations your messages use in `extractor.prompt_template`. Set `schema_placeholder` to the field name for JSON and `schema_description_placeholder` to the field name for a readable description. The default template declares `schema_description_placeholder: schema_description`, and the Codex preset also declares `schema_placeholder: schema`. Derived templates inherit these settings. Standalone templates and Python callers using `{schema}` or `{schema_description}` must supply the corresponding declaration.
 
@@ -256,6 +256,7 @@ prompt_template:
     Extract the requested information and return JSON matching this schema.
     {output_schema}
   user_message: "{document}"
+  document_placeholder: document
   schema_placeholder: output_schema
 ```
 

@@ -41,7 +41,7 @@ def test_in_process_usage_counts_all_generated_tokens(
     result = extract_from_text(
         text="document",
         text_id="test",
-        prompt_template={"user_message": "{document}"},
+        prompt_template={"user_message": "{document}", "document_placeholder": "document"},
         use_guided_decoding=False,
         llm=backend,
     )

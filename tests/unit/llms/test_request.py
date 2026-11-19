@@ -78,6 +78,7 @@ def test_prepare_inline_request_can_omit_schema_bindings() -> None:
     request = prepare_inline_request(
         {
             "user_message": "{document} {{schema}} {{schema_description}}",
+            "document_placeholder": "document",
             "schema_placeholder": "schema",
             "schema_description_placeholder": "schema_description",
         },
@@ -120,7 +121,11 @@ def test_prepare_inline_request_inserts_json_schema_with_custom_placeholder() ->
 @pytest.mark.parametrize("schema", [None, {}], ids=["no-schema", "undeclared-field"])
 def test_prepare_inline_request_reports_missing_schema_binding(placeholder, schema) -> None:
     """A referenced schema field requires both a declaration and a schema."""
-    template = {"system_message": f"{{{placeholder}}}", "user_message": "{document}"}
+    template = {
+        "system_message": f"{{{placeholder}}}",
+        "user_message": "{document}",
+        "document_placeholder": "document",
+    }
     if schema is None:
         template[f"{placeholder}_placeholder"] = placeholder
     with pytest.raises(MissingBindingError) as raised:
@@ -130,11 +135,26 @@ def test_prepare_inline_request_reports_missing_schema_binding(placeholder, sche
     assert raised.value.role == MessageRole.SYSTEM
 
 
-@pytest.mark.parametrize("user_message", ["Extract the fields.", "Extract from {{document}}."])
-def test_prepare_inline_request_requires_document_in_first_turn(user_message: str) -> None:
-    """Require an actual document binding in an initial prompt."""
-    with pytest.raises(ValueError, match="must contain"):
-        prepare_inline_request({"user_message": user_message}, document="Markdown", schema=None)
+@pytest.mark.parametrize(
+    "template",
+    [
+        {"user_message": "Extract the fields."},
+        {"user_message": "Extract the fields.", "document_placeholder": "document"},
+        {"user_message": "Extract from {{document}}.", "document_placeholder": "document"},
+    ],
+)
+def test_prepare_inline_request_requires_document_in_first_turn(template) -> None:
+    """Require a declared and referenced document field in the initial prompt."""
+    with pytest.raises(ValueError, match="first inline turn must declare 'document_placeholder'"):
+        prepare_inline_request(template, document="Markdown", schema=None)
+
+
+def test_prepare_inline_request_reports_undeclared_document_field() -> None:
+    """Using the conventional field name still requires a declaration."""
+    with pytest.raises(MissingBindingError) as raised:
+        prepare_inline_request({"user_message": "{document}"}, document="Markdown", schema=None)
+    assert raised.value.placeholder == "document"
+    assert raised.value.role == MessageRole.USER
 
 
 def test_prepare_inline_request_keeps_history_separate_from_current_turn() -> None:

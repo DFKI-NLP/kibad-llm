@@ -139,7 +139,10 @@ def test_backend_prepares_messages_before_extractor_records_them() -> None:
         text="a document",
         text_id="fixture",
         character_start=2,
-        prompt_template={"user_message": "Configured: {document}"},
+        prompt_template={
+            "user_message": "Configured: {document}",
+            "document_placeholder": "document",
+        },
         history=history,
         llm=TestLLM(),
         use_guided_decoding=False,
@@ -171,6 +174,7 @@ def test_extract_from_text_uses_same_schema_for_both_placeholders(
         prompt_template={
             "system_message": "{schema_description}",
             "user_message": "{document}\n{schema}",
+            "document_placeholder": "document",
             "schema_description_placeholder": "schema_description",
             "schema_placeholder": "schema",
         },
@@ -231,7 +235,7 @@ def test_backend_metadata_survives_postprocessing_errors(
     result = extract_from_text(
         text="document",
         text_id="test",
-        prompt_template={"user_message": "{document}"},
+        prompt_template={"user_message": "{document}", "document_placeholder": "document"},
         schema={"type": "object", "required": ["missing"]},
         use_guided_decoding=False,
         validate_with_schema=validate_with_schema,
@@ -259,7 +263,7 @@ def test_metadata_error_does_not_discard_structured_output() -> None:
     result = extract_from_text(
         text="document",
         text_id="test",
-        prompt_template={"user_message": "{document}"},
+        prompt_template={"user_message": "{document}", "document_placeholder": "document"},
         use_guided_decoding=False,
         llm=TestLLM(),
     )
