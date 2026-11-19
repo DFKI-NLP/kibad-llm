@@ -240,9 +240,7 @@ class OpenAI(LLM):
                         "keys or types not declared in the schema."
                     )
                 if "text" not in request_kwargs:
-                    request_kwargs["text"] = (
-                        {}
-                    )  # XXX: why are we doing this and then overwriting it immediately!
+                    request_kwargs["text"] = {}
 
                 request_kwargs["text"] = {
                     "format": {
