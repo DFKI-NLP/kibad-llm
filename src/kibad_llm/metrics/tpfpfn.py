@@ -30,10 +30,11 @@ class TpFpFnCollector(MetricWithTpFpFnEntries):
             per_record: Whether to group results by record id.
 
         Keyword Args:
-            field: Optional field to extract from dictionary inputs.
-            flatten_dicts: Whether nested dictionaries should be flattened before comparison.
-            ignore_subfields: Optional subfields to ignore when hashing dictionary values.
-            ignore_missing_entries: Whether one-sided empty entries should be skipped.
+            field (str | None): Optional field to extract from dictionary inputs.
+            flatten_dicts (bool): Whether nested dictionaries should be flattened before comparison.
+            ignore_subfields (dict[str, list] | None): Optional subfields to ignore when
+                hashing dictionary values.
+            ignore_missing_entries (bool): Whether one-sided empty entries should be skipped.
         """
         super().__init__(**kwargs)
         self.per_record = per_record
@@ -94,16 +95,17 @@ class TpFpFnCollectorCollection(MetricCollectionWithFieldDiscoveryAndGrouping[Tp
         """Initialize a multi-field tp/fp/fn entry collection.
 
         Keyword Args:
-            fields: Optional allowlist of fields to evaluate. If omitted, fields are discovered
-                from the union of keys present in each prediction/reference pair.
-            subfield_keys: Optional mapping describing how nested entries are split into generated
-                fields.
-            subfield_values: Optional mapping restricting which nested values are kept after field
-                expansion.
-            sort_fields: Whether to sort the fields in the output. Defaults to False.
-            per_record: Whether each per-field collector should group entries by record id.
-            flatten_dicts: Whether nested dictionaries should be flattened before comparison.
-            ignore_subfields: Optional subfields to ignore when hashing dictionary payloads.
-            ignore_missing_entries: Whether one-sided empty entries should be skipped.
+            fields (list[str] | None): Optional allowlist of fields to evaluate. If omitted,
+                fields are discovered from the union of keys in each prediction/reference pair.
+            subfield_keys (dict[str, list[str]] | None): Optional mapping describing how nested
+                entries are split into generated fields.
+            subfield_values (dict[str, list[str]] | None): Optional mapping restricting which
+                nested values are kept after field expansion.
+            sort_fields (bool): Whether to sort the fields in the output. Defaults to False.
+            per_record (bool): Whether each per-field collector should group entries by record id.
+            flatten_dicts (bool): Whether nested dictionaries should be flattened before comparison.
+            ignore_subfields (dict[str, list] | None): Optional subfields to ignore when
+                hashing dictionary payloads.
+            ignore_missing_entries (bool): Whether one-sided empty entries should be skipped.
         """
         super().__init__(metric_class=TpFpFnCollector, **kwargs)
