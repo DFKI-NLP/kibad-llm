@@ -191,7 +191,8 @@ class LLM(ABC):
         Args:
             messages: Message history to pass to the LLM query.
             json_schema: Schema the LLM output must comply with.
-                None means free-form output. - must be passed by keyword
+                `json_schema=None` passes no schema, but leaves backend-specific output constraints in effect.
+                - must be passed by keyword
 
         Keyword Args:
             **request_kwargs (Any): Backend-specific request options, forwarded to the
