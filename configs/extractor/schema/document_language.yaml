@@ -1,0 +1,9 @@
+# Bounded output for pipeline smoke tests with tiny models.
+type: object
+properties:
+  language:
+    type: string
+    description: "Hauptsprache des Textes (de: Deutsch, en: Englisch, other: andere Sprache)."
+    enum: [de, en, other]
+required: [language]
+additionalProperties: false
