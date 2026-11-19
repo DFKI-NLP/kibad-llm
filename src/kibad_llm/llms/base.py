@@ -1,4 +1,10 @@
-"""Base interface for preparing and executing LLM chat requests."""
+"""Define the LLM backend interface and its default inline request preparation.
+
+Each backend supplies values and input artifacts for the fields in the current template.
+The default inline preparation requires a document field on the first turn. Its schema
+bindings supply JSON or a readable description and can be reused by other backends.
+`LLM` also defines the chat call and access to response content, reasoning, and metadata.
+"""
 
 from abc import ABC, abstractmethod
 from collections.abc import Mapping, Sequence
@@ -6,12 +12,13 @@ from copy import deepcopy
 import json
 from typing import Any
 
-from llama_index.core.base.llms.types import ChatResponse, MessageRole
+from llama_index.core.base.llms.types import ChatResponse
 from pydantic import BaseModel
 
 from kibad_llm.llms.request import (
     PreparedRequest,
     SimpleChatMessage,
+    get_message_templates,
     get_template_placeholders,
     prepare_template_request,
 )
@@ -52,31 +59,6 @@ class EmptyReasoningError(Exception):
     """Raised when the extracted reasoning is empty."""
 
     ...
-
-
-def get_message_templates(prompt_template: Mapping[str, Any]) -> list[SimpleChatMessage]:
-    """Read the configured system and user message templates, in conversation order.
-
-    Args:
-        prompt_template: Settings for the current turn, including `system_message` or `user_message`.
-
-    Returns:
-        Role-tagged templates in order, omitting messages whose text is absent or None.
-
-    Raises:
-        ValueError: Neither message has a template.
-    """
-    templates = [
-        SimpleChatMessage(role=role, content=content)
-        for role, content in (
-            (MessageRole.SYSTEM, prompt_template.get("system_message")),
-            (MessageRole.USER, prompt_template.get("user_message")),
-        )
-        if content is not None
-    ]
-    if not templates:
-        raise ValueError("At least one of system_message or user_message must be provided.")
-    return templates
 
 
 def build_inline_schema_bindings(

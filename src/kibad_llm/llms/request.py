@@ -1,4 +1,8 @@
-"""Share request types and message rendering between LLM backends.
+"""Construct chat messages from templates and explicit field bindings.
+
+Read the system and user templates in order, identify their fields, and substitute
+the values the backend supplies. A prepared request combines the rendered turn with
+prior messages and carries any input artifacts chosen by the backend.
 
 Classes:
     MissingBindingError: A template references a field without a supplied value.
@@ -6,6 +10,7 @@ Classes:
     PreparedRequest: Rendered messages and optional backend inputs.
 
 Functions:
+    get_message_templates: Read the configured system and user templates in order.
     build_chat_messages: Render role-tagged templates with explicit bindings.
     get_template_placeholders: Find the binding names referenced by message templates.
     prepare_template_request: Render with supplied bindings and prepend history.
@@ -14,6 +19,7 @@ Functions:
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from string import Formatter
+from typing import Any
 
 from llama_index.core.base.llms.types import MessageRole
 
@@ -64,6 +70,31 @@ class PreparedRequest:
     current_messages: list[SimpleChatMessage]
     messages: list[SimpleChatMessage]
     input_artifacts: dict[str, str] = field(default_factory=dict)
+
+
+def get_message_templates(prompt_template: Mapping[str, Any]) -> list[SimpleChatMessage]:
+    """Read the configured system and user message templates, in conversation order.
+
+    Args:
+        prompt_template: Settings for the current turn, including `system_message` or `user_message`.
+
+    Returns:
+        Role-tagged templates in order, omitting messages whose text is absent or None.
+
+    Raises:
+        ValueError: Neither message has a template.
+    """
+    templates = [
+        SimpleChatMessage(role=role, content=content)
+        for role, content in (
+            (MessageRole.SYSTEM, prompt_template.get("system_message")),
+            (MessageRole.USER, prompt_template.get("user_message")),
+        )
+        if content is not None
+    ]
+    if not templates:
+        raise ValueError("At least one of system_message or user_message must be provided.")
+    return templates
 
 
 def build_chat_messages(

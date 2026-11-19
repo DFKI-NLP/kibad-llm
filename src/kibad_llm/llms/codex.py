@@ -12,10 +12,11 @@ from uuid import uuid4
 
 from llama_index.core.base.llms.types import ChatMessage, ChatResponse, MessageRole
 
-from kibad_llm.llms.base import LLM, build_inline_schema_bindings, get_message_templates
+from kibad_llm.llms.base import LLM, build_inline_schema_bindings
 from kibad_llm.llms.request import (
     PreparedRequest,
     SimpleChatMessage,
+    get_message_templates,
     get_template_placeholders,
     prepare_template_request,
 )
