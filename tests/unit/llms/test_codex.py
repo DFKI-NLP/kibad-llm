@@ -2,7 +2,7 @@
 
 import json
 from pathlib import Path
-import subprocess  # nosec B404  # Used only to simulate TimeoutExpired.
+import subprocess  # nosec B404  # Used to run the fixed probe script and simulate CLI results.
 
 from hydra.utils import instantiate
 from llama_index.core.base.llms.types import MessageRole
@@ -14,6 +14,163 @@ from kibad_llm.llms.request import ExtractionPrompt, SimpleChatMessage
 from tests.conftest import cfg_global
 
 CODEX_PRESET = "faktencheck_core_fields_schema_with_evidence_codex"
+
+
+@pytest.mark.parametrize("include_document", [False, True])
+@pytest.mark.parametrize("include_schema_file", [False, True])
+def test_codex_stages_only_files_referenced_by_filename_placeholders(
+    tmp_path, monkeypatch, include_document, include_schema_file
+):
+    """Stage and probe exactly the requested document/schema files, including no files."""
+    backend = Codex("test-model", "high", 30, str(tmp_path))
+    schema = {"type": "object", "properties": {"habitat": {"const": "Wälder"}}}
+    document = "# Original Markdown\nWälder\n"
+    user = "Read {document_filename}." if include_document else "Return the fields."
+    user += "\n{schema_filename}" if include_schema_file else "\n{schema}"
+    warnings: list[str] = []
+    monkeypatch.setattr("kibad_llm.llms.request.warn_once", warnings.append)
+    request = backend.prepare_request(
+        ExtractionPrompt(document=document, schema=schema, user_message=user)
+    )
+    expected = {}
+    if include_document:
+        expected["input.md"] = document
+    if include_schema_file:
+        expected["schema.json"] = json.dumps(schema, ensure_ascii=False)
+    assert request.input_artifacts == expected
+    assert warnings == []
+    run_shell = subprocess.run
+
+    def run_cli(args, *, cwd, **kwargs):
+        """Check staged file contents and probe arguments, then simulate inference."""
+        assert {path.name: path.read_text(encoding="utf-8") for path in cwd.iterdir()} == expected
+        if args[1] == "sandbox":
+            filenames = args[args.index("probe") + 1 : args.index("--")]
+            assert set(filenames) == set(expected)
+            protected = str(tmp_path / "unavailable-private-file")
+            probe = run_shell(
+                ["/bin/sh", "-ec", args[4], "probe", *filenames, "--", protected],
+                cwd=cwd,
+                capture_output=True,
+                text=True,
+                timeout=5,
+            )
+            assert probe.returncode == 0, probe.stderr
+            if not expected:
+                missing_input = run_shell(
+                    ["/bin/sh", "-ec", args[4], "probe", "missing.md", "--", protected],
+                    cwd=cwd,
+                    capture_output=True,
+                    timeout=5,
+                )
+                assert missing_input.returncode != 0
+        else:
+            Path(args[args.index("--output-last-message") + 1]).write_text("{}", encoding="utf-8")
+        return subprocess.CompletedProcess(args, 0)
+
+    monkeypatch.setenv("CODEX_API_KEY", "test")
+    monkeypatch.setattr("kibad_llm.llms.codex.shutil.which", lambda _: "/usr/bin/codex")
+    monkeypatch.setattr("kibad_llm.llms.codex.subprocess.run", run_cli)
+    kwargs = {"input_artifacts": request.input_artifacts} if request.input_artifacts else {}
+
+    response = backend.call_llm_chat_with_guided_decoding(request.messages, **kwargs)
+
+    assert response.message.content == "{}"
+
+
+def test_codex_can_supply_the_same_schema_inline_and_as_a_file(tmp_path):
+    """Create the schema file when requested alongside its inline representation."""
+    backend = Codex("test-model", "high", 30, str(tmp_path))
+    request = backend.prepare_request(
+        ExtractionPrompt(
+            document="Source",
+            schema={"type": "string", "const": "Wälder"},
+            user_message="{schema_filename}\n{schema}",
+        )
+    )
+
+    filename, inline_schema = request.current_messages[0].content.split("\n", maxsplit=1)
+    assert request.input_artifacts == {filename: inline_schema}
+
+
+@pytest.mark.parametrize(
+    "template",
+    [
+        "Read input.md and schema.json; {schema}",
+        "{{document_filename}} {{schema_filename}}; {schema}",
+    ],
+)
+def test_codex_does_not_attach_files_for_literals_or_rendered_values(tmp_path, template):
+    """Literal filenames and placeholder text inside a schema do not request files."""
+    backend = Codex("test-model", "high", 30, str(tmp_path))
+    schema = {"description": "Literal {document_filename} and {schema_filename}"}
+
+    request = backend.prepare_request(
+        ExtractionPrompt(document="Source", schema=schema, user_message=template)
+    )
+
+    assert request.input_artifacts == {}
+
+
+def test_schema_file_uses_prompt_schema_and_custom_filename_placeholders(tmp_path, monkeypatch):
+    """Use the evidence-adjusted prompt schema and preserve the original schema."""
+    backend = Codex("test-model", "high", 30, str(tmp_path))
+    schema = {"type": "object", "properties": {"habitat": {"type": "string"}}}
+    inputs = {}
+
+    def run(input_artifacts, prompt, artifact, events):
+        """Capture prepared inputs and return evidence-wrapped extraction content."""
+        inputs.update(input_artifacts)
+        events.write_text("", encoding="utf-8")
+        return json.dumps({"habitat": {"content": "Wald", "evidence_anchor": "Wälder"}})
+
+    monkeypatch.setattr(backend, "_run", run)
+    result = extract_from_text(
+        text="Wälder",
+        text_id="fixture",
+        prompt_template={
+            "system_message": "Use {output_file}",
+            "user_message": "Read {source_file}",
+            "document_filename_placeholder": "source_file",
+            "schema_filename_placeholder": "output_file",
+        },
+        llm=backend,
+        schema=schema,
+        use_guided_decoding=False,
+        adjust_schema_for_evidence_detection=True,
+        adjust_schema_description_for_evidence_detection=True,
+        return_messages_formatted=True,
+    )
+
+    assert result.errors == []
+    assert result.structured == {"habitat": "Wald"}
+    assert result.messages_formatted == {"system": "Use schema.json", "user": "Read input.md"}
+    assert inputs["input.md"] == "Wälder"
+    field = json.loads(inputs["schema.json"])["properties"]["habitat"]
+    assert "evidence_anchor" in field["properties"]
+    assert schema == {"type": "object", "properties": {"habitat": {"type": "string"}}}
+
+
+def test_codex_requires_schema_when_its_filename_is_referenced(tmp_path):
+    """Fail before inference if the requested schema file has no schema value."""
+    backend = Codex("test-model", "high", 30, str(tmp_path))
+
+    with pytest.raises(ValueError, match="requires schema file"):
+        backend.prepare_request(
+            ExtractionPrompt(document="Source", schema=None, user_message="Read {schema_filename}")
+        )
+    assert not list(tmp_path.iterdir())
+
+
+@pytest.mark.parametrize("filename", ["notes.txt", "../outside.md"])
+def test_codex_rejects_unsupported_input_filenames_before_creating_artifacts(tmp_path, filename):
+    """Restrict staged inputs to the backend's document and schema filenames."""
+    artifact_dir = tmp_path / "codex"
+    backend = Codex("test-model", "high", 30, str(artifact_dir))
+
+    with pytest.raises(ValueError, match="Unsupported Codex input filenames"):
+        backend.call_llm_chat_with_guided_decoding([], input_artifacts={filename: "Source"})
+    assert not artifact_dir.exists()
 
 
 @pytest.mark.parametrize(
@@ -115,6 +272,7 @@ def test_file_backed_preset_stages_markdown_and_uses_only_template_messages(
     def run_cli(args, *, cwd, **kwargs):
         """Verify the staged document and simulate the CLI's final response and usage."""
         assert (cwd / "input.md").read_bytes() == document.encode()
+        assert not (cwd / "schema.json").exists()
         if args[1] == "sandbox":
             (cwd / "probe").touch()
         else:
@@ -143,6 +301,7 @@ def test_file_backed_preset_stages_markdown_and_uses_only_template_messages(
     expected_metadata = {"usage": usage_reports} if usage_reports else None
     assert result.backend_metadata == expected_metadata
     assert result.messages["user"].endswith("{schema}\n")
+    assert "{document_filename}" in result.messages["user"]
     system = result.messages_formatted["system"]
     user = result.messages_formatted["user"]
     (prompt_file,) = tmp_path.glob("codex/*/prompt.txt")
@@ -198,11 +357,12 @@ def test_prepare_request_preserves_history_and_custom_schema_placeholders(tmp_pa
         document="# Original Markdown\n",
         schema=schema,
         system_message="{description}",
-        user_message="Read input.md; {{markdown}} is literal.\n{output_schema}",
+        user_message="Read {source_file}; {{markdown}} is literal.\n{output_schema}",
         history=history,
         document_placeholder="markdown",
         schema_placeholder="output_schema",
         schema_description_placeholder="description",
+        document_filename_placeholder="source_file",
     )
 
     request = backend.prepare_request(prompt)
@@ -228,7 +388,7 @@ def test_failed_execution_uses_existing_error_result(tmp_path, monkeypatch, erro
     """Record execution failures through the existing extractor and retain CLI diagnostics."""
     backend = Codex("test-model", "high", 30, str(tmp_path))
 
-    def fail(document, prompt, artifact, events):
+    def fail(input_artifacts, prompt, artifact, events):
         """Simulate a failed CLI execution with an incomplete event log."""
         events.write_text('{"type":', encoding="utf-8")
         raise error
@@ -237,7 +397,7 @@ def test_failed_execution_uses_existing_error_result(tmp_path, monkeypatch, erro
     result = extract_from_text_lenient(
         text="Source Markdown",
         text_id="fixture",
-        prompt_template={"user_message": "Read input.md"},
+        prompt_template={"user_message": "Read {document_filename}"},
         llm=backend,
         use_guided_decoding=False,
     )
@@ -254,7 +414,7 @@ def test_metadata_error_does_not_discard_response(tmp_path, monkeypatch, event_l
     """Use the shared callback error handling when CLI usage cannot be parsed."""
     backend = Codex("test-model", "high", 30, str(tmp_path))
 
-    def run(document, prompt, artifact, events):
+    def run(input_artifacts, prompt, artifact, events):
         """Return valid extraction content alongside malformed CLI events."""
         events.write_text(event_log, encoding="utf-8")
         return "{}"
@@ -263,7 +423,7 @@ def test_metadata_error_does_not_discard_response(tmp_path, monkeypatch, event_l
     result = extract_from_text(
         text="Source",
         text_id="fixture",
-        prompt_template={"user_message": "Read input.md"},
+        prompt_template={"user_message": "Read {document_filename}"},
         llm=backend,
         use_guided_decoding=False,
     )

@@ -203,11 +203,23 @@ uv run -m kibad_llm.predict \
   pdf_directory=tests/fixtures/pdfs
 ```
 
-The preset gives Codex the Markdown as `input.md` and supplies the extraction instructions and schema through the prompt template. You can override `extractor.llm.reasoning_effort` (default `high`) and `extractor.llm.timeout` (default 600 seconds).
+The preset binds `{document_filename}` to `input.md` and includes the schema inline through `{schema}`. You can override `extractor.llm.reasoning_effort` (default `high`) and `extractor.llm.timeout` (default 600 seconds).
 
 The preset sets `extractor.use_guided_decoding=false`: the schema is supplied in the prompt, and the extractor validates the response after inference. Keep `extractor.request_parameters` empty; Codex rejects guided decoding and additional request parameters before starting the CLI.
 
-Custom Codex templates must name `input.md` and omit the inline document placeholder (`{document}` by default).
+Use `{schema_filename}` to provide the prompt schema as `schema.json` instead of embedding it. Each input file is attached and written only when its filename field occurs in a configured system or user template. Literal filenames and escaped fields such as `{{schema_filename}}` do not request files. Inline document text (`{document}` by default) remains unsupported.
+
+Customize the field names with `document_filename_placeholder` and `schema_filename_placeholder`. For example, an experiment based on the Codex preset can request both files with:
+
+```yaml
+extractor:
+  prompt_template:
+    document_filename_placeholder: source_file
+    schema_filename_placeholder: output_spec
+    user_message: |
+      Lies das Markdown-Dokument aus `{source_file}`.
+      Verwende das JSON-Schema aus `{output_spec}`.
+```
 
 Each call launches a fresh ephemeral Codex process in a document workspace. Shell commands have a restricted filesystem profile and no network access. Web search, apps, and plugins are disabled. The backend checks workspace access before inference. If sandboxing is unavailable, the extraction records an error. Use a job-local Hydra run directory on shared filesystems to keep temporary runtime state off shared storage.
 

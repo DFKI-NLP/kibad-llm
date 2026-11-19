@@ -17,9 +17,13 @@ from kibad_llm.llms.request import (
     MissingBindingError,
     PreparedRequest,
     SimpleChatMessage,
+    get_placeholder_roles,
     prepare_template_request,
 )
 from kibad_llm.utils.log import warn_once
+
+_DOCUMENT_FILENAME = "input.md"
+_SCHEMA_FILENAME = "schema.json"
 
 CODEX_CONFIG_TEMPLATE = """
 default_permissions = "document"
@@ -61,34 +65,48 @@ class Codex(LLM):
         self.executable = executable
 
     def prepare_request(self, prompt: ExtractionPrompt) -> PreparedRequest:
-        """Render a file-backed prompt and supply the original Markdown as `input.md`.
+        """Render templates and attach only the document and schema files they reference.
 
         Implements the LLM request-preparation hook. The request separates the rendered
         current turn from the full conversation, which includes history. The extractor
         records the current turn; snapshot truncation leaves the messages sent to Codex intact.
+        Document and schema filename fields bind to `input.md` and `schema.json`.
+        Each file is attached only when its field is used in a configured template.
 
         Args:
             prompt: Configured templates, source Markdown, schema, and history.
 
         Returns:
-            Rendered current messages, the full conversation, and the document artifact.
+            Rendered current messages, the full conversation, and the requested input artifacts.
 
         Raises:
             ValueError: A template uses the inline document placeholder, or shared
                 request preparation rejects its templates or schema.
             TypeError: Schema serialization or schema description options are invalid.
         """
+        placeholders = get_placeholder_roles(prompt)
+        bindings = {}
+        if prompt.document_filename_placeholder in placeholders:
+            bindings[prompt.document_filename_placeholder] = _DOCUMENT_FILENAME
+        if prompt.schema_filename_placeholder in placeholders:
+            bindings[prompt.schema_filename_placeholder] = _SCHEMA_FILENAME
         try:
-            request = prepare_template_request(prompt, bindings={})
+            request = prepare_template_request(prompt, bindings=bindings)
         except MissingBindingError as error:
             if error.placeholder != prompt.document_placeholder:
                 raise
             raise ValueError(
-                "Codex reads the document from input.md. Use "
+                f"Codex reads the document from a file. Use '{{{prompt.document_filename_placeholder}}}' "
+                "in your template or select "
                 "experiment/predict=faktencheck_core_fields_schema_with_evidence_codex "
-                "or remove the document placeholder from your file-backed template."
+                "for the file-backed preset."
             ) from error
-        request.input_artifacts["input.md"] = prompt.document
+        if prompt.document_filename_placeholder in bindings:
+            request.input_artifacts[_DOCUMENT_FILENAME] = prompt.document
+        if prompt.schema_filename_placeholder in bindings:
+            request.input_artifacts[_SCHEMA_FILENAME] = json.dumps(
+                prompt.schema, ensure_ascii=False
+            )
         return request
 
     def get_reasoning_from_chat_response(self, response: ChatResponse) -> None:
@@ -113,7 +131,8 @@ class Codex(LLM):
         Args:
             messages: Prepared extraction messages, including conversation history.
             json_schema: Must be None; configure `extractor.use_guided_decoding=false`.
-            input_artifacts: Named inputs containing the source Markdown as `input.md`.
+            input_artifacts: Requested source Markdown as `input.md` and JSON Schema as
+                `schema.json`. Omit files whose filename fields were not referenced.
 
         Returns:
             The final response text and raw CLI events for shared postprocessing.
@@ -122,8 +141,8 @@ class Codex(LLM):
             **request_kwargs: Additional request parameters are unsupported and must be omitted.
 
         Raises:
-            ValueError: Guided decoding or additional request parameters were supplied,
-                or CLI execution failed.
+            ValueError: Guided decoding, additional request parameters, or unsupported
+                input filenames were supplied, or CLI execution failed.
         """
         if json_schema is not None:
             raise ValueError(
@@ -136,14 +155,17 @@ class Codex(LLM):
                 f"{', '.join(sorted(request_kwargs))}. "
                 "Remove them from extractor.request_parameters."
             )
-        document = (input_artifacts or {})["input.md"]
+        inputs = input_artifacts or {}
+        unsupported_inputs = inputs.keys() - {_DOCUMENT_FILENAME, _SCHEMA_FILENAME}
+        if unsupported_inputs:
+            raise ValueError(f"Unsupported Codex input filenames: {sorted(unsupported_inputs)}.")
         artifact = self.artifact_dir / uuid4().hex
         artifact.mkdir(mode=0o700, parents=True)
         events = artifact / "events.jsonl"
         prompt = "\n\n".join(f"{message.role.value}:\n{message.content}" for message in messages)
         (artifact / "prompt.txt").write_text(prompt, encoding="utf-8")
         try:
-            answer = self._run(document, prompt, artifact, events)
+            answer = self._run(inputs, prompt, artifact, events)
         except (OSError, ValueError, subprocess.SubprocessError) as error:
             (artifact / "error.txt").write_text(str(error), encoding="utf-8")
             raise
@@ -184,7 +206,7 @@ class Codex(LLM):
 
     def _run(
         self,
-        document: str,
+        input_artifacts: dict[str, str],
         prompt: str,
         artifact: Path,
         events: Path,
@@ -201,7 +223,8 @@ class Codex(LLM):
             state = root / "state"
             workspace.mkdir()
             state.mkdir(mode=0o700)
-            (workspace / "input.md").write_text(document, encoding="utf-8")
+            for filename, content in input_artifacts.items():
+                (workspace / filename).write_text(content, encoding="utf-8")
             env = {"PATH": "/usr/bin:/bin", "HOME": str(state), "CODEX_HOME": str(state)}
             api_key = os.environ.get("CODEX_API_KEY") or os.environ.get("OPENAI_API_KEY")
             if api_key:
@@ -236,9 +259,12 @@ class Codex(LLM):
                     "sandbox",
                     "/bin/sh",
                     "-ec",
-                    "test -r input.md; touch probe; "
+                    'while test "$1" != --; do test -r "$1"; shift; done; '
+                    "shift; touch probe; "
                     'for path do if test -r "$path"; then echo "Readable: $path" >&2; exit 1; fi; done',
                     "probe",
+                    *input_artifacts,
+                    "--",
                     *map(str, protected),
                 ],
                 cwd=workspace,

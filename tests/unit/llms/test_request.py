@@ -10,6 +10,7 @@ from kibad_llm.llms.request import (
     MissingBindingError,
     SimpleChatMessage,
     build_chat_messages,
+    get_placeholder_roles,
     prepare_inline_request,
     prepare_template_request,
 )
@@ -34,6 +35,38 @@ def test_build_chat_messages_reports_missing_binding() -> None:
         build_chat_messages(templates, {})
     assert raised.value.placeholder == "missing"
     assert raised.value.role == MessageRole.USER
+
+
+@pytest.mark.parametrize(
+    "template, fields",
+    [
+        ("{document_filename!s}", {"document_filename"}),
+        ("{schema_filename[0]}", {"schema_filename"}),
+        ("{schema:{document_filename}}", {"schema", "document_filename"}),
+        ("{{document_filename}} {{schema_filename}}", set()),
+    ],
+)
+def test_get_placeholder_roles_finds_bindings_without_interpreting_literals(template, fields):
+    """Discover root bindings, including nested fields, using formatter syntax."""
+    prompt = ExtractionPrompt(document="Source", schema=None, user_message=template)
+
+    assert get_placeholder_roles(prompt) == {field: MessageRole.USER for field in fields}
+
+
+@pytest.mark.parametrize(
+    "options",
+    [
+        {"document_filename_placeholder": "document"},
+        {"schema_filename_placeholder": "document_filename"},
+        {"schema_filename_placeholder": "schema"},
+    ],
+)
+def test_prepare_template_request_rejects_colliding_placeholder_names(options):
+    """Reject ambiguous document and schema bindings before rendering."""
+    prompt = ExtractionPrompt(document="Source", schema={}, user_message="{schema}", **options)
+
+    with pytest.raises(ValueError, match="placeholder names must be distinct"):
+        prepare_template_request(prompt, bindings={})
 
 
 def test_prepare_template_request_renders_schema_and_preserves_caller_inputs() -> None:
@@ -113,13 +146,13 @@ def test_prepare_template_request_warns_about_unused_schema_without_rendering_it
     ]
     assert len(warnings) == 1
     assert warnings[0].startswith(
-        "Schema provided but message templates use neither schema placeholder"
+        "Schema provided but message templates use no schema placeholder"
     )
 
 
-@pytest.mark.parametrize("placeholder", ["schema", "schema_description"])
+@pytest.mark.parametrize("placeholder", ["schema", "schema_description", "schema_filename"])
 def test_prepare_template_request_requires_referenced_schema(placeholder: str) -> None:
-    """Require a schema for both schema representations in file-oriented templates."""
+    """Require a schema for inline representations and schema-file references."""
     prompt = ExtractionPrompt(document="Source", schema=None, user_message="{" + placeholder + "}")
 
     with pytest.raises(ValueError, match="Schema must be provided"):

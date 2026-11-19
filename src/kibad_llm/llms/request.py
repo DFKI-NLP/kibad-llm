@@ -8,6 +8,7 @@ Classes:
 
 Functions:
     build_chat_messages: Render role-tagged templates with explicit bindings.
+    get_placeholder_roles: Find template bindings and the roles that reference them.
     prepare_template_request: Render templates and schema bindings and prepend history.
     prepare_inline_request: Prepare messages with the document embedded in the text.
 """
@@ -70,6 +71,8 @@ class ExtractionPrompt:
             Defaults to an empty sequence. Inline preparation leaves these messages unchanged.
         document_placeholder: Template field name for the document, without braces.
             Defaults to `document`.
+        document_filename_placeholder: Template field name for a backend-supplied document
+            filename, without braces. Defaults to `document_filename`.
         schema_placeholder: Template field name for the schema serialized as JSON, without
             braces. Defaults to `schema`.
         schema_description_placeholder: Template field name for the human-readable schema
@@ -77,6 +80,8 @@ class ExtractionPrompt:
         schema_description_kwargs: Optional keyword arguments forwarded to
             [`build_schema_description`][kibad_llm.schema.description.build_schema_description]
             when a template uses the schema description placeholder.
+        schema_filename_placeholder: Template field name for a backend-supplied JSON Schema
+            filename, without braces. Defaults to `schema_filename`.
     """
 
     document: str
@@ -88,6 +93,8 @@ class ExtractionPrompt:
     schema_placeholder: str = "schema"
     schema_description_placeholder: str = "schema_description"
     schema_description_kwargs: dict[str, Any] | None = None
+    document_filename_placeholder: str = "document_filename"
+    schema_filename_placeholder: str = "schema_filename"
 
 
 @dataclass
@@ -140,8 +147,22 @@ def build_chat_messages(
     return messages
 
 
-def _get_placeholder_roles(prompt: ExtractionPrompt) -> dict[str, MessageRole]:
-    """Find unescaped template fields and the first message role that references each."""
+def get_placeholder_roles(prompt: ExtractionPrompt) -> dict[str, MessageRole]:
+    """Find template bindings and the first message role that references each.
+
+    Inspect configured templates before rendering. Escaped braces remain literal;
+    attribute access, indexing, conversions, and nested format specifications refer
+    to their root binding names. Already-rendered history is left unchanged.
+
+    Args:
+        prompt: System and user templates to inspect.
+
+    Returns:
+        Each referenced binding name mapped to its first message role.
+
+    Raises:
+        ValueError: A template contains invalid formatting syntax.
+    """
     formatter = Formatter()
     roles_by_placeholder: dict[str, MessageRole] = {}
     for role, content in (
@@ -149,9 +170,14 @@ def _get_placeholder_roles(prompt: ExtractionPrompt) -> dict[str, MessageRole]:
         (MessageRole.USER, prompt.user_message),
     ):
         if content is not None:
-            for _, name, _, _ in formatter.parse(content):
-                if name is not None:
-                    roles_by_placeholder.setdefault(name, role)
+            pending = [content]
+            while pending:
+                for _, name, format_spec, _ in formatter.parse(pending.pop()):
+                    if name is not None:
+                        root = name.partition(".")[0].partition("[")[0]
+                        roles_by_placeholder.setdefault(root, role)
+                        if format_spec:
+                            pending.append(format_spec)
     return roles_by_placeholder
 
 
@@ -167,9 +193,10 @@ def prepare_template_request(
 
     Args:
         prompt: Templates, optional schema, history, and placeholder settings for this turn.
-        bindings: Explicit replacement values, excluding the configured schema placeholders.
+        bindings: Explicit replacement values, excluding the configured inline schema placeholders.
             The mapping is not modified. Pass an empty mapping for file-backed prompts
-            that need only schema bindings.
+            that need only inline schema bindings. Backends supply filename bindings
+            when they provide the corresponding document or schema as a file.
 
     Returns:
         A request with the rendered current turn and the full conversation formed by
@@ -177,15 +204,16 @@ def prepare_template_request(
 
     Raises:
         MissingBindingError: A template references an unavailable binding.
-        ValueError: Both templates are None, caller bindings override schema placeholders,
+        ValueError: Both templates are None, configured placeholder names collide,
+            caller bindings override inline schema placeholders,
             a schema placeholder is used without a schema, a template cannot be rendered,
             or the schema cannot be expanded into a description.
         TypeError: A referenced schema cannot be serialized as JSON, or
             `schema_description_kwargs` contains unsupported arguments.
 
     Warns:
-        UserWarning: Logs a warning once when a schema is supplied but neither schema
-            placeholder is used by the templates.
+        UserWarning: Logs a warning once when a schema is supplied but none of its
+            placeholders are used by the templates.
     """
     templates = [
         SimpleChatMessage(role=role, content=content)
@@ -198,6 +226,15 @@ def prepare_template_request(
     if not templates:
         raise ValueError("At least one of system_message or user_message must be provided.")
 
+    placeholder_names = (
+        prompt.document_placeholder,
+        prompt.document_filename_placeholder,
+        prompt.schema_placeholder,
+        prompt.schema_description_placeholder,
+        prompt.schema_filename_placeholder,
+    )
+    if len(set(placeholder_names)) != len(placeholder_names):
+        raise ValueError("Configured document and schema placeholder names must be distinct.")
     schema_placeholders = {prompt.schema_placeholder, prompt.schema_description_placeholder}
     conflicting_bindings = schema_placeholders.intersection(bindings)
     if conflicting_bindings:
@@ -205,14 +242,16 @@ def prepare_template_request(
             f"Caller bindings must not override schema placeholders: {sorted(conflicting_bindings)}."
         )
 
-    roles_by_placeholder = _get_placeholder_roles(prompt)
+    roles_by_placeholder = get_placeholder_roles(prompt)
     schema_description_role = roles_by_placeholder.get(prompt.schema_description_placeholder)
     schema_role = roles_by_placeholder.get(prompt.schema_placeholder)
+    schema_filename_role = roles_by_placeholder.get(prompt.schema_filename_placeholder)
     resolved_bindings = dict(bindings)
     if prompt.schema is None:
         for role, description, placeholder in (
             (schema_description_role, "schema description", prompt.schema_description_placeholder),
             (schema_role, "JSON Schema", prompt.schema_placeholder),
+            (schema_filename_role, "schema file", prompt.schema_filename_placeholder),
         ):
             if role is not None:
                 raise ValueError(
@@ -228,10 +267,15 @@ def prepare_template_request(
             resolved_bindings[prompt.schema_placeholder] = json.dumps(
                 prompt.schema, ensure_ascii=False
             )
-        if schema_description_role is None and schema_role is None:
+        if (
+            schema_description_role is None
+            and schema_role is None
+            and schema_filename_role is None
+        ):
             warn_once(
-                "Schema provided but message templates use neither schema placeholder "
-                f"('{{{prompt.schema_description_placeholder}}}' or '{{{prompt.schema_placeholder}}}')."
+                "Schema provided but message templates use no schema placeholder "
+                f"('{{{prompt.schema_description_placeholder}}}', '{{{prompt.schema_placeholder}}}', "
+                f"or '{{{prompt.schema_filename_placeholder}}}')."
             )
 
     current_messages = build_chat_messages(templates, resolved_bindings)
@@ -265,13 +309,13 @@ def prepare_inline_request(prompt: ExtractionPrompt) -> PreparedRequest:
             `schema_description_kwargs` contains unsupported arguments.
 
     Warns:
-        UserWarning: Logs a warning once when a schema is supplied but neither schema
-            placeholder is used by the templates.
+        UserWarning: Logs a warning once when a schema is supplied but none of its
+            placeholders are used by the templates.
     """
     request = prepare_template_request(
         prompt, bindings={prompt.document_placeholder: prompt.document}
     )
-    if not prompt.history and prompt.document_placeholder not in _get_placeholder_roles(prompt):
+    if not prompt.history and prompt.document_placeholder not in get_placeholder_roles(prompt):
         raise ValueError(
             "At least one of the message templates must require the input text "
             f"(they must contain '{{{prompt.document_placeholder}}}')."
