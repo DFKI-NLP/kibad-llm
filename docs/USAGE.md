@@ -147,9 +147,7 @@ uv run -m kibad_llm.data_integration.synch_nextcloud_with_cluster
 
 ### Prerequisite: choose an LLM backend
 
-Choose a backend through the extractor configuration under [configs/extractor/llm](/configs/extractor/llm).
-For vLLM, follow the instructions [here for a quickstart](/models/README.md#quickstart), [here for an all-in-one script](/models/README.md#all-in-one-run-script) or [here for general instructions on uv and the cluster](/models/README.md#the-two-ways-to-use-uv-on-pegasus).
-OpenAI-hosted models use `OPENAI_API_KEY`; the [Codex backend](#codex-extraction-backend) uses a separately installed CLI.
+Choose a backend through the extractor configuration under [configs/extractor/llm](/configs/extractor/llm). For vLLM, follow the instructions [here for a quickstart](/models/README.md#quickstart), [here for an all-in-one script](/models/README.md#all-in-one-run-script) or [here for general instructions on uv and the cluster](/models/README.md#the-two-ways-to-use-uv-on-pegasus). OpenAI-hosted models use `OPENAI_API_KEY`; the [Codex backend](#codex-extraction-backend) uses a separately installed CLI.
 
 ### Inference
 
@@ -196,11 +194,7 @@ Use this to send more than one simultaneous request to vLLM.
 
 #### Codex extraction backend
 
-Use Codex CLI on a Linux host that supports its restricted filesystem sandbox.
-Install Codex separately and authenticate with `codex login` or set
-`CODEX_API_KEY`. Choose an explicit model available to that credential with
-`extractor.llm.model=MODEL`. The default model is an alias. Hosted inference
-and agent execution can vary across reruns.
+Use Codex CLI on a Linux host that supports its restricted filesystem sandbox. Install Codex separately and authenticate with `codex login` or set `CODEX_API_KEY`. Choose an explicit model available to that credential with `extractor.llm.model=MODEL`. The default model is an alias. Hosted inference and agent execution can vary across reruns.
 
 ```bash
 uv run -m kibad_llm.predict \
@@ -209,29 +203,15 @@ uv run -m kibad_llm.predict \
   pdf_directory=tests/fixtures/pdfs
 ```
 
-The preset gives Codex the Markdown as `input.md` and supplies the extraction instructions
-and schema through the prompt template. You can override `extractor.llm.reasoning_effort`
-(default `high`) and `extractor.llm.timeout` (default 600 seconds).
+The preset gives Codex the Markdown as `input.md` and supplies the extraction instructions and schema through the prompt template. You can override `extractor.llm.reasoning_effort` (default `high`) and `extractor.llm.timeout` (default 600 seconds).
 
 The preset sets `extractor.use_guided_decoding=false`: the schema is supplied in the prompt, and the extractor validates the response after inference. Keep `extractor.request_parameters` empty; Codex rejects guided decoding and additional request parameters before starting the CLI.
 
-Custom Codex templates must name `input.md` and omit the inline document placeholder
-(`{document}` by default).
+Custom Codex templates must name `input.md` and omit the inline document placeholder (`{document}` by default).
 
-Each call launches a fresh ephemeral Codex process in a document workspace.
-Shell commands have a restricted filesystem profile and no network access.
-Web search, apps, and plugins are disabled. The backend checks workspace access
-before inference. If sandboxing is unavailable, the extraction records an error.
-Use a job-local Hydra run directory on shared filesystems to keep temporary
-runtime state off shared storage.
+Each call launches a fresh ephemeral Codex process in a document workspace. Shell commands have a restricted filesystem profile and no network access. Web search, apps, and plugins are disabled. The backend checks workspace access before inference. If sandboxing is unavailable, the extraction records an error. Use a job-local Hydra run directory on shared filesystems to keep temporary runtime state off shared storage.
 
-The Hydra run directory contains prompts, final responses, execution events, and errors.
-Prediction records use the shared `backend_metadata` field described under
-[Token usage in prediction results](#token-usage-in-prediction-results). For Codex,
-`backend_metadata.usage` is a list of the CLI's individual usage reports in event order.
-Their native fields are preserved without calculating totals or costs. When the CLI
-reports no usage, `backend_metadata` is `null`. Keep the run directory with the
-predictions to retain the execution diagnostics.
+The Hydra run directory contains prompts, final responses, execution events, and errors. Prediction records use the shared `backend_metadata` field described under [Token usage in prediction results](#token-usage-in-prediction-results). For Codex, `backend_metadata.usage` is a list of the CLI's individual usage reports in event order. Their native fields are preserved without calculating totals or costs. When the CLI reports no usage, `backend_metadata` is `null`. Keep the run directory with the predictions to retain the execution diagnostics.
 
 ### Schema descriptions in prompts
 
