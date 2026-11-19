@@ -51,6 +51,7 @@ def test_file_backed_preset_stages_markdown_and_uses_only_template_messages(
     }
 
     def run_cli(args, *, cwd, **kwargs):
+        """Verify the staged document and simulate the CLI's final response and usage."""
         assert (cwd / "input.md").read_bytes() == document.encode()
         if args[1] == "sandbox":
             (cwd / "probe").touch()

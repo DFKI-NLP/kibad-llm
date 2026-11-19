@@ -53,6 +53,7 @@ class Codex(LLM):
         artifact_dir: str,
         executable: str = "codex",
     ):
+        """Configure the CLI model, reasoning effort, timeout, artifacts, and executable."""
         self.model = model
         self.reasoning_effort = reasoning_effort
         self.timeout = timeout
@@ -91,6 +92,7 @@ class Codex(LLM):
         return request
 
     def get_reasoning_from_chat_response(self, response: ChatResponse) -> None:
+        """Return unavailable reasoning and warn once without raising an extraction error."""
         warn_once("Codex does not return reasoning content.")
         return None
 
@@ -102,6 +104,12 @@ class Codex(LLM):
         input_artifacts: dict[str, str] | None = None,
         **request_kwargs,
     ) -> ChatResponse:
+        """Execute a file-backed request and return the final text and raw CLI events.
+
+        Schema instructions come from the configured messages; the shared extractor
+        performs JSON parsing and schema validation. The shared interface's json_schema
+        and other request parameters do not constrain the CLI's decoding.
+        """
         document = (input_artifacts or {})["input.md"]
         artifact = self.artifact_dir / uuid4().hex
         artifact.mkdir(mode=0o700, parents=True)
@@ -155,6 +163,7 @@ class Codex(LLM):
         artifact: Path,
         events: Path,
     ) -> str:
+        """Stage private runtime state, verify isolation, and execute Codex for one document."""
         executable_path = shutil.which(self.executable)
         if executable_path is None:
             raise FileNotFoundError(f"Codex executable unavailable: {self.executable}")
