@@ -10,9 +10,29 @@ from kibad_llm.llms.request import (
     MissingBindingError,
     SimpleChatMessage,
     build_chat_messages,
+    get_message_templates,
     get_template_placeholders,
     prepare_template_request,
 )
+
+
+def test_get_message_templates_returns_remaining_settings() -> None:
+    """Consume message keys on a copy of the backend's settings."""
+    prompt_template = {
+        "system_message": None,
+        "user_message": "Read {filename}.",
+        "filename_placeholder": "filename",
+    }
+
+    templates, remaining_settings = get_message_templates(prompt_template)
+
+    assert templates == [SimpleChatMessage(role=MessageRole.USER, content="Read {filename}.")]
+    assert remaining_settings == {"filename_placeholder": "filename"}
+    assert prompt_template == {
+        "system_message": None,
+        "user_message": "Read {filename}.",
+        "filename_placeholder": "filename",
+    }
 
 
 def test_build_chat_messages_renders_backend_supplied_templates() -> None:
@@ -77,7 +97,10 @@ def test_prepare_template_request_renders_only_current_templates() -> None:
 def test_prepare_inline_request_can_omit_schema_bindings(schema) -> None:
     """Skip schema preparation when the template uses only the document."""
     request = prepare_inline_request(
-        {"user_message": "{document} {{schema}} {{schema_description}}"},
+        {
+            "user_message": "{document} {{schema}} {{schema_description}}",
+            "schema_description_kwargs": {"include_field_descriptions": False},
+        },
         document="Source",
         schema=schema,
     )
@@ -108,6 +131,27 @@ def test_prepare_inline_request_inserts_json_schema() -> None:
     assert user.content == "Markdown"
 
 
+def test_prepare_inline_request_applies_schema_description_settings() -> None:
+    """Pass the recognized formatting options through to the description builder."""
+    schema = {
+        "type": "object",
+        "properties": {"field": {"type": "string", "description": "Field guidance"}},
+    }
+    request = prepare_inline_request(
+        {
+            "system_message": "{schema_description}",
+            "user_message": "{document}",
+            "schema_description_kwargs": {"include_field_descriptions": False},
+        },
+        document="Source",
+        schema=schema,
+    )
+
+    system, _ = request.current_messages
+    assert "field:" in system.content
+    assert "Field guidance" not in system.content
+
+
 @pytest.mark.parametrize("field", ["schema", "schema_description"])
 def test_prepare_inline_request_requires_schema_for_referenced_field(field) -> None:
     """Name the field that requested the missing schema."""
@@ -121,13 +165,23 @@ def test_prepare_inline_request_rejects_legacy_alias() -> None:
     template = {
         "system_message": "{output_schema}",
         "user_message": "{document}",
-        "schema_placeholder": "output_schema",
     }
     with pytest.raises(MissingBindingError) as raised:
         prepare_inline_request(template, document="Markdown", schema={})
 
     assert raised.value.placeholder == "output_schema"
     assert raised.value.role == MessageRole.SYSTEM
+
+
+def test_prepare_inline_request_reports_all_unrecognized_settings() -> None:
+    """Reject legacy declarations even when the message uses built-in fields."""
+    template = {
+        "user_message": "{document}",
+        "schema_placeholder": "schema_description",
+        "document_placeholder": "document",
+    }
+    with pytest.raises(TypeError, match="'document_placeholder', 'schema_placeholder'"):
+        prepare_inline_request(template, document="Source", schema=None)
 
 
 @pytest.mark.parametrize(

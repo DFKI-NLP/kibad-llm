@@ -91,10 +91,18 @@ def prepare_inline_request(
 
     Raises:
         MissingBindingError: A template references an unavailable binding.
+        TypeError: The template contains unrecognized inline prompt settings.
         ValueError: A referenced schema field has no schema, the first turn omits
             the document field, or the templates cannot be rendered.
     """
-    templates = get_message_templates(prompt_template)
+    templates, remaining_settings = get_message_templates(prompt_template)
+    schema_description_kwargs = remaining_settings.pop(SCHEMA_DESCRIPTION_KWARGS_KEY, None)
+    if remaining_settings:
+        unknown_settings = ", ".join(sorted(repr(key) for key in remaining_settings))
+        raise TypeError(
+            f"Inline prompt_template contains unrecognized settings {unknown_settings}."
+        )
+
     placeholders = get_template_placeholders(templates)
     bindings: dict[str, str] = {}
     if SCHEMA_PLACEHOLDER in placeholders:
@@ -107,7 +115,7 @@ def prepare_inline_request(
                 f"Placeholder '{{{SCHEMA_DESCRIPTION_PLACEHOLDER}}}' requires a schema."
             )
         bindings[SCHEMA_DESCRIPTION_PLACEHOLDER] = build_schema_description(
-            schema=schema, **(prompt_template.get(SCHEMA_DESCRIPTION_KWARGS_KEY) or {})
+            schema=schema, **(schema_description_kwargs or {})
         )
     if DOCUMENT_PLACEHOLDER in placeholders:
         bindings[DOCUMENT_PLACEHOLDER] = document
@@ -154,6 +162,7 @@ class LLM(ABC):
 
         Raises:
             MissingBindingError: A template references an unavailable binding.
+            TypeError: The inline template contains unrecognized prompt settings.
             ValueError: A template is invalid for the backend.
         """
         return prepare_inline_request(

@@ -10,7 +10,7 @@ Classes:
     PreparedRequest: Rendered messages and optional backend inputs.
 
 Functions:
-    get_message_templates: Read the configured system and user templates in order.
+    get_message_templates: Read message templates and return the remaining prompt settings.
     build_chat_messages: Render role-tagged templates with explicit bindings.
     get_template_placeholders: Find the binding names referenced by message templates.
     prepare_template_request: Render with supplied bindings and prepend history.
@@ -75,23 +75,27 @@ class PreparedRequest:
     input_artifacts: dict[str, str] = field(default_factory=dict)
 
 
-def get_message_templates(prompt_template: Mapping[str, Any]) -> list[SimpleChatMessage]:
-    """Read the configured system and user message templates, in conversation order.
+def get_message_templates(
+    prompt_template: Mapping[str, Any],
+) -> tuple[list[SimpleChatMessage], dict[str, Any]]:
+    """Read the configured message templates and keep the remaining settings for the backend.
 
     Args:
         prompt_template: Settings for the current turn, including `system_message` or `user_message`.
 
     Returns:
-        Role-tagged templates in order, omitting messages whose text is absent or None.
+        Role-tagged templates in conversation order and a copy of the remaining settings.
+        Messages whose text is absent or None are omitted.
 
     Raises:
         ValueError: Neither message has a template.
     """
+    remaining_settings = dict(prompt_template)
     templates = [
         SimpleChatMessage(role=role, content=content)
         for role, content in (
-            (MessageRole.SYSTEM, prompt_template.get(SYSTEM_MESSAGE_KEY)),
-            (MessageRole.USER, prompt_template.get(USER_MESSAGE_KEY)),
+            (MessageRole.SYSTEM, remaining_settings.pop(SYSTEM_MESSAGE_KEY, None)),
+            (MessageRole.USER, remaining_settings.pop(USER_MESSAGE_KEY, None)),
         )
         if content is not None
     ]
@@ -99,7 +103,7 @@ def get_message_templates(prompt_template: Mapping[str, Any]) -> list[SimpleChat
         raise ValueError(
             f"At least one of {SYSTEM_MESSAGE_KEY} or {USER_MESSAGE_KEY} must be provided."
         )
-    return templates
+    return templates, remaining_settings
 
 
 def build_chat_messages(

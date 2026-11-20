@@ -191,7 +191,7 @@ Use this to send more than one simultaneous request to vLLM.
 
 ### Schema descriptions in prompts
 
-Put message text in `prompt_template` under `system_message` or `user_message`. Inline templates use `{document}` for the source text, `{schema}` for JSON Schema, and `{schema_description}` for a readable description. These fields can appear in either message. The first turn must reference `{document}`. Follow-ups with history can omit it.
+Put message text in `prompt_template` under `system_message` or `user_message`. Inline templates use `{document}` for the source text, `{schema}` for JSON Schema, and `{schema_description}` for a readable description. These fields can appear in either message. The first turn must reference `{document}`. Follow-ups with history can omit it. Unrecognized settings in an inline `prompt_template` raise `TypeError`.
 
 Schema fields are optional even when the extractor uses a schema for guided decoding or output validation. Referencing a schema field requires a schema. When the schema is missing, the backend reports which field requested it. An unknown field raises `MissingBindingError` during rendering.
 

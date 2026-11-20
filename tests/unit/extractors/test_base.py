@@ -121,6 +121,21 @@ def test_extract_from_text_rejects_top_level_prompt_settings(option: dict[str, A
         )
 
 
+def test_extract_from_text_rejects_misspelled_inline_prompt_setting() -> None:
+    """Report the misspelled key before preparing a schema description."""
+    with pytest.raises(TypeError, match="'schema_description_kwarg'"):
+        extract_from_text(
+            text="A forest.",
+            text_id="fixture",
+            prompt_template={
+                "system_message": "{schema_description}",
+                "user_message": "{document}",
+                "schema_description_kwarg": {"include_field_descriptions": False},
+            },
+            schema={"type": "object"},
+        )
+
+
 def test_backend_prepares_messages_before_extractor_records_them() -> None:
     """Send the full backend-prepared request and record only its current turn."""
     history = [SimpleChatMessage(role=MessageRole.USER, content="Previous turn")]
