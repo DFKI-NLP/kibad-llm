@@ -334,7 +334,6 @@ def wrap_terminals_with_metadata(
     *,
     content_key: str = WRAPPED_CONTENT_KEY,
     content_description: str | None = None,
-    metadata_first: bool = False,
     metadata_before_content: tuple[str, ...] = (),
 ) -> dict[str, Any]:
     """
@@ -349,14 +348,11 @@ def wrap_terminals_with_metadata(
     - Returns a deep-copied dict; input is not mutated.
     - `metadata_before_content` names the metadata properties to place before `content_key`,
       in the specified order. The remaining properties follow `content_key`.
-    - `metadata_first=True` places all metadata properties before `content_key` in schema order.
     """
     from copy import deepcopy
 
     root: dict[str, Any] = deepcopy(dict(schema))
     metadata_obj_schema = _normalize_metadata_schema(metadata_schema)
-    if metadata_first:
-        metadata_before_content = tuple(metadata_obj_schema["properties"])
 
     def transform(node: Any, *, allow_wrap_here: bool = True) -> Any:
         if isinstance(node, list):

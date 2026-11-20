@@ -387,12 +387,15 @@ def test_wrap_terminals_with_metadata_custom_content_key_and_metadata_requiremen
     )
 
 
-@pytest.mark.parametrize("metadata_first", [False, True])
-def test_wrap_terminals_with_metadata_metadata_first_orders_properties(
-    sample_schema, metadata_first
+@pytest.mark.parametrize("metadata_before_content", [(), ("evidence_anchor",)])
+def test_wrap_terminals_with_metadata_orders_properties(
+    sample_schema, metadata_before_content
 ) -> None:
+    """Render metadata properties in the configured order."""
     out = wrap_terminals_with_metadata(
-        sample_schema, metadata_schema=METADATA_SCHEMA_WITH_EVIDENCE, metadata_first=metadata_first
+        sample_schema,
+        metadata_schema=METADATA_SCHEMA_WITH_EVIDENCE,
+        metadata_before_content=metadata_before_content,
     )
 
     name = out["properties"]["name"]
@@ -403,14 +406,15 @@ def test_wrap_terminals_with_metadata_metadata_first_orders_properties(
     # the reordered wrapper is still recognized as a wrapper (idempotency)
     assert (
         wrap_terminals_with_metadata(
-            out, metadata_schema=METADATA_SCHEMA_WITH_EVIDENCE, metadata_first=metadata_first
+            out,
+            metadata_schema=METADATA_SCHEMA_WITH_EVIDENCE,
+            metadata_before_content=metadata_before_content,
         )
         == out
     )
 
     schema_description = build_schema_description(out)
-    # default setup: content first, then metadata
-    if not metadata_first:
+    if not metadata_before_content:
         assert schema_description == (
             "Feldhinweise und erlaubte Werte (getrennt durch Semikolons):\n"
             "- name: | Kardinalität: 1 | Typ: object\n"
@@ -430,7 +434,6 @@ def test_wrap_terminals_with_metadata_metadata_first_orders_properties(
             "  - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: A; B\n"
             "  - evidence_anchor: Verbatim excerpt from the source text supporting the extracted content. | Kardinalität: 1 | Typ: string"
         )
-    # metadata_first: metadata first, then content
     else:
         assert schema_description == (
             "Feldhinweise und erlaubte Werte (getrennt durch Semikolons):\n"
