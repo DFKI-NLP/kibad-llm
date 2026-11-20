@@ -1,6 +1,7 @@
 import copy
 import json
 from types import SimpleNamespace
+from typing import Any
 
 from llama_index.core.base.llms.types import ChatMessage, ChatResponse, MessageRole
 import pytest
@@ -98,6 +99,20 @@ def test_check_utf8_encodable_raises_for_lone_surrogate_nested_in_dict_and_list(
         "'utf-8' codec can't encode character '\\udd7a' in position 4: surrogates "
         "not allowed (string: 'Wild\\udd7aschwein')"
     )
+
+
+@pytest.mark.parametrize("message_key", ["system_message", "user_message"])
+def test_extract_from_text_rejects_top_level_message_templates(message_key: str) -> None:
+    """Require message text to be supplied inside the prompt template mapping."""
+    prompt_options: dict[str, Any] = {message_key: "{document}"}
+    with pytest.raises(TypeError, match="inside 'prompt_template'"):
+        extract_from_text(
+            text="A forest.",
+            text_id="fixture",
+            prompt_template={},
+            use_guided_decoding=False,
+            **prompt_options,
+        )
 
 
 def test_backend_prepares_messages_before_extractor_records_them() -> None:

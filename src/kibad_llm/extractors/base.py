@@ -643,10 +643,6 @@ def extract_from_text(
     return_messages: bool = False,
     return_messages_formatted: bool = False,
     truncate_user_message_formatted: int | None = 300,
-    # deprecated arguments
-    user_message: str | None = None,
-    system_message: str | None = None,
-    #
     **prompt_options: Any,
 ) -> SingleExtractionResult:
     """Extract structured information from text using an LLM.
@@ -711,17 +707,16 @@ def extract_from_text(
         UserWarning: When there is no LLM provided, the call to it is skipped.
 
     Raises:
-        DeprecationWarning: If deprecated args are used, the extraction exits early.
+        TypeError: If a message template is passed as a top-level keyword argument.
         TextOffsetValueError: If character_start and/or character_end are set erroneously.
         ValueError: If schema is None and use_guided_decoding or adjust_schema_for_evidence_detection is True.
     """
     # setting the log level on every query is suboptimal, but the simplest solution in our current architecture
     logging.getLogger("httpx").setLevel(logging.WARNING)
 
-    if system_message is not None or user_message is not None:
-        raise DeprecationWarning(
-            "The system_message and user_message arguments are deprecated. "
-            "Pass them in the prompt_template dictionary."
+    if SYSTEM_MESSAGE_KEY in prompt_options or USER_MESSAGE_KEY in prompt_options:
+        raise TypeError(
+            f"Pass {SYSTEM_MESSAGE_KEY!r} or {USER_MESSAGE_KEY!r} inside 'prompt_template'."
         )
 
     if not (0 <= character_start <= len(text)):
