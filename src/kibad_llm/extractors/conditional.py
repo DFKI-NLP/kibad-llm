@@ -10,7 +10,7 @@ from typing import Any
 
 from llama_index.core.base.llms.types import MessageRole
 
-from kibad_llm.llms.base import SimpleChatMessage
+from kibad_llm.llms.request import SYSTEM_MESSAGE_KEY, SimpleChatMessage
 
 from .base import extract_from_text_lenient
 from .union import UnionExtractor
@@ -52,7 +52,7 @@ class ConditionalUnionExtractor(UnionExtractor):
             }
             # 2) if history exists, pass it and disable system message
             if len(history) > 0:
-                current_kwargs["prompt_template"]["system_message"] = None
+                current_kwargs["prompt_template"][SYSTEM_MESSAGE_KEY] = None
                 current_kwargs["history"] = history
 
             current_result = extract_from_text_lenient(*args, **current_kwargs)

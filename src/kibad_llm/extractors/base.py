@@ -39,11 +39,11 @@ from typing import Any
 from jsonschema.validators import validator_for
 from llama_index.core.base.llms.types import ChatResponse
 
-from kibad_llm.llms.base import LLM
+from kibad_llm.llms.base import LLM, prepare_request
 from kibad_llm.llms.request import (
-    ExtractionPrompt,
+    SYSTEM_MESSAGE_KEY,
+    USER_MESSAGE_KEY,
     SimpleChatMessage,
-    prepare_inline_request,
 )
 from kibad_llm.schema.utils import (
     WRAPPED_CONTENT_KEY,
@@ -652,13 +652,6 @@ def extract_from_text(
     return_messages: bool = False,
     return_messages_formatted: bool = False,
     truncate_user_message_formatted: int | None = 300,
-    # deprecated arguments
-    user_message: str | None = None,
-    system_message: str | None = None,
-    schema_description_placeholder: str | None = None,
-    document_placeholder: str | None = None,
-    #
-    **prompt_options: Any,
 ) -> SingleExtractionResult:
     """Extract structured information from text using an LLM.
 
@@ -669,8 +662,8 @@ def extract_from_text(
     Args:
         text: The document text to process.
         text_id: Document text identifier for logging.
-        prompt_template: A dictionary with at least one of 'system_message' and 'user_message'
-            templates (or both).
+        prompt_template: At least one of `system_message` and `user_message`, plus
+            any per-template settings used by the selected backend.
         schema: Optional JSON schema for structured output.
         use_guided_decoding: Whether to use guided decoding.
         validate_with_schema: Whether to validate the output against the provided schema.
@@ -709,15 +702,11 @@ def extract_from_text(
             value. Requires an unwrapped extraction schema. Both schema placeholders in the prompt
             use the wrapped schema when enabled, and scores are saved in `structured_with_metadata`.
         confidence_description: Description for the confidence field when confidence scoring is enabled.
-        history: Messages from previous turns.
+        history: Previously rendered messages to prepend to the current turn.
         return_messages: Record the configured prompt templates.
         return_messages_formatted: Record the rendered messages from the current turn.
         truncate_user_message_formatted: Character limit for the recorded user message.
             Use None to keep the full message.
-
-    Keyword Args:
-        **prompt_options: Additional prompt settings, such as schema_description_kwargs.
-            Settings in `prompt_template` take precedence.
 
     Returns:
         A SingleExtractionResult object with the extraction result.
@@ -726,26 +715,11 @@ def extract_from_text(
         UserWarning: When there is no LLM provided, the call to it is skipped.
 
     Raises:
-        DeprecationWarning: If deprecated args are used, the extraction exits early.
         TextOffsetValueError: If character_start and/or character_end are set erroneously.
         ValueError: If guided decoding, evidence wrapping, or confidence is enabled without a schema.
     """
     # setting the log level on every query is suboptimal, but the simplest solution in our current architecture
     logging.getLogger("httpx").setLevel(logging.WARNING)
-
-    if (
-        system_message is not None
-        or user_message is not None
-        or schema_description_placeholder is not None
-        or document_placeholder is not None
-    ):
-        # raise an error if deprecated arguments are used
-        raise DeprecationWarning(
-            "system_message, user_message, schema_description_placeholder, and document_placeholder "
-            "are deprecated. Please provide a prompt_template dictionary containing 'system_message' and/or "
-            "'user_message' (and optionally schema_description_placeholder and document_placeholder)"
-            "instead."
-        )
 
     if not (0 <= character_start <= len(text)):
         raise TextOffsetValueError(
@@ -802,16 +776,19 @@ def extract_from_text(
 
     text_to_process = text[out.character_start : out.character_end]
 
-    prompt = ExtractionPrompt(
+    request_preparer = prepare_request if llm is None else llm.prepare_request
+    request = request_preparer(
+        prompt_template,
         document=text_to_process,
         schema=prompt_schema,
         history=history or (),
-        **{**prompt_options, **prompt_template},
     )
-    request = prepare_inline_request(prompt) if llm is None else llm.prepare_request(prompt)
 
     if return_messages:
-        out.messages = {"system": prompt.system_message, "user": prompt.user_message}
+        out.messages = {
+            "system": prompt_template.get(SYSTEM_MESSAGE_KEY),
+            "user": prompt_template.get(USER_MESSAGE_KEY),
+        }
 
     if return_messages_formatted:
         messages_formatted = {
