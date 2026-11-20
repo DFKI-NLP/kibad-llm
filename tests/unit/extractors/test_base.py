@@ -141,10 +141,13 @@ def test_backend_prepares_messages_before_extractor_records_them() -> None:
     assert request_parameters == {"seed": 42}
 
 
-@pytest.mark.parametrize("use_wrapped_schema", [False, True])
+@pytest.mark.parametrize("use_wrapped_schema_in_prompt", [None, False, True])
+@pytest.mark.parametrize("include_confidence", [False, True])
 def test_extract_from_text_uses_same_schema_for_both_placeholders(
-    use_wrapped_schema: bool,
+    use_wrapped_schema_in_prompt: bool | None,
+    include_confidence: bool,
 ) -> None:
+    """Show the same output shape in both prompt placeholders."""
     schema = {
         "type": "object",
         "properties": {"habitat": {"type": "string", "description": "Habitat label"}},
@@ -157,8 +160,9 @@ def test_extract_from_text_uses_same_schema_for_both_placeholders(
             "user_message": "{document}\n{schema}",
         },
         schema=schema,
-        adjust_schema_for_evidence_detection=True,
-        adjust_schema_description_for_evidence_detection=use_wrapped_schema,
+        include_evidence=True,
+        use_wrapped_schema_in_prompt=use_wrapped_schema_in_prompt,
+        include_confidence=include_confidence,
         return_messages=True,
         return_messages_formatted=True,
         truncate_user_message_formatted=None,
@@ -169,18 +173,68 @@ def test_extract_from_text_uses_same_schema_for_both_placeholders(
         "user": "{document}\n{schema}",
     }
     assert result.messages_formatted is not None
-    assert "Habitat label" in result.messages_formatted["system"]
-    assert ("evidence_anchor" in result.messages_formatted["system"]) == use_wrapped_schema
+    description = result.messages_formatted["system"]
+    assert "Habitat label" in description
+    expect_metadata = (
+        include_confidence
+        if use_wrapped_schema_in_prompt is None
+        else use_wrapped_schema_in_prompt
+    )
+    assert ("evidence_anchor" in description) == expect_metadata
+    expect_confidence = expect_metadata and include_confidence
+    assert ("confidence:" in description) == expect_confidence
+    assert (
+        "How confident are you that the extracted value is correct? (1–5)" in description
+    ) == expect_confidence
     document, rendered_schema = result.messages_formatted["user"].split("\n", maxsplit=1)
     assert document == "A forest."
     rendered = json.loads(rendered_schema)
-    if use_wrapped_schema:
-        assert set(rendered["properties"]["habitat"]["properties"]) == {
-            "content",
-            "evidence_anchor",
-        }
+    if expect_metadata:
+        fields = {"content", "evidence_anchor"}
+        if include_confidence:
+            fields.add("confidence")
+        assert set(rendered["properties"]["habitat"]["properties"]) == fields
     else:
         assert rendered == schema
+
+
+@pytest.mark.parametrize(
+    "prediction",
+    [
+        {"content": "Wald"},
+        {"content": "Wald", "confidence": "3"},
+        {"content": "Wald", "confidence": 0},
+        {"content": "Wald", "confidence": 6},
+        {"content": "Wald", "confidence": 2.5},
+    ],
+)
+def test_extract_from_text_rejects_invalid_confidence(prediction: dict) -> None:
+    """Validate confidence scores even when the backend uses no guided decoding."""
+
+    class TestLLM(LLM):
+        """Return a response that violates the confidence schema."""
+
+        def call_llm_chat_with_guided_decoding(
+            self, messages, *, json_schema=None, **kwargs
+        ) -> ChatResponse:
+            """Return the test response without contacting a backend."""
+            assert json_schema is None
+            return ChatResponse(message=ChatMessage(content=json.dumps({"habitat": prediction})))
+
+    result = extract_from_text(
+        text="Wald",
+        text_id="test",
+        prompt_template={"system_message": "{schema_description}", "user_message": "{document}"},
+        schema={"type": "object", "properties": {"habitat": {"type": "string"}}},
+        include_confidence=True,
+        use_guided_decoding=False,
+        llm=TestLLM(),
+    )
+
+    assert result.structured is None
+    assert result.structured_with_metadata is None
+    assert len(result.errors) == 1
+    assert result.errors[0].startswith("ValidationError:")
 
 
 @pytest.mark.parametrize(

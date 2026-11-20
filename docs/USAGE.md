@@ -205,8 +205,9 @@ Descriptions are assigned a role before formatting:
 
 The same annotation is rendered once per field occurrence. Independent annotations with identical wording are preserved, and each use of a shared type retains its documentation. Evidence wrapping keeps field instructions on the wrapper; entering its `content` and `evidence_anchor` properties does not repeat those instructions.
 
-When `adjust_schema_for_evidence_detection` is enabled, the output schema wraps each value with an evidence anchor.
-With evidence wrapping enabled, the prompt uses the wrapped schema by default (`adjust_schema_description_for_evidence_detection: true`).
+The `include_evidence` option wraps extracted values with an evidence anchor. The bundled evidence config sets `use_wrapped_schema_in_prompt: true` so the model sees the wrapped schema in its prompt.
+
+When migrating an extractor config, Hydra override, or Python call, rename `adjust_schema_for_evidence_detection` to `include_evidence` and `adjust_schema_description_for_evidence_detection` to `use_wrapped_schema_in_prompt`. Keep the same boolean values. Use the recorded code revision to replay older experiments verbatim.
 
 Set `schema_description_kwargs` inside `extractor.prompt_template` to configure the readable description. `include_field_descriptions=False` hides property documentation completely; `type_description_prefix=None` hides root/type documentation; `choices_description_prefix=None` hides enum documentation. These options work at every nesting level. `choices_prefix=None` hides enum values independently of their documentation. The deprecated `include_type_descriptions=False` remains supported.
 
@@ -222,8 +223,15 @@ prompt_template:
   user_message: "{document}"
 ```
 
-Both the full schema and the readable description follow `adjust_schema_description_for_evidence_detection`.
-Both placeholders affect the prompt independently of whether guided decoding is enabled.
+`use_wrapped_schema_in_prompt` selects the schema for both placeholders independently of guided decoding. Set it to `false` to use the original schema in templates that explain the wrappers themselves.
+
+### Prediction confidence
+
+Add `_with_confidence` to an extractor config's Hydra defaults to request an integer score from 1 to 5 for each non-null extracted value. The score expresses how sure the model is that its extracted value is correct. With a bundled extractor, pass `+extractor.include_confidence=true` on the command line. For organism trends, select `extractor/schema=organism_trends`. Set `extractor.include_evidence=false` for scores alone.
+
+Select `extractor/prompt_template=default_with_confidence` to include the full five-level rubric once per turn. Customize the short field description by setting `confidence_description` in the helper. With a bundled extractor, add custom wording using `+extractor.confidence_description`.
+
+For example, a model may return `{"content": "negative", "confidence": 4}` for a trend direction. The JSONL stores these estimates in `structured_with_metadata` for the simple extractor and in `structured_with_metadata_list` for multi-call extractors using the default `return_as_list`. Each score belongs to its individual model response. The `structured` field contains the extraction values used for evaluation.
 
 ### CPU smoke test with a micro LLM
 

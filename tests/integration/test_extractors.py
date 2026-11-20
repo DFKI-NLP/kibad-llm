@@ -13,6 +13,7 @@ import pytest
 
 from kibad_llm.config import PROJ_ROOT
 from kibad_llm.llms.base import LLM
+from kibad_llm.schema.description import build_schema_description
 from tests.conftest import WRITE_FIXTURE_DATA, cfg_global
 
 pytestmark = pytest.mark.usefixtures("llm_chat_replay")
@@ -99,9 +100,16 @@ def test_extractor(tmp_path, cfg_predict_extractor, extractor_name):
     assert set(result["structured"]) == set(expected_result["structured"])
 
 
-def test_default_prompt_accepts_json_schema_override() -> None:
+@pytest.mark.parametrize(
+    "override",
+    [
+        "extractor.include_evidence=false",
+        "extractor.use_wrapped_schema_in_prompt=false",
+    ],
+)
+def test_default_prompt_accepts_json_schema_override(override: str) -> None:
     """Keep the default document message when the system message requests JSON Schema."""
-    cfg = cfg_global(overrides=['extractor.prompt_template.system_message="{schema}"'])
+    cfg = cfg_global(overrides=['extractor.prompt_template.system_message="{schema}"', override])
     extractor = instantiate(cfg.extractor, _convert_="all", llm=None)
     schema = {"type": "object", "properties": {"field": {"const": "Wälder"}}}
     document = "Two oaks grow beside the trail."
@@ -109,7 +117,6 @@ def test_default_prompt_accepts_json_schema_override() -> None:
         text=document,
         text_id="fixture",
         schema=schema,
-        adjust_schema_for_evidence_detection=False,
         return_messages_formatted=True,
     )
 
@@ -154,7 +161,7 @@ def test_extractor_preserves_backend_metadata_in_jsonl(
         use_guided_decoding=False,
         validate_with_schema=False,
         return_reasoning=False,
-        adjust_schema_for_evidence_detection=False,
+        include_evidence=False,
         response_has_metadata=False,
     )
 
@@ -169,3 +176,105 @@ def test_extractor_preserves_backend_metadata_in_jsonl(
         assert len(backend.metadata) > 1
         assert saved_result["backend_metadata_list"] == backend.metadata
         assert saved_result["errors_list"] == [[]] * len(backend.metadata)
+
+
+@pytest.mark.parametrize(
+    ("extractor_name", "include_evidence", "evidence_before_content", "expected_fields"),
+    [
+        ("simple", False, True, ("content", "confidence")),
+        ("chunking", True, False, ("content", "evidence_anchor", "confidence")),
+        ("chunking", True, True, ("evidence_anchor", "content", "confidence")),
+    ],
+)
+@pytest.mark.parametrize("prompt_template", ["default", "default_with_confidence"])
+def test_extractor_preserves_confidence_in_jsonl(
+    tmp_path,
+    extractor_name,
+    include_evidence,
+    evidence_before_content,
+    expected_fields,
+    prompt_template,
+) -> None:
+    """Check schema field order, prompt rendering, and per-call scores in prediction JSONL."""
+    sentence = "Forest birds declined."
+    confidence_description = (
+        "Rate how well the text supports this value using an integer from 1 to 5."
+    )
+    trend = {
+        "Hauptgruppe_RoteListen": "Wirbeltiere",
+        "Untergruppe_RoteListen": None,
+        "Lebensraum": "Wald",
+        "Antwortvariable": "Artenzahl",
+        "Trend": "negative",
+    }
+    evidence = {"evidence_anchor": sentence} if include_evidence else {}
+    scores = iter((1, 5))
+
+    class TestLLM(LLM):
+        """Return a trend with a different confidence for each call."""
+
+        def call_llm_chat_with_guided_decoding(
+            self, messages, *, json_schema=None, **kwargs
+        ) -> ChatResponse:
+            """Return a mock trend and verify the wrapped schema reaches the backend."""
+            assert json_schema is not None
+            trend_properties = json_schema["$defs"]["OrganismBiodiversityTrend"]["properties"]
+            wrapped_properties = trend_properties["Trend"]["properties"]
+            assert tuple(wrapped_properties) == expected_fields
+            assert wrapped_properties["confidence"] == {
+                "type": "integer",
+                "enum": [1, 2, 3, 4, 5],
+                "description": confidence_description,
+            }
+            expected_system_message = cfg.extractor.prompt_template.system_message.format(
+                schema_description=build_schema_description(json_schema)
+            )
+            assert messages[0].content == expected_system_message
+            assert confidence_description in messages[0].content
+            score = next(scores)
+            wrapped = {
+                field: (
+                    {"content": value, "confidence": score, **evidence}
+                    if value is not None
+                    else None
+                )
+                for field, value in trend.items()
+            }
+            return ChatResponse(
+                message=ChatMessage(content=json.dumps({"organism_trends": [wrapped]}))
+            )
+
+    overrides = [
+        f"extractor={extractor_name}",
+        "extractor/schema=organism_trends",
+        "extractor/llm=dry-run",
+        f"extractor/prompt_template={prompt_template}",
+        "+extractor.include_confidence=true",
+        f"+extractor.confidence_description={confidence_description}",
+        f"extractor.include_evidence={str(include_evidence).lower()}",
+        f"extractor.evidence_before_content={str(evidence_before_content).lower()}",
+        "extractor.return_reasoning=false",
+    ]
+    if extractor_name == "chunking":
+        overrides.append(f"extractor.max_char_buffer={len(sentence) + 1}")
+    cfg = cfg_global(out_dir=tmp_path, overrides=overrides)
+    extractor = instantiate(cfg.extractor, _convert_="all")
+    backend = TestLLM()
+    result = extractor(text_id="test", text=f"{sentence} {sentence}", llm=backend)
+
+    output_file = tmp_path / "predictions.jsonl"
+    Dataset.from_list([dict(result)]).to_json(output_file)
+    saved = json.loads(output_file.read_text())
+    assert saved["structured"] == {"organism_trends": [trend]}
+    if extractor_name == "simple":
+        assert saved["errors"] == []
+        wrapped = saved["structured_with_metadata"]["organism_trends"][0]
+        assert wrapped["Trend"] == {"content": "negative", "confidence": 1}
+        assert wrapped["Untergruppe_RoteListen"] is None
+    else:
+        assert saved["errors_list"] == [[], []]
+        entries = [
+            item["organism_trends"][0]["Trend"] for item in saved["structured_with_metadata_list"]
+        ]
+        assert [entry["confidence"] for entry in entries] == [1, 5]
+        assert [entry["evidence_anchor"] for entry in entries] == [sentence, sentence]
