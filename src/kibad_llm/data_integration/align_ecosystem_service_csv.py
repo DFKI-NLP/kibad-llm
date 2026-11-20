@@ -11,6 +11,8 @@ The script corrects the following formatting differences of the raw export:
   columns to keep and their order are defined by `OUTPUT_COLUMNS`.
 - The raw export preserves Unicode punctuation (hyphen/dash/quote variants), which is flattened
   to the ASCII equivalents.
+- Surrounding whitespace of all cells is stripped and inner whitespace runs (including
+  non-breaking spaces) are collapsed into a single space.
 
 Optionally, papers can be filtered (all rows of a paper, identified by "Key") with
 `--exclude-methods` (e.g. reviews and pure model studies) and `--require-habitat` (e.g. "Wald"). The
@@ -114,6 +116,19 @@ def normalize_punctuation(value: str) -> str:
     if not value:
         return value
     return _PUNCTUATION_PATTERN.sub(lambda m: PUNCTUATION_NORMALIZATION[m.group(0)], value)
+
+
+def normalize_whitespace(value: str) -> str:
+    """Strip surrounding whitespace from `value` and collapse inner whitespace runs (including
+    non-breaking spaces) into a single space.
+
+    Args:
+        value: Cell value to normalize.
+
+    Returns:
+        The normalized value, e.g. "Biomasseproduktion " -> "Biomasseproduktion".
+    """
+    return " ".join(value.split())
 
 
 def rename_value(column: str, value: str) -> str:
@@ -230,7 +245,7 @@ def align_csv(
 
     Applies, in order: column renames (see `COLUMN_RENAMES`), then restricts and reorders columns
     to exactly match `OUTPUT_COLUMNS`, then normalizes Unicode punctuation to ASCII (see
-    `PUNCTUATION_NORMALIZATION`) and renames selected values (see `VALUE_RENAMES`) on every cell.
+    `PUNCTUATION_NORMALIZATION`), normalizes whitespace (see `normalize_whitespace`) and renames selected values (see `VALUE_RENAMES`) on every cell.
     Finally, papers are optionally filtered (see `filter_papers`). Line endings are written as LF.
     The parent directory of `output_path` is created if necessary.
 
@@ -256,7 +271,9 @@ def align_csv(
             renamed_row = {COLUMN_RENAMES.get(k, k): v for k, v in row.items()}
             aligned_rows.append(
                 {
-                    col: rename_value(col, normalize_punctuation(renamed_row[col]))
+                    col: rename_value(
+                        col, normalize_whitespace(normalize_punctuation(renamed_row[col]))
+                    )
                     for col in OUTPUT_COLUMNS
                 }
             )

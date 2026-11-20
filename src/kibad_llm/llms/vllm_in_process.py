@@ -15,6 +15,7 @@ from vllm.entrypoints.chat_utils import (
 )
 from vllm.entrypoints.harmony_utils import parse_chat_output
 from vllm.entrypoints.openai.protocol import ChatCompletionRequest
+from vllm.outputs import RequestOutput
 from vllm.reasoning import ReasoningParser
 from vllm.reasoning.gptoss_reasoning_parser import GptOssReasoningParser
 from vllm.sampling_params import StructuredOutputsParams
@@ -175,6 +176,35 @@ class VllmInProcess(LLM):
             msg.additional_kwargs["reasoning"] = reasoning
 
         return ChatResponse(message=msg, raw=req_outputs)
+
+    def get_backend_metadata_from_chat_response(
+        self, response: ChatResponse
+    ) -> dict[str, Any] | None:
+        """Count usage from the token IDs returned by one in-process vLLM request.
+
+        Args:
+            response: A chat response with the raw vLLM request outputs.
+
+        Returns:
+            Metadata with prompt, completion, and total token counts. Completion
+            usage includes all generated candidates, including reasoning tokens.
+            Cached prompt tokens are included when vLLM reports them. If prompt
+            token IDs are unavailable, prompt and total counts are omitted.
+            Returns None if there is no raw response.
+        """
+        if response.raw is None:
+            return None
+        output: RequestOutput = response.raw[0]
+        completion_tokens = sum(len(candidate.token_ids) for candidate in output.outputs)
+        usage: dict[str, Any] = {"completion_tokens": completion_tokens}
+        if output.prompt_token_ids is not None:
+            prompt_tokens = len(output.prompt_token_ids)
+            usage.update(
+                prompt_tokens=prompt_tokens, total_tokens=prompt_tokens + completion_tokens
+            )
+        if output.num_cached_tokens is not None:
+            usage["prompt_tokens_details"] = {"cached_tokens": output.num_cached_tokens}
+        return {"usage": usage}
 
     def get_reasoning_from_chat_response(self, response: ChatResponse) -> str | None:
         """Extract reasoning from a chat response."""
