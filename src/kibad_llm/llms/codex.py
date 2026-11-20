@@ -1,6 +1,7 @@
 """Document extraction through the non-interactive Codex CLI."""
 
-from collections.abc import Mapping, Sequence
+from collections.abc import Iterator, Mapping, Sequence
+from contextlib import ExitStack, contextmanager
 import json
 import os
 from pathlib import Path
@@ -52,6 +53,47 @@ enabled = false
 [permissions.document.network]
 enabled = false
 """
+
+
+def _save_refreshed_auth(source: Path, staged: Path, original: bytes) -> None:
+    """Replace the login file with a complete refresh when the source still matches."""
+    try:
+        refreshed = staged.read_bytes()
+        if refreshed == original or source.read_bytes() != original:
+            return
+    except FileNotFoundError:
+        return
+
+    try:
+        credentials = json.loads(refreshed)
+    except (json.JSONDecodeError, UnicodeDecodeError):
+        credentials = None
+    if not isinstance(credentials, dict) or not credentials:
+        warn_once("Codex left an invalid authentication cache. Check the saved login.")
+        return
+
+    with TemporaryDirectory(prefix=".codex-auth-", dir=source.parent) as temporary:
+        replacement = Path(temporary) / "auth.json"
+        replacement.touch(mode=0o600)
+        replacement.write_bytes(refreshed)
+        replacement.replace(source)
+
+
+@contextmanager
+def _stage_saved_auth(source: Path, staged: Path) -> Iterator[None]:
+    """Serialize calls sharing a login and retain refreshes even if inference fails."""
+    import fcntl
+
+    source = source.resolve()
+    with source.with_name(".kibad-llm-auth.lock").open("ab") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        original = source.read_bytes()
+        staged.touch(mode=0o600)
+        staged.write_bytes(original)
+        try:
+            yield
+        finally:
+            _save_refreshed_auth(source, staged, original)
 
 
 class Codex(LLM):
@@ -262,7 +304,10 @@ class Codex(LLM):
             raise FileNotFoundError(f"Codex executable unavailable: {self.executable}")
         executable = Path(executable_path).resolve()
         auth_source = Path(os.environ.get("CODEX_HOME", Path.home() / ".codex")) / "auth.json"
-        with TemporaryDirectory(prefix="codex-", dir=self.artifact_dir) as temporary:
+        with (
+            TemporaryDirectory(prefix="codex-", dir=self.artifact_dir) as temporary,
+            ExitStack() as cleanup,
+        ):
             root = Path(temporary)
             workspace = root / "document"
             state = root / "state"
@@ -275,10 +320,11 @@ class Codex(LLM):
             if api_key:
                 env["CODEX_API_KEY"] = api_key
             elif auth_source.is_file():
-                shutil.copyfile(auth_source, state / "auth.json")
-                (state / "auth.json").chmod(0o600)
+                cleanup.enter_context(_stage_saved_auth(auth_source, state / "auth.json"))
             else:
-                raise ValueError("Set CODEX_API_KEY or provide a Codex auth.json file.")
+                raise ValueError(
+                    "Set CODEX_API_KEY or OPENAI_API_KEY, or provide a Codex auth.json file."
+                )
 
             (state / "config.toml").write_text(
                 CODEX_CONFIG_TEMPLATE.format(

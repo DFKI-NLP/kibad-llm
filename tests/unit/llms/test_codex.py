@@ -371,6 +371,85 @@ def test_codex_rejects_inline_template_before_inference(tmp_path, template, role
     assert not list(tmp_path.iterdir())
 
 
+@pytest.mark.parametrize(
+    "codex_key, expected", [(None, "project-key"), ("override-key", "override-key")]
+)
+def test_codex_prefers_api_keys_over_saved_login(tmp_path, monkeypatch, codex_key, expected):
+    """Keep the project API key ahead of the saved login and allow an explicit override."""
+    login_home = tmp_path / "login"
+    login_home.mkdir()
+    auth = login_home / "auth.json"
+    auth.write_text('{"auth_mode": "chatgpt"}', encoding="utf-8")
+    monkeypatch.setenv("CODEX_HOME", str(login_home))
+    monkeypatch.setenv("OPENAI_API_KEY", "project-key")
+    if codex_key is None:
+        monkeypatch.delenv("CODEX_API_KEY", raising=False)
+    else:
+        monkeypatch.setenv("CODEX_API_KEY", codex_key)
+
+    def run_cli(args, *, cwd, env, **kwargs):
+        """Check which credential reaches the CLI and simulate a successful call."""
+        assert env["CODEX_API_KEY"] == expected
+        assert not (Path(env["CODEX_HOME"]) / "auth.json").exists()
+        if args[1] == "sandbox":
+            (cwd / "probe").touch()
+        else:
+            Path(args[args.index("--output-last-message") + 1]).write_text("{}", encoding="utf-8")
+        return subprocess.CompletedProcess(args, 0)
+
+    monkeypatch.setattr("kibad_llm.llms.codex.shutil.which", lambda _: "/usr/bin/codex")
+    monkeypatch.setattr("kibad_llm.llms.codex.subprocess.run", run_cli)
+    backend = Codex("test-model", "high", 30, str(tmp_path / "artifacts"))
+
+    assert backend.call_llm_chat_with_guided_decoding([]).message.content == "{}"
+    assert list(login_home.iterdir()) == [auth]
+
+
+@pytest.mark.parametrize("first_exit_code", [0, 1])
+def test_codex_keeps_refreshed_login_between_documents(tmp_path, monkeypatch, first_exit_code):
+    """Pass the refreshed login to the next document even if the first extraction fails."""
+    login_home = tmp_path / "login"
+    login_home.mkdir()
+    auth = login_home / "auth.json"
+    original = {"auth_mode": "chatgpt", "tokens": {"refresh_token": "original-token"}}
+    refreshed = {"auth_mode": "chatgpt", "tokens": {"refresh_token": "replacement-token"}}
+    auth.write_text(json.dumps(original), encoding="utf-8")
+    monkeypatch.setenv("CODEX_HOME", str(login_home))
+    monkeypatch.delenv("CODEX_API_KEY", raising=False)
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    used_credentials = []
+
+    def run_cli(args, *, cwd, env, **kwargs):
+        """Simulate the CLI rotating the login token in its temporary state."""
+        staged = Path(env["CODEX_HOME"]) / "auth.json"
+        assert staged != auth
+        assert (staged.stat().st_mode & 0o777) == 0o600
+        if args[1] == "sandbox":
+            (cwd / "probe").touch()
+            return subprocess.CompletedProcess(args, 0)
+        used_credentials.append(json.loads(staged.read_text(encoding="utf-8")))
+        if len(used_credentials) == 1:
+            staged.write_text(json.dumps(refreshed), encoding="utf-8")
+            if first_exit_code:
+                return subprocess.CompletedProcess(args, first_exit_code)
+        Path(args[args.index("--output-last-message") + 1]).write_text("{}", encoding="utf-8")
+        return subprocess.CompletedProcess(args, 0)
+
+    monkeypatch.setattr("kibad_llm.llms.codex.shutil.which", lambda _: "/usr/bin/codex")
+    monkeypatch.setattr("kibad_llm.llms.codex.subprocess.run", run_cli)
+    backend = Codex("test-model", "high", 30, str(tmp_path / "artifacts"))
+
+    if first_exit_code:
+        with pytest.raises(ValueError, match="Codex exited with status 1"):
+            backend.call_llm_chat_with_guided_decoding([])
+    else:
+        assert backend.call_llm_chat_with_guided_decoding([]).message.content == "{}"
+    assert json.loads(auth.read_text(encoding="utf-8")) == refreshed
+    assert (auth.stat().st_mode & 0o777) == 0o600
+    assert backend.call_llm_chat_with_guided_decoding([]).message.content == "{}"
+    assert used_credentials == [original, refreshed]
+
+
 def test_codex_rejects_placeholder_alias_settings(tmp_path):
     """Report unsupported settings even when the messages already use fixed field names."""
     backend = Codex("test-model", "high", 30, str(tmp_path))

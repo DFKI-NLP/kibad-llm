@@ -194,7 +194,11 @@ Use this to send more than one simultaneous request to vLLM.
 
 #### Codex extraction backend
 
-Use Codex CLI on a Linux host that supports its restricted filesystem sandbox. Install Codex separately and authenticate with `codex login` or set `CODEX_API_KEY`. Choose an explicit model available to that credential with `extractor.llm.model=MODEL`. The default model is an alias. Hosted inference and agent execution can vary across reruns.
+Install Codex CLI on a Linux host that supports its restricted filesystem sandbox. The backend checks `CODEX_API_KEY` first, then `OPENAI_API_KEY`, including a project key loaded from `.env`. The first available key selects the API project for the run, even if the host also has a saved Codex login.
+
+With both keys unset, the backend uses the file-backed login from `$CODEX_HOME/auth.json`, which defaults to `~/.codex/auth.json`. For ChatGPT sign-in, use a dedicated, writable `CODEX_HOME` for both `codex login` and extraction. The backend writes refreshed credentials back to that file and serializes extraction calls that share it. Reserve that login for extraction to avoid concurrent refreshes by other Codex processes.
+
+Choose an explicit model available to the selected credential with `extractor.llm.model=MODEL`. The default model is an alias. Hosted inference and agent execution can vary across reruns.
 
 ```bash
 uv run -m kibad_llm.predict \
