@@ -2,6 +2,7 @@
 
 from collections.abc import Iterator, Mapping, Sequence
 from contextlib import ExitStack, contextmanager
+from io import StringIO
 import json
 import os
 from pathlib import Path
@@ -282,7 +283,7 @@ class Codex(LLM):
         if raw is None:
             return None
         usage_reports = []
-        for line in raw.splitlines():
+        for line in StringIO(raw):
             event = json.loads(line)
             usage = event.get("usage")
             if usage is not None:

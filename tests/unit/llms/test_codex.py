@@ -5,7 +5,7 @@ from pathlib import Path
 import subprocess  # nosec B404  # Used to run the fixed probe script and simulate CLI results.
 
 from hydra.utils import instantiate
-from llama_index.core.base.llms.types import MessageRole
+from llama_index.core.base.llms.types import ChatMessage, ChatResponse, MessageRole
 import pytest
 
 from kibad_llm.extractors.base import extract_from_text, extract_from_text_lenient
@@ -540,6 +540,20 @@ def test_failed_execution_uses_existing_error_result(tmp_path, monkeypatch, erro
     (error_file,) = tmp_path.glob("*/error.txt")
     assert error_file.read_text(encoding="utf-8") == str(error)
     assert error_file.with_name("events.jsonl").is_file()
+
+
+def test_codex_keeps_usage_after_event_with_unicode_separator(tmp_path):
+    """Preserve a Unicode line separator inside a valid JSONL record."""
+    backend = Codex("test-model", "high", 30, str(tmp_path))
+    usage = {"input_tokens": 10, "output_tokens": 2}
+    events = [
+        {"type": "item.completed", "item": {"type": "agent_message", "text": "A\u2028B"}},
+        {"type": "turn.completed", "usage": usage},
+    ]
+    raw = "".join(json.dumps(event, ensure_ascii=False) + "\n" for event in events)
+    response = ChatResponse(message=ChatMessage(role=MessageRole.ASSISTANT, content="{}"), raw=raw)
+
+    assert backend.get_backend_metadata_from_chat_response(response) == {"usage": [usage]}
 
 
 @pytest.mark.parametrize("event_log", ['{"usage":', '{"usage": "invalid"}'])
