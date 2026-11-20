@@ -673,9 +673,9 @@ def extract_from_text(
             evidence alone uses the original schema. Guided decoding uses the wrapped schema in either case.
         evidence_anchor_description: Description for the evidence anchor field.
         wrapped_content_description: Optional description for the content field in the metadata wrapper.
-        evidence_before_content: Whether to place `evidence_anchor` before `content` in the metadata
-            wrapper. With guided decoding, the model then quotes the evidence before it commits to the
-            extracted value. Applies when `include_evidence` is enabled.
+        evidence_before_content: Place `evidence_anchor` before `content` when evidence is enabled.
+            Decoders that follow schema order can then quote the evidence before emitting the value.
+            Confidence follows the extracted value.
         response_has_metadata: If True, the output is expected to have each leaf value wrapped in
             an object with `content` plus metadata fields. If so, the metadata is stripped and the cleaned
             output is returned under the "structured" key, while the raw output with metadata is returned
@@ -754,7 +754,9 @@ def extract_from_text(
             metadata_schema=metadata_schema,
             content_key=WRAPPED_CONTENT_KEY,
             content_description=wrapped_content_description,
-            metadata_first=include_evidence and evidence_before_content,
+            metadata_before_content=(
+                ("evidence_anchor",) if include_evidence and evidence_before_content else ()
+            ),
         )
         # since we wrapped terminals with metadata, we expect metadata in the response
         response_has_metadata = True

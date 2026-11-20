@@ -245,7 +245,7 @@ def _wrap_value_schema_with_metadata(
     metadata_obj_schema: Mapping[str, Any],
     content_key: str,
     content_description: str | None = None,
-    metadata_first: bool = False,
+    metadata_before_content: tuple[str, ...] = (),
 ) -> dict[str, Any]:
     """
     Construct the wrapper-object schema for a single wrappable value schema.
@@ -265,9 +265,8 @@ def _wrap_value_schema_with_metadata(
       to explain the wrapper semantics (e.g., “extracted value; see evidence_anchor”).
     - The wrapper's `additionalProperties` is inherited from `metadata_obj_schema`
       (defaulting to False if absent) to keep the wrapper strict.
-    - With `metadata_first`, the metadata properties are placed before `content_key`. Since
-      guided decoding generates properties in schema order, the model then has to write e.g.
-      the evidence before committing to the extracted value.
+    - The properties in `metadata_before_content` appear first, followed by `content_key`
+      and the remaining metadata properties.
 
     This function assumes `value_schema` is already a "wrappable" schema node (as
     determined by `_schema_should_be_wrapped`); it does not attempt to handle unions,
@@ -300,11 +299,16 @@ def _wrap_value_schema_with_metadata(
     if additional_props is None:
         additional_props = False
 
-    properties = {content_key: content_schema, **meta_props}
+    preceding_metadata = {
+        name: meta_props[name] for name in metadata_before_content if name in meta_props
+    }
+    following_metadata = {
+        name: prop_schema
+        for name, prop_schema in meta_props.items()
+        if name not in preceding_metadata
+    }
+    properties = {**preceding_metadata, content_key: content_schema, **following_metadata}
     required = [content_key, *[r for r in meta_required if r != content_key]]
-
-    if metadata_first:
-        properties = {**meta_props, content_key: content_schema}
 
     wrapper: dict[str, Any] = {
         "type": "object",
@@ -331,6 +335,7 @@ def wrap_terminals_with_metadata(
     content_key: str = WRAPPED_CONTENT_KEY,
     content_description: str | None = None,
     metadata_first: bool = False,
+    metadata_before_content: tuple[str, ...] = (),
 ) -> dict[str, Any]:
     """
     Wrap every terminal field schema (scalars/enums/const, including nullable unions and refs)
@@ -342,12 +347,16 @@ def wrap_terminals_with_metadata(
     - Does NOT wrap the root of $defs entries (important for shared enum defs).
     - DOES wrap terminal fields inside object definitions in $defs.
     - Returns a deep-copied dict; input is not mutated.
-    - With `metadata_first`, the metadata fields are placed before <content_key> in each wrapper.
+    - `metadata_before_content` names the metadata properties to place before `content_key`,
+      in the specified order. The remaining properties follow `content_key`.
+    - `metadata_first=True` places all metadata properties before `content_key` in schema order.
     """
     from copy import deepcopy
 
     root: dict[str, Any] = deepcopy(dict(schema))
     metadata_obj_schema = _normalize_metadata_schema(metadata_schema)
+    if metadata_first:
+        metadata_before_content = tuple(metadata_obj_schema["properties"])
 
     def transform(node: Any, *, allow_wrap_here: bool = True) -> Any:
         if isinstance(node, list):
@@ -375,7 +384,7 @@ def wrap_terminals_with_metadata(
                 metadata_obj_schema=metadata_obj_schema,
                 content_key=content_key,
                 content_description=content_description,
-                metadata_first=metadata_first,
+                metadata_before_content=metadata_before_content,
             )
 
         # combinators

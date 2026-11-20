@@ -179,13 +179,23 @@ def test_extractor_preserves_backend_metadata_in_jsonl(
 
 
 @pytest.mark.parametrize(
-    ("extractor_name", "include_evidence"), [("simple", False), ("chunking", True)]
+    ("extractor_name", "include_evidence", "evidence_before_content", "expected_fields"),
+    [
+        ("simple", False, True, ("content", "confidence")),
+        ("chunking", True, False, ("content", "evidence_anchor", "confidence")),
+        ("chunking", True, True, ("evidence_anchor", "content", "confidence")),
+    ],
 )
 @pytest.mark.parametrize("prompt_template", ["default", "default_with_confidence"])
 def test_extractor_preserves_confidence_in_jsonl(
-    tmp_path, extractor_name, include_evidence, prompt_template
+    tmp_path,
+    extractor_name,
+    include_evidence,
+    evidence_before_content,
+    expected_fields,
+    prompt_template,
 ) -> None:
-    """Render the selected prompt and retain per-call confidence scores in prediction JSONL."""
+    """Check schema field order, prompt rendering, and per-call scores in prediction JSONL."""
     sentence = "Forest birds declined."
     confidence_description = (
         "Rate how well the text supports this value using an integer from 1 to 5."
@@ -210,7 +220,7 @@ def test_extractor_preserves_confidence_in_jsonl(
             assert json_schema is not None
             trend_properties = json_schema["$defs"]["OrganismBiodiversityTrend"]["properties"]
             wrapped_properties = trend_properties["Trend"]["properties"]
-            assert set(wrapped_properties) == {"content", "confidence", *evidence}
+            assert tuple(wrapped_properties) == expected_fields
             assert wrapped_properties["confidence"] == {
                 "type": "integer",
                 "enum": [1, 2, 3, 4, 5],
@@ -242,6 +252,7 @@ def test_extractor_preserves_confidence_in_jsonl(
         "+extractor.include_confidence=true",
         f"+extractor.confidence_description={confidence_description}",
         f"extractor.include_evidence={str(include_evidence).lower()}",
+        f"extractor.evidence_before_content={str(evidence_before_content).lower()}",
         "extractor.return_reasoning=false",
     ]
     if extractor_name == "chunking":
