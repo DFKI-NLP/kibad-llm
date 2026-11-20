@@ -18,6 +18,10 @@ evidence_anchor_description: "Wörtliches Zitat aus dem Originaltext, das den ex
 # the wrapped content description here. If not set, no description will be used.
 # wrapped_content_description: "Der extrahierte Inhalt."
 
+# Enabling this flag places the evidence_anchor before the content in each wrapped field, so that (with guided
+# decoding) the model quotes the evidence before it commits to the extracted value.
+evidence_before_content: false
+
 # Enabling response_has_metadata will cause metadata unwrapping to be performed on the LLM response.
 # This means that the extracted field values will be unwrapped from their evidence detection
 # metadata, so that only the raw field "content" values are returned in the final predictions.

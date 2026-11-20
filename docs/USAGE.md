@@ -16,6 +16,8 @@
     - [Prerequisite: LLM Hosting](#prerequisite-llm-hosting)
     - [Inference](#inference)
     - [Schema descriptions in prompts](#schema-descriptions-in-prompts)
+    - [CPU smoke test with a micro LLM](#cpu-smoke-test-with-a-micro-llm)
+    - [Token usage in prediction results](#token-usage-in-prediction-results)
     - [Evaluation](#evaluation)
     - [Multirun](#multirun)
     - [A/B Testing with Multiple Seeds](#ab-testing-with-multiple-seeds)
@@ -199,9 +201,91 @@ Descriptions are assigned a role before formatting:
 
 The same annotation is rendered once per field occurrence. Independent annotations with identical wording are preserved, and each use of a shared type retains its documentation. Evidence wrapping keeps field instructions on the wrapper; entering its `content` and `evidence_anchor` properties does not repeat those instructions.
 
+When `adjust_schema_for_evidence_detection` is enabled, the output schema wraps each value with an evidence anchor.
+With evidence wrapping enabled, the prompt uses the wrapped schema by default (`adjust_schema_description_for_evidence_detection: true`).
+
 Pass formatting options through `schema_description_kwargs` when building messages. `include_field_descriptions=False` hides property documentation completely; `type_description_prefix=None` hides root/type documentation; `choices_description_prefix=None` hides enum documentation. These options work at every nesting level. `choices_prefix=None` hides enum values independently of their documentation. The deprecated `include_type_descriptions=False` remains supported.
 
 This is a prompt summary, not a complete JSON Schema validator. Local references, inline objects, arrays, nullable unions, and enum compositions are supported. Enum unions combine choices and enum intersections retain their common choices. General structural unions display a representative non-null branch. Unresolved or recursive references, list-valued `type`, and multi-branch structural `allOf` raise `ValueError` instead of producing an incomplete or infinitely recursive description. Cardinality retains the existing convention: arrays use `0..*`; other fields use `0..1` if a default is present, otherwise `1`.
+
+To include the full JSON Schema in a prompt, use `{schema}` in the system or user message.
+A prompt template can include either schema representation or both. To rename the JSON placeholder,
+set `schema_placeholder` in the prompt template and use the corresponding name in the message:
+
+```yaml
+prompt_template:
+  system_message: |
+    Extract the requested information and return JSON matching this schema.
+    {output_schema}
+  user_message: "{document}"
+  schema_placeholder: output_schema
+```
+
+Both the full schema and the readable description follow `adjust_schema_description_for_evidence_detection`.
+Both placeholders affect the prompt independently of whether guided decoding is enabled.
+
+### CPU smoke test with a micro LLM
+
+Use [SmolLM2-135M-Instruct](https://huggingface.co/HuggingFaceTB/SmolLM2-135M-Instruct) for local pipeline testing. The [model config](/configs/extractor/llm/smollm2_135m_in_process.yaml) uses `kibad_llm.llms.VllmInProcess`, so no model server or API key is needed. The public weights require no Hugging Face token. This 135-million-parameter model is intended for smoke tests; its predictions are not suitable for evaluating extraction quality.
+
+The standard PyPI vLLM package targets GPUs. Install a **CPU build of vLLM 0.12.0** into the project environment instead. For Linux ARM64, the official package index provides a prebuilt CPU wheel, so no compiler or source build is needed:
+
+```bash
+uv pip install --torch-backend cpu 'vllm==0.12.0+cpu' \
+  --extra-index-url https://wheels.vllm.ai/0.12.0/cpu/
+```
+
+The wheel command above is specific to Linux ARM64. For AMD64, vLLM provides the [prebuilt CPU container](https://gallery.ecr.aws/q9t5s3a7/vllm-cpu-release-repo) `public.ecr.aws/q9t5s3a7/vllm-cpu-release-repo:v0.12.0`; the 0.12.0 CPU wheel index currently lists only an ARM64 wheel. Follow the [vLLM CPU installation instructions](https://docs.vllm.ai/en/v0.12.0/getting_started/installation/cpu/) for platform requirements and native CPU builds. Choose a runtime compatible with the project's vLLM version range. Use `uv run --no-sync` afterwards to retain the CPU-specific installation. Plain `uv run` or `uv sync` can restore the GPU package pinned in `uv.lock`.
+
+If vLLM reports `Device string must not be empty`, it has detected no usable device backend. On a CPU-only machine, check that the active environment contains a CPU build of vLLM. The `VLLM_CPU_*` settings below tune that backend; they do not install or select it. `--no-sync` preserves the current installation, so reinstall the CPU runtime first if an earlier sync replaced it.
+
+From the repository root, run:
+
+```bash
+export VLLM_CPU_KVCACHE_SPACE=1
+export VLLM_CPU_OMP_THREADS_BIND=nobind
+export OMP_NUM_THREADS=4
+uv run --no-sync -m kibad_llm.predict experiment/predict=micro_llm
+```
+
+The [smoke-test preset](/configs/experiment/predict/micro_llm.yaml) processes all four complete PDFs in `tests/fixtures/pdfs`, splits their text into 6,000-character chunks, and predicts the main language (`de`, `en`, or `other`) of each chunk using a small, bounded JSON schema. Chunk predictions are combined by majority vote. Evidence wrappers are disabled. It uses an 8,192-token context, compact JSON decoding, and a 64-token response limit. Results and run metadata are written to the usual `predictions/micro_llm` and `logs/micro_llm` directories. These environment settings limit the KV cache to 1 GiB and use four CPU threads. Override `pdf_directory` to test another directory.
+
+### Token usage in prediction results
+
+Each LLM call records its token usage in `SingleExtractionResult.backend_metadata.usage`.
+The simple extractor writes this to `backend_metadata` in the prediction JSONL.
+The default chunking, repeat, union, conditional union, and multi-pass configs preserve each
+call's metadata in `backend_metadata_list`, in call order. When customizing `return_as_list`,
+include `backend_metadata` to retain it.
+
+OpenAI Responses preserves the API's usage fields, including `input_tokens`, `output_tokens`,
+`total_tokens`, `input_tokens_details.cached_tokens`, and `output_tokens_details.reasoning_tokens`.
+API-hosted vLLM preserves its reported usage, including `prompt_tokens`, `completion_tokens`,
+`total_tokens`, and any token details supplied by the server. For example:
+
+```json
+{
+  "backend_metadata": {
+    "usage": {
+      "input_tokens": 120,
+      "input_tokens_details": {"cached_tokens": 80},
+      "output_tokens": 30,
+      "output_tokens_details": {"reasoning_tokens": 10},
+      "total_tokens": 150
+    }
+  }
+}
+```
+
+In-process vLLM records `prompt_tokens`, `completion_tokens`, and `total_tokens` from the returned
+token IDs, plus `prompt_tokens_details.cached_tokens` when available. Completion tokens include
+reasoning and all generated candidates. If prompt token IDs are unavailable, prompt and total
+counts are omitted.
+
+Metadata is retained even if response parsing, schema validation, or reasoning extraction fails.
+It is `null` when there is no response or the backend does not report usage; missing counts are
+not estimated. Older prediction files remain readable without this field. These records contain
+token counts only; monetary costs and aggregation across calls or documents are not computed.
 
 ### Evaluation
 
