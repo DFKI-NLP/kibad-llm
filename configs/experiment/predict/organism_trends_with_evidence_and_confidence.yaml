@@ -1,0 +1,18 @@
+# @package _global_
+
+# This experiment uses the schema EcosystemStudyOrganismTrendsV2 to extract organism based
+# ecosystem study trends from Markdown documents.
+# It also enables evidence detection, so that each extracted field value
+# is accompanied by a text snippet from the original document that supports the extraction.
+
+# To execute this experiment run:
+# python -m kibad_llm.predict experiment/predict=organism_trends_with_evidence
+
+defaults:
+  - override /extractor/prompt_template: organism_trends_v1_with_evidence_confidence_and_persona
+  - override /extractor/schema: organism_trends_v1
+
+extractor:
+  include_confidence: true
+  use_wrapped_schema_in_prompt: true
+  confidence_description: "Wie sicher bist du, den korrekten Wert extrahiert zu haben? (1–5)"
