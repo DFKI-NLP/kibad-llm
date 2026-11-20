@@ -221,8 +221,14 @@ prompt_template:
   schema_placeholder: output_schema
 ```
 
-Both the full schema and the readable description follow `adjust_schema_description_for_evidence_detection`.
+Both the full schema and the readable description follow `adjust_schema_description_for_evidence_detection` for evidence-only extraction.
 Both placeholders affect the prompt independently of whether guided decoding is enabled.
+
+### Prediction confidence
+
+Set `extractor.include_confidence=true` to ask the model to score each non-null extracted value on a scale from 0 (no confidence) to 1 (complete confidence). For organism trends, select `extractor/schema=organism_trends`. Evidence anchors can accompany the scores. Set `extractor.adjust_schema_for_evidence_detection=false` for scores alone.
+
+With confidence enabled, both schema placeholders in the prompt describe the wrapped values. For example, a model may return `{"content": "negative", "confidence": 0.85}` for a trend direction. The JSONL stores these estimates in `structured_with_metadata` for the simple extractor and in `structured_with_metadata_list` for multi-call extractors using the default `return_as_list`. Each score belongs to its individual model response. The `structured` field contains the extraction values used for evaluation.
 
 ### CPU smoke test with a micro LLM
 

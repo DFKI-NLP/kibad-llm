@@ -147,3 +147,81 @@ def test_extractor_preserves_backend_metadata_in_jsonl(
         assert len(backend.metadata) > 1
         assert saved_result["backend_metadata_list"] == backend.metadata
         assert saved_result["errors_list"] == [[]] * len(backend.metadata)
+
+
+@pytest.mark.parametrize(
+    ("extractor_name", "include_evidence"), [("simple", False), ("chunking", True)]
+)
+def test_extractor_preserves_confidence_in_jsonl(
+    tmp_path, extractor_name, include_evidence
+) -> None:
+    """Keep per-call trend scores beside the extracted values in prediction JSONL."""
+    sentence = "Forest birds declined."
+    trend = {
+        "Hauptgruppe_RoteListen": "Wirbeltiere",
+        "Untergruppe_RoteListen": None,
+        "Lebensraum": "Wald",
+        "Antwortvariable": "Artenzahl",
+        "Trend": "negative",
+    }
+    evidence = {"evidence_anchor": sentence} if include_evidence else {}
+    scores = iter((0.25, 1))
+
+    class TestLLM(LLM):
+        """Return a trend with a different confidence for each call."""
+
+        def call_llm_chat_with_guided_decoding(
+            self, messages, *, json_schema=None, **kwargs
+        ) -> ChatResponse:
+            """Return a mock trend and verify the wrapped schema reaches the backend."""
+            assert json_schema is not None
+            trend_properties = json_schema["$defs"]["OrganismBiodiversityTrend"]["properties"]
+            assert set(trend_properties["Trend"]["properties"]) == {
+                "content",
+                "confidence",
+                *evidence,
+            }
+            score = next(scores)
+            wrapped = {
+                field: (
+                    {"content": value, "confidence": score, **evidence}
+                    if value is not None
+                    else None
+                )
+                for field, value in trend.items()
+            }
+            return ChatResponse(
+                message=ChatMessage(content=json.dumps({"organism_trends": [wrapped]}))
+            )
+
+    overrides = [
+        f"extractor={extractor_name}",
+        "extractor/schema=organism_trends",
+        "extractor/llm=dry-run",
+        "extractor.include_confidence=true",
+        f"extractor.adjust_schema_for_evidence_detection={str(include_evidence).lower()}",
+        "extractor.return_reasoning=false",
+    ]
+    if extractor_name == "chunking":
+        overrides.append(f"extractor.max_char_buffer={len(sentence) + 1}")
+    cfg = cfg_global(out_dir=tmp_path, overrides=overrides)
+    extractor = instantiate(cfg.extractor, _convert_="all")
+    backend = TestLLM()
+    result = extractor(text_id="test", text=f"{sentence} {sentence}", llm=backend)
+
+    output_file = tmp_path / "predictions.jsonl"
+    Dataset.from_list([dict(result)]).to_json(output_file)
+    saved = json.loads(output_file.read_text())
+    assert saved["structured"] == {"organism_trends": [trend]}
+    if extractor_name == "simple":
+        assert saved["errors"] == []
+        wrapped = saved["structured_with_metadata"]["organism_trends"][0]
+        assert wrapped["Trend"] == {"content": "negative", "confidence": 0.25}
+        assert wrapped["Untergruppe_RoteListen"] is None
+    else:
+        assert saved["errors_list"] == [[], []]
+        entries = [
+            item["organism_trends"][0]["Trend"] for item in saved["structured_with_metadata_list"]
+        ]
+        assert [entry["confidence"] for entry in entries] == [0.25, 1]
+        assert [entry["evidence_anchor"] for entry in entries] == [sentence, sentence]

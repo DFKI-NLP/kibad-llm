@@ -639,6 +639,7 @@ def extract_from_text(
     character_start: int = 0,
     character_end: int | None = None,
     *,
+    include_confidence: bool = False,
     history: list[SimpleChatMessage] | None = None,
     return_messages: bool = False,
     return_messages_formatted: bool = False,
@@ -696,6 +697,9 @@ def extract_from_text(
             Defaults to 0 (process from the beginning of the text).
         character_end: Optional character offsets to specify a substring of `text` to process.
             If None (default), processes until the end of the text.
+        include_confidence: Ask the model for a score from 0 to 1 for each extracted terminal
+            value. Requires an unwrapped extraction schema. Both schema placeholders in the prompt
+            use the wrapped schema when enabled, and scores are saved in `structured_with_metadata`.
         history: Messages from previous turns.
         return_messages: Record the configured prompt templates.
         return_messages_formatted: Record the rendered messages from the current turn.
@@ -715,7 +719,7 @@ def extract_from_text(
     Raises:
         DeprecationWarning: If deprecated args are used, the extraction exits early.
         TextOffsetValueError: If character_start and/or character_end are set erroneously.
-        ValueError: If schema is None and use_guided_decoding or adjust_schema_for_evidence_detection is True.
+        ValueError: If guided decoding, evidence wrapping, or confidence is enabled without a schema.
     """
     # setting the log level on every query is suboptimal, but the simplest solution in our current architecture
     logging.getLogger("httpx").setLevel(logging.WARNING)
@@ -752,33 +756,43 @@ def extract_from_text(
     original_schema = schema
     prompt_schema = schema
 
+    metadata_schema: dict[str, Any] = {}
     if adjust_schema_for_evidence_detection:
-        if schema is None:
-            raise ValueError(
-                "adjust_schema_for_detect_evidence is True but no schema provided to adjust."
-            )
+        metadata_schema["evidence_anchor"] = {
+            "type": "string",
+            "description": evidence_anchor_description,
+        }
         if not use_guided_decoding:
             warn_once(
                 "adjust_schema_for_evidence_detection is True but use_guided_decoding is False. "
                 "Enabling adjust_schema_for_evidence_detection adjusts the schema for guided decoding, "
                 "so it is recommended to enable use_guided_decoding as well."
             )
+    if include_confidence:
+        metadata_schema["confidence"] = {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": (
+                "Your confidence that the extracted content is correct given the source text. "
+                "Use a number from 0 (no confidence) to 1 (complete confidence)."
+            ),
+        }
+
+    if metadata_schema:
+        if schema is None:
+            raise ValueError("A JSON schema is required to request evidence or confidence.")
         schema = wrap_terminals_with_metadata(
             schema,
-            metadata_schema={
-                "evidence_anchor": {
-                    "type": "string",
-                    "description": evidence_anchor_description,
-                }
-            },
+            metadata_schema=metadata_schema,
             content_key=WRAPPED_CONTENT_KEY,
             content_description=wrapped_content_description,
-            metadata_first=evidence_before_content,
+            metadata_first=adjust_schema_for_evidence_detection and evidence_before_content,
         )
         # since we wrapped terminals with metadata, we expect metadata in the response
         response_has_metadata = True
 
-        if adjust_schema_description_for_evidence_detection:
+        if include_confidence or adjust_schema_description_for_evidence_detection:
             prompt_schema = schema
 
     text_to_process = text[out.character_start : out.character_end]
