@@ -26,6 +26,11 @@ evidence_before_content: false
 # Scores can be requested with or without evidence anchors.
 include_confidence: false
 
+# Customize the wording for the confidence field in the prompt schema.
+confidence_description: >-
+  Your confidence that the extracted content is correct given the source text.
+  Use a number from 0 (no confidence) to 1 (complete confidence).
+
 # Enabling response_has_metadata will cause metadata unwrapping to be performed on the LLM response.
 # This means that the extracted field values will be unwrapped from their evidence detection
 # metadata, so that only the raw field "content" values are returned in the final predictions.

@@ -640,6 +640,10 @@ def extract_from_text(
     character_end: int | None = None,
     *,
     include_confidence: bool = False,
+    confidence_description: str = (
+        "Your confidence that the extracted content is correct given the source text. "
+        "Use a number from 0 (no confidence) to 1 (complete confidence)."
+    ),
     history: list[SimpleChatMessage] | None = None,
     return_messages: bool = False,
     return_messages_formatted: bool = False,
@@ -700,6 +704,7 @@ def extract_from_text(
         include_confidence: Ask the model for a score from 0 to 1 for each extracted terminal
             value. Requires an unwrapped extraction schema. Both schema placeholders in the prompt
             use the wrapped schema when enabled, and scores are saved in `structured_with_metadata`.
+        confidence_description: Description for the confidence field when confidence scoring is enabled.
         history: Messages from previous turns.
         return_messages: Record the configured prompt templates.
         return_messages_formatted: Record the rendered messages from the current turn.
@@ -773,10 +778,7 @@ def extract_from_text(
             "type": "number",
             "minimum": 0,
             "maximum": 1,
-            "description": (
-                "Your confidence that the extracted content is correct given the source text. "
-                "Use a number from 0 (no confidence) to 1 (complete confidence)."
-            ),
+            "description": confidence_description,
         }
 
     if metadata_schema:

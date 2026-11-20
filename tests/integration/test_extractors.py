@@ -155,8 +155,9 @@ def test_extractor_preserves_backend_metadata_in_jsonl(
 def test_extractor_preserves_confidence_in_jsonl(
     tmp_path, extractor_name, include_evidence
 ) -> None:
-    """Keep per-call trend scores beside the extracted values in prediction JSONL."""
+    """Render the configured description and retain per-call scores in prediction JSONL."""
     sentence = "Forest birds declined."
+    confidence_description = "Rate how well the text supports this value on a scale from 0 to 1."
     trend = {
         "Hauptgruppe_RoteListen": "Wirbeltiere",
         "Untergruppe_RoteListen": None,
@@ -176,11 +177,10 @@ def test_extractor_preserves_confidence_in_jsonl(
             """Return a mock trend and verify the wrapped schema reaches the backend."""
             assert json_schema is not None
             trend_properties = json_schema["$defs"]["OrganismBiodiversityTrend"]["properties"]
-            assert set(trend_properties["Trend"]["properties"]) == {
-                "content",
-                "confidence",
-                *evidence,
-            }
+            wrapped_properties = trend_properties["Trend"]["properties"]
+            assert set(wrapped_properties) == {"content", "confidence", *evidence}
+            assert wrapped_properties["confidence"]["description"] == confidence_description
+            assert any(confidence_description in message.content for message in messages)
             score = next(scores)
             wrapped = {
                 field: (
@@ -199,6 +199,7 @@ def test_extractor_preserves_confidence_in_jsonl(
         "extractor/schema=organism_trends",
         "extractor/llm=dry-run",
         "extractor.include_confidence=true",
+        f"extractor.confidence_description={confidence_description}",
         f"extractor.adjust_schema_for_evidence_detection={str(include_evidence).lower()}",
         "extractor.return_reasoning=false",
     ]
