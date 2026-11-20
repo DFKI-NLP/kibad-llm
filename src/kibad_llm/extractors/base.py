@@ -643,7 +643,6 @@ def extract_from_text(
     return_messages: bool = False,
     return_messages_formatted: bool = False,
     truncate_user_message_formatted: int | None = 300,
-    **prompt_options: Any,
 ) -> SingleExtractionResult:
     """Extract structured information from text using an LLM.
 
@@ -696,10 +695,6 @@ def extract_from_text(
         truncate_user_message_formatted: Character limit for the recorded user message.
             Use None to keep the full message.
 
-    Keyword Args:
-        **prompt_options: Additional prompt settings, such as schema_description_kwargs.
-            Settings in `prompt_template` take precedence.
-
     Returns:
         A SingleExtractionResult object with the extraction result.
 
@@ -707,17 +702,11 @@ def extract_from_text(
         UserWarning: When there is no LLM provided, the call to it is skipped.
 
     Raises:
-        TypeError: If a message template is passed as a top-level keyword argument.
         TextOffsetValueError: If character_start and/or character_end are set erroneously.
         ValueError: If schema is None and use_guided_decoding or adjust_schema_for_evidence_detection is True.
     """
     # setting the log level on every query is suboptimal, but the simplest solution in our current architecture
     logging.getLogger("httpx").setLevel(logging.WARNING)
-
-    if SYSTEM_MESSAGE_KEY in prompt_options or USER_MESSAGE_KEY in prompt_options:
-        raise TypeError(
-            f"Pass {SYSTEM_MESSAGE_KEY!r} or {USER_MESSAGE_KEY!r} inside 'prompt_template'."
-        )
 
     if not (0 <= character_start <= len(text)):
         raise TextOffsetValueError(
@@ -768,7 +757,6 @@ def extract_from_text(
 
     text_to_process = text[out.character_start : out.character_end]
 
-    prompt_template = {**prompt_options, **prompt_template}
     prepare_request = prepare_inline_request if llm is None else llm.prepare_request
     request = prepare_request(
         prompt_template,

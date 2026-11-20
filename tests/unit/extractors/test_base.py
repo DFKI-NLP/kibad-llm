@@ -101,17 +101,23 @@ def test_check_utf8_encodable_raises_for_lone_surrogate_nested_in_dict_and_list(
     )
 
 
-@pytest.mark.parametrize("message_key", ["system_message", "user_message"])
-def test_extract_from_text_rejects_top_level_message_templates(message_key: str) -> None:
-    """Require message text to be supplied inside the prompt template mapping."""
-    prompt_options: dict[str, Any] = {message_key: "{document}"}
-    with pytest.raises(TypeError, match="inside 'prompt_template'"):
+@pytest.mark.parametrize(
+    "option",
+    [
+        {"system_message": "{document}"},
+        {"user_message": "{document}"},
+        {"schema_description_kwargs": {"include_field_descriptions": False}},
+    ],
+)
+def test_extract_from_text_rejects_top_level_prompt_settings(option: dict[str, Any]) -> None:
+    """Require prompt settings to be supplied inside the prompt template mapping."""
+    with pytest.raises(TypeError, match="unexpected keyword argument"):
         extract_from_text(
             text="A forest.",
             text_id="fixture",
-            prompt_template={},
+            prompt_template={"user_message": "{document}"},
             use_guided_decoding=False,
-            **prompt_options,
+            **option,
         )
 
 
