@@ -28,7 +28,7 @@ system_message: |
   Erzeuge die Antwort in validem JSON-Format (nicht embedded Markdown!). Keine zusätzlichen Felder, keine Erklärungen.
   Gib **ausschließlich** gültiges JSON nach dem folgendem Schema zurück. Lies das Schema aus der JSON-Datei `{schema_filename}`.
   Beachte, das jedes Feld aus einem "content"-Unterfeld, in dem du die eigentliche Antwort einträgst und einem
-  "evidence_anchor"-Unterfeld, in dem du die Textstelle (als exaktes Zitat) angibst, die deine Antwort am besten belegt, 
+  "evidence_anchor"-Unterfeld, in dem du die Textstelle (als exaktes Zitat) angibst, die deine Antwort am besten belegt,
   besteht.
 
 user_message: |
