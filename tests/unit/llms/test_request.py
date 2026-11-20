@@ -3,7 +3,7 @@
 from llama_index.core.base.llms.types import MessageRole
 import pytest
 
-from kibad_llm.llms.base import prepare_inline_request
+from kibad_llm.llms.base import prepare_request
 from kibad_llm.llms.request import (
     MissingBindingError,
     SimpleChatMessage,
@@ -68,9 +68,9 @@ def test_prepare_template_request_renders_only_current_templates() -> None:
 
 
 @pytest.mark.parametrize("schema", [None, {"default": object()}], ids=["absent", "unused"])
-def test_prepare_inline_request_can_omit_schema_bindings(schema) -> None:
+def test_prepare_request_can_omit_schema_bindings(schema) -> None:
     """Skip schema preparation when the template uses only the document."""
-    request = prepare_inline_request(
+    request = prepare_request(
         {"user_message": "{document} {{schema}} {{schema_description}}"},
         document="Source",
         schema=schema,
@@ -81,19 +81,19 @@ def test_prepare_inline_request_can_omit_schema_bindings(schema) -> None:
     ]
 
 
-def test_prepare_inline_request_requires_a_template() -> None:
+def test_prepare_request_requires_a_template() -> None:
     """Fail before execution when neither message template is configured."""
     with pytest.raises(ValueError, match="At least one of system_message or user_message"):
-        prepare_inline_request({}, document="Source", schema=None)
+        prepare_request({}, document="Source", schema=None)
 
 
-def test_prepare_inline_request_applies_schema_description_settings() -> None:
+def test_prepare_request_applies_schema_description_settings() -> None:
     """Pass the recognized formatting options through to the description builder."""
     schema = {
         "type": "object",
         "properties": {"field": {"type": "string", "description": "Field guidance"}},
     }
-    request = prepare_inline_request(
+    request = prepare_request(
         {
             "system_message": "{schema_description}",
             "user_message": "{document}",
@@ -109,18 +109,18 @@ def test_prepare_inline_request_applies_schema_description_settings() -> None:
 
 
 @pytest.mark.parametrize("field", ["schema", "schema_description"])
-def test_prepare_inline_request_requires_schema_for_referenced_field(field) -> None:
+def test_prepare_request_requires_schema_for_referenced_field(field) -> None:
     """Name the field that requested the missing schema."""
     template = {"system_message": f"{{{field}}}", "user_message": "{document}"}
     with pytest.raises(ValueError, match=rf"\{{{field}\}}.*requires a schema"):
-        prepare_inline_request(template, document="Markdown", schema=None)
+        prepare_request(template, document="Markdown", schema=None)
 
 
-def test_prepare_inline_request_reports_unknown_field() -> None:
+def test_prepare_request_reports_unknown_field() -> None:
     """Identify the unknown field and the message referencing it."""
     template = {"system_message": "{output_schema}", "user_message": "{document}"}
     with pytest.raises(MissingBindingError, match="output_schema.*SYSTEM") as raised:
-        prepare_inline_request(template, document="Markdown", schema={})
+        prepare_request(template, document="Markdown", schema={})
 
     assert raised.value.placeholder == "output_schema"
     assert raised.value.role == MessageRole.SYSTEM
@@ -130,16 +130,16 @@ def test_prepare_inline_request_reports_unknown_field() -> None:
     "user_message",
     ["Extract the fields.", "Extract from {{document}}."],
 )
-def test_prepare_inline_request_requires_document_in_first_turn(user_message) -> None:
+def test_prepare_request_requires_document_in_first_turn(user_message) -> None:
     """Require a document field in the initial prompt."""
     with pytest.raises(ValueError, match=r"first inline turn must reference '\{document\}'"):
-        prepare_inline_request({"user_message": user_message}, document="Markdown", schema=None)
+        prepare_request({"user_message": user_message}, document="Markdown", schema=None)
 
 
-def test_prepare_inline_request_keeps_history_separate_from_current_turn() -> None:
+def test_prepare_request_keeps_history_separate_from_current_turn() -> None:
     """Allow a follow-up template without a document placeholder."""
     history = [SimpleChatMessage(role=MessageRole.USER, content="Markdown")]
-    request = prepare_inline_request(
+    request = prepare_request(
         {"user_message": "Extract one more field."},
         document="Markdown",
         schema=None,

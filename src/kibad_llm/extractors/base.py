@@ -39,7 +39,7 @@ from typing import Any
 from jsonschema.validators import validator_for
 from llama_index.core.base.llms.types import ChatResponse
 
-from kibad_llm.llms.base import LLM, prepare_inline_request
+from kibad_llm.llms.base import LLM, prepare_request
 from kibad_llm.llms.request import (
     SYSTEM_MESSAGE_KEY,
     USER_MESSAGE_KEY,
@@ -757,8 +757,8 @@ def extract_from_text(
 
     text_to_process = text[out.character_start : out.character_end]
 
-    prepare_request = prepare_inline_request if llm is None else llm.prepare_request
-    request = prepare_request(
+    request_preparer = prepare_request if llm is None else llm.prepare_request
+    request = request_preparer(
         prompt_template,
         document=text_to_process,
         schema=prompt_schema,

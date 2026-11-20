@@ -66,7 +66,7 @@ class EmptyReasoningError(Exception):
     ...
 
 
-def prepare_inline_request(
+def prepare_request(
     prompt_template: Mapping[str, Any],
     *,
     document: str,
@@ -144,8 +144,8 @@ class LLM(ABC):
         The backend supplies the fields referenced by the message templates. Include any
         files the referenced fields require in the returned request.
 
-        The default uses [`prepare_inline_request`][kibad_llm.llms.base.prepare_inline_request],
-        which requires the inline document field on the first turn. Overrides can pass
+        The default calls the module-level [`prepare_request`][kibad_llm.llms.base.prepare_request],
+        which requires the document field on the first turn. Overrides can pass
         their bindings and rendered history to
         [`prepare_template_request`][kibad_llm.llms.request.prepare_template_request].
 
@@ -165,9 +165,7 @@ class LLM(ABC):
             TypeError: The inline template contains unrecognized prompt settings.
             ValueError: A template is invalid for the backend.
         """
-        return prepare_inline_request(
-            prompt_template, document=document, schema=schema, history=history
-        )
+        return prepare_request(prompt_template, document=document, schema=schema, history=history)
 
     @abstractmethod
     def call_llm_chat_with_guided_decoding(
