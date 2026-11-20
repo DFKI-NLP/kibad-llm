@@ -227,7 +227,7 @@ prompt_template:
 
 ### Prediction confidence
 
-Add `_with_confidence` to an extractor config's Hydra defaults to request an integer score from 1 to 5 for each non-null extracted value. With a bundled extractor, pass `+extractor.include_confidence=true` on the command line. For organism trends, select `extractor/schema=organism_trends`. Set `extractor.include_evidence=false` for scores alone.
+Add `_with_confidence` to an extractor config's Hydra defaults to request an integer score from 1 to 5 for each non-null extracted value. The score expresses how sure the model is that its extracted value is correct. With a bundled extractor, pass `+extractor.include_confidence=true` on the command line. For organism trends, select `extractor/schema=organism_trends`. Set `extractor.include_evidence=false` for scores alone.
 
 Select `extractor/prompt_template=default_with_confidence` to include the full five-level rubric once per turn. Customize the short field description by setting `confidence_description` in the helper. With a bundled extractor, add custom wording using `+extractor.confidence_description`.
 

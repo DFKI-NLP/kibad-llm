@@ -1,4 +1,4 @@
 # Add this helper to an extractor's defaults list to request confidence scores.
 include_confidence: true
 use_wrapped_schema_in_prompt: true
-confidence_description: "Integer from 1 (weak support) to 5 (explicit support)."
+confidence_description: "Wie sicher bist du, den korrekten Wert extrahiert zu haben? (1–5)"

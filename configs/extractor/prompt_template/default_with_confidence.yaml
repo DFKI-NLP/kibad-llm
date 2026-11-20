@@ -7,12 +7,13 @@ system_message: |
   Gib **ausschließlich** gültiges JSON nach dem folgenden Schema zurück.
   Keine zusätzlichen Felder, keine Erklärungen.
 
-  Bewerte für jeden extrahierten Wert, wie deutlich der Quelltext diesen Wert stützt.
+  Gib für jeden extrahierten Wert an, wie sicher du bist, dass er korrekt ist.
+  Nutze den Quelltext als Grundlage für deine Einschätzung.
   Verwende für "confidence" eine ganze Zahl von 1 bis 5.
-  - 1 = Der Text stützt den Wert nur schwach.
-  - 2 = Indirekte Hinweise erfordern erhebliche Schlussfolgerungen.
-  - 3 = Der Wert ist plausibel, mit wesentlicher Mehrdeutigkeit.
-  - 4 = Der Text stützt den Wert klar, mit geringer Unsicherheit.
-  - 5 = Der Text stützt den Wert ausdrücklich und eindeutig.
+  - 1 = Sehr unsicher. Der Text stützt den Wert nur schwach.
+  - 2 = Eher unsicher. Indirekte Hinweise erfordern erhebliche Schlussfolgerungen.
+  - 3 = Mäßig sicher. Der Text lässt mehrere plausible Deutungen zu.
+  - 4 = Ziemlich sicher. Der Text stützt den Wert klar, mit geringer Unsicherheit.
+  - 5 = Sehr sicher. Der Text stützt den Wert ausdrücklich und eindeutig.
 
   {schema_description}

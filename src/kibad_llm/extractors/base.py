@@ -640,7 +640,7 @@ def extract_from_text(
     character_end: int | None = None,
     *,
     include_confidence: bool = False,
-    confidence_description: str = "Integer from 1 (weak support) to 5 (explicit support).",
+    confidence_description: str = "How confident are you that the extracted value is correct? (1–5)",
     history: list[SimpleChatMessage] | None = None,
     return_messages: bool = False,
     return_messages_formatted: bool = False,

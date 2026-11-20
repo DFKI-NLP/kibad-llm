@@ -184,7 +184,7 @@ def test_extract_from_text_uses_same_schema_for_both_placeholders(
     expect_confidence = expect_metadata and include_confidence
     assert ("confidence:" in description) == expect_confidence
     assert (
-        "Integer from 1 (weak support) to 5 (explicit support)." in description
+        "How confident are you that the extracted value is correct? (1–5)" in description
     ) == expect_confidence
     document, rendered_schema = result.messages_formatted["user"].split("\n", maxsplit=1)
     assert document == "A forest."
