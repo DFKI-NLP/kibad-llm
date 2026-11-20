@@ -1647,9 +1647,10 @@ class EcosystemServiceFieldsWithoutHabitat(CompoundFeature):
 
 # The three variants below restrict Einfluss by the facet group (see CategoricalBiodiversityFacetEnum).
 # Without this restriction, about 35-40% of the predicted relationships of run 592 combined a categorical
-# facet with pos/neg/neu, which the reference data does in only 2 of 75 cases. Overriding the fields keeps
-# their position, so all variants share the field order of EcosystemServiceFieldsWithoutHabitat. The
-# overrides intentionally narrow the field types, hence the `type: ignore[assignment]`.
+# facet with pos/neg/neu, which the reference data does in only 2 of 80 categorical relationships.
+# Overriding the fields keeps their position, so all variants share the field order of
+# EcosystemServiceFieldsWithoutHabitat. The overrides intentionally narrow the field types, hence the
+# `type: ignore[assignment]`.
 class EcosystemServiceFieldsCategoricalWithoutHabitat(EcosystemServiceFieldsWithoutHabitat):
     """Zusammenhang mit einer kategorialen Biodiversitätsfacette (verglichen werden einzelne Arten,
     Artenmischungen bzw. -anteile oder Landschaftstypen): Einfluss ist nur ja oder nein.

@@ -1,0 +1,16 @@
+# @package _global_
+
+# F1 score metric for ecosystem-service/biodiversity trend predictions like `ecosystem_service`, but additionally
+# ignoring `ÖSL` (the field that is hardest to match exactly, so errors in the other fields can be seen separately).
+# Each `ecosystem_service_trends` compound is scored as one entry based on `Themenkomplex`, `Biodiv_Facette` and
+# `Einfluss`.
+
+defaults:
+ # derive everything from experiment/evaluate/ecosystem_service.yaml
+ - ecosystem_service
+
+metric:
+  ignore_subfields:
+    ecosystem_service_trends:
+     - Arten
+     - ÖSL
