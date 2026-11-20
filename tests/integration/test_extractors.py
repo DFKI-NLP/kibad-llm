@@ -13,6 +13,7 @@ import pytest
 
 from kibad_llm.config import PROJ_ROOT
 from kibad_llm.llms.base import LLM
+from kibad_llm.schema.description import build_schema_description
 from tests.conftest import WRITE_FIXTURE_DATA, cfg_global
 
 pytestmark = pytest.mark.usefixtures("llm_chat_replay")
@@ -184,7 +185,7 @@ def test_extractor_preserves_backend_metadata_in_jsonl(
 def test_extractor_preserves_confidence_in_jsonl(
     tmp_path, extractor_name, include_evidence, prompt_template
 ) -> None:
-    """Render the configured description and retain per-call scores in prediction JSONL."""
+    """Render the selected prompt and retain per-call confidence scores in prediction JSONL."""
     sentence = "Forest birds declined."
     confidence_description = (
         "Rate how well the text supports this value using an integer from 1 to 5."
@@ -215,14 +216,11 @@ def test_extractor_preserves_confidence_in_jsonl(
                 "enum": [1, 2, 3, 4, 5],
                 "description": confidence_description,
             }
-            assert any(confidence_description in message.content for message in messages)
-            rubric_count = sum(
-                message.content.count(
-                    "Indirekte Hinweise erfordern erhebliche Schlussfolgerungen."
-                )
-                for message in messages
+            expected_system_message = cfg.extractor.prompt_template.system_message.format(
+                schema_description=build_schema_description(json_schema)
             )
-            assert rubric_count == int(prompt_template == "default_with_confidence")
+            assert messages[0].content == expected_system_message
+            assert confidence_description in messages[0].content
             score = next(scores)
             wrapped = {
                 field: (
