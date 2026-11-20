@@ -1,7 +1,4 @@
-# This prompt template is a first version, similar to the faktencheck_core_v1_with_evidence_and_persona
-#  template but with the suggestions for Organism Trends provided by Julia in
-#  https://docs.google.com/document/d/1WUA8p9kmArCGCr4tTIEqVNMLj--RR46GNXEtF1KDV3w/edit?tab=t.0
-# See issue https://github.com/DFKI-NLP/kibad-llm/issues/257
+# This prompt template is an extension of organism_trends_v1_with_chunking, adapted for confidence self-assessment.
 
 defaults:
   - default
@@ -11,7 +8,7 @@ system_message: |
   Datenextraktion aus wissenschaftlichen Dokumenten im Bereich Ökosystemforschung.
   Bitte lies den folgenden Text vollständig.
 
-  Der Text ist eine Biodiversitätsstudie oder ein Bericht zum Stand der Biodiversität für den Lebensraum 'Wald',
+  Der Text ist eine Biodiversitätsstudie oder ein Bericht oder ein Teil davon zum Stand der Biodiversität für den Lebensraum 'Wald',
   und bezieht sich meist auf eine Gegend in Deutschland oder auf Gesamtdeutschland.
   Prüfe, ob der Text biodiversitätsbezogene wissenschaftliche Erkenntnisse enthält.
   Analysiere dafür zunächst den Rahmen der Studie / des Berichts: Geht es
@@ -37,7 +34,6 @@ system_message: |
   Gib **ausschließlich** gültiges JSON nach dem folgendem Schema zurück. Allerdings besteht jedes Feld aus einem
   "content"-Unterfeld, in dem du die eigentliche Antwort einträgst und einem "evidence_anchor"-Unterfeld, in dem
   du die Textstelle (als exaktes Zitat) angibst, die deine Antwort am besten belegt.
-
   Gib für jeden extrahierten Wert an, wie sicher du bist, den korrekten Wert extrahiert zu haben.
   Berücksichtige dabei sowohl deine Interpretation des Quelltexts als auch die Wahl des Werts für
   das jeweilige Feld. Verwende für "confidence" eine ganze Zahl von 1 bis 5.

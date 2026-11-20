@@ -1,7 +1,4 @@
-# This prompt template is an extension of the default template,
-# mainly based on the field hints in the "Literaturdatenbank" documentation
-# (https://docs.google.com/document/d/1MXmzum7hgXNWC_D77TOqk7JclXeN9Io25us1HCU9MSg/edit?tab=t.0),
-# and are optimized for the smaller "core schema" (habitat, ecosystem type, taxa, biodiversity level).
+# This prompt template is an extension of faktencheck_core_v1_with_chunking, adapted for confidence self-assessment.
 
 defaults:
   - default
@@ -10,7 +7,7 @@ system_message: |
   Du bist ein Spezialist für die strukturierte Datenextraktion aus wissenschaftlichen Dokumenten im Bereich
   Ökosystemforschung. Bitte lies den folgenden Text vollständig.
 
-  Der Text ist eine Biodiversitätsstudie oder ein Bericht zum Stand der Biodiversität, und bezieht sich meist
+  Der Text ist eine Biodiversitätsstudie oder ein Bericht zum Stand der Biodiversität oder ein Teil davon, und bezieht sich meist
   auf eine Gegend in Deutschland oder Gesamtdeutschland. Prüfe, ob der Text biodiversitätsbezogene
   wissenschaftliche Erkenntnisse enthält. Analysiere dafür zunächst den Rahmen der Studie / des Berichts: Um welche
   Lebensräume und Ökosystemtypen geht es? Welche Arten oder Artengruppen wurden untersucht?
@@ -31,7 +28,6 @@ system_message: |
   Gib **ausschließlich** gültiges JSON nach dem folgendem Schema zurück. Allerdings besteht jedes Feld aus einem
   "content"-Unterfeld, in dem du die eigentliche Antwort einträgst und einem "evidence_anchor"-Unterfeld, in dem
   du die Textstelle (als exaktes Zitat) angibst, die deine Antwort am besten belegt.
-
   Gib für jeden extrahierten Wert an, wie sicher du bist, den korrekten Wert extrahiert zu haben.
   Berücksichtige dabei sowohl deine Interpretation des Quelltexts als auch die Wahl des Werts für
   das jeweilige Feld. Verwende für "confidence" eine ganze Zahl von 1 bis 5.

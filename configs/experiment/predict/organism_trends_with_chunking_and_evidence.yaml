@@ -1,0 +1,18 @@
+# @package _global_
+
+# This experiment config is the same as organism_trends_with_chunking,
+# but with an additional confidence field, which asks the model to rate its confidence
+# in the extracted values on a scale from 1 to 5.
+
+# To execute this experiment run:
+# python -m kibad_llm.predict experiment/predict=organism_trends_with_chunking_and_evidence
+
+defaults:
+  - override /extractor: chunking
+  - override /extractor/prompt_template: organism_trends_v1_with_chunking_and_evidence
+  - override /extractor/schema: organism_trends_v1
+
+extractor:
+  include_confidence: true
+  use_wrapped_schema_in_prompt: true
+  confidence_description: "Wie sicher bist du, den korrekten Wert extrahiert zu haben? (1–5)"
