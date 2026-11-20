@@ -39,8 +39,12 @@ from typing import Any
 from jsonschema.validators import validator_for
 from llama_index.core.base.llms.types import ChatResponse
 
-from kibad_llm.llms.base import LLM, prepare_inline_request
-from kibad_llm.llms.request import SimpleChatMessage
+from kibad_llm.llms.base import LLM, prepare_request
+from kibad_llm.llms.request import (
+    SYSTEM_MESSAGE_KEY,
+    USER_MESSAGE_KEY,
+    SimpleChatMessage,
+)
 from kibad_llm.schema.utils import (
     WRAPPED_CONTENT_KEY,
     wrap_terminals_with_metadata,
@@ -639,13 +643,6 @@ def extract_from_text(
     return_messages: bool = False,
     return_messages_formatted: bool = False,
     truncate_user_message_formatted: int | None = 300,
-    # deprecated arguments
-    user_message: str | None = None,
-    system_message: str | None = None,
-    schema_description_placeholder: str | None = None,
-    document_placeholder: str | None = None,
-    #
-    **prompt_options: Any,
 ) -> SingleExtractionResult:
     """Extract structured information from text using an LLM.
 
@@ -698,10 +695,6 @@ def extract_from_text(
         truncate_user_message_formatted: Character limit for the recorded user message.
             Use None to keep the full message.
 
-    Keyword Args:
-        **prompt_options: Additional prompt settings, such as schema_description_kwargs.
-            Settings in `prompt_template` take precedence.
-
     Returns:
         A SingleExtractionResult object with the extraction result.
 
@@ -709,26 +702,11 @@ def extract_from_text(
         UserWarning: When there is no LLM provided, the call to it is skipped.
 
     Raises:
-        DeprecationWarning: If deprecated args are used, the extraction exits early.
         TextOffsetValueError: If character_start and/or character_end are set erroneously.
         ValueError: If schema is None and use_guided_decoding or adjust_schema_for_evidence_detection is True.
     """
     # setting the log level on every query is suboptimal, but the simplest solution in our current architecture
     logging.getLogger("httpx").setLevel(logging.WARNING)
-
-    if (
-        system_message is not None
-        or user_message is not None
-        or schema_description_placeholder is not None
-        or document_placeholder is not None
-    ):
-        # raise an error if deprecated arguments are used
-        raise DeprecationWarning(
-            "system_message, user_message, schema_description_placeholder, and document_placeholder "
-            "are deprecated. Please provide a prompt_template dictionary containing 'system_message' and/or "
-            "'user_message' (and optionally schema_description_placeholder and document_placeholder)"
-            "instead."
-        )
 
     if not (0 <= character_start <= len(text)):
         raise TextOffsetValueError(
@@ -779,9 +757,8 @@ def extract_from_text(
 
     text_to_process = text[out.character_start : out.character_end]
 
-    prompt_template = {**prompt_options, **prompt_template}
-    prepare_request = prepare_inline_request if llm is None else llm.prepare_request
-    request = prepare_request(
+    request_preparer = prepare_request if llm is None else llm.prepare_request
+    request = request_preparer(
         prompt_template,
         document=text_to_process,
         schema=prompt_schema,
@@ -790,8 +767,8 @@ def extract_from_text(
 
     if return_messages:
         out.messages = {
-            "system": prompt_template.get("system_message"),
-            "user": prompt_template.get("user_message"),
+            "system": prompt_template.get(SYSTEM_MESSAGE_KEY),
+            "user": prompt_template.get(USER_MESSAGE_KEY),
         }
 
     if return_messages_formatted:

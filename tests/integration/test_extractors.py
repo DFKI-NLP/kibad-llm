@@ -99,6 +99,28 @@ def test_extractor(tmp_path, cfg_predict_extractor, extractor_name):
     assert set(result["structured"]) == set(expected_result["structured"])
 
 
+def test_default_prompt_accepts_json_schema_override() -> None:
+    """Keep the default document message when the system message requests JSON Schema."""
+    cfg = cfg_global(overrides=['extractor.prompt_template.system_message="{schema}"'])
+    extractor = instantiate(cfg.extractor, _convert_="all", llm=None)
+    schema = {"type": "object", "properties": {"field": {"const": "Wälder"}}}
+    document = "Two oaks grow beside the trail."
+    result = extractor(
+        text=document,
+        text_id="fixture",
+        schema=schema,
+        adjust_schema_for_evidence_detection=False,
+        return_messages_formatted=True,
+    )
+
+    assert result.errors == []
+    messages = result.messages_formatted
+    assert messages is not None
+    assert json.loads(messages["system"]) == schema
+    assert "Wälder" in messages["system"]
+    assert document in messages["user"]
+
+
 def test_extractor_preserves_backend_metadata_in_jsonl(
     tmp_path, cfg_predict_extractor, extractor_name
 ) -> None:

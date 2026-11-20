@@ -28,12 +28,7 @@ def test_codex_stages_only_files_referenced_by_filename_placeholders(
     user = "Read {document_filename}." if include_document else "Return the fields."
     user += "\n{schema_filename}" if include_schema_file else "\n{schema}"
     request = backend.prepare_request(
-        {
-            "user_message": user,
-            "document_filename_placeholder": "document_filename",
-            "schema_filename_placeholder": "schema_filename",
-            "schema_placeholder": "schema",
-        },
+        {"user_message": user},
         document=document,
         schema=schema,
     )
@@ -86,11 +81,7 @@ def test_codex_can_supply_the_same_schema_inline_and_as_a_file(tmp_path):
     """Create the schema file when requested alongside its inline representation."""
     backend = Codex("test-model", "high", 30, str(tmp_path))
     request = backend.prepare_request(
-        {
-            "user_message": "{schema_filename}\n{schema}",
-            "schema_filename_placeholder": "schema_filename",
-            "schema_placeholder": "schema",
-        },
+        {"user_message": "{schema_filename}\n{schema}"},
         document="Source",
         schema={"type": "string", "const": "Wälder"},
     )
@@ -112,12 +103,7 @@ def test_codex_does_not_attach_files_for_literals_or_rendered_values(tmp_path, t
     schema = {"description": "Literal {document_filename} and {schema_filename}"}
 
     request = backend.prepare_request(
-        {
-            "user_message": template,
-            "document_filename_placeholder": "document_filename",
-            "schema_filename_placeholder": "schema_filename",
-            "schema_placeholder": "schema",
-        },
+        {"user_message": template},
         document="Source",
         schema=schema,
     )
@@ -125,15 +111,11 @@ def test_codex_does_not_attach_files_for_literals_or_rendered_values(tmp_path, t
     assert request.input_artifacts == {}
 
 
-def test_schema_file_uses_prompt_schema_and_custom_filename_placeholders(tmp_path, monkeypatch):
+def test_schema_file_uses_evidence_adjusted_prompt_schema(tmp_path, monkeypatch):
     """Use the evidence-adjusted prompt schema and preserve the original schema."""
     cfg = cfg_global(
         out_dir=tmp_path,
-        overrides=[
-            f"experiment/predict={CODEX_PRESET}",
-            "extractor.prompt_template.document_filename_placeholder=source_file",
-            "extractor.prompt_template.schema_filename_placeholder=output_file",
-        ],
+        overrides=[f"experiment/predict={CODEX_PRESET}"],
     )
     backend = instantiate(cfg.extractor.llm)
     schema = {"type": "object", "properties": {"habitat": {"type": "string"}}}
@@ -151,8 +133,8 @@ def test_schema_file_uses_prompt_schema_and_custom_filename_placeholders(tmp_pat
         text_id="fixture",
         prompt_template={
             **cfg.extractor.prompt_template,
-            "system_message": "Use {output_file}",
-            "user_message": "Read {source_file}",
+            "system_message": "Use {schema_filename}",
+            "user_message": "Read {document_filename}",
         },
         llm=backend,
         schema=schema,
@@ -171,20 +153,14 @@ def test_schema_file_uses_prompt_schema_and_custom_filename_placeholders(tmp_pat
     assert schema == {"type": "object", "properties": {"habitat": {"type": "string"}}}
 
 
-@pytest.mark.parametrize(
-    "setting",
-    ["schema_placeholder", "schema_description_placeholder", "schema_filename_placeholder"],
-)
-def test_codex_requires_schema_for_declared_field(tmp_path, setting):
-    """Name the declared field that requested the missing schema before inference."""
+@pytest.mark.parametrize("field", ["schema", "schema_description", "schema_filename"])
+def test_codex_requires_schema_for_referenced_field(tmp_path, field):
+    """Name the field that requested the missing schema before inference."""
     backend = Codex("test-model", "high", 30, str(tmp_path))
 
-    with pytest.raises(ValueError, match=r"\{spec\}.*requires a schema"):
+    with pytest.raises(ValueError, match=rf"\{{{field}\}}.*requires a schema"):
         backend.prepare_request(
-            {
-                "system_message": "Use {spec}",
-                setting: "spec",
-            },
+            {"system_message": f"Use {{{field}}}"},
             document="Source",
             schema=None,
         )
@@ -192,7 +168,7 @@ def test_codex_requires_schema_for_declared_field(tmp_path, setting):
 
 
 def test_extractor_accepts_initial_codex_turn_without_files(tmp_path, monkeypatch):
-    """Allow a first-turn prompt to leave declared file fields unused."""
+    """Allow a first-turn prompt to omit both file fields."""
     backend = Codex("test-model", "high", 30, str(tmp_path))
 
     def run(input_artifacts, prompt, artifact, events):
@@ -206,11 +182,7 @@ def test_extractor_accepts_initial_codex_turn_without_files(tmp_path, monkeypatc
     result = extract_from_text(
         text="Source",
         text_id="fixture",
-        prompt_template={
-            "user_message": "Return an empty object.",
-            "document_filename_placeholder": "document_filename",
-            "schema_filename_placeholder": "schema_filename",
-        },
+        prompt_template={"user_message": "Return an empty object."},
         use_guided_decoding=False,
         llm=backend,
     )
@@ -371,76 +343,64 @@ def test_file_backed_preset_stages_markdown_and_uses_only_template_messages(
 
 
 @pytest.mark.parametrize(
-    "template, placeholder",
+    "template, role",
     [
-        ({"user_message": "Read {document}"}, "document"),
-        ({"system_message": "Read {markdown!s}"}, "markdown"),
-        ({"user_message": "Read {document[0]}"}, "document"),
-        ({"user_message": "{schema:{document}}", "schema_placeholder": "schema"}, "document"),
+        ({"user_message": "Read {document}"}, MessageRole.USER),
+        ({"system_message": "Read {document!s}"}, MessageRole.SYSTEM),
+        ({"user_message": "Read {document[0]}"}, MessageRole.USER),
+        ({"user_message": "{schema:{document}}"}, MessageRole.USER),
     ],
 )
-def test_codex_rejects_inline_template_before_inference(tmp_path, template, placeholder):
-    """Reject inline document bindings in either role, including custom field names."""
+def test_codex_rejects_inline_template_before_inference(tmp_path, template, role):
+    """Report the message that references the unsupported inline document field."""
     backend = Codex("test-model", "medium", 30, str(tmp_path))
 
     with pytest.raises(MissingBindingError) as raised:
         extract_from_text(
             text="# Fixture",
             text_id="fixture",
-            prompt_template={**template, "document_placeholder": placeholder},
+            prompt_template=template,
             llm=backend,
             schema={},
             use_guided_decoding=False,
         )
-    assert raised.value.placeholder == placeholder
+    assert raised.value.placeholder == "document"
+    assert raised.value.role == role
     assert not list(tmp_path.iterdir())
 
 
-@pytest.mark.parametrize(
-    "field", ["missing", "schema", "schema_description", "document_filename", "schema_filename"]
-)
-def test_codex_reports_undeclared_fields(tmp_path, field):
-    """Document and schema inputs only bind fields declared by the template."""
-    backend = Codex("test-model", "high", 600, str(tmp_path))
-    with pytest.raises(MissingBindingError) as raised:
-        backend.prepare_request(
-            {"user_message": f"Read {{{field}}}"}, document="Source", schema={}
-        )
-    assert raised.value.placeholder == field
-    assert raised.value.role == MessageRole.USER
-
-
-def test_codex_reads_filename_fields_per_template(tmp_path):
-    """Resolve both file bindings from the template on each call to the same backend."""
+def test_codex_rejects_placeholder_alias_settings(tmp_path):
+    """Report unsupported settings even when the messages already use fixed field names."""
     backend = Codex("test-model", "high", 30, str(tmp_path))
-    for source, spec in [("article", "format"), ("paper", "output_schema")]:
-        request = backend.prepare_request(
+    with pytest.raises(
+        TypeError, match="Codex prompt_template contains unrecognized settings"
+    ) as raised:
+        backend.prepare_request(
             {
-                "user_message": f"Read {{{source}}} using {{{spec}}}.",
-                "document_filename_placeholder": source,
-                "schema_filename_placeholder": spec,
+                "user_message": "Read {document_filename}. Use {schema}.",
+                "document_filename_placeholder": "source_file",
+                "schema_placeholder": "output_schema",
             },
             document="Text",
             schema={},
         )
-        assert request.current_messages[0].content == "Read input.md using schema.json."
-        assert request.input_artifacts == {"input.md": "Text", "schema.json": "{}"}
+    assert "'document_filename_placeholder', 'schema_placeholder'" in str(raised.value)
 
 
-def test_prepare_request_preserves_history_and_custom_schema_placeholders(tmp_path):
-    """Render custom schema bindings while leaving escaped document fields literal."""
+def test_prepare_request_stages_files_for_the_current_turn_only(tmp_path):
+    """Prepend rendered history and select staged files from the current messages."""
     backend = Codex("test-model", "high", 600, str(tmp_path))
     history = [SimpleChatMessage(role=MessageRole.USER, content="Previous turn")]
-    schema = {"type": "object", "properties": {"habitat": {"type": "string"}}}
+    schema = {
+        "type": "object",
+        "properties": {"habitat": {"type": "string", "description": "Study habitat"}},
+    }
     document = "# Original Markdown\n"
     request = backend.prepare_request(
         {
-            "system_message": "{description}",
-            "user_message": "Read {source_file}; {{markdown}} is literal.\n{output_schema}",
-            "document_filename_placeholder": "source_file",
-            "document_placeholder": "markdown",
-            "schema_placeholder": "output_schema",
-            "schema_description_placeholder": "description",
+            "system_message": "{schema_description}",
+            "user_message": "Read {document_filename}.\n{schema}",
+            "schema_description_kwargs": {"include_field_descriptions": False},
         },
         document=document,
         schema=schema,
@@ -449,12 +409,24 @@ def test_prepare_request_preserves_history_and_custom_schema_placeholders(tmp_pa
 
     system, user = request.current_messages
     assert "habitat" in system.content
-    assert user.content.startswith("Read input.md; {markdown} is literal.")
+    assert "Study habitat" not in system.content
+    assert user.content.startswith("Read input.md.")
     assert json.loads(user.content.split("\n", maxsplit=1)[1]) == schema
     assert request.messages == [*history, system, user]
     assert history == [SimpleChatMessage(role=MessageRole.USER, content="Previous turn")]
     assert request.input_artifacts == {"input.md": document}
     assert all(document not in message.content for message in request.messages)
+
+    followup = backend.prepare_request(
+        {"user_message": "Use {schema_filename}."},
+        document=document,
+        schema=schema,
+        history=request.messages,
+    )
+
+    assert followup.messages == [*request.messages, *followup.current_messages]
+    assert followup.current_messages[0].content == "Use schema.json."
+    assert followup.input_artifacts == {"schema.json": json.dumps(schema, ensure_ascii=False)}
 
 
 @pytest.mark.parametrize(
@@ -477,10 +449,7 @@ def test_failed_execution_uses_existing_error_result(tmp_path, monkeypatch, erro
     result = extract_from_text_lenient(
         text="Source Markdown",
         text_id="fixture",
-        prompt_template={
-            "user_message": "Read {document_filename}",
-            "document_filename_placeholder": "document_filename",
-        },
+        prompt_template={"user_message": "Read {document_filename}"},
         llm=backend,
         use_guided_decoding=False,
     )
@@ -506,10 +475,7 @@ def test_metadata_error_does_not_discard_response(tmp_path, monkeypatch, event_l
     result = extract_from_text(
         text="Source",
         text_id="fixture",
-        prompt_template={
-            "user_message": "Read {document_filename}",
-            "document_filename_placeholder": "document_filename",
-        },
+        prompt_template={"user_message": "Read {document_filename}"},
         llm=backend,
         use_guided_decoding=False,
     )

@@ -13,9 +13,3 @@ user_message: |
   Dokument in Markdown Format:
 
   {document}
-
-# Inline binding names for the schema description and document.
-# A referenced schema description needs a schema. The first inline extraction
-# turn must reference the document in its system or user template.
-schema_description_placeholder: schema_description
-document_placeholder: document
