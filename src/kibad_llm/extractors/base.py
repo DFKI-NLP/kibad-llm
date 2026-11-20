@@ -641,8 +641,12 @@ def extract_from_text(
     *,
     include_confidence: bool = False,
     confidence_description: str = (
-        "Your confidence that the extracted content is correct given the source text. "
-        "Use a number from 0 (no confidence) to 1 (complete confidence)."
+        "Rate how clearly the source text supports the extracted value. Use one integer from 1 to 5. "
+        "1 = weak support. "
+        "2 = indirect support requiring substantial inference. "
+        "3 = plausible interpretation with meaningful ambiguity. "
+        "4 = clear support with minor uncertainty. "
+        "5 = explicit, unambiguous support."
     ),
     history: list[SimpleChatMessage] | None = None,
     return_messages: bool = False,
@@ -701,7 +705,7 @@ def extract_from_text(
             Defaults to 0 (process from the beginning of the text).
         character_end: Optional character offsets to specify a substring of `text` to process.
             If None (default), processes until the end of the text.
-        include_confidence: Ask the model for a score from 0 to 1 for each extracted terminal
+        include_confidence: Ask the model for an integer score from 1 to 5 for each extracted terminal
             value. Requires an unwrapped extraction schema. Both schema placeholders in the prompt
             use the wrapped schema when enabled, and scores are saved in `structured_with_metadata`.
         confidence_description: Description for the confidence field when confidence scoring is enabled.
@@ -775,9 +779,8 @@ def extract_from_text(
             )
     if include_confidence:
         metadata_schema["confidence"] = {
-            "type": "number",
-            "minimum": 0,
-            "maximum": 1,
+            "type": "integer",
+            "enum": [1, 2, 3, 4, 5],
             "description": confidence_description,
         }
 

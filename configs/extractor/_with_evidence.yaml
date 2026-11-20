@@ -22,14 +22,18 @@ evidence_anchor_description: "Wörtliches Zitat aus dem Originaltext, das den ex
 # decoding) the model quotes the evidence before it commits to the extracted value.
 evidence_before_content: false
 
-# Ask the model for a confidence score from 0 to 1 alongside each extracted value.
+# Ask the model for an integer confidence score from 1 to 5 alongside each extracted value.
 # Scores can be requested with or without evidence anchors.
 include_confidence: false
 
 # Customize the wording for the confidence field in the prompt schema.
 confidence_description: >-
-  Your confidence that the extracted content is correct given the source text.
-  Use a number from 0 (no confidence) to 1 (complete confidence).
+  Rate how clearly the source text supports the extracted value. Use one integer from 1 to 5.
+  1 = weak support.
+  2 = indirect support requiring substantial inference.
+  3 = plausible interpretation with meaningful ambiguity.
+  4 = clear support with minor uncertainty.
+  5 = explicit, unambiguous support.
 
 # Enabling response_has_metadata will cause metadata unwrapping to be performed on the LLM response.
 # This means that the extracted field values will be unwrapped from their evidence detection

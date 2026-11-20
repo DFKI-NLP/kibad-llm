@@ -226,11 +226,11 @@ Both placeholders affect the prompt independently of whether guided decoding is 
 
 ### Prediction confidence
 
-Set `extractor.include_confidence=true` to ask the model to score each non-null extracted value on a scale from 0 (no confidence) to 1 (complete confidence). For organism trends, select `extractor/schema=organism_trends`. Evidence anchors can accompany the scores. Set `extractor.adjust_schema_for_evidence_detection=false` for scores alone.
+Set `extractor.include_confidence=true` to ask the model for an integer score from 1 to 5 for each non-null extracted value. The scale describes how clearly the source text supports the value. A score of 1 indicates weak support, 3 indicates a plausible interpretation with meaningful ambiguity, and 5 indicates explicit, unambiguous support. For organism trends, select `extractor/schema=organism_trends`. Evidence anchors can accompany the scores. Set `extractor.adjust_schema_for_evidence_detection=false` for scores alone.
 
 Customize the wording for the score with `extractor.confidence_description`. With confidence enabled, both schema placeholders in the prompt describe the wrapped values.
 
-For example, a model may return `{"content": "negative", "confidence": 0.85}` for a trend direction. The JSONL stores these estimates in `structured_with_metadata` for the simple extractor and in `structured_with_metadata_list` for multi-call extractors using the default `return_as_list`. Each score belongs to its individual model response. The `structured` field contains the extraction values used for evaluation.
+For example, a model may return `{"content": "negative", "confidence": 4}` for a trend direction. The JSONL stores these estimates in `structured_with_metadata` for the simple extractor and in `structured_with_metadata_list` for multi-call extractors using the default `return_as_list`. Each score belongs to its individual model response. The `structured` field contains the extraction values used for evaluation.
 
 ### CPU smoke test with a micro LLM
 

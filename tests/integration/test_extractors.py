@@ -157,7 +157,9 @@ def test_extractor_preserves_confidence_in_jsonl(
 ) -> None:
     """Render the configured description and retain per-call scores in prediction JSONL."""
     sentence = "Forest birds declined."
-    confidence_description = "Rate how well the text supports this value on a scale from 0 to 1."
+    confidence_description = (
+        "Rate how well the text supports this value using an integer from 1 to 5."
+    )
     trend = {
         "Hauptgruppe_RoteListen": "Wirbeltiere",
         "Untergruppe_RoteListen": None,
@@ -166,7 +168,7 @@ def test_extractor_preserves_confidence_in_jsonl(
         "Trend": "negative",
     }
     evidence = {"evidence_anchor": sentence} if include_evidence else {}
-    scores = iter((0.25, 1))
+    scores = iter((1, 5))
 
     class TestLLM(LLM):
         """Return a trend with a different confidence for each call."""
@@ -179,7 +181,11 @@ def test_extractor_preserves_confidence_in_jsonl(
             trend_properties = json_schema["$defs"]["OrganismBiodiversityTrend"]["properties"]
             wrapped_properties = trend_properties["Trend"]["properties"]
             assert set(wrapped_properties) == {"content", "confidence", *evidence}
-            assert wrapped_properties["confidence"]["description"] == confidence_description
+            assert wrapped_properties["confidence"] == {
+                "type": "integer",
+                "enum": [1, 2, 3, 4, 5],
+                "description": confidence_description,
+            }
             assert any(confidence_description in message.content for message in messages)
             score = next(scores)
             wrapped = {
@@ -217,12 +223,12 @@ def test_extractor_preserves_confidence_in_jsonl(
     if extractor_name == "simple":
         assert saved["errors"] == []
         wrapped = saved["structured_with_metadata"]["organism_trends"][0]
-        assert wrapped["Trend"] == {"content": "negative", "confidence": 0.25}
+        assert wrapped["Trend"] == {"content": "negative", "confidence": 1}
         assert wrapped["Untergruppe_RoteListen"] is None
     else:
         assert saved["errors_list"] == [[], []]
         entries = [
             item["organism_trends"][0]["Trend"] for item in saved["structured_with_metadata_list"]
         ]
-        assert [entry["confidence"] for entry in entries] == [0.25, 1]
+        assert [entry["confidence"] for entry in entries] == [1, 5]
         assert [entry["evidence_anchor"] for entry in entries] == [sentence, sentence]

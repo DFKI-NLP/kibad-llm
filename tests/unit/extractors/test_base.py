@@ -189,7 +189,7 @@ def test_extract_from_text_uses_same_schema_for_both_placeholders(
     expect_metadata = describe_wrapped_evidence or include_confidence
     assert ("evidence_anchor" in description) == expect_metadata
     assert ("confidence:" in description) == include_confidence
-    assert ("0 (no confidence) to 1 (complete confidence)" in description) == include_confidence
+    assert ("Use one integer from 1 to 5" in description) == include_confidence
     document, rendered_schema = result.messages_formatted["user"].split("\n", maxsplit=1)
     assert document == "A forest."
     rendered = json.loads(rendered_schema)
@@ -206,9 +206,10 @@ def test_extract_from_text_uses_same_schema_for_both_placeholders(
     "prediction",
     [
         {"content": "Wald"},
-        {"content": "Wald", "confidence": "0.8"},
-        {"content": "Wald", "confidence": -0.1},
-        {"content": "Wald", "confidence": 1.1},
+        {"content": "Wald", "confidence": "3"},
+        {"content": "Wald", "confidence": 0},
+        {"content": "Wald", "confidence": 6},
+        {"content": "Wald", "confidence": 2.5},
     ],
 )
 def test_extract_from_text_rejects_invalid_confidence(prediction: dict) -> None:
