@@ -141,10 +141,10 @@ def test_backend_prepares_messages_before_extractor_records_them() -> None:
     assert request_parameters == {"seed": 42}
 
 
-@pytest.mark.parametrize("describe_wrapped_evidence", [False, True])
+@pytest.mark.parametrize("use_wrapped_schema_in_prompt", [None, False, True])
 @pytest.mark.parametrize("include_confidence", [False, True])
 def test_extract_from_text_uses_same_schema_for_both_placeholders(
-    describe_wrapped_evidence: bool,
+    use_wrapped_schema_in_prompt: bool | None,
     include_confidence: bool,
 ) -> None:
     """Show the same output shape in both prompt placeholders."""
@@ -160,8 +160,8 @@ def test_extract_from_text_uses_same_schema_for_both_placeholders(
             "user_message": "{document}\n{schema}",
         },
         schema=schema,
-        adjust_schema_for_evidence_detection=True,
-        adjust_schema_description_for_evidence_detection=describe_wrapped_evidence,
+        include_evidence=True,
+        use_wrapped_schema_in_prompt=use_wrapped_schema_in_prompt,
         include_confidence=include_confidence,
         return_messages=True,
         return_messages_formatted=True,
@@ -175,10 +175,17 @@ def test_extract_from_text_uses_same_schema_for_both_placeholders(
     assert result.messages_formatted is not None
     description = result.messages_formatted["system"]
     assert "Habitat label" in description
-    expect_metadata = describe_wrapped_evidence or include_confidence
+    expect_metadata = (
+        include_confidence
+        if use_wrapped_schema_in_prompt is None
+        else use_wrapped_schema_in_prompt
+    )
     assert ("evidence_anchor" in description) == expect_metadata
-    assert ("confidence:" in description) == include_confidence
-    assert ("Use one integer from 1 to 5" in description) == include_confidence
+    expect_confidence = expect_metadata and include_confidence
+    assert ("confidence:" in description) == expect_confidence
+    assert (
+        "Integer from 1 (weak support) to 5 (explicit support)." in description
+    ) == expect_confidence
     document, rendered_schema = result.messages_formatted["user"].split("\n", maxsplit=1)
     assert document == "A forest."
     rendered = json.loads(rendered_schema)

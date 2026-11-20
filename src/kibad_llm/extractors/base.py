@@ -629,8 +629,8 @@ def extract_from_text(
     llm: LLM | None = None,
     request_parameters: dict[str, Any] | None = None,
     return_reasoning: bool = False,
-    adjust_schema_for_evidence_detection: bool = False,
-    adjust_schema_description_for_evidence_detection: bool = False,
+    include_evidence: bool = False,
+    use_wrapped_schema_in_prompt: bool | None = None,
     evidence_anchor_description: str = "Verbatim excerpt from the source text supporting the extracted content.",
     wrapped_content_description: str | None = None,
     evidence_before_content: bool = False,
@@ -640,18 +640,13 @@ def extract_from_text(
     character_end: int | None = None,
     *,
     include_confidence: bool = False,
-    confidence_description: str = (
-        "Rate how clearly the source text supports the extracted value. Use one integer from 1 to 5. "
-        "1 = weak support. "
-        "2 = indirect support requiring substantial inference. "
-        "3 = plausible interpretation with meaningful ambiguity. "
-        "4 = clear support with minor uncertainty. "
-        "5 = explicit, unambiguous support."
-    ),
+    confidence_description: str = "Integer from 1 (weak support) to 5 (explicit support).",
     history: list[SimpleChatMessage] | None = None,
     return_messages: bool = False,
     return_messages_formatted: bool = False,
     truncate_user_message_formatted: int | None = 300,
+    adjust_schema_for_evidence_detection: bool | None = None,
+    adjust_schema_description_for_evidence_detection: bool | None = None,
 ) -> SingleExtractionResult:
     """Extract structured information from text using an LLM.
 
@@ -673,22 +668,16 @@ def extract_from_text(
             parameters for guided decoding if schema is provided. If None, no LLM call is made.
         request_parameters: Additional parameters to pass to the LLM chat call.
         return_reasoning: Whether to return the reasoning done by the model.
-        adjust_schema_for_evidence_detection: Whether to adjust the schema to wrap terminal values
-            with metadata. If True, the schema is modified so that each terminal value is replaced
-            with an object containing the original value under the key `content` plus a metadata field
-            `evidence_anchor` (a verbatim quote from the input text supporting the
-            extracted content). Requires a schema to be provided.
-            Per default, the schema description is constructed from the original schema, so it is
-            recommended to adjust the prompt_template accordingly (e.g., by adding instructions about
-            evidence). Set `adjust_schema_description_for_evidence_detection` to use the wrapped schema in prompts.
-        adjust_schema_description_for_evidence_detection: When evidence wrapping is enabled, use
-            the wrapped schema for both schema placeholders in the prompt. The default uses the
-            original schema in the prompt. This does not affect the schema used for decoding.
+        include_evidence: Wrap each terminal value with an `evidence_anchor`, a verbatim quote
+            from the input text supporting the extracted content. Requires an extraction schema.
+        use_wrapped_schema_in_prompt: Select the wrapped schema for both schema placeholders when
+            metadata is requested. If omitted, confidence scoring selects the wrapped schema and
+            evidence alone uses the original schema. Guided decoding uses the wrapped schema in either case.
         evidence_anchor_description: Description for the evidence anchor field.
         wrapped_content_description: Optional description for the content field in the metadata wrapper.
         evidence_before_content: Whether to place `evidence_anchor` before `content` in the metadata
             wrapper. With guided decoding, the model then quotes the evidence before it commits to the
-            extracted value. Has only an effect if adjust_schema_for_evidence_detection is True.
+            extracted value. Applies when `include_evidence` is enabled.
         response_has_metadata: If True, the output is expected to have each leaf value wrapped in
             an object with `content` plus metadata fields. If so, the metadata is stripped and the cleaned
             output is returned under the "structured" key, while the raw output with metadata is returned
@@ -698,15 +687,19 @@ def extract_from_text(
             Defaults to 0 (process from the beginning of the text).
         character_end: Optional character offsets to specify a substring of `text` to process.
             If None (default), processes until the end of the text.
-        include_confidence: Ask the model for an integer score from 1 to 5 for each extracted terminal
-            value. Requires an unwrapped extraction schema. Both schema placeholders in the prompt
-            use the wrapped schema when enabled, and scores are saved in `structured_with_metadata`.
+        include_confidence: Ask the model for an integer score from 1 to 5 for each extracted
+            terminal value. Requires an unwrapped extraction schema. Scores are saved in
+            `structured_with_metadata`.
         confidence_description: Description for the confidence field when confidence scoring is enabled.
         history: Previously rendered messages to prepend to the current turn.
         return_messages: Record the configured prompt templates.
         return_messages_formatted: Record the rendered messages from the current turn.
         truncate_user_message_formatted: Character limit for the recorded user message.
             Use None to keep the full message.
+        adjust_schema_for_evidence_detection: Legacy alias for `include_evidence`. An explicit
+            legacy value takes precedence so saved Hydra overrides still work.
+        adjust_schema_description_for_evidence_detection: Legacy alias for
+            `use_wrapped_schema_in_prompt` with the same precedence.
 
     Returns:
         A SingleExtractionResult object with the extraction result.
@@ -738,18 +731,23 @@ def extract_from_text(
 
     original_schema = schema
     prompt_schema = schema
+    if adjust_schema_for_evidence_detection is not None:
+        include_evidence = adjust_schema_for_evidence_detection
+    if adjust_schema_description_for_evidence_detection is not None:
+        use_wrapped_schema_in_prompt = adjust_schema_description_for_evidence_detection
+    if use_wrapped_schema_in_prompt is None:
+        use_wrapped_schema_in_prompt = include_confidence
 
     metadata_schema: dict[str, Any] = {}
-    if adjust_schema_for_evidence_detection:
+    if include_evidence:
         metadata_schema["evidence_anchor"] = {
             "type": "string",
             "description": evidence_anchor_description,
         }
         if not use_guided_decoding:
             warn_once(
-                "adjust_schema_for_evidence_detection is True but use_guided_decoding is False. "
-                "Enabling adjust_schema_for_evidence_detection adjusts the schema for guided decoding, "
-                "so it is recommended to enable use_guided_decoding as well."
+                "include_evidence is True but use_guided_decoding is False. "
+                "Enable guided decoding to enforce the evidence schema."
             )
     if include_confidence:
         metadata_schema["confidence"] = {
@@ -766,12 +764,12 @@ def extract_from_text(
             metadata_schema=metadata_schema,
             content_key=WRAPPED_CONTENT_KEY,
             content_description=wrapped_content_description,
-            metadata_first=adjust_schema_for_evidence_detection and evidence_before_content,
+            metadata_first=include_evidence and evidence_before_content,
         )
         # since we wrapped terminals with metadata, we expect metadata in the response
         response_has_metadata = True
 
-        if include_confidence or adjust_schema_description_for_evidence_detection:
+        if use_wrapped_schema_in_prompt:
             prompt_schema = schema
 
     text_to_process = text[out.character_start : out.character_end]

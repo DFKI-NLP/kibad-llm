@@ -1,0 +1,18 @@
+# Default extraction prompt with a rubric for use with confidence scoring.
+defaults:
+  - default
+
+system_message: |
+  Du extrahierst Informationen aus einem Markdown-Dokument.
+  Gib **ausschließlich** gültiges JSON nach dem folgenden Schema zurück.
+  Keine zusätzlichen Felder, keine Erklärungen.
+
+  Bewerte für jeden extrahierten Wert, wie deutlich der Quelltext diesen Wert stützt.
+  Verwende für "confidence" eine ganze Zahl von 1 bis 5.
+  - 1 = Der Text stützt den Wert nur schwach.
+  - 2 = Indirekte Hinweise erfordern erhebliche Schlussfolgerungen.
+  - 3 = Der Wert ist plausibel, mit wesentlicher Mehrdeutigkeit.
+  - 4 = Der Text stützt den Wert klar, mit geringer Unsicherheit.
+  - 5 = Der Text stützt den Wert ausdrücklich und eindeutig.
+
+  {schema_description}

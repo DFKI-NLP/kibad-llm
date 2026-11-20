@@ -99,9 +99,18 @@ def test_extractor(tmp_path, cfg_predict_extractor, extractor_name):
     assert set(result["structured"]) == set(expected_result["structured"])
 
 
-def test_default_prompt_accepts_json_schema_override() -> None:
+@pytest.mark.parametrize(
+    "override",
+    [
+        "extractor.include_evidence=false",
+        "extractor.adjust_schema_for_evidence_detection=false",
+        "extractor.use_wrapped_schema_in_prompt=false",
+        "extractor.adjust_schema_description_for_evidence_detection=false",
+    ],
+)
+def test_default_prompt_accepts_json_schema_override(override: str) -> None:
     """Keep the default document message when the system message requests JSON Schema."""
-    cfg = cfg_global(overrides=['extractor.prompt_template.system_message="{schema}"'])
+    cfg = cfg_global(overrides=['extractor.prompt_template.system_message="{schema}"', override])
     extractor = instantiate(cfg.extractor, _convert_="all", llm=None)
     schema = {"type": "object", "properties": {"field": {"const": "Wälder"}}}
     document = "Two oaks grow beside the trail."
@@ -109,7 +118,6 @@ def test_default_prompt_accepts_json_schema_override() -> None:
         text=document,
         text_id="fixture",
         schema=schema,
-        adjust_schema_for_evidence_detection=False,
         return_messages_formatted=True,
     )
 
@@ -154,7 +162,7 @@ def test_extractor_preserves_backend_metadata_in_jsonl(
         use_guided_decoding=False,
         validate_with_schema=False,
         return_reasoning=False,
-        adjust_schema_for_evidence_detection=False,
+        include_evidence=False,
         response_has_metadata=False,
     )
 
@@ -174,8 +182,9 @@ def test_extractor_preserves_backend_metadata_in_jsonl(
 @pytest.mark.parametrize(
     ("extractor_name", "include_evidence"), [("simple", False), ("chunking", True)]
 )
+@pytest.mark.parametrize("prompt_template", ["default", "default_with_confidence"])
 def test_extractor_preserves_confidence_in_jsonl(
-    tmp_path, extractor_name, include_evidence
+    tmp_path, extractor_name, include_evidence, prompt_template
 ) -> None:
     """Render the configured description and retain per-call scores in prediction JSONL."""
     sentence = "Forest birds declined."
@@ -209,6 +218,13 @@ def test_extractor_preserves_confidence_in_jsonl(
                 "description": confidence_description,
             }
             assert any(confidence_description in message.content for message in messages)
+            rubric_count = sum(
+                message.content.count(
+                    "Indirekte Hinweise erfordern erhebliche Schlussfolgerungen."
+                )
+                for message in messages
+            )
+            assert rubric_count == int(prompt_template == "default_with_confidence")
             score = next(scores)
             wrapped = {
                 field: (
@@ -226,9 +242,10 @@ def test_extractor_preserves_confidence_in_jsonl(
         f"extractor={extractor_name}",
         "extractor/schema=organism_trends",
         "extractor/llm=dry-run",
-        "extractor.include_confidence=true",
-        f"extractor.confidence_description={confidence_description}",
-        f"extractor.adjust_schema_for_evidence_detection={str(include_evidence).lower()}",
+        f"extractor/prompt_template={prompt_template}",
+        "+extractor.include_confidence=true",
+        f"+extractor.confidence_description={confidence_description}",
+        f"extractor.include_evidence={str(include_evidence).lower()}",
         "extractor.return_reasoning=false",
     ]
     if extractor_name == "chunking":
