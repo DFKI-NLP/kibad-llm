@@ -642,8 +642,6 @@ def extract_from_text(
     # deprecated arguments
     user_message: str | None = None,
     system_message: str | None = None,
-    schema_description_placeholder: str | None = None,
-    document_placeholder: str | None = None,
     #
     **prompt_options: Any,
 ) -> SingleExtractionResult:
@@ -716,18 +714,10 @@ def extract_from_text(
     # setting the log level on every query is suboptimal, but the simplest solution in our current architecture
     logging.getLogger("httpx").setLevel(logging.WARNING)
 
-    if (
-        system_message is not None
-        or user_message is not None
-        or schema_description_placeholder is not None
-        or document_placeholder is not None
-    ):
-        # raise an error if deprecated arguments are used
+    if system_message is not None or user_message is not None:
         raise DeprecationWarning(
-            "system_message, user_message, schema_description_placeholder, and document_placeholder "
-            "are deprecated. Please provide a prompt_template dictionary containing 'system_message' and/or "
-            "'user_message' (and optionally schema_description_placeholder and document_placeholder)"
-            "instead."
+            "The system_message and user_message arguments are deprecated. "
+            "Pass them in the prompt_template dictionary."
         )
 
     if not (0 <= character_start <= len(text)):

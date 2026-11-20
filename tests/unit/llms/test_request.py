@@ -77,12 +77,7 @@ def test_prepare_template_request_renders_only_current_templates() -> None:
 def test_prepare_inline_request_can_omit_schema_bindings(schema) -> None:
     """Skip schema preparation when the template uses only the document."""
     request = prepare_inline_request(
-        {
-            "user_message": "{document} {{schema}} {{schema_description}}",
-            "document_placeholder": "document",
-            "schema_placeholder": "schema",
-            "schema_description_placeholder": "schema_description",
-        },
+        {"user_message": "{document} {{schema}} {{schema_description}}"},
         document="Source",
         schema=schema,
     )
@@ -98,16 +93,11 @@ def test_prepare_inline_request_requires_a_template() -> None:
         prepare_inline_request({}, document="Source", schema=None)
 
 
-def test_prepare_inline_request_inserts_json_schema_with_custom_placeholder() -> None:
-    """Render non-ASCII JSON Schema and Markdown using the configured placeholder names."""
+def test_prepare_inline_request_inserts_json_schema() -> None:
+    """Render non-ASCII JSON Schema and Markdown from the built-in fields."""
     schema = {"type": "object", "properties": {"field": {"const": "Wälder"}}}
     request = prepare_inline_request(
-        {
-            "system_message": "{output_schema}",
-            "user_message": "{markdown}",
-            "document_placeholder": "markdown",
-            "schema_placeholder": "output_schema",
-        },
+        {"system_message": "{schema}", "user_message": "{document}"},
         document="Markdown",
         schema=schema,
     )
@@ -118,54 +108,36 @@ def test_prepare_inline_request_inserts_json_schema_with_custom_placeholder() ->
     assert user.content == "Markdown"
 
 
-@pytest.mark.parametrize("setting", ["schema_placeholder", "schema_description_placeholder"])
-def test_prepare_inline_request_requires_schema_for_declared_field(setting) -> None:
-    """Name the declared field that requested the missing schema."""
-    template = {
-        "system_message": "{spec}",
-        "user_message": "{document}",
-        "document_placeholder": "document",
-        setting: "spec",
-    }
-    with pytest.raises(ValueError, match=r"\{spec\}.*requires a schema"):
+@pytest.mark.parametrize("field", ["schema", "schema_description"])
+def test_prepare_inline_request_requires_schema_for_referenced_field(field) -> None:
+    """Name the field that requested the missing schema."""
+    template = {"system_message": f"{{{field}}}", "user_message": "{document}"}
+    with pytest.raises(ValueError, match=rf"\{{{field}\}}.*requires a schema"):
         prepare_inline_request(template, document="Markdown", schema=None)
 
 
-@pytest.mark.parametrize("placeholder", ["schema", "schema_description"])
-def test_prepare_inline_request_reports_undeclared_schema_field(placeholder) -> None:
-    """The renderer identifies an undeclared field and its message role."""
+def test_prepare_inline_request_rejects_legacy_alias() -> None:
+    """A legacy alias is reported as an unknown field."""
     template = {
-        "system_message": f"{{{placeholder}}}",
+        "system_message": "{output_schema}",
         "user_message": "{document}",
-        "document_placeholder": "document",
+        "schema_placeholder": "output_schema",
     }
     with pytest.raises(MissingBindingError) as raised:
         prepare_inline_request(template, document="Markdown", schema={})
 
-    assert raised.value.placeholder == placeholder
+    assert raised.value.placeholder == "output_schema"
     assert raised.value.role == MessageRole.SYSTEM
 
 
 @pytest.mark.parametrize(
-    "template",
-    [
-        {"user_message": "Extract the fields."},
-        {"user_message": "Extract the fields.", "document_placeholder": "document"},
-        {"user_message": "Extract from {{document}}.", "document_placeholder": "document"},
-    ],
+    "user_message",
+    ["Extract the fields.", "Extract from {{document}}."],
 )
-def test_prepare_inline_request_requires_document_in_first_turn(template) -> None:
-    """Require a declared and referenced document field in the initial prompt."""
-    with pytest.raises(ValueError, match="first inline turn must declare 'document_placeholder'"):
-        prepare_inline_request(template, document="Markdown", schema=None)
-
-
-def test_prepare_inline_request_reports_undeclared_document_field() -> None:
-    """Using the conventional field name still requires a declaration."""
-    with pytest.raises(MissingBindingError) as raised:
-        prepare_inline_request({"user_message": "{document}"}, document="Markdown", schema=None)
-    assert raised.value.placeholder == "document"
-    assert raised.value.role == MessageRole.USER
+def test_prepare_inline_request_requires_document_in_first_turn(user_message) -> None:
+    """Require a document field in the initial prompt."""
+    with pytest.raises(ValueError, match=r"first inline turn must reference '\{document\}'"):
+        prepare_inline_request({"user_message": user_message}, document="Markdown", schema=None)
 
 
 def test_prepare_inline_request_keeps_history_separate_from_current_turn() -> None:
