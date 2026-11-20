@@ -16,10 +16,6 @@ from llama_index.core.base.llms.types import ChatResponse
 from pydantic import BaseModel
 
 from kibad_llm.llms.request import (
-    DOCUMENT_PLACEHOLDER,
-    SCHEMA_DESCRIPTION_KWARGS_KEY,
-    SCHEMA_DESCRIPTION_PLACEHOLDER,
-    SCHEMA_PLACEHOLDER,
     PreparedRequest,
     SimpleChatMessage,
     get_message_templates,
@@ -27,6 +23,11 @@ from kibad_llm.llms.request import (
     prepare_template_request,
 )
 from kibad_llm.schema.description import build_schema_description
+
+DOCUMENT_PLACEHOLDER = "document"
+SCHEMA_PLACEHOLDER = "schema"
+SCHEMA_DESCRIPTION_PLACEHOLDER = "schema_description"
+SCHEMA_DESCRIPTION_KWARGS_KEY = "schema_description_kwargs"
 
 
 class MissingRawChatResponseError(Exception):

@@ -25,11 +25,6 @@ from llama_index.core.base.llms.types import MessageRole
 
 SYSTEM_MESSAGE_KEY = "system_message"
 USER_MESSAGE_KEY = "user_message"
-SCHEMA_DESCRIPTION_KWARGS_KEY = "schema_description_kwargs"
-
-DOCUMENT_PLACEHOLDER = "document"
-SCHEMA_PLACEHOLDER = "schema"
-SCHEMA_DESCRIPTION_PLACEHOLDER = "schema_description"
 
 
 class MissingBindingError(ValueError):
