@@ -7,4 +7,5 @@ defaults:
   - override /extractor/prompt_template: faktencheck_core_v1_with_evidence_codex
 
 extractor:
+  # our codex backend does not yet support guided decoding
   use_guided_decoding: false
