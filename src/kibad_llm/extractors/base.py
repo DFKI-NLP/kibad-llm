@@ -40,7 +40,11 @@ from jsonschema.validators import validator_for
 from llama_index.core.base.llms.types import ChatResponse
 
 from kibad_llm.llms.base import LLM, prepare_inline_request
-from kibad_llm.llms.request import SimpleChatMessage
+from kibad_llm.llms.request import (
+    SYSTEM_MESSAGE_KEY,
+    USER_MESSAGE_KEY,
+    SimpleChatMessage,
+)
 from kibad_llm.schema.utils import (
     WRAPPED_CONTENT_KEY,
     wrap_terminals_with_metadata,
@@ -780,8 +784,8 @@ def extract_from_text(
 
     if return_messages:
         out.messages = {
-            "system": prompt_template.get("system_message"),
-            "user": prompt_template.get("user_message"),
+            "system": prompt_template.get(SYSTEM_MESSAGE_KEY),
+            "user": prompt_template.get(USER_MESSAGE_KEY),
         }
 
     if return_messages_formatted:

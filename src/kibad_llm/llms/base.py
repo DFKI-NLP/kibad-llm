@@ -16,6 +16,10 @@ from llama_index.core.base.llms.types import ChatResponse
 from pydantic import BaseModel
 
 from kibad_llm.llms.request import (
+    DOCUMENT_PLACEHOLDER,
+    SCHEMA_DESCRIPTION_KWARGS_KEY,
+    SCHEMA_DESCRIPTION_PLACEHOLDER,
+    SCHEMA_PLACEHOLDER,
     PreparedRequest,
     SimpleChatMessage,
     get_message_templates,
@@ -92,22 +96,25 @@ def prepare_inline_request(
     templates = get_message_templates(prompt_template)
     placeholders = get_template_placeholders(templates)
     bindings: dict[str, str] = {}
-    if "schema" in placeholders:
+    if SCHEMA_PLACEHOLDER in placeholders:
         if schema is None:
-            raise ValueError("Placeholder '{schema}' requires a schema.")
-        bindings["schema"] = json.dumps(schema, ensure_ascii=False)
-    if "schema_description" in placeholders:
+            raise ValueError(f"Placeholder '{{{SCHEMA_PLACEHOLDER}}}' requires a schema.")
+        bindings[SCHEMA_PLACEHOLDER] = json.dumps(schema, ensure_ascii=False)
+    if SCHEMA_DESCRIPTION_PLACEHOLDER in placeholders:
         if schema is None:
-            raise ValueError("Placeholder '{schema_description}' requires a schema.")
-        bindings["schema_description"] = build_schema_description(
-            schema=schema, **(prompt_template.get("schema_description_kwargs") or {})
+            raise ValueError(
+                f"Placeholder '{{{SCHEMA_DESCRIPTION_PLACEHOLDER}}}' requires a schema."
+            )
+        bindings[SCHEMA_DESCRIPTION_PLACEHOLDER] = build_schema_description(
+            schema=schema, **(prompt_template.get(SCHEMA_DESCRIPTION_KWARGS_KEY) or {})
         )
-    if "document" in placeholders:
-        bindings["document"] = document
+    if DOCUMENT_PLACEHOLDER in placeholders:
+        bindings[DOCUMENT_PLACEHOLDER] = document
     request = prepare_template_request(templates, bindings=bindings, history=history)
-    if not history and "document" not in placeholders:
+    if not history and DOCUMENT_PLACEHOLDER not in placeholders:
         raise ValueError(
-            "The first inline turn must reference '{document}' in the system or user message."
+            f"The first inline turn must reference '{{{DOCUMENT_PLACEHOLDER}}}' "
+            "in the system or user message."
         )
     return request
 

@@ -23,6 +23,14 @@ from typing import Any
 
 from llama_index.core.base.llms.types import MessageRole
 
+SYSTEM_MESSAGE_KEY = "system_message"
+USER_MESSAGE_KEY = "user_message"
+SCHEMA_DESCRIPTION_KWARGS_KEY = "schema_description_kwargs"
+
+DOCUMENT_PLACEHOLDER = "document"
+SCHEMA_PLACEHOLDER = "schema"
+SCHEMA_DESCRIPTION_PLACEHOLDER = "schema_description"
+
 
 class MissingBindingError(ValueError):
     """A template references a field without a supplied value.
@@ -87,13 +95,15 @@ def get_message_templates(prompt_template: Mapping[str, Any]) -> list[SimpleChat
     templates = [
         SimpleChatMessage(role=role, content=content)
         for role, content in (
-            (MessageRole.SYSTEM, prompt_template.get("system_message")),
-            (MessageRole.USER, prompt_template.get("user_message")),
+            (MessageRole.SYSTEM, prompt_template.get(SYSTEM_MESSAGE_KEY)),
+            (MessageRole.USER, prompt_template.get(USER_MESSAGE_KEY)),
         )
         if content is not None
     ]
     if not templates:
-        raise ValueError("At least one of system_message or user_message must be provided.")
+        raise ValueError(
+            f"At least one of {SYSTEM_MESSAGE_KEY} or {USER_MESSAGE_KEY} must be provided."
+        )
     return templates
 
 
