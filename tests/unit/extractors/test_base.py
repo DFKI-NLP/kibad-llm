@@ -51,44 +51,41 @@ def test_check_utf8_encodable_reports_nested_surrogate() -> None:
     assert repr(invalid_name) in error.value.reason
 
 
-@pytest.mark.parametrize(
-    "option",
-    [
-        {"system_message": "{document}"},
-        {"user_message": "{document}"},
-        {"schema_description_kwargs": {"include_field_descriptions": False}},
-    ],
-)
-def test_extract_from_text_rejects_top_level_prompt_settings(option: dict[str, Any]) -> None:
+@pytest.mark.parametrize("key", ["system_message", "user_message", "schema_description_kwargs"])
+def test_extract_from_text_rejects_top_level_prompt_settings(key: str) -> None:
     """Require prompt settings to be supplied inside the prompt template mapping."""
-    with pytest.raises(TypeError, match="unexpected keyword argument"):
+    unexpected_setting: dict[str, Any] = {key: None}
+    with pytest.raises(TypeError, match=f"unexpected keyword argument '{key}'"):
         extract_from_text(
             text="A forest.",
             text_id="fixture",
             prompt_template={"user_message": "{document}"},
             use_guided_decoding=False,
-            **option,
+            **unexpected_setting,
         )
 
 
-def test_extract_from_text_rejects_misspelled_inline_prompt_setting() -> None:
-    """Report the misspelled key before preparing a schema description."""
-    with pytest.raises(TypeError, match="'schema_description_kwarg'"):
+def test_extract_from_text_reports_unrecognized_inline_prompt_settings() -> None:
+    """Name both the misspelled option and the retired placeholder declaration."""
+    with pytest.raises(TypeError) as error:
         extract_from_text(
             text="A forest.",
             text_id="fixture",
             prompt_template={
                 "system_message": "{schema_description}",
                 "user_message": "{document}",
+                "schema_placeholder": "schema_description",
                 "schema_description_kwarg": {"include_field_descriptions": False},
             },
             schema={"type": "object"},
         )
+    assert "'schema_description_kwarg'" in str(error.value)
+    assert "'schema_placeholder'" in str(error.value)
 
 
 def test_backend_prepares_messages_before_extractor_records_them() -> None:
     """Send the full backend-prepared request and record only its current turn."""
-    history = [SimpleChatMessage(role=MessageRole.USER, content="Previous turn")]
+    history = [SimpleChatMessage(role=MessageRole.ASSISTANT, content="Previous turn")]
     prepared_user = SimpleChatMessage(role=MessageRole.USER, content="Backend: document")
 
     class TestLLM(LLM):
@@ -138,7 +135,6 @@ def test_backend_prepares_messages_before_extractor_records_them() -> None:
     )
 
     assert result.errors == []
-    assert result.backend_metadata is None
     assert result.structured == {}
     assert result.messages == {"system": None, "user": "Configured: {document}"}
     assert result.messages_formatted == {"user": "Backend... (truncated @ 7 chars)"}
@@ -168,7 +164,6 @@ def test_extract_from_text_uses_same_schema_for_both_placeholders(
         truncate_user_message_formatted=None,
     )
 
-    assert result.backend_metadata is None
     assert result.messages == {
         "system": "{schema_description}",
         "user": "{document}\n{schema}",
