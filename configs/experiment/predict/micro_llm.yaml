@@ -12,6 +12,6 @@ pdf_directory: ${paths.root_dir}/tests/fixtures/pdfs
 
 extractor:
   max_char_buffer: 6000
-  adjust_schema_for_evidence_detection: false
-  adjust_schema_description_for_evidence_detection: false
+  include_evidence: false
+  use_wrapped_schema_in_prompt: false
   return_reasoning: false

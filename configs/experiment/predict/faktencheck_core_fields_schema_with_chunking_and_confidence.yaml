@@ -1,0 +1,20 @@
+# @package _global_
+
+# This experiment config is the same as faktencheck_core_fields_schema_with_chunking,
+# but with an additional confidence field, which asks the model to rate its confidence
+# in the extracted values on a scale from 1 to 5.
+
+# To execute this experiment run:
+# uv run -m kibad_llm.predict \
+#   experiment/predict=faktencheck_core_fields_schema_with_chunking_and_confidence \
+#   pdf_directory=path/to/pdf/files
+
+defaults:
+  - override /extractor/schema: faktencheck_core
+  - override /extractor: chunking
+  - override /extractor/prompt_template: faktencheck_core_v1_with_chunking_and_confidence
+
+extractor:
+  include_confidence: true
+  use_wrapped_schema_in_prompt: true
+  confidence_description: "Wie sicher bist du, den korrekten Wert extrahiert zu haben? (1–5)"

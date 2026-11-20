@@ -139,8 +139,8 @@ def test_schema_file_uses_evidence_adjusted_prompt_schema(tmp_path, monkeypatch)
         llm=backend,
         schema=schema,
         use_guided_decoding=False,
-        adjust_schema_for_evidence_detection=True,
-        adjust_schema_description_for_evidence_detection=True,
+        include_evidence=True,
+        use_wrapped_schema_in_prompt=True,
         return_messages_formatted=True,
     )
 
