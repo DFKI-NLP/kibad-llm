@@ -129,10 +129,11 @@ class Codex(LLM):
             bindings[_DOCUMENT_FILENAME_PLACEHOLDER] = _DOCUMENT_FILENAME
             input_artifacts[_DOCUMENT_FILENAME] = document
 
+        serialized_schema = json.dumps(schema, ensure_ascii=False) if schema is not None else None
         if SCHEMA_PLACEHOLDER in placeholders:
-            if schema is None:
+            if serialized_schema is None:
                 raise ValueError(f"Placeholder '{{{SCHEMA_PLACEHOLDER}}}' requires a schema.")
-            bindings[SCHEMA_PLACEHOLDER] = json.dumps(schema, ensure_ascii=False)
+            bindings[SCHEMA_PLACEHOLDER] = serialized_schema
         if SCHEMA_DESCRIPTION_PLACEHOLDER in placeholders:
             if schema is None:
                 raise ValueError(
@@ -142,12 +143,12 @@ class Codex(LLM):
                 schema=schema, **(schema_description_kwargs or {})
             )
         if _SCHEMA_FILENAME_PLACEHOLDER in placeholders:
-            if schema is None:
+            if serialized_schema is None:
                 raise ValueError(
                     f"Placeholder '{{{_SCHEMA_FILENAME_PLACEHOLDER}}}' requires a schema."
                 )
             bindings[_SCHEMA_FILENAME_PLACEHOLDER] = _SCHEMA_FILENAME
-            input_artifacts[_SCHEMA_FILENAME] = json.dumps(schema, ensure_ascii=False)
+            input_artifacts[_SCHEMA_FILENAME] = serialized_schema
 
         request = prepare_template_request(templates, bindings=bindings, history=history)
         request.input_artifacts = input_artifacts
