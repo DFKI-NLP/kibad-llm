@@ -203,9 +203,9 @@ uv run -m kibad_llm.predict \
   pdf_directory=tests/fixtures/pdfs
 ```
 
-The preset binds `{document_filename}` to `input.md` and includes the schema inline through `{schema}`. You can override `extractor.llm.reasoning_effort` (default `high`) and `extractor.llm.timeout` (default 600 seconds).
+The preset stages the source Markdown as `input.md` and the evidence-adjusted JSON Schema as `schema.json`. Its prompt refers to these files through `{document_filename}` and `{schema_filename}`. You can override `extractor.llm.reasoning_effort` (default `high`) and `extractor.llm.timeout` (default 600 seconds).
 
-The preset sets `extractor.use_guided_decoding=false`: the schema is supplied in the prompt, and the extractor validates the response after inference. Keep `extractor.request_parameters` empty; Codex rejects guided decoding and additional request parameters before starting the CLI.
+The preset sets `extractor.use_guided_decoding=false`. The extractor validates the response after inference. Keep `extractor.request_parameters` empty. Codex rejects guided decoding and additional request parameters before starting the CLI.
 
 Both filename fields are optional on every Codex turn, including the first. Use `{document_filename}` for the source Markdown as `input.md` and `{schema_filename}` for the prompt schema as `schema.json`. For inline schema content, use `{schema}` or `{schema_description}`. Each call starts with a fresh workspace, so reference a filename field again in any follow-up that needs the file. Only replacement fields request files. Literal filenames and escaped braces are treated as text.
 

@@ -272,10 +272,10 @@ def test_unsupported_preset_options_use_existing_error_result(
     ],
 )
 @pytest.mark.parametrize("invalid_json", [False, True])
-def test_file_backed_preset_stages_markdown_and_uses_only_template_messages(
+def test_file_backed_preset_stages_document_and_schema(
     tmp_path, monkeypatch, usage_reports, invalid_json
 ):
-    """Use the shared metadata callback and retain usage when JSON postprocessing fails."""
+    """Stage the preset's input files and retain usage when JSON parsing fails."""
     cfg = cfg_global(
         out_dir=tmp_path,
         overrides=[
@@ -298,12 +298,15 @@ def test_file_backed_preset_stages_markdown_and_uses_only_template_messages(
     }
 
     def run_cli(args, *, cwd, **kwargs):
-        """Verify the staged document and simulate the CLI's final response and usage."""
+        """Verify the staged inputs and simulate the CLI's final response and usage."""
         assert (cwd / "input.md").read_bytes() == document.encode()
-        assert not (cwd / "schema.json").exists()
+        schema_text = (cwd / "schema.json").read_text(encoding="utf-8")
+        schema = json.loads(schema_text)
+        assert "evidence_anchor" in schema["properties"]["habitat"]["items"]["properties"]
         if args[1] == "sandbox":
             (cwd / "probe").touch()
         else:
+            assert schema_text not in kwargs["input"]
             final = Path(args[args.index("--output-last-message") + 1])
             final.write_text(
                 "invalid JSON" if invalid_json else json.dumps(answer), encoding="utf-8"
@@ -328,7 +331,7 @@ def test_file_backed_preset_stages_markdown_and_uses_only_template_messages(
         assert result.structured["habitat"] == ["Wald"]
     expected_metadata = {"usage": usage_reports} if usage_reports else None
     assert result.backend_metadata == expected_metadata
-    assert result.messages["user"].endswith("{schema}\n")
+    assert "{schema_filename}" in result.messages["system"]
     assert "{document_filename}" in result.messages["user"]
     system = result.messages_formatted["system"]
     user = result.messages_formatted["user"]
@@ -336,10 +339,9 @@ def test_file_backed_preset_stages_markdown_and_uses_only_template_messages(
     prompt = prompt_file.read_text(encoding="utf-8")
     assert prompt == f"system:\n{system}\n\nuser:\n{user}"
     assert prompt.count("input.md") == 1
+    assert prompt.count("schema.json") == 1
     assert quote not in prompt
     assert "evidence_anchor" in system
-    schema = json.loads(user.split("\n\n", maxsplit=1)[1])
-    assert "evidence_anchor" in schema["properties"]["habitat"]["items"]["properties"]
 
 
 @pytest.mark.parametrize(
