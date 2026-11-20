@@ -103,9 +103,7 @@ def test_extractor(tmp_path, cfg_predict_extractor, extractor_name):
     "override",
     [
         "extractor.include_evidence=false",
-        "extractor.adjust_schema_for_evidence_detection=false",
         "extractor.use_wrapped_schema_in_prompt=false",
-        "extractor.adjust_schema_description_for_evidence_detection=false",
     ],
 )
 def test_default_prompt_accepts_json_schema_override(override: str) -> None:

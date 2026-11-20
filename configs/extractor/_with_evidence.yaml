@@ -9,10 +9,6 @@ include_evidence: true
 # Templates with their own wrapper instructions can use the original schema.
 use_wrapped_schema_in_prompt: true
 
-# Keep saved experiment overrides usable. Explicit values take precedence over the new keys.
-adjust_schema_for_evidence_detection: null
-adjust_schema_description_for_evidence_detection: null
-
 # When use_wrapped_schema_in_prompt is enabled, customize
 # the evidence anchor description here.
 evidence_anchor_description: "Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt."

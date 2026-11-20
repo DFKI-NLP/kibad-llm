@@ -645,8 +645,6 @@ def extract_from_text(
     return_messages: bool = False,
     return_messages_formatted: bool = False,
     truncate_user_message_formatted: int | None = 300,
-    adjust_schema_for_evidence_detection: bool | None = None,
-    adjust_schema_description_for_evidence_detection: bool | None = None,
 ) -> SingleExtractionResult:
     """Extract structured information from text using an LLM.
 
@@ -696,10 +694,6 @@ def extract_from_text(
         return_messages_formatted: Record the rendered messages from the current turn.
         truncate_user_message_formatted: Character limit for the recorded user message.
             Use None to keep the full message.
-        adjust_schema_for_evidence_detection: Legacy alias for `include_evidence`. An explicit
-            legacy value takes precedence so saved Hydra overrides still work.
-        adjust_schema_description_for_evidence_detection: Legacy alias for
-            `use_wrapped_schema_in_prompt` with the same precedence.
 
     Returns:
         A SingleExtractionResult object with the extraction result.
@@ -731,10 +725,6 @@ def extract_from_text(
 
     original_schema = schema
     prompt_schema = schema
-    if adjust_schema_for_evidence_detection is not None:
-        include_evidence = adjust_schema_for_evidence_detection
-    if adjust_schema_description_for_evidence_detection is not None:
-        use_wrapped_schema_in_prompt = adjust_schema_description_for_evidence_detection
     if use_wrapped_schema_in_prompt is None:
         use_wrapped_schema_in_prompt = include_confidence
 

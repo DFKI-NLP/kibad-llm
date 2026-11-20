@@ -207,7 +207,7 @@ The same annotation is rendered once per field occurrence. Independent annotatio
 
 The `include_evidence` option wraps extracted values with an evidence anchor. The bundled evidence config sets `use_wrapped_schema_in_prompt: true` so the model sees the wrapped schema in its prompt.
 
-Saved experiment overrides can still use `adjust_schema_for_evidence_detection` and `adjust_schema_description_for_evidence_detection`. When supplied, these aliases take precedence over `include_evidence` and `use_wrapped_schema_in_prompt`, respectively.
+When migrating an extractor config, Hydra override, or Python call, rename `adjust_schema_for_evidence_detection` to `include_evidence` and `adjust_schema_description_for_evidence_detection` to `use_wrapped_schema_in_prompt`. Keep the same boolean values. Use the recorded code revision to replay older experiments verbatim.
 
 Set `schema_description_kwargs` inside `extractor.prompt_template` to configure the readable description. `include_field_descriptions=False` hides property documentation completely; `type_description_prefix=None` hides root/type documentation; `choices_description_prefix=None` hides enum documentation. These options work at every nesting level. `choices_prefix=None` hides enum values independently of their documentation. The deprecated `include_type_descriptions=False` remains supported.
 
