@@ -16,7 +16,8 @@
     - [Prerequisite: choose an LLM backend](#prerequisite-choose-an-llm-backend)
     - [Inference](#inference)
         - [Codex extraction backend](#codex-extraction-backend)
-    - [Schema descriptions in prompts](#schema-descriptions-in-prompts)
+    - [Prompt templates and schema descriptions](#prompt-templates-and-schema-descriptions)
+        - [Codex file inputs](#codex-file-inputs)
     - [CPU smoke test with a micro LLM](#cpu-smoke-test-with-a-micro-llm)
     - [Token usage in prediction results](#token-usage-in-prediction-results)
     - [Evaluation](#evaluation)
@@ -207,27 +208,21 @@ uv run -m kibad_llm.predict \
   pdf_directory=tests/fixtures/pdfs
 ```
 
-The preset stages the source Markdown as `input.md` and the evidence-adjusted JSON Schema as `schema.json`. Its prompt refers to these files through `{document_filename}` and `{schema_filename}`. You can override `extractor.llm.reasoning_effort` (default `high`) and `extractor.llm.timeout` (default 600 seconds).
+The preset stages the source Markdown and the evidence-adjusted JSON Schema as files. See [Codex file inputs](#codex-file-inputs) to reference them in a custom prompt. You can override `extractor.llm.reasoning_effort` (default `high`) and `extractor.llm.timeout` (default 600 seconds).
 
 The preset sets `extractor.use_guided_decoding=false`. Note that, per default, the extractor validates the response after inference (`extractor.validate_with_schema=true`). Keep `extractor.request_parameters` empty. Codex rejects guided decoding and additional request parameters before starting the CLI.
 
-Both filename fields are optional on every Codex turn, including the first. Use `{document_filename}` for the source Markdown as `input.md` and `{schema_filename}` for the prompt schema as `schema.json`. For inline schema content, use `{schema}` or `{schema_description}`. Each call starts with a fresh workspace, so reference a filename field again in any follow-up that needs the file. Only replacement fields request files. Literal filenames and escaped braces are treated as text.
-
-```yaml
-extractor:
-  prompt_template:
-    user_message: |
-      Lies das Markdown-Dokument aus `{document_filename}`.
-      Verwende das JSON-Schema aus `{schema_filename}`.
-```
-
 Each call launches a fresh ephemeral Codex process in a document workspace. Shell commands have a restricted filesystem profile and no network access. Web search, apps, and plugins are disabled. The backend checks workspace access before inference. If sandboxing is unavailable, the extraction records an error. Use a job-local Hydra run directory on shared filesystems to keep temporary runtime state off shared storage.
 
-The Hydra run directory contains prompts, final responses, execution events, and errors. Prediction records use the shared `backend_metadata` field described under [Token usage in prediction results](#token-usage-in-prediction-results). For Codex, `backend_metadata.usage` is a list of the CLI's individual usage reports in event order. Their native fields are preserved without calculating totals or costs. When the CLI reports no usage, `backend_metadata` is `null`. Keep the run directory with the predictions to retain the execution diagnostics.
+The Hydra run directory contains prompts, final responses, execution events, and errors. Keep it with the predictions to retain the execution diagnostics. See [Token usage in prediction results](#token-usage-in-prediction-results) for the usage data recorded in the predictions.
 
-### Schema descriptions in prompts
+<a id="schema-descriptions-in-prompts"></a>
 
-Put message text in `prompt_template` under `system_message` or `user_message`. Inline templates use `{document}` for the source text, `{schema}` for JSON Schema, and `{schema_description}` for a readable description. These fields can appear in either message. The first turn must reference `{document}`. Follow-ups with history can omit it. Unrecognized settings in an inline `prompt_template` raise `TypeError`.
+### Prompt templates and schema descriptions
+
+Put message text in `prompt_template` under `system_message` or `user_message`. Use `{schema}` for inline JSON Schema and `{schema_description}` for a readable description. Template fields can appear in either message. Unrecognized settings in an inline `prompt_template` raise `TypeError`.
+
+OpenAI and vLLM prompts must reference `{document}` for inline source text on the first turn. Follow-ups with history can omit it. See [Codex file inputs](#codex-file-inputs) for how to attach the source document in Codex prompts.
 
 Schema fields are optional even when the extractor uses a schema for guided decoding or output validation. Referencing a schema field requires a schema. When the schema is missing, the backend reports which field requested it. An unknown field raises `MissingBindingError` during rendering.
 
@@ -260,6 +255,18 @@ prompt_template:
 
 Both the full schema and the readable description follow `adjust_schema_description_for_evidence_detection`.
 Both placeholders affect the prompt independently of whether guided decoding is enabled.
+
+#### Codex file inputs
+
+With Codex, use `{document_filename}` to stage the source Markdown as `input.md` and `{schema_filename}` to stage the prompt schema as `schema.json`. Both filename fields are optional on every turn, including the first. Each call starts with a fresh workspace, so reference a filename field again in any follow-up that needs the file. Only replacement fields request files. Literal filenames and escaped braces are treated as text.
+
+```yaml
+extractor:
+  prompt_template:
+    user_message: |
+      Lies das Markdown-Dokument aus `{document_filename}`.
+      Verwende das JSON-Schema aus `{schema_filename}`.
+```
 
 ### CPU smoke test with a micro LLM
 
@@ -318,6 +325,8 @@ In-process vLLM records `prompt_tokens`, `completion_tokens`, and `total_tokens`
 token IDs, plus `prompt_tokens_details.cached_tokens` when available. Completion tokens include
 reasoning and all generated candidates. If prompt token IDs are unavailable, prompt and total
 counts are omitted.
+
+For Codex, `backend_metadata.usage` contains the CLI's individual usage reports in event order. Each list entry preserves the CLI's native fields without calculating totals.
 
 Metadata is retained even if response parsing, schema validation, or reasoning extraction fails.
 It is `null` when there is no response or the backend does not report usage; missing counts are
