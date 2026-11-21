@@ -46,19 +46,86 @@
       ],
       "title": "ThemenkomplexEnum",
       "type": "string"
+    },
+    "_SLEnum": {
+      "description": "Ökosystemleistungen bzw. -funktionen (ÖSL/ÖSF) der Themenkomplexe.",
+      "enum": [
+        "Ästhetischer Wert der Landschaft",
+        "Beitrag zu einer lebenswerten Stadt",
+        "Biomasseproduktion",
+        "Dürreerholung",
+        "Dürreresilienz",
+        "Dürreresistenz",
+        "Erholungsleistungen",
+        "Erosionsschutz",
+        "Fraßresilienz",
+        "Fraßresistenz",
+        "Freizeitliche Nutzung",
+        "Gesundheit",
+        "Grundwasserbildung",
+        "Hitzeresilienz",
+        "Hitzeresistenz",
+        "Kälteresilienz",
+        "Kälteresistenz",
+        "Klimaschutz",
+        "Klimawandelresilienz",
+        "Klimawandelresistenz",
+        "Kohlenstoffspeicherung",
+        "Kohlenstoffumsatz",
+        "Kohlenstoffverfügbarkeit",
+        "Krankheitsresilienz",
+        "Krankheitsresistenz",
+        "Kultureller Wert der Pflanzen",
+        "Landschaftsbild, Natur- und Kulturerbe",
+        "Mikroklimaregulation",
+        "Ortsbezogene Bedeutung",
+        "Pathogenresilienz",
+        "Pathogenresistenz",
+        "Physisches Wohlbefinden",
+        "Psychisches Wohlbefinden",
+        "Reduktion von Mortalität",
+        "Schädlingskontrolle",
+        "Schädlingsresilienz",
+        "Schädlingsresistenz",
+        "Soziale Interaktion / Integration",
+        "Staunässeresilienz",
+        "Staunässeresistenz",
+        "Störungsresilienz",
+        "Störungsresistenz",
+        "Sturmresilienz",
+        "Sturmresistenz",
+        "Temperaturpufferung / Reduktion von Hitze",
+        "Trockenerholung",
+        "Trockenresilienz",
+        "Trockenresistenz",
+        "Überflutungsresilienz",
+        "Überflutungsresistenz",
+        "Versickerungsschutz",
+        "Wachstum bei Dürre",
+        "Wassernutzung",
+        "Wasserrückhaltefähigkeit",
+        "Wissen / Kenntnis",
+        "Wohlbefinden / Sicherheitsgefühl",
+        "Zersetzung"
+      ],
+      "title": "ÖSLEnum",
+      "type": "string"
     }
   },
   "additionalProperties": false,
-  "description": "Ein einzelner Zusammenhang zwischen Biodiversität und Ökosystemleistung, bestehend aus\nThemenkomplex, Ökosystemleistung (ÖSL), Biodiv_Facette, Einfluss, Arten und Lebensraum_Gruppiert.\nPro betroffenem Lebensraum wird eine eigene Instanz erstellt.",
+  "description": "Ein einzelner Zusammenhang zwischen Biodiversität und Ökosystemleistung, bestehend aus\nÖkosystemleistung (ÖSL), Themenkomplex, Biodiv_Facette, Einfluss, Arten und Lebensraum_Gruppiert.\nPro betroffenem Lebensraum wird eine eigene Instanz erstellt.",
   "properties": {
+    "ÖSL": {
+      "$ref": "#/$defs/_SLEnum",
+      "description": "Welche der folgenden Ökosystemleistungen wird in der Studie betrachtet? Gemeint ist die allgemeine Ökosystemleistung bzw. -funktion, nicht die konkrete Messgröße."
+    },
     "Themenkomplex": {
       "$ref": "#/$defs/ThemenkomplexEnum",
-      "description": "Zu welchem der folgenden Themenkomplexe gehört die in der Studie betrachtete Ökosystemleistung (ÖSL)?"
+      "description": "Zu welchem Themenkomplex gehört die gewählte Ökosystemleistung (ÖSL)?"
     },
-    "ÖSL": {
-      "description": "Welche Ökosystemleistung wird in der Studie betrachtet? Gib eine kurze, allgemeine deutsche Bezeichnung (ein bis drei Wörter) an, nicht die konkrete Messgröße.",
-      "title": "Ösl",
-      "type": "string"
+    "Themenkomplex": {
+      "$ref": "#/$defs/ThemenkomplexEnum",
+      "description": "Zu welchem Themenkomplex gehört die gewählte Ökosystemleistung (ÖSL)?"
     },
     "Biodiv_Facette": {
       "$ref": "#/$defs/BiodiversityFacetEnum",
@@ -66,7 +133,7 @@
     },
     "Einfluss": {
       "$ref": "#/$defs/EinflussEnum",
-      "description": "Was ist der in der Studie gemessene Einfluss der Biodiversitätsfacette (Biodiv_Facette) auf die Ökosystemleistung bzw. -funktion (ÖSL/ÖSF)? Die Richtung bezieht sich auf die ÖSL/ÖSF (pos = die ÖSL/ÖSF nimmt mit höherer Ausprägung der Facette zu). pos, neg und neu gelten nur für kontinuierliche oder ordinale Prädiktoren, ja und nein für kategoriale Prädiktoren."
+      "description": "Was ist der in der Studie gemessene Einfluss der Biodiversitätsfacette (Biodiv_Facette) auf die Ökosystemleistung bzw. -funktion (ÖSL/ÖSF)? Die Richtung bezieht sich auf die ÖSL/ÖSF."
     },
     "Arten": {
       "description": "Welche Arten, Gattungen bzw. Artengruppen werden in der Studie untersucht? Gib die Namen so an, wie sie im Text verwendet werden, auf Deutsch. Falls der Text keinen deutschen Namen nennt, übersetze den Namen ins Deutsche; ist das nicht möglich, verwende den wissenschaftlichen Namen. Leere Liste, wenn keine Arten genannt werden.",
@@ -82,8 +149,8 @@
     }
   },
   "required": [
-    "Themenkomplex",
     "ÖSL",
+    "Themenkomplex",
     "Biodiv_Facette",
     "Einfluss",
     "Lebensraum_Gruppiert"

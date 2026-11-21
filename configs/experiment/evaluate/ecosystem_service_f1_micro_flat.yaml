@@ -1,0 +1,20 @@
+# @package _global_
+
+# F1 score metric for ecosystem-service/biodiversity trend predictions, but compounds are flattened into
+# individual entries so that F1 is reported for each field individually (`Arten` is not evaluated).
+
+defaults:
+ # derive everything from experiment/evaluate/ecosystem_service.yaml
+ - ecosystem_service
+
+metric:
+  # compute metrics on flattened fields, i.e. split compounds
+  flatten_dicts: true
+  # the fields in the prediction and reference to compute the F1 score on
+  fields:
+   - ecosystem_service_trends.Themenkomplex
+   - ecosystem_service_trends.ÖSL
+   - ecosystem_service_trends.Biodiv_Facette
+   - ecosystem_service_trends.Einfluss
+  # no subfields to ignore anymore
+  ignore_subfields: null
