@@ -46,21 +46,22 @@ cp .env.example .env         # then fill in the variables you need, see below
 
 ## Running the extraction pipeline
 
-### Prerequisite: host an LLM
+<a id="prerequisite-host-an-llm"></a>
 
-Prediction needs a running LLM backend, chosen per extractor config under
-[configs/extractor/llm/](/configs/extractor/llm/):
+### Prerequisite: choose an LLM backend
+
+Prediction uses an LLM backend, chosen per extractor config under [configs/extractor/llm/](/configs/extractor/llm/):
 
 - **OpenAI-hosted** (e.g. `gpt_5`) — just needs `OPENAI_API_KEY`, no separate hosting step.
 - **External vLLM server** (`*_in_process.yaml`'s sibling, an OpenAI-compatible endpoint you start yourself) —
     see [models/README.md](/models/README.md) and `run_with_llm.sh`.
 - **In-process vLLM** (`*_in_process.yaml`, model loaded inside the same process; used on the DFKI cluster via
     `run_in_process.sh`) — needs `HF_TOKEN` for gated models.
+- **Codex CLI** (`codex`) — needs an authenticated CLI and a Linux host supporting its filesystem sandbox. See [USAGE.md § Codex extraction backend](USAGE.md#codex-extraction-backend) for setup and prediction instructions.
 
 For a tiny CPU model and a prediction run on the four fixture PDFs, see [USAGE.md § CPU smoke test](USAGE.md#cpu-smoke-test-with-a-micro-llm).
 
-Follow [models/README.md § Quickstart](/models/README.md#quickstart) or
-[§ All-in-one run script](/models/README.md#all-in-one-run-script) to get one running.
+For vLLM, follow [models/README.md § Quickstart](/models/README.md#quickstart) or [§ All-in-one run script](/models/README.md#all-in-one-run-script) to get one running.
 
 ### Run a prediction
 
@@ -123,8 +124,7 @@ LLM, extractor, metric, or dataset means adding both a Python class/function and
     from the pydantic models in [src/kibad_llm/schema/types.py](/src/kibad_llm/schema/types.py), optionally with
     guided decoding), wrapped by `ChunkingExtractor` (splits long documents), `UnionExtractor` /
     `ConditionalUnionExtractor` (multiple passes, merged or chained), and `RepeatingExtractor` (majority vote).
-- **LLM backends** ([src/kibad_llm/llms/](/src/kibad_llm/llms/)) share one interface over the three hosting
-    options described above (`openai.py`, `openai_like_vllm.py`, `vllm_in_process.py`).
+- **LLM backends** ([src/kibad_llm/llms/](/src/kibad_llm/llms/)) share one interface across the backends described above (`openai.py`, `openai_like_vllm.py`, `vllm_in_process.py`, `codex.py`).
 - **Evaluation** ([src/kibad_llm/evaluate.py](/src/kibad_llm/evaluate.py)) pairs a `dataset` (predictions +
     references, matched on file name / record id, see [src/kibad_llm/dataset/](/src/kibad_llm/dataset/)) with a
     `metric` implementing `reset`/`update`/`compute` (see [src/kibad_llm/metrics/](/src/kibad_llm/metrics/)).

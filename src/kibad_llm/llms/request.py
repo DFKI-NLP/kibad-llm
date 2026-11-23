@@ -1,25 +1,45 @@
-"""Prepare extraction requests for LLM backends.
+"""Construct chat messages from templates and explicit field bindings.
+
+Read the system and user templates in order, identify their fields, and substitute
+the values the backend supplies. A prepared request combines the rendered turn with
+prior messages and carries any input artifacts chosen by the backend.
 
 Classes:
+    MissingBindingError: A template references a field without a supplied value.
     SimpleChatMessage: A role and template or rendered message text.
-    ExtractionPrompt: Templates and inputs for preparing an extraction request.
     PreparedRequest: Rendered messages and optional backend inputs.
 
 Functions:
+    get_message_templates: Read message templates and return the remaining prompt settings.
     build_chat_messages: Render role-tagged templates with explicit bindings.
-    prepare_inline_request: Prepare messages with the document embedded in the text.
+    get_template_placeholders: Find the binding names referenced by message templates.
+    prepare_template_request: Render with supplied bindings and prepend history.
 """
 
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
-import json
 from string import Formatter
 from typing import Any
 
 from llama_index.core.base.llms.types import MessageRole
 
-from kibad_llm.schema.description import build_schema_description
-from kibad_llm.utils.log import warn_once
+SYSTEM_MESSAGE_KEY = "system_message"
+USER_MESSAGE_KEY = "user_message"
+
+
+class MissingBindingError(ValueError):
+    """A template references a field without a supplied value.
+
+    Attributes:
+        placeholder: Name of the missing binding, without braces.
+        role: Role of the message whose template requires the binding.
+    """
+
+    def __init__(self, placeholder: str, role: MessageRole):
+        """Identify the missing binding and the message that requires it."""
+        super().__init__(f"No value for placeholder {placeholder!r} in {role.name} message.")
+        self.placeholder = placeholder
+        self.role = role
 
 
 @dataclass
@@ -35,42 +55,6 @@ class SimpleChatMessage:
 
     role: MessageRole
     content: str
-
-
-@dataclass(frozen=True)
-class ExtractionPrompt:
-    """Templates and inputs available when preparing an extraction request.
-
-    The schema is the one selected for the prompt. The extractor passes the
-    decoding schema separately when it executes the request.
-
-    Attributes:
-        document: Source document text to extract from, typically Markdown.
-        schema: JSON Schema available to the templates, or None when no schema is supplied.
-        system_message: System message template, or None to omit the system message.
-        user_message: User message template, or None to omit the user message.
-        history: Previously rendered messages to prepend to the current turn, in order.
-            Defaults to an empty sequence. Inline preparation leaves these messages unchanged.
-        document_placeholder: Template field name for the document, without braces.
-            Defaults to `document`.
-        schema_placeholder: Template field name for the schema serialized as JSON, without
-            braces. Defaults to `schema`.
-        schema_description_placeholder: Template field name for the human-readable schema
-            description, without braces. Defaults to `schema_description`.
-        schema_description_kwargs: Optional keyword arguments forwarded to
-            [`build_schema_description`][kibad_llm.schema.description.build_schema_description]
-            when a template uses the schema description placeholder.
-    """
-
-    document: str
-    schema: dict[str, Any] | None
-    system_message: str | None = None
-    user_message: str | None = None
-    history: Sequence[SimpleChatMessage] = ()
-    document_placeholder: str = "document"
-    schema_placeholder: str = "schema"
-    schema_description_placeholder: str = "schema_description"
-    schema_description_kwargs: dict[str, Any] | None = None
 
 
 @dataclass
@@ -91,6 +75,37 @@ class PreparedRequest:
     input_artifacts: dict[str, str] = field(default_factory=dict)
 
 
+def get_message_templates(
+    prompt_template: Mapping[str, Any],
+) -> tuple[list[SimpleChatMessage], dict[str, Any]]:
+    """Read the configured message templates and keep the remaining settings for the backend.
+
+    Args:
+        prompt_template: Settings for the current turn, including `system_message` or `user_message`.
+
+    Returns:
+        Role-tagged templates in conversation order and a copy of the remaining settings.
+        Messages whose text is absent or None are omitted.
+
+    Raises:
+        ValueError: Neither message has a template.
+    """
+    remaining_settings = dict(prompt_template)
+    templates = [
+        SimpleChatMessage(role=role, content=content)
+        for role, content in (
+            (MessageRole.SYSTEM, remaining_settings.pop(SYSTEM_MESSAGE_KEY, None)),
+            (MessageRole.USER, remaining_settings.pop(USER_MESSAGE_KEY, None)),
+        )
+        if content is not None
+    ]
+    if not templates:
+        raise ValueError(
+            f"At least one of {SYSTEM_MESSAGE_KEY} or {USER_MESSAGE_KEY} must be provided."
+        )
+    return templates, remaining_settings
+
+
 def build_chat_messages(
     templates: Sequence[SimpleChatMessage],
     bindings: Mapping[str, str],
@@ -109,102 +124,69 @@ def build_chat_messages(
         The input templates are not modified.
 
     Raises:
-        ValueError: A replacement field has no binding, with the field name and message role
-            included in the error, or a template contains invalid formatting syntax.
+        MissingBindingError: A replacement field has no binding, with the field name
+            and message role included in the error.
+        ValueError: A template contains invalid formatting syntax.
     """
     messages = []
     for template in templates:
         try:
             content = template.content.format_map(bindings)
         except KeyError as error:
-            raise ValueError(
-                f"No value for placeholder {error.args[0]!r} in {template.role.name} message."
-            ) from error
+            raise MissingBindingError(error.args[0], template.role) from error
         messages.append(SimpleChatMessage(role=template.role, content=content))
     return messages
 
 
-def prepare_inline_request(prompt: ExtractionPrompt) -> PreparedRequest:
-    """Render an extraction request that provides the document inline.
+def get_template_placeholders(templates: Sequence[SimpleChatMessage]) -> set[str]:
+    """Find the bindings needed to render the supplied message templates.
 
-    Render the configured system and user templates in that order, omitting templates
-    set to None. Bind the document text and, when referenced, the JSON Schema or its
-    human-readable description. Without history, at least one template must use the
-    document placeholder. Escaped placeholders such as `{{document}}` remain literal
-    text and do not satisfy that requirement.
+    Use Python format fields. Escaped braces remain literal. Attribute access, indexing,
+    conversions, and nested format specifications refer to their root binding names.
 
     Args:
-        prompt: Templates, document, optional schema, history, and placeholder settings
-            to use for this turn.
+        templates: The message templates for the current turn.
 
     Returns:
-        A request with the rendered current turn and the full conversation formed by
-        prepending unchanged history. No auxiliary input artifacts are created.
+        The set of referenced binding names.
 
     Raises:
-        ValueError: Both templates are None, a schema placeholder is used without a schema,
-            no document placeholder is used when history is empty, a template cannot be
-            rendered, or the schema cannot be expanded into a description.
-        TypeError: A referenced schema cannot be serialized as JSON, or
-            `schema_description_kwargs` contains unsupported arguments.
-
-    Warns:
-        UserWarning: Logs a warning once when a schema is supplied but neither schema
-            placeholder is used by the templates.
+        ValueError: A template contains invalid formatting syntax.
     """
-    templates = [
-        SimpleChatMessage(role=role, content=content)
-        for role, content in (
-            (MessageRole.SYSTEM, prompt.system_message),
-            (MessageRole.USER, prompt.user_message),
-        )
-        if content is not None
-    ]
-    if not templates:
-        raise ValueError("At least one of system_message or user_message must be provided.")
-
     formatter = Formatter()
-    roles_by_placeholder: dict[str, MessageRole] = {}
-    for template in templates:
-        for _, name, _, _ in formatter.parse(template.content):
+    placeholders: set[str] = set()
+    pending = [template.content for template in templates]
+    while pending:
+        for _, name, format_spec, _ in formatter.parse(pending.pop()):
             if name is not None:
-                roles_by_placeholder.setdefault(name, template.role)
+                placeholders.add(name.partition(".")[0].partition("[")[0])
+                if format_spec:
+                    pending.append(format_spec)
+    return placeholders
 
-    schema_description_role = roles_by_placeholder.get(prompt.schema_description_placeholder)
-    schema_role = roles_by_placeholder.get(prompt.schema_placeholder)
-    bindings = {}
-    if prompt.schema is None:
-        for role, description, placeholder in (
-            (schema_description_role, "schema description", prompt.schema_description_placeholder),
-            (schema_role, "JSON Schema", prompt.schema_placeholder),
-        ):
-            if role is not None:
-                raise ValueError(
-                    f"Schema must be provided if {role.name} message template requires "
-                    f"{description} (it contains '{{{placeholder}}}')."
-                )
-    else:
-        if schema_description_role is not None:
-            bindings[prompt.schema_description_placeholder] = build_schema_description(
-                schema=prompt.schema, **(prompt.schema_description_kwargs or {})
-            )
-        if schema_role is not None:
-            bindings[prompt.schema_placeholder] = json.dumps(prompt.schema, ensure_ascii=False)
-        if not bindings:
-            warn_once(
-                "Schema provided but message templates use neither schema placeholder "
-                f"('{{{prompt.schema_description_placeholder}}}' or '{{{prompt.schema_placeholder}}}')."
-            )
 
-    bindings[prompt.document_placeholder] = prompt.document
+def prepare_template_request(
+    templates: Sequence[SimpleChatMessage],
+    *,
+    bindings: Mapping[str, str],
+    history: Sequence[SimpleChatMessage] = (),
+) -> PreparedRequest:
+    """Build a request by rendering the current turn and prepending rendered history.
+
+    Args:
+        templates: Current message templates in their desired order.
+        bindings: All replacement values, keyed by field name without braces.
+        history: Previously rendered messages in order, copied into the request as supplied.
+
+    Returns:
+        The rendered current turn and full conversation. Backends can add input artifacts.
+
+    Raises:
+        MissingBindingError: A template references an unavailable binding.
+        ValueError: A template cannot be rendered with Python's formatting syntax.
+    """
     current_messages = build_chat_messages(templates, bindings)
-    if not prompt.history and prompt.document_placeholder not in roles_by_placeholder:
-        raise ValueError(
-            "At least one of the message templates must require the input text "
-            f"(they must contain '{{{prompt.document_placeholder}}}')."
-        )
-
     return PreparedRequest(
         current_messages=current_messages,
-        messages=[*prompt.history, *current_messages],
+        messages=[*history, *current_messages],
     )

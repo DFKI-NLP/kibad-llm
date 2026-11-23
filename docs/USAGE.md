@@ -13,9 +13,12 @@
     - [Scientific-name normalization](#scientific-name-normalization)
     - [Syncing Nextcloud PDFs with the cluster storage](#syncing-nextcloud-pdfs-with-the-cluster-storage)
 - [Information Extraction from PDFs](#information-extraction-from-pdfs)
-    - [Prerequisite: LLM Hosting](#prerequisite-llm-hosting)
+    - [Prerequisite: choose an LLM backend](#prerequisite-choose-an-llm-backend)
     - [Inference](#inference)
-    - [Schema descriptions in prompts](#schema-descriptions-in-prompts)
+        - [Codex extraction backend](#codex-extraction-backend)
+    - [Prompt templates and schema descriptions](#prompt-templates-and-schema-descriptions)
+        - [Codex file inputs](#codex-file-inputs)
+    - [Prediction confidence](#prediction-confidence)
     - [CPU smoke test with a micro LLM](#cpu-smoke-test-with-a-micro-llm)
     - [Token usage in prediction results](#token-usage-in-prediction-results)
     - [Evaluation](#evaluation)
@@ -142,9 +145,11 @@ uv run -m kibad_llm.data_integration.synch_nextcloud_with_cluster
 
 ## Information Extraction from PDFs
 
-### Prerequisite: LLM Hosting
+<a id="prerequisite-llm-hosting"></a>
 
-Follow the instructions [here for a quickstart](/models/README.md#quickstart), [here for an all-in-one script](/models/README.md#all-in-one-run-script) or [here for general instructions on uv and the cluster](/models/README.md#the-two-ways-to-use-uv-on-pegasus).
+### Prerequisite: choose an LLM backend
+
+Choose a backend through the extractor configuration under [configs/extractor/llm](/configs/extractor/llm). For vLLM, follow the instructions [here for a quickstart](/models/README.md#quickstart), [here for an all-in-one script](/models/README.md#all-in-one-run-script) or [here for general instructions on uv and the cluster](/models/README.md#the-two-ways-to-use-uv-on-pegasus). OpenAI-hosted models use `OPENAI_API_KEY`; the [Codex backend](#codex-extraction-backend) uses a separately installed CLI.
 
 ### Inference
 
@@ -189,9 +194,40 @@ Use this to send more than one simultaneous request to vLLM.
 
 </details>
 
-### Schema descriptions in prompts
+#### Codex extraction backend
 
-Prompt templates containing `{schema_description}` use `build_schema_description` from [schema/description.py](/src/kibad_llm/schema/description.py).
+Install Codex CLI on a Linux host that supports its restricted filesystem sandbox. The backend checks `CODEX_API_KEY` first, then `OPENAI_API_KEY`, including a project key loaded from `.env`. The first available key selects the API project for the run, even if the host also has a saved Codex login.
+
+With both keys unset, the backend uses the file-backed login from `$CODEX_HOME/auth.json`, which defaults to `~/.codex/auth.json`. For ChatGPT sign-in, use a dedicated, writable `CODEX_HOME` for both `codex login` and extraction. The backend writes refreshed credentials back to that file and serializes extraction calls that share it. Reserve that login for extraction to avoid concurrent refreshes by other Codex processes.
+
+Choose an explicit model available to the selected credential with `extractor.llm.model=MODEL`. The default model is an alias. Hosted inference and agent execution can vary across reruns.
+
+```bash
+uv run -m kibad_llm.predict \
+  name=codex_fixture \
+  experiment/predict=faktencheck_core_fields_schema_with_evidence_codex \
+  pdf_directory=tests/fixtures/pdfs
+```
+
+The preset stages the source Markdown and the evidence-adjusted JSON Schema as files. See [Codex file inputs](#codex-file-inputs) to reference them in a custom prompt. You can override `extractor.llm.reasoning_effort` (default `high`) and `extractor.llm.timeout` (default 600 seconds).
+
+The preset sets `extractor.use_guided_decoding=false`. Note that, per default, the extractor validates the response after inference (`extractor.validate_with_schema=true`). Keep `extractor.request_parameters` empty. Codex rejects guided decoding and additional request parameters before starting the CLI.
+
+Each call launches a fresh ephemeral Codex process in a document workspace. Shell commands have a restricted filesystem profile and no network access. Web search, apps, and plugins are disabled. The backend checks workspace access before inference. If sandboxing is unavailable, the extraction records an error. Use a job-local Hydra run directory on shared filesystems to keep temporary runtime state off shared storage.
+
+The Hydra run directory contains prompts, final responses, execution events, and errors. Keep it with the predictions to retain the execution diagnostics. See [Token usage in prediction results](#token-usage-in-prediction-results) for the usage data recorded in the predictions.
+
+<a id="schema-descriptions-in-prompts"></a>
+
+### Prompt templates and schema descriptions
+
+Put message text in `prompt_template` under `system_message` or `user_message`. Use `{schema}` for inline JSON Schema and `{schema_description}` for a readable description. Template fields can appear in either message. Unrecognized settings in an inline `prompt_template` raise `TypeError`.
+
+OpenAI and vLLM prompts must reference `{document}` for inline source text on the first turn. Follow-ups with history can omit it. See [Codex file inputs](#codex-file-inputs) for how to attach the source document in Codex prompts.
+
+Schema fields are optional even when the extractor uses a schema for guided decoding or output validation. Referencing a schema field requires a schema. When the schema is missing, the backend reports which field requested it. An unknown field raises `MissingBindingError` during rendering.
+
+The readable description is generated by [build_schema_description](/src/kibad_llm/schema/description.py).
 
 Descriptions are assigned a role before formatting:
 
@@ -203,28 +239,45 @@ Descriptions are assigned a role before formatting:
 
 The same annotation is rendered once per field occurrence. Independent annotations with identical wording are preserved, and each use of a shared type retains its documentation. Evidence wrapping keeps field instructions on the wrapper; entering its `content` and `evidence_anchor` properties does not repeat those instructions.
 
-When `adjust_schema_for_evidence_detection` is enabled, the output schema wraps each value with an evidence anchor.
-With evidence wrapping enabled, the prompt uses the wrapped schema by default (`adjust_schema_description_for_evidence_detection: true`).
+The `include_evidence` option wraps extracted values with an evidence anchor. The bundled evidence config sets `use_wrapped_schema_in_prompt: true` so the model sees the wrapped schema in its prompt.
 
-Pass formatting options through `schema_description_kwargs` when building messages. `include_field_descriptions=False` hides property documentation completely; `type_description_prefix=None` hides root/type documentation; `choices_description_prefix=None` hides enum documentation. These options work at every nesting level. `choices_prefix=None` hides enum values independently of their documentation. The deprecated `include_type_descriptions=False` remains supported.
+When migrating an extractor config, Hydra override, or Python call, rename `adjust_schema_for_evidence_detection` to `include_evidence` and `adjust_schema_description_for_evidence_detection` to `use_wrapped_schema_in_prompt`. Keep the same boolean values. Use the recorded code revision to replay older experiments verbatim.
+
+Set `schema_description_kwargs` inside `extractor.prompt_template` to configure the readable description. `include_field_descriptions=False` hides property documentation completely; `type_description_prefix=None` hides root/type documentation; `choices_description_prefix=None` hides enum documentation. These options work at every nesting level. `choices_prefix=None` hides enum values independently of their documentation. The deprecated `include_type_descriptions=False` remains supported.
 
 This is a prompt summary, not a complete JSON Schema validator. Local references, inline objects, arrays, nullable unions, and enum compositions are supported. Enum unions combine choices and enum intersections retain their common choices. General structural unions display a representative non-null branch. Unresolved or recursive references, list-valued `type`, and multi-branch structural `allOf` raise `ValueError` instead of producing an incomplete or infinitely recursive description. Cardinality retains the existing convention: arrays use `0..*`; other fields use `0..1` if a default is present, otherwise `1`.
 
-To include the full JSON Schema in a prompt, use `{schema}` in the system or user message.
-A prompt template can include either schema representation or both. To rename the JSON placeholder,
-set `schema_placeholder` in the prompt template and use the corresponding name in the message:
+This template includes the full JSON Schema.
 
 ```yaml
 prompt_template:
   system_message: |
     Extract the requested information and return JSON matching this schema.
-    {output_schema}
+    {schema}
   user_message: "{document}"
-  schema_placeholder: output_schema
 ```
 
-Both the full schema and the readable description follow `adjust_schema_description_for_evidence_detection`.
-Both placeholders affect the prompt independently of whether guided decoding is enabled.
+`use_wrapped_schema_in_prompt` selects the schema for `{schema}`, `{schema_description}`, and Codex's `{schema_filename}` independently of guided decoding. Set it to `false` to use the original schema in templates that explain the wrappers themselves.
+
+#### Codex file inputs
+
+With Codex, use `{document_filename}` to stage the source Markdown as `input.md` and `{schema_filename}` to stage the prompt schema as `schema.json`. Both filename fields are optional on every turn, including the first. Each call starts with a fresh workspace, so reference a filename field again in any follow-up that needs the file. Only replacement fields request files. Literal filenames and escaped braces are treated as text.
+
+```yaml
+extractor:
+  prompt_template:
+    user_message: |
+      Lies das Markdown-Dokument aus `{document_filename}`.
+      Verwende das JSON-Schema aus `{schema_filename}`.
+```
+
+### Prediction confidence
+
+Add `_with_confidence` to an extractor config's Hydra defaults to request an integer score from 1 to 5 for each non-null extracted value. The score expresses how sure the model is that its extracted value is correct. With a bundled extractor, pass `+extractor.include_confidence=true` on the command line. For organism trends, select `extractor/schema=organism_trends`. Set `extractor.include_evidence=false` for scores alone.
+
+Select `extractor/prompt_template=default_with_confidence` to include the full five-level rubric once per turn. Customize the short field description by setting `confidence_description` in the helper. With a bundled extractor, add custom wording using `+extractor.confidence_description`.
+
+For example, a model may return `{"content": "negative", "confidence": 4}` for a trend direction. The JSONL stores these estimates in `structured_with_metadata` for the simple extractor and in `structured_with_metadata_list` for multi-call extractors using the default `return_as_list`. Each score belongs to its individual model response. The `structured` field contains the extraction values used for evaluation.
 
 ### CPU smoke test with a micro LLM
 
@@ -283,6 +336,8 @@ In-process vLLM records `prompt_tokens`, `completion_tokens`, and `total_tokens`
 token IDs, plus `prompt_tokens_details.cached_tokens` when available. Completion tokens include
 reasoning and all generated candidates. If prompt token IDs are unavailable, prompt and total
 counts are omitted.
+
+For Codex, `backend_metadata.usage` contains the CLI's individual usage reports in event order. Each list entry preserves the CLI's native fields without calculating totals.
 
 Metadata is retained even if response parsing, schema validation, or reasoning extraction fails.
 It is `null` when there is no response or the backend does not report usage; missing counts are
