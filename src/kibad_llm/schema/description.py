@@ -169,6 +169,12 @@ class _SchemaInterpreter:
             (value for value in non_null if value.type_name),
             non_null[0] if non_null else alternatives[0],
         )
+        structural = [
+            value for value in alternatives if value.fields or value.items or value.variants
+        ]
+        # Checked before combining choices: a branch carrying choices (enum/const) may also be structural.
+        if keyword == "allOf" and len(structural) > 1:
+            raise ValueError("Schema descriptions do not support multi-branch structural allOf.")
         enums = tuple(value for value in non_null if value.choices is not None)
         if enums and (keyword == "allOf" or len(enums) == len(non_null)):
             choices = list(enums[0].choices or ())
@@ -185,13 +191,6 @@ class _SchemaInterpreter:
                 ),
             )
         if keyword == "allOf":
-            structural = [
-                value for value in alternatives if value.fields or value.items or value.variants
-            ]
-            if len(structural) > 1:
-                raise ValueError(
-                    "Schema descriptions do not support multi-branch structural allOf."
-                )
             return replace(
                 structural[0] if structural else selected,
                 descriptions=_unique_descriptions(
