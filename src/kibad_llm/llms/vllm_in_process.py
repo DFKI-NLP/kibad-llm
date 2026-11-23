@@ -206,7 +206,8 @@ class VllmInProcess(LLM):
                 [`SimpleChatMessage`][kibad_llm.llms.base.SimpleChatMessage]s to pass to the
                 LLM query.
             json_schema: Schema the LLM output must comply with.
-                None means free-form output. - must be passed by keyword
+                None means free-form output, unless `structured_outputs` is set, which will still
+                reach `sampling_params`. - must be passed by keyword
 
         Keyword Args:
             **request_kwargs (Any): Per-request kwargs, overriding the defaults set at init.
