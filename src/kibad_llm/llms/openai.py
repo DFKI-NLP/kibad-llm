@@ -192,7 +192,7 @@ class OpenAI(LLM):
         Args:
             messages: Message history to pass to the LLM query.
             json_schema: Schema the LLM output must comply with.
-                None means free-form output. - must be passed by keyword
+                None means free-form output, unless text.format is set. - must be passed by keyword
 
         Keyword Args:
             seed (int): Ignored with a warning.
