@@ -235,6 +235,8 @@ Descriptions are assigned a role before formatting:
 - Root and nested type descriptions appear on `Beschreibung:` lines. Array item descriptions and non-null branch descriptions belong to their respective types.
 - Enum type descriptions, such as those in referenced `$defs`, appear under `Hinweise zu den Werten:`.
 
+`anyOf`/`oneOf` unions whose non-null branches are all objects are rendered as numbered variants (the label before the number is set by the `variant_prefix` argument of `build_schema_description`), also at the root and when nested. Fields that render identically in all variants are listed once; the remaining fields are listed per variant together with the variant's description. A `const` (e.g. a `Literal` discriminator) is shown as a single allowed value. Unions that mix objects with other types still show only the first typed non-null branch, and `allOf` combined with an object union is not supported.
+
 The same annotation is rendered once per field occurrence. Independent annotations with identical wording are preserved, and each use of a shared type retains its documentation. Evidence wrapping keeps field instructions on the wrapper; entering its `content` and `evidence_anchor` properties does not repeat those instructions.
 
 The `include_evidence` option wraps extracted values with an evidence anchor. The bundled evidence config sets `use_wrapped_schema_in_prompt: true` so the model sees the wrapped schema in its prompt.
