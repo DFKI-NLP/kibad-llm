@@ -126,6 +126,8 @@ class _SchemaInterpreter:
         choices = value.choices
         if isinstance(node.get("enum"), list):
             choices = tuple(str(choice) for choice in node["enum"])
+        elif "const" in node:
+            choices = (str(node["const"]),)
         if own_description and choices is not None:
             descriptions = (replace(own_description, role="choices"),)
 
@@ -157,9 +159,12 @@ class _SchemaInterpreter:
         object intersections require merging constraints and are unsupported.
         """
         non_null = tuple(value for value in alternatives if value.type_name != "null")
-        object_branches = tuple(value for value in non_null if value.fields)
-        if keyword != "allOf" and len(object_branches) > 1:
-            return _Value(type_name="object", variants=object_branches)
+        if (
+            keyword != "allOf"
+            and len(non_null) > 1
+            and all(value.type_name == "object" for value in non_null)
+        ):
+            return _Value(type_name="object", variants=non_null)
         selected = next(
             (value for value in non_null if value.type_name),
             non_null[0] if non_null else alternatives[0],
@@ -180,7 +185,9 @@ class _SchemaInterpreter:
                 ),
             )
         if keyword == "allOf":
-            structural = [value for value in alternatives if value.fields or value.items]
+            structural = [
+                value for value in alternatives if value.fields or value.items or value.variants
+            ]
             if len(structural) > 1:
                 raise ValueError(
                     "Schema descriptions do not support multi-branch structural allOf."
@@ -289,6 +296,7 @@ def _render_variants(
                 tuple(f for f in variant.fields if f.name not in shared), options, indent + 1
             )
         )
+        lines.extend(_render_variants(variant.variants, options, indent + 1))
     return lines
 
 
@@ -320,10 +328,11 @@ def build_schema_description(
     schema locations is preserved.
 
     Local references, inline objects, arrays, nullable unions, and enum compositions
-    are supported. anyOf/oneOf unions of several object types are rendered as numbered
-    variants: fields that render identically in all variants are shown once, the others per
-    variant together with its documentation. Other structural unions display the first typed
-    non-null branch.
+    are supported. anyOf/oneOf unions whose non-null branches are all objects (also at the
+    root) are rendered as numbered variants, including objects without properties and nested
+    unions: fields that render identically in all variants are shown once, the others per
+    variant together with its documentation. A `const` is shown as a single choice. Other
+    structural unions, e.g. mixing objects with strings, display the first typed non-null branch.
     Enum unions combine choices; enum intersections keep their common choices.
     Cardinality follows the existing display convention: arrays use `0..*`, other
     fields use `0..1` when they have a default, otherwise `1`. This is a prompt
@@ -352,7 +361,8 @@ def build_schema_description(
 
     Raises:
         ValueError: A reference is unresolved or recursive, a type is a list, or a
-            structural allOf requires merging multiple branches.
+            structural allOf (including one containing an object union) requires merging
+            multiple branches.
     """
     if not include_type_descriptions:
         type_description_prefix = None
@@ -381,4 +391,5 @@ def build_schema_description(
     if header:
         lines.append(header)
     lines.extend(_render_fields(value.fields, options, indent))
+    lines.extend(_render_variants(value.variants, options, indent))
     return "\n".join(lines)
