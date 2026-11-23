@@ -420,6 +420,20 @@ def test_all_of_with_object_union_is_unsupported():
         build_schema_description(schema)
 
 
+def test_all_of_with_object_union_and_const_is_unsupported():
+    """A const on one branch must not bypass the structural allOf guard."""
+    schema = _schema(
+        {
+            "allOf": [
+                {**_object(c="x"), "const": {"a": "x", "c": "y"}},
+                {"anyOf": [_object(a="x"), _object(b="x")]},
+            ]
+        }
+    )
+    with pytest.raises(ValueError, match="structural allOf"):
+        build_schema_description(schema)
+
+
 def test_nested_object_union_keeps_all_branches():
     """Branches of an inner union are rendered below their variant."""
     schema = _schema(
