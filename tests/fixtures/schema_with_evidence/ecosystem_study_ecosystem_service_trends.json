@@ -69,24 +69,6 @@
           "additionalProperties": false,
           "description": "Zu welchem Themenkomplex gehört die gewählte Ökosystemleistung (ÖSL)?"
         },
-        "Themenkomplex": {
-          "type": "object",
-          "properties": {
-            "content": {
-              "$ref": "#/$defs/ThemenkomplexEnum"
-            },
-            "evidence_anchor": {
-              "type": "string",
-              "description": "Verbatim excerpt from the source text supporting the extracted content."
-            }
-          },
-          "required": [
-            "content",
-            "evidence_anchor"
-          ],
-          "additionalProperties": false,
-          "description": "Zu welchem Themenkomplex gehört die gewählte Ökosystemleistung (ÖSL)?"
-        },
         "Biodiv_Facette": {
           "type": "object",
           "properties": {
@@ -429,6 +411,7 @@
       "type": "object"
     },
     "EinflussEnum": {
+      "description": "ja = die Facette hat einen Einfluss auf die ÖSL/ÖSF (unabhängig von dessen Richtung), nein = kein\nEinfluss bzw. kein nachweisbarer Unterschied, pos = die ÖSL/ÖSF nimmt mit höherer Ausprägung der Facette\nzu, neg = sie nimmt ab, neu = kein Einfluss bzw. kein nachweisbarer Zusammenhang.",
       "enum": [
         "ja",
         "neg",

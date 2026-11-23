@@ -1,5 +1,9 @@
-# Prompt template for extracting biodiversity -> ecosystem service (ÖSL) relations, see
-# `EcosystemServiceFields` in src/kibad_llm/schema/types.py.
+# Prompt template for extracting biodiversity -> ecosystem service (ÖSL) relations, see the variants of
+# `EcosystemServiceFieldsWithoutHabitat` and `EcosystemServiceFields` in src/kibad_llm/schema/types.py.
+#
+# The habitat wording defaults to the forest dev set. For other habitats, set the optional root-level keys
+# `ecosystem_service_prompt.habitat_scope` and `ecosystem_service_prompt.habitat_rule`, see
+# configs/experiment/predict/ecosystemservice_trends_all_habitats.yaml.
 
 defaults:
   - default
@@ -11,7 +15,7 @@ system_message: |
   ## Aufgabe
 
   Der Text ist eine wissenschaftliche Studie oder ein Teil davon (z.B. ein einzelner Abschnitt) zu Biodiversität
-  und/oder Ökosystemleistungen im Lebensraum 'Wald', meist mit Bezug auf eine Gegend in Deutschland, Gesamtdeutschland
+  und/oder Ökosystemleistungen ${oc.select:ecosystem_service_prompt.habitat_scope,"im Lebensraum 'Wald'"}, meist mit Bezug auf eine Gegend in Deutschland, Gesamtdeutschland
   oder auf Nachbarländer. Prüfe, ob der Text empirisch untersucht, ob eine Biodiversitätsfacette einen Einfluss auf
   eine Ökosystemleistung oder Ökosystemfunktion (ÖSL/ÖSF) hat. Berücksichtige nur, was in diesem Text steht.
 
@@ -39,7 +43,7 @@ system_message: |
   - Enthält der Text keine solche Beziehung, gib eine leere Liste zurück. Erfinde keine Beziehungen.
   - Jede Beziehung bildet genau einen Eintrag in der Liste. Ein Text kann mehrere Beziehungen enthalten (z.B. mehrere
     ÖSL/ÖSF oder mehrere Biodiversitätsfacetten). Lege für jede untersuchte Kombination aus ÖSL/ÖSF und
-    Biodiversitätsfacette genau einen Eintrag an, nicht mehr.
+    Biodiversitätsfacette genau einen Eintrag an, nicht mehr.${oc.select:ecosystem_service_prompt.habitat_rule,""}
   - Fasse zusammen: Verschiedene Messgrößen, Arten, Standorte, Behandlungen oder Zeitpunkte, die derselben ÖSL/ÖSF und
     derselben Biodiversitätsfacette zugeordnet werden, bilden zusammen nur einen Eintrag (z.B. sterile und nicht
     sterile Proben sind keine eigenen Beziehungen). Erfasse nur die Hauptbeziehungen der Studie, wie sie typischerweise
@@ -247,9 +251,9 @@ system_message: |
   Gib die Antworten ("content") auf Deutsch, auch wenn der Text auf Englisch ist.
   Wenn Antwortmöglichkeiten nach einer Frage gegeben sind, wähle nur aus den durch Semikolon getrennten
   Antwortmöglichkeiten. Extrahiere dabei nur, was auch im Text steht, konzentriere dich daher auf die
-  Informationen, die du sicher identifizieren und auch belegen kannst. Für nicht im Text vorhandene
-  Informationen lasse die entsprechenden Antwortfelder leer. Wenn eine Antwortmöglichkeit zutrifft, genügt es,
-  sie einmal zu nennen, wiederhole sie also nicht mehrfach.
+  Informationen, die du sicher identifizieren und auch belegen kannst. Werden keine Arten genannt, lasse das
+  optionale Feld 'Arten' leer. Fehlt eine Angabe für ein Pflichtfeld, lasse die gesamte Beziehung weg. Wenn eine
+  Antwortmöglichkeit zutrifft, genügt es, sie einmal zu nennen, wiederhole sie also nicht mehrfach.
   Beachte jedoch auch die Angaben zur Kardinalität jedes Feldes.
 
   Erzeuge die Antwort in validem JSON-Format (nicht embedded Markdown!). Keine zusätzlichen Felder, keine Erklärungen.

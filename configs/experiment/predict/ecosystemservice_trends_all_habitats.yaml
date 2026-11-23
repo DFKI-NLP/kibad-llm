@@ -1,0 +1,18 @@
+# @package _global_
+
+# Like ecosystemservice_trends, but for documents from several habitats: uses the base schema
+# EcosystemStudyEcosystemServiceTrends (adds Lebensraum_Gruppiert) and adapts the habitat wording of the prompt.
+# Evaluating these predictions requires references that contain Lebensraum_Gruppiert; the forest dev set
+# (configs/dataset/references/ecosystem_service_wald.yaml) does not.
+
+# To execute this experiment run:
+# python -m kibad_llm.predict experiment/predict=ecosystemservice_trends_all_habitats
+
+defaults:
+  - ecosystemservice_trends
+  - override /extractor/schema: ecosystem_service
+
+ecosystem_service_prompt:
+  habitat_scope: "in einem bzw. mehreren Lebensräumen"
+  # appended directly to the rule about one entry per relationship, hence the leading space
+  habitat_rule: " Betrifft eine Beziehung mehrere Lebensräume, lege für jeden Lebensraum einen eigenen Eintrag an."

@@ -236,6 +236,10 @@ class TransformationPotentialEnum(str, Enum):
 
 
 class EinflussEnum(str, Enum):
+    """ja = die Facette hat einen Einfluss auf die ÖSL/ÖSF (unabhängig von dessen Richtung), nein = kein
+    Einfluss bzw. kein nachweisbarer Unterschied, pos = die ÖSL/ÖSF nimmt mit höherer Ausprägung der Facette
+    zu, neg = sie nimmt ab, neu = kein Einfluss bzw. kein nachweisbarer Zusammenhang."""
+
     JA = "ja"
     NEG = "neg"
     NEIN = "nein"
@@ -252,7 +256,7 @@ class ThemenkomplexEnum(str, Enum):
     STABILITAET_UND_RESILIENZ = "Stabilität und Resilienz"
 
 
-# Example ÖSL/ÖSF of the three Themenkomplexe as listed in the "Themenkomplexe" section of
+# Allowed ÖSL/ÖSF of the three Themenkomplexe as listed in the "Themenkomplexe" section of
 # configs/extractor/prompt_template/ecosystem_service.yaml. Abbreviated compounds are expanded (e.g.
 # "Dürre-/Trockenresistenz, -resilienz und -erholung" -> "Dürreresistenz", ..., "Trockenerholung"),
 # while items joined by " / " (e.g. "Wissen / Kenntnis") denote a single ÖSL and are kept as one value.
@@ -332,7 +336,7 @@ class BiodiversityFacetEnum(str, Enum):
 # The facets are split into three groups by the kind of predictor they are in the reference data
 # (data/interim/ecosystem_services/wald_devset_processed.csv): categorical facets almost always have
 # Einfluss ja/nein, gradient facets always pos/neg/neu, the other facets both. The groups are used to
-# constrain Einfluss by Biodiv_Facette via guided decoding (see EcosystemServiceFieldsWithoutHabitat).
+# constrain Einfluss by Biodiv_Facette via guided decoding (see EcosystemServiceFieldsCategoricalWithoutHabitat and its siblings).
 class CategoricalBiodiversityFacetEnum(str, Enum):
     """Facetten, die als Kategorien (Identität bzw. Zusammensetzung) verglichen werden."""
 
@@ -1621,7 +1625,7 @@ class EcosystemServiceFieldsWithoutHabitat(CompoundFeature):
     # grouping of "ÖSL" (in the forest reference it is fully determined by it), but it is still extracted
     # as its own field. It comes after "ÖSL", so that the model picks the ÖSL first and then only needs
     # to look up its Themenkomplex. "ÖSL" is free text in the reference data; here it is restricted to the
-    # examples from the prompt (ÖSLEnum). "Lebensraum_Gruppiert" is only part of the base schema
+    # values listed in the prompt (ÖSLEnum). "Lebensraum_Gruppiert" is only part of the base schema
     # (EcosystemServiceFields), since the habitat is fixed by the data set here (e.g. "Wald", see
     # configs/dataset/references/ecosystem_service_wald.yaml).
     # ÖSL, Biodiv_Facette and Einfluss are single-valued and required per relationship (every row

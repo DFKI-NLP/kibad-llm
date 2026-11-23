@@ -2,7 +2,10 @@
 
 # This experiment uses the schema EcosystemStudyEcosystemServiceTrendsWithoutHabitat to extract relationships between
 # biodiversity and ecosystem services (forest dev set) from Markdown documents, using chunking and evidence detection.
-# For other habitats, use the base schema extractor/schema=ecosystem_service (adds Lebensraum_Gruppiert).
+# For documents from several habitats, use experiment/predict=ecosystemservice_trends_all_habitats. For a single other
+# habitat, keep this experiment and set the prompt wording, e.g.:
+# python -m kibad_llm.predict experiment/predict=ecosystemservice_trends \
+#   '+ecosystem_service_prompt.habitat_scope="im Lebensraum Urbane Räume"'
 
 # To execute this experiment run:
 # python -m kibad_llm.predict experiment/predict=ecosystemservice_trends

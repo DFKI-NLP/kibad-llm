@@ -35,5 +35,5 @@ Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
       - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Funktionelle Diversität; Genetische Diversität | Hinweise zu den Werten: Facetten, die je nach Studie kategorial oder als Gradient untersucht werden.
       - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
     - Einfluss: Was ist der in der Studie gemessene Einfluss der Biodiversitätsfacette (Biodiv_Facette) auf die Ökosystemleistung bzw. -funktion (ÖSL/ÖSF)? Die Richtung bezieht sich auf die ÖSL/ÖSF. | Kardinalität: 1 | Typ: object
-      - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: ja; neg; nein; neu; pos
+      - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: ja; neg; nein; neu; pos | Hinweise zu den Werten: ja = die Facette hat einen Einfluss auf die ÖSL/ÖSF (unabhängig von dessen Richtung), nein = kein Einfluss bzw. kein nachweisbarer Unterschied, pos = die ÖSL/ÖSF nimmt mit höherer Ausprägung der Facette zu, neg = sie nimmt ab, neu = kein Einfluss bzw. kein nachweisbarer Zusammenhang.
       - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string

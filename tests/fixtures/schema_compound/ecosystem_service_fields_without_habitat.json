@@ -15,6 +15,7 @@
       "type": "string"
     },
     "EinflussEnum": {
+      "description": "ja = die Facette hat einen Einfluss auf die ÖSL/ÖSF (unabhängig von dessen Richtung), nein = kein\nEinfluss bzw. kein nachweisbarer Unterschied, pos = die ÖSL/ÖSF nimmt mit höherer Ausprägung der Facette\nzu, neg = sie nimmt ab, neu = kein Einfluss bzw. kein nachweisbarer Zusammenhang.",
       "enum": [
         "ja",
         "neg",
@@ -106,10 +107,6 @@
     "ÖSL": {
       "$ref": "#/$defs/_SLEnum",
       "description": "Welche der folgenden Ökosystemleistungen wird in der Studie betrachtet? Gemeint ist die allgemeine Ökosystemleistung bzw. -funktion, nicht die konkrete Messgröße."
-    },
-    "Themenkomplex": {
-      "$ref": "#/$defs/ThemenkomplexEnum",
-      "description": "Zu welchem Themenkomplex gehört die gewählte Ökosystemleistung (ÖSL)?"
     },
     "Themenkomplex": {
       "$ref": "#/$defs/ThemenkomplexEnum",
