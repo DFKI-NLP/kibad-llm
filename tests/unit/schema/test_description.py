@@ -190,6 +190,66 @@ def test_multi_branch_structural_allof_fails_explicitly():
         build_schema_description(schema)
 
 
+@pytest.mark.parametrize("keyword", ["anyOf", "oneOf"])
+@pytest.mark.parametrize("evidence", [False, True])
+def test_object_union_items_are_rendered_as_variants(keyword, evidence):
+    """Fields shared by all object branches appear once; each branch shows its own choices."""
+
+    def variant(doc: str, choices: list[str]) -> dict[str, Any]:
+        """Build an object branch with one enum field."""
+        return {
+            "type": "object",
+            "description": doc,
+            "properties": {
+                "name": {"type": "string", "description": "Shared field."},
+                "kind": {"type": "string", "enum": choices},
+            },
+        }
+
+    schema = _schema(
+        {
+            "type": "array",
+            "description": "Field instructions.",
+            "items": {keyword: [{"$ref": "#/$defs/First"}, {"$ref": "#/$defs/Second"}]},
+        }
+    )
+    schema["$defs"] = {
+        "First": variant("First doc.", ["A"]),
+        "Second": variant("Second doc.", ["B"]),
+    }
+    if evidence:
+        schema = wrap_terminals_with_metadata(schema, METADATA_SCHEMA_WITH_EVIDENCE)
+    output = build_schema_description(
+        schema, header=None, cardinality_prefix=None, type_prefix=None
+    )
+    if not evidence:
+        assert output == "\n".join(
+            [
+                "- example: Field instructions.",
+                "  - name: Shared field.",
+                "  - Variante 1:",
+                "    Beschreibung: First doc.",
+                "    - kind: | Zulässige Werte: A",
+                "  - Variante 2:",
+                "    Beschreibung: Second doc.",
+                "    - kind: | Zulässige Werte: B",
+            ]
+        )
+    else:
+        lines = output.split("\n")
+        # wrapped fields keep their content/evidence_anchor children below the field line
+        assert lines.count("  - name: Shared field.") == 1
+        positions = [
+            lines.index(line)
+            for line in ("  - name: Shared field.", "  - Variante 1:", "  - Variante 2:")
+        ]
+        choice_a, choice_b = (
+            next(i for i, line in enumerate(lines) if f"Zulässige Werte: {c}" in line)
+            for c in "AB"
+        )
+        assert positions[0] < positions[1] < choice_a < positions[2] < choice_b
+
+
 def test_shared_enum_documentation_is_repeated_per_field_occurrence():
     """Each use of a shared enum retains its documentation independently."""
     schema = {
@@ -313,3 +373,110 @@ def test_recursive_reference_fails_explicitly():
     """Recursive schemas produce a useful error rather than infinite expansion."""
     with pytest.raises(ValueError, match="Recursive schema"):
         build_schema_description(_schema({"$ref": "#"}))
+
+
+def _object(**properties: str) -> dict[str, Any]:
+    """Build an object branch whose properties are all required strings."""
+    return {
+        "type": "object",
+        "properties": {name: {"type": "string"} for name in properties},
+        "required": list(properties),
+    }
+
+
+def _plain(schema: dict[str, Any]) -> str:
+    """Render without header, cardinality and type to keep expectations short."""
+    return build_schema_description(schema, header=None, cardinality_prefix=None, type_prefix=None)
+
+
+def test_root_object_union_is_rendered_as_variants():
+    """A root union has no field to attach its variants to, so they are rendered at the root."""
+    output = _plain({"oneOf": [_object(left="x"), _object(right="x")]})
+    assert output == "\n".join(["- Variante 1:", "  - left:", "- Variante 2:", "  - right:"])
+
+
+def test_mixed_union_keeps_documented_fallback():
+    """Objects mixed with an enum keep showing the first typed branch, as on main."""
+    schema = _schema(
+        {"anyOf": [{"type": "string", "enum": ["unknown"]}, _object(a="x"), _object(b="x")]}
+    )
+    assert _plain(schema) == "- example: | Zulässige Werte: unknown"
+
+
+def test_object_without_properties_is_a_variant():
+    """An empty object is a valid branch and must not disappear from the union."""
+    schema = _schema(
+        {"anyOf": [_object(a="x"), {"type": "object", "additionalProperties": False}]}
+    )
+    assert _plain(schema) == "\n".join(
+        ["- example:", "  - Variante 1:", "    - a:", "  - Variante 2:"]
+    )
+
+
+def test_all_of_with_object_union_is_unsupported():
+    """Intersecting a union with another object must not silently drop the union."""
+    schema = _schema({"allOf": [{"anyOf": [_object(a="x"), _object(b="x")]}, _object(c="x")]})
+    with pytest.raises(ValueError, match="structural allOf"):
+        build_schema_description(schema)
+
+
+def test_all_of_with_object_union_and_const_is_unsupported():
+    """A const on one branch must not bypass the structural allOf guard."""
+    schema = _schema(
+        {
+            "allOf": [
+                {**_object(c="x"), "const": {"a": "x", "c": "y"}},
+                {"anyOf": [_object(a="x"), _object(b="x")]},
+            ]
+        }
+    )
+    with pytest.raises(ValueError, match="structural allOf"):
+        build_schema_description(schema)
+
+
+def test_nested_object_union_keeps_all_branches():
+    """Branches of an inner union are rendered below their variant."""
+    schema = _schema(
+        {"anyOf": [{"oneOf": [_object(a="x"), _object(b="x")]}, _object(c="x"), _object(d="x")]}
+    )
+    output = _plain(schema)
+    assert output == "\n".join(
+        [
+            "- example:",
+            "  - Variante 1:",
+            "    - Variante 1:",
+            "      - a:",
+            "    - Variante 2:",
+            "      - b:",
+            "  - Variante 2:",
+            "    - c:",
+            "  - Variante 3:",
+            "    - d:",
+        ]
+    )
+
+
+def test_const_discriminator_is_shown_as_choice():
+    """A single-value Literal (const) distinguishes the variants and must be displayed."""
+
+    def variant(kind: str) -> dict[str, Any]:
+        """Build a branch with a shared field and a const tag."""
+        return {
+            "type": "object",
+            "properties": {
+                "kind": {"type": "string", "const": kind},
+                "count": {"type": "integer"},
+            },
+        }
+
+    output = _plain(_schema({"oneOf": [variant("bird"), variant("tree")]}))
+    assert output == "\n".join(
+        [
+            "- example:",
+            "  - count:",
+            "  - Variante 1:",
+            "    - kind: | Zulässige Werte: bird",
+            "  - Variante 2:",
+            "    - kind: | Zulässige Werte: tree",
+        ]
+    )

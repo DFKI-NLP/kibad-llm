@@ -44,6 +44,8 @@ class _Value:
     choices: tuple[str, ...] | None = None
     fields: tuple[_Field, ...] = ()
     items: _Value | None = None
+    # alternative object shapes of an anyOf/oneOf union with several structural branches
+    variants: tuple[_Value, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -124,6 +126,8 @@ class _SchemaInterpreter:
         choices = value.choices
         if isinstance(node.get("enum"), list):
             choices = tuple(str(choice) for choice in node["enum"])
+        elif "const" in node:
+            choices = (str(node["const"]),)
         if own_description and choices is not None:
             descriptions = (replace(own_description, role="choices"),)
 
@@ -142,20 +146,35 @@ class _SchemaInterpreter:
             choices=choices,
             fields=fields,
             items=items,
+            variants=value.variants,
         )
 
     @staticmethod
     def composition(keyword: str, alternatives: tuple[_Value, ...]) -> _Value:
-        """Combine enum constraints, or select a representative non-null display branch.
+        """Combine enum constraints, keep object variants, or select a representative branch.
 
-        Structural unions remain summaries of one branch, as in the original formatter.
-        Multi-branch object intersections require merging constraints and are unsupported.
+        anyOf/oneOf unions with several object branches keep all of them as variants, so
+        that each variant can be rendered with its own fields and choices. Other structural
+        unions remain summaries of one branch, as in the original formatter. Multi-branch
+        object intersections require merging constraints and are unsupported.
         """
         non_null = tuple(value for value in alternatives if value.type_name != "null")
+        if (
+            keyword != "allOf"
+            and len(non_null) > 1
+            and all(value.type_name == "object" for value in non_null)
+        ):
+            return _Value(type_name="object", variants=non_null)
         selected = next(
             (value for value in non_null if value.type_name),
             non_null[0] if non_null else alternatives[0],
         )
+        structural = [
+            value for value in alternatives if value.fields or value.items or value.variants
+        ]
+        # Checked before combining choices: a branch carrying choices (enum/const) may also be structural.
+        if keyword == "allOf" and len(structural) > 1:
+            raise ValueError("Schema descriptions do not support multi-branch structural allOf.")
         enums = tuple(value for value in non_null if value.choices is not None)
         if enums and (keyword == "allOf" or len(enums) == len(non_null)):
             choices = list(enums[0].choices or ())
@@ -172,11 +191,6 @@ class _SchemaInterpreter:
                 ),
             )
         if keyword == "allOf":
-            structural = [value for value in alternatives if value.fields or value.items]
-            if len(structural) > 1:
-                raise ValueError(
-                    "Schema descriptions do not support multi-branch structural allOf."
-                )
             return replace(
                 structural[0] if structural else selected,
                 descriptions=_unique_descriptions(
@@ -199,6 +213,7 @@ class _RenderOptions:
     choices_separator: str
     indent_step: str
     include_field_descriptions: bool
+    variant_prefix: str
 
 
 def _render_fields(fields: tuple[_Field, ...], options: _RenderOptions, indent: int) -> list[str]:
@@ -235,6 +250,52 @@ def _render_fields(fields: tuple[_Field, ...], options: _RenderOptions, indent: 
                 for d in type_descriptions
             )
         lines.extend(_render_fields(target.fields, options, indent + 1))
+        lines.extend(_render_variants(target.variants, options, indent + 1))
+    return lines
+
+
+def _render_variants(
+    variants: tuple[_Value, ...], options: _RenderOptions, indent: int
+) -> list[str]:
+    """Render fields shared by all variants once, then each variant with its remaining fields.
+
+    A field is shared if it renders identically in every variant (same name, documentation,
+    and choices), so only the differing fields are repeated per variant.
+    """
+    if not variants:
+        return []
+
+    def rendered(variant: _Value) -> dict[str, list[str]]:
+        """Render each field of a variant on its own."""
+        return {f.name: _render_fields((f,), options, indent) for f in variant.fields}
+
+    per_variant = [rendered(variant) for variant in variants]
+    shared = {
+        name
+        for name, lines in per_variant[0].items()
+        if all(other.get(name) == lines for other in per_variant[1:])
+    }
+    lines = [
+        line
+        for name, field_lines in per_variant[0].items()
+        if name in shared
+        for line in field_lines
+    ]
+    prefix = options.indent_step * indent
+    for number, variant in enumerate(variants, start=1):
+        lines.append(f"{prefix}- {options.variant_prefix}{number}:")
+        if options.type_description_prefix is not None:
+            lines.extend(
+                f"{prefix}{options.indent_step}{options.type_description_prefix}{d.text}"
+                for d in variant.descriptions
+                if d.role == "type"
+            )
+        lines.extend(
+            _render_fields(
+                tuple(f for f in variant.fields if f.name not in shared), options, indent + 1
+            )
+        )
+        lines.extend(_render_variants(variant.variants, options, indent + 1))
     return lines
 
 
@@ -253,6 +314,7 @@ def build_schema_description(
     include_type_descriptions: bool = True,
     indent: int = 0,
     root_schema: Mapping[str, Any] | None = None,
+    variant_prefix: str = "Variante ",
 ) -> str:
     """Build a human-readable description with explicit ownership of documentation.
 
@@ -265,7 +327,11 @@ def build_schema_description(
     schema locations is preserved.
 
     Local references, inline objects, arrays, nullable unions, and enum compositions
-    are supported. General structural unions display the first typed non-null branch.
+    are supported. anyOf/oneOf unions whose non-null branches are all objects (also at the
+    root) are rendered as numbered variants, including objects without properties and nested
+    unions: fields that render identically in all variants are shown once, the others per
+    variant together with its documentation. A `const` is shown as a single choice. Other
+    structural unions, e.g. mixing objects with strings, display the first typed non-null branch.
     Enum unions combine choices; enum intersections keep their common choices.
     Cardinality follows the existing display convention: arrays use `0..*`, other
     fields use `0..1` when they have a default, otherwise `1`. This is a prompt
@@ -287,13 +353,15 @@ def build_schema_description(
         include_type_descriptions: Deprecated; use type_description_prefix=None.
         indent: Initial indentation (retained for compatibility).
         root_schema: Reference-resolution root when describing a subschema.
+        variant_prefix: Label before the number of each object variant of a union.
 
     Returns:
         A multiline description of the schema's fields and documentation.
 
     Raises:
         ValueError: A reference is unresolved or recursive, a type is a list, or a
-            structural allOf requires merging multiple branches.
+            structural allOf (including one containing an object union) requires merging
+            multiple branches.
     """
     if not include_type_descriptions:
         type_description_prefix = None
@@ -312,6 +380,7 @@ def build_schema_description(
         choices_separator,
         indent_step,
         include_field_descriptions,
+        variant_prefix,
     )
     lines = []
     if type_description_prefix is not None:
@@ -321,4 +390,5 @@ def build_schema_description(
     if header:
         lines.append(header)
     lines.extend(_render_fields(value.fields, options, indent))
+    lines.extend(_render_variants(value.variants, options, indent))
     return "\n".join(lines)
