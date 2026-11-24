@@ -196,7 +196,8 @@ class OpenAI(LLM):
 
         Keyword Args:
             seed (int): Ignored with a warning.
-            strict_json_schema (bool): Determines whether to apply strict schema conversion.
+            strict_json_schema (bool): Whether to convert the schema and enable strict mode.
+                Pass this only when you provide `json_schema` and omit `text.format`.
                 Defaults to `True`.
             text (dict[str, Any]): Responses API `text` config. If it already contains a `format`,
                 that format takes precedence and `json_schema` is ignored. If `json_schema` is not `None`
