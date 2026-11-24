@@ -44,7 +44,7 @@ class SingleFieldMetric(Metric):
             field: Optional field name extracted from dictionary-like inputs.
 
         Keyword Args:
-            **kwargs: Additional keyword arguments forwarded to `Metric`.
+            **kwargs (Any): Additional keyword arguments forwarded to `Metric`.
         """
         super().__init__(**kwargs)
         self.field = field
@@ -84,7 +84,7 @@ class MetricWithPrepareEntryAsSet(SingleFieldMetric):
                 is only effective for list entries. Takes precedence over process_entry_func.
 
         Keyword Args:
-            field: Optional field to extract from dictionary inputs.
+            field (str | None): Optional field to extract from dictionary inputs.
 
         Raises:
             ValueError: If `field` is not provided, but `flatten_dicts` is enabled (because the flattened
@@ -190,10 +190,10 @@ class MetricWithTpFpFnEntries(MetricWithPrepareEntryAsSet):
                 empty set.
 
         Keyword Args:
-            field: Optional field to extract from dictionary inputs.
-            flatten_dicts: Whether to flatten nested dictionaries before further processing.
-            ignore_subfields: Optional mapping from field names to subfield names that should be
-                ignored when converting dictionaries into tuples.
+            field (str | None): Optional field to extract from dictionary inputs.
+            flatten_dicts (bool): Whether to flatten nested dictionaries before further processing.
+            ignore_subfields (dict[str, list] | None): Optional mapping from field names to
+                subfield names to ignore when converting dictionaries into tuples.
         """
         super().__init__(**kwargs)
         self.ignore_missing_entries = ignore_missing_entries

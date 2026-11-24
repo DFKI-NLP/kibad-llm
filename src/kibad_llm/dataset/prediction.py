@@ -33,9 +33,12 @@ def load_with_metadata(
         log: Path to the prediction log directory.
         file: Path to the dataset file.
         skip_by_id: Optional list of IDs to drop respective entries from the dataset after loading.
-        **load_kwargs: Additional keyword arguments to pass to `read_and_preprocess`.
+
     Returns:
         The loaded dataset, possibly wrapped in `DictWithMetadata` if loaded from a log directory.
+
+    Keyword Args:
+        **load_kwargs (Any): Additional keyword arguments to pass to `read_and_preprocess`.
     """
 
     metadata = None

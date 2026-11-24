@@ -287,7 +287,7 @@ uv run --group cicd prek run -a
 just prek
 ```
 
-This runs all configured [prek](https://prek.j178.dev/) hooks (see [pre-commit-config.yaml](/.pre-commit-config.yaml)) on all files. Some hooks may fix issues automatically, others will report issues that need to be fixed manually.
+This runs all configured [prek](https://prek.j178.dev/) hooks (see [pre-commit-config.yaml](/.pre-commit-config.yaml)) on all files. Some hooks may fix issues automatically, others will report issues that need to be fixed manually. The `properdocs-build` hook runs with `--strict`, so documentation warnings fail the check.
 
 To run all Python tests with `pytest`:
 

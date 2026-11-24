@@ -66,7 +66,7 @@ class MultiPassExtractorWithChunking:
             max_char_buffer: Max chunk size in characters.
 
         Keyword Args:
-            *: Additional keyword arguments passed to the base extraction function.
+            **kwargs (Any): Default keyword arguments forwarded to the base extraction function.
 
         Raises:
             ValueError: If no overrides are supplied, there can't be an extraction.
@@ -89,12 +89,6 @@ class MultiPassExtractorWithChunking:
         Args:
             *args (Any): Positional form of `text` and `text_id`, in that order.
 
-
-        Keyword Args:
-            text (str): Input document to process.
-            text_id (str): Id of input document.
-            * (Any): Refer to [`extract_from_text_lenient`][kibad_llm.extractors.base.extract_from_text_lenient]
-
         Returns:
             Dict with the key `structured` that holds the aggregated structured outputs.
             Additionally, there can be lists for fields at the keys `"{field}_list"`. These hold
@@ -103,6 +97,12 @@ class MultiPassExtractorWithChunking:
             This flattens the per-call layout of
             [`UnionExtractor`][kibad_llm.extractors.union.UnionExtractor] on the outside and
             [`ChunkingExtractor`][kibad_llm.extractors.chunking.ChunkingExtractor] on the inside.
+
+        Keyword Args:
+            text (str): Input document to process.
+            text_id (str): Id of input document.
+            **kwargs (Any): Additional keyword arguments for
+                [`extract_from_text_lenient`][kibad_llm.extractors.base.extract_from_text_lenient].
         """
 
         # extract text and id in most compatible way

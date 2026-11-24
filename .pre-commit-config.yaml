@@ -144,6 +144,7 @@ repos:
       - id: properdocs-build
         name: properdocs build (uv)
         entry: uv run --group cicd properdocs build
+        args: ["--strict"]
         language: system
         pass_filenames: false
         priority: 100  # run after check-mkdocs, before lychee
