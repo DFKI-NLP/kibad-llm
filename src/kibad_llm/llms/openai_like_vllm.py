@@ -58,7 +58,8 @@ class OpenAILikeVllm(LLM):
         Args:
             messages: Message history to pass to the LLM query.
             json_schema: Schema the LLM output must comply with.
-                None means free-form output, unless `extra_body["structured_outputs"]` is set. - must be passed by keyword
+                With `None`, the wrapper supplies no schema. Output can still be constrained
+                by `response_format` or `extra_body["structured_outputs"]`. Pass by keyword.
 
         Keyword Args:
             extra_body (dict): Optionally containing `structured_outputs`.
