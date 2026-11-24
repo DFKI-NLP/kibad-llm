@@ -226,7 +226,7 @@ class Codex(LLM):
             The final response text and raw CLI events for shared postprocessing.
 
         Keyword Args:
-            **request_kwargs: Additional request parameters are unsupported and must be omitted.
+            **request_kwargs (Any): Extra request parameters must be omitted.
 
         Raises:
             ValueError: Guided decoding, additional request parameters, or unsupported
