@@ -385,8 +385,11 @@ evidence first and derives the labels from it:
 1. Code (not the model) locates each anchor in the full text and widens it to whole paragraphs or sentences
     (`extractor.min_snippet_chars` to `extractor.max_snippet_chars`). Locating tolerates whitespace, Markdown,
     quotes, hyphenation and ellipses (see [snippets.py](/src/kibad_llm/extractors/snippets.py)).
-1. A final label pass runs the task prompt and schema on the notes and snippets, so the output also contains the
-    usual labels (in German) and can be evaluated with the existing F1 experiments.
+1. One LLM call per document groups the findings that describe the same result (e.g. in the abstract, the results
+    and the conclusion). The model only returns groups of finding IDs with a merged summary; code joins the verbatim
+    snippets of each group and keeps all of them (`extractor.aggregate_findings=false` skips this step).
+1. A final label pass runs the task prompt and schema on the notes and the merged findings, so the output also
+    contains the usual labels (in German) and can be evaluated with the existing F1 experiments.
 
 ```bash
 uv run -m kibad_llm.predict \
@@ -394,15 +397,19 @@ pdf_directory=path/to/pdf/files \
 experiment/predict=ecosystemservice_evidence_snippets  # or organism_trends_evidence_snippets
 ```
 
-The prediction's `structured` field contains the labels, `study_notes` and `evidence_findings`. Each finding has its
-section, a summary, context, the anchors (with offsets and how they matched: `exact`, `normalized`, `ellipsis`,
-`partial`, or `null` if not found) and the widened `snippets`. `study_notes_list` shows the notes after each chunk.
+The prediction's `structured` field contains the labels, `study_notes`, `evidence_findings` (merged findings with
+their `member_ids`) and `evidence_findings_raw` (the findings per chunk, including those whose anchors were not
+found). Each finding has its section, a summary, context, the anchors (with offsets and how they matched: `exact`,
+`normalized`, `ellipsis`, `partial`, or `null` if not found) and the widened `snippets`. `study_notes_list` shows the
+notes after each chunk.
 
 The [`SnippetJudgeMetric`](/src/kibad_llm/metrics/snippet_judge.py) compares the snippets with the gold entries,
 including the annotators' free-text columns. For each gold entry, an LLM rates every snippet of the same document as
 `match`, `partial` or `no_match` and says whether the reported result agrees. It reports recall (gold entries with a
 matching snippet), precision (snippets matching a gold entry), F1 (strict: `match` only; lenient: also `partial`) and
 result agreement. Per-entry judgements with rationales are written to `snippet_judgements.json` in the run directory.
+The judge scores the merged findings; add `metric.findings_field=evidence_findings_raw` to score the unmerged
+findings of the same run, e.g. to see whether merging helps.
 
 ```bash
 uv run -m kibad_llm.evaluate \

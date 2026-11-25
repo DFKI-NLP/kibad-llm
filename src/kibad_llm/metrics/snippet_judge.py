@@ -24,6 +24,7 @@ from kibad_llm.extractors.snippets import (
 from kibad_llm.llms.base import LLM
 from kibad_llm.llms.request import prefill_template_fields
 from kibad_llm.metric import Metric
+from kibad_llm.schema.evidence_snippets import RENDER_TEXTS
 
 logger = logging.getLogger(__name__)
 
@@ -183,10 +184,14 @@ class SnippetJudgeMetric(Metric):
                 if entry.get(field) not in (None, "", [])
             ]
 
-        lines = ["# Gold-Eintrag", "Labels:", *(_items(label_fields) or ["- (keine)"])]
+        lines = [
+            f"# {RENDER_TEXTS['gold_heading']}",
+            f"{RENDER_TEXTS['gold_labels']}:",
+            *(_items(label_fields) or [f"- {RENDER_TEXTS['gold_no_labels']}"]),
+        ]
         text_items = _items(self.text_fields)
         if text_items:
-            lines.extend(["", "Notizen der Annotierenden:", *text_items])
+            lines.extend(["", f"{RENDER_TEXTS['gold_text']}:", *text_items])
         return "\n".join(lines)
 
     def _judge(
@@ -210,9 +215,9 @@ class SnippetJudgeMetric(Metric):
         document = "\n\n".join(
             [
                 self._render_gold_entry(gold_entry),
-                "# Notizen zur Studie (automatisch erstellt)",
+                f"# {RENDER_TEXTS['notes_heading_judge']}",
                 render_notes(notes, hidden_fields=NOTES_FIELDS_HIDDEN_AFTER_READING),
-                "# Kandidaten",
+                f"# {RENDER_TEXTS['candidates_heading']}",
                 *(render_finding_card(c) for c in candidates),
             ]
         )
@@ -236,7 +241,11 @@ class SnippetJudgeMetric(Metric):
             if not isinstance(judgement, Mapping):
                 continue
             candidate_id = judgement.get("candidate_id")
-            if isinstance(candidate_id, str) and candidate_id in ids and candidate_id not in judgements:
+            if (
+                isinstance(candidate_id, str)
+                and candidate_id in ids
+                and candidate_id not in judgements
+            ):
                 judgements[candidate_id] = dict(judgement)
         return judgements
 

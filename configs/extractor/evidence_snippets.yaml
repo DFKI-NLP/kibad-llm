@@ -5,9 +5,13 @@
 #     in the language of the document (snippet_prompt_template / snippet_schema).
 #  2. The anchors are located in the full text and widened to paragraphs or sentences in code (no LLM call), so the
 #     snippets are verbatim and big enough for a judge (min_snippet_chars / max_snippet_chars).
-#  3. A final label pass runs `prompt_template` and `schema` (like the simple extractor) on a document rendered from
-#     the notes and snippets, which yields the usual structured labels (set label_pass=false to skip it).
-# The prediction's `structured` field contains the labels plus `study_notes` and `evidence_findings`.
+#  3. One LLM call per document groups the located findings that describe the same result (e.g. abstract, results and
+#     conclusion); code joins their verbatim snippets (aggregation_prompt_template / aggregation_schema, set
+#     aggregate_findings=false to skip it).
+#  4. A final label pass runs `prompt_template` and `schema` (like the simple extractor) on a document rendered from
+#     the notes and the aggregated findings, which yields the usual structured labels (set label_pass=false to skip it).
+# The prediction's `structured` field contains the labels plus `study_notes`, `evidence_findings` (aggregated) and
+# `evidence_findings_raw` (per chunk, including findings whose anchors were not found).
 
 defaults:
   # label pass (works like the simple extractor)
@@ -18,6 +22,8 @@ defaults:
   - _with_evidence
   # snippet pass
   - prompt_template@snippet_prompt_template: evidence_snippets
+  # aggregation step
+  - prompt_template@aggregation_prompt_template: evidence_snippets_aggregation
 
 _target_: kibad_llm.extractors.EvidenceSnippetExtractor
 
@@ -28,6 +34,11 @@ snippet_schema:
 # Task-specific description of the findings to look for, inserted at {task_description} in the snippet prompt.
 # Set it in the experiment config.
 snippet_task_description: ""
+
+aggregate_findings: true
+aggregation_schema:
+  _target_: kibad_llm.schema.evidence_snippets.FindingAggregation.model_json_schema
+  by_alias: false
 
 label_pass: true
 
@@ -44,7 +55,8 @@ max_snippet_chars: 2500
 # snippets of one finding that are at most this many characters apart are merged
 snippet_merge_gap: 200
 
-# for these fields, return a list with one entry per LLM call (all chunk calls, then the label call if it ran)
+# for these fields, return a list with one entry per LLM call (all chunk calls, then the aggregation and label calls
+# if they ran)
 return_as_list:
   - backend_metadata
   - structured_with_metadata

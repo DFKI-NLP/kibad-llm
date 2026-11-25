@@ -16,10 +16,18 @@ Classes:
     StudyNotes: Running notes about the whole document, carried from chunk to chunk.
     EvidenceFinding: One finding in a chunk, marked by verbatim anchors.
     ChunkEvidence: Model output for one chunk: updated notes and the findings of the chunk.
+    FindingGroup: Findings from different chunks or sections that describe the same result.
+    FindingAggregation: Model output of the aggregation step: groups of findings.
     JudgeVerdictEnum: Whether a candidate snippet supports a gold entry.
     ResultAgreementEnum: Whether the result in a candidate agrees with the gold entry.
     SnippetJudgement: Judgement of one candidate against one gold entry.
     SnippetJudgeOutput: Judge output for one gold entry and a batch of candidates.
+
+Attributes:
+    NOTES_LABELS: German labels for the fields of [`StudyNotes`][.StudyNotes], used when rendering notes.
+    RENDER_TEXTS: German texts used when rendering notes, findings and gold entries for the model (snippet pass,
+        aggregation step, label pass and judge). Kept here, next to the field descriptions, so that all German
+        model-facing text of the pipeline is in one place.
 """
 
 from enum import Enum
@@ -162,6 +170,43 @@ class ChunkEvidence(BaseModel):
     )
 
 
+class FindingGroup(BaseModel):
+    """Gruppe von Textstellen, die dasselbe Ergebnis beschreiben."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    finding_ids: list[str] = Field(
+        ...,
+        min_length=1,
+        description="IDs der Textstellen, die dasselbe Ergebnis beschreiben, z.B. ['F1', 'F4'].",
+    )
+    finding: str = Field(
+        ...,
+        description=(
+            "Zusammengeführte Zusammenfassung des Ergebnisses in der Sprache des Dokuments, mit den genauesten "
+            "Angaben der zugehörigen Textstellen (Richtung, Signifikanz, Organismen, Zeitraum)."
+        ),
+    )
+    context: str = Field(
+        ...,
+        description=(
+            "Zusammengeführter Kontext der zugehörigen Textstellen in der Sprache des Dokuments; leer, wenn keiner "
+            "nötig ist."
+        ),
+    )
+
+
+class FindingAggregation(BaseModel):
+    """Zusammenfassung der Textstellen eines Dokuments zu Gruppen, die jeweils ein Ergebnis beschreiben."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    groups: list[FindingGroup] = Field(
+        ...,
+        description="Eine Gruppe pro Ergebnis. Jede ID kommt in genau einer Gruppe vor.",
+    )
+
+
 class JudgeVerdictEnum(str, Enum):
     """match: belegt dieselbe Information; partial: belegt sie teilweise; no_match: belegt sie nicht."""
 
@@ -210,3 +255,52 @@ class SnippetJudgeOutput(BaseModel):
         ...,
         description="Genau eine Bewertung pro Kandidat.",
     )
+
+
+NOTES_LABELS = {
+    "document_language": "Sprache",
+    "study_topic": "Thema",
+    "study_design": "Studiendesign",
+    "study_area": "Untersuchungsgebiet",
+    "time_period": "Zeitraum",
+    "organisms": "Organismen",
+    "variables": "Variablen",
+    "current_section": "Aktueller Abschnitt",
+    "open_points": "Offene Punkte",
+}
+
+RENDER_TEXTS = {
+    # notes
+    "no_notes": "Noch keine Notizen.",
+    "no_notes_first_chunk": "Noch keine Notizen (erster Textausschnitt).",
+    "notes_heading": "Notizen zur Studie",
+    "notes_heading_judge": "Notizen zur Studie (automatisch erstellt)",
+    # finding cards
+    "cards_heading": "Textstellen",
+    "card_title": "Textstelle",
+    "section": "Abschnitt",
+    "figure_or_table": "Abbildung/Tabelle",
+    "finding": "Ergebnis",
+    "finding_by_model": "Ergebnis (Zusammenfassung des Modells)",
+    "context": "Kontext",
+    "context_from_document": "Kontext (aus dem übrigen Dokument)",
+    "snippets": "Auszug aus der Studie",
+    "quotes": "Zitate",
+    "quotes_unlocated": "Zitate (nicht im Text gefunden)",
+    # document headers
+    "evidence_document_header": (
+        "Dieses Dokument fasst eine wissenschaftliche Studie zusammen. Es enthält automatisch erstellte Notizen zur "
+        "gesamten Studie und die Textstellen mit relevanten Ergebnissen. Die Auszüge stammen unverändert aus der "
+        "Studie."
+    ),
+    "aggregation_document_header": (
+        "Die folgenden Textstellen wurden beim abschnittsweisen Lesen einer wissenschaftlichen Studie gefunden, in "
+        "der Reihenfolge des Textes."
+    ),
+    # judge
+    "gold_heading": "Gold-Eintrag",
+    "gold_labels": "Labels",
+    "gold_no_labels": "(keine)",
+    "gold_text": "Notizen der Annotierenden",
+    "candidates_heading": "Kandidaten",
+}

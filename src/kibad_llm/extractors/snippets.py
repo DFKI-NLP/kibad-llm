@@ -14,10 +14,12 @@ Functions:
     expand_span: Widen a span to paragraphs or sentences within a size budget.
     merge_spans: Merge overlapping or nearby spans.
     build_finding_card: Locate the anchors of one model finding and attach the widened snippets.
+    aggregate_finding_cards: Merge finding cards that describe the same result into aggregated cards.
     format_value: Format a JSON-like value for rendering in prompts.
     render_notes: Render running notes as a short Markdown list.
     render_finding_card: Render a finding card with its snippets as Markdown.
     render_evidence_document: Render notes and finding cards as one Markdown document.
+    render_aggregation_document: Render notes and compact finding cards as input for the aggregation step.
 """
 
 from __future__ import annotations
@@ -25,8 +27,10 @@ from __future__ import annotations
 from bisect import bisect_left
 from collections.abc import Mapping, Sequence
 import re
-import unicodedata
 from typing import Any
+import unicodedata
+
+from kibad_llm.schema.evidence_snippets import NOTES_LABELS, RENDER_TEXTS
 
 from .base import _find_anchor_match_spans
 
@@ -40,19 +44,6 @@ _ELLIPSIS_RE = re.compile(r"\[\s*(?:\.\.\.|…)\s*\]|\(\s*(?:\.\.\.|…)\s*\)|\.
 _PARAGRAPH_BREAK_RE = re.compile(r"\n[ \t]*\n")
 _SENTENCE_END_RE = re.compile(r"(?<=[.!?])[\"')\]]*\s+")
 
-# Labels for the fields of StudyNotes, used when rendering notes for the label pass and the judge.
-# Unknown fields are rendered with their field name.
-NOTES_LABELS = {
-    "document_language": "Sprache",
-    "study_topic": "Thema",
-    "study_design": "Studiendesign",
-    "study_area": "Untersuchungsgebiet",
-    "time_period": "Zeitraum",
-    "organisms": "Organismen",
-    "variables": "Variablen",
-    "current_section": "Aktueller Abschnitt",
-    "open_points": "Offene Punkte",
-}
 # Notes that only steer the chunk-by-chunk reading and are not useful afterwards.
 NOTES_FIELDS_HIDDEN_AFTER_READING = ("current_section", "open_points")
 
@@ -94,9 +85,7 @@ class CompactText:
         Returns:
             The lowercased, NFKC-normalized letters and digits of `text`.
         """
-        return "".join(
-            c.lower() for c in unicodedata.normalize("NFKC", text) if c.isalnum()
-        )
+        return "".join(c.lower() for c in unicodedata.normalize("NFKC", text) if c.isalnum())
 
     def find(self, needle: str, start: int = 0, end: int | None = None) -> tuple[int, int] | None:
         """Find a compact needle and map the match back to original offsets.
@@ -464,7 +453,7 @@ def format_value(value: Any) -> str:
 
 def render_notes(
     notes: Mapping[str, Any] | None,
-    empty_text: str = "Noch keine Notizen.",
+    empty_text: str = RENDER_TEXTS["no_notes"],
     hidden_fields: Sequence[str] = (),
 ) -> str:
     """Render running notes as a short Markdown list.
@@ -497,24 +486,27 @@ def render_finding_card(card: Mapping[str, Any], heading_level: int = 2) -> str:
         The rendered card: ID, section, figure/table reference, summary, context and the snippets.
         If no anchor was located, the unlocated anchors are shown instead of snippets.
     """
-    lines = [f"{'#' * heading_level} Textstelle {card.get('id', '')}"]
+    lines = [f"{'#' * heading_level} {RENDER_TEXTS['card_title']} {card.get('id', '')}"]
     section = card.get("section") or ""
     section_type = card.get("section_type") or ""
     if section or section_type:
-        lines.append(f"Abschnitt: {section}" + (f" ({section_type})" if section_type else ""))
+        lines.append(
+            f"{RENDER_TEXTS['section']}: {section}"
+            + (f" ({section_type})" if section_type else "")
+        )
     if card.get("figure_or_table"):
-        lines.append(f"Abbildung/Tabelle: {card['figure_or_table']}")
+        lines.append(f"{RENDER_TEXTS['figure_or_table']}: {card['figure_or_table']}")
     if card.get("finding"):
-        lines.append(f"Ergebnis (Zusammenfassung des Modells): {card['finding']}")
+        lines.append(f"{RENDER_TEXTS['finding_by_model']}: {card['finding']}")
     if card.get("context"):
-        lines.append(f"Kontext (aus dem übrigen Dokument): {card['context']}")
+        lines.append(f"{RENDER_TEXTS['context_from_document']}: {card['context']}")
     snippets: Any = card.get("snippets") or []
     if snippets:
-        lines.append("Auszug aus der Studie:")
+        lines.append(f"{RENDER_TEXTS['snippets']}:")
         lines.append("\n\n[...]\n\n".join(s["text"] for s in snippets))
     else:
         anchors = [a.get("text", "") for a in card.get("anchors") or []]
-        lines.append("Zitate (nicht im Text gefunden): " + " | ".join(anchors))
+        lines.append(f"{RENDER_TEXTS['quotes_unlocated']}: " + " | ".join(anchors))
     return "\n".join(lines)
 
 
@@ -531,12 +523,167 @@ def render_evidence_document(
         A Markdown document with an explanatory header, the notes and all cards.
     """
     parts = [
-        "Dieses Dokument fasst eine wissenschaftliche Studie zusammen. Es enthält automatisch erstellte Notizen "
-        "zur gesamten Studie und die Textstellen mit relevanten Ergebnissen. Die Auszüge stammen unverändert "
-        "aus der Studie.",
-        "# Notizen zur Studie",
+        RENDER_TEXTS["evidence_document_header"],
+        f"# {RENDER_TEXTS['notes_heading']}",
         render_notes(notes, hidden_fields=NOTES_FIELDS_HIDDEN_AFTER_READING),
-        "# Textstellen",
+        f"# {RENDER_TEXTS['cards_heading']}",
     ]
     parts.extend(render_finding_card(card) for card in cards)
+    return "\n\n".join(parts)
+
+
+def _card_position(card: Mapping[str, Any]) -> int:
+    """Return the text position of a card: its first snippet start, else its first located anchor.
+
+    Args:
+        card: Finding card.
+
+    Returns:
+        The offset, or a large number if the card has no location.
+    """
+    starts = [s["start"] for s in card.get("snippets") or []]
+    starts += [a["start"] for a in card.get("anchors") or [] if a.get("start") is not None]
+    return min(starts) if starts else 2**62
+
+
+def _unique(values: Sequence[Any]) -> list[str]:
+    """Return the non-empty string values in order, without repetitions.
+
+    Args:
+        values: Values to filter.
+
+    Returns:
+        The unique non-empty strings.
+    """
+    return list(dict.fromkeys(v for v in values if isinstance(v, str) and v))
+
+
+def aggregate_finding_cards(
+    cards: Sequence[Mapping[str, Any]],
+    groups: Any,
+    *,
+    text: str,
+    merge_gap: int = 200,
+    id_prefix: str = "A",
+) -> list[dict[str, Any]]:
+    """Merge finding cards that describe the same result into aggregated cards.
+
+    The groups come from the model (see
+    [`FindingAggregation`][kibad_llm.schema.evidence_snippets.FindingAggregation]). Only the summary and context are
+    taken from the model; all evidence (anchors and snippets) comes from the member cards, so no new text is added.
+    Unknown IDs are ignored, an ID listed in several groups stays in the first one, and cards in no group become
+    single-member groups. Passing no groups therefore keeps every card as its own aggregated card.
+
+    Args:
+        cards: Finding cards as returned by [`build_finding_card`][..build_finding_card].
+        groups: `groups` list returned by the model, or None.
+        text: Full document text, used to re-slice merged snippets.
+        merge_gap: Snippets at most this many characters apart are merged.
+        id_prefix: Prefix of the aggregated card IDs.
+
+    Returns:
+        Aggregated cards in text order with the IDs `A1`, `A2`, ... Each has `member_ids` and `chunk_indices` of its
+        members, their sections, section types and figure/table references joined, all their anchors (each with
+        its `finding_id`), all their snippets (merged and in text order), the `finding` and `context` of the group
+        (falling back to the members') and `located`.
+    """
+    by_id = {card["id"]: card for card in cards}
+    assigned: set[str] = set()
+    grouped: list[tuple[list[str], Mapping[str, Any]]] = []
+    for group in groups if isinstance(groups, list) else []:
+        if not isinstance(group, Mapping):
+            continue
+        ids: Any = group.get("finding_ids") or []
+        if isinstance(ids, str):
+            ids = [ids]
+        members = [
+            i
+            for i in dict.fromkeys(ids)
+            if isinstance(i, str) and i in by_id and i not in assigned
+        ]
+        if members:
+            assigned.update(members)
+            grouped.append((members, group))
+    grouped.extend(([card["id"]], {}) for card in cards if card["id"] not in assigned)
+
+    aggregated = []
+    for members, group in grouped:
+        member_cards = sorted((by_id[i] for i in members), key=_card_position)
+        spans = [(s["start"], s["end"]) for c in member_cards for s in c.get("snippets") or []]
+        snippets = [
+            {"start": start, "end": end, "text": text[start:end]}
+            for start, end in merge_spans(spans, max_gap=merge_gap)
+        ]
+        group_finding = group.get("finding")
+        group_context = group.get("context")
+        aggregated.append(
+            {
+                "member_ids": [c["id"] for c in member_cards],
+                "chunk_indices": sorted({c["chunk_index"] for c in member_cards}),
+                "section": " | ".join(_unique([c.get("section") for c in member_cards])),
+                "section_type": ", ".join(_unique([c.get("section_type") for c in member_cards])),
+                "finding": (
+                    group_finding
+                    if isinstance(group_finding, str) and group_finding
+                    else member_cards[0].get("finding", "")
+                ),
+                "context": (
+                    group_context
+                    if isinstance(group_context, str) and group_context
+                    else next(iter(_unique([c.get("context") for c in member_cards])), "")
+                ),
+                "figure_or_table": ", ".join(
+                    _unique([c.get("figure_or_table") for c in member_cards])
+                ),
+                "anchors": [
+                    {**anchor, "finding_id": c["id"]}
+                    for c in member_cards
+                    for anchor in c.get("anchors") or []
+                ],
+                "snippets": snippets,
+                "located": len(snippets) > 0,
+            }
+        )
+
+    aggregated.sort(key=_card_position)
+    return [{"id": f"{id_prefix}{i + 1}", **card} for i, card in enumerate(aggregated)]
+
+
+def render_aggregation_document(
+    notes: Mapping[str, Any] | None, cards: Sequence[Mapping[str, Any]]
+) -> str:
+    """Render notes and compact finding cards as input for the aggregation step.
+
+    Only the quotes are shown, not the widened snippets, to keep the input small.
+
+    Args:
+        notes: Final running notes of the document.
+        cards: Finding cards as returned by [`build_finding_card`][..build_finding_card].
+
+    Returns:
+        A Markdown document with an explanatory header, the notes and one compact entry per card, in text order.
+    """
+    parts = [
+        RENDER_TEXTS["aggregation_document_header"],
+        f"# {RENDER_TEXTS['notes_heading']}",
+        render_notes(notes, hidden_fields=NOTES_FIELDS_HIDDEN_AFTER_READING),
+        f"# {RENDER_TEXTS['cards_heading']}",
+    ]
+    for card in sorted(cards, key=_card_position):
+        lines = [f"## {card.get('id', '')}"]
+        section = card.get("section") or ""
+        section_type = card.get("section_type") or ""
+        if section or section_type:
+            lines.append(
+                f"{RENDER_TEXTS['section']}: {section}"
+                + (f" ({section_type})" if section_type else "")
+            )
+        if card.get("figure_or_table"):
+            lines.append(f"{RENDER_TEXTS['figure_or_table']}: {card['figure_or_table']}")
+        lines.append(f"{RENDER_TEXTS['finding']}: {card.get('finding', '')}")
+        if card.get("context"):
+            lines.append(f"{RENDER_TEXTS['context']}: {card['context']}")
+        lines.append(f"{RENDER_TEXTS['quotes']}:")
+        lines.extend(f"- {anchor.get('text', '')}" for anchor in card.get("anchors") or [])
+        parts.append("\n".join(lines))
     return "\n\n".join(parts)

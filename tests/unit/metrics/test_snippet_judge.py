@@ -40,7 +40,9 @@ class VerdictLLM(LLM):
         """Answer for all candidates mentioned in the prompt."""
         prompt = messages[-1].content
         self.prompts.append(prompt)
-        gold = next(line[len("- ÖSL: ") :] for line in prompt.splitlines() if line.startswith("- ÖSL: "))
+        gold = next(
+            line[len("- ÖSL: ") :] for line in prompt.splitlines() if line.startswith("- ÖSL: ")
+        )
         judgements = [
             {"candidate_id": cid, "rationale": "r", "verdict": v, "result_agreement": a}
             for (g, cid), (v, a) in self.verdicts.items()
@@ -48,7 +50,12 @@ class VerdictLLM(LLM):
         ]
         # unknown ids are ignored by the metric
         judgements.append(
-            {"candidate_id": "X9", "rationale": "", "verdict": "match", "result_agreement": "agrees"}
+            {
+                "candidate_id": "X9",
+                "rationale": "",
+                "verdict": "match",
+                "result_agreement": "agrees",
+            }
         )
         return ChatResponse(message=ChatMessage(content=json.dumps({"judgements": judgements})))
 
