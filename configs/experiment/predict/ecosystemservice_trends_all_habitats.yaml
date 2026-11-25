@@ -14,5 +14,5 @@ defaults:
 
 ecosystem_service_prompt:
   habitat_scope: "in einem bzw. mehreren Lebensräumen"
-  # appended directly to the rule about one entry per relationship, hence the leading space
-  habitat_rule: " Betrifft eine Beziehung mehrere Lebensräume, lege für jeden Lebensraum einen eigenen Eintrag an."
+  # appended directly to the rule about consolidating entries, hence the leading space
+  habitat_rule: " Ausnahme: Betrifft eine Beziehung mehrere Lebensräume, lege für jeden Lebensraum einen eigenen Eintrag an und fasse nur innerhalb desselben Lebensraums zusammen."
