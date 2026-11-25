@@ -22,6 +22,7 @@
     - [CPU smoke test with a micro LLM](#cpu-smoke-test-with-a-micro-llm)
     - [Token usage in prediction results](#token-usage-in-prediction-results)
     - [Evaluation](#evaluation)
+    - [Evidence snippets and LLM judge](#evidence-snippets-and-llm-judge)
     - [Multirun](#multirun)
     - [A/B Testing with Multiple Seeds](#ab-testing-with-multiple-seeds)
 
@@ -370,6 +371,49 @@ experiment/evaluate=faktencheck_f1_micro_flat
 ```
 
 See [configs/experiment/evaluate](/configs/experiment/evaluate) for available experiment configs.
+
+### Evidence snippets and LLM judge
+
+For tasks where gold labels and schema predictions are hard to compare (e.g. ecosystem-service relations and
+organism trends), the [`EvidenceSnippetExtractor`](/src/kibad_llm/extractors/evidence_snippets.py) puts verbatim
+evidence first and derives the labels from it:
+
+1. The document is chunked and the chunks are read in order. Each chunk prompt contains running notes from the
+    previous chunks (study topic, design, area, period, organisms, variables, current section, open points). The
+    model returns updated notes and the findings in the chunk, each marked by one to three verbatim anchors in the
+    language of the document.
+1. Code (not the model) locates each anchor in the full text and widens it to whole paragraphs or sentences
+    (`extractor.min_snippet_chars` to `extractor.max_snippet_chars`). Locating tolerates whitespace, Markdown,
+    quotes, hyphenation and ellipses (see [snippets.py](/src/kibad_llm/extractors/snippets.py)).
+1. A final label pass runs the task prompt and schema on the notes and snippets, so the output also contains the
+    usual labels (in German) and can be evaluated with the existing F1 experiments.
+
+```bash
+uv run -m kibad_llm.predict \
+pdf_directory=path/to/pdf/files \
+experiment/predict=ecosystemservice_evidence_snippets  # or organism_trends_evidence_snippets
+```
+
+The prediction's `structured` field contains the labels, `study_notes` and `evidence_findings`. Each finding has its
+section, a summary, context, the anchors (with offsets and how they matched: `exact`, `normalized`, `ellipsis`,
+`partial`, or `null` if not found) and the widened `snippets`. `study_notes_list` shows the notes after each chunk.
+
+The [`SnippetJudgeMetric`](/src/kibad_llm/metrics/snippet_judge.py) compares the snippets with the gold entries,
+including the annotators' free-text columns. For each gold entry, an LLM rates every snippet of the same document as
+`match`, `partial` or `no_match` and says whether the reported result agrees. It reports recall (gold entries with a
+matching snippet), precision (snippets matching a gold entry), F1 (strict: `match` only; lenient: also `partial`) and
+result agreement. Per-entry judgements with rationales are written to `snippet_judgements.json` in the run directory.
+
+```bash
+uv run -m kibad_llm.evaluate \
+dataset.predictions.file=path/to/predictions.jsonl \
+experiment/evaluate=ecosystem_service_snippet_judge \
+extractor/llm@metric.llm=gpt_oss_120b  # or organism_trends_snippet_judge
+```
+
+Keep the snippet sizes fixed when comparing runs: larger snippets make it easier for the judge to find a match. See
+[Evidence-snippet preprocessing requirements](evidence-snippets-preprocessing.md) for what the PDF conversion needs to
+provide.
 
 ### Multirun
 

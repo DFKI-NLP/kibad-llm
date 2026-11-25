@@ -1,0 +1,31 @@
+# @package _global_
+
+# Snippet-first extraction of biodiversity -> ecosystem service (ÖSL) relations (forest dev set) with the
+# EvidenceSnippetExtractor: running notes across chunks, verbatim evidence snippets per finding (in the language of
+# the document), and a final label pass with the prompt and schema of experiment/predict=ecosystemservice_trends.
+# Evaluate the snippets with experiment/evaluate=ecosystem_service_snippet_judge and the labels with
+# experiment/evaluate=ecosystem_service.
+
+# To execute this experiment run:
+# python -m kibad_llm.predict experiment/predict=ecosystemservice_evidence_snippets
+
+defaults:
+  - override /extractor: evidence_snippets
+  # label pass
+  - override /extractor/prompt_template: ecosystem_service
+  - override /extractor/schema: ecosystem_service_habitat
+
+extractor:
+  snippet_task_description: |
+    Gesucht sind Ergebnisse, in denen die Studie mit eigenen Daten untersucht, ob eine Biodiversitätsfacette einen
+    Einfluss auf eine Ökosystemleistung oder Ökosystemfunktion (ÖSL/ÖSF) hat. Die Biodiversitätsfacette ist die
+    erklärende Größe (z.B. Artenvielfalt, Identität einzelner Arten, Artenzusammensetzung, strukturelle, genetische
+    oder funktionelle Diversität, Landschaftstyp oder Landschaftsdiversität), die ÖSL/ÖSF die Zielgröße (z.B.
+    Biomasseproduktion, Kohlenstoffspeicherung, Zersetzung, Dürreresistenz oder -erholung, Mikroklimaregulation,
+    Wasserhaushalt, Schädlingsresistenz, Erholungswert oder ästhetischer Wert der Landschaft).
+    Dazu zählen auch Vergleiche von Beständen oder Flächen, die sich in ihrer Biodiversität unterscheiden (z.B.
+    Reinbestand vs. Mischbestand, verschiedene Baumarten, Herkünfte oder Genotypen einer Art, unterschiedlich
+    strukturierte Bestände), sowie schwache, nicht signifikante oder fehlende Effekte. Nicht gesucht ist der Einfluss
+    von Störungen, Behandlungen oder Ökosystemleistungen auf die Biodiversität.
+    Halte im Ergebnis fest, welche Biodiversitätsfacette mit welcher ÖSL/ÖSF untersucht wurde, für welche Arten,
+    und welche Richtung bzw. welcher Effekt gefunden wurde.

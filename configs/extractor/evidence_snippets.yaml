@@ -1,0 +1,58 @@
+# Snippet-first extraction with running notes (see src/kibad_llm/extractors/evidence_snippets.py):
+#  1. The document is chunked and the chunks are processed in order. Each chunk prompt contains the running notes
+#     from the previous chunks (study topic, design, area, organisms, variables, current section, open points).
+#     The model returns updated notes and the relevant findings of the chunk, each marked by 1-3 verbatim anchors
+#     in the language of the document (snippet_prompt_template / snippet_schema).
+#  2. The anchors are located in the full text and widened to paragraphs or sentences in code (no LLM call), so the
+#     snippets are verbatim and big enough for a judge (min_snippet_chars / max_snippet_chars).
+#  3. A final label pass runs `prompt_template` and `schema` (like the simple extractor) on a document rendered from
+#     the notes and snippets, which yields the usual structured labels (set label_pass=false to skip it).
+# The prediction's `structured` field contains the labels plus `study_notes` and `evidence_findings`.
+
+defaults:
+  # label pass (works like the simple extractor)
+  - schema: default
+  - llm: gpt_oss_20b
+  - prompt_template: default
+  - request_parameters: default
+  - _with_evidence
+  # snippet pass
+  - prompt_template@snippet_prompt_template: evidence_snippets
+
+_target_: kibad_llm.extractors.EvidenceSnippetExtractor
+
+snippet_schema:
+  _target_: kibad_llm.schema.evidence_snippets.ChunkEvidence.model_json_schema
+  by_alias: false
+
+# Task-specific description of the findings to look for, inserted at {task_description} in the snippet prompt.
+# Set it in the experiment config.
+snippet_task_description: ""
+
+label_pass: true
+
+# see configs/extractor/chunking.yaml for the chunk size
+max_char_buffer: 20000
+tokenizer:
+  _target_: kibad_llm.extractors.chunking_utils.RegexTokenizer
+
+# Each anchor is widened to its paragraph(s) and neighbouring paragraphs until the snippet has at least
+# min_snippet_chars characters, but never more than max_snippet_chars (long paragraphs are cut at sentence
+# boundaries). Keep these fixed when comparing runs: bigger snippets make it easier for a judge to find a match.
+min_snippet_chars: 800
+max_snippet_chars: 2500
+# snippets of one finding that are at most this many characters apart are merged
+snippet_merge_gap: 200
+
+# for these fields, return a list with one entry per LLM call (all chunk calls, then the label call if it ran)
+return_as_list:
+  - backend_metadata
+  - structured_with_metadata
+  - errors
+  - reasoning_content
+  - character_start
+  - character_end
+
+return_reasoning: True
+return_messages: False
+return_messages_formatted: False

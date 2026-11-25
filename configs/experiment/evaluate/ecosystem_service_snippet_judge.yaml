@@ -1,0 +1,39 @@
+# @package _global_
+
+# LLM-judge evaluation of the evidence snippets from experiment/predict=ecosystemservice_evidence_snippets against
+# the forest dev set, including the annotators' free-text columns. For each gold relation, the judge rates every
+# snippet of the same document (see configs/metric/snippet_judge.yaml). Per-entry judgements with rationales are
+# written to snippet_judgements.json in the run directory.
+# Choose the judge model with e.g. extractor/llm@metric.llm=gpt_oss_120b.
+
+defaults:
+  - override /dataset: ecosystem_service
+  - override /dataset/references: ecosystem_service_wald_with_gold_text
+  - override /metric: snippet_judge
+
+metric:
+  reference_field: ecosystem_service_trends
+  label_fields:
+    - Themenkomplex
+    - ÖSL
+    - Biodiv_Facette
+    - Einfluss
+    - Arten
+  text_fields:
+    - Notiz zum Vote Count
+    - Methode
+    - Ökologische Einheit
+    - Artengruppe
+    - Ort
+    - Ort Details
+  details_file: ${hydra:runtime.output_dir}/snippet_judgements.json
+  task_description: |
+    Die Gold-Einträge beschreiben Beziehungen der Form "Ökosystemleistung/-funktion (ÖSL) ~ Biodiversitätsfacette":
+    Die Studie untersucht, ob eine Biodiversitätsfacette (erklärende Größe, Feld 'Biodiv_Facette', z.B.
+    Artenvielfalt, Artidentität, Artenzusammensetzung, Strukturelle Diversität, Genetische Diversität, Landschaftstyp)
+    eine ÖSL (Zielgröße, Feld 'ÖSL', zugeordnet zum 'Themenkomplex') beeinflusst. 'Arten' nennt die untersuchten
+    Arten, oft vereinfacht oder auf deutsch. Das Feld 'Einfluss' bedeutet: pos = die ÖSL nimmt mit höherer Vielfalt
+    bzw. Struktur zu (z.B. Mischbestand höher als Reinbestand); neg = sie nimmt ab; neu = kein Effekt; ja = die
+    verglichenen Kategorien (z.B. Baumarten, Herkünfte, Landschaftstypen) unterscheiden sich; nein = sie unterscheiden
+    sich nicht. Die Zuordnung zu Facette und ÖSL ist oft nicht eindeutig; ein Kandidat passt auch dann, wenn er
+    dieselbe Untersuchung und dasselbe Ergebnis mit anderen Begriffen beschreibt.

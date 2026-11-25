@@ -1,0 +1,30 @@
+# @package _global_
+
+# Snippet-first extraction of organism biodiversity trends (forest literature) with the EvidenceSnippetExtractor:
+# running notes across chunks, verbatim evidence snippets per finding (in the language of the document), and a final
+# label pass with the prompt and schema of experiment/predict=organism_trends_with_evidence.
+# Evaluate the snippets with experiment/evaluate=organism_trends_snippet_judge and the labels with
+# experiment/evaluate=organism_trends_f1_micro.
+# Trends are often only shown in figures or tables. For now, the snippets contain the captions and the sentences
+# referring to them, but not the figure content (see docs/evidence-snippets-preprocessing.md).
+
+# To execute this experiment run:
+# python -m kibad_llm.predict experiment/predict=organism_trends_evidence_snippets
+
+defaults:
+  - override /extractor: evidence_snippets
+  # label pass
+  - override /extractor/prompt_template: organism_trends_v1_with_evidence_and_persona
+  - override /extractor/schema: organism_trends_v1
+
+extractor:
+  snippet_task_description: |
+    Gesucht sind zeitliche Trends der Biodiversität, die die Studie mit eigenen Daten belegt: Veränderungen der
+    Abundanz (z.B. Individuenzahl, Deckung, Häufigkeit, Brutpaare), der Artenzahl oder von Diversitätsindizes von
+    Organismen (Pflanzen, Tiere, Pilze, Flechten) über die Zeit, z.B. aus Wiederholungsaufnahmen, Zeitreihen,
+    Monitoring oder dem Vergleich historischer mit aktuellen Daten. Auch ausbleibende Veränderungen und
+    Trendumkehrungen zählen.
+    Halte im Ergebnis fest, welche Organismen bzw. Artengruppe, welcher Lebensraum, welche Zielgröße, welcher
+    Zeitraum und welche Richtung (Zunahme, Abnahme, kein Trend, Umkehr) gefunden wurde. Trends werden oft in
+    Abbildungen oder Tabellen dargestellt: Zitiere dann die Bild- bzw. Tabellenunterschrift und die Sätze, die auf
+    die Abbildung oder Tabelle verweisen.

@@ -55,6 +55,10 @@ def cfg_evaluate(tmp_path, metric_name) -> Iterator[DictConfig]:
             cfg.metric.fields = ["habitat", "landuse"]
         elif metric_name == "prediction_errors":
             pass  # no extra config needed
+        elif metric_name == "snippet_judge":
+            # the predictions contain no evidence snippets, so no judge calls are made
+            cfg.metric.reference_field = "habitat"
+            cfg.metric.llm = None
         else:
             raise ValueError(
                 f"Unexpected metric name: {metric_name}. Please update the test case."
@@ -222,5 +226,13 @@ def test_evaluate(tmp_path, cfg_evaluate: DictConfig, metric_name: str) -> None:
                 },
             },
         }
+    elif metric_name == "snippet_judge":
+        assert metric_type == "SnippetJudgeMetric"
+        # each reference habitat is one gold entry; without snippets, none of them is supported
+        assert metric_scores["counts"]["gold_entries"] == 3
+        assert metric_scores["counts"]["records_without_gold"] == 1
+        assert metric_scores["counts"]["candidates"] == 0
+        assert metric_scores["counts"]["judge_calls"] == 0
+        assert metric_scores["strict"] == {"precision": 0.0, "recall": 0.0, "f1": 0.0}
     else:
         raise ValueError(f"Unexpected metric name: {metric_name}. Please update the test case.")

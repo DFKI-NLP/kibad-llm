@@ -1,0 +1,19 @@
+# Like ecosystem_service_wald, but also reads the free-text columns of the annotation (annotator notes, method,
+# ecological unit, species group, location), so that an LLM judge can compare evidence snippets with the full gold
+# information (see configs/experiment/evaluate/ecosystem_service_snippet_judge.yaml). Do not use it with the F1
+# metrics: the extra columns would become part of each compared entry.
+defaults:
+  - ecosystem_service_wald
+
+columns:
+  - Themenkomplex
+  - ÖSL
+  - Biodiv_Facette
+  - Einfluss
+  - Arten
+  - Notiz zum Vote Count
+  - Methode
+  - Ökologische Einheit
+  - Artengruppe
+  - Ort
+  - Ort Details

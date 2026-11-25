@@ -1,0 +1,45 @@
+# @package _global_
+
+# LLM-judge evaluation of the evidence snippets from experiment/predict=organism_trends_evidence_snippets against the
+# manually corrected forest references, including the annotators' free-text columns. For each gold trend, the judge
+# rates every snippet of the same document (see configs/metric/snippet_judge.yaml). Per-entry judgements with
+# rationales are written to snippet_judgements.json in the run directory.
+# Choose the judge model with e.g. extractor/llm@metric.llm=gpt_oss_120b.
+
+defaults:
+  - override /dataset: organism_trends_forest
+  - override /dataset/references: organism_trends_wald_corrected_with_gold_text
+  - override /metric: snippet_judge
+
+metric:
+  reference_field: organism_trends
+  label_fields:
+    - Hauptgruppe_RoteListen
+    - Untergruppe_RoteListen
+    - Lebensraum
+    - Antwortvariable
+    - Trend
+  text_fields:
+    - Untergruppe_Andere
+    - Artname_deutsch
+    - Artname_wissensch
+    - Antwortvariable_Einheit
+    - x_Achse
+    - Startjahr
+    - Endjahr
+    - Methode
+    - Trend_Info
+    - Beschreibung_Potential
+    - Lebensraum_Details
+    - Ort
+    - Notizen
+  details_file: ${hydra:runtime.output_dir}/snippet_judgements.json
+  task_description: |
+    Die Gold-Einträge beschreiben zeitliche Biodiversitätstrends von Organismen: Organismengruppe
+    ('Hauptgruppe_RoteListen', 'Untergruppe_RoteListen', ggf. 'Untergruppe_Andere' und Artnamen), Lebensraum,
+    Zielgröße ('Antwortvariable': Abundanz, Artenzahl oder ENS = effektive Artenzahl bzw. Diversitätsindex) und
+    Richtung ('Trend': positive = Zunahme, negative = Abnahme, no = kein Trend, 'negative to positive' bzw. 'positive
+    to negative' = Trendumkehr) über den Zeitraum von 'Startjahr' bis 'Endjahr'. 'Beschreibung_Potential' nennt meist
+    die Abbildung oder Tabelle, in der der Trend dargestellt ist; ein Kandidat mit demselben Verweis spricht für
+    dieselbe Information. Die Organismengruppen sind im Gold-Eintrag oft gröber als in der Studie (z.B. 'Pflanzen'
+    für einzelne Baumarten).

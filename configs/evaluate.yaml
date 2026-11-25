@@ -35,6 +35,9 @@ defaults:
 # name of the run, used in logging and as a subdir of log_dir
 name: "default"
 
+# seed for metrics that call an LLM (e.g. metric=snippet_judge), referenced by the LLM configs
+seed: 1337
+
 # List of log directories containing prediction runs to evaluate.
 # If set, replaces dataset.predictions.log in multi-run mode.
 prediction_logs: null

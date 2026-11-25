@@ -1,0 +1,31 @@
+# Organism trends of the forest literature from the manually corrected reference file (see data/readme.md and
+# https://github.com/DFKI-NLP/kibad-llm/issues/558), including the free-text columns of the annotation, so that an
+# LLM judge can compare evidence snippets with the full gold information (see
+# configs/experiment/evaluate/organism_trends_snippet_judge.yaml). `Beschreibung_Potential` names the figure or
+# table that shows the trend in most rows. Do not use it with the F1 metrics: the extra columns would become part of
+# each compared entry.
+_target_: kibad_llm.dataset.csv.read_grouped_csv_records
+output_key: organism_trends
+file: "${paths.root_dir}/data/external/organism_trends/Referenz_Wald_korrigiert_angepasst.csv"
+pdf_id_column: "Key"
+columns:
+  # labels (as in the schema OrganismBiodiversityTrend)
+  - Hauptgruppe_RoteListen
+  - Untergruppe_RoteListen
+  - Lebensraum
+  - Antwortvariable
+  - Trend
+  # annotator text
+  - Untergruppe_Andere
+  - Artname_deutsch
+  - Artname_wissensch
+  - Antwortvariable_Einheit
+  - x_Achse
+  - Startjahr
+  - Endjahr
+  - Methode
+  - Trend_Info
+  - Beschreibung_Potential
+  - Lebensraum_Details
+  - Ort
+  - Notizen

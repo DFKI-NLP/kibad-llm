@@ -14,10 +14,12 @@ Functions:
     build_chat_messages: Render role-tagged templates with explicit bindings.
     get_template_placeholders: Find the binding names referenced by message templates.
     prepare_template_request: Render with supplied bindings and prepend history.
+    prefill_template_fields: Substitute extractor-specific fields before backend rendering.
 """
 
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
+import re
 from string import Formatter
 from typing import Any
 
@@ -190,3 +192,33 @@ def prepare_template_request(
         current_messages=current_messages,
         messages=[*history, *current_messages],
     )
+
+
+def prefill_template_fields(
+    prompt_template: Mapping[str, Any], values: Mapping[str, str]
+) -> dict[str, Any]:
+    """Substitute extractor-specific fields in the message templates before backend rendering.
+
+    Backends only bind `document` and the schema fields. Extractors that need further
+    per-call fields (e.g. notes carried between chunks) fill them in here. Braces in the
+    values are escaped, so they stay literal when the backend renders the remaining fields.
+    Escaped template braces (`{{name}}`) and fields without a value are left unchanged.
+
+    Args:
+        prompt_template: Settings for the current turn, including `system_message` or `user_message`.
+        values: Replacement values keyed by field name, without braces.
+
+    Returns:
+        A copy of `prompt_template` with the fields replaced in both message templates.
+    """
+    result = dict(prompt_template)
+    for key in (SYSTEM_MESSAGE_KEY, USER_MESSAGE_KEY):
+        template = result.get(key)
+        if not isinstance(template, str):
+            continue
+        for name, value in values.items():
+            escaped = value.replace("{", "{{").replace("}", "}}")
+            pattern = r"(?<!\{)\{" + re.escape(name) + r"\}(?!\})"
+            template = re.sub(pattern, lambda _match: escaped, template)
+        result[key] = template
+    return result

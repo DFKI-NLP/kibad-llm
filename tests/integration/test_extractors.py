@@ -15,6 +15,7 @@ from kibad_llm.config import PROJ_ROOT
 from kibad_llm.llms.base import LLM
 from kibad_llm.schema.description import build_schema_description
 from tests.conftest import WRITE_FIXTURE_DATA, cfg_global
+from tests.integration.conftest import WRITE_LLM_CHAT_FIXTURE_DATA
 
 pytestmark = pytest.mark.usefixtures("llm_chat_replay")
 
@@ -25,6 +26,12 @@ AVAILABLE_EXTRACTORS = [
     for extractor_yaml in os.listdir(PROJ_ROOT / "configs" / "extractor")
     if os.path.splitext(extractor_yaml)[1] != "" and not extractor_yaml.startswith("_")
 ]
+
+
+# Extractors without recorded LLM chat fixtures yet. They need a live backend to record them (see
+# docs/CONTRIBUTING-CODE.md#fixture-regeneration). Until then, test_extractor is skipped for them; the other tests,
+# which use a mock LLM, still run.
+EXTRACTORS_WITHOUT_LLM_CHAT_FIXTURES = ["evidence_snippets"]
 
 
 @pytest.fixture(scope="function", params=AVAILABLE_EXTRACTORS)
@@ -59,6 +66,8 @@ def cfg_predict_extractor(tmp_path, extractor_name) -> DictConfig:  # type: igno
 
 
 def test_extractor(tmp_path, cfg_predict_extractor, extractor_name):
+    if extractor_name in EXTRACTORS_WITHOUT_LLM_CHAT_FIXTURES and not WRITE_LLM_CHAT_FIXTURE_DATA:
+        pytest.skip(f"No LLM chat fixtures recorded for extractor={extractor_name} yet.")
 
     HydraConfig().set_config(cfg_predict_extractor)
 

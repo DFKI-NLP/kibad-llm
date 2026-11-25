@@ -17,11 +17,15 @@ Modules:
         extraction with per-pass parameter overrides.
     multi_pass: [`MultiPassExtractorWithChunking`][kibad_llm.extractors.multi_pass.MultiPassExtractorWithChunking]
         for multi-pass extraction with per-pass parameter overrides on document chunking.
+    evidence_snippets: [`EvidenceSnippetExtractor`][kibad_llm.extractors.evidence_snippets.EvidenceSnippetExtractor]
+        for snippet-first extraction with running notes across chunks.
+    snippets: Locating model-quoted anchors and widening them to evidence snippets.
 """
 
 from .base import extract_from_text, extract_from_text_lenient
 from .chunking import ChunkingExtractor
 from .conditional import ConditionalUnionExtractor
+from .evidence_snippets import EvidenceSnippetExtractor
 from .multi_pass import MultiPassExtractorWithChunking
 from .repeat import RepeatingExtractor
 from .union import UnionExtractor

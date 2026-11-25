@@ -1,5 +1,7 @@
 """Tests for prompt rendering and default request preparation."""
 
+from typing import Any
+
 from llama_index.core.base.llms.types import MessageRole
 import pytest
 
@@ -9,6 +11,7 @@ from kibad_llm.llms.request import (
     SimpleChatMessage,
     get_message_templates,
     get_template_placeholders,
+    prefill_template_fields,
     prepare_template_request,
 )
 
@@ -151,3 +154,23 @@ def test_prepare_request_keeps_history_separate_from_current_turn() -> None:
     ]
     assert request.messages == [*history, *request.current_messages]
     assert len(history) == 1
+
+
+def test_prefill_template_fields_escapes_values_and_keeps_other_fields() -> None:
+    """Prefilled values stay literal when the backend renders the remaining fields."""
+    template: dict[str, Any] = {
+        "system_message": "Notes: {notes} {{notes}} {schema_description}",
+        "user_message": "{document}",
+        "schema_description_kwargs": {"x": 1},
+    }
+    prefilled = prefill_template_fields(template, {"notes": "a {b}", "unused": "c"})
+    assert prefilled["system_message"] == "Notes: a {{b}} {{notes}} {schema_description}"
+    assert prefilled["schema_description_kwargs"] == {"x": 1}
+    assert template["system_message"].startswith("Notes: {notes}")
+
+    request = prepare_request(
+        {k: v for k, v in prefilled.items() if k != "schema_description_kwargs"},
+        document="doc",
+        schema={"type": "object"},
+    )
+    assert request.current_messages[0].content.startswith("Notes: a {b} {notes} ")
