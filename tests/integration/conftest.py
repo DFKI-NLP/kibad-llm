@@ -26,6 +26,7 @@ FIXTURE_DIR = PROJ_ROOT / "tests" / "fixtures" / "llm_chat"
 FIXTURE_FORMAT_VERSION = 1
 
 _BACKEND_CONFIG_EXCLUDED_KEYS = {
+    "api_base",
     "api_key",
     "timeout",
     "max_retries",
