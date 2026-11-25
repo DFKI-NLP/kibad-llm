@@ -1,11 +1,19 @@
 import copy
 import json
 
+from llama_index.core.base.llms.types import (
+    ChatMessage,
+    ChatResponse,
+    MessageRole,
+    TextBlock,
+    ThinkingBlock,
+)
 from pydantic import BaseModel
 import pytest
 
 from kibad_llm.config import PROJ_ROOT
-from kibad_llm.llms.openai import make_openai_strict_json_schema
+from kibad_llm.llms.base import ReasoningExtractionError
+from kibad_llm.llms.openai import OpenAI, make_openai_strict_json_schema
 from tests.conftest import WRITE_FIXTURE_DATA
 from tests.unit.schema import (
     ALL_MODELS,
@@ -166,3 +174,33 @@ def test_does_not_mutate_input_schema() -> None:
     _ = make_openai_strict_json_schema(schema)
 
     assert schema == original, "make_openai_strict_json_schema must not mutate its input"
+
+
+def _response(*blocks) -> ChatResponse:
+    """Return a chat response with the given content blocks."""
+    return ChatResponse(message=ChatMessage(role=MessageRole.ASSISTANT, blocks=list(blocks)))
+
+
+def test_get_reasoning_returns_summary() -> None:
+    """Join the contents of all thinking blocks."""
+    llm = OpenAI(model="gpt-5", api_key="test", reasoning_options={"summary": "auto"})
+    response = _response(
+        ThinkingBlock(content="first"), ThinkingBlock(content="second"), TextBlock(text="{}")
+    )
+
+    assert llm.get_reasoning_from_chat_response(response) == "first\n\nsecond"
+
+
+def test_get_reasoning_without_summary_when_summaries_are_enabled() -> None:
+    """The API can omit the summary for a response, which is not an error."""
+    llm = OpenAI(model="gpt-5", api_key="test", reasoning_options={"summary": "auto"})
+
+    assert llm.get_reasoning_from_chat_response(_response(TextBlock(text="{}"))) is None
+
+
+def test_get_reasoning_without_summary_when_summaries_are_disabled() -> None:
+    """Without enabled summaries, a missing summary points to a configuration error."""
+    llm = OpenAI(model="gpt-5", api_key="test")
+
+    with pytest.raises(ReasoningExtractionError, match="reasoning_options.summary"):
+        llm.get_reasoning_from_chat_response(_response(TextBlock(text="{}")))

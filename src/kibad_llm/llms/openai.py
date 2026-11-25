@@ -194,8 +194,24 @@ class OpenAI(LLM):
             # align error type with in_process LLMs
             raise ValueError(e.message) from e
 
-    def get_reasoning_from_chat_response(self, response: ChatResponse) -> str:
-        """Return the OpenAI Responses API reasoning *summary* (not raw CoT)."""
+    def get_reasoning_from_chat_response(self, response: ChatResponse) -> str | None:
+        """Return the OpenAI Responses API reasoning *summary* (not raw CoT).
+
+        With reasoning summaries enabled, the API can still omit the summary for a response, even
+        though the model used reasoning tokens. This was observed for short reasoning, e.g. on chunks
+        that contain only the references. Such responses are valid, so None is returned for them.
+
+        Args:
+            response: The chat response from the Responses API.
+
+        Returns:
+            The reasoning summary, or None if summaries are enabled but the API sent none for this
+            response.
+
+        Raises:
+            ReasoningExtractionError: The response has no reasoning summary and reasoning
+                summaries are not enabled via `reasoning_options.summary`.
+        """
 
         thinking_block_contents = [
             block.content
@@ -203,6 +219,12 @@ class OpenAI(LLM):
             if isinstance(block, ThinkingBlock) and block.content is not None
         ]
         if len(thinking_block_contents) == 0:
+            if (self.model.reasoning_options or {}).get("summary"):
+                warn_once(
+                    "The OpenAI Responses API returned no reasoning summary for a response, "
+                    "although summaries are enabled. Its reasoning_content is None."
+                )
+                return None
             raise ReasoningExtractionError(
                 "Could not find any ThinkingBlock content in chat response. "
                 "Did you enable reasoning summaries via OpenAI Responses API, e.g. "
