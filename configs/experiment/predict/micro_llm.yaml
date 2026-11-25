@@ -1,0 +1,17 @@
+# @package _global_
+
+# Run the complete fixture PDFs through a small local model with bounded requests.
+# See docs/USAGE.md for CPU installation and runtime settings.
+defaults:
+  - override /extractor: chunking
+  - override /extractor/llm: smollm2_135m_in_process
+  - override /extractor/schema: document_language
+
+name: micro_llm
+pdf_directory: ${paths.root_dir}/tests/fixtures/pdfs
+
+extractor:
+  max_char_buffer: 6000
+  include_evidence: false
+  use_wrapped_schema_in_prompt: false
+  return_reasoning: false

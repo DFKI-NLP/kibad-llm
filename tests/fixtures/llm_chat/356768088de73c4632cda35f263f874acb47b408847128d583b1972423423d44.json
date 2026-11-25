@@ -1,0 +1,216 @@
+{
+  "fixture_format_version": 1,
+  "fixture_hash": "356768088de73c4632cda35f263f874acb47b408847128d583b1972423423d44",
+  "request": {
+    "backend_type": "llama_index.llms.openai_like.base.OpenAILike",
+    "backend_config": {
+      "system_prompt": null,
+      "pydantic_program_mode": "default",
+      "model": "openai/gpt-oss-20b",
+      "temperature": 1.0,
+      "max_tokens": null,
+      "logprobs": null,
+      "top_logprobs": 0,
+      "additional_kwargs": {
+        "max_completion_tokens": 8192,
+        "seed": 1337,
+        "top_p": 1.0
+      },
+      "api_version": "",
+      "strict": false,
+      "reasoning_effort": null,
+      "modalities": null,
+      "audio_config": null,
+      "context_window": 131072,
+      "is_chat_model": true,
+      "is_function_calling_model": false,
+      "should_use_structured_outputs": false
+    },
+    "messages": [
+      {
+        "role": "system",
+        "content": "Du extrahierst Informationen aus einem Markdown-Dokument.\nGib **ausschließlich** gültiges JSON nach dem folgendem Schema zurück.\nKeine zusätzlichen Felder, keine Erklärungen.\nBeschreibung: Angaben zu den ökosystembezogenen Studienmerkmalen.\nFeldhinweise und erlaubte Werte (getrennt durch Semikolons):\n- habitat: Um welchen der folgenden Lebensräume oder in welcher Kombination der folgenden Lebensräume geht es in dem Text? | Kardinalität: 0..* | Typ: object\n  - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Agrar- und Offenland; Binnengewässer und Auen; Boden; Küsten und Küstengewässer; Urbane Räume; Wald\n  - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string\n- natural_region: Um welchen der folgenden Naturgroßräume geht es in dem Text? | Kardinalität: 0..* | Typ: object\n  - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Alpen; Alpenvorland; Mittelgebirgsschwelle; Nord- und Ostsee; Norddeutsches Tiefland; Schichtstufenland beidseits des Oberrheingrabens\n  - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string\n- climate: Welche Umschreibung trifft auf das Klima des Untersuchungsgebiets zu? | Kardinalität: 0..* | Typ: object\n  - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Atlantisches Klima; Gebirgsklima; kontinental; maritim; niederschlagsbenachteiligt; niederschlagsnormal; niederschlagsbegünstigt; subkontinental; submaritim\n  - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string\n- landuse: Welche Landnutzung wird im oder nahe des Untersuchungsgebietes betrieben? In welche der folgenden Kategorien fällt die Nutzung? | Kardinalität: 0..* | Typ: object\n  - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: Bau; Bergbau und Steinbruch; Brachliegende Flächen; Energieproduktion; Erholung, Freizeit, Sport; Fischerei und Aquakultur; Forstwirtschaft; Handels-, Finanz-, Berufs- und Informationsdienstleistungen; Industrie und Fertigung; Landwirtschaft; Naturnahe und natürliche Flächen, die nicht genutzt werden; Verkehr, Kommunikationsnetzwerke, Lagerung, Schutzwälle; Wasser- und Abfallbehandlung; Wohngebiete; andere Leistung des Primärsektors; Öffentliche Einrichtungen\n  - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string\n"
+      },
+      {
+        "role": "user",
+        "content": "Dokument in Markdown Format:\n\n[Freiflächensolaranlagen (PV-FFA)](https://mluk.brandenburg.de/sixcms/media.php/9/MLUK-Handlungsempfehlung-PV-FFA.pdf)\n11 Grethe, H., Martinez, J., Osterburg, B., Taube, F. & Thom, F. (2021): Klimaschutz im Agrar- und Ernährungssystem Deutschlands: Die drei\nzentralen Handlungsfelder auf dem Weg zur Klimaneutralität. Stiftung Klimaneutralität, Berlin. 103 S.\n12 [Närmann, F., Birr, F., Kaiser, M., Nerger, M., Luthardt, V., Zeitz J. & Tanneberger, F. (Hg.): Klimaschonende, biodiversitätsfördernde](https://www.bfn.de/sites/default/files/2021-11/Skript616.pdf)\n[Bewirtschaftung von Niedermoorböden. BfN-Skripten 616, Bundesamt für Naturschutz, Bonn-Bad Godesberg, 342 S.](https://www.bfn.de/sites/default/files/2021-11/Skript616.pdf)\n13 Barthelmes A., Abel S., Barthelmes K.-D., Couwenberg J., Kaiser M., Reichelt F., Tanneberger F. & H. Joosten (2021): Evaluierung von\nMoor-Wiedervernässung in Deutschland. Naturschutz und Biologische Vielfalt 171: 121-148.\n14 LM M-V (2017): Umsetzung von Paludikultur auf landwirtschaftlich genutzten Flächen in Mecklenburg-Vorpommern. Fachstrategie zur\nUmsetzung der nutzungsbezogenen Vorschläge des Moorschutzkonzeptes. Ministerium für Landwirtschaft und Umwelt MecklenburgVorpommern, Schwerin.\n15 Tanneberger, F., Birr, F., Couwenberg, J., […] & Närmann, F. (accepted) Saving soil carbon, greenhouse gas emissions, biodiversity, and\nthe economy: Paludiculture as sustainable land use option in German fen peatlands. Regional Environmental Change.\n16 Vgl. UBA (2021): Wege in eine ressourcenschonende Treibhausgasneutralität. RESCUE-Studie. Hg. v. Umweltbundesamt. Dessau-Roßlau.\n2. Auflage Juni 2021. Demnach müssen jährlich 5 % der landwirtschaftlich genutzten Moorböden vernässt werden, das entspricht 50.000 ha\npro Jahr.\n17 GMC (2021): [Faktenpapier Torfmoos-Anbau in Niedersachsen. 2 S.](https://greifswaldmoor.de/files/dokumente/Infopapiere_Briefings/202101_Faktenpapier_Torfmoosanbau.pdf)\n18 Nordt, A., Wichmann, S., Risse, J., Peters, J. & Schäfer, A. (2022): Potenziale und Hemmnisse von Paludikultur. Hintergrundpapier zur\nStudie „Anreize für Paludikultur zur Umsetzung der Klimaschutzziele 2030 und 2050“. Hg. v. Deutsche Emissionshandelsstelle im Umweltbundesamt (DEHSt). Berlin\n19 GMC (2020): Stellungnahme des Greifswald Moor Centrum zur Berücksichtigung der Bedeutung der Moore für den Klimaschutz im\nRegionalen Raumentwicklungsprogramm Vorpommern 2020. Greifswald, 17 S., unveröffentlicht\n20 ROG vom 22.12.2008, Bgbl. I S. 2986, welches in §2 Abs. 2 Nr. 6 die Zielvorgabe setzt: „ […] die räumlichen Voraussetzungen für […] die\nEntwicklung von natürlichen Senken für klimaschädliche Stoffe […] zu schaffen“.\n21 BMWK 2022: [Referentenentwurf, Stand 04.03.2022.](https://www.bmwi.de/Redaktion/DE/Downloads/E/referentenentwurf-erneuerbaren-energien-und-weiteren-massnahmen-im-stromsektor.pdf?__blob=publicationFile&v=6)\n22 Niedersächsisches Ministerium für Umwelt, Energie, Bauen und Klimaschutz (2022): [Länderanhörung zum Entwurf eines Gesetzes zu](https://www.bmwi.de/Redaktion/DE/Downloads/Stellungnahmen/Stellungnahmen-referentenentwurf-erneuerbaren-energien-und-weiteren-massnahmen-im-stromsektor/niedersachsen.pdf?__blob=publicationFile&v=4)\n[Sofortmaßnahmen für einen beschleunigten Ausbau der erneuerbaren Energien und weiteren Maßnahmen im Stromsektor. Hannover, 9 S.](https://www.bmwi.de/Redaktion/DE/Downloads/Stellungnahmen/Stellungnahmen-referentenentwurf-erneuerbaren-energien-und-weiteren-massnahmen-im-stromsektor/niedersachsen.pdf?__blob=publicationFile&v=4)\n23 BLZV (2021): [Bund-Länder-Zielvereinbarung zum Klimaschutz durch Moorbodenschutz. Berlin, 20.10.2021. 13 S.](https://www.bmel.de/SharedDocs/Downloads/DE/_Landwirtschaft/Klimaschutz/moorbodenschutz-blzv.pdf;jsessionid=89F9EE84DDBD67F3DA94F6464591DAED.live841?)\n[24 Ministerium für Energiewende, Landwirtschaft, Umwelt, Natur und Digitalisierung Schleswig-Holstein 2022: Stellungnahme des MELUND](https://www.bmwi.de/Redaktion/DE/Downloads/Stellungnahmen/Stellungnahmen-referentenentwurf-erneuerbaren-energien-und-weiteren-massnahmen-im-stromsektor/melund-sh.pdf?__blob=publicationFile&v=2)\n[SH zum Entwurf des BMWK für die EEG-Novelle 2023 im Rahmen des Sofortprogramms. Kiel, 3 S.](https://www.bmwi.de/Redaktion/DE/Downloads/Stellungnahmen/Stellungnahmen-referentenentwurf-erneuerbaren-energien-und-weiteren-massnahmen-im-stromsektor/melund-sh.pdf?__blob=publicationFile&v=2)\n\n\nwww.greifswaldmoor.de www.greifswaldmoor.de\n"
+      }
+    ],
+    "request_kwargs": {
+      "extra_body": {
+        "structured_outputs": {
+          "json": {
+            "$defs": {
+              "ClimateEnum": {
+                "enum": [
+                  "Atlantisches Klima",
+                  "Gebirgsklima",
+                  "kontinental",
+                  "maritim",
+                  "niederschlagsbenachteiligt",
+                  "niederschlagsnormal",
+                  "niederschlagsbegünstigt",
+                  "subkontinental",
+                  "submaritim"
+                ],
+                "title": "ClimateEnum",
+                "type": "string"
+              },
+              "HabitatEnum": {
+                "enum": [
+                  "Agrar- und Offenland",
+                  "Binnengewässer und Auen",
+                  "Boden",
+                  "Küsten und Küstengewässer",
+                  "Urbane Räume",
+                  "Wald"
+                ],
+                "title": "HabitatEnum",
+                "type": "string"
+              },
+              "LanduseEnum": {
+                "enum": [
+                  "Bau",
+                  "Bergbau und Steinbruch",
+                  "Brachliegende Flächen",
+                  "Energieproduktion",
+                  "Erholung, Freizeit, Sport",
+                  "Fischerei und Aquakultur",
+                  "Forstwirtschaft",
+                  "Handels-, Finanz-, Berufs- und Informationsdienstleistungen",
+                  "Industrie und Fertigung",
+                  "Landwirtschaft",
+                  "Naturnahe und natürliche Flächen, die nicht genutzt werden",
+                  "Verkehr, Kommunikationsnetzwerke, Lagerung, Schutzwälle",
+                  "Wasser- und Abfallbehandlung",
+                  "Wohngebiete",
+                  "andere Leistung des Primärsektors",
+                  "Öffentliche Einrichtungen"
+                ],
+                "title": "LanduseEnum",
+                "type": "string"
+              },
+              "NaturalRegionEnum": {
+                "enum": [
+                  "Alpen",
+                  "Alpenvorland",
+                  "Mittelgebirgsschwelle",
+                  "Nord- und Ostsee",
+                  "Norddeutsches Tiefland",
+                  "Schichtstufenland beidseits des Oberrheingrabens"
+                ],
+                "title": "NaturalRegionEnum",
+                "type": "string"
+              }
+            },
+            "additionalProperties": false,
+            "description": "Angaben zu den ökosystembezogenen Studienmerkmalen.",
+            "properties": {
+              "habitat": {
+                "description": "Um welchen der folgenden Lebensräume oder in welcher Kombination der folgenden Lebensräume geht es in dem Text?",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "content": {
+                      "$ref": "#/$defs/HabitatEnum"
+                    },
+                    "evidence_anchor": {
+                      "type": "string",
+                      "description": "Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt."
+                    }
+                  },
+                  "required": [
+                    "content",
+                    "evidence_anchor"
+                  ],
+                  "additionalProperties": false
+                },
+                "title": "Habitat",
+                "type": "array"
+              },
+              "natural_region": {
+                "description": "Um welchen der folgenden Naturgroßräume geht es in dem Text?",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "content": {
+                      "$ref": "#/$defs/NaturalRegionEnum"
+                    },
+                    "evidence_anchor": {
+                      "type": "string",
+                      "description": "Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt."
+                    }
+                  },
+                  "required": [
+                    "content",
+                    "evidence_anchor"
+                  ],
+                  "additionalProperties": false
+                },
+                "title": "Natural Region",
+                "type": "array"
+              },
+              "climate": {
+                "description": "Welche Umschreibung trifft auf das Klima des Untersuchungsgebiets zu?",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "content": {
+                      "$ref": "#/$defs/ClimateEnum"
+                    },
+                    "evidence_anchor": {
+                      "type": "string",
+                      "description": "Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt."
+                    }
+                  },
+                  "required": [
+                    "content",
+                    "evidence_anchor"
+                  ],
+                  "additionalProperties": false
+                },
+                "title": "Climate",
+                "type": "array"
+              },
+              "landuse": {
+                "description": "Welche Landnutzung wird im oder nahe des Untersuchungsgebietes betrieben? In welche der folgenden Kategorien fällt die Nutzung?",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "content": {
+                      "$ref": "#/$defs/LanduseEnum"
+                    },
+                    "evidence_anchor": {
+                      "type": "string",
+                      "description": "Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt."
+                    }
+                  },
+                  "required": [
+                    "content",
+                    "evidence_anchor"
+                  ],
+                  "additionalProperties": false
+                },
+                "title": "Landuse",
+                "type": "array"
+              }
+            },
+            "title": "EcosystemStudyFeaturesSimple",
+            "type": "object"
+          }
+        }
+      }
+    }
+  },
+  "response": {
+    "message": {
+      "role": "assistant",
+      "content": "{\n  \"habitat\": [\n    {\n      \"content\": \"Boden\",\n      \"evidence_anchor\": \"Demnach müssen jährlich 5 % der landwirtschaftlich genutzten Moorböden vernässt werden\"\n    }\n  ],\n  \"natural_region\": [\n    {\n      \"content\": \"Norddeutsches Tiefland\",\n      \"evidence_anchor\": \"Niedersachsen\"\n    }\n  ],\n  \"landuse\": [\n    {\n      \"content\": \"Landwirtschaft\",\n      \"evidence_anchor\": \"landwirtschaftlich genutzten Moorböden\"\n    }\n  ]\n}"
+    },
+    "raw_message": {
+      "reasoning": "We are to extract info from Markdown doc; but the doc is bibliographic list without obvious habitat etc. It lists references and mentions paludiculture, peatlands, wetlands. But need to extract fields: habitat, natural_region, climate, landuse. Must provide JSON with these fields arrays of objects each containing content and evidence_anchor. If nothing found for a field, we omit that field? Schema: Each field cardinality 0..* . So if none, can omit or empty array? Probably omit.\n\nWe need evidence anchor: literal quote from original text that supports extraction. But the doc is just references with URLs and some abbreviations. There is mention: \"Landwirtschaftlich genutzten Moorböden\" etc, but no direct quote context. We can extract habitat: \"Moorböden\" which is not in options, but options: \"Boden\" maybe? \"Moor\" is wetland; but options: \"Binnengewässer und Auen;\" \"Boden;\" etc. Probably \"Boden\" but not precise. Could also say \"Boden\" because peat soil is \"Boden\". Evidence anchor: \"landwirtschaftlich genutzten Moorböden\" from sentence 16: \"Demnach müssen jährlich 5 % der landwirtschaftlich genutzten Moorböden vernässt werden\". That statement includes \"Moorböden\". So habitat content \"Boden\" maybe; evidence: \"Moorböden\" from that sentence.\n\nNatural_region: There is no region names in doc. It mentions \"Mecklenburg-Vorpommern\", \"Niedersachsen\", \"Schleswig-Holstein\" as states, but natural region terms given are specific German natural regions: Alpen; Alpenvorland; Mittelgebirgsschwelle; Nord- und Ostsee; Norddeutsches Tiefland; Schichtstufenland beidseits des Oberrheingrabens. We could consider \"Norddeutsches Tiefland\" covers regions like Niedersachsen, Schleswig-Holstein. So natural_region content \"Norddeutsches Tiefland\"; evidence anchor: \"Niedersachsen\", \"Schleswig-Holstein\" mention? There's mention \"Künftiges\" etc. The text includes \"Niedersachsen\" in node 21 and 22. Also \"Schleswig-Holstein\" in 24. That indicates the region approximated as Norddeutsches Tiefland. I think we can extract natural_region: \"Norddeutsches Tiefland\". Provide evidence anchor: the word \"Niedersachsen\" or \"Schleswig-Holstein\" ; but quoting both would be two anchors? Each object includes one evidence_anchor; better choose one. Choose \"Niedersachsen\". Provide evidence anchor string from sentence 21/22: contains \"Niedersachsen\". So we can create object.\n\nClimate: No explicit climate description. Not possible. Landuse: \"Landwirtschaft\" is used. So landuse content: \"Landwirtschaft\". Evidence anchor: \"landwirtschaftlich genutzten Moorböden\" etc. Alternatively \"Landwirtschaft\" is in \"Klimaschutz im Agrar- und Ernährungssystem Deutschlands\". But given the doc content includes many references to agriculture and peatland restoration – land use is agriculture. Could also include \"Bau\" etc. But only agriculture is definite. So we include landuse: \"Landwirtschaft\".\n\nSo we produce:\n\n{\n  \"habitat\": [\n    {\n      \"content\": \"Boden\",\n      \"evidence_anchor\": \"Demnach müssen jährlich 5 % der landwirtschaftlich genutzten Moorböden vernässt werden\"\n    }\n  ],\n  \"natural_region\": [\n    {\n      \"content\": \"Norddeutsches Tiefland\",\n      \"evidence_anchor\": \"Niedersachsen\"\n    }\n  ],\n  \"landuse\": [\n    {\n      \"content\": \"Landwirtschaft\",\n      \"evidence_anchor\": \"landwirtschaftlich genutzten Moorböden\"\n    }\n  ]\n}\n\nBut need evidence_anchor exact quoted from original text. The extracted evidence must be literal. I can copy snippet: \"Demnach müssen jährlich 5 % der landwirtschaftlich genutzten Moorböden vernässt werden\". That's from sentence 16. So use that.\n\nFor natural_region evidence: the word \"Niedersachsen\" appears in the cited document title: \"Länderanhörung zum Entwurf eines Gesetzes zu\". The snippet: \"Niedersachsen\". We need to quote exactly. So include: \"Niedersachsen\". Or we could quote the entire line: \"Niedersachsen (2022): [Länderanhörung zum Entwurf eines Gesetzes zu\". But anchor must be a literal quote. So let's use \"Niedersachsen\".\n\nFor landuse evidence: same sentence: \"landwirtschaftlich genutzten Moorböden\". Good.\n\nMake sure JSON keys exactly as schema: habitat, natural_region, climate, landuse. Provide arrays. Use correct string values.\n\nOk.",
+      "reasoning_content": "We are to extract info from Markdown doc; but the doc is bibliographic list without obvious habitat etc. It lists references and mentions paludiculture, peatlands, wetlands. But need to extract fields: habitat, natural_region, climate, landuse. Must provide JSON with these fields arrays of objects each containing content and evidence_anchor. If nothing found for a field, we omit that field? Schema: Each field cardinality 0..* . So if none, can omit or empty array? Probably omit.\n\nWe need evidence anchor: literal quote from original text that supports extraction. But the doc is just references with URLs and some abbreviations. There is mention: \"Landwirtschaftlich genutzten Moorböden\" etc, but no direct quote context. We can extract habitat: \"Moorböden\" which is not in options, but options: \"Boden\" maybe? \"Moor\" is wetland; but options: \"Binnengewässer und Auen;\" \"Boden;\" etc. Probably \"Boden\" but not precise. Could also say \"Boden\" because peat soil is \"Boden\". Evidence anchor: \"landwirtschaftlich genutzten Moorböden\" from sentence 16: \"Demnach müssen jährlich 5 % der landwirtschaftlich genutzten Moorböden vernässt werden\". That statement includes \"Moorböden\". So habitat content \"Boden\" maybe; evidence: \"Moorböden\" from that sentence.\n\nNatural_region: There is no region names in doc. It mentions \"Mecklenburg-Vorpommern\", \"Niedersachsen\", \"Schleswig-Holstein\" as states, but natural region terms given are specific German natural regions: Alpen; Alpenvorland; Mittelgebirgsschwelle; Nord- und Ostsee; Norddeutsches Tiefland; Schichtstufenland beidseits des Oberrheingrabens. We could consider \"Norddeutsches Tiefland\" covers regions like Niedersachsen, Schleswig-Holstein. So natural_region content \"Norddeutsches Tiefland\"; evidence anchor: \"Niedersachsen\", \"Schleswig-Holstein\" mention? There's mention \"Künftiges\" etc. The text includes \"Niedersachsen\" in node 21 and 22. Also \"Schleswig-Holstein\" in 24. That indicates the region approximated as Norddeutsches Tiefland. I think we can extract natural_region: \"Norddeutsches Tiefland\". Provide evidence anchor: the word \"Niedersachsen\" or \"Schleswig-Holstein\" ; but quoting both would be two anchors? Each object includes one evidence_anchor; better choose one. Choose \"Niedersachsen\". Provide evidence anchor string from sentence 21/22: contains \"Niedersachsen\". So we can create object.\n\nClimate: No explicit climate description. Not possible. Landuse: \"Landwirtschaft\" is used. So landuse content: \"Landwirtschaft\". Evidence anchor: \"landwirtschaftlich genutzten Moorböden\" etc. Alternatively \"Landwirtschaft\" is in \"Klimaschutz im Agrar- und Ernährungssystem Deutschlands\". But given the doc content includes many references to agriculture and peatland restoration – land use is agriculture. Could also include \"Bau\" etc. But only agriculture is definite. So we include landuse: \"Landwirtschaft\".\n\nSo we produce:\n\n{\n  \"habitat\": [\n    {\n      \"content\": \"Boden\",\n      \"evidence_anchor\": \"Demnach müssen jährlich 5 % der landwirtschaftlich genutzten Moorböden vernässt werden\"\n    }\n  ],\n  \"natural_region\": [\n    {\n      \"content\": \"Norddeutsches Tiefland\",\n      \"evidence_anchor\": \"Niedersachsen\"\n    }\n  ],\n  \"landuse\": [\n    {\n      \"content\": \"Landwirtschaft\",\n      \"evidence_anchor\": \"landwirtschaftlich genutzten Moorböden\"\n    }\n  ]\n}\n\nBut need evidence_anchor exact quoted from original text. The extracted evidence must be literal. I can copy snippet: \"Demnach müssen jährlich 5 % der landwirtschaftlich genutzten Moorböden vernässt werden\". That's from sentence 16. So use that.\n\nFor natural_region evidence: the word \"Niedersachsen\" appears in the cited document title: \"Länderanhörung zum Entwurf eines Gesetzes zu\". The snippet: \"Niedersachsen\". We need to quote exactly. So include: \"Niedersachsen\". Or we could quote the entire line: \"Niedersachsen (2022): [Länderanhörung zum Entwurf eines Gesetzes zu\". But anchor must be a literal quote. So let's use \"Niedersachsen\".\n\nFor landuse evidence: same sentence: \"landwirtschaftlich genutzten Moorböden\". Good.\n\nMake sure JSON keys exactly as schema: habitat, natural_region, climate, landuse. Provide arrays. Use correct string values.\n\nOk."
+    }
+  },
+  "error": null
+}

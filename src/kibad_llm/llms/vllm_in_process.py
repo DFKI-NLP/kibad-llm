@@ -1,3 +1,12 @@
+"""Simple wrapper around VllmLLM in process models.
+
+Functions:
+    cleanup: Clean up everything related to a model running in this process.
+
+Classes:
+    VllmInProcess: Simple wrapper around VllmLLM in process models.
+"""
+
 import contextlib
 import gc
 import logging
@@ -15,6 +24,7 @@ from vllm.entrypoints.chat_utils import (
 )
 from vllm.entrypoints.harmony_utils import parse_chat_output
 from vllm.entrypoints.openai.protocol import ChatCompletionRequest
+from vllm.outputs import RequestOutput
 from vllm.reasoning import ReasoningParser
 from vllm.reasoning.gptoss_reasoning_parser import GptOssReasoningParser
 from vllm.sampling_params import StructuredOutputsParams
@@ -31,6 +41,7 @@ logger = logging.getLogger(__name__)
 
 
 def cleanup():
+    """Clean up everything related to a model running in this process."""
     destroy_model_parallel()
     destroy_distributed_environment()
     with contextlib.suppress(AssertionError):
@@ -55,19 +66,42 @@ _VLLM_CHAT_KWARGS = {
 
 
 def _chat_message_to_vllm_param(m: SimpleChatMessage) -> ChatCompletionMessageParam:
+    """Convert a `SimpleChatMessage` to the vLLM compatible `ChatCompletionMessageParam`.
+
+    Args:
+        m: [`SimpleChatMessage`][kibad_llm.llms.base.SimpleChatMessage] to convert to
+            vLLM compatible.
+
+    Returns:
+        `ChatCompletionMessageParam` equivalent to the
+            [`SimpleChatMessage`][kibad_llm.llms.base.SimpleChatMessage].
+    """
+    # This type is a narrower version of ChatCompletionMessageParam, ensuring compatibility and security.
     msg: CustomChatCompletionMessageParam = {"role": m.role.value, "content": m.content}
     return msg
 
 
 class VllmInProcess(LLM):
-    """
-    In-process vLLM backend using vllm.LLM.chat() so the model's chat template
+    """In-process vLLM backend using `vllm.LLM.chat()` so the model's chat template
     is applied automatically.
 
-    Supports guided decoding via StructuredOutputsParams(json=...).
+    Supports guided decoding via `StructuredOutputsParams(json=...)`.
 
     In offline mode, vLLM does not automatically split reasoning vs final content
-    for you; we do it here using the configured ReasoningParser (and a Harmony fallback).
+    for you; we do it here using the configured `ReasoningParser` (and a Harmony fallback).
+
+    Attributes:
+        llm: `VllmLLM` instance to query for responses.
+        reasoning_parser: `ReasoningParser` to retrieve reasoning content with.
+        _model_name: Name of the model to instantiate.
+        _vllm_kwargs: Kwargs to instantiate vLLM with.
+        _default_request_kwargs: Default kwargs to forward to all requests.
+
+    Methods:
+        destroy: Clean up vLLM resources.
+        call_llm_chat_with_guided_decoding: Call the in process VllmLLM chat LLM with optional json schema for
+            guided decoding.
+        get_reasoning_from_chat_response: Extract reasoning from a chat response.
     """
 
     def __init__(
@@ -80,6 +114,20 @@ class VllmInProcess(LLM):
         additional_kwargs: dict[str, Any] | None = None,
         **default_request_kwargs: Any,
     ) -> None:
+        """Initialize the VllmInProcess wrapper class.
+
+        All args need to be passed by keyword!
+
+        Args:
+            model: Model to run in process.
+            vllm_kwargs: Arguments to hand to vLLM.
+            lazy: If lazy, initialize model upon first call to it. Otherwise do it here.
+            additional_kwargs: These args are handed to the `_default_request_kwargs`.
+
+        Keyword Args:
+            **default_request_kwargs (Any): These args take precedence over `additional_kwargs` and are handed to
+                the `_default_request_kwargs`.
+        """
         self._model_name = model
         self._vllm_kwargs = vllm_kwargs or {}
         if not lazy:
@@ -93,6 +141,11 @@ class VllmInProcess(LLM):
 
     @property
     def llm(self) -> VllmLLM:
+        """This property wraps an in process vLLM model.
+
+        Returns:
+            The in process VllmLLM.
+        """
         if not hasattr(self, "_llm"):
             self._llm = VllmLLM(model=self._model_name, **self._vllm_kwargs)
 
@@ -100,6 +153,11 @@ class VllmInProcess(LLM):
 
     @property
     def reasoning_parser(self) -> ReasoningParser | None:
+        """This property wraps the ReasoningParser to match the VllmLLM.
+
+        Returns:
+            The ReasoningParser, or None if none is configured.
+        """
         if not hasattr(self, "_reasoning_parser"):
             # Uses vllm_config.structured_outputs_config.reasoning_parser
             # to create a ReasoningParser (if configured).
@@ -129,6 +187,7 @@ class VllmInProcess(LLM):
         cleanup()
 
     def __del__(self):
+        """Ensure that deletion of this class cleans up all the vLLM processes."""
         self.destroy()
 
     def call_llm_chat_with_guided_decoding(
@@ -138,6 +197,29 @@ class VllmInProcess(LLM):
         json_schema: dict[str, Any] | None = None,
         **request_kwargs: Any,
     ) -> ChatResponse:
+        """Call the in process VllmLLM chat LLM with optional json schema for guided decoding.
+
+        The reasoning is stored in `ChatResponse.message.additional_kwargs["reasoning"]` if extracted.
+
+        Args:
+            messages: Message history of
+                [`SimpleChatMessage`][kibad_llm.llms.base.SimpleChatMessage]s to pass to the
+                LLM query.
+            json_schema: Schema the LLM output must comply with.
+                With `None`, the wrapper supplies no schema. Sampling parameters such as
+                `structured_outputs` and `allowed_token_ids` can still constrain output.
+                Pass by keyword.
+
+        Keyword Args:
+            **request_kwargs (Any): Per-request kwargs, overriding the defaults set at init.
+                Keys in `_VLLM_CHAT_KWARGS` (e.g. `chat_template_kwargs`, `lora_request`) are
+                passed to `vllm.LLM.chat()`, all others to `SamplingParams`. A
+                `structured_outputs` entry is overwritten if `json_schema` is given.
+
+        Returns:
+            [`ChatResponse`][llama_index.core.base.llms.types.ChatResponse] holding the model's
+                reply message and raw vLLM response.
+        """
         convo = [_chat_message_to_vllm_param(m) for m in messages]
 
         sampling_kwargs = {**self._default_request_kwargs, **request_kwargs}
@@ -176,9 +258,51 @@ class VllmInProcess(LLM):
 
         return ChatResponse(message=msg, raw=req_outputs)
 
-    def get_reasoning_from_chat_response(self, response: ChatResponse) -> str | None:
-        """Extract reasoning from a chat response."""
+    def get_backend_metadata_from_chat_response(
+        self, response: ChatResponse
+    ) -> dict[str, Any] | None:
+        """Count usage from the token IDs returned by one in-process vLLM request.
 
+        Args:
+            response: A chat response with the raw vLLM request outputs.
+
+        Returns:
+            Metadata with prompt, completion, and total token counts. Completion
+            usage includes all generated candidates, including reasoning tokens.
+            Cached prompt tokens are included when vLLM reports them. If prompt
+            token IDs are unavailable, prompt and total counts are omitted.
+            Returns None if there is no raw response.
+        """
+        if response.raw is None:
+            return None
+        output: RequestOutput = response.raw[0]
+        completion_tokens = sum(len(candidate.token_ids) for candidate in output.outputs)
+        usage: dict[str, Any] = {"completion_tokens": completion_tokens}
+        if output.prompt_token_ids is not None:
+            prompt_tokens = len(output.prompt_token_ids)
+            usage.update(
+                prompt_tokens=prompt_tokens, total_tokens=prompt_tokens + completion_tokens
+            )
+        if output.num_cached_tokens is not None:
+            usage["prompt_tokens_details"] = {"cached_tokens": output.num_cached_tokens}
+        return {"usage": usage}
+
+    def get_reasoning_from_chat_response(self, response: ChatResponse) -> str | None:
+        """Extract reasoning from a chat response.
+
+        Args:
+            response: [`ChatResponse`][llama_index.core.base.llms.types.ChatResponse] to
+                extract the reasoning from.
+
+        Returns:
+            Reasoning output from the given
+                [`ChatResponse`][llama_index.core.base.llms.types.ChatResponse]
+                or None if no reasoning_parser is configured.
+
+        Raises:
+            ReasoningExtractionError: If the reasoning cannot be extracted.
+            EmptyReasoningError: If the extracted reasoning is empty.
+        """
         # don't attempt extraction if no reasoning parser configured (and thus don't raise errors)
         if self.reasoning_parser is None:
             return None

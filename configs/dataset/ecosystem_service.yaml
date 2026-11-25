@@ -1,0 +1,12 @@
+# Merges the references from the "ÖSL-VoteCount-Vollständig" csv into the predictions from
+# extraction_result. The resulting dataset has "prediction" and "reference" fields for each entry
+# and can be used for evaluation.
+
+defaults:
+  - predictions: extraction_result
+  - references: ecosystem_service_wald
+
+_target_: kibad_llm.dataset.utils.merge_references_into_predictions
+# the reference data contains only positive entries (i.e., with a relationship), so we allow
+# missing references to be able to evaluate negative predictions as well
+allow_missing_references: true

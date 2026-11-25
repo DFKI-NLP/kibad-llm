@@ -3,27 +3,31 @@
 # See simple.yaml for an example.
 
 # Enabling this flag will adjust the schema to wrap each field value with evidence detection metadata
-adjust_schema_for_evidence_detection: true
+include_evidence: true
 
-# Enabling this flag will create the schema description from the adjusted schema.
-# If not enabled, the original schema description will be used. In this case, it is
-# highly recommended to use a prompt template that is aware of evidence detection.
-adjust_schema_description_for_evidence_detection: true
+# Show the wrapped schema in both prompt schema placeholders.
+# Templates with their own wrapper instructions can use the original schema.
+use_wrapped_schema_in_prompt: true
 
-# In case of enabled adjust_schema_description_for_evidence_detection, customize
+# When use_wrapped_schema_in_prompt is enabled, customize
 # the evidence anchor description here.
 evidence_anchor_description: "Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt."
 
-# In case of enabled adjust_schema_description_for_evidence_detection, customize
+# When use_wrapped_schema_in_prompt is enabled, customize
 # the wrapped content description here. If not set, no description will be used.
 # wrapped_content_description: "Der extrahierte Inhalt."
+
+# Enabling this flag places the evidence_anchor before the content in each wrapped field, so that (with guided
+# decoding) the model quotes the evidence before it commits to the extracted value.
+# Confidence scores follow the extracted value.
+evidence_before_content: false
 
 # Enabling response_has_metadata will cause metadata unwrapping to be performed on the LLM response.
 # This means that the extracted field values will be unwrapped from their evidence detection
 # metadata, so that only the raw field "content" values are returned in the final predictions.
-# If adjust_schema_for_evidence_detection is enabled, this is automatically set to true.
+# If include_evidence is enabled, this is automatically set to true.
 # Useful when a handcrafted schema with evidence detection metadata is used (and, thus,
-# adjust_schema_for_evidence_detection is false).
+# include_evidence is false).
 # response_has_metadata: true
 
 # Customize metadata augmentation ...

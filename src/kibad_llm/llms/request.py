@@ -1,0 +1,192 @@
+"""Construct chat messages from templates and explicit field bindings.
+
+Read the system and user templates in order, identify their fields, and substitute
+the values the backend supplies. A prepared request combines the rendered turn with
+prior messages and carries any input artifacts chosen by the backend.
+
+Classes:
+    MissingBindingError: A template references a field without a supplied value.
+    SimpleChatMessage: A role and template or rendered message text.
+    PreparedRequest: Rendered messages and optional backend inputs.
+
+Functions:
+    get_message_templates: Read message templates and return the remaining prompt settings.
+    build_chat_messages: Render role-tagged templates with explicit bindings.
+    get_template_placeholders: Find the binding names referenced by message templates.
+    prepare_template_request: Render with supplied bindings and prepend history.
+"""
+
+from collections.abc import Mapping, Sequence
+from dataclasses import dataclass, field
+from string import Formatter
+from typing import Any
+
+from llama_index.core.base.llms.types import MessageRole
+
+SYSTEM_MESSAGE_KEY = "system_message"
+USER_MESSAGE_KEY = "user_message"
+
+
+class MissingBindingError(ValueError):
+    """A template references a field without a supplied value.
+
+    Attributes:
+        placeholder: Name of the missing binding, without braces.
+        role: Role of the message whose template requires the binding.
+    """
+
+    def __init__(self, placeholder: str, role: MessageRole):
+        """Identify the missing binding and the message that requires it."""
+        super().__init__(f"No value for placeholder {placeholder!r} in {role.name} message.")
+        self.placeholder = placeholder
+        self.role = role
+
+
+@dataclass
+class SimpleChatMessage:
+    """Simplified representation of a chat message.
+
+    Attributes:
+        role: Role of the actor who wrote the content, such as user, system, or assistant.
+            Any `MessageRole` value is accepted.
+        content: Message text, which may be a template before request preparation or
+            rendered content ready to send to the backend.
+    """
+
+    role: MessageRole
+    content: str
+
+
+@dataclass
+class PreparedRequest:
+    """Prepared input to a backend's chat call.
+
+    Attributes:
+        current_messages: The rendered current turn without history, used for extraction
+            result recording. These messages retain the full text before snapshot truncation.
+        messages: The complete chat input, with history followed by the current turn.
+        input_artifacts: Named text inputs for backends that support auxiliary inputs.
+            Defaults to an empty dictionary. When nonempty, the extractor passes this dictionary
+            to the backend's chat call as the `input_artifacts` keyword argument.
+    """
+
+    current_messages: list[SimpleChatMessage]
+    messages: list[SimpleChatMessage]
+    input_artifacts: dict[str, str] = field(default_factory=dict)
+
+
+def get_message_templates(
+    prompt_template: Mapping[str, Any],
+) -> tuple[list[SimpleChatMessage], dict[str, Any]]:
+    """Read the configured message templates and keep the remaining settings for the backend.
+
+    Args:
+        prompt_template: Settings for the current turn, including `system_message` or `user_message`.
+
+    Returns:
+        Role-tagged templates in conversation order and a copy of the remaining settings.
+        Messages whose text is absent or None are omitted.
+
+    Raises:
+        ValueError: Neither message has a template.
+    """
+    remaining_settings = dict(prompt_template)
+    templates = [
+        SimpleChatMessage(role=role, content=content)
+        for role, content in (
+            (MessageRole.SYSTEM, remaining_settings.pop(SYSTEM_MESSAGE_KEY, None)),
+            (MessageRole.USER, remaining_settings.pop(USER_MESSAGE_KEY, None)),
+        )
+        if content is not None
+    ]
+    if not templates:
+        raise ValueError(
+            f"At least one of {SYSTEM_MESSAGE_KEY} or {USER_MESSAGE_KEY} must be provided."
+        )
+    return templates, remaining_settings
+
+
+def build_chat_messages(
+    templates: Sequence[SimpleChatMessage],
+    bindings: Mapping[str, str],
+) -> list[SimpleChatMessage]:
+    """Render message templates with the supplied placeholder values.
+
+    Uses Python's `str.format_map` syntax. Double braces escape literal braces;
+    braces inside binding values are not interpreted again.
+
+    Args:
+        templates: Messages whose content contains named replacement fields.
+        bindings: Replacement values keyed by field name, without braces.
+
+    Returns:
+        New messages in template order, preserving each role and replacing its content.
+        The input templates are not modified.
+
+    Raises:
+        MissingBindingError: A replacement field has no binding, with the field name
+            and message role included in the error.
+        ValueError: A template contains invalid formatting syntax.
+    """
+    messages = []
+    for template in templates:
+        try:
+            content = template.content.format_map(bindings)
+        except KeyError as error:
+            raise MissingBindingError(error.args[0], template.role) from error
+        messages.append(SimpleChatMessage(role=template.role, content=content))
+    return messages
+
+
+def get_template_placeholders(templates: Sequence[SimpleChatMessage]) -> set[str]:
+    """Find the bindings needed to render the supplied message templates.
+
+    Use Python format fields. Escaped braces remain literal. Attribute access, indexing,
+    conversions, and nested format specifications refer to their root binding names.
+
+    Args:
+        templates: The message templates for the current turn.
+
+    Returns:
+        The set of referenced binding names.
+
+    Raises:
+        ValueError: A template contains invalid formatting syntax.
+    """
+    formatter = Formatter()
+    placeholders: set[str] = set()
+    pending = [template.content for template in templates]
+    while pending:
+        for _, name, format_spec, _ in formatter.parse(pending.pop()):
+            if name is not None:
+                placeholders.add(name.partition(".")[0].partition("[")[0])
+                if format_spec:
+                    pending.append(format_spec)
+    return placeholders
+
+
+def prepare_template_request(
+    templates: Sequence[SimpleChatMessage],
+    *,
+    bindings: Mapping[str, str],
+    history: Sequence[SimpleChatMessage] = (),
+) -> PreparedRequest:
+    """Build a request by rendering the current turn and prepending rendered history.
+
+    Args:
+        templates: Current message templates in their desired order.
+        bindings: All replacement values, keyed by field name without braces.
+        history: Previously rendered messages in order, copied into the request as supplied.
+
+    Returns:
+        The rendered current turn and full conversation. Backends can add input artifacts.
+
+    Raises:
+        MissingBindingError: A template references an unavailable binding.
+        ValueError: A template cannot be rendered with Python's formatting syntax.
+    """
+    current_messages = build_chat_messages(templates, bindings)
+    return PreparedRequest(
+        current_messages=current_messages,
+        messages=[*history, *current_messages],
+    )

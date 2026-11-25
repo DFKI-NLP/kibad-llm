@@ -9,6 +9,5 @@ Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
     - content: | Kardinalität: 1 | Typ: string
     - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
   - success: Hatte das Schutzgebiet einen messbaren Effekt auf die Biodiversität? | Kardinalität: 1 | Typ: object
-    Beschreibung: Hatte das Schutzgebiet einen messbaren Effekt auf die Biodiversität?
     - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: ja; nein; teilweise; unbekannt
     - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string

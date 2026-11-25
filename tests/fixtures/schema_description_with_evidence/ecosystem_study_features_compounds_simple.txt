@@ -3,7 +3,6 @@ Feldhinweise und erlaubte Werte (getrennt durch Semikolons):
 - ecosystem_type: Welche Ökosystemtypen werden in der Studie untersucht? | Kardinalität: 0..* | Typ: object
   Beschreibung: Ökosystemtyp mit Kategorie, Name und Beschreibung.
   - category: Kategorie des Ökosystemtyps | Kardinalität: 1 | Typ: object
-    Beschreibung: Kategorie des Ökosystemtyps
     - content: | Kardinalität: 1 | Typ: string | Zulässige Werte: I Biotoptypengruppen der Meere und Küsten; II Biotoptypengruppen der Binnengewässer; III Terrestrische und semiterrestrische Biotoptypengruppen des Binnenlandes; IV Technische Biotoptypengruppen; V Biotoptypengruppen mit Schwerpunkt in den Alpen; VI Weitere
     - evidence_anchor: Wörtliches Zitat aus dem Originaltext, das den extrahierten Inhalt belegt. | Kardinalität: 1 | Typ: string
   - term: Name des Ökosystemtyps | Kardinalität: 0..1 | Typ: object

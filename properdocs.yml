@@ -36,6 +36,7 @@ theme:
 
 nav:
 - Welcome: index.md
+- Quickstart: QUICKSTART.md
 - Usage instructions: USAGE.md
 - LLM usage instructions: models-readme.md
 - Faktencheck database instructions: podman-readme.md
@@ -43,7 +44,6 @@ nav:
 - Contribution guidelines:
   - Overview: CONTRIBUTING.md
   - Source Code: CONTRIBUTING-CODE.md
-  - Experiments: CONTRIBUTING-EXPERIMENTS.md
 # defer to gen-files + literate-nav
 - KIBA-D code Reference: reference/kibad_llm/
 
@@ -61,6 +61,8 @@ plugins:
 - mkdocstrings:
     handlers:
       python:
+        inventories:
+        - https://developers.llamaindex.ai/python/framework-api-reference/objects.inv
         options:
           show_symbol_type_heading: true
           show_symbol_type_toc: true

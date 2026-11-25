@@ -1,94 +1,304 @@
 import copy
+import json
+from types import SimpleNamespace
+from typing import Any
 
+from llama_index.core.base.llms.types import ChatMessage, ChatResponse, MessageRole
 import pytest
 
 from kibad_llm.extractors.base import (
     check_utf8_encodable,
+    extract_from_text,
     strip_metadata,
 )
-
-
-def test_strip_metadata_unwraps_simple_wrapper() -> None:
-    data = {"name": {"content": "Alice", "evidence_anchor": "…"}}
-    out = strip_metadata(data, content_key="content")
-    assert out == {"name": "Alice"}
+from kibad_llm.llms.base import LLM
+from kibad_llm.llms.request import PreparedRequest, SimpleChatMessage
 
 
 def test_strip_metadata_unwraps_nested_wrappers_in_objects_and_lists() -> None:
+    """Unwrap nested values while preserving plain objects, nulls, and the input."""
     data = {
-        "obj": {
-            "x": {"content": 1, "evidence_anchor": "quote"},
-            "y": [
-                {"content": "a", "evidence_anchor": "q1"},
-                {"content": "b", "evidence_anchor": "q2"},
-            ],
-        }
-    }
-    out = strip_metadata(data, content_key="content")
-    assert out == {"obj": {"x": 1, "y": ["a", "b"]}}
-
-
-def test_strip_metadata_handles_nullable_union_shape() -> None:
-    # Typical output shape when schema allowed null OR wrapped value:
-    # anyOf is schema-side; runtime data is either None or the wrapper object.
-    data = {"maybe": None, "maybe2": {"content": "x", "evidence_anchor": "…"}}
-    out = strip_metadata(data, content_key="content")
-    assert out == {"maybe": None, "maybe2": "x"}
-
-
-def test_strip_metadata_does_not_unwrap_plain_content_only_object() -> None:
-    # Heuristic: wrapper must have content_key AND at least one additional key.
-    data = {"note": {"content": "keep_me"}}
-    out = strip_metadata(data, content_key="content")
-    assert out == {"note": {"content": "keep_me"}}
-
-
-def test_strip_metadata_is_pure_does_not_mutate_input() -> None:
-    data = {
-        "name": {"content": "Alice", "evidence_anchor": "…"},
-        "tags": [{"content": "x", "evidence_anchor": "q"}],
+        "observation": {
+            "count": {"content": 2, "evidence_anchor": "two oaks"},
+            "species": [{"content": "oak", "evidence_anchor": "oaks"}, None],
+            "note": {"content": "mixed forest"},
+        },
     }
     before = copy.deepcopy(data)
-    _ = strip_metadata(data, content_key="content")
+
+    assert strip_metadata(data, content_key="content") == {
+        "observation": {"count": 2, "species": ["oak", None], "note": {"content": "mixed forest"}},
+    }
     assert data == before
 
 
 def test_strip_metadata_custom_content_key() -> None:
+    """Use the selected key to recognize and unwrap a metadata wrapper."""
     data = {"name": {"value": "Alice", "evidence_anchor": "…"}}
-    out = strip_metadata(data, content_key="value")
-    assert out == {"name": "Alice"}
+    assert strip_metadata(data, content_key="value") == {"name": "Alice"}
 
 
-def test_check_utf8_encodable_passes_for_well_formed_data() -> None:
-    data = {
-        "response_content": "some ordinary text, including umlauts like ä ö ü",
-        "structured": {"habitat": "Wald", "species": ["Rotfuchs", "Wildschwein"]},
-        "errors": [],
-    }
-    # should not raise
-    check_utf8_encodable(data)
+def test_check_utf8_encodable_accepts_unicode() -> None:
+    """Accept well-formed Unicode in nested results."""
+    check_utf8_encodable({"species": ["Eichhörnchen"]})
 
 
-def test_check_utf8_encodable_raises_for_lone_surrogate_in_plain_string() -> None:
-    with pytest.raises(UnicodeEncodeError) as excinfo:
-        check_utf8_encodable("some text with a lone surrogate \udd7a in it")
-    assert str(excinfo.value) == (
-        "'utf-8' codec can't encode character '\\udd7a' in position 32: surrogates "
-        "not allowed (string: 'some text with a lone surrogate \\udd7a in it')"
+def test_check_utf8_encodable_reports_nested_surrogate() -> None:
+    """Identify the offending string when encoding a nested result fails."""
+    invalid_name = "Wild\udd7aschwein"
+    with pytest.raises(UnicodeEncodeError) as error:
+        check_utf8_encodable({"species": ["Rotfuchs", invalid_name]})
+    assert repr(invalid_name) in error.value.reason
+
+
+@pytest.mark.parametrize("key", ["system_message", "user_message", "schema_description_kwargs"])
+def test_extract_from_text_rejects_top_level_prompt_settings(key: str) -> None:
+    """Require prompt settings to be supplied inside the prompt template mapping."""
+    unexpected_setting: dict[str, Any] = {key: None}
+    with pytest.raises(TypeError, match=f"unexpected keyword argument '{key}'"):
+        extract_from_text(
+            text="A forest.",
+            text_id="fixture",
+            prompt_template={"user_message": "{document}"},
+            use_guided_decoding=False,
+            **unexpected_setting,
+        )
+
+
+def test_extract_from_text_reports_unrecognized_inline_prompt_settings() -> None:
+    """Name both the misspelled option and the retired placeholder declaration."""
+    with pytest.raises(TypeError) as error:
+        extract_from_text(
+            text="A forest.",
+            text_id="fixture",
+            prompt_template={
+                "system_message": "{schema_description}",
+                "user_message": "{document}",
+                "schema_placeholder": "schema_description",
+                "schema_description_kwarg": {"include_field_descriptions": False},
+            },
+            schema={"type": "object"},
+        )
+    assert "'schema_description_kwarg'" in str(error.value)
+    assert "'schema_placeholder'" in str(error.value)
+
+
+def test_backend_prepares_messages_before_extractor_records_them() -> None:
+    """Send the full backend-prepared request and record only its current turn."""
+    history = [SimpleChatMessage(role=MessageRole.ASSISTANT, content="Previous turn")]
+    prepared_user = SimpleChatMessage(role=MessageRole.USER, content="Backend: document")
+
+    class TestLLM(LLM):
+        """Customize the prompt and provide an auxiliary input to the chat call."""
+
+        def prepare_request(
+            self, prompt_template, *, document, schema, history=()
+        ) -> PreparedRequest:
+            """Use the sliced document to render a backend-specific template."""
+            assert document == "document"
+            request = super().prepare_request(
+                {**prompt_template, "user_message": "Backend: {document}"},
+                document=document,
+                schema=schema,
+                history=history,
+            )
+            request.input_artifacts["context.txt"] = "Extra context"
+            return request
+
+        def call_llm_chat_with_guided_decoding(
+            self, messages, *, json_schema=None, **request_kwargs
+        ) -> ChatResponse:
+            """Check the prepared request received by the backend."""
+            assert messages == [*history, prepared_user]
+            assert json_schema is None
+            assert request_kwargs == {
+                "seed": 42,
+                "input_artifacts": {"context.txt": "Extra context"},
+            }
+            return ChatResponse(message=ChatMessage(role=MessageRole.ASSISTANT, content="{}"))
+
+    request_parameters = {"seed": 42}
+    result = extract_from_text(
+        text="a document",
+        text_id="fixture",
+        character_start=2,
+        prompt_template={
+            "user_message": "Configured: {document}",
+        },
+        history=history,
+        llm=TestLLM(),
+        use_guided_decoding=False,
+        request_parameters=request_parameters,
+        return_messages=True,
+        return_messages_formatted=True,
+        truncate_user_message_formatted=7,
     )
 
+    assert result.errors == []
+    assert result.structured == {}
+    assert result.messages == {"system": None, "user": "Configured: {document}"}
+    assert result.messages_formatted == {"user": "Backend... (truncated @ 7 chars)"}
+    assert request_parameters == {"seed": 42}
 
-def test_check_utf8_encodable_raises_for_lone_surrogate_nested_in_dict_and_list() -> None:
-    data = {
-        "structured": {
-            "habitat": "Wald",
-            "species": ["Rotfuchs", "Wild\udd7aschwein"],
-        }
+
+@pytest.mark.parametrize("use_wrapped_schema_in_prompt", [None, False, True])
+@pytest.mark.parametrize("include_confidence", [False, True])
+def test_extract_from_text_uses_same_schema_for_both_placeholders(
+    use_wrapped_schema_in_prompt: bool | None,
+    include_confidence: bool,
+) -> None:
+    """Show the same output shape in both prompt placeholders."""
+    schema = {
+        "type": "object",
+        "properties": {"habitat": {"type": "string", "description": "Habitat label"}},
     }
-    with pytest.raises(UnicodeEncodeError) as excinfo:
-        check_utf8_encodable(data)
-
-    assert str(excinfo.value) == (
-        "'utf-8' codec can't encode character '\\udd7a' in position 4: surrogates "
-        "not allowed (string: 'Wild\\udd7aschwein')"
+    result = extract_from_text(
+        text="A forest.",
+        text_id="fixture",
+        prompt_template={
+            "system_message": "{schema_description}",
+            "user_message": "{document}\n{schema}",
+        },
+        schema=schema,
+        include_evidence=True,
+        use_wrapped_schema_in_prompt=use_wrapped_schema_in_prompt,
+        include_confidence=include_confidence,
+        return_messages=True,
+        return_messages_formatted=True,
+        truncate_user_message_formatted=None,
     )
+
+    assert result.messages == {
+        "system": "{schema_description}",
+        "user": "{document}\n{schema}",
+    }
+    assert result.messages_formatted is not None
+    description = result.messages_formatted["system"]
+    assert "Habitat label" in description
+    expect_metadata = (
+        include_confidence
+        if use_wrapped_schema_in_prompt is None
+        else use_wrapped_schema_in_prompt
+    )
+    assert ("evidence_anchor" in description) == expect_metadata
+    expect_confidence = expect_metadata and include_confidence
+    assert ("confidence:" in description) == expect_confidence
+    assert (
+        "How confident are you that the extracted value is correct? (1–5)" in description
+    ) == expect_confidence
+    document, rendered_schema = result.messages_formatted["user"].split("\n", maxsplit=1)
+    assert document == "A forest."
+    rendered = json.loads(rendered_schema)
+    if expect_metadata:
+        fields = {"content", "evidence_anchor"}
+        if include_confidence:
+            fields.add("confidence")
+        assert set(rendered["properties"]["habitat"]["properties"]) == fields
+    else:
+        assert rendered == schema
+
+
+@pytest.mark.parametrize(
+    "prediction",
+    [
+        {"content": "Wald"},
+        {"content": "Wald", "confidence": "3"},
+        {"content": "Wald", "confidence": 0},
+        {"content": "Wald", "confidence": 6},
+        {"content": "Wald", "confidence": 2.5},
+    ],
+)
+def test_extract_from_text_rejects_invalid_confidence(prediction: dict) -> None:
+    """Validate confidence scores even when the backend uses no guided decoding."""
+
+    class TestLLM(LLM):
+        """Return a response that violates the confidence schema."""
+
+        def call_llm_chat_with_guided_decoding(
+            self, messages, *, json_schema=None, **kwargs
+        ) -> ChatResponse:
+            """Return the test response without contacting a backend."""
+            assert json_schema is None
+            return ChatResponse(message=ChatMessage(content=json.dumps({"habitat": prediction})))
+
+    result = extract_from_text(
+        text="Wald",
+        text_id="test",
+        prompt_template={"system_message": "{schema_description}", "user_message": "{document}"},
+        schema={"type": "object", "properties": {"habitat": {"type": "string"}}},
+        include_confidence=True,
+        use_guided_decoding=False,
+        llm=TestLLM(),
+    )
+
+    assert result.structured is None
+    assert result.structured_with_metadata is None
+    assert len(result.errors) == 1
+    assert result.errors[0].startswith("ValidationError:")
+
+
+@pytest.mark.parametrize(
+    ("content", "return_reasoning", "validate_with_schema", "expected_error"),
+    [
+        ("{}", False, False, None),
+        (None, False, False, "MissingResponseContentError"),
+        ("", False, False, "EmptyResponseMessageError"),
+        ("invalid json", False, False, "JSONDecodeError"),
+        ("{}", False, True, "ValidationError"),
+        ("{}", True, False, "NotImplementedError"),
+    ],
+)
+def test_backend_metadata_survives_postprocessing_errors(
+    content, return_reasoning: bool, validate_with_schema: bool, expected_error
+) -> None:
+    """Retain usage for responses that cannot produce a valid extraction."""
+    usage = {"input_tokens": 120, "output_tokens": 30, "total_tokens": 150}
+
+    class TestLLM(LLM):
+        """Return usage independently of the response's parseable content."""
+
+        def call_llm_chat_with_guided_decoding(self, messages, **kwargs) -> ChatResponse:
+            """Return the test response without contacting a backend."""
+            return ChatResponse(
+                message=ChatMessage(content=content), raw=SimpleNamespace(usage=usage)
+            )
+
+    result = extract_from_text(
+        text="document",
+        text_id="test",
+        prompt_template={"user_message": "{document}"},
+        schema={"type": "object", "required": ["missing"]},
+        use_guided_decoding=False,
+        validate_with_schema=validate_with_schema,
+        return_reasoning=return_reasoning,
+        llm=TestLLM(),
+    )
+
+    assert result.backend_metadata == {"usage": usage}
+    if expected_error is None:
+        assert result.errors == []
+    else:
+        assert any(error.startswith(expected_error + ":") for error in result.errors)
+
+
+def test_metadata_error_does_not_discard_structured_output() -> None:
+    """Report malformed backend usage through the existing extraction error fields."""
+
+    class TestLLM(LLM):
+        """Return valid content with invalid usage metadata."""
+
+        def call_llm_chat_with_guided_decoding(self, messages, **kwargs) -> ChatResponse:
+            """Provide a response that fails only the metadata callback."""
+            return ChatResponse(message=ChatMessage(content="{}"), raw={"usage": "invalid"})
+
+    result = extract_from_text(
+        text="document",
+        text_id="test",
+        prompt_template={"user_message": "{document}"},
+        use_guided_decoding=False,
+        llm=TestLLM(),
+    )
+    assert result.backend_metadata is None
+    assert result.structured == {}
+    assert len(result.errors) == 1
+    assert result.errors[0].startswith("TypeError: Unsupported token usage type")

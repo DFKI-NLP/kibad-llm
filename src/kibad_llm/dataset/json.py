@@ -34,9 +34,12 @@ def read_and_preprocess(
         preprocess: Optional preprocessing function to apply to the dataset.
         archive_member: If the file is an archive, the member to extract (required for tar/zip
             with multiple files).
-        **kwargs: Additional keyword arguments to pass to `json.load` or `json.loads`.
+
     Returns:
         The loaded and preprocessed Dataset.
+
+    Keyword Args:
+        **kwargs (Any): Additional keyword arguments to pass to `json.load` or `json.loads`.
     """
 
     process_id = process_id or (lambda x: x)

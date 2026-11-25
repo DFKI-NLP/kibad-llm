@@ -1,3 +1,4 @@
+# TODO: should we remove ignoring data? Does anyone store data here that should not be comitted?
 # Data: ignore everything under /data by default
 /data/*
 

@@ -11,6 +11,7 @@ The following guidelines ensure consistency across the project, so please read t
 - [Contribution requirements](#contribution-requirements)
     - [PR description](#pr-description)
     - [CI/CD](#cicd)
+    - [Branch naming](#branch-naming)
 - [Source code](#source-code)
 - [Experiments](#experiments)
 - [Documentation](#documentation)
@@ -20,8 +21,7 @@ The following guidelines ensure consistency across the project, so please read t
     - [Building and hosting locally](#building-and-hosting-locally)
 - [Local checks and CI commands](#local-checks-and-ci-commands)
     - [Troubleshooting](#troubleshooting)
-- [Submodules](#submodules)
-    - [Submodule data changing flow](#submodule-data-changing-flow)
+- [Lightweight cloning](#lightweight-cloning)
 - [Misc](#misc)
 
 ## Project Organization
@@ -49,8 +49,7 @@ High-level overview of contributor-relevant paths (local caches and other genera
 ├── data/                       <- Local data area for source inputs and derived datasets.
 │   ├── external/               <- Third-party inputs such as exported Zotero data.
 │   ├── interim/                <- Intermediate converted data such as DB-to-JSON exports used for evaluation.
-│   ├── results/                <- Git submodule of Checked-in experiment artefacts and derived result bundles that are meant to live
-│   │                              in Git.
+│   ├── results/                <- Gitignored path to store the kibad-llm-results repo at.
 │   ├── processed/              <- Versioned processed datasets kept in Git when useful for reproducibility.
 │   └── raw/                    <- Immutable source data dumps (not yet used).
 │
@@ -177,7 +176,6 @@ Use
 - `docs/description-here` for documentation work. (other branches, e.g. `feat/` are expected to document their features too.)
 - `fix/description-here` for (bug)fixes.
 - `hotfix/description-here` for urgent fixes.
-- `experiment/description-here` for experiments (see [CONTRIBUTING-EXPERIMENTS.md](CONTRIBUTING-EXPERIMENTS.md))
 
 These prefixes don't just make branch names easier to read, but also allow for colour coding in tools like [lazy git](https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md#custom-branch-color).
 
@@ -201,7 +199,7 @@ They cover general implementation principles, test layout, source-code documenta
 
 ## Experiments
 
-The experiment guidelines live in [CONTRIBUTING-EXPERIMENTS.md](CONTRIBUTING-EXPERIMENTS.md).
+The experimental results are collected in the https://github.com/DFKI-NLP/kibad-llm-results, see there for guidelines the respective guidelines for contributing to the results repository.
 
 They cover how to plan, configure, run, track, and document reproducible experiments for this project.
 
@@ -289,7 +287,7 @@ uv run --group cicd prek run -a
 just prek
 ```
 
-This runs all configured [prek](https://prek.j178.dev/) hooks (see [pre-commit-config.yaml](/.pre-commit-config.yaml)) on all files. Some hooks may fix issues automatically, others will report issues that need to be fixed manually.
+This runs all configured [prek](https://prek.j178.dev/) hooks (see [pre-commit-config.yaml](/.pre-commit-config.yaml)) on all files. Some hooks may fix issues automatically, others will report issues that need to be fixed manually. The `properdocs-build` hook runs with `--strict`, so documentation warnings fail the check.
 
 To run all Python tests with `pytest`:
 
@@ -358,14 +356,11 @@ If your c standard library (e.g. glibc) is too old, you can't run lychee locally
 SKIP=lychee uv run prek run -a
 ```
 
-## Submodules
+## Lightweight cloning
 
 > [!IMPORTANT]
-> This repo uses submodules to reduce its footprint. The history, however, still
-> carries a lot of removed files, so a plain `git clone` downloads all of them.
+> This repos history still carries a lot of removed files and a plain `git clone` downloads all of them.
 > To avoid that, pick a lightweight clone strategy — see the two snippets below.
-
-This repo has a single submodule, `data/results`, which points at the [`kibad-llm-results`](https://github.com/DFKI-NLP/kibad-llm-results) repository. Its tracked branch is recorded as `branch = main` in the `.gitmodules` file, so the `--remote` commands below follow the `main` branch of `kibad-llm-results`.
 
 **`--filter=blob:none` — recommended for development.** A blobless clone keeps the
 full commit history and directory tree, but fetches file contents lazily on
@@ -385,25 +380,6 @@ it when you just want to build or run the latest state, not develop against it.
 ```bash
 git clone --depth 1 git@github.com:DFKI-NLP/kibad-llm.git
 ```
-
-- Normal cloning ignores submodules: A normal `git clone git@github.com:DFKI-NLP/kibad-llm.git` does not clone any submodules and is hence much faster. (Combine with `--filter=blob:none` or `--depth 1` from above as needed.)
-
-- To clone with submodules run: `git clone -j8 --recurse-submodules git@github.com:DFKI-NLP/kibad-llm.git` with `-j` specifying the number of submodules fetched simultaneously.
-
-- To update submodules, or clone submodules in a repo that was cloned without the submodules `git submodule update --init --recursive`
-
-- You can also do this for one specific submodule by appending `-- <path to submodule>`
-
-- The `kibad-llm` repo stores the exact commit to check out for each submodule.
-
-    - If you want to clone the `kibad-llm` repo with all submodule repos with the latest commit instead of the stored one, use `git clone -j8 --recurse-submodules --remote-submodules git@github.com:DFKI-NLP/kibad-llm.git`
-    - If you want to update/ clone submodules with the latest commit instead of the stored one, use `git submodule update --init --recursive --remote`
-
-### Submodule data changing flow
-
-1. enter the submodule and check out a branch to work on: `cd data/results && git switch -c <branch>`. A fresh clone leaves the submodule in detached `HEAD` at the stored commit, so this step is required before you can commit.
-1. change the files in the submodule, commit them there, and push the branch to `kibad-llm-results` (`git push -u origin <branch>`) so the commit is reachable for others and CI.
-1. back in `kibad-llm`, stage and commit the updated submodule pointer and push, so the superproject records your new submodule commit.
 
 ## Misc
 

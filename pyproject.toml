@@ -7,7 +7,7 @@ name = "kibad-llm"
 version = "0.1.0"
 description = "Add your description here"
 authors = [{ name = "Your name (or your organization/company/team)" }]
-requires-python = ">=3.10.0"
+requires-python = ">=3.10.0,<3.14.0"
 readme = "README.md"
 license = "AGPL-3.0-or-later"
 license-files = [
@@ -40,6 +40,7 @@ dependencies = [
     "jupyter>=1.1.1,<2.0.0", # to run jupyter notebooks
     "matplotlib>=3.10.8,<4.0.0", # to run eval notebook (create plots)
     "types-regex>=2026.1.15.20260116",
+    "langdetect>=1.0.9,<2.0.0",  # to run test set stats notebook (estimate language distribution)
 ]
 
 [dependency-groups]
@@ -159,7 +160,8 @@ max-line-length = 99
 exclude = [".git", "notebooks", "models", "data", "logs"]
 
 [tool.codespell]
-skip = "logs/**,data/**,configs/**/*template*,configs/evaluate.yaml,tests/fixtures/**.json,tests/fixtures/**.jsonl,src/kibad_llm/schema/**,tests/unit/schema/**,*.ipynb"
+# skip the whole align_ecosystem_service_csv.py since it lists German column names (excluding them would allow them in all other files, which is not what we want)
+skip = "logs/**,data/**,configs/**/*template*,configs/evaluate.yaml,tests/fixtures/**.json,tests/fixtures/**.jsonl,src/kibad_llm/schema/**,tests/unit/schema/**,*.ipynb,src/kibad_llm/data_integration/align_ecosystem_service_csv.py"
 ignore-words-list = "hist"
 
 # Bandit (read by prek bandit with -c pyproject.toml)
