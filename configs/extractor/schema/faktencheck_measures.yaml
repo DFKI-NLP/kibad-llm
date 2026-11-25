@@ -1,0 +1,3 @@
+# create the schema from the pydantic model of EcosystemStudyFeaturesMeasures
+_target_: kibad_llm.schema.types.EcosystemStudyFeaturesMeasures.model_json_schema
+by_alias: false

@@ -1,0 +1,28 @@
+# @package _global_
+
+# This experiment uses seven schemata to extract data for all fields in the Fragenkatalog database.
+# The grouping follows the column "Subgroup for prompt simplification" in the Fragenkatalog google
+# table (see #92) and partitions the 29 fields of EcosystemStudyFeaturesAll without gaps or overlaps:
+#   - EcosystemStudyFeaturesEnvironment:  habitat, natural_region, ecosystem_type, climate, landuse, soil
+#   - EcosystemStudyFeaturesSpatial:      location, spatial_extent, spatial_resolution, spatial_measurements
+#   - EcosystemStudyFeaturesTemporal:     temporal_extent, temporal_extent_unit, temporal_resolution,
+#                                         temporal_measurements, start_year, end_year
+#   - EcosystemStudyFeaturesStudy:        method, study_type, project
+#   - EcosystemStudyFeaturesBiodiversity: taxa, biodiversity_level, biodiversity_variable, ecosystem_service
+#   - EcosystemStudyFeaturesDrivers:      direct_driver, indirect_driver
+#   - EcosystemStudyFeaturesMeasures:     conservation_area, management_measure, impulse_measure,
+#                                         transformation_potential
+
+# To execute this experiment run:
+# uv run -m kibad_llm.predict experiment/predict=faktencheck_subgroup_schemata pdf_directory=path/to/pdf/files
+
+defaults:
+  # use one override setup per subgroup to extract with each schema separately
+  - /extractor/schema@extractor.overrides.setup_environment.schema: faktencheck_environment
+  - /extractor/schema@extractor.overrides.setup_spatial.schema: faktencheck_spatial
+  - /extractor/schema@extractor.overrides.setup_temporal.schema: faktencheck_temporal
+  - /extractor/schema@extractor.overrides.setup_study.schema: faktencheck_study
+  - /extractor/schema@extractor.overrides.setup_biodiversity.schema: faktencheck_biodiversity
+  - /extractor/schema@extractor.overrides.setup_drivers.schema: faktencheck_drivers
+  - /extractor/schema@extractor.overrides.setup_measures.schema: faktencheck_measures
+  - override /extractor: union
