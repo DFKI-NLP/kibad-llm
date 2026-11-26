@@ -210,13 +210,27 @@ def test_filter_nested_dict_preserves_selected_common_prefixes_and_ignores_inval
 
 @pytest.mark.slow
 def test_normalize_spezies_live_gbif_endpoint() -> None:
-    # set response_fields=None to get all available fields from the GBIF API
-    # (remember that we restructure the classification field)
-    result = normalize_spezies("Abies albaa", response_fields=None)
-    assert result is not None
-    # drop time related values since they are not deterministic
-    result["diagnostics"].pop("timeTaken", None)
-    result["diagnostics"].pop("timings", None)
+    # Only assert fields that matter semantically: GBIF adds new fields over time
+    # (e.g. "usage.code", "additionalStatus") and the nested-set indices
+    # ("left", "right") change with every backbone rebuild. Filtering also keeps
+    # out non-deterministic timing values ("diagnostics.timeTaken", "diagnostics.timings").
+    result = normalize_spezies(
+        "Abies albaa",
+        response_fields=[
+            "classification",
+            "diagnostics.matchType",
+            "diagnostics.confidence",
+            "synonym",
+            "usage.key",
+            "usage.name",
+            "usage.canonicalName",
+            "usage.authorship",
+            "usage.rank",
+            "usage.status",
+            "usage.type",
+            "usage.formattedName",
+        ],
+    )
     assert result == {
         "classification": {
             "CLASS": "Pinopsida",
@@ -230,8 +244,6 @@ def test_normalize_spezies_live_gbif_endpoint() -> None:
             "confidence": 94,
             "matchType": "HIGHERRANK",
         },
-        "left": 865764,
-        "right": 865921,
         "synonym": False,
         "usage": {
             "authorship": "Mill.",
