@@ -55,6 +55,7 @@ def test_all_habitats_experiment(tmp_path) -> None:
     """The all-habitats experiment adds the habitat field and its instruction."""
     prompt, schema = _compose(tmp_path, "experiment/predict=ecosystemservice_trends_all_habitats")
     assert "Ökosystemleistungen in einem bzw. mehreren Lebensräumen, meist" in prompt
-    assert "nicht mehr. Betrifft eine Beziehung mehrere Lebensräume" in prompt
+    assert "Hauptbeziehungen. Ausnahme: Betrifft eine Beziehung mehrere Lebensräume" in prompt
+    assert "fasse nur innerhalb desselben Lebensraums zusammen" in prompt
     assert "'Wald'" not in prompt.split("## Was zählt")[0]
     assert "Lebensraum_Gruppiert" in _entry_properties(schema)

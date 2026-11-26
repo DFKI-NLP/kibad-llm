@@ -72,7 +72,7 @@ def load(
         directory: Path to the directory containing return value file(s).
         subdir_pattern: One or multiple pattern to match subdirectories (e.g., "*/" to load from
             all immediate subdirs).
-        filename: Name of the file to load from each subdirectory.
+        filename (str): Name of the file to load from each subdirectory.
         strip_id_keys: Whether to strip the top-level identifier keys from loaded multi-run results.
         flatten: Whether to flatten nested dictionaries in the loaded data.
         exclude_keys: List of keys to exclude from the loaded data. Applied after flattening if enabled.

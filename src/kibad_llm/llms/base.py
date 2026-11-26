@@ -4,6 +4,17 @@ Each backend supplies values and input artifacts for the fields in the current t
 The default inline preparation requires a document field on the first turn and supplies
 schema JSON or a readable description when the template references the corresponding fields.
 `LLM` also defines the chat call and access to response content, reasoning, and metadata.
+
+Classes:
+    MissingRawChatResponseError: Raised when a ChatResponse is missing the raw attribute.
+    RawMessageExtractionError: Raised when a message cannot be extracted from a ChatResponse raw attribute.
+    MissingResponseContentError: Raised when the LLM response message has no content.
+    EmptyResponseMessageError: Raised when the LLM response message is empty.
+    ReasoningExtractionError: Raised when reasoning cannot be extracted from the LLM response message.
+    EmptyReasoningError: Raised when the extracted reasoning is empty.
+    SimpleChatMessage: Simplified representation of a chat message.
+    LLM: Base class for LLM interaction. This class defines the project internal LLM API.
+
 """
 
 from abc import ABC, abstractmethod
@@ -45,25 +56,25 @@ class RawMessageExtractionError(Exception):
 class MissingResponseContentError(Exception):
     """Raised when the LLM response message has no content."""
 
-    ...
+    pass
 
 
 class EmptyResponseMessageError(Exception):
     """Raised when the LLM response message is empty."""
 
-    ...
+    pass
 
 
 class ReasoningExtractionError(Exception):
     """Raised when reasoning cannot be extracted from the LLM response message."""
 
-    ...
+    pass
 
 
 class EmptyReasoningError(Exception):
     """Raised when the extracted reasoning is empty."""
 
-    ...
+    pass
 
 
 def prepare_request(
@@ -175,11 +186,37 @@ class LLM(ABC):
         json_schema: dict[str, Any] | None = None,
         **request_kwargs,
     ) -> ChatResponse:
-        """Call a chat LLM with optional json schema for guided decoding."""
+        """Call a chat LLM with optional json schema for guided decoding.
+
+        Args:
+            messages: Message history to pass to the LLM query.
+            json_schema: Schema the LLM output must comply with.
+                `json_schema=None` passes no schema, but leaves backend-specific output constraints in effect.
+                - must be passed by keyword
+
+        Keyword Args:
+            **request_kwargs (Any): Backend-specific request options, forwarded to the
+                underlying client. See the implementing subclass for what is supported.
+
+        Returns:
+            ChatResponse holding the model's reply message and the raw response.
+        """
         ...
 
     def get_raw_message_from_chat_response(self, response: ChatResponse) -> Any:
-        """Extract raw message from a chat response."""
+        """Extract raw message from a chat response.
+
+        Args:
+            response: A ChatResponse to extract the raw message from.
+
+        Returns:
+            The raw message embedded in the provided ChatResponse.
+
+
+        Raises:
+            MissingRawChatResponseError: Raised if the ChatResponse is missing the raw attribute.
+            RawMessageExtractionError: Raised if the raw message cannot be extracted.
+        """
 
         raw = response.raw
         if raw is None:
@@ -194,7 +231,18 @@ class LLM(ABC):
             )
 
     def get_reasoning_from_chat_response(self, response: ChatResponse) -> str | None:
-        """Extract reasoning from a chat response."""
+        """Extract reasoning from a chat response.
+
+        Args:
+            response: A ChatResponse to extract the reasoning from.
+
+        Returns:
+            The reasoning embedded in the provided ChatResponse.
+
+
+        Raises:
+            NotImplementedError: This is a stub that needs to be implemented per backend, if the backend supports it.
+        """
         raise NotImplementedError(
             f"get_reasoning_from_chat_response() is not implemented for {type(self)}"
         )
@@ -231,8 +279,19 @@ class LLM(ABC):
         return {"usage": usage}
 
     def get_response_content_from_chat_response(self, response: ChatResponse) -> str:
-        """Extract content from chat response."""
+        """Extract content from chat response.
 
+        Args:
+            response: A ChatResponse to extract the content from.
+
+        Returns:
+            The response embedded in the provided ChatResponse.
+
+
+        Raises:
+            MissingResponseContentError: Raised if the ChatResponse carries no content.
+            EmptyResponseMessageError: Raised if the ChatResponse carries an empty message as content.
+        """
         response_content = response.message.content
         if response_content is None:
             raise MissingResponseContentError("LLM response is missing content.")

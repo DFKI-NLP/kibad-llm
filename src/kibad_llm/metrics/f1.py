@@ -92,16 +92,17 @@ class F1MicroMultipleFieldsMetric(
             format_as_markdown: Whether to format the result as a markdown table. Defaults to True.
 
         Keyword Args:
-            fields: Optional allowlist of fields to evaluate. If omitted, fields are discovered
-                from the union of keys present in each prediction/reference pair.
-            subfield_keys: Optional mapping describing how nested entries are split into generated
-                fields.
-            subfield_values: Optional mapping restricting which nested values are kept after field
-                expansion.
-            sort_fields: Whether to sort the fields in the output. Defaults to False.
-            flatten_dicts: Whether nested dictionaries should be flattened before comparison.
-            ignore_subfields: Optional subfields to ignore when hashing dictionary payloads.
-            ignore_missing_entries: Whether one-sided empty entries should be skipped.
+            fields (list[str] | None): Optional allowlist of fields to evaluate. If omitted,
+                fields are discovered from the union of keys in each prediction/reference pair.
+            subfield_keys (dict[str, list[str]] | None): Optional mapping describing how nested
+                entries are split into generated fields.
+            subfield_values (dict[str, list[str]] | None): Optional mapping restricting which
+                nested values are kept after field expansion.
+            sort_fields (bool): Whether to sort the fields in the output. Defaults to False.
+            flatten_dicts (bool): Whether nested dictionaries should be flattened before comparison.
+            ignore_subfields (dict[str, list] | None): Optional subfields to ignore when
+                hashing dictionary payloads.
+            ignore_missing_entries (bool): Whether one-sided empty entries should be skipped.
 
         Raises:
             ValueError: If `fields` contains the reserved aggregate labels `ALL` or `AVG`.

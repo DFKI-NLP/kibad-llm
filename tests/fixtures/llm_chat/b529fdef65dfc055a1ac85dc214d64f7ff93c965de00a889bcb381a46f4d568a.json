@@ -1,6 +1,6 @@
 {
   "fixture_format_version": 1,
-  "fixture_hash": "80344032a07d98c8be5a7b06216df0fe94f997d1454c9fa6ffd443d3b011126e",
+  "fixture_hash": "b529fdef65dfc055a1ac85dc214d64f7ff93c965de00a889bcb381a46f4d568a",
   "request": {
     "backend_type": "llama_index.llms.openai_like.base.OpenAILike",
     "backend_config": {
@@ -16,7 +16,6 @@
         "seed": 1337,
         "top_p": 1.0
       },
-      "api_base": "http://127.0.0.1:5001/v1",
       "api_version": "",
       "strict": false,
       "reasoning_effort": null,

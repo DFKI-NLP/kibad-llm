@@ -191,7 +191,7 @@ def locate_anchor(
 
     Returns:
         `(start, end, match_type, in_window)` or None if the anchor cannot be located. See
-        [`_locate_in_window`][.._locate_in_window] for the match types.
+        `_locate_in_window` for the match types.
     """
     if not isinstance(anchor, str) or not anchor.strip():
         return None

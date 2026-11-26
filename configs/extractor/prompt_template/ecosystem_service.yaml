@@ -39,16 +39,18 @@ system_message: |
   - Werden Bestände, Flächen oder Bewirtschaftungsformen verglichen, die sich in ihrer Biodiversität unterscheiden
     (z.B. Reinbestand vs. Mischbestand, Hochwald aus einer Baumart vs. artenreicher Niederwald, verschiedene
     Herkünfte einer Art), und wird dabei eine ÖSL/ÖSF gemessen, dann zählt das als gültige Beziehung, auch wenn die
-    Studie den Unterschied zusätzlich mit der Bewirtschaftung erklärt.
+    Studie den Unterschied zusätzlich mit der Bewirtschaftung erklärt. Voraussetzung ist, dass die ÖSL/ÖSF gerade
+    zwischen diesen Beständen bzw. Ausprägungen der Biodiversität verglichen wird. Berichtet die Studie Biodiversität
+    und ÖSL/ÖSF nur als getrennte Ergebnisse derselben Behandlung, ist das keine Beziehung.
   - Enthält der Text keine solche Beziehung, gib eine leere Liste zurück. Erfinde keine Beziehungen.
   - Jede Beziehung bildet genau einen Eintrag in der Liste. Ein Text kann mehrere Beziehungen enthalten (z.B. mehrere
     ÖSL/ÖSF oder mehrere Biodiversitätsfacetten). Lege für jede untersuchte Kombination aus ÖSL/ÖSF und
-    Biodiversitätsfacette genau einen Eintrag an, nicht mehr.${oc.select:ecosystem_service_prompt.habitat_rule,""}
+    Biodiversitätsfacette genau einen Eintrag an, nicht mehr.
   - Fasse zusammen: Verschiedene Messgrößen, Arten, Standorte, Behandlungen oder Zeitpunkte, die derselben ÖSL/ÖSF und
     derselben Biodiversitätsfacette zugeordnet werden, bilden zusammen nur einen Eintrag (z.B. sterile und nicht
     sterile Proben sind keine eigenen Beziehungen). Erfasse nur die Hauptbeziehungen der Studie, wie sie typischerweise
     auch im Abstract oder Fazit genannt werden, nicht jede einzelne Teilmessung. Die meisten Studien enthalten nur
-    eine oder zwei solche Hauptbeziehungen.
+    eine oder zwei solche Hauptbeziehungen.${oc.select:ecosystem_service_prompt.habitat_rule,""}
   - Im Zweifel lasse eine Beziehung weg. Enthält der Text (z.B. ein reiner Methodenabschnitt) keine berichteten
     Ergebnisse, gib eine leere Liste zurück.
   - Eine Beziehung ist nur dann gültig, wenn alle Pflichtfelder ausgefüllt werden können. Nur das Feld 'Arten' ist
