@@ -1,0 +1,97 @@
+.plot-content {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  padding: 10px;
+  overflow: auto;
+  min-height: 180px;
+}
+
+.plot-group-bars-controls {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  margin: 6px 0 10px 0;
+}
+
+.plot-group-bars-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  align-items: center;
+  min-height: 28px;
+}
+
+.plot-legend {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 0 0 8px 0;
+}
+
+.plot-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 2px 8px;
+  background: color-mix(in srgb, var(--surface) 90%, var(--surface-2));
+}
+
+.plot-legend-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+.plot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(520px, 1fr));
+  gap: 12px;
+}
+
+.plot-card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--surface) 94%, var(--surface-2));
+  padding: 8px;
+  overflow: auto;
+}
+
+.plot-card svg {
+  display: block;
+}
+
+.plot-title {
+  margin: 0 0 8px 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-family: monospace;
+}
+
+.plot-empty {
+  margin: 0;
+  color: var(--muted);
+}
+
+.bar-tooltip {
+  position: fixed;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 0.82rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  white-space: pre;
+  pointer-events: none;
+  z-index: 9999;
+  display: none;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+  line-height: 1.5;
+}
