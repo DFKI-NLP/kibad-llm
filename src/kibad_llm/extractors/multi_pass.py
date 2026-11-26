@@ -6,10 +6,19 @@ Classes:
         override and, within each pass, the ChunkingExtractor loop over the chunks of the text.
 """
 
+import json
 from typing import Any
 
+from llama_index.core.base.llms.types import MessageRole
+
+from kibad_llm.llms.request import (
+    SYSTEM_MESSAGE_KEY,
+    USER_MESSAGE_KEY,
+    SimpleChatMessage,
+)
+
 from .aggregation_utils import Aggregator
-from .base import extract_from_text_lenient
+from .base import extract_from_text_lenient, prepare_request
 from .chunking import _document_chunk_iterator
 from .chunking_utils import tokenizers as tokenizer_lib
 
@@ -51,6 +60,7 @@ class MultiPassExtractorWithChunking:
         return_as_list: list[str] | None = None,
         tokenizer: tokenizer_lib.Tokenizer | None = None,
         max_char_buffer: int = 20000,
+        with_history: bool = False,
         **kwargs,
     ):
         """Assign args to attributes with safety checks and conversions
@@ -82,6 +92,7 @@ class MultiPassExtractorWithChunking:
         self.default_kwargs = kwargs
         self.tokenizer = tokenizer
         self.max_char_buffer = max_char_buffer
+        self.with_history = with_history
 
     def __call__(self, *args, **kwargs) -> dict[str, Any]:
         """Process singular text in chunks with multiple passes.
@@ -127,12 +138,43 @@ class MultiPassExtractorWithChunking:
         # to build the "{field}_list" entries from
         all_results = []
 
+        history: list[SimpleChatMessage] = []
         # aggregated structured output per pass
         all_passes_results = []
         for override_name, override_params in self.overrides.items():
             current_pass_results = []
             current_pass_kwargs = {**combined_kwargs, **override_params}
             for i, chunk in enumerate(chunks):
+                if self.with_history:
+
+                    # some kind of from current_pass_kwargs
+                    prompt_template = current_pass_kwargs["prompt_template"].copy()
+                    prompt_template[USER_MESSAGE_KEY] = None
+
+                    llm = current_pass_kwargs["llm"]
+                    request_preparer = prepare_request if llm is None else llm.prepare_request
+                    request = request_preparer(
+                        prompt_template,
+                        document=text[
+                            chunk.char_interval.start_pos or 0 : chunk.char_interval.end_pos
+                        ],
+                        schema=None,
+                        history=(),
+                    )
+
+                    system_message = request.current_messages[0]
+                    if (
+                        system_message.role is not MessageRole.SYSTEM
+                    ):  # TODO: test whether is not or !=
+                        raise ValueError(
+                            "Retrieved incorrect message from prepare_request. system_message expected."
+                        )
+
+                    current_pass_kwargs["history"] = [system_message] + history
+                    current_pass_kwargs["prompt_template"][SYSTEM_MESSAGE_KEY] = None
+                    current_pass_kwargs["return_messages_formatted"] = True
+                    current_pass_kwargs["truncate_user_message_formatted"] = None
+
                 # for each override, run the ChunkingExtractor loop over all chunks of the text
                 current_chunk_result = extract_from_text_lenient(
                     text=text,
@@ -152,7 +194,26 @@ class MultiPassExtractorWithChunking:
             current_pass_structured_outputs = [
                 v.get("structured", None) for v in current_pass_results
             ]
-            all_passes_results.append(self.chunking_aggregator(current_pass_structured_outputs))
+            aggregated_pass_result = self.chunking_aggregator(current_pass_structured_outputs)
+            all_passes_results.append(aggregated_pass_result)
+            if self.with_history:
+                if len(current_pass_results) == 0:
+                    raise ValueError("No results returned by ASSISTANT.")
+                messages_formatted = current_pass_results[0]["messages_formatted"]
+                # TODO: should use a constant for MessageRole
+                user_message_key = MessageRole.USER.name.lower()
+                if len(messages_formatted) != 1 or user_message_key not in messages_formatted:
+                    raise ValueError("Expecting exactly one user message.")
+                user_message_content = messages_formatted[user_message_key]
+                history.append(
+                    SimpleChatMessage(role=MessageRole.USER, content=user_message_content)
+                )
+                history.append(
+                    SimpleChatMessage(
+                        role=MessageRole.ASSISTANT,
+                        content=json.dumps(aggregated_pass_result, ensure_ascii=False),
+                    )
+                )
 
         # aggregate the previously aggregated results, but now across the overrides, to get a single result.
         aggregated_structured = self.aggregator(all_passes_results)
