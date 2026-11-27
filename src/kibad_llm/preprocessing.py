@@ -1,5 +1,8 @@
 """Preprocessing functions for converting input documents to markdown.
 
+Attributes:
+    PREPROCESSING_VERSION: Revision of the PDF readers, part of the PDF conversion cache key.
+
 Functions:
     read_pdf_as_markdown_via_pymupdf4llm: Read a PDF file and convert it to markdown using pymupdf4llm.
 """
@@ -15,6 +18,15 @@ import pymupdf
 import pymupdf4llm
 
 logger = logging.getLogger(__name__)
+
+# This needs to be incremented whenever the output of a PDF reader in this module changes (e.g. due to a
+# bug fix in the text extraction). It is part of the cache key of the PDF conversion step in
+# `kibad_llm.predict`, because the `datasets` fingerprint only references the reader function by name and
+# would otherwise reuse Markdown produced by an older reader implementation.
+# History:
+#   1: initial version
+#   2: fall back to character codes for glyphs without a Unicode mapping instead of emitting U+FFFD
+PREPROCESSING_VERSION = 2
 
 REPLACEMENT_CHARACTER = "�"
 
