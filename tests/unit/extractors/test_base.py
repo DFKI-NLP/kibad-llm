@@ -7,6 +7,7 @@ from llama_index.core.base.llms.types import ChatMessage, ChatResponse, MessageR
 import pytest
 
 from kibad_llm.extractors.base import (
+    _find_anchor_match_spans,
     check_utf8_encodable,
     extract_from_text,
     strip_metadata,
@@ -81,6 +82,35 @@ def test_extract_from_text_reports_unrecognized_inline_prompt_settings() -> None
         )
     assert "'schema_description_kwarg'" in str(error.value)
     assert "'schema_placeholder'" in str(error.value)
+
+
+TEXT = (
+    "Results\n\nIn mixed stands, _Fagus sylvatica_ showed higher above-ground productivity.\n"
+    "Several unrelated sentences follow here. Decomposition was \u201cfaster\u201d in pure stands."
+)
+
+
+@pytest.mark.parametrize(
+    "anchor, expected",
+    [
+        # verbatim, wrapping quotes, and different whitespace
+        ("higher above-ground productivity", "higher above-ground productivity"),
+        ('"higher above-ground\n productivity"', "higher above-ground productivity"),
+    ],
+)
+def test_find_anchor_match_spans_matches_verbatim_variants(anchor, expected) -> None:
+    spans = _find_anchor_match_spans(TEXT, anchor)
+    assert [TEXT[start:end] for start, end in spans] == [expected]
+
+
+def test_find_anchor_match_spans_prefers_exact_over_lenient_matches() -> None:
+    text = "Mixed stands. mixed stands."
+    assert _find_anchor_match_spans(text, "mixed stands") == [(14, 26)]
+
+
+@pytest.mark.parametrize("anchor", ["", "  ", "\u2026", "lower productivity", "**"])
+def test_find_anchor_match_spans_without_match(anchor) -> None:
+    assert _find_anchor_match_spans(TEXT, anchor) == []
 
 
 def test_backend_prepares_messages_before_extractor_records_them() -> None:
