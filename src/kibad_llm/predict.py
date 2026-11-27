@@ -3,6 +3,7 @@
 Functions:
     get_git_info: Get current git commit hash, branch name, and dirty status.
     get_run_log_dir: Get the Hydra run log directory from the HydraConfig.
+    convert_pdfs_to_markdown: Convert the PDF files of a dataset to markdown (cached).
     predict: Run classification based information extraction on PDF files.
     main: Helper function to inject the hydra config into [`predict`][.predict].
 
@@ -19,6 +20,7 @@ import time
 from typing import Any
 
 from datasets import Dataset
+from datasets.fingerprint import Hasher
 import git
 import hydra
 from hydra.core.hydra_config import HydraConfig
@@ -28,6 +30,7 @@ from omegaconf import DictConfig, OmegaConf
 from omegaconf.errors import OmegaConfBaseException
 
 from kibad_llm.config import PROJ_ROOT, RESULT_FORMAT_VERSION_KEY
+from kibad_llm.preprocessing import PREPROCESSING_VERSION
 from kibad_llm.utils.datasets import wrap_map_func
 
 # This needs to be incremented when the format of the prediction results changes in a non-backwards-compatible
@@ -112,6 +115,48 @@ def get_run_log_dir() -> str | None:
         return None
 
 
+def convert_pdfs_to_markdown(
+    dataset: Dataset,
+    pdf_reader: Callable[..., str],
+    base_path: Path,
+    num_proc: int | None = None,
+) -> Dataset:
+    """Convert the PDF files of a dataset to markdown, caching the results via `datasets`.
+
+    The default `datasets` fingerprint references module-level functions (like the PDF readers in
+    `kibad_llm.preprocessing`) only by name, so it does not change when their implementation changes.
+    Therefore, the fingerprint is computed explicitly and includes
+    `kibad_llm.preprocessing.PREPROCESSING_VERSION`, which invalidates Markdown cached by an older
+    reader implementation.
+
+    Args:
+        dataset: Dataset with a `file_name` column.
+        pdf_reader: Callable that takes `file_name` and `base_path` and returns the markdown text.
+        base_path: Directory that contains the PDF files.
+        num_proc: Number of processes to use for the conversion.
+
+    Returns:
+        The dataset with an additional `text` column containing the markdown.
+    """
+    pdf_reader_wrapped = wrap_map_func(func=pdf_reader, result_key="text")
+    fn_kwargs = {"base_path": base_path}
+    new_fingerprint = Hasher.hash(
+        {
+            "previous_fingerprint": dataset._fingerprint,
+            "function": pdf_reader_wrapped,
+            "fn_kwargs": fn_kwargs,
+            "preprocessing_version": PREPROCESSING_VERSION,
+        }
+    )
+    return dataset.map(
+        function=pdf_reader_wrapped,
+        input_columns=["file_name"],
+        fn_kwargs=fn_kwargs,
+        num_proc=num_proc,
+        new_fingerprint=new_fingerprint,
+    )
+
+
 def predict(cfg: DictConfig) -> dict[str, Any]:
     """Run classification-based information extraction on PDF files.
 
@@ -165,12 +210,11 @@ def predict(cfg: DictConfig) -> dict[str, Any]:
     logger.info("Converting PDF to markdown ...")
     logger.info(f"PDF reader config: {OmegaConf.to_container(cfg.pdf_reader, resolve=True)}")
     pdf_reader = instantiate(cfg.pdf_reader, _convert_="all")
-    pdf_reader_wrapped = wrap_map_func(func=pdf_reader, result_key="text")
     t_start_pdf_conversion = time.perf_counter()
-    dataset = dataset.map(
-        function=pdf_reader_wrapped,
-        input_columns=["file_name"],
-        fn_kwargs={"base_path": data_base_path},
+    dataset = convert_pdfs_to_markdown(
+        dataset=dataset,
+        pdf_reader=pdf_reader,
+        base_path=data_base_path,
         num_proc=cfg.pdf_reader_num_proc,
     )
     t_delta_pdf_conversion = time.perf_counter() - t_start_pdf_conversion

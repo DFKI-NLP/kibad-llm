@@ -1,7 +1,7 @@
 {
     "file_name": "7T8NZA5Q.pdf",
     "character_start": 0,
-    "character_end": 55835,
+    "character_end": 55803,
     "response_content": "{\n  \"habitat\": [\n    {\n      \"content\": \"Küsten und Küstengewässer\",\n      \"evidence_anchor\": \"monitoring the environmental suitability of coastal waters for Vibrio spp.\"\n    }\n  ],\n  \"taxa\": [\n    {\n      \"scientific_name\": {\n        \"content\": \"Vibrio cholerae\",\n        \"evidence_anchor\": \"Vibrio cholerae (serogroups O1 and O139) is the causative agent of cholera epidemics\"\n      },\n      \"german_name\": {\n        \"content\": \"Vibrio cholerae\",\n        \"evidence_anchor\": \"Vibrio cholerae (serogroups O1 und O139) ist der Erreger von Cholera-Epidemien\"\n      },\n      \"species_group\": {\n        \"content\": \"Bakterien\",\n        \"evidence_anchor\": \"Vibrio cholerae (serogroups O1 und O139) is the causative agent of cholera epidemics\"\n      }\n    },\n    {\n      \"scientific_name\": {\n        \"content\": \"Vibrio parahaemolyticus\",\n        \"evidence_anchor\": \"V. parahaemolyticus is one of the most common bacterial causes of gastroenteritis\"\n      },\n      \"german_name\": {\n        \"content\": \"Vibrio parahaemolyticus\",\n        \"evidence_anchor\": \"V. parahaemolyticus ist einer der häufigsten bakteriellen Ursachen von Magen-Darm-Erkrankungen\"\n      },\n      \"species_group\": {\n        \"content\": \"Bakterien\",\n        \"evidence_anchor\": \"Vibrio parahaemolyticus is one of the most common bacterial causes of gastroenteritis\"\n      }\n    },\n    {\n      \"scientific_name\": {\n        \"content\": \"Vibrio vulnificus\",\n        \"evidence_anchor\": \"V. vulnificus is associated with wound infections\"\n      },\n      \"german_name\": {\n        \"content\": \"Vibrio vulnificus\",\n        \"evidence_anchor\": \"V. vulnificus ist mit Wundinfektionen verbunden\"\n      },\n      \"species_group\": {\n        \"content\": \"Bakterien\",\n        \"evidence_anchor\": \"V. vulnificus is associated with wound infections\"\n      }\n    },\n    {\n      \"scientific_name\": {\n        \"content\": \"Vibrio alginolyticus\",\n        \"evidence_anchor\": \"V. alginolyticus was listed among species investigated in Sweden\"\n      },\n      \"german_name\": {\n        \"content\": \"Vibrio alginolyticus\",\n        \"evidence_anchor\": \"V. alginolyticus wurde in den Studien erfasst\"\n      },\n      \"species_group\": {\n        \"content\": \"Bakterien\",\n        \"evidence_anchor\": \"V. alginolyticus was listed among species investigated in Sweden\"\n      }\n    },\n    {\n      \"scientific_name\": {\n        \"content\": \"Vibrio spp.\",\n        \"evidence_anchor\": \"platform (the ECDC Vibrio Map Viewer) to monitor environmental suitability of coastal waters for Vibrio spp.\"\n      },\n      \"species_group\": {\n        \"content\": \"Bakterien\",\n        \"evidence_anchor\": \"platform (the ECDC Vibrio Map Viewer) to monitor environmental suitability of coastal waters for Vibrio spp.\"\n      }\n    }\n  ],\n  \"biodiversity_level\": [],\n  \"ecosystem_type\": []\n}",
     "structured": {
         "biodiversity_level": [],
@@ -61,9 +61,9 @@
                     "content": "Vibrio cholerae",
                     "evidence_anchor": "Vibrio cholerae (serogroups O1 and O139) is the causative agent of cholera epidemics",
                     "evidence_num_matches": 1,
-                    "first_evidence_end": 3509.0,
+                    "first_evidence_end": 3505.0,
                     "first_evidence_snippet": "waters with low to moderate salinity (Vezzulli\net al. 2013). Vibrio cholerae (serogroups O1 and O139) is the\ncausative agent of cholera epidemics, including the outbreak in\nHaiti (CDC 2010; Chin et al.",
-                    "first_evidence_start": 3425.0
+                    "first_evidence_start": 3421.0
                 },
                 "species_group": {
                     "content": "Bakterien",
@@ -84,9 +84,9 @@
                     "content": "Vibrio parahaemolyticus",
                     "evidence_anchor": "V. parahaemolyticus is one of the most common bacterial causes of gastroenteritis",
                     "evidence_num_matches": 1,
-                    "first_evidence_end": 4043.0,
+                    "first_evidence_end": 4039.0,
                     "first_evidence_snippet": "sporadic cases of gastroenteritis, wound\ninfections, ear infections, and septicemia. V. parahaemolyticus is\none of the most common bacterial causes of gastroenteritis due to\ncontaminated seafood (Odeyemi 2016) and also causes wound",
-                    "first_evidence_start": 3962.0
+                    "first_evidence_start": 3958.0
                 },
                 "species_group": {
                     "content": "Bakterien",
@@ -168,5 +168,6 @@
     "messages": null,
     "messages_formatted": null,
     "errors": [],
-    "errors_long": []
+    "errors_long": [],
+    "backend_metadata": null
 }
