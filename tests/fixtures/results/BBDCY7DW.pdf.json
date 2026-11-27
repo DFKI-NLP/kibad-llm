@@ -1,7 +1,7 @@
 {
     "file_name": "BBDCY7DW.pdf",
     "character_start": 0,
-    "character_end": 38831,
+    "character_end": 38660,
     "response_content": "{\n  \"habitat\": [\n    {\n      \"content\": \"Küsten und Küstengewässer\",\n      \"evidence_anchor\": \"estimated exposure to particulate air pollution (PM2.5) and health effects from shipping in countries around the Baltic Sea\"\n    }\n  ],\n  \"taxa\": [],\n  \"biodiversity_level\": [],\n  \"ecosystem_type\": []\n}",
     "structured": {
         "biodiversity_level": [],
@@ -30,5 +30,6 @@
     "messages": null,
     "messages_formatted": null,
     "errors": [],
-    "errors_long": []
+    "errors_long": [],
+    "backend_metadata": null
 }
